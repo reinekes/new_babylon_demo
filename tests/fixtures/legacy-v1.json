@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "year": 1,
+  "season": 0,
+  "tick": 0,
+  "population": 12,
+  "capacity": 16,
+  "happiness": 75,
+  "resources": {
+    "grain": 100,
+    "clay": 90,
+    "reed": 45,
+    "faith": 25,
+    "prestige": 10
+  },
+  "buildings": [
+    {
+      "type": "house",
+      "x": 8,
+      "y": 8
+    },
+    {
+      "type": "house",
+      "x": 9,
+      "y": 9
+    },
+    {
+      "type": "field",
+      "x": 12,
+      "y": 8
+    },
+    {
+      "type": "clay",
+      "x": 7,
+      "y": 7
+    },
+    {
+      "type": "shrine",
+      "x": 9,
+      "y": 8
+    }
+  ],
+  "cooldowns": {
+    "rain": 0,
+    "abundance": 0,
+    "bless": 0
+  },
+  "drought": 0,
+  "rain": 0,
+  "droughtSeen": false,
+  "memories": [],
+  "news": [
+    {
+      "title": "У города появился покровитель",
+      "text": "Двенадцать жителей оставили у реки первое подношение. Их надежда — теперь твоя сила.",
+      "kind": "good",
+      "year": 1,
+      "season": 0,
+      "tick": 0
+    }
+  ],
+  "event": null,
+  "won": false,
+  "lost": false,
+  "continued": false,
+  "hungry": 0,
+  "miracleCount": 0,
+  "name": "Безымянный дух",
+  "achievements": []
+}
