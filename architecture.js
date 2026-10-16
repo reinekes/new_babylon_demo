@@ -57,6 +57,33 @@ export function drawBuilding(r, b, state, t) {
     if(night>.12)glow(11,-3,25);
   }
 
+  if(b.type==='market') {
+    // An open court and two shaded stalls leave the central delivery passage clear.
+    box(0,1,27,13.5,3,'#e2cda2','#b39a6d','#ccb584');
+    for(let k=0;k<5;k++)line([[-24+k*10,-9+k*5],[-4+k*6,11-k*3]],'#c6b088',.65);
+    box(-11,-4,13,6.5,17+(level-1)*4,'#ddc69b','#b29464','#c8ad7c');
+    poly([[-20,-14],[-12,-10],[-12,-3],[-20,-7]],'#75654a');
+    const canopy=(a,z,color)=>{
+      for(const dx of [-11,11])line([[a+dx,z+8],[a+dx,z-22]],'#8a704b',1.6);
+      poly([[a-13,z-23],[a+8,z-33],[a+14,z-20],[a-8,z-9]],color);
+      for(let i=0;i<5;i++)line([[a-11+i*4,z-23-i*2],[a-7+i*4,z-10-i*2]],'#eddfb0',2);
+      poly([[a-8,z-9],[a+14,z-20],[a+14,z-16],[a-8,z-5]],color);
+      for(let i=0;i<6;i++)line([[a-7+i*4,z-9-i*2],[a-7+i*4,z-5-i*2]],'#e9d9a8',.7);
+    };
+    canopy(-11,-7,'#9ba98b');canopy(13,7,'#b78167');
+    box(13,8,11,5.5,10,'#d5ba87','#9d8058','#b79a6a');
+    for(let k=0;k<4;k++){pot(7+k*4,6-k*1.5,.5);box(-23+k*4,2+k*1.3,2,1,3,'#dbc27b','#ac9255','#c8ad69');}
+    // Bales, scales and a clay tablet identify trade without relying on text.
+    box(-17,8,5,2.5,7,'#c2b582','#8e865e','#aaa06e');
+    line([[-17,1],[-17,8]],'#ded09f',.8);line([[-21,4],[-13,0]],'#ded09f',.8);
+    line([[11,-8],[11,-19],[6,-21],[17,-16]],'#806d47',1.2);
+    line([[6,-21],[4,-16],[8,-14]],'#dac483',.8);line([[17,-16],[15,-11],[19,-9]],'#dac483',.8);
+    if(level>1){box(-11,-(22+(level-1)*4),14,7,3,'#ead5a9','#b99b69','#d1b786');pot(-10,-27,.65);}
+    if(level>2){line([[-25,-17],[-25,-40]],'#8d7651',1.4);poly([[-25,-40],[-15,-35],[-25,-31]],'#788f82');}
+    if(night>.12)glow(3,-13,34);
+    r.marketCargo?.(b,state);
+  }
+
   if(b.type==='field') {
     r.tile(b.x,b.y,state.drought?'#ac935b':'#94a86a');
     for(let k=0;k<7;k++){

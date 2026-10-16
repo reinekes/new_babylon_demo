@@ -32,9 +32,38 @@ export class Renderer{
   if(this.vegetationKey!==vegetationKey){this.vegetationKey=vegetationKey;this.scenery=vegetationFor(state,this.streets);for(const d of state.world?.deposits||[])if(['forest','dates'].includes(d.kind)&&!state.buildings.some(b=>b.x===d.x&&b.y===d.y))for(let k=0;k<3;k++)this.scenery.push({x:d.x+(k-1)*.17,y:d.y+(k%2)*.14,kind:'palm',size:.44});}
  }
  caravan(e){
-  const p=this.point(e.x,e.y),q=this.s,c=this.ctx;
-  for(let k=0;k<2;k++){const x=p.x-k*15*q,y=p.y+k*5*q;this.line([[x-9*q,y+q],[x-9*q,y+8*q],[x+2*q,y+4*q],[x+2*q,y+11*q]],'#756647',1.7*q);this.box(x-3*q,y,7*q,3*q,5*q,'#bda47b','#8e7758','#a68b64');this.line([[x+3*q,y],[x+7*q,y-8*q],[x+12*q,y-7*q]],'#9a8160',4*q);this.line([[x+8*q,y-9*q],[x+8*q,y-12*q]],'#756647',q);this.box(x-4*q,y-5*q,5*q,3*q,5*q,k?'#9e7759':'#a4aa79','#7b6e4e','#b59b6b');}
-  c.fillStyle='#5e7057';c.font=`${Math.max(8,9*q)}px Georgia`;c.textAlign='center';c.fillText('КАРАВАН',p.x-10*q,p.y-24*q);
+  const p=this.point(e.x,e.y,onBridge(this.state.buildings,e.x,e.y)?5:0),q=this.s,c=this.ctx;
+  const next=e.route?.[e.routeIndex||0],previous=e.route?.[Math.max(0,(e.routeIndex||0)-1)];
+  const direction=next&&Math.hypot(next.x-e.x,next.y-e.y)>.001?next:previous;
+  const facing=direction?((next===direction?1:-1)*((direction.x-e.x)-(direction.y-e.y))>=0?1:-1):1;
+  const moving=['arriving','departing'].includes(e.phase),step=this.reduce||!moving?0:Math.sin((this.state.simTime||0)*6),bob=Math.abs(step)*q;
+  c.save();c.translate(p.x,p.y);c.scale(facing,1);
+  c.fillStyle='#5d614632';c.beginPath();c.ellipse(-2*q,5*q,15*q,4*q,0,0,7);c.fill();
+  for(const [x,offset]of [[-10,1],[0,-1]]){this.line([[x*q,-3*q],[(x+step*offset*2)*q,8*q]],'#8a7353',2*q);this.line([[(x+4)*q,-2*q],[(x+4-step*offset*2)*q,9*q]],'#a58b63',1.8*q);}
+  c.fillStyle='#b59b71';c.beginPath();c.ellipse(-4*q,-5*q-bob,12*q,6*q,0,0,7);c.fill();
+  this.line([[5*q,-6*q-bob],[9*q,-20*q-bob],[16*q,-20*q-bob]],'#b59b71',5*q);
+  this.line([[12*q,-22*q-bob],[11*q,-26*q-bob]],'#92794f',1.4*q);
+  c.fillStyle='#655a40';c.beginPath();c.arc(16*q,-21*q-bob,.8*q,0,7);c.fill();
+  this.line([[-15*q,-6*q-bob],[-19*q,-3*q-bob]],'#8d7754',1.2*q);
+  this.polygon([[-13*q,-9*q-bob],[2*q,-9*q-bob],[3*q,-1*q-bob],[-12*q,-1*q-bob]],'#ab705c');
+  this.line([[-11*q,-8*q-bob],[1*q,-8*q-bob]],'#e4cea1',1.3*q);
+  for(const [x,color]of [[-10,'#a4aa79'],[-3,'#d2b284']]){this.box(x*q,-9*q-bob,4*q,2*q,6*q,color,'#8d7953','#b8a074');this.line([[x*q,-14*q-bob],[x*q,-7*q-bob]],'#e7d6a6',.8*q);}
+  this.line([[17*q,-20*q-bob],[24*q,-3*q]],'#917e57',.7*q);
+  c.restore();
+  // The merchant and the animal share the same depth entry and simulation clock.
+  const mx=p.x+facing*23*q,my=p.y+2*q;
+  this.line([[mx-q,my-3*q],[mx-step*q,my+3*q],[mx+q,my-3*q],[mx+step*q,my+3*q]],'#6f6249',1.2*q);
+  this.polygon([[mx-3*q,my-10*q],[mx+2*q,my-10*q],[mx+4*q,my-2*q],[mx-3*q,my-2*q]],'#687f79');
+  c.fillStyle='#a88b62';c.beginPath();c.arc(mx,my-12*q,2*q,0,7);c.fill();
+  this.line([[mx-2*q,my-14*q],[mx+3*q,my-14*q]],'#ead7ad',2*q);
+  if(e.phase==='unloading'){const lift=this.reduce?0:(Math.sin((this.state.simTime||0)*3)+1)*2*q;this.box(mx-facing*5*q,my-3*q-lift,3*q,1.5*q,4*q,'#ceb184','#977b54','#b89b6c');}
+ }
+ marketCargo(b,state){
+  const queue=state.trade?.deliveries||[],loads=queue.filter(item=>item.market===`${b.x},${b.y}`);
+  let amount=loads.reduce((n,item)=>n+(item.remaining||0),0);
+  if(!amount)return;
+  const p=this.point(b.x,b.y),q=this.s;
+  for(let k=0;k<Math.min(8,Math.ceil(amount/6));k++){const x=p.x+(15+(k%3)*4)*q,y=p.y+(-6+Math.floor(k/3)*3)*q;this.box(x,y,3*q,1.5*q,(4+Math.floor(k/6)*4)*q,'#d0b081','#99764e','#b69362');this.line([[x,y-4*q],[x,y+q]],'#e6d09b',.7*q);}
  }
  vegetation(e,t,state){
   const p=this.point(e.x,e.y),q=this.s*(e.growth||1),c=this.ctx,dry=state.drought||e.vigor<.5,color=dry?'#a49c64':state.season===3?'#8c9a69':e.vigor>.9?'#668b56':'#78935f';
@@ -112,7 +141,7 @@ export class Renderer{
  const entities=[...s.buildings.filter(b=>b.type!=='bridge'||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...visibleCitizens(s).map(person=>({...person,kind:'person',onBridge:onBridge(s.buildings,person.x,person.y)}))];
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpan(b.y);for(let x=span.left;x<span.right;x+=.5)entities.push({x:x+.25,y:span.y+.13,kind:'bridgeRail',end:Math.min(x+.5,span.right)});}
  const lamps=[...this.streets.nodes.values()].filter((p,i)=>i%4===0||this.streets.graph.get(p.key).size>=3).map(p=>({...p,kind:'lamp'}));
- entities.push(...lamps);if(s.trade?.caravan){const arrival=Math.min(1,Math.max(0,((s.simTime||0)-s.trade.caravan.arrived*45)/8));entities.push({kind:'caravan',x:4+arrival*3,y:4+arrival*2,id:90001});}
+ entities.push(...lamps);if(s.trade?.caravan&&Number.isFinite(s.trade.caravan.x)&&Number.isFinite(s.trade.caravan.y))entities.push({...s.trade.caravan,kind:'caravan'});
  for(const e of sortScene(entities)){
   if(!this.inView(e.x,e.y,150))continue;
   const p=this.point(e.x,e.y);

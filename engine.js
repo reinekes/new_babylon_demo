@@ -6,7 +6,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=4;
+export const VERSION=5;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
@@ -38,6 +38,7 @@ export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.co
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);for(const [k,n]of Object.entries(cost))s.resources[k]-=n;b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='house')return `Жильё: ${capacityOf(b)} жителей`;
+ if(b.type==='market')return `Приём караванов · 2 носильщика · до ${4+2*level} ед. груза за рейс`;
  if(b.type==='granary')return `+${150*level} хранения каждого материала · принимает все грузы`;
  if(b.type==='bridge')return `Соединяет берега · скорость на мосту ×${(1+(level-1)*.25).toFixed(2)}`;
  const output=Object.entries(def.output).map(([k,n])=>`${(n*outputMultiplier(b)).toFixed(n<1?2:1)} ${RESOURCE_NAMES[k]}`).join(' + ');
@@ -110,8 +111,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>JSON.stringify(s);
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4;
-  if(!s||![1,2,3,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5;
+  if(!s||![1,2,3,4,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -127,6 +128,7 @@ export function decode(raw){
    s.version=VERSION;s.roads=[];s.rngState=117;
   }
   if(oldTrade){s.version=VERSION;delete s.trade;initializeTrade(s);}
+  if(oldLogistics){s.version=VERSION;initializeTrade(s);}
   if(s.world&&!validateWorld(s))return null;
   initializeWorld(s);ensureResourceSites(s);
   const finite=(v,min=0,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
@@ -164,8 +166,8 @@ export function decode(raw){
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,WIDTH-.5)&&finite(p.y,-.5,HEIGHT-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading'].includes(c.phase))return null;
-   ids.add(c.id);
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket'].includes(c.phase))return null;
+   ids.add(c.id);if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.role!==undefined&&!['auto','builder','carrier','production'].includes(c.role)||c.pendingRole!==undefined&&!['auto','builder','carrier','production'].includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;
    if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||!Object.keys(BUILDINGS[buildings.get(c.work).type].output).length))return null;
    if(c.store!==null&&!['shrine','granary','house'].includes(buildings.get(c.store)?.type))return null;

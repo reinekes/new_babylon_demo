@@ -12,7 +12,8 @@ export const BUILDINGS={
  fishing:{name:'Рыбацкая хижина',icon:'♓',clay:8,reed:8,wood:10,desc:'Рыбаки доставляют еду с реки и озёр.',effect:'Еда · 2 работника',output:{food:5},workTime:4},
  hunting:{name:'Охотничий домик',icon:'➶',clay:8,reed:6,wood:12,desc:'Охотники добывают еду и шкуры рядом с дичью.',effect:'Еда + шкуры · 2 работника',output:{food:4,hides:1},workTime:4},
  logging:{name:'Лесорубная хижина',icon:'♠',clay:10,reed:4,desc:'Лесорубы доставляют дерево с лесного участка.',effect:'Дерево · 2 работника',output:{wood:6},workTime:4},
- quarry:{name:'Каменоломня',icon:'⬟',clay:10,reed:0,wood:12,desc:'Каменотёсы доставляют камень из месторождения.',effect:'Камень · 2 работника',output:{stone:5},workTime:4}
+ quarry:{name:'Каменоломня',icon:'⬟',clay:10,reed:0,wood:12,desc:'Каменотёсы доставляют камень из месторождения.',effect:'Камень · 2 работника',output:{stone:5},workTime:4},
+ market:{name:'Рынок',icon:'⚖',clay:20,reed:12,wood:8,desc:'Принимает караваны. Два носильщика доставляют покупки на склад.',effect:'Торговля · 2 носильщика',output:{}}
 };
 export const MIRACLES={
  rain:{name:'Небесный дождь',cost:15,cooldown:2,icon:'☂',domain:'water',desc:'Снимает засуху; урожай ×1,5 на два сезона.'},

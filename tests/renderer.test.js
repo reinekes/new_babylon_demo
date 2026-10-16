@@ -34,10 +34,35 @@ test('expanded production, lakes and rain render with finite drawing coordinates
  const r=Object.create(Renderer.prototype),gradient={addColorStop(){}},positions=[];
  const ctx=new Proxy({}, {get(target,key){if(key==='createRadialGradient')return ()=>gradient;if(['lineTo','moveTo','ellipse','arc','fillRect'].includes(key))return (...args)=>positions.push(args.filter(a=>typeof a==='number'));return target[key]??(()=>{});},set(target,key,value){target[key]=value;return true;}});
  Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
- const state=createGame();state.rain=15;state.buildings.push(...['fishing','hunting','logging','quarry'].map((type,i)=>({type,x:6+i,y:12,level:2})));
+ const state=createGame();state.rain=15;state.buildings.push(...['fishing','hunting','logging','quarry','market'].map((type,i)=>({type,x:6+i,y:12,level:2})));
+ state.trade.caravan={x:8.5,y:8.5,phase:'unloading',route:[{x:8.5,y:8.5}],routeIndex:0};state.trade.deliveries=[{id:'sample',market:'10,12',resource:'wood',remaining:12}];
  r.draw(state,'fishing',1000);
  assert.ok(positions.length>100);
  assert.ok(positions.flat().every(Number.isFinite));
  assert.equal(r.weather.type,'rain');
  assert.ok(r.scenery.every(e=>!state.buildings.some(b=>b.x===e.x&&b.y===e.y)));
+});
+
+test('caravan renders at its saved graph position and shares the scene depth queue',async()=>{
+ const {createGame}=await import('../engine.js');const {sceneDepth}=await import('../city-life.js');
+ const r=Object.create(Renderer.prototype),gradient={addColorStop(){}};
+ const ctx=new Proxy({}, {get(target,key){if(key==='createRadialGradient')return ()=>gradient;return target[key]??(()=>{});},set(target,key,value){target[key]=value;return true;}});
+ Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
+ const state=createGame();state.trade.caravan={x:10.5,y:8.5,phase:'arriving',route:[{x:10.5,y:8.5},{x:10.5,y:9.5}],routeIndex:1};
+ state.buildings.push({type:'market',x:11,y:9,level:2});
+ const order=[];r.person=e=>order.push(e);r.building=e=>order.push({...e,kind:'building'});r.caravan=e=>order.push(e);
+ r.draw(state,null,1000);const caravan=order.find(e=>e.kind==='caravan');
+ assert.equal(caravan.x,10.5);assert.equal(caravan.y,8.5);
+ for(let i=1;i<order.length;i++)assert.ok(sceneDepth(order[i])>=sceneDepth(order[i-1])-1e-8);
+ state.trade.caravan.x=9.5;r.draw(state,null,2000);assert.equal(order.filter(e=>e.kind==='caravan').at(-1).x,9.5);
+});
+
+test('market delivery piles disappear as goods are picked up and ignore other markets',()=>{
+ const r=Object.create(Renderer.prototype);let boxes=0;
+ Object.assign(r,{s:1,point:()=>({x:0,y:0}),box:()=>boxes++,line:()=>{}});
+ const b={x:8,y:9},delivery={market:'8,9',remaining:18};
+ const state={trade:{deliveries:[delivery,{market:'30,20',remaining:80}]}};
+ r.marketCargo(b,state);const full=boxes;assert.ok(full>0);
+ boxes=0;delivery.remaining=6;r.marketCargo(b,state);assert.ok(boxes<full&&boxes>0);
+ boxes=0;delivery.remaining=0;r.marketCargo(b,state);assert.equal(boxes,0);
 });
