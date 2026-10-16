@@ -37,3 +37,5 @@ export const outputMultiplier=b=>[0,1,1.6,2.4][levelOf(b)];
 export const buildingKey=b=>b.id||`${b.x},${b.y}`;
 export const storageOf=s=>200+s.buildings.filter(b=>b.type==='granary'&&isOperational(b)).reduce((n,b)=>n+150*levelOf(b),0);
 export const housingOf=s=>s.buildings.reduce((n,b)=>n+capacityOf(b),0);
+
+export const citizenName=id=>['Амал','Нин-Ая','Илду','Энлил','Шуба','Тари','Ишме','Нанна','Лугаль','Сила','Уту','Белет'][id%12]+(id>=12?` ${Math.floor(id/12)+1}`:'');

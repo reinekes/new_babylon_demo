@@ -7,9 +7,15 @@ export const DIVINE_NAMES={
  sun:['Зажигающий огни','Несущий рассвет','Хранитель полудня','Сердце небесного пламени','Солнце четырёх сторон']
 };
 export const DOMAIN_NAMES={water:'Воды',harvest:'Урожай',life:'Жизнь',craft:'Ремесло',knowledge:'Мудрость',sun:'Свет'};
-export function createDivinity(){return {domains:Object.fromEntries(Object.keys(DIVINE_NAMES).map(k=>[k,0])),names:[]};}
+export function createDivinity(){return {domains:Object.fromEntries(Object.keys(DIVINE_NAMES).map(k=>[k,0])),names:[],rating:0,inspirationAttempts:0,inspirationSuccesses:0};}
 export function registerMiracle(s,domain){
- s.divinity ||= createDivinity();s.divinity.domains[domain]++;
+ s.divinity ||= createDivinity();s.divinity.domains[domain]++;s.divinity.rating=(s.divinity.rating||0)+2;refreshDivineName(s);
+}
+export function registerInspiration(s,success){
+ s.divinity ||= createDivinity();s.divinity.inspirationAttempts=(s.divinity.inspirationAttempts||0)+1;s.divinity.inspirationSuccesses=(s.divinity.inspirationSuccesses||0)+(success?1:0);s.divinity.rating=Math.max(0,(s.divinity.rating||0)+(success?3:-1));
+ if(success){s.divinity.domains.craft++;refreshDivineName(s);}
+}
+function refreshDivineName(s){
  const ranked=Object.entries(s.divinity.domains).sort((a,b)=>b[1]-a[1]);
  const [dominant,uses]=ranked[0],rank=uses>=18?4:uses>=10?3:uses>=5?2:uses>=2?1:0;
  let name=DIVINE_NAMES[dominant][rank];

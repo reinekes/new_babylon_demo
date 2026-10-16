@@ -66,3 +66,35 @@ test('market delivery piles disappear as goods are picked up and ignore other ma
  boxes=0;delivery.remaining=6;r.marketCargo(b,state);assert.ok(boxes<full&&boxes>0);
  boxes=0;delivery.remaining=0;r.marketCargo(b,state);assert.equal(boxes,0);
 });
+
+test('placement outlines remain visible for valid terrain even without money',async()=>{
+ const {createGame}=await import('../engine.js');const s=createGame();s.resources.clay=0;s.resources.reed=0;
+ const r=Object.create(Renderer.prototype),drawn=[];
+ Object.assign(r,{s:1,reduce:true,ctx:{save(){},restore(){}},inView:()=>true,point:(x,y)=>({x,y}),polygon:points=>drawn.push(points),line(){}});
+ r.placementLayer(s,'house');assert.ok(drawn.some(points=>points[0].x===2-.45&&points[0].y===2-.45));
+ drawn.length=0;r.placementLayer(s,'clay');assert.ok(drawn.length>0);assert.ok(drawn.length<20);
+});
+
+test('open depot stocks reflect actual resources and disappear once a granary operates',async()=>{
+ const {createGame}=await import('../engine.js');const s=createGame(),r=Object.create(Renderer.prototype);r.streets={ports:[]};
+ const piles=r.groundStocks(s);assert.equal(piles.length,1);assert.equal(piles[0].stock,s.resources);
+ s.buildings.push({type:'granary',x:3,y:3,level:1,construction:{kind:'new'}});assert.equal(r.groundStocks(s).length,1);
+ delete s.buildings.at(-1).construction;assert.equal(r.groundStocks(s).length,0);
+});
+
+test('funeral renders covered bier, jackals and at-home mourners at actual scene positions',async()=>{
+ const {createGame}=await import('../engine.js'),{sceneDepth}=await import('../city-life.js');
+ const r=Object.create(Renderer.prototype),gradient={addColorStop(){}},ctx=new Proxy({}, {get(target,key){if(key==='createRadialGradient')return ()=>gradient;return target[key]??(()=>{});},set(target,key,value){target[key]=value;return true;}});
+ Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
+ const s=createGame();s.citizens[0].x=7.5;s.citizens[0].y=7.5;s.citizens[0].phase='home';s.funeral={stage:'jackals',boundary:{x:5.5,y:7.5},coffin:{x:5.5,y:7.5},deceased:[{id:100}],actors:[{id:0}],timer:1};
+ const order=[];r.person=e=>order.push({...e,kind:'person'});r.building=e=>order.push({...e,kind:'building'});r.bier=e=>order.push(e);r.animal=e=>order.push(e);
+ r.draw(s,null,1000);const mourner=order.find(e=>e.kind==='person'&&e.id===0);assert.ok(mourner);assert.equal(mourner.x,7.5);assert.equal(mourner.y,7.5);
+ assert.equal(order.find(e=>e.kind==='bier').x,5.5);assert.equal(order.filter(e=>String(e.id).startsWith('funeral-jackal')).length,3);
+ for(let i=1;i<order.length;i++)assert.ok(sceneDepth(order[i])>=sceneDepth(order[i-1])-1e-8);
+});
+test('placement highlights remain above night and weather shading',async()=>{
+ const{createGame}=await import('../engine.js'),r=Object.create(Renderer.prototype),gradient={addColorStop(){}},calls=[];
+ const ctx=new Proxy({},{get(t,k){if(k==='createRadialGradient')return()=>gradient;return t[k]??(()=>{});},set(t,k,v){t[k]=v;return true;}});
+ Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:0,visualLast:null,lightMode:'night',reduce:true,lights:[],effects:[],hover:null});
+ r.nightLayer=()=>calls.push('night');r.weatherLayer=()=>calls.push('weather');r.placementLayer=()=>calls.push('highlight');r.draw(createGame(),'reed',1000);assert.deepEqual(calls,['night','weather','highlight']);
+});

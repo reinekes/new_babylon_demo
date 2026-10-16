@@ -1,26 +1,27 @@
+import {startFuneral,validateFuneral} from './funerals.js';
 import {initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {roadUpgradeCost,roadKey} from './roads.js';
 import {createOrder,isComplete,nextOrder,constructionEntities,workRequired} from './construction.js';
 import {WIDTH,HEIGHT,terrain,river,bridgeSpan,initializeWorld,nearDeposit,isShore,validateWorld,isDryPoint,ensureResourceSites} from './world.js';
-import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf} from './definitions.js';
-import {syncCitizens,advanceWorkers,workforceStats} from './workforce.js';
+import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf,citizenName} from './definitions.js';
+import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=5;
+export const VERSION=6;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame(){
- const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
+ const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
  initializeWorld(s);ensureResourceSites(s);initializeTrade(s);syncCitizens(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
 export const storage=storageOf;
 export function workers(s){const needed=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).length*2;return needed?Math.min(1,workforceStats(s).employed/needed):1;}
 export function buildingAt(s,x,y){return s.buildings.find(b=>b.x===x&&b.y===y)||s.buildings.find(b=>{if(b.type!=='bridge'||b.y!==y)return false;const span=bridgeSpan(y);return terrain(x,y,s)==='water'&&x>=span.left&&x<=span.right;});}
-export function canBuild(s,type,x,y){
- const b=BUILDINGS[type];if(!b)return 'Неизвестная постройка';if(s.lost)return 'Поселение покинуто';if(s.event)return 'Сначала реши судьбу события';if(terrain(x,y,s)==='void')return 'За пределами долины';if(buildingAt(s,x,y))return 'Эта клетка уже занята';
+export function canBuild(s,type,x,y,placementOnly=false){
+ const b=BUILDINGS[type];if(!b)return 'Неизвестная постройка';if(!placementOnly&&s.lost)return 'Поселение покинуто';if(!placementOnly&&s.event)return 'Сначала реши судьбу события';if(terrain(x,y,s)==='void')return 'За пределами долины';if(buildingAt(s,x,y))return 'Эта клетка уже занята';
  if(type==='bridge'){
   if(terrain(x,y,s)!=='water'||terrain(x,y)!=='water')return 'Выбери клетку воды: мост соединит оба берега';
   if(s.buildings.some(b=>b.type==='bridge'&&b.y===y))return 'На этом участке уже есть мост';
@@ -28,10 +29,11 @@ export function canBuild(s,type,x,y){
  if(type==='field'&&terrain(x,y,s)!=='fertile')return 'Полю нужна зелёная земля у реки';
  if(['clay','reed','quarry','logging','hunting','garden'].includes(type)&&!nearDeposit(s,({quarry:'stone',logging:'forest',hunting:'wildlife',garden:'dates'})[type]||type,x,y))return type==='garden'?'Нужен отмеченный финиковый участок':'Нужно отмеченное месторождение';
  if(type==='fishing'&&!isShore(s,x,y))return 'Нужна сухая клетка у воды';
- if(type==='ziggurat'&&s.buildings.some(b=>b.type===type))return 'Зиккурат уже построен';if((b.prestige||0)>s.resources.prestige)return `Нужно ${b.prestige} престижа`;
- for(const k of [...MATERIALS,'faith'])if((b[k]||0)>s.resources[k])return `Не хватает: ${RESOURCE_NAMES[k]}`;
+ if(type==='ziggurat'&&s.buildings.some(b=>b.type===type))return 'Зиккурат уже построен';if(!placementOnly&&(b.prestige||0)>s.resources.prestige)return `Нужно ${b.prestige} престижа`;
+ for(const k of [...MATERIALS,'faith'])if(!placementOnly&&(b[k]||0)>s.resources[k])return `Не хватает: ${RESOURCE_NAMES[k]}`;
  return '';
 }
+export const canPlace=(s,type,x,y)=>canBuild(s,type,x,y,true);
 export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};for(const k of [...MATERIALS,'faith'])s.resources[k]-=BUILDINGS[type][k]||0;s.buildings.push({type,x,y,level:1,construction:{...createOrder(BUILDINGS[type]),order:nextOrder(s)}});s.capacity=housingOf(s);syncCitizens(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 export function upgradeCost(b){const factor=levelOf(b)===1?1.5:2.5;return {clay:Math.ceil(BUILDINGS[b.type].clay*factor),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...(levelOf(b)===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{})};}
 export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
@@ -46,6 +48,7 @@ export function yieldSummary(s,b){
 }
 export function miracle(s,id){
  const m=MIRACLES[id];if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<m.cost)return {ok:false,reason:`Нужно ${m.cost} веры`};if(id==='abundance'&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
+ if(s.funeral&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
  if(['bless','healing'].includes(id)&&s.population>=s.capacity&&s.happiness>=100)return {ok:false,reason:'Город уже счастлив; для новых жителей нужны дома'};
  s.resources.faith-=m.cost;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
@@ -72,12 +75,14 @@ function check(s){
 }
 function settleSeason(s){
  s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);advanceTrade(s);
+ if(s.funeral){syncCitizens(s);check(s);return;}
  for(const k of Object.keys(s.cooldowns))s.cooldowns[k]=Math.max(0,s.cooldowns[k]-1);
  // Production is already in citizens' delivered cargo. Never credit it here.
  const food=s.population*.6,fed=s.resources.food>=food;s.resources.food=Math.max(0,s.resources.food-food);s.hungry=fed?0:s.hungry+1;
  const gardenJoy=s.buildings.filter(b=>b.type==='garden'&&isComplete(b)).reduce((n,b)=>n+2+2*levelOf(b),0),target=fed?Math.min(95,72+gardenJoy):12;s.happiness=Math.max(0,Math.min(100,s.happiness+(target-s.happiness)*.3));
- if(!fed){log(s,'В амбарах не хватает еды','Проверь поля, работников и дороги к складу. Люди теряют надежду.','bad');if(s.hungry>=2){const n=Math.min(s.population,Math.max(2,Math.ceil(s.population*.12)));s.population-=n;log(s,'Люди покидают город',`Голод унёс ${n} жителей. Город слабеет.`,'bad');}}
+ if(!fed){log(s,'В амбарах не хватает еды','Проверь поля, работников и дороги к складу. Люди теряют надежду.','bad');if(s.hungry>=2){const n=Math.min(s.population,Math.max(2,Math.ceil(s.population*.12))),deceased=s.citizens.filter(c=>c.id>=s.population-n).map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));for(const c of deceased)recoverCitizenCargo(s,c.id);s.population-=n;s.deaths+=n;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${n} жителей. Город остановил работу, чтобы проводить умерших к границе долины.`,'bad');}}
  else if(s.happiness>60&&s.population<s.capacity){const n=Math.min(2,s.capacity-s.population);s.population+=n;log(s,'Новые жители',`К городу присоединились ${n} человека. Их привлекли сытые амбары и твоя защита.`,'good');}
+ if(s.funeral){syncCitizens(s);check(s);return;}
  s.drought=Math.max(0,s.drought-1);s.rain=Math.max(0,s.rain-1);for(const k of Object.keys(s.buffs))s.buffs[k]=Math.max(0,s.buffs[k]-1);
  if(s.season===0){
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');
@@ -89,9 +94,9 @@ function settleSeason(s){
  syncCitizens(s);check(s);
 }
 export function advanceTime(s,seconds){
- if(s.lost||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
+ if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
  let remaining=Math.min(seconds,3600),advanced=0;
- while(remaining>1e-7&&!s.lost&&!s.event){
+ while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   const dt=Math.min(remaining,45-s.seasonElapsed);advanceWorkers(s,dt);s.seasonElapsed+=dt;remaining-=dt;advanced+=dt;
   if(s.seasonElapsed>=45-1e-7){s.seasonElapsed=0;settleSeason(s);}
  }
@@ -111,8 +116,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>JSON.stringify(s);
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5;
-  if(!s||![1,2,3,4,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6;
+  if(!s||![1,2,3,4,5,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -129,6 +134,7 @@ export function decode(raw){
   }
   if(oldTrade){s.version=VERSION;delete s.trade;initializeTrade(s);}
   if(oldLogistics){s.version=VERSION;initializeTrade(s);}
+  if(oldMortality){s.version=VERSION;initializeTrade(s);s.funeral=null;s.deaths=0;s.divinity.rating=s.miracleCount*2;s.divinity.inspirationAttempts=0;s.divinity.inspirationSuccesses=0;}
   if(s.world&&!validateWorld(s))return null;
   initializeWorld(s);ensureResourceSites(s);
   const finite=(v,min=0,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
@@ -159,6 +165,9 @@ export function decode(raw){
   for(const k of ['memories','achievements'])if(!Array.isArray(s[k])||s[k].some(v=>typeof v!=='string'))return null;
   if(!s.divinity||!Array.isArray(s.divinity.names)||s.divinity.names.some(v=>typeof v!=='string'||v.length>100))return null;
   for(const k of Object.keys(createDivinity().domains))if(!integer(s.divinity.domains?.[k]))return null;
+  if(s.funeral===undefined||!integer(s.deaths)||!validateFuneral(s))return null;
+  for(const k of ['rating','inspirationAttempts','inspirationSuccesses'])if(!integer(s.divinity[k]))return null;
+  if(s.divinity.inspirationSuccesses>s.divinity.inspirationAttempts)return null;
   if(!Array.isArray(s.news)||s.news.length>80||s.news.some(n=>typeof n.title!=='string'||typeof n.text!=='string'||!integer(n.year,1)||!integer(n.season,0,3)||typeof n.kind!=='string'))return null;
   if(s.event!==null&&(!s.event||!['caravan','refugees','festival'].includes(s.event.id)||typeof s.event.title!=='string'||typeof s.event.text!=='string'))return null;
   if(legacy)syncCitizens(s);
@@ -166,8 +175,9 @@ export function decode(raw){
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,WIDTH-.5)&&finite(p.y,-.5,HEIGHT-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket'].includes(c.phase))return null;
-   ids.add(c.id);if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home'].includes(c.phase)))return null;
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket'].includes(c.phase))return null;
+   ids.add(c.id);if(c.saleJob!=null&&(!s.trade.sales.some(q=>q.id===c.saleJob&&q.market===c.saleMarket)||!['toSaleSupply','toSaleMarket','blocked','toHome','home'].includes(c.phase)))return null;
+   if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.role!==undefined&&!['auto','builder','carrier','production'].includes(c.role)||c.pendingRole!==undefined&&!['auto','builder','carrier','production'].includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;
    if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||!Object.keys(BUILDINGS[buildings.get(c.work).type].output).length))return null;
    if(c.store!==null&&!['shrine','granary','house'].includes(buildings.get(c.store)?.type))return null;

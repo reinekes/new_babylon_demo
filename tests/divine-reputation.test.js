@@ -1,0 +1,7 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {createDivinity,registerInspiration,registerMiracle} from '../divinity.js';
+const state=()=>({name:'Безымянный дух',divinity:createDivinity()});
+test('successful inspiration improves reputation, craft deeds and divine name',()=>{const s=state();registerInspiration(s,true);assert.equal(s.divinity.rating,3);assert.equal(s.divinity.inspirationAttempts,1);assert.equal(s.divinity.inspirationSuccesses,1);assert.equal(s.divinity.domains.craft,1);assert.equal(s.name,'Направляющий руки');assert.ok(s.divinity.names.includes(s.name));});
+test('refused inspiration affects reputation but never erases earned names or makes rating negative',()=>{const s=state();registerInspiration(s,true);const names=[...s.divinity.names];registerInspiration(s,false);assert.equal(s.divinity.rating,2);assert.equal(s.divinity.inspirationAttempts,2);assert.equal(s.divinity.inspirationSuccesses,1);assert.deepEqual(s.divinity.names,names);for(let i=0;i<10;i++)registerInspiration(s,false);assert.equal(s.divinity.rating,0);});
+test('inspiration and miracles share domain ranks without counting attempts as miracles',()=>{const s=state();registerMiracle(s,'craft');registerInspiration(s,true);assert.equal(s.name,'Покровитель мастеров');assert.equal(s.divinity.rating,5);assert.equal(s.divinity.domains.craft,2);assert.equal(s.divinity.inspirationAttempts,1);});

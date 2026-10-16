@@ -1,3 +1,4 @@
+import {registerInspiration} from './divinity.js';
 import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS} from './definitions.js';
 import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor} from './workforce.js';
@@ -5,7 +6,7 @@ import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
 const roles=['auto','builder','carrier','production'];
 const hasLoad=c=>Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
 const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
-const blocked=s=>s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
+const blocked=s=>s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
 const upgradePrice=(b,level)=>({...level===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{},clay:Math.ceil(BUILDINGS[b.type].clay*(level===1?1.5:2.5)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*(level===1?1.5:2.5)))});
 function note(s,title,text){s.news.unshift({title,text,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
 export function cancellationRefund(b){const q=b?.construction;return q?{...q.required,faith:q.kind==='new'?(BUILDINGS[b.type]?.faith||0):0}:{clay:0,reed:0,faith:0};}
@@ -58,20 +59,20 @@ function relocations(s,b){
  return result;
 }
 export function canDemolish(s,b){
- const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(b.type==='market'&&((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||s.trade?.caravan?.market===buildingKey(b)))return 'Рынок занят караваном или оплаченными покупками';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
+ const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(b.type==='market'&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Рынок занят караваном или оплаченными покупками';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
  if(storageOf(future)<storageOf(s)&&MATERIALS.some(k=>storageOf(future)<(s.resources[k]||0)))return 'Сначала освободи еду: оставшихся амбаров недостаточно';
  if(['bridge','shrine','granary'].includes(b.type)){
   const {net,map}=ports(future);
-  for(const q of s.trade?.deliveries||[]){if(q.delivered>=q.amount)continue;const market=map.get(q.market),component=market&&net.components.get(market.key);if(!market||!future.buildings.some(store=>['shrine','granary'].includes(store.type)&&isComplete(store)&&map.get(buildingKey(store))&&net.components.get(map.get(buildingKey(store)).key)===component))return 'На рынке ждут оплаченные покупки: нужен доступный склад';}
+  for(const q of [...s.trade?.deliveries||[],...s.trade?.sales||[]]){if((q.delivered??((q.loaded||0)+(q.cancelled||0)))>=q.amount)continue;const market=map.get(q.market),component=market&&net.components.get(market.key);if(!market||!future.buildings.some(store=>['shrine','granary'].includes(store.type)&&isComplete(store)&&map.get(buildingKey(store))&&net.components.get(map.get(buildingKey(store)).key)===component))return 'На рынке ждут оплаченные покупки: нужен доступный склад';}
   for(const c of s.citizens.filter(hasLoad)){
    let nearest=null,min=Infinity;for(const p of net.nodes.values()){const d=Math.abs(c.x-p.x)+Math.abs(c.y-p.y);if(d<min){min=d;nearest=p;}}
    const component=nearest&&net.components.get(nearest.key);
    const stores=future.buildings.filter(v=>isComplete(v)&&['shrine','granary'].includes(v.type));
    if(!stores.some(v=>map.get(buildingKey(v))&&net.components.get(map.get(buildingKey(v)).key)===component))return 'Есть грузы в пути: нужен другой доступный склад на этом берегу';
-   if(c.tradeJob){const market=map.get(c.tradeMarket);if(!market||net.components.get(market.key)!==component)return 'Дождись доставки покупок: снос перекроет путь к рынку';}
+   if(c.tradeJob||c.saleJob){const market=map.get(c.tradeMarket||c.saleMarket);if(!market||net.components.get(market.key)!==component)return 'Дождись доставки покупок: снос перекроет путь к рынку';}
    if(Object.values(c.buildCargo||{}).some(n=>n>0)&&c.site!==buildingKey(b)){
     const target=map.get(c.sitePort);if(!target||net.components.get(target.key)!==component)return 'Сначала дождись доставки материалов: снос перекроет их путь к стройке';
    }
@@ -98,4 +99,4 @@ export function demolish(s,x,y){
 }
 
 export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id);if(!c||!roles.includes(role))return 'Неизвестный житель или роль';if((c.role||'auto')===role||c.pendingRole===role)return 'Эта профессия уже выбрана';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
-export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const success=s.rngState/4294967296<.4;const c=s.citizens.find(c=>c.id===id);if(success)setCitizenRole(s,id,role);const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}
+export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const success=s.rngState/4294967296<.4;registerInspiration(s,success);const c=s.citizens.find(c=>c.id===id);if(success)setCitizenRole(s,id,role);const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}
