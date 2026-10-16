@@ -88,7 +88,8 @@ export class Renderer{
   const depot=s.buildings.find(b=>b.type==='shrine'&&b.construction?.kind!=='new')||s.buildings.find(b=>b.type==='house'&&b.construction?.kind!=='new');
   if(!depot)return [];
   const port=this.streets.ports.find(p=>p.building.x===depot.x&&p.building.y===depot.y);
-  return [{kind:'groundStocks',x:port?.x??depot.x+.5,y:port?.y??depot.y+.5,stock:s.resources}];
+  const stock={...s.resources};for(const order of s.trade?.sales||[])stock[order.resource]=(stock[order.resource]||0)+order.remaining;for(const b of [...s.buildings,...s.roads||[]])for(const [k,n]of Object.entries(b.construction?.remaining||{}))stock[k]=(stock[k]||0)+n;
+  return [{kind:'groundStocks',x:port?.x??depot.x+.5,y:port?.y??depot.y+.5,stock}];
  }
  stockPile(e){
   const p=this.point(e.x,e.y),q=this.s,c=this.ctx,materials=['food','clay','reed','wood','stone','hides'];

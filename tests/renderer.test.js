@@ -77,7 +77,7 @@ test('placement outlines remain visible for valid terrain even without money',as
 
 test('open depot stocks reflect actual resources and disappear once a granary operates',async()=>{
  const {createGame}=await import('../engine.js');const s=createGame(),r=Object.create(Renderer.prototype);r.streets={ports:[]};
- const piles=r.groundStocks(s);assert.equal(piles.length,1);assert.equal(piles[0].stock,s.resources);
+ const piles=r.groundStocks(s);assert.equal(piles.length,1);assert.deepEqual(piles[0].stock,s.resources);
  s.buildings.push({type:'granary',x:3,y:3,level:1,construction:{kind:'new'}});assert.equal(r.groundStocks(s).length,1);
  delete s.buildings.at(-1).construction;assert.equal(r.groundStocks(s).length,0);
 });
@@ -97,4 +97,7 @@ test('placement highlights remain above night and weather shading',async()=>{
  const ctx=new Proxy({},{get(t,k){if(k==='createRadialGradient')return()=>gradient;return t[k]??(()=>{});},set(t,k,v){t[k]=v;return true;}});
  Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:0,visualLast:null,lightMode:'night',reduce:true,lights:[],effects:[],hover:null});
  r.nightLayer=()=>calls.push('night');r.weatherLayer=()=>calls.push('weather');r.placementLayer=()=>calls.push('highlight');r.draw(createGame(),'reed',1000);assert.deepEqual(calls,['night','weather','highlight']);
+});
+test('reserved warehouse goods stay visible on the ground until porters take them',async()=>{
+ const{createGame}=await import('../engine.js'),s=createGame(),r=Object.create(Renderer.prototype);r.refreshCity(s);s.resources.clay=0;s.trade.sales=[{resource:'clay',remaining:5}];assert.equal(r.groundStocks(s)[0].stock.clay,5);s.trade.sales[0].remaining=2;assert.equal(r.groundStocks(s)[0].stock.clay,2);s.trade.sales[0].remaining=0;assert.equal(r.groundStocks(s)[0].stock.clay,0);
 });
