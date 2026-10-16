@@ -16,3 +16,28 @@ test('actual render queue interleaves people and solid buildings in depth order'
  for(let i=1;i<order.length;i++)assert.ok(sceneDepth(order[i])>=sceneDepth(order[i-1])-1e-8);
  assert.ok(order.findIndex(e=>e.kind==='person')<order.findLastIndex(e=>e.kind==='building'),'some residents must be drawn before houses, not in a final overlay pass');
 });
+
+test('road mode selects an existing segment and returns to tile selection',()=>{
+ const road={id:'test',a:{x:3,y:4},b:{x:4,y:4}};
+ const r=Object.create(Renderer.prototype),selected=[];
+ Object.assign(r,{state:{roads:[road]},onRoadSelect:value=>selected.push(value)});
+ r.setRoadMode(true);r.selectPoint({x:3.7,y:4.1},()=>assert.fail('tile callback in road mode'));
+ assert.equal(selected[0],road);
+ r.selectPoint({x:10,y:12},()=>assert.fail('empty terrain callback in road mode'));
+ assert.equal(selected.length,1);
+ r.setRoadMode(false);r.selectPoint({x:8,y:8},p=>selected.push(p));
+ assert.deepEqual(selected[1],{x:8,y:8});
+});
+
+test('expanded production, lakes and rain render with finite drawing coordinates',async()=>{
+ const {createGame}=await import('../engine.js');
+ const r=Object.create(Renderer.prototype),gradient={addColorStop(){}},positions=[];
+ const ctx=new Proxy({}, {get(target,key){if(key==='createRadialGradient')return ()=>gradient;if(['lineTo','moveTo','ellipse','arc','fillRect'].includes(key))return (...args)=>positions.push(args.filter(a=>typeof a==='number'));return target[key]??(()=>{});},set(target,key,value){target[key]=value;return true;}});
+ Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
+ const state=createGame();state.rain=15;state.buildings.push(...['fishing','hunting','logging','quarry'].map((type,i)=>({type,x:6+i,y:12,level:2})));
+ r.draw(state,'fishing',1000);
+ assert.ok(positions.length>100);
+ assert.ok(positions.flat().every(Number.isFinite));
+ assert.equal(r.weather.type,'rain');
+ assert.ok(r.scenery.every(e=>!state.buildings.some(b=>b.x===e.x&&b.y===e.y)));
+});

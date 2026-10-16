@@ -100,6 +100,39 @@ export function drawBuilding(r, b, state, t) {
     pot(-11,13,.8);
   }
 
+  if(['fishing','hunting','logging','quarry'].includes(b.type)) {
+    const fishing=b.type==='fishing',hunting=b.type==='hunting',logging=b.type==='logging';
+    box(0,0,25,12.5,3,'#c4b385','#9c8962','#b39e71');
+    if(b.type==='quarry') {
+      for(let k=0;k<7;k++){const a=-18+seed(k,b.x)*37,z=-5+seed(k,b.y)*13;box(a,z,7,3.5,8+seed(k,7)*15,'#c6c4ad','#8c948a','#aab1a0');line([[a-5,z-6],[a+5,z-11]],'#e4dfc5',1);}
+      line([[-19,2],[-19,-39],[7,-27]],'#7e694b',2.4);line([[-19,-37],[7,-25],[7,-8]],'#a38b5b',1.5);
+      box(7,-3,5,2.5,8,'#bbb9a1','#8b9186','#a5ad9b');
+    } else {
+      const h=23+(level-1)*5;
+      box(-3,-1,16,8,h,'#c7b080','#99825a','#b49b6d');
+      poly([[-24,-h-2],[-5,-h-24],[19,-h-3],[-2,-h+8]],fishing?'#b5ba92':hunting?'#a98259':'#8d9b73');
+      for(let i=0;i<7;i++)line([[-22+i*5,-h-1+i*.4],[-5+i*3,-h-22+i*2.7]],'#d4c18c',.8);
+      poly([[0,-12],[8,-16],[8,4],[0,8]],'#635b43');
+      if(fishing){
+        for(let i=0;i<5;i++)box(17-i*3,5+i*1.5,9,1.5,2,'#cbb382','#987e53','#b29b6c');
+        line([[19,4],[24,-31]],'#816f4e',1.3);line([[24,-31],[29,-4]],'#d8d4b0',.7);
+        for(let i=0;i<5;i++)line([[-21+i*4,-16],[-13+i*4,3]],'#c4c7a1',.7);
+        for(let i=0;i<4;i++)line([[-20,-14+i*4],[-3,-5+i*4]],'#c4c7a1',.7);
+        pot(-19,7,1);
+      } else if(hunting){
+        line([[12,8],[12,-20],[24,-26],[24,2]],'#7e6949',1.8);
+        poly([[13,-18],[17,-17],[22,-22],[23,-7],[18,-2],[14,-5]],'#b88d5b');
+        line([[-20,4],[-24,-20]],'#745f44',1.8);line([[-24,-20],[-16,-17]],'#b5ab8b',2);
+        line([[18,-6],[18,-16]],'#8a6747',.8);
+      } else {
+        for(let i=0;i<5;i++){box(10+i*2,9-i*2,10,2,4,'#b79c66','#7d6848','#9f8254');line([[3+i*2,6-i*2],[18+i*2,-1-i*2]],'#dbc48c',1);}
+        box(-20,7,6,3,10,'#c4ac78','#8c754e','#a68d5d');
+        line([[-20,-2],[-14,-20]],'#796348',2);poly([[-16,-22],[-8,-21],[-10,-15],[-17,-17]],'#b5b9a8');
+      }
+      if(night>.12)glow(4,-5,22);
+    }
+  }
+
   if(b.type==='shrine'||b.type==='ziggurat') {
     const big=b.type==='ziggurat',levels=(big?4:2)+(level-1),step=big?13:11;
     for(let l=0;l<levels;l++){

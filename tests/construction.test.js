@@ -35,11 +35,11 @@ test('saving during labour preserves stages; malformed and duplicated material b
  bad.buildings[0].construction.delivered.clay=0;bad.buildings[0].construction.work=1;assert.equal(decode(encode(bad)),null);
 });
 test('a new workshop produces nothing before construction; builders conserve reservations when population falls',()=>{
- const s=createGame();s.resources.clay=500;s.resources.reed=500;build(s,'reed',10,9);const b=s.buildings.at(-1);const delivered=s.delivered.reed;
+ const s=createGame();s.resources.clay=500;s.resources.reed=500;build(s,'reed',11,12);const b=s.buildings.at(-1);const delivered=s.delivered.reed;
  run(s,1);assert.equal(s.delivered.reed,delivered);assert.ok(b.construction);
  const loaded=decode(encode(s));assert.ok(loaded);
  // Population loss can remove a builder carrying a reservation; it returns to the order.
- const t=createGame();t.buildings=t.buildings.filter(b=>b.type==='house'||b.type==='shrine');t.citizens=[];t.population=12;t.resources.grain=0;build(t,'house',10,9);
+ const t=createGame();t.buildings=t.buildings.filter(b=>b.type==='house'||b.type==='shrine');t.citizens=[];t.population=12;t.resources.food=0;build(t,'house',10,9);
  run(t,100);assert.ok(decode(encode(t)));
 });
 test('save is valid on the exact frame construction completes, including newly unemployed builders',()=>{

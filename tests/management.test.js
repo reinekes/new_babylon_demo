@@ -45,8 +45,8 @@ test('blocked loaded carriers retain their exact cargo across night and resume a
  s.buildings=s.buildings.filter(b=>b.type!=='bridge');rerouteCitizens(s);assert.equal(carrier.phase,'blocked');assert.equal(carrier.routeIndex,0);assert.ok(decode(encode(s)));run(s,60);assert.deepEqual(carrier.buildCargo,cargo);assert.ok(decode(encode(s)));
  s.buildings.push({type:'bridge',x:13,y:9,level:1});run(s,25);assert.notEqual(carrier.phase,'blocked');assert.ok(decode(encode(s)));
 });
-test('empty bridges can be removed; occupied bridges and grain-overflowing warehouse demolition are blocked',()=>{
+test('empty bridges can be removed; occupied bridges and food-overflowing warehouse demolition are blocked',()=>{
  const s=stocked();s.buildings.push({type:'bridge',x:13,y:9,level:1});const before=s.resources.clay;assert.ok(management.demolish(s,13,9).ok);assert.equal(s.resources.clay,before+22);assert.ok(decode(encode(s)));
  s.buildings.push({type:'bridge',x:13,y:9,level:1});s.citizens[0].x=13;s.citizens[0].y=9.5;assert.equal(management.demolish(s,13,9).ok,false);
- const t=stocked();t.buildings.push({type:'granary',x:10,y:9,level:1});t.resources.grain=300;assert.equal(management.demolish(t,10,9).ok,false);assert.equal(t.resources.grain,300);
+ const t=stocked();t.buildings.push({type:'granary',x:10,y:9,level:1});t.resources.food=300;assert.equal(management.demolish(t,10,9).ok,false);assert.equal(t.resources.food,300);
 });

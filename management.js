@@ -1,19 +1,19 @@
-import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf} from './definitions.js';
-import {isComplete} from './construction.js';
+import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS} from './definitions.js';
+import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor} from './workforce.js';
 import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
 const roles=['auto','builder','carrier','production'];
 const hasLoad=c=>Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
-const find=(s,x,y)=>s.buildings.find(b=>b.x===x&&b.y===y);
+const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
 const blocked=s=>s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
-const upgradePrice=(b,level)=>({clay:Math.ceil(BUILDINGS[b.type].clay*(level===1?1.5:2.5)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*(level===1?1.5:2.5)))});
+const upgradePrice=(b,level)=>({...level===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{},clay:Math.ceil(BUILDINGS[b.type].clay*(level===1?1.5:2.5)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*(level===1?1.5:2.5)))});
 function note(s,title,text){s.news.unshift({title,text,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
-export function cancellationRefund(b){const q=b?.construction;return q?{clay:q.required.clay,reed:q.required.reed,faith:q.kind==='new'?(BUILDINGS[b.type].faith||0):0}:{clay:0,reed:0,faith:0};}
+export function cancellationRefund(b){const q=b?.construction;return q?{...q.required,faith:q.kind==='new'?(BUILDINGS[b.type]?.faith||0):0}:{clay:0,reed:0,faith:0};}
 export function demolitionRefund(b){
  if(!b||!isComplete(b))return {clay:0,reed:0};
- const total={clay:BUILDINGS[b.type].clay,reed:BUILDINGS[b.type].reed};
- for(let level=1;level<levelOf(b);level++){const cost=upgradePrice(b,level);total.clay+=cost.clay;total.reed+=cost.reed;}
- return {clay:Math.floor(total.clay/2),reed:Math.floor(total.reed/2)};
+ const total=Object.fromEntries(MATERIALS.map(k=>[k,BUILDINGS[b.type][k]||0]));
+ for(let level=1;level<levelOf(b);level++){const cost=upgradePrice(b,level);for(const k of MATERIALS)total[k]+=cost[k]||0;}
+ return Object.fromEntries(Object.entries(total).filter(([,n])=>n>0).map(([k,n])=>[k,Math.floor(n/2)]));
 }
 export function setPriority(s,x,y,priority){
  const b=find(s,x,y),reason=blocked(s);if(reason)return {ok:false,reason};
@@ -46,7 +46,7 @@ export function cancelConstruction(s,x,y){
  const b=find(s,x,y),reason=blocked(s);if(reason)return {ok:false,reason};if(!b?.construction)return {ok:false,reason:'Здесь нет незавершённой стройки'};
  const fresh=b.construction.kind==='new';if(fresh)rememberApproaches(s,b);
  const refund=refundOrder(s,b);if(fresh)s.buildings=s.buildings.filter(v=>v!==b);
- s.capacity=housingOf(s);rerouteCitizens(s);note(s,`Отменено: ${BUILDINGS[b.type].name}`,'Зарезервированная цена полностью возвращена, включая доставленные материалы и груз в пути.');return {ok:true,refund};
+ s.capacity=housingOf(s);rerouteCitizens(s);note(s,`Отменено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Зарезервированная цена полностью возвращена, включая доставленные материалы и груз в пути.');return {ok:true,refund};
 }
 function ports(s){const net=networkFor(s),map=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p]));for(const p of net.ports.filter(p=>p.building.siteKey))map.set(`site:${p.building.siteKey}:${p.building.side}`,p);return {net,map};}
 function relocations(s,b){
@@ -62,7 +62,7 @@ export function canDemolish(s,b){
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
- if(storageOf(future)<s.resources.grain)return 'Сначала освободи зерно: оставшихся амбаров недостаточно';
+ if(storageOf(future)<storageOf(s)&&MATERIALS.some(k=>storageOf(future)<(s.resources[k]||0)))return 'Сначала освободи еду: оставшихся амбаров недостаточно';
  if(['bridge','shrine','granary'].includes(b.type)){
   const {net,map}=ports(future);
   for(const c of s.citizens.filter(hasLoad)){
@@ -91,5 +91,8 @@ export function demolish(s,x,y){
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}
  s.buildings=s.buildings.filter(v=>v!==b);s.capacity=housingOf(s);rerouteCitizens(s);
- note(s,`Снесено: ${BUILDINGS[b.type].name}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
+ note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
+
+export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id);if(!c||!roles.includes(role))return 'Неизвестный житель или роль';if((c.role||'auto')===role||c.pendingRole===role)return 'Эта профессия уже выбрана';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
+export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const success=s.rngState/4294967296<.4;const c=s.citizens.find(c=>c.id===id);if(success)setCitizenRole(s,id,role);const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}

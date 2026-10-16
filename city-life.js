@@ -1,4 +1,4 @@
-import {WIDTH, HEIGHT, river, bridgeSpan} from './world.js';
+import {WIDTH, HEIGHT, river, bridgeSpan, isDryPoint} from './world.js';
 
 export const DAY_SECONDS = 60;
 export const seed = (x, y = 0) => {
@@ -7,7 +7,7 @@ export const seed = (x, y = 0) => {
 };
 const keyOf = (x, y) => `${x},${y}`;
 const at = (x, y) => ({x: x - .5, y: y - .5, key: keyOf(x, y)});
-const dry = p => Math.abs(p.x - river(p.y)) >= 1.25;
+const dry = (p,s) => isDryPoint(s,p.x,p.y);
 
 function pathTo(start, target, neighbours) {
   const queue = [start], previous = new Map([[start, null]]);
@@ -27,7 +27,7 @@ function pathTo(start, target, neighbours) {
 
 // Streets use tile boundaries: a house can grow on a tile without erasing its road.
 // Each riverbank has its own network; roads never invent a crossing over water.
-export function generateStreets(buildings) {
+export function generateStreets(buildings,s) {
   const nodes = new Map(), land = new Map(), graph = new Map(), edges = [];
   const bridgeNodes=new Set(),bridgeEdges=new Set();
   for(const b of buildings.filter(b=>b.type==='bridge'&&b.construction?.kind!=='new')){
@@ -36,13 +36,13 @@ export function generateStreets(buildings) {
   }
   for (let y = 0; y <= HEIGHT; y++) for (let x = 0; x <= WIDTH; x++) {
     const p = at(x, y);
-    if (dry(p)||bridgeNodes.has(p.key)) land.set(p.key, p);
+    if (dry(p,s)||bridgeNodes.has(p.key)) land.set(p.key, p);
   }
   const neighbours = key => {
     const [x, y] = key.split(',').map(Number), result = [];
     for (const [dx, dy] of [[1,0],[0,1],[-1,0],[0,-1]]) {
       const p = land.get(keyOf(x + dx, y + dy)), a = land.get(key);
-      if (p && (bridgeEdges.has(`${key}|${p.key}`)||[.25,.5,.75].every(t => dry({x:a.x+(p.x-a.x)*t,y:a.y+(p.y-a.y)*t})))) result.push(p.key);
+      if (p && (bridgeEdges.has(`${key}|${p.key}`)||[.25,.5,.75].every(t => dry({x:a.x+(p.x-a.x)*t,y:a.y+(p.y-a.y)*t},s)))) result.push(p.key);
     }
     return result;
   };
@@ -79,6 +79,14 @@ export function generateStreets(buildings) {
     if (!graph.has(next)) graph.set(next, new Set());
     graph.get(port.key).add(next); graph.get(next).add(port.key);
     edges.push([port, land.get(next)]);
+  }
+  // Upgraded roads are durable city infrastructure even when the shortest route changes.
+  for(const road of s?.roads||[]){
+    const resolve=v=>typeof v==='string'?land.get(v):v?.key?land.get(v.key):v&&land.get(keyOf(v.x+.5,v.y+.5));
+    const a=resolve(road.a),b=resolve(road.b);
+    if(!a||!b||Math.abs(a.x-b.x)+Math.abs(a.y-b.y)!==1||![0,.25,.5,.75,1].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},s)))continue;
+    for(const p of [a,b]){nodes.set(p.key,p);if(!graph.has(p.key))graph.set(p.key,new Set());}
+    if(!graph.get(a.key).has(b.key))edges.push([a,b]);graph.get(a.key).add(b.key);graph.get(b.key).add(a.key);
   }
   const components = new Map(); let component = 0;
   for (const key of nodes.keys()) {

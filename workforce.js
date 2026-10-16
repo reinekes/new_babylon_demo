@@ -1,5 +1,6 @@
-import {isComplete,materialsReady,finishConstruction,orderedSites} from './construction.js';
-import {BUILDINGS,buildingKey,capacityOf,outputMultiplier,storageOf,isOperational} from './definitions.js';
+import {ensureRoads,roadSpeed} from './roads.js';
+import {isComplete,materialsReady,finishConstruction,orderedSites,constructionEntities,workRequired} from './construction.js';
+import {BUILDINGS,buildingKey,capacityOf,outputMultiplier,storageOf,isOperational,MATERIALS} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {onBridge} from './world.js';
 
@@ -15,8 +16,8 @@ const distance=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 export function networkFor(s){
  const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}`).join('|');
  let cache=caches.get(s);
- if(!cache||cache.signature!==signature){cache={signature,network:generateStreets([...s.buildings,...s.roadAnchors||[]]),paths:new Map(),synced:null};caches.set(s,cache);}
- return cache.network;
+ if(!cache||cache.signature!==signature){cache={signature,network:generateStreets([...s.buildings,...s.roadAnchors||[]],s),paths:new Map(),synced:null};caches.set(s,cache);}
+ ensureRoads(s,cache.network);return cache.network;
 }
 function routeBetween(s,from,to){
  const network=networkFor(s),cache=caches.get(s),key=`${from}>${to}`;
@@ -35,7 +36,8 @@ function context(s){
  for(const p of network.ports.filter(p=>p.building.siteKey))ports.set(`site:${p.building.siteKey}:${p.building.side}`,p);
  const stores=s.buildings.filter(b=>isComplete(b)&&(b.type==='granary'||b.type==='shrine'));
  if(!stores.length&&s.buildings.some(b=>b.type==='house'&&isComplete(b)))stores.push(s.buildings.find(b=>b.type==='house'&&isComplete(b)));
- return {network,ports,stores,buildings:new Map(s.buildings.map(b=>[buildingKey(b),b]))};
+ for(const r of s.roads||[])ports.set(r.id,{...r.a,building:r});
+ return {network,ports,stores,buildings:new Map(constructionEntities(s).map(b=>[buildingKey(b),b]))};
 }
 function closestStore(s,ctx,work){
  const p=ctx.ports.get(work);if(!p)return null;
@@ -60,8 +62,8 @@ function siteAccess(s,ctx,c,b){
  return null;
 }
 export function syncCitizens(s){
- s.simTime??=s.tick*45;s.citizens??=[];s.deliveries??=0;s.delivered??={grain:0,clay:0,reed:0,faith:0,prestige:0};
- const ctx=context(s),cache=caches.get(s),signature=`${cache.signature}/${s.population}/${s.buildings.map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${s.citizens.map(c=>`${c.role||'auto'}:${c.pendingRole||''}`).join(',')}`;
+ s.simTime??=s.tick*45;s.citizens??=[];s.deliveries??=0;s.delivered??={food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0};
+ const ctx=context(s),cache=caches.get(s),signature=`${cache.signature}/${s.population}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${s.citizens.map(c=>`${c.role||'auto'}:${c.pendingRole||''}`).join(',')}`;
  if(cache.synced===signature)return;
  // Return undelivered reserved cargo when a resident leaves the city.
  for(const c of s.citizens.filter(c=>c.id>=s.population)){const q=ctx.buildings.get(c.site)?.construction;if(q)for(const [k,n]of Object.entries(c.buildCargo||{}))q.remaining[k]+=n;}
@@ -97,7 +99,7 @@ export function syncCitizens(s){
    }
   }
  }
- const priority={field:0,garden:1,clay:2,reed:3,shrine:4,ziggurat:5};
+ const priority={field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5};
  const jobs=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).sort((a,b)=>priority[a.type]-priority[b.type]);
  const slots=jobs.flatMap(b=>[buildingKey(b),buildingKey(b)]),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
@@ -126,7 +128,7 @@ function harvest(s,c,ctx){
  const def=BUILDINGS[b.type],boost=s.buffs||{};c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
-  if(resource==='grain')mult*=(b.type==='field'?[.8,1,1.6,.3][s.season]*(s.drought?.5:1)*(s.rain?1.5:1):1)*(boost.fertility?1.6:1);
+  if(resource==='food')mult*=(b.type==='field'?[.8,1,1.6,.3][s.season]*(s.drought?.5:1)*(s.rain?1.5:1):1)*(boost.fertility?1.6:1);
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;
   c.cargo[resource]=base*mult;
@@ -136,11 +138,11 @@ function harvest(s,c,ctx){
 function deposit(s,c){
  let delivered=0;const actual={};
  for(const [resource,amount]of Object.entries(c.cargo)){
-  const accepted=resource==='grain'?Math.max(0,Math.min(amount,storageOf(s)-s.resources.grain)):amount;
-  s.resources[resource]+=accepted;s.delivered[resource]+=accepted;actual[resource]=accepted;delivered+=accepted;
+  const accepted=MATERIALS.includes(resource)?Math.max(0,Math.min(amount,storageOf(s)-(s.resources[resource]||0))):amount;
+  s.resources[resource]=(s.resources[resource]||0)+accepted;s.delivered[resource]=(s.delivered[resource]||0)+accepted;c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];actual[resource]=accepted;delivered+=accepted;
  }
  if(delivered>0){s.deliveries++;s.lastDelivery={time:s.simTime,citizen:c.id,store:c.store,cargo:actual};}
- c.cargo={};
+ return !hasCargo(c);
 }
 function arrival(s,c,ctx){
  c.route=[];c.routeIndex=0;
@@ -149,7 +151,7 @@ function arrival(s,c,ctx){
   const q=ctx.buildings.get(c.site)?.construction;
   if(!q){startTrip(s,c,c.home,'toHome',ctx);return;}
   if(!isWorkday(s.simTime)){startTrip(s,c,c.home,'toHome',ctx);return;}
-  const k=['clay','reed'].find(k=>q.remaining[k]>0);
+  const k=MATERIALS.find(k=>q.remaining[k]>0);
   if(k){const amount=Math.min(6,q.remaining[k]);q.remaining[k]-=amount;c.buildCargo={[k]:amount};}
   startTrip(s,c,c.sitePort,'toSite',ctx);return;
  }
@@ -163,13 +165,14 @@ function arrival(s,c,ctx){
   else c.phase='waiting';return;
  }
  if(c.phase==='toStore'){
-  deposit(s,c);invalidateAssignments(s);
+  if(!deposit(s,c)){c.phase='unloading';return;}invalidateAssignments(s);
   if(isWorkday(s.simTime)&&c.site)beginSiteTrip(s,c,ctx);else if(isWorkday(s.simTime)&&c.work)startTrip(s,c,c.work,'returnWork',ctx);else startTrip(s,c,c.home,'toHome',ctx);
   return;
  }
  c.phase='working';c.workElapsed=0;
 }
 function advanceCitizen(s,c,dt,ctx){
+ if(c.phase==='unloading'){if(hasCargo(c)){if(!deposit(s,c))return;invalidateAssignments(s);}startTrip(s,c,c.home,'toHome',ctx);}
  const day=isWorkday(s.simTime);
  if(c.phase==='blocked'&&(hasBuildCargo(c)||hasCargo(c))){
   const target=hasBuildCargo(c)?c.sitePort:c.store;if(target)startTrip(s,c,target,hasBuildCargo(c)?'toSite':'toStore',ctx);if(c.phase==='blocked')return;
@@ -184,7 +187,7 @@ function advanceCitizen(s,c,dt,ctx){
  for(let transition=0;transition<12&&remaining>1e-8;transition++){
   if(c.phase==='waiting'||c.phase==='constructing'){
    const q=ctx.buildings.get(c.site)?.construction;if(!q){startTrip(s,c,c.home,'toHome',ctx);continue;}
-   if(materialsReady(q)&&c.siteDuty==='builder'){c.phase='constructing';q.work=Math.min(12*q.target,q.work+remaining);}return;
+   if(materialsReady(q)&&c.siteDuty==='builder'){c.phase='constructing';q.work=Math.min(workRequired(ctx.buildings.get(c.site)),q.work+remaining);}return;
   }
   if(c.phase==='working'){
    const b=ctx.buildings.get(c.work);if(!b){startTrip(s,c,c.home,'toHome',ctx);continue;}
@@ -196,7 +199,7 @@ function advanceCitizen(s,c,dt,ctx){
   const next=c.route[c.routeIndex];
   if(!next){arrival(s,c,ctx);if(c.phase==='home')return;continue;}
   const dist=distance(c,next);
-  let speed=1.05*(s.buffs?.haste?1.5:1);
+  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);
   if(onBridge(s.buildings,c.x,c.y)){
    const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
   }
@@ -218,7 +221,7 @@ export function workforceStats(s){
  const disconnected=s.buildings.filter(b=>isOperational(b)&&Object.keys(BUILDINGS[b.type].output).length).filter(b=>{
   const p=ctx.ports.get(buildingKey(b));return !p||!closestStore(s,ctx,buildingKey(b))||!s.buildings.some(h=>h.type==='house'&&ctx.ports.get(buildingKey(h))&&routeBetween(s,ctx.ports.get(buildingKey(h)).key,p.key));
  }).length;
- return {total:people.length,employed:people.filter(c=>c.work).length,builders:people.filter(c=>c.site&&c.siteDuty==='builder').length,carriers:people.filter(c=>c.site&&c.siteDuty==='carrier').length,sites:s.buildings.filter(b=>b.construction).length,working:people.filter(c=>c.phase==='working').length,carrying:people.filter(c=>hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0)).length,atHome:people.filter(c=>c.phase==='home').length,disconnected,deliveries:s.deliveries};
+ return {total:people.length,employed:people.filter(c=>c.work).length,builders:people.filter(c=>c.site&&c.siteDuty==='builder').length,carriers:people.filter(c=>c.site&&c.siteDuty==='carrier').length,sites:constructionEntities(s).filter(b=>b.construction).length,working:people.filter(c=>c.phase==='working').length,carrying:people.filter(c=>hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0)).length,atHome:people.filter(c=>c.phase==='home').length,disconnected,deliveries:s.deliveries};
 }
 
 export function rerouteCitizens(s){
