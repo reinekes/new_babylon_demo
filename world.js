@@ -8,7 +8,7 @@ export function onBridge(buildings,x,y){return buildings.some(b=>{if(b.type!=='b
 
 // Persist explicit tiles so future generator changes cannot move a saved lake.
 export function initializeWorld(s){
- if(s.world)return s.world;
+ if(s.world){ensureResourceSites(s);return s.world;}
  const buildings=[...(s.buildings||[]),...(s.roadAnchors||[])],roads=generateStreets(buildings),blocked=new Set();
  for(const b of buildings)blocked.add(`${b.x},${b.y}`);
  const stored=(s.roads||[]).map(r=>[r.a,r.b].map(p=>typeof p==='string'?(()=>{const [x,y]=p.split(',').map(Number);return {x:x-.5,y:y-.5};})():p)).filter(pair=>pair.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)));
@@ -26,7 +26,7 @@ export function initializeWorld(s){
  }
  const deposits=[{kind:'clay',x:7,y:7},{kind:'reed',x:11,y:12},{kind:'forest',x:6,y:10},{kind:'wildlife',x:5,y:15},{kind:'stone',x:5,y:6},{kind:'clay',x:24,y:13},{kind:'forest',x:28,y:15},{kind:'wildlife',x:30,y:17},{kind:'stone',x:33,y:13},{kind:'reed',x:25,y:8}];
  for(const b of buildings)if(['clay','reed'].includes(b.type)){const at=deposits.find(d=>d.x===b.x&&d.y===b.y);if(at)at.kind=b.type;else deposits.push({kind:b.type,x:b.x,y:b.y});}
- s.world={seed:73129,lakes,deposits:deposits.filter(d=>terrain(d.x,d.y,{world:{lakes}})!=='water')};return s.world;
+ s.world={seed:73129,lakes,deposits:deposits.filter(d=>terrain(d.x,d.y,{world:{lakes}})!=='water')};ensureResourceSites(s);return s.world;
 }
 export function depositAt(s,x,y){return s?.world?.deposits?.find(d=>d.x===x&&d.y===y)?.kind||null;}
 export function nearDeposit(s,kind,x,y){const radius=['forest','wildlife'].includes(kind)?2:0;return !!s?.world?.deposits?.some(d=>d.kind===kind&&Math.hypot(d.x-x,d.y-y)<=radius);}
@@ -36,9 +36,25 @@ export function isDryPoint(s,x,y){
  return Number.isFinite(x)&&Number.isFinite(y)&&x>=-.5&&y>=-.5&&x<=WIDTH-.5&&y<=HEIGHT-.5&&Math.abs(x-river(y))>=1.25&&!s?.world?.lakes?.some(l=>l.cells.some(c=>Math.abs(x-c.x)<.51&&Math.abs(y-c.y)<.51));
 }
 export function validateWorld(s){
- const w=s?.world,kinds=['clay','reed','stone','forest','wildlife'];
- if(!w||!Number.isSafeInteger(w.seed)||!Array.isArray(w.lakes)||w.lakes.length>5||!Array.isArray(w.deposits)||w.deposits.length>WIDTH*HEIGHT)return false;
+ const w=s?.world,kinds=['clay','reed','stone','forest','wildlife','dates'];
+ if(!w||(w.resourceVersion!==undefined&&w.resourceVersion!==1)||!Number.isSafeInteger(w.seed)||!Array.isArray(w.lakes)||w.lakes.length>5||!Array.isArray(w.deposits)||w.deposits.length>WIDTH*HEIGHT)return false;
  const tile=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.x<WIDTH&&p.y>=0&&p.y<HEIGHT,seen=new Set(),ids=new Set();
  for(const l of w.lakes){if(typeof l.id!=='string'||ids.has(l.id)||!Array.isArray(l.cells)||!l.cells.length||l.cells.length>30)return false;ids.add(l.id);for(const c of l.cells){const key=`${c?.x},${c?.y}`;if(!tile(c)||seen.has(key)||terrain(c.x,c.y)==='water'||s.buildings?.some(b=>b.x===c.x&&b.y===c.y))return false;seen.add(key);}}
  const deposits=new Set();for(const d of w.deposits){const key=`${d?.x},${d?.y}`;if(!tile(d)||!kinds.includes(d.kind)||deposits.has(key)||terrain(d.x,d.y,s)==='water')return false;deposits.add(key);}return true;
+}
+
+// Versioned supplementation leaves a saved valley's terrain and existing sites in place.
+export function ensureResourceSites(s){
+ const w=s.world;if(!w||w.resourceVersion!==undefined)return w;
+ const types={clay:'clay',reed:'reed',dates:'garden'},buildings=s.buildings||[];
+ for(const b of buildings){const kind=b.type==='garden'?'dates':['clay','reed'].includes(b.type)?b.type:null;if(!kind)continue;const existing=w.deposits.find(d=>d.x===b.x&&d.y===b.y);if(existing)existing.kind=kind;else w.deposits.push({kind,x:b.x,y:b.y});}
+ const usable=(d,kind)=>terrain(d.x,d.y,s)!=='water'&&!buildings.some(b=>b.x===d.x&&b.y===d.y&&b.type!==types[kind]);
+ const candidates=[];for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++)if(terrain(x,y,s)!=='water')candidates.push({x,y});
+ for(const left of [true,false])for(const kind of ['clay','reed','dates']){
+  const nearby=p=>p.x>=5&&p.x<=24&&p.y>=4&&p.y<=14;
+  let count=w.deposits.filter(d=>d.kind===kind&&(d.x<river(d.y))===left&&nearby(d)&&usable(d,kind)).length;
+  const ordered=candidates.filter(p=>(p.x<river(p.y))===left&&usable(p,kind)&&!w.deposits.some(d=>d.x===p.x&&d.y===p.y)).sort((a,b)=>Number(nearby(b))-Number(nearby(a))||((kind==='reed'?Number(isShore(s,b.x,b.y))-Number(isShore(s,a.x,a.y)):0))||Math.hypot(a.x-(left?9:18),a.y-9)-Math.hypot(b.x-(left?9:18),b.y-9)||a.y-b.y||a.x-b.x);
+  for(const p of ordered){if(count>=2)break;w.deposits.push({kind,...p});count++;}
+ }
+ w.resourceVersion=1;return w;
 }

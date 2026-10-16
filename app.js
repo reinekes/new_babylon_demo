@@ -1,3 +1,4 @@
+import {trade,tradeReason} from './trading.js';
 import {upgradeRoad,roadUpgradeCost} from './roads.js';
 import {weatherAt} from './environment.js';
 import {setPriority,inspireCitizen,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish} from './management.js';
@@ -20,7 +21,7 @@ const desiredRoles=new Map();
 const entityAt=(x,y)=>state.buildings.find(b=>b.x===x&&b.y===y)||(state.roads||[]).find(b=>b.x===x&&b.y===y);
 const entityName=b=>b.type==='road'?'Участок дороги':BUILDINGS[b.type].name;
 let state=createGame(),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
-try{const raw=localStorage.getItem(key);if(raw){const saved=decode(raw);if(saved){state=saved;loaded=true;if(JSON.parse(raw).version<3)legacyRaw=raw;}else corrupt=true;}}catch{storageOK=false;}
+try{const raw=localStorage.getItem(key);if(raw){const saved=decode(raw);if(saved){state=saved;loaded=true;if(JSON.parse(raw).version<4)legacyRaw=raw;}else corrupt=true;}}catch{storageOK=false;}
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
 const dialog=$('dialog');
 const renderer=new Renderer($('city'),tile=>{
@@ -89,6 +90,24 @@ function confirmRemoval(b,demolition){
  openDialog('confirmation',`<span class="eyebrow">${demolition?'СНОС ЗДАНИЯ':'ОТМЕНА ЗАКАЗА'}</span><h2>${demolition?'Снести':'Отменить'}: ${entityName(b)}?</h2><p>Клетка ${b.x}, ${b.y}. ${demolition?'Готовое здание будет удалено. Возврат — половина вложенных материалов; вера и престиж не возвращаются.':b.construction.kind==='upgrade'?'Здание сохранит прежний уровень. Потраченный труд исчезнет.':'Клетка освободится. Потраченный труд исчезнет.'}</p><h3>${demolition?'Возврат за готовую часть':'Полный возврат цены'}</h3>${costs(refund,false)}${demolition&&b.construction?`<h3>Отдельно: отмена улучшения</h3>${costs(cancellationRefund(b),false)}`:''}<p>Материалы сразу вернутся в общие запасы, включая доставленные и находящиеся в пути. Это игровая условность; повторно они не начисляются.</p><div class="dialog-actions"><button class="primary" id="confirm-removal">${demolition?'Снести здание':'Отменить заказ'}</button><button class="secondary" id="keep-building">Оставить</button></div>`);
  $('keep-building').onclick=()=>{closeDialog();if(back)showManagement(back);};$('confirm-removal').onclick=()=>{const result=demolition?demolish(state,b.x,b.y):cancelConstruction(state,b.x,b.y);if(!result.ok){toast(result.reason);return;}closeDialog();mutate(result,demolition?'Здание снесено. Ресурсы возвращены.':'Заказ отменён. Ресурсы возвращены.');if(back)showManagement(back);else{const current=buildingAt(state,b.x,b.y);if(current)detail(current.type,false,current);else{inspected=null;$('tile-detail').hidden=true;}}};
 }
+const tradeQuantities=new Map();
+function showTrade(){
+ openDialog('trade',`<button class="management-close" id="close-trade" aria-label="Вернуться в город">×</button><span class="eyebrow">КАРАВАННЫЕ ПУТИ</span><h2>Торговля</h2><div id="trade-content"></div>`);$('close-trade').onclick=closeDialog;renderTrade();
+}
+function renderTrade(){
+ if(modalKind!=='trade'||!$('trade-content'))return;
+ const t=state.trade,c=t.caravan;
+ $('trade-content').innerHTML=`<div class="trade-wallet"><span>Серебро города <b id="trade-silver">${t.silver}</b></span>${c?`<span>Кошелёк купцов <b>${c.silver}</b></span>`:''}</div>${!c?`<div class="trade-empty"><span>♧</span><h3>Караван ещё в пути</h3><p>Следующий прибудет: год ${1+Math.floor(t.nextArrival/4)}, ${SEASONS[t.nextArrival%4].toLowerCase()}. Купцы остаются на два сезона. Продай лишнее, чтобы купить нужные материалы.</p></div>`:`<p class="trade-visit"><b>${esc(c.name)}</b> · отъезд: год ${1+Math.floor(c.departAt/4)}, ${SEASONS[c.departAt%4].toLowerCase()}<br>Цены — за единицу. Покупки сразу поступают на склад; в окне торговли время на паузе.</p><div class="trade-list">${MATERIALS.map(k=>{const amount=tradeQuantities.get(k)||10;return `<article class="trade-row" data-trade-row="${k}"><div class="trade-resource">${resourceIcon(k)}<div><h3>${label(k)}</h3><small>У тебя: ${rounded(state.resources[k])} / ${storage(state)} · у купцов: ${c.stock[k]}</small></div></div><div class="trade-prices">Купить: ${c.prices[k].buy} · продать: ${c.prices[k].sell} серебра / ед.</div><div class="trade-actions"><label>Количество <input type="number" data-trade-quantity="${k}" aria-label="Количество: ${label(k)}" min="1" max="1000000" step="1" value="${amount}" inputmode="numeric"></label><button data-trade="buy" data-resource="${k}"></button><button data-trade="sell" data-resource="${k}"></button></div><small class="trade-reason" data-trade-reason="${k}"></small></article>`;}).join('')}</div><p class="trade-help">Запасы и серебро каравана ограничены. Вера и престиж не продаются. Покупка и обратная продажа обходятся в убыток.</p>`}`;
+ if(!c)return;
+ for(const input of $('trade-content').querySelectorAll('[data-trade-quantity]'))input.oninput=()=>{tradeQuantities.set(input.dataset.tradeQuantity,Number(input.value));updateTradeRow(input.dataset.tradeQuantity);};
+ for(const button of $('trade-content').querySelectorAll('[data-trade]'))button.onclick=()=>{const k=button.dataset.resource,amount=Number($('trade-content').querySelector(`[data-trade-quantity="${k}"]`).value),result=trade(state,k,button.dataset.trade,amount);if(mutate(result,`${button.dataset.trade==='buy'?'Куплено':'Продано'}: ${amount} ${RESOURCE_NAMES[k]}`))renderTrade();};
+ for(const k of MATERIALS)updateTradeRow(k);
+}
+function updateTradeRow(k){
+ const row=$('trade-content').querySelector(`[data-trade-row="${k}"]`),amount=Number(row.querySelector('input').value),c=state.trade.caravan;
+ for(const side of ['buy','sell']){const b=row.querySelector(`[data-trade="${side}"]`),reason=tradeReason(state,k,side,amount);b.disabled=!!reason;b.title=reason||`${side==='buy'?'Купить':'Продать'} ${amount} ${RESOURCE_NAMES[k]}`;b.textContent=`${side==='buy'?'Купить':'Продать'} · ${Number.isSafeInteger(amount)&&amount>0?amount*c.prices[k][side]:'—'} серебра`;}
+ const buyReason=tradeReason(state,k,'buy',amount),sellReason=tradeReason(state,k,'sell',amount);row.querySelector('.trade-reason').textContent=[buyReason&&`Покупка: ${buyReason}`,sellReason&&`Продажа: ${sellReason}`].filter(Boolean).join(' · ');
+}
 function showManagement(kind){openDialog(kind,`<button class="management-close" id="close-management" aria-label="Вернуться в город">×</button><span class="eyebrow">УПРАВЛЕНИЕ ГОРОДОМ</span><h2>${kind==='construction'?'Стройки':'Жители'}</h2><p>${kind==='construction'?'Высокий приоритет обслуживается первым. Уже взятые грузы заканчивают прежнюю доставку.':'Выбери профессию и вдохнови жителя за 1 веру. Шанс — 40%; вера тратится при любом исходе. С грузом он сначала закончит доставку.'}</p><div id="management-list"></div>`);$('close-management').onclick=closeDialog;renderManagement();}
 function renderManagement(){
  if(!['construction','residents'].includes(modalKind)||!$('management-list')||$('management-list').contains(document.activeElement))return;
@@ -140,12 +159,12 @@ function update(){
  $('day-cycle').setAttribute('aria-label',`Дождаться ${isWorkday(state.simTime)?'вечера':'утра'}. Время и хозяйство действительно продвинутся.`);$('day-cycle').disabled=state.lost||!!state.event;
  $('street-life').textContent=`Строят ${stats.builders} · доставляют на стройки ${stats.carriers??0} · на работе ${stats.working} · с грузом ${stats.carrying} · дома ${stats.atHome}`;
  $('delivery-log').textContent=state.lastDelivery?`${citizenName(state.lastDelivery.citizen)} доставил: ${resourceText(state.lastDelivery.cargo)}`:'Ресурсы поступают, когда груз доходит до склада';
- $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateDetail();renderManagement();for(const el of document.querySelectorAll('[data-cost]'))el.innerHTML=costs(BUILDINGS[el.dataset.cost]);$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;
+ $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateDetail();renderManagement();for(const el of document.querySelectorAll('[data-cost]'))el.innerHTML=costs(BUILDINGS[el.dataset.cost]);$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',!!state.trade.caravan);$('open-trade').title=state.trade.caravan?'Караван в городе. Открыть покупку и продажу.':'Караван придёт летом. Серебро сохраняется между визитами.';
 }
 function openDialog(kind,html){modalKind=kind;dialog.dataset.kind=kind;$('dialog-content').innerHTML=`<div class="dialog-inner">${html}</div>`;if(!dialog.open)dialog.showModal();last=performance.now();}
 function closeDialog(){dialog.close();modalKind=null;delete dialog.dataset.kind;last=performance.now();}
 function intro(){
- openDialog('help',`<span class="eyebrow">НОВЫЙ ВАВИЛОН · ЖИВОЙ ГОРОД</span><span class="dialog-emblem">✺</span><h2>У каждого города есть жизнь.</h2><p>Теперь жители действительно работают: выходят из дома, собирают материалы и несут их на склад. Ночью они возвращаются домой.</p><div class="instructions"><b>01.</b> Заложи двор или поле: строители принесут материалы и возведут здание.<br><b>02.</b> Храм — первый универсальный склад. Амбары хранят все материалы.<br><b>03.</b> Улучшения до III уровня тоже требуют доставки и работы. Ночью строители отдыхают.<br><b>04.</b> Поставь мост на воду и осваивай другой берег.<br><b>05.</b> Развивай дороги; вдохновляй жителей. Добывай глину и тростник на отмеченных местах, дерево в лесах, камень в карьерах. Рыбалка и охота дают общую еду.</div><p>Цель — зиккурат, 30 жителей и десятый год. Сезон — 45 секунд; сутки — 60 секунд. Числа в производстве указаны за один рейс работника.</p><div class="dialog-actions"><button class="primary" id="start-game">${loaded||state.tick?'Вернуться в город':'Да будет город'}</button></div><p class="keyboard-note">1–9 — постройки · пробел — пауза · Escape — отмена<br>Shift + перетаскивание — карта · ◫ — вся долина</p>`);
+ openDialog('help',`<span class="eyebrow">НОВЫЙ ВАВИЛОН · ЖИВОЙ ГОРОД</span><span class="dialog-emblem">✺</span><h2>У каждого города есть жизнь.</h2><p>Теперь жители действительно работают: выходят из дома, собирают материалы и несут их на склад. Ночью они возвращаются домой.</p><div class="instructions"><b>01.</b> Заложи двор или поле: строители принесут материалы и возведут здание.<br><b>02.</b> Храм — первый универсальный склад. Амбары хранят все материалы.<br><b>03.</b> Улучшения до III уровня тоже требуют доставки и работы. Ночью строители отдыхают.<br><b>04.</b> Поставь мост на воду и осваивай другой берег.<br><b>05.</b> Развивай дороги; вдохновляй жителей. Добывай глину и тростник на отмеченных местах, дерево в лесах, камень в карьерах. Рыбалка и охота дают общую еду. Караваны ежегодно привозят товары: продавай лишнее и покупай нужное за серебро.</div><p>Цель — зиккурат, 30 жителей и десятый год. Сезон — 45 секунд; сутки — 60 секунд. Числа в производстве указаны за один рейс работника.</p><div class="dialog-actions"><button class="primary" id="start-game">${loaded||state.tick?'Вернуться в город':'Да будет город'}</button></div><p class="keyboard-note">1–9 — постройки · пробел — пауза · Escape — отмена<br>Shift + перетаскивание — карта · ◫ — вся долина</p>`);
  $('start-game').onclick=()=>{closeDialog();paused=false;save();update();checkDialogs();};
 }
 function checkDialogs(){
@@ -168,6 +187,7 @@ function askReset(){openDialog('reset','<span class="dialog-emblem">↻</span><h
 $('building-count').textContent=Object.keys(BUILDINGS).length;
 $('open-roads').onclick=()=>{if(selection)choose(selection);roadMode=!roadMode;renderer.setRoadMode(roadMode);$('open-roads').setAttribute('aria-pressed',String(roadMode));$('map-hint').textContent=roadMode?'Дороги: выбери участок · стрелки и Enter — с клавиатуры · Escape — выйти':'Выбери здание или жителя';};
 renderer.onRoadSelect=road=>{if(dialog.open)return;roadDetail(road);};
+$('open-trade').onclick=showTrade;
 $('open-construction').onclick=()=>showManagement('construction');$('open-residents').onclick=()=>showManagement('residents');
 $('reset').onclick=askReset;$('help').onclick=intro;$('pantheon').onclick=pantheon;
 $('pause').onclick=()=>{if(state.lost)return;paused=!paused;save();update();};
@@ -175,7 +195,7 @@ for(const el of document.querySelectorAll('[data-speed]'))el.onclick=()=>{speed=
 $('next-season').onclick=()=>{advanceSeason(state);save();update();checkDialogs();};
 $('day-cycle').onclick=()=>{const clock=lightingAt(state.simTime),target=isWorkday(state.simTime)?19:6,seconds=((target-clock.hour+24)%24)*DAY_SECONDS/24+.05;advanceTime(state,seconds);renderer.lightMode='auto';save();update();checkDialogs();};
 $('zoom-in').onclick=()=>renderer.zoom=Math.min(3,renderer.zoom+.2);$('zoom-out').onclick=()=>renderer.zoom=Math.max(.3,renderer.zoom-.2);$('home').onclick=()=>renderer.home();$('overview').onclick=()=>renderer.overview();
-dialog.addEventListener('cancel',e=>{e.preventDefault();if(['help','reset','pantheon','construction','residents','confirmation'].includes(modalKind)){closeDialog();checkDialogs();}});
+dialog.addEventListener('cancel',e=>{e.preventDefault();if(['help','reset','pantheon','construction','residents','confirmation','trade'].includes(modalKind)){closeDialog();checkDialogs();}});
 document.addEventListener('keydown',e=>{if(dialog.open||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(roadMode){roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
 function frame(now){
@@ -185,6 +205,6 @@ function frame(now){
  renderer.draw(state,selection,now);requestAnimationFrame(frame);
 }
 update();requestAnimationFrame(frame);
-if(!loaded)intro();else{toast(legacyRaw?'Город обновлён: новые промыслы, материалы и дороги. Запасы и грузы сохранены. Нажми ▶.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}
+if(!loaded)intro();else{toast(legacyRaw?'Город обновлён: караваны, торговля и новые места добычи. Запасы и грузы сохранены. Нажми ▶.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}
 if(corrupt)setTimeout(()=>toast('Сохранение повреждено или несовместимо. Начата новая история.'),500);
 if(!storageOK){$('save-status').textContent='○ Без сохранения';setTimeout(()=>toast('Хранилище браузера недоступно. Прогресс сохранится только до закрытия вкладки.'),1000);}
