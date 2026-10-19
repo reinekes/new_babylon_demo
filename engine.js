@@ -1,4 +1,5 @@
-import {initializeDemography,advanceGenerations,validateDemography,foodDemand} from './demography.js';
+import {consumeHouseholdFood,validateHouseholds} from './households.js';
+import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
 import {startFuneral,validateFuneral} from './funerals.js';
 import {initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {roadUpgradeCost,roadKey} from './roads.js';
@@ -8,7 +9,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=7;
+export const VERSION=8;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
@@ -79,7 +80,7 @@ function settleSeason(s){
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);check(s);return;}
  for(const k of Object.keys(s.cooldowns))s.cooldowns[k]=Math.max(0,s.cooldowns[k]-1);
  // Production is already in citizens' delivered cargo. Never credit it here.
- const food=foodDemand(s),fed=s.resources.food>=food;s.resources.food=Math.max(0,s.resources.food-food);s.hungry=fed?0:s.hungry+1;
+ const {fed}=consumeHouseholdFood(s);s.hungry=fed?0:s.hungry+1;
  const gardenJoy=s.buildings.filter(b=>b.type==='garden'&&isComplete(b)).reduce((n,b)=>n+2+2*levelOf(b),0),target=fed?Math.min(95,72+gardenJoy):12;s.happiness=Math.max(0,Math.min(100,s.happiness+(target-s.happiness)*.3));
  if(!fed){log(s,'В амбарах не хватает еды','Проверь поля, работников и дороги к складу. Люди теряют надежду.','bad');if(s.hungry>=2&&!s.funeral){const n=Math.min(s.population,Math.max(2,Math.ceil(s.population*.12))),deceased=s.citizens.slice(-n).map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));for(const c of deceased)recoverCitizenCargo(s,c.id);s.citizens=s.citizens.filter(c=>!deceased.some(d=>d.id===c.id));s.population=s.citizens.length;s.deaths+=n;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${n} жителей. Город остановил работу, чтобы проводить умерших к границе долины.`,'bad');}}
  if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>recoverCitizenCargo(s,id));syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{family:true});}
@@ -117,8 +118,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>JSON.stringify(s);
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7;
-  if(!s||![1,2,3,4,5,6,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8;
+  if(!s||![1,2,3,4,5,6,7,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -176,7 +177,7 @@ export function decode(raw){
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,WIDTH-.5)&&finite(p.y,-.5,HEIGHT-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket'].includes(c.phase))return null;
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome'].includes(c.phase))return null;
    ids.add(c.id);if(c.saleJob!=null&&(!s.trade.sales.some(q=>q.id===c.saleJob&&q.market===c.saleMarket)||!['toSaleSupply','toSaleMarket','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.role!==undefined&&!['auto','builder','carrier','production'].includes(c.role)||c.pendingRole!==undefined&&!['auto','builder','carrier','production'].includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;
@@ -209,7 +210,8 @@ export function decode(raw){
   }
   if(s.lastDelivery!==null&&(!s.lastDelivery||!finite(s.lastDelivery.time,0,s.simTime)||!integer(s.lastDelivery.citizen)||typeof s.lastDelivery.store!=='string'||!s.lastDelivery.cargo||Object.entries(s.lastDelivery.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v))))return null;
   if(oldGenerations){initializeDemography(s);s.version=VERSION;}
-  if(!validateDemography(s))return null;
+  if(oldHouseholds)s.version=VERSION;
+  if(!validateDemography(s)||!validateHouseholds(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   return s;
  }catch{return null;}

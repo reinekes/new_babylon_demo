@@ -1,3 +1,4 @@
+import {totalFood} from './households.js';
 import {networkFor,routeBetween} from './workforce.js';
 import {buildingKey,capacityOf,citizenName} from './definitions.js';
 export const lifeStage=c=>c.age<16?'child':c.age<55?'adult':'elder';
@@ -27,7 +28,7 @@ export function advanceGenerations(s,recover=()=>{}){
   if(a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   const net=networkFor(s),ports=new Map(net.ports.map(p=>[buildingKey(p.building),p.key]));
   const house=s.buildings.find(b=>b.type==='house'&&routeBetween(s,ports.get(a.home),ports.get(buildingKey(b)))&&routeBetween(s,ports.get(partner.home),ports.get(buildingKey(b)))&&!(homes.get(buildingKey(b))||[]).length&&b.construction?.kind!=='new'&&buildingKey(b)!==a.home&&capacityOf(b)-(homes.get(buildingKey(b))||[]).length>=family.length);
-  if(!house||family.some(c=>Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+  if(!house||family.some(c=>c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
   const destination=buildingKey(house);for(const c of family){homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
   news(s,'Семья обрела дом',`${citizenName(a.id)} и ${citizenName(partner.id)} поселились в доме ${destination}.`);
  }
@@ -36,7 +37,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50);
   for(const a of adults){if(a.partner!==null)continue;const partner=adults.find(c=>c!==a&&c.sex!==a.sex&&c.partner===null&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
   const pair=adults.find(c=>c.sex==='f'&&c.age<45&&living.get(c.partner)?.home===home);
-  if(!pair||residents.length>=capacityOf(b)||s.happiness<65||s.hungry||s.resources.food<foodDemand(s)*2+.6||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
+  if(!pair||residents.length>=capacityOf(b)||s.happiness<65||s.hungry||totalFood(s)<foodDemand(s)*2+.6||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
   const father=living.get(pair.partner),id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};
   newborns.push(baby);residents.push(baby);d.lastBirth[home]=s.tick;d.births++;news(s,'В семье родился ребёнок',`${citizenName(id)} · родители: ${citizenName(pair.id)} и ${citizenName(father.id)}. Поколение ${baby.generation}.`);
  }

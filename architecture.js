@@ -1,3 +1,4 @@
+import {houseLightCount} from './households.js';
 import {levelOf} from './definitions.js';
 import {seed} from './city-life.js';
 
@@ -7,7 +8,7 @@ export function drawBuilding(r, b, state, t) {
   if(b.type==='bridge'){r.bridge(b);return;}
   const level=levelOf(b);
   const p=r.point(b.x,b.y), c=r.ctx, q=r.s, x=p.x, y=p.y;
-  const night=r.lighting?.night||0;
+  const night=r.lighting?.night||0,occupied=b.type==='house'?(r.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(c=>c.home===`${b.x},${b.y}`).length??0):0,lit=b.type==='house'?houseLightCount(b,occupied):Infinity;let windowIndex=1;
   const poly=(points,fill)=>r.polygon(points.map(([a,z])=>[x+a*q,y+z*q]),fill);
   const line=(points,color,width=1)=>r.line(points.map(([a,z])=>[x+a*q,y+z*q]),color,width*q);
   const box=(a,z,w,d,h,top,left,right)=>r.box(x+a*q,y+z*q,w*q,d*q,h*q,top,left,right);
@@ -17,11 +18,11 @@ export function drawBuilding(r, b, state, t) {
     c.fillStyle='#d1a16c';c.beginPath();c.ellipse(x+a*q,y+(z-6.3*size)*q,2.2*size*q,1*size*q,0,0,7);c.fill();
     line([[a-1.5*size,z-6.4*size],[a+1.5*size,z-6.4*size]],'#715d40',.7);
   };
-  const window=(a,z,face=1)=>{
+  const window=(a,z,face=1)=>{const on=night>.12&&windowIndex++<lit;
     poly([[a,z],[a+5,z+2.5*face],[a+5,z+10+2.5*face],[a,z+10]],'#94794f');
-    poly([[a+.8,z+1.4],[a+4.2,z+1.4+1.7*face],[a+4.2,z+8.6+1.7*face],[a+.8,z+8.6]],night>.12?'#f5c36c':'#736b53');
-    line([[a+2.5,z+2],[a+2.5,z+9.5]],night>.12?'#ad8046':'#baa77a',.8);
-    if(night>.12)glow(a+2.5,z+5,16);
+    poly([[a+.8,z+1.4],[a+4.2,z+1.4+1.7*face],[a+4.2,z+8.6+1.7*face],[a+.8,z+8.6]],on?'#f5c36c':'#736b53');
+    line([[a+2.5,z+2],[a+2.5,z+9.5]],on?'#ad8046':'#baa77a',.8);
+    if(on)glow(a+2.5,z+5,16);
   };
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
@@ -37,7 +38,7 @@ export function drawBuilding(r, b, state, t) {
     // A pale plaster band, timber lintel and recessed doorway.
     poly([[-25,-h+2],[0,-h+14],[25,-h+2],[25,-h+8],[0,-h+20],[-25,-h+8]],'#e7d2aa');
     poly([[6,-8],[15,-12.5],[15,4.5],[6,9]],'#715e43');
-    poly([[7,-7],[14,-10.5],[14,4],[7,7.5]],night>.12?'#d3a35e':'#5e5641');
+    poly([[7,-7],[14,-10.5],[14,4],[7,7.5]],night>.12&&lit>0?'#d3a35e':'#5e5641');
     line([[5,-9],[16,-14.5]],'#a17c4c',2);
     line([[10,6],[10,-8]],'#9b7c50',.9);
     window(-18,-h+14,1);window(14,-h+12,-1);
@@ -54,7 +55,7 @@ export function drawBuilding(r, b, state, t) {
     poly([[4,-11],[22,-20],[26,-14],[8,-5]],'#a7b28b');
     line([[7,-6],[25,-15]],'#d8d5a7',1.1);
     pot(-22,3,.9);pot(-16,7,.65);
-    if(night>.12)glow(11,-3,25);
+    if(night>.12&&lit>0)glow(11,-3,25);
   }
 
   if(b.type==='market') {

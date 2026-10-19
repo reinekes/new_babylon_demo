@@ -91,7 +91,7 @@ export function canDemolish(s,b){
 }
 export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
- const homes=relocations(s,b),refund=demolitionRefund(b);rememberApproaches(s,b);
+ const homes=relocations(s,b),refund=demolitionRefund(b);rememberApproaches(s,b);if(b.pantry)s.resources.food+=b.pantry;
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}

@@ -1,3 +1,5 @@
+import {ration} from './households.js';
+import {childPlay} from './local-motion.js';
 import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
 import {advanceTradeLogistics,loadSaleCargo} from './trading.js';
@@ -46,6 +48,7 @@ function context(s){
  for(const r of s.roads||[])ports.set(r.id,{...r.a,building:r});
  return cache.context={network,ports,stores,roadSource:s.roads,roadCount:s.roads.length,closestStores:new Map(),buildings:new Map(constructionEntities(s).map(b=>[buildingKey(b),b]))};
 }
+function houseDemand(s,ctx,home){if(ctx.foodCitizens!==s.citizens){ctx.foodCitizens=s.citizens;ctx.foodDemand=new Map();for(const c of s.citizens)ctx.foodDemand.set(c.home,(ctx.foodDemand.get(c.home)||0)+ration(c));}return ctx.foodDemand.get(home)||0;}
 function closestStore(s,ctx,work){
  if(ctx.closestStores.has(work))return ctx.closestStores.get(work);
  const p=ctx.ports.get(work);if(!p)return null;
@@ -91,12 +94,13 @@ export function syncCitizens(s){
  }
  s.citizens=citizens;initializeDemography(s);const livingIds=new Set(citizens.map(c=>c.id));for(const c of citizens)if(c.partner!==null&&!livingIds.has(c.partner))c.partner=null;
  for(const c of citizens)if(c.rehousing){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
- for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||hasCargo(c)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
- const assignments=new Map(),locked=new Set(citizens.filter(c=>!canWork(c)).map(c=>c.id));
+ for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
+ const assignments=new Map(),locked=new Set(citizens.filter(c=>!canWork(c)||c.pantryTrip).map(c=>c.id));
+ for(const c of citizens)if(c.pantryTrip){if(c.work&&!ctx.buildings.has(c.work))c.work=null;if(c.site&&!ctx.buildings.get(c.site)?.construction){c.site=null;c.sitePort=null;c.siteDuty=null;}}
  for(const c of citizens)if(!canWork(c)){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.store=null;}
  if(s.funeral?.scope==='family')for(const a of s.funeral.actors)locked.add(a.id);
  // A load already in someone's hands belongs to its old destination.
- for(const c of citizens)if((hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
+ for(const c of citizens)if((c.pantryTrip||hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
   locked.add(c.id);if(c.site){c.siteDuty??='carrier';assignments.set(c.id,{site:c.site,sitePort:c.sitePort,store:c.store,siteDuty:c.siteDuty});}
  }
  for(const b of orderedSites(s)){
@@ -172,6 +176,14 @@ function deposit(s,c){
 function arrival(s,c,ctx){
  c.route=[];c.routeIndex=0;
  if(c.phase==='toHome'){c.phase='home';return;}
+ if(c.phase==='toPantrySupply'){
+  const b=ctx.buildings.get(c.home),inTransit=s.citizens.filter(p=>p.pantryTrip&&p.home===c.home).reduce((n,p)=>n+(p.cargo.food||0),0),amount=b?Math.min(6,Math.max(0,houseDemand(s,ctx,c.home)*2-(b.pantry||0)-inTransit),s.resources.food):0;
+  if(amount>1e-8){s.resources.food-=amount;c.cargo={food:amount};startTrip(s,c,c.home,'toPantryHome',ctx);}else{delete c.pantryTrip;startTrip(s,c,c.home,'toHome',ctx);}return;
+ }
+ if(c.phase==='toPantryHome'){
+  const b=ctx.buildings.get(c.home),amount=c.cargo.food||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;}else s.resources.food+=amount;
+  c.cargo={};delete c.pantryTrip;c.phase='home';return;
+ }
  if(c.phase==='toSaleSupply'){
   const q=s.trade?.sales?.find(q=>q.id===c.saleJob),market=ctx.buildings.get(c.saleMarket);if(q&&market&&isWorkday(s.simTime)){const amount=Math.min(q.remaining,4+2*(market.level||1));q.remaining-=amount;c.cargo={[q.resource]:amount};if(amount>0){startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);return;}}
   c.saleJob=null;c.saleMarket=null;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);return;
@@ -212,14 +224,19 @@ function advanceCitizen(s,c,dt,ctx){
  const day=isWorkday(s.simTime);
  if(c.phase==='blocked'&&c.saleJob&&!hasCargo(c)&&day)startTrip(s,c,c.store,'toSaleSupply',ctx);
  if(c.phase==='blocked'&&c.tradeJob&&!hasCargo(c)&&day)startTrip(s,c,c.tradeMarket,'toMarket',ctx);
+ if(c.phase==='blocked'&&c.pantryTrip){startTrip(s,c,hasCargo(c)?c.home:c.store,hasCargo(c)?'toPantryHome':'toPantrySupply',ctx);if(c.phase==='blocked')return;}
  if(c.phase==='blocked'&&(hasBuildCargo(c)||hasCargo(c))){
   const target=hasBuildCargo(c)?c.sitePort:c.saleJob?c.saleMarket:c.store;if(target)startTrip(s,c,target,hasBuildCargo(c)?'toSite':c.saleJob?'toSaleMarket':'toStore',ctx);if(c.phase==='blocked')return;
  }
- if(!day&&!['home','toHome','toStore','toSaleMarket'].includes(c.phase)&&!(c.phase==='toSite'&&Object.values(c.buildCargo||{}).some(n=>n>0))){
+ if(!day&&!['home','toHome','toStore','toSaleMarket','toPantrySupply','toPantryHome'].includes(c.phase)&&!(c.phase==='toSite'&&Object.values(c.buildCargo||{}).some(n=>n>0))){
   if(hasCargo(c)&&c.saleJob)startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);else if(hasCargo(c)&&c.store)startTrip(s,c,c.store,'toStore',ctx);else startTrip(s,c,c.home,'toHome',ctx);
  }
  if(c.phase==='home'){
-  if(day&&c.saleJob)startTrip(s,c,c.store,'toSaleSupply',ctx);else if(day&&c.tradeJob)startTrip(s,c,c.tradeMarket,'toMarket',ctx);else if(day&&c.site)beginSiteTrip(s,c,ctx);else if(day&&c.work)startTrip(s,c,c.work,'toWork',ctx);else return;
+  const evening=hourAt(s.simTime)>=19&&hourAt(s.simTime)<22,free=!c.work&&!c.site&&!c.tradeJob&&!c.saleJob&&(c.role||'auto')==='auto';
+  if(canWork(c)&&!c.tradeJob&&!c.saleJob&&(free&&day||evening)&&s.resources.food>0&&!s.citizens.some(p=>p.pantryTrip&&p.home===c.home)){
+   const b=ctx.buildings.get(c.home),store=closestStore(s,ctx,c.home);if(b&&houseDemand(s,ctx,c.home)*2-(b.pantry||0)>1e-7&&store){c.store=store;c.pantryTrip=true;startTrip(s,c,store,'toPantrySupply',ctx);}
+  }
+  if(c.pantryTrip){}else if(day&&c.saleJob)startTrip(s,c,c.store,'toSaleSupply',ctx);else if(day&&c.tradeJob)startTrip(s,c,c.tradeMarket,'toMarket',ctx);else if(day&&c.site)beginSiteTrip(s,c,ctx);else if(day&&c.work)startTrip(s,c,c.work,'toWork',ctx);else return;
  }
  let remaining=dt;
  for(let transition=0;transition<12&&remaining>1e-8;transition++){
@@ -233,7 +250,7 @@ function advanceCitizen(s,c,dt,ctx){
    if(remaining<needed){c.workElapsed+=remaining;return;}
    remaining-=Math.max(0,needed);c.workElapsed=0;harvest(s,c,ctx);continue;
   }
-  if(!['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket'].includes(c.phase))return;
+  if(!['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome'].includes(c.phase))return;
   const next=c.route[c.routeIndex];
   if(!next){arrival(s,c,ctx);if(c.phase==='home')return;continue;}
   const dist=distance(c,next);
@@ -252,7 +269,7 @@ export function advanceWorkers(s,seconds){
  s.simTime=start+seconds;
 }
 export function visibleCitizens(s){
- return (s.citizens||[]).filter(c=>c.phase!=='home'||c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket'].includes(c.phase),carrying:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:hasCargo(c)?c.cargo:c.buildCargo,robe:['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2)}));
+ return (s.citizens||[]).filter(c=>c.phase!=='home'||c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome'].includes(c.phase),carrying:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:hasCargo(c)?c.cargo:c.buildCargo,robe:['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...isWorkday(s.simTime)?childPlay(s,c):null}));
 }
 export function workforceStats(s){
  syncCitizens(s);const ctx=context(s),people=s.citizens;
@@ -265,7 +282,8 @@ export function workforceStats(s){
 export function rerouteCitizens(s){
  invalidateAssignments(s);syncCitizens(s);const ctx=context(s);
  for(const c of s.citizens){
-  if(hasBuildCargo(c)&&c.site)startTrip(s,c,c.sitePort,'toSite',ctx);
+  if(c.pantryTrip)startTrip(s,c,hasCargo(c)?c.home:c.store,hasCargo(c)?'toPantryHome':'toPantrySupply',ctx);
+  else if(hasBuildCargo(c)&&c.site)startTrip(s,c,c.sitePort,'toSite',ctx);
   else if(hasCargo(c)&&c.saleJob)startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);
   else if(hasCargo(c)&&c.store)startTrip(s,c,c.store,'toStore',ctx);
   else if(c.phase!=='home'||distance(c,ctx.ports.get(c.home)||c)>.01)startTrip(s,c,c.home,'toHome',ctx);
@@ -273,4 +291,4 @@ export function rerouteCitizens(s){
 }
 
 export function recoverCitizenCargo(s,id){const c=s.citizens?.find(c=>c.id===id);if(!c)return false;const site=constructionEntities(s).find(b=>buildingKey(b)===c.site)?.construction;if(site)for(const [k,n]of Object.entries(c.buildCargo||{}))site.remaining[k]=(site.remaining[k]||0)+n;else for(const [k,n]of Object.entries(c.buildCargo||{}))s.resources[k]=(s.resources[k]||0)+n;
- const purchase=s.trade?.deliveries?.find(q=>q.id===c.tradeJob),sale=s.trade?.sales?.find(q=>q.id===c.saleJob);for(const [k,n]of Object.entries(c.cargo||{})){if(purchase&&k===purchase.resource)purchase.remaining+=n;else if(sale&&k===sale.resource)sale.remaining+=n;else s.resources[k]=(s.resources[k]||0)+n;}c.cargo={};c.buildCargo={};c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;invalidateAssignments(s);return true;}
+ const purchase=s.trade?.deliveries?.find(q=>q.id===c.tradeJob),sale=s.trade?.sales?.find(q=>q.id===c.saleJob);for(const [k,n]of Object.entries(c.cargo||{})){if(purchase&&k===purchase.resource)purchase.remaining+=n;else if(sale&&k===sale.resource)sale.remaining+=n;else s.resources[k]=(s.resources[k]||0)+n;}c.cargo={};c.buildCargo={};delete c.pantryTrip;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;invalidateAssignments(s);return true;}

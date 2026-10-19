@@ -22,3 +22,4 @@ test('sprite storage stays bounded when many unique workshops are drawn',()=>{
  const {r}=setup(),s=createGame();for(let x=0;x<160;x++){r.lights=[];r.building({type:'clay',x,y:6,level:3},s,0);}
  assert.ok(r.buildingSprites.size<=128);assert.ok(r.spriteBytes<=24*1024*1024);
 });
+test('cached house lights refresh when residents leave or fill the house',()=>{const {r}=setup(),s=createGame(),b={type:'house',x:8,y:8,level:2},counts=[];for(const residents of [0,4,12,0]){r.houseOccupancy=new Map([['8,8',residents]]);r.lights=[];r.building(b,s,0);counts.push(r.lights.length);}assert.equal(counts[0],0);assert.ok(counts[1]>0&&counts[1]<counts[2]);assert.equal(counts[3],0);});

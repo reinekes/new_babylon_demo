@@ -1,3 +1,4 @@
+import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
 import {canBuild,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
@@ -33,7 +34,7 @@ export class Renderer{
   const dx=(this.canvas?.width/this.w)||1,dy=(this.canvas?.height/this.h)||dx,q=this.s,scale=`${q}/${dx}/${dy}`;
   if(this.spriteScale!==scale){this.spriteScale=scale;this.buildingSprites=new Map();this.spriteBytes=0;}
   const variant=b.type==='house'?`${hash(b.x,b.y)>.64}/${hash(b.x,7)>.5}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
-  const key=`${b.type}/${variant}/${b.level||1}/${(this.lighting?.night||0)>.12}`;
+  const key=`${b.type}/${variant}/${b.level||1}/${(this.lighting?.night||0)>.12}/${b.type==='house'?houseLightCount(b,this.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(c=>c.home===`${b.x},${b.y}`).length??0):''}`;
   let entry=this.buildingSprites.get(key);
   if(!entry){
    const canvas=this.createLayerCanvas?.()||(typeof document!=='undefined'?document.createElement('canvas'):null);
@@ -55,7 +56,7 @@ export class Renderer{
   if(b.type==='market')this.marketCargo(b,state);
  }
  refreshCity(state) {
-  this.state=state;
+  this.state=state;this.houseOccupancy=new Map();for(const c of state.citizens||[])this.houseOccupancy.set(c.home,(this.houseOccupancy.get(c.home)||0)+1);
   const signature=[...state.buildings,...state.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}`).join('|');
   if(signature!==this.citySignature){this.citySignature=signature;this.streets=generateStreets([...state.buildings,...state.roadAnchors||[]],state);}
   const vegetationKey=signature+'|'+state.season+'|'+!!state.drought+'|'+weatherAt(state).type+'|'+Math.floor((state.simTime||0)/10);
@@ -143,11 +144,11 @@ export class Renderer{
   }
  }
  animal(e){
-  const p=this.point(e.x,e.y),q=this.s,c=this.ctx,t=this.reduce?0:(this.state.simTime||0),step=this.reduce?0:Math.sin(e.step??t*4),color={goat:'#c4bb96',gazelle:'#b99b6f',jackal:'#a39270'}[e.kind]||'#b99b6f';
+  const p=this.point(e.x,e.y),q=this.s,c=this.ctx,t=this.reduce?0:(this.state.simTime||0),step=this.reduce||e.walking===false?0:Math.sin(e.step??t*4),color={goat:'#c4bb96',gazelle:'#b99b6f',jackal:'#a39270'}[e.kind]||'#b99b6f';
   c.save();
   if(e.kind==='bird'){const flap=this.reduce?2:Math.sin(t*5+(Number(e.id)||0))*3;this.line([[p.x-5*q,p.y-(3+flap)*q],[p.x,p.y],[p.x+5*q,p.y-(3+flap)*q]],'#758473',1.2*q);c.restore();return;}
   const facing=e.heading||e.facing||(String(e.id).startsWith('funeral-')?(this.state.funeral?.boundary.x<WIDTH/2?-1:1):1),x=p.x,y=p.y;
-  c.translate(x,y);c.scale(facing,1);
+  c.translate(x,y);c.scale(facing,1);if(e.behavior==='grazing'){c.translate(0,2*q);c.rotate(.13);}
   c.fillStyle='#59634424';c.beginPath();c.ellipse(0,2*q,8*q,2.5*q,0,0,7);c.fill();
   for(const a of [-4,3]){this.line([[a*q,-2*q],[(a+step*.6)*q,4*q]],'#81704f',q);this.line([[(a+2)*q,-2*q],[(a+2-step*.6)*q,4*q]],'#97835d',q);}
   c.fillStyle=color;c.beginPath();c.ellipse(-q,-4*q,7*q,3.5*q,0,0,7);c.fill();
@@ -181,8 +182,10 @@ export class Renderer{
  }
  person(person) {
   const c=this.ctx,q=this.s*(person.age<16?.65:1),p=this.point(person.x,person.y,person.onBridge?5:0);
+  const playTime=this.state?.simTime||0;
   const stride=person.walking&&!this.reduce?Math.sin((person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
+  if(person.playing&&person.id%2===0){c.fillStyle='#b4804f';c.beginPath();c.arc(p.x+6*q,p.y-Math.abs(Math.sin(playTime*3))*3*q,1.8*q,0,7);c.fill();}
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
   this.line([[p.x-1.1*q,p.y-3*q],[p.x+stride*q,p.y]],'#665841',1.25*q);
   this.line([[p.x+1.1*q,p.y-3*q],[p.x-stride*q,p.y]],'#665841',1.25*q);
