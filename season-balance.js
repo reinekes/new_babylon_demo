@@ -1,0 +1,38 @@
+import {MATERIALS,BUILDINGS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
+import {workRate,mealRation,beliefMultiplier} from './wellbeing.js';
+import {networkFor,routeBetween} from './workforce.js';
+import {storeCapacity} from './inventory.js';
+import {craftBatch,craftResource,craftState,craftLoad,fleeceCapacity} from './textiles.js';
+export const RESOURCE_GROUPS=[
+ {id:'basic',name:'Добыча',keys:['food','clay','reed','wood','stone','hides','wool']},
+ {id:'processed',name:'Переработка',keys:['cloth','clothing']},
+ {id:'divine',name:'Влияние',keys:['faith','prestige']}
+];
+// Analytical estimate for 45 seconds in the current season, not a second simulation.
+// Local stores and current workers constrain processing; trade, building and miracles are one-offs.
+export function seasonBalance(s){
+ const keys=RESOURCE_GROUPS.flatMap(g=>g.keys),r=Object.fromEntries(keys.map(k=>[k,{income:0,outgo:0,net:0}])),net=networkFor(s),ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),stocks=new Map(),capacities=new Map(),byComponent=new Map(),incomeByComponent=new Map(),townFuneral=s.funeral&&s.funeral.scope!=='family';
+ const component=key=>net.components.get(ports.get(key)?.key),empty=()=>Object.fromEntries(MATERIALS.map(k=>[k,0]));
+ for(const b of s.buildings)if(b.stock&&isOperational(b)){const id=component(buildingKey(b));if(id===undefined)continue;if(!stocks.has(id)){stocks.set(id,empty());capacities.set(id,empty());}for(const k of MATERIALS){stocks.get(id)[k]+=b.stock[k]||0;capacities.get(id)[k]+=storeCapacity(b);}}
+ const production=new Map(),groups=new Map();
+ for(const c of s.citizens){if(c.age<16||!c.work||c.guardPost||c.site||c.clinic||c.school||c.tradeJob||c.saleJob||c.districtJob||townFuneral||s.funeral?.actors.some(a=>a.id===c.id))continue;const b=buildings.get(c.work),id=component(c.work);if(!b||!isOperational(b)||id===undefined||!stocks.has(id)||component(c.home)!==id)continue;if(!groups.has(c.work))groups.set(c.work,[]);groups.get(c.work).push(c);}
+ const flow=(id,k,n)=>{if(!byComponent.has(id))byComponent.set(id,empty());byComponent.get(id)[k]+=n;};
+ const credit=(id,k,n)=>{n=Math.max(0,n);r[k].income+=n;if(MATERIALS.includes(k)){flow(id,k,n);if(!incomeByComponent.has(id))incomeByComponent.set(id,empty());incomeByComponent.get(id)[k]+=n;}};
+ const debit=(id,k,n)=>{n=Math.max(0,n);r[k].outgo+=n;if(MATERIALS.includes(k)&&id!==undefined)flow(id,k,-n);};
+ for(const [key,people] of groups){const b=buildings.get(key),def=BUILDINGS[b.type],id=component(key);let trips=0;
+  for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type==='tailor'?'tailor':'production'),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,'production'))),inputTravel=['weaver','tailor'].includes(b.type)?travel*Math.ceil(craftBatch(b)/3):0;trips+=45*13/24/((def.workTime||4)/rate+travel+inputTravel);}
+  production.set(key,trips);
+  if(['weaver','tailor','healer','depot'].includes(b.type))continue;
+  if(b.type==='field'){const crop=b.crop||{},batch=7*outputMultiplier(b);if(crop.sheaves>0||s.season===2){const harvest=s.season===2?crop.remaining||0:0;credit(id,'food',Math.min((crop.sheaves||0)+harvest,trips*batch*(harvest>0?.5:1)));}if(s.season===0)debit(id,'food',Math.min(stocks.get(id).food,Math.max(0,4-(crop.seedUsed||0))));continue;}
+  if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceCapacity(b)*45/180));continue;}
+  for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=s.buffs?.fertility?1.6:1;if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,trips*base*mult);}
+ }
+ // Finish each link before budgeting the next; never borrow from another bank.
+ for(const type of ['weaver','tailor'])for(const [key]of groups){const b=buildings.get(key);if(b.type!==type)continue;const id=component(key),input=craftResource(b),output=type==='weaver'?'cloth':'clothing',ratio=type==='weaver'?3:2,buffer=craftState(b)?.[input]||0,incoming=s.citizens.filter(c=>c.craftSite===key).reduce((n,c)=>n+craftLoad(c),0),available=Math.max(0,stocks.get(id)[input]+(byComponent.get(id)?.[input]||0)),amount=Math.min((production.get(key)||0)*outputMultiplier(b),(available+buffer+incoming)/ratio),taken=Math.max(0,amount*ratio-buffer-incoming);debit(id,input,taken);credit(id,output,amount);}
+ for(const c of s.citizens){debit(component(c.home),'food',mealRation(c)*45/60);debit(component(c.home),'clothing',45/(540*.75));r.faith.income+=(c.faith??60)/100*.15*45/60;}
+ const sites=s.pests?.sites||[];for(const q of sites){const guard=s.citizens.some(c=>c.guardPost===q.key&&c.work===q.key&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)),cat=s.pests.cats.some(c=>c.site===q.key);debit(component(q.key),'food',Math.min(buildings.get(q.key)?.stock?.food||0,.012*q.mice*45/Math.max(1,sites.length)*(guard?.15:cat?.4:1)));}
+ for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='healer')continue;const patients=s.citizens.filter(c=>c.clinic===key),need=patients.reduce((n,c)=>n+Math.max(0,(c.careGoal||85)-c.health),0),healing=Math.min(need,people.reduce((n,c)=>n+45*13/24*workRate(c,'healer'),0));debit(component(key),'food',healing*.04);debit(component(key),'reed',healing*.02);}
+ // Local surpluses cannot grow a full warehouse; demand is still shown even if stock is empty.
+ for(const [id,flow]of byComponent)for(const k of MATERIALS){const overflow=Math.max(0,flow[k]-((capacities.get(id)?.[k]||0)-(stocks.get(id)?.[k]||0)));if(overflow>0)r[k].income=Math.max(0,r[k].income-Math.min(overflow,incomeByComponent.get(id)?.[k]||0));}
+ for(const k of keys)r[k].net=r[k].income-r[k].outgo;return r;
+}
