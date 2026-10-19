@@ -1,5 +1,7 @@
-export const MATERIALS=['food','clay','reed','wood','stone','hides'];
+export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth'];
 export const BUILDINGS={
+ sheepfold:{name:'Овчарня',icon:'♈',clay:18,reed:10,wood:4,desc:'Стадо пасётся, шерсть отрастает. Работники собирают шерсть и несут её на склад.',effect:'Шерсть · 2 работника',output:{wool:2},workTime:6},
+ weaver:{name:'Ткацкая мастерская',icon:'▤',clay:24,reed:12,wood:6,desc:'Работники приносят 3 шерсти со склада, прядут и ткут 1 ткань, затем несут её на склад.',effect:'3 шерсти → 1 ткань · 2 работника',output:{cloth:1},workTime:8},
  house:{name:'Дом',icon:'⌂',clay:12,reed:8,desc:'Дом для восьми жителей. У каждого человека есть дом, место работы и распорядок дня.',effect:'+8 мест',output:{}},
  field:{name:'Ячменное поле',icon:'≋',clay:8,reed:5,desc:'Весной работники приносят 4 еды на семена и сеют ячмень. Летом нужен полив из канала или чудесный дождь. Осенью срезают снопы, отдельно обмолачивают на току и несут еду на склад. Несрезанное портится зимой; снопы можно обмолотить позже. На песке поле закладывают рядом с наполненным каналом.',effect:'4 семян → посев → полив → жатва → обмолот',output:{food:7},workTime:3.5},
  clay:{name:'Глиняный карьер',icon:'◈',clay:10,reed:4,desc:'Два глиняных мастера добывают глину и доставляют её на склад.',effect:'Глина · 2 работника',output:{clay:6},workTime:3},
@@ -33,7 +35,7 @@ export const MIRACLES={
  stars:{name:'Мудрость звёзд',cost:45,cooldown:4,icon:'✶',domain:'knowledge',desc:'+18 престижа; открывает мудрые имена.'},
  shaping:{name:'Повеление глине',cost:50,cooldown:4,icon:'◈',domain:'craft',desc:'+60 глины и +40 тростника.'}
 };
-export const RESOURCE_NAMES={food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',faith:'вера',prestige:'престиж'};
+export const RESOURCE_NAMES={food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',faith:'вера',prestige:'престиж'};
 export const levelOf=b=>b.level||1;
 export const isOperational=b=>!b.construction||b.construction.kind==='upgrade';
 export const capacityOf=b=>b.type==='house'&&isOperational(b)?4+4*levelOf(b):0;

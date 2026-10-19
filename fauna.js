@@ -1,8 +1,9 @@
+import {flockSize} from './textiles.js';
 import {pestActors} from './pests.js';
 import {safeLoop,loopMotion} from './local-motion.js';
 import {WIDTH,HEIGHT,terrain,isShore,isDryPoint} from './world.js';
 import {seed} from './city-life.js';
-const habitats=new WeakMap();
+const habitats=new WeakMap(),flockRoutes=new WeakMap();
 function habitatsFor(s){
  const worldSeed=s.world?.seed||73129;
  const signature=JSON.stringify([worldSeed,s.buildings.map(b=>[b.type,b.x,b.y]),s.world?.deposits,s.world?.lakes]);
@@ -21,5 +22,9 @@ export function animalsFor(s){
  const time=s.simTime||0,result=[];
  for(const {id,kind,route,...p} of habitatsFor(s)){const phase=time+seed(p.x,p.y)*17;
   const motion=loopMotion(route,phase,kind==='bird'?.65:.32,kind==='jackal'?2:3.5);result.push({id,kind,...motion,step:phase*5,behavior:motion.walking?'walking':kind==='bird'?'perched':'grazing'});}
+ for(const b of s.buildings){if(b.type!=='sheepfold'||b.construction?.kind==='new')continue;
+  const size=flockSize(b);let cached=flockRoutes.get(b);if(cached?.size!==size){cached={size,routes:Array.from({length:size},(_,i)=>{const cx=b.x-.24+(i%4)*.16,cy=b.y+.02+Math.floor(i/4)*.22;const route=[{x:cx-.035,y:cy-.035},{x:cx+.035,y:cy-.035},{x:cx+.035,y:cy+.035},{x:cx-.035,y:cy+.035},{x:cx-.035,y:cy-.035}];return route.every(p=>isDryPoint(s,p.x,p.y))?route:[{x:b.x,y:b.y}];})};flockRoutes.set(b,cached);}
+  for(let i=0;i<size;i++){const phase=time+seed(b.x+i,b.y)*23,motion=loopMotion(cached.routes[i],phase,.035,2+i%3);result.push({id:`sheep-${b.x}-${b.y}-${i}`,kind:'sheep',...motion,step:phase*5,behavior:motion.walking?'walking':'grazing'});}
+ }
  return [...result,...pestActors(s)];
 }

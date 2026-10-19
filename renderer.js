@@ -10,7 +10,7 @@ import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
-const spriteTypes=new Set(['house','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
+const spriteTypes=new Set(['house','sheepfold','weaver','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
@@ -131,7 +131,7 @@ export class Renderer{
   return [{kind:'groundStocks',x:port?.x??depot.x+.5,y:port?.y??depot.y+.5,stock}];
  }
  stockPile(e){
-  const p=this.point(e.x,e.y),q=this.s,c=this.ctx,materials=['food','clay','reed','wood','stone','hides'];
+  const p=this.point(e.x,e.y),q=this.s,c=this.ctx,materials=['food','clay','reed','wood','stone','hides','wool','cloth'];
   for(const [i,kind]of materials.entries()){
    const amount=e.stock[kind]||0;if(amount<=0)continue;
    const x=p.x+((i%3)-1)*12*q,y=p.y+Math.floor(i/3)*9*q;
@@ -140,6 +140,8 @@ export class Renderer{
     const a=x+(k-1)*3*q,z=y-k*2*q;
     if(kind==='reed'){for(let j=0;j<4;j++)this.line([[a+(j-2)*q,z],[a+(j+3)*q,z-8*q]],'#8e9c66',1.4*q);this.line([[a-q,z-3*q],[a+4*q,z-5*q]],'#e0ce93',q);}
     else if(kind==='wood'){this.line([[a-5*q,z],[a+5*q,z-5*q]],'#9b7951',4*q);c.fillStyle='#d1b77e';c.beginPath();c.ellipse(a-5*q,z,2*q,1.7*q,0,0,7);c.fill();}
+    else if(kind==='wool'){c.fillStyle='#e7dec0';c.beginPath();c.arc(a,z-3*q,4*q,0,7);c.fill();this.line([[a-2*q,z-5*q],[a+2*q,z-q]],'#b5a989',.8*q);}
+    else if(kind==='cloth')this.box(a,z,4*q,2*q,2*q,'#a0b198','#6e8876','#8c9e85');
     else if(kind==='hides'){this.polygon([[a-4*q,z],[a-2*q,z-4*q],[a+4*q,z-5*q],[a+5*q,z-2*q],[a+2*q,z+q]],'#b78e62');this.line([[a-2*q,z-2*q],[a+3*q,z-3*q]],'#ddc69c',.7*q);}
     else this.box(a,z,(kind==='food'?3.5:4)*q,2*q,(kind==='stone'?4:3)*q,{food:'#d1bb76',clay:'#bd8b65',stone:'#b7bba9'}[kind],kind==='stone'?'#8c968c':'#9a7952',kind==='stone'?'#a3ad9f':'#b89a68');
    }
@@ -149,6 +151,12 @@ export class Renderer{
  animal(e){
   const p=this.point(e.x,e.y),q=this.s,c=this.ctx,t=this.reduce?0:(this.state.simTime||0),step=this.reduce||e.walking===false?0:Math.sin(e.step??t*4),color={goat:'#c4bb96',gazelle:'#b99b6f',jackal:'#a39270'}[e.kind]||'#b99b6f';
   c.save();
+  if(e.kind==='sheep'){
+   c.translate(p.x,p.y);c.scale((e.heading||1)*.62,.62);
+   for(const a of [-4,3])this.line([[a*q,-2*q],[(a+step*.7)*q,4*q]],'#786e54',1.3*q);
+   c.fillStyle='#eee5c9';for(const [a,z,r]of [[-5,-5,4],[0,-7,4.5],[5,-5,3.7],[-1,-3,5]]){c.beginPath();c.arc(a*q,z*q,r*q,0,7);c.fill();}
+   const head=e.behavior==='grazing'?0:-5;c.fillStyle='#8d8060';c.beginPath();c.ellipse(7*q,head*q,2.8*q,2.4*q,.3,0,7);c.fill();this.line([[6*q,(head-1)*q],[4*q,(head-3)*q]],'#a99b77',1.7*q);c.fillStyle='#514f3c';c.fillRect(8*q,(head-.7)*q,.8*q,.8*q);c.restore();return;
+  }
   if(e.kind==='cat'||e.kind==='mouse'){
    const cat=e.kind==='cat',z=cat?1:.42,face=e.heading||1,asleep=e.behavior==='sleeping';c.translate(p.x,p.y);c.scale(face*z,z);
    c.fillStyle=cat?'#9c8d70':'#827866';c.beginPath();c.ellipse(0,-2*q,(asleep?5:4.5)*q,(asleep?2.8:2.3)*q,0,0,7);c.fill();
@@ -210,7 +218,7 @@ export class Renderer{
   }
   if(person.guarding){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-5*q],[p.x+(7+swing)*q,p.y-10*q]],'#92764f',1.4*q);for(let i=0;i<4;i++)this.line([[p.x+(6+swing)*q,p.y-10*q],[p.x+(6+i+swing)*q,p.y-14*q]],'#b5a36c',q);}
   else if(['working','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
-  if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
+  if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
   c.restore();
  }
  bridge(b,rails=true){const span=bridgeSpan(b.y),{left,right,y}=span;this.polygon([this.point(left,y-.13,5),this.point(right,y-.13,5),this.point(right,y+.13,5),this.point(left,y+.13,5)],'#c7ad7c','#8e7853');this.line([this.point(left,y+.13,5),this.point(right,y+.13,5)],'#92784d',3*this.s);for(let x=left;x<right;x+=.18)this.line([this.point(x,y-.13,5),this.point(x,y+.13,5)],'#8b754e',this.s*.65);this.bridgeRail(left,right,y-.13);if(rails)this.bridgeRail(left,right,y+.13);}
@@ -295,7 +303,7 @@ export class Renderer{
   else if(e.kind==='groundStocks')this.stockPile(e);
   else if(e.kind==='bier')this.bier(e);
   else if(e.kind==='pestCatch'){const p=this.point(e.x,e.y);c.save();c.globalAlpha=1-e.progress;c.font=`${Math.max(9,11*this.s)}px Arial`;c.fillStyle='#427c67';c.textAlign='center';c.fillText(e.by==='cat'?'Поймала!':'Прогнал!',p.x,p.y-(12+e.progress*12)*this.s);c.restore();}
-  else if(['goat','gazelle','bird','jackal','cat','mouse'].includes(e.kind))this.animal(e);
+  else if(['goat','gazelle','bird','jackal','cat','mouse','sheep'].includes(e.kind))this.animal(e);
   else if(['palm','shrub','grass','reed','rock'].includes(e.kind))this.vegetation(e,this.reduce?0:s.simTime||0,s);
   else if(e.kind==='lamp')this.streetLamp(e,t);
   else this.box(p.x,p.y,5*this.s,3*this.s,4*this.s,'#c6bf9d','#aea98b','#b6b293');

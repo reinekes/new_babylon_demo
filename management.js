@@ -1,4 +1,4 @@
-import {refundSources,syncInventory} from './inventory.js';
+import {putStock,stockStores,refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
@@ -8,7 +8,7 @@ import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor,recoverCitizenCargo} from './workforce.js';
 import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
 const roles=ROLES;
-const hasLoad=c=>!!c.seedField||c.pantryFood>0||Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
+const hasLoad=c=>!!c.craftSite||!!c.seedField||c.pantryFood>0||Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
 const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
 const blocked=s=>s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
 const upgradePrice=(b,level)=>({...level===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{},clay:Math.ceil(BUILDINGS[b.type].clay*(level===1?1.5:2.5)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*(level===1?1.5:2.5)))});
@@ -79,6 +79,7 @@ export function canDemolish(s,b){
    const stores=future.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type));
    if(!stores.some(v=>map.get(buildingKey(v))&&net.components.get(map.get(buildingKey(v)).key)===component))return 'Есть грузы в пути: нужен другой доступный склад на этом берегу';
    if(c.tradeJob||c.saleJob){const market=map.get(c.tradeMarket||c.saleMarket);if(!market||net.components.get(market.key)!==component)return 'Дождись доставки покупок: снос перекроет путь к рынку';}
+   if(c.craftSite&&c.craftWool>0){const target=map.get(c.craftSite);if(!target||net.components.get(target.key)!==component)return 'Дождись доставки шерсти: снос перекроет путь к мастерской';}
    if(Object.values(c.buildCargo||{}).some(n=>n>0)&&c.site!==buildingKey(b)){
     const target=map.get(c.sitePort);if(!target||net.components.get(target.key)!==component)return 'Сначала дождись доставки материалов: снос перекроет их путь к стройке';
    }
@@ -96,7 +97,7 @@ export function canDemolish(s,b){
 }
 export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
- const homes=relocations(s,b),refund=demolitionRefund(b);rememberApproaches(s,b);if(b.pantry)s.resources.food+=b.pantry;if(b.crop?.seedStock)s.resources.food+=b.crop.seedStock;for(const c of s.citizens)if(c.seedField===buildingKey(b))recoverCitizenCargo(s,c.id);
+ const homes=relocations(s,b),refund=demolitionRefund(b);if(b.weaving?.wool){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата шерсти'};putStock(s,buildingKey(target),'wool',b.weaving.wool,{overflow:true});b.weaving.wool=0;}rememberApproaches(s,b);if(b.pantry)s.resources.food+=b.pantry;if(b.crop?.seedStock)s.resources.food+=b.crop.seedStock;for(const c of s.citizens)if(c.craftSite===buildingKey(b)||c.seedField===buildingKey(b))recoverCitizenCargo(s,c.id);
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}

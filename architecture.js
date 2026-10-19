@@ -30,6 +30,31 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
+  if(b.type==='sheepfold') {
+    poly([[0,-14],[28,0],[0,14],[-28,0]],'#a8ac75');
+    // Low reed rails leave the flock visible inside its own plot.
+    const fence=(a,z,d,e)=>{line([[a,z-6],[d,e-6]],'#a08b55',1.6);line([[a,z-3],[d,e-3]],'#c7b879',1.1);for(let i=0;i<=4;i++){const f=i/4,u=a+(d-a)*f,v=z+(e-z)*f;line([[u,v],[u,v-9]],'#8f7951',1.4);}};
+    fence(0,-14,28,0);fence(0,-14,-28,0);fence(-28,0,0,14);fence(0,14,22,3);
+    box(0,-8,11,5.5,16,'#d5c195','#a98e62','#c5ad7c');
+    poly([[-13,-24],[-2,-30],[14,-22],[3,-16]],'#b5a273');
+    for(let i=0;i<6;i++)line([[-11+i*3,-24+i*1.5],[-1+i*2,-28+i]],'#d7c38e',.7);
+    poly([[3,-16],[8,-18.5],[8,-8],[3,-5.5]],'#74674b');
+    box(22,2,4,2,3,'#c6b37e','#8e8056','#a69a65');
+  }
+  if(b.type==='weaver') {
+    box(-7,-3,18,9,25,'#e2cda1','#b6986b','#cfb484');
+    box(-7,-28,19,9.5,3,'#ead9ae','#c1a87b','#d5bf94');
+    poly([[-11,-15],[-3,-11],[-3,1],[-11,-3]],'#796a4d');
+    // Wooden upright loom and hanging woven panel in the open courtyard.
+    line([[5,8],[5,-20],[23,-29],[23,-1]],'#826c47',2);
+    line([[5,-20],[23,-29]],'#b49a64',2);line([[5,5],[23,-4]],'#8b754d',1.8);
+    poly([[7,-18],[21,-25],[21,-5],[7,2]],'#92a58c');
+    for(let i=0;i<7;i++)line([[8+i*1.8,-18-i*.9],[8+i*1.8,1-i*.9]],'#d5d2a5',.55);
+    for(let i=0;i<5;i++)line([[7,-15+i*3.5],[21,-22+i*3.5]],'#6f8a79',.7);
+    line([[4,-5],[24,-15]],'#bba575',1.5);pot(-21,3,.8);
+    box(20,9,6,3,3,'#9cad91','#728c78','#8f9f83');
+  }
+
   if(b.type==='house') {
     const tall=seed(b.x,b.y)>.64, h=(tall?43:35)+(level-1)*12;
     box(0,1,27,13.5,3,'#d0b888','#b3996c','#bea575');

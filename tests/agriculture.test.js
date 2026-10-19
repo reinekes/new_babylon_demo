@@ -21,7 +21,7 @@ test('workers can be pinned to a building; children cannot; pin survives saving 
  assert.equal(assignWorkplace(s,s.citizens.find(c=>c.age<16).id,`${b.x},${b.y}`).ok,false);const saved=decode(encode(s));assert.ok(saved);assert.equal(saved.citizens.find(v=>v.id===c.id).workplace,c.workplace);
 });
 test('legacy migration retains people, carried goods and pantry; crop state survives deterministic reload',()=>{
- const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,15);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
+ const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,16);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
  const next=decode(encode(loaded));assert.deepEqual(next,loaded);
 });
 test('cats and mice inhabit storage yards, move and rest without entering water or buildings',async()=>{
@@ -49,7 +49,7 @@ test('pins wait for carried cargo, survive clinic trips and cannot exceed buildi
 });
 test('actual v11 autumn city retains in-flight loads and home food, grants transitional harvest only once',async()=>{
  const {readFileSync}=await import('node:fs');const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v11-autumn.json',import.meta.url))),s=decode(JSON.stringify(old));assert.ok(s);assert.equal(old.version,11);assert.equal(s.season,2);assert.ok(old.citizens.some(c=>Object.values(c.cargo).some(n=>n>0)));
- assert.deepEqual(s.resources,old.resources);assert.deepEqual(s.citizens,old.citizens);assert.deepEqual(projectLegacy(s.buildings,old.buildings),old.buildings);assert.ok(field(s).crop.remaining>0);
+ assert.deepEqual(Object.fromEntries(Object.keys(old.resources).map(k=>[k,s.resources[k]])),old.resources);assert.deepEqual(s.citizens,old.citizens);assert.deepEqual(projectLegacy(s.buildings,old.buildings),old.buildings);assert.ok(field(s).crop.remaining>0);
  const total=field(s).crop.remaining;workField(s,field(s),4);assert.equal(field(s).crop.remaining,total-7);const copy=decode(encode(s));assert.deepEqual(copy,s);
  for(let i=0;i<1600&&s.year===1;i++){s.event=null;advanceTime(s,.1);}assert.equal(s.year,2);assert.equal(field(s).crop.sown,0);assert.equal(field(s).crop.legacyYear,undefined);assert.ok(decode(encode(s)));
 });
