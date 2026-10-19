@@ -18,6 +18,7 @@ export const BUILDINGS={
  market:{name:'Рынок',icon:'⚖',clay:20,reed:12,wood:8,desc:'Принимает караваны. Два носильщика доставляют покупки на склад.',effect:'Торговля · 2 носильщика',output:{}}
 };
 export const MIRACLES={
+ cat:{name:'Кошка — дар бога',cost:12,cooldown:1,icon:'🐈',domain:'life',desc:'Приводит кошку к хранилищу без кошки. Она ловит мышей и защищает еду; первую кошку приводит только бог.'},
  rain:{name:'Небесный дождь',cost:15,cooldown:2,icon:'☂',domain:'water',desc:'Снимает засуху и поливает ячмень два сезона.'},
  abundance:{name:'Изобилие',cost:25,cooldown:2,icon:'✧',domain:'harvest',desc:'+45 еды прямо в амбары.'},
  bless:{name:'Благословение',cost:20,cooldown:3,icon:'☀',domain:'life',desc:'+15 довольства; до трёх новых жителей.'},

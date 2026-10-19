@@ -98,7 +98,7 @@ export function demolish(s,x,y){
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}
- s.buildings=s.buildings.filter(v=>v!==b);for(const c of s.citizens)if(c.workplace===buildingKey(b))delete c.workplace;s.capacity=housingOf(s);rerouteCitizens(s);
+ s.buildings=s.buildings.filter(v=>v!==b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
  note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
@@ -113,7 +113,13 @@ export function assignWorkplace(s,id,key){
   if(b.type==='healer'?c.role!=='healer'||!c.medicine?.level:!['auto','production'].includes(c.role))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
   if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(b.type==='healer'?1:2))return {ok:false,reason:'Все постоянные места заняты'};
   const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к работе'};
-  c.workplace=key;
- }else delete c.workplace;
+  c.workplace=key;delete c.guardPost;
+ }else{delete c.workplace;delete c.guardPost;}
+ invalidateAssignments(s);syncCitizens(s);return {ok:true};
+}
+
+export function assignGuard(s,id,key){
+ const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c)||!['auto','production'].includes(c.role))return {ok:false,reason:'Нужен взрослый со свободной производственной профессией'};
+ if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!['shrine','granary'].includes(b.type))return {ok:false,reason:'Нужен готовый амбар или храм-склад'};if(s.citizens.some(v=>v.id!==id&&v.guardPost===key))return {ok:false,reason:'У склада уже есть сторож'};const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к складу'};c.guardPost=key;delete c.workplace;}else delete c.guardPost;
  invalidateAssignments(s);syncCitizens(s);return {ok:true};
 }

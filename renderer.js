@@ -207,7 +207,8 @@ export class Renderer{
    this.polygon([[x-2*q,y],[x+flicker,y-6*q],[x+2*q,y]],'#ee983f');this.polygon([[x-q,y],[x,y-4*q],[x+q,y]],'#ffe19a');
    if((person.id||0)%4===0)this.lights.push({x,y:y-2*q,size:17*q});
   }
-  if(['working','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
+  if(person.guarding){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-5*q],[p.x+(7+swing)*q,p.y-10*q]],'#92764f',1.4*q);for(let i=0;i<4;i++)this.line([[p.x+(6+swing)*q,p.y-10*q],[p.x+(6+i+swing)*q,p.y-14*q]],'#b5a36c',q);}
+  else if(['working','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
   if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
   c.restore();
  }
@@ -292,6 +293,7 @@ export class Renderer{
   else if(e.kind==='caravan')this.caravan(e);
   else if(e.kind==='groundStocks')this.stockPile(e);
   else if(e.kind==='bier')this.bier(e);
+  else if(e.kind==='pestCatch'){const p=this.point(e.x,e.y);c.save();c.globalAlpha=1-e.progress;c.font=`${Math.max(9,11*this.s)}px Arial`;c.fillStyle='#427c67';c.textAlign='center';c.fillText(e.by==='cat'?'Поймала!':'Прогнал!',p.x,p.y-(12+e.progress*12)*this.s);c.restore();}
   else if(['goat','gazelle','bird','jackal','cat','mouse'].includes(e.kind))this.animal(e);
   else if(['palm','shrub','grass','reed','rock'].includes(e.kind))this.vegetation(e,this.reduce?0:s.simTime||0,s);
   else if(e.kind==='lamp')this.streetLamp(e,t);
