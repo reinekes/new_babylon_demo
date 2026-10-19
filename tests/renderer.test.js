@@ -1,3 +1,4 @@
+import {visibleCitizens} from '../workforce.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {Renderer} from '../renderer.js';
@@ -12,7 +13,7 @@ test('actual render queue interleaves people and solid buildings in depth order'
  Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
  const order=[];r.person=p=>order.push(p);r.building=b=>order.push({...b,kind:'building'});
  const state=createGame();advanceTime(state,1);r.draw(state,null,1000);
- assert.equal(order.filter(e=>e.kind==='person').length,10);
+ assert.equal(order.filter(e=>e.kind==='person').length,visibleCitizens(state).length);
  for(let i=1;i<order.length;i++)assert.ok(sceneDepth(order[i])>=sceneDepth(order[i-1])-1e-8);
  assert.ok(order.findIndex(e=>e.kind==='person')<order.findLastIndex(e=>e.kind==='building'),'some residents must be drawn before houses, not in a final overlay pass');
 });

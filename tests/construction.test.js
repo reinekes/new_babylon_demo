@@ -25,7 +25,7 @@ test('unreachable sites wait and new bridge opens only after actual construction
  assert.ok(comps()>1);run(s,300);assert.equal(bridge.construction,undefined);assert.equal(house.construction,undefined);assert.equal(comps(),1);
 });
 test('builders stop labour at night and return home',()=>{
- const s=createGame();build(s,'house',10,9);run(s,43);assert.ok(s.citizens.every(c=>c.phase==='home'));const work=s.buildings.at(-1).construction?.work;run(s,5);assert.equal(s.buildings.at(-1).construction?.work,work);
+ const s=createGame();build(s,'house',10,9);run(s,43);assert.ok(s.citizens.every(c=>['home','resting'].includes(c.phase)));const work=s.buildings.at(-1).construction?.work;run(s,5);assert.equal(s.buildings.at(-1).construction?.work,work);
 });
 test('saving during labour preserves stages; malformed and duplicated material balances are rejected',()=>{
  const s=createGame();build(s,'house',10,9);const b=s.buildings.at(-1);

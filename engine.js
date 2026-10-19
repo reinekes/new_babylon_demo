@@ -1,4 +1,5 @@
-import {consumeHouseholdFood,validateHouseholds} from './households.js';
+import {initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
+import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
 import {startFuneral,validateFuneral} from './funerals.js';
 import {initializeTrade,advanceTrade,validateTrade} from './trading.js';
@@ -9,14 +10,14 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=8;
+export const VERSION=9;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame(){
  const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
- initializeWorld(s);ensureResourceSites(s);initializeTrade(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});syncCitizens(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
+ initializeWorld(s);ensureResourceSites(s);initializeTrade(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
 export const storage=storageOf;
@@ -57,12 +58,12 @@ export function miracle(s,id){
  const oldName=s.name;registerMiracle(s,m.domain);
  if(id==='rain'){if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
  if(id==='abundance')s.resources.food=Math.min(storage(s),s.resources.food+45);
- if(id==='bless'||id==='healing'){s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
+ if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
- if(id==='sunlight')s.happiness=Math.min(100,s.happiness+10);
+ if(id==='sunlight'){affectResidents(s,{mood:7});s.happiness=Math.min(100,s.happiness+10);}
  if(id==='revelation'){s.resources.faith+=20;s.resources.prestige+=12;}
  if(id==='stars')s.resources.prestige+=18;
- if(id==='peace')s.happiness=Math.min(100,s.happiness+25);
+ if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'){s.resources.clay+=60;s.resources.reed+=40;}
  log(s,m.name,m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);check(s);return {ok:true};
 }
@@ -80,15 +81,17 @@ function settleSeason(s){
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);check(s);return;}
  for(const k of Object.keys(s.cooldowns))s.cooldowns[k]=Math.max(0,s.cooldowns[k]-1);
  // Production is already in citizens' delivered cargo. Never credit it here.
- const {fed}=consumeHouseholdFood(s);s.hungry=fed?0:s.hungry+1;
- const gardenJoy=s.buildings.filter(b=>b.type==='garden'&&isComplete(b)).reduce((n,b)=>n+2+2*levelOf(b),0),target=fed?Math.min(95,72+gardenJoy):12;s.happiness=Math.max(0,Math.min(100,s.happiness+(target-s.happiness)*.3));
- if(!fed){log(s,'В амбарах не хватает еды','Проверь поля, работников и дороги к складу. Люди теряют надежду.','bad');if(s.hungry>=2&&!s.funeral){const n=Math.min(s.population,Math.max(2,Math.ceil(s.population*.12))),deceased=s.citizens.slice(-n).map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));for(const c of deceased)recoverCitizenCargo(s,c.id);s.citizens=s.citizens.filter(c=>!deceased.some(d=>d.id===c.id));s.population=s.citizens.length;s.deaths+=n;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${n} жителей. Город остановил работу, чтобы проводить умерших к границе долины.`,'bad');}}
+ const hungry=s.citizens.filter(c=>c.hunger>=30);s.hungry=hungry.length?Math.max(...hungry.map(c=>c.missedMeals)):0;
+ s.happiness=s.citizens.length?s.citizens.reduce((n,c)=>n+c.mood,0)/s.citizens.length:0;
+ if(hungry.length)log(s,'Голод в семьях',`${hungry.length} жителей недоедают. Проверь домашние запасы и доставку еды.`,'bad');
+ const victims=!s.funeral?s.citizens.filter(c=>c.health<=0&&c.missedMeals>=3):[];
+ if(victims.length){const deceased=victims.map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));mournResidents(s,victims.map(c=>c.id));for(const c of victims)recoverCitizenCargo(s,c.id);const ids=new Set(victims.map(c=>c.id));s.citizens=s.citizens.filter(c=>!ids.has(c.id));s.population=s.citizens.length;s.deaths+=victims.length;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${victims.length} жителей из семей, которым не хватало еды. Город провожает умерших.`,'bad');}
  if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>recoverCitizenCargo(s,id));syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{family:true});}
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);check(s);return;}
  s.drought=Math.max(0,s.drought-1);s.rain=Math.max(0,s.rain-1);for(const k of Object.keys(s.buffs))s.buffs[k]=Math.max(0,s.buffs[k]-1);
  if(s.season===0){
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');
-  if(s.year===3||(!s.droughtSeen&&s.year>=4)){s.drought=3;s.droughtSeen=true;log(s,'На долину опустилась засуха','Урожай полей уменьшился вдвое на три сезона. Небесный дождь может спасти посевы.','bad');}
+  if(s.year===3||(!s.droughtSeen&&s.year>=4)){s.drought=3;s.droughtSeen=true;affectResidents(s,{faith:-8,mood:-7});log(s,'На долину опустилась засуха','Урожай полей уменьшился вдвое на три сезона. Небесный дождь может спасти посевы.','bad');}
   else if(s.year%5===0)s.event={id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'};
   else if(s.year%3===1){s.resources.food+=Math.max(0,Math.min(30,storage(s)-s.resources.food));log(s,'Щедрый разлив','Река принесла плодородный ил. Общие амбары получили 30 еды.','good');}
   else s.event={id:'festival',title:'Ночь тысячи огней',text:'Жрецы предлагают праздник у воды. 20 еды превратятся в 15 веры, 5 престижа и 10 довольства.'};
@@ -110,7 +113,7 @@ export function resolveEvent(s,choice){
  if(!s.event||!['accept','skip'].includes(choice))return {ok:false,reason:'Нет такого решения'};
  if(choice==='accept'){
   const reason=eventReason(s);if(reason)return {ok:false,reason};const id=s.event.id;s.resources.food-=id==='caravan'?35:20;
-  if(id==='caravan'){s.resources.clay+=25;s.resources.reed+=20;}if(id==='refugees')s.population+=Math.min(6,s.capacity-s.population);if(id==='festival'){s.resources.faith+=15;s.resources.prestige+=5;s.happiness=Math.min(100,s.happiness+10);}
+  if(id==='caravan'){s.resources.clay+=25;s.resources.reed+=20;}if(id==='refugees')s.population+=Math.min(6,s.capacity-s.population);if(id==='festival'){affectResidents(s,{faith:4,mood:8});s.resources.faith+=15;s.resources.prestige+=5;s.happiness=Math.min(100,s.happiness+10);}
  }
  log(s,s.event.title,choice==='accept'?'Город принял твоё решение.':'Город сохранил запасы и продолжил свой путь.',choice==='accept'?'good':'info');s.event=null;syncCitizens(s);check(s);return {ok:true};
 }
@@ -118,8 +121,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>JSON.stringify(s);
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8;
-  if(!s||![1,2,3,4,5,6,7,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9;
+  if(!s||![1,2,3,4,5,6,7,8,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -177,9 +180,9 @@ export function decode(raw){
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,WIDTH-.5)&&finite(p.y,-.5,HEIGHT-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome'].includes(c.phase))return null;
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting'].includes(c.phase))return null;
    ids.add(c.id);if(c.saleJob!=null&&(!s.trade.sales.some(q=>q.id===c.saleJob&&q.market===c.saleMarket)||!['toSaleSupply','toSaleMarket','blocked','toHome','home'].includes(c.phase)))return null;
-   if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home'].includes(c.phase)))return null;
+   if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home','toRest','resting','toPantrySupply','toPantryHome'].includes(c.phase)))return null;
    if(c.role!==undefined&&!['auto','builder','carrier','production'].includes(c.role)||c.pendingRole!==undefined&&!['auto','builder','carrier','production'].includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;
    if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||!Object.keys(BUILDINGS[buildings.get(c.work).type].output).length))return null;
    if(c.store!==null&&!['shrine','granary','house'].includes(buildings.get(c.store)?.type))return null;
@@ -211,7 +214,8 @@ export function decode(raw){
   if(s.lastDelivery!==null&&(!s.lastDelivery||!finite(s.lastDelivery.time,0,s.simTime)||!integer(s.lastDelivery.citizen)||typeof s.lastDelivery.store!=='string'||!s.lastDelivery.cargo||Object.entries(s.lastDelivery.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v))))return null;
   if(oldGenerations){initializeDemography(s);s.version=VERSION;}
   if(oldHouseholds)s.version=VERSION;
-  if(!validateDemography(s)||!validateHouseholds(s))return null;
+  if(oldWellbeing){for(const c of s.citizens)if(c.pantryTrip){if(c.pantryTrip!==true||c.tradeJob!=null||c.saleJob!=null||Object.entries(c.cargo).some(([k,n])=>k!=='food'&&n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||!['toPantrySupply','toPantryHome','blocked'].includes(c.phase))return null;c.pantryFood=c.cargo.food||0;c.cargo={};}initializeWellbeing(s);s.version=VERSION;}
+  if(!validateDemography(s)||!validateHouseholds(s)||!validateWellbeing(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   return s;
  }catch{return null;}
