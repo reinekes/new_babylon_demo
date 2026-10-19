@@ -2,7 +2,7 @@
 export function residentAppearance(c,buildings=[]){
  const work=buildings instanceof Map?buildings.get(c.work):buildings.find(b=>(b.id||`${b.x},${b.y}`)===c.work)?.type;
  const craft=c.role==='watercarrier'?'watercarrier':c.role==='tailor'?'tailor':work==='weaver'?'weaver':null,wear=c.clothing??100;
- return {craft,wear:wear>50?'new':wear>25?'worn':'ragged',patches:wear>50?0:wear>25?1:2,
+ return {craft,work,wear:wear>50?'new':wear>25?'worn':'ragged',patches:wear>50?0:wear>25?1:2,
   robe:wear<=25?'#9b927b':wear<=50?'#b6a88d':craft==='watercarrier'?'#668f9a':craft==='tailor'?'#bb8e6b':craft==='weaver'?'#7e9c97':c.robe||'#dfc99d'};
 }
 export function drawResidentClothes(r,p,q,look){

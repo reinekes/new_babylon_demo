@@ -1,20 +1,23 @@
+import {drawArtisan} from './artisan-art.js';
+import {drawCourtyardHouse,drawBuildingFinish} from './map-art.js';
 import {drawHarbor} from './waterfront-art.js';
 import {masonryBox} from './masonry-art.js';
 import {cropFor} from './agriculture.js';
 import {fieldWater,drawCanal} from './irrigation.js';
-import {houseLightCount} from './households.js';
 import {levelOf} from './definitions.js';
 import {seed} from './city-life.js';
 
 // All solid architecture is painted inside its depth-sorted scene entry.
 // Details and windows therefore occlude residents exactly like the main walls.
 export function drawBuilding(r, b, state, t) {
+  if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
+  if(['pottery','brewery'].includes(b.type)){drawArtisan(r,b,state,t);return;}
   if(b.type==='harbor'){drawHarbor(r,b,state);return;}
   if(b.type==='canal'){drawCanal(r,b,state);return;}
   if(b.type==='bridge'){r.bridge(b);return;}
   const level=levelOf(b);
   const p=r.point(b.x,b.y), c=r.ctx, q=r.s, x=p.x, y=p.y;
-  const night=r.lighting?.night||0,occupied=b.type==='house'?(r.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(c=>c.home===`${b.x},${b.y}`).length??0):0,lit=b.type==='house'?houseLightCount(b,occupied):Infinity;let windowIndex=1;
+  const night=r.lighting?.night||0;let windowIndex=1;const lit=Infinity;
   const poly=(points,fill)=>r.polygon(points.map(([a,z])=>[x+a*q,y+z*q]),fill);
   const line=(points,color,width=1)=>r.line(points.map(([a,z])=>[x+a*q,y+z*q]),color,width*q);
   const box=(a,z,w,d,h,top,left,right)=>r.box(x+a*q,y+z*q,w*q,d*q,h*q,top,left,right);
@@ -96,38 +99,6 @@ export function drawBuilding(r, b, state, t) {
     for(let i=0;i<5;i++)line([[7,-15+i*3.5],[21,-22+i*3.5]],'#6f8a79',.7);
     line([[4,-5],[24,-15]],'#bba575',1.5);pot(-21,3,.8);
     box(20,9,6,3,3,'#9cad91','#728c78','#8f9f83');
-  }
-
-  if(b.type==='house') {
-    const tall=seed(b.x,b.y)>.64, h=(tall?43:35)+(level-1)*12;
-    box(0,1,27,13.5,3,'#d0b888','#b3996c','#bea575');
-    if(level>1)masonryBox(r,x,y,25*q,12.5*q,h*q,level===2?'mud':'fired',q);
-    else box(0,0,25,12.5,h,'#e5cfa0','#b99967','#d7b883');
-    if(level===1)for(let z=-h+5;z<-3;z+=5){
-      line([[-24,z],[0,z+12],[24,z]],'#ac8e5b55',.7);
-      for(let i=0;i<3;i++)line([[-22+i*8,z+(-22+i*8)*.5+12],[-22+i*8,z+(-22+i*8)*.5+16]],'#ac8e5b40',.65);
-    }
-    // A pale plaster band, timber lintel and recessed doorway.
-    poly([[-25,-h+2],[0,-h+14],[25,-h+2],[25,-h+8],[0,-h+20],[-25,-h+8]],'#e7d2aa');
-    poly([[6,-8],[15,-12.5],[15,4.5],[6,9]],'#715e43');
-    poly([[7,-7],[14,-10.5],[14,4],[7,7.5]],night>.12&&lit>0?'#d3a35e':'#5e5641');
-    line([[5,-9],[16,-14.5]],'#a17c4c',2);
-    line([[10,6],[10,-8]],'#9b7c50',.9);
-    window(-18,-h+14,1);window(14,-h+12,-1);
-    if(tall)window(-8,-h+20,1);
-    // Roof parapet, inner courtyard, roof steps and a drying textile.
-    box(0,-h,26,13,3,'#eeddb4','#d2b989','#ddc697');
-    box(0,-h-3,20,10,1,'#bea97a','#b49f73','#c8b484');
-    box(-11,-h-3,6,3,3,'#ead3a1','#c9ae7b','#d7bf8a');
-    box(-14,-h-3,3,1.5,6,'#e5ce9a','#c0a16c','#d3b780');
-    poly([[0,-h-3],[12,-h-9],[19,-h-5],[7,-h+1]],seed(b.x,7)>.5?'#809a8b':'#b66e54');
-    for(let i=0;i<4;i++)line([[1+i*2,-h-3-i],[8+i*2,-h-6-i]],'#e0cf9c',.6);
-    // Linen shade and two slender supports outside the doorway.
-    line([[7,8],[7,-7]],'#8c7954',1.2);line([[24,0],[24,-15]],'#8c7954',1.2);
-    poly([[4,-11],[22,-20],[26,-14],[8,-5]],'#a7b28b');
-    line([[7,-6],[25,-15]],'#d8d5a7',1.1);
-    pot(-22,3,.9);pot(-16,7,.65);
-    if(night>.12&&lit>0)glow(11,-3,25);
   }
 
   if(b.type==='healer') {
@@ -322,5 +293,6 @@ export function drawBuilding(r, b, state, t) {
     box(0,11,6,3,7,'#e9d5a7','#ad8c59','#ceb17b');
     c.fillStyle='#665337';c.textAlign='center';c.font=`bold ${Math.max(6,7*q)}px Georgia`;c.fillText(level===2?'II':'III',x,y+9*q);
   }
+  drawBuildingFinish(r,b,state);
   c.restore();
 }

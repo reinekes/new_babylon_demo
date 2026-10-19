@@ -1,5 +1,7 @@
 // Local resource drawings share one silhouette in stock bars and cost cards.
 const drawings={
+ pottery:'<path d="M8 3h8M9 3v4c-8 7-7 14 3 14s11-7 3-14V3M5 14h14m-13 4h12"/>',
+ beer:'<path d="M6 5h12l-2 4c6 8 3 12-4 12S2 17 8 9L6 5Zm2 9h8M11 5V2m3 3V1"/>',
  firedBrick:'<path d="m2 13 12-4 8 4-12 4-8-4Zm0 0v6l8 4 12-4v-6M10 17v6M8 8c-3-3 3-4 1-7m6 7c-3-3 3-4 1-7"/>',
  water:'<path d="M12 2C9 7 5 10 5 15a7 7 0 0 0 14 0c0-5-4-8-7-13Z"/>',
  brick:'<path d="m2 9 13-5 7 4-13 5-7-4Zm0 0v9l7 4v-9m0 9 13-5V8M4 15l3 1m5 1 7-3"/>',
@@ -16,5 +18,5 @@ const drawings={
  faith:'<path d="M12 2v5m0 10v5M2 12h5m10 0h5M5 5l3 3m8 8 3 3M5 19l3-3m8-8 3-3m-7 1 3 6-3 6-3-6 3-6Z"/>',
  prestige:'<path d="m7 13-3 9 7-3 2-6m4 0 3 9-7-3-2-6"/><circle cx="12" cy="9" r="7"/><path d="m12 5 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>'
 };
-const names={firedBrick:'Обожжённый кирпич',water:'Вода',brick:'Сырцовый кирпич',wool:'Шерсть',cloth:'Ткань',clothing:'Одежда',food:'Еда',wood:'Дерево',stone:'Камень',hides:'Шкуры',grain:'Зерно',clay:'Глина',reed:'Тростник',faith:'Вера',prestige:'Престиж'};
+const names={pottery:'Керамика',beer:'Пиво',firedBrick:'Обожжённый кирпич',water:'Вода',brick:'Сырцовый кирпич',wool:'Шерсть',cloth:'Ткань',clothing:'Одежда',food:'Еда',wood:'Дерево',stone:'Камень',hides:'Шкуры',grain:'Зерно',clay:'Глина',reed:'Тростник',faith:'Вера',prestige:'Престиж'};
 export function resourceIcon(kind){return `<svg class="resource-svg resource-${kind}" viewBox="0 0 24 24" role="img" aria-label="${names[kind]||kind}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><title>${names[kind]||kind}</title>${drawings[kind]||''}</svg>`;}

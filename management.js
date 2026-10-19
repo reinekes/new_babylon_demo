@@ -1,3 +1,5 @@
+import {recoverFestivalCitizen} from './festival.js';
+import {isArtisan,artisanOutput} from './artisan.js';
 import {isTradePort} from './river-trade.js';
 import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
@@ -37,6 +39,7 @@ export function setPriority(s,x,y,priority){
 export function setCitizenRole(s,id,role){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);
  if(!c||!roles.includes(role))return {ok:false,reason:'Неизвестный житель или роль'};if(!canWork(c))return {ok:false,reason:'Дети начинают работать с 16 лет'};
+ if(c.phase==='festival')recoverFestivalCitizen(s,id);
  if(hasLoad(c)){if(role===(c.role||'auto'))delete c.pendingRole;else c.pendingRole=role;}
  else{c.role=role;delete c.pendingRole;}
  invalidateAssignments(s);syncCitizens(s);return {ok:true};
@@ -74,11 +77,12 @@ function relocations(s,b){
 export function canDemolish(s,b){
  const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
+ if(isArtisan(b)&&!['idle','ready'].includes(b.artisan.stage))return 'Дождись завершения ремесленной партии';
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
  if(b.brickmaking?.wet>0)return 'Дождись высыхания партии сырца';
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';
- const key=buildingKey(b);syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
+ const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary','depot'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
@@ -113,6 +117,7 @@ export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
  const homes=relocations(s,b),refund=demolitionRefund(b);
  if(b.brickmaking){const amounts={clay:b.brickmaking.clay,reed:b.brickmaking.reed,brick:b.brickmaking.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья и сырца'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.brickmaking.clay=0;b.brickmaking.reed=0;b.brickmaking.ready=0;}}
+if(isArtisan(b)){const v=b.artisan,amounts={clay:v.clay,reed:v.reed,food:v.food,pottery:v.pottery};amounts[artisanOutput(b)]=(amounts[artisanOutput(b)]||0)+v.ready;if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата ремесленных грузов'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});}}
 if(b.firing){const amounts={brick:b.firing.brick,reed:b.firing.reed,firedBrick:b.firing.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата топлива и кирпича'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.firing.brick=0;b.firing.reed=0;b.firing.ready=0;}}
 if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья'};putStock(s,buildingKey(target),craftResource(b),craftState(b)[craftResource(b)],{overflow:true});craftState(b)[craftResource(b)]=0;}rememberApproaches(s,b);if(b.pantry)s.resources.food+=b.pantry;if(b.crop?.seedStock)s.resources.food+=b.crop.seedStock;for(const c of s.citizens)if(c.craftSite===buildingKey(b)||c.seedField===buildingKey(b))recoverCitizenCargo(s,c.id);
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}

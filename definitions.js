@@ -1,9 +1,11 @@
-export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth','clothing','brick','firedBrick'];
+export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth','clothing','brick','firedBrick','pottery','beer'];
 export const BUILDINGS={
+ pottery:{name:'Гончарный двор',icon:'◉',clay:20,reed:12,wood:4,desc:'Работники приносят глину, тростник и воду. Формовка трудом, сушка с погодой, обжиг и остывание; готовые сосуды относят на склад. Рецепт — игровой баланс.',effect:'4 глины + 2 воды + 2 тростника → 2 керамики',output:{pottery:2},workTime:5},
+ brewery:{name:'Пивоварня',icon:'♜',clay:24,reed:14,wood:6,desc:'Из 4 еды и 3 воды за 15 секунд труда готовят 3 напитка. Семенной резерв защищён; один керамический сосуд служит четырём партиям. Готовый напиток относят на склад. Рецепт — игровой баланс.',effect:'4 еды + 3 воды → 3 напитка · сосуд на 4 партии',output:{beer:3},workTime:15},
  harbor:{name:'Речная пристань',icon:'⚓',clay:28,reed:22,wood:12,brick:12,desc:'На берегу главной реки. Грузовая лодка швартуется, открывает торговлю и привозит крупные партии леса и камня. Два носильщика доставляют покупки на склад и загружают продажи. Нужны дорога, склад и населённый дом на этом берегу.',effect:'Речная торговля · крупные грузы · 2 носильщика',output:{}},
  kiln:{name:'Печь для обжига',icon:'♨',clay:24,reed:12,brick:12,desc:'Работники приносят 4 сырца и 3 тростника на топливо, загружают печь. Обжиг — 20 с, остывание — 8 с; дождь и ночь не прерывают загруженную партию. Готовый кирпич относят на склад. Нужен для III уровня крупных зданий и облицовки зиккурата.',effect:'4 сырца + 3 тростника → 4 обожжённых · 2 работника',output:{firedBrick:4},workTime:5},
  brickyard:{name:'Кирпичный двор',icon:'▱',clay:16,reed:8,wood:4,desc:'Работники приносят 4 глины и 1 тростник, добавляют 2 воды и формуют 4 сырцовых кирпича. Солнце сушит партию; дождь приостанавливает сушку. Сырец относят на склад.',effect:'Глина + тростник + вода → сырец · 2 работника',output:{brick:4},workTime:5},
- waterpoint:{name:'Береговой водозабор',icon:'♒',clay:12,reed:8,wood:4,desc:'Водоносы набирают воду у берега и доставляют в дома и кирпичные дворы. Вода хранится на месте, в кувшинах.',effect:'Вода кварталу · 2 водоноса',output:{}},
+ waterpoint:{name:'Береговой водозабор',icon:'♒',clay:12,reed:8,wood:4,desc:'Водоносы набирают воду у берега и доставляют в дома и ремесленные дворы. Вода хранится на месте, в кувшинах.',effect:'Вода кварталу · 2 водоноса',output:{}},
  tailor:{name:'Мастерская одежды',icon:'♧',clay:24,reed:14,wood:6,desc:'Нужен мастер одежды: вдохнови жителя на эту профессию. Мастер приносит 2 ткани со склада, отделывает одеяние и несёт готовую одежду на склад. Жители забирают её для себя и детей.',effect:'2 ткани → 1 одежда · 2 мастера',output:{clothing:1},workTime:7},
  sheepfold:{name:'Овчарня',icon:'♈',clay:18,reed:10,wood:4,desc:'Стадо пасётся, шерсть отрастает. Работники собирают шерсть и несут её на склад.',effect:'Шерсть · 2 работника',output:{wool:2},workTime:6},
  weaver:{name:'Ткацкая мастерская',icon:'▤',clay:24,reed:12,wood:6,desc:'Работники приносят 3 шерсти со склада, прядут и ткут 1 ткань, затем несут её на склад.',effect:'3 шерсти → 1 ткань · 2 работника',output:{cloth:1},workTime:8},
@@ -40,7 +42,7 @@ export const MIRACLES={
  stars:{name:'Мудрость звёзд',cost:45,cooldown:4,icon:'✶',domain:'knowledge',desc:'+18 престижа; открывает мудрые имена.'},
  shaping:{name:'Повеление глине',cost:50,cooldown:4,icon:'◈',domain:'craft',desc:'+60 глины и +40 тростника.'}
 };
-export const RESOURCE_NAMES={food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
+export const RESOURCE_NAMES={pottery:'керамика',beer:'напиток',food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
 export const levelOf=b=>b.level||1;
 export const isOperational=b=>!b.construction||b.construction.kind==='upgrade';
 export const capacityOf=b=>b.type==='house'&&isOperational(b)?4+4*levelOf(b):0;

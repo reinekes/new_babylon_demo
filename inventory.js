@@ -5,6 +5,7 @@ const amount=n=>Number.isFinite(n)&&n>0?n:0;
 function referencedStores(s){
  const refs=new Set(),allocation=q=>{for(const map of [q?.sources,q?.allocations])for(const key of Object.keys(map||{}))refs.add(key);};
  for(const b of [...s.buildings||[],...s.roads||[]])if(b.construction)allocation(b.construction);
+ allocation(s.festival);
  for(const q of s.trade?.sales||[])if(q.amount>q.loaded+q.cancelled)allocation(q);
  for(const q of s.district?.jobs||[]){const carried=(s.citizens||[]).some(c=>c.districtJob===q.id&&Object.values(c.cargo||{}).some(n=>n>0));if(q.remaining>0||carried){refs.add(q.source);refs.add(q.target);}}
  for(const c of s.citizens||[])if(c.clothingTarget!==undefined||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0))refs.add(c.store);

@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#e8dcc0;color:#514e41;font:14px Georgia}canvas{width:1200px;height:760px;display:block}button{padding:8px}</style><p>Изолированная художественная сцена · настоящий Renderer · без сохранения города</p><button id="night">День / ночь</button><button id="mobile">390 px / 1200 px</button><canvas id="map" width="1200" height="760"></canvas><script type="module">
+import{Renderer}from'../../renderer.js';import{createGame}from'../../engine.js';
+const canvas=document.querySelector('canvas'),r=new Renderer(canvas,()=>{}),s=createGame();s.simTime=12;s.buildings=s.buildings.filter(b=>b.type!=='house');
+for(const [type,x,y,level]of [['house',8,7,1],['house',9,7,2],['house',10,7,3],['house',11,7,1],['weaver',8,9,2],['brickyard',9,9,1],['granary',10,9,2],['market',11,9,1],['shrine',8,11,2],['ziggurat',10,11,1],['harbor',11,10,1]])s.buildings.push({type,x,y,level});
+r.zoom=2.6;r.lightMode='day';r.layout();document.querySelector('#mobile').onclick=()=>{canvas.style.width=canvas.style.width==='390px'?'1200px':'390px';canvas.style.height=canvas.style.width==='390px'?'600px':'760px'};document.querySelector('button').onclick=()=>{r.lightMode=r.lightMode==='day'?'night':'day'};const draw=t=>{r.draw(s,null,t);requestAnimationFrame(draw)};requestAnimationFrame(draw);
+</script>
