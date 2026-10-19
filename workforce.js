@@ -19,7 +19,7 @@ export function networkFor(s){
  const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}`).join('|');
  let cache=caches.get(s);
  if(!cache||cache.signature!==signature){cache={signature,network:generateStreets([...s.buildings,...s.roadAnchors||[]],s),paths:new Map(),synced:null};caches.set(s,cache);}
- ensureRoads(s,cache.network);return cache.network;
+ if(cache.roads!==s.roads||cache.roadCount!==s.roads?.length){ensureRoads(s,cache.network);cache.roads=s.roads;cache.roadCount=s.roads.length;}return cache.network;
 }
 export function routeBetween(s,from,to){
  const network=networkFor(s),cache=caches.get(s),key=`${from}>${to}`;
