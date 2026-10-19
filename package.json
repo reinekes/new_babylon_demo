@@ -1,1 +1,1 @@
-{"name":"new-babylon","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test","start":"python3 -m http.server 8080 --bind 127.0.0.1","benchmark":"node scripts/benchmark.mjs"}}
+{"name":"new-babylon","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test","start":"python3 -m http.server 8080 --bind 127.0.0.1","benchmark":"node scripts/benchmark.mjs","benchmark:4x":"node scripts/benchmark-4x.mjs"}}

@@ -21,8 +21,9 @@ export function networkFor(s){
  if(!cache||cache.signature!==signature){cache={signature,network:generateStreets([...s.buildings,...s.roadAnchors||[]],s),paths:new Map(),synced:null};caches.set(s,cache);}
  if(cache.roads!==s.roads||cache.roadCount!==s.roads?.length){ensureRoads(s,cache.network);cache.roads=s.roads;cache.roadCount=s.roads.length;}return cache.network;
 }
-export function routeBetween(s,from,to){
- const network=networkFor(s),cache=caches.get(s),key=`${from}>${to}`;
+// Internal callers reuse a validated access context within the same city network.
+export function routeBetween(s,from,to,ctx){
+ const network=ctx?.network||networkFor(s),cache=caches.get(s),key=`${from}>${to}`;
  if(cache.paths.has(key))return cache.paths.get(key);
  if(!from||!to||network.components.get(from)!==network.components.get(to)){cache.paths.set(key,null);return null;}
  const queue=[from],prev=new Map([[from,null]]);
@@ -34,31 +35,35 @@ export function routeBetween(s,from,to){
  cache.paths.set(key,null);return null;
 }
 function context(s){
- const network=networkFor(s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p]));
+ const network=networkFor(s),cache=caches.get(s);
+ // Access tables and nearest stores depend on topology, not the simulation clock.
+ if(cache.context?.roadSource===s.roads&&cache.context.roadCount===s.roads.length)return cache.context;
+ const ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p]));
  for(const p of network.ports.filter(p=>p.building.siteKey))ports.set(`site:${p.building.siteKey}:${p.building.side}`,p);
  const stores=s.buildings.filter(b=>isComplete(b)&&(b.type==='granary'||b.type==='shrine'));
  if(!stores.length&&s.buildings.some(b=>b.type==='house'&&isComplete(b)))stores.push(s.buildings.find(b=>b.type==='house'&&isComplete(b)));
  for(const r of s.roads||[])ports.set(r.id,{...r.a,building:r});
- return {network,ports,stores,buildings:new Map(constructionEntities(s).map(b=>[buildingKey(b),b]))};
+ return cache.context={network,ports,stores,roadSource:s.roads,roadCount:s.roads.length,closestStores:new Map(),buildings:new Map(constructionEntities(s).map(b=>[buildingKey(b),b]))};
 }
 function closestStore(s,ctx,work){
+ if(ctx.closestStores.has(work))return ctx.closestStores.get(work);
  const p=ctx.ports.get(work);if(!p)return null;
  let best=null,length=Infinity;
- for(const b of ctx.stores){const key=buildingKey(b),target=ctx.ports.get(key);if(!target)continue;const route=routeBetween(s,p.key,target.key);if(route&&route.length<length){best=key;length=route.length;}}
- return best;
+ for(const b of ctx.stores){const key=buildingKey(b),target=ctx.ports.get(key);if(!target)continue;const route=routeBetween(s,p.key,target.key,ctx);if(route&&route.length<length){best=key;length=route.length;}}
+ ctx.closestStores.set(work,best);return best;
 }
 function startTrip(s,c,targetKey,phase,ctx){
  const target=ctx.ports.get(targetKey);if(!target){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
  let origin=null,min=Infinity;
  for(const p of ctx.network.nodes.values()){const d=distance(c,p);if(d<min){origin=p;min=d;}}
- const route=origin&&routeBetween(s,origin.key,target.key);
+ const route=origin&&routeBetween(s,origin.key,target.key,ctx);
  if(!route){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
  c.route=[{x:c.x,y:c.y},...route.map(p=>({x:p.x,y:p.y}))];c.routeIndex=1;c.phase=phase;
 }
 function siteAccess(s,ctx,c,b){
  const home=ctx.ports.get(c.home);if(!home)return null;
  const key=buildingKey(b),targets=b.type==='bridge'?[`site:${key}:0`,`site:${key}:1`]:[key];
- for(const target of targets){const p=ctx.ports.get(target);if(!p||!routeBetween(s,home.key,p.key))continue;
+ for(const target of targets){const p=ctx.ports.get(target);if(!p||!routeBetween(s,home.key,p.key,ctx))continue;
   const store=closestStore(s,ctx,target);if(store)return {site:key,sitePort:target,store};
  }
  return null;
@@ -81,7 +86,7 @@ export function syncCitizens(s){
   c.buildCargo??={};c.site??=null;c.sitePort??=null;c.role??='auto';c.siteDuty??=null;
   if(c.pendingRole&&!hasCargo(c)&&!hasBuildCargo(c)){c.role=c.pendingRole;delete c.pendingRole;}citizens.push(c);
  }
- for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||hasCargo(c)&&(!store||!home||!routeBetween(s,home.key,store.key)))c.store=closestStore(s,ctx,c.home);}
+ for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||hasCargo(c)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
  const assignments=new Map(),locked=new Set();
  // A load already in someone's hands belongs to its old destination.
  for(const c of citizens)if((hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
@@ -106,7 +111,7 @@ export function syncCitizens(s){
  const jobsQueue=[...(s.trade?.deliveries||[]).map(q=>({q,sale:false})),...(s.trade?.sales||[]).map(q=>({q,sale:true}))].sort((a,b)=>a.q.id-b.q.id);
  for(const {q,sale} of jobsQueue){if(q.remaining<=0)continue;if(sale&&s.trade.caravan?.id!==q.caravanId)continue;const market=ctx.ports.get(q.market),store=closestStore(s,ctx,q.market);if(!market||!store)continue;
   let assigned=citizens.filter(c=>locked.has(c.id)&&(c.tradeMarket||c.saleMarket)===q.market).length+[...tradeAssignments.values()].filter(a=>(a.tradeMarket||a.saleMarket)===q.market).length;
-  for(const c of [...citizens].sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id)){if(assigned>=2)break;if(locked.has(c.id)||assignments.has(c.id)||tradeAssignments.has(c.id)||!['auto','carrier'].includes(c.role)||!routeBetween(s,ctx.ports.get(c.home)?.key,market.key))continue;tradeAssignments.set(c.id,{...sale?{saleJob:q.id,saleMarket:q.market}:{tradeJob:q.id,tradeMarket:q.market},store});assigned++;}
+  for(const c of [...citizens].sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id)){if(assigned>=2)break;if(locked.has(c.id)||assignments.has(c.id)||tradeAssignments.has(c.id)||!['auto','carrier'].includes(c.role)||!routeBetween(s,ctx.ports.get(c.home)?.key,market.key,ctx))continue;tradeAssignments.set(c.id,{...sale?{saleJob:q.id,saleMarket:q.market}:{tradeJob:q.id,tradeMarket:q.market},store});assigned++;}
  }
  const priority={field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5};
  const jobs=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).sort((a,b)=>priority[a.type]-priority[b.type]);
@@ -120,7 +125,7 @@ export function syncCitizens(s){
   else if(tradeAssignments.has(c.id))Object.assign(c,tradeAssignments.get(c.id));
   else{
    const p=ctx.ports.get(c.home);
-   for(let j=0;j<slots.length&&['auto','production'].includes(c.role);j++){if(used.has(j))continue;const work=slots[j],workPort=ctx.ports.get(work),store=closestStore(s,ctx,work);if(workPort&&store&&routeBetween(s,p.key,workPort.key)){used.add(j);c.work=work;c.store=store;break;}}
+   for(let j=0;j<slots.length&&['auto','production'].includes(c.role);j++){if(used.has(j))continue;const work=slots[j],workPort=ctx.ports.get(work),store=closestStore(s,ctx,work);if(workPort&&store&&routeBetween(s,p.key,workPort.key,ctx)){used.add(j);c.work=work;c.store=store;break;}}
    if(!c.work)c.store=closestStore(s,ctx,c.home);
   }
   if(oldSale!==c.saleJob||oldTrade!==c.tradeJob||oldHome!==c.home||oldWork!==c.work||oldStore!==c.store||oldSite!==c.site||oldPort!==c.sitePort||oldDuty!==c.siteDuty){
@@ -245,7 +250,7 @@ export function visibleCitizens(s){
 export function workforceStats(s){
  syncCitizens(s);const ctx=context(s),people=s.citizens;
  const disconnected=s.buildings.filter(b=>isOperational(b)&&Object.keys(BUILDINGS[b.type].output).length).filter(b=>{
-  const p=ctx.ports.get(buildingKey(b));return !p||!closestStore(s,ctx,buildingKey(b))||!s.buildings.some(h=>h.type==='house'&&ctx.ports.get(buildingKey(h))&&routeBetween(s,ctx.ports.get(buildingKey(h)).key,p.key));
+  const p=ctx.ports.get(buildingKey(b));return !p||!closestStore(s,ctx,buildingKey(b))||!s.buildings.some(h=>h.type==='house'&&ctx.ports.get(buildingKey(h))&&routeBetween(s,ctx.ports.get(buildingKey(h)).key,p.key,ctx));
  }).length;
  return {total:people.length,employed:people.filter(c=>c.work).length,builders:people.filter(c=>c.site&&c.siteDuty==='builder').length,carriers:people.filter(c=>c.site&&c.siteDuty==='carrier').length,sites:constructionEntities(s).filter(b=>b.construction).length,working:people.filter(c=>c.phase==='working').length,carrying:people.filter(c=>hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0)).length,atHome:people.filter(c=>c.phase==='home').length,disconnected,deliveries:s.deliveries};
 }
