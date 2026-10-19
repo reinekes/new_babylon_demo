@@ -37,7 +37,7 @@ export class Renderer{
   if(!spriteTypes.has(b.type)||b.construction){drawBuilding(this,b,state,t);return;}
   const dx=(this.canvas?.width/this.w)||1,dy=(this.canvas?.height/this.h)||dx,q=this.s,scale=`${q}/${dx}/${dy}`;
   if(this.spriteScale!==scale){this.spriteScale=scale;this.buildingSprites=new Map();this.spriteBytes=0;}
-  const variant=b.type==='house'?`${hash(b.x,b.y)>.64}/${hash(b.x,7)>.5}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
+  const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${hash(b.x,b.y)>.64}/${hash(b.x,7)>.5}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
   const key=`${b.type}/${variant}/${b.level||1}/${(this.lighting?.night||0)>.12}/${b.type==='house'?houseLightCount(b,this.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(c=>c.home===`${b.x},${b.y}`).length??0):''}`;
   let entry=this.buildingSprites.get(key);
   if(!entry){
