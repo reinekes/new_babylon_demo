@@ -10,7 +10,7 @@ import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
-const spriteTypes=new Set(['house','sheepfold','weaver','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
+const spriteTypes=new Set(['house','sheepfold','weaver','tailor','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
@@ -206,7 +206,8 @@ export class Renderer{
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
   this.line([[p.x-1.1*q,p.y-3*q],[p.x+stride*q,p.y]],'#665841',1.25*q);
   this.line([[p.x+1.1*q,p.y-3*q],[p.x-stride*q,p.y]],'#665841',1.25*q);
-  this.polygon([[p.x-1.7*q,p.y-9*q],[p.x+1.7*q,p.y-9*q],[p.x+2.5*q,p.y-2.6*q],[p.x-2.5*q,p.y-2.6*q]],person.robe||'#e0c28f');
+  this.polygon([[p.x-1.7*q,p.y-9*q],[p.x+1.7*q,p.y-9*q],[p.x+2.5*q,p.y-2.6*q],[p.x-2.5*q,p.y-2.6*q]],person.clothing<=25?'#9b927b':person.robe||'#e0c28f');
+  if(person.clothing<=50){this.ctx.fillStyle='#776b57';this.ctx.fillRect(p.x-.9*q,p.y-6.4*q,1.5*q,1.8*q);}
   this.line([[p.x-2*q,p.y-7*q],[p.x-3*q,p.y-(4+stride*.4)*q]],'#a3835e',1.2*q);
   this.line([[p.x+2*q,p.y-7*q],[p.x+3*q,p.y-(4-stride*.4)*q]],'#a3835e',1.2*q);
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();

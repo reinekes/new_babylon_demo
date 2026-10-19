@@ -30,7 +30,7 @@ export function advanceGenerations(s,recover=()=>{}){
   if(a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   const net=networkFor(s),ports=new Map(net.ports.map(p=>[buildingKey(p.building),p.key]));
   const house=s.buildings.find(b=>b.type==='house'&&routeBetween(s,ports.get(a.home),ports.get(buildingKey(b)))&&routeBetween(s,ports.get(partner.home),ports.get(buildingKey(b)))&&!(homes.get(buildingKey(b))||[]).length&&b.construction?.kind!=='new'&&buildingKey(b)!==a.home&&capacityOf(b)-(homes.get(buildingKey(b))||[]).length>=family.length);
-  if(!house||family.some(c=>c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+  if(!house||family.some(c=>s.citizens.some(p=>p.clothingTarget===c.id)||c.clothingTarget!==undefined||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
   const destination=buildingKey(house);for(const c of family){homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
   news(s,'Семья обрела дом',`${citizenName(a.id)} и ${citizenName(partner.id)} поселились в доме ${destination}.`);
  }
