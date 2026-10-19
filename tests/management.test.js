@@ -4,7 +4,7 @@ import {createGame,build,upgrade,advanceTime,encode,decode} from '../engine.js';
 import * as management from '../management.js';
 import {syncCitizens,rerouteCitizens} from '../workforce.js';
 const run=(s,n)=>{for(let i=0;i<Math.round(n*10);i++){if(s.event)s.event=null;advanceTime(s,.1);}};
-const stocked=()=>{const s=createGame();s.resources.clay=1000;s.resources.reed=1000;s.resources.faith=1000;return s;};
+const stocked=()=>{const s=createGame();for(const c of s.citizens)c.age=24;s.resources.clay=1000;s.resources.reed=1000;s.resources.faith=1000;return s;};
 test('high priority takes scarce free workers and changing it preserves the old carried load',()=>{
  const s=stocked();for(const c of s.citizens)management.setCitizenRole(s,c.id,'production');management.setCitizenRole(s,10,'auto');management.setCitizenRole(s,11,'auto');
  build(s,'house',10,9);build(s,'house',11,9);management.setPriority(s,11,9,2);assert.ok(s.citizens.filter(c=>c.site).every(c=>c.site==='11,9'));

@@ -1,3 +1,4 @@
+import {initializeDemography,advanceGenerations,validateDemography,foodDemand} from './demography.js';
 import {startFuneral,validateFuneral} from './funerals.js';
 import {initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {roadUpgradeCost,roadKey} from './roads.js';
@@ -7,14 +8,14 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=6;
+export const VERSION=7;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame(){
  const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
- initializeWorld(s);ensureResourceSites(s);initializeTrade(s);syncCitizens(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
+ initializeWorld(s);ensureResourceSites(s);initializeTrade(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});syncCitizens(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
 export const storage=storageOf;
@@ -75,14 +76,14 @@ function check(s){
 }
 function settleSeason(s){
  s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);advanceTrade(s);
- if(s.funeral){syncCitizens(s);check(s);return;}
+ if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);check(s);return;}
  for(const k of Object.keys(s.cooldowns))s.cooldowns[k]=Math.max(0,s.cooldowns[k]-1);
  // Production is already in citizens' delivered cargo. Never credit it here.
- const food=s.population*.6,fed=s.resources.food>=food;s.resources.food=Math.max(0,s.resources.food-food);s.hungry=fed?0:s.hungry+1;
+ const food=foodDemand(s),fed=s.resources.food>=food;s.resources.food=Math.max(0,s.resources.food-food);s.hungry=fed?0:s.hungry+1;
  const gardenJoy=s.buildings.filter(b=>b.type==='garden'&&isComplete(b)).reduce((n,b)=>n+2+2*levelOf(b),0),target=fed?Math.min(95,72+gardenJoy):12;s.happiness=Math.max(0,Math.min(100,s.happiness+(target-s.happiness)*.3));
- if(!fed){log(s,'В амбарах не хватает еды','Проверь поля, работников и дороги к складу. Люди теряют надежду.','bad');if(s.hungry>=2){const n=Math.min(s.population,Math.max(2,Math.ceil(s.population*.12))),deceased=s.citizens.filter(c=>c.id>=s.population-n).map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));for(const c of deceased)recoverCitizenCargo(s,c.id);s.population-=n;s.deaths+=n;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${n} жителей. Город остановил работу, чтобы проводить умерших к границе долины.`,'bad');}}
- else if(s.happiness>60&&s.population<s.capacity){const n=Math.min(2,s.capacity-s.population);s.population+=n;log(s,'Новые жители',`К городу присоединились ${n} человека. Их привлекли сытые амбары и твоя защита.`,'good');}
- if(s.funeral){syncCitizens(s);check(s);return;}
+ if(!fed){log(s,'В амбарах не хватает еды','Проверь поля, работников и дороги к складу. Люди теряют надежду.','bad');if(s.hungry>=2&&!s.funeral){const n=Math.min(s.population,Math.max(2,Math.ceil(s.population*.12))),deceased=s.citizens.slice(-n).map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));for(const c of deceased)recoverCitizenCargo(s,c.id);s.citizens=s.citizens.filter(c=>!deceased.some(d=>d.id===c.id));s.population=s.citizens.length;s.deaths+=n;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${n} жителей. Город остановил работу, чтобы проводить умерших к границе долины.`,'bad');}}
+ if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>recoverCitizenCargo(s,id));syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{family:true});}
+ if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);check(s);return;}
  s.drought=Math.max(0,s.drought-1);s.rain=Math.max(0,s.rain-1);for(const k of Object.keys(s.buffs))s.buffs[k]=Math.max(0,s.buffs[k]-1);
  if(s.season===0){
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');
@@ -116,8 +117,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>JSON.stringify(s);
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6;
-  if(!s||![1,2,3,4,5,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7;
+  if(!s||![1,2,3,4,5,6,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -207,6 +208,8 @@ export function decode(raw){
    if(q.work>0&&Object.keys(q.required).some(k=>q.delivered[k]<q.required[k]))return null;
   }
   if(s.lastDelivery!==null&&(!s.lastDelivery||!finite(s.lastDelivery.time,0,s.simTime)||!integer(s.lastDelivery.citizen)||typeof s.lastDelivery.store!=='string'||!s.lastDelivery.cargo||Object.entries(s.lastDelivery.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v))))return null;
+  if(oldGenerations){initializeDemography(s);s.version=VERSION;}
+  if(!validateDemography(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   return s;
  }catch{return null;}

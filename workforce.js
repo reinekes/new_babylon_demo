@@ -1,3 +1,4 @@
+import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
 import {advanceTradeLogistics,loadSaleCargo} from './trading.js';
 import {ensureRoads,roadSpeed} from './roads.js';
@@ -69,25 +70,31 @@ function siteAccess(s,ctx,c,b){
  return null;
 }
 export function syncCitizens(s){
- if(s.funeral)return;
+ if(s.funeral&&s.funeral.scope!=='family')return;
  s.simTime??=s.tick*45;s.citizens??=[];s.deliveries??=0;s.delivered??={food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0};
- const ctx=context(s),cache=caches.get(s),signature=`${cache.signature}/${s.population}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.role||'auto'}:${c.pendingRole||''}`).join(',')}`;
+ const ctx=context(s),cache=caches.get(s),signature=`${cache.signature}/${s.population}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}`).join(',')}`;
  if(cache.synced===signature)return;
- // Return undelivered reserved cargo when a resident leaves the city.
- for(const c of s.citizens.filter(c=>c.id>=s.population))recoverCitizenCargo(s,c.id);
+ // Population is a count; stable IDs are never reused after a death.
+ while(s.citizens.length>s.population){const c=s.citizens.at(-1);recoverCitizenCargo(s,c.id);s.citizens.pop();}
  const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
- for(const c of s.citizens){if(c.id>=s.population||!available.get(c.home))continue;homes[c.id]=c.home;available.set(c.home,available.get(c.home)-1);}
- for(let id=0;id<s.population;id++)if(!homes[id]){const home=[...available].find(([,beds])=>beds>0)?.[0];if(!home)break;homes[id]=home;available.set(home,available.get(home)-1);}
+ for(const c of s.citizens){if(!available.get(c.home))continue;homes[c.id]=c.home;available.set(c.home,available.get(c.home)-1);}
+ let nextId=Math.max(s.demography?.nextId||0,1+Math.max(-1,...s.citizens.map(c=>c.id)));
+ while(s.citizens.length<s.population)s.citizens.push({id:nextId++});
+ if(s.demography)s.demography.nextId=nextId;
  const citizens=[];
- for(let id=0;id<s.population;id++){
+ for(let c of s.citizens){
+  const id=c.id;if(!homes[id]){const home=[...available].find(([,beds])=>beds>0)?.[0];if(!home)continue;homes[id]=home;available.set(home,available.get(home)-1);}
   const home=homes[id],p=ctx.ports.get(home);if(!p)continue;
-  let c=s.citizens.find(c=>c.id===id);
-  if(!c)c={id,home,work:null,store:null,x:p.x,y:p.y,phase:'home',route:[],routeIndex:0,workElapsed:0,cargo:{},site:null,sitePort:null,buildCargo:{},role:'auto',siteDuty:null};
+  if(c.phase===undefined)Object.assign(c,{home,work:null,store:null,x:p.x,y:p.y,phase:'home',route:[],routeIndex:0,workElapsed:0,cargo:{},site:null,sitePort:null,buildCargo:{},role:'auto',siteDuty:null});
   c.buildCargo??={};c.site??=null;c.sitePort??=null;c.role??='auto';c.siteDuty??=null;
   if(c.pendingRole&&!hasCargo(c)&&!hasBuildCargo(c)){c.role=c.pendingRole;delete c.pendingRole;}citizens.push(c);
  }
+ s.citizens=citizens;initializeDemography(s);const livingIds=new Set(citizens.map(c=>c.id));for(const c of citizens)if(c.partner!==null&&!livingIds.has(c.partner))c.partner=null;
+ for(const c of citizens)if(c.rehousing){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
  for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||hasCargo(c)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
- const assignments=new Map(),locked=new Set();
+ const assignments=new Map(),locked=new Set(citizens.filter(c=>!canWork(c)).map(c=>c.id));
+ for(const c of citizens)if(!canWork(c)){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.store=null;}
+ if(s.funeral?.scope==='family')for(const a of s.funeral.actors)locked.add(a.id);
  // A load already in someone's hands belongs to its old destination.
  for(const c of citizens)if((hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
   locked.add(c.id);if(c.site){c.siteDuty??='carrier';assignments.set(c.id,{site:c.site,sitePort:c.sitePort,store:c.store,siteDuty:c.siteDuty});}
@@ -240,12 +247,12 @@ function advanceCitizen(s,c,dt,ctx){
  }
 }
 export function advanceWorkers(s,seconds){
- if(!s.funeral)syncCitizens(s);let ctx=context(s);const start=s.simTime;
- for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;if(advanceFuneral(s,dt)){elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);for(const c of s.citizens)advanceCitizen(s,c,dt,ctx);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
+ for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);for(const c of s.citizens)if(!mourners?.has(c.id))advanceCitizen(s,c,dt,ctx);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
  s.simTime=start+seconds;
 }
 export function visibleCitizens(s){
- return (s.citizens||[]).filter(c=>c.phase!=='home').map(c=>({...c,kind:'person',walking:['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket'].includes(c.phase),carrying:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:hasCargo(c)?c.cargo:c.buildCargo,robe:['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2)}));
+ return (s.citizens||[]).filter(c=>c.phase!=='home'||c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket'].includes(c.phase),carrying:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:hasCargo(c)?c.cargo:c.buildCargo,robe:['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2)}));
 }
 export function workforceStats(s){
  syncCitizens(s);const ctx=context(s),people=s.citizens;

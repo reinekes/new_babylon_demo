@@ -1,3 +1,4 @@
+import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
 import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS} from './definitions.js';
 import {isComplete,constructionEntities} from './construction.js';
@@ -23,7 +24,7 @@ export function setPriority(s,x,y,priority){
 }
 export function setCitizenRole(s,id,role){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);
- if(!c||!roles.includes(role))return {ok:false,reason:'Неизвестный житель или роль'};
+ if(!c||!roles.includes(role))return {ok:false,reason:'Неизвестный житель или роль'};if(!canWork(c))return {ok:false,reason:'Дети начинают работать с 16 лет'};
  if(hasLoad(c)){if(role===(c.role||'auto'))delete c.pendingRole;else c.pendingRole=role;}
  else{c.role=role;delete c.pendingRole;}
  invalidateAssignments(s);syncCitizens(s);return {ok:true};
@@ -98,5 +99,5 @@ export function demolish(s,x,y){
  note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
-export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id);if(!c||!roles.includes(role))return 'Неизвестный житель или роль';if((c.role||'auto')===role||c.pendingRole===role)return 'Эта профессия уже выбрана';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
+export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id);if(!c||!roles.includes(role))return 'Неизвестный житель или роль';if(!canWork(c))return 'Дети начинают работать с 16 лет';if((c.role||'auto')===role||c.pendingRole===role)return 'Эта профессия уже выбрана';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
 export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const success=s.rngState/4294967296<.4;registerInspiration(s,success);const c=s.citizens.find(c=>c.id===id);if(success)setCitizenRole(s,id,role);const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}

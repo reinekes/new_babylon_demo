@@ -17,10 +17,11 @@ export function registerInspiration(s,success){
 }
 export const MOURNING_NAMES=['Слышащий плач','Хранитель пепла','Владыка погребальных огней','Несущий смерть','Жестокий владыка пустыни'];
 export function registerLoss(s,count=1){
- const deaths=Math.max(s.deaths||0,count),rank=deaths>=20?4:deaths>=10?3:deaths>=5?2:deaths>=2?1:0;
+ const deaths=Math.max((s.deaths||0)-(s.demography?.naturalDeaths||0),count),rank=deaths>=20?4:deaths>=10?3:deaths>=5?2:deaths>=2?1:0;
  s.name=MOURNING_NAMES[rank];if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);
 }
 function refreshDivineName(s){
+ if(s.funeral?.scope==='family'&&!s.hungry){s.name='Хранитель памяти';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);return;}
  if(s.deaths>0&&(s.hungry>0||s.funeral)){registerLoss(s);return;}
 
  const ranked=Object.entries(s.divinity.domains).sort((a,b)=>b[1]-a[1]);

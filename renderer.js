@@ -180,7 +180,7 @@ export class Renderer{
   if(weight('wind')&&!this.reduce){c.save();c.globalAlpha=weight('wind')*.5;for(let k=0;k<16;k++){const x=(hash(k,63)*w+t*27)%w,y=hash(k,28)*h;this.line([[x,y],[x+5,y-2]],'#b0ad76',1);}c.restore();}
  }
  person(person) {
-  const c=this.ctx,q=this.s,p=this.point(person.x,person.y,person.onBridge?5:0);
+  const c=this.ctx,q=this.s*(person.age<16?.65:1),p=this.point(person.x,person.y,person.onBridge?5:0);
   const stride=person.walking&&!this.reduce?Math.sin((person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
@@ -190,7 +190,7 @@ export class Renderer{
   this.line([[p.x-2*q,p.y-7*q],[p.x-3*q,p.y-(4+stride*.4)*q]],'#a3835e',1.2*q);
   this.line([[p.x+2*q,p.y-7*q],[p.x+3*q,p.y-(4-stride*.4)*q]],'#a3835e',1.2*q);
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();
-  this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.id%2?'#eee0b7':'#5c5140',1.7*q);
+  this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.age>=55?'#deddd3':person.id%2?'#eee0b7':'#5c5140',1.7*q);
   if(person.mourningTorch){const x=p.x+5*q,y=p.y-12*q,flicker=this.reduce?0:Math.sin((this.state?.simTime||0)*9+(person.id||0))*q;
    this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q],[x,y]],'#936746',1.4*q);
    this.polygon([[x-2*q,y],[x+flicker,y-6*q],[x+2*q,y]],'#ee983f');this.polygon([[x-q,y],[x,y-4*q],[x+q,y]],'#ffe19a');
@@ -269,7 +269,7 @@ export class Renderer{
  entities.push(...lamps);if(s.trade?.caravan&&Number.isFinite(s.trade.caravan.x)&&Number.isFinite(s.trade.caravan.y))entities.push({...s.trade.caravan,kind:'caravan'});
  for(const e of sortScene(entities)){
   if(!this.inView(e.x,e.y,150))continue;
-  if(e.kind==='person'&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;
+  if(e.kind==='person'&&s.funeral?.actors.some(a=>a.id===e.id)&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;
   const p=this.point(e.x,e.y);
   if(e.kind==='bridgeRail')this.bridgeRail(e.x-.25,e.end,e.y);
   else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);}
