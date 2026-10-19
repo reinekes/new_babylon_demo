@@ -26,7 +26,7 @@ export const MIRACLES={
  revelation:{name:'Откровение',cost:35,cooldown:3,icon:'◉',domain:'knowledge',desc:'+20 веры и +12 престижа.'},
  peace:{name:'Тишина сердец',cost:30,cooldown:2,icon:'♡',domain:'life',desc:'+25 довольства; жители быстрее обретают надежду.'},
  sunlight:{name:'Золотое сияние',cost:30,cooldown:3,icon:'✺',domain:'sun',desc:'Храмовые подношения ×1,8 на три сезона; +10 довольства.'},
- healing:{name:'Новая жизнь',cost:45,cooldown:4,icon:'✚',domain:'life',desc:'До шести новых жителей при свободном жилье; +10 довольства.'},
+ healing:{name:'Зов новых жителей',cost:45,cooldown:4,icon:'✚',domain:'life',desc:'До шести новых жителей при свободном жилье; +10 довольства.'},
  stars:{name:'Мудрость звёзд',cost:45,cooldown:4,icon:'✶',domain:'knowledge',desc:'+18 престижа; открывает мудрые имена.'},
  shaping:{name:'Повеление глине',cost:50,cooldown:4,icon:'◈',domain:'craft',desc:'+60 глины и +40 тростника.'}
 };

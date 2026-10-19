@@ -203,6 +203,7 @@ export function decode(raw){
   }
   for(const b of constructionEntities(s)){const q=b.construction;if(!q)continue;
    if(!['new','upgrade'].includes(q.kind)||!integer(q.target,1,3)||q.target!==(q.kind==='new'?1:b.level+1)||q.kind==='new'&&b.level!==1||!finite(q.work,0,workRequired(b)))return null;
+   if(q.routeOrder!==undefined&&(b.type!=='road'||!integer(q.routeOrder,0,1e9)))return null;
    if(q.priority!==undefined&&!integer(q.priority,0,2)||q.order!==undefined&&!integer(q.order,0,1e9))return null;
    const cost=b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:upgradeCost(b);
    if(!q.required||!q.remaining||!q.delivered||[q.required,q.remaining,q.delivered].some(v=>Object.keys(v).some(k=>!MATERIALS.includes(k))))return null;
