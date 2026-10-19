@@ -18,6 +18,7 @@ const paths={
  tailor:'M5 20h14L17 7l-5-4-5 4-2 13ZM7 7l10 7M6 15l12-2M7 20v2m3-2v2m4-2v2m3-2v2',
  granary:'M3 9 12 3l9 6H3Zm2 0v12h14V9M8 12h8m-8 4h8M9 21v-3h6v3',
  depot:'M3 21V9l9-5 9 5v12M3 12h18M8 12v9m8-9v9M6 8V4h12v4',
+ harbor:'M3 16h18l-4 5H7l-4-5Zm9-13v13M12 4l7 8h-7M5 12v4M2 23q3-2 5 0t5 0t5 0t5 0',
  market:'M3 9 6 4h12l3 5v3H3V9Zm2 3v9h14v-9M8 4l-1 8m9-8 1 8M9 21v-6h6v6',
  shrine:'M4 21V10h16v11M3 10l9-6 9 6M9 21v-7h6v7M12 1v3',
  ziggurat:'M2 21h20v-5h-4v-5h-4V5h-4v6H6v5H2v5ZM10 5V2h4v3M6 16h12',

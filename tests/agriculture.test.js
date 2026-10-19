@@ -21,7 +21,7 @@ test('workers can be pinned to a building; children cannot; pin survives saving 
  assert.equal(assignWorkplace(s,s.citizens.find(c=>c.age<16).id,`${b.x},${b.y}`).ok,false);const saved=decode(encode(s));assert.ok(saved);assert.equal(saved.citizens.find(v=>v.id===c.id).workplace,c.workplace);
 });
 test('legacy migration retains people, carried goods and pantry; crop state survives deterministic reload',()=>{
- const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,20);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
+ const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,21);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
  const next=decode(encode(loaded));assert.deepEqual(next,loaded);
 });
 test('cats and mice inhabit storage yards, move and rest without entering water or buildings',async()=>{

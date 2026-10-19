@@ -5,6 +5,6 @@ export const BUILDING_GROUPS=[
  {id:'craft',name:'Ремёсла',types:['kiln','brickyard','sheepfold','weaver','tailor']},
  {id:'supply',name:'Снабжение',types:['waterpoint','granary','depot','market']},
  {id:'sacred',name:'Храмы',types:['shrine','ziggurat']},
- {id:'routes',name:'Пути и вода',types:['canal','bridge']}
+ {id:'routes',name:'Пути и вода',types:['canal','bridge','harbor']}
 ];
 export const groupFor=type=>BUILDING_GROUPS.find(g=>g.types.includes(type));

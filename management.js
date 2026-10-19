@@ -1,3 +1,4 @@
+import {isTradePort} from './river-trade.js';
 import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
 import {putStock,stockStores,refundSources,syncInventory} from './inventory.js';
@@ -71,7 +72,7 @@ function relocations(s,b){
  return result;
 }
 export function canDemolish(s,b){
- const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(b.type==='market'&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Рынок занят караваном или оплаченными покупками';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
+ const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
  if(b.brickmaking?.wet>0)return 'Дождись высыхания партии сырца';
@@ -99,7 +100,7 @@ export function canDemolish(s,b){
   }
  }
  if(b.type==='bridge'){
-  const caravan=s.trade?.caravan;if(caravan&&caravan.x!==null){if(onBridge([b],caravan.x,caravan.y))return 'Дождись, пока караван сойдёт с моста';const net=networkFor(future),near=[...net.nodes.values()].sort((a,b)=>Math.abs(a.x-caravan.x)+Math.abs(a.y-caravan.y)-Math.abs(b.x-caravan.x)-Math.abs(b.y-caravan.y))[0],market=net.ports.find(p=>buildingKey(p.building)===caravan.market);if(near&&(!net.nodes.has(caravan.entry)||net.components.get(near.key)!==net.components.get(caravan.entry)||market&&net.components.get(near.key)!==net.components.get(market.key)))return 'Снос перекроет путь каравана';}
+  const caravan=s.trade?.caravan;if(caravan&&caravan.transport!=='river'&&caravan.x!==null){if(onBridge([b],caravan.x,caravan.y))return 'Дождись, пока караван сойдёт с моста';const net=networkFor(future),near=[...net.nodes.values()].sort((a,b)=>Math.abs(a.x-caravan.x)+Math.abs(a.y-caravan.y)-Math.abs(b.x-caravan.x)-Math.abs(b.y-caravan.y))[0],market=net.ports.find(p=>buildingKey(p.building)===caravan.market);if(near&&(!net.nodes.has(caravan.entry)||net.components.get(near.key)!==net.components.get(caravan.entry)||market&&net.components.get(near.key)!==net.components.get(market.key)))return 'Снос перекроет путь каравана';}
   if(s.citizens.some(c=>onBridge([b],c.x,c.y)))return 'Дождись, пока все жители сойдут с моста';
   const {net,map}=ports(future);
   for(const c of s.citizens){let nearest=null,min=Infinity;for(const p of net.nodes.values()){const d=Math.abs(c.x-p.x)+Math.abs(c.y-p.y);if(d<min){min=d;nearest=p;}}

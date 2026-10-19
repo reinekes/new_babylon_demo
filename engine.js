@@ -1,3 +1,4 @@
+import {isRiverBank} from './river-trade.js';
 import {upgradeCost,legacyUpgradeCost} from './masonry.js';
 export {upgradeCost} from './masonry.js';
 import {initializeKilns,validateKilns} from './kilns.js';
@@ -24,7 +25,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=20;
+export const VERSION=21;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
@@ -43,6 +44,7 @@ export function canBuild(s,type,x,y,placementOnly=false){
   if(terrain(x,y,s)!=='water'||terrain(x,y)!=='water')return 'Выбери клетку воды: мост соединит оба берега';
   if(s.buildings.some(b=>b.type==='bridge'&&b.y===y))return 'На этом участке уже есть мост';
  }else if(terrain(x,y,s)==='water')return 'На воде можно построить мост';
+ if(type==='harbor'&&!isRiverBank(s,x,y))return 'Пристани нужен сухой берег главной реки, не озеро';
  if(type==='field'&&!fieldWater(s,{x,y}).productive)return 'Полю нужна приречная земля или готовый канал с водой рядом';
  if(['clay','reed','quarry','logging','hunting','garden'].includes(type)&&!nearDeposit(s,({quarry:'stone',logging:'forest',hunting:'wildlife',garden:'dates'})[type]||type,x,y))return type==='garden'?'Нужен отмеченный финиковый участок':'Нужно отмеченное месторождение';
  if(['fishing','waterpoint'].includes(type)&&!isShore(s,x,y))return 'Нужна сухая клетка у воды';
@@ -62,6 +64,7 @@ export function yieldSummary(s,b){
  if(b.type==='brickyard')return '4 глины + 1 тростник + 2 воды → 4 сырца · сушка на солнце 30 с · 2 работника';
  if(b.type==='waterpoint')return 'Вода домам и кирпичным дворам · 2 водоноса';
  if(b.type==='healer')return `1 обученный лекарь · ${1+level} места · база ${1+(level-1)*.5} здоровья/с · требуется обучение в храме`;
+ if(b.type==='harbor')return `Грузовые лодки · 2 носильщика · до ${4+2*level} ед. за рейс`;
  if(b.type==='market')return `Приём караванов · 2 носильщика · до ${4+2*level} ед. груза за рейс`;
  if(b.type==='granary')return `+${150*level} хранения каждого материала · принимает все грузы`;
  if(b.type==='bridge')return `Соединяет берега · скорость на мосту ×${(1+(level-1)*.25).toFixed(2)}`;
@@ -142,7 +145,7 @@ export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventor
 export function decode(raw){
  try{
   const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20;
-  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,VERSION].includes(s.version))return null;
+  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -199,7 +202,7 @@ export function decode(raw){
    if(b.legacyMasonryLevel!==undefined&&!integer(b.legacyMasonryLevel,1,b.level))return null;
    if(b.legacyFiringLevel!==undefined&&!integer(b.legacyFiringLevel,1,b.level))return null;
    if(b.type==='bridge'){if(land!=='water'||bridgeRows.has(b.y))return null;bridgeRows.add(b.y);}
-   else if(land==='water'||b.type==='canal'&&(b.level!==1||b.construction?.kind==='upgrade'))return null;
+   else if(land==='water'||b.type==='harbor'&&!isRiverBank(s,b.x,b.y)||b.type==='canal'&&(b.level!==1||b.construction?.kind==='upgrade'))return null;
    cells.add(key);
   }
   if(s.roadAnchors!==undefined&&(!Array.isArray(s.roadAnchors)||s.roadAnchors.length>WIDTH*HEIGHT||s.roadAnchors.some(b=>terrain(b.x,b.y,s)==='void'||!['road'].includes(b.type))))return null;

@@ -1,3 +1,4 @@
+import {drawHarbor} from './waterfront-art.js';
 import {masonryBox} from './masonry-art.js';
 import {cropFor} from './agriculture.js';
 import {fieldWater,drawCanal} from './irrigation.js';
@@ -8,6 +9,7 @@ import {seed} from './city-life.js';
 // All solid architecture is painted inside its depth-sorted scene entry.
 // Details and windows therefore occlude residents exactly like the main walls.
 export function drawBuilding(r, b, state, t) {
+  if(b.type==='harbor'){drawHarbor(r,b,state);return;}
   if(b.type==='canal'){drawCanal(r,b,state);return;}
   if(b.type==='bridge'){r.bridge(b);return;}
   const level=levelOf(b);

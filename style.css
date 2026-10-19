@@ -76,3 +76,16 @@ dialog[data-kind=event]::backdrop{background:transparent;backdrop-filter:none}di
 @media(max-width:600px){.resource-frame-processed{grid-column:1/-1}.resource-frame-divine{grid-column:1/-1}.resource-frame-processed .resource-group-items,.resource-frame-divine .resource-group-items{justify-content:space-around}}
 
 .resource-firedBrick{color:#ad684a}@media(max-width:600px){.resource-frame-processed .resource-group-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 5px}}
+
+/* River city: make the landscape the main surface, even in a narrow desktop panel. */
+:root{--paper:#f3eddf;--ink:#2e453f;--muted:#827c69;--line:#d8cdb7;--gold:#ad8051}
+.world{background:#e8e5d5;box-shadow:inset 0 0 0 1px #c7bda4}
+.world h1{text-shadow:0 1px 0 #f4edda80}.world .eyebrow{color:#817655}
+.building-card{border-bottom-color:#d8cdb7}.building-card:hover{background:#e9e4d3}
+.building-groups button{border-radius:2px}.building-groups button[aria-pressed=true]{box-shadow:inset 0 -2px 0 #b19b6e}
+.building-card[data-type=harbor] .building-icon{background:#dce5dc!important;color:#4c7770!important;border-color:#a7bcb0}
+@media(min-width:601px){.game-layout{height:max(520px,calc(100dvh - 320px));min-height:520px}.world{min-height:520px}}
+@media(min-width:601px) and (max-width:1100px){.game-layout{height:max(500px,calc(100dvh - 290px));min-height:500px}.world{min-height:500px}}
+@media(max-width:600px){.world{min-height:480px}.game-layout{height:auto}.world h1{font-size:23px}.world .world-heading{max-width:75%}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+.world.is-night h1{color:#f3e8ca;text-shadow:0 1px 2px #243b46}.world.is-night .eyebrow{color:#d6c8a7}
