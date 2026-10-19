@@ -12,7 +12,7 @@ export function constructionProgress(b){
 export function finishConstruction(s){
  let changed=false;
  for(const b of constructionEntities(s)){const q=b.construction;if(!q||!materialsReady(q)||q.work<workRequired(b)-1e-8)continue;
-  b.level=q.target;delete b.construction;changed=true;
+  b.level=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;
   s.news.unshift({title:q.kind==='upgrade'?`${(BUILDINGS[b.type]?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,text:'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
   // Workforce synchronization sees the old site and routes builders home.
  }

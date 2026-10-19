@@ -1,5 +1,6 @@
-export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth','clothing','brick'];
+export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth','clothing','brick','firedBrick'];
 export const BUILDINGS={
+ kiln:{name:'Печь для обжига',icon:'♨',clay:24,reed:12,brick:12,desc:'Работники приносят 4 сырца и 3 тростника на топливо, загружают печь. Обжиг — 20 с, остывание — 8 с; дождь и ночь не прерывают загруженную партию. Готовый кирпич относят на склад. Нужен для III уровня крупных зданий и облицовки зиккурата.',effect:'4 сырца + 3 тростника → 4 обожжённых · 2 работника',output:{firedBrick:4},workTime:5},
  brickyard:{name:'Кирпичный двор',icon:'▱',clay:16,reed:8,wood:4,desc:'Работники приносят 4 глины и 1 тростник, добавляют 2 воды и формуют 4 сырцовых кирпича. Солнце сушит партию; дождь приостанавливает сушку. Сырец относят на склад.',effect:'Глина + тростник + вода → сырец · 2 работника',output:{brick:4},workTime:5},
  waterpoint:{name:'Береговой водозабор',icon:'♒',clay:12,reed:8,wood:4,desc:'Водоносы набирают воду у берега и доставляют в дома и кирпичные дворы. Вода хранится на месте, в кувшинах.',effect:'Вода кварталу · 2 водоноса',output:{}},
  tailor:{name:'Мастерская одежды',icon:'♧',clay:24,reed:14,wood:6,desc:'Нужен мастер одежды: вдохнови жителя на эту профессию. Мастер приносит 2 ткани со склада, отделывает одеяние и несёт готовую одежду на склад. Жители забирают её для себя и детей.',effect:'2 ткани → 1 одежда · 2 мастера',output:{clothing:1},workTime:7},
@@ -13,7 +14,7 @@ export const BUILDINGS={
  garden:{name:'Финиковый сад',icon:'✳',clay:18,reed:12,desc:'Садовники собирают финики на отмеченном участке пальм. Сад повышает целевое довольство города.',effect:'Еда · +4 довольства',output:{food:3.5},workTime:3.5},
  depot:{name:'Раздаточный двор',icon:'▤',clay:18,reed:12,wood:4,desc:'Местный склад на 60 единиц каждого материала за уровень. Носильщики пополняют двор из других складов, семьи забирают здесь местную еду.',effect:'Местная еда · 2 носильщика · 60 хранения',output:{}},
  granary:{name:'Амбар и склад',icon:'▥',clay:25,reed:15,desc:'Хранит все виды грузов и добавляет по 150 мест для каждого материала. Работники выбирают ближайший доступный склад.',effect:'+150 хранения · приём грузов',output:{}},
- ziggurat:{brick:80,name:'Великий зиккурат',icon:'▲',clay:160,reed:90,faith:80,prestige:50,desc:'Уникальный храм, производящий много веры и престижа. Нужны 50 престижа; расходует 80 веры.',effect:'Много веры + престижа',output:{faith:2.1,prestige:.7},workTime:4},
+ ziggurat:{firedBrick:40,brick:80,name:'Великий зиккурат',icon:'▲',clay:160,reed:90,faith:80,prestige:50,desc:'Уникальный храм, производящий много веры и престижа. Нужны 50 престижа; расходует 80 веры.',effect:'Много веры + престижа',output:{faith:2.1,prestige:.7},workTime:4},
  bridge:{name:'Мост через реку',icon:'⌒',clay:45,reed:25,desc:'Поставь на воду: мост соединит берега и дорожные сети. По нему можно носить грузы на склад.',effect:'Соединяет берега и рабочие пути',output:{}},
  fishing:{name:'Рыбацкая хижина',icon:'♓',clay:8,reed:8,wood:10,desc:'Рыбаки доставляют еду с реки и озёр.',effect:'Еда · 2 работника',output:{food:5},workTime:4},
  hunting:{name:'Охотничий домик',icon:'➶',clay:8,reed:6,wood:12,desc:'Охотники добывают еду и шкуры рядом с дичью.',effect:'Еда + шкуры · 2 работника',output:{food:4,hides:1},workTime:4},
@@ -38,7 +39,7 @@ export const MIRACLES={
  stars:{name:'Мудрость звёзд',cost:45,cooldown:4,icon:'✶',domain:'knowledge',desc:'+18 престижа; открывает мудрые имена.'},
  shaping:{name:'Повеление глине',cost:50,cooldown:4,icon:'◈',domain:'craft',desc:'+60 глины и +40 тростника.'}
 };
-export const RESOURCE_NAMES={food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',faith:'вера',prestige:'престиж'};
+export const RESOURCE_NAMES={food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
 export const levelOf=b=>b.level||1;
 export const isOperational=b=>!b.construction||b.construction.kind==='upgrade';
 export const capacityOf=b=>b.type==='house'&&isOperational(b)?4+4*levelOf(b):0;

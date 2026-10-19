@@ -22,7 +22,7 @@ test('cancelling new work refunds exactly once even with materials in flight',()
 });
 test('cancelled upgrade preserves old level; new ziggurat refunds prepaid faith',()=>{
  const s=stocked();s.resources.brick=100;upgrade(s,8,8);run(s,2);const before=s.resources.clay;assert.ok(management.cancelConstruction(s,8,8).ok);assert.equal(s.buildings[0].level,1);assert.equal(s.capacity,16);assert.equal(s.resources.clay,before+18);
- s.resources.brick=100;s.resources.prestige=100;build(s,'ziggurat',10,9);const faith=s.resources.faith;management.cancelConstruction(s,10,9);assert.equal(s.resources.faith,faith+80);assert.ok(decode(encode(s)));
+ s.resources.brick=100;s.resources.firedBrick=40;s.resources.prestige=100;build(s,'ziggurat',10,9);const faith=s.resources.faith;management.cancelConstruction(s,10,9);assert.equal(s.resources.faith,faith+80);assert.ok(decode(encode(s)));
 });
 test('demolition refunds half of completed investments and protects houses and final warehouse',()=>{
  const s=stocked();assert.ok(management.canDemolish(s,s.buildings[0]));assert.ok(management.canDemolish(s,s.buildings.find(b=>b.type==='shrine')));

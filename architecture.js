@@ -30,6 +30,19 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
+  if(b.type==='kiln') {
+    const active=b.firing?.hot>0,burning=active&&b.firing.time<20;
+    poly([[0,-15],[29,0],[0,15],[-29,0]],'#a99572');
+    box(0,0,19,10,18,'#b68d65','#8b6448','#a47753');
+    poly([[-19,-18],[-16,-31],[0,-39],[16,-31],[19,-18],[0,-9]],'#c69b6f');
+    for(let i=0;i<4;i++)line([[-15+i*2,-21-i*4],[15-i*2,-21-i*4]],'#987354',.65);
+    box(0,-19,5,3,25,'#ae7e56','#795440','#976647');
+    poly([[-7,0],[-7,-8],[-4,-13],[2,-14],[7,-10],[7,-1]],'#4e4437');
+    if(active){poly([[-5,-1],[-5,-5],[0,-8],[5,-5],[5,-1]],burning?'#d97e38':'#a7643c');if(burning){const flicker=r.reduce?0:Math.sin((state.simTime||0)*8)*2;poly([[-4,-2],[-3,-7],[0,-12-flicker],[2,-6],[5,-2]],'#f5b451');glow(0,-6,21);}}
+    for(let i=0;i<4;i++)box(18+i%2*5,4+Math.floor(i/2)*3,4,2,3,b.firing?.ready?'#c47750':'#d1b38a','#8c674b','#ae8058');
+    line([[-25,1],[-15,6],[-22,10]],'#a29b62',3);
+    if(burning)for(let i=0;i<3;i++){const lift=((state.simTime||0)*3+i*7)%22;c.fillStyle='#746d5b35';c.beginPath();c.ellipse(x+(Math.sin(i+lift*.1)*3)*q,y+(-47-lift)*q,(2+lift*.12)*q,(2+lift*.18)*q,0,0,7);c.fill();}
+  }
   if(b.type==='brickyard') {
     poly([[0,-14],[28,0],[0,14],[-28,0]],'#baa278');
     box(-14,-6,12,6,12,'#d4bc90','#a98b60','#bca176');

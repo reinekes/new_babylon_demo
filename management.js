@@ -18,7 +18,8 @@ export function cancellationRefund(b){const q=b?.construction;return q?{...q.req
 export function demolitionRefund(b){
  if(!b||!isComplete(b))return {clay:0,reed:0};
  const total=Object.fromEntries(MATERIALS.map(k=>[k,BUILDINGS[b.type][k]||0]));
- for(let level=1;level<levelOf(b);level++){const cost=upgradePrice(b,level);for(const k of MATERIALS)total[k]+=cost[k]||0;}
+ if(b.legacyFiringLevel)total.firedBrick=0;
+ for(let level=1;level<levelOf(b);level++){if(level>=(b.legacyFiringLevel||1)&&((level===2&&['house','granary','depot','shrine','market','ziggurat'].includes(b.type))||b.type==='ziggurat'))total.firedBrick+=b.type==='ziggurat'?16:b.type==='house'?8:4;const cost=upgradePrice(b,level);for(const k of MATERIALS)total[k]+=cost[k]||0;}
  return Object.fromEntries(Object.entries(total).filter(([,n])=>n>0).map(([k,n])=>[k,Math.floor(n/2)]));
 }
 export function setPriority(s,x,y,priority){
@@ -66,6 +67,7 @@ function relocations(s,b){
 export function canDemolish(s,b){
  const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(b.type==='market'&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Рынок занят караваном или оплаченными покупками';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
+ if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
  if(b.brickmaking?.wet>0)return 'Дождись высыхания партии сырца';
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';
@@ -104,6 +106,7 @@ export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
  const homes=relocations(s,b),refund=demolitionRefund(b);
  if(b.brickmaking){const amounts={clay:b.brickmaking.clay,reed:b.brickmaking.reed,brick:b.brickmaking.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья и сырца'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.brickmaking.clay=0;b.brickmaking.reed=0;b.brickmaking.ready=0;}}
+if(b.firing){const amounts={brick:b.firing.brick,reed:b.firing.reed,firedBrick:b.firing.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата топлива и кирпича'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.firing.brick=0;b.firing.reed=0;b.firing.ready=0;}}
 if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья'};putStock(s,buildingKey(target),craftResource(b),craftState(b)[craftResource(b)],{overflow:true});craftState(b)[craftResource(b)]=0;}rememberApproaches(s,b);if(b.pantry)s.resources.food+=b.pantry;if(b.crop?.seedStock)s.resources.food+=b.crop.seedStock;for(const c of s.citizens)if(c.craftSite===buildingKey(b)||c.seedField===buildingKey(b))recoverCitizenCargo(s,c.id);
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;

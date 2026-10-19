@@ -1,3 +1,4 @@
+import {initializeKilns,validateKilns} from './kilns.js';
 import {initializeBricks,validateBricks} from './bricks.js';
 import {initializeWater,validateWater} from './water.js';
 import {initializeTextiles,validateTextiles} from './textiles.js';
@@ -21,14 +22,14 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=18;
+export const VERSION=19;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
-const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,faith:0,prestige:0});
+const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame(){
- const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
- initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeTextiles(s);initializeBricks(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);syncInventory(s);initializeDistricts(s);initializeWater(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
+ const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
+ initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);syncInventory(s);initializeDistricts(s);initializeWater(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
 export const storage=storageOf;
@@ -48,13 +49,14 @@ export function canBuild(s,type,x,y,placementOnly=false){
  return '';
 }
 export const canPlace=(s,type,x,y)=>canBuild(s,type,x,y,true);
-export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type]);if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
-export function upgradeCost(b){const factor=levelOf(b)===1?1.5:2.5;return {clay:Math.ceil(BUILDINGS[b.type].clay*factor),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...(!['canal','bridge'].includes(b.type)?{brick:levelOf(b)===1?(b.type==='house'?8:4):(b.type==='house'?16:8)}:{}),...(levelOf(b)===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{})};}
+export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type]);if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
+export function upgradeCost(b){const factor=levelOf(b)===1?1.5:2.5;return {clay:Math.ceil(BUILDINGS[b.type].clay*factor),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...((levelOf(b)===2&&['house','granary','depot','shrine','market','ziggurat'].includes(b.type))||b.type==='ziggurat'?{firedBrick:b.type==='ziggurat'?16:b.type==='house'?8:4}:{}),...(!['canal','bridge'].includes(b.type)?{brick:levelOf(b)===1?(b.type==='house'?8:4):(b.type==='house'?16:8)}:{}),...(levelOf(b)===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{})};}
 export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.type==='canal')return 'Канал готовится в один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.type==='house')return `Жильё: ${capacityOf(b)} жителей`;
  if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив соседних клеток':'Сухое русло · соедини готовыми участками с рекой';
+ if(b.type==='kiln')return `4 сырца + 3 тростника → 4 обожжённых · обжиг ${(20/outputMultiplier(b)).toFixed(1)} с + остывание ${(8/outputMultiplier(b)).toFixed(1)} с`;
  if(b.type==='brickyard')return '4 глины + 1 тростник + 2 воды → 4 сырца · сушка на солнце 30 с · 2 работника';
  if(b.type==='waterpoint')return 'Вода домам и кирпичным дворам · 2 водоноса';
  if(b.type==='healer')return `1 обученный лекарь · ${1+level} места · база ${1+(level-1)*.5} здоровья/с · требуется обучение в храме`;
@@ -137,8 +139,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18;
-  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19;
+  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -160,14 +162,21 @@ export function decode(raw){
   if(oldTextiles){
    for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r){r.wool??=0;r.cloth??=0;}
    const c=s.trade?.caravan;if(c){for(const [k,base] of [['wool',4],['cloth',22]]){c.stock[k]??=0;c.prices[k]??={buy:base+2,sell:base};}}
-   initializeTextiles(s);initializeBricks(s);
+   initializeTextiles(s);initializeBricks(s);initializeKilns(s);
   }
   if(oldClothing){for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)r.clothing??=0;const c=s.trade?.caravan;if(c){c.stock.clothing??=0;c.prices.clothing??={buy:54,sell:52};}initializeClothing(s);}
   if(oldBricks){
    for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)r.brick??=0;
    const c=s.trade?.caravan;if(c){c.stock.brick??=0;c.prices.brick??={buy:10,sell:8};}
    for(const b of [...s.buildings||[],...s.roads||[]])if(b.construction)b.construction.legacyBricks=true;
-   initializeBricks(s);initializeWater(s);
+   initializeBricks(s);initializeKilns(s);initializeWater(s);
+  }
+  if(oldFiring){
+   for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)r.firedBrick??=0;
+   const c=s.trade?.caravan;if(c){c.stock.firedBrick??=0;c.prices.firedBrick??={buy:18,sell:16};}
+   for(const b of [...s.buildings||[],...s.roads||[]])if(b.construction)b.construction.legacyFiring=true;
+   for(const b of s.buildings||[])b.legacyFiringLevel=levelOf(b);
+   initializeKilns(s);
   }
   if(s.world&&!validateWorld(s))return null;
   initializeWorld(s);ensureResourceSites(s);
@@ -184,6 +193,7 @@ export function decode(raw){
   for(const b of s.buildings){
    const key=buildingKey(b),land=terrain(b.x,b.y,s);
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
+   if(b.legacyFiringLevel!==undefined&&!integer(b.legacyFiringLevel,1,b.level))return null;
    if(b.type==='bridge'){if(land!=='water'||bridgeRows.has(b.y))return null;bridgeRows.add(b.y);}
    else if(land==='water'||b.type==='canal'&&(b.level!==1||b.construction?.kind==='upgrade'))return null;
    cells.add(key);
@@ -239,7 +249,8 @@ export function decode(raw){
    const cost=b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:upgradeCost(b);
    if(!q.required||!q.remaining||!q.delivered||[q.required,q.remaining,q.delivered].some(v=>Object.keys(v).some(k=>!MATERIALS.includes(k))))return null;
    if([q.remaining,q.delivered].some(v=>Object.keys(v).length!==Object.keys(q.required).length||Object.keys(v).some(k=>!(k in q.required))))return null;
-   const expected=q.legacyPrice?{clay:cost.clay||0,reed:cost.reed||0}:{...cost,...q.legacyBricks?{brick:0}:{}};
+   const expected=q.legacyPrice?{clay:cost.clay||0,reed:cost.reed||0}:{...cost,...q.legacyBricks?{brick:0}:{},...q.legacyFiring?{firedBrick:0}:{}};
+   if(q.legacyFiring!==undefined&&q.legacyFiring!==true)return null;
    if(q.legacyBricks!==undefined&&q.legacyBricks!==true)return null;
    if(q.legacyPrice!==undefined&&q.legacyPrice!==true)return null;
    for(const k of MATERIALS){if((q.required[k]||0)!==(expected[k]||0))return null;}
@@ -261,7 +272,7 @@ export function decode(raw){
   if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateWellbeing(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
-  if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateBricks(s)||!validateWater(s))return null;
+  if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
   if(!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}

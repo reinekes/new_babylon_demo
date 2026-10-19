@@ -1,5 +1,6 @@
 // One local set of engraved, 24-unit pictograms: no emoji/font dependencies.
 const paths={
+ kiln:'M4 21V11a8 8 0 0 1 16 0v10H4Zm5 0v-5a3 3 0 0 1 6 0v5M7 10h10M10 6V2m4 4V2M3 21h18',
  brickyard:'M2 21h20M3 15h8v6H3v-6Zm10 0h8v6h-8v-6ZM7 9h10v6H7V9ZM12 2v3m-5-2 2 3m8-3-2 3',
  waterpoint:'M3 10 6 4h12l3 6H3Zm2 0v11m14-11v11M9 13h6l-1 3c4 6-8 6-4 0l-1-3ZM3 21h18',
  house:'M4 11 12 5l8 6v10H4V11Zm6 10v-7h4v7M7 11h2m6 0h2',
