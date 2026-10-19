@@ -1,7 +1,7 @@
 export const MATERIALS=['food','clay','reed','wood','stone','hides'];
 export const BUILDINGS={
  house:{name:'Дом',icon:'⌂',clay:12,reed:8,desc:'Дом для восьми жителей. У каждого человека есть дом, место работы и распорядок дня.',effect:'+8 мест',output:{}},
- field:{name:'Ячменное поле',icon:'≋',clay:8,reed:5,desc:'Два земледельца собирают еду и относят урожай на склад. Нужна приречная земля или наполненный канал в соседней клетке.',effect:'Еда · 2 работника',output:{food:7},workTime:3.5},
+ field:{name:'Ячменное поле',icon:'≋',clay:8,reed:5,desc:'Весной работники сеют ячмень, летом он растёт при поливе из канала (или чудесного дождя), осенью собирают и несут еду на склад. Несобранное портится зимой. На песке поле закладывают рядом с наполненным каналом.',effect:'Посев → полив → жатва · 2 работника',output:{food:7},workTime:3.5},
  clay:{name:'Глиняный карьер',icon:'◈',clay:10,reed:4,desc:'Два глиняных мастера добывают глину и доставляют её на склад.',effect:'Глина · 2 работника',output:{clay:6},workTime:3},
  reed:{name:'Тростниковый двор',icon:'♧',clay:8,reed:0,desc:'Два заготовителя собирают тростник и несут связки на склад.',effect:'Тростник · 2 работника',output:{reed:5},workTime:3},
  shrine:{name:'Святилище',icon:'♜',clay:22,reed:12,desc:'Два жреца приносят веру и престиж. Первое святилище служит центральным складом.',effect:'Вера + престиж · склад',output:{faith:.85,prestige:.17},workTime:4},
@@ -18,7 +18,7 @@ export const BUILDINGS={
  market:{name:'Рынок',icon:'⚖',clay:20,reed:12,wood:8,desc:'Принимает караваны. Два носильщика доставляют покупки на склад.',effect:'Торговля · 2 носильщика',output:{}}
 };
 export const MIRACLES={
- rain:{name:'Небесный дождь',cost:15,cooldown:2,icon:'☂',domain:'water',desc:'Снимает засуху; урожай ×1,5 на два сезона.'},
+ rain:{name:'Небесный дождь',cost:15,cooldown:2,icon:'☂',domain:'water',desc:'Снимает засуху и поливает ячмень два сезона.'},
  abundance:{name:'Изобилие',cost:25,cooldown:2,icon:'✧',domain:'harvest',desc:'+45 еды прямо в амбары.'},
  bless:{name:'Благословение',cost:20,cooldown:3,icon:'☀',domain:'life',desc:'+15 довольства; до трёх новых жителей.'},
  fertility:{name:'Дыхание земли',cost:35,cooldown:3,icon:'❧',domain:'harvest',desc:'Сбор еды и фиников ×1,6 на три сезона.'},

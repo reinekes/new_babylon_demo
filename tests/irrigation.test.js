@@ -30,14 +30,11 @@ test('old v11 cities preserve residents and cargo; isolated canals and lakes do 
  const s=createGame(),copy=decode(encode(s));assert.deepEqual(copy,s);
  s.buildings.push(canal(3,3),canal(4,4));assert.equal(irrigationFor(s).wet.size,0);
 });
-test('dryland workers wait without producing cargo and resume after restoring water',()=>{
- const s=createGame();s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6),{type:'field',x:8,y:6,level:1});syncCitizens(s);
- // Keep just this field as a production job; legacy fertile production must not mask the result.
- s.buildings=s.buildings.filter(b=>b.type!=='field'||b.x===8);syncCitizens(s);
- const run=n=>{for(let i=0;i<n*10;i++){s.event=null;advanceTime(s,.1);}};
- run(40);assert.ok(s.delivered.food>0);const source=s.buildings.find(b=>b.type==='canal'&&b.x===13);s.buildings=s.buildings.filter(b=>b!==source);syncCitizens(s);run(55);
- const before=s.delivered.food;run(45);assert.equal(s.delivered.food,before);assert.ok(decode(encode(s)));
- s.buildings.push(source);syncCitizens(s);run(70);assert.ok(s.delivered.food>before);
+test('summer dryland crops stop growing and resume when the river connection returns',async()=>{
+ const {cropFor,advanceCrops}=await import('../agriculture.js');const s=createGame();s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6),{type:'field',x:8,y:6,level:1});
+ const b=s.buildings.at(-1),crop=cropFor(s,b);crop.sown=1;s.season=1;advanceCrops(s,10);assert.ok(crop.growth>0);
+ const source=s.buildings.find(b=>b.type==='canal'&&b.x===13);s.buildings=s.buildings.filter(b=>b!==source);const before=crop.growth;advanceCrops(s,10);assert.equal(crop.growth,before);
+ s.buildings.push(source);advanceCrops(s,10);assert.ok(crop.growth>before);
 });
 test('canal cancellation refunds reserved and carried goods; demolition cuts downstream water',async()=>{
  const {cancelConstruction,demolish}=await import('../management.js');const s=createGame(),clay=s.resources.clay,reed=s.resources.reed;

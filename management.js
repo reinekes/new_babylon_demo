@@ -98,7 +98,7 @@ export function demolish(s,x,y){
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}
- s.buildings=s.buildings.filter(v=>v!==b);s.capacity=housingOf(s);rerouteCitizens(s);
+ s.buildings=s.buildings.filter(v=>v!==b);for(const c of s.citizens)if(c.workplace===buildingKey(b))delete c.workplace;s.capacity=housingOf(s);rerouteCitizens(s);
  note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
@@ -106,3 +106,14 @@ export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)r
 export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const subject=s.citizens.find(c=>c.id===id),success=s.rngState/4294967296<inspirationChance(subject,role);registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=role;if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}
 
 export function cancelRoadRoute(s,group){if(!Number.isSafeInteger(group)||group<0)return {ok:false,reason:'Неизвестный дорожный маршрут'};const reason=blocked(s);if(reason)return {ok:false,reason};const roads=(s.roads||[]).filter(r=>r.construction?.routeOrder===group);if(!roads.length)return {ok:false,reason:'У маршрута нет незавершённых работ'};for(const r of roads)refundOrder(s,r);rerouteCitizens(s);note(s,'Маршрут отменён','Незавершённые дорожные работы отменены, их материалы возвращены. Готовые участки сохранены.');return {ok:true,count:roads.length};}
+
+export function assignWorkplace(s,id,key){
+ const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c))return {ok:false,reason:'Нужен взрослый работник'};
+ if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!Object.keys(BUILDINGS[b.type].output).length&&b.type!=='healer')return {ok:false,reason:'Нужна готовая производственная постройка'};
+  if(b.type==='healer'?c.role!=='healer'||!c.medicine?.level:!['auto','production'].includes(c.role))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
+  if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(b.type==='healer'?1:2))return {ok:false,reason:'Все постоянные места заняты'};
+  const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к работе'};
+  c.workplace=key;
+ }else delete c.workplace;
+ invalidateAssignments(s);syncCitizens(s);return {ok:true};
+}
