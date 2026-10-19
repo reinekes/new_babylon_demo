@@ -41,3 +41,9 @@ dialog[data-kind=event]::backdrop{background:transparent;backdrop-filter:none}di
 .tile-detail p:empty{display:none}
 
 .wellbeing-readout{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0;font-size:10px}.wellbeing-readout span{padding:4px;background:#e5e8d9}.wellbeing-readout b{float:right}.house-gathering{font-size:10px!important;color:#617b58!important}
+
+/* Compact controls for route orders and household supply. */
+#supply-content button,#route-start,#order-route,#cancel-route-order,#route-level{font:inherit;font-size:.76rem;color:#344d40;background:#e3e9d8;border:1px solid #96a381;border-radius:3px;padding:6px 10px;cursor:pointer;}
+#route-start,#order-route,#cancel-route-order{display:block;width:100%;margin-top:8px;}
+#order-route:disabled{opacity:.55;cursor:default;}
+#supply-content .management-row{padding:10px 0;}
