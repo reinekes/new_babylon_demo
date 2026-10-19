@@ -1,0 +1,5 @@
+import {BUILDINGS,levelOf} from './definitions.js';
+const finishMaterials=b=>levelOf(b)===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{};
+// Retained solely for already paid pre-v20 orders and historical demolition costs.
+export function legacyUpgradeCost(b){const level=levelOf(b),factor=level===1?1.5:2.5;return {clay:Math.ceil(BUILDINGS[b.type].clay*factor),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...((level===2&&['house','granary','depot','shrine','market','ziggurat'].includes(b.type))||b.type==='ziggurat'?{firedBrick:b.type==='ziggurat'?16:b.type==='house'?8:4}:{}),...(!['canal','bridge'].includes(b.type)?{brick:level===1?(b.type==='house'?8:4):(b.type==='house'?16:8)}:{}),...finishMaterials(b)};}
+export function upgradeCost(b){const level=levelOf(b),factor=level===1?1.5:2.5;return {[level===1?'brick':'firedBrick']:Math.max(4,Math.ceil(BUILDINGS[b.type].clay*factor)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...finishMaterials(b)};}

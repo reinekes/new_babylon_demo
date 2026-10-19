@@ -36,6 +36,7 @@ test('expanded production, lakes and rain render with finite drawing coordinates
  const ctx=new Proxy({}, {get(target,key){if(key==='createRadialGradient')return ()=>gradient;if(['lineTo','moveTo','ellipse','arc','fillRect'].includes(key))return (...args)=>positions.push(args.filter(a=>typeof a==='number'));return target[key]??(()=>{});},set(target,key,value){target[key]=value;return true;}});
  Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
  const state=createGame();state.rain=15;state.buildings.push(...['fishing','hunting','logging','quarry','market'].map((type,i)=>({type,x:6+i,y:12,level:2})));
+ state.buildings.push({type:'house',x:4,y:8,level:2},{type:'house',x:5,y:8,level:3},{type:'ziggurat',x:4,y:10,level:3});
  state.buildings.push({type:'kiln',x:6,y:11,level:1,firing:{brick:0,reed:0,hot:4,time:5,ready:0}});
  state.trade.caravan={x:8.5,y:8.5,phase:'unloading',route:[{x:8.5,y:8.5}],routeIndex:0};state.trade.deliveries=[{id:'sample',market:'10,12',resource:'wood',remaining:12}];
  r.draw(state,'fishing',1000);

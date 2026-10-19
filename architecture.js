@@ -1,3 +1,4 @@
+import {masonryBox} from './masonry-art.js';
 import {cropFor} from './agriculture.js';
 import {fieldWater,drawCanal} from './irrigation.js';
 import {houseLightCount} from './households.js';
@@ -98,8 +99,9 @@ export function drawBuilding(r, b, state, t) {
   if(b.type==='house') {
     const tall=seed(b.x,b.y)>.64, h=(tall?43:35)+(level-1)*12;
     box(0,1,27,13.5,3,'#d0b888','#b3996c','#bea575');
-    box(0,0,25,12.5,h,'#e5cfa0','#b99967','#d7b883');
-    for(let z=-h+5;z<-3;z+=5){
+    if(level>1)masonryBox(r,x,y,25*q,12.5*q,h*q,level===2?'mud':'fired',q);
+    else box(0,0,25,12.5,h,'#e5cfa0','#b99967','#d7b883');
+    if(level===1)for(let z=-h+5;z<-3;z+=5){
       line([[-24,z],[0,z+12],[24,z]],'#ac8e5b55',.7);
       for(let i=0;i<3;i++)line([[-22+i*8,z+(-22+i*8)*.5+12],[-22+i*8,z+(-22+i*8)*.5+16]],'#ac8e5b40',.65);
     }
@@ -252,9 +254,11 @@ export function drawBuilding(r, b, state, t) {
     const big=b.type==='ziggurat',levels=(big?4:2)+(level-1),step=big?13:11;
     for(let l=0;l<levels;l++){
       const w=(big?29:26)-l*(big?4.5:7);
-      box(0,-l*step,w,w*.5,step,l%2?'#e0c78f':'#ead3a2',l%2?'#b4925c':'#bea475',l%2?'#cfac73':'#dac18d');
+      const kind=big||level>=3?'fired':level===2?'mud':null;
+      if(kind)masonryBox(r,x,y-l*step*q,w*q,w*.5*q,step*q,kind,q);
+      else box(0,-l*step,w,w*.5,step,l%2?'#e0c78f':'#ead3a2',l%2?'#b4925c':'#bea475',l%2?'#cfac73':'#dac18d');
       line([[-w,-(l+1)*step+3],[0,-(l+1)*step+w*.5+3],[w,-(l+1)*step+3]],'#f0ddaf',1);
-      if(big&&l<3)for(let i=0;i<5-l;i++)box(-w+5+i*7,-l*step-2+(i*3.5),1.2,.6,6,'#b8a375','#9d895e','#c1af7e');
+      if(big&&l<3)for(let i=0;i<5-l;i++)box(-w+5+i*7,-l*step-2+(i*3.5),1.2,.6,6,'#d4a275','#8e5943','#b77a54');
     }
     const h=levels*step;
     box(0,-h,12,6,22,'#e7d3a2','#3e7a7f','#579290');

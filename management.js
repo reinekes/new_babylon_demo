@@ -1,3 +1,4 @@
+import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
 import {putStock,stockStores,refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
@@ -19,7 +20,12 @@ export function demolitionRefund(b){
  if(!b||!isComplete(b))return {clay:0,reed:0};
  const total=Object.fromEntries(MATERIALS.map(k=>[k,BUILDINGS[b.type][k]||0]));
  if(b.legacyFiringLevel)total.firedBrick=0;
- for(let level=1;level<levelOf(b);level++){if(level>=(b.legacyFiringLevel||1)&&((level===2&&['house','granary','depot','shrine','market','ziggurat'].includes(b.type))||b.type==='ziggurat'))total.firedBrick+=b.type==='ziggurat'?16:b.type==='house'?8:4;const cost=upgradePrice(b,level);for(const k of MATERIALS)total[k]+=cost[k]||0;}
+ for(let level=1;level<levelOf(b);level++){
+  if(level<(b.legacyMasonryLevel||1)){
+   if(level>=(b.legacyFiringLevel||1)&&((level===2&&['house','granary','depot','shrine','market','ziggurat'].includes(b.type))||b.type==='ziggurat'))total.firedBrick+=b.type==='ziggurat'?16:b.type==='house'?8:4;
+   const cost=upgradePrice(b,level);for(const k of MATERIALS)total[k]+=cost[k]||0;
+  }else{const cost=upgradeCost({...b,level});for(const k of MATERIALS)total[k]+=cost[k]||0;}
+ }
  return Object.fromEntries(Object.entries(total).filter(([,n])=>n>0).map(([k,n])=>[k,Math.floor(n/2)]));
 }
 export function setPriority(s,x,y,priority){

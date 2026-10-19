@@ -36,6 +36,7 @@ export function drawConstruction(r,b,s,t){
   const a=r.point(b.x-.46,b.y+.46),d=r.point(b.x+.46,b.y+.46),e=r.point(b.x+.46,b.y-.46);
   for(const k of [.35,.7,1]){r.line([[a.x,a.y-h*k],[d.x,d.y-h*k],[e.x,e.y-h*k]],'#b99763',2.4*scale);}
   r.line([[a.x,a.y],[d.x,d.y-h*.7]],'#9d8055',scale);r.line([[d.x,d.y],[a.x,a.y-h*.7]],'#9d8055',scale);
+  for(const [kind,top,left,right]of [['brick','#d7bc8a','#aa8d61','#c3a575'],['firedBrick','#cf9466','#955c43','#b97750']])if(q.delivered[kind]>0)for(let i=0;i<Math.min(3,Math.ceil(q.delivered[kind]/10));i++)r.box(p.x+(-14+i*5)*scale,p.y+(11-i%2*2)*scale,4*scale,2*scale,(4+i%2*2)*scale,top,left,right);
   if(q.delivered.clay>0)r.box(p.x-14*scale,p.y+11*scale,6*scale,3*scale,5*scale,'#d1a179','#a1714e','#bb885e');
   if(q.delivered.reed>0){for(let i=0;i<4;i++)r.line([[p.x+(8+i)*scale,p.y+10*scale],[p.x+(17+i)*scale,p.y+5*scale]],'#8d9a63',1.5*scale);}
  }

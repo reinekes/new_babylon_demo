@@ -52,6 +52,6 @@ test('bridge construction can be supplied entirely from the eastern bank',()=>{
  build(s,'bridge',Math.round(river(8)),8);const b=s.buildings.at(-1);run(s,1);assert.ok(s.citizens.some(c=>c.sitePort?.endsWith(':1')));run(s,300);assert.equal(b.construction,undefined);assert.ok(decode(encode(s)));
 });
 test('a finished bridge remains passable throughout its upgrade',()=>{
- const s=createGame();s.resources.clay=500;s.resources.reed=500;build(s,'bridge',Math.round(river(8)),8);run(s,240);s.event=null;const b=s.buildings.at(-1);assert.equal(b.construction,undefined);
+ const s=createGame();s.resources.brick=100;s.resources.clay=500;s.resources.reed=500;build(s,'bridge',Math.round(river(8)),8);run(s,240);s.event=null;const b=s.buildings.at(-1);assert.equal(b.construction,undefined);
  const components=()=>new Set(networkFor(s).ports.map(p=>networkFor(s).components.get(p.key))).size;assert.equal(components(),1);assert.ok(upgrade(s,b.x,b.y).ok);assert.equal(b.level,1);assert.equal(components(),1);run(s,300);assert.equal(b.level,2);assert.equal(components(),1);
 });
