@@ -1,3 +1,4 @@
+import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
@@ -5,7 +6,7 @@ import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS} 
 import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor} from './workforce.js';
 import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
-const roles=['auto','builder','carrier','production'];
+const roles=ROLES;
 const hasLoad=c=>c.pantryFood>0||Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
 const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
 const blocked=s=>s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
@@ -102,4 +103,4 @@ export function demolish(s,x,y){
 }
 
 export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id);if(!c||!roles.includes(role))return 'Неизвестный житель или роль';if(role==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===role)return 'Эта профессия уже выбрана';if(c.calling===role&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
-export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const subject=s.citizens.find(c=>c.id===id),success=s.rngState/4294967296<(canWork(subject)?.4:.7);registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);if(success){c.calling=role;if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}
+export function inspireCitizen(s,id,role){const reason=inspirationReason(s,id,role);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const subject=s.citizens.find(c=>c.id===id),success=s.rngState/4294967296<inspirationChance(subject,role);registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=role;if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}
