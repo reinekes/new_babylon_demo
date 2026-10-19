@@ -110,3 +110,5 @@ test('placement sites reuse terrain checks until buildings or deposits change',a
  s.buildings.pop();s.world.deposits=s.world.deposits.filter(d=>d.x!==tile.x||d.y!==tile.y);assert.ok(!r.placementSites(s,'clay').some(p=>p.x===tile.x&&p.y===tile.y));
  assert.deepEqual(r.placementSites(s,'house'),[]);
 });
+
+test('road outlines are painted before every surface so adjacent segments have no border seams',()=>{const r=Object.create(Renderer.prototype),calls=[];Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads:[]},streets:{edges:[[{key:'a',x:0,y:0},{key:'b',x:1,y:0}],[{key:'b',x:1,y:0},{key:'c',x:2,y:0}]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push(color)});r.streetsLayer();assert.deepEqual(calls.slice(0,4),['#af9c73','#af9c73','#dbc79c','#dbc79c']);});

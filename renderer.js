@@ -9,7 +9,7 @@ import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
-const spriteTypes=new Set(['house','granary','clay','reed','market','fishing','hunting','logging','quarry']);
+const spriteTypes=new Set(['house','healer','granary','clay','reed','market','fishing','hunting','logging','quarry']);
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
@@ -218,7 +218,8 @@ export class Renderer{
   const edgeKey=(a,b)=>[a.key,b.key].sort().join('|'),edges=[...this.streets.edges],seen=new Set(edges.map(([a,b])=>edgeKey(a,b))),roads=new Map();
  for(const road of this.state?.roads||[]){const key=edgeKey(road.a,road.b);if(!roads.has(key))roads.set(key,road);if(!seen.has(key)){edges.push([road.a,road.b]);seen.add(key);}}
  const hovered=this.roadMode?this.roadNear(this.hover||{})?.id:null;
-  for(const [a,b] of edges){const road=roads.get(edgeKey(a,b)),level=road?.level||1;const path=[this.point(a.x,a.y),this.point(b.x,b.y)];this.line(path,'#af9c73',7.6*this.s);this.line(path,'#dbc79c',5.4*this.s);this.line(path,level===3?'#ad7956':level===2?'#b5af94':'#ead9b4',(level>1?4:1.2)*this.s);if(level===3)for(let k=1;k<5;k++){const f=k/5,p=this.point(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}if(road?.construction){const p=this.point(road.x,road.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}if(road&&(this.selectedRoad===road.id||this.selectedRoad?.id===road.id||this.roadMode&&hovered===road.id))this.line(path,'#fff0ae',2*this.s);}
+  for(const [color,width] of [['#af9c73',7.6],['#dbc79c',5.4]])for(const [a,b] of edges)this.line([this.point(a.x,a.y),this.point(b.x,b.y)],color,width*this.s);
+  for(const [a,b] of edges){const road=roads.get(edgeKey(a,b)),level=road?.level||1;const path=[this.point(a.x,a.y),this.point(b.x,b.y)];this.line(path,level===3?'#ad7956':level===2?'#b5af94':'#ead9b4',(level>1?4:1.2)*this.s);if(level===3)for(let k=1;k<5;k++){const f=k/5,p=this.point(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}if(road?.construction){const p=this.point(road.x,road.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}if(road&&(this.selectedRoad===road.id||this.selectedRoad?.id===road.id||this.roadMode&&hovered===road.id))this.line(path,'#fff0ae',2*this.s);}
   for(const port of this.streets.ports){const p=this.point(port.x,port.y);this.box(p.x,p.y,4*this.s,2*this.s,.6*this.s,'#e6d5ac','#bfac81','#cdbc91');}
   c.restore();
  }

@@ -47,7 +47,7 @@ function context(s){
  const stores=s.buildings.filter(b=>isComplete(b)&&(b.type==='granary'||b.type==='shrine'));
  if(!stores.length&&s.buildings.some(b=>b.type==='house'&&isComplete(b)))stores.push(s.buildings.find(b=>b.type==='house'&&isComplete(b)));
  for(const r of s.roads||[])ports.set(r.id,{...r.a,building:r});
- return cache.context={network,ports,stores,roadSource:s.roads,roadCount:s.roads.length,closestStores:new Map(),buildings:new Map(constructionEntities(s).map(b=>[buildingKey(b),b]))};
+ return cache.context={network,ports,stores,roadSource:s.roads,roadCount:s.roads.length,closestStores:new Map(),healers:s.buildings.filter(b=>b.type==='healer'),buildings:new Map(constructionEntities(s).map(b=>[buildingKey(b),b]))};
 }
 function houseDemand(s,ctx,home){if(ctx.foodCitizens!==s.citizens){ctx.foodCitizens=s.citizens;ctx.foodDemand=new Map();for(const c of s.citizens)ctx.foodDemand.set(c.home,(ctx.foodDemand.get(c.home)||0)+ration(c));}return ctx.foodDemand.get(home)||0;}
 function closestStore(s,ctx,work){
@@ -90,13 +90,14 @@ export function syncCitizens(s){
   const id=c.id;if(!homes[id]){const home=[...available].find(([,beds])=>beds>0)?.[0];if(!home)continue;homes[id]=home;available.set(home,available.get(home)-1);}
   const home=homes[id],p=ctx.ports.get(home);if(!p)continue;
   if(c.phase===undefined)Object.assign(c,{home,work:null,store:null,x:p.x,y:p.y,phase:'home',route:[],routeIndex:0,workElapsed:0,cargo:{},site:null,sitePort:null,buildCargo:{},role:'auto',siteDuty:null});
+  if(c.futureRole&&canWork(c)){c.role=c.futureRole;delete c.futureRole;}
   c.buildCargo??={};c.site??=null;c.sitePort??=null;c.role??='auto';c.siteDuty??=null;
   if(c.pendingRole&&!hasCargo(c)&&!hasBuildCargo(c)&&!c.pantryFood){c.role=c.pendingRole;delete c.pendingRole;}citizens.push(c);
  }
  s.citizens=citizens;initializeDemography(s);initializeWellbeing(s);const livingIds=new Set(citizens.map(c=>c.id));for(const c of citizens)if(c.partner!==null&&!livingIds.has(c.partner))c.partner=null;
  for(const c of citizens)if(c.rehousing){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
  for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
- const assignments=new Map(),locked=new Set(citizens.filter(c=>!canWork(c)||c.pantryTrip).map(c=>c.id));
+ const assignments=new Map(),locked=new Set(citizens.filter(c=>!canWork(c)||c.pantryTrip||c.clinic).map(c=>c.id));
  for(const c of citizens)if(c.pantryTrip){if(c.work&&!ctx.buildings.has(c.work))c.work=null;if(c.site&&!ctx.buildings.get(c.site)?.construction){c.site=null;c.sitePort=null;c.siteDuty=null;}}
  for(const c of citizens)if(!canWork(c)){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.store=null;}
  if(s.funeral?.scope==='family')for(const a of s.funeral.actors)locked.add(a.id);
@@ -125,9 +126,9 @@ export function syncCitizens(s){
   let assigned=citizens.filter(c=>locked.has(c.id)&&(c.tradeMarket||c.saleMarket)===q.market).length+[...tradeAssignments.values()].filter(a=>(a.tradeMarket||a.saleMarket)===q.market).length;
   for(const c of [...citizens].sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id)){if(assigned>=2)break;if(locked.has(c.id)||assignments.has(c.id)||tradeAssignments.has(c.id)||!['auto','carrier'].includes(c.role)||!routeBetween(s,ctx.ports.get(c.home)?.key,market.key,ctx))continue;tradeAssignments.set(c.id,{...sale?{saleJob:q.id,saleMarket:q.market}:{tradeJob:q.id,tradeMarket:q.market},store});assigned++;}
  }
- const priority={field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5};
- const jobs=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).sort((a,b)=>priority[a.type]-priority[b.type]);
- const slots=jobs.flatMap(b=>[buildingKey(b),buildingKey(b)]),used=new Set();
+ const priority={healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5};
+ const jobs=s.buildings.filter(b=>isComplete(b)&&(b.type==='healer'||Object.keys(BUILDINGS[b.type].output).length)).sort((a,b)=>priority[a.type]-priority[b.type]);
+ const slots=jobs.flatMap(b=>b.type==='healer'?[buildingKey(b)]:[buildingKey(b),buildingKey(b)]),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
  for(const c of citizens){
   if(locked.has(c.id))continue;
@@ -177,6 +178,7 @@ function deposit(s,c){
 function arrival(s,c,ctx){
  c.route=[];c.routeIndex=0;
  if(c.phase==='toHome'){c.phase='home';return;}
+ if(c.phase==='toHealer'){c.phase='treatment';return;}
  if(c.phase==='toRest'){c.phase='resting';return;}
  if(c.phase==='toPantrySupply'){
   const b=ctx.buildings.get(c.home),inTransit=s.citizens.filter(p=>p.pantryTrip&&p.home===c.home).reduce((n,p)=>n+(p.pantryFood||0),0),amount=b?Math.min(6,Math.max(0,houseDemand(s,ctx,c.home)*8/3-(b.pantry||0)-inTransit),s.resources.food):0;
@@ -222,7 +224,14 @@ function arrival(s,c,ctx){
  c.phase='working';c.workElapsed=0;
 }
 function advanceCitizen(s,c,dt,ctx){
- const day=isWorkday(s.simTime);
+ const day=isWorkday(s.simTime);if(c.health>=85)delete c.recovering;
+ if(c.clinic){const clinic=ctx.buildings.get(c.clinic);if(!day||!clinic||!isComplete(clinic)||c.health>=85){delete c.clinic;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}else if(c.phase==='treatment')return;else if(c.phase==='blocked'){startTrip(s,c,c.clinic,'toHealer',ctx);if(c.phase==='blocked')return;}}
+ if(!c.clinic&&c.phase==='home'&&day&&(c.health<60||c.recovering)&&!hasCargo(c)&&!hasBuildCargo(c)&&!c.pantryTrip&&!c.saleJob&&!c.tradeJob&&ctx.buildings.get(c.work)?.type!=='healer'){
+  const home=ctx.ports.get(c.home);let best=null,length=Infinity;
+  for(const {building:b,key,staff,patients} of ctx.care?.values()||[]){const port=ctx.ports.get(key);if(!port||patients.length>=1+(b.level||1)||!staff)continue;const route=routeBetween(s,home?.key,port.key,ctx);if(route&&route.length<length){best=key;length=route.length;}}
+  if(best){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.workElapsed=0;c.recovering=true;c.clinic=best;ctx.care.get(best).patients.push(c);startTrip(s,c,best,'toHealer',ctx);invalidateAssignments(s);}
+ }
+
  if(!day&&!c.pantryTrip&&!c.saleJob&&!hasBuildCargo(c)&&hasCargo(c)&&['toStore','unloading','blocked'].includes(c.phase))startTrip(s,c,c.home,'toRest',ctx);
  if(c.phase==='resting'){if((day||hourAt(s.simTime)>=19&&hourAt(s.simTime)<20)&&!c.saleJob&&s.resources.food>0){const b=ctx.buildings.get(c.home);if(b&&houseDemand(s,ctx,c.home)*8/3-(b.pantry||0)>1e-7&&!s.citizens.some(p=>p.pantryTrip&&p.home===c.home)){c.store=closestStore(s,ctx,c.home);if(c.store){c.pantryTrip=true;c.pantryFood=0;startTrip(s,c,c.store,'toPantrySupply',ctx);}}}if(!c.pantryTrip){if(!day)return;if(hasCargo(c))startTrip(s,c,c.store,'toStore',ctx);else c.phase='home';}}
  if(c.phase==='unloading'){if(hasCargo(c)){if(!deposit(s,c))return;if(c.tradeJob){c.tradeJob=null;c.tradeMarket=null;}invalidateAssignments(s);}startTrip(s,c,c.home,'toHome',ctx);}
@@ -246,19 +255,24 @@ function advanceCitizen(s,c,dt,ctx){
  for(let transition=0;transition<12&&remaining>1e-8;transition++){
   if(c.phase==='waiting'||c.phase==='constructing'){
    const q=ctx.buildings.get(c.site)?.construction;if(!q){startTrip(s,c,c.home,'toHome',ctx);continue;}
-   if(materialsReady(q)&&c.siteDuty==='builder'){c.phase='constructing';q.work=Math.min(workRequired(ctx.buildings.get(c.site)),q.work+remaining*workRate(c));}return;
+   if(materialsReady(q)&&c.siteDuty==='builder'){c.phase='constructing';q.work=Math.min(workRequired(ctx.buildings.get(c.site)),q.work+remaining*workRate(c,'builder'));}return;
   }
   if(c.phase==='working'){
    const b=ctx.buildings.get(c.work);if(!b){startTrip(s,c,c.home,'toHome',ctx);continue;}
-   const rate=workRate(c),needed=(BUILDINGS[b.type].workTime-c.workElapsed)/rate;
+   if(b.type==='healer'){
+    const patients=(ctx.care?.get(c.work)?.patients||[]).filter(p=>p.phase==='treatment'&&p.health<85&&!s.funeral?.actors.some(a=>a.id===p.id));
+    let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'production');
+    for(const patient of patients){const amount=Math.max(0,Math.min(budget/patients.length,85-patient.health,s.resources.food/.04,s.resources.reed/.02));patient.health+=amount;s.resources.food=Math.max(0,s.resources.food-amount*.04);s.resources.reed=Math.max(0,s.resources.reed-amount*.02);}return;
+   }
+   const rate=workRate(c,'production'),needed=(BUILDINGS[b.type].workTime-c.workElapsed)/rate;
    if(remaining<needed){c.workElapsed+=remaining*rate;return;}
    remaining-=Math.max(0,needed);c.workElapsed=0;harvest(s,c,ctx);continue;
   }
-  if(!['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest'].includes(c.phase))return;
+  if(!['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer'].includes(c.phase))return;
   const next=c.route[c.routeIndex];
   if(!next){arrival(s,c,ctx);if(c.phase==='home'||c.phase==='resting')return;continue;}
   const dist=distance(c,next);
-  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c);
+  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.tradeJob||c.saleJob?'carrier':c.work?'production':null);
   if(onBridge(s.buildings,c.x,c.y)){
    const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
   }
@@ -267,13 +281,18 @@ function advanceCitizen(s,c,dt,ctx){
   else{const fraction=remaining/travel;c.x+=(next.x-c.x)*fraction;c.y+=(next.y-c.y)*fraction;return;}
  }
 }
+function prepareCare(s,ctx){
+ if(!ctx.healers.length)return;
+ ctx.care=new Map(ctx.healers.filter(isComplete).map(b=>[buildingKey(b),{key:buildingKey(b),building:b,staff:false,patients:[]}]));
+ for(const c of s.citizens){const workplace=ctx.care.get(c.work);if(workplace)workplace.staff=true;const clinic=ctx.care.get(c.clinic);if(clinic)clinic.patients.push(c);}
+}
 export function advanceWorkers(s,seconds){
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);for(const c of s.citizens)if(!mourners?.has(c.id))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);for(const c of s.citizens)if(!mourners?.has(c.id))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
  s.simTime=start+seconds;
 }
 export function visibleCitizens(s){
- return (s.citizens||[]).filter(c=>!['home','resting'].includes(c.phase)||c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest'].includes(c.phase),carrying:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...isWorkday(s.simTime)?childPlay(s,c):null}));
+ return (s.citizens||[]).filter(c=>!['home','resting','treatment'].includes(c.phase)||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:['toWork','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer'].includes(c.phase),carrying:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...isWorkday(s.simTime)?childPlay(s,c):null}));
 }
 export function workforceStats(s){
  syncCitizens(s);const ctx=context(s),people=s.citizens;
@@ -286,7 +305,8 @@ export function workforceStats(s){
 export function rerouteCitizens(s){
  invalidateAssignments(s);syncCitizens(s);const ctx=context(s);
  for(const c of s.citizens){
-  if(c.pantryTrip)startTrip(s,c,c.pantryFood>0?c.home:c.store,c.pantryFood>0?'toPantryHome':'toPantrySupply',ctx);
+  if(c.clinic)startTrip(s,c,c.clinic,'toHealer',ctx);
+  else if(c.pantryTrip)startTrip(s,c,c.pantryFood>0?c.home:c.store,c.pantryFood>0?'toPantryHome':'toPantrySupply',ctx);
   else if(hasBuildCargo(c)&&c.site)startTrip(s,c,c.sitePort,'toSite',ctx);
   else if(hasCargo(c)&&c.saleJob)startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);
   else if(hasCargo(c)&&c.store)startTrip(s,c,c.store,'toStore',ctx);

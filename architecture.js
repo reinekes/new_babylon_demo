@@ -58,6 +58,20 @@ export function drawBuilding(r, b, state, t) {
     if(night>.12&&lit>0)glow(11,-3,25);
   }
 
+  if(b.type==='healer') {
+    const h=28+(level-1)*7;
+    box(0,1,27,13.5,3,'#dccba7','#b29a74','#c5ae87');
+    box(-5,-3,20,10,h,'#e8d9b6','#bda57e','#d2bd97');
+    box(-5,-h-3,21,10.5,3,'#eee1bf','#c9b48c','#dcca9f');
+    poly([[2,-7],[12,-12],[12,5],[2,10]],'#716950');
+    line([[8,9],[8,-14]],'#8b7957',1.3);line([[27,0],[27,-23]],'#8b7957',1.3);
+    poly([[0,-15],[22,-26],[28,-18],[6,-7]],'#72958b');
+    for(let i=0;i<3;i++){pot(-24+i*5,3+i*2,.8);line([[-24+i*5,-4+i*2],[-27+i*5,-11+i*2]],'#65814d',2);}
+    box(19,4,7,3.5,5,'#b5c4a1','#809575','#99ad89');pot(23,-5,1);
+    window(-18,-h+11,1);if(level>1)window(-8,-h+16,1);
+    poly([[-9,-h+2],[-2,-h+5],[-2,-h+11],[-9,-h+8]],'#72958b');
+  }
+
   if(b.type==='market') {
     // An open court and two shaded stalls leave the central delivery passage clear.
     box(0,1,27,13.5,3,'#e2cda2','#b39a6d','#ccb584');
