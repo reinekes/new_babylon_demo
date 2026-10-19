@@ -1,3 +1,4 @@
+import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale} from './trading.js';
 import {upgradeRoad,roadUpgradeCost} from './roads.js';
 import {weatherAt} from './environment.js';
@@ -64,13 +65,13 @@ function detail(type,placement,b=null){
  $('tile-detail').querySelector('.detail-close').onclick=()=>{inspected=null;inspectedPerson=null;$('tile-detail').hidden=true;};if(!placement)updateDetail();
 }
 function updateDetail(){
- if(selection&&$('placement-cost'))$('placement-cost').innerHTML=costs(BUILDINGS[selection]);
+ if(selection&&$('placement-cost'))setHTML($('placement-cost'),costs(BUILDINGS[selection]));
  if(inspectedPerson!==null&&!selection&&!$('tile-detail').hidden){const c=state.citizens.find(c=>c.id===inspectedPerson);if(c&&!$('tile-detail').contains(document.activeElement))personDetail(c);return;}
  if(!inspected||selection||$('tile-detail').hidden||!$('building-controls'))return;
  const b=entityAt(inspected.x,inspected.y);if(!b){inspected=null;$('tile-detail').hidden=true;return;}
  if(b.type==='road'){updateRoadDetail(b);return;}
  // Refresh the live readout without replacing a focused priority selector.
- if(b.construction&&$('inspector-site-live'))$('inspector-site-live').innerHTML=siteStatus(b);
+ if(b.construction&&$('inspector-site-live'))setHTML($('inspector-site-live'),siteStatus(b));
  if($('building-controls').contains(document.activeElement)&&b.construction)return;
  const q=b.construction,reason=canUpgrade(state,b),cost=upgradeCost(b),demolitionReason=canDemolish(state,b);
  $('tile-detail').querySelector('.eyebrow').textContent=q?(q.kind==='upgrade'?`УЛУЧШЕНИЕ ДО ${q.target}`:'СТРОЙПЛОЩАДКА'):`УРОВЕНЬ ${levelOf(b)} / 3`;
@@ -145,19 +146,19 @@ for(const [id,m]of Object.entries(MIRACLES)){
 }
 function update(){
  const r=state.resources,stats=workforceStats(state),marketPorters=state.citizens.filter(c=>c.tradeJob||c.saleJob).length,res=Object.fromEntries(Object.entries(RESOURCE_NAMES).map(([k,n])=>[k,['',n.toUpperCase()]]));
- $('resources').innerHTML=Object.entries(res).map(([k,[icon,name]])=>`<div class="resource" title="${name}: ${rounded(r[k])}${MATERIALS.includes(k)?` / ${storage(state)}`:''}. Доставлено работниками: ${rounded(state.delivered[k]||0)}"><span class="resource-icon">${resourceIcon(k)}</span><div><strong class="${MATERIALS.includes(k)&&r[k]>storage(state)?'overflow':''}">${Math.floor(r[k])}</strong><small>${name}</small></div></div>`).join('');
+ setHTML($('resources'),Object.entries(res).map(([k,[icon,name]])=>`<div class="resource" title="${name}: ${rounded(r[k])}${MATERIALS.includes(k)?` / ${storage(state)}`:''}. Доставлено работниками: ${rounded(state.delivered[k]||0)}"><span class="resource-icon">${resourceIcon(k)}</span><div><strong class="${MATERIALS.includes(k)&&r[k]>storage(state)?'overflow':''}">${Math.floor(r[k])}</strong><small>${name}</small></div></div>`).join(''));
  $('population').textContent=`${state.population} / ${state.capacity}`;$('happiness').textContent=`☀ ${Math.round(state.happiness)}%`;$('happiness').style.color=state.happiness<40?'#aa654a':'';
  const efficiency=workers(state);const funeralLabels={gathering:'Город собирается проводить умерших',procession:'Процессия идёт к границе долины',jackals:'Шакалы уносят погребальный свёрток',returning:'Жители возвращаются домой'};$('mourning-notice').hidden=!state.funeral;if(state.funeral)$('mourning-notice').textContent=`${funeralLabels[state.funeral.stage]} · погибло ${state.funeral.deceased.length}. Работа приостановлена.`;const ground=!state.buildings.some(b=>b.type==='granary'&&(!b.construction||b.construction.kind==='upgrade'));$('ground-storage-note').hidden=!ground;$('ground-storage-note').textContent='Без амбара · запасы на земле у разгрузки';$('workers').textContent=`${stats.employed+stats.builders+(stats.carriers??0)+marketPorters} / ${state.population}`;$('labor-meter').style.width=`${efficiency*100}%`;
  $('labor-note').textContent=state.funeral?'Траурная процессия. Назначения и все грузы сохранены; работа продолжится после возвращения.':stats.disconnected?`Нет пути к ${stats.disconnected} рабочим зданиям. Нужен мост или склад на этом берегу.`:`Строители: ${stats.builders} · носильщики: ${stats.carriers??0} · площадки: ${stats.sites} · рынок: ${marketPorters}. Собирают: ${stats.working} · несут груз: ${stats.carrying}. Ресурсы поступают только после доставки.`;
  $('date').textContent=`Год ${state.year} · ${SEASONS[state.season]}`;$('season-icon').textContent=['❀','☀','❧','❄'][state.season];
- $('season-track').innerHTML=SEASONS.map((v,i)=>`<i class="${i===state.season?'current':''}" title="${v}"></i>`).join('');
- $('god-name').textContent=state.name;$('god-rating').textContent=`Слава ${state.divinity.rating} · вдохновлено ${state.divinity.inspirationSuccesses}`;$('god-description').innerHTML=Object.values(state.divinity.domains).some(v=>v>0)?'Твоё имя рождается из деяний.<br>Деяния остаются в памяти людей.':'Люди строят город.<br>Ты выбираешь, каким богом стать.';
+ setHTML($('season-track'),SEASONS.map((v,i)=>`<i class="${i===state.season?'current':''}" title="${v}"></i>`).join(''));
+ $('god-name').textContent=state.name;$('god-rating').textContent=`Слава ${state.divinity.rating} · вдохновлено ${state.divinity.inspirationSuccesses}`;setHTML($('god-description'),Object.values(state.divinity.domains).some(v=>v>0)?'Твоё имя рождается из деяний.<br>Деяния остаются в памяти людей.':'Люди строят город.<br>Ты выбираешь, каким богом стать.');
  $('god-level').textContent=count(state,'ziggurat')?'III · БОГ ВЕЛИКОГО ГОРОДА':state.population>=24?'II · ПОКРОВИТЕЛЬ ГОРОДА':'I · ДУХ ПОСЕЛЕНИЯ';$('pantheon').textContent=`Заслуженные имена · ${state.divinity.names.length}`;
  const weather=weatherAt(state);$('weather').textContent=state.drought?`☀ Засуха · ${state.drought} сез.`:state.rain?`☂ Благодатный дождь · ${state.rain} сез.`:({sunny:'☀ Ясно',cloudy:'☁ Облачно',rain:'☂ Дождь',wind:'≋ Ветер'}[weather.type]);$('weather').classList.toggle('drought',!!state.drought);
 
  const signature=`${state.news.length}|${state.news[0]?.title}|${state.tick}`;
  if(signature!==newsSignature){newsSignature=signature;$('news').innerHTML=state.news.map(n=>`<article class="news-item ${['good','bad','miracle','year','build','info'].includes(n.kind)?n.kind:'info'}"><small>ГОД ${n.year} · ${SEASONS[n.season].toUpperCase()}</small><h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></article>`).join('');}
- const g=goals(state);$('goals').innerHTML=g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('');$('goal-number').textContent=`${g.filter(v=>v.done).length} / 5`;
+ const g=goals(state);setHTML($('goals'),g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join(''));$('goal-number').textContent=`${g.filter(v=>v.done).length} / 5`;
  for(const [id,m]of Object.entries(MIRACLES)){
   const el=$(`miracle-${id}`);const reason=state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<m.cost?`Нужно ${m.cost} веры`:id==='abundance'&&r.food>=storage(state)?'Амбары полны':'';
   el.disabled=!!reason;el.title=`${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.querySelector('small').textContent=reason||`${m.cost} веры · ${DOMAIN_NAMES[m.domain]}`;
@@ -169,7 +170,7 @@ function update(){
  $('day-cycle').setAttribute('aria-label',`Дождаться ${isWorkday(state.simTime)?'вечера':'утра'}. Время и хозяйство действительно продвинутся.`);$('day-cycle').disabled=state.lost&&!state.funeral||!!state.event;
  $('street-life').textContent=state.funeral?'Все жители провожают умерших · работы и доставки приостановлены':`Строят ${stats.builders} · доставляют на стройки ${stats.carriers??0} · с рынка ${marketPorters} · на работе ${stats.working} · с грузом ${stats.carrying} · дома ${stats.atHome}`;
  $('delivery-log').textContent=state.lastDelivery?`${citizenName(state.lastDelivery.citizen)} ${state.lastDelivery.source==='market'?'доставил покупку':'доставил'}: ${resourceText(state.lastDelivery.cargo)}`:'Ресурсы поступают, когда груз доходит до склада';
- $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateDetail();renderManagement();for(const el of document.querySelectorAll('[data-cost]'))el.innerHTML=costs(BUILDINGS[el.dataset.cost]);$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',state.trade.caravan?.phase==='trading');$('open-trade').title=marketStatus(state);
+ $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateDetail();renderManagement();for(const el of document.querySelectorAll('[data-cost]'))setHTML(el,costs(BUILDINGS[el.dataset.cost]));$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',state.trade.caravan?.phase==='trading');$('open-trade').title=marketStatus(state);
 }
 function openDialog(kind,html){modalKind=kind;dialog.dataset.kind=kind;$('dialog-content').innerHTML=`<div class="dialog-inner">${html}</div>`;if(!dialog.open)dialog.showModal();last=performance.now();}
 function closeDialog(){dialog.close();modalKind=null;delete dialog.dataset.kind;last=performance.now();}
