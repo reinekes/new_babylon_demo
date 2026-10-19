@@ -115,6 +115,9 @@ export function drawBuilding(r, b, state, t) {
         r.line([[a.x+sway,a.y-height*q],[a.x-2*q+sway,a.y-(height-2)*q]],'#d5ce87',.8*q);
       }
     }
+    const floor=[r.point(b.x+.05,b.y+.1),r.point(b.x+.45,b.y+.1),r.point(b.x+.45,b.y+.45),r.point(b.x+.05,b.y+.45)];r.polygon(floor,'#c7af79','#9f8859');
+    if(crop.sheaves>0)for(let k=0;k<Math.min(5,Math.ceil(crop.sheaves/7));k++){const p=r.point(b.x+.12+k*.065,b.y+.3);for(let j=0;j<3;j++)r.line([[p.x+j*q,p.y],[p.x+(j+6)*q,p.y-5*q]],'#dbbe71',1.5*q);}
+    if(crop.seedStock>0){const p=r.point(b.x-.28,b.y+.34);r.box(p.x,p.y,3*q,1.5*q,4*q,'#bb9b66','#92764c','#a98c5a');}
     const a=r.point(b.x-.46,b.y-.45),z=r.point(b.x-.46,b.y+.45);
     r.line([a,z],dry?'#a6885b':'#79aaa0',2*q);
   }

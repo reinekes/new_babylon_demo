@@ -7,12 +7,12 @@ import {syncCitizens} from '../workforce.js';
 const field=s=>s.buildings.find(b=>b.type==='field');
 test('barley needs actual spring labour; summer grows only seeded area with canal water',()=>{
  const s=createGame(),b=field(s),crop=cropFor(s,b);assert.equal(crop.sown,0);s.season=1;advanceCrops(s,45);assert.equal(crop.growth,0);
- s.season=0;workField(s,b,12);assert.equal(crop.sown,1);s.season=1;advanceCrops(s,45);assert.equal(crop.growth,0);
+ s.season=0;crop.seedStock=4;workField(s,b,12);assert.equal(crop.sown,1);s.season=1;advanceCrops(s,45);assert.equal(crop.growth,0);
  s.buildings.push({type:'canal',x:12,y:7,level:1});advanceCrops(s,45);assert.equal(crop.growth,1);
 });
 test('harvest is finite, goes into worker cargo only in autumn, and uncollected barley spoils',()=>{
  const s=createGame(),b=field(s),crop=cropFor(s,b);crop.sown=1;crop.growth=1;s.season=2;changeCropSeason(s,1);
- const before=s.resources.food;assert.equal(workField(s,b,4),7);assert.equal(s.resources.food,before);const left=crop.remaining;
+ const before=s.resources.food;assert.equal(workField(s,b,4),0);assert.equal(crop.sheaves,7);assert.equal(workField(s,b,4),7);assert.equal(s.resources.food,before);const left=crop.remaining;
  s.season=3;changeCropSeason(s,2);assert.equal(crop.remaining,0);assert.equal(crop.spoiled,left);assert.equal(workField(s,b,4),0);
 });
 test('workers can be pinned to a building; children cannot; pin survives saving and construction competition',()=>{
@@ -20,7 +20,7 @@ test('workers can be pinned to a building; children cannot; pin survives saving 
  assert.equal(assignWorkplace(s,s.citizens.find(c=>c.age<16).id,`${b.x},${b.y}`).ok,false);const saved=decode(encode(s));assert.ok(saved);assert.equal(saved.citizens.find(v=>v.id===c.id).workplace,c.workplace);
 });
 test('legacy migration retains people, carried goods and pantry; crop state survives deterministic reload',()=>{
- const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,13);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
+ const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,14);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
  const next=decode(encode(loaded));assert.deepEqual(next,loaded);
 });
 test('cats and mice inhabit storage yards, move and rest without entering water or buildings',async()=>{
@@ -31,13 +31,13 @@ test('cats and mice inhabit storage yards, move and rest without entering water 
 test('actual residents sow, harvest once and deliver finite autumn crop to storage',async()=>{
  const {build}=await import('../engine.js');const s=createGame(),b=field(s);assert.ok(build(s,'canal',12,7).ok);assignWorkplace(s,0,'12,8');assignWorkplace(s,1,'12,8');
  const run=n=>{for(let i=0;i<n*10;i++){s.event=null;advanceTime(s,.1);}};run(44);assert.equal(b.crop.sown,1);assert.equal(s.delivered.food,0);run(46);assert.equal(s.season,2);assert.ok(b.crop.remaining>0);const total=b.crop.total;
- run(40);assert.ok(s.delivered.food>0);assert.ok(b.crop.harvested<=total);assert.ok(decode(encode(s)));const carried=s.citizens.reduce((n,c)=>n+(c.cargo.food||0),0);assert.ok(Math.abs(b.crop.harvested-s.delivered.food-carried)<1e-6);
+ run(40);assert.ok(s.delivered.food>0);assert.ok(b.crop.harvested<=total);assert.ok(decode(encode(s)));const carried=s.citizens.reduce((n,c)=>n+(c.cargo.food||0),0);assert.ok(Math.abs(b.crop.harvested-s.delivered.food-carried-b.crop.sheaves)<1e-6);
  const copy=decode(encode(s));run(6);for(let i=0;i<60;i++){copy.event=null;advanceTime(copy,.1);}assert.deepEqual(copy,s);
 });
 test('an empty workforce never seeds a field; unharvested crop spoils on winter boundary',()=>{
  const s=createGame(),b=field(s);for(const c of s.citizens)if(c.age>=16)c.role='builder';syncCitizens(s);
  for(let i=0;i<450;i++){s.event=null;advanceTime(s,.1);}assert.equal(b.crop.sown,0);
- b.crop.sown=1;b.crop.growth=1;s.season=2;s.tick=2;s.simTime=90;s.seasonElapsed=0;changeCropSeason(s,1);const total=b.crop.total;advanceTime(s,45);assert.equal(b.crop.remaining,0);assert.equal(b.crop.spoiled,total);assert.equal(s.delivered.food,0);assert.ok(decode(encode(s)));
+ b.crop.sown=1;b.crop.seedUsed=4;b.crop.growth=1;s.season=2;s.tick=2;s.simTime=90;s.seasonElapsed=0;changeCropSeason(s,1);const total=b.crop.total;advanceTime(s,45);assert.equal(b.crop.remaining,0);assert.equal(b.crop.spoiled,total);assert.equal(s.delivered.food,0);assert.ok(decode(encode(s)));
 });
 test('pins wait for carried cargo, survive clinic trips and cannot exceed building capacity',async()=>{
  const {build}=await import('../engine.js');const s=createGame(),b=field(s);s.buildings.push({type:'fishing',x:11,y:10,level:1});syncCitizens(s);
