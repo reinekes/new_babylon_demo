@@ -1,3 +1,4 @@
+import {weatherAt} from './environment.js';
 import {MATERIALS,BUILDINGS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {workRate,mealRation,beliefMultiplier} from './wellbeing.js';
 import {networkFor,routeBetween} from './workforce.js';
@@ -5,7 +6,7 @@ import {storeCapacity} from './inventory.js';
 import {craftBatch,craftResource,craftState,craftLoad,fleeceCapacity} from './textiles.js';
 export const RESOURCE_GROUPS=[
  {id:'basic',name:'Добыча',keys:['food','clay','reed','wood','stone','hides','wool']},
- {id:'processed',name:'Переработка',keys:['cloth','clothing']},
+ {id:'processed',name:'Переработка',keys:['brick','cloth','clothing']},
  {id:'divine',name:'Влияние',keys:['faith','prestige']}
 ];
 // Analytical estimate for 45 seconds in the current season, not a second simulation.
@@ -22,13 +23,14 @@ export function seasonBalance(s){
  for(const [key,people] of groups){const b=buildings.get(key),def=BUILDINGS[b.type],id=component(key);let trips=0;
   for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type==='tailor'?'tailor':'production'),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,'production'))),inputTravel=['weaver','tailor'].includes(b.type)?travel*Math.ceil(craftBatch(b)/3):0;trips+=45*13/24/((def.workTime||4)/rate+travel+inputTravel);}
   production.set(key,trips);
-  if(['weaver','tailor','healer','depot'].includes(b.type))continue;
+  if(['brickyard','waterpoint','weaver','tailor','healer','depot'].includes(b.type))continue;
   if(b.type==='field'){const crop=b.crop||{},batch=7*outputMultiplier(b);if(crop.sheaves>0||s.season===2){const harvest=s.season===2?crop.remaining||0:0;credit(id,'food',Math.min((crop.sheaves||0)+harvest,trips*batch*(harvest>0?.5:1)));}if(s.season===0)debit(id,'food',Math.min(stocks.get(id).food,Math.max(0,4-(crop.seedUsed||0))));continue;}
   if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceCapacity(b)*45/180));continue;}
   for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=s.buffs?.fertility?1.6:1;if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,trips*base*mult);}
  }
  // Finish each link before budgeting the next; never borrow from another bank.
  for(const type of ['weaver','tailor'])for(const [key]of groups){const b=buildings.get(key);if(b.type!==type)continue;const id=component(key),input=craftResource(b),output=type==='weaver'?'cloth':'clothing',ratio=type==='weaver'?3:2,buffer=craftState(b)?.[input]||0,incoming=s.citizens.filter(c=>c.craftSite===key).reduce((n,c)=>n+craftLoad(c),0),available=Math.max(0,stocks.get(id)[input]+(byComponent.get(id)?.[input]||0)),amount=Math.min((production.get(key)||0)*outputMultiplier(b),(available+buffer+incoming)/ratio),taken=Math.max(0,amount*ratio-buffer-incoming);debit(id,input,taken);credit(id,output,amount);}
+ for(const [key] of groups){const b=buildings.get(key);if(b.type!=='brickyard')continue;const id=component(key),v=b.brickmaking||{},amounts={clay:4,reed:1},buffers={clay:v.clay||0,reed:v.reed||0};for(const c of s.citizens)if(c.craftSite===key&&c.craftMaterial)buffers[c.craftMaterial]+=c.craftAmount||0;const dryRate=s.rain>0?0:weatherAt(s).type==='rain'?0:weatherAt(s).type==='cloudy'?.6:weatherAt(s).type==='wind'?.85:1;const dryingCapacity=Math.max(0,45*dryRate-(v.wet?30-(v.drying||0):0))/30;const batches=Math.min((production.get(key)||0),dryingCapacity,...Object.entries(amounts).map(([k,n])=>(Math.max(0,stocks.get(id)[k]+(byComponent.get(id)?.[k]||0))+buffers[k])/n),(v.water||0)/2);for(const [k,n]of Object.entries(amounts))debit(id,k,Math.max(0,batches*n-buffers[k]));credit(id,'brick',(v.ready||0)+(v.wet&&45*dryRate>=30-(v.drying||0)?v.wet:0)+batches*4);}
  for(const c of s.citizens){debit(component(c.home),'food',mealRation(c)*45/60);debit(component(c.home),'clothing',45/(540*.75));r.faith.income+=(c.faith??60)/100*.15*45/60;}
  const sites=s.pests?.sites||[];for(const q of sites){const guard=s.citizens.some(c=>c.guardPost===q.key&&c.work===q.key&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)),cat=s.pests.cats.some(c=>c.site===q.key);debit(component(q.key),'food',Math.min(buildings.get(q.key)?.stock?.food||0,.012*q.mice*45/Math.max(1,sites.length)*(guard?.15:cat?.4:1)));}
  for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='healer')continue;const patients=s.citizens.filter(c=>c.clinic===key),need=patients.reduce((n,c)=>n+Math.max(0,(c.careGoal||85)-c.health),0),healing=Math.min(need,people.reduce((n,c)=>n+45*13/24*workRate(c,'healer'),0));debit(component(key),'food',healing*.04);debit(component(key),'reed',healing*.02);}

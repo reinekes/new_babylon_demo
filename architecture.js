@@ -30,6 +30,22 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
+  if(b.type==='brickyard') {
+    poly([[0,-14],[28,0],[0,14],[-28,0]],'#baa278');
+    box(-14,-6,12,6,12,'#d4bc90','#a98b60','#bca176');
+    pot(-22,2,.9);pot(-17,5,.7);
+    const wet=b.brickmaking?.wet>0,ready=b.brickmaking?.ready>0;
+    for(let i=0;i<8;i++){const a=(i%4)*7-5,z=Math.floor(i/4)*6;box(a,z,5,2.5,ready?4:2,wet?'#8a7154':'#d6b782',wet?'#745f47':'#a88a5d',wet?'#9e825c':'#c0a16e');}
+    line([[1,-7],[11,-12],[20,-7],[10,-2],[1,-7]],'#705637',1.6);
+  }
+  if(b.type==='waterpoint') {
+    poly([[0,-14],[28,0],[0,14],[-28,0]],'#b7aa7c');
+    box(-7,-4,18,9,3,'#d0bb8c','#9c885f','#bba071');
+    for(let i=0;i<4;i++)pot(-13+i*8,3-i%2*5,1);
+    line([[-20,-6],[-20,-24],[9,-10],[9,8]],'#8b714b',2);
+    poly([[-23,-25],[0,-37],[24,-24],[1,-12]],'#bdaa76');
+    line([[-18,-24],[1,-14],[18,-24]],'#d4c28e',1);
+  }
   if(b.type==='sheepfold') {
     poly([[0,-14],[28,0],[0,14],[-28,0]],'#a8ac75');
     // Low reed rails leave the flock visible inside its own plot.

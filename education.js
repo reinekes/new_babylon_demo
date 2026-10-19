@@ -1,7 +1,7 @@
 import {citizenName} from './definitions.js';
 import {canWork} from './demography.js';
 export const STUDY_SECONDS=20;
-export const ROLES=['auto','builder','carrier','production','healer','tailor'];
+export const ROLES=['auto','builder','carrier','production','healer','tailor','watercarrier'];
 export const inspirationChance=(c,role)=>role==='healer'?(canWork(c)?.2:.4):(canWork(c)?.4:.7);
 export const medicalLevel=c=>c.medicine?.level||0;
 export const qualifiedHealer=c=>canWork(c)&&medicalLevel(c)>0;

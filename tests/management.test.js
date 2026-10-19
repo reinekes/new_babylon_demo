@@ -21,15 +21,15 @@ test('cancelling new work refunds exactly once even with materials in flight',()
  const paid=s.resources.clay;assert.ok(management.cancelConstruction(s,10,9).ok);assert.equal(s.resources.clay,paid+12);assert.equal(s.resources.reed,before.reed);assert.ok(s.citizens.every(c=>!Object.values(c.buildCargo||{}).some(n=>n>0)));assert.ok(decode(encode(s)));assert.equal(management.cancelConstruction(s,10,9).ok,false);run(s,2);assert.ok(decode(encode(s)));
 });
 test('cancelled upgrade preserves old level; new ziggurat refunds prepaid faith',()=>{
- const s=stocked();upgrade(s,8,8);run(s,2);const before=s.resources.clay;assert.ok(management.cancelConstruction(s,8,8).ok);assert.equal(s.buildings[0].level,1);assert.equal(s.capacity,16);assert.equal(s.resources.clay,before+18);
- s.resources.prestige=100;build(s,'ziggurat',10,9);const faith=s.resources.faith;management.cancelConstruction(s,10,9);assert.equal(s.resources.faith,faith+80);assert.ok(decode(encode(s)));
+ const s=stocked();s.resources.brick=100;upgrade(s,8,8);run(s,2);const before=s.resources.clay;assert.ok(management.cancelConstruction(s,8,8).ok);assert.equal(s.buildings[0].level,1);assert.equal(s.capacity,16);assert.equal(s.resources.clay,before+18);
+ s.resources.brick=100;s.resources.prestige=100;build(s,'ziggurat',10,9);const faith=s.resources.faith;management.cancelConstruction(s,10,9);assert.equal(s.resources.faith,faith+80);assert.ok(decode(encode(s)));
 });
 test('demolition refunds half of completed investments and protects houses and final warehouse',()=>{
  const s=stocked();assert.ok(management.canDemolish(s,s.buildings[0]));assert.ok(management.canDemolish(s,s.buildings.find(b=>b.type==='shrine')));
  const b=s.buildings.find(b=>b.type==='clay');b.level=2;const before=s.resources.clay;assert.ok(management.demolish(s,b.x,b.y).ok);assert.equal(s.resources.clay,before+12);assert.ok(decode(encode(s)));
 });
 test('demolishing a home moves residents to reachable beds without losing anyone',()=>{
- const s=stocked();build(s,'house',10,9);run(s,90);s.event=null;const ids=s.citizens.map(c=>c.id);assert.ok(management.demolish(s,8,8).ok);assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.ok(s.citizens.every(c=>c.home!=='8,8'));assert.ok(decode(encode(s)));run(s,3);assert.ok(decode(encode(s)));
+ const s=stocked();build(s,'house',10,9);run(s,90);for(let i=0;i<120&&s.citizens.some(c=>c.waterTrip?.target==='8,8');i++)run(s,.5);s.event=null;const ids=s.citizens.map(c=>c.id);assert.ok(management.demolish(s,8,8).ok);assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.ok(s.citizens.every(c=>c.home!=='8,8'));assert.ok(decode(encode(s)));run(s,3);assert.ok(decode(encode(s)));
 });
 test('old saves default to automatic roles and ordinary priorities',()=>{
  const s=stocked();build(s,'house',10,9);for(const c of s.citizens){delete c.role;delete c.siteDuty;}delete s.buildings.at(-1).construction.priority;const loaded=decode(encode(s));assert.ok(loaded);syncCitizens(loaded);assert.ok(loaded.citizens.every(c=>(c.role||'auto')==='auto'));assert.ok(decode(encode(loaded)));

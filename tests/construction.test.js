@@ -11,7 +11,7 @@ test('new house reserves price but provides no beds before delivered materials a
  assert.ok(delivered);assert.equal(b.construction,undefined);assert.equal(s.capacity,24);
 });
 test('upgrades retain old capacity and residents until completion, reject duplicate orders',()=>{
- const s=createGame(),homes=s.citizens.map(c=>c.home);assert.ok(upgrade(s,8,8).ok);const b=s.buildings[0];assert.equal(b.level,1);assert.equal(s.capacity,16);assert.equal(upgrade(s,8,8).ok,false);
+ const s=createGame(),homes=s.citizens.map(c=>c.home);s.resources.brick=100;assert.ok(upgrade(s,8,8).ok);const b=s.buildings[0];assert.equal(b.level,1);assert.equal(s.capacity,16);assert.equal(upgrade(s,8,8).ok,false);
  run(s,180);assert.equal(b.level,2);assert.equal(b.construction,undefined);assert.equal(s.capacity,20);assert.deepEqual(s.citizens.slice(0,12).map(c=>c.home),homes);
 });
 test('construction cargo and work survive saving with deterministic continuation',()=>{
@@ -31,7 +31,7 @@ test('saving during labour preserves stages; malformed and duplicated material b
  const s=createGame();build(s,'house',10,9);const b=s.buildings.at(-1);
  for(let i=0;i<1500&&(!b.construction||b.construction.work===0);i++)run(s,.1);
  assert.ok(b.construction.work>0);const loaded=decode(encode(s));assert.ok(loaded);run(s,80);run(loaded,80);assert.deepEqual(loaded,s);
- const bad=structuredClone(loaded);upgrade(bad,8,8);bad.buildings[0].construction.delivered.clay=1;assert.equal(decode(encode(bad)),null);
+ const bad=structuredClone(loaded);bad.resources.brick=100;upgrade(bad,8,8);bad.buildings[0].construction.delivered.clay=1;assert.equal(decode(encode(bad)),null);
  bad.buildings[0].construction.delivered.clay=0;bad.buildings[0].construction.work=1;assert.equal(decode(encode(bad)),null);
 });
 test('a new workshop produces nothing before construction; builders conserve reservations when population falls',()=>{
