@@ -31,8 +31,9 @@ export function advancePests(s,dt){
   if(q.mice>0&&!resting){q.hunt=cat?q.hunt+dt:0;q.guardTime=guarded?q.guardTime+dt:0;
    if(q.hunt>=10||q.guardTime>=8){const by=cat&&q.hunt>=10?'cat':'guard';const phase=q.clock+(q.mice-1)*2.2;q.mice--;q[by==='cat'?'caught':'scared']++;q.flash={time:q.clock,phase,by};q.hunt=0;q.guardTime=0;if(q.caught+q.scared===1)note(s,by==='cat'?'Кошка поймала мышь':'Сторож прогнал мышь',`У хранилища ${q.key} запасы стали безопаснее.`, 'good');}
   }else if(!q.mice){q.hunt=0;q.guardTime=0;}
-  if(q.loss-q.reported>=1){q.reported=q.loss;note(s,'Мыши портят запасы',`У хранилища ${q.key} потеряно ${q.loss.toFixed(1)} еды за всё время. Приведи кошку или назначь сторожа.`, 'bad');}
+  if(q.loss-q.reported>=1){q.reported=q.loss;note(s,'Мыши портят запасы',`У хранилища ${q.key} потеряно ${q.loss.toFixed(1)} еды за всё время. Назначь сторожа: жители пока защищают запасы своими силами.`, 'bad');}
  }
+ if(s.pests.nextCat===0&&s.pests.totalLoss>=3&&bringCat(s))note(s,'Неожиданный гость','После долгой борьбы с мышами бог послал к амбарам маленького охотника. Люди впервые увидели, как кошка ловит мышь.','good');
 }
 export function pestActors(s){
  if(!s.pests)return [];const routes=yards(s),result=[];

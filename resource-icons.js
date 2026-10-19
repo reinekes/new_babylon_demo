@@ -1,7 +1,7 @@
 // Local resource drawings share one silhouette in stock bars and cost cards.
 const drawings={
  wool:'<circle cx="11" cy="12" r="8"/><path d="M5 6c8 1 13 8 11 12M3 11c5-1 11 3 12 9M7 4c-1 7 3 12 10 14M5 17c3-5 8-9 13-9m-1 9 4 2 1-3"/>',
- clothing:'<path d="m5 3 7 3 7-3 3 5-5 3v10H7V11L2 8l3-5Z"/><path d="m7 14 10-2M8 19l2 2m2-2 2 2m2-2 1 1M12 6v5"/>',
+ clothing:'<path d="m8 3 9 4-2 14-11-2 4-16ZM8 3l7 12M5 14l11-2M5 19v3m3-2v2m4-1v1"/>',
  cloth:'<path d="m3 7 12-3 6 4v12l-12 2-6-4V7Zm0 0 6 4 12-3M9 11v11M3 12l6 4 12-3"/><path d="m12 6 5 3m-5 7 6-1"/>',
  food:'<path d="M3 13h18c0 6-4 9-9 9s-9-3-9-9ZM5 10c-3-5 4-6 2-9m5 9c-3-5 4-6 2-9m5 9c-3-5 4-6 2-9"/>',
  wood:'<path d="m4 7 11-4 6 4v11l-11 4-6-4V7Zm0 0 6 4 11-4M10 11v11"/><ellipse cx="7" cy="14" rx="1.5" ry="3"/>',

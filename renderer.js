@@ -1,3 +1,4 @@
+import {residentAppearance,drawResidentClothes} from './resident-appearance.js';
 import {drawCanal,irrigationFor} from './irrigation.js';
 import {drawGroundTexture} from './terrain-texture.js';
 import {houseLightCount} from './households.js';
@@ -59,7 +60,7 @@ export class Renderer{
   if(b.type==='market')this.marketCargo(b,state);
  }
  refreshCity(state) {
-  this.state=state;this.houseOccupancy=new Map();for(const c of state.citizens||[])this.houseOccupancy.set(c.home,(this.houseOccupancy.get(c.home)||0)+1);
+  this.state=state;this.professionByWork=new Map(state.buildings.map(b=>[b.id||`${b.x},${b.y}`,b.type]));this.houseOccupancy=new Map();for(const c of state.citizens||[])this.houseOccupancy.set(c.home,(this.houseOccupancy.get(c.home)||0)+1);
   const signature=[...state.buildings,...state.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}`).join('|');
   if(signature!==this.citySignature){this.citySignature=signature;this.streets=generateStreets([...state.buildings,...state.roadAnchors||[]],state);}
   const vegetationKey=signature+'|'+state.season+'|'+!!state.drought+'|'+weatherAt(state).type+'|'+Math.floor((state.simTime||0)/10);
@@ -198,7 +199,7 @@ export class Renderer{
   if(weight('wind')&&!this.reduce){c.save();c.globalAlpha=weight('wind')*.5;for(let k=0;k<16;k++){const x=(hash(k,63)*w+t*27)%w,y=hash(k,28)*h;this.line([[x,y],[x+5,y-2]],'#b0ad76',1);}c.restore();}
  }
  person(person) {
-  const c=this.ctx,q=this.s*(person.age<16?.65:1),p=this.point(person.x,person.y,person.onBridge?5:0);
+  const c=this.ctx,q=this.s*(person.age<16?.75:1.2),p=this.point(person.x,person.y,person.onBridge?5:0);
   const playTime=this.state?.simTime||0;
   const stride=person.walking&&!this.reduce?Math.sin((person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
@@ -206,8 +207,7 @@ export class Renderer{
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
   this.line([[p.x-1.1*q,p.y-3*q],[p.x+stride*q,p.y]],'#665841',1.25*q);
   this.line([[p.x+1.1*q,p.y-3*q],[p.x-stride*q,p.y]],'#665841',1.25*q);
-  this.polygon([[p.x-1.7*q,p.y-9*q],[p.x+1.7*q,p.y-9*q],[p.x+2.5*q,p.y-2.6*q],[p.x-2.5*q,p.y-2.6*q]],person.clothing<=25?'#9b927b':person.robe||'#e0c28f');
-  if(person.clothing<=50){this.ctx.fillStyle='#776b57';this.ctx.fillRect(p.x-.9*q,p.y-6.4*q,1.5*q,1.8*q);}
+  const look=residentAppearance(person,this.professionByWork||[]);drawResidentClothes(this,p,q,look);
   this.line([[p.x-2*q,p.y-7*q],[p.x-3*q,p.y-(4+stride*.4)*q]],'#a3835e',1.2*q);
   this.line([[p.x+2*q,p.y-7*q],[p.x+3*q,p.y-(4-stride*.4)*q]],'#a3835e',1.2*q);
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();
@@ -218,6 +218,7 @@ export class Renderer{
    if((person.id||0)%4===0)this.lights.push({x,y:y-2*q,size:17*q});
   }
   if(person.guarding){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-5*q],[p.x+(7+swing)*q,p.y-10*q]],'#92764f',1.4*q);for(let i=0;i<4;i++)this.line([[p.x+(6+swing)*q,p.y-10*q],[p.x+(6+i+swing)*q,p.y-14*q]],'#b5a36c',q);}
+  else if(look.craft&&person.phase==='working'){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-6*q],[p.x+(4+swing)*q,p.y-7*q]],'#a3835e',q);}
   else if(['working','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
   if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
   c.restore();
