@@ -258,7 +258,7 @@ function advanceCitizen(s,c,dt,ctx){
   const next=c.route[c.routeIndex];
   if(!next){arrival(s,c,ctx);if(c.phase==='home'||c.phase==='resting')return;continue;}
   const dist=distance(c,next);
-  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);
+  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c);
   if(onBridge(s.buildings,c.x,c.y)){
    const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
   }
