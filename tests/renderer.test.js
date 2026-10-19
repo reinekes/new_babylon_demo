@@ -71,7 +71,7 @@ test('placement outlines remain visible for valid terrain even without money',as
  const {createGame}=await import('../engine.js');const s=createGame();s.resources.clay=0;s.resources.reed=0;
  const r=Object.create(Renderer.prototype),drawn=[];
  Object.assign(r,{s:1,reduce:true,ctx:{save(){},restore(){}},inView:()=>true,point:(x,y)=>({x,y}),polygon:points=>drawn.push(points),line(){}});
- for(const type of ['house','shrine','granary','market','ziggurat']){r.placementLayer(s,type);assert.equal(drawn.length,0,`${type} must not highlight the whole map`);}
+ for(const type of ['house','shrine','granary','market','ziggurat','field','bridge']){r.placementLayer(s,type);assert.equal(drawn.length,0,`${type} must not highlight the whole map`);}
  drawn.length=0;r.placementLayer(s,'clay');assert.ok(drawn.length>0);assert.ok(drawn.length<20);
 });
 
