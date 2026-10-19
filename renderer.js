@@ -22,6 +22,7 @@ export class Renderer{
  resize(){const r=this.canvas.getBoundingClientRect();this.w=r.width;this.h=r.height;const d=Math.min(devicePixelRatio||1,2);this.canvas.width=Math.round(r.width*d);this.canvas.height=Math.round(r.height*d);this.ctx.setTransform(d,0,0,d,0,0);this.layout();}
  layout(){const scale=Math.min((this.w-22)/1200,(this.h-165)/670)*this.zoom;this.s=this.mapOverview?Math.max(.1,Math.min((this.w-30)/((WIDTH+HEIGHT)*30),(this.h-60)/((WIDTH+HEIGHT)*15))):Math.max(.22,scale);this.tw=60*this.s;this.th=30*this.s;const focus=this.mapOverview?{x:(WIDTH-1)/2,y:(HEIGHT-1)/2}:{x:10,y:9};this.ox=this.w*.49-(focus.x-focus.y)*this.tw/2+(this.pan?.x||0);this.oy=this.h*.52-(focus.x+focus.y)*this.th/2+(this.pan?.y||0);}
  home(){this.mapOverview=false;this.zoom=1.45;this.pan={x:0,y:0};this.layout();}
+ focusOn(x,y){this.home();const p=this.point(x+.5,y+.5);this.pan={x:this.w*(this.w>=600?.67:.88)-p.x,y:this.h*.48-p.y};this.layout();this.hover={x,y};}
  overview(){this.mapOverview=true;this.zoom=.72;this.pan={x:0,y:0};this.layout();}
  inView(x,y,padding=100){const p=this.point(x,y);return p.x>-padding*this.s&&p.x<this.w+padding*this.s&&p.y>-30*this.s&&p.y<this.h+padding*this.s;}
  point(x,y,z=0){return {x:this.ox+(x-y)*this.tw/2,y:this.oy+(x+y)*this.th/2-z*this.s};}

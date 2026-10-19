@@ -112,3 +112,4 @@ test('placement sites reuse terrain checks until buildings or deposits change',a
 });
 
 test('road outlines are painted before every surface so adjacent segments have no border seams',()=>{const r=Object.create(Renderer.prototype),calls=[];Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads:[]},streets:{edges:[[{key:'a',x:0,y:0},{key:'b',x:1,y:0}],[{key:'b',x:1,y:0},{key:'c',x:2,y:0}]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push(color)});r.streetsLayer();assert.deepEqual(calls.slice(0,4),['#af9c73','#af9c73','#dbc79c','#dbc79c']);});
+test('supply focus puts a distant house visibly to the right of the desktop detail card',()=>{const r=Object.create(Renderer.prototype);Object.assign(r,{w:945,h:715,zoom:1.45,pan:{x:0,y:0}});r.layout();r.focusOn(35,27);const p=r.point(35,27);assert.ok(p.x>400&&p.x<r.w-80);assert.ok(p.y>90&&p.y<r.h-90);});
