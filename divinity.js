@@ -15,7 +15,14 @@ export function registerInspiration(s,success){
  s.divinity ||= createDivinity();s.divinity.inspirationAttempts=(s.divinity.inspirationAttempts||0)+1;s.divinity.inspirationSuccesses=(s.divinity.inspirationSuccesses||0)+(success?1:0);s.divinity.rating=Math.max(0,(s.divinity.rating||0)+(success?3:-1));
  if(success){s.divinity.domains.craft++;refreshDivineName(s);}
 }
+export const MOURNING_NAMES=['Слышащий плач','Хранитель пепла','Владыка погребальных огней','Несущий смерть','Жестокий владыка пустыни'];
+export function registerLoss(s,count=1){
+ const deaths=Math.max(s.deaths||0,count),rank=deaths>=20?4:deaths>=10?3:deaths>=5?2:deaths>=2?1:0;
+ s.name=MOURNING_NAMES[rank];if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);
+}
 function refreshDivineName(s){
+ if(s.deaths>0&&(s.hungry>0||s.funeral)){registerLoss(s);return;}
+
  const ranked=Object.entries(s.divinity.domains).sort((a,b)=>b[1]-a[1]);
  const [dominant,uses]=ranked[0],rank=uses>=18?4:uses>=10?3:uses>=5?2:uses>=2?1:0;
  let name=DIVINE_NAMES[dominant][rank];

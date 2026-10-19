@@ -67,7 +67,7 @@ export function miracle(s,id){
 function check(s){
  s.capacity=housingOf(s);
  if(s.population<=0){s.population=0;s.lost=true;s.event=null;syncCitizens(s);return;}
- const hasMiracles=Object.values(s.divinity.domains).some(v=>v>0);
+ const hasMiracles=s.deaths>0||Object.values(s.divinity.domains).some(v=>v>0);
  if(s.population>=24&&!s.achievements.includes('population')){s.achievements.push('population');log(s,'Поселение стало городом','Двадцать четыре человека называют это место домом.','good');}
  if(s.resources.food>=150&&!s.achievements.includes('food')){s.achievements.push('food');if(!hasMiracles){s.name='Наполняющий амбары';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}log(s,'Полные амбары','Запас еды достиг 150. Город встречает будущее с надеждой.','good');}
  if(s.population>=30&&!s.achievements.includes('keeper')){s.achievements.push('keeper');if(!hasMiracles){s.name='Хранитель людей';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}}
@@ -207,6 +207,7 @@ export function decode(raw){
    if(q.work>0&&Object.keys(q.required).some(k=>q.delivered[k]<q.required[k]))return null;
   }
   if(s.lastDelivery!==null&&(!s.lastDelivery||!finite(s.lastDelivery.time,0,s.simTime)||!integer(s.lastDelivery.citizen)||typeof s.lastDelivery.store!=='string'||!s.lastDelivery.cargo||Object.entries(s.lastDelivery.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v))))return null;
+  if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   return s;
  }catch{return null;}
 }
