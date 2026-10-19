@@ -1,3 +1,4 @@
+import {refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
@@ -42,7 +43,7 @@ function rememberApproaches(s,b){
  for(const a of anchors)if(!s.roadAnchors.some(p=>p.x===a.x&&p.y===a.y))s.roadAnchors.push(a);
 }
 function refundOrder(s,b){
- const refund=cancellationRefund(b),key=buildingKey(b);for(const [k,n]of Object.entries(refund))s.resources[k]+=n;
+ const refund=cancellationRefund(b),key=buildingKey(b);refundSources(s,b.construction.allocations);s.resources.faith+=refund.faith||0;
  for(const c of s.citizens)if(c.site===key)c.buildCargo={};
  delete b.construction;return refund;
 }
@@ -64,17 +65,18 @@ function relocations(s,b){
 export function canDemolish(s,b){
  const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(b.type==='market'&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Рынок занят караваном или оплаченными покупками';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';
+ const key=buildingKey(b);syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
- if(['shrine','granary'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
+ if(['shrine','granary','depot'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
  if(storageOf(future)<storageOf(s)&&MATERIALS.some(k=>storageOf(future)<(s.resources[k]||0)))return 'Сначала освободи еду: оставшихся амбаров недостаточно';
- if(['bridge','shrine','granary'].includes(b.type)){
+ if(['bridge','shrine','granary','depot'].includes(b.type)){
   const {net,map}=ports(future);
-  for(const q of [...s.trade?.deliveries||[],...s.trade?.sales||[]]){if((q.delivered??((q.loaded||0)+(q.cancelled||0)))>=q.amount)continue;const market=map.get(q.market),component=market&&net.components.get(market.key);if(!market||!future.buildings.some(store=>['shrine','granary'].includes(store.type)&&isComplete(store)&&map.get(buildingKey(store))&&net.components.get(map.get(buildingKey(store)).key)===component))return 'На рынке ждут оплаченные покупки: нужен доступный склад';}
+  for(const q of [...s.trade?.deliveries||[],...s.trade?.sales||[]]){if((q.delivered??((q.loaded||0)+(q.cancelled||0)))>=q.amount)continue;const market=map.get(q.market),component=market&&net.components.get(market.key);if(!market||!future.buildings.some(store=>['shrine','granary','depot'].includes(store.type)&&isComplete(store)&&map.get(buildingKey(store))&&net.components.get(map.get(buildingKey(store)).key)===component))return 'На рынке ждут оплаченные покупки: нужен доступный склад';}
   for(const c of s.citizens.filter(hasLoad)){
    let nearest=null,min=Infinity;for(const p of net.nodes.values()){const d=Math.abs(c.x-p.x)+Math.abs(c.y-p.y);if(d<min){min=d;nearest=p;}}
    const component=nearest&&net.components.get(nearest.key);
-   const stores=future.buildings.filter(v=>isComplete(v)&&['shrine','granary'].includes(v.type));
+   const stores=future.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type));
    if(!stores.some(v=>map.get(buildingKey(v))&&net.components.get(map.get(buildingKey(v)).key)===component))return 'Есть грузы в пути: нужен другой доступный склад на этом берегу';
    if(c.tradeJob||c.saleJob){const market=map.get(c.tradeMarket||c.saleMarket);if(!market||net.components.get(market.key)!==component)return 'Дождись доставки покупок: снос перекроет путь к рынку';}
    if(Object.values(c.buildCargo||{}).some(n=>n>0)&&c.site!==buildingKey(b)){
@@ -99,7 +101,7 @@ export function demolish(s,x,y){
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}
  s.buildings=s.buildings.filter(v=>v!==b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
- note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
+ syncInventory(s);note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
 export function inspirationReason(s,id,role){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id);if(!c||!roles.includes(role))return 'Неизвестный житель или роль';if(role==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===role)return 'Эта профессия уже выбрана';if(c.calling===role&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
@@ -109,7 +111,7 @@ export function cancelRoadRoute(s,group){if(!Number.isSafeInteger(group)||group<
 
 export function assignWorkplace(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c))return {ok:false,reason:'Нужен взрослый работник'};
- if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!Object.keys(BUILDINGS[b.type].output).length&&b.type!=='healer')return {ok:false,reason:'Нужна готовая производственная постройка'};
+ if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!Object.keys(BUILDINGS[b.type].output).length&&!['healer','depot'].includes(b.type))return {ok:false,reason:'Нужна готовая производственная постройка'};
   if(b.type==='healer'?c.role!=='healer'||!c.medicine?.level:!['auto','production'].includes(c.role))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
   if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(b.type==='healer'?1:2))return {ok:false,reason:'Все постоянные места заняты'};
   const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к работе'};
@@ -120,6 +122,6 @@ export function assignWorkplace(s,id,key){
 
 export function assignGuard(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c)||!['auto','production'].includes(c.role))return {ok:false,reason:'Нужен взрослый со свободной производственной профессией'};
- if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!['shrine','granary'].includes(b.type))return {ok:false,reason:'Нужен готовый амбар или храм-склад'};if(s.citizens.some(v=>v.id!==id&&v.guardPost===key))return {ok:false,reason:'У склада уже есть сторож'};const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к складу'};c.guardPost=key;delete c.workplace;}else delete c.guardPost;
+ if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!['shrine','granary','depot'].includes(b.type))return {ok:false,reason:'Нужен готовый амбар или храм-склад'};if(s.citizens.some(v=>v.id!==id&&v.guardPost===key))return {ok:false,reason:'У склада уже есть сторож'};const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к складу'};c.guardPost=key;delete c.workplace;}else delete c.guardPost;
  invalidateAssignments(s);syncCitizens(s);return {ok:true};
 }

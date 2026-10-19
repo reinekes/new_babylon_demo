@@ -10,7 +10,7 @@ import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
-const spriteTypes=new Set(['house','healer','granary','clay','reed','market','fishing','hunting','logging','quarry']);
+const spriteTypes=new Set(['house','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};

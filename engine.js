@@ -1,3 +1,5 @@
+import {syncInventory,validateInventory,stockStores,reserveStock} from './inventory.js';
+import {initializeDistricts,validateDistricts} from './district-logistics.js';
 import {initializeFoodPlan,availableFood,validateFoodPlan} from './food-planning.js';
 import {initializePests,syncPestSites,validatePests,catReason,bringCat} from './pests.js';
 import {initializeCrops,changeCropSeason,cropSummary,validateCrops} from './agriculture.js';
@@ -15,14 +17,14 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=14;
+export const VERSION=15;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame(){
  const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
- initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
+ initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);syncInventory(s);initializeDistricts(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
 export const storage=storageOf;
@@ -42,10 +44,10 @@ export function canBuild(s,type,x,y,placementOnly=false){
  return '';
 }
 export const canPlace=(s,type,x,y)=>canBuild(s,type,x,y,true);
-export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};for(const k of [...MATERIALS,'faith'])s.resources[k]-=BUILDINGS[type][k]||0;s.buildings.push({type,x,y,level:1,construction:{...createOrder(BUILDINGS[type]),order:nextOrder(s)}});initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
+export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type]);if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 export function upgradeCost(b){const factor=levelOf(b)===1?1.5:2.5;return {clay:Math.ceil(BUILDINGS[b.type].clay*factor),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...(levelOf(b)===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{})};}
 export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.type==='canal')return 'Канал готовится в один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
-export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);for(const [k,n]of Object.entries(cost))s.resources[k]-=n;b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
+export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.type==='house')return `Жильё: ${capacityOf(b)} жителей`;
  if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив соседних клеток':'Сухое русло · соедини готовыми участками с рекой';
@@ -108,12 +110,12 @@ function settleSeason(s){
 }
 export function advanceTime(s,seconds){
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
- let remaining=Math.min(seconds,3600),advanced=0;
+ syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   const dt=Math.min(remaining,45-s.seasonElapsed);advanceWorkers(s,dt);s.seasonElapsed+=dt;remaining-=dt;advanced+=dt;
   if(s.seasonElapsed>=45-1e-7){s.seasonElapsed=0;settleSeason(s);}
  }
- check(s);return advanced;
+ syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,45-s.seasonElapsed)>0;}
 export function eventReason(s){if(!s.event)return 'Нет события';const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
@@ -126,11 +128,11 @@ export function resolveEvent(s,choice){
  log(s,s.event.title,choice==='accept'?'Город принял твоё решение.':'Город сохранил запасы и продолжил свой путь.',choice==='accept'?'good':'info');s.event=null;syncCitizens(s);check(s);return {ok:true};
 }
 export function goals(s){return [{label:'Построить новое поле',done:count(s,'field')>=2},{label:'Поселить 24 жителя',done:s.achievements.includes('population')},{label:'Спасти поля от засухи',done:s.memories.includes('rain')},{label:'Набрать 50 престижа',done:s.resources.prestige>=50},{label:'Возвести зиккурат и встретить 10-й год с 30 жителями',done:s.won}];}
-export const encode=s=>JSON.stringify(s);
+export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14;
-  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15;
+  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -157,7 +159,7 @@ export function decode(raw){
   for(const k of Object.keys(emptyResources()))if(!finite(s.resources?.[k])||!finite(s.delivered?.[k]))return null;
   if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed))>.001||!integer(s.deliveries))return null;
   if(!Array.isArray(s.buildings)||s.buildings.length>WIDTH*HEIGHT)return null;
-  if(!validateTrade(s))return null;
+  if(!oldInventory&&!validateTrade(s))return null;
   if(!validateWorld(s)||!Number.isInteger(s.rngState)||s.rngState<0||s.rngState>4294967295||!Array.isArray(s.roads)||s.roads.length>WIDTH*HEIGHT*4)return null;
   const roadIds=new Set();for(const r of s.roads){if(r.type!=='road'||!integer(r.level,1,3)||typeof r.id!=='string'||roadIds.has(r.id)||!r.a||!r.b||!finite(r.x,-.5,WIDTH)||!finite(r.y,-.5,HEIGHT)||Math.abs(Math.abs(r.a.x-r.b.x)+Math.abs(r.a.y-r.b.y)-1)>1e-7||[r.a,r.b,{x:r.x,y:r.y}].some(p=>!isDryPoint(s,p.x,p.y))||r.id!==roadKey(r.a,r.b)||r.x!==(r.a.x+r.b.x)/2||r.y!==(r.a.y+r.b.y)/2)return null;roadIds.add(r.id);}
   const cells=new Set(),bridgeRows=new Set();
@@ -189,7 +191,7 @@ export function decode(raw){
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,WIDTH-.5)&&finite(p.y,-.5,HEIGHT-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying'].includes(c.phase))return null;
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['home','toWork','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying','toDistrictSupply','toDistrictStore'].includes(c.phase))return null;
    if(c.recovering!==undefined&&typeof c.recovering!=='boolean')return null;
    if(c.clinic!=null&&(buildings.get(c.clinic)?.type!=='healer'||!isComplete(buildings.get(c.clinic))||!['toHealer','treatment','blocked'].includes(c.phase)||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||c.pantryTrip||c.tradeJob||c.saleJob))return null;
    if(['toHealer','treatment'].includes(c.phase)&&!c.clinic)return null;
@@ -197,12 +199,12 @@ export function decode(raw){
    ids.add(c.id);if(c.saleJob!=null&&(!s.trade.sales.some(q=>q.id===c.saleJob&&q.market===c.saleMarket)||!['toSaleSupply','toSaleMarket','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home','toRest','resting','toPantrySupply','toPantryHome'].includes(c.phase)))return null;
    if(c.role!==undefined&&!ROLES.includes(c.role)||c.pendingRole!==undefined&&!ROLES.includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;
-   if(c.workplace!=null&&(typeof c.workplace!=='string'||!isComplete(buildings.get(c.workplace)||{construction:{kind:'new'}})||!buildings.has(c.workplace)||buildings.get(c.workplace).type!=='healer'&&!Object.keys(BUILDINGS[buildings.get(c.workplace).type].output).length))return null;
+   if(c.workplace!=null&&(typeof c.workplace!=='string'||!isComplete(buildings.get(c.workplace)||{construction:{kind:'new'}})||!buildings.has(c.workplace)||!['healer','depot'].includes(buildings.get(c.workplace).type)&&!Object.keys(BUILDINGS[buildings.get(c.workplace).type].output).length))return null;
    if(c.seedField!==undefined&&(typeof c.seedField!=='string'||buildings.get(c.seedField)?.type!=='field'||!isComplete(buildings.get(c.seedField))||c.work!==c.seedField||!finite(c.seedFood,0,6)||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||c.pantryTrip||c.saleJob||c.tradeJob||c.clinic||c.school||!['toStore','toWork','blocked','toHome','home','resting'].includes(c.phase)))return null;
    if(c.seedField===undefined&&c.seedFood!==undefined)return null;
-   if(c.guardPost!=null&&(typeof c.guardPost!=='string'||!['shrine','granary'].includes(buildings.get(c.guardPost)?.type)||!isComplete(buildings.get(c.guardPost))||c.workplace||c.age<16||!['auto','production'].includes(c.role)))return null;
-   if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||c.guardPost!==c.work&&buildings.get(c.work).type!=='healer'&&!Object.keys(BUILDINGS[buildings.get(c.work).type].output).length))return null;
-   if(c.store!==null&&!['shrine','granary','house'].includes(buildings.get(c.store)?.type))return null;
+   if(c.guardPost!=null&&(typeof c.guardPost!=='string'||!['shrine','granary','depot'].includes(buildings.get(c.guardPost)?.type)||!isComplete(buildings.get(c.guardPost))||c.workplace||c.age<16||!['auto','production'].includes(c.role)))return null;
+   if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||c.guardPost!==c.work&&!['healer','depot'].includes(buildings.get(c.work).type)&&!Object.keys(BUILDINGS[buildings.get(c.work).type].output).length))return null;
+   if(c.store!==null&&!['shrine','granary','depot','house'].includes(buildings.get(c.store)?.type))return null;
    if(!Array.isArray(c.route)||c.route.length>WIDTH*HEIGHT*2||c.route.some(p=>!point(p))||!integer(c.routeIndex,0,c.route.length)||!finite(c.workElapsed,0,60))return null;
    if(!c.cargo||typeof c.cargo!=='object'||Array.isArray(c.cargo)||Object.entries(c.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v,0,1e6)))return null;
    if(c.phase==='home'&&Object.values(c.cargo).some(v=>v>0)||c.phase==='working'&&!c.work)return null;
@@ -241,6 +243,12 @@ export function decode(raw){
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
   if(!validatePests(s))return null;
+  if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
+  if(!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
+  for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
+
   s.version=VERSION;return s;
  }catch{return null;}
 }
+
+export function validSources(s,sources,expected){if(!sources||typeof sources!=='object'||Array.isArray(sources))return false;const stores=new Set(stockStores(s).map(buildingKey)),totals=Object.fromEntries(MATERIALS.map(k=>[k,0]));for(const [key,stock] of Object.entries(sources)){if(!stores.has(key)||!stock||typeof stock!=='object'||Array.isArray(stock))return false;for(const [k,n]of Object.entries(stock)){if(!MATERIALS.includes(k)||!Number.isFinite(n)||n<0)return false;totals[k]+=n;}}return MATERIALS.every(k=>Math.abs(totals[k]-(expected[k]||0))<1e-7);}

@@ -1,8 +1,9 @@
+import {storeStock,takeStock} from './inventory.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {WIDTH,HEIGHT,isDryPoint,terrain} from './world.js';
 import {safeLoop,loopMotion} from './local-motion.js';
 const layouts=new WeakMap();
-export const isPestStore=b=>['shrine','granary'].includes(b?.type)&&isOperational(b);
+export const isPestStore=b=>['shrine','granary','depot'].includes(b?.type)&&isOperational(b);
 export function initializePests(s){s.pests??={cats:[],sites:[],nextCat:0,totalLoss:0};}
 function yards(s){
  const signature=s.pests?.cats.map(c=>c.site).join(';')+';'+s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${isOperational(b)}`).join('|'),old=layouts.get(s);if(old?.signature===signature)return old.map;
@@ -14,7 +15,7 @@ function yards(s){
 export function syncPestSites(s){
  initializePests(s);const keys=new Set(s.buildings.filter(isPestStore).map(buildingKey));
  s.pests.sites=s.pests.sites.filter(q=>keys.has(q.key));
- for(const key of keys)if(!s.pests.sites.some(q=>q.key===key))s.pests.sites.push({key,mice:1,clock:0,spawn:0,hunt:0,guardTime:0,loss:0,caught:0,scared:0,reported:0,flash:null});
+ for(const key of keys)if(!s.pests.sites.some(q=>q.key===key))s.pests.sites.push({key,mice:(s.inventory?s.buildings.find(b=>buildingKey(b)===key)?.stock?.food:s.resources.food)>0?1:0,clock:0,spawn:0,hunt:0,guardTime:0,loss:0,caught:0,scared:0,reported:0,flash:null});
  // Cats keep their old yard when its store is removed; a later miracle can call a cat to a new store.
 }
 export function catReason(s){initializePests(s);const routes=yards(s);return s.buildings.some(b=>isPestStore(b)&&routes.has(buildingKey(b))&&!s.pests.cats.some(c=>c.site===buildingKey(b)))?'':'Все доступные хранилища уже под защитой кошек';}
@@ -24,8 +25,8 @@ export function advancePests(s,dt){
  syncPestSites(s);const routes=yards(s),activeGuards=new Set(s.citizens.filter(c=>c.guardPost&&c.work===c.guardPost&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)).map(c=>c.guardPost));
  const exposed=s.pests.sites.filter(q=>routes.has(q.key)),cap=exposed.length?1/exposed.length:0;
  for(const q of exposed){q.clock+=dt;const guarded=activeGuards.has(q.key),cat=s.pests.cats.some(c=>c.site===q.key);
-  q.spawn+=dt;if(q.spawn>=45){q.spawn%=45;if(s.resources.food>0)q.mice=Math.min(3,q.mice+1);}
-  if(q.mice>0){const amount=Math.min(s.resources.food,.012*q.mice*dt*cap*(guarded?.15:1));s.resources.food-=amount;q.loss+=amount;s.pests.totalLoss+=amount;}
+  q.spawn+=dt;if(q.spawn>=45){q.spawn%=45;if(storeStock(s,q.key,'food')>0)q.mice=Math.min(3,q.mice+1);}
+  if(q.mice>0){const amount=takeStock(s,q.key,'food',.012*q.mice*dt*cap*(guarded?.15:1));q.loss+=amount;s.pests.totalLoss+=amount;}
   const resting=q.flash&&q.clock-q.flash.time<2;
   if(q.mice>0&&!resting){q.hunt=cat?q.hunt+dt:0;q.guardTime=guarded?q.guardTime+dt:0;
    if(q.hunt>=10||q.guardTime>=8){const by=cat&&q.hunt>=10?'cat':'guard';const phase=q.clock+(q.mice-1)*2.2;q.mice--;q[by==='cat'?'caught':'scared']++;q.flash={time:q.clock,phase,by};q.hunt=0;q.guardTime=0;if(q.caught+q.scared===1)note(s,by==='cat'?'Кошка поймала мышь':'Сторож прогнал мышь',`У хранилища ${q.key} запасы стали безопаснее.`, 'good');}

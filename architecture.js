@@ -217,6 +217,18 @@ export function drawBuilding(r, b, state, t) {
     box(-13,8,7,3.5,4,'#d9c795','#b9a677','#c9b888');
   }
 
+  if(b.type==='depot') {
+    box(0,0,27,13.5,3,'#d6c398','#ad966c','#c2ac81');
+    box(-20,-2,4,2,13,'#d4bb87','#a18a61','#bea16d');
+    box(21,-2,4,2,13,'#d4bb87','#a18a61','#bea16d');
+    for(const a of [-18,18])line([[a,0],[a,-29]],'#806a43',2.2);
+    poly([[-24,-26],[1,-37],[25,-25],[0,-13]],'#b2aa78');
+    for(let i=0;i<5;i++)line([[-21+i*5,-27-i*2],[3+i*5,-15-i*2]],'#d0c699',1);
+    for(let i=0;i<4;i++)pot(-13+i*8,5+(i%2)*3,.9);
+    box(0,10,11,4,5,'#dbc78f','#ab925b','#c2ab73');
+    if(night>.12)glow(0,-6,20);
+  }
+
   if(b.type==='granary') {
     box(0,0,26,13,4,'#d6bf8e','#b49b68','#c5ac78');
     for(let i=-1;i<2;i++) {

@@ -4,8 +4,9 @@ export const BUILDINGS={
  field:{name:'Ячменное поле',icon:'≋',clay:8,reed:5,desc:'Весной работники приносят 4 еды на семена и сеют ячмень. Летом нужен полив из канала или чудесный дождь. Осенью срезают снопы, отдельно обмолачивают на току и несут еду на склад. Несрезанное портится зимой; снопы можно обмолотить позже. На песке поле закладывают рядом с наполненным каналом.',effect:'4 семян → посев → полив → жатва → обмолот',output:{food:7},workTime:3.5},
  clay:{name:'Глиняный карьер',icon:'◈',clay:10,reed:4,desc:'Два глиняных мастера добывают глину и доставляют её на склад.',effect:'Глина · 2 работника',output:{clay:6},workTime:3},
  reed:{name:'Тростниковый двор',icon:'♧',clay:8,reed:0,desc:'Два заготовителя собирают тростник и несут связки на склад.',effect:'Тростник · 2 работника',output:{reed:5},workTime:3},
- shrine:{name:'Святилище',icon:'♜',clay:22,reed:12,desc:'Два жреца приносят веру и престиж. Первое святилище служит центральным складом.',effect:'Вера + престиж · склад',output:{faith:.85,prestige:.17},workTime:4},
+ shrine:{name:'Святилище',icon:'♜',clay:22,reed:12,desc:'Два жреца приносят веру и престиж. Святилище хранит собственные запасы всех материалов.',effect:'Вера + престиж · склад',output:{faith:.85,prestige:.17},workTime:4},
  garden:{name:'Финиковый сад',icon:'✳',clay:18,reed:12,desc:'Садовники собирают финики на отмеченном участке пальм. Сад повышает целевое довольство города.',effect:'Еда · +4 довольства',output:{food:3.5},workTime:3.5},
+ depot:{name:'Раздаточный двор',icon:'▤',clay:18,reed:12,wood:4,desc:'Местный склад на 60 единиц каждого материала за уровень. Носильщики пополняют двор из других складов, семьи забирают здесь местную еду.',effect:'Местная еда · 2 носильщика · 60 хранения',output:{}},
  granary:{name:'Амбар и склад',icon:'▥',clay:25,reed:15,desc:'Хранит все виды грузов и добавляет по 150 мест для каждого материала. Работники выбирают ближайший доступный склад.',effect:'+150 хранения · приём грузов',output:{}},
  ziggurat:{name:'Великий зиккурат',icon:'▲',clay:160,reed:90,faith:80,prestige:50,desc:'Уникальный храм, производящий много веры и престижа. Нужны 50 престижа; расходует 80 веры.',effect:'Много веры + престижа',output:{faith:2.1,prestige:.7},workTime:4},
  bridge:{name:'Мост через реку',icon:'⌒',clay:45,reed:25,desc:'Поставь на воду: мост соединит берега и дорожные сети. По нему можно носить грузы на склад.',effect:'Соединяет берега и рабочие пути',output:{}},
@@ -38,7 +39,7 @@ export const isOperational=b=>!b.construction||b.construction.kind==='upgrade';
 export const capacityOf=b=>b.type==='house'&&isOperational(b)?4+4*levelOf(b):0;
 export const outputMultiplier=b=>[0,1,1.6,2.4][levelOf(b)];
 export const buildingKey=b=>b.id||`${b.x},${b.y}`;
-export const storageOf=s=>200+s.buildings.filter(b=>b.type==='granary'&&isOperational(b)).reduce((n,b)=>n+150*levelOf(b),0);
+export const storageOf=s=>{const stores=s.buildings.filter(b=>isOperational(b)&&(['shrine','granary','depot'].includes(b.type)||b.type==='house'&&b.stock&&MATERIALS.some(k=>b.stock[k]>0)));return s.inventory?(stores.length?stores.reduce((n,b)=>n+(b.type==='granary'?150*levelOf(b):b.type==='depot'?60*levelOf(b):200),0):200):200+s.buildings.filter(b=>b.type==='granary'&&isOperational(b)).reduce((n,b)=>n+150*levelOf(b),0);};
 export const housingOf=s=>s.buildings.reduce((n,b)=>n+capacityOf(b),0);
 
 export const citizenName=id=>['Амал','Нин-Ая','Илду','Энлил','Шуба','Тари','Ишме','Нанна','Лугаль','Сила','Уту','Белет'][id%12]+(id>=12?` ${Math.floor(id/12)+1}`:'');
