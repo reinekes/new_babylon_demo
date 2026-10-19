@@ -1,3 +1,4 @@
+import {fieldWater,irrigationFor} from './irrigation.js';
 import {ROLES,validateEducation,newMedicalSkill,advanceMedicalYear} from './education.js';
 import {initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
 import {validateHouseholds} from './households.js';
@@ -30,7 +31,7 @@ export function canBuild(s,type,x,y,placementOnly=false){
   if(terrain(x,y,s)!=='water'||terrain(x,y)!=='water')return 'Выбери клетку воды: мост соединит оба берега';
   if(s.buildings.some(b=>b.type==='bridge'&&b.y===y))return 'На этом участке уже есть мост';
  }else if(terrain(x,y,s)==='water')return 'На воде можно построить мост';
- if(type==='field'&&terrain(x,y,s)!=='fertile')return 'Полю нужна зелёная земля у реки';
+ if(type==='field'&&!fieldWater(s,{x,y}).productive)return 'Полю нужна приречная земля или готовый канал с водой рядом';
  if(['clay','reed','quarry','logging','hunting','garden'].includes(type)&&!nearDeposit(s,({quarry:'stone',logging:'forest',hunting:'wildlife',garden:'dates'})[type]||type,x,y))return type==='garden'?'Нужен отмеченный финиковый участок':'Нужно отмеченное месторождение';
  if(type==='fishing'&&!isShore(s,x,y))return 'Нужна сухая клетка у воды';
  if(type==='ziggurat'&&s.buildings.some(b=>b.type===type))return 'Зиккурат уже построен';if(!placementOnly&&(b.prestige||0)>s.resources.prestige)return `Нужно ${b.prestige} престижа`;
@@ -40,16 +41,17 @@ export function canBuild(s,type,x,y,placementOnly=false){
 export const canPlace=(s,type,x,y)=>canBuild(s,type,x,y,true);
 export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};for(const k of [...MATERIALS,'faith'])s.resources[k]-=BUILDINGS[type][k]||0;s.buildings.push({type,x,y,level:1,construction:{...createOrder(BUILDINGS[type]),order:nextOrder(s)}});s.capacity=housingOf(s);syncCitizens(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 export function upgradeCost(b){const factor=levelOf(b)===1?1.5:2.5;return {clay:Math.ceil(BUILDINGS[b.type].clay*factor),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*factor)),...(levelOf(b)===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{})};}
-export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
+export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.type==='canal')return 'Канал готовится в один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);for(const [k,n]of Object.entries(cost))s.resources[k]-=n;b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='house')return `Жильё: ${capacityOf(b)} жителей`;
+ if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив соседних клеток':'Сухое русло · соедини готовыми участками с рекой';
  if(b.type==='healer')return `1 обученный лекарь · ${1+level} места · база ${1+(level-1)*.5} здоровья/с · требуется обучение в храме`;
  if(b.type==='market')return `Приём караванов · 2 носильщика · до ${4+2*level} ед. груза за рейс`;
  if(b.type==='granary')return `+${150*level} хранения каждого материала · принимает все грузы`;
  if(b.type==='bridge')return `Соединяет берега · скорость на мосту ×${(1+(level-1)*.25).toFixed(2)}`;
  const output=Object.entries(def.output).map(([k,n])=>`${(n*outputMultiplier(b)).toFixed(n<1?2:1)} ${RESOURCE_NAMES[k]}`).join(' + ');
- return `${output} за рейс работника · 2 рабочих места${b.type==='garden'?` · +${2+2*level} довольства`:''}`;
+ return `${b.type==='field'?(Number.isInteger(b.x)?fieldWater(s,b).label:'Приречная земля или полив из канала')+' · ':''}${output} за рейс работника · 2 рабочих места${b.type==='garden'?` · +${2+2*level} довольства`:''}`;
 }
 export function miracle(s,id){
  const m=MIRACLES[id];if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<m.cost)return {ok:false,reason:`Нужно ${m.cost} веры`};if(id==='abundance'&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
@@ -158,7 +160,7 @@ export function decode(raw){
    const key=buildingKey(b),land=terrain(b.x,b.y,s);
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
    if(b.type==='bridge'){if(land!=='water'||bridgeRows.has(b.y))return null;bridgeRows.add(b.y);}
-   else if(land==='water'||b.type==='field'&&land!=='fertile')return null;
+   else if(land==='water'||b.type==='canal'&&(b.level!==1||b.construction?.kind==='upgrade'))return null;
    cells.add(key);
   }
   if(s.roadAnchors!==undefined&&(!Array.isArray(s.roadAnchors)||s.roadAnchors.length>WIDTH*HEIGHT||s.roadAnchors.some(b=>terrain(b.x,b.y,s)==='void'||!['road'].includes(b.type))))return null;

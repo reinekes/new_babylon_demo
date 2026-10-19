@@ -1,3 +1,4 @@
+import {drawCanal,irrigationFor} from './irrigation.js';
 import {drawGroundTexture} from './terrain-texture.js';
 import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
@@ -265,9 +266,12 @@ export class Renderer{
  if(this.lighting.night){c.fillStyle=`rgba(239,232,207,${this.lighting.night*.65})`;for(let k=0;k<55;k++){const px=hash(k,34)*w,py=hash(k,56)*(h-80);c.beginPath();c.arc(px,py,(k%5===0?1.2:.6)*this.s,0,7);c.fill();}}
  this.terrainLayer(s);
  for(let k=0;k<42;k++){const yy=((k*.47+t*.13)%(HEIGHT-.3))-.4;const xx=river(yy)+(hash(k,9)-.5)*1.45;const p=this.point(xx,yy),p2=this.point(xx+.13+hash(k,8)*.4,yy+.06);this.line([p,p2],'#c3d9bd70',this.s);}
+ const irrigation=irrigationFor(s);
+ for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
  this.streetsLayer();
+ for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
- const entities=[...s.buildings.filter(b=>b.type!=='bridge'||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...visibleCitizens(s).map(person=>({...person,kind:'person',onBridge:onBridge(s.buildings,person.x,person.y)}))];
+ const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...visibleCitizens(s).map(person=>({...person,kind:'person',onBridge:onBridge(s.buildings,person.x,person.y)}))];
  const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:(s.simTime||0)*4});}}}
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpan(b.y);for(let x=span.left;x<span.right;x+=.5)entities.push({x:x+.25,y:span.y+.13,kind:'bridgeRail',end:Math.min(x+.5,span.right)});}
  const lamps=[...this.streets.nodes.values()].filter((p,i)=>i%4===0||this.streets.graph.get(p.key).size>=3).map(p=>({...p,kind:'lamp'}));

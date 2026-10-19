@@ -1,3 +1,4 @@
+import {fieldWater,drawCanal} from './irrigation.js';
 import {houseLightCount} from './households.js';
 import {levelOf} from './definitions.js';
 import {seed} from './city-life.js';
@@ -5,6 +6,7 @@ import {seed} from './city-life.js';
 // All solid architecture is painted inside its depth-sorted scene entry.
 // Details and windows therefore occlude residents exactly like the main walls.
 export function drawBuilding(r, b, state, t) {
+  if(b.type==='canal'){drawCanal(r,b,state);return;}
   if(b.type==='bridge'){r.bridge(b);return;}
   const level=levelOf(b);
   const p=r.point(b.x,b.y), c=r.ctx, q=r.s, x=p.x, y=p.y;
@@ -100,18 +102,19 @@ export function drawBuilding(r, b, state, t) {
   }
 
   if(b.type==='field') {
-    r.tile(b.x,b.y,state.drought?'#ac935b':'#94a86a');
+    const water=fieldWater(state,b),dry=!water.productive||state.drought&&!water.canal;
+    r.tile(b.x,b.y,dry?'#ac935b':'#94a86a');
     for(let k=0;k<7;k++){
       const yy=-.39+k*.13;
-      r.line([r.point(b.x-.42,b.y+yy),r.point(b.x+.42,b.y+yy)],state.drought?'#897447':'#688352',2*q);
+      r.line([r.point(b.x-.42,b.y+yy),r.point(b.x+.42,b.y+yy)],dry?'#897447':'#688352',2*q);
       for(let j=0;j<7;j++){
         const a=r.point(b.x-.38+j*.12,b.y+yy),sway=r.reduce?0:Math.sin(t*1.5+k+j)*q;
-        r.line([[a.x,a.y],[a.x+sway,a.y-6*q]],state.drought?'#c9b276':state.season===2?'#dfc77f':'#c1c87b',1.3*q);
+        r.line([[a.x,a.y],[a.x+sway,a.y-6*q]],dry?'#c9b276':state.season===2?'#dfc77f':'#c1c87b',1.3*q);
         r.line([[a.x+sway,a.y-6*q],[a.x-2*q+sway,a.y-4*q]],'#d5ce87',.8*q);
       }
     }
     const a=r.point(b.x-.46,b.y-.45),z=r.point(b.x-.46,b.y+.45);
-    r.line([a,z],'#79aaa0',2*q);
+    r.line([a,z],dry?'#a6885b':'#79aaa0',2*q);
   }
 
   if(b.type==='clay') {

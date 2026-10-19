@@ -7,7 +7,7 @@ export const materialsReady=q=>Object.keys(q.required).every(k=>(q.delivered[k]|
 export function constructionProgress(b){
  const q=b.construction;if(!q)return {ratio:1,stage:'Готово',work:1,materials:1};
  const total=Object.values(q.required).reduce((a,b)=>a+b,0),materials=total?Object.values(q.delivered).reduce((a,b)=>a+b,0)/total:1,work=Math.min(1,q.work/(workRequired(b)));
- return {ratio:materials*.4+work*.6,materials,work,stage:!materialsReady(q)?'Доставка материалов':b.type==='road'?'Укладка покрытия':work<.3?'Фундамент':work<.75?'Возведение стен':'Крыша и отделка'};
+ return {ratio:materials*.4+work*.6,materials,work,stage:!materialsReady(q)?'Доставка материалов':b.type==='road'?'Укладка покрытия':b.type==='canal'?(work<.7?'Выкапывание русла':'Укрепление берегов'):work<.3?'Фундамент':work<.75?'Возведение стен':'Крыша и отделка'};
 }
 export function finishConstruction(s){
  let changed=false;

@@ -1,9 +1,13 @@
+import {drawCanal} from './irrigation.js';
 import {constructionProgress} from './construction.js';
 import {bridgeSpan} from './world.js';
 // Drawn in the same depth queue as completed architecture and residents.
 export function drawConstruction(r,b,s,t){
  const q=b.construction,c=r.ctx,scale=r.s,p=r.point(b.x,b.y),progress=constructionProgress(b);
- if(b.type==='road'){
+ if(b.type==='canal'){
+  drawCanal(r,b,s,{dry:true,progress:.15+progress.work*.85});
+  for(const dx of [-.3,.3]){const a=r.point(b.x+dx,b.y+.25);r.box(a.x,a.y,4*scale,2*scale,(2+progress.work*3)*scale,'#c6a573','#9b7c50','#b79460');}
+ }else if(b.type==='road'){
   r.line([r.point(b.a.x,b.a.y),r.point(b.b.x,b.b.y)],'#ccaa78',6*scale);
   for(const a of [-7,7]){r.line([[p.x+a*scale,p.y+3*scale],[p.x+a*scale,p.y-8*scale]],'#8b704c',1.4*scale);}
   r.line([[p.x-8*scale,p.y-8*scale],[p.x+8*scale,p.y-8*scale]],'#dbc08c',2*scale);

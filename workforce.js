@@ -1,3 +1,4 @@
+import {fieldWater} from './irrigation.js';
 import {medicalLevel,qualifiedHealer,newMedicalSkill,STUDY_SECONDS,healingSpeed,healingQuality,healingCost} from './education.js';
 import {initializeWellbeing,advanceWellbeing,workRate,beliefMultiplier} from './wellbeing.js';
 import {ration} from './households.js';
@@ -162,7 +163,7 @@ function harvest(s,c,ctx){
  const def=BUILDINGS[b.type],boost=s.buffs||{};c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
-  if(resource==='food')mult*=(b.type==='field'?[.8,1,1.6,.3][s.season]*(s.drought?.5:1)*(s.rain?1.5:1):1)*(boost.fertility?1.6:1);
+  if(resource==='food')mult*=(b.type==='field'?[.8,1,1.6,.3][s.season]*(s.drought&&!fieldWater(s,b).canal ? .5 : 1)*(s.rain?1.5:1):1)*(boost.fertility?1.6:1);
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   c.cargo[resource]=base*mult;
@@ -273,6 +274,7 @@ function advanceCitizen(s,c,dt,ctx){
   }
   if(c.phase==='working'){
    const b=ctx.buildings.get(c.work);if(!b){startTrip(s,c,c.home,'toHome',ctx);continue;}
+   if(b.type==='field'&&!fieldWater(s,b).productive)return;
    if(b.type==='healer'){
     const patients=(ctx.care?.get(c.work)?.patients||[]).filter(p=>p.phase==='treatment'&&p.health<(p.careGoal||85)&&!s.funeral?.actors.some(a=>a.id===p.id));
     let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'healer')*healingSpeed(c);const cost=healingCost(c);

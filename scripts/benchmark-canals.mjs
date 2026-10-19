@@ -1,0 +1,11 @@
+import {performance} from 'node:perf_hooks';
+import {createGame,advanceTime,terrain} from '../engine.js';
+import {syncCitizens} from '../workforce.js';
+import {housingOf} from '../definitions.js';
+import {irrigationFor} from '../irrigation.js';
+const s=createGame();
+for(const y of [4,6,10,12,16,20])for(let x=3;x<18;x++)if(terrain(x,y,s)!=='water'&&!s.buildings.some(b=>b.x===x&&b.y===y))s.buildings.push({type:'canal',x,y,level:1});
+for(let y=2;y<25;y+=2)for(let x=2;x<30;x+=2)if(terrain(x,y,s)!=='water'&&!s.buildings.some(b=>b.x===x&&b.y===y))s.buildings.push({type:irrigationFor(s).irrigated.has(`${x},${y}`)||terrain(x,y,s)==='fertile'?'field':'house',x,y,level:3});
+s.population=200;s.capacity=housingOf(s);syncCitizens(s);const samples=[];
+for(let i=0;i<900;i++){s.event=null;const a=performance.now();advanceTime(s,4/60);samples.push(performance.now()-a);}samples.sort((a,b)=>a-b);
+console.log(JSON.stringify({population:s.population,buildings:s.buildings.length,canals:s.buildings.filter(b=>b.type==='canal').length,wet:irrigationFor(s).wet.size,simulation4x:{medianMs:samples[450],p95Ms:samples[855],maxMs:samples[899]}}));
