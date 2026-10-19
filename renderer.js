@@ -7,6 +7,7 @@ import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
+const placementTypes=new Set(['field','bridge','clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
 export class Renderer{
  constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.45;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(moves[e.key]){e.preventDefault();const current=this.hover||{x:10,y:9};const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(WIDTH-1,current.x+dx)),y:Math.max(0,Math.min(HEIGHT-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= {x:10,y:9};this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
@@ -69,12 +70,19 @@ export class Renderer{
   for(let k=0;k<Math.min(8,Math.ceil(amount/6));k++){const x=p.x+(15+(k%3)*4)*q,y=p.y+(-6+Math.floor(k/3)*3)*q;this.box(x,y,3*q,1.5*q,(4+Math.floor(k/6)*4)*q,'#d0b081','#99764e','#b69362');this.line([[x,y-4*q],[x,y+q]],'#e6d09b',.7*q);}
   for(let k=0;k<Math.min(4,Math.ceil(outgoing/6));k++){const x=p.x+(-21+k*4)*q,y=p.y+9*q;this.box(x,y,3*q,1.5*q,4*q,'#8fa498','#657f72','#7e9585');this.line([[x,y-4*q],[x,y+q]],'#d9d9aa',.7*q);}
  }
+ placementSites(s,selection){
+  if(!placementTypes.has(selection))return [];
+  const key=JSON.stringify([selection,s.buildings.map(b=>[b.type,b.x,b.y]),s.world]);
+  if(this.placementCache?.state===s&&this.placementCache.key===key)return this.placementCache.tiles;
+  const tiles=[];for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++)if(!canPlace(s,selection,x,y))tiles.push({x,y});
+  this.placementCache={state:s,key,tiles};return tiles;
+ }
  placementLayer(s,selection){
-  if(!selection)return;
+  if(!placementTypes.has(selection))return;
   const pulse=this.reduce?1:.82+Math.sin((s.simTime||0)*2)*.18,special=['clay','reed','garden','quarry','logging','hunting','fishing'].includes(selection),c=this.ctx;
   c.save();c.lineJoin='round';c.shadowColor='#efff96';c.shadowBlur=5*this.s;
-  for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){
-   if(!this.inView(x,y,40)||canPlace(s,selection,x,y))continue;
+  for(const {x,y}of this.placementSites(s,selection)){
+   if(!this.inView(x,y,40))continue;
    const points=[this.point(x-.45,y-.45),this.point(x+.45,y-.45),this.point(x+.45,y+.45),this.point(x-.45,y+.45)];
    c.globalAlpha=pulse;
    this.polygon(points,special?'#d0ec9650':'#fff8d223');

@@ -71,7 +71,7 @@ test('placement outlines remain visible for valid terrain even without money',as
  const {createGame}=await import('../engine.js');const s=createGame();s.resources.clay=0;s.resources.reed=0;
  const r=Object.create(Renderer.prototype),drawn=[];
  Object.assign(r,{s:1,reduce:true,ctx:{save(){},restore(){}},inView:()=>true,point:(x,y)=>({x,y}),polygon:points=>drawn.push(points),line(){}});
- r.placementLayer(s,'house');assert.ok(drawn.some(points=>points[0].x===2-.45&&points[0].y===2-.45));
+ for(const type of ['house','shrine','granary','market','ziggurat']){r.placementLayer(s,type);assert.equal(drawn.length,0,`${type} must not highlight the whole map`);}
  drawn.length=0;r.placementLayer(s,'clay');assert.ok(drawn.length>0);assert.ok(drawn.length<20);
 });
 
@@ -100,4 +100,12 @@ test('placement highlights remain above night and weather shading',async()=>{
 });
 test('reserved warehouse goods stay visible on the ground until porters take them',async()=>{
  const{createGame}=await import('../engine.js'),s=createGame(),r=Object.create(Renderer.prototype);r.refreshCity(s);s.resources.clay=0;s.trade.sales=[{resource:'clay',remaining:5}];assert.equal(r.groundStocks(s)[0].stock.clay,5);s.trade.sales[0].remaining=2;assert.equal(r.groundStocks(s)[0].stock.clay,2);s.trade.sales[0].remaining=0;assert.equal(r.groundStocks(s)[0].stock.clay,0);
+});
+test('placement sites reuse terrain checks until buildings or deposits change',async()=>{
+ const {createGame}=await import('../engine.js'),s=createGame(),r=Object.create(Renderer.prototype);
+ const first=r.placementSites(s,'clay');assert.ok(first.length>0);s.resources.clay=0;s.simTime+=1;
+ assert.equal(r.placementSites(s,'clay'),first);
+ const tile=first[0];s.buildings.push({type:'house',...tile});assert.ok(!r.placementSites(s,'clay').some(p=>p.x===tile.x&&p.y===tile.y));
+ s.buildings.pop();s.world.deposits=s.world.deposits.filter(d=>d.x!==tile.x||d.y!==tile.y);assert.ok(!r.placementSites(s,'clay').some(p=>p.x===tile.x&&p.y===tile.y));
+ assert.deepEqual(r.placementSites(s,'house'),[]);
 });
