@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {createGame,encode,decode} from '../engine.js';
+import {makeDemoDistrict,readCityCopy,DISTRICT_SOURCE_KEY} from '../district3d/state.js';
+test('3D demo is a valid real city with crafts, families and sheep',()=>{const s=makeDemoDistrict();assert.ok(decode(encode(s)));for(const type of ['pottery','house','sheepfold','weaver','field'])assert.ok(s.buildings.some(b=>b.type===type));assert.ok(s.population>=24);});
+test('3D city import never changes the primary save and creates independent identities/cargo',()=>{const original=createGame(),raw=encode(original),store={getItem:k=>k===DISTRICT_SOURCE_KEY?raw:null,setItem(){throw Error('must not write')}};const copy=readCityCopy(store);assert.equal(copy.ok,true);assert.equal(encode(original),raw);copy.state.citizens[0].cargo.clay=9;assert.equal(encode(original),raw);assert.equal(store.getItem(DISTRICT_SOURCE_KEY),raw);assert.equal(readCityCopy({getItem:()=>'{broken'}).ok,false);assert.equal(readCityCopy({getItem(){throw Error('blocked')}}).ok,false);});
