@@ -7,6 +7,7 @@ import {roadKey} from '../roads.js';
 import {generateStreets} from '../city-life.js';
 import {canPlace} from '../engine.js';
 import {createGameWater,canalArm,wornRoadGeometry,canalSection} from './water.js';
+import {cargoLayout,createGoodsSources} from './goods.js';
 import {floodplainTufts,tuftGeometry,riverbankGeometry,rectangularSiteGeometry} from './nature.js';
 
 const RESOURCE_SITES={clay:{label:'Глина',color:'#b88764'},reed:{label:'Тростник',color:'#82985c'},stone:{label:'Камень',color:'#a2a996'},forest:{label:'Дерево',color:'#6e8955'},wildlife:{label:'Дичь',color:'#ab9064'},dates:{label:'Финики',color:'#b79a4f'}};
@@ -39,13 +40,35 @@ export function landscapePlan(s){
  const c=s.trade?.caravan,caravan=c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{x:c.x,y:c.y,river:c.transport==='river',stock:{...c.stock},route:c.route||[],routeIndex:c.routeIndex||0}:null;
  return {roads,canals,palms,caravan,deposits};
 }
-function groundStocks(s,net){
+const groundYards=new WeakMap();
+// Full four-column/four-row parcel footprint, in map tiles, plus trunk clearance.
+const yardTreeClear=(yard,tree)=>Math.hypot(Math.max(Math.abs(tree.x-yard.x)-.26,0),Math.max(yard.y-.05-tree.y,tree.y-yard.y-.38,0))>=.45;
+function findGroundYard(s,net){
  if(s.buildings.some(b=>b.type==='granary'&&b.construction?.kind!=='new'))return null;
  const depot=s.buildings.find(b=>b.type==='shrine'&&b.construction?.kind!=='new')||s.buildings.find(b=>b.type==='house'&&b.construction?.kind!=='new');if(!depot)return null;
- const port=net.ports.find(p=>p.building.x===depot.x&&p.building.y===depot.y),stock={...s.resources};
+ const port=net.ports.find(p=>p.building.x===depot.x&&p.building.y===depot.y);
+ // Tree and palm planning is done only on topology changes, never per animation frame.
+ const trees=[...landscapePlan(s).palms,...(s.gathering?.features||[]).filter(f=>f.kind==='tree')];
+ const anchor=port||{x:depot.x+.5,y:depot.y+.5},candidates=[];
+ for(let radius=1;radius<=4;radius+=.5)for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1],[1,1],[-1,1],[-1,-1],[1,-1]]){
+  const x=depot.x+dx*radius,y=depot.y+dy*radius;
+  if(x<.5||y<.5||x>WIDTH-1.5||y>HEIGHT-1.5||shoreDistance(x,y,s)<.55)continue;
+  if(s.buildings.some(b=>Math.abs(b.x-x)<.85&&Math.abs(b.y-y)<.95))continue;
+  if(net.edges.some(([a,b])=>pointDistance({x,y},a,b)<.6))continue;
+  if(trees.some(t=>!yardTreeClear({x,y},t)))continue;
+  candidates.push({x,y,d:Math.hypot(x-anchor.x,y-anchor.y)});
+ }
+ candidates.sort((a,b)=>a.d-b.d);const yard=candidates[0];
+ return yard?{x:yard.x,y:yard.y}:null;
+}
+export function groundStocks(s,net,topologySignature=landscapeSignature(s)){
+ let cached=groundYards.get(s);
+ if(!cached||cached.net!==net||cached.signature!==topologySignature){cached={net,signature:topologySignature,yard:findGroundYard(s,net)};groundYards.set(s,cached);}
+ if(!cached.yard)return null;
+ const stock={...s.resources};
  for(const q of s.trade?.sales||[])stock[q.resource]=(stock[q.resource]||0)+q.remaining;
  for(const b of [...s.buildings,...s.roads||[]])for(const [k,n]of Object.entries(b.construction?.remaining||{}))stock[k]=(stock[k]||0)+n;
- return {x:port?.x??depot.x+.5,y:port?.y??depot.y+.5,stock};
+ return {...cached.yard,stock};
 }
 
 export async function createGameLandscape(B,scene,initialState,materials){
@@ -171,13 +194,15 @@ export async function createGameLandscape(B,scene,initialState,materials){
    }else{const health=Math.max(.15,f.health);for(const m of parts)m.scaling.set(.45+.30*health,.23+.35*health,.43+.27*health);}
   }
  }
- function sack(name,x,y,z,mat,collection,parent){const m=B.MeshBuilder.CreateSphere(name,{diameter:.62,segments:6},scene);m.position.set(x,y,z);m.scaling.set(1,.8,.8);m.material=mat;m.parent=parent||null;return add(m,collection);}
- function cargo(stock,collection,parent,origin={x:0,y:0,z:0}){let i=0;for(const [kind,amount]of Object.entries(stock||{})){if(amount<=0)continue;for(let j=0;j<Math.min(3,Math.ceil(amount/50));j++){sack(`cargo-${kind}`,origin.x+(i%3-1)*.7,origin.y+.23+j*.34,origin.z+Math.floor(i/3)*.55,['stone','clay','wood','reed'].includes(kind)?materials[kind==='clay'?'terracotta':kind]:materials.reed,collection,parent);}if(++i===9)break;}}
- function updateStocks(s){const stocks=groundStocks(s,streetNetwork),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:.1,z:stocks.y*TILE});}
+ const goods=createGoodsSources(B,scene,materials);meshes.push(...goods.meshes);
+ function cargo(stock,collection,parent,origin={x:0,y:0,z:0},options={}){
+  for(const p of cargoLayout(stock,options)){const m=goods.sources.get(p.kind).createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=parent||null;m.position.set(origin.x+p.x,origin.y+p.y,origin.z+p.z);m.metadata={goods:{...p,supportY:origin.y+p.y}};add(m,collection);}
+ }
+ function updateStocks(s){const stocks=groundStocks(s,streetNetwork,signature),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:surfaceElevation(stocks.x,stocks.y,s),z:stocks.y*TILE});}
  function updateTrader(c,time){const next=JSON.stringify(c?[c.river,c.stock]:null);if(next!==traderSignature){traderSignature=next;remove(traderMeshes);traderRoot?.dispose();traderRoot=null;if(c){traderRoot=new B.TransformNode('actual-trade-caravan',scene);
-    if(c.river){const hull=box('trade-reed-boat',0,.04,0,1.65,.42,5.2,materials.reed,traderMeshes);hull.parent=traderRoot;for(const side of [-1,1]){const bow=B.MeshBuilder.CreateSphere('boat-raised-bow',{diameter:1,segments:6},scene);bow.scaling.set(.7,.5,1.2);bow.position.set(0,.17,side*2.2);bow.material=materials.reed;bow.parent=traderRoot;add(bow,traderMeshes);}for(const x of [-.8,.8]){const rim=box('boat-gunwale',x,.36,0,.13,.35,4.5,materials.wood,traderMeshes);rim.parent=traderRoot;}cargo(c.stock,traderMeshes,traderRoot,{x:0,y:.4,z:-.7});
+    if(c.river){const hull=box('trade-reed-boat',0,.04,0,1.65,.42,5.2,materials.reed,traderMeshes);hull.parent=traderRoot;for(const side of [-1,1]){const bow=B.MeshBuilder.CreateSphere('boat-raised-bow',{diameter:1,segments:6},scene);bow.scaling.set(.7,.5,1.2);bow.position.set(0,.17,side*2.2);bow.material=materials.reed;bow.parent=traderRoot;add(bow,traderMeshes);}for(const x of [-.8,.8]){const rim=box('boat-gunwale',x,.36,0,.13,.35,4.5,materials.wood,traderMeshes);rim.parent=traderRoot;}cargo(c.stock,traderMeshes,traderRoot,{x:0,y:.25,z:-1.35},{columns:2,layers:1,maxKinds:10});
     }else{ // Original pack donkey and merchant, deliberately modest beside licensed residents.
-     const body=box('caravan-pack-donkey',0,.91,0,.65,.65,1.35,materials.wood,traderMeshes);body.parent=traderRoot;for(const x of [-.23,.23])for(const z of [-.45,.45]){const leg=box('donkey-leg',x,.35,z,.15,.7,.15,materials.wood,traderMeshes);leg.parent=traderRoot;}const head=box('donkey-head',0,1.3,.8,.36,.5,.6,materials.wood,traderMeshes);head.parent=traderRoot;for(const x of [-.13,.13]){const ear=box('donkey-ear',x,1.72,.8,.11,.4,.12,materials.wood,traderMeshes);ear.parent=traderRoot;}cargo(c.stock,traderMeshes,traderRoot,{x:0,y:1.25,z:-.6});const person=box('trade-merchant',1.1,.85,.1,.52,1.5,.4,materials.linen,traderMeshes);person.parent=traderRoot;sack('merchant-head',1.1,1.8,.1,materials.terracotta,traderMeshes,traderRoot);
+     const body=box('caravan-pack-donkey',0,.91,0,.65,.65,1.35,materials.wood,traderMeshes);body.parent=traderRoot;for(const x of [-.23,.23])for(const z of [-.45,.45]){const leg=box('donkey-leg',x,.35,z,.15,.7,.15,materials.wood,traderMeshes);leg.parent=traderRoot;}const head=box('donkey-head',0,1.3,.8,.36,.5,.6,materials.wood,traderMeshes);head.parent=traderRoot;for(const x of [-.13,.13]){const ear=box('donkey-ear',x,1.72,.8,.11,.4,.12,materials.wood,traderMeshes);ear.parent=traderRoot;}const rack=box('donkey-wood-pack-support',0,1.2,-.1,1.5,.07,.6,materials.wood,traderMeshes);rack.parent=traderRoot;cargo(c.stock,traderMeshes,traderRoot,{x:0,y:1.235,z:-.1},{columns:2,layers:1,maxKinds:2});const person=box('trade-merchant',1.1,.85,.1,.52,1.5,.4,materials.linen,traderMeshes);person.parent=traderRoot;const merchantHead=B.MeshBuilder.CreateSphere('merchant-head',{diameter:.48,segments:6},scene);merchantHead.position.set(1.1,1.8,.1);merchantHead.material=materials.terracotta;merchantHead.parent=traderRoot;add(merchantHead,traderMeshes);
     }}}
   if(!c||!traderRoot)return;traderRoot.position.set(c.x*TILE,c.river?-.08+Math.sin(time*1.7)*.025:surfaceElevation(c.x,c.y,currentState),c.y*TILE);const target=c.route[c.routeIndex];if(target&&Math.hypot(target.x-c.x,target.y-c.y)>.01)traderRoot.rotation.y=Math.atan2(target.x-c.x,target.y-c.y);
  }

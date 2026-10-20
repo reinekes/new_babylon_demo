@@ -5,7 +5,20 @@ export function residentMotion(id){
  let hash=2166136261;for(const ch of String(id??0))hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
  hash=Math.imul(hash^(hash>>>16),2246822507)>>>0;hash=Math.imul(hash^(hash>>>13),3266489909)>>>0;hash=(hash^(hash>>>16))>>>0;
  const unit=n=>((hash>>>n)&255)/255;
- return {width:.91+unit(0)*.18,height:.95+unit(8)*.10,gait:.83+unit(16)*.34,phase:unit(0)*Math.PI*2,stride:.012+unit(8)*.018};
+ return {width:.80+unit(0)*.40,height:.89+unit(8)*.22,gait:.83+unit(16)*.34,phase:unit(0)*Math.PI*2,stride:.012+unit(8)*.018};
+}
+
+// The shipped GLB contains two complete strides in 104 frames at 60 fps.
+// Each planted foot travels about .62m backwards per stance: 4 * .62m per clip.
+// Verified against foot_l/foot_r transform tracks, not the simulation clock.
+export const RESIDENT_WALK={authoredMetres:2.48,frames:104,fps:60};
+export function residentWalkPhase(phase,metres,forwardScale=1){
+ return (phase+Math.max(0,metres)/(RESIDENT_WALK.authoredMetres*Math.max(.1,forwardScale)))%1;
+}
+export function residentIdentity(id){
+ const m=residentMotion(id),n=Math.round(m.phase/(Math.PI*2)*255);
+ return {hair:n%4,beard:Math.floor(n/4)%4,skin:Math.floor(n/16)%5,cloth:Math.floor(n/3)%7,
+  headWidth:.88+(n%7)*.04,headHeight:.91+(Math.floor(n/7)%6)*.035};
 }
 
 // Resolve actual visible neighbours only, keeping route coordinates, cargo and IDs intact.

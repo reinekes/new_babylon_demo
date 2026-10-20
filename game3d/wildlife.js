@@ -1,5 +1,6 @@
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
+import {coatVariant,hasHairCoat,createCoatTextures} from './animal-coats.js';
 
 // Dimensions are metres. Author-created anatomy, not archaeological reconstructions.
 const species={
@@ -14,20 +15,21 @@ const species={
 
 /** A shared, smooth anatomical animal layer; state and routes remain read-only. */
 export function createWildlife(B,scene,meshes=[]){
- const actors=new Map(),sources=new Map(),materials=new Map(),seen=new Set();let disposed=false,time=0,blend=1;
+ const actors=new Map(),sources=new Map(),geometrySources=new Map(),materials=new Map(),coatTextures=[],seen=new Set();let disposed=false,time=0,blend=1;
  const ease=(from,to)=>from+(to-from)*blend;
  const v=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function material(key,color){if(materials.has(key))return materials.get(key);const m=new B.PBRMaterial(`wildlife-${key}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.metallic=0;m.roughness=.97;materials.set(key,m);return m;}
+ function coatMaterial(kind,id){const variant=coatVariant(id),key=`${kind}-coat-${variant}`;if(materials.has(key))return materials.get(key);const m=material(key,'#ffffff'),textures=createCoatTextures(B,scene,kind,variant);m.albedoTexture=textures.albedo;m.bumpTexture=textures.bump;m.roughness=kind==='goat'?.98:.94;coatTextures.push(textures.albedo,textures.bump);return m;}
  const black=material('eyes','#27231e'),horn=material('horn','#625545'),glint=material('eye-glint','#eee5c8');
  function node(name,parent,x=0,y=0,z=0){const n=new B.TransformNode(name,scene);n.parent=parent;n.position.set(x,y,z);return n;}
  // Elliptical rings form a continuous softly curved surface with rounded ends.
  // Each ring is [z, centreY, radiusX, radiusY]. No box geometry is used.
- function loft(name,rings){const positions=[],indices=[],normals=[],segments=16;
-  for(const [z,y,rx,ry]of rings)for(let i=0;i<=segments;i++){const t=i/segments*Math.PI*2;positions.push(Math.cos(t)*rx,y+Math.sin(t)*ry,z);}
+ function loft(name,rings){const positions=[],indices=[],normals=[],uvs=[],segments=16;
+  for(let r=0;r<rings.length;r++){const [z,y,rx,ry]=rings[r];for(let i=0;i<=segments;i++){const t=i/segments*Math.PI*2;positions.push(Math.cos(t)*rx,y+Math.sin(t)*ry,z);uvs.push(i/segments,(z-rings[0][0])/(rings.at(-1)[0]-rings[0][0]));}}
   for(let r=0;r<rings.length-1;r++)for(let i=0;i<segments;i++){const a=r*(segments+1)+i,b=a+segments+1;indices.push(a,b,a+1,a+1,b,b+1);}
-  B.VertexData.ComputeNormals(positions,indices,normals);const mesh=new B.Mesh(name,scene),data=new B.VertexData();data.positions=positions;data.indices=indices;data.normals=normals;data.applyToMesh(mesh);return mesh;
+  B.VertexData.ComputeNormals(positions,indices,normals);const mesh=new B.Mesh(name,scene),data=new B.VertexData();data.positions=positions;data.indices=indices;data.normals=normals;data.uvs=uvs;data.applyToMesh(mesh);return mesh;
  }
- function part(key,parent,mat,build,x=0,y=0,z=0){let source=sources.get(key);if(!source){source=build(`wildlife-source-${key}`);source.material=mat;source.isVisible=false;source.isPickable=false;source.receiveShadows=true;sources.set(key,source);}
+ function part(key,parent,mat,build,x=0,y=0,z=0){const materialKey=`${key}@${mat.name}`;let source=sources.get(materialKey);if(!source){const geometry=geometrySources.get(key);source=geometry?geometry.clone(`wildlife-source-${materialKey}`,null,true):build(`wildlife-source-${key}`);if(!geometry)geometrySources.set(key,source);source.material=mat;source.isVisible=false;source.isPickable=false;source.receiveShadows=true;sources.set(materialKey,source);}
   const m=source.createInstance(`${parent.name}-${key.split(':').at(-1)}`);m.parent=parent;m.position.set(x,y,z);m.isVisible=true;m.isPickable=true;meshes.push(m);return m;
  }
  function ball(key,parent,mat,x,y,z,sx,sy,sz){const m=part(key,parent,mat,name=>B.MeshBuilder.CreateSphere(name,{diameter:1,segments:12},scene),x,y,z);m.scaling.set(sx,sy,sz);return m;}
@@ -53,7 +55,8 @@ export function createWildlife(B,scene,meshes=[]){
   return {root,body,tail,d,lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:[...String(c.id)].reduce((n,ch)=>n+ch.charCodeAt(0),0)*.37};
  }
  function build(c){if(c.kind==='fish')return buildFish(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(.55);
-  const fur=material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
+  const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
+  if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
   part(`${kind}:torso`,body,fur,name=>loft(name,[[-L*.55,0,.003,.003],[-L*.49,.005,W*.45,D*.65],[-L*.36,.015,W*.84,D*.98],[-L*.15,0,W,D],[L*.06,-.015,W*.91,D*.91],[L*.27,.035,W*.79,D*.98],[L*.42,.05,W*.53,D*.78],[L*.49,.04,.003,.003]]));
   ball(`${kind}:belly`,body,pale,0,-D*.43,L*.07,W*1.47,D*.99,L*.75);
@@ -160,6 +163,6 @@ export function createWildlife(B,scene,meshes=[]){
   }
   for(const [id,a]of actors)if(!seen.has(id)){remove(a);actors.delete(id);}
  }
- function dispose(){if(disposed)return;disposed=true;for(const a of actors.values())remove(a);actors.clear();for(const source of sources.values())source.dispose();for(const mat of materials.values())mat.dispose();sources.clear();materials.clear();}
+ function dispose(){if(disposed)return;disposed=true;for(const a of actors.values())remove(a);actors.clear();for(const source of sources.values())source.dispose();for(const mat of materials.values())mat.dispose();for(const texture of coatTextures)texture.dispose();coatTextures.length=0;sources.clear();geometrySources.clear();materials.clear();}
  return {update,dispose,meshes,rootFor:selection=>actors.get(selection.animalId)?.root};
 }

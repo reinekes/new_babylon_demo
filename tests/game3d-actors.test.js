@@ -166,3 +166,77 @@ test('petting pairs use visible child positions once and the matching cat receiv
  try{view=await createGameActors(B,scene,{});view.update(s,1/60);const root=view.rootFor({animalId:cat.id}),tail=root.getChildTransformNodes().find(n=>n.name===`${cat.id}-tail`);assert.equal(tail.rotation.x,-1.25,'the exact paired cat gets the petting pose');assert.equal(JSON.stringify(s),before);}
  finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
+
+// Measure the shipped skeleton, so changing clips cannot silently invalidate cadence.
+test('authored planted foot travel agrees with the two-stride GLB distance calibration',async()=>{
+ const {RESIDENT_WALK}=await import('../game3d/resident-motion.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine);
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);
+  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));
+  const asset=await B.SceneLoader.LoadAssetContainerAsync('',data,scene,undefined,'.glb');asset.addAllToScene();
+  const clip=asset.animationGroups.find(g=>g.name==='Walk_Loop');assert.ok(Math.abs(clip.to-RESIDENT_WALK.frames)<.001);assert.equal(clip.targetedAnimations[0].animation.framePerSecond,RESIDENT_WALK.fps);
+  clip.start(true,1);clip.speedRatio=0;const foot=scene.getTransformNodeByName('foot_l');
+  const sample=frame=>{scene.render();clip.goToFrame(frame);foot.computeWorldMatrix(true);return foot.getAbsolutePosition().clone();};
+  const start=sample(30),end=sample(48),groundTravel=RESIDENT_WALK.authoredMetres*18/RESIDENT_WALK.frames;
+  assert.ok(Math.abs(start.z-end.z-groundTravel)<.065,'planted ankle should counter the calibrated ground travel within 6.5cm');
+  assert.ok(Math.abs(start.y-end.y)<.035,'sample is a planted stance, not the swinging foot');
+  const repeat=sample(82);assert.ok(B.Vector3.Distance(start,repeat)<.01,'the 104-frame clip repeats its gait after 52 frames');
+ }finally{scene.dispose();engine.dispose();}
+});
+
+test('walk phase follows rendered metres for adults, children and smoothed lanes and freezes on pause',async()=>{
+ const {residentWalkPhase}=await import('../game3d/resident-motion.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
+  const s=createGame(),adult={...s.citizens.find(c=>c.age>=16),id:10001,phase:'toStore',x:7,y:10,cargo:{},carrying:false},child={...adult,id:10002,age:7,x:8};s.citizens=[adult,child];
+  view.update(s,1/60);scene.render();
+  for(const c of [adult,child]){
+   const root=view.rootFor({citizenId:c.id}),model=root.getChildTransformNodes().find(n=>n.name.endsWith('-model')),g=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`);
+   let phase=residentMotion(c.id).phase/(Math.PI*2);
+   // Same physical route and same frame cadence, regardless of selected simulation speed.
+   for(const speed of [1,4,2]){c.y+=.02;view.update(s,1/60,{speed});scene.render();phase=residentWalkPhase(phase,.12,model.scaling.z*root.scaling.z);
+    assert.ok(Math.abs(g.animatables[0].masterFrame-(g.from+phase*(g.to-g.from)))<.001,`${c.id} ${speed} actual=${g.animatables[0].masterFrame} expected=${phase*(g.to-g.from)} root=${root.position.asArray()}`);assert.equal(g.speedRatio,0);
+   }
+   const frame=g.animatables[0].masterFrame,foot=root.getChildTransformNodes().find(n=>n.name.endsWith('-foot_l'));foot.computeWorldMatrix(true);const sole=foot.getAbsolutePosition().clone();
+   view.update(s,1/60,{paused:true,speed:4});for(let n=0;n<3;n++)scene.render();foot.computeWorldMatrix(true);
+   assert.equal(g.animatables[0].masterFrame,frame);assert.ok(B.Vector3.Distance(sole,foot.getAbsolutePosition())<1e-6,'pause holds the rendered foot as well as the clip frame');
+  }
+  // Give a later ID a lane offset, then remove its neighbour: smoothing itself moves the figure.
+  adult.x=child.x=7;adult.y=child.y=10;view.update(s,1/60);scene.render();view.update(s,1/60);scene.render();const root=view.rootFor({citizenId:child.id}),model=root.getChildTransformNodes().find(n=>n.name.endsWith('-model')),g=scene.animationGroups.find(g=>g.name===`citizen-${child.id}-Walk_Loop`);
+  const before=root.position.clone(),frame=g.animatables[0].masterFrame;s.citizens=[child];view.update(s,1/60);scene.render();
+  const metres=B.Vector3.Distance(before,root.position),expected=residentWalkPhase((frame-g.from)/(g.to-g.from),metres,model.scaling.z*root.scaling.z);
+  assert.ok(metres>.001);assert.ok(Math.abs(g.animatables[0].masterFrame-(g.from+expected*(g.to-g.from)))<.001,'smoothed visible offset advances feet by the actual rendered distance');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('resident identities are stable, visibly varied and respect age/sex without mutating source materials',async()=>{
+ const {residentIdentity}=await import('../game3d/resident-motion.js');const identities=Array.from({length:32},(_,id)=>residentIdentity(id));
+ for(const key of ['hair','beard','skin','cloth'])assert.ok(new Set(identities.map(i=>i[key])).size>=4,key);
+ assert.deepEqual(residentIdentity(37),residentIdentity(37));assert.ok(Math.max(...identities.map((_,id)=>residentMotion(id).height))-Math.min(...identities.map((_,id)=>residentMotion(id).height))>.18);
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view,source;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?(source=await originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb')):mockContainer(scene,'sheep');
+ try{
+  view=await createGameActors(B,scene,{});const sourceSkin=source.materials.find(m=>/skin/i.test(m.name)),original=sourceSkin.albedoColor.asArray(),s=createGame(),base=s.citizens.find(c=>c.age>=16);
+  s.citizens=Array.from({length:16},(_,id)=>({...base,id,age:id===0?8:30,sex:id===1?'f':'m',phase:'toStore',x:7+id*.2,y:10,clothing:100}));view.update(s,1/60);
+  const skins=new Set(),robes=new Set(),hair=new Set();
+  for(const c of s.citizens){const root=view.rootFor({citizenId:c.id}),meshes=root.getChildMeshes();skins.add(meshes.find(m=>m.material?.name.startsWith('citizen-skin')).material.albedoColor.toHexString());robes.add(meshes.find(m=>m.material?.name.startsWith('citizen-cloth')).material.albedoColor.toHexString());hair.add(meshes.find(m=>m.name.endsWith('-full-hair')).isEnabled());
+   if(c.age<16||c.sex==='f')assert.ok(meshes.filter(m=>/beard/i.test(m.name)).every(m=>!m.isEnabled()||!m.isVisible));
+   const head=root.getChildTransformNodes().find(n=>n.name.endsWith('-head'));head.computeWorldMatrix(true);const inverse=head.getWorldMatrix().clone().invert();
+   const localBounds=mesh=>{mesh.computeWorldMatrix(true);const p=mesh.getBoundingInfo().boundingBox.vectorsWorld.map(v=>B.Vector3.TransformCoordinates(v,inverse));return {min:[0,1,2].map(k=>Math.min(...p.map(v=>v.asArray()[k]))),max:[0,1,2].map(k=>Math.max(...p.map(v=>v.asArray()[k])))};};
+   const cap=meshes.find(m=>m.name.endsWith('-full-hair')),bun=meshes.find(m=>m.name.endsWith('-hair-bun')),beard=meshes.find(m=>m.name.endsWith('-full-beard')),scalp=cap.metadata.attachmentBounds,jaw=beard.metadata.attachmentBounds,capBox=localBounds(cap),bunBox=localBounds(bun),beardBox=localBounds(beard);
+   const scalpWidth=scalp.max[0]-scalp.min[0],scalpDepth=scalp.max[2]-scalp.min[2];
+   assert.ok(capBox.max[0]-capBox.min[0]<scalpWidth*1.04,'cap hugs the actual GLB scalp width');
+   assert.ok(Math.abs((bunBox.min[0]+bunBox.max[0])*.5-(scalp.min[0]+scalp.max[0])*.5)<.001,'one bun is centred behind the skull, never beside it');
+   assert.ok(bunBox.min[2]<scalp.min[2]&&bunBox.max[2]>scalp.min[2],'compact bun intersects the measured rear scalp');
+   assert.ok(scalp.min[2]-bunBox.min[2]<scalpDepth*.14,'bun protrusion stays below 14 percent of scalp depth');
+   assert.ok(beardBox.max[1]<=jaw.max[1]+.001,'beard starts below the measured jaw top, not across the face');
+
+  }
+  assert.ok(skins.size>=4);assert.ok(robes.size>=5);assert.equal(hair.size,2);assert.deepEqual(sourceSkin.albedoColor.asArray(),original);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});

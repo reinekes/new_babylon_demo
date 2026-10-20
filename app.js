@@ -1,4 +1,5 @@
 import {calendarAt,monthTrackHTML,simulationSeconds,secondsToNextMonth} from './calendar.js';
+import {grantTestResources} from './test-tools.js';
 import {festivalReason,orderFestival,cancelFestival,festivalSummary} from './festival.js';
 import {createCityAudio} from './city-audio.js';
 import {createPhotoMode} from './photo-mode.js';
@@ -246,9 +247,13 @@ for(const [i,[type,b]]of Object.entries(Object.entries(BUILDINGS))){
  el.onclick=()=>choose(type);buildSections.get(groupFor(type).id).querySelector('.accordion-buildings').append(el);
 }
 function makeMiracleCard(id,m){
- const el=document.createElement('button');el.className='miracle-card';el.id=`miracle-${id}`;
- el.innerHTML=`<span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><span class="miracle-description">${m.desc}</span><small></small></span>`;
- el.onclick=()=>{const result=miracle(state,id);if(result.ok){renderer.addEffect(id);toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(el);return el;
+ const details=document.createElement('details');details.className='miracle-disclosure';details.dataset.miracle=id;
+ details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p>${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p><button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
+ details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;});
+ details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
+ details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
+ const el=details.querySelector('.miracle-cast');
+ el.onclick=()=>{const result=miracle(state,id);if(result.ok){details.open=false;renderer.addEffect(id);toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
 }
 for(const [id,m]of Object.entries(MIRACLES))if(id!=='cat'||state.pests.nextCat>0)makeMiracleCard(id,m);
 function update(){
@@ -270,7 +275,7 @@ function update(){
  const g=goals(state);setHTML($('goals'),g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join(''));$('goal-number').textContent=`${g.filter(v=>v.done).length} / 5`;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(id==='cat'&&!state.pests.nextCat)continue;const el=$(`miracle-${id}`)||makeMiracleCard(id,m);const reason=state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<m.cost?`Нужно ${m.cost} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'&&r.food>=storage(state)?'Амбары полны':'';
-  el.disabled=!!reason;el.title=`${m.name} · ${m.cost} веры. ${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',el.title);el.querySelector('small').textContent=reason||`${m.cost} веры · ${DOMAIN_NAMES[m.domain]}`;
+  el.disabled=!!reason;el.title=`${m.name} · ${m.cost} веры. ${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);const details=el.closest('details');details.querySelector('.miracle-summary-status').textContent=reason||`${m.cost} веры · ${DOMAIN_NAMES[m.domain]}`;const note=details.querySelector('.miracle-unavailable');note.hidden=!reason;note.textContent=reason;
  }
  $('season-countdown').textContent=`Месяц ${calendar.number} / 12 · день ${calendar.day}${paused?' · пауза':''}`;
  $('pause').textContent=paused?'▶':'Ⅱ';$('pause').setAttribute('aria-label',paused?'Продолжить время':'Приостановить время');$('pause').classList.toggle('active',paused);$('next-season').disabled=state.lost&&!state.funeral||!!state.event;
@@ -310,6 +315,7 @@ $('open-supply').onclick=showSupply;
 $('open-roads').onclick=()=>{clearRoadRoute();if(selection)choose(selection);roadMode=!roadMode;renderer.setRoadMode(roadMode);$('open-roads').setAttribute('aria-pressed',String(roadMode));$('map-hint').textContent=roadMode?'Дороги: выбери участок · стрелки и Enter — с клавиатуры · Escape — выйти':'Выбери здание или жителя';};
 renderer.onRoadSelect=road=>{if(dialog.open)return;if(routeFrom&&roadMode){routeTo=road.id;inspected=null;renderRoadRoute();}else roadDetail(road);};
 $('open-trade').onclick=showTrade;
+$('test-resources').onclick=()=>{const result=grantTestResources(state);if(!result.ok){toast(result.reason);return;}state.news.unshift({title:'Тестовые ресурсы',text:'По команде игрока добавлено 1000 каждого ресурса, включая веру и престиж.',kind:'info',year:state.year,season:state.season,tick:state.tick});state.news=state.news.slice(0,80);save();update();toast('Тест: +1000 каждого ресурса');};
 $('open-construction').onclick=()=>showManagement('construction');$('open-residents').onclick=()=>showCityOverview('citizens');$('open-city-tools').onclick=()=>showCityOverview();$('open-photo').onclick=()=>photo.enter();$('open-festival').onclick=showFestival;$('toggle-sound').onclick=async()=>{const enabled=await cityAudio.toggle();$('toggle-sound').textContent=enabled?'Звук включён':'Звук выключен';$('toggle-sound').setAttribute('aria-pressed',String(enabled));};
 $('reset').onclick=askReset;$('help').onclick=intro;$('pantheon').onclick=pantheon;
 $('pause').onclick=()=>{if(state.lost&&!state.funeral)return;paused=!paused;save();update();};
@@ -318,7 +324,7 @@ $('next-season').title='Перейти к следующему месяцу';$('
 $('day-cycle').onclick=()=>{const clock=lightingAt(state.simTime),target=isWorkday(state.simTime)?20.25:6,seconds=((target-clock.hour+24)%24)*DAY_SECONDS/24+.05;advanceTime(state,seconds);renderer.lightMode='auto';save();update();checkDialogs();};
 $('zoom-in').onclick=()=>renderer.zoomBy?renderer.zoomBy(.2):renderer.zoom=Math.min(3,renderer.zoom+.2);$('zoom-out').onclick=()=>renderer.zoomBy?renderer.zoomBy(-.2):renderer.zoom=Math.max(.3,renderer.zoom-.2);$('home').onclick=()=>renderer.home();$('overview').onclick=()=>renderer.overview();
 dialog.addEventListener('cancel',e=>{e.preventDefault();if(['help','reset','pantheon','construction','residents','confirmation','trade','citytools','festival'].includes(modalKind)){closeDialog();checkDialogs();}});
-document.addEventListener('keydown',e=>{if(photo.active||dialog.open||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(roadMode){clearRoadRoute();$('tile-detail').hidden=true;roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
+document.addEventListener('keydown',e=>{if(photo.active||dialog.open||['INPUT','TEXTAREA','SELECT','SUMMARY'].includes(e.target.tagName))return;if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(roadMode){clearRoadRoute();$('tile-detail').hidden=true;roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
 function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;

@@ -8,8 +8,8 @@ import {surfaceElevation} from '../district3d/terrain.js';
 import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
-import {residentMotion,residentViewPositions} from './resident-motion.js';
-export {residentMotion,residentViewPositions} from './resident-motion.js';
+import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
+export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 
 // These helpers read state only. The renderer never advances workers or writes saves.
 export function actorViewFrame(state){
@@ -30,7 +30,7 @@ export function residentVisual(c,state){
  const look=residentAppearance(c,state.buildings||[]);
  return {...look,scale:c.age<16?.55+Math.max(0,Math.min(c.age,15))*.022:1,
   inspired:!!((c.calling&&c.calling!=='auto')||(c.futureRole&&c.futureRole!=='auto')||state.buffs?.inspiration&&['clay','reed'].includes(look.work)),
-  motion:residentMotion(c.id),mood:c.mood??50,role:c.role||look.work||'resident'};
+  motion:residentMotion(c.id),identity:residentIdentity(c.id),mood:c.mood??50,role:c.role||look.work||'resident'};
 }
 export function actorAnimation(c,distance=0){
  if(c.kind==='sheep')return {clip:distance>.00001?'Walk':['grazing','drinking'].includes(c.behavior)?'Graze':'Idle',pose:c.behavior||'idle'};
@@ -71,18 +71,31 @@ export async function createGameActors(B,scene,materials){
   const unit=metadata.citizenId!==undefined&&height>0?1.7/height:1;
   model.scaling.setAll(unit);model.position.y=-bounds.min.y*unit;
   register(root);
-  const a={root,model,groups,skeletons:copy.skeletons,materials:[],lastX:null,lastY:null,yaw:null,clip:null,cargoKey:null,pose:'idle',time:0,paused:false};
-  // Clone only garments; skin/hair and textures remain shared and are never recolored.
+  const a={root,model,unit,walkPhase:residentMotion(metadata.citizenId).phase/(Math.PI*2),groups,skeletons:copy.skeletons,materials:[],lastX:null,lastY:null,yaw:null,clip:null,cargoKey:null,pose:'idle',time:0,paused:false};
+  // Clone recolored surfaces per resident; shared source materials stay immutable.
   if(metadata.citizenId!==undefined){
-   const cloned=new Map();a.cloth=[];
-   for(const m of model.getChildMeshes())if(m.material&&/undyed|wool|cloth/i.test(m.material.name)){
-    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-cloth-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);a.cloth.push(cloth);}m.material=cloth;
+   const cloned=new Map();a.cloth=[];a.skin=[];a.hair=[];
+   for(const m of model.getChildMeshes())if(m.material&&/undyed|wool|cloth|skin|hair/i.test(m.material.name)){
+    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-${/skin/i.test(m.material.name)?'skin':/hair/i.test(m.material.name)?'hair':'cloth'}-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);(/skin/i.test(m.material.name)?a.skin:/hair/i.test(m.material.name)?a.hair:a.cloth).push(cloth);}m.material=cloth;
    }
    a.load=new B.TransformNode(`${name}-carried`,scene);a.load.parent=root;a.load.position.set(0,1,.37);
    a.details=new B.TransformNode(`${name}-details`,scene);a.details.parent=root;
    a.tool=new B.TransformNode(`${name}-tool`,scene);a.tool.parent=root;a.tool.setEnabled(false);a.toolKind=null;
    a.inspired=sphere(`${name}-inspired`,root,gold,0,1.85,0,.10,.10,.10);a.inspired.setEnabled(false);
    const nodes=model.getChildTransformNodes();a.hands={};a.arms={};
+   a.head=nodes.find(n=>n.name.endsWith('-head'));a.headBase=a.head?.scaling.clone();
+   a.hairMeshes=model.getChildMeshes().filter(m=>/scalp hair/i.test(m.name));a.beardMeshes=model.getChildMeshes().filter(m=>/beard/i.test(m.name));
+   if(a.head&&a.hairMeshes[0]&&a.beardMeshes[0]){
+    a.head.computeWorldMatrix(true);const inverse=a.head.getWorldMatrix().clone().invert();
+    // Measure the authored scalp/jaw in the head's bind space. World guesses put
+    // the bun outside the skull after the GLB's handedness and rest transforms.
+    const bounds=mesh=>{mesh.computeWorldMatrix(true);const points=mesh.getBoundingInfo().boundingBox.vectorsWorld.map(p=>B.Vector3.TransformCoordinates(p,inverse)),min=vec(Infinity,Infinity,Infinity),max=vec(-Infinity,-Infinity,-Infinity);for(const p of points){min.minimizeInPlace(p);max.maximizeInPlace(p);}return {min,max,centre:min.add(max).scale(.5),size:max.subtract(min)};};
+    const scalp=bounds(a.hairMeshes[0]),jaw=bounds(a.beardMeshes[0]);
+    const attach=(label,centre,size,source)=>{const mesh=sphere(`${name}-${label}`,a.head,a.hair[0]||dark,0,0,0,size.x,size.y,size.z);mesh.position.copyFrom(centre);mesh.metadata={...metadata,attachmentBounds:{min:source.min.asArray(),max:source.max.asArray()}};return mesh;};
+    a.fullHair=attach('full-hair',vec(scalp.centre.x,scalp.max.y-scalp.size.y*.23,scalp.centre.z),vec(scalp.size.x*1.03,scalp.size.y*.52,scalp.size.z*.97),scalp);
+    a.bun=attach('hair-bun',vec(scalp.centre.x,scalp.min.y+scalp.size.y*.67,scalp.min.z+scalp.size.z*.04),vec(scalp.size.x*.42,scalp.size.y*.40,scalp.size.z*.35),scalp);
+    a.fullBeard=attach('full-beard',jaw.centre,vec(jaw.size.x*.97,jaw.size.y*1.5,jaw.size.z*.95),jaw);a.jawBounds=jaw;
+   }
    for(const side of ['l','r']){a.hands[side]=nodes.find(n=>n.name.endsWith(`-hand_${side}`));a.arms[side]={upper:nodes.find(n=>n.name.endsWith(`-upperarm_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-lowerarm_${side}`))};}
    if(a.hands.r){a.tool.parent=a.hands.r;a.tool.position.set(0,.045,0);}
    a.armNodes=[];
@@ -150,8 +163,19 @@ export async function createGameActors(B,scene,materials){
  }
  function appearance(a,c,state){
   const look=residentVisual(c,state),scale=look.scale,motion=look.motion;a.root.scaling.set(scale*motion.width,scale*motion.height,scale*(.96+motion.width*.04));a.look=look;
-  for(const m of a.model.getChildMeshes())if(/beard/i.test(m.name))m.isVisible=c.age>=16&&c.sex!=='f';
-  const color=c.phase==='mourning'?'#c7c9ae':look.robe;
+  const identity=look.identity,adult=c.age>=16,bearded=adult&&c.sex!=='f'&&identity.beard>0;
+  for(const m of a.beardMeshes)m.isVisible=bearded;
+  for(const m of a.hairMeshes)m.isVisible=identity.hair!==0||!adult;
+  if(a.head){a.head.scaling.set(a.headBase.x*identity.headWidth,a.headBase.y*identity.headHeight,a.headBase.z);
+   a.fullHair?.setEnabled(identity.hair===2);a.bun?.setEnabled(identity.hair===3);
+   if(a.fullBeard){a.fullBeard.setEnabled(bearded&&identity.beard>=2);a.fullBeard.scaling.y=a.jawBounds.size.y*(identity.beard===3?2.1:1.5);a.fullBeard.position.y=a.jawBounds.max.y-a.fullBeard.scaling.y*.5;}
+
+  }
+  const skin=['#855234','#a26a43','#b98155','#c69365','#70462f'][identity.skin],hair=c.age>=55?['#8c8372','#b0a693','#756b5d'][identity.beard%3]:['#241d18','#3d2a1c','#543724','#1d1b19'][identity.hair];
+  for(const m of a.skin)m.albedoColor=B.Color3.FromHexString(skin).toLinearSpace();for(const m of a.hair)m.albedoColor=B.Color3.FromHexString(hair).toLinearSpace();
+  // Earth/wool shades distinguish individuals; worn/ragged and mourning still communicate state.
+  const palette=['#e0cda4','#9d7855','#b69b78','#c7baa1','#8f9272','#aa795d','#d7d0bb'];
+  const color=c.phase==='mourning'?'#c7c9ae':look.wear==='new'&&!look.craft?palette[identity.cloth]:look.robe;
   for(const m of a.cloth)m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();
   a.inspired.setEnabled(look.inspired);
   const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}`;
@@ -167,32 +191,41 @@ export async function createGameActors(B,scene,materials){
   cargo(a,c);
  }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
-  const dx=a.lastX===null?0:c.x-a.lastX,dz=a.lastY===null?0:c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
+  let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
   if(a.viewOffsetX===undefined||c.activity&&['working','strike'].includes(c.activity.stage)){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const blend=1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY;
+  dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);
   if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){a.yaw=Math.atan2(c.activity.target.x-viewPosition.x,c.activity.target.y-viewPosition.y);}
   if(distance>.00001&&!paused){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
-  a.lastX=c.x;a.lastY=c.y;
+  a.lastX=shownX;a.lastY=shownY;
   const decision=actorAnimation(c,distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
-  if(!paused||!a.clip){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
+  if(!paused||!a.clip){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
   a.paused=paused;
   if(a.tool&&(!paused||a.toolKind===null)){const active=['work','logging','quarry','hunting','fishing'].includes(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
    const kind=c.activity?.kind||(builder?'building':['field','garden','reed','wood','stone','clay','pottery','brewery','brickyard'].includes(a.look?.work)?'gathering':null);workerTool(a,!c.carrying&&active?kind:null);}
-  for(const [name,g]of a.groups)g.speedRatio=paused?0:speed*(name==='Walk_Loop'?(c.playing?1.35:c.age>=55?.7:.9)*(a.look?.motion.gait||1):1);
+  for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
+  if(a.clip==='Walk_Loop'&&!paused&&distance<3){
+   a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z);
+   const g=a.groups.get(a.clip);a.walkFrame=g.from+a.walkPhase*(g.to-g.from);
+  }
   if(!paused){a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);if(a.look){const beat=Math.sin(a.time*3.5),work=['work','logging','quarry','hunting','fishing'].includes(a.pose);a.model.rotation.x=(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:work?.08:0);a.model.rotation.z=a.pose==='dance'?beat*.055:0;
    a.inspired.position.y=1.85+Math.sin(a.time*2.3)*.045;a.inspired.scaling.setAll(1+Math.sin(a.time*2.3)*.10);
    // Play and dance bounce is a presentation pose at the resident's exact route position.
-   a.model.position.y=a.footOffset+(a.pose==='play'||a.pose==='dance'?Math.abs(beat)*.04:distance>.00001?Math.abs(Math.sin(a.time*6))*a.look.motion.stride:0);
+   a.model.position.y=a.footOffset+(a.pose==='play'||a.pose==='dance'?Math.abs(beat)*.04:0);
   }}
  }
  // Animation clips set the skeletal base, then apply small task-specific arm gestures.
  const observer=scene.onAfterAnimationsObservable.add(()=>{
   for(const a of people.values()){
    if(!a.root.isEnabled())continue;
+   // Walking animatables are paused, avoiding a second clock-based evaluation.
+   // Apply the distance sample once, before task IK and skeleton upload.
+   if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
+   if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*i.headWidth,a.headBase.y*i.headHeight,a.headBase.z);}
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();continue;}
    const carry=['carry','unload'].includes(a.pose),work=['work','logging','quarry','building','gathering'].includes(a.pose),play=['play','dance'].includes(a.pose);
    for(const arm of a.armNodes){const n=arm.node;
@@ -262,7 +295,7 @@ export async function createGameActors(B,scene,materials){
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   for(const c of visible){seen.add(c.id);let a=people.get(c.id);if(!a){a=instantiate(residentSource,`citizen-${c.id}`,{citizenId:c.id});a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
-  const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
+  const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
   wildlife.update(state,[...fauna.filter(c=>c.kind!=='sheep'),...(funeralView(state)?.jackals||[])],dt,{paused,speed});funeralProps(state);

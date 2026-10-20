@@ -145,3 +145,61 @@ test('real gathering tree falls at saved target, leaves a stump and recovers wit
   s.gathering.features=[];view.update(s,122);assert.equal(tree.isDisposed(),true);assert.equal(stump.isDisposed(),true);view.dispose();assert.equal(scene.meshes.length,0);
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });
+
+import {cargoLayout,createGoodsSources,GOODS_HEIGHT,GOODS_KINDS} from '../game3d/goods.js';
+import {groundStocks} from '../game3d/landscape.js';
+import {generateStreets} from '../city-life.js';
+test('goods are detailed shared rectangular geometry resting on exact support planes',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ try{const goods=createGoodsSources(B,scene,materials),stock=Object.fromEntries(GOODS_KINDS.map(k=>[k,150])),before=JSON.stringify(stock),layout=cargoLayout(stock);
+  assert.equal(layout.length,GOODS_KINDS.length*3);assert.equal(JSON.stringify(stock),before);assert.deepEqual(cargoLayout({faith:100,prestige:100}),[]);
+  for(const [kind,src]of goods.sources){src.computeWorldMatrix(true);const bounds=src.getBoundingInfo().boundingBox;
+   assert.ok(Math.abs(bounds.minimum.y)<1e-6,`${kind} bottom rests on ground`);assert.ok(bounds.maximum.y<=GOODS_HEIGHT+1e-6);assert.ok(src.getTotalVertices()>24,`${kind} includes physical details`);assert.equal(src.isEnabled(),false);
+   if(!['water','beer','pottery'].includes(kind)){assert.ok(bounds.maximum.x-bounds.minimum.x>.6);assert.ok(bounds.maximum.z-bounds.minimum.z>.5);assert.ok(src.getIndices().length%36===0,`${kind} consists of straight rectangular goods, never round sacks`);}
+   const parcel=src.createInstance('support-test');parcel.setEnabled(true);
+   for(const p of layout.filter(p=>p.kind===kind)){parcel.position.set(p.x,p.y,p.z);parcel.computeWorldMatrix(true);const b=parcel.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-p.layer*GOODS_HEIGHT)<1e-6);if(p.layer)assert.ok(layout.some(q=>q.kind===kind&&q.x===p.x&&q.z===p.z&&q.layer===p.layer-1));}
+   assert.equal(parcel.sourceMesh,src);parcel.dispose();
+  }
+  for(const src of goods.meshes)src.dispose();assert.equal(scene.meshes.length,0);
+ }finally{scene.dispose();engine.dispose();}
+});
+test('ground stock yard avoids real roads and building footprints without editing quantities',()=>{
+ const s=createGame(),net=generateStreets(s.buildings,s),before=JSON.stringify(s),yard=groundStocks(s,net);assert.ok(yard);assert.equal(JSON.stringify(s),before);
+ assert.ok(shoreDistance(yard.x,yard.y,s)>=.55);
+ for(const b of s.buildings)assert.ok(Math.abs(b.x-yard.x)>=.85||Math.abs(b.y-yard.y)>=.95);
+ for(const [a,b]of net.edges){const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((yard.x-a.x)*dx+(yard.y-a.y)*dy)/(dx*dx+dy*dy||1)));assert.ok(Math.hypot(yard.x-a.x-dx*t,yard.y-a.y-dy*t)>=.6);}
+ const quantities=JSON.stringify(yard.stock);cargoLayout(yard.stock);assert.equal(JSON.stringify(yard.stock),quantities);assert.equal(JSON.stringify(s),before);
+});
+test('changing actual stock recreates only display instances and disposes old piles',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async()=>loadGeometry(scene);let view;
+ try{const s=createGame();view=await createGameLandscape(B,scene,s,materials);const old=view.meshes.filter(m=>m.metadata?.goods&&!m.parent);assert.ok(old.length);for(const m of old){m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-m.metadata.goods.supportY)<1e-6);if(!m.metadata.goods.layer)assert.ok(Math.abs(b.minimumWorld.y-surfaceElevation(m.position.x/TILE,m.position.z/TILE,s))<1e-6);}
+  const src=old[0].sourceMesh,before=JSON.stringify(s);view.update(s,3);assert.equal(JSON.stringify(s),before);assert.ok(view.meshes.includes(old[0]));
+  s.resources.food+=75;const changed=JSON.stringify(s);view.update(s,4);assert.equal(JSON.stringify(s),changed);assert.ok(old.every(m=>m.isDisposed()));assert.ok(view.meshes.some(m=>m.sourceMesh===src));assert.equal(src.isDisposed(),false);
+  const sources=view.meshes.filter(m=>m.name.startsWith('goods-source-'));assert.equal(sources.length,GOODS_KINDS.length);view.dispose();assert.ok(sources.every(m=>m.isDisposed()));assert.equal(scene.meshes.length,0);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+});
+
+import {MATERIALS} from '../definitions.js';
+test('ground display represents every actual material including clothing and raw/fired bricks',()=>{
+ const stock=Object.fromEntries(MATERIALS.map(k=>[k,1000])),before=JSON.stringify(stock),layout=cargoLayout(stock);
+ for(const kind of MATERIALS)assert.ok(layout.some(p=>p.kind===kind),kind);
+ assert.equal(JSON.stringify(stock),before);
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ try{const goods=createGoodsSources(B,scene,materials);assert.equal(goods.sources.get('brick').material,materials.soil);assert.equal(goods.sources.get('firedBrick').material,materials.terracotta);assert.equal(goods.sources.get('clothing').material,materials.linen);
+  assert.ok(goods.sources.get('clothing').getTotalVertices()>24);for(const key of ['brick','firedBrick'])assert.ok(goods.sources.get(key).getTotalVertices()>=120);
+  for(const src of goods.meshes)src.dispose();assert.equal(scene.meshes.length,0);
+ }finally{scene.dispose();engine.dispose();}
+});
+
+test('stock yard clears complete parcel bounds around actual palms and gathering trees, with cached search',()=>{
+ const s=createGame(),net=generateStreets(s.buildings,s);let edgeReads=0;const edges=net.edges;Object.defineProperty(net,'edges',{get(){edgeReads++;return edges;}});
+ const before=JSON.stringify(s),yard=groundStocks(s,net);assert.ok(yard);assert.ok(edgeReads>0);const coldReads=edgeReads;
+ const clear=(yard,tree)=>Math.hypot(Math.max(Math.abs(tree.x-yard.x)-.26,0),Math.max(yard.y-.05-tree.y,tree.y-yard.y-.38,0));
+ for(const tree of landscapePlan(s).palms)assert.ok(clear(yard,tree)>=.45);
+ for(let i=0;i<20;i++){const next=groundStocks(s,net);assert.equal(next.x,yard.x);assert.equal(next.y,yard.y);}
+ assert.equal(edgeReads,coldReads,'warm stock updates never search candidate roads');assert.equal(JSON.stringify(s),before);
+ s.resources.food+=20;const changed=JSON.stringify(s),next=groundStocks(s,net);assert.equal(next.stock.food,yard.stock.food+20);assert.equal(edgeReads,coldReads);assert.equal(JSON.stringify(s),changed);
+ s.gathering.features.push({id:'stock-yard-tree',kind:'tree',x:yard.x,y:yard.y,health:1,felledAt:null,recoverAt:null});const treesChanged=JSON.stringify(s),moved=groundStocks(s,net);assert.ok(moved);assert.ok(edgeReads>coldReads);assert.ok(clear(moved,s.gathering.features.at(-1))>=.45);assert.equal(JSON.stringify(s),treesChanged);
+ const readAfterTree=edgeReads;s.world.deposits.push({kind:'dates',x:moved.x,y:moved.y});groundStocks(s,net);assert.ok(edgeReads>readAfterTree,'changed deposit palms invalidate the yard cache');
+});

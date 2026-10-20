@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGame} from '../engine.js';
 import {createWildlife} from '../game3d/wildlife.js';
+import {createCoatPixels} from '../game3d/animal-coats.js';
 const sandbox={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
 const B=sandbox.exports.NullEngine?sandbox.exports:sandbox.module.exports;
@@ -19,7 +20,7 @@ test('wildlife has rounded species anatomy, shared geometry, exact identity/posi
   const positions=body.getVerticesData(B.VertexBuffer.PositionKind),normals=body.getVerticesData(B.VertexBuffer.NormalKind),middle=3*17*3;
   assert.ok(positions[middle]*normals[middle]>0,'torso side normals must face outward');bodySources.push(body.sourceMesh);
  }
- for(let i=0;i<bodySources.length;i+=2)assert.equal(bodySources[i],bodySources[i+1]);
+ for(let i=0;i<bodySources.length;i+=2)assert.equal(bodySources[i].geometry,bodySources[i+1].geometry);
  assert.notDeepEqual(bodySources[0].getVerticesData(B.VertexBuffer.PositionKind),bodySources[2].getVerticesData(B.VertexBuffer.PositionKind),'goat and gazelle must have different anatomy');
  assert.ok(scene.meshes.filter(m=>m.name.startsWith('wildlife-source')).every(m=>!m.isVisible&&!m.isPickable));
  const count=scene.meshes.length;for(let i=0;i<10;i++)view.update(s,animals,1/60,{speed:.25});assert.equal(scene.meshes.length,count);
@@ -59,4 +60,43 @@ test('fish swim with shared outward anatomy, rodents are small, cats have feline
  const snapshot=()=>JSON.stringify(prey.getDescendants().map(n=>[n.position?.asArray(),n.rotation?.asArray(),n.scaling?.asArray()]));const still=snapshot();for(let i=0;i<10;i++)view.update(s,animals,.05);assert.equal(snapshot(),still,'dead prey must stop breathing, stepping and moving its ears/tail');
  const count=scene.meshes.length;for(let i=0;i<10;i++)view.update(s,animals,.05);assert.equal(scene.meshes.length,count,'animation creates no meshes');
  view.dispose();assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();
+});
+
+test('mammal coats have UV mapped hair relief, stable ID variants and cached disposable textures',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
+ const animals=['goat','gazelle','cat','jackal','mouse'].flatMap(kind=>Array.from({length:6},(_,i)=>({id:`coat-${kind}-${i}`,kind,x:5+i,y:5,behavior:'looking'})));
+ view.update(s,animals,.05);
+ for(const kind of ['goat','gazelle','cat','jackal','mouse']){
+  const torsos=animals.filter(c=>c.kind===kind).map(c=>view.rootFor({animalId:c.id}).getChildMeshes().find(m=>m.name.includes('-torso')));
+  assert.ok(torsos.every(m=>m.getVerticesData(B.VertexBuffer.UVKind)?.length===m.getTotalVertices()*2),'every rounded torso needs complete UV mapping');
+  assert.ok(torsos.every(m=>m.material.albedoTexture&&m.material.bumpTexture),'fur needs authored coat color and strand relief');
+  assert.ok(new Set(torsos.map(m=>m.material)).size>1,'stable IDs should produce visibly different coats');
+  assert.ok(torsos.every(m=>m.sourceMesh.geometry===torsos[0].sourceMesh.geometry),'variants share anatomical geometry');
+ }
+ const textures=scene.textures.filter(t=>t.name.startsWith('wildlife-coat-')),materials=animals.map(c=>view.rootFor({animalId:c.id}).getChildMeshes().find(m=>m.name.includes('-torso')).material);
+ assert.ok(textures.length>0);const count=scene.textures.length;for(let i=0;i<30;i++)view.update(s,animals,.05,{speed:4});assert.equal(scene.textures.length,count,'animation must allocate no textures');
+ view.update(s,[],.05);view.update(s,animals,.05);assert.deepEqual(animals.map(c=>view.rootFor({animalId:c.id}).getChildMeshes().find(m=>m.name.includes('-torso')).material),materials,'recreated identity retains its coat');
+ view.dispose();assert.equal(scene.textures.filter(t=>t.name.startsWith('wildlife-coat-')).length,0,'dispose must release owned coat textures');scene.dispose();engine.dispose();
+});
+
+
+test('authored coat maps distinguish coarse patches, fine tabby stripes and opaque directional hair relief',()=>{
+ const coats=['goat','gazelle','cat','jackal','mouse'].map(kind=>createCoatPixels(kind,0));
+ for(const {color,normal,size}of coats){
+  assert.equal(color.length,size*size*4);assert.equal(normal.length,color.length);
+  const shades=new Set();let relief=0;for(let i=0;i<color.length;i+=4){shades.add(`${color[i]},${color[i+1]},${color[i+2]}`);assert.equal(color[i+3],255);assert.equal(normal[i+3],255);relief+=Math.abs(normal[i]-127);}
+  assert.ok(shades.size>256,'coat must contain actual hair/gradient detail rather than flat tint');assert.ok(relief/(size*size)>10,'directional normal relief must survive material application');
+ }
+ assert.notDeepEqual(coats[0].color,coats[1].color);assert.notDeepEqual(coats[0].normal,coats[1].normal,'short gazelle hair must differ from coarse goat hair');
+ assert.notDeepEqual(createCoatPixels('goat',0).color,createCoatPixels('goat',1).color,'cream and dark patches must differ between variants');
+});
+
+test('every goat coat retains warm flanks and cream patches instead of near-black pigment',()=>{
+ for(let variant=0;variant<3;variant++){
+  const {color,size}=createCoatPixels('goat',variant);let paleFlank=0,nearBlackFlank=0,count=0;
+  // Around the two visible lateral sides, excluding the naturally pale belly.
+  for(let y=0;y<size;y++)for(const x of [0,1,2,3,128,129,130,131]){const i=(y*size+x)*4;count++;if(color[i]>160&&color[i+1]>135&&color[i+2]>105)paleFlank++;if(color[i]<65&&color[i+1]<60&&color[i+2]<55)nearBlackFlank++;}
+  assert.ok(paleFlank/count>.12,`variant ${variant} needs cream patches on its flanks`);
+  assert.ok(nearBlackFlank/count<.05,`variant ${variant} should read as warm brown rather than near-black`);
+ }
 });
