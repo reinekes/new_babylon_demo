@@ -49,7 +49,53 @@ test('camera frustum skips actor rigs and restores current simulated position on
  camera.setTarget(new B.Vector3(c.x*6,0,c.y*6));camera.minZ=.1;camera.maxZ=100;scene.activeCamera=camera;
  view.update(s);const root=scene.transformNodes.find(n=>n.metadata?.citizenId===c.id);assert.ok(root?.isEnabled());
  camera.position.x+=10000;camera.setTarget(new B.Vector3(c.x*6+10000,0,c.y*6));view.update(s);assert.equal(root.isEnabled(),false);
+ view.update(s,s.simTime,1/60,{citizenId:c.id});assert.equal(root.isEnabled(),true,'tracked resident stays available while the camera catches up');view.update(s);assert.equal(root.isEnabled(),false);
  const count=scene.meshes.length;c.x+=.2;const state=JSON.stringify(s);view.update(s);assert.equal(root.isEnabled(),false);assert.equal(scene.meshes.length,count);assert.equal(JSON.stringify(s),state);
  camera.position.x=c.x*6;camera.setTarget(new B.Vector3(c.x*6,0,c.y*6));view.update(s);assert.equal(root.isEnabled(),true);assert.equal(root.position.x,c.x*6);assert.equal(root.position.z,c.y*6);
+ view.dispose();scene.dispose();engine.dispose();
+});
+
+test('residents ease into turns, settle their feet when stopped and keep real cargo and position',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ const c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.cargo={clay:2};
+ view.update(s,0,1/60);
+ const root=scene.transformNodes.find(n=>n.metadata?.citizenId===c.id),before=JSON.stringify(s);
+ const body=root.getChildTransformNodes().find(n=>n.name==='body'),hip=root.getChildTransformNodes().find(n=>n.name==='hip');
+ c.x+=.04;view.update(s,1/60,1/60);
+ assert.ok(root.rotation.y>0&&root.rotation.y<.45,'a right angle turn must not snap in one frame');
+ assert.equal(root.position.x,c.x*6,'smoothing must not move the resident away from their real route');
+ for(let i=2;i<=90;i++)view.update(s,i/60,1/60);
+ assert.ok(Math.abs(root.rotation.y-Math.PI/2)<.02,'turn should settle onto the actual direction');
+ assert.ok(Math.abs(hip.rotation.x)<.03,'a resident waiting on their route must stop marching');
+ const yaw=root.rotation.y,pose=body.rotation.z;
+ view.update(s,90/60,0);assert.equal(root.rotation.y,yaw);assert.equal(body.rotation.z,pose,'paused poses must remain still');
+ assert.equal(JSON.stringify(s),JSON.stringify({...JSON.parse(before),citizens:[{...JSON.parse(before).citizens[0],x:c.x}]}));
+ view.dispose();scene.dispose();engine.dispose();
+});
+
+test('cloth faces outward and all shared model vertices stay finite',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ view.update(s,0,1/60);
+ const cloth=scene.meshes.find(m=>m.name.startsWith('actor-source-wrap:'));assert.ok(cloth);
+ const positions=cloth.getVerticesData(B.VertexBuffer.PositionKind),normals=cloth.getVerticesData(B.VertexBuffer.NormalKind);
+ for(let i=0;i<positions.length;i+=3)assert.ok(positions[i]*normals[i]+positions[i+2]*normals[i+2]>.1,'cloth must face outward rather than expose the back of the wrap');
+ for(const mesh of scene.meshes.filter(m=>m.name.startsWith('actor-source-'))){
+  assert.ok(mesh.getVerticesData(B.VertexBuffer.PositionKind).every(Number.isFinite));
+ }
+ view.dispose();scene.dispose();engine.dispose();
+});
+
+test('birds alternate their two legs instead of hopping with both together',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ let alternating=false;
+ for(let i=0;i<80&&!alternating;i++){
+  s.simTime=i*.05;view.update(s,s.simTime,.05);
+  for(const bird of animalsFor(s).filter(a=>a.kind==='bird'&&a.walking)){
+   const root=scene.transformNodes.find(n=>n.metadata?.animalId===bird.id);
+   const legs=root.getChildTransformNodes().filter(n=>n.name==='animal-hip');
+   if(legs.length===2&&legs[0].rotation.x*legs[1].rotation.x<-.0001)alternating=true;
+  }
+ }
+ assert.ok(alternating,'a walking bird must advance one leg while the other is behind');
  view.dispose();scene.dispose();engine.dispose();
 });
