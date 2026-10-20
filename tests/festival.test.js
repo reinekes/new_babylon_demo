@@ -37,3 +37,11 @@ test('guests still travelling when evening ends return home without consuming or
  assert.equal(guest.mood,mood);assert.equal(guest.faith,faith);assert.deepEqual(s.festival.rewarded,[]);assert.deepEqual(s.festival.delivered,{food:12,beer:6});assert.ok(validateFestival(s));
  assert.equal(cancelFestival(s).refunded,true);assert.equal(s.resources.food,100);assert.equal(s.resources.beer,20);assert.equal(s.resources.prestige,100);
 });
+test('saved festival invitations show the current physical order instead of obsolete instant exchange',()=>{
+ const s=createGame();s.event={id:'festival',title:'Ночь тысячи огней',text:'Жрецы предлагают праздник у воды. 20 еды превратятся в 15 веры, 5 престижа и 10 довольства.'};
+ const ids=s.citizens.map(c=>c.id),resources=structuredClone(s.resources);
+ const restored=decode(JSON.stringify(s));assert.ok(restored);
+ assert.match(restored.event.text,/15 престижа, 12 еды и 6 пива/);
+ assert.match(restored.event.text,/доставят угощение/);assert.doesNotMatch(restored.event.text,/превратятся/);
+ assert.deepEqual(restored.resources,resources);assert.deepEqual(restored.citizens.map(c=>c.id),ids);assert.equal(restored.festival,null);
+});

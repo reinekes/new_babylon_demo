@@ -1,4 +1,4 @@
-import {initializeFestival,validateFestival,festivalReason,orderFestival} from './festival.js';
+import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation} from './festival.js';
 import {initializeArtisans,validateArtisans} from './artisan.js';
 import {isRiverBank} from './river-trade.js';
 import {upgradeCost,legacyUpgradeCost} from './masonry.js';
@@ -121,7 +121,7 @@ function settleSeason(s){
   if(s.year===3||(!s.droughtSeen&&s.year>=4)){s.drought=3;s.droughtSeen=true;affectResidents(s,{faith:-8,mood:-7});log(s,'На долину опустилась засуха','Нужен полив ячменя: соедини поля с рекой каналами или призови Небесный дождь.','bad');}
   else if(s.year%5===0)s.event={id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'};
   else if(s.year%3===1){s.resources.food+=Math.max(0,Math.min(30,storage(s)-s.resources.food));log(s,'Щедрый разлив','Река принесла плодородный ил. Общие амбары получили 30 еды.','good');}
-  else s.event={id:'festival',title:'Ночь тысячи огней',text:'Закажи общинный праздник: 15 престижа, 12 еды и 6 пива. Жители доставят угощение к храму и соберутся после вечернего ужина.'};
+  else s.event={id:'festival',title:'Ночь тысячи огней',text:festivalInvitation()};
  }
  syncCitizens(s);check(s);
 }
@@ -296,6 +296,7 @@ export function decode(raw){
   if(!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
 
+  if(s.event?.id==='festival')s.event.text=festivalInvitation();
   s.version=VERSION;return s;
  }catch{return null;}
 }

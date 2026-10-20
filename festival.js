@@ -7,6 +7,7 @@ import {canWork} from './demography.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {roadSpeed} from './roads.js';
 export const FESTIVAL_COST=Object.freeze({food:12,beer:6,prestige:15});
+export const festivalInvitation=()=>`Закажи общинный праздник: ${FESTIVAL_COST.prestige} престижа, ${FESTIVAL_COST.food} еды и ${FESTIVAL_COST.beer} пива. Жители доставят угощение к храму и соберутся после вечернего ужина.`;
 export const FESTIVAL_SECONDS=12;
 const keys=['food','beer'],sum=o=>Object.values(o||{}).reduce((n,v)=>n+v,0),distance=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 const readyTemple=b=>['shrine','ziggurat'].includes(b.type)&&isOperational(b)&&!b.construction;
