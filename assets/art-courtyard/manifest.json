@@ -1,0 +1,120 @@
+{
+  "release": "art-courtyard-20261020-1",
+  "purpose": "separate art trial, no save data",
+  "files": [
+    {
+      "file": "ATTRIBUTION.md",
+      "bytes": 4501,
+      "sha256": "ee47e4ca83a5f5c266c3f7a7df9fc5713359e2aaa33cc848c955d557e455393d"
+    },
+    {
+      "file": "CREDITS.html",
+      "bytes": 3690,
+      "sha256": "1867fef799c95d41488d148ac7ba09b512412af103a82f9864a5279481e881d4"
+    },
+    {
+      "file": "models/adobe-courtyard.glb",
+      "bytes": 4312216,
+      "sha256": "77e7cb06148b69c6d1f6e8cf9bdb075cb1542fe5efaf63ce28c54454c095eae0",
+      "triangles": 20500,
+      "meshes": 154,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/date-palm.glb",
+      "bytes": 2793460,
+      "sha256": "acf22f5fd38d6d734ad99c442095d63ee1f8af26133b1dd247a7884e85d0b9ea",
+      "triangles": 42560,
+      "meshes": 4,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/resident-lod.glb",
+      "bytes": 325368,
+      "sha256": "c8c6c2dc43c0b1f525c8d62f12c3e9e38ce6eb178fecedcc30ddb87046822f9f",
+      "triangles": 4147,
+      "meshes": 1,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/resident.glb",
+      "bytes": 1524036,
+      "sha256": "a37c622a07b47384bfab4fff5d8c7258dc87879abaefb3037e53e65a132b8389",
+      "triangles": 22125,
+      "meshes": 7,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/sheep.glb",
+      "bytes": 2024888,
+      "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
+      "triangles": 2940,
+      "meshes": 1,
+      "bones": 22,
+      "clips": [
+        "Graze",
+        "Idle",
+        "StartGraze",
+        "StartWalk",
+        "StopGraze",
+        "StopWalk",
+        "Walk"
+      ]
+    },
+    {
+      "file": "sources/README.md",
+      "bytes": 1097,
+      "sha256": "4d418ec21d2c4eecfe56e48d415582bde50bc625d1cfd3e89bc0532b787e85a7"
+    },
+    {
+      "file": "sources/courtyard.blend",
+      "bytes": 5770204,
+      "sha256": "5e3a35a65d4a7e6ac784e2e57e88fc8e5a4fb3909560635870ae687ebb37508d"
+    },
+    {
+      "file": "sources/palm-adapted.blend",
+      "bytes": 5694404,
+      "sha256": "0027860757e4ff4f24d0680cd7f84714ca717962b7908af24fc7f3217dd10a6f"
+    },
+    {
+      "file": "sources/resident-source.zip",
+      "bytes": 2570933,
+      "sha256": "a95acdd7a75c2bde8971ece79b41a50a45223ab582d0c13bc4f3e2cd8722ecdd"
+    },
+    {
+      "file": "sources/sheep-source.zip",
+      "bytes": 6590107,
+      "sha256": "d957dd7b880bbc8c61900850de97db6410698a4d61b0fbc3618f4f821b76cd7c"
+    },
+    {
+      "file": "textures/kiara_1_dawn_1k.hdr",
+      "bytes": 1475077,
+      "sha256": "ee70fb8c8fb3e34566802191d83b299e179ecc392b97639e6c750f66e161c8e2"
+    },
+    {
+      "file": "textures/palm_bark_color.jpg",
+      "bytes": 707281,
+      "sha256": "80cbe5ee11af799db082cdb342601a70b81a5f54b98eb587e87dcb5bf5e1f395"
+    },
+    {
+      "file": "textures/palm_bark_normal.jpg",
+      "bytes": 1307345,
+      "sha256": "4b558654ea5f92e61fe5be5d3df2f79aedd7e5f0e230a08954c1794a6a20dc25"
+    },
+    {
+      "file": "textures/palm_bark_roughness.jpg",
+      "bytes": 240790,
+      "sha256": "04f4507af58a2011f90dba2c69455a8959e52c01e5748f31d1c5b5654839153b"
+    }
+  ]
+}
