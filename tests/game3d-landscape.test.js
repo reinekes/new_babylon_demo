@@ -70,15 +70,18 @@ test('real GLB palms share baked geometry; canals, road work and trade update a 
  const before=JSON.stringify(s);
  try{
   view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,1);assert.equal(JSON.stringify(s),before);
-  for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
+  for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets','living-river','saved-lakes'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
   const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);assert.ok(palms.every(m=>m.isEnabled()));assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);
   for(const m of palms){assert.equal(m.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);assert.ok(m.getWorldMatrix().determinant()>0);}
-  const waters=live.filter(m=>m.name==='actual-canal-water');assert.ok(waters.length);assert.ok(waters.every(m=>Math.abs(m.position.x-canalX*6)<=1.5&&Math.abs(m.position.z-48)<=1.5));
+  const waters=live.filter(m=>m.name==='actual-canal-water');assert.ok(waters.length);assert.ok(waters.every(m=>m.metadata.canalArm.a.x===canalX&&m.metadata.canalArm.a.y===8));assert.ok(waters.some(m=>m.metadata.canalArm.mouth));assert.ok(waters.some(m=>m.getVerticesData(B.VertexBuffer.ColorKind).some((v,i)=>i%4===2&&v>.9)),'wet canals use a visible canal-water tint');
+  for(const m of live.filter(m=>m.metadata?.canalArm&&m.name!=='actual-canal-water')){assert.equal(m.material.name,'game-wet-channel-mud');const c=m.material.albedoColor;assert.ok(c.r<.14&&c.g<.14&&c.b<.14,'wet mud is dark, not pale dry sand');assert.ok(c.g>c.r);}
   const patches=live.filter(m=>m.name.startsWith('resource-site-'));assert.equal(patches.length,s.world.deposits.length);assert.ok(patches.every(m=>!m.isEnabled()),'ordinary city view has no deposit tile squares');
   for(const m of patches){const d=m.metadata.resourceSite;assert.equal(m.position.x,d.x*6);assert.equal(m.position.z,d.y*6);assert.ok(s.world.deposits.some(p=>p.kind===d.kind&&p.x===d.x&&p.y===d.y));}
   const firstPatch=patches[0];view.update(s,0,'clay');assert.ok(patches.every(m=>m.isEnabled()===(m.metadata.resourceSite.kind==='clay')));const highlights=live.filter(m=>m.metadata?.resourcePlacement);assert.ok(highlights.length);assert.ok(highlights.every(m=>m.metadata.resourcePlacement.type==='clay'));const marker=highlights[0];view.update(s,0,'clay');assert.ok(live.includes(marker),'unchanged selection shares its cached highlight instances');assert.ok(live.includes(firstPatch),'selection does not rebuild resource geology');
   view.update(s,0,'house');assert.ok(patches.every(m=>!m.isEnabled()));assert.equal(marker.isDisposed(),true);assert.equal(live.filter(m=>m.metadata?.resourcePlacement).length,0);view.update(s,0,'shrine');assert.equal(live.filter(m=>m.metadata?.resourcePlacement).length,0);assert.equal(JSON.stringify(s),before);
-  const street=live.find(m=>m.name==='road-local-level-2');assert.equal(street.position.x,18);assert.equal(street.position.z,27);assert.equal(street.material.name,'game-road-clay-gravel');
+  const street=live.find(m=>m.name==='road-local-level-2');assert.equal(street.position.x,18);assert.equal(street.position.z,27);assert.equal(street.material.name,'game-road-clay-gravel');assert.ok(street.getTotalVertices()>30);assert.equal(street.hasVertexAlpha,true);
+  const clear=live.find(m=>m.name==='clear-living-river');assert.ok(clear);assert.equal(clear.material.needAlphaBlending(),true);assert.equal(clear.material.disableDepthWrite,true);assert.ok(live.some(m=>m.name==='clear-river-bed'));assert.ok(live.some(m=>m.name.startsWith('submerged-pebble-')&&m.sourceMesh));assert.ok(!live.some(m=>/resource-name|resource-label/.test(m.name)));
+  const valley=live.find(m=>m.name==='alluvial-valley'),positions=valley.getVerticesData(B.VertexBuffer.PositionKind);assert.ok(positions.some((v,i)=>i%3===1&&Math.abs(positions[i-1]-canalX*6)<.01&&Math.abs(positions[i+1]-48)<.01&&v<0),'real canal cuts a shallow inlet in this main-game terrain copy');
   const palm=palms[0],root=scene.getTransformNodeByName('actual-trade-caravan');assert.equal(root.position.x,75.6);assert.ok(Math.abs(root.position.z-48.6)<1e-9);assert.ok(live.some(m=>m.name==='cargo-food'));
   s.rain=1;view.update(s,0);assert.ok(live.some(m=>m.name==='weather-rain'&&m.isEnabled()));s.rain=0;view.update(s,0);
   const count=scene.meshes.length;view.update(s,1);view.update(s,2);assert.equal(scene.meshes.length,count);assert.ok(live.includes(palm));assert.equal(JSON.stringify(s),before);
@@ -100,4 +103,9 @@ test('deposit plans use saved coordinates/kinds and resource selections examine 
  const guarded={get world(){throw Error('ordinary buildings must not scan deposits');},get buildings(){throw Error('ordinary buildings must not scan the city');}};assert.deepEqual(resourcePlacementSites(guarded,'house'),[]);assert.deepEqual(resourcePlacementSites(guarded,'shrine'),[]);
  s.buildings.push({type:'house',x:2,y:3});assert.deepEqual(resourcePlacementSites(s,'clay'),[]);s.buildings=[];
  s.world.deposits[0].x++;assert.notEqual(landscapeSignature(s),signature);s.world.deposits[0].x--;assert.equal(JSON.stringify(s),before);
+});
+
+test('main landscape never creates deposit text labels or dynamic text textures',()=>{
+ const source=readFileSync(new URL('../game3d/landscape.js',import.meta.url),'utf8');
+ assert.ok(!source.includes('DynamicTexture'));assert.ok(!source.includes('fillText('));assert.ok(!source.includes('resource-name-'));assert.ok(!source.includes('resource-label-'));
 });

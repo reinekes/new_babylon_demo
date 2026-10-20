@@ -1,0 +1,7 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>Shore visual verification</title><base href="../../"><link rel="stylesheet" href="game3d/style.css"><style>html,body{margin:0;height:100%;background:#303c2a}.world{position:relative;height:100%}canvas{display:block;width:100%;height:100%}</style><div class="world"><canvas id="city"></canvas></div><script src="assets/vendor/babylon-9.31.0.js"></script><script src="assets/vendor/babylonjs-loaders-9.31.0.min.js"></script><script type="module">
+import {createGameRenderer} from './game3d/renderer.js';import {createGame,terrain} from './engine.js';
+const state=createGame();let x=0;while(terrain(x,8,state)==='water'||terrain(x+1,8,state)!=='water')x++;
+state.buildings.push({type:'canal',x,y:8,level:1},{type:'canal',x:x-1,y:8,level:1});
+const renderer=await createGameRenderer(document.querySelector('canvas'),()=>{},{initialState:state});renderer.camera?.setTarget(new BABYLON.Vector3(x*6,0,48));if(renderer.camera)renderer.camera.radius=35;
+function frame(now){renderer.draw(state,null,now,{paused:true,speed:1});requestAnimationFrame(frame);}requestAnimationFrame(frame);
+</script></html>

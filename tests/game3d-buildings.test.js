@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGameBuildings,gameBuildingSignature} from '../game3d/buildings.js';
+import {organicHousePoint,organicHouseVariant} from '../game3d/field-shore.js';
+import {shoreDistance} from '../district3d/terrain.js';
 import {BUILDINGS} from '../definitions.js';
 const sandbox={module:{exports:{}},console,setTimeout,clearTimeout,performance,self:{}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
@@ -60,7 +62,7 @@ test('actual courtyard GLB transforms stay centered in one tile, tiers are disti
 
 test('sync is read only, shares geometry and creates no meshes for unchanged frames; live shadow list follows removal',async()=>{
  const t=await setup();try{
-  const state={buildings:[house(),house(1,5,4,'second')],citizens:[{home:'home'}],tick:1,simTime:2};
+  const state={buildings:[house(),house(1,8,4,'second')],citizens:[{home:'home'}],tick:1,simTime:2};
   const before=structuredClone(state);Object.freeze(state.buildings[0]);Object.freeze(state.buildings[1]);Object.freeze(state.buildings);Object.freeze(state);
   const live=t.layer.meshes;t.layer.sync(state);assert.deepEqual(state,before);
   const count=t.scene.meshes.length,first=live[0],firstSource=first.sourceMesh;
@@ -68,7 +70,7 @@ test('sync is read only, shares geometry and creates no meshes for unchanged fra
   assert.equal(t.scene.meshes.length,count);assert.equal(live[0],first);assert.equal(t.layer.meshes,live);
   assert.equal(live.find(m=>m.metadata.buildingKey==='home'&&m.metadata.homeLamp).material.name,'game-occupied-home');
   assert.equal(live.find(m=>m.metadata.buildingKey==='second'&&m.metadata.homeLamp).material.name,'game-door-shadow');
-  t.layer.sync({buildings:[house(1,5,4,'second')],citizens:[]});assert.ok(first.isDisposed());assert.ok(live.every(m=>m.metadata.buildingKey==='second'));
+  t.layer.sync({buildings:[house(1,8,4,'second')],citizens:[]});assert.ok(first.isDisposed());assert.ok(live.every(m=>m.metadata.buildingKey==='second'));
   t.layer.sync({buildings:[]});assert.equal(live.length,0);assert.ok(firstSource.isDisposed());
   t.layer.dispose();assert.equal(t.scene.meshes.length,0);t.layer.dispose();
  }finally{t.dispose();}
@@ -77,7 +79,7 @@ test('sync is read only, shares geometry and creates no meshes for unchanged fra
 test('all defined buildings produce visible pickable architecture; construction and upgrades progress without changing source',async()=>{
  const t=await setup();try{
   for(const type of Object.keys(BUILDINGS)){
-   const b={type,x:3,y:4,id:type,level:1};t.layer.sync({buildings:[b],citizens:[]});assert.ok(t.layer.meshes.length,type);
+   const b={type,x:3,y:4,id:type,level:1};t.layer.sync({buildings:[b],citizens:[]});if(type==='canal'){assert.equal(t.layer.meshes.length,0,'landscape owns canals');continue;}assert.ok(t.layer.meshes.length,type);
    const bb=bounds(t.layer.meshes);assert.ok(Number.isFinite(bb.maxY),type);
    if(type!=='bridge'){assert.ok(bb.minX>=15.1&&bb.maxX<=20.9,`${type} ${JSON.stringify(bb)}`);assert.ok(bb.minZ>=21.1&&bb.maxZ<=26.9,`${type} ${JSON.stringify(bb)}`);}
   }
@@ -107,5 +109,72 @@ test('masonry variants share uploaded dynamic maps instead of cloning unready te
   assert.equal(t.scene.materials.find(m=>m.name==='game-plaster-trim').bumpTexture,texture);
   t.layer.sync({buildings:[house(3)],citizens:[]});assert.equal(t.scene.textures.length,textureCount);
   t.layer.dispose();assert.ok(t.scene.textures.includes(texture),'caller owns the shared texture');assert.equal(texture.isReady(),true);
+ }finally{t.dispose();}
+});
+
+
+test('river and saved-lake fields keep their dry portions and clip all crop triangles above the real bank',async()=>{
+ const t=await setup();try{
+  for(const [x,y,lakes]of [[12,8,[]],[3,4,[{id:'edge-lake',cells:[{x:4,y:4}]}]]]){
+   const b={type:'field',id:'field',x,y,level:1,crop:{sown:1,growth:1,total:100,remaining:100}},s={buildings:[b],citizens:[],world:{lakes}},before=structuredClone(s);
+   t.layer.sync(s);assert.ok(t.layer.meshes.length>1,'ground and actual standing crops remain');
+   const points=[];assert.ok(t.layer.meshes.reduce((n,m)=>n+m.getTotalVertices(),0)<150000,'adaptive shoreline geometry remains bounded');
+   for(const mesh of t.layer.meshes){
+    const src=mesh.sourceMesh,p=src.getVerticesData(B.VertexBuffer.PositionKind),indices=src.getIndices();
+    for(let i=0;i<p.length;i+=3){const d=shoreDistance(x+p[i]/6,y+p[i+2]/6,s);assert.ok(d>=.22-1e-6,`wet field vertex ${d}`);points.push([p[i],p[i+2]]);}
+    // Interior and edges matter too: testing only vertices misses river-straddling triangles.
+    for(let i=0;i<indices.length;i+=3){const a=indices.slice(i,i+3).map(k=>[p[k*3],p[k*3+2]]);for(const weights of [[1/3,1/3,1/3],[.5,.5,0],[0,.5,.5],[.5,0,.5]]){const xx=a.reduce((n,v,j)=>n+v[0]*weights[j],0),zz=a.reduce((n,v,j)=>n+v[1]*weights[j],0);assert.ok(shoreDistance(x+xx/6,y+zz/6,s)>=.22-1e-6);}}
+   }
+   assert.ok(Math.max(...points.map(p=>p[0]))<2.65,'wet edge was actually cut off');assert.ok(Math.min(...points.map(p=>p[0]))<-2.5,'dry field portion retained');
+   assert.deepEqual(s,before,'crop yields, growth and saved world unchanged');
+   const first=t.layer.meshes[0];t.layer.sync(s);assert.equal(t.layer.meshes[0],first);
+   s.world.lakes=[{id:'new',cells:[{x:x+1,y}]}];t.layer.sync(s);assert.ok(first.isDisposed(),'shore cache follows actual saved lakes');
+  }
+ }finally{t.dispose();}
+});
+
+test('level-one homes share three organic variants with coherent non-affine walls and ground contact',async()=>{
+ const t=await setup();try{
+  const houses=[house(1,3,4,'a'),house(1,8,4,'b'),house(1,4,4,'c')];t.layer.sync({buildings:houses,citizens:[]});
+  const a=t.layer.meshes.find(m=>m.metadata.buildingKey==='a'&&m.name.includes('plastered')),b=t.layer.meshes.find(m=>m.metadata.buildingKey==='b'&&m.name.includes('plastered')),c=t.layer.meshes.find(m=>m.metadata.buildingKey==='c'&&m.name.includes('plastered'));
+  assert.equal(organicHouseVariant(houses[0]),organicHouseVariant(houses[1]));assert.equal(a.sourceMesh,b.sourceMesh);assert.notEqual(a.sourceMesh.geometry,c.sourceMesh.geometry);
+  const left=organicHousePoint(-2,0,1,0),middle=organicHousePoint(0,0,1,0),right=organicHousePoint(2,0,1,0);
+  assert.ok(Math.abs(middle[2]-(left[2]+right[2])/2)>.003,'wall outline is curved rather than a rigid skew');
+  assert.equal(left[1],0);assert.equal(middle[1],0);assert.equal(right[1],0);
+  for(let variant=0;variant<3;variant++)for(let x=-2;x<=2;x+=.5){const p=organicHousePoint(x,2.2,1,variant);assert.ok(Math.abs(p[0]-x)<.25);assert.ok(Math.abs(p[1]-2.2)<.15);}
+  assert.notEqual(gameBuildingSignature(houses[0]),gameBuildingSignature(houses[2]));
+ }finally{t.dispose();}
+});
+
+test('organic GLB variants preserve outward authored normals including sky-facing roofs after reflection',async()=>{
+ const t=await setup();try{
+  for(const x of [3,4,10]){
+   t.layer.sync({buildings:[house(1,x,4)],citizens:[]});let compared=0,upward=0;
+   for(const m of t.layer.meshes.filter(m=>m.name.includes('game-courtyard'))){
+    const mesh=m.sourceMesh,original=t.scene.meshes.find(s=>s.name===mesh.name.replace(/-tier1$/,''));
+    assert.ok(original,'actual merged GLB source is retained');
+    const before=original.getVerticesData(B.VertexBuffer.NormalKind),after=mesh.getVerticesData(B.VertexBuffer.NormalKind);
+    for(let i=0;i<before.length;i+=3){
+     const a=new B.Vector3(before[i]/.52,before[i+1]/.74,before[i+2]/.52).normalize(),b=new B.Vector3(after[i],after[i+1],after[i+2]).normalize();
+     if(a.length()<.1||b.length()<.1)continue;
+     assert.ok(B.Vector3.Dot(a,b)>.97,`${mesh.name}: outward authored normal reversed at vertex ${i/3}`);compared++;
+     if(a.y>.999&&/roof-earth|plastered/.test(mesh.name)){assert.ok(b.y>.97,`roof tops must face daylight: ${mesh.name} ${b.y}`);upward++;}
+    }
+   }
+   assert.ok(compared>1000);assert.ok(upward>50);
+  }
+ }finally{t.dispose();}
+});
+
+
+test('main building adapter never duplicates landscape canals with legacy crossbars or scaffolds',async()=>{
+ const t=await setup();try{
+  const baseline=t.scene.meshes.length,canal={id:'canal',type:'canal',x:12,y:8,level:1};
+  for(const construction of [undefined,{kind:'new',target:1,required:{clay:4},delivered:{clay:2},work:3},{kind:'upgrade',target:2,required:{},delivered:{},work:0}]){
+   const s={buildings:[{...canal,construction}],citizens:[]},before=structuredClone(s);t.layer.sync(s);
+   assert.equal(t.layer.meshes.length,0);assert.equal(t.scene.meshes.length,baseline,'canals create no hidden legacy geometry either');assert.deepEqual(s,before);
+  }
+  t.layer.sync({buildings:[house(1,12,8,'canal')],citizens:[]});const old=t.layer.meshes[0];
+  t.layer.sync({buildings:[canal],citizens:[]});assert.ok(old.isDisposed());assert.equal(t.layer.meshes.length,0);assert.equal(t.scene.meshes.length,baseline);
  }finally{t.dispose();}
 });

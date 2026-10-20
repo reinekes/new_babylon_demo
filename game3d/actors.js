@@ -5,7 +5,7 @@ import {residentAppearance} from '../resident-appearance.js';
 import {residentPose} from '../actor-art.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
-import {createDistrictActors} from '../district3d/actors.js';
+import {createWildlife} from './wildlife.js';
 
 // These helpers read state only. The renderer never advances workers or writes saves.
 export function actorViewCitizens(state){
@@ -31,7 +31,7 @@ export function actorAnimation(c,distance=0){
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
 export async function createGameActors(B,scene,materials){
- const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[],funeralAnimals=new Map();
+ const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
  let disposed=false,poseTime=0,bier=null;
  const containers=[];
  try{
@@ -41,7 +41,7 @@ export async function createGameActors(B,scene,materials){
   const failed=loaded.find(r=>r.status==='rejected');if(failed)throw failed.reason;
  }catch(error){for(const c of containers)c.dispose();throw error;}
  const [residentSource,sheepSource]=containers;
- const wildlife=createDistrictActors(B,scene,materials),wildlifeState={};
+ const wildlife=createWildlife(B,scene,meshes);
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
  const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952');
@@ -142,20 +142,11 @@ export async function createGameActors(B,scene,materials){
    }
   }
  });
- function syncWildlife(state,paused,dt){
-  // Mark folds as under construction in this private presentation view to suppress
-  // only procedural sheep. Footprints/type remain intact for wildlife habitat logic.
-  Object.assign(wildlifeState,state,{citizens:[],funeral:null,buildings:(state.buildings||[]).map(b=>b.type==='sheepfold'?{...b,construction:{...b.construction,kind:'new'}}:b)});
-  wildlife.update(wildlifeState,state.simTime||0,paused?0:dt);
-  for(const m of wildlife.meshes)if(!meshes.includes(m))meshes.push(m);
-  for(let i=meshes.length-1;i>=0;i--)if(meshes[i].isDisposed())meshes.splice(i,1);
- }
  function funeralProps(state){
   const f=funeralView(state);
   if(f?.coffin){if(!bier){const root=new B.TransformNode('funeral-bier',scene);box('bier-cloth',root,linen,0,.58,0,.7,.22,1.8);for(const x of [-.35,.35])box('bier-pole',root,wood,x,.42,0,.045,.045,2.5);bier={root};}bier.root.position.set(f.coffin.x*6,surfaceElevation(f.coffin.x,f.coffin.y,state),f.coffin.y*6);}
   else if(bier){remove(bier);bier=null;}
-  const seen=new Set();for(const c of f?.jackals||[]){seen.add(c.id);let a=funeralAnimals.get(c.id);if(!a){const root=new B.TransformNode(c.id,scene);root.metadata={animalId:c.id,animalKind:'jackal'};sphere('funeral-jackal-body',root,wood,0,.42,0,.30,.30,.70);sphere('funeral-jackal-head',root,wood,0,.64,.34,.20,.24,.30);for(const x of [-.1,.1])for(const z of [-.23,.23])box('funeral-jackal-leg',root,dark,x,.2,z,.045,.4,.045);for(const x of [-.07,.07])box('funeral-jackal-ear',root,wood,x,.84,.30,.055,.18,.06);a={root};funeralAnimals.set(c.id,a);}a.root.position.set(c.x*6,surfaceElevation(c.x,c.y,state),c.y*6);}
-  for(const [id,a]of funeralAnimals)if(!seen.has(id)){remove(a);funeralAnimals.delete(id);}
+
  }
  function update(state,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
@@ -163,10 +154,10 @@ export async function createGameActors(B,scene,materials){
   const visible=actorViewCitizens(state),seen=new Set();
   for(const c of visible){seen.add(c.id);let a=people.get(c.id);if(!a){a=instantiate(residentSource,`citizen-${c.id}`,{citizenId:c.id});a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);animate(a,c,state,dt,paused,speed);}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
-  const animals=animalsFor(state).filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
+  const fauna=animalsFor(state),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
-  syncWildlife(state,paused,dt);funeralProps(state);
+  wildlife.update(state,[...fauna.filter(c=>c.kind!=='sheep'),...(funeralView(state)?.jackals||[])],dt,{paused,speed});funeralProps(state);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);for(const a of funeralAnimals.values())remove(a);if(bier)remove(bier);people.clear();sheep.clear();funeralAnimals.clear();wildlife.dispose();for(const c of containers)c.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
- return {update,dispose,meshes,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||funeralAnimals.get(selection.animalId)?.root||wildlife.rootFor(selection);}};
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);people.clear();sheep.clear();wildlife.dispose();for(const c of containers)c.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ return {update,dispose,meshes,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||wildlife.rootFor(selection);}};
 }
