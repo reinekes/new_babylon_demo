@@ -1,0 +1,4 @@
+<!doctype html><meta charset="utf-8"><title>Main3D fallback verification</title><script type="module">
+// Deliberately omit Babylon to exercise the complete existing UI with Canvas fallback.
+const response=await fetch('../../index.html');if(!response.ok)throw Error('Main UI unavailable');const html=(await response.text()).replace('<head>','<head><base href="../../">').replace(/<script src="assets\/vendor\/babylon[^<]*<\/script>/g,'');document.open();document.write(html);document.close();
+</script>
