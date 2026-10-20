@@ -41,11 +41,19 @@ function supplements(B,scene) {
   if(emission)m.emissiveColor=B.Color3.FromHexString(emission);return m;
  };
  mats={dark:make('interior','#51483b'),edge:make('adobe-edge','#ac9678'),straw:make('dry-straw','#aa9a66'),glow:make('occupied-lamp','#b59257','#ce9a4c'),leaf:make('olive-foliage','#777653'),silt:make('wet-silt','#88775e')};
+ // Four shared plaster finishes: variation without creating a material for every house.
+ mats.plasters=['#fff0dc','#e6d3b4','#f5ddba','#d6c09e'].map((color,i)=>{
+  const m=make(`plaster-finish-${i}`,color);m.albedoColor.scaleInPlace(2.1);return m;
+ });
  materialCache.set(scene,mats);return mats;
 }
 
 export function createDistrictBuilding(B,scene,b,materials) {
  const plan=districtBuildingPlan(b), extra=supplements(B,scene),m={...extra,...materials};
+ const finish=extra.plasters[plan.variant];
+ if(!finish.albedoTexture){finish.albedoTexture=materials.plaster?.albedoTexture;finish.bumpTexture=materials.plaster?.bumpTexture;}
+ m.plaster=finish;
+ if(!extra.silt.albedoTexture){extra.silt.albedoTexture=materials.soil?.albedoTexture;extra.silt.bumpTexture=materials.soil?.bumpTexture;}
  const root=new B.TransformNode(`building-${b.id||`${b.x},${b.y}`}`,scene);
  root.metadata={buildingKey:b.id||`${b.x},${b.y}`,type:b.type};
  const groups=new Map();let serial=0;const lights=[];

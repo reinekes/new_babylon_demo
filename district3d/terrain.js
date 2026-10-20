@@ -31,6 +31,7 @@ export function districtRoadEdges(s) {
 export function createDistrictTerrain(B,scene,initialState,materials) {
   const meshes=[],ownedMaterials=[],textures=[];
   let state=initialState,roadMeshes=[],roadSignature='',waterTime=0;
+  const leafBatches=new Map();
   const C=(r,g,b)=>new B.Color3(r,g,b);
   const geometry=(name,positions,indices,material,colors)=>{
     const mesh=new B.Mesh(name,scene),data=new B.VertexData();
@@ -65,22 +66,51 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     if(i<nx&&j<ny){const a=j*(nx+1)+i;idx.push(a,a+nx+1,a+1,a+1,a+nx+1,a+nx+2);}
   }
   geometry('alluvial-valley',p,idx,materials.soil,colors).freezeWorldMatrix();
-  const water=new B.PBRMaterial('river-water',scene);ownedMaterials.push(water);
-  water.albedoColor=C(.16,.32,.30);water.metallic=.08;water.roughness=.3;
-  water.alpha=.94;water.backFaceCulling=false;water.environmentIntensity=.8;
-  // A shared small procedural normal map gives quiet moving ripples, no geometry rebuild.
-  if(B.DynamicTexture&&typeof document!=='undefined'){
-    const tex=new B.DynamicTexture('water-ripple-normal',{width:128,height:128},scene,false);
-    const ctx=tex.getContext(),pixels=ctx.createImageData(128,128);
-    for(let y=0;y<128;y++)for(let x=0;x<128;x++){
-      const i=(y*128+x)*4;
-      pixels.data[i]=128+Math.round(13*Math.cos(y*Math.PI/8+x*Math.PI/32));
-      pixels.data[i+1]=128+Math.round(18*Math.cos(x*Math.PI/16+y*Math.PI/8));
-      pixels.data[i+2]=253;pixels.data[i+3]=255;
+  const bp=[],bi=[],bc=[],steps=40;
+  for(let j=0;j<=steps;j++)for(let i=0;i<=steps;i++){
+    const x=-36+(WIDTH+72)*i/steps,y=-36+(HEIGHT+72)*j/steps;
+    const outside=Math.max(-.5-x,x-(WIDTH-.5),-.5-y,y-(HEIGHT-.5));
+    const height=-.15+smooth(outside/9)*(1.2+2.8*Math.sin(x*.09+y*.055)**2);
+    bp.push(x*TILE,height,y*TILE);bc.push(.84,.76,.60,1);
+    if(i<steps&&j<steps){const a=j*(steps+1)+i;
+      const x2=-36+(WIDTH+72)*(i+1)/steps,y2=-36+(HEIGHT+72)*(j+1)/steps;
+      if(x2<1||x>WIDTH-2||y2<1||y>HEIGHT-2)bi.push(a,a+steps+1,a+1,a+1,a+steps+1,a+steps+2);
     }
-    ctx.putImageData(pixels,0,0);tex.update();tex.uScale=16;tex.vScale=20;
-    water.bumpTexture=tex;tex.level=.22;textures.push(tex);
   }
+  geometry('distant-alluvial-plain',bp,bi,materials.soil,bc).freezeWorldMatrix();
+  // Original lightweight water shader: directional ripples, Fresnel sky and sun glints.
+  // No mirrored scene render, downloaded environment, or per-frame geometry allocation.
+  B.Effect.ShadersStore.districtRiverVertexShader=`
+    precision highp float;
+    attribute vec3 position;
+    uniform mat4 world,worldViewProjection;
+    varying vec3 vWorld;
+    void main(){vWorld=(world*vec4(position,1.0)).xyz;gl_Position=worldViewProjection*vec4(position,1.0);}`;
+  B.Effect.ShadersStore.districtRiverFragmentShader=`
+    precision highp float;
+    varying vec3 vWorld;
+    uniform vec3 cameraPosition;
+    uniform float time,night;
+    void main(){
+      vec2 p=vWorld.xz;
+      float a=p.x*2.8+p.y*1.4-time*.9,b=p.x*1.1-p.y*3.7+time*.6;
+      vec3 n=normalize(vec3(.13*cos(a)+.06*cos(b),1.0,.08*cos(a)-.12*cos(b)));
+      vec3 view=normalize(cameraPosition-vWorld);
+      float fresnel=.24+.64*pow(1.0-max(dot(n,view),0.0),3.0);
+      vec3 reflected=reflect(-view,n);
+      vec3 sky=mix(vec3(.69,.76,.73),vec3(.36,.58,.68),clamp(reflected.y,0.0,1.0));
+      float fine=sin(a+sin(b)*.55)*.5+.5;
+      vec3 water=mix(vec3(.12,.27,.23),sky,fresnel)+fine*.035;
+      float sun=pow(max(dot(reflect(normalize(vec3(-.65,-.9,.45)),n),view),0.0),80.0);
+      water+=vec3(1.0,.87,.62)*sun*.65;
+      water=mix(water,water*vec3(.29,.39,.55),night*.88);
+      gl_FragColor=vec4(water,1.0);
+    }`;
+  const water=new B.ShaderMaterial('river-water',scene,{vertex:'districtRiver',fragment:'districtRiver'},
+    {attributes:['position'],uniforms:['world','worldViewProjection','cameraPosition','time','night']});
+  water.backFaceCulling=false;water.setFloat('time',0);water.setFloat('night',0);
+  water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);});
+  ownedMaterials.push(water);
   const wp=[],wi=[],uv=[];
   for(let j=0;j<=HEIGHT*12;j++){
     const y=-.5+j/12,c=river(y);
@@ -153,8 +183,11 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     const vertexCount=positions.length/3,backIndices=[];
     for(let i=0;i<indices.length;i+=3)backIndices.push(indices[i]+vertexCount,indices[i+2]+vertexCount,indices[i+1]+vertexCount);
     positions.push(...positions);normals.push(...normals.map(n=>-n));indices.push(...backIndices);
-    const mesh=new B.Mesh(name,scene),data=new B.VertexData();
-    data.positions=positions;data.indices=indices;data.uvs=new Array(positions.length/3*2).fill(0);data.normals=normals;data.applyToMesh(mesh);parts.push(mesh);
+    let batch=leafBatches.get(parts);
+    if(!batch){batch={positions:[],indices:[],normals:[]};leafBatches.set(parts,batch);}
+    const offset=batch.positions.length/3;
+    batch.positions.push(...positions);batch.normals.push(...normals);
+    for(const index of indices)batch.indices.push(index+offset);
   };
   // Date palms, tamarisk-like scrub and marsh reeds; no temperate conifers.
   for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){
@@ -165,10 +198,19 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     if((d<6&&r>.92)||(nearQuarter&&r>.68)){
       const h=5+noise(x+7,y)*3;
       cylinder('date-palm-trunk',X,Y,Z,h,.14,.28,trunks);
-      for(let n=0;n<10;n++){
-        const a=n*Math.PI*.2+noise(x,y),len=2.6+noise(n+x,y)*1.1,pts=[];
+      for(let n=0;n<11;n++){
+        const a=n*Math.PI*2/11+noise(x,y),len=2.7+noise(n+x,y)*1.2,pts=[];
         for(let k=0;k<6;k++){const t=k/5;pts.push([X+Math.cos(a)*len*t,Y+h+.85*Math.sin(t*Math.PI)-.9*t*t,Z+Math.sin(a)*len*t]);}
-        leaf('date-palm-frond',pts,.32,fronds);
+        leaf('date-palm-rib',pts,.025,fronds);
+        // Pinnate date-palm silhouette: paired narrow leaflets, never broad tropical paddles.
+        for(let j=1;j<=9;j++){
+          const t=j/11,q=[X+Math.cos(a)*len*t,Y+h+.85*Math.sin(t*Math.PI)-.9*t*t,Z+Math.sin(a)*len*t];
+          const reach=(.24+.58*Math.sin(t*Math.PI))*(1-t*.45);
+          for(const side of [-1,1]){
+            const dx=Math.cos(a)*.22-Math.sin(a)*reach*side,dz=Math.sin(a)*.22+Math.cos(a)*reach*side;
+            leaf('date-palm-leaflet',[q,[q[0]+dx*.55,q[1]+.07,q[2]+dz*.55],[q[0]+dx,q[1]-.2-t*.12,q[2]+dz]],.105,fronds);
+          }
+        }
       }
     }else if(d<1.25&&r>.24){
       for(let n=0;n<7;n++){
@@ -179,12 +221,17 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     }else if(r>.88&&r<.94){
       const m=B.MeshBuilder.CreateIcoSphere('alluvial-stone',{radius:.22+noise(x,y)*.24,subdivisions:1},scene);
       m.position.set(X,Y+.07,Z);m.scaling.set(1.6,.55,1);m.rotation.y=r*30;stones.push(m);
-    }else if(d<5&&r>.64&&r<.73){
-      for(let n=0;n<4;n++){
-        const a=n*2.4,h=.35+noise(x+n,y)*.45;
-        leaf('dry-grass',[[X,Y,Z],[X+Math.cos(a)*.22,Y+h,Z+Math.sin(a)*.22],[X+Math.cos(a)*.5,Y+h*.6,Z+Math.sin(a)*.5]],.11,scrub);
+    }else if(d<5&&r>.52&&r<.76){
+      for(let n=0;n<12;n++){
+        const a=n*2.4,h=.28+noise(x+n,y)*.45,dx=(noise(x+n*2,y)-.5)*1.5,dz=(noise(x,y+n*2)-.5)*1.5;
+        leaf('dry-grass',[[X+dx,Y,Z+dz],[X+dx+Math.cos(a)*.22,Y+h,Z+dz+Math.sin(a)*.22],[X+dx+Math.cos(a)*.5,Y+h*.6,Z+dz+Math.sin(a)*.5]],.065,scrub);
       }
     }
+  }
+  for(const [parts,batch] of leafBatches){
+    const mesh=new B.Mesh('batched-foliage',scene),data=new B.VertexData();
+    data.positions=batch.positions;data.indices=batch.indices;data.normals=batch.normals;
+    data.uvs=new Array(batch.positions.length/3*2).fill(0);data.applyToMesh(mesh);parts.push(mesh);
   }
   merge('date-palm-trunks',trunks,materials.wood);
   merge('date-palm-crowns',fronds,palmMaterial);
@@ -213,5 +260,5 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     if(inds.length)roadMeshes.push(geometry('connected-earth-streets',pos,inds,roadMaterial));
   }
   updateRoads(state);
-  return {meshes,update(s,t){state=s;updateRoads(s);const time=Number.isFinite(t)?t:waterTime+.016;waterTime=time;if(water.bumpTexture){water.bumpTexture.uOffset=time*.002;water.bumpTexture.vOffset=time*.001;}},dispose(){for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
+  return {meshes,light(n){water.setFloat('night',n);},update(s,t){state=s;updateRoads(s);const time=Number.isFinite(t)?t:waterTime+.016;waterTime=time;water.setFloat('time',time);},dispose(){for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
 }
