@@ -40,4 +40,4 @@
 ### Task5: Verification and publication
 - [x] Fulltests + fresh independentreview; fiximportant findings.
 - [x] Recordjournal and version06, commitonlytaskfiles,pushPages.
-- [ ] ConfirmPages success/checksums/livebrowser + captures, updateversionstatus.
+- [x] ConfirmPages success/checksums/livebrowser + captures, updateversionstatus.
