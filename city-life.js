@@ -1,3 +1,4 @@
+import {insideFootprint,footprintSize} from './footprints.js';
 import {WIDTH, HEIGHT, river, bridgeSpan, isDryPoint} from './world.js';
 
 export const DAY_SECONDS = 60;
@@ -36,7 +37,7 @@ export function generateStreets(buildings,s) {
   }
   for (let y = 0; y <= HEIGHT; y++) for (let x = 0; x <= WIDTH; x++) {
     const p = at(x, y);
-    if (dry(p,s)||bridgeNodes.has(p.key)) land.set(p.key, p);
+    if ((dry(p,s)||bridgeNodes.has(p.key))&&!buildings.some(b=>insideFootprint(b,p.x,p.y))) land.set(p.key, p);
   }
   const neighbours = key => {
     const [x, y] = key.split(',').map(Number), result = [];
@@ -53,7 +54,7 @@ export function generateStreets(buildings,s) {
   const root=roadBuildings.find(b=>b.type==='shrine')||roadBuildings[0];
   const ordered=root?[root,...roadBuildings.filter(b=>b!==root)]:[];
   for (const b of ordered) {
-    const corners = [[b.x+1,b.y+1],[b.x,b.y+1],[b.x+1,b.y],[b.x,b.y]];
+    const n=footprintSize(b),corners = [[b.x+n,b.y+n],[b.x,b.y+n],[b.x+n,b.y],[b.x,b.y]];
     const port = corners.map(([x,y]) => land.get(keyOf(x,y))).find(Boolean);
     if (!port) continue;
     ports.push({...port, building:b});

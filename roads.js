@@ -1,3 +1,5 @@
+const topologyRevisions=new WeakMap();
+export const roadTopologyRevision=s=>topologyRevisions.get(s)||0;
 import {reserveStock} from './inventory.js';
 import {generateStreets} from './city-life.js';
 import {terrain,onBridge,isDryPoint} from './world.js';
@@ -30,3 +32,23 @@ export function planRoadRoute(s,fromId,toId,target=2){
  return {roads:route,pending,cost,reason};
 }
 export function upgradeRoadRoute(s,from,to,target=2){const plan=planRoadRoute(s,from,to,target);if(plan.reason)return {ok:false,reason:plan.reason};const group=nextOrder(s);for(const [i,r]of plan.pending.entries()){const sources=reserveStock(s,roadUpgradeCost(r));r.construction={...createOrder(roadUpgradeCost(r),target,'upgrade'),sources,allocations:structuredClone(sources),order:group+i,routeOrder:group};}s.news.unshift({title:'Заказан дорожный маршрут',text:`Уровень ${target}: ${plan.pending.length} участков. Материалы зарезервированы, работы выполнят жители.`,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);return {ok:true,count:plan.pending.length,group};}
+
+// Player selects two tiles; the path follows their south-east street corners.
+// Unpaved streets cost no materials, matching the existing automatic approaches.
+export function planNewRoad(s,from,to){
+ const empty=reason=>({roads:[],reason});
+ if(s.event||s.lost||s.funeral)return empty(s.funeral?'Жители провожают умерших':'Сначала заверши текущее событие');
+ const node=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)?{x:p.x+.5,y:p.y+.5,key:`${p.x+1},${p.y+1}`}:null,a=node(from),b=node(to);
+ if(!a||!b)return empty('Выбери начало и конец дороги');
+ const blocked=p=>s.buildings.some(v=>v.type==='ziggurat'&&v.footprint===2&&p.x>v.x-.5&&p.x<v.x+1.5&&p.y>v.y-.5&&p.y<v.y+1.5);
+ const dry=p=>isDryPoint(s,p.x,p.y)&&!blocked(p),allowed=p=>dry(p)||onBridge(s.buildings,p.x,p.y);
+ if(!allowed(a)||!allowed(b))return empty('Начало и конец должны быть на сухой улице');
+ const prev=new Map([[a.key,null]]),points=new Map([[a.key,a]]),queue=[a];
+ for(let i=0;i<queue.length&&!prev.has(b.key);i++){const p=queue[i];for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1]]){const q={x:p.x+dx,y:p.y+dy,key:`${p.x+dx+.5},${p.y+dy+.5}`};if(prev.has(q.key)||!allowed(q)||![.25,.5,.75].every(t=>allowed({x:p.x+dx*t,y:p.y+dy*t})))continue;prev.set(q.key,p.key);points.set(q.key,q);queue.push(q);}}
+ if(!prev.has(b.key))return empty('Нет сухого пути: построй мост или выбери свой берег');
+ const path=[];for(let k=b.key;k!==null;k=prev.get(k))path.push(points.get(k));path.reverse();
+ const existing=new Set((s.roads||[]).map(r=>r.id)),roads=[];
+ for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],id=roadKey(a,b);if(existing.has(id)||!dry(a)||!dry(b)||![.25,.5,.75].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t})))continue;roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a,b,level:1});}
+ return {roads,reason:roads.length?'':'Этот путь уже проложен'};
+}
+export function layRoad(s,from,to){const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};s.roads.push(...plan.roads);topologyRevisions.set(s,roadTopologyRevision(s)+1);return {ok:true,count:plan.roads.length};}

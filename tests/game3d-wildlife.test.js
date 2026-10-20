@@ -49,7 +49,7 @@ test('fish swim with shared outward anatomy, rodents are small, cats have feline
  assert.ok(cat.getChildMeshes().filter(m=>m.name.includes('whisker')).length>=6,'cat needs visible paired whiskers');
  assert.ok(cat.getChildMeshes().some(m=>m.name.includes('iris')),'feline iris surrounds dark slit pupil');
  assert.ok(fish.getChildMeshes().some(m=>m.name.includes('caudal-fin')),'fish must have a fish tail');
- assert.ok(Math.abs(fish.position.y+.08)<1e-12,'fish uses water elevation rather than terrain surface');
+ assert.ok(fish.position.y<=-.4,'fish anatomy remains fully below the rendered water even with stale positive water elevation');
  const torso=fish.getChildMeshes().find(m=>m.name.includes('torso')),second=fishB.getChildMeshes().find(m=>m.name.includes('torso'));
  assert.equal(torso.sourceMesh,second.sourceMesh);assert.ok(!fish.getChildTransformNodes().some(n=>n.name.includes('-hip-')),'fish has no mammal legs');
  const positions=torso.getVerticesData(B.VertexBuffer.PositionKind),normals=torso.getVerticesData(B.VertexBuffer.NormalKind),middle=3*17*3;assert.ok(positions[middle]*normals[middle]>0);
@@ -99,4 +99,15 @@ test('every goat coat retains warm flanks and cream patches instead of near-blac
   assert.ok(paleFlank/count>.12,`variant ${variant} needs cream patches on its flanks`);
   assert.ok(nearBlackFlank/count<.05,`variant ${variant} should read as warm brown rather than near-black`);
  }
+});
+
+
+test('cat and goat torsos are slim in width and depth, with a smaller feline silhouette',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
+ const animals=['cat','goat'].map(kind=>({id:kind,kind,x:5,y:5,behavior:'looking'}));view.update(s,animals,.05);
+ for(const kind of ['cat','goat']){const root=view.rootFor({animalId:kind}),torso=root.getChildMeshes().find(m=>m.name.includes('-torso')),p=torso.getVerticesData(B.VertexBuffer.PositionKind),xs=p.filter((_,i)=>i%3===0),ys=p.filter((_,i)=>i%3===1),zs=p.filter((_,i)=>i%3===2),width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...ys)-Math.min(...ys),length=Math.max(...zs)-Math.min(...zs);
+  assert.ok(width/length<(kind==='cat'?.37:.46));assert.ok(depth/length<(kind==='cat'?.45:.55));
+  if(kind==='cat'){assert.equal(root.scaling.x,.85);assert.ok(width*root.scaling.x<.19);assert.ok(depth*root.scaling.x<.23);}
+  assert.ok(torso.material.albedoTexture&&torso.material.bumpTexture,'retain the previously authored coats');
+ }view.dispose();scene.dispose();engine.dispose();
 });

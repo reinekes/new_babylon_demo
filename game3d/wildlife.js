@@ -1,13 +1,14 @@
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
+import {WATER_HEIGHT} from './water.js';
 import {coatVariant,hasHairCoat,createCoatTextures} from './animal-coats.js';
 
 // Dimensions are metres. Author-created anatomy, not archaeological reconstructions.
 const species={
  fish:{height:0,length:.68,width:.085,depth:.17,stride:.64,fish:true,color:'#888f75',light:'#d0cdb0'},
- goat:{height:.67,length:.91,width:.29,depth:.34,neck:.24,head:.22,muzzle:.23,leg:.63,color:'#b29a77',light:'#e3d5b8',stride:.78,horns:true},
+ goat:{height:.67,length:.91,width:.205,depth:.245,neck:.24,head:.22,muzzle:.23,leg:.63,color:'#b29a77',light:'#e3d5b8',stride:.78,horns:true},
  gazelle:{height:.97,length:1.03,width:.23,depth:.30,neck:.42,head:.19,muzzle:.25,leg:.92,color:'#bc9464',light:'#ece0bf',stride:1.12,horns:true},
- cat:{height:.31,length:.66,width:.16,depth:.22,neck:.10,head:.18,muzzle:.09,leg:.29,color:'#a79c7a',light:'#d6cdb4',stride:.53,cat:true},
+ cat:{height:.31,length:.58,width:.105,depth:.115,neck:.07,head:.125,muzzle:.065,leg:.29,color:'#a79c7a',light:'#d6cdb4',stride:.53,cat:true},
  jackal:{height:.53,length:.96,width:.22,depth:.28,neck:.20,head:.21,muzzle:.32,leg:.50,color:'#a38965',light:'#cfbc93',stride:.85,jackal:true},
  bird:{height:.23,length:.38,width:.16,depth:.24,neck:.15,head:.13,muzzle:.10,leg:.20,color:'#928d77',light:'#c8c4aa',stride:.29,bird:true},
  mouse:{height:.095,length:.22,width:.075,depth:.12,neck:.025,head:.095,muzzle:.07,leg:.08,color:'#9b8a73',light:'#cabaa2',stride:.17,mouse:true}
@@ -54,7 +55,7 @@ export function createWildlife(B,scene,meshes=[]){
   for(const side of [-1,1])for(let i=0;i<5;i++)ball('fish:scale',body,belly,side*W*(.91-Math.abs(i-2)*.08),.005,-.16+i*.065,.009,.036,.011);
   return {root,body,tail,d,lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:[...String(c.id)].reduce((n,ch)=>n+ch.charCodeAt(0),0)*.37};
  }
- function build(c){if(c.kind==='fish')return buildFish(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(.55);
+ function build(c){if(c.kind==='fish')return buildFish(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(.55);if(d.cat)root.scaling.setAll(.85);
   const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
   if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
@@ -95,7 +96,7 @@ export function createWildlife(B,scene,meshes=[]){
   const legs=[];
   for(const side of [-1,1])for(const end of d.bird?[0]:[-1,1]){
    const leg=d.leg,hip=node(`${c.id}-hip-${side}-${end}`,body,side*W*.67,-D*.16,end*L*.30),upper=leg*.48,lower=leg*.49;
-   const limbMat=d.bird?horn:fur,r=d.bird?.018:d.mouse?.018:d.cat?.042:kind==='gazelle'?.048:.066;
+   const limbMat=d.bird?horn:fur,r=d.bird?.018:d.mouse?.018:d.cat?.028:kind==='gazelle'?.048:.066;
    part(`${kind}:upper-leg`,hip,limbMat,name=>B.MeshBuilder.CreateTube(name,{path:Array.from({length:9},(_,i)=>v(0,-upper*i/8,Math.sin(i/8*Math.PI)*r*.6)),radius:r,tessellation:12,cap:B.Mesh.CAP_ALL,radiusFunction:i=>r*(.62+.45*Math.sin(i/8*Math.PI))},scene));
    const knee=node(`${c.id}-knee-${side}-${end}`,hip,0,-upper,r*.3);
    part(`${kind}:lower-leg`,knee,limbMat,name=>B.MeshBuilder.CreateTube(name,{path:Array.from({length:9},(_,i)=>v(0,-lower*i/8,Math.sin(i/8*Math.PI)*r*.35)),radius:r,tessellation:12,cap:B.Mesh.CAP_ALL,radiusFunction:i=>r*(.44+.18*Math.sin(i/8*Math.PI))},scene));
@@ -105,8 +106,8 @@ export function createWildlife(B,scene,meshes=[]){
    legs.push({hip,knee,foot,side,end});
   }
   const tail=node(`${c.id}-tail`,body,0,D*.33,-L*.48),tailJoints=[];
-  const tailLength=d.cat?.59:d.jackal?.49:d.mouse?.25:d.bird?.20:.20;
-  let previous=tail;for(let i=0;i<3;i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.034:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
+  const tailLength=d.cat?.48:d.jackal?.49:d.mouse?.25:d.bird?.20:.20;
+  let previous=tail;for(let i=0;i<3;i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.024:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
   const wings=[];if(d.bird)for(const side of [-1,1]){const wing=node(`${c.id}-wing-${side}`,body,side*W*.60,.015,-.02);wing.rotation.z=side*.12;
    const cover=ball(`${kind}:wing-cover`,wing,pale,side*.08,0,-.015,.12,.16,.34);cover.rotation.z=side*.3;
    for(let i=0;i<6;i++){const feather=part(`${kind}:flight-feather-${i}`,wing,fur,name=>loft(name,[[-.23-i*.014,0,.002,.002],[-.15,0,.027,.012],[.01,0,.035,.018],[.10-i*.008,0,.015,.012],[.14-i*.01,0,.002,.002]]),side*(.035+i*.027),0,-i*.006);feather.rotation.y=-side*(.15+i*.09);}
@@ -118,7 +119,7 @@ export function createWildlife(B,scene,meshes=[]){
   if(disposed)return;dt=Math.max(0,Math.min(.1,dt));paused=paused||!dt||!speed;if(!paused)time+=dt*speed;
   seen.clear();for(const c of animals){if(c.kind==='sheep')continue;seen.add(c.id);let a=actors.get(c.id);if(a&&a.root.metadata.animalKind!==c.kind){remove(a);actors.delete(c.id);a=null;}let fresh=false;if(!a){a=build(c);actors.set(c.id,a);fresh=true;}
    const {d}=a,dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
-   a.root.position.set(c.x*6,d.fish?(Number.isFinite(c.waterLevel)?c.waterLevel:.07)-(Number.isFinite(c.swimDepth)?c.swimDepth:.17):onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   a.root.position.set(c.x*6,d.fish?Math.min(WATER_HEIGHT-.22,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    a.lastX=c.x;a.lastY=c.y;
    if(paused&&!fresh)continue;
    const delta=fresh?1:1-Math.exp(-dt*9);blend=delta;

@@ -178,3 +178,26 @@ test('main building adapter never duplicates landscape canals with legacy crossb
   t.layer.sync({buildings:[canal],citizens:[]});assert.ok(old.isDisposed());assert.equal(t.layer.meshes.length,0);assert.equal(t.scene.meshes.length,baseline);
  }finally{t.dispose();}
 });
+
+test('two-tile ziggurat template remains at its saved anchor and warm lamp material follows daylight',async()=>{
+ const t=await setup();try{
+  const b={id:'grand',type:'ziggurat',x:3,y:4,level:1,footprint:2},state={buildings:[b],citizens:[]},before=structuredClone(state);
+  t.layer.sync(state);const bb=bounds(t.layer.meshes);assert.ok(bb.minX>=15.3&&bb.maxX<=26.7&&bb.minZ>=21.3&&bb.maxZ<=32.7,JSON.stringify(bb));assert.ok(bb.maxY>10);assert.ok(t.layer.meshes.every(m=>m.metadata.tile.x===3&&m.metadata.tile.y===4));assert.deepEqual(state,before);
+  const material=t.scene.materials.find(m=>m.name==='game-occupied-home');t.layer.light(0);const day=material.emissiveColor.r;t.layer.light(1);assert.ok(material.emissiveColor.r>day*5);assert.ok(material.emissiveColor.r>material.emissiveColor.b*4);const meshes=t.scene.meshes.length;t.layer.light(.5);assert.equal(t.scene.meshes.length,meshes);
+  assert.notEqual(gameBuildingSignature(b),gameBuildingSignature({...b,footprint:undefined}));
+ }finally{t.dispose();}
+});
+
+test('each house tier shares only three deterministic finishes/layouts and family occupancy lights its fraction of windows',async()=>{
+ const t=await setup();try{
+  for(const level of [1,2,3]){
+   const houses=[house(level,3,4,'a'),house(level,8,4,'b'),house(level,4,4,'c')];t.layer.sync({buildings:houses,citizens:[]});
+   const facade=id=>t.layer.meshes.find(m=>m.metadata.buildingKey===id&&m.name.includes('game-courtyard')&&m.name.includes('plastered'));
+   assert.equal(facade('a').sourceMesh,facade('b').sourceMesh);assert.notEqual(facade('a').material,facade('c').material);assert.notEqual(facade('a').sourceMesh.geometry,facade('c').sourceMesh.geometry);assert.notEqual(gameBuildingSignature(houses[0]),gameBuildingSignature(houses[2]));
+   for(const h of houses){const bb=bounds(t.layer.meshes.filter(m=>m.metadata.buildingKey===h.id));assert.ok(bb.minX>=h.x*6-2.8&&bb.maxX<=h.x*6+2.8&&bb.minZ>=h.y*6-2.8&&bb.maxZ<=h.y*6+2.8,JSON.stringify(bb));}
+  }
+  const b=house(),windows=()=>t.layer.meshes.filter(m=>m.metadata.homeLamp),lit=()=>windows().filter(m=>m.material.name==='game-occupied-home').length;
+  const state={buildings:[b],citizens:[]};t.layer.sync(state);assert.equal(windows().length,4);assert.equal(lit(),0);const geometry=windows()[0].geometry;
+  for(const [count,expected]of [[1,1],[4,2],[8,4],[0,0]]){state.citizens=Array.from({length:count},()=>({home:'home'}));const before=structuredClone(state);t.layer.sync(state);assert.equal(lit(),expected);assert.equal(windows()[0].geometry,geometry);assert.deepEqual(state,before);}
+ }finally{t.dispose();}
+});

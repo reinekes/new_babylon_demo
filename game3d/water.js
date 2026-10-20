@@ -1,10 +1,12 @@
 import {WIDTH,HEIGHT,river,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
+import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
+
 export const WATER_HEIGHT=-.18;
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
 const noise=(x,y)=>{const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;return n-Math.floor(n);};
-export function waterDepth(x,y,s){return Math.max(0,WATER_HEIGHT-surfaceElevation(x,y,s));}
+export function waterDepth(x,y,s){return Math.max(0,WATER_HEIGHT-visualSurfaceElevation(x,y,s));}
 const sheet=()=>({positions:[],indices:[],colors:[],uvs:[],points:[],depths:[]});
 function vertex(g,x,y,s,lake){const d=waterDepth(x,y,s);g.positions.push(x*TILE,WATER_HEIGHT,y*TILE);g.points.push({x,y});g.depths.push(d);g.colors.push(d,lake?1:0,0,1);g.uvs.push(x,y);}
 export function waterSurfaceGeometry(s){
@@ -12,7 +14,7 @@ export function waterSurfaceGeometry(s){
  // The shallow edge reaches the actual intersection of the terrain and water,
  // beyond the old uniform strip. Adjacent rows share all cross-section vertices.
  for(let j=0;j<=along;j++){const y=-.5+HEIGHT*j/along,c=river(y);for(let i=0;i<=across;i++){const x=c+(i/across*2-1)*1.145;vertex(flow,x,y,s,false);if(i<across&&j<along){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
- for(const lake of s.world?.lakes||[])for(const c of lake.cells){const offset=lakes.positions.length/3,n=8;for(let j=0;j<=n;j++)for(let i=0;i<=n;i++){vertex(lakes,c.x-.5+i/n,c.y-.5+j/n,s,true);if(i<n&&j<n){const a=offset+j*(n+1)+i;lakes.indices.push(a,a+n+1,a+1,a+1,a+n+1,a+n+2);}}}
+ const organic=organicLakeGeometry(s,WATER_HEIGHT);Object.assign(lakes,organic);
  return {river:flow,lakes};
 }
 // Real connected canals meet the submerged river bank instead of ending at the
@@ -100,14 +102,14 @@ export function createGameWater(B,scene,materials){
  const bed=new B.PBRMaterial('visible-alluvial-riverbed',scene);bed.albedoColor=B.Color3.FromHexString('#b5a586').toLinearSpace();bed.roughness=.96;bed.metallic=0;bed.albedoTexture=materials.soil?.albedoTexture||null;owned.push(bed);
  const stones=['#8d8e78','#a49e86','#777d73'].map((hex,i)=>{const m=new B.PBRMaterial(`submerged-rounded-pebbles-${i}`,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.85;m.metallic=0;owned.push(m);return m;});
  function geometry(name,g,mat,isBed=false){if(!g.indices.length)return;const m=new B.Mesh(name,scene),d=new B.VertexData();d.positions=g.positions.slice();d.indices=g.indices.slice();d.uvs=g.uvs;d.colors=[];
-  for(let i=0;i<g.points.length;i++){const p=g.points[i];if(isBed){d.positions[i*3+1]=surfaceElevation(p.x,p.y,currentState)+.013;const grain=.84+noise(p.x*3,p.y*3)*.16;d.colors.push(grain,grain,grain*.95,1);}else d.colors.push(...g.colors.slice(i*4,i*4+4));}
+  for(let i=0;i<g.points.length;i++){const p=g.points[i];if(isBed){d.positions[i*3+1]=visualSurfaceElevation(p.x,p.y,currentState)+.013;const grain=.84+noise(p.x*3,p.y*3)*.16;d.colors.push(grain,grain,grain*.95,1);}else d.colors.push(...g.colors.slice(i*4,i*4+4));}
   d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);if(d.normals[1]<0){for(let i=0;i<d.indices.length;i+=3)[d.indices[i+1],d.indices[i+2]]=[d.indices[i+2],d.indices[i+1]];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);}d.applyToMesh(m);m.material=mat;m.isPickable=false;m.receiveShadows=isBed;m.useVertexColors=true;m.freezeWorldMatrix();meshes.push(m);return m;
  }
  let currentState;
  function update(s,t=0){if(disposed)return;currentState=s;time=t;water.setFloat('time',time);water.setFloat('night',night);const next=JSON.stringify(s.world?.lakes||[]);if(next===signature)return;signature=next;for(const m of meshes)m.dispose();meshes.length=0;
   const g=waterSurfaceGeometry(s);geometry('clear-river-bed',g.river,bed,true);geometry('clear-lake-bed',g.lakes,bed,true);geometry('clear-living-river',g.river,water);geometry('clear-saved-lakes',g.lakes,water);
   const sources=stones.map((mat,i)=>{const m=B.MeshBuilder.CreateIcoSphere(`submerged-pebble-source-${i}`,{radius:1,subdivisions:i%2+1},scene);m.material=mat;m.isPickable=false;m.setEnabled(false);meshes.push(m);return m;});
-  for(const [i,p]of submergedPebbles(s).entries()){const m=sources[p.tone].createInstance(`submerged-pebble-${i}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s)+p.flat*.6,p.y*TILE);m.scaling.set(p.size,p.flat,p.size*(.65+noise(i,94)*.5));m.rotation.set(noise(i,61)*.2,p.angle,noise(i,62)*.2);m.isPickable=false;m.computeWorldMatrix(true);m.freezeWorldMatrix();meshes.push(m);}
+  for(const [i,p]of submergedPebbles(s).entries()){const m=sources[p.tone].createInstance(`submerged-pebble-${i}`);m.setEnabled(true);m.position.set(p.x*TILE,visualSurfaceElevation(p.x,p.y,s)+p.flat*.6,p.y*TILE);m.scaling.set(p.size,p.flat,p.size*(.65+noise(i,94)*.5));m.rotation.set(noise(i,61)*.2,p.angle,noise(i,62)*.2);m.isPickable=false;m.computeWorldMatrix(true);m.freezeWorldMatrix();meshes.push(m);}
 
  }
  return {meshes,material:water,update,light(n){night=n;water.setFloat('night',n);bed.albedoColor=C(.46*(1-n*.65),.4*(1-n*.6),.30*(1-n*.48));},dispose(){if(disposed)return;disposed=true;for(const m of meshes)m.dispose();meshes.length=0;for(const m of owned)m.dispose(false,false);}};

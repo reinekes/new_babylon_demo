@@ -19,7 +19,7 @@ import {childPlay} from './local-motion.js';
 import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
 import {advanceTradeLogistics,loadSaleCargo} from './trading.js';
-import {ensureRoads,roadSpeed} from './roads.js';
+import {ensureRoads,roadSpeed,roadTopologyRevision} from './roads.js';
 import {isComplete,materialsReady,finishConstruction,orderedSites,constructionEntities,workRequired} from './construction.js';
 import {BUILDINGS,buildingKey,capacityOf,outputMultiplier,storageOf,isOperational,MATERIALS,citizenName} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
@@ -35,7 +35,7 @@ export const isWorkday=t=>hourAt(t)>=6&&hourAt(t)<19;
 const distance=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 
 export function networkFor(s){
- const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}`).join('|');
+ const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}`).join('|')+`|roads:${roadTopologyRevision(s)}`;
  let cache=caches.get(s);
  if(!cache||cache.signature!==signature){cache={signature,network:generateStreets([...s.buildings,...s.roadAnchors||[]],s),paths:new Map(),synced:null};caches.set(s,cache);}
  if(cache.roads!==s.roads||cache.roadCount!==s.roads?.length){ensureRoads(s,cache.network);cache.roads=s.roads;cache.roadCount=s.roads.length;}return cache.network;

@@ -240,3 +240,83 @@ test('resident identities are stable, visibly varied and respect age/sex without
   assert.ok(skins.size>=4);assert.ok(robes.size>=5);assert.equal(hair.size,2);assert.deepEqual(sourceSkin.albedoColor.asArray(),original);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
+
+test('workplace activities follow real construction, crop and craft phases instead of a generic work label',()=>{
+ const s=createGame(),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];
+ const site={type:'house',x:7,y:9,construction:{target:1,required:{clay:2},delivered:{clay:2},work:3}};s.buildings.push(site);
+ Object.assign(c,{phase:'constructing',site:'7,9',siteDuty:'builder',cargo:{},buildCargo:{},work:null});
+ let p=actorViewCitizens(s)[0];assert.equal(p.activity?.kind,'building');assert.equal(actorAnimation(p).pose,'building');
+ site.construction.delivered.clay=0;assert.equal(actorViewCitizens(s)[0].activity?.stage,'waiting');assert.equal(actorAnimation(actorViewCitizens(s)[0]).pose,'idle');
+ const field={type:'field',x:7,y:8,level:1,crop:{sown:.2,seedStock:2,sheaves:0,remaining:0}};s.buildings.push(field);Object.assign(c,{phase:'working',site:null,siteDuty:null,work:'7,8'});s.season=0;
+ p=actorViewCitizens(s)[0];assert.equal(p.activity?.kind,'farming');assert.equal(p.activity?.task,'sowing');assert.equal(actorAnimation(p).pose,'farming');
+ s.season=1;assert.equal(actorAnimation(actorViewCitizens(s)[0]).pose,'idle');s.season=2;field.crop.remaining=4;assert.equal(actorViewCitizens(s)[0].activity?.task,'harvesting');
+ const pot={type:'pottery',x:8,y:8,level:1,artisan:{stage:'forming',elapsed:1}};s.buildings.push(pot);c.work='8,8';assert.equal(actorViewCitizens(s)[0].activity?.kind,'pottery');
+ pot.artisan.stage='drying';assert.equal(actorAnimation(actorViewCitizens(s)[0]).pose,'idle');c.phase='toStore';assert.equal(actorViewCitizens(s)[0].activity,null);
+});
+
+test('real GLB narrows ankles without reducing the authored stride or changing sole height',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
+  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:433,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,1/60);scene.render();
+  c.y+=.02;view.update(s,1/60);scene.render();
+  const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert(),group=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),feet=['l','r'].map(side=>root.getChildTransformNodes().find(n=>n.name.endsWith(`-foot_${side}`)));
+  const sample=()=>feet.map(n=>{n.computeWorldMatrix(true);return B.Vector3.TransformCoordinates(n.getAbsolutePosition(),inverse);});
+  const narrow=sample();group.goToFrame(group.animatables[0].masterFrame);const authored=sample();
+  for(let i=0;i<2;i++){
+   assert.ok(Math.abs(narrow[i].x-authored[i].x*.60)<.008,`ankle X ${narrow[i].x} authored ${authored[i].x}`);
+   assert.ok(Math.abs(narrow[i].z-authored[i].z)<.008,'forward ankle track retains its calibrated ground travel');
+   assert.ok(Math.abs(narrow[i].y-authored[i].y)<.008,'planted/swinging sole height retained');
+  }
+  assert.ok(Math.abs(narrow[0].x-narrow[1].x)<Math.abs(authored[0].x-authored[1].x)*.65);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('real workplace joints visibly cycle by trade, freeze on pause and children handle local clay toys',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
+  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:434,phase:'working',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
+  const poses=[];
+  for(const kind of ['building','farming','pottery','weaving','brewing']){
+   c.activity={kind,task:'sowing',stage:'working',target:{x:7,y:9}};view.update(s,.1);scene.render();
+   const root=view.rootFor({citizenId:c.id}),arm=root.getChildTransformNodes().find(n=>n.name.endsWith('-upperarm_r')),spine=root.getChildTransformNodes().find(n=>n.name.endsWith('-spine_01'));
+   const first=arm.rotationQuaternion.asArray();for(let i=0;i<5;i++){view.update(s,.1);scene.render();}
+   assert.notDeepEqual(arm.rotationQuaternion.asArray(),first,`${kind} moves real skeletal arms`);poses.push(arm.rotationQuaternion.asArray().map(n=>n.toFixed(2)).join(','));
+   const frozen=[arm.rotationQuaternion.asArray(),spine.rotationQuaternion.asArray()];view.update(s,.1,{paused:true});scene.render();scene.render();assert.deepEqual([arm.rotationQuaternion.asArray(),spine.rotationQuaternion.asArray()],frozen);
+   if(kind==='building')assert.ok(root.getChildMeshes().some(m=>m.name==='builder-tool-blade'));
+   if(kind==='farming')assert.ok(root.getChildMeshes().some(m=>m.name==='field-hoe-blade'));
+  }
+  assert.equal(new Set(poses).size,5,'trades do not share a generic arm pose');
+  const child={...s.citizens[0],id:435,age:7,phase:'home',activity:undefined,work:null};[child.x,child.y]=child.home.split(',').map(Number);s.citizens=[child];let playing;
+  for(let t=0;t<20;t+=.2){s.simTime=t;playing=actorViewCitizens(s)[0];if(playing&&!playing.walking)break;}
+  assert.ok(playing?.playing&&!playing.walking);const before=JSON.stringify(s);view.update(s,.1);scene.render();assert.equal(JSON.stringify(s),before);
+  const root=view.rootFor({citizenId:child.id});const toy=root.getChildMeshes().find(m=>m.name==='child-clay-ram-body');assert.ok(toy?.isEnabled());assert.match(toy.parent.parent.name,/hand_r$/,'clay animal is held and moved by the actual articulated hand');assert.ok(root.getChildMeshes().some(m=>m.name==='child-play-counter'&&m.isEnabled()));
+  assert.ok(Math.hypot(root.position.x/6-child.x,root.position.z/6-child.y)<1.5,'toys remain on the existing safe home play route');
+  const arm=root.getChildTransformNodes().find(n=>n.name.endsWith('-upperarm_r')),pose=arm.rotationQuaternion.asArray();view.update(s,.1,{paused:true});scene.render();assert.deepEqual(arm.rotationQuaternion.asArray(),pose);
+  s.simTime=35;view.update(s,.1);assert.equal(root.isEnabled(),false,'night removes the child and outdoor toy scene together');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('real GLB hoe cycles into soil with grounded feet and building implement strikes forward of the face',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
+  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:8102,age:30,phase:'working',x:7,y:10,cargo:{},buildCargo:{},activity:{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}};s.citizens=[c];
+  let low=Infinity,high=-Infinity;
+  for(let i=0;i<28;i++){
+   view.update(s,.1);scene.render();const root=view.rootFor({citizenId:c.id}),blade=root.getChildMeshes().find(m=>m.name==='field-hoe-blade');blade.computeWorldMatrix(true);
+   const y=blade.getAbsolutePosition().y-root.position.y;low=Math.min(low,y);high=Math.max(high,y);
+   for(const side of ['l','r']){const foot=root.getChildTransformNodes().find(n=>n.name.endsWith(`-foot_${side}`));foot.computeWorldMatrix(true);assert.ok(foot.getAbsolutePosition().y-root.position.y>-.04,'working pose keeps ankles above ground');}
+  }
+  assert.ok(low<.20,`hoe blade must reach soil, minimum height=${low}`);assert.ok(low>-.04,`hoe must not swing underground, minimum=${low}`);assert.ok(high-low>.20,'a real lift follows the ground stroke');
+  c.activity.kind='building';view.update(s,.1);scene.render();const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert(),blade=root.getChildMeshes().find(m=>m.name==='builder-tool-blade'),hand=root.getChildTransformNodes().find(n=>n.name.endsWith('-hand_r'));
+  blade.computeWorldMatrix(true);hand.computeWorldMatrix(true);const tip=B.Vector3.TransformCoordinates(blade.getAbsolutePosition(),inverse),palm=B.Vector3.TransformCoordinates(hand.getAbsolutePosition(),inverse);assert.ok(tip.z-palm.z>.25,'masonry tool head extends toward the work, not up into the face');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});

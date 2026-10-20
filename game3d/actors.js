@@ -8,6 +8,7 @@ import {surfaceElevation} from '../district3d/terrain.js';
 import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
+import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
 import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 
@@ -17,7 +18,8 @@ export function actorViewFrame(state){
  // Pair once, using the actual rendered child-play positions and walking flags.
  // A hand must be able to reach the cat; the general neighbourhood test is wider.
  const pettingPairs=catPettingPairs(state,residents).filter(p=>{const c=byId.get(p.citizenId),scale=c.age<16?.55+Math.max(0,Math.min(c.age,15))*.022:1;return Math.hypot(c.x-p.x,c.y-p.y)<=.16*scale;});
- const visible=new Map(residents.map(c=>[c.id,{...c,activity:actorWorkActivity(state,c,pettingPairs)}]));
+ const workplaces=workplaceIndex(state);
+ const visible=new Map(residents.map(c=>[c.id,{...c,activity:actorWorkActivity(state,c,pettingPairs)||workplaceActivity(state,c,workplaces)}]));
  const funeral=funeralView(state);
  for(const id of funeral?.mourners||[]){
   const c=visible.get(id)||(state.citizens||[]).find(c=>c.id===id);
@@ -83,6 +85,8 @@ export async function createGameActors(B,scene,materials){
    a.tool=new B.TransformNode(`${name}-tool`,scene);a.tool.parent=root;a.tool.setEnabled(false);a.toolKind=null;
    a.inspired=sphere(`${name}-inspired`,root,gold,0,1.85,0,.10,.10,.10);a.inspired.setEnabled(false);
    const nodes=model.getChildTransformNodes();a.hands={};a.arms={};
+   a.spine=nodes.find(n=>n.name.endsWith('-spine_01'));a.spineBase=a.spine?.rotationQuaternion?.clone();a.legs={};
+   for(const side of ['l','r'])a.legs[side]={upper:nodes.find(n=>n.name.endsWith(`-thigh_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-calf_${side}`)),foot:nodes.find(n=>n.name.endsWith(`-foot_${side}`))};
    a.head=nodes.find(n=>n.name.endsWith('-head'));a.headBase=a.head?.scaling.clone();
    a.hairMeshes=model.getChildMeshes().filter(m=>/scalp hair/i.test(m.name));a.beardMeshes=model.getChildMeshes().filter(m=>/beard/i.test(m.name));
    if(a.head&&a.hairMeshes[0]&&a.beardMeshes[0]){
@@ -98,6 +102,15 @@ export async function createGameActors(B,scene,materials){
    }
    for(const side of ['l','r']){a.hands[side]=nodes.find(n=>n.name.endsWith(`-hand_${side}`));a.arms[side]={upper:nodes.find(n=>n.name.endsWith(`-upperarm_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-lowerarm_${side}`))};}
    if(a.hands.r){a.tool.parent=a.hands.r;a.tool.position.set(0,.045,0);}
+   if(metadata.child){a.playProps=new B.TransformNode(`${name}-play-props`,scene);a.playProps.parent=root;a.playProps.setEnabled(false);
+   // Terracotta animal and simple counters are period-inspired materials; this
+   // particular children's scene is a game interpretation, not an excavated rule.
+   a.playAnimal=new B.TransformNode(`${name}-clay-toy`,scene);a.playAnimal.parent=a.hands.r||a.playProps;a.playAnimal.position.set(0,.025,0);a.playAnimal.scaling.setAll(.75);a.playAnimal.setEnabled(false);
+   sphere('child-clay-ram-body',a.playAnimal,clay,0,.08,0,.23,.13,.12);sphere('child-clay-ram-face',a.playAnimal,clay,.12,.14,0,.10,.10,.10);
+   for(const x of [-.07,.07])for(const z of [-.04,.04])box('child-clay-ram-leg',a.playAnimal,clay,x,.025,z,.035,.07,.035);
+   a.playBoard=new B.TransformNode(`${name}-counters`,scene);a.playBoard.parent=a.playProps;
+   box('child-clay-play-board',a.playBoard,clay,0,.025,.46,.39,.035,.30);
+   for(let i=0;i<4;i++)sphere('child-play-counter',a.playBoard,i%2?stone:dark,(i%2-.5)*.15,.06,.39+Math.floor(i/2)*.13,.055,.035,.055);}
    a.armNodes=[];
    for(const n of model.getChildTransformNodes())if(/(?:upperarm|lowerarm)_[lr]$/.test(n.name))a.armNodes.push({node:n,base:n.rotationQuaternion?.clone()||B.Quaternion.FromEulerVector(n.rotation),last:null});
   }
@@ -125,7 +138,7 @@ export async function createGameActors(B,scene,materials){
  }
  function workerTool(a,kind){
   if(a.toolKind===kind){a.tool.setEnabled(!!kind);return;}
-  a.toolKind=kind;const grip=kind==='hunting'?a.hands.l:a.hands.r;if(grip){a.tool.parent=grip;a.tool.position.set(0,.045,0);a.tool.rotationQuaternion=B.Quaternion.Identity();}prune(a.tool);for(const n of a.tool.getChildren())n.dispose();
+  a.toolKind=kind;a.tool.scaling.setAll(1);const grip=kind==='hunting'?a.hands.l:a.hands.r;if(grip){a.tool.parent=grip;a.tool.position.set(0,kind==='hoe'?0:.045,0);a.tool.rotationQuaternion=B.Quaternion.Identity();}prune(a.tool);for(const n of a.tool.getChildren())n.dispose();
   if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();a.fishingLine=null;}
   if(a.shotArrow){prune(a.shotArrow);a.shotArrow.dispose();a.shotArrow=null;}
   a.tool.setEnabled(!!kind);if(!kind)return;
@@ -142,8 +155,11 @@ export async function createGameActors(B,scene,materials){
    a.rodTip=new B.TransformNode('fishing-rod-tip',scene);a.rodTip.parent=rod;a.rodTip.position.y=.725;
    a.fishingLine=B.MeshBuilder.CreateLines('fishing-line',{points:[vec(),vec(0,-1,0)],updatable:true},scene);a.fishingLine.color=B.Color3.FromHexString('#d7c9a6');a.fishingLine.metadata=a.root.metadata;meshes.push(a.fishingLine);
   }else{
-   box('worker-tool-handle',a.tool,wood,0,.16,0,.035,kind==='quarry'?.86:.66,.035);
+   box('worker-tool-handle',a.tool,wood,0,kind==='hoe'?.40:.16,0,.035,kind==='hoe'?1.04:kind==='quarry'?.86:.66,.035);
    if(kind==='quarry')box('quarry-pick-head',a.tool,copper,0,.58,0,.40,.045,.055);
+   else if(kind==='hoe'){box('field-hoe-blade',a.tool,stone,0,.92,0,.28,.07,.13);}
+   else if(kind==='sickle'){const blade=box('field-sickle-blade',a.tool,copper,.12,.38,0,.28,.045,.045);blade.rotation.z=-.45;}
+   else if(kind==='stirring'){}
    else if(kind==='logging')box('logging-axe-head',a.tool,copper,.10,.46,0,.24,.13,.045);
    else box('builder-tool-blade',a.tool,stone,.065,.46,0,.16,.085,.045);
   }
@@ -205,18 +221,40 @@ export async function createGameActors(B,scene,materials){
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
   if(!paused||!a.clip){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
   a.paused=paused;
-  if(a.tool&&(!paused||a.toolKind===null)){const active=['work','logging','quarry','hunting','fishing'].includes(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
-   const kind=c.activity?.kind||(builder?'building':['field','garden','reed','wood','stone','clay','pottery','brewery','brickyard'].includes(a.look?.work)?'gathering':null);workerTool(a,!c.carrying&&active?kind:null);}
+  if(a.playProps&&!paused){const playing=c.playing&&c.age<16;a.playProps.setEnabled(!!playing);a.playBoard.setEnabled(!!playing&&!c.walking);a.playAnimal.setEnabled(!!playing);}
+  if(a.tool&&(!paused||a.toolKind===null)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
+   const kind=c.activity?workPose(c.activity.kind,a.time,c.activity.task).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
   if(a.clip==='Walk_Loop'&&!paused&&distance<3){
    a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z);
    const g=a.groups.get(a.clip);a.walkFrame=g.from+a.walkPhase*(g.to-g.from);
   }
-  if(!paused){a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);if(a.look){const beat=Math.sin(a.time*3.5),work=['work','logging','quarry','hunting','fishing'].includes(a.pose);a.model.rotation.x=(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:work?.08:0);a.model.rotation.z=a.pose==='dance'?beat*.055:0;
+  if(!paused){a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=a.pose==='dance'?beat*.055:0;
    a.inspired.position.y=1.85+Math.sin(a.time*2.3)*.045;a.inspired.scaling.setAll(1+Math.sin(a.time*2.3)*.10);
    // Play and dance bounce is a presentation pose at the resident's exact route position.
    a.model.position.y=a.footOffset+(a.pose==='play'||a.pose==='dance'?Math.abs(beat)*.04:0);
   }}
+ }
+ // Pull the authored ankle tracks toward the centre line, then solve each real
+ // thigh/calf chain. Preserve height, forward travel and foot orientation: scaling
+ // the model's X axis would also shrink bodies/cargo and leave the wide joint gait.
+ function narrowStance(a){
+  for(const leg of Object.values(a.legs)){
+   const {upper,lower,foot}=leg;if(!upper||!lower||!foot)continue;
+   a.root.computeWorldMatrix(true);upper.computeWorldMatrix(true);lower.computeWorldMatrix(true);foot.computeWorldMatrix(true);
+   const inverse=a.root.getWorldMatrix().clone().invert(),hip=upper.getAbsolutePosition(),knee=lower.getAbsolutePosition(),ankle=foot.getAbsolutePosition();
+   const local=B.Vector3.TransformCoordinates(ankle,inverse);local.x*=.60;const goal=B.Vector3.TransformCoordinates(local,a.root.getWorldMatrix());
+   const orientation=new B.Quaternion();foot.getWorldMatrix().decompose(undefined,orientation,undefined);
+   const l1=B.Vector3.Distance(hip,knee),l2=B.Vector3.Distance(knee,ankle),direction=goal.subtract(hip),length=Math.min(direction.length(),l1+l2-.0001);direction.normalize();
+   const along=(l1*l1-l2*l2+length*length)/(2*length),height=Math.sqrt(Math.max(0,l1*l1-along*along));
+   let bend=knee.subtract(hip).subtract(direction.scale(B.Vector3.Dot(knee.subtract(hip),direction)));
+   if(bend.lengthSquared()<1e-8)bend=B.Vector3.TransformNormal(vec(0,0,1),a.root.getWorldMatrix());bend.normalize();
+   const joint=hip.add(direction.scale(along)).add(bend.scale(height));
+   const aim=(node,end)=>{node.parent.computeWorldMatrix(true);const ray=B.Vector3.TransformNormal(end.subtract(node.getAbsolutePosition()),node.parent.getWorldMatrix().clone().invert()).normalize();node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,ray,new B.Quaternion());node.computeWorldMatrix(true);};
+   aim(upper,joint);lower.computeWorldMatrix(true);aim(lower,hip.add(direction.scale(length)));
+   const parentRotation=new B.Quaternion();foot.parent.getWorldMatrix().decompose(undefined,parentRotation,undefined);foot.rotationQuaternion=parentRotation.conjugate().multiply(orientation);
+   leg.last={upper:upper.rotationQuaternion.clone(),lower:lower.rotationQuaternion.clone(),foot:foot.rotationQuaternion.clone()};
+  }
  }
  // Animation clips set the skeletal base, then apply small task-specific arm gestures.
  const observer=scene.onAfterAnimationsObservable.add(()=>{
@@ -226,8 +264,10 @@ export async function createGameActors(B,scene,materials){
    // Apply the distance sample once, before task IK and skeleton upload.
    if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*i.headWidth,a.headBase.y*i.headHeight,a.headBase.z);}
-   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();continue;}
-   const carry=['carry','unload'].includes(a.pose),work=['work','logging','quarry','building','gathering'].includes(a.pose),play=['play','dance'].includes(a.pose);
+   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))for(const key of ['upper','lower','foot'])if(leg.last?.[key])leg[key].rotationQuaternion=leg.last[key].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
+   narrowStance(a);
+   const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=workPose(a.pose,a.time,a.c.activity?.task);
+   if(a.spine){const base=a.spine.rotationQuaternion||a.spineBase; a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
     const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===n);
@@ -255,11 +295,20 @@ export async function createGameActors(B,scene,materials){
     const target=a.c.activity?.target,pet=target?B.Vector3.TransformCoordinates(vec(target.x*6,surfaceElevation(target.x,target.y,a.state)+.58,target.y*6),a.root.computeWorldMatrix(true).clone().invert()):vec(.15,.44,.65);
     pet.z+=Math.sin(a.time*4)*.07;poseArm(a,'r',pet);poseArm(a,'l',vec(-.24,.79,.30));
    }else if(work){
-    poseArm(a,'r',vec(.19,.88+Math.sin(a.time*3.5)*.17,.40));poseArm(a,'l',vec(-.18,.95,.28));
+    poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
+   }else if(a.pose==='play'&&!a.c.walking){
+    const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
    if(a.tool.isEnabled()&&a.hands.r&&a.hands.l){
     a.hands.r.computeWorldMatrix(true);a.hands.l.computeWorldMatrix(true);
-    const direction=['logging','quarry'].includes(a.pose)?a.hands.l.getAbsolutePosition().subtract(a.hands.r.getAbsolutePosition()):B.Vector3.TransformNormal(a.pose==='hunting'?vec(0,1,0):vec(0,.85,.55),a.root.getWorldMatrix());
+    let direction=['logging','quarry'].includes(a.pose)?a.hands.l.getAbsolutePosition().subtract(a.hands.r.getAbsolutePosition()):B.Vector3.TransformNormal(a.pose==='hunting'?vec(0,1,0):a.pose==='building'?vec(0,.12,.99):vec(0,.85,.55),a.root.getWorldMatrix());
+    if(a.toolKind==='hoe'){
+     // A rigid shaft pivots down from its palm grip. Solve its forward reach
+     // from the desired blade height instead of pointing an axe shape skyward.
+     const rootMatrix=a.root.computeWorldMatrix(true),inverse=rootMatrix.clone().invert(),grip=B.Vector3.TransformCoordinates(a.hands.r.getAbsolutePosition(),inverse),shaft=B.Vector3.TransformNormal(vec(0,.92,0),a.hands.r.getWorldMatrix().multiply(inverse)).length();
+     const lift=(Math.sin(a.time*3.6)+1)*.5,drop=Math.max(-shaft*.98,Math.min(shaft*.98,.055+lift*.34-grip.y)),forward=Math.sqrt(Math.max(0,shaft*shaft-drop*drop));
+     const end=B.Vector3.TransformCoordinates(vec(grip.x,grip.y+drop,grip.z+forward),rootMatrix);direction=end.subtract(a.hands.r.getAbsolutePosition());
+    }
     const local=B.Vector3.TransformNormal(direction,a.tool.parent.getWorldMatrix().clone().invert()).normalize();
     a.tool.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,local,new B.Quaternion());a.tool.computeWorldMatrix(true);
    }
@@ -294,7 +343,7 @@ export async function createGameActors(B,scene,materials){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
-  for(const c of visible){seen.add(c.id);let a=people.get(c.id);if(!a){a=instantiate(residentSource,`citizen-${c.id}`,{citizenId:c.id});a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
+  for(const c of visible){seen.add(c.id);let a=people.get(c.id);if(!a){a=instantiate(residentSource,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
