@@ -38,3 +38,25 @@ test('gait follows distance, birds alternate feet, grazing lowers head, pause fr
  const bird=view.rootFor({animalId:'bird'});for(let i=0;i<10;i++){animals[1].x+=.01;view.update(s,animals,.05,{speed:1});}const legs=bird.getChildTransformNodes().filter(n=>/-hip--?1-0$/.test(n.name));assert.equal(legs.length,2);assert.ok(legs[0].rotation.x*legs[1].rotation.x<0);
  view.dispose();scene.dispose();engine.dispose();
 });
+
+test('fish swim with shared outward anatomy, rodents are small, cats have feline details, hunted prey lies still',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
+ const animals=[{id:'fish-a',kind:'fish',x:4,y:4,behavior:'swimming',waterLevel:.12,swimDepth:.2},{id:'fish-b',kind:'fish',x:5,y:4,behavior:'swimming'},{id:'cat-a',kind:'cat',x:6,y:4,behavior:'looking'},{id:'mouse-a',kind:'mouse',x:7,y:4,behavior:'looking'},{id:'prey',kind:'gazelle',x:8,y:4,behavior:'looking'}];
+ const saved=JSON.stringify(animals);view.update(s,animals,.05);
+ const fish=view.rootFor({animalId:'fish-a'}),fishB=view.rootFor({animalId:'fish-b'}),cat=view.rootFor({animalId:'cat-a'}),mouse=view.rootFor({animalId:'mouse-a'}),prey=view.rootFor({animalId:'prey'});
+ assert.equal(mouse.scaling.x,.55,'rodents should occupy substantially less street space');
+ assert.ok(cat.getChildMeshes().filter(m=>m.name.includes('whisker')).length>=6,'cat needs visible paired whiskers');
+ assert.ok(cat.getChildMeshes().some(m=>m.name.includes('iris')),'feline iris surrounds dark slit pupil');
+ assert.ok(fish.getChildMeshes().some(m=>m.name.includes('caudal-fin')),'fish must have a fish tail');
+ assert.ok(Math.abs(fish.position.y+.08)<1e-12,'fish uses water elevation rather than terrain surface');
+ const torso=fish.getChildMeshes().find(m=>m.name.includes('torso')),second=fishB.getChildMeshes().find(m=>m.name.includes('torso'));
+ assert.equal(torso.sourceMesh,second.sourceMesh);assert.ok(!fish.getChildTransformNodes().some(n=>n.name.includes('-hip-')),'fish has no mammal legs');
+ const positions=torso.getVerticesData(B.VertexBuffer.PositionKind),normals=torso.getVerticesData(B.VertexBuffer.NormalKind),middle=3*17*3;assert.ok(positions[middle]*normals[middle]>0);
+ const tail=fish.getChildTransformNodes().find(n=>n.name.endsWith('-tail'));const priorTail=tail.rotation.y;
+ for(let i=0;i<20;i++)view.update(s,animals,.05);assert.notEqual(tail.rotation.y,priorTail,'fish tail swims continuously');assert.equal(JSON.stringify(animals),saved);
+ animals[4].behavior='dead';animals[4].deathProgress=1;for(let i=0;i<80;i++)view.update(s,animals,.05);
+ const body=prey.getChildTransformNodes().find(n=>n.name.endsWith('-body-pivot'));assert.ok(Math.abs(body.rotation.z)>1,'prey lies on its side');assert.ok(body.position.y<.4);
+ const snapshot=()=>JSON.stringify(prey.getDescendants().map(n=>[n.position?.asArray(),n.rotation?.asArray(),n.scaling?.asArray()]));const still=snapshot();for(let i=0;i<10;i++)view.update(s,animals,.05);assert.equal(snapshot(),still,'dead prey must stop breathing, stepping and moving its ears/tail');
+ const count=scene.meshes.length;for(let i=0;i<10;i++)view.update(s,animals,.05);assert.equal(scene.meshes.length,count,'animation creates no meshes');
+ view.dispose();assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();
+});

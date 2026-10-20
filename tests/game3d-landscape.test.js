@@ -109,3 +109,39 @@ test('main landscape never creates deposit text labels or dynamic text textures'
  const source=readFileSync(new URL('../game3d/landscape.js',import.meta.url),'utf8');
  assert.ok(!source.includes('DynamicTexture'));assert.ok(!source.includes('fillText('));assert.ok(!source.includes('resource-name-'));assert.ok(!source.includes('resource-label-'));
 });
+
+import {floodplainTufts,tuftGeometry,riverbankGeometry,rectangularSiteGeometry} from '../game3d/nature.js';
+import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
+test('volumetric floodplain colonies preserve dry open ground, foundations and real roads',()=>{
+ const s=createGame(),plan=landscapePlan(s),before=JSON.stringify(s),a=floodplainTufts(s,plan.roads);
+ assert.deepEqual(a,floodplainTufts(s,plan.roads));assert.ok(a.length>250);assert.ok(a.length<4000);
+ assert.ok(a.some(p=>p.kind==='reed'));assert.ok(a.some(p=>p.kind==='grass'));
+ for(const p of a){assert.ok(shoreDistance(p.x,p.y,s)>=.23);assert.ok(!s.buildings.some(b=>Math.abs(b.x-p.x)<.79&&Math.abs(b.y-p.y)<.79));
+  for(const r of plan.roads){const dx=r.b.x-r.a.x,dy=r.b.y-r.a.y,t=Math.max(0,Math.min(1,((p.x-r.a.x)*dx+(p.y-r.a.y)*dy)/(dx*dx+dy*dy||1)));assert.ok(Math.hypot(p.x-r.a.x-dx*t,p.y-r.a.y-dy*t)>.29);}}
+ const g=tuftGeometry(s,a);assert.ok(g.positions.length>10000);assert.ok(g.positions.length<180000);assert.equal(g.colors.length,g.positions.length/3*4);assert.equal(g.uvs.length,g.positions.length/3*2);assert.ok(g.positions.every(Number.isFinite));
+ assert.ok(g.positions.some((v,i)=>i%3===1&&v>.7),'grass has real height and bent upright leaves');assert.equal(JSON.stringify(s),before);
+});
+test('shore margin has irregular width and lies directly on the canonical physical bank',()=>{
+ const s=createGame(),before=JSON.stringify(s),g=riverbankGeometry(s),widths=[];assert.equal(g.colors.length,g.positions.length/3*4);
+ for(let i=0;i<g.positions.length;i+=3){const x=g.positions[i]/TILE,y=g.positions[i+2]/TILE;assert.ok(Math.abs(g.positions[i+1]-surfaceElevation(x,y,s)-.024)<1e-9);if(i%(7*3)===18)widths.push(shoreDistance(x,y,s));}
+ assert.ok(new Set(widths.map(v=>v.toFixed(3))).size>40);assert.ok(g.colors.some((v,i)=>i%4===3&&v===0));assert.equal(JSON.stringify(s),before);
+});
+test('resource placement uses four straight rectangular edges with no circular footprint',()=>{
+ const g=rectangularSiteGeometry();assert.equal(g.positions.length,48);assert.equal(g.indices.length,24);
+ const xs=g.positions.filter((_,i)=>i%3===0),zs=g.positions.filter((_,i)=>i%3===2);assert.ok(Math.max(...xs)>2.6&&Math.max(...zs)>2.6);assert.ok(g.positions.filter((_,i)=>i%3===1).every(v=>v===0));
+});
+
+test('real gathering tree falls at saved target, leaves a stump and recovers without new geometry or save edits',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async()=>loadGeometry(scene);let view;
+ const s=createGame();s.gathering={features:[{id:'tree:test:0',kind:'tree',x:4,y:5,health:1,felledAt:null,recoverAt:null},{id:'rock:test:0',kind:'rock',x:5,y:5,health:1,felledAt:null,recoverAt:null}],jobs:[],kills:[]};
+ try{const before=JSON.stringify(s);view=await createGameLandscape(B,scene,s,materials);const tree=scene.getTransformNodeByName('gathering-feature-tree:test:0'),parts=view.meshes.filter(m=>m.name.startsWith('working-tree-')),stump=view.meshes.find(m=>m.name==='felled-tree-stump-tree:test:0'),rock=view.meshes.find(m=>m.name==='working-rock-rock:test:0');
+  assert.equal(tree.position.x,24);assert.equal(tree.position.z,30);assert.ok(parts.length);assert.equal(stump.isEnabled(),false);assert.equal(JSON.stringify(s),before);const count=scene.meshes.length;
+  for(const m of parts){assert.equal(m.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);m.computeWorldMatrix(true);assert.ok(m.getWorldMatrix().determinant()>0);}
+  s.gathering.features[0].health=0;s.gathering.features[0].felledAt=1;s.gathering.features[0].recoverAt=121;s.gathering.features[1].health=.2;
+  const fallen=JSON.stringify(s);view.update(s,1.4);assert.ok(tree.rotation.z<-.5);assert.equal(stump.isEnabled(),true);assert.ok(parts.every(m=>m.isEnabled()));assert.ok(rock.scaling.y<.4);assert.equal(scene.meshes.length,count);assert.equal(JSON.stringify(s),fallen);
+  view.update(s,15);assert.ok(parts.every(m=>!m.isEnabled()));assert.equal(stump.isEnabled(),true);assert.equal(scene.meshes.length,count);
+  s.gathering.features[0].health=1;s.gathering.features[0].felledAt=null;s.gathering.features[0].recoverAt=null;view.update(s,121);assert.equal(tree.rotation.z,0);assert.equal(stump.isEnabled(),false);assert.ok(parts.every(m=>m.isEnabled()));assert.equal(scene.meshes.length,count);
+  s.gathering.features=[];view.update(s,122);assert.equal(tree.isDisposed(),true);assert.equal(stump.isDisposed(),true);view.dispose();assert.equal(scene.meshes.length,0);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+});

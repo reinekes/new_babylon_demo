@@ -7,7 +7,7 @@ import {houseLightCount} from '../households.js';
 import {Renderer} from '../renderer.js';
 import {createGame} from '../engine.js';
 import {animalsFor} from '../fauna.js';
-import {isDryPoint} from '../world.js';
+import {isDryPoint,terrain} from '../world.js';
 
 test('courtyard variants are deterministic, distinct and independent of time or population',()=>{
  const variants=new Set();for(let x=0;x<20;x++){const b={x,y:8,type:'house'};variants.add(houseVariant(b));assert.equal(houseVariant(b),houseVariant({...b,pantry:99}));}assert.equal(variants.size,4);
@@ -24,7 +24,7 @@ test('expressive poses respect cargo, mourning and movement before decorative wo
  assert.equal(residentPose({phase:'home',age:65},null,3).kind,'elder');
 });
 test('animal idle variety never moves actors off their valid routes',()=>{
- const s=createGame(),behaviors=new Set();for(let t=0;t<90;t+=.5){s.simTime=t;for(const a of animalsFor(s)){behaviors.add(a.behavior);assert.ok(isDryPoint(s,a.x,a.y));}}
+ const s=createGame(),behaviors=new Set();for(let t=0;t<90;t+=.5){s.simTime=t;for(const a of animalsFor(s)){behaviors.add(a.behavior);if(a.kind==='fish')assert.equal(terrain(Math.round(a.x),Math.round(a.y),s),'water',a.id);else assert.ok(isDryPoint(s,a.x,a.y));}}
  assert.ok(behaviors.has('resting'));assert.ok(behaviors.has('drinking'));assert.ok(behaviors.has('looking'));
 });
 

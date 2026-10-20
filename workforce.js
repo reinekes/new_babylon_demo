@@ -1,4 +1,5 @@
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
+import {GATHERING_TYPES,workGathering,advanceGathering} from './labor-life.js';
 import {initializeArtisans,isArtisan,artisanNeeds,artisanOutput,workArtisan,advanceArtisans,collectArtisan} from './artisan.js';
 import {advanceKilns,kilnNeeds,startFiring,collectFired,KILN_RECIPE} from './kilns.js';
 import {initializeBricks,advanceBricks,brickNeeds,formBricks,collectBricks,BRICK_RECIPE} from './bricks.js';
@@ -78,13 +79,13 @@ function closestStock(s,ctx,origin,k,{seed=false,sources=null,receiving=false}={
 }
 function receivingStore(s,ctx,origin,cargo){for(const [k,n]of Object.entries(cargo||{}))if(n>0&&MATERIALS.includes(k)){const key=closestStock(s,ctx,origin,k,{receiving:true});if(key)return key;}return closestStore(s,ctx,origin);}
 function localRecoveryStore(s,c){const ctx=context(s);let nearest=null,d=Infinity;for(const p of ctx.network.nodes.values()){const n=distance(c,p);if(n<d){d=n;nearest=p;}}let best=null,length=Infinity;for(const b of ctx.stores){const p=ctx.ports.get(buildingKey(b)),route=p&&nearest&&routeBetween(s,nearest.key,p.key,ctx);if(route&&route.length<length){best=buildingKey(b);length=route.length;}}return best;}
-function startTrip(s,c,targetKey,phase,ctx){
+function startTrip(s,c,targetKey,phase,ctx,via=null){
  const target=ctx.ports.get(targetKey);if(!target){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
  let origin=null,min=Infinity;
- for(const p of ctx.network.nodes.values()){const d=distance(c,p);if(d<min){origin=p;min=d;}}
+ for(const p of ctx.network.nodes.values()){const d=distance(via||c,p);if(d<min){origin=p;min=d;}}
  const route=origin&&routeBetween(s,origin.key,target.key,ctx);
  if(!route){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
- c.route=[{x:c.x,y:c.y},...route.map(p=>({x:p.x,y:p.y}))];c.routeIndex=1;c.phase=phase;
+ c.route=[{x:c.x,y:c.y},...(via?[{x:via.x,y:via.y}]:[]),...route.map(p=>({x:p.x,y:p.y}))];c.routeIndex=1;c.phase=phase;
 }
 function siteAccess(s,ctx,c,b){
  const home=ctx.ports.get(c.home);if(!home)return null;
@@ -185,10 +186,10 @@ export function syncCitizens(s){
    else if(c.phase!=='home'){if(c.site&&isWorkday(s.simTime))beginSiteTrip(s,c,ctx);else startTrip(s,c,c.home,'toHome',ctx);}
   }
  }
- s.citizens=citizens;cache.synced=signature;
+ s.citizens=citizens;advanceGathering(s);cache.synced=signature;
 }
 
-function harvest(s,c,ctx){
+function harvest(s,c,ctx,via=null){
  const b=ctx.buildings.get(c.work);if(!b)return false;
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){c.cargo={firedBrick:amount};c.store=receivingStore(s,ctx,c.work,c.cargo)||c.store;startTrip(s,c,c.store,'toStore',ctx);return true;}startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){c.cargo={brick:amount};c.store=receivingStore(s,ctx,c.work,c.cargo)||c.store;startTrip(s,c,c.store,'toStore',ctx);return true;}formBricks(b);return false;}
@@ -202,7 +203,7 @@ function harvest(s,c,ctx){
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   c.cargo[resource]=base*mult;
  }
- startTrip(s,c,c.store,'toStore',ctx);return true;
+ startTrip(s,c,c.store,'toStore',ctx,via);return true;
 }
 function deposit(s,c){
  let delivered=0;const actual={};
@@ -356,7 +357,12 @@ function advanceCitizen(s,c,dt,ctx){
     let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'healer')*healingSpeed(c);const cost=healingCost(c);
     for(const patient of patients){const amount=Math.max(0,Math.min(budget/patients.length,(patient.careGoal||85)-patient.health,Math.min(availableFood(s),foodAvailableAt(s,c.store))/(.04*cost),storeStock(s,c.store,'reed')/(.02*cost)));patient.health+=amount;if(amount>0)c.medicine.practice+=amount;takeStock(s,c.store,'food',amount*.04*cost);takeStock(s,c.store,'reed',amount*.02*cost);}return;
    }
-   const rate=workRate(c,b.type==='tailor'?'tailor':'production'),needed=(BUILDINGS[b.type].workTime-c.workElapsed)/rate;
+   const rate=workRate(c,b.type==='tailor'?'tailor':'production');
+   if(GATHERING_TYPES.includes(b.type)){
+    const via=workGathering(s,c,b,remaining,rate,ctx.ports.get(c.work));if(via)harvest(s,c,ctx,via);
+    return;
+   }
+   const needed=(BUILDINGS[b.type].workTime-c.workElapsed)/rate;
    if(remaining<needed){c.workElapsed+=remaining*rate;return;}
    remaining-=Math.max(0,needed);c.workElapsed=0;harvest(s,c,ctx);continue;
   }
@@ -381,7 +387,7 @@ function prepareCare(s,ctx){
 export function advanceWorkers(s,seconds){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;advanceFestival(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);advanceCrops(s,dt);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);advanceCrops(s,dt);advancePests(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;advanceGathering(s);advanceFestival(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);advanceCrops(s,dt);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);advanceCrops(s,dt);advancePests(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
  s.simTime=start+seconds;
 }
 export function visibleCitizens(s){

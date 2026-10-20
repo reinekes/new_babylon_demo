@@ -21,13 +21,13 @@ test('workers can be pinned to a building; children cannot; pin survives saving 
  assert.equal(assignWorkplace(s,s.citizens.find(c=>c.age<16).id,`${b.x},${b.y}`).ok,false);const saved=decode(encode(s));assert.ok(saved);assert.equal(saved.citizens.find(v=>v.id===c.id).workplace,c.workplace);
 });
 test('legacy migration retains people, carried goods and pantry; crop state survives deterministic reload',()=>{
- const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,22);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
+ const s=createGame();s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,23);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
  const next=decode(encode(loaded));assert.deepEqual(next,loaded);
 });
 test('cats and mice inhabit storage yards, move and rest without entering water or buildings',async()=>{
  const {miracle}=await import('../engine.js');const {advancePests}=await import('../pests.js');const {animalsFor}=await import('../fauna.js'),{isDryPoint}=await import('../world.js');const s=createGame(),actions=new Set(),positions=new Set();miracle(s,'cat');
  for(let t=0;t<60;t+=.5){s.simTime=t;advancePests(s,.5);for(const a of animalsFor(s).filter(a=>['cat','mouse'].includes(a.kind))){assert.ok(isDryPoint(s,a.x,a.y));assert.ok(!s.buildings.some(b=>Math.abs(b.x-a.x)<.48&&Math.abs(b.y-a.y)<.48));actions.add(a.behavior);positions.add(`${a.id}:${a.x.toFixed(2)}`);}}
- assert.ok(actions.has('sleeping'));assert.ok(actions.has('hunting'));assert.ok(positions.size>20);
+ assert.ok(actions.has('resting'));assert.ok(actions.has('wandering'));assert.ok(actions.has('hunting'));assert.ok(positions.size>20);
 });
 test('actual residents sow, harvest once and deliver finite autumn crop to storage',async()=>{
  const {build}=await import('../engine.js');const s=createGame(),b=field(s);assert.ok(build(s,'canal',12,7).ok);assignWorkplace(s,0,'12,8');assignWorkplace(s,1,'12,8');

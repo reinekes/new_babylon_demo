@@ -229,7 +229,7 @@ export function createDistrictActors(B,scene,materials){
  function update(s,t=s.simTime||0,dt,focus){
   frameDelta=Math.max(0,Math.min(.1,dt??(lastTime===null?1/60:Math.max(1/60,t-lastTime))));lastTime=t;
   refreshFrustum();
-  const visible=visibleCitizens(s),fauna=animalsFor(s),seen=new Set(),seenAnimals=new Set();
+  const visible=visibleCitizens(s),fauna=animalsFor(s).filter(a=>a.kind!=='fish'),seen=new Set(),seenAnimals=new Set();
   const professions=new Map((s.buildings||[]).map(b=>[b.id||`${b.x},${b.y}`,b.type]));
   for(const c of visible){
    seen.add(c.id);let a=people.get(c.id);

@@ -1,3 +1,4 @@
+import {initializeGathering,validateGathering} from './labor-life.js';
 import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation} from './festival.js';
 import {initializeArtisans,validateArtisans} from './artisan.js';
 import {isRiverBank} from './river-trade.js';
@@ -27,14 +28,14 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=22;
+export const VERSION=23;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame(){
  const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{food:100,clay:90,reed:45,wood:20,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
- initializeFestival(s);initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);syncInventory(s);initializeDistricts(s);initializeWater(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
+ initializeGathering(s);initializeFestival(s);initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);syncCitizens(s);syncInventory(s);initializeDistricts(s);initializeWater(s);log(s,'У города появился покровитель','Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
 export const storage=storageOf;
@@ -149,8 +150,8 @@ export function goals(s){return [{label:'Построить новое поле'
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22;
-  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,VERSION].includes(s.version))return null;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23;
+  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -194,6 +195,7 @@ export function decode(raw){
    const c=s.trade?.caravan;if(c)for(const [k,base]of [['pottery',14],['beer',8]]){c.stock[k]??=0;c.prices[k]??={buy:base+2,sell:base};}
    initializeArtisans(s);
   }
+  if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s))return null;
   if(s.world&&!validateWorld(s))return null;
   initializeWorld(s);ensureResourceSites(s);
   const finite=(v,min=0,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;

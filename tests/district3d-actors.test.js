@@ -20,12 +20,13 @@ test('3D actors instance shared geometry, preserve simulation and track real pos
  const root=scene.transformNodes.find(n=>n.metadata?.citizenId===c.id);
  assert.ok(root);assert.equal(root.position.x,c.x*6);assert.equal(root.position.z,c.y*6);
  assert.equal(root.position.y,surfaceElevation(c.x,c.y,s));
- for(const animal of animalsFor(s)){
+ for(const animal of animalsFor(s).filter(a=>a.kind!=='fish')){
   const rig=scene.transformNodes.find(n=>n.metadata?.animalId===animal.id);
   assert.equal(rig.position.y,onBridge(s.buildings,animal.x,animal.y)?.22:surfaceElevation(animal.x,animal.y,s));
  }
  assert.equal(scene.transformNodes.filter(n=>n.metadata?.citizenId!==undefined&&n.isEnabled()).length,visibleCitizens(s).length);
- assert.equal(scene.transformNodes.filter(n=>n.metadata?.animalId!==undefined&&n.isEnabled()).length,animalsFor(s).length);
+ assert.equal(scene.transformNodes.filter(n=>n.metadata?.animalId!==undefined&&n.isEnabled()).length,animalsFor(s).filter(a=>a.kind!=='fish').length);
+ assert.ok(!scene.transformNodes.some(n=>String(n.metadata?.animalId).startsWith('fish:')),'legacy renderer must not render fish as land mammals');
  assert.ok(view.meshes.every(m=>m instanceof B.InstancedMesh));
  const count=scene.meshes.length,ids=view.meshes.map(m=>m.uniqueId);
  for(let i=0;i<10;i++)view.update(s,s.simTime);
