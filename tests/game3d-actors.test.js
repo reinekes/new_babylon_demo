@@ -255,7 +255,7 @@ test('workplace activities follow real construction, crop and craft phases inste
  pot.artisan.stage='drying';assert.equal(actorAnimation(actorViewCitizens(s)[0]).pose,'idle');c.phase='toStore';assert.equal(actorViewCitizens(s)[0].activity,null);
 });
 
-test('real GLB narrows ankles without reducing the authored stride or changing sole height',async()=>{
+test('real GLB gently narrows hip translation while preserving authored ankle stride and sole height',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
  B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
@@ -265,13 +265,15 @@ test('real GLB narrows ankles without reducing the authored stride or changing s
   c.y+=.02;view.update(s,1/60);scene.render();
   const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert(),group=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),feet=['l','r'].map(side=>root.getChildTransformNodes().find(n=>n.name.endsWith(`-foot_${side}`)));
   const sample=()=>feet.map(n=>{n.computeWorldMatrix(true);return B.Vector3.TransformCoordinates(n.getAbsolutePosition(),inverse);});
-  const narrow=sample();group.goToFrame(group.animatables[0].masterFrame);const authored=sample();
+  const hipPoints=()=>['l','r'].map(side=>{const n=root.getChildTransformNodes().find(n=>n.name.endsWith(`-thigh_${side}`));n.computeWorldMatrix(true);return B.Vector3.TransformCoordinates(n.getAbsolutePosition(),inverse);});
+  const narrow=sample(),narrowHips=hipPoints();group.goToFrame(group.animatables[0].masterFrame);const authored=sample(),authoredHips=hipPoints();
   for(let i=0;i<2;i++){
-   assert.ok(Math.abs(narrow[i].x-authored[i].x*.60)<.008,`ankle X ${narrow[i].x} authored ${authored[i].x}`);
+   assert.ok(Math.abs(narrow[i].x-authored[i].x)<.025,'modest hip translation moves each whole leg by under 2.5cm');
    assert.ok(Math.abs(narrow[i].z-authored[i].z)<.008,'forward ankle track retains its calibrated ground travel');
    assert.ok(Math.abs(narrow[i].y-authored[i].y)<.008,'planted/swinging sole height retained');
   }
-  assert.ok(Math.abs(narrow[0].x-narrow[1].x)<Math.abs(authored[0].x-authored[1].x)*.65);
+  assert.ok(Math.abs(B.Vector3.Distance(narrowHips[0],narrowHips[1])/B.Vector3.Distance(authoredHips[0],authoredHips[1])-.84)<.003,'hip width is gently reduced16percent without deforming lower limbs');
+  const reduction=Math.abs(authored[0].x-authored[1].x)-Math.abs(narrow[0].x-narrow[1].x);assert.ok(reduction>.012&&reduction<.05,'stance narrows by a few centimetres rather than forced40percent ankle compression');
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
 
@@ -391,5 +393,34 @@ test('work pose time follows real unpaused 1x/2x/4x seconds even when the calend
   // Global task phase advances through 1.25, 2.5 and 3.75 seconds while
   // calendar time advances by only a quarter of those amounts.
   assert.ok(samples.every(n=>n>=0&&n<.5));assert.ok(new Set(samples.map(n=>n.toFixed(2))).size>1,`calendar quarter speed must not freeze motion: ${samples}`);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('actual GLB toe axes and leg rotations remain authored through walking turns and cargo poses',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:9500,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,.02);scene.render();
+  const root=view.rootFor({citizenId:c.id});
+  for(const yaw of [0,Math.PI/2,Math.PI,-Math.PI/2])for(const mode of ['idle','walk','cargo'])for(let frame=0;frame<8;frame++){
+   if(mode!=='idle'){c.x+=Math.sin(yaw)*.02;c.y+=Math.cos(yaw)*.02;}c.cargo=mode==='cargo'?{wood:2}:{};view.update(s,.02);root.rotation.y=yaw;scene.render();
+   const clip=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-${mode==='idle'?'Idle_Loop':'Walk_Loop'}`),inverse=root.computeWorldMatrix(true).clone().invert();
+   const point=name=>{const n=root.getChildTransformNodes().find(n=>n.name.endsWith(`-${name}`));n.computeWorldMatrix(true);return B.Vector3.TransformCoordinates(n.getAbsolutePosition(),inverse);};
+   const toes=['l','r'].map(side=>point(`ball_${side}`).subtract(point(`foot_${side}`)).normalize()),legs=root.getChildTransformNodes().filter(n=>/-(thigh|calf|foot|ball)_[lr]$/.test(n.name)),rotations=legs.map(n=>n.rotationQuaternion.clone());
+   clip.goToFrame(clip.animatables[0].masterFrame);
+   for(const [i,side]of ['l','r'].entries()){const authored=point(`ball_${side}`).subtract(point(`foot_${side}`)).normalize();assert.ok(B.Vector3.Dot(toes[i],authored)>.995,`${yaw} ${side} toe changed direction: dot=${B.Vector3.Dot(toes[i],authored)}`);}
+   for(let i=0;i<legs.length;i++)assert.ok(Math.abs(B.Quaternion.Dot(rotations[i],legs[i].rotationQuaternion))>.9999,`${legs[i].name} is procedurally rotated away from its authored anatomical gait`);
+  }
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('inspiration remains a tiny glow and worn clothing changes the actual garment without detached patches',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>mockContainer(scene,file.startsWith('resident')?'resident':'sheep');let view;
+ try{
+  view=await createGameActors(B,scene,{});const s=createGame(),c={...s.citizens.find(c=>c.age>=16),age:30,phase:'toStore',clothing:100,calling:'builder',cargo:{},buildCargo:{}};s.citizens=[c];
+  for(let i=0;i<12;i++){view.update(s,.05);const root=view.rootFor({citizenId:c.id}),marker=root.getChildMeshes().find(m=>m.name.endsWith('-inspired'));assert.ok(marker.scaling.x<=.08&&marker.scaling.y<=.12,'persistent inspiration must never inflate into a large sphere');}
+  const root=view.rootFor({citizenId:c.id}),cloth=root.getChildMeshes().find(m=>m.material?.name.startsWith('citizen-cloth')).material,clean=cloth.albedoColor.asArray();c.clothing=8;view.update(s,.05);assert.notDeepEqual(cloth.albedoColor.asArray(),clean);assert.equal(root.getChildMeshes().some(m=>m.name==='clothing-patch'),false,'wear belongs to the skinned material, never a floating rectangle');
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });

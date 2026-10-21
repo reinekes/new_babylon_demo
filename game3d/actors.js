@@ -9,7 +9,7 @@ import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
-import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
+import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity,RESIDENT_STANCE} from './resident-motion.js';
 export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 
 // These helpers read state only. The renderer never advances workers or writes saves.
@@ -83,7 +83,7 @@ export async function createGameActors(B,scene,materials){
    a.load=new B.TransformNode(`${name}-carried`,scene);a.load.parent=root;a.load.position.set(0,1,.37);
    a.details=new B.TransformNode(`${name}-details`,scene);a.details.parent=root;
    a.tool=new B.TransformNode(`${name}-tool`,scene);a.tool.parent=root;a.tool.setEnabled(false);a.toolKind=null;
-   a.inspired=sphere(`${name}-inspired`,root,gold,0,1.85,0,.10,.10,.10);a.inspired.setEnabled(false);
+   a.inspired=B.MeshBuilder.CreatePolyhedron(`${name}-inspired`,{type:1,size:1},scene);a.inspired.parent=root;a.inspired.material=gold;a.inspired.position.set(0,1.82,0);a.inspired.scaling.set(.035,.06,.035);a.inspired.setEnabled(false);a.inspired.isPickable=false;meshes.push(a.inspired);
    const nodes=model.getChildTransformNodes();a.hands={};a.arms={};
    a.spine=nodes.find(n=>n.name.endsWith('-spine_01'));a.spineBase=a.spine?.rotationQuaternion?.clone();a.legs={};
    for(const side of ['l','r'])a.legs[side]={upper:nodes.find(n=>n.name.endsWith(`-thigh_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-calf_${side}`)),foot:nodes.find(n=>n.name.endsWith(`-foot_${side}`))};
@@ -192,11 +192,12 @@ export async function createGameActors(B,scene,materials){
   // Earth/wool shades distinguish individuals; worn/ragged and mourning still communicate state.
   const palette=['#e0cda4','#9d7855','#b69b78','#c7baa1','#8f9272','#aa795d','#d7d0bb'];
   const color=c.phase==='mourning'?'#c7c9ae':look.wear==='new'&&!look.craft?palette[identity.cloth]:look.robe;
-  for(const m of a.cloth)m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();
+  for(const m of a.cloth){m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=look.wear==='new'?.88:look.wear==='worn'?.96:1;}
   a.inspired.setEnabled(look.inspired);
   const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}`;
   if(a.detailKey!==key){a.detailKey=key;prune(a.details);for(const n of a.details.getChildren())n.dispose();a.torchNode=null;a.torch=false;
-   for(let i=0;i<look.patches;i++)box('clothing-patch',a.details,i?linen:dark,(i?.12:-.12),i?.65:.9,.19,.13,.12,.015);
+   // Wear is carried by the real skinned wool material; freestanding flat
+   // patch meshes cannot follow the pleated robe and used to float off the body.
    if(c.role==='carrier'||c.siteDuty==='carrier')box('carrier-sling',a.details,reed,-.23,.87,.04,.17,.19,.12);
    if(c.role==='healer')box('healer-satchel',a.details,reed,.23,.92,.02,.18,.22,.12);
    if(look.craft==='weaver'||look.craft==='tailor')sphere('craft-thread',a.details,linen,-.24,.90,.12,.12,.16,.12);
@@ -230,33 +231,18 @@ export async function createGameActors(B,scene,materials){
    const g=a.groups.get(a.clip);a.walkFrame=g.from+a.walkPhase*(g.to-g.from);
   }
   if(!paused){a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=a.pose==='dance'?beat*.055:0;
-   a.inspired.position.y=1.85+Math.sin(a.time*2.3)*.045;a.inspired.scaling.setAll(1+Math.sin(a.time*2.3)*.10);
+   const glow=1+Math.sin(a.time*2.3)*.08;a.inspired.position.y=1.82+Math.sin(a.time*2.3)*.015;a.inspired.scaling.set(.035*glow,.06*glow,.035*glow);
    // Play and dance bounce is a presentation pose at the resident's exact route position.
    a.model.position.y=a.footOffset+(a.pose==='play'||a.pose==='dance'?Math.abs(beat)*.04:0);
   }}
  }
- // Pull the authored ankle tracks toward the centre line, then solve each real
- // thigh/calf chain. Preserve height, forward travel and foot orientation: scaling
- // the model's X axis would also shrink bodies/cargo and leave the wide joint gait.
- function narrowStance(a){
-  for(const leg of Object.values(a.legs)){
-   const {upper,lower,foot}=leg;if(!upper||!lower||!foot)continue;
-   a.root.computeWorldMatrix(true);upper.computeWorldMatrix(true);lower.computeWorldMatrix(true);foot.computeWorldMatrix(true);
-   const inverse=a.root.getWorldMatrix().clone().invert(),hip=upper.getAbsolutePosition(),knee=lower.getAbsolutePosition(),ankle=foot.getAbsolutePosition();
-   const local=B.Vector3.TransformCoordinates(ankle,inverse);local.x*=.60;const goal=B.Vector3.TransformCoordinates(local,a.root.getWorldMatrix());
-   const orientation=new B.Quaternion();foot.getWorldMatrix().decompose(undefined,orientation,undefined);
-   const l1=B.Vector3.Distance(hip,knee),l2=B.Vector3.Distance(knee,ankle),direction=goal.subtract(hip),length=Math.min(direction.length(),l1+l2-.0001);direction.normalize();
-   const along=(l1*l1-l2*l2+length*length)/(2*length),height=Math.sqrt(Math.max(0,l1*l1-along*along));
-   // Kneecaps face the actor's forward axis. Inferring the plane from a nearly
-   // straight authored leg lets tiny clip noise select the reverse solution.
-   const forward=B.Vector3.TransformNormal(vec(0,0,1),a.root.getWorldMatrix());
-   const bend=forward.subtract(direction.scale(B.Vector3.Dot(forward,direction))).normalize();
-   const joint=hip.add(direction.scale(along)).add(bend.scale(height));
-   const aim=(node,end)=>{node.parent.computeWorldMatrix(true);const ray=B.Vector3.TransformNormal(end.subtract(node.getAbsolutePosition()),node.parent.getWorldMatrix().clone().invert()).normalize();const base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();B.Axis.Y.rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,ray,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);};
-   aim(upper,joint);lower.computeWorldMatrix(true);aim(lower,hip.add(direction.scale(length)));
-   const parentRotation=new B.Quaternion();foot.parent.getWorldMatrix().decompose(undefined,parentRotation,undefined);foot.rotationQuaternion=parentRotation.conjugate().multiply(orientation);
-   leg.last={upper:upper.rotationQuaternion.clone(),lower:lower.rotationQuaternion.clone(),foot:foot.rotationQuaternion.clone()};
-  }
+ // Keep every authored leg/ankle/toe rotation. The glTF ancestry contains a
+ // reflection: decomposing world matrices into quaternions and reconstructing
+ // foot rotations reversed the actual toe axis, even when knee points looked OK.
+ // A small symmetric hip translation narrows the stance without solving or
+ // rotating the limb; stride, knee flexion and the entire foot remain authored.
+ function authoredStance(a){
+  for(const leg of Object.values(a.legs))if(leg.upper){leg.upper.position.x*=RESIDENT_STANCE.hipWidthScale;leg.lastPosition=leg.upper.position.clone();}
  }
  // Animation clips set the skeletal base, then apply small task-specific arm gestures.
  const observer=scene.onAfterAnimationsObservable.add(()=>{
@@ -266,8 +252,8 @@ export async function createGameActors(B,scene,materials){
    // Apply the distance sample once, before task IK and skeleton upload.
    if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*i.headWidth,a.headBase.y*i.headHeight,a.headBase.z);}
-   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))for(const key of ['upper','lower','foot'])if(leg.last?.[key])leg[key].rotationQuaternion=leg.last[key].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
-   narrowStance(a);
+   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
+   authoredStance(a);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=workPose(a.pose,a.time,a.c.activity?.task);
    if(a.spine){const base=a.spine.rotationQuaternion||a.spineBase; a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    for(const arm of a.armNodes){const n=arm.node;

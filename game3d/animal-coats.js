@@ -29,24 +29,26 @@ export function createCoatPixels(kind,variant,size=256){
   }
   // Short gazelle coat has an anatomical lateral stripe, never wool curls.
   if(kind==='gazelle')tint=mix(tint,dark,Math.exp(-(((around+.12)/.13)**2))*.86);
-  if(cat){const stripes=Math.pow(Math.max(0,Math.cos(v*Math.PI*14+Math.sin(u*18.85)*.9)),9);tint=mix(tint,dark,stripes*(.55+.38*Math.max(0,around)));}
+  // Tabby bars change pigment only; the height map below contains short hair,
+  // never raised bands following the stripe pattern.
+  if(cat){const stripes=Math.pow(Math.max(0,Math.cos(v*Math.PI*14+Math.sin(u*18.85)*.9)),9);tint=mix(tint,dark,stripes*(.38+.22*Math.max(0,around)));}
   if(jackal){const fleck=Math.max(0,Math.sin(x*1.7+y*.67)*Math.sin(x*.43-y*1.1));tint=mix(tint,dark,fleck*.40*Math.max(0,around+.3));}
   // Broken, long tapered streaks read as coarse goat hair; other species have
   // finer, low relief grain. Cyclic x preserves the longitudinal seam.
   const strands=Math.sin(u*Math.PI*(coarse?112:192)+Math.sin(v*31+u*12.566)*.75),breaks=.55+.45*Math.sin(v*93+u*37.699);
   const grain=strands*breaks,shade=1+grain*(coarse?.17:.105)+(noise-.5)*(coarse?.13:.10),i=(y*size+x)*4;
   for(let c=0;c<3;c++)color[i+c]=Math.max(0,Math.min(255,tint[c]*shade));color[i+3]=255;
-  heights[y*size+x]=grain*(coarse?.80:.32)+(noise-.5)*.16;
+  heights[y*size+x]=grain*(coarse?.80:cat?.22:.32)+(noise-.5)*.16;
  }
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
   const dx=heights[y*size+(x+1)%size]-heights[y*size+(x+size-1)%size],dy=heights[((y+1)%size)*size+x]-heights[((y+size-1)%size)*size+x];
-  const strength=coarse?.55:.65,nx=-dx*strength,ny=-dy*strength,len=Math.hypot(nx,ny,1),i=(y*size+x)*4;
+  const strength=coarse?.55:cat?.38:.65,nx=-dx*strength,ny=-dy*strength,len=Math.hypot(nx,ny,1),i=(y*size+x)*4;
   normal[i]=(nx/len*.5+.5)*255;normal[i+1]=(ny/len*.5+.5)*255;normal[i+2]=(1/len*.5+.5)*255;normal[i+3]=255;
  }
  return {color,normal,size};
 }
 export function createCoatTextures(B,scene,kind,variant){
  const pixels=createCoatPixels(kind,variant),make=(data,suffix)=>{const t=B.RawTexture.CreateRGBATexture(data,pixels.size,pixels.size,scene,true,false,B.Texture.TRILINEAR_SAMPLINGMODE);t.name=`wildlife-coat-${kind}-${variant}-${suffix}`;t.wrapU=B.Texture.WRAP_ADDRESSMODE;t.wrapV=B.Texture.WRAP_ADDRESSMODE;return t;};
- const albedo=make(pixels.color,'hair'),bump=make(pixels.normal,'normal');albedo.gammaSpace=true;bump.gammaSpace=false;bump.level=kind==='goat'?.45:.48;
+ const albedo=make(pixels.color,'hair'),bump=make(pixels.normal,'normal');albedo.gammaSpace=true;bump.gammaSpace=false;bump.level=kind==='goat'?.45:kind==='cat'?.22:.48;
  return {albedo,bump};
 }

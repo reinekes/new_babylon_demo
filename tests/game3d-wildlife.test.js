@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGame} from '../engine.js';
 import {createWildlife} from '../game3d/wildlife.js';
-import {createCoatPixels} from '../game3d/animal-coats.js';
+import {createCoatPixels,coatVariant} from '../game3d/animal-coats.js';
 const sandbox={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
 const B=sandbox.exports.NullEngine?sandbox.exports:sandbox.module.exports;
@@ -82,10 +82,10 @@ test('mammal coats have UV mapped hair relief, stable ID variants and cached dis
 
 test('authored coat maps distinguish coarse patches, fine tabby stripes and opaque directional hair relief',()=>{
  const coats=['goat','gazelle','cat','jackal','mouse'].map(kind=>createCoatPixels(kind,0));
- for(const {color,normal,size}of coats){
+ for(const [index,{color,normal,size}]of coats.entries()){
   assert.equal(color.length,size*size*4);assert.equal(normal.length,color.length);
   const shades=new Set();let relief=0;for(let i=0;i<color.length;i+=4){shades.add(`${color[i]},${color[i+1]},${color[i+2]}`);assert.equal(color[i+3],255);assert.equal(normal[i+3],255);relief+=Math.abs(normal[i]-127);}
-  assert.ok(shades.size>256,'coat must contain actual hair/gradient detail rather than flat tint');assert.ok(relief/(size*size)>10,'directional normal relief must survive material application');
+  assert.ok(shades.size>256,'coat must contain actual hair/gradient detail rather than flat tint');assert.ok(relief/(size*size)>(index===2?3:10),'directional hair relief remains present, with subdued short cat hair');
  }
  assert.notDeepEqual(coats[0].color,coats[1].color);assert.notDeepEqual(coats[0].normal,coats[1].normal,'short gazelle hair must differ from coarse goat hair');
  assert.notDeepEqual(createCoatPixels('goat',0).color,createCoatPixels('goat',1).color,'cream and dark patches must differ between variants');
@@ -110,4 +110,26 @@ test('cat and goat torsos are slim in width and depth, with a smaller feline sil
   if(kind==='cat'){assert.equal(root.scaling.x,.85);assert.ok(width*root.scaling.x<.19);assert.ok(depth*root.scaling.x<.23);}
   assert.ok(torso.material.albedoTexture&&torso.material.bumpTexture,'retain the previously authored coats');
  }view.dispose();scene.dispose();engine.dispose();
+});
+
+
+test('tabby cats have no raised stripe objects; three ID coats share natural anatomy and dispose cleanly',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame(),ids=new Map();
+ for(let i=0;ids.size<3;i++){const id=`natural-cat-${i}`,variant=coatVariant(id);if(!ids.has(variant))ids.set(variant,id);}
+ const cats=[...ids.values()].flatMap(id=>[{id,kind:'cat',x:5,y:5,behavior:'looking'},{id:id+'-paired',kind:'cat',x:6,y:5,behavior:'looking'}]),before=JSON.stringify([s,cats]);view.update(s,cats,.05);
+ for(const c of cats){const root=view.rootFor({animalId:c.id}),parts=root.getChildMeshes(),torso=parts.find(m=>m.name.includes('-torso')),face=parts.find(m=>m.name.includes('-face'));
+  assert.ok(!parts.some(m=>/stripe|saddle|marking/.test(m.name)),'tabby stripes must never be separate balls, tubes or cards');
+  assert.ok(parts.filter(m=>m.parent.name.endsWith('-body-pivot')).every(m=>!m.material.name.includes('horn')),'nothing dark sits on the feline back');
+  assert.equal(root.scaling.x,.85);const positions=torso.getVerticesData(B.VertexBuffer.PositionKind),xs=positions.filter((_,i)=>i%3===0);assert.ok(Math.abs(Math.max(...xs)-.105)<1e-6&&Math.abs(Math.min(...xs)+.105)<1e-6,'slim torso dimensions unchanged');
+  for(const m of [torso,face]){assert.equal(m.getVerticesData(B.VertexBuffer.UVKind).length,m.getTotalVertices()*2);assert.ok(m.material.albedoTexture&&m.material.bumpTexture);assert.equal(m.material.bumpTexture.level,.22);}
+ }
+ const torsos=cats.map(c=>view.rootFor({animalId:c.id}).getChildMeshes().find(m=>m.name.includes('-torso')));assert.equal(new Set(torsos.map(m=>m.material)).size,3);assert.ok(torsos.every(m=>m.sourceMesh.geometry===torsos[0].sourceMesh.geometry));
+ const count=scene.textures.length;for(let i=0;i<20;i++)view.update(s,cats,.05,{speed:4});assert.equal(scene.textures.length,count);assert.equal(JSON.stringify([s,cats]),before);view.dispose();assert.equal(scene.textures.filter(t=>t.name.startsWith('wildlife-coat-cat-')).length,0);assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();
+});
+test('all tabby variants carry a flat visible fur pattern with low hair relief and no black dorsal patch',()=>{
+ for(let variant=0;variant<3;variant++){const {color,normal,size}=createCoatPixels('cat',variant),rows=[];let relief=0;
+  for(let y=0;y<size;y++){let brightness=0;for(let x=61;x<=67;x++){const i=(y*size+x)*4;brightness+=.2126*color[i]+.7152*color[i+1]+.0722*color[i+2];}rows.push(brightness/7);}
+  const contrast=Math.max(...rows)-Math.min(...rows);assert.ok(contrast>20&&contrast<60,'each dorsal UV strip has recognisable but moderate tabby bars');assert.ok(Math.min(...rows)>55,'markings remain fur-coloured rather than near-black objects');
+  for(let i=0;i<normal.length;i+=4)relief+=Math.abs(normal[i]-127);assert.ok(relief/(size*size)>3&&relief/(size*size)<9,'normal contains only fine short-hair relief');
+ }
 });

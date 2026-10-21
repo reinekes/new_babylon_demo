@@ -11,6 +11,8 @@ export function residentMotion(id){
 // The shipped GLB contains two complete strides in 104 frames at 60 fps.
 // Each planted foot travels about .62m backwards per stance: 4 * .62m per clip.
 // Verified against foot_l/foot_r transform tracks, not the simulation clock.
+// Modest pelvic narrowing only: never replace authored lower-limb rotations.
+export const RESIDENT_STANCE=Object.freeze({hipWidthScale:.84});
 export const RESIDENT_WALK={authoredMetres:2.48,frames:104,fps:60};
 export function residentWalkPhase(phase,metres,forwardScale=1){
  return (phase+Math.max(0,metres)/(RESIDENT_WALK.authoredMetres*Math.max(.1,forwardScale)))%1;

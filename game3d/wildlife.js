@@ -66,10 +66,10 @@ export function createWildlife(B,scene,meshes=[]){
   const neck=part(`${kind}:neck`,head,fur,name=>loft(name,[[-.08,-.05,W*.48,D*.48],[0,.02,W*.53,D*.52],[.07,N*.43,W*.43,D*.47],[.16,N*.81,W*.34,D*.39],[.22,N,W*.28,D*.29],[.24,N+.025,.003,.003]]));
   part(`${kind}:face`,head,fur,name=>loft(name,[[.10,N+.06,.003,.003],[.14,N+.06,H*.63,H*.70],[.24,N+.055,H*.72,H*.70],[.31,N+.015,H*.57,H*.48],[.33+M*.55,N-.015,H*.34,H*.28],[.34+M,N-.025,H*.25,H*.23],[.36+M,N-.025,.003,.003]]));
   ball(`${kind}:chin`,head,pale,0,N-H*.24,.29+M*.26,H*.80,H*.40,H*.80);
-  if(!d.bird)ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*.40,H*.24,H*.20);
+  if(!d.bird)ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*(d.cat?.24:.40),H*(d.cat?.17:.24),H*(d.cat?.14:.20));
   else tube(`${kind}:beak`,head,horn,[[0,N+.02,.28],[0,N,.36],[0,N-.018,.42]],.045);
   const ears=[];for(const side of [-1,1]){
-   if(d.cat||d.jackal)ball(`${kind}:iris`,head,material(`${kind}-iris`,d.cat?'#a5af69':'#b49155'),side*H*.62,N+H*.23,.275,H*.23,H*.22,H*.22);
+   if(d.cat||d.jackal)ball(`${kind}:iris`,head,material(`${kind}-iris`,d.cat?'#979b72':'#b49155'),side*H*.62,N+H*.23,.275,H*.23,H*.22,H*.22);
    ball(`${kind}:eye`,head,black,side*H*.67,N+H*.23,.284,H*(d.cat?.055:.14),H*.15,H*.14);
    ball(`${kind}:eye-glint`,head,glint,side*H*.70,N+H*.27,.294,H*.045,H*.045,H*.045);
    const ear=node(`${c.id}-ear-${side}`,head,side*H*.66,N+H*.49,.17);
@@ -88,10 +88,10 @@ export function createWildlife(B,scene,meshes=[]){
   if(kind==='gazelle')for(const side of [-1,1]){const stripe=ball(`${kind}:flank-stripe`,body,horn,side*W*.93,-D*.15,0,.025,.055,L*.65);stripe.rotation.x=-.03;ball(`${kind}:rump`,body,pale,side*W*.52,-.005,-L*.36,W*.80,D*.85,.18);}
   if(kind==='goat')tube(`${kind}:beard`,head,pale,[[0,N-.11,.31],[0,N-.19,.29],[0,N-.27,.27]],.045);
   if(d.jackal)ball(`${kind}:saddle`,body,horn,0,D*.65,-L*.03,W*1.5,.06,L*.66);
-  if(d.cat)for(const z of [-.15,0,.15]){const stripe=ball(`${kind}:stripe`,body,horn,0,D*.75,z,W*1.62,.035,.065);stripe.rotation.x=.12;}
+  // Tabby markings belong to the shared coat texture; raised dark meshes
+  // looked like separate objects sitting on the short-haired back.
   if(d.cat)for(const side of [-1,1]){
    ball(`${kind}:cheek`,head,pale,side*H*.46,N-.005,.22,H*.42,H*.48,H*.64);
-   for(let i=0;i<3;i++){const stripe=ball(`${kind}:flank-stripe-${side}`,body,horn,side*W*.89,D*.24,-.16+i*.15,.023,D*.80,.034);stripe.rotation.z=side*.24;}
   }
   const legs=[];
   for(const side of [-1,1])for(const end of d.bird?[0]:[-1,1]){
