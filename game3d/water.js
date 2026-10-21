@@ -2,6 +2,7 @@ import {WIDTH,HEIGHT,river,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
 import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
+import {RIVER_HALF_WIDTH,RIVER_STEPS_PER_TILE} from './shore-profile.js';
 
 export const WATER_HEIGHT=-.18;
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -10,10 +11,10 @@ export function waterDepth(x,y,s){return Math.max(0,WATER_HEIGHT-visualSurfaceEl
 const sheet=()=>({positions:[],indices:[],colors:[],uvs:[],points:[],depths:[]});
 function vertex(g,x,y,s,lake){const d=waterDepth(x,y,s);g.positions.push(x*TILE,WATER_HEIGHT,y*TILE);g.points.push({x,y});g.depths.push(d);g.colors.push(d,lake?1:0,0,1);g.uvs.push(x,y);}
 export function waterSurfaceGeometry(s){
- const flow=sheet(),lakes=sheet(),across=24,along=HEIGHT*10;
+ const flow=sheet(),lakes=sheet(),across=24,along=HEIGHT*RIVER_STEPS_PER_TILE;
  // The shallow edge reaches the actual intersection of the terrain and water,
  // beyond the old uniform strip. Adjacent rows share all cross-section vertices.
- for(let j=0;j<=along;j++){const y=-.5+HEIGHT*j/along,c=river(y);for(let i=0;i<=across;i++){const x=c+(i/across*2-1)*1.145;vertex(flow,x,y,s,false);if(i<across&&j<along){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
+ for(let j=0;j<=along;j++){const y=-.5+HEIGHT*j/along,c=river(y);for(let i=0;i<=across;i++){const x=c+(i/across*2-1)*RIVER_HALF_WIDTH;vertex(flow,x,y,s,false);if(i<across&&j<along){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
  const organic=organicLakeGeometry(s,WATER_HEIGHT);Object.assign(lakes,organic);
  return {river:flow,lakes};
 }

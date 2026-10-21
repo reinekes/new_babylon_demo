@@ -1,3 +1,4 @@
+import {validRotation} from './placement.js';
 import {footprintCells,occupiesCell,insideFootprint} from './footprints.js';
 import {initializeGathering,validateGathering} from './labor-life.js';
 import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation} from './festival.js';
@@ -29,7 +30,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=24;
+export const VERSION=25;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0});
@@ -42,7 +43,8 @@ export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b))
 export const storage=storageOf;
 export function workers(s){const needed=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).length*2;return needed?Math.min(1,workforceStats(s).employed/needed):1;}
 export function buildingAt(s,x,y){return s.buildings.find(b=>occupiesCell(b,x,y))||s.buildings.find(b=>{if(b.type!=='bridge'||b.y!==y)return false;const span=bridgeSpan(y);return terrain(x,y,s)==='water'&&x>=span.left&&x<=span.right;});}
-export function canBuild(s,type,x,y,placementOnly=false){
+export function canBuild(s,type,x,y,placementOnly=false,rotation=0){
+ if(!validRotation(type,rotation))return 'Недопустимый поворот здания';
  const b=BUILDINGS[type];if(!b)return 'Неизвестная постройка';if(!placementOnly&&s.lost)return 'Поселение покинуто';if(!placementOnly&&s.event)return 'Сначала реши судьбу события';if(terrain(x,y,s)==='void')return 'За пределами долины';if(buildingAt(s,x,y))return 'Эта клетка уже занята';
  if(type==='bridge'){
   if(terrain(x,y,s)!=='water'||terrain(x,y)!=='water')return 'Выбери клетку воды: мост соединит оба берега';
@@ -56,8 +58,8 @@ export function canBuild(s,type,x,y,placementOnly=false){
  for(const k of [...MATERIALS,'faith'])if(!placementOnly&&(b[k]||0)>s.resources[k])return `Не хватает: ${RESOURCE_NAMES[k]}`;
  return '';
 }
-export const canPlace=(s,type,x,y)=>canBuild(s,type,x,y,true);
-export function build(s,type,x,y){const reason=canBuild(s,type,x,y);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type]);if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,...(type==='ziggurat'?{footprint:2}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
+export const canPlace=(s,type,x,y,rotation=0)=>canBuild(s,type,x,y,true,rotation);
+export function build(s,type,x,y,rotation=0){const reason=canBuild(s,type,x,y,false,rotation);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type]);if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,rotation,...(type==='ziggurat'?{footprint:2}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 
 export function canUpgrade(s,b){if(!b)return 'Выбери здание';if(b.type==='canal')return 'Канал готовится в один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
@@ -152,7 +154,7 @@ export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventor
 export function decode(raw){
  try{
   const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23;
-  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,VERSION].includes(s.version))return null;
+  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,VERSION].includes(s.version))return null;
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
@@ -210,7 +212,7 @@ export function decode(raw){
   const roadIds=new Set();for(const r of s.roads){if(r.type!=='road'||!integer(r.level,1,3)||typeof r.id!=='string'||roadIds.has(r.id)||!r.a||!r.b||!finite(r.x,-.5,WIDTH)||!finite(r.y,-.5,HEIGHT)||Math.abs(Math.abs(r.a.x-r.b.x)+Math.abs(r.a.y-r.b.y)-1)>1e-7||[r.a,r.b,{x:r.x,y:r.y}].some(p=>!isDryPoint(s,p.x,p.y))||r.id!==roadKey(r.a,r.b)||r.x!==(r.a.x+r.b.x)/2||r.y!==(r.a.y+r.b.y)/2)return null;roadIds.add(r.id);}
   const cells=new Set(),bridgeRows=new Set();
   for(const b of s.buildings){
-   const key=buildingKey(b),land=terrain(b.x,b.y,s);if(b.footprint!==undefined&&(b.type!=='ziggurat'||b.footprint!==2))return null;
+   const key=buildingKey(b),land=terrain(b.x,b.y,s);if(b.rotation!==undefined&&!validRotation(b.type,b.rotation))return null;if(b.footprint!==undefined&&(b.type!=='ziggurat'||b.footprint!==2))return null;
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
    if(b.legacyMasonryLevel!==undefined&&!integer(b.legacyMasonryLevel,1,b.level))return null;
    if(b.legacyFiringLevel!==undefined&&!integer(b.legacyFiringLevel,1,b.level))return null;

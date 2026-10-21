@@ -1,9 +1,11 @@
+import {footprintSize} from '../footprints.js';
 import {createArchitecture} from './architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
 import {constructionProgress} from '../construction.js';
 import {buildingKey,capacityOf} from '../definitions.js';
 import {createDistrictBuilding, districtCropVisual} from '../district3d/buildings.js';
 
+const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
 const HOME_ASSET='assets/art-courtyard/models/adobe-courtyard.glb';
 const tier=b=>Math.max(1,Math.min(3,b.level||1));
 const progress=b=>b.construction?Math.floor(Math.max(0,Math.min(1,constructionProgress(b).ratio))*12):12;
@@ -11,7 +13,7 @@ const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgr
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state){
- return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?districtCropVisual(b).signature:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):''].join('|');
+ return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):''].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -43,7 +45,8 @@ export function mergeCourtyardAsset(B,container){
 export async function createGameBuildings(B,scene,materials){
  const container=await B.SceneLoader.LoadAssetContainerAsync('',HOME_ASSET,scene,undefined,'.glb');
  const originals=mergeCourtyardAsset(B,container),templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
- let disposed=false;
+ let disposed=false,previewRecord=null;
+ const previewTemplates=new Map(),ghostMaterials=new Map();
  const finish=(name,color,base)=>{
   // PBRMaterial.clone() deep-clones DynamicTexture without uploading its canvas.
   // Share immutable maps explicitly so scene readiness never waits on orphan copies.
@@ -151,7 +154,7 @@ export async function createGameBuildings(B,scene,materials){
     mesh.parent=root;sources.push(mesh);
    }
   }else{
-   if(b.type==='field'||b.type==='bridge'||b.type==='house'){
+   if(b.type==='field'||b.type==='bridge'||b.type==='house'||b.type==='canal'){
     const base=createDistrictBuilding(B,scene,{...b,id:'template'},materialSet);
     for(const mesh of base.meshes){mesh.unfreezeWorldMatrix();mesh.parent=root;sources.push(mesh);}
     base.root.dispose();
@@ -174,6 +177,45 @@ export async function createGameBuildings(B,scene,materials){
  }
  function release(key){const t=templates.get(key);if(t&&!--t.users){t.root.dispose();templates.delete(key);}}
  function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}record.root.dispose();release(record.signature);active.delete(key);}
+ function placeRoot(root,b){
+  const angle=rotationOf(b)*Math.PI/2,offset=(footprintSize(b)-1)*3,c=Math.cos(angle),s=Math.sin(angle);
+  root.rotation.y=angle;root.position.set(b.x*6+offset-(c+s)*offset,0,b.y*6+offset-(-s+c)*offset);
+ }
+ function ghostMaterial(base,allowed){
+  let pair=ghostMaterials.get(base);if(!pair){pair=new Map();ghostMaterials.set(base,pair);}if(pair.has(allowed))return pair.get(allowed);
+  const mat=finish(`preview-${allowed?'allowed':'blocked'}-${base.name}`,allowed?'#9cd0ac':'#e37465',base);
+  mat.alpha=.34;mat.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHABLEND;mat.emissiveColor=B.Color3.FromHexString(allowed?'#35634a':'#772e24');mat.backFaceCulling=base.backFaceCulling;mat.sideOrientation=base.sideOrientation;mat.disableDepthWrite=true;
+  pair.set(allowed,mat);return mat;
+ }
+ function clearPreview(){if(previewRecord){previewRecord.root.dispose();previewRecord=null;}}
+ function preview(input,state,options={}){
+  if(disposed)return null;if(!input){clearPreview();return null;}
+  const b={...input,level:1,construction:undefined},signature=gameBuildingSignature(b,state),allowed=options.allowed!==false;
+  if(!previewRecord||previewRecord.signature!==signature){
+   clearPreview();let template=previewTemplates.get(signature);
+   if(template){previewTemplates.delete(signature);previewTemplates.set(signature,template);}else{template=acquire(b,signature,state);previewTemplates.set(signature,template);}
+   // A small LRU retains nearby shore clips and all three house variants without
+   // turning a long mouse sweep into an unbounded cache of templates.
+   while(previewTemplates.size>8){const oldest=previewTemplates.keys().next().value;previewTemplates.delete(oldest);release(oldest);}
+   const root=new B.TransformNode('game-building-preview',scene),parts=[];placeRoot(root,b);root.metadata={preview:true,tile:{x:b.x,y:b.y},type:b.type};
+   for(const source of template.sources){
+    if(source.metadata?.homeLamp)continue;
+    const mesh=source.clone(`preview-${source.name}`,null,true);mesh.parent=root;mesh.material=ghostMaterial(source.material,allowed);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;mesh.isVisible=true;mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=false;mesh.metadata={preview:true};mesh.computeWorldMatrix(true);parts.push(mesh);
+   }
+   previewRecord={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b),allowed};
+  }else{
+   if(previewRecord.x!==b.x||previewRecord.y!==b.y||previewRecord.rotation!==rotationOf(b)){
+    placeRoot(previewRecord.root,b);previewRecord.root.metadata.tile={x:b.x,y:b.y};for(const mesh of previewRecord.meshes)mesh.computeWorldMatrix(true);
+    previewRecord.x=b.x;previewRecord.y=b.y;previewRecord.rotation=rotationOf(b);
+   }
+   if(previewRecord.allowed!==allowed){
+    const template=previewTemplates.get(signature),sources=template.sources.filter(source=>!source.metadata?.homeLamp);
+    for(let i=0;i<sources.length;i++){previewRecord.meshes[i].material=ghostMaterial(sources[i].material,allowed);previewRecord.meshes[i].overrideMaterialSideOrientation=sources[i].overrideMaterialSideOrientation;}
+    previewRecord.allowed=allowed;
+   }
+  }
+  return previewRecord;
+ }
  function sync(state){
   if(disposed)return;
   const seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
@@ -186,17 +228,20 @@ export async function createGameBuildings(B,scene,materials){
    if(record&&(record.signature!==signature||record.x!==b.x||record.y!==b.y)){remove(key);record=null;}
    if(!record){
     const template=acquire(b,signature,state),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
-    root.position.set(b.x*6,0,b.y*6);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
+    placeRoot(root,b);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
      const mesh=source.metadata?.homeLamp?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(source.metadata?.homeLamp)mesh.receiveShadows=true;
      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
-    record={root,meshes:parts,signature,x:b.x,y:b.y};active.set(key,record);meshes.push(...parts);
+    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b)};active.set(key,record);meshes.push(...parts);
+   }
+   if(record.rotation!==rotationOf(b)){
+    for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,b);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(b);
    }
    const litWindows=Math.ceil(Math.min(1,(occupied.get(key)||0)/Math.max(1,capacityOf(b)))*4);
    for(const mesh of record.meshes)if(mesh.metadata.homeLamp)mesh.material=mesh.metadata.lampIndex<litWindows?warm:shade;
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
  }
- return {sync,meshes,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;for(const key of active.keys())remove(key);for(const source of originals)source.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,preview,clearPreview,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);for(const source of originals)source.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

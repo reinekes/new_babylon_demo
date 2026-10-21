@@ -21,3 +21,7 @@
 .miracle-explanation .miracle-close{position:absolute;right:10px;top:8px;border:0;background:transparent;color:#64705f;font-size:21px;cursor:pointer}
 #test-resources{grid-column:1/-1;border-style:dashed;font-size:10px;color:#7b6045}
 @media(max-width:700px){.miracle-explanation{left:6px;right:6px;padding:13px 15px}.miracle-explanation h3{font-size:21px}.miraclebar{position:relative}}
+/* Selection places the building; the separate question button explains it. */
+.building-choice{position:relative;min-width:0}.building-choice>.building-card{width:100%;padding-right:23px;box-sizing:border-box;height:100%}.building-info{position:absolute;right:4px;top:4px;z-index:1;width:18px;height:18px;padding:0;border:1px solid #abb499;border-radius:50%;background:#f5f0df;color:#66785d;font:bold 11px Georgia,serif;cursor:pointer}.building-info:hover,.building-info:focus-visible{background:#dce5cd;border-color:#72886a;outline:2px solid #8a9c79;outline-offset:1px}.building-choice .build-hotkey{display:none}
+.placement-tools{position:absolute;left:12px;bottom:95px;z-index:16;display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f5f0e2ed;border:1px solid #9ba88d;border-radius:4px;color:#384e3d;font:11px Arial,sans-serif}.placement-tools[hidden]{display:none}.placement-tools button{padding:6px 9px;border:1px solid #a8b49a;border-radius:3px;background:#e5ebda;color:#344b37;cursor:pointer}.placement-tools button:disabled{opacity:.5;cursor:default}@media(max-width:700px){.placement-tools{bottom:120px;left:6px}}
+.photo-mode .placement-tools{display:none}

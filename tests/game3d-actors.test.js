@@ -125,6 +125,7 @@ test('real articulated palms touch cargo and hold role tools; casts, petting and
   for(const side of ['l','r']){const hand=root.getChildTransformNodes().find(n=>n.name.endsWith(`-hand_${side}`));hand.computeWorldMatrix(true);
    const local=B.Vector3.TransformCoordinates(hand.getAbsolutePosition(),inverse),expected=new B.Vector3(side==='l'?-.21:.21,1.01,.34);
    assert.ok(B.Vector3.Distance(local,expected)<.12,`${side} palm must reach cargo: ${local.asArray()}`);
+   const elbow=root.getChildTransformNodes().find(n=>n.name.endsWith(`-lowerarm_${side}`));elbow.computeWorldMatrix(true);const elbowLocal=B.Vector3.TransformCoordinates(elbow.getAbsolutePosition(),inverse);assert.ok(side==='l'?elbowLocal.x<local.x:elbowLocal.x>local.x,'cargo elbows bend outward without crossing the torso');assert.ok(elbowLocal.y>.85&&elbowLocal.y<1.45,'elbows stay between the shoulder and the supported load');
   }
   c.phase='working';c.carrying=false;c.cargo={};
   for(const [kind,meshName]of [['logging','logging-axe-head'],['quarry','quarry-pick-head'],['hunting','hunter-bow'],['fishing','fishing-rod']]){
@@ -318,5 +319,77 @@ test('real GLB hoe cycles into soil with grounded feet and building implement st
   assert.ok(low<.20,`hoe blade must reach soil, minimum height=${low}`);assert.ok(low>-.04,`hoe must not swing underground, minimum=${low}`);assert.ok(high-low>.20,'a real lift follows the ground stroke');
   c.activity.kind='building';view.update(s,.1);scene.render();const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert(),blade=root.getChildMeshes().find(m=>m.name==='builder-tool-blade'),hand=root.getChildTransformNodes().find(n=>n.name.endsWith('-hand_r'));
   blade.computeWorldMatrix(true);hand.computeWorldMatrix(true);const tip=B.Vector3.TransformCoordinates(blade.getAbsolutePosition(),inverse),palm=B.Vector3.TransformCoordinates(hand.getAbsolutePosition(),inverse);assert.ok(tip.z-palm.z>.25,'masonry tool head extends toward the work, not up into the face');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('stationary colleagues receive stable dry workplace slots rather than identical rendered coordinates',()=>{
+ const s=createGame(),base=s.citizens.find(c=>c.age>=16),site={type:'pottery',x:7,y:10,level:1,artisan:{stage:'forming',elapsed:1}};s.buildings.push(site);
+ const workers=Array.from({length:6},(_,i)=>({...base,id:9000+i,phase:'working',work:'7,10',x:7,y:10.55,cargo:{},buildCargo:{},activity:{kind:'pottery',stage:'working',target:site}}));
+ const before=JSON.stringify(workers),positions=residentViewPositions(s,workers);assert.equal(JSON.stringify(workers),before);assert.deepEqual(positions,residentViewPositions(s,[...workers].reverse()));
+ for(const [id,p]of positions){assert.ok(isDryPoint(s,p.x,p.y));assert.ok(Math.hypot(p.x-7,p.y-10.55)<.46,'slots stay on the same workplace apron');for(const [other,q]of positions)if(other!==id)assert.ok(Math.hypot(p.x-q.x,p.y-q.y)*6>=.59,`${id} overlaps ${other}`);}
+});
+
+test('real GLB knees stay forward of the hip-ankle line through idle, work, walking and child poses',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
+  const s=createGame(),base=s.citizens.find(c=>c.age>=16),c={...base,id:9100,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
+  for(const kind of ['idle','walk','farming','child']){
+   c.age=kind==='child'?7:30;c.activity=kind==='farming'?{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}:null;
+   for(let frame=0;frame<24;frame++){
+    if(kind==='walk')c.y+=.014;view.update(s,1/30);scene.render();const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert();
+    for(const side of ['l','r']){const point=name=>{const n=root.getChildTransformNodes().find(n=>n.name.endsWith(`-${name}_${side}`));n.computeWorldMatrix(true);return B.Vector3.TransformCoordinates(n.getAbsolutePosition(),inverse);},hip=point('thigh'),knee=point('calf'),ankle=point('foot'),axis=ankle.subtract(hip).normalize(),bend=knee.subtract(hip).subtract(axis.scale(B.Vector3.Dot(knee.subtract(hip),axis)));
+     assert.ok(bend.z>=-.005,`${kind} ${side} backward knee=${bend.z}`);assert.ok(ankle.y>-.04,'sole track stays above ground');
+    }
+   }
+  }
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('real GLB stance adjustment preserves authored knee surface orientation rather than twisting limb meshes',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
+  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:9101,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,.03);scene.render();c.y+=.02;view.update(s,.03);scene.render();
+  const root=view.rootFor({citizenId:c.id}),clip=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),limbs=root.getChildTransformNodes().filter(n=>/-(thigh|calf)_[lr]$/.test(n.name));
+  const normals=()=>limbs.map(n=>{n.computeWorldMatrix(true);return n.getDirection(B.Axis.X).normalize();}),adjusted=normals();clip.goToFrame(clip.animatables[0].masterFrame);const authored=normals();
+  for(let i=0;i<limbs.length;i++)assert.ok(B.Vector3.Dot(adjusted[i],authored[i])>.70,`${limbs[i].name} lost authored limb roll, dot=${B.Vector3.Dot(adjusted[i],authored[i])}`);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('real stationary colleagues render clear slots, hold them on pause and return along canonical routes',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),base=s.citizens.find(c=>c.age>=16),site={type:'weaver',x:7,y:10,level:1,weaving:{wool:3}};s.buildings.push(site);
+  s.citizens=Array.from({length:4},(_,i)=>({...base,id:9300+i,age:30,phase:'working',work:'7,10',x:7,y:10.55,cargo:{},buildCargo:{}}));const before=JSON.stringify(s);view.update(s,.05);scene.render();assert.equal(JSON.stringify(s),before);
+  const roots=s.citizens.map(c=>view.rootFor({citizenId:c.id}));for(let i=0;i<roots.length;i++)for(let j=i+1;j<roots.length;j++)assert.ok(B.Vector3.Distance(roots[i].position,roots[j].position)>=.59,'rendered work roots must separate');
+  const frozen=roots.map(r=>r.position.asArray());view.update(s,.05,{paused:true,speed:4});scene.render();assert.deepEqual(roots.map(r=>r.position.asArray()),frozen);
+  const c=s.citizens[1],root=roots[1];c.phase='toHome';c.y+=.1;for(let i=0;i<50;i++)view.update(s,.05);assert.ok(Math.abs(root.position.x-c.x*6)<.001);assert.ok(Math.abs(root.position.z-c.y*6)<.001);assert.equal(c.id,9301);assert.deepEqual(c.cargo,{});
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('work pose time follows real unpaused 1x/2x/4x seconds even when the calendar advances at quarter speed',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),base=s.citizens.find(c=>c.age>=16),samples=[];let elapsed=0;
+  for(const speed of [1,2,4]){
+   const c={...base,id:9400,age:30,phase:'working',x:7,y:10,cargo:{},buildCargo:{},activity:{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}};s.citizens=[c];
+   // Each run advances 1.25 actual task seconds, regardless of UI speed.
+   for(let frame=0;frame<120/speed;frame++){s.simTime+=1/96*speed*.25;elapsed+=1/96*speed;view.update(s,1/96,{speed});scene.render();}
+   const root=view.rootFor({citizenId:c.id}),blade=root.getChildMeshes().find(m=>m.name==='field-hoe-blade');blade.computeWorldMatrix(true);samples.push(blade.getAbsolutePosition().y-root.position.y);const motion=residentMotion(c.id),phase=elapsed*motion.gait+motion.phase,expected=(.055+((Math.sin(phase*3.6)+1)*.5)*.34)*root.scaling.y;assert.ok(Math.abs(samples.at(-1)-expected)<.012,`${speed}x expected wall-clock blade height ${expected}, got ${samples.at(-1)}`);
+   const hand=root.getChildTransformNodes().find(n=>n.name.endsWith('-hand_r')),frozen=hand.rotationQuaternion.asArray();view.update(s,.1,{paused:true,speed});scene.render();assert.deepEqual(hand.rotationQuaternion.asArray(),frozen);
+   s.citizens=[];view.update(s,0); // New render actor, same stable identity.
+  }
+  // Global task phase advances through 1.25, 2.5 and 3.75 seconds while
+  // calendar time advances by only a quarter of those amounts.
+  assert.ok(samples.every(n=>n>=0&&n<.5));assert.ok(new Set(samples.map(n=>n.toFixed(2))).size>1,`calendar quarter speed must not freeze motion: ${samples}`);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });

@@ -128,7 +128,7 @@ export async function createGameActors(B,scene,materials){
   let bend=B.Vector3.TransformNormal(vec(side==='l'?-1:1,-.7,-.35),a.root.getWorldMatrix());bend=bend.subtract(direction.scale(B.Vector3.Dot(bend,direction))).normalize();
   const joint=shoulder.add(direction.scale(along)).add(bend.scale(height));
   const aim=(node,end)=>{node.parent.computeWorldMatrix(true);const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
-   const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize();node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,vector,new B.Quaternion());node.computeWorldMatrix(true);};
+   const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();B.Axis.Y.rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);};
   aim(upper,joint);lower.computeWorldMatrix(true);aim(lower,shoulder.add(direction.scale(length)));
  }
  function aimForward(node,end){
@@ -209,7 +209,7 @@ export async function createGameActors(B,scene,materials){
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
-  if(a.viewOffsetX===undefined||c.activity&&['working','strike'].includes(c.activity.stage)){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const blend=1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
+  if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const fixed=!c.walking&&['working','constructing','waiting'].includes(c.phase),blend=fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY;
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);
@@ -247,10 +247,12 @@ export async function createGameActors(B,scene,materials){
    const orientation=new B.Quaternion();foot.getWorldMatrix().decompose(undefined,orientation,undefined);
    const l1=B.Vector3.Distance(hip,knee),l2=B.Vector3.Distance(knee,ankle),direction=goal.subtract(hip),length=Math.min(direction.length(),l1+l2-.0001);direction.normalize();
    const along=(l1*l1-l2*l2+length*length)/(2*length),height=Math.sqrt(Math.max(0,l1*l1-along*along));
-   let bend=knee.subtract(hip).subtract(direction.scale(B.Vector3.Dot(knee.subtract(hip),direction)));
-   if(bend.lengthSquared()<1e-8)bend=B.Vector3.TransformNormal(vec(0,0,1),a.root.getWorldMatrix());bend.normalize();
+   // Kneecaps face the actor's forward axis. Inferring the plane from a nearly
+   // straight authored leg lets tiny clip noise select the reverse solution.
+   const forward=B.Vector3.TransformNormal(vec(0,0,1),a.root.getWorldMatrix());
+   const bend=forward.subtract(direction.scale(B.Vector3.Dot(forward,direction))).normalize();
    const joint=hip.add(direction.scale(along)).add(bend.scale(height));
-   const aim=(node,end)=>{node.parent.computeWorldMatrix(true);const ray=B.Vector3.TransformNormal(end.subtract(node.getAbsolutePosition()),node.parent.getWorldMatrix().clone().invert()).normalize();node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,ray,new B.Quaternion());node.computeWorldMatrix(true);};
+   const aim=(node,end)=>{node.parent.computeWorldMatrix(true);const ray=B.Vector3.TransformNormal(end.subtract(node.getAbsolutePosition()),node.parent.getWorldMatrix().clone().invert()).normalize();const base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();B.Axis.Y.rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,ray,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);};
    aim(upper,joint);lower.computeWorldMatrix(true);aim(lower,hip.add(direction.scale(length)));
    const parentRotation=new B.Quaternion();foot.parent.getWorldMatrix().decompose(undefined,parentRotation,undefined);foot.rotationQuaternion=parentRotation.conjugate().multiply(orientation);
    leg.last={upper:upper.rotationQuaternion.clone(),lower:lower.rotationQuaternion.clone(),foot:foot.rotationQuaternion.clone()};
@@ -341,6 +343,8 @@ export async function createGameActors(B,scene,materials){
  }
  function update(state,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
+  // Presentation seconds use the real frame delta and selected UI multiplier.
+  // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   for(const c of visible){seen.add(c.id);let a=people.get(c.id);if(!a){a=instantiate(residentSource,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}

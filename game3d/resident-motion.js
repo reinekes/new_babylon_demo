@@ -25,16 +25,29 @@ export function residentIdentity(id){
 // A small spatial hash avoids an all-pairs pass in the large city.
 export function residentViewPositions(state,citizens){
  const cells=new Map(),result=new Map(),gap=.10;
+ const fixed=c=>!c.walking&&['working','constructing','waiting'].includes(c.phase);
+ // Allocate work aprons first so passing pedestrians cannot reshuffle colleagues.
+ const order=[...citizens].sort((a,b)=>Number(fixed(b))-Number(fixed(a))||String(a.id).localeCompare(String(b.id)));
  const key=(x,y)=>`${Math.floor(x/gap)},${Math.floor(y/gap)}`;
  const neighbours=(x,y)=>{const found=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)found.push(...(cells.get(`${Math.floor(x/gap)+dx},${Math.floor(y/gap)+dy}`)||[]));return found;};
- for(const c of [...citizens].sort((a,b)=>String(a.id).localeCompare(String(b.id)))){
+ for(const c of order){
   let p={x:c.x,y:c.y};const bridge=onBridge(state.buildings||[],c.x,c.y),phase=residentMotion(c.id).phase;
   const safe=q=>{if(bridge)return !!onBridge(state.buildings||[],q.x,q.y)&&Math.abs(q.y-c.y)<.025;
    if(!isDryPoint(state,q.x,q.y))return false;
    return !(state.buildings||[]).some(b=>!['road','bridge','field','canal'].includes(b.type)&&Math.abs(q.x-b.x)<.42&&Math.abs(q.y-b.y)<.42&&!(Math.abs(c.x-b.x)<.42&&Math.abs(c.y-b.y)<.42));};
   const clear=q=>neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001);
-  const working=c.activity&&['working','strike'].includes(c.activity.stage);
-  if(!working&&!clear(p))for(let ring=1,done=false;ring<=4&&!done;ring++)for(let n=0;n<(ring+1)*6;n++){
+  if(fixed(c)&&!clear(p)){
+   const target=c.activity?.target;let dx=(target?.x??c.x)-c.x,dy=(target?.y??c.y-1)-c.y;if(Math.hypot(dx,dy)<1e-6)dy=-1;
+   const length=Math.hypot(dx,dy),tangent={x:-dy/length,y:dx/length},away={x:-dx/length,y:-dy/length};
+   // A deterministic line along the actual facade/field edge; a second row is
+   // used only when the frontage is occupied. Never move into the work target.
+   const slots=[1,-1,2,-2,3,-3];let placed=false;
+   for(let row=0;row<3&&!placed;row++)for(const n of row===0?slots:[0,...slots]){
+    const q={x:c.x+tangent.x*n*.115+away.x*row*.115,y:c.y+tangent.y*n*.115+away.y*row*.115};
+    if(Math.hypot(q.x-c.x,q.y-c.y)<=.43&&safe(q)&&clear(q)){p=q;placed=true;break;}
+   }
+  }
+  if(!fixed(c)&&!clear(p))for(let ring=1,done=false;ring<=4&&!done;ring++)for(let n=0;n<(ring+1)*6;n++){
    const radius=.10+(ring-1)*.06,angle=phase+n/((ring+1)*6)*Math.PI*2,q=bridge?{x:c.x+(n%2?1:-1)*radius,y:c.y}:{x:c.x+Math.cos(angle)*radius,y:c.y+Math.sin(angle)*radius};
    if(safe(q)&&clear(q)){p=q;done=true;break;}
   }

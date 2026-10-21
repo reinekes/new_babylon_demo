@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGameBuildings,gameBuildingSignature} from '../game3d/buildings.js';
-import {organicHousePoint,organicHouseVariant} from '../game3d/field-shore.js';
-import {shoreDistance} from '../district3d/terrain.js';
+import {organicHousePoint,organicHouseVariant,fieldWorldPoint,FIELD_SHORE_BUFFER} from '../game3d/field-shore.js';
+import {renderedShoreDistance} from '../game3d/shore-profile.js';
 import {BUILDINGS} from '../definitions.js';
 const sandbox={module:{exports:{}},console,setTimeout,clearTimeout,performance,self:{}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
@@ -121,11 +121,11 @@ test('river and saved-lake fields keep their dry portions and clip all crop tria
    const points=[];assert.ok(t.layer.meshes.reduce((n,m)=>n+m.getTotalVertices(),0)<150000,'adaptive shoreline geometry remains bounded');
    for(const mesh of t.layer.meshes){
     const src=mesh.sourceMesh,p=src.getVerticesData(B.VertexBuffer.PositionKind),indices=src.getIndices();
-    for(let i=0;i<p.length;i+=3){const d=shoreDistance(x+p[i]/6,y+p[i+2]/6,s);assert.ok(d>=.22-1e-6,`wet field vertex ${d}`);points.push([p[i],p[i+2]]);}
+    for(let i=0;i<p.length;i+=3){const world=fieldWorldPoint(b,p[i],p[i+2]),d=renderedShoreDistance(world.x,world.y,s);assert.ok(d>=FIELD_SHORE_BUFFER-1e-6,`wet field vertex ${d}`);points.push([p[i],p[i+2]]);}
     // Interior and edges matter too: testing only vertices misses river-straddling triangles.
-    for(let i=0;i<indices.length;i+=3){const a=indices.slice(i,i+3).map(k=>[p[k*3],p[k*3+2]]);for(const weights of [[1/3,1/3,1/3],[.5,.5,0],[0,.5,.5],[.5,0,.5]]){const xx=a.reduce((n,v,j)=>n+v[0]*weights[j],0),zz=a.reduce((n,v,j)=>n+v[1]*weights[j],0);assert.ok(shoreDistance(x+xx/6,y+zz/6,s)>=.22-1e-6);}}
+    for(let i=0;i<indices.length;i+=3){const a=indices.slice(i,i+3).map(k=>[p[k*3],p[k*3+2]]);for(const weights of [[1/3,1/3,1/3],[.5,.5,0],[0,.5,.5],[.5,0,.5]]){const xx=a.reduce((n,v,j)=>n+v[0]*weights[j],0),zz=a.reduce((n,v,j)=>n+v[1]*weights[j],0);const world=fieldWorldPoint(b,xx,zz);assert.ok(renderedShoreDistance(world.x,world.y,s)>=FIELD_SHORE_BUFFER-.0001);}}
    }
-   assert.ok(Math.max(...points.map(p=>p[0]))<2.65,'wet edge was actually cut off');assert.ok(Math.min(...points.map(p=>p[0]))<-2.5,'dry field portion retained');
+   if(x===12)assert.ok(points.reduce((max,p)=>Math.max(max,p[0]),-Infinity)<2.65,'actual river overlap was clipped');else assert.ok(points.reduce((max,p)=>Math.max(max,p[0]),-Infinity)>2.67,'field beside a rounded lake retains its already dry outer edge');assert.ok(points.reduce((min,p)=>Math.min(min,p[0]),Infinity)<-2.5,'dry field portion retained');
    assert.deepEqual(s,before,'crop yields, growth and saved world unchanged');
    const first=t.layer.meshes[0];t.layer.sync(s);assert.equal(t.layer.meshes[0],first);
    s.world.lakes=[{id:'new',cells:[{x:x+1,y}]}];t.layer.sync(s);assert.ok(first.isDisposed(),'shore cache follows actual saved lakes');
@@ -199,5 +199,42 @@ test('each house tier shares only three deterministic finishes/layouts and famil
   const b=house(),windows=()=>t.layer.meshes.filter(m=>m.metadata.homeLamp),lit=()=>windows().filter(m=>m.material.name==='game-occupied-home').length;
   const state={buildings:[b],citizens:[]};t.layer.sync(state);assert.equal(windows().length,4);assert.equal(lit(),0);const geometry=windows()[0].geometry;
   for(const [count,expected]of [[1,1],[4,2],[8,4],[0,0]]){state.citizens=Array.from({length:count},()=>({home:'home'}));const before=structuredClone(state);t.layer.sync(state);assert.equal(lit(),expected);assert.equal(windows()[0].geometry,geometry);assert.deepEqual(state,before);}
+ }finally{t.dispose();}
+});
+
+test('saved quarter-turns rotate shared architecture around the centre of its reserved footprint',async()=>{
+ const t=await setup();try{
+  for(const footprint of [undefined,2]){
+   const b={id:'monument',type:'ziggurat',x:3,y:4,level:1,...(footprint?{footprint}:{})},state={buildings:[b],citizens:[]};t.layer.sync(state);const first=t.layer.meshes[0],source=first.sourceMesh,baseline=gameBuildingSignature(b),count=t.scene.meshes.length,offset=footprint?3:0;
+   for(const rotation of [0,1,2,3,0]){
+    b.rotation=rotation;const before=structuredClone(state);t.layer.sync(state);assert.equal(t.layer.meshes[0],first);assert.equal(first.sourceMesh,source);assert.equal(t.scene.meshes.length,count);assert.equal(gameBuildingSignature(b),baseline);assert.deepEqual(state,before);
+    const pivot=B.Vector3.TransformCoordinates(new B.Vector3(offset,0,offset),first.parent.getWorldMatrix());assert.ok(Math.abs(pivot.x-(18+offset))<1e-5&&Math.abs(pivot.z-(24+offset))<1e-5);assert.deepEqual(first.metadata.tile,{x:3,y:4});
+    const bb=bounds(t.layer.meshes),edge=footprint?8.7:2.9;assert.ok(bb.minX>=18-2.9&&bb.maxX<=18+edge&&bb.minZ>=24-2.9&&bb.maxZ<=24+edge,JSON.stringify(bb));
+   }
+  }
+  assert.notEqual(gameBuildingSignature({type:'field',x:3,y:4,rotation:0}),gameBuildingSignature({type:'field',x:3,y:4,rotation:1}));
+ }finally{t.dispose();}
+});
+
+test('placement preview uses the exact shared building geometry and pivot with separate reusable transparent materials',async()=>{
+ const t=await setup();try{
+  const b={id:'grand',type:'ziggurat',x:3,y:4,footprint:2,level:1,rotation:1},state={buildings:[b],citizens:[]},before=structuredClone(state);t.layer.sync(state);
+  const originals=t.layer.meshes.map(m=>m.material),baseAlpha=originals.map(m=>m.alpha),actualBounds=bounds(t.layer.meshes),actualCount=t.layer.meshes.length;
+  const p=t.layer.preview(b,state,{allowed:true});assert.deepEqual(state,before);assert.equal(p.meshes.length,actualCount);assert.equal(t.layer.meshes.length,actualCount);assert.deepEqual(bounds(p.meshes),actualBounds);
+  for(let i=0;i<p.meshes.length;i++){const m=p.meshes[i];assert.equal(m.geometry,t.layer.meshes[i].sourceMesh.geometry);assert.notEqual(m.material,originals[i]);assert.ok(m.material.alpha>=.25&&m.material.alpha<=.4);assert.equal(m.isPickable,false);assert.equal(m.receiveShadows,false);assert.equal(m.checkCollisions,false);assert.ok(!t.layer.meshes.includes(m));}
+  t.layer.preview(b,state,{allowed:false});const blocked=p.meshes[0].material;assert.ok(blocked.albedoColor.r>blocked.albedoColor.g);t.layer.preview(b,state,{allowed:true});const sceneCount=t.scene.meshes.length,materialCount=t.scene.materials.length,textureCount=t.scene.textures.length,first=p.meshes[0];
+  for(let i=0;i<20;i++){assert.equal(t.layer.preview({...b,rotation:i%4},state,{allowed:i%2===0}).meshes[0],first);t.layer.light(i%2);}
+  assert.equal(t.scene.meshes.length,sceneCount);assert.equal(t.scene.materials.length,materialCount);assert.equal(t.scene.textures.length,textureCount);
+  assert.deepEqual(t.layer.meshes.map(m=>m.material),originals);assert.deepEqual(originals.map(m=>m.alpha),baseAlpha);t.layer.clearPreview();assert.ok(first.isDisposed());assert.equal(t.layer.meshes.length,actualCount);
+  t.layer.dispose();assert.equal(t.scene.meshes.length,0);assert.ok(!t.scene.materials.includes(blocked));
+ }finally{t.dispose();}
+});
+
+test('house preview is complete, lamp-free, follows its position variant and does not alter a construction order',async()=>{
+ const t=await setup();try{
+  const b={...house(),rotation:3,construction:{kind:'new',target:1,required:{clay:8},delivered:{clay:0},work:0}},state={buildings:[],citizens:[]},before=structuredClone(b);
+  const p=t.layer.preview(b,state,{allowed:true});assert.ok(p.meshes.some(m=>m.name.includes('game-courtyard')));assert.ok(p.meshes.every(m=>!m.name.includes('home-lamp')));assert.equal(t.layer.meshes.length,0);assert.deepEqual(b,before);
+  const count=t.scene.meshes.length,first=p.meshes[0];for(let i=0;i<20;i++)t.layer.preview({...b,x:8},state,{allowed:true});assert.equal(t.scene.meshes.length,count);assert.equal(t.layer.preview({...b,x:8},state).meshes[0],first);assert.equal(p.root.metadata.tile.x,8);
+  t.layer.preview(null,state);assert.ok(first.isDisposed());
  }finally{t.dispose();}
 });
