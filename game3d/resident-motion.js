@@ -27,7 +27,7 @@ export function residentIdentity(id){
 // A small spatial hash avoids an all-pairs pass in the large city.
 export function residentViewPositions(state,citizens){
  const cells=new Map(),result=new Map(),gap=.10;
- const fixed=c=>!c.walking&&['working','constructing','waiting'].includes(c.phase);
+ const fixed=c=>!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase);
  // Allocate work aprons first so passing pedestrians cannot reshuffle colleagues.
  const order=[...citizens].sort((a,b)=>Number(fixed(b))-Number(fixed(a))||String(a.id).localeCompare(String(b.id)));
  const key=(x,y)=>`${Math.floor(x/gap)},${Math.floor(y/gap)}`;

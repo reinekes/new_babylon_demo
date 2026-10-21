@@ -285,7 +285,7 @@ test('real workplace joints visibly cycle by trade, freeze on pause and children
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
   const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:434,phase:'working',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
   const poses=[];
-  for(const kind of ['building','farming','pottery','weaving','brewing']){
+  for(const kind of ['building','farming','pottery','weaving','brewing','healing']){
    c.activity={kind,task:'sowing',stage:'working',target:{x:7,y:9}};view.update(s,.1);scene.render();
    const root=view.rootFor({citizenId:c.id}),arm=root.getChildTransformNodes().find(n=>n.name.endsWith('-upperarm_r')),spine=root.getChildTransformNodes().find(n=>n.name.endsWith('-spine_01'));
    const first=arm.rotationQuaternion.asArray();for(let i=0;i<5;i++){view.update(s,.1);scene.render();}
@@ -294,7 +294,7 @@ test('real workplace joints visibly cycle by trade, freeze on pause and children
    if(kind==='building')assert.ok(root.getChildMeshes().some(m=>m.name==='builder-tool-blade'));
    if(kind==='farming')assert.ok(root.getChildMeshes().some(m=>m.name==='field-hoe-blade'));
   }
-  assert.equal(new Set(poses).size,5,'trades do not share a generic arm pose');
+  assert.equal(new Set(poses).size,6,'trades do not share a generic arm pose');
   const child={...s.citizens[0],id:435,age:7,phase:'home',activity:undefined,work:null};[child.x,child.y]=child.home.split(',').map(Number);s.citizens=[child];let playing;
   for(let t=0;t<20;t+=.2){s.simTime=t;playing=actorViewCitizens(s)[0];if(playing&&!playing.walking)break;}
   assert.ok(playing?.playing&&!playing.walking);const before=JSON.stringify(s);view.update(s,.1);scene.render();assert.equal(JSON.stringify(s),before);

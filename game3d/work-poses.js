@@ -1,3 +1,7 @@
+import {isWorkday,treatmentViewPosition} from '../workforce.js';
+import {qualifiedHealer} from '../education.js';
+import {stockStores} from '../inventory.js';
+import {seedReserve} from '../food-planning.js';
 import {buildingKey,isOperational,BUILDINGS} from '../definitions.js';
 import {materialsReady,workRequired} from '../construction.js';
 import {artisanNeeds} from '../artisan.js';
@@ -5,7 +9,7 @@ import {brickNeeds} from '../bricks.js';
 import {kilnNeeds} from '../kilns.js';
 import {craftBatch,craftResource,craftState} from '../textiles.js';
 
-export const WORK_POSES=new Set(['work','building','farming','gathering','pottery','weaving','brewing','brickmaking','logging','quarry','hunting','fishing']);
+export const WORK_POSES=new Set(['work','building','farming','gathering','pottery','weaving','brewing','brickmaking','logging','quarry','hunting','fishing','healing']);
 export function workplaceIndex(s){return new Map([...(s.buildings||[]),...(s.roads||[])].map(b=>[buildingKey(b),b]));}
 // View-only contract: the same active/waiting gates as workforce, without cropFor
 // or any initializer (rendering must never migrate or mutate a saved city).
@@ -14,6 +18,17 @@ export function workplaceActivity(s,c,index){
  const b=index.get(c.phase==='constructing'?c.site:c.work);
  if(c.phase==='constructing'&&b?.construction&&c.siteDuty==='builder')return {kind:'building',stage:materialsReady(b.construction)?'working':'waiting',target:b,progress:b.construction.work/workRequired(b)};
  if(c.phase!=='working'||!b)return null;
+ if(b.type==='healer'){
+  const waiting={kind:'healing',stage:'waiting',target:b};
+  if(!isOperational(b)||c.guarding||c.role!=='healer'||!qualifiedHealer(c)||!isWorkday(s.simTime||0)||s.funeral?.actors.some(a=>a.id===c.id))return waiting;
+  const patients=(s.citizens||[]).filter(p=>p.clinic===c.work&&p.phase==='treatment'&&p.health<(p.careGoal||85)&&!s.funeral?.actors.some(a=>a.id===p.id));if(!patients.length)return waiting;
+  let reserve=seedReserve(s),food=0,reed=0;
+  // Read the same local stock and distributed seed reserve without initialisers.
+  for(const store of stockStores(s)){const n=store.stock?.food||0,protectedFood=Math.min(reserve,n);reserve-=protectedFood;if(buildingKey(store)===c.store){food=Math.max(0,n-protectedFood);reed=store.stock?.reed||0;}}
+  if(food<=1e-8||reed<=1e-8)return waiting;
+  const patient=patients[0],position=treatmentViewPosition(s,patient)||patient;
+  return {kind:'healing',stage:'working',target:{x:position.x,y:position.y},patientId:patient.id,progress:1-patient.health/(patient.careGoal||85)};
+ }
  if(!isOperational(b)||c.guarding||['depot','waterpoint','healer','logging','quarry','hunting','fishing'].includes(b.type))return {kind:'gathering',task:b.type,stage:'waiting',target:b};
  let kind='gathering',task=b.type,active=true;
  if(b.type==='field'){
@@ -32,6 +47,7 @@ export function workplaceActivity(s,c,index){
 // hunting/fishing solves retain priority in actors.js. Distinct cycles read task time.
 export function workPose(kind,time,task){
  const cycle=Math.sin(time*3.6),lift=(cycle+1)*.5;
+ if(kind==='healing')return {bend:.14+lift*.05,twist:cycle*.025,right:[.12,1.02+cycle*.055,.49],left:[-.14,1.04,.42+lift*.035],tool:null};
  if(kind==='building')return {bend:.13+lift*.16,twist:cycle*.045,right:[.20,.75+lift*.60,.50-lift*.18],left:[-.13,.88,.48],tool:'building'};
  if(kind==='farming')return {bend:.55-lift*.24,twist:cycle*.055,right:[.17,.76+lift*.18,.45+lift*.10],left:[.10,.98+lift*.16,.30+lift*.10],tool:task==='harvesting'?'sickle':'hoe'};
  if(kind==='pottery'||kind==='brickmaking')return {bend:.22+lift*.10,twist:cycle*.035,right:[.13,.70+cycle*.07,.47],left:[-.13,.70-cycle*.07,.47],tool:null};

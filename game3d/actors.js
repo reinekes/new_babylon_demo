@@ -210,7 +210,7 @@ export async function createGameActors(B,scene,materials){
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
-  if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const fixed=!c.walking&&['working','constructing','waiting'].includes(c.phase),blend=fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
+  if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),blend=fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY;
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);

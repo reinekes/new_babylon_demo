@@ -25,12 +25,12 @@ export function validateFoodPlan(s){return !!s.foodPlan&&typeof s.foodPlan.prote
 
 // Read-only diagnostics: no news, save fields, route searches or simulation mutations.
 export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
- const night=isDinnerTime(s.simTime),day=mealCycle(s.simTime),nearDinner=hourOf(s.simTime)>=16||night,byHome=new Map(),noFood=availableFood(s)<=1e-7;
- for(const c of s.citizens){if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);}
+ const night=isDinnerTime(s.simTime),day=mealCycle(s.simTime),nearDinner=hourOf(s.simTime)>=16||night,byHome=new Map(),byTarget=new Map(),noFood=availableFood(s)<=1e-7;
+ for(const c of s.citizens){if(c.pantryTrip){const key=c.pantryTarget||c.home;if(!byTarget.has(key))byTarget.set(key,[]);byTarget.get(key).push(c);}if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);}
  const houses=[];
- for(const b of s.buildings){if(b.type!=='house'||!isOperational(b))continue;const key=`${b.x},${b.y}`,residents=byHome.get(key)||[];if(!residents.length)continue;
+ for(const b of s.buildings){if(b.type!=='house'||!isOperational(b))continue;const key=`${b.x},${b.y}`,residents=byHome.get(key)||[],couriers=byTarget.get(key)||[];if(!residents.length)continue;
   const hungryResidents=residents.filter(c=>(c.hunger||0)>=30||((c.missedMeals||0)>0&&(c.lastMealQuality??1)<.95&&!(night&&c.mealDay===day&&c.mealEaten>=mealRation(c)*.95)));
-  const need=residents.reduce((n,c)=>n+(night?Math.max(0,mealRation(c)-(c.mealDay===day?c.mealEaten:0)):mealRation(c)),0),food=b.pantry||0,inTransit=residents.reduce((n,c)=>n+(c.pantryTrip?c.pantryFood||0:0),0),deliverable=residents.reduce((n,c)=>n+(c.pantryTrip&&c.phase!=='blocked'?c.pantryFood||0:0),0),blockedDelivery=residents.some(c=>c.pantryTrip&&c.phase==='blocked'),shortfall=Math.max(0,need-food-deliverable),atRisk=shortfall>1e-7&&(nearDinner||noFood);
+  const need=residents.reduce((n,c)=>n+(night?Math.max(0,mealRation(c)-(c.mealDay===day?c.mealEaten:0)):mealRation(c)),0),food=b.pantry||0,inTransit=couriers.reduce((n,c)=>n+(c.pantryFood||0),0),deliverable=couriers.reduce((n,c)=>n+(c.phase!=='blocked'?c.pantryFood||0:0),0),blockedDelivery=couriers.some(c=>c.phase==='blocked'),shortfall=Math.max(0,need-food-deliverable),atRisk=shortfall>1e-7&&(nearDinner||noFood);
   houses.push({key,x:b.x,y:b.y,residents,hungryResidents,hungry:hungryResidents.length,hungryChildren:hungryResidents.filter(c=>c.age<16).length,severe:hungryResidents.some(c=>(c.hunger||0)>=70),need,food,inTransit,shortfall,atRisk,blockedDelivery,awaitingDelivery:need>food+1e-7&&deliverable>0});
  }
  houses.sort((a,b)=>Number(b.severe)-Number(a.severe)||b.hungry-a.hungry||Number(b.atRisk)-Number(a.atRisk)||b.shortfall-a.shortfall||a.y-b.y||a.x-b.x);

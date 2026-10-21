@@ -2,3 +2,5 @@
 
 /* Main map controls stay centred at the top at every viewport size. */
 .game3d-options{top:12px;right:auto;left:50%;transform:translateX(-50%);max-width:calc(100% - 20px);white-space:nowrap;box-sizing:border-box}
+
+.building-reach-note{position:absolute;top:54px;left:50%;transform:translateX(-50%);max-width:min(90%,600px);padding:5px 9px;background:#293329d9;color:#eee4c5;font:11px/1.4 Arial,sans-serif;pointer-events:none;text-align:center;z-index:6;border:1px solid #c4ad6b77;border-radius:3px}.building-reach-note[hidden]{display:none}

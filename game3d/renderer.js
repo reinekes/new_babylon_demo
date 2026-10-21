@@ -1,3 +1,4 @@
+import {createBuildingReach,nearbySimilar} from './building-reach.js';
 import {bindMapControls} from './map-controls.js';
 import {Renderer as CanvasRenderer} from '../renderer.js';
 import {canBuild} from '../engine.js';
@@ -8,7 +9,7 @@ import {buildingKey} from '../definitions.js';
 import {createDistrictMaterials} from '../district3d/materials.js';
 import {weatherAt} from '../environment.js';
 
-export const GAME3D_RELEASE='actor-finish-20261021-1';
+export const GAME3D_RELEASE='living-city-20261021-1';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
@@ -37,7 +38,8 @@ export class GameRenderer3D{
   this.fill=new B.HemisphericLight('city-sky',new B.Vector3(0,1,0),this.scene);this.fill.intensity=.35;
   this.shadow=new B.ShadowGenerator(2048,this.sun);this.shadow.usePercentageCloserFiltering=true;this.shadow.filteringQuality=B.ShadowGenerator.QUALITY_MEDIUM;this.shadow.bias=.0004;this.shadow.normalBias=.025;
   this.scene.environmentTexture=new B.HDRCubeTexture('assets/art-courtyard/textures/kiara_1_dawn_1k.hdr',this.scene,128,false,true,false,true);
-  this.materials=createDistrictMaterials(B,this.scene);
+  this.materials=createDistrictMaterials(B,this.scene);this.reach=createBuildingReach(B,this.scene);
+  this.reachNote=document.createElement('output');this.reachNote.className='building-reach-note';this.reachNote.hidden=true;canvas.parentNode.append(this.reachNote);
   this.marker=B.MeshBuilder.CreateGround('placement-cell',{width:5.75,height:5.75},this.scene);this.marker.position.y=.10;this.marker.isPickable=false;this.marker.material=new B.StandardMaterial('placement-glow',this.scene);this.marker.material.disableLighting=true;this.marker.material.alpha=.47;this.marker.setEnabled(false);
   this.engine.runRenderLoop(()=>this.scene.render());this.createControls();this.bindInput();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.home();
  }
@@ -45,14 +47,14 @@ export class GameRenderer3D{
   if(!state)throw Error('Нет состояния города для карты');
   const [{createGameBuildings},{createGameActors},{createGameLandscape}]=await Promise.all([import('./buildings.js'),import('./actors.js'),import('./landscape.js')]);
   const progress=(name,value)=>{document.querySelector('.game3d-loading small')?.replaceChildren(document.createTextNode(name+' готовы…'));return value;};
-  const results=await Promise.allSettled([createGameBuildings(this.B,this.scene,this.materials).then(v=>progress('Здания',v)),createGameActors(this.B,this.scene,this.materials).then(v=>progress('Жители',v)),createGameLandscape(this.B,this.scene,state,this.materials).then(v=>progress('Ландшафт',v))]);
+  const results=await Promise.allSettled([createGameBuildings(this.B,this.scene,this.materials).then(v=>progress('Здания',v)),createGameActors(this.B,this.scene,this.materials).then(v=>progress('Жители',v)),createGameLandscape(this.B,this.scene,state,this.materials,{tier:'high'}).then(v=>progress('Ландшафт',v))]);
   this.buildings=results[0].status==='fulfilled'?results[0].value:null;this.actors=results[1].status==='fulfilled'?results[1].value:null;this.landscape=results[2].status==='fulfilled'?results[2].value:null;
   const failure=results.find(r=>r.status==='rejected');if(failure)throw failure.reason;
   document.querySelector('.game3d-loading small')?.replaceChildren(document.createTextNode('Модели готовы · подготавливаем материалы…'));this.state=state;this.buildings.sync(state);this.actors.update(state,0,{paused:true,speed:1});this.landscape.update(state,state.simTime);this.layersReady=true;try{await Promise.race([this.scene.whenReadyAsync(),new Promise((_,reject)=>{this.loadingTimer=setTimeout(()=>reject(Error('Материалы 3D не ответили вовремя')),45000);})]);}finally{clearTimeout(this.loadingTimer);this.engine.stopRenderLoop();}this.resize();
  }
  createControls(){
   const panel=document.createElement('div');panel.className='game3d-options';panel.innerHTML='<span>3D · ЖИВОЙ ГОРОД</span><button type="button" data-turn="-1" title="Повернуть камеру влево">↶</button><button type="button" data-turn="1" title="Повернуть камеру вправо">↷</button><select aria-label="Качество 3D"><option value="high">Высокая</option><option value="low">Лёгкая</option></select><a href="?view=2d" title="Открыть прежнюю графику с тем же сохранением">2D</a><a href="assets/art-courtyard/CREDITS.html" target="_blank" rel="noopener" title="Модели и авторы">Авторы ↗</a>';
-  this.canvas.parentNode.append(panel);this.controls=panel;for(const b of panel.querySelectorAll('[data-turn]'))b.onclick=()=>{this.camera.alpha+=Number(b.dataset.turn)*Math.PI/4;};panel.querySelector('select').onchange=e=>{const low=e.target.value==='low';this.scene.shadowsEnabled=!low;this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,low?1:1.5));this.resize();};
+  this.canvas.parentNode.append(panel);this.controls=panel;for(const b of panel.querySelectorAll('[data-turn]'))b.onclick=()=>{this.camera.alpha+=Number(b.dataset.turn)*Math.PI/4;};panel.querySelector('select').onchange=e=>{const low=e.target.value==='low';this.scene.shadowsEnabled=!low;this.landscape?.setQuality?.(low?'low':'high');this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,low?1:1.5));this.resize();};
   const metrics=document.createElement('output');metrics.className='game3d-metrics';metrics.setAttribute('aria-label','Производительность 3D');this.canvas.parentNode.append(metrics);this.metrics=metrics;this.samples=[];this.frameCount=0;this.windowStart=0;
  }
  bindInput(){
@@ -94,9 +96,11 @@ export class GameRenderer3D{
   for(const [key,lamp]of this.lamps)if(!live.has(key)){lamp.dispose();this.lamps.delete(key);}
  }
  updateSelection(){
-  if(this.photoMode){this.buildings.clearPreview();this.marker.setEnabled(false);for(const m of this.routeMarkers||[])m.setEnabled(false);return;}for(const m of this.routeMarkers||[])m.setEnabled(true);
+  if(this.photoMode){this.reach.clear();this.reachNote.hidden=true;this.buildings.highlight([]);this.buildings.clearPreview();this.marker.setEnabled(false);for(const m of this.routeMarkers||[])m.setEnabled(false);return;}for(const m of this.routeMarkers||[])m.setEnabled(true);
   const B=this.B,p=previewFor(this.state,this.selection,this.hover,this.placementRotation||0);this.marker.setEnabled(!!p||!!this.hover&&!!this.roadMode||!!this.keyboardHover&&!!this.hover);if(this.marker.isEnabled()){const at=p||this.hover;const n=this.selection==='ziggurat'?2:1;this.marker.scaling.set(n,1,n);this.marker.position.set((at.x+(n-1)/2)*6,.10,(at.y+(n-1)/2)*6);this.marker.material.emissiveColor=B.Color3.FromHexString(p&&!p.allowed?'#e27857':'#dcdda0');this.marker.material.diffuseColor=this.marker.material.emissiveColor;if(p)this.canvas.title=p.allowed?'Нажми, чтобы заложить строительство':p.reason;}
   if(p)this.buildings.preview({type:this.selection,x:p.x,y:p.y,level:1,rotation:this.placementRotation||0,...(this.selection==='ziggurat'?{footprint:2}:{})},this.state,{allowed:p.allowed});else this.buildings.clearPreview();
+  const selected=this.selection&&this.hover?{type:this.selection,...this.hover,...(this.selection==='ziggurat'?{footprint:2}:{})}:this.inspected&&this.state.buildings.find(b=>b.x===this.inspected.x&&b.y===this.inspected.y);
+  this.buildings.highlight(this.selection&&selected?nearbySimilar(this.state,selected):[]);this.reachNote.textContent=this.reach.update(this.state,selected);this.reachNote.hidden=!this.reachNote.textContent;
   const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,.12,r.a.y*6),b=new B.Vector3(r.b.x*6,.12,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
  }
  draw(state,selection,now,options={}){
@@ -105,5 +109,5 @@ export class GameRenderer3D{
   this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }
- dispose(){this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.scene?.dispose();this.engine?.dispose();}
+ dispose(){this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.scene?.dispose();this.engine?.dispose();}
 }

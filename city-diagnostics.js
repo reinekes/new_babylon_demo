@@ -76,14 +76,14 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
  * (geometric distance for the overview, not a promise of actual carrier routing).
  * Shared stores are counted once; pantry, stock and in-transit are separate. */
 export function cityDiagnostics(s){
- const citizens=s.citizens||[],buildings=s.buildings||[],{components}=topology(s),stores=stockStores(s),food=localFood(s,stores),byHome=new Map(),byWork=new Map(),bySite=new Map();
+ const citizens=s.citizens||[],buildings=s.buildings||[],{components}=topology(s),stores=stockStores(s),food=localFood(s,stores),byHome=new Map(),byWork=new Map(),bySite=new Map(),byPantryTarget=new Map();
  const same=(a,b)=>components.has(a)&&components.get(a)!==undefined&&components.get(a)===components.get(b);
- for(const c of citizens){if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);if(c.work&&adult(c)){if(!byWork.has(c.work))byWork.set(c.work,[]);byWork.get(c.work).push(c);}if(c.site&&adult(c)){if(!bySite.has(c.site))bySite.set(c.site,[]);bySite.get(c.site).push(c);}}
+ for(const c of citizens){if(c.pantryTrip){const target=c.pantryTarget||c.home;if(!byPantryTarget.has(target))byPantryTarget.set(target,[]);byPantryTarget.get(target).push(c);}if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);if(c.work&&adult(c)){if(!byWork.has(c.work))byWork.set(c.work,[]);byWork.get(c.work).push(c);}if(c.site&&adult(c)){if(!bySite.has(c.site))bySite.set(c.site,[]);bySite.get(c.site).push(c);}}
  const homes=buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>{
-  const key=buildingKey(b),residents=byHome.get(key)||[],connected=stores.filter(st=>same(key,buildingKey(st))),demand=homeDemand(residents,s),waterNeed=waterDemand(residents),pantry=amount(b.pantry),water=amount(b.water),foodInTransit=residents.reduce((n,c)=>n+(c.pantryTrip?amount(c.pantryFood):0),0),waterInTransit=citizens.reduce((n,c)=>n+(c.waterTrip?.target===key?amount(c.waterTrip.load):0),0),accessibleFood=connected.reduce((n,st)=>n+(food.get(buildingKey(st))||0),0),reasons=[];
+  const key=buildingKey(b),residents=byHome.get(key)||[],couriers=byPantryTarget.get(key)||[],connected=stores.filter(st=>same(key,buildingKey(st))),demand=homeDemand(residents,s),waterNeed=waterDemand(residents),pantry=amount(b.pantry),water=amount(b.water),foodInTransit=couriers.reduce((n,c)=>n+amount(c.pantryFood),0),waterInTransit=citizens.reduce((n,c)=>n+(c.waterTrip?.target===key?amount(c.waterTrip.load):0),0),accessibleFood=connected.reduce((n,st)=>n+(food.get(buildingKey(st))||0),0),reasons=[];
   const h={key,x:b.x,y:b.y,residents:residents.map(c=>c.id),population:residents.length,adults:residents.filter(adult).length,workers:residents.filter(c=>adult(c)&&(c.work||c.site||c.districtJob||c.tradeJob||c.saleJob)).length,hungry:residents.filter(c=>hungry(c,s)).length,ill:residents.filter(ill).length,food:pantry,demand,water,waterDemand:waterNeed,foodInTransit,waterInTransit,accessibleFood,reasons};
   if(residents.length&&!connected.length)reasons.push(reason('path','Нет пути к складу','Общий запас не доступен этому дому',key));
-  const deliverable=residents.reduce((n,c)=>n+(c.pantryTrip&&c.phase!=='blocked'?amount(c.pantryFood):0),0),foodNeeded=pantry+1e-7<demand,canFetch=residents.some(c=>adult(c)&&!c.clinic&&!c.school);
+  const deliverable=couriers.reduce((n,c)=>n+(c.phase!=='blocked'?amount(c.pantryFood):0),0),foodNeeded=pantry+1e-7<demand,canFetch=residents.some(c=>adult(c)&&!c.clinic&&!c.school)||couriers.some(c=>c.phase!=='blocked');
   h.foodStatus='ready';
   if(h.hungry)reasons.push(reason('food','Недоедание',accessibleFood>0?'Еда есть на доступном складе: нужна доставка домой':'На доступных складах нет свободной еды',key));
   if(foodNeeded){

@@ -1,3 +1,4 @@
+import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {createArchitecture} from './architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
@@ -45,7 +46,19 @@ export function mergeCourtyardAsset(B,container){
 export async function createGameBuildings(B,scene,materials){
  const container=await B.SceneLoader.LoadAssetContainerAsync('',HOME_ASSET,scene,undefined,'.glb');
  const originals=mergeCourtyardAsset(B,container),templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
- let disposed=false,previewRecord=null;
+ let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
+ const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
+ function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
+ function highlight(keys=[]){
+  const sig=keys.map(key=>key+':'+active.get(key)?.signature).join('|');if(sig===highlightSignature)return;clearHighlights();highlightSignature=sig;
+  for(const key of keys){const record=active.get(key);if(!record)continue;
+   for(const original of record.meshes){if(original.metadata?.homeLamp)continue;const source=original.sourceMesh||original,mesh=source.clone('nearby-building-highlight',original.parent,true);mesh.position.copyFrom(original.position);mesh.position.y+=.006;mesh.rotation.copyFrom(original.rotation);mesh.scaling.copyFrom(original.scaling);mesh.isVisible=true;mesh.isPickable=false;mesh.material=highlightMaterial;mesh.metadata={highlight:true};mesh.receiveShadows=false;highlighted.push(mesh);}
+   const n=record.root.metadata.type==='ziggurat'?2:1,c=(n-1)*3,r=n*3-.12,points=[];
+   for(const x of [-1,1])for(const z of [-1,1])points.push([new B.Vector3(c+x*(r-.8),.16,c+z*r),new B.Vector3(c+x*r,.16,c+z*r),new B.Vector3(c+x*r,.16,c+z*(r-.8))]);
+   const line=B.MeshBuilder.CreateLineSystem('nearby-building-corners',{lines:points},scene);line.parent=record.root;line.color=B.Color3.FromHexString('#ffe099');line.isPickable=false;highlighted.push(line);
+  }
+ }
+
  const previewTemplates=new Map(),ghostMaterials=new Map();
  const finish=(name,color,base)=>{
   // PBRMaterial.clone() deep-clones DynamicTexture without uploading its canvas.
@@ -111,16 +124,6 @@ export async function createGameBuildings(B,scene,materials){
    }
   }
 
-  if(b.construction){
-   const p=progress(b)/12;
-   if(b.construction.kind==='upgrade'){
-    for(const x of [-2.55,2.55])for(const z of [-1.8,1.8])box('upgrade-scaffold-post',x,1.5,z,.075,3,.075,materials.wood);
-    for(const x of [-2.55,2.55])for(const y of [1.1,2.1])box('upgrade-scaffold-rail',x,y,0,.07,.07,3.75,materials.wood);
-   }
-   // Quantised work advances a visible scaffold and a small stack, not just text.
-   for(let i=0;i<2+Math.floor(p*6);i++)box('site-materials',-1.75+i%4*.44,.13+Math.floor(i/4)*.21,2.35,.4,.2,.4,raw);
-   box('site-work-board',2.55,.5+p*1.65,-1.4,.08,.09,1.75,materials.wood);
-  }
   const result=[];
   for(const [material,parts] of groups){
    const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.material=material;mesh.name=`game-detail-${material.name}`;mesh.parent=root;result.push(mesh);
@@ -130,7 +133,9 @@ export async function createGameBuildings(B,scene,materials){
  function acquire(b,key,state){
   let t=templates.get(key);if(t){t.users++;return t;}
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
-  if(isHouse(b)){
+  if(b.construction?.kind==='new'){
+   sources=createConstructionSite(B,scene,b,materialSet);for(const mesh of sources)mesh.parent=root;
+  }else if(isHouse(b)){
    for(const original of originals){
     const mesh=original.clone(`${original.name}-tier${tier(b)}`,null,true);mesh.isVisible=false;
     mesh.scaling.set(scale,verticalScale,scale);mesh.position.set(-center.x*scale,-min.y*verticalScale,-center.z*scale);
@@ -161,7 +166,8 @@ export async function createGameBuildings(B,scene,materials){
    }else for(const mesh of createArchitecture(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
 
   }
-  sources.push(...additions(b,root));
+  if(b.construction?.kind!=='new')sources.push(...additions(b,root));
+  if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>{
    const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
    if(!clipped.indices.length){mesh.dispose();return false;}
@@ -243,5 +249,5 @@ export async function createGameBuildings(B,scene,materials){
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
  }
- return {sync,meshes,preview,clearPreview,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);for(const source of originals)source.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);for(const source of originals)source.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

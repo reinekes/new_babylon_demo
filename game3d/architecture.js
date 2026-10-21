@@ -90,11 +90,6 @@ export function createArchitecture(B,scene,b,m){
  case 'healer':ground();room(-1.6,-.5,1.6,3.8,2.1);room(.5,-1.65,2.55,1.5,2.4);cloth(.65,.75,2.6,2,1.95);for(const x of [0,1.3]){bench(x,.75,.8);block(x,.88,.75,.7,.06,1.5,m.linen);}for(let i=0;i<5;i++)jar(-1.9+i*.32,-1.5,.25,2.2);basin(-1.9,1.7,.6,.55);break;
  default:throw Error(`Missing original architecture for ${b.type}`);
  }
- // A new site exposes the recognisable structural mass at its actual progress.
- if(b.construction&&b.construction.kind!=='upgrade'){
-  const p=.08+Math.max(0,Math.min(1,constructionProgress(b).ratio))*.92;
-  for(const parts of groups.values())for(const mesh of parts){mesh.scaling.y*=p;mesh.position.y*=p;}
- }
  const meshes=[];for(const [material,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);if(mesh){mesh.name=`original-${b.type}-${material.name}`;mesh.material=material;meshes.push(mesh);}}
  return meshes;
 }
