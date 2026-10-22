@@ -106,7 +106,7 @@ test('cat and goat torsos are slim in width and depth, with a smaller feline sil
  const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
  const animals=['cat','goat'].map(kind=>({id:kind,kind,x:5,y:5,behavior:'looking'}));view.update(s,animals,.05);
  for(const kind of ['cat','goat']){const root=view.rootFor({animalId:kind}),torso=root.getChildMeshes().find(m=>m.name.includes('-torso')),p=torso.getVerticesData(B.VertexBuffer.PositionKind),xs=p.filter((_,i)=>i%3===0),ys=p.filter((_,i)=>i%3===1),zs=p.filter((_,i)=>i%3===2),width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...ys)-Math.min(...ys),length=Math.max(...zs)-Math.min(...zs);
-  assert.ok(width/length<(kind==='cat'?.37:.46));assert.ok(depth/length<(kind==='cat'?.45:.55));
+  assert.ok(width/length<(kind==='cat'?.37:.46));assert.ok(depth/length<(kind==='cat'?.45:.55),`${kind} depth/length ${depth/length}`);
   if(kind==='cat'){assert.equal(root.scaling.x,.85);assert.ok(width*root.scaling.x<.19);assert.ok(depth*root.scaling.x<.23);}
   assert.ok(torso.material.albedoTexture&&torso.material.bumpTexture,'retain the previously authored coats');
  }view.dispose();scene.dispose();engine.dispose();
@@ -132,4 +132,24 @@ test('all tabby variants carry a flat visible fur pattern with low hair relief a
   const contrast=Math.max(...rows)-Math.min(...rows);assert.ok(contrast>20&&contrast<60,'each dorsal UV strip has recognisable but moderate tabby bars');assert.ok(Math.min(...rows)>55,'markings remain fur-coloured rather than near-black objects');
   for(let i=0;i<normal.length;i+=4)relief+=Math.abs(normal[i]-127);assert.ok(relief/(size*size)>3&&relief/(size*size)<9,'normal contains only fine short-hair relief');
  }
+});
+
+test('animal skins have closed welded topology, capped ends and continuous UV seam normals',async()=>{
+ const {closedAnimalLoft}=await import('../game3d/animal-anatomy.js');
+ const skin=closedAnimalLoft(B,[[-.5,0,.003,.003],[-.3,0,.2,.22],[0,.02,.23,.25],[.3,.08,.12,.2],[.5,.1,.003,.003]]),edges=new Map(),point=i=>skin.positions.slice(i*3,i*3+3).map(n=>Math.round(n*1e8)).join(',');
+ for(let i=0;i<skin.indices.length;i+=3){const ids=skin.indices.slice(i,i+3);for(let k=0;k<3;k++){const edge=[point(ids[k]),point(ids[(k+1)%3])].sort().join('|');edges.set(edge,(edges.get(edge)||0)+1);}}
+ assert.ok([...edges.values()].every(n=>n===2),'every geometric edge must belong to exactly two triangles, including caps and angular seam');
+ const ringCount=(skin.positions.length/3-2)/17;for(let r=0;r<ringCount;r++){const first=r*17*3,last=first+16*3;assert.deepEqual(skin.normals.slice(first,first+3),skin.normals.slice(last,last+3),'UV seam must not introduce a shading ridge');}
+ assert.ok(skin.normals.every(Number.isFinite));assert.ok(skin.normals.at(-1)>.5,'nose cap normal points forward');assert.ok(skin.normals.at(-4)<-.5,'rear cap normal points backward');
+});
+
+test('quadruped recovery bends front and hind legs in opposite directions with low planted stance',async()=>{
+ const {animalFootPose}=await import('../game3d/animal-anatomy.js');
+ for(const end of [-1,1]){let previous=null;for(let i=0;i<=100;i++){const pose=animalFootPose(i/100*Math.PI*2,.30,.31,1,end);assert.ok(Number.isFinite(pose.hip)&&Number.isFinite(pose.knee));assert.ok(Math.abs(pose.hip)<1.2&&Math.abs(pose.knee)<1.5,'joint angles must stay inside a relaxed walking envelope');assert.equal(Math.sign(pose.knee),end);if(pose.stance)assert.equal(pose.height,.61*.965,'stance stays at fixed height');if(previous)assert.ok(Math.abs(pose.hip-previous.hip)<.2,'no discontinuous hip snap');previous=pose;}}
+});
+
+test('new animal anatomy has one head-neck skin and no floating belly/back shell',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),state=createGame(),animals=['goat','cat','gazelle','jackal'].map(kind=>({kind,id:kind,x:4,y:4,behavior:'looking'}));view.update(state,animals,.05);
+ for(const {id}of animals){const meshes=view.rootFor({animalId:id}).getChildMeshes();assert.equal(meshes.filter(m=>m.name.endsWith('-face')).length,1);assert.ok(!meshes.some(m=>/-neck$|-belly$|-saddle$/.test(m.name)));}
+ view.dispose();assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();
 });

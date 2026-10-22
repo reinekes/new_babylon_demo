@@ -17,7 +17,7 @@ export function natureDetailPlan(s,roads=[],tier='balanced'){
   const cell=(i*137)%(WIDTH*HEIGHT),x=cell%WIDTH+(random(cell,7)-.5)*.5,y=Math.floor(cell/WIDTH)+(random(cell,8)-.5)*.5;
   if(!clear(x,y))continue;const n=random(cell,12);
   if(result.debris.length<budget.debris&&n<.46)result.debris.push({x,y,angle:random(cell,1)*Math.PI*2,kind:n<.16?'shard':n<.31?'reed':'dust',size:.09+random(cell,2)*.13});
-  if(result.puddles.length<budget.puddles&&n>.80&&clear(x,y,.25))result.puddles.push({x,y,angle:random(cell,3)*Math.PI*2,size:.38+random(cell,4)*.60,seed:cell});
+  const puddleSize=.95+random(cell,4)*1.35;if(result.puddles.length<budget.puddles&&n>.80&&clear(x,y,puddleSize*1.12/6))result.puddles.push({x,y,angle:random(cell,3)*Math.PI*2,size:puddleSize,seed:cell});
   if(n>.56&&n<.62&&clear(x,y,.44)){
    if(result.tumbleweeds.length<budget.tumbleweeds&&shoreDistance(x,y,s)>2.5)result.tumbleweeds.push({x,y,phase:random(cell,6)*Math.PI*2});
    else if(result.snakes.length<budget.snakes)result.snakes.push({x,y,phase:random(cell,9)*Math.PI*2});

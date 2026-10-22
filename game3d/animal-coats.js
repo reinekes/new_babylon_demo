@@ -18,7 +18,7 @@ export function createCoatPixels(kind,variant,size=256){
   const u=x/size,v=y/size,around=Math.sin(u*Math.PI*2),seed=Math.sin(x*127.1+y*311.7+variant*73.7)*43758.5453,noise=seed-Math.floor(seed);
   // Angular UV: dorsal centre is u=.25, pale underside is u=.75.
   let tint=mix(base,belly,Math.pow(Math.max(0,-around),.7)*.96);
-  tint=mix(tint,dark,Math.pow(Math.max(0,around),coarse?2:3)*(jackal?.82:coarse?.38:.30));
+  tint=mix(tint,dark,Math.pow(Math.max(0,around),coarse?2:3)*(jackal?.82:coarse?.14:.30));
   if(coarse){
    const patch=Math.sin(u*12.566+Math.sin(v*8)*1.6)+Math.cos(v*13+variant*2);
    if(variant!==1)tint=mix(tint,belly,Math.max(0,patch-.38)*.77);
@@ -36,7 +36,7 @@ export function createCoatPixels(kind,variant,size=256){
   // Broken, long tapered streaks read as coarse goat hair; other species have
   // finer, low relief grain. Cyclic x preserves the longitudinal seam.
   const strands=Math.sin(u*Math.PI*(coarse?112:192)+Math.sin(v*31+u*12.566)*.75),breaks=.55+.45*Math.sin(v*93+u*37.699);
-  const grain=strands*breaks,shade=1+grain*(coarse?.17:.105)+(noise-.5)*(coarse?.13:.10),i=(y*size+x)*4;
+  const grain=strands*breaks,shade=1+grain*(coarse?.025:.105)+(noise-.5)*(coarse?.13:.10),i=(y*size+x)*4;
   for(let c=0;c<3;c++)color[i+c]=Math.max(0,Math.min(255,tint[c]*shade));color[i+3]=255;
   heights[y*size+x]=grain*(coarse?.80:cat?.22:.32)+(noise-.5)*.16;
  }
@@ -49,6 +49,6 @@ export function createCoatPixels(kind,variant,size=256){
 }
 export function createCoatTextures(B,scene,kind,variant){
  const pixels=createCoatPixels(kind,variant),make=(data,suffix)=>{const t=B.RawTexture.CreateRGBATexture(data,pixels.size,pixels.size,scene,true,false,B.Texture.TRILINEAR_SAMPLINGMODE);t.name=`wildlife-coat-${kind}-${variant}-${suffix}`;t.wrapU=B.Texture.WRAP_ADDRESSMODE;t.wrapV=B.Texture.WRAP_ADDRESSMODE;return t;};
- const albedo=make(pixels.color,'hair'),bump=make(pixels.normal,'normal');albedo.gammaSpace=true;bump.gammaSpace=false;bump.level=kind==='goat'?.45:kind==='cat'?.22:.48;
+ const albedo=make(pixels.color,'hair'),bump=make(pixels.normal,'normal');albedo.gammaSpace=true;bump.gammaSpace=false;bump.level=kind==='goat'?.08:kind==='cat'?.22:.48;
  return {albedo,bump};
 }

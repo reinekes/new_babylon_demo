@@ -26,7 +26,7 @@ test('workers actually deliver materials and finish canals before water arrives,
  for(let i=0;i<2400&&b.construction;i++){s.event=null;advanceTime(s,.1);cargo ||= s.citizens.some(c=>Object.values(c.buildCargo||{}).some(n=>n>0));if(b.construction)assert.equal(irrigationFor(s).wet.size,0);}
  assert.ok(cargo);assert.equal(b.construction,undefined);assert.ok(irrigationFor(s).wet.has('13,6'));assert.ok(decode(encode(s)));
 });
-test('old v11 cities preserve residents and cargo; isolated canals and lakes do not create water',()=>{
+test('old cities preserve residents and cargo; canals without cardinal contact with a source stay dry',()=>{
  const s=createGame(),copy=decode(encode(s));assert.deepEqual(copy,s);
  s.buildings.push(canal(3,3),canal(4,4));assert.equal(irrigationFor(s).wet.size,0);
 });
@@ -56,4 +56,23 @@ test('a road crossing receives a three-plank deck above the finished canal',asyn
  const {drawCanal}=await import('../irrigation.js'),s=createGame();s.buildings.push(canal(13,6));const lines=[];
  const r={s:1,point:(x,y)=>({x,y}),line:(points,color,width)=>lines.push({points,color,width}),streets:{edges:[[{x:13.5,y:5.5},{x:13.5,y:6.5}]]}};
  drawCanal(r,s.buildings.at(-1),s,{crossings:true});assert.equal(lines.length,3);assert.ok(lines.every(l=>l.color==='#c5ad7d'));
+});
+
+function lakeCanals(){
+ const s=createGame();s.world.lakes=[{id:'lake-irrigation-probe',cells:[{x:3,y:3},{x:4,y:3},{x:3,y:4}]}];s.world.deposits=s.world.deposits.filter(d=>!s.world.lakes[0].cells.some(c=>c.x===d.x&&c.y===d.y));
+ s.buildings.push(canal(4,4),canal(5,4),canal(5,5),canal(6,5));return s;
+}
+test('a completed turning canal carries lake water to a desert field without making the field a conduit',()=>{
+ const s=lakeCanals(),n=irrigationFor(s);assert.ok(n.wet.has('6,5'),'lake must fill the entire cardinal chain');assert.deepEqual(n.arms.get('5,4'),[[0,1],[-1,0]],'corner shares the same two actual ports');
+ assert.equal(canBuild(s,'field',7,5),'');assert.ok(build(s,'field',7,5).ok);assert.equal(fieldWater(s,s.buildings.at(-1)).canal,true);assert.ok(canBuild(s,'field',6,5),'an occupied canal tile cannot also become a field');assert.ok(canBuild(s,'field',4,3),'an irrigated lake-water tile is not buildable land');
+ s.buildings.push(canal(8,5),canal(7,6));assert.ok(!irrigationFor(s).wet.has('8,5'),'a field does not carry canal water onward');assert.ok(!irrigationFor(s).wet.has('7,6'),'diagonal contact does not carry water');assert.ok(decode(encode(s)));
+});
+test('new construction interrupts lake water and a restored complete link resumes crop growth',async()=>{
+ const {cropFor,advanceCrops}=await import('../agriculture.js');const s=lakeCanals(),field={type:'field',x:7,y:5,level:1};s.buildings.push(field);const crop=cropFor(s,field);crop.sown=1;s.season=1;advanceCrops(s,4);assert.ok(crop.growth>0);
+ const link=s.buildings.find(b=>b.type==='canal'&&b.x===5&&b.y===4);link.construction={kind:'new'};const before=crop.growth;advanceCrops(s,4);assert.equal(crop.growth,before);assert.equal(fieldWater(s,field).canal,false);delete link.construction;advanceCrops(s,4);assert.ok(crop.growth>before);
+});
+test('lake membership changes invalidate derived irrigation without changing saved state or the river',()=>{
+ const s=lakeCanals();s.buildings.push(canal(13,6));const before=encode(s),wet=irrigationFor(s);assert.ok(wet.wet.has('6,5'));assert.ok(wet.wet.has('13,6'));assert.equal(encode(s),before);
+ s.world.lakes[0].cells.splice(1);const after=irrigationFor(s);assert.notEqual(after,wet);assert.equal(after.wet.has('6,5'),false);assert.ok(after.wet.has('13,6'),'the unchanged river source remains wet');assert.ok(canBuild(s,'field',7,5));
+ s.world.lakes[0].cells.push({x:4,y:3});assert.ok(irrigationFor(s).wet.has('6,5'));assert.deepEqual(decode(encode(s)).world,s.world);
 });

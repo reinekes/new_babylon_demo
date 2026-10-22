@@ -2,7 +2,7 @@ import {WIDTH,HEIGHT,river,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
 import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
-import {RIVER_HALF_WIDTH,RIVER_STEPS_PER_TILE} from './shore-profile.js';
+import {renderedShoreDistance,RIVER_HALF_WIDTH,RIVER_STEPS_PER_TILE} from './shore-profile.js';
 
 export const WATER_HEIGHT=-.18;
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -22,20 +22,20 @@ export function waterSurfaceGeometry(s){
 // abstract half-cell boundary. Construction and disconnected channels stay dry.
 export function canalArm(s,c,dx,dy){
  const a={x:c.x,y:c.y};let length=.5*c.progress,mouth=false;
- if(c.wet&&terrain(c.x+dx,c.y+dy)==='water'){
+ if(c.wet&&terrain(c.x+dx,c.y+dy,s)==='water'){
   mouth=true;
   // Continue far enough that the inlet visibly overlaps the continuous surface.
   // The scan is bounded to the one real neighbouring water cell.
-  length=.5;while(length<1.3&&shoreDistance(c.x+dx*length,c.y+dy*length,s)>-.1)length+=.025;
+  length=.5;while(length<1.3&&renderedShoreDistance(c.x+dx*length,c.y+dy*length,s)>-.12)length+=.025;
   length=Math.min(1.3,length+.08);
  }
  const b={x:c.x+dx*length,y:c.y+dy*length};
- return {a,b,mouth,startHeight:.095,endHeight:mouth?WATER_HEIGHT+.012:.095};
+ return {a,b,mouth,startHeight:c.wet?WATER_HEIGHT+.006:.095,endHeight:c.wet?WATER_HEIGHT+.006:.095};
 }
 
 export function canalSection(s,arm,t){
  const dx=arm.b.x-arm.a.x,dy=arm.b.y-arm.a.y,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len,x=arm.a.x+dx*t,y=arm.a.y+dy*t,height=arm.startHeight+(arm.endHeight-arm.startHeight)*t,halfWidth=.68+(arm.mouth?.12*t*t:0);
- const banks=[-1,-.65,.65,1].map(side=>{const X=x*TILE+nx*side*halfWidth,Z=y*TILE+ny*side*halfWidth,ground=surfaceElevation(X/TILE,Z/TILE,s),d=shoreDistance(X/TILE,Z/TILE,s);
+ const banks=[-1,-.65,.65,1].map(side=>{const X=x*TILE+nx*side*halfWidth,Z=y*TILE+ny*side*halfWidth,ground=visualSurfaceElevation(X/TILE,Z/TILE,s),d=renderedShoreDistance(X/TILE,Z/TILE,s);
   // The bank dissolves into the natural submerged bed. Never keep a raised tan
   // lip at the river surface or broaden it into an artificial delta/fan.
   const blend=clamp((.24-d)/.28),smooth=blend*blend*(3-2*blend),dryRim=Math.max(height+.015,ground+.012),wetRim=Math.min(height-.065,ground+.012),rim=dryRim*(1-smooth)+wetRim*smooth;

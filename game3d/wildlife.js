@@ -1,14 +1,15 @@
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT} from './water.js';
+import {closedAnimalLoft,animalFootPose} from './animal-anatomy.js';
 import {coatVariant,hasHairCoat,createCoatTextures} from './animal-coats.js';
 
 // Dimensions are metres. Author-created anatomy, not archaeological reconstructions.
 const species={
  fish:{height:0,length:.68,width:.085,depth:.17,stride:.64,fish:true,color:'#888f75',light:'#d0cdb0'},
- goat:{height:.67,length:.91,width:.205,depth:.245,neck:.24,head:.22,muzzle:.23,leg:.63,color:'#b29a77',light:'#e3d5b8',stride:.78,horns:true},
+ goat:{height:.67,length:.91,width:.19,depth:.22,neck:.22,head:.17,muzzle:.15,leg:.63,color:'#b29a77',light:'#e3d5b8',stride:.78,horns:true},
  gazelle:{height:.97,length:1.03,width:.23,depth:.30,neck:.42,head:.19,muzzle:.25,leg:.92,color:'#bc9464',light:'#ece0bf',stride:1.12,horns:true},
- cat:{height:.31,length:.58,width:.105,depth:.115,neck:.07,head:.125,muzzle:.065,leg:.29,color:'#a79c7a',light:'#d6cdb4',stride:.53,cat:true},
+ cat:{height:.31,length:.58,width:.105,depth:.105,neck:.07,head:.125,muzzle:.065,leg:.29,color:'#a79c7a',light:'#d6cdb4',stride:.53,cat:true},
  jackal:{height:.53,length:.96,width:.22,depth:.28,neck:.20,head:.21,muzzle:.32,leg:.50,color:'#a38965',light:'#cfbc93',stride:.85,jackal:true},
  bird:{height:.23,length:.38,width:.16,depth:.24,neck:.15,head:.13,muzzle:.10,leg:.20,color:'#928d77',light:'#c8c4aa',stride:.29,bird:true},
  mouse:{height:.095,length:.22,width:.075,depth:.12,neck:.025,head:.095,muzzle:.07,leg:.08,color:'#9b8a73',light:'#cabaa2',stride:.17,mouse:true}
@@ -25,11 +26,7 @@ export function createWildlife(B,scene,meshes=[]){
  function node(name,parent,x=0,y=0,z=0){const n=new B.TransformNode(name,scene);n.parent=parent;n.position.set(x,y,z);return n;}
  // Elliptical rings form a continuous softly curved surface with rounded ends.
  // Each ring is [z, centreY, radiusX, radiusY]. No box geometry is used.
- function loft(name,rings){const positions=[],indices=[],normals=[],uvs=[],segments=16;
-  for(let r=0;r<rings.length;r++){const [z,y,rx,ry]=rings[r];for(let i=0;i<=segments;i++){const t=i/segments*Math.PI*2;positions.push(Math.cos(t)*rx,y+Math.sin(t)*ry,z);uvs.push(i/segments,(z-rings[0][0])/(rings.at(-1)[0]-rings[0][0]));}}
-  for(let r=0;r<rings.length-1;r++)for(let i=0;i<segments;i++){const a=r*(segments+1)+i,b=a+segments+1;indices.push(a,b,a+1,a+1,b,b+1);}
-  B.VertexData.ComputeNormals(positions,indices,normals);const mesh=new B.Mesh(name,scene),data=new B.VertexData();data.positions=positions;data.indices=indices;data.normals=normals;data.uvs=uvs;data.applyToMesh(mesh);return mesh;
- }
+ function loft(name,rings){const mesh=new B.Mesh(name,scene),data=new B.VertexData();Object.assign(data,closedAnimalLoft(B,rings));data.applyToMesh(mesh);return mesh;}
  function part(key,parent,mat,build,x=0,y=0,z=0){const materialKey=`${key}@${mat.name}`;let source=sources.get(materialKey);if(!source){const geometry=geometrySources.get(key);source=geometry?geometry.clone(`wildlife-source-${materialKey}`,null,true):build(`wildlife-source-${key}`);if(!geometry)geometrySources.set(key,source);source.material=mat;source.isVisible=false;source.isPickable=false;source.receiveShadows=true;sources.set(materialKey,source);}
   const m=source.createInstance(`${parent.name}-${key.split(':').at(-1)}`);m.parent=parent;m.position.set(x,y,z);m.isVisible=true;m.isPickable=true;meshes.push(m);return m;
  }
@@ -60,11 +57,13 @@ export function createWildlife(B,scene,meshes=[]){
   if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
   part(`${kind}:torso`,body,fur,name=>loft(name,[[-L*.55,0,.003,.003],[-L*.49,.005,W*.45,D*.65],[-L*.36,.015,W*.84,D*.98],[-L*.15,0,W,D],[L*.06,-.015,W*.91,D*.91],[L*.27,.035,W*.79,D*.98],[L*.42,.05,W*.53,D*.78],[L*.49,.04,.003,.003]]));
-  ball(`${kind}:belly`,body,pale,0,-D*.43,L*.07,W*1.47,D*.99,L*.75);
+  // Underside pigment belongs to the closed torso skin, avoiding an intersecting belly shell.
   // Shoulders and the neck/head follow one articulated chain, rather than a head cube.
   const head=node(`${c.id}-head-pivot`,body,0,D*.23,L*.32),N=d.neck,H=d.head,M=d.muzzle;
-  const neck=part(`${kind}:neck`,head,fur,name=>loft(name,[[-.08,-.05,W*.48,D*.48],[0,.02,W*.53,D*.52],[.07,N*.43,W*.43,D*.47],[.16,N*.81,W*.34,D*.39],[.22,N,W*.28,D*.29],[.24,N+.025,.003,.003]]));
-  part(`${kind}:face`,head,fur,name=>loft(name,[[.10,N+.06,.003,.003],[.14,N+.06,H*.63,H*.70],[.24,N+.055,H*.72,H*.70],[.31,N+.015,H*.57,H*.48],[.33+M*.55,N-.015,H*.34,H*.28],[.34+M,N-.025,H*.25,H*.23],[.36+M,N-.025,.003,.003]]));
+  // One skin runs from the chest inside the torso through the neck to the muzzle.
+  // No pointed neck cap intersects a second pointed face (the old visible back hole).
+  part(`${kind}:face`,head,fur,name=>loft(name,[[-.12,-.08,W*.56,D*.59],[0,.015,W*.57,D*.61],[.09,N*.60,W*.43,D*.49],[.16,N+.045,H*.62,H*.68],[.235,N+.04,H*.70,H*.68],[.30,N+.005,H*.52,H*.46],[.33+M*.55,N-.018,H*.33,H*.28],[.35+M,N-.025,H*.24,H*.22]]));
+  if(d.cat){head.scaling.z=.64;head.position.z=L*.23;}
   ball(`${kind}:chin`,head,pale,0,N-H*.24,.29+M*.26,H*.80,H*.40,H*.80);
   if(!d.bird)ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*(d.cat?.24:.40),H*(d.cat?.17:.24),H*(d.cat?.14:.20));
   else tube(`${kind}:beak`,head,horn,[[0,N+.02,.28],[0,N,.36],[0,N-.018,.42]],.045);
@@ -74,39 +73,36 @@ export function createWildlife(B,scene,meshes=[]){
    ball(`${kind}:eye-glint`,head,glint,side*H*.70,N+H*.27,.294,H*.045,H*.045,H*.045);
    const ear=node(`${c.id}-ear-${side}`,head,side*H*.66,N+H*.49,.17);
    if(!d.bird){
-    const earSize=d.cat||d.jackal?.16:d.mouse?.10:.22;
+    const earSize=d.cat?.095:d.jackal?.15:d.mouse?.10:kind==='goat'?.17:.22;
     const leaf=part(`${kind}:ear`,ear,fur,name=>loft(name,[[0,0,.015,.01],[.005,earSize*.35,earSize*.26,.025],[.015,earSize*.72,earSize*.20,.018],[.028,earSize,.002,.002]]));
     ear.rotation.z=side*(d.cat||d.jackal?-.17:d.mouse?-.7:-.90);ears.push({node:ear,base:ear.rotation.z,side});leaf.rotation.y=side*.32;
     const inner=ball(`${kind}:ear-inner`,ear,pale,0,earSize*.48,.025,earSize*.27,earSize*.60,.012);inner.rotation.x=.1;
    }
-   if(d.horns){const tall=kind==='gazelle'?.48:.31;const points=Array.from({length:13},(_,i)=>{const t=i/12;return [side*(H*.50+.035*t),N+H*.64+t*tall,.15-.11*t*t+(kind==='gazelle'?.06:0)*Math.sin(t*Math.PI)];});tube(`${kind}:horn-${side}`,head,horn,points,kind==='gazelle'?.029:.038);}
+   if(d.horns){const tall=kind==='gazelle'?.48:.24;const points=Array.from({length:13},(_,i)=>{const t=i/12;return [side*(H*.50+.035*t),N+H*.64+t*tall,.15-.11*t*t+(kind==='gazelle'?.06:0)*Math.sin(t*Math.PI)];});tube(`${kind}:horn-${side}`,head,horn,points,kind==='gazelle'?.029:.038);}
   }
   if(d.cat||d.mouse||d.jackal)for(const side of [-1,1]){
    ball(`${kind}:muzzle-pad`,head,pale,side*H*.23,N-.03,.325+M*.65,H*.46,H*.32,H*.48);
    for(let i=0;i<3;i++)tube(`${kind}:whisker-${side}-${i}`,head,pale,[[side*H*.27,N-.015,.34+M*.60],[side*(H*.55+.035),N+(i-1)*.022,.35+M*.59],[side*(H*.8+.055),N+(i-1)*.035,.32+M*.57]],d.mouse?.0015:.0024,.12);
   }
-  if(kind==='gazelle')for(const side of [-1,1]){const stripe=ball(`${kind}:flank-stripe`,body,horn,side*W*.93,-D*.15,0,.025,.055,L*.65);stripe.rotation.x=-.03;ball(`${kind}:rump`,body,pale,side*W*.52,-.005,-L*.36,W*.80,D*.85,.18);}
-  if(kind==='goat')tube(`${kind}:beard`,head,pale,[[0,N-.11,.31],[0,N-.19,.29],[0,N-.27,.27]],.045);
-  if(d.jackal)ball(`${kind}:saddle`,body,horn,0,D*.65,-L*.03,W*1.5,.06,L*.66);
+  if(kind==='goat')tube(`${kind}:beard`,head,pale,[[0,N-.035,.34],[0,N-.11,.33],[0,N-.19,.31]],.025);
+  // Jackal saddle is pigment in its coat; there is no raised dark back plate.
   // Tabby markings belong to the shared coat texture; raised dark meshes
   // looked like separate objects sitting on the short-haired back.
-  if(d.cat)for(const side of [-1,1]){
-   ball(`${kind}:cheek`,head,pale,side*H*.46,N-.005,.22,H*.42,H*.48,H*.64);
-  }
+
   const legs=[];
   for(const side of [-1,1])for(const end of d.bird?[0]:[-1,1]){
    const leg=d.leg,hip=node(`${c.id}-hip-${side}-${end}`,body,side*W*.67,-D*.16,end*L*.30),upper=leg*.48,lower=leg*.49;
-   const limbMat=d.bird?horn:fur,r=d.bird?.018:d.mouse?.018:d.cat?.028:kind==='gazelle'?.048:.066;
-   part(`${kind}:upper-leg`,hip,limbMat,name=>B.MeshBuilder.CreateTube(name,{path:Array.from({length:9},(_,i)=>v(0,-upper*i/8,Math.sin(i/8*Math.PI)*r*.6)),radius:r,tessellation:12,cap:B.Mesh.CAP_ALL,radiusFunction:i=>r*(.62+.45*Math.sin(i/8*Math.PI))},scene));
+   const limbMat=d.bird?horn:fur,r=d.bird?.018:d.mouse?.018:d.cat?.024:kind==='gazelle'?.032:kind==='goat'?.043:.049;
+   part(`${kind}:upper-leg`,hip,limbMat,name=>B.MeshBuilder.CreateTube(name,{path:Array.from({length:9},(_,i)=>v(0,-upper*i/8,Math.sin(i/8*Math.PI)*r*.6)),radius:r,tessellation:12,cap:B.Mesh.CAP_ALL,radiusFunction:i=>r*(1.28-.68*i/8+.10*Math.sin(i/8*Math.PI))},scene));
    const knee=node(`${c.id}-knee-${side}-${end}`,hip,0,-upper,r*.3);
-   part(`${kind}:lower-leg`,knee,limbMat,name=>B.MeshBuilder.CreateTube(name,{path:Array.from({length:9},(_,i)=>v(0,-lower*i/8,Math.sin(i/8*Math.PI)*r*.35)),radius:r,tessellation:12,cap:B.Mesh.CAP_ALL,radiusFunction:i=>r*(.44+.18*Math.sin(i/8*Math.PI))},scene));
+   part(`${kind}:lower-leg`,knee,limbMat,name=>B.MeshBuilder.CreateTube(name,{path:Array.from({length:9},(_,i)=>v(0,-lower*i/8,Math.sin(i/8*Math.PI)*r*.35)),radius:r,tessellation:12,cap:B.Mesh.CAP_ALL,radiusFunction:i=>r*(.53-.15*i/8)},scene));
    const foot=ball(`${kind}:foot`,knee,d.cat||d.mouse?fur:horn,0,-lower,.03,r*(d.bird?1.4:1.7),r*.8,r*(d.bird?4:2.7));
    if(d.horns){ball(`${kind}:hoof-cleft`,knee,black,0,-lower+.008,.03+r*1.18,.009,r*.68,.018);}
    if(d.cat)for(let toe=0;toe<3;toe++)ball(`${kind}:toe`,knee,pale,(toe-1)*r*.45,-lower+.008,r*1.45,r*.48,r*.43,r*.70);
-   legs.push({hip,knee,foot,side,end});
+   legs.push({hip,knee,foot,side,end,upper,lower});
   }
   const tail=node(`${c.id}-tail`,body,0,D*.33,-L*.48),tailJoints=[];
-  const tailLength=d.cat?.48:d.jackal?.49:d.mouse?.25:d.bird?.20:.20;
+  const tailLength=d.cat?.48:d.jackal?.49:d.mouse?.25:d.bird?.20:.12;
   let previous=tail;for(let i=0;i<3;i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.024:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
   const wings=[];if(d.bird)for(const side of [-1,1]){const wing=node(`${c.id}-wing-${side}`,body,side*W*.60,.015,-.02);wing.rotation.z=side*.12;
    const cover=ball(`${kind}:wing-cover`,wing,pale,side*.08,0,-.015,.12,.16,.34);cover.rotation.z=side*.3;
@@ -146,16 +142,17 @@ export function createWildlife(B,scene,meshes=[]){
    }
    const rest=c.behavior==='resting',graze=c.behavior==='grazing'||c.behavior==='drinking',flying=d.bird&&c.behavior==='flying';
    a.body.position.y=ease(a.body.position.y,rest?d.height*.49:d.height+(flying?.23:0)+Math.cos(a.gait*2)*d.depth*.028*a.move);
-   a.body.scaling.y=1+Math.sin(t*1.7)*.009;
+   a.body.scaling.y=1+Math.sin(t*1.7)*.003;
    a.body.rotation.z=Math.sin(a.gait)*.016*a.move;
    a.head.rotation.x=ease(a.head.rotation.x,graze?(d.bird?.7:1.42)+Math.sin(t*2.3)*.035:rest?.25:Math.sin(t*.65)*.035);
    a.head.position.y=ease(a.head.position.y,d.depth*.23-(graze?(c.kind==='gazelle'?.30:c.kind==='goat'?.08:0):0));
    for(const ear of a.ears)ear.node.rotation.z=ease(ear.node.rotation.z,ear.base+ear.side*Math.max(0,Math.sin(t*2.1+ear.side)-.90)*.18);
    a.head.rotation.y=ease(a.head.rotation.y,c.headTurn??Math.sin(t*(d.cat?.8:.4))*(d.cat?.19:.07));
    a.head.rotation.z=ease(a.head.rotation.z,d.cat?Math.sin(t*.53)*.045:0);
-   for(const leg of a.legs){const offset=d.bird?(leg.side>0?0:Math.PI):leg.end>0?(leg.side>0?0:Math.PI):(leg.side>0?Math.PI*.62:Math.PI*1.62),step=Math.sin(a.gait+offset);
-    leg.hip.rotation.x=ease(leg.hip.rotation.x,rest?-1.02:step*(d.bird?.46:.31)*a.move);
-    leg.knee.rotation.x=ease(leg.knee.rotation.x,rest?1.82:Math.max(0,-step)*.52*a.move);
+   for(const leg of a.legs){const offset=d.bird?(leg.side>0?0:Math.PI):leg.end>0?(leg.side>0?0:Math.PI):(leg.side>0?Math.PI*.62:Math.PI*1.62);
+    const step=Math.sin(a.gait+offset),pose=d.bird?{hip:step*.46*a.move,knee:Math.max(0,-step)*.52*a.move}:animalFootPose(a.gait+offset,leg.upper,leg.lower,a.move,leg.end);
+    leg.hip.rotation.x=ease(leg.hip.rotation.x,rest?-1.02:pose.hip);
+    leg.knee.rotation.x=ease(leg.knee.rotation.x,rest?1.82:pose.knee);
     leg.foot.rotation.x=-leg.hip.rotation.x-leg.knee.rotation.x;
    }
    a.tail.rotation.x=ease(a.tail.rotation.x,d.cat?(c.behavior==='petting'?-1.25:-.93):d.jackal?.32:d.bird?.2:0);
