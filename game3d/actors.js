@@ -30,6 +30,7 @@ export function actorViewFrame(state){
  }
  return {citizens:[...visible.values()],pettingPairs};
 }
+export const cityAnimalVisible=animal=>!['bird','mouse','rat'].includes(animal.kind);
 export function actorViewCitizens(state){return actorViewFrame(state).citizens;}
 export function residentVisual(c,state){
  const look=residentAppearance(c,state.buildings||[]);
@@ -59,7 +60,7 @@ export async function createGameActors(B,scene,materials){
  const [residentSource,sheepSource]=containers;
  const wildlife=createWildlife(B,scene,meshes);
  const [goats,imported,ambient]=await Promise.all([
-  createGameGoats(B,scene,meshes).catch(error=>{console.warn('Using legacy goats until the new assets are available.',error);return null;}),
+  createGameGoats(B,scene,meshes,{variants:['downloaded']}).catch(error=>{console.warn('Downloaded goats unavailable; herd remains in simulation.',error);return null;}),
   createImportedFauna(B,scene,meshes).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
   createAmbientFauna(B,scene,meshes).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;})]);
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
@@ -348,7 +349,7 @@ export async function createGameActors(B,scene,materials){
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
   imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed});
-  wildlife.update(state,[...fauna.filter(c=>c.kind!=='sheep'&&(!goats||c.kind!=='goat')&&!imported?.supports(c.kind)),...(funeralView(state)?.jackals||[])],dt,{paused,speed});funeralProps(state);
+  wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&c.kind!=='goat'&&!imported?.supports(c.kind)),...(funeralView(state)?.jackals||[])],dt,{paused,speed});funeralProps(state);
  }
  function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();wildlife.dispose();for(const c of containers)c.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
  return {update,dispose,meshes,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||wildlife.rootFor(selection);}};

@@ -1,3 +1,5 @@
+import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
+import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js';
 import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {createArchitecture} from './architecture.js';
@@ -13,8 +15,8 @@ const progress=b=>b.construction?Math.floor(Math.max(0,Math.min(1,constructionPr
 const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgrade');
 
 // The adapter only reads simulation objects. Templates live outside the game state.
-export function gameBuildingSignature(b,state){
- return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):''].join('|');
+export function gameBuildingSignature(b,state,shoreContext){
+ return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?'barley':'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):'',foundationSignature(b,state,shoreContext)].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -45,6 +47,7 @@ export function mergeCourtyardAsset(B,container){
 
 export async function createGameBuildings(B,scene,materials){
  const container=await B.SceneLoader.LoadAssetContainerAsync('',HOME_ASSET,scene,undefined,'.glb');
+ const cropAssets=await loadFieldCrops(B,scene);
  const originals=mergeCourtyardAsset(B,container),templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
@@ -130,7 +133,7 @@ export async function createGameBuildings(B,scene,materials){
   }
   return result;
  }
- function acquire(b,key,state){
+ function acquire(b,key,state,shoreContext){
   let t=templates.get(key);if(t){t.users++;return t;}
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
   if(b.construction?.kind==='new'){
@@ -160,7 +163,8 @@ export async function createGameBuildings(B,scene,materials){
    }
   }else{
    if(b.type==='field'||b.type==='bridge'||b.type==='house'||b.type==='canal'){
-    const base=createDistrictBuilding(B,scene,{...b,id:'template'},materialSet);
+    const adapted=cropAssets&&usesBarleyCards(b)?{...b,crop:{...b.crop,sown:0}}:b;
+    const base=createDistrictBuilding(B,scene,{...adapted,id:'template'},materialSet);
     for(const mesh of base.meshes){mesh.unfreezeWorldMatrix();mesh.parent=root;sources.push(mesh);}
     base.root.dispose();
    }else for(const mesh of createArchitecture(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
@@ -173,11 +177,13 @@ export async function createGameBuildings(B,scene,materials){
    if(!clipped.indices.length){mesh.dispose();return false;}
    const geometry=new B.VertexData();Object.assign(geometry,clipped);geometry.applyToMesh(mesh);return true;
   });
+  if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
    for(let index=0;index<4;index++){
     const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:.22,height:.2,depth:.04},scene);lamp.position.set(.22+index*.34,1.08,.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
+  for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}
   for(const source of sources){source.isVisible=false;source.isPickable=false;source.checkCollisions=false;source.receiveShadows=true;source.computeWorldMatrix(true);}
   t={root,sources,users:1};templates.set(key,t);return t;
  }
@@ -190,16 +196,16 @@ export async function createGameBuildings(B,scene,materials){
  function ghostMaterial(base,allowed){
   let pair=ghostMaterials.get(base);if(!pair){pair=new Map();ghostMaterials.set(base,pair);}if(pair.has(allowed))return pair.get(allowed);
   const mat=finish(`preview-${allowed?'allowed':'blocked'}-${base.name}`,allowed?'#9cd0ac':'#e37465',base);
-  mat.alpha=.34;mat.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHABLEND;mat.emissiveColor=B.Color3.FromHexString(allowed?'#35634a':'#772e24');mat.backFaceCulling=base.backFaceCulling;mat.sideOrientation=base.sideOrientation;mat.disableDepthWrite=true;
+  mat.alpha=.34;mat.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHABLEND;mat.emissiveColor=B.Color3.FromHexString(allowed?'#35634a':'#772e24');mat.backFaceCulling=base.backFaceCulling;mat.sideOrientation=base.sideOrientation;mat.useAlphaFromAlbedoTexture=!!base.useAlphaFromAlbedoTexture;mat.twoSidedLighting=base.twoSidedLighting;mat.disableDepthWrite=true;
   pair.set(allowed,mat);return mat;
  }
  function clearPreview(){if(previewRecord){previewRecord.root.dispose();previewRecord=null;}}
  function preview(input,state,options={}){
   if(disposed)return null;if(!input){clearPreview();return null;}
-  const b={...input,level:1,construction:undefined},signature=gameBuildingSignature(b,state),allowed=options.allowed!==false;
+  const b={...input,level:1,construction:undefined},shoreContext=foundationContext(state),signature=gameBuildingSignature(b,state,shoreContext),allowed=options.allowed!==false;
   if(!previewRecord||previewRecord.signature!==signature){
    clearPreview();let template=previewTemplates.get(signature);
-   if(template){previewTemplates.delete(signature);previewTemplates.set(signature,template);}else{template=acquire(b,signature,state);previewTemplates.set(signature,template);}
+   if(template){previewTemplates.delete(signature);previewTemplates.set(signature,template);}else{template=acquire(b,signature,state,shoreContext);previewTemplates.set(signature,template);}
    // A small LRU retains nearby shore clips and all three house variants without
    // turning a long mouse sweep into an unbounded cache of templates.
    while(previewTemplates.size>8){const oldest=previewTemplates.keys().next().value;previewTemplates.delete(oldest);release(oldest);}
@@ -224,16 +230,16 @@ export async function createGameBuildings(B,scene,materials){
  }
  function sync(state){
   if(disposed)return;
-  const seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
+  const shoreContext=foundationContext(state),seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
   for(const b of state.buildings||[]){
    // Landscape owns connected canal beds, wetness, banks and construction.
    // The legacy standalone side walls would span across those real channels.
    if(b.type==='canal')continue;
-   const key=buildingKey(b),signature=gameBuildingSignature(b,state);seen.add(key);
+   const key=buildingKey(b),signature=gameBuildingSignature(b,state,shoreContext);seen.add(key);
    let record=active.get(key);
    if(record&&(record.signature!==signature||record.x!==b.x||record.y!==b.y)){remove(key);record=null;}
    if(!record){
-    const template=acquire(b,signature,state),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
+    const template=acquire(b,signature,state,shoreContext),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
     placeRoot(root,b);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
      const mesh=source.metadata?.homeLamp?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(source.metadata?.homeLamp)mesh.receiveShadows=true;
@@ -249,5 +255,5 @@ export async function createGameBuildings(B,scene,materials){
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
  }
- return {sync,meshes,preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);for(const source of originals)source.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);for(const source of originals)source.dispose();cropAssets?.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

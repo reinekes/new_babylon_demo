@@ -37,8 +37,8 @@ import vm from 'node:vm';
 const sandbox={console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
 const B=sandbox.BABYLON;
-function loadGeometry(scene){
- const bytes=readFileSync(new URL('../assets/art-courtyard/models/date-palm.glb',import.meta.url));
+function loadGeometry(scene,file='date-palm.glb'){
+ const bytes=readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url));
  const jsonSize=bytes.readUInt32LE(12),g=JSON.parse(bytes.subarray(20,20+jsonSize)),binary=bytes.subarray(28+jsonSize);
  const container=new B.AssetContainer(scene),root=new B.TransformNode('gltf-reflection',scene);root.scaling.z=-1;container.transformNodes.push(root);
  const mats=g.materials.map(m=>new B.PBRMaterial(m.name,scene));container.materials.push(...mats);
@@ -62,14 +62,15 @@ function loadGeometry(scene){
 test('real GLB palms share baked geometry; canals, road work and trade update a live mesh list read-only',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;let loads=0;
- B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;assert.equal(root+file,'assets/art-courtyard/models/date-palm.glb');return loadGeometry(scene);};
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^valley-(?:dry-grass-[123]|reed-[123]|date-palm)\.glb$/);return loadGeometry(scene,file);};
  let view;const s=createGame();s.roads=[{id:'local',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2}];
  let canalX=0;while(terrain(canalX,8)==='water'||terrain(canalX+1,8)!=='water')canalX++;
  s.buildings.push({type:'canal',x:canalX,y:8,level:1});
  s.trade.caravan={x:12.6,y:8.1,transport:'river',stock:{food:30},route:[],routeIndex:0};
  const before=JSON.stringify(s);
  try{
-  view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,1);assert.equal(JSON.stringify(s),before);
+  view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,7);assert.equal(JSON.stringify(s),before);
+  assert.ok(live.some(m=>m.name.startsWith('valley-grass-')&&m.sourceMesh));assert.ok(live.some(m=>m.name.startsWith('valley-reed-')&&m.sourceMesh));assert.ok(!live.some(m=>['volumetric-riparian-colonies','deposit-reed-bed'].includes(m.name)),'imported plants replace old grass ribbons and reed cylinders');
   for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets','living-river','saved-lakes'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
   const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);assert.ok(palms.every(m=>m.isEnabled()));assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);
   for(const m of palms){assert.equal(m.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);assert.ok(m.getWorldMatrix().determinant()>0);}
@@ -135,7 +136,7 @@ test('resource placement uses four straight rectangular edges with no circular f
 
 test('real gathering tree falls at saved target, leaves a stump and recovers without new geometry or save edits',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
- const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async()=>loadGeometry(scene);let view;
+ const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
  const s=createGame();s.gathering={features:[{id:'tree:test:0',kind:'tree',x:4,y:5,health:1,felledAt:null,recoverAt:null},{id:'rock:test:0',kind:'rock',x:5,y:5,health:1,felledAt:null,recoverAt:null}],jobs:[],kills:[]};
  try{const before=JSON.stringify(s);view=await createGameLandscape(B,scene,s,materials);const tree=scene.getTransformNodeByName('gathering-feature-tree:test:0'),parts=view.meshes.filter(m=>m.name.startsWith('working-tree-')),stump=view.meshes.find(m=>m.name==='felled-tree-stump-tree:test:0'),rock=view.meshes.find(m=>m.name==='working-rock-rock:test:0');
   assert.equal(tree.position.x,24);assert.equal(tree.position.z,30);assert.ok(parts.length);assert.equal(stump.isEnabled(),false);assert.equal(JSON.stringify(s),before);const count=scene.meshes.length;
@@ -174,7 +175,7 @@ test('ground stock yard avoids real roads and building footprints without editin
 });
 test('changing actual stock recreates only display instances and disposes old piles',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;
- B.SceneLoader.LoadAssetContainerAsync=async()=>loadGeometry(scene);let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
  try{const s=createGame();view=await createGameLandscape(B,scene,s,materials);const old=view.meshes.filter(m=>m.metadata?.goods&&!m.parent);assert.ok(old.length);for(const m of old){m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-m.metadata.goods.supportY)<1e-6);if(!m.metadata.goods.layer)assert.ok(Math.abs(b.minimumWorld.y-surfaceElevation(m.position.x/TILE,m.position.z/TILE,s))<1e-6);}
   const src=old[0].sourceMesh,before=JSON.stringify(s);view.update(s,3);assert.equal(JSON.stringify(s),before);assert.ok(view.meshes.includes(old[0]));
   s.resources.food+=75;const changed=JSON.stringify(s);view.update(s,4);assert.equal(JSON.stringify(s),changed);assert.ok(old.every(m=>m.isDisposed()));assert.ok(view.meshes.some(m=>m.sourceMesh===src));assert.equal(src.isDisposed(),false);
@@ -218,7 +219,7 @@ test('expanded monument clears palms and tuft colonies across all four cells; le
 });
 test('building a 2 by 2 platform hides overlapping gathering trees, stones and deposit fixtures then restores them on removal',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
- const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async()=>loadGeometry(scene);let view;
+ const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
  const s=createGame(),z={type:'ziggurat',x:28,y:1,footprint:2,level:1};s.world.deposits=[{kind:'stone',x:29,y:2},{kind:'reed',x:28,y:2},{kind:'forest',x:29,y:1}];s.gathering={features:[{id:'platform-tree',kind:'tree',x:29,y:2,health:1,felledAt:null,recoverAt:null},{id:'platform-rock',kind:'rock',x:28,y:2,health:1}],jobs:[],kills:[]};
  try{
   view=await createGameLandscape(B,scene,s,materials);assert.ok(scene.getTransformNodeByName('gathering-feature-platform-tree'));assert.ok(view.meshes.some(m=>m.name==='deposit-stone-pile'));

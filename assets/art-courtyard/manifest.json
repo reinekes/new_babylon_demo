@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 10360,
-      "sha256": "15c42b78e7c9d17a37886123293dd21a6ee267fc72954efe2ecc596f28b14eae"
+      "bytes": 12858,
+      "sha256": "361baf1d70173e524de09f7c870d809f35e54ca0d71924d9153c42dae66a9c62"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 7860,
-      "sha256": "4f00a78fdb22bf2cce409855c782e0fe26557ae5fd127464de44281d05057d45"
+      "bytes": 10306,
+      "sha256": "6c621736d171fd02840fa495474e758f98bf80778d1d15693205199cf98abce0"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -234,6 +234,78 @@
         "Walk_Loop",
         "Idle_Loop"
       ]
+    },
+    {
+      "file": "models/valley-barley.glb",
+      "bytes": 92432,
+      "sha256": "13292796c892ba54a1926c74db28288a93d884edb5b8aefbc7ca330c4c0a9b40",
+      "triangles": 8,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-date-palm.glb",
+      "bytes": 3167732,
+      "sha256": "7c190134e191f9637d1e684c9c05c94800c1cf8c8bff7a31a16c4537be58b8fb",
+      "triangles": 9941,
+      "meshes": 4,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-dry-grass-1.glb",
+      "bytes": 463436,
+      "sha256": "0623698d3d8d1389984fdb2c897bee5191a6978f4efefc227c799586cf1bbd89",
+      "triangles": 20,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-dry-grass-2.glb",
+      "bytes": 462300,
+      "sha256": "d8df4a2baf7c38387a75ba90c4a443f5b8a783d3035bef32114bd25c5d45a45e",
+      "triangles": 8,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-dry-grass-3.glb",
+      "bytes": 463452,
+      "sha256": "7a463cc2cbb211a33be9405859677f3ac63313b81cc66bb647b99873c7c63852",
+      "triangles": 20,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-reed-1.glb",
+      "bytes": 1056420,
+      "sha256": "199d13f5cd2e9e084e3f5ed9c3848f637082219c3c1054bc934accaa9bf5e944",
+      "triangles": 331,
+      "meshes": 2,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-reed-2.glb",
+      "bytes": 1056616,
+      "sha256": "c1ec26132602e6f63a332e120da17e47a4cf07ec01bff4d6521f603ea4be608a",
+      "triangles": 327,
+      "meshes": 2,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/valley-reed-3.glb",
+      "bytes": 1055284,
+      "sha256": "8996a8e85234fbd82dc930a112aa36f283945768ef99b6c47f9ebaa736d2a452",
+      "triangles": 296,
+      "meshes": 2,
+      "bones": 0,
+      "clips": []
     },
     {
       "file": "sources/README.md",
