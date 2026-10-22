@@ -1,12 +1,19 @@
 """Original New Babylon goat: implicit sculpt, continuous skin, authored rig/clips.
 Run with Python + numpy + Pillow. No external assets or network are used.
 Model coordinates: metres, Y up, +Z forward. Rebuild is deterministic.
+Use --step .025 --output assets/art-courtyard/models/goat-authored-lod.glb
+for a lighter city mesh; the default recreates the original studio asset.
 """
 from pathlib import Path
-import numpy as np, math, json, struct, io
+import numpy as np, math, json, struct, io, argparse
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'assets/art-courtyard/models/goat-authored.glb'
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--step',type=float,default=.015,help='Implicit sculpt grid spacing in metres (default: .015).')
+parser.add_argument('--output',type=Path,default=ROOT/'assets/art-courtyard/models/goat-authored.glb',help='Destination GLB; defaults to the original studio model.')
+args=parser.parse_args()
+if not math.isfinite(args.step) or args.step<=0:parser.error('--step must be finite and positive')
+OUT=args.output
 bones=[]
 def bone(name,p,parent=0):
  i=len(bones);bones.append(dict(name=name,p=np.array(p,dtype=float),parent=parent));return i
@@ -63,7 +70,7 @@ def distances(P,weights=False):
    W*=h[...,None];W[...,b]+=1-h
  return (d,W) if weights else d
 # 1.5cm sculpt grid: the offline extraction cost never enters the game loop.
-step=.015;lo=np.array([-.27,-.025,-.68]);hi=np.array([.27,1.48,.86]);dims=np.ceil((hi-lo)/step).astype(int)+1
+step=args.step;lo=np.array([-.27,-.025,-.68]);hi=np.array([.27,1.48,.86]);dims=np.ceil((hi-lo)/step).astype(int)+1
 axis=[lo[i]+np.arange(dims[i])*step for i in range(3)]
 P=np.stack(np.meshgrid(*axis,indexing='ij'),axis=-1);D=distances(P)
 base=np.stack(np.meshgrid(np.arange(dims[0]-1),np.arange(dims[1]-1),np.arange(dims[2]-1),indexing='ij'),axis=-1).reshape(-1,3)
@@ -86,6 +93,21 @@ for cell in base:
   if len(ids)==3:faces.append(ids)
   else:faces.extend([[ids[0],ids[1],ids[2]],[ids[1],ids[3],ids[2]]])
 V=np.array(verts);F=np.array(faces,dtype=np.uint32)
+# A coarse grid can isolate a minute beard/tail tip. Retain the connected main
+# skin only; horns below use their original smooth parametric rings at every LOD.
+if step>.015:
+ parent=np.arange(len(V))
+ def root(i):
+  while parent[i]!=i:
+   parent[i]=parent[parent[i]];i=parent[i]
+  return i
+ for a,b,c in F:
+  a=root(a);parent[root(b)]=a;parent[root(c)]=a
+ labels=np.array([root(i) for i in range(len(V))]);ids,counts=np.unique(labels,return_counts=True);keep=labels==ids[np.argmax(counts)]
+ removed=np.count_nonzero(~keep)
+ if removed:
+  remap=np.cumsum(keep)-1;F=remap[F[keep[F].all(axis=1)]].astype(np.uint32);V=V[keep]
+  print('REMOVED isolated coarse-grid tip vertices',removed)
 # Correct winding against the scalar-field outward gradient.
 eps=.0005;N=np.stack([(distances(V+np.eye(3)[k]*eps)-distances(V-np.eye(3)[k]*eps))/(2*eps) for k in range(3)],axis=1);N/=np.maximum(1e-12,np.linalg.norm(N,axis=1))[:,None]
 fn=np.cross(V[F[:,1]]-V[F[:,0]],V[F[:,2]]-V[F[:,0]]);flip=(fn*N[F].mean(axis=1)).sum(axis=1)<0;F[flip]=F[flip][:,[0,2,1]]

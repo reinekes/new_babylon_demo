@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 4501,
-      "sha256": "ee47e4ca83a5f5c266c3f7a7df9fc5713359e2aaa33cc848c955d557e455393d"
+      "bytes": 5995,
+      "sha256": "52e51f4bd0577524810ea613b7c11724d873b717450974f65fd7b14ee5930a69"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 3690,
-      "sha256": "1867fef799c95d41488d148ac7ba09b512412af103a82f9864a5279481e881d4"
+      "bytes": 4458,
+      "sha256": "20e5ee24127fa81a5886d958af4d10ba847ec76b738542612016db9bebc72b3e"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -29,6 +29,60 @@
       "meshes": 4,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "models/goat-authored-lod.glb",
+      "bytes": 1649492,
+      "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+      "triangles": 32684,
+      "meshes": 1,
+      "bones": 18,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest"
+      ]
+    },
+    {
+      "file": "models/goat-authored.glb",
+      "bytes": 4000280,
+      "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+      "triangles": 83788,
+      "meshes": 1,
+      "bones": 18,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest"
+      ]
+    },
+    {
+      "file": "models/goat-downloaded.glb",
+      "bytes": 11857612,
+      "sha256": "dca8e24b21d23db492499fd0bd126bb77b1c44b01870ad7c6eea0fbec45dbc25",
+      "triangles": 41346,
+      "meshes": 5,
+      "bones": 34,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest",
+        "SourceRigAction"
+      ]
+    },
+    {
+      "file": "models/goat.glb",
+      "bytes": 29877228,
+      "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+      "triangles": 41346,
+      "meshes": 5,
+      "bones": 34,
+      "clips": [
+        "rigAction"
+      ]
     },
     {
       "file": "models/resident-lod.glb",

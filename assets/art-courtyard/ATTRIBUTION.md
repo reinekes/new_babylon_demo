@@ -31,3 +31,12 @@ Historical basis: [Penn Museum — Adaptation and Change](https://www.penn.museu
 ## Runtime tools
 
 Babylon.js9.31.0 and babylonjs-loaders9.31.0 from official npm, Apache2.0; vendor license in ../vendor/BABYLON-LICENSE.txt. Blender4.5.3 Python official PyPI bpy used only as an isolated conversion tool; it is not downloaded or run by the website. All shipped runtime assets are local; no external requests are needed.
+
+
+## Goats — original project model and GerardoA400 / CC BY 4.0
+
+**Original New Babylon goat:** `models/goat-authored.glb` and its city LOD `models/goat-authored-lod.glb`; reproducible source `scripts/art-courtyard/create_goat.py` in the repository. Original project geometry, skeleton, color and Idle/Walk/Graze/Rest motions; no purchased or downloaded goat geometry used in this variant.
+
+**Goat by GerardoA400:** [model](https://sketchfab.com/3d-models/goat-5d7431517b634f4e9e8c0f3729cd9c59), [author](https://sketchfab.com/GerardoA400), licensed [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Downloaded original is retained as `models/goat.glb`; city adaptation is `models/goat-downloaded.glb`. Attribution/source/license are also preserved inside the GLB.
+
+New Babylon changes to the downloaded model: added a metre-scale/grounded wrapper, reduced embedded textures to at most1024pixels; geometry, original materials, weights and skin bind matrices retained. Original `rigAction` retained verbatim as `SourceRigAction` and `Idle`. The source clip is stationary head/look-around motion, NOT a verified walking clip. `Walk`, `Graze` and `Rest` are new project-added skeletal motions; Walk includes per-frame ground correction and an estimated0.39m cycle. Downloaded Rest is a standing drowse, while the project model folds its legs. Reproduction: `scripts/art-courtyard/prepare_downloaded_goat.py`. No exact ancient goat breed is claimed.
