@@ -9,6 +9,8 @@ import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {createGameGoats} from './goats.js';
+import {createImportedFauna} from './imported-fauna.js';
+import {createAmbientFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
 import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity,RESIDENT_STANCE} from './resident-motion.js';
 export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
@@ -48,13 +50,18 @@ export async function createGameActors(B,scene,materials){
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
-  const loaded=await Promise.allSettled(['resident','sheep'].map(name=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${name}.glb`,scene,undefined,'.glb')));
+  const load=name=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${name}.glb?v=city-creatures-20261022-1`,scene,undefined,'.glb');
+  const resident=async()=>{try{const asset=await load('sumer-people');if(['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip)))return asset;asset.dispose();throw Error('Adapted civilian clips missing');}catch(error){console.warn('Adapted civilian unavailable; using original resident.',error);return load('resident');}};
+  const loaded=await Promise.allSettled([resident(),load('sheep')]);
   for(const r of loaded)if(r.status==='fulfilled')containers.push(r.value);
   const failed=loaded.find(r=>r.status==='rejected');if(failed)throw failed.reason;
  }catch(error){for(const c of containers)c.dispose();throw error;}
  const [residentSource,sheepSource]=containers;
  const wildlife=createWildlife(B,scene,meshes);
- const goats=await createGameGoats(B,scene,meshes).catch(error=>{console.warn('Using legacy goats until the new assets are available.',error);return null;});
+ const [goats,imported,ambient]=await Promise.all([
+  createGameGoats(B,scene,meshes).catch(error=>{console.warn('Using legacy goats until the new assets are available.',error);return null;}),
+  createImportedFauna(B,scene,meshes).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
+  createAmbientFauna(B,scene,meshes).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;})]);
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
  const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#829e91'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952');
@@ -340,8 +347,9 @@ export async function createGameActors(B,scene,materials){
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
-  wildlife.update(state,[...fauna.filter(c=>c.kind!=='sheep'&&(!goats||c.kind!=='goat')),...(funeralView(state)?.jackals||[])],dt,{paused,speed});funeralProps(state);
+  imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed});
+  wildlife.update(state,[...fauna.filter(c=>c.kind!=='sheep'&&(!goats||c.kind!=='goat')&&!imported?.supports(c.kind)),...(funeralView(state)?.jackals||[])],dt,{paused,speed});funeralProps(state);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);people.clear();sheep.clear();goats?.dispose();wildlife.dispose();for(const c of containers)c.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
- return {update,dispose,meshes,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||wildlife.rootFor(selection);}};
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();wildlife.dispose();for(const c of containers)c.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ return {update,dispose,meshes,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

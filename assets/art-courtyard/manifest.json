@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 5995,
-      "sha256": "52e51f4bd0577524810ea613b7c11724d873b717450974f65fd7b14ee5930a69"
+      "bytes": 10360,
+      "sha256": "15c42b78e7c9d17a37886123293dd21a6ee267fc72954efe2ecc596f28b14eae"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 4458,
-      "sha256": "20e5ee24127fa81a5886d958af4d10ba847ec76b738542612016db9bebc72b3e"
+      "bytes": 7860,
+      "sha256": "4f00a78fdb22bf2cce409855c782e0fe26557ae5fd127464de44281d05057d45"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -22,6 +22,32 @@
       "clips": []
     },
     {
+      "file": "models/cat-sitting.glb",
+      "bytes": 3289240,
+      "sha256": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3",
+      "triangles": 7372,
+      "meshes": 3,
+      "bones": 63,
+      "clips": [
+        "Sit",
+        "Groom",
+        "SourceOriginal"
+      ]
+    },
+    {
+      "file": "models/cat-walk.glb",
+      "bytes": 667472,
+      "sha256": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917",
+      "triangles": 4575,
+      "meshes": 4,
+      "bones": 60,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal"
+      ]
+    },
+    {
       "file": "models/date-palm.glb",
       "bytes": 2793460,
       "sha256": "acf22f5fd38d6d734ad99c442095d63ee1f8af26133b1dd247a7884e85d0b9ea",
@@ -29,6 +55,20 @@
       "meshes": 4,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "models/gazelle-downloaded.glb",
+      "bytes": 3731492,
+      "sha256": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922",
+      "triangles": 8652,
+      "meshes": 1,
+      "bones": 31,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Rest",
+        "SourceOriginal"
+      ]
     },
     {
       "file": "models/goat-authored-lod.glb",
@@ -85,6 +125,64 @@
       ]
     },
     {
+      "file": "models/imported-boar.glb",
+      "bytes": 907576,
+      "sha256": "319b1260714d0527935c28299e3e9ba6942c32fd90cbfa28ab21a0385caf3d88",
+      "triangles": 13484,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/imported-fox.glb",
+      "bytes": 814576,
+      "sha256": "11cd9a77ec9e4fdea0d847d045a543df8683ddabd1092179569958f7f98a062f",
+      "triangles": 14192,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/imported-goose.glb",
+      "bytes": 770224,
+      "sha256": "c4f1f546a69f4d45ab1d666cf7bfcd07300426d9fff5053620dddd62e9fefa27",
+      "triangles": 10336,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/imported-lioness.glb",
+      "bytes": 1009076,
+      "sha256": "6861c6c2d8559692a89d2346a4697ad5536e063550c01dd2988e4c177a0c9881",
+      "triangles": 16474,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/imported-orange-bird.glb",
+      "bytes": 570772,
+      "sha256": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d",
+      "triangles": 5062,
+      "meshes": 1,
+      "bones": 43,
+      "clips": [
+        "anim"
+      ]
+    },
+    {
+      "file": "models/imported-sky-birds.glb",
+      "bytes": 195568,
+      "sha256": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04",
+      "triangles": 810,
+      "meshes": 10,
+      "bones": 10,
+      "clips": [
+        "Scene"
+      ]
+    },
+    {
       "file": "models/resident-lod.glb",
       "bytes": 325368,
       "sha256": "c8c6c2dc43c0b1f525c8d62f12c3e9e38ce6eb178fecedcc30ddb87046822f9f",
@@ -123,6 +221,18 @@
         "StopGraze",
         "StopWalk",
         "Walk"
+      ]
+    },
+    {
+      "file": "models/sumer-people.glb",
+      "bytes": 2356068,
+      "sha256": "4570891336403f614b351e7796bb672b35b87773c62b7ef4b3123f61fea0e57a",
+      "triangles": 16124,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
       ]
     },
     {

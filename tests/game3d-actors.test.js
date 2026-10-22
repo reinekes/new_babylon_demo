@@ -163,7 +163,7 @@ test('petting pairs use visible child positions once and the matching cat receiv
  const before=JSON.stringify(s),paired=actorViewFrame(s);assert.equal(JSON.stringify(s),before);
  assert.equal(paired.pettingPairs.length,1);assert.equal(paired.pettingPairs[0].citizenId,adult.id);assert.equal(paired.citizens.find(c=>c.id===adult.id).activity.kind,'petting');
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>mockContainer(scene,file.startsWith('resident')?'resident':'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{if(file.startsWith('cat-'))throw Error('exercise legacy cat fallback');return mockContainer(scene,file.startsWith('resident')?'resident':'sheep');};
  try{view=await createGameActors(B,scene,{});view.update(s,1/60);const root=view.rootFor({animalId:cat.id}),tail=root.getChildTransformNodes().find(n=>n.name===`${cat.id}-tail`);assert.equal(tail.rotation.x,-1.25,'the exact paired cat gets the petting pose');assert.equal(JSON.stringify(s),before);}
  finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
@@ -422,5 +422,12 @@ test('inspiration remains a tiny glow and worn clothing changes the actual garme
   view=await createGameActors(B,scene,{});const s=createGame(),c={...s.citizens.find(c=>c.age>=16),age:30,phase:'toStore',clothing:100,calling:'builder',cargo:{},buildCargo:{}};s.citizens=[c];
   for(let i=0;i<12;i++){view.update(s,.05);const root=view.rootFor({citizenId:c.id}),marker=root.getChildMeshes().find(m=>m.name.endsWith('-inspired'));assert.ok(marker.scaling.x<=.08&&marker.scaling.y<=.12,'persistent inspiration must never inflate into a large sphere');}
   const root=view.rootFor({citizenId:c.id}),cloth=root.getChildMeshes().find(m=>m.material?.name.startsWith('citizen-cloth')).material,clean=cloth.albedoColor.asArray();c.clothing=8;view.update(s,.05);assert.notDeepEqual(cloth.albedoColor.asArray(),clean);assert.equal(root.getChildMeshes().some(m=>m.name==='clothing-patch'),false,'wear belongs to the skinned material, never a floating rectangle');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('adapted Sumerian civilian is the default city resident and retains work, cargo, pause and identity',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync,loaded=[];
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{loaded.push(file);return file.startsWith('sumer-people')?originalLoader.call(B.SceneLoader,'',new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/sumer-people.glb',import.meta.url))),scene,undefined,'.glb'):mockContainer(scene,'sheep');};
+ let view;try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='working';c.role='builder';const before=JSON.stringify(s);view.update(s,.05);scene.render();assert.equal(JSON.stringify(s),before);assert.ok(loaded.some(f=>f.startsWith('sumer-people')),'new civilian must load by default');const root=view.rootFor({citizenId:c.id});assert.ok(root.getChildMeshes().some(m=>m.skeleton?.bones.length===53));assert.ok(root.getChildMeshes().some(m=>/Sumer|civilian/i.test(m.name)));c.cargo={wood:3};c.phase='toStore';c.x+=.015;view.update(s,.05);scene.render();assert.ok(root.getChildMeshes().some(m=>m.name.includes('cargo')));const arm=root.getChildTransformNodes().find(n=>/upperarm_r$/.test(n.name));view.update(s,.05,{paused:true});const frozen=arm.rotationQuaternion.asArray();scene.render();assert.deepEqual(arm.rotationQuaternion.asArray(),frozen);assert.equal(root.metadata.citizenId,c.id);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
