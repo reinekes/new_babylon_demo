@@ -395,19 +395,19 @@ function advanceCitizen(s,c,dt,ctx){
     const needs=artisanNeeds(b),k=Object.keys(needs).find(k=>k!=='water'&&needs[k]>1e-8);
     if(k){const incoming=s.citizens.filter(p=>p.craftSite===c.work&&p.craftMaterial===k).reduce((n,p)=>n+craftLoad(p),0);if(needs[k]>incoming+1e-8){const store=closestStock(s,ctx,c.work,k);if(store){c.store=store;c.craftSite=c.work;c.craftMaterial=k;c.craftAmount=0;startTrip(s,c,store,'toCraftSupply',ctx);}}return;}
     if(needs.water>1e-8)return;
-    workArtisan(b,remaining*workRate(c,'production'));return;
+    workArtisan(b,remaining*workRate(c,b.type));return;
    }
    if(b.type==='kiln'){const v=b.firing;if(v.hot)return;if(!v.ready){const needs=kilnNeeds(b),k=['brick','reed'].find(k=>needs[k]>1e-8);if(k){c.workElapsed=0;const incoming=s.citizens.filter(p=>p.craftSite===c.work&&p.craftMaterial===k).reduce((n,p)=>n+craftLoad(p),0);if(needs[k]>incoming+1e-8){const store=closestStock(s,ctx,c.work,k);if(store){c.store=store;c.craftSite=c.work;c.craftMaterial=k;c.craftAmount=0;startTrip(s,c,store,'toCraftSupply',ctx);}}return;}}}
    if(b.type==='brickyard'){const v=b.brickmaking;if(v.wet)return;if(!v.ready){const needs=brickNeeds(b);const k=['clay','reed'].find(k=>needs[k]>1e-8);if(k){c.workElapsed=0;const incoming=s.citizens.filter(p=>p.craftSite===c.work&&p.craftMaterial===k).reduce((n,p)=>n+craftLoad(p),0);if(needs[k]>incoming+1e-8){const store=closestStock(s,ctx,c.work,k);if(store){c.store=store;c.craftSite=c.work;c.craftMaterial=k;c.craftAmount=0;startTrip(s,c,store,'toCraftSupply',ctx);}}return;}if(needs.water>1e-8)return;}}
    if(b.type==='sheepfold'&&(b.flock?.fleece||0)<1-1e-8)return;
    if(['weaver','tailor'].includes(b.type)){const k=craftResource(b),input=craftState(b)?.[k]||0;if(input+1e-8<craftBatch(b)){c.workElapsed=0;const incoming=s.citizens.filter(p=>p.craftSite===c.work).reduce((n,p)=>n+craftLoad(p),0);if(input+incoming+1e-8<craftBatch(b)){const store=closestStock(s,ctx,c.work,k);if(store){c.store=store;c.craftSite=c.work;if(b.type==='tailor')c.craftCloth=0;else c.craftWool=0;startTrip(s,c,store,'toCraftSupply',ctx);}}return;}}
-   if(b.type==='field'){if(s.season===0&&cropFor(s,b).sheaves<=1e-8){const crop=cropFor(s,b),before=crop.sown;if(crop.sown<1-1e-8&&crop.seedStock<=1e-8&&!s.citizens.some(p=>p.id!==c.id&&p.seedField===c.work)){c.seedField=c.work;c.seedFood=0;c.store=closestStock(s,ctx,c.work,'food',{seed:true});if(c.store)startTrip(s,c,c.store,'toStore',ctx);else{delete c.seedField;delete c.seedFood;}return;}workField(s,b,remaining*workRate(c,'production'));if(before<1&&crop.sown>=1)invalidateAssignments(s);return;}if(cropFor(s,b).sheaves<=1e-8&&(s.season!==2||cropFor(s,b).remaining<=0))return;}
+   if(b.type==='field'){if(s.season===0&&cropFor(s,b).sheaves<=1e-8){const crop=cropFor(s,b),before=crop.sown;if(crop.sown<1-1e-8&&crop.seedStock<=1e-8&&!s.citizens.some(p=>p.id!==c.id&&p.seedField===c.work)){c.seedField=c.work;c.seedFood=0;c.store=closestStock(s,ctx,c.work,'food',{seed:true});if(c.store)startTrip(s,c,c.store,'toStore',ctx);else{delete c.seedField;delete c.seedFood;}return;}workField(s,b,remaining*workRate(c,b.type));if(before<1&&crop.sown>=1)invalidateAssignments(s);return;}if(cropFor(s,b).sheaves<=1e-8&&(s.season!==2||cropFor(s,b).remaining<=0))return;}
    if(b.type==='healer'){
     const patients=(ctx.care?.get(c.work)?.patients||[]).filter(p=>p.phase==='treatment'&&p.health<(p.careGoal||85)&&!s.funeral?.actors.some(a=>a.id===p.id));
     let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'healer')*healingSpeed(c);const cost=healingCost(c);
     for(const patient of patients){const amount=Math.max(0,Math.min(budget/patients.length,(patient.careGoal||85)-patient.health,Math.min(availableFood(s),foodAvailableAt(s,c.store))/(.04*cost),storeStock(s,c.store,'reed')/(.02*cost)));patient.health+=amount;if(amount>0)c.medicine.practice+=amount;takeStock(s,c.store,'food',amount*.04*cost);takeStock(s,c.store,'reed',amount*.02*cost);}return;
    }
-   const rate=workRate(c,b.type==='tailor'?'tailor':'production');
+   const rate=workRate(c,b.type);
    if(GATHERING_TYPES.includes(b.type)){
     const via=workGathering(s,c,b,remaining,rate,ctx.ports.get(c.work));if(via)harvest(s,c,ctx,via);
     return;
@@ -420,7 +420,7 @@ function advanceCitizen(s,c,dt,ctx){
   const next=c.route[c.routeIndex];
   if(!next){arrival(s,c,ctx);if(c.phase==='home'||c.phase==='resting')return;continue;}
   const dist=distance(c,next);
-  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?'production':null);
+  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?ctx.buildings.get(c.work)?.type:null);
   if(onBridge(s.buildings,c.x,c.y)){
    const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
   }

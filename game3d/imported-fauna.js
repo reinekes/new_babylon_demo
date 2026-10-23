@@ -1,3 +1,4 @@
+import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 export const IMPORTED_FAUNA_MODELS={catWalk:{file:'cat-walk.glb',kind:'cat',clips:['Walk','Idle'],stride:.38},catSit:{file:'cat-sitting.glb',kind:'cat',clips:['Sit'],stride:.38},gazelle:{file:'gazelle-downloaded.glb',kind:'gazelle',clips:['Walk','Idle','Rest'],stride:.84}};
@@ -5,7 +6,7 @@ export function importedFaunaAction(animal,distance=0){if(animal.dead||animal.be
 // The two cat sources have unrelated rigs; their coats use a matched charcoal profile: switch independent skins
 // with a short visibility fade; never attempt to retarget one skeleton to the other.
 export async function createImportedFauna(B,scene,meshes=[],options={}){
- const sources=new Map(),actors=new Map(),warn=options.warn||console.warn,load=options.loadAsset||(file=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${file}?v=city-creatures-20261022-1`,scene,undefined,'.glb'));
+ const sources=new Map(),actors=new Map(),warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=city-creatures-20261022-1`,scene,undefined,'.glb'));
  const results=await Promise.allSettled(Object.entries(IMPORTED_FAUNA_MODELS).map(async([key,config])=>{const asset=await load(config.file);if(config.clips.some(name=>!asset.animationGroups.some(g=>g.name===name))){asset.dispose();throw Error(`Missing imported fauna clips: ${key}`);}return {key,asset};}));
  for(const r of results)if(r.status==='fulfilled')sources.set(r.value.key,r.value.asset);else warn('Imported fauna model unavailable; procedural fallback remains available.',r.reason);
  let disposed=false;

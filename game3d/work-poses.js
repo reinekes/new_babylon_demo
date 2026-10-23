@@ -49,13 +49,13 @@ export function workplaceActivity(s,c,index){
 // Palm coordinates are in the resident root's metre space. Cargo and the specialised
 // hunting/fishing solves retain priority in actors.js. Distinct cycles read task time.
 export function workPose(kind,time,task){
- const cycle=Math.sin(time*3.6),lift=(cycle+1)*.5;
+ const cycle=Math.sin(time*2.7),lift=(cycle+1)*.5;
  if(task==='water-filling')return {bend:.5,twist:cycle*.025,right:[.12,.60+lift*.09,.43],left:[-.12,.65+lift*.09,.43],tool:'water-vessel'};
  if(kind==='healing')return {bend:.14+lift*.05,twist:cycle*.025,right:[.12,1.02+cycle*.055,.49],left:[-.14,1.04,.42+lift*.035],tool:null};
- if(kind==='building')return {bend:.13+lift*.16,twist:cycle*.045,right:[.20,.75+lift*.60,.50-lift*.18],left:[-.13,.88,.48],tool:'building'};
+ if(kind==='building')return {bend:.12+lift*.07,twist:cycle*.02,right:[.17,.99+lift*.25,.47-lift*.08],left:[-.13,.88,.48],tool:'building'};
  if(kind==='farming')return {bend:.55-lift*.24,twist:cycle*.055,right:[.17,.76+lift*.18,.45+lift*.10],left:[.10,.98+lift*.16,.30+lift*.10],tool:task==='harvesting'?'sickle':'hoe'};
- if(kind==='pottery'||kind==='brickmaking')return {bend:.22+lift*.10,twist:cycle*.035,right:[.13,.70+cycle*.07,.47],left:[-.13,.70-cycle*.07,.47],tool:null};
- if(kind==='weaving')return {bend:.10,twist:cycle*.06,right:[.20,.93,.35+lift*.18],left:[-.20,.93,.53-lift*.18],tool:null};
- if(kind==='brewing')return {bend:.15+lift*.05,twist:cycle*.06,right:[.12,.79+lift*.13,.48],left:[-.10,1.05,.43],tool:'stirring'};
- return {bend:.12+lift*.09,twist:cycle*.035,right:[.18,.75+lift*.22,.43],left:[-.17,.86,.36],tool:kind==='gathering'?'gathering':null};
+ if(kind==='pottery'||kind==='brickmaking')return {bend:.18+lift*.035,twist:cycle*.012,right:[.13,.88+cycle*.025,.46],left:[-.13,.88-cycle*.025,.46],tool:null};
+ if(kind==='weaving')return {bend:.08,twist:cycle*.018,right:[.17,1.00,.43+lift*.06],left:[-.17,1.00,.49-lift*.06],tool:null};
+ if(kind==='brewing')return {bend:.13+lift*.025,twist:cycle*.018,right:[.12,.91+lift*.06,.46],left:[-.10,1.05,.43],tool:'stirring'};
+ return {bend:.10+lift*.025,twist:cycle*.012,right:[.17,.89+lift*.07,.42],left:[-.17,.93,.38],tool:kind==='gathering'?'gathering':null};
 }

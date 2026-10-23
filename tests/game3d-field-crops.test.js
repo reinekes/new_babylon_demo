@@ -20,7 +20,7 @@ function loadGeometry(scene,path){
 }
 function setup(fail=false){
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['plaster','brick','wood','linen','reed','terracotta','soil','grass','stone'].map(name=>[name,new B.PBRMaterial(name,scene)])),previous=B.SceneLoader.LoadAssetContainerAsync,loads=[];
- B.SceneLoader.LoadAssetContainerAsync=async(_root,path)=>{loads.push(path);if(fail&&path===FIELD_CROP_ASSET)throw Error('Optional crop download failed');return loadGeometry(scene,path);};
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,path)=>{const assetPath=path.split('?')[0];loads.push(assetPath);if(fail&&assetPath===FIELD_CROP_ASSET)throw Error('Optional crop download failed');return loadGeometry(scene,assetPath);};
  return {scene,materials,loads,dispose(){B.SceneLoader.LoadAssetContainerAsync=previous;scene.dispose();engine.dispose();}};
 }
 const field=(crop={},x=3,y=4)=>({type:'field',id:'field',x,y,level:1,crop:{sown:1,growth:1,total:100,remaining:100,...crop}});

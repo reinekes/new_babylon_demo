@@ -1,10 +1,11 @@
+import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 export const JACKAL_MODEL={file:'jackal.glb',stride:.61,muzzle:[0,.4576,.4939]};
 export function jackalHeading(c,dx,dz){return Number.isFinite(c.faceX)&&Number.isFinite(c.faceY)?Math.atan2(c.faceX-c.x,c.faceY-c.y):Math.hypot(dx,dz)>.00001?Math.atan2(dx,dz):null;}
 // Visuals consume authoritative animals only: no spawn, resource or save mutations.
 export async function createJackals(B,scene,shadow,meshes=[],options={}){
- const load=options.loadAsset||(()=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${JACKAL_MODEL.file}?v=jackal-20261023-1`,scene,undefined,'.glb'));
+ const load=options.loadAsset||(()=>loadModel(B,scene,'assets/art-courtyard/models/',`${JACKAL_MODEL.file}?v=jackal-20261023-1`,scene,undefined,'.glb'));
  const source=await load(JACKAL_MODEL.file),actors=new Map();let disposed=false;
  if(['Idle','Walk','Pull'].some(n=>!source.animationGroups.some(g=>g.name===n))){source.dispose();throw Error('Jackal model missing Idle/Walk/Pull clips');}
  function make(c){

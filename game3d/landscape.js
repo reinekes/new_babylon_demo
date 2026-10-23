@@ -1,3 +1,4 @@
+import {createLazyFeature} from './asset-loading.js';
 import {createTradeCaravan} from './caravan.js';
 import {createDateClusters,createBotanicalMaterial} from './crop-varieties.js';
 import {canalNetworkGeometry,openCanalMouths} from './canal-network.js';
@@ -203,7 +204,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(const p of cargoLayout(stock,options)){const m=goods.sources.get(p.kind).createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=parent||null;m.position.set(origin.x+p.x,origin.y+p.y,origin.z+p.z);m.metadata={goods:{...p,supportY:origin.y+p.y}};add(m,collection);}
  }
  function updateStocks(s){const stocks=groundStocks(s,streetNetwork,signature),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:surfaceElevation(stocks.x,stocks.y,s),z:stocks.y*TILE});}
- const caravanView=await createTradeCaravan(B,scene,meshes,materials,goods,options);
+ const caravanView=options.deferOptional?createLazyFeature(()=>createTradeCaravan(B,scene,meshes,materials,goods,options),{required:(_s,c)=>!!c,onError:error=>console.warn('Caravan detail unavailable',error)}):await createTradeCaravan(B,scene,meshes,materials,goods,options);
  function updateTrader(c,time){
   caravanView.update(currentState,c?.river?null:c,time);
   const next=JSON.stringify(c?.river?c.stock:null);if(next!==traderSignature){traderSignature=next;remove(traderMeshes);traderRoot?.dispose();traderRoot=null;if(c?.river){traderRoot=new B.TransformNode('actual-trade-caravan',scene);

@@ -1,4 +1,6 @@
-import {workstationHands} from './workstations.js';
+import {loadModel} from './asset-loading.js';
+import {workstationHands,workstationPose} from './workstations.js';
+import {professionClothing,createProfessionClothing} from './profession-clothing.js';
 import {visibleCitizens} from '../workforce.js';
 import {animalsFor} from '../fauna.js';
 import {funeralView} from '../funerals.js';
@@ -49,26 +51,28 @@ export function actorAnimation(c,distance=0){
 }
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
-export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna}={}){
+export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false}={}){
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
  let disposed=false,poseTime=0,bier=null,riteState=null;
  const ritual=createFuneralRitual(B,scene,meshes);
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
-  const load=name=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${name}.glb?v=rites-and-caravan-20261023-1`,scene,undefined,'.glb');
+  const load=name=>loadModel(B,scene,'assets/art-courtyard/models/',`${name}.glb?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb');
   const resident=async()=>{try{const asset=await load('sumer-people');if(['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip)))return asset;asset.dispose();throw Error('Adapted civilian clips missing');}catch(error){console.warn('Adapted civilian unavailable; using original resident.',error);return load('resident');}};
   const loaded=await Promise.allSettled([resident(),load('sheep'),load('sumer-child'),load('sumer-adolescent')]);
-  for(const r of loaded)if(r.status==='fulfilled')containers.push(r.value);
-  const failed=loaded.find(r=>r.status==='rejected');if(failed)throw failed.reason;
- }catch(error){for(const c of containers)c.dispose();throw error;}
+  for(const r of loaded)containers.push(r.status==='fulfilled'?r.value:null);
+  const failed=loaded.slice(0,2).find(r=>r.status==='rejected');if(failed)throw failed.reason;
+ }catch(error){for(const c of containers)c?.dispose();throw error;}
  const [residentSource,sheepSource,childSource,adolescentSource]=containers;
  const wildlife=createWildlife(B,scene,meshes);
- const [goats,imported,ambient,jackals]=await Promise.all([
+ let goats=null,imported=null,ambient=null,jackals=null;
+ const loadFauna=async()=>{const values=await Promise.all([
   (includeFauna?createGameGoats(B,scene,meshes,{variants:['downloaded']}):Promise.resolve(null)).catch(error=>{console.warn('Downloaded goats unavailable; herd remains in simulation.',error);return null;}),
   (includeFauna?createImportedFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
   (includeFauna?createAmbientFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;}),
-  (includeFuneralFauna?createJackals(B,scene,null,meshes):Promise.resolve(null)).catch(error=>{console.warn('Jackals unavailable; using legacy fauna.',error);return null;})]);
+  (includeFuneralFauna?createJackals(B,scene,null,meshes):Promise.resolve(null)).catch(error=>{console.warn('Jackals unavailable; using legacy fauna.',error);return null;})]);if(disposed){for(const v of values)v?.dispose();return;}[goats,imported,ambient,jackals]=values;};
+ let faunaReady=Promise.resolve();if(!deferFauna)await loadFauna();else faunaReady=new Promise(resolve=>setTimeout(resolve,150)).then(()=>{if(!disposed)return loadFauna();});
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
  const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#829e91'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952');
@@ -211,8 +215,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const color=c.phase==='mourning'?'#c7c9ae':look.wear==='new'&&!look.craft?palette[identity.cloth]:look.robe;
   for(const m of a.cloth){m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=look.wear==='new'?.88:look.wear==='worn'?.96:1;}
   a.inspired.setEnabled(look.inspired);
-  const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}`;
-  if(a.detailKey!==key){a.detailKey=key;prune(a.details);for(const n of a.details.getChildren())n.dispose();a.torchNode=null;a.torch=false;
+  const profession=professionClothing(c);
+  const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}:${profession?.id||''}`;
+  if(a.detailKey!==key){a.detailKey=key;for(const mesh of a.professionGarments||[]){const i=meshes.indexOf(mesh);if(i>=0)meshes.splice(i,1);mesh.dispose();}a.professionGarments=[];prune(a.details);for(const n of a.details.getChildren())n.dispose();a.torchNode=null;a.torch=false;
+   if(profession){if(!a.professionMaterial){a.professionMaterial=new B.PBRMaterial(`profession-cloth-${c.id}`,scene);a.professionMaterial.metallic=0;a.professionMaterial.albedoTexture=materials.linen?.albedoTexture||null;a.materials.push(a.professionMaterial);}const tint=B.Color3.FromHexString(profession.color),fade=look.wear==='ragged'?.38:look.wear==='worn'?.18:0;a.professionMaterial.albedoColor=B.Color3.Lerp(tint,B.Color3.FromHexString('#a69b80'),fade).toLinearSpace();a.professionMaterial.roughness=1;const garment=createProfessionClothing(B,scene,a.model,profession,a.professionMaterial);for(const mesh of garment){mesh.metadata={...a.root.metadata,profession:profession.id};meshes.push(mesh);}a.professionGarments=garment;}
    // Wear is carried by the real skinned wool material; freestanding flat
    // patch meshes cannot follow the pleated robe and used to float off the body.
    if(c.role==='carrier'||c.siteDuty==='carrier')box('carrier-sling',a.details,reed,-.23,.87,.04,.17,.19,.12);
@@ -272,7 +278,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*i.headWidth,a.headBase.y*i.headHeight,a.headBase.z);}
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    authoredStance(a);
-   const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=workPose(a.pose,a.time,a.c.activity?.task);
+   const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
    if(a.spine){const base=a.spine.rotationQuaternion||a.spineBase; a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
@@ -294,9 +300,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     a.load.position.set(0,1.02,.34);
     poseArm(a,'l',vec(-.21,1.01,.34));poseArm(a,'r',vec(.21,1.01,.34));
    }else if(a.pose==='logging'||a.pose==='quarry'){
-    const swing=a.c.activity?.stage==='strike'?0:(Math.sin(a.time*4.5)+1)*.5;
-    poseArm(a,'r',vec(.20,.93+swing*.60,.36-swing*.20));
-    poseArm(a,'l',vec(-.02,.98+swing*.47,.43-swing*.18));
+    const swing=a.c.activity?.stage==='strike'?0:(Math.sin(a.time*2.8)+1)*.5;
+    poseArm(a,'r',vec(.17,.99+swing*.28,.39-swing*.11));
+    poseArm(a,'l',vec(-.04,1.03+swing*.23,.44-swing*.10));
    }else if(a.pose==='hunting'){
     const pull=(Math.sin(a.time*2.5)+1)*.5;
     poseArm(a,'l',vec(-.11,1.22,.63));poseArm(a,'r',vec(.15,1.15,.22+pull*.25));
@@ -314,6 +320,12 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
    }else if(a.pose==='play'&&!a.c.walking){
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
+   }
+   if(!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&a.pose!=='petting'){
+    // The source idle/walk gesture was too broad for a close city crowd. Keep
+    // the authored legs, and solve relaxed palms below their actual shoulders.
+    const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
+    for(const side of ['l','r']){const arm=a.arms[side],hand=a.hands[side];if(!arm?.upper||!arm.lower||!hand)continue;for(const n of [arm.upper,arm.lower,hand])n.computeWorldMatrix(true);const shoulder=B.Vector3.TransformCoordinates(arm.upper.getAbsolutePosition(),inverse),elbow=B.Vector3.TransformCoordinates(arm.lower.getAbsolutePosition(),inverse),palm=B.Vector3.TransformCoordinates(hand.getAbsolutePosition(),inverse),length=B.Vector3.Distance(shoulder,elbow)+B.Vector3.Distance(elbow,palm);poseArm(a,side,vec(shoulder.x+(side==='l'?-.035:.035),shoulder.y-length*.94,shoulder.z+.025+(side==='l'?swing:-swing)));}
    }
    if(a.tool.isEnabled()&&a.hands.r&&a.hands.l){
     a.hands.r.computeWorldMatrix(true);a.hands.l.computeWorldMatrix(true);
@@ -372,15 +384,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
-  for(const c of visible){seen.add(c.id);let a=people.get(c.id);const anatomy=residentAnatomy(c.age);if(a&&a.anatomy!==anatomy.source){remove(a);people.delete(c.id);a=null;}if(!a){const source=anatomy.source==='child'?childSource:anatomy.source==='adolescent'?adolescentSource:residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=anatomy.source;a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
+  for(const c of visible){seen.add(c.id);let a=people.get(c.id);const anatomy=residentAnatomy(c.age);if(a&&a.anatomy!==anatomy.source){remove(a);people.delete(c.id);a=null;}if(!a){const source=anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=anatomy.source;a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
   imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed});
   const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
-  wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&c.kind!=='goat'&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);
+  wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
- return {update,dispose,meshes,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ return {update,dispose,meshes,faunaReady,rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

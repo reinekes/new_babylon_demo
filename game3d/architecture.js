@@ -4,7 +4,7 @@ import {constructionProgress} from '../construction.js';
 // not reconstructions. One merged mesh per shared material and building template.
 export const ARCHITECTURE_TYPES=Object.freeze(['pottery','brewery','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market']);
 export function createArchitecture(B,scene,b,m){
- const groups=new Map(),level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
+ const canopies=[],groups=new Map(),level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
  let serial=0;const add=(mesh,mat)=>{mesh.material=mat||wall;if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
  // Bevelled corners, a slightly bowed middle and a battered top: this breaks
  // razor-sharp cube edges without random per-instance geometry or tiny bricks.
@@ -26,9 +26,18 @@ export function createArchitecture(B,scene,b,m){
  const cylinder=(x,y,z,r,h,mat=m.wood,top=r)=>{const a=B.MeshBuilder.CreateCylinder(`round-${serial++}`,{height:h,diameterBottom:r*2,diameterTop:top*2,tessellation:12},scene);a.position.set(x,y,z);return add(a,mat);};
  const beam=(a,c,r=.045,mat=m.wood)=>{const start=new B.Vector3(...a),end=new B.Vector3(...c),v=end.subtract(start),mesh=B.MeshBuilder.CreateCylinder(`beam-${serial++}`,{height:v.length(),diameter:r*2,tessellation:7},scene);mesh.position=start.add(end).scale(.5);mesh.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,v.normalize(),new B.Quaternion());return add(mesh,mat);};
  const jar=(x,z,s=1,y=0)=>{const shape=[[0,0],[.18,.03],[.34,.21],[.38,.53],[.25,.83],[.16,.9],[.17,1],[.12,1],[.12,.89],[.2,.77],[.3,.51],[.26,.22],[.1,.09],[0,.09]].map(([r,h])=>new B.Vector3(r*s,h*s,0));const mesh=B.MeshBuilder.CreateLathe(`storage-jar-${serial++}`,{shape,tessellation:12,sideOrientation:B.Mesh.DOUBLESIDE},scene);mesh.position.set(x,y,z);return add(mesh,m.terracotta);};
- const cloth=(x,z,w,d,y=1.9,mat=m.linen)=>{for(const a of [-1,1])for(const c of [-1,1])cylinder(x+a*(w/2-.08),y/2,z+c*(d/2-.08),.045,y);for(let i=0;i<8;i++){const q=block(x-w/2+w*(i+.5)/8,y-.1*Math.sin(i/7*Math.PI),z,w/8+.02,.045,d,mat);q.rotation.z=-.12*Math.cos(i/7*Math.PI);}beam([x-w/2,y,z-d/2],[x+w/2,y,z-d/2]);beam([x-w/2,y,z+d/2],[x+w/2,y,z+d/2]);};
- const room=(x,z,w,d,h=2.1)=>{const t=.23,door=Math.min(.8,w*.45),side=(w-door)/2;block(x,h/2,z-d/2,w,h,t);for(const s of [-1,1]){block(x+s*(w-t)/2,h/2,z,t,h,d);block(x+s*(door+side)/2,h/2,z+d/2,side,h,t);}block(x,h-.22,z+d/2,door,.44,t);block(x,.76,z+d/2-.19,door,1.5,.07,m.shade);block(x,1.6,z+d/2,door+.22,.12,.34,m.wood);if(m.warm&&h>1.85)block(x,h-.34,z+d/2+.012,.28,.16,.025,m.warm);block(x,h+.04,z,w+.14,.14,d+.14,m.soil);for(let i=0;i<Math.ceil(w/.55);i++)beam([x-w/2+i*.55+.15,h-.08,z-d/2-.18],[x-w/2+i*.55+.15,h-.08,z+d/2+.18],.055);for(const s of [-1,1])block(x+s*w/2,h+.24,z,.16,.32,d+.12);block(x,h+.24,z-d/2,w,.32,.17);};
- const ladder=(x,z,h)=>{for(const s of [-1,1])beam([x+s*.2,.05,z+.52],[x+s*.2,h+.25,z]);for(let i=1;i<10;i++)beam([x-.23,h*i/9,z+.52*(1-i/9)],[x+.23,h*i/9,z+.52*(1-i/9)],.03);};
+ const cloth=(x,z,w,d,y=1.9,mat=m.linen)=>{const before=new Set([...groups.values()].flat());for(const a of [-1,1])for(const c of [-1,1])cylinder(x+a*(w/2-.08),y/2,z+c*(d/2-.08),.045,y);for(let i=0;i<8;i++){const q=block(x-w/2+w*(i+.5)/8,y-.1*Math.sin(i/7*Math.PI),z,w/8+.02,.045,d,mat);q.rotation.z=-.12*Math.cos(i/7*Math.PI);}beam([x-w/2,y,z-d/2],[x+w/2,y,z-d/2]);beam([x-w/2,y,z+d/2],[x+w/2,y,z+d/2]);canopies.push({x,z,w,d,y,mat,parts:[...groups.values()].flat().filter(p=>!before.has(p))});};
+ // A rotated road port can put the active bay at a back corner. Reserve that
+ // real volume in the room, rather than reaching through an intact wall/roof.
+ const workBay=workstationLayout(b)[0];
+ const roomBlock=(x,y,z,w,h,d,mat=wall)=>{
+  const x0=x-w/2,x1=x+w/2,z0=z-d/2,z1=z+d/2,bay=workBay;
+  if(!bay||x1<=bay.x-.80||x0>=bay.x+.80||z1<=bay.z-.80||z0>=bay.z+.80)return block(x,y,z,w,h,d,mat);
+  const lx=Math.max(x0,bay.x-.80),rx=Math.min(x1,bay.x+.80),lz=Math.max(z0,bay.z-.80),rz=Math.min(z1,bay.z+.80);
+  const part=(a,c,e,f)=>{if(c-a>.015&&f-e>.015)block((a+c)/2,y,(e+f)/2,c-a,h,f-e,mat);};
+  part(x0,lx,z0,z1);part(rx,x1,z0,z1);part(lx,rx,z0,lz);part(lx,rx,rz,z1);
+ };
+ const room=(x,z,w,d,h=2.1)=>{const t=.23,door=Math.min(.8,w*.45),side=(w-door)/2;roomBlock(x,h/2,z-d/2,w,h,t);for(const s of [-1,1]){roomBlock(x+s*(w-t)/2,h/2,z,t,h,d);roomBlock(x+s*(door+side)/2,h/2,z+d/2,side,h,t);}roomBlock(x,h-.22,z+d/2,door,.44,t);roomBlock(x,.76,z+d/2-.19,door,1.5,.07,m.shade);roomBlock(x,1.6,z+d/2,door+.22,.12,.34,m.wood);if(m.warm&&h>1.85)roomBlock(x,h-.34,z+d/2+.012,.28,.16,.025,m.warm);roomBlock(x,h+.04,z,w+.14,.14,d+.14,m.soil);for(let i=0;i<Math.ceil(w/.55);i++){const bx=x-w/2+i*.55+.15;if(!workBay||Math.abs(bx-workBay.x)>.86||z+d/2<workBay.z-.80||z-d/2>workBay.z+.80)beam([bx,h-.08,z-d/2-.18],[bx,h-.08,z+d/2+.18],.055);}for(const s of [-1,1])roomBlock(x+s*w/2,h+.24,z,.16,.32,d+.12);roomBlock(x,h+.24,z-d/2,w,.32,.17);};
  const stack=(x,z,n=8,mat=m.raw)=>{for(let i=0;i<n;i++)block(x+(i%3)*.42,.12+Math.floor(i/6)*.23,z+Math.floor(i%6/3)*.43,.39,.21,.37,mat);};
  const bench=(x,z,w=1.5)=>{block(x,.77,z,w,.12,.65,m.wood);for(const s of [-1,1])block(x+s*w*.4,.38,z,.1,.76,.5,m.wood);};
  const basin=(x,z,w,d)=>{block(x,.1,z,w,.2,d,m.raw);for(const s of [-1,1]){block(x+s*w/2,.3,z,.16,.5,d,m.raw);block(x,.3,z+s*d/2,w,.5,.16,m.raw);}block(x,.22,z,w-.16,.025,d-.16,m.shade);};
@@ -38,7 +47,7 @@ export function createArchitecture(B,scene,b,m){
  switch(b.type){
  case 'pottery':ground();room(-1.3,-1.45,2.2,1.8,2);cloth(-1.15,.65,2.4,1.6);cylinder(1.4,.65,-.7,.85,1.3,m.fired,.6);cylinder(1.4,1.4,-.7,.6,.3,m.terracotta,.34);block(1.4,.35,.14,.47,.58,.04,m.shade);bench(-1.2,.7);for(let i=0;i<5;i++)jar(-1.85+i*.34,.7,.37,.84);for(let i=0;i<7;i++)jar(-1.9+i*.61,1.9,.52+i%2*.18);break;
  case 'brewery':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);for(let i=0;i<6;i++)jar(-1.7+(i%3)*.95,.1+Math.floor(i/3)*1.35,1.05);basin(1.8,.45,.7,1.3);beam([1.6,.8,.1],[2,1.25,-.1]);break;
- case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);ladder(2.1,1.3,2.8);break;
+ case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);break;
  case 'depot':ground();room(-1.55,-.25,1.7,4.3,2.45);room(.6,-1.65,2.5,1.5,2.7);cloth(.9,.5,2.8,2.5,1.9,m.reed);stack(.3,.2,14);for(let i=0;i<4;i++)block(.2+i*.52,.32,1.8,.45,.6,.55,m.wood);jar(1.9,-1.5,.85,2.8);break;
  case 'shrine':ground();block(0,.25,0,5.2,.5,4.8,m.fired);room(0,-.8,3.5,2.8,3.3);for(const x of [-1.75,-1.05,1.05,1.75]){block(x,1.6,.8,.26,3.2,.43,m.raw);block(x,3.3,.8,.37,.15,.52,m.trim);}for(let i=0;i<4;i++)block(0,.08+i*.12,2.4-i*.26,1.6,.17,.55,m.fired);block(0,.72,1.45,1.1,.65,.55,m.stone);jar(-1.25,1.65,.6);jar(1.3,1.6,.65);break;
  case 'ziggurat':{
@@ -91,9 +100,17 @@ export function createArchitecture(B,scene,b,m){
  case 'healer':ground();room(-1.6,-.5,1.6,3.8,2.1);room(.5,-1.65,2.55,1.5,2.4);cloth(.65,.75,2.6,2,1.95);for(const x of [0,1.3]){bench(x,.75,.8);block(x,.88,.75,.7,.06,1.5,m.linen);}for(let i=0;i<5;i++)jar(-1.9+i*.32,-1.5,.25,2.2);basin(-1.9,1.7,.6,.55);break;
  default:throw Error(`Missing original architecture for ${b.type}`);
  }
- // A single street-facing working gallery shares coordinates with palm IK.
+ // An inset work bay shares coordinates with palm IK; both residents stand
+ // inside the production yard instead of on the adjoining street.
  for(const a of workstationLayout(b)){
   const {x,z,height:h,kind}=a;
+  // The active equipment belongs to an attached open work bay. Its edge
+  // shades the tools while leaving both front/side working bodies readable.
+  if(!['garden','sheepfold'].includes(b.type)){
+   const bx=x-a.sx*.28,bz=z-a.sz*.28,shade=canopies.find(c=>Math.abs(c.x-bx)<(c.w+1.72)/2-.05&&Math.abs(c.z-bz)<(c.d+1.72)/2-.05);
+   if(shade){const x0=Math.min(shade.x-shade.w/2,bx-.86),x1=Math.max(shade.x+shade.w/2,bx+.86),z0=Math.min(shade.z-shade.d/2,bz-.86),z1=Math.max(shade.z+shade.d/2,bz+.86);for(const part of shade.parts){const parts=groups.get(part.material),i=parts.indexOf(part);if(i>=0)parts.splice(i,1);part.dispose();}canopies.splice(canopies.indexOf(shade),1);cloth((x0+x1)/2,(z0+z1)/2,x1-x0,z1-z0,Math.max(2.18,shade.y),shade.mat);}
+   else cloth(bx,bz,1.72,1.72,2.18,m.reed);
+  }
   if(kind==='loom'){
    for(const side of [-1,1])beam([x+side*.30,.08,z],[x+side*.30,1.38,z],.035);
    beam([x-.30,1.38,z+a.sz*.20],[x+.30,1.38,z+a.sz*.20],.035);block(x,1.05,z+a.sz*.20,.54,.62,.035,m.linen);

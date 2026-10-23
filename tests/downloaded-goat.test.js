@@ -23,8 +23,19 @@ test('source animation survives exactly and new motions state their provenance',
  for(const name of ['Idle','SourceRigAction']){const a=adapted.g.animations.find(a=>a.name===name),source=original.g.animations[0];assert.deepEqual(a.channels,source.channels);assert.deepEqual(a.samplers,source.samplers);for(const s of source.samplers){assert.deepEqual(adapted.accessor(s.input),original.accessor(s.input));assert.deepEqual(adapted.accessor(s.output),original.accessor(s.output));}}
  for(const name of ['Walk','Graze','Rest']){const a=adapted.g.animations.find(a=>a.name===name);assert.match(a.extras.provenance,/New Babylon/);assert.equal(a.channels.length,93);for(const s of a.samplers){const times=adapted.accessor(s.input),values=adapted.accessor(s.output),width=adapted.g.accessors[s.output].type==='VEC4'?4:3;assert.equal(values.length,times.length*width);assert.ok(values.every(Number.isFinite));assert.ok(times.every((t,i)=>i===0||t>times[i-1]));for(let c=0;c<width;c++)assert.ok(Math.abs(values[c]-values[values.length-width+c])<1e-6,'cyclic endpoints must match');if(width===4)for(let i=0;i<values.length;i+=4)assert.ok(Math.abs(Math.hypot(...values.slice(i,i+4))-1)<1e-5);}}
 });
-test('adaptation embeds <=1k PNGs and reduces transfer size',()=>{
+function imageDimensions(bytes,mime){
+ if(mime==='image/png'){assert.equal(bytes.subarray(1,4).toString(),'PNG');return [bytes.readUInt32BE(16),bytes.readUInt32BE(20)];}
+ assert.equal(mime,'image/jpeg');assert.equal(bytes.readUInt16BE(0),0xffd8);
+ for(let offset=2;offset<bytes.length;){assert.equal(bytes[offset++],0xff);while(bytes[offset]===0xff)offset++;const marker=bytes[offset++];assert.notEqual(marker,0xda,'JPEG frame dimensions must precede image data');const size=bytes.readUInt16BE(offset);if(marker>=0xc0&&marker<=0xcf&&![0xc4,0xc8,0xcc].includes(marker))return [bytes.readUInt16BE(offset+5),bytes.readUInt16BE(offset+3)];assert.ok(size>=2);offset+=size;}
+ assert.fail('JPEG frame dimensions missing');
+}
+test('adaptation embeds <=1k PNG/JPEG textures while alpha and normal maps remain PNG',()=>{
  assert.ok(adapted.bytes.length<original.bytes.length*.5);
- for(const im of adapted.g.images){const b=adapted.view(im.bufferView);assert.equal(b.subarray(1,4).toString(),'PNG');assert.ok(b.readUInt32BE(16)<=1024&&b.readUInt32BE(20)<=1024);}
+ for(const im of adapted.g.images){const dimensions=imageDimensions(adapted.view(im.bufferView),im.mimeType);assert.ok(dimensions.every(value=>value>0&&value<=1024));}
+ for(const material of adapted.g.materials){
+  const normal=material.normalTexture,alpha=material.alphaMode&&material.alphaMode!=='OPAQUE'&&material.pbrMetallicRoughness?.baseColorTexture;
+  for(const texture of [normal,alpha].filter(Boolean)){const image=adapted.g.images[adapted.g.textures[texture.index].source];assert.equal(image.mimeType,'image/png');}
+  if(alpha){const image=adapted.g.images[adapted.g.textures[alpha.index].source],bytes=adapted.view(image.bufferView);assert.ok([4,6].includes(bytes[25]),'transparent hair keeps an alpha channel');}
+ }
  const root=adapted.g.nodes.at(-1);assert.equal(root.extras.forward_gltf,'+Z');assert.deepEqual(adapted.g.scenes[0].nodes,[adapted.g.nodes.length-1]);assert.ok(root.scale.every(s=>s>0&&s<1));
 });

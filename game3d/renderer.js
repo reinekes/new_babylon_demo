@@ -1,3 +1,6 @@
+import {createBackgroundQueue,createLazyFeature} from './asset-loading.js';
+import {createBootstrapActors} from './bootstrap-actors.js';
+import {createBootstrapLandscape} from './bootstrap-landscape.js';
 import {foundingCameraTarget} from '../starter-settlement.js';
 import {createBuildingReach,nearbySimilar} from './building-reach.js';
 import {bindMapControls} from './map-controls.js';
@@ -14,7 +17,7 @@ import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
 import {weatherAt} from '../environment.js';
 
-export const GAME3D_RELEASE='rites-and-caravan-20261023-1';
+export const GAME3D_RELEASE='craft-and-fast-start-20261023-1';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
@@ -33,7 +36,7 @@ export async function createGameRenderer(canvas,onSelect,options={}){
 
 export class GameRenderer3D{
  constructor(B,canvas,onSelect){
-  this.B=B;this.canvas=canvas;this.onSelect=onSelect;this.mode='3d';this.effects=[];this.lightMode='auto';this.pan={x:0,y:0};this._zoom=2.5;this.hover=null;this.selected=null;this.ambient=0;this.mapOverview=false;this.state=null;this.lastTime=null;this.lastSim=null;this.layersReady=false;this.lamps=new Map();this.effectViews=[];
+  this.B=B;this.canvas=canvas;this.onSelect=onSelect;this.mode='3d';this.quality='high';this.effects=[];this.lightMode='auto';this.pan={x:0,y:0};this._zoom=2.5;this.hover=null;this.selected=null;this.ambient=0;this.mapOverview=false;this.state=null;this.lastTime=null;this.lastSim=null;this.layersReady=false;this.lamps=new Map();this.effectViews=[];
   this.engine=new B.Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true,powerPreference:'high-performance'});
   this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,1.5));
   this.scene=new B.Scene(this.engine);this.scene.skipPointerMovePicking=true;this.scene.clearColor=B.Color4.FromHexString('#d0c8aeff');this.scene.fogMode=B.Scene.FOGMODE_EXP2;this.scene.fogDensity=.0018;
@@ -42,25 +45,32 @@ export class GameRenderer3D{
   this.sun=new B.DirectionalLight('city-sun',new B.Vector3(-.6,-.85,-.5),this.scene);this.sun.shadowMinZ=.1;this.sun.shadowMaxZ=350;this.sun.shadowFrustumSize=90;
   this.fill=new B.HemisphericLight('city-sky',new B.Vector3(0,1,0),this.scene);this.fill.intensity=.35;
   this.shadow=new B.ShadowGenerator(2048,this.sun);this.shadow.usePercentageCloserFiltering=true;this.shadow.filteringQuality=B.ShadowGenerator.QUALITY_MEDIUM;this.shadow.bias=.0004;this.shadow.normalBias=.025;
-  this.scene.environmentTexture=new B.HDRCubeTexture('assets/art-courtyard/textures/kiara_1_dawn_1k.hdr',this.scene,128,false,true,false,true);
-  this.materials=createDistrictMaterials(B,this.scene);this.reach=createBuildingReach(B,this.scene);
+  // Environment and photographic textures are optional detail, never a first-frame barrier.
+  this.materials=createDistrictMaterials(B,this.scene,{deferPhotos:true});this.reach=createBuildingReach(B,this.scene);
   this.reachNote=document.createElement('output');this.reachNote.className='building-reach-note';this.reachNote.hidden=true;canvas.parentNode.append(this.reachNote);
   this.marker=B.MeshBuilder.CreateGround('placement-cell',{width:5.75,height:5.75},this.scene);this.marker.position.y=.10;this.marker.isPickable=false;this.marker.material=new B.StandardMaterial('placement-glow',this.scene);this.marker.material.disableLighting=true;this.marker.material.alpha=.47;this.marker.setEnabled(false);
   this.engine.runRenderLoop(()=>this.scene.render());this.createControls();this.bindInput();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.home();
  }
  async initialize(state){
   if(!state)throw Error('Нет состояния города для карты');
-  const [{createGameBuildings},{createGameActors},{createGameLandscape}]=await Promise.all([import('./buildings.js'),import('./actors.js'),import('./landscape.js')]);
-  const progress=(name,value)=>{document.querySelector('.game3d-loading small')?.replaceChildren(document.createTextNode(name+' готовы…'));return value;};
-  const results=await Promise.allSettled([createGameBuildings(this.B,this.scene,this.materials).then(v=>progress('Здания',v)),createGameActors(this.B,this.scene,this.materials).then(v=>progress('Жители',v)),createGameLandscape(this.B,this.scene,state,this.materials,{tier:'high'}).then(v=>progress('Ландшафт',v))]);
-  this.buildings=results[0].status==='fulfilled'?results[0].value:null;this.actors=results[1].status==='fulfilled'?results[1].value:null;this.landscape=results[2].status==='fulfilled'?results[2].value:null;
-  this.miracleGarden=await createMiracleGarden(this.B,this.scene,{groundHeight:(x,y)=>visualSurfaceElevation(x,y,this.state||state),canPlant:(x,y)=>x>0&&y>0&&x<WIDTH-1&&y<HEIGHT-1&&vegetationBankDistance(x,y,this.state||state)>.08&&sceneryClear(this.state||state,{x,y},.16)});
-  const failure=results.find(r=>r.status==='rejected');if(failure)throw failure.reason;
-  document.querySelector('.game3d-loading small')?.replaceChildren(document.createTextNode('Модели готовы · подготавливаем материалы…'));this.state=state;this.buildings.sync(state);this.actors.update(state,0,{paused:true,speed:1});this.landscape.update(state,state.simTime);this.layersReady=true;try{await Promise.race([this.scene.whenReadyAsync(),new Promise((_,reject)=>{this.loadingTimer=setTimeout(()=>reject(Error('Материалы 3D не ответили вовремя')),45000);})]);}finally{clearTimeout(this.loadingTimer);this.engine.stopRenderLoop();}this.resize();if(foundingCameraTarget(state))this.home();
+  const {createGameBuildings}=await import('./buildings.js');
+  this.state=state;this.buildings=await createGameBuildings(this.B,this.scene,this.materials,{deferAssets:true});
+  this.actors=createBootstrapActors(this.B,this.scene);this.landscape=createBootstrapLandscape(this.B,this.scene,state,this.materials);
+  this.buildings.sync(state);this.actors.update(state);this.layersReady=true;this.engine.stopRenderLoop();this.resize();if(foundingCameraTarget(state))this.home();
+  this.detailNote=document.createElement('output');this.detailNote.className='game3d-detail-status';this.detailNote.setAttribute('role','status');this.detailNote.textContent='Город открыт · подробности загружаются';this.canvas.parentNode.append(this.detailNote);
+  this.detailQueue=createBackgroundQueue(2,{onError:error=>{console.warn('Optional 3D detail unavailable:',error);if(!this.disposed)this.detailNote.textContent='Город открыт · часть деталей в лёгком виде';}});
+  const replace=(name,value)=>{if(this.disposed){value.dispose();return;}const previous=this[name];try{name==='actors'?value.update(this.state,0,{paused:true,speed:1}):value.update(this.state,this.state.simTime);value.setQuality?.(this.quality);}catch(error){value.dispose();throw error;}this[name]=value;previous.dispose();};
+  if(state.buildings.some(b=>b.type==='field'))this.detailQueue.add(()=>this.buildings.loadDetails(),()=>{});
+  this.detailQueue.add(async()=>{const {createGameActors}=await import('./actors.js');return createGameActors(this.B,this.scene,this.materials,{deferFauna:true});},value=>replace('actors',value));
+  this.detailQueue.add(async()=>{const {createGameLandscape}=await import('./landscape.js');return createGameLandscape(this.B,this.scene,this.state,this.materials,{tier:this.quality,deferOptional:true});},value=>replace('landscape',value));
+  // A miracle and its vegetation are loaded on first invocation, not before playing.
+  this.miracleGarden=createLazyFeature(()=>createMiracleGarden(this.B,this.scene,{groundHeight:(x,y)=>visualSurfaceElevation(x,y,this.state),canPlant:(x,y)=>x>0&&y>0&&x<WIDTH-1&&y<HEIGHT-1&&vegetationBankDistance(x,y,this.state)>.08&&sceneryClear(this.state,{x,y},.16)}),{required:()=>false,onError:error=>console.warn('Miracle plants unavailable',error)});
+  this.detailsReady=this.detailQueue.idle().then(()=>this.actors.faunaReady).then(()=>{if(!this.disposed){this.detailNote.textContent=this.detailQueue.errors.length?'Часть деталей недоступна · игра продолжается':'Подробный город готов';this.detailNote.dataset.complete='true';setTimeout(()=>{if(!this.disposed)this.detailNote.hidden=true;},4000);}});
+  setTimeout(()=>{if(this.disposed)return;this.materials.loadPhotos().then(()=>{if(!this.disposed)this.buildings.refreshMaterials?.();});const hdr=new this.B.HDRCubeTexture('assets/art-courtyard/textures/kiara_1_dawn_1k.hdr',this.scene,128,false,true,false,true);hdr.onLoadObservable.addOnce(()=>{if(!this.disposed)this.scene.environmentTexture=hdr;});},250);
  }
  createControls(){
   const panel=document.createElement('div');panel.className='game3d-options';panel.innerHTML='<span>3D · ЖИВОЙ ГОРОД</span><button type="button" data-turn="-1" title="Повернуть камеру влево">↶</button><button type="button" data-turn="1" title="Повернуть камеру вправо">↷</button><select aria-label="Качество 3D"><option value="high">Высокая</option><option value="low">Лёгкая</option></select><a href="?view=2d" title="Открыть прежнюю графику с тем же сохранением">2D</a><a href="assets/art-courtyard/CREDITS.html" target="_blank" rel="noopener" title="Модели и авторы">Авторы ↗</a>';
-  this.canvas.parentNode.append(panel);this.controls=panel;for(const b of panel.querySelectorAll('[data-turn]'))b.onclick=()=>{this.camera.alpha+=Number(b.dataset.turn)*Math.PI/4;};panel.querySelector('select').onchange=e=>{const low=e.target.value==='low';this.scene.shadowsEnabled=!low;this.landscape?.setQuality?.(low?'low':'high');this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,low?1:1.5));this.resize();};
+  this.canvas.parentNode.append(panel);this.controls=panel;for(const b of panel.querySelectorAll('[data-turn]'))b.onclick=()=>{this.camera.alpha+=Number(b.dataset.turn)*Math.PI/4;};panel.querySelector('select').onchange=e=>{const low=e.target.value==='low';this.quality=low?'low':'high';this.scene.shadowsEnabled=!low;this.landscape?.setQuality?.(low?'low':'high');this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,low?1:1.5));this.resize();};
   const metrics=document.createElement('output');metrics.className='game3d-metrics';metrics.setAttribute('aria-label','Производительность 3D');this.canvas.parentNode.append(metrics);this.metrics=metrics;this.samples=[];this.frameCount=0;this.windowStart=0;
  }
  bindInput(){
@@ -115,5 +125,5 @@ export class GameRenderer3D{
   this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }
- dispose(){this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.scene?.dispose();this.engine?.dispose();}
+ dispose(){this.disposed=true;this.detailQueue?.dispose();this.detailNote?.remove();this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.scene?.dispose();this.engine?.dispose();}
 }

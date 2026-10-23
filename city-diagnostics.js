@@ -1,3 +1,4 @@
+import {PROFESSION_NAMES,professionRole} from './professions.js';
 import {BUILDINGS,buildingKey,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {stockStores,storeCapacity} from './inventory.js';
@@ -13,7 +14,7 @@ const adult=c=>c.age===undefined||c.age>=16;
 const hungry=(c,s)=>(c.hunger||0)>=30||((c.missedMeals||0)>0&&(c.lastMealQuality??1)<.95&&!(isDinnerTime(s.simTime||0)&&c.mealDay===mealCycle(s.simTime||0)&&c.mealEaten>=mealRation(c)*.95));
 const ill=c=>(c.health??100)<60;
 const reason=(code,label,detail='',target=null)=>({code,label,detail,target});
-export const CITY_ROLE_NAMES={auto:'Авто',production:'Производство',carrier:'Носильщик',builder:'Строитель',healer:'Лекарь',tailor:'Мастер одежды',watercarrier:'Водонос'};
+export const CITY_ROLE_NAMES=PROFESSION_NAMES;
 
 // Only immutable derived navigation is cached. Do not use networkFor/syncInventory:
 // those simulation helpers initialise roads, stores, and assignment state.
@@ -114,5 +115,5 @@ export function cityDiagnostics(s){
 /** Combines filters; never edits or renumbers the returned resident objects. */
 export function filterCitizens(s,{role='all',age='all',trouble='all',home=null}={}){
  const family=trouble==='family'?new Set(cityDiagnostics(s).homes.filter(h=>h.reasons.length).map(h=>h.key)):null;
- return (s.citizens||[]).filter(c=>(role==='all'||(c.role||'auto')===role)&&(age==='all'||age==='adult'&&adult(c)||age==='child'&&!adult(c))&&(!home||c.home===home)&&(trouble==='all'||trouble==='hunger'&&hungry(c,s)||trouble==='health'&&ill(c)||trouble==='family'&&family.has(c.home)));
+ return (s.citizens||[]).filter(c=>(role==='all'||(c.role||'auto')===role||c.calling===role&&professionRole(c.calling)===c.role)&&(age==='all'||age==='adult'&&adult(c)||age==='child'&&!adult(c))&&(!home||c.home===home)&&(trouble==='all'||trouble==='hunger'&&hungry(c,s)||trouble==='health'&&ill(c)||trouble==='family'&&family.has(c.home)));
 }

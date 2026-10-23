@@ -23,7 +23,7 @@ export function seasonBalance(s){
  const credit=(id,k,n)=>{n=Math.max(0,n);r[k].income+=n;if(MATERIALS.includes(k)){flow(id,k,n);if(!incomeByComponent.has(id))incomeByComponent.set(id,empty());incomeByComponent.get(id)[k]+=n;}};
  const debit=(id,k,n)=>{n=Math.max(0,n);r[k].outgo+=n;if(MATERIALS.includes(k)&&id!==undefined)flow(id,k,-n);};
  for(const [key,people] of groups){const b=buildings.get(key),def=BUILDINGS[b.type],id=component(key);let trips=0;
-  for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type==='tailor'?'tailor':'production'),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,'production'))),inputTravel=isArtisan(b)?travel*4:['weaver','tailor','kiln'].includes(b.type)?travel*(b.type==='kiln'?3:Math.ceil(craftBatch(b)/3)):0;trips+=45*13/24/((def.workTime||4)/(rate*(isArtisan(b)?outputMultiplier(b):1))+travel+inputTravel);}
+  for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,b.type))),inputTravel=isArtisan(b)?travel*4:['weaver','tailor','kiln'].includes(b.type)?travel*(b.type==='kiln'?3:Math.ceil(craftBatch(b)/3)):0;trips+=45*13/24/((def.workTime||4)/(rate*(isArtisan(b)?outputMultiplier(b):1))+travel+inputTravel);}
   production.set(key,trips);
   if(isArtisan(b)||['kiln','brickyard','waterpoint','weaver','tailor','healer','depot'].includes(b.type))continue;
   if(b.type==='field'){const crop=b.crop||{},batch=7*outputMultiplier(b);if(crop.sheaves>0||s.season===2){const harvest=s.season===2?crop.remaining||0:0;credit(id,'food',Math.min((crop.sheaves||0)+harvest,trips*batch*(harvest>0?.5:1)));}if(s.season===0)debit(id,'food',Math.min(stocks.get(id).food,Math.max(0,4-(crop.seedUsed||0))));continue;}
@@ -44,7 +44,7 @@ export function seasonBalance(s){
   const available=k=>Math.max(0,(stocks.get(id)?.[k]||0)+(byComponent.get(id)?.[k]||0)-(k==='food'?(protectedByComponent.get(id)||0):0));
   // Stored progress is labor, not elapsed wall time. Match the forecast's
   // workday allowance and sum the actual rates of the workshop's staff.
-  const laborRate=groups.get(key).reduce((n,c)=>n+workRate(c,'production'),0)*13/24*outputMultiplier(b);
+  const laborRate=groups.get(key).reduce((n,c)=>n+workRate(c,b.type),0)*13/24*outputMultiplier(b);
   const laborTime=seconds=>laborRate>0?Math.max(0,seconds)/laborRate:Infinity;
   const duration=pottery?laborTime(5)+(dryRate?12/dryRate:Infinity)+18:laborTime(15);
   const activeRemaining={forming:laborTime(5-v.elapsed)+(dryRate?12/dryRate:Infinity)+18,drying:(dryRate?(12-v.elapsed)/dryRate:Infinity)+18,firing:12-v.elapsed+6,cooling:6-v.elapsed,brewing:laborTime(15-v.elapsed),ready:0,idle:0}[v.stage];

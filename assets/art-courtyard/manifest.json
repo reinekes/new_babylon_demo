@@ -1,6 +1,6 @@
 {
-  "release": "art-courtyard-20261020-1",
-  "purpose": "separate art trial, no save data",
+  "release": "craft-and-fast-start-20261023-1",
+  "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
@@ -9,8 +9,8 @@
     },
     {
       "file": "CREDITS.html",
-      "bytes": 21966,
-      "sha256": "2faa5989dbe799179cea433cb3a1a078c9e778297818e470d3ad5d82d68369a9"
+      "bytes": 23128,
+      "sha256": "1bb6d292061269f7cce80c1ccd734d60efc62d9c71180a67aae7b36a46932d28"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -23,8 +23,8 @@
     },
     {
       "file": "models/ambient-bull.glb",
-      "bytes": 5800688,
-      "sha256": "abb9dceb612f69350b728d44bde433da37e847a92715597df33132c2bcdfff3c",
+      "bytes": 5800664,
+      "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
       "triangles": 3610,
       "meshes": 1,
       "bones": 49,
@@ -52,8 +52,8 @@
     },
     {
       "file": "models/ambient-donkey.glb",
-      "bytes": 4658608,
-      "sha256": "26523e667828cdd752d6b0d83251ed2b23e197fa4f8fb74d810c0f0bebde150e",
+      "bytes": 4356268,
+      "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
       "triangles": 4386,
       "meshes": 2,
       "bones": 53,
@@ -102,8 +102,8 @@
     },
     {
       "file": "models/caravan-camel.glb",
-      "bytes": 5579484,
-      "sha256": "17628cddc9232d8fc4722f64790440c0857dacfd70d222bb004bd627d14673d4",
+      "bytes": 4713460,
+      "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
       "triangles": 25914,
       "meshes": 3,
       "bones": 109,
@@ -218,8 +218,8 @@
     },
     {
       "file": "models/goat-downloaded.glb",
-      "bytes": 11857612,
-      "sha256": "dca8e24b21d23db492499fd0bd126bb77b1c44b01870ad7c6eea0fbec45dbc25",
+      "bytes": 8930492,
+      "sha256": "873294979c9adc2cb9baa568c4dd7dd971f5ccc426d3ca3b7d9f4079d62cdbae",
       "triangles": 41346,
       "meshes": 5,
       "bones": 34,

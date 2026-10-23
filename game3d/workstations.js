@@ -17,7 +17,7 @@ export function workstationBuilding(b,state){
 }
 export function workstationLayout(b){
  if(!equipment[b.type]||b.construction)return [];
- return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*2.55,z:sz*2.55,height:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
+ return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*1.94,z:sz*1.94,height:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
 }
 export function workstationFor(b,c,index=0){
  if(!b?.type||!['working','strike'].includes(c.activity?.stage)||c.walking||c.carrying)return null;
@@ -32,12 +32,12 @@ export function workstationFor(b,c,index=0){
 export function workstationPose(contact,time){
  const wave=Math.sin(time*3.6),lift=(1-Math.cos(time*3.6))*.5;
  const height=contact.target.height;
- if(contact.kind==='building')return {right:[.10,1.28+lift*.13,.49],left:[-.10,height,.49],tool:'building',bend:.15,twist:wave*.025};
- if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.025};
- if(contact.kind==='farming')return {right:[.10,.89+lift*.11,.49],left:[-.10,1.03+lift*.11,.20],tool:'hoe',bend:.30,twist:wave*.025};
- if(contact.kind==='loom')return {right:[.12,height,.49+wave*.035],left:[-.12,height,.49-wave*.035],tool:null,bend:.08,twist:wave*.025};
- if(contact.kind==='vat')return {right:[.08,height+.10+lift*.08,.47],left:[-.14,height+.02,.50],tool:'stirring',bend:.1,twist:wave*.04};
- return {right:[.10,height+.055,.49+wave*.035],left:[-.10,height+.055,.49-wave*.035],tool:null,bend:.15,twist:wave*.025};
+ if(contact.kind==='building')return {right:[.10,1.28+lift*.13,.49],left:[-.10,height,.49],tool:'building',bend:.15,twist:wave*.012};
+ if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.012};
+ if(contact.kind==='farming')return {right:[.10,.89+lift*.11,.49],left:[-.10,1.03+lift*.11,.20],tool:'hoe',bend:.30,twist:wave*.012};
+ if(contact.kind==='loom')return {right:[.12,height,.49+wave*.022],left:[-.12,height,.49-wave*.022],tool:null,bend:.08,twist:wave*.012};
+ if(contact.kind==='vat')return {right:[.08,height+.10+lift*.04,.47],left:[-.14,height+.02,.50],tool:'stirring',bend:.1,twist:wave*.018};
+ return {right:[.10,height+.045,.49+wave*.018],left:[-.10,height+.045,.49-wave*.018],tool:null,bend:.15,twist:wave*.012};
 }
 // World targets preserve contact under identity height/width variation and yaw.
 export function workstationHands(contact,time){

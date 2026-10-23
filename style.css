@@ -89,3 +89,75 @@ dialog[data-kind=event]::backdrop{background:transparent;backdrop-filter:none}di
 @media(max-width:600px){.world{min-height:480px}.game-layout{height:auto}.world h1{font-size:23px}.world .world-heading{max-width:75%}}
 @media(prefers-reduced-motion:reduce){button{transition:none}}
 .world.is-night h1{color:#f3e8ca;text-shadow:0 1px 2px #243b46}.world.is-night .eyebrow{color:#d6c8a7}
+
+/* Keep stocks, seasonal change and names in separate, readable tracks. */
+body .resourcebar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 20px;height:auto;min-height:0;padding:12px 20px 10px}
+.resourcebar > div#resources{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,3fr) minmax(110px,1.2fr);gap:10px;width:100%;min-width:0}
+.resourcebar #resources .resource-frame{grid-column:auto;padding:10px 12px;border-radius:6px;min-width:0}
+.resourcebar #resources .resource-group-label{align-items:baseline;gap:8px;margin:0 0 10px;font-size:9px;letter-spacing:.8px}
+.resourcebar #resources .resource-group-label > small{font-size:8px;white-space:nowrap}
+.resourcebar #resources .resource-group-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;gap:10px 8px}
+.resourcebar #resources .resource-frame-processed .resource-group-items{grid-template-columns:repeat(3,minmax(0,1fr))}
+.resourcebar #resources .resource-frame-divine .resource-group-items{grid-template-columns:minmax(0,1fr)}
+.resourcebar #resources .resource{display:grid;grid-template-columns:20px minmax(0,1fr);align-items:start;gap:6px;min-width:0;min-height:49px;padding:0;row-gap:3px}
+.resourcebar #resources .resource-icon{display:block;margin-top:1px;line-height:1}
+.resourcebar #resources .resource-icon .resource-svg{display:block;width:20px;height:21px}
+.resourcebar #resources .resource > div{display:contents;min-width:0}
+.resourcebar #resources .resource-value{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr);gap:2px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.resourcebar #resources .resource strong{display:block;font-size:18px;font-weight:500;line-height:20px;font-variant-numeric:tabular-nums;letter-spacing:-.35px}
+.resourcebar #resources .season-delta{display:block;margin:0;font:11px/13px Arial,Helvetica,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:0}
+.resourcebar #resources .resource small{grid-column:1/-1;display:block;margin:0;font-size:9px;line-height:11px;letter-spacing:.25px;white-space:normal;overflow-wrap:anywhere}
+body .resourcebar .city-title{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:10px;min-width:0;border:0}
+.resourcebar .city-title .eyebrow{font-size:8px;letter-spacing:1px}
+.resourcebar .city-title strong{margin:0;font-size:18px;line-height:22px}
+.resourcebar .city-title strong span{margin-left:8px;font-size:11px}
+body .resourcebar .citizens{position:static;grid-column:2;grid-row:2;display:flex;align-items:center;justify-content:flex-end;align-self:center;gap:8px;border:0;padding:0;color:var(--ink)!important}
+.resourcebar .citizens .resource-icon{display:block;font-size:21px}
+.resourcebar .citizens strong{font-size:15px;line-height:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.resourcebar .citizens small{display:inline;margin:0 0 0 5px;font-size:8px;letter-spacing:.5px}
+.resourcebar .citizens .divider{display:block;height:18px;margin:0 3px}
+.resourcebar #happiness{display:block;font-size:12px}
+@media(min-width:1500px){
+ .resourcebar > div#resources{grid-template-columns:minmax(0,7fr) minmax(0,3.5fr) minmax(0,2fr)}
+ .resourcebar #resources .resource-frame-basic .resource-group-items{grid-template-columns:repeat(7,minmax(0,1fr))}
+ .resourcebar #resources .resource-frame-divine .resource-group-items{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .resourcebar #resources .resource-frame-basic .resource-group-items,.resourcebar #resources .resource-frame-divine .resource-group-items{height:108px;align-items:center}
+}
+@media(max-width:900px){
+ body .resourcebar{padding:10px 14px;gap:9px 12px}
+ .resourcebar > div#resources{grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:8px}
+ .resourcebar #resources .resource-frame-basic{grid-column:1/-1}
+ .resourcebar #resources .resource-frame{padding:9px 10px}
+ .resourcebar #resources .resource strong{font-size:17px}
+ .resourcebar .city-title .eyebrow{display:none}
+}
+@media(max-width:480px){
+ body .resourcebar{padding:9px 10px;gap:9px}
+ .resourcebar > div#resources{grid-template-columns:minmax(0,1fr);gap:8px}
+ .resourcebar #resources .resource-frame{grid-column:1;padding:9px}
+ .resourcebar #resources .resource-group-items{gap:10px 6px}
+ .resourcebar #resources .resource{grid-template-columns:16px minmax(0,1fr);gap:3px 4px;min-height:47px}
+ .resourcebar #resources .resource-icon .resource-svg{width:16px;height:19px}
+ .resourcebar #resources .resource strong{font-size:15px;line-height:18px;letter-spacing:-.4px}
+ .resourcebar #resources .resource-frame-processed .resource-group-items,.resourcebar #resources .resource-frame-divine .resource-group-items{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .resourcebar #resources .resource small{font-size:8px}
+ .resourcebar #resources .resource-group-label{margin-bottom:9px}
+ .resourcebar .city-title strong{font-size:17px}
+ .resourcebar .citizens .resource-icon{display:none}
+ .resourcebar .citizens strong{font-size:13px}
+ .resourcebar .citizens small{margin-left:3px}
+ .resourcebar #happiness{font-size:11px}
+}
+
+.production-readout{margin:12px 0;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.production-readout h4{margin:0 0 7px;font-size:12px;line-height:1.4;color:var(--teal)}
+.production-readout .production-recipe{margin:0 0 10px!important;font-size:11px!important;line-height:1.5!important;color:#6a624a}
+.production-materials{max-width:100%;overflow-x:auto;margin:10px 0 12px}
+.production-materials table{width:100%;border-collapse:collapse;font-size:10px;line-height:1.4;font-variant-numeric:tabular-nums}
+.production-materials caption{text-align:left;font-size:10px;font-weight:bold;margin-bottom:6px;color:var(--muted)}
+.production-materials th,.production-materials td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+.production-materials th:first-child{text-align:left;padding-left:0}
+.production-materials thead th{font-size:9px;font-weight:normal;color:var(--muted)}
+.production-materials tbody th{font-weight:normal}
+.production-readout .production-output{margin:8px 0!important;padding:8px 10px;background:#e9ecdf;border:1px solid #ccd2bb;border-radius:4px;font-size:11px!important;line-height:1.6!important;font-variant-numeric:tabular-nums}
+.production-note{display:block;font-size:10px;line-height:1.6;color:var(--muted)}

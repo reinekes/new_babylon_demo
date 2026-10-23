@@ -1,3 +1,4 @@
+import {loadModel} from './asset-loading.js';
 import {cropSeed,fieldCropKind,cropPlantGeometry,createBotanicalMaterial,botanicalMesh} from './crop-varieties.js';
 import {districtCropVisual} from '../district3d/buildings.js';
 import {lakeContours} from './lake-shore.js';
@@ -14,7 +15,7 @@ export async function loadFieldCrops(B,scene){
  let container,base;
  const batches=new Map(),owned=[],extraContainers=[];
  try{
-  container=await B.SceneLoader.LoadAssetContainerAsync('',FIELD_CROP_ASSET,scene,undefined,'.glb');container.addAllToScene();
+  container=await loadModel(B,scene,'',FIELD_CROP_ASSET,scene,undefined,'.glb');container.addAllToScene();
   const sources=container.meshes.filter(m=>m.getTotalVertices());
   if(!sources.length)throw Error('Barley model has no geometry');
   for(const mesh of sources)mesh.computeWorldMatrix(true);
@@ -39,7 +40,7 @@ export async function loadFieldCrops(B,scene){
    sourcesByKind.set(kind,{data,radius:.34,material:botanicalMaterial,count:8});
   }
   try{
-   const extra=await B.SceneLoader.LoadAssetContainerAsync('',EMMER_CROP_ASSET,scene,undefined,'.glb');extraContainers.push(extra);extra.addAllToScene();
+   const extra=await loadModel(B,scene,'',EMMER_CROP_ASSET,scene,undefined,'.glb');extraContainers.push(extra);extra.addAllToScene();
    const parts=extra.meshes.filter(m=>m.getTotalVertices());for(const m of parts)m.computeWorldMatrix(true);
    const reflected=parts[0].getWorldMatrix().determinant()<0,mat=parts[0].material;
    const merged=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);merged.isVisible=false;merged.isPickable=false;

@@ -21,6 +21,7 @@ import {initializeCrops,changeCropSeason,cropSummary,validateCrops} from './agri
 import {fieldWater,irrigationFor} from './irrigation.js';
 import {initializeClothing,validateClothing} from './clothing.js';
 import {ROLES,validateEducation,newMedicalSkill,advanceMedicalYear} from './education.js';
+import {PROFESSION_IDS,professionRole} from './professions.js';
 import {initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
 import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
@@ -252,7 +253,7 @@ export function decode(raw){
    if(c.recovering!==undefined&&typeof c.recovering!=='boolean')return null;
    if(c.clinic!=null&&(buildings.get(c.clinic)?.type!=='healer'||!isComplete(buildings.get(c.clinic))||!['toHealer','treatment','blocked'].includes(c.phase)||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||c.pantryTrip||c.tradeJob||c.saleJob))return null;
    if(['toHealer','treatment'].includes(c.phase)&&!c.clinic)return null;
-   if(c.calling!==undefined&&!ROLES.includes(c.calling)||c.futureRole!==undefined&&(!ROLES.includes(c.futureRole)||c.age>=16||c.futureRole!==c.calling))return null;
+   if(c.calling!==undefined&&!PROFESSION_IDS.includes(c.calling)||c.futureRole!==undefined&&(!ROLES.includes(c.futureRole)||c.age>=16||c.futureRole!==professionRole(c.calling)))return null;
    ids.add(c.id);if(c.saleJob!=null&&(!s.trade.sales.some(q=>q.id===c.saleJob&&q.market===c.saleMarket)||!['toSaleSupply','toSaleMarket','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home','toRest','resting','toPantrySupply','toPantryHome'].includes(c.phase)))return null;
    if(c.role!==undefined&&!ROLES.includes(c.role)||c.pendingRole!==undefined&&!ROLES.includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;

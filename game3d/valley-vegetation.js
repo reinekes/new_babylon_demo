@@ -1,3 +1,4 @@
+import {loadModel} from './asset-loading.js';
 import {WIDTH,HEIGHT,river} from '../world.js';
 import {TILE} from '../district3d/terrain.js';
 import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js';
@@ -38,7 +39,7 @@ export function valleyVegetationPlan(s,roads=[],tier='balanced'){
 export async function loadValleyPlantSources(B,scene,files,meshes,containers,kind){
  const sources=[];let variant=0;
  for(const file of files){let container;try{
-  container=await B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',file,scene);containers.push(container);container.addAllToScene();const groups=new Map();
+  container=await loadModel(B,scene,'assets/art-courtyard/models/',file,scene);containers.push(container);container.addAllToScene();const groups=new Map();
   for(const m of container.meshes)if(m.getTotalVertices()>0){m.computeWorldMatrix(true);if(!groups.has(m.material))groups.set(m.material,[]);groups.get(m.material).push(m);}
   for(const [mat,parts]of groups){
    // Dry-grass cards deliberately carry upward canopy normals. Flipping them

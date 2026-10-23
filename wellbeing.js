@@ -1,11 +1,12 @@
 import {ration} from './households.js';
+import {professionMatchesTask} from './professions.js';
 const clamp=n=>Math.max(0,Math.min(100,n));
 export const hourOf=t=>((8+t*.4)%24+24)%24;
 export const mealCycle=t=>Math.floor((t-30+1e-7)/60);
 export const mealRation=c=>ration(c)*4/3;
 export const isDinnerTime=t=>hourOf(t)>=20||hourOf(t)<6;
 export function initializeWellbeing(s){const day=mealCycle(s.simTime||0);for(const c of s.citizens){c.hunger??=0;c.health??=100;c.mood??=75;c.faith??=60;c.mealDay??=day;c.mealEaten??=mealRation(c);c.mealEvaluated??=day;c.missedMeals??=0;c.lastMealQuality??=1;c.familyMeal??=false;c.diningUntil??=0;c.prayerTotal??=0;}}
-export const workRate=(c,task=c.siteDuty||c.role)=>Math.max(.15,Math.min(1.2,(.5+(c.mood??75)/150)*(.4+.6*(c.health??100)/100)*(1-.6*(c.hunger||0)/100)))*(c.age>=16&&c.calling&&c.calling!=='auto'&&c.calling===task&&c.role===task?1.2:1);
+export const workRate=(c,task=c.siteDuty||c.role)=>Math.max(.15,Math.min(1.2,(.5+(c.mood??75)/150)*(.4+.6*(c.health??100)/100)*(1-.6*(c.hunger||0)/100)))*(professionMatchesTask(c,task)?1.2:1);
 export const beliefMultiplier=s=>s.citizens.length?s.citizens.reduce((n,c)=>n+(c.faith??60),0)/(s.citizens.length*60):0;
 export function affectResidents(s,{faith=0,mood=0}={},ids=null){const affected=ids&&new Set(ids);for(const c of s.citizens||[])if(!affected||affected.has(c.id)){c.faith=clamp((c.faith??60)+faith);c.mood=clamp((c.mood??75)+mood);}}
 export function mournResidents(s,ids,natural=false){const dead=new Set(ids);for(const c of s.citizens){if(dead.has(c.id))continue;const family=dead.has(c.partner)||c.parents?.some(id=>dead.has(id));c.mood=clamp((c.mood??75)-(family?20:6));c.faith=clamp((c.faith??60)-(natural?(family?4:1):(family?22:10)));}}

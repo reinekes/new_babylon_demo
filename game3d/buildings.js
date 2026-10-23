@@ -1,4 +1,5 @@
 import {workstationBuilding} from './workstations.js';
+import {createRoofAccess} from './roof-access.js';
 import {cropSeed,fieldCropKind} from './crop-varieties.js';
 import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
 import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js';
@@ -48,10 +49,9 @@ export function mergeCourtyardAsset(B,container){
  return merged;
 }
 
-export async function createGameBuildings(B,scene,materials){
- const container=await B.SceneLoader.LoadAssetContainerAsync('',HOME_ASSET,scene,undefined,'.glb');
- const cropAssets=await loadFieldCrops(B,scene);
- const originals=mergeCourtyardAsset(B,container),templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
+export async function createGameBuildings(B,scene,materials,options={}){
+ let cropAssets=options.deferAssets?null:await loadFieldCrops(B,scene),cropPromise=null;
+ const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
  function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
@@ -83,17 +83,6 @@ export async function createGameBuildings(B,scene,materials){
  const homeShade=finish('home-interior-shadow','#100c08');
  const homePlasters=houseFinishes.map((variants,level)=>variants.map((base,variant)=>{const mat=finish(`home-plaster-${level+1}-${variant}`,['#ceb18a','#d8c29e','#e0cdaa'][variant],materials.plaster);mat.albedoTexture=null;mat.albedoColor=mat.albedoColor.toLinearSpace();return mat;}));
  const materialSet={...materials,raw,fired,shade,trim,warm};
- // Share photographic surface maps with the high detail asset's authored UVs.
- for(const mesh of originals){
-  const m=mesh.material,name=m?.name||'';
-  const source=/plastered/.test(name)?materials.plaster:/timber/.test(name)?materials.wood:/roof-earth/.test(name)?materials.soil:null;
-  if(source&&m){m.albedoTexture=source.albedoTexture;m.bumpTexture=source.bumpTexture;m.roughness=.97;}
- }
- const min=new B.Vector3(Infinity,Infinity,Infinity),max=new B.Vector3(-Infinity,-Infinity,-Infinity);
- for(const mesh of originals){mesh.computeWorldMatrix(true);const b=mesh.getBoundingInfo().boundingBox;min.minimizeInPlace(b.minimumWorld);max.maximizeInPlace(b.maximumWorld);}
- // Width is about 8.8 m including wall thickness; .52 preserves a clear tile margin.
- const scale=Math.min(.52,5.15/(max.x-min.x),5.15/(max.z-min.z));
- const center=min.add(max).scale(.5),verticalScale=.74;
  function acquire(b,key,state,shoreContext){
   let t=templates.get(key);if(t){t.users++;return t;}
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
@@ -101,29 +90,6 @@ export async function createGameBuildings(B,scene,materials){
    sources=createConstructionSite(B,scene,b,materialSet);for(const mesh of sources)mesh.parent=root;
   }else if(isHouse(b)){
    sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade});for(const mesh of sources)mesh.parent=root;
-  }else if(isHouse(b)){
-   for(const original of originals){
-    const mesh=original.clone(`${original.name}-tier${tier(b)}`,null,true);mesh.isVisible=false;
-    mesh.scaling.set(scale,verticalScale,scale);mesh.position.set(-center.x*scale,-min.y*verticalScale,-center.z*scale);
-    {
-     // Independent geometry once per shared variant; all groups use the same warp.
-     mesh.makeGeometryUnique();
-     const p=Array.from(mesh.getVerticesData(B.VertexBuffer.PositionKind)),authored=mesh.getVerticesData(B.VertexBuffer.NormalKind),normals=[],variant=organicHouseVariant(b);
-     for(let i=0;i<p.length;i+=3){
-      const x=(p[i]-center.x)*scale,y=(p[i+1]-min.y)*verticalScale,z=(p[i+2]-center.z)*scale,v=organicHousePoint(x,y,z,variant),epsilon=.001;
-      // Preserve authored (including bevel-weighted) normals through the warp's
-      // inverse transpose. Rebuilding them from reflected glTF indices reverses
-      // Babylon's default winding and loses the artist's hard/smooth edge choices.
-      const derivative=(axis)=>{const a=[x,y,z],c=[x,y,z];a[axis]+=epsilon;c[axis]-=epsilon;const u=organicHousePoint(...a,variant),w=organicHousePoint(...c,variant);return new B.Vector3((u[0]-w[0])/(2*epsilon),(u[1]-w[1])/(2*epsilon),(u[2]-w[2])/(2*epsilon));};
-      const dx=derivative(0),dy=derivative(1),dz=derivative(2),normal=B.Vector3.Cross(dy,dz).scale(authored[i]/scale).addInPlace(B.Vector3.Cross(dz,dx).scale(authored[i+1]/verticalScale)).addInPlace(B.Vector3.Cross(dx,dy).scale(authored[i+2]/scale)).normalize();
-      p[i]=v[0];p[i+1]=v[1];p[i+2]=v[2];normals.push(normal.x,normal.y,normal.z);
-     }
-     mesh.setVerticesData(B.VertexBuffer.PositionKind,p);mesh.setVerticesData(B.VertexBuffer.NormalKind,normals);mesh.scaling.setAll(1);mesh.position.setAll(0);
-    }
-    if(/plastered/.test(original.material?.name||''))mesh.material=houseFinishes[tier(b)-1][organicHouseVariant(b)];
-    mesh.overrideMaterialSideOrientation=original.overrideMaterialSideOrientation;
-    mesh.parent=root;sources.push(mesh);
-   }
   }else{
    if(b.type==='field'||b.type==='bridge'||b.type==='house'||b.type==='canal'){
     const adapted=cropAssets&&usesBarleyCards(b)?{...b,crop:{...b.crop,sown:0}}:b;
@@ -133,6 +99,7 @@ export async function createGameBuildings(B,scene,materials){
    }else for(const mesh of createArchitecture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
 
   }
+  for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>{
    const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
@@ -192,7 +159,7 @@ export async function createGameBuildings(B,scene,materials){
   return previewRecord;
  }
  function sync(state){
-  if(disposed)return;
+  if(disposed)return;if(options.deferAssets&&state.buildings.some(b=>b.type==='field'))loadDetails();
   const shoreContext=foundationContext(state),seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
   for(const b of state.buildings||[]){
    // Landscape owns connected canal beds, wetness, banks and construction.
@@ -229,5 +196,6 @@ export async function createGameBuildings(B,scene,materials){
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
  }
- return {sync,meshes,preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);for(const source of originals)source.dispose();cropAssets?.dispose();container.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
+ return {sync,meshes,loadDetails,refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

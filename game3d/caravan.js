@@ -1,3 +1,4 @@
+import {loadModel} from './asset-loading.js';
 import {surfaceElevation,TILE} from '../district3d/terrain.js';
 import {cargoLayout} from './goods.js';
 export const CARAVAN_MODELS={merchant:'caravan-merchant.glb',camel:'caravan-camel.glb'};
@@ -14,7 +15,7 @@ export function caravanFormation(c){
 export function caravanCargoSignature(stock={}){return JSON.stringify(Object.entries(stock).filter(([,n])=>Number.isFinite(n)&&n>0).sort(([a],[b])=>a.localeCompare(b)));}
 export async function createTradeCaravan(B,scene,meshes,materials,goods,options={}){
  const sources=new Map(),actors=[],ownedMaterials=[],cargoMeshes=[];let key=null,lastTime=null,cargoSignature='',disposed=false;
- const load=options.loadAsset||(file=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${file}?v=${CARAVAN_RELEASE}`,scene,undefined,'.glb'));
+ const load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=${CARAVAN_RELEASE}`,scene,undefined,'.glb'));
  for(const result of await Promise.allSettled(Object.entries(CARAVAN_MODELS).map(async([kind,file])=>({kind,asset:await load(file)}))))if(result.status==='fulfilled')sources.set(result.value.kind,result.value.asset);else(options.warn||console.warn)('Caravan model unavailable',result.reason);
  const material=(name,hex)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.96;m.metallic=0;ownedMaterials.push(m);return m;};
  const wool=material('caravan-woven-saddle-cloth','#8e5235'),linen=material('caravan-linen-pannier','#ad976c'),rope=material('caravan-hemp-lashings','#6f593b');
