@@ -1,0 +1,83 @@
+{
+  "file": "crop-emmer.glb",
+  "bytes": 631660,
+  "source_file": "yard_wheat_clump.glb",
+  "source_sha256": "d72983654e9280d93178c8b6175a08c16da72118168ee3034f4fb656cbbd9f11",
+  "source_node_indices": [
+    6
+  ],
+  "semantic": "Generic wheat adapted visually for emmer / Triticum dicoccum; broad awned ears, species not identified by source author",
+  "runtime_approved": true,
+  "units": "metres",
+  "up": "+Y",
+  "geometry_transform_baked": true,
+  "source_to_metres_scale": 0.2810626877281316,
+  "source_world_center_ground": [
+    -0.613377571105957,
+    -0.2657797336578369,
+    0.056802988052368164
+  ],
+  "bounds_min": [
+    -0.34395250658937243,
+    0.0,
+    -0.3692745600296424
+  ],
+  "bounds_max": [
+    0.34395250658937243,
+    1.02,
+    0.3692745600296424
+  ],
+  "triangles": 720,
+  "texture_limit": 512,
+  "images": [
+    {
+      "source_index": 2,
+      "source_size": [
+        1024,
+        1024
+      ],
+      "output_size": [
+        512,
+        512
+      ],
+      "mode": "RGB"
+    },
+    {
+      "source_index": 1,
+      "source_size": [
+        1024,
+        1024
+      ],
+      "output_size": [
+        512,
+        512
+      ],
+      "mode": "RGB"
+    },
+    {
+      "source_index": 0,
+      "source_size": [
+        1024,
+        1024
+      ],
+      "output_size": [
+        512,
+        512
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "changes": [
+    "selected complete plant material groups",
+    "baked source hierarchy; centered XZ and grounded Y",
+    "embedded PNG textures capped at 512; original UVs and channels preserved",
+    "vegetation metallic factor 0; alpha cards double sided MASK",
+    "froze rest shape; removed source morph wind animation and morph targets"
+  ],
+  "source_asset_extras": {
+    "author": "ebmclachlan (https://sketchfab.com/ebmclachlan)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/yard-wheat-clump-b8bdffd307a64833b2acc986a87f3977",
+    "title": "Yard Wheat Clump"
+  }
+}

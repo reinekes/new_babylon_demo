@@ -73,3 +73,37 @@ test('optional barley load failure keeps the existing standing crop and empty fi
   b.crop.sown=0;layer.sync(state);assert.ok(!layer.meshes.some(m=>m.material===t.materials.grass));layer.dispose();assert.equal(t.scene.meshes.length,0);
  }finally{layer?.dispose();t.dispose();}
 });
+
+test('seven crop species build single material batches with real wheat geometry and unchanged harvest state',async()=>{
+ const {fieldCropKind}=await import('../game3d/crop-varieties.js');const t=setup();let assets;
+ try{
+  assets=await loadFieldCrops(B,t.scene);const seen=new Map();
+  for(let id=0;id<140&&seen.size<7;id++){
+   const b={...field(),id},kind=fieldCropKind(b);if(seen.has(kind))continue;
+   const state={buildings:[b]},before=structuredClone(state),[mesh]=assets.create(b,state);assert.ok(mesh);assert.equal(mesh.metadata.cropKind,kind);assert.deepEqual(state,before);assert.ok(mesh.getIndices().length/3<=22000);
+   if(kind==='emmer'){assert.equal(mesh.metadata.clumps,16);assert.equal(mesh.getIndices().length/3,11520);assert.ok(mesh.material.albedoTexture);assert.ok(mesh.getBoundingInfo().boundingBox.maximum.y>1.1);}
+   if(!['barley','emmer'].includes(kind)){assert.ok(mesh.getVerticesData(B.VertexBuffer.ColorKind).length);assert.equal(mesh.material.metallic,0);}
+   seen.set(kind,mesh);mesh.dispose();
+  }
+  assert.equal(seen.size,7);assets.dispose();assert.equal(t.scene.meshes.length,0);
+ }finally{assets?.dispose();t.dispose();}
+});
+
+test('household gardens batch ten plants and preserve old simulation data',async()=>{
+ const t=setup();let assets;try{
+  assets=await loadFieldCrops(B,t.scene);const b={type:'house',id:2,x:3,y:4},state={buildings:[b]},before=structuredClone(state),[mesh]=assets.createGarden(b,state);
+  assert.equal(mesh.metadata.plants,10);assert.equal(mesh.metadata.cropKinds.length,2);assert.deepEqual(state,before);assert.equal(assets.createGarden({...b,construction:{kind:'new'}},state).length,0);assert.equal(assets.createGarden({...b,type:'temple'},state).length,0);mesh.dispose();
+ }finally{assets?.dispose();t.dispose();}
+});
+
+test('house gardens preserve shared courtyard templates and rebuild only their own rotated or moved beds',async()=>{
+ const t=setup();let layer;try{
+  layer=await createGameBuildings(B,t.scene,t.materials);
+  const a={type:'house',id:'home',x:3,y:4,level:1},b={...a,id:'second',x:8},state={buildings:[a,b],citizens:[]};layer.sync(state);
+  const house=layer.meshes.find(m=>m.metadata.buildingKey==='home'&&m.name.includes('game-courtyard')),other=layer.meshes.find(m=>m.metadata.buildingKey==='second'&&m.name.includes('game-courtyard'));
+  assert.equal(house.sourceMesh,other.sourceMesh);
+  const garden=layer.meshes.find(m=>m.metadata.householdGarden&&m.metadata.buildingKey==='home');assert.ok(garden);const n=t.scene.meshes.length;layer.sync(state);assert.equal(t.scene.meshes.length,n);
+  a.rotation=1;layer.sync(state);assert.ok(garden.isDisposed());assert.ok(layer.meshes.includes(house));assert.equal(t.scene.meshes.length,n);
+  layer.dispose();assert.equal(t.scene.meshes.length,0);
+ }finally{layer?.dispose();t.dispose();}
+});

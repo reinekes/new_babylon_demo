@@ -1,3 +1,4 @@
+import {createDateClusters,createBotanicalMaterial} from './crop-varieties.js';
 import {canalNetworkGeometry,openCanalMouths} from './canal-network.js';
 import {createDistrictTerrain, districtRoadEdges, surfaceElevation, TILE, shoreDistance} from '../district3d/terrain.js';
 import {WIDTH, HEIGHT, terrain, river} from '../world.js';
@@ -106,6 +107,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  const palmContainers=[];
  palmSources.push(...await loadValleyPlantSources(B,scene,VALLEY_PLANT_ASSETS.palm,meshes,palmContainers,'palm'));
  if(!palmSources.length)palmSources.push(...await loadValleyPlantSources(B,scene,['date-palm.glb'],meshes,palmContainers,'palm'));
+ if(palmSources.length){const dateMaterial=createBotanicalMaterial(B,scene);ownedMaterials.push(dateMaterial);const dateSource=createDateClusters(B,scene,{height:5.15,radius:.5},dateMaterial);dateSource.setEnabled(false);dateSource.metadata={nativeDates:true};meshes.push(dateSource);palmSources.push(dateSource);}
  for(const m of palmSources)m.name=`game-date-palm-source-${m.material?.name||m.name}`;
  const siteMaterials=Object.fromEntries(Object.entries(RESOURCE_SITES).map(([kind,spec])=>[kind,material(`resource-${kind}`,spec.color)]));
  const resourceModels=new Map();
@@ -171,7 +173,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   const lakeMargin=meshData('organic-lake-soft-banks',openCanalMouths(lakebankGeometry(s),arms),shore);if(lakeMargin){lakeMargin.hasVertexAlpha=true;lakeMargin.freezeWorldMatrix();}
   const visiblePalms=plan.palms.filter(p=>!(s.gathering?.features||[]).some(f=>f.kind==='tree'&&Math.hypot(f.x-p.x,f.y-p.y)<.85));
   const nextPalms=JSON.stringify(visiblePalms.map(p=>[p.id,p.x,p.y]));
-  if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;m.overrideMaterialSideOrientation=B.Material.ClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}}
+  if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}}
  }
 
  let featureSignature='';
@@ -181,7 +183,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(next!==featureSignature){featureSignature=next;remove(workFeatureMeshes);for(const r of workFeatureRoots)r.dispose();workFeatureRoots.length=0;workFeatures.clear();
    for(const f of features){if(!sceneryClear(s,f,.2)||vegetationBankDistance(f.x,f.y,s)<.2||landscapePlanRoads.some(r=>pointDistance(f,r.a,r.b)<.4))continue;const Y=surfaceElevation(f.x,f.y,s),root=new B.TransformNode(`gathering-feature-${f.id}`,scene);root.position.set(f.x*TILE,Y,f.y*TILE);workFeatureRoots.push(root);const parts=[];
     if(f.kind==='tree'){
-     for(const src of palmSources){const m=src.createInstance(`working-tree-${f.id}-${src.name}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(.72);m.overrideMaterialSideOrientation=B.Material.ClockWiseSideOrientation;parts.push(add(m,workFeatureMeshes));}
+     for(const src of palmSources){const m=src.createInstance(`working-tree-${f.id}-${src.name}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(.72);if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;parts.push(add(m,workFeatureMeshes));}
      const stump=B.MeshBuilder.CreateCylinder(`felled-tree-stump-${f.id}`,{height:.32,diameterTop:.26,diameterBottom:.34,tessellation:8},scene);stump.position.set(f.x*TILE,Y+.16,f.y*TILE);stump.material=cutWood;add(stump,workFeatureMeshes);stump.setEnabled(false);
      const scar=box(`axe-cut-${f.id}`,f.x*TILE-.17,Y+.43,f.y*TILE,.05,.12,.21,cutWood,workFeatureMeshes);scar.setEnabled(false);
      workFeatures.set(f.id,{root,parts,stump,scar});

@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import {createMiracleGarden,miracleGardenPlan,MIRACLE_PLANT_ASSETS} from '../game3d/miracle-garden.js';
+const files=Object.values(MIRACLE_PLANT_ASSETS).flat();
+function glb(file){const raw=readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url)),n=raw.readUInt32LE(12);return {raw,g:JSON.parse(raw.subarray(20,20+n)),bin:raw.subarray(28+n)};}
+test('miracle plants preserve attribution and complete selected LODs, metres and embedded 512 textures',()=>{
+ const expectedLayers={birch:2,lilac:2};
+ for(const file of files){const {raw,g,bin}=glb(file),ex=g.asset.extras,m=ex.new_babylon_adaptation;assert.equal(raw.readUInt32LE(8),raw.length);assert.match(ex.author,/LOLIPOP/);assert.match(ex.license,/CC-BY-4.0/);assert.equal(ex.source,m.source_asset_extras.source);assert.equal(m.units,'metres');assert.equal(m.up,'+Y');assert.ok(Math.abs(m.bounds_min[1])<1e-7);assert.ok(m.triangles>0&&m.triangles<3000);assert.equal(g.meshes.length,expectedLayers[file.split('-')[1]]||1);assert.ok(g.nodes.every(n=>!/holder|ref_man|checker|billboard|filler/i.test(n.name)));assert.equal(g.animations,undefined);
+  for(const mesh of g.meshes)for(const p of mesh.primitives){const a=g.accessors[p.attributes.POSITION],v=g.bufferViews[a.bufferView];let min=Infinity,max=-Infinity;for(let i=0;i<a.count;i++){const y=bin.readFloatLE(v.byteOffset+(a.byteOffset||0)+i*12+4);assert.ok(Number.isFinite(y));min=Math.min(min,y);max=Math.max(max,y);}assert.ok(min>=-1e-6&&max<=m.bounds_max[1]+1e-5);}
+  for(const im of g.images){assert.equal(im.mimeType,'image/png');const v=g.bufferViews[im.bufferView];assert.ok(bin.readUInt32BE(v.byteOffset+16)<=512);assert.ok(bin.readUInt32BE(v.byteOffset+20)<=512);}
+ }
+});
+test('garden has bounded complete circular composition, with a single birch and outer cacti',()=>{const p=miracleGardenPlan({x:10,y:12},3.5);assert.equal(p.length,148);assert.equal(p.filter(p=>p.kind==='birch').length,1);assert.equal(p.filter(p=>p.kind==='cactus').length,9);for(const e of p){const d=Math.hypot(e.x-10,e.y-12);assert.ok(d<=3.5);if(e.kind==='cactus')assert.ok(d>3.2);}assert.deepEqual(p,miracleGardenPlan({x:10,y:12},3.5));});
+test('real Babylon garden grows, pauses, expires, bounds repeated shows and disposes all geometry',async()=>{
+ const box={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'},TextDecoder,TextEncoder,URL,Blob};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),box);const B=box.exports.NullEngine?box.exports:box.module.exports;box.BABYLON=B;box.exports=undefined;box.module=undefined;vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url),'utf8'),box);
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),load=B.SceneLoader.LoadAssetContainerAsync;let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>p.skipMaterials=true);const c=await load.call(B.SceneLoader,'',new Uint8Array(glb(file).raw),scene,undefined,'.glb');for(const m of c.meshes)if(m.getTotalVertices()>0){const mat=new B.PBRMaterial(m.name+'-test',scene);m.material=mat;c.materials.push(mat);}return c;};
+ try{view=await createMiracleGarden(B,scene,{groundHeight:(x,y)=>x*.001+y*.002});assert.ok(view.sources.birch.length);view.show({x:10,y:12});assert.equal(view.activeGardens,1);view.update(6);const plant=view.meshes.find(m=>m.metadata?.miracleGarden?.kind==='daisy');assert.ok(plant.isEnabled()&&plant.scaling.x>1);assert.equal(plant.overrideMaterialSideOrientation,B.Material.CounterClockWiseSideOrientation);assert.equal(plant.sourceMesh.overrideMaterialSideOrientation,B.Material.CounterClockWiseSideOrientation);const scale=plant.scaling.x;view.update(7,{paused:true});assert.equal(view.gardens[0].age,6);assert.equal(plant.scaling.x,scale);view.update(51);assert.ok(plant.scaling.x<scale);view.show({x:11,y:12});view.show({x:12,y:12});assert.ok(plant.isDisposed());assert.equal(view.activeGardens,2);assert.ok(view.meshes.length<400);view.update(61);assert.equal(view.activeGardens,0);view.dispose();view.dispose();assert.equal(view.meshes.length,0);assert.equal(scene.meshes.length,0);assert.equal(scene.materials.length,0);assert.equal(scene.transformNodes.length,0);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=load;view?.dispose();scene.dispose();engine.dispose();}
+});
+
+test('garden planting respects dry/clear placement and reset releases every transient instance',async()=>{
+ const box={console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),box);const B=box.BABYLON;
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),load=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async()=>{const c=new B.AssetContainer(scene),m=B.MeshBuilder.CreatePlane('plant',{size:.4},scene);m.material=new B.StandardMaterial('leaf',scene);c.meshes.push(m);c.materials.push(m.material);c.removeAllFromScene();return c;};
+ let garden;
+ try{garden=await createMiracleGarden(B,scene,{canPlant:(x,y)=>x>5&&y>5});garden.show({x:5,y:5});const planted=garden.meshes.filter(m=>m.metadata?.miracleGarden?.kind);assert.ok(planted.length>0);assert.ok(planted.every(m=>m.metadata.miracleGarden.x>5&&m.metadata.miracleGarden.y>5));garden.update(5);const total=scene.meshes.length;garden.clear();assert.equal(garden.activeGardens,0);assert.ok(planted.every(m=>m.isDisposed()));assert.ok(scene.meshes.length<total);garden.show({x:5,y:5});garden.clear();assert.equal(garden.activeGardens,0);}finally{garden?.dispose();B.SceneLoader.LoadAssetContainerAsync=load;scene.dispose();engine.dispose();}
+});

@@ -1,3 +1,4 @@
+import {cropSeed,fieldCropKind} from './crop-varieties.js';
 import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
 import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js';
 import {createConstructionSite} from './construction-sites.js';
@@ -16,7 +17,7 @@ const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgr
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?'barley':'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):'',foundationSignature(b,state,shoreContext)].join('|');
+ return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):'',foundationSignature(b,state,shoreContext)].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -249,6 +250,17 @@ export async function createGameBuildings(B,scene,materials){
    }
    if(record.rotation!==rotationOf(b)){
     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,b);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(b);
+   }
+   // The courtyard architecture keeps its three shared templates. A tiny garden
+   // owns its terrain-dependent geometry separately, so plant variety never
+   // duplicates the entire high-detail house or fragments preview caches.
+   if(cropAssets&&isHouse(b)){
+    const gardenSignature=`${cropSeed(b)%5}:${b.x},${b.y}:${rotationOf(b)}:${shoreContext.signature}`;
+    if(record.gardenSignature!==gardenSignature){
+     for(const mesh of record.gardenMeshes||[]){const a=record.meshes.indexOf(mesh),c=meshes.indexOf(mesh);if(a>=0)record.meshes.splice(a,1);if(c>=0)meshes.splice(c,1);mesh.dispose();}
+     record.gardenMeshes=cropAssets.createGarden(b,state);record.gardenSignature=gardenSignature;
+     for(const mesh of record.gardenMeshes){mesh.parent=record.root;mesh.isVisible=true;mesh.isPickable=true;mesh.receiveShadows=true;mesh.metadata={...mesh.metadata,...record.root.metadata};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();record.meshes.push(mesh);meshes.push(mesh);}
+    }
    }
    const litWindows=Math.ceil(Math.min(1,(occupied.get(key)||0)/Math.max(1,capacityOf(b)))*4);
    for(const mesh of record.meshes)if(mesh.metadata.homeLamp)mesh.material=mesh.metadata.lampIndex<litWindows?warm:shade;

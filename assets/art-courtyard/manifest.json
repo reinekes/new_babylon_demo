@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 12858,
-      "sha256": "361baf1d70173e524de09f7c870d809f35e54ca0d71924d9153c42dae66a9c62"
+      "bytes": 19946,
+      "sha256": "998f0e6ad41986ea940d4806e55efa4c7d1cba9dd59f8731335bb85dee2842e2"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 10306,
-      "sha256": "6c621736d171fd02840fa495474e758f98bf80778d1d15693205199cf98abce0"
+      "bytes": 17813,
+      "sha256": "2b294b59b359f972499ddbd117fd686a5c2b35cb1afab9925635968baffd02bb"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -20,6 +20,85 @@
       "meshes": 154,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "models/ambient-bull.glb",
+      "bytes": 5800688,
+      "sha256": "abb9dceb612f69350b728d44bde433da37e847a92715597df33132c2bcdfff3c",
+      "triangles": 3610,
+      "meshes": 1,
+      "bones": 49,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Eat",
+        "SourceOriginal-Idle_01",
+        "SourceOriginal-Idle_02_Chew",
+        "SourceOriginal-Walk"
+      ]
+    },
+    {
+      "file": "models/ambient-dog.glb",
+      "bytes": 2161184,
+      "sha256": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4",
+      "triangles": 11786,
+      "meshes": 1,
+      "bones": 39,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Take 001"
+      ]
+    },
+    {
+      "file": "models/ambient-donkey.glb",
+      "bytes": 4658608,
+      "sha256": "26523e667828cdd752d6b0d83251ed2b23e197fa4f8fb74d810c0f0bebde150e",
+      "triangles": 4386,
+      "meshes": 2,
+      "bones": 53,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Armature|call",
+        "SourceOriginal-Armature|front leg kick",
+        "SourceOriginal-Armature|grazing",
+        "SourceOriginal-Armature|idle",
+        "SourceOriginal-Armature|laydown",
+        "SourceOriginal-Armature|rear leg kick",
+        "SourceOriginal-Armature|run",
+        "SourceOriginal-Armature|sleep",
+        "SourceOriginal-Armature|trot",
+        "SourceOriginal-Armature|wake up",
+        "SourceOriginal-Armature|walk",
+        "SourceOriginal-Armature|wound"
+      ]
+    },
+    {
+      "file": "models/ambient-duck.glb",
+      "bytes": 2740460,
+      "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
+      "triangles": 19315,
+      "meshes": 1,
+      "bones": 59,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Animation"
+      ]
+    },
+    {
+      "file": "models/ambient-sheep-kenchoo.glb",
+      "bytes": 1777624,
+      "sha256": "4119278af230b7b25b1eea8742fec3ded4709c6845333285ff7b46bbc295f1a3",
+      "triangles": 2290,
+      "meshes": 1,
+      "bones": 38,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Animation"
+      ]
     },
     {
       "file": "models/cat-sitting.glb",
@@ -46,6 +125,20 @@
         "Idle",
         "SourceOriginal"
       ]
+    },
+    {
+      "file": "models/crop-emmer.glb",
+      "bytes": 631660,
+      "sha256": "0b09a7ff8d588d1730dc7f80f8df1885955943aa9c115434cbce4eed69e2a9c2",
+      "triangles": 720,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/crop-emmer.metadata.json",
+      "bytes": 2013,
+      "sha256": "abe7c1cbb6fe99bb63040cfe410a9dd11d97d7b91f37d4e812d302c253d9f496"
     },
     {
       "file": "models/date-palm.glb",
@@ -126,39 +219,51 @@
     },
     {
       "file": "models/imported-boar.glb",
-      "bytes": 907576,
-      "sha256": "319b1260714d0527935c28299e3e9ba6942c32fd90cbfa28ab21a0385caf3d88",
+      "bytes": 1951108,
+      "sha256": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89",
       "triangles": 13484,
       "meshes": 1,
       "bones": 0,
-      "clips": []
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
     },
     {
       "file": "models/imported-fox.glb",
-      "bytes": 814576,
-      "sha256": "11cd9a77ec9e4fdea0d847d045a543df8683ddabd1092179569958f7f98a062f",
+      "bytes": 1884684,
+      "sha256": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b",
       "triangles": 14192,
       "meshes": 1,
       "bones": 0,
-      "clips": []
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
     },
     {
       "file": "models/imported-goose.glb",
-      "bytes": 770224,
-      "sha256": "c4f1f546a69f4d45ab1d666cf7bfcd07300426d9fff5053620dddd62e9fefa27",
+      "bytes": 1310296,
+      "sha256": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f",
       "triangles": 10336,
       "meshes": 1,
       "bones": 0,
-      "clips": []
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
     },
     {
       "file": "models/imported-lioness.glb",
-      "bytes": 1009076,
-      "sha256": "6861c6c2d8559692a89d2346a4697ad5536e063550c01dd2988e4c177a0c9881",
+      "bytes": 2322264,
+      "sha256": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e",
       "triangles": 16474,
       "meshes": 1,
       "bones": 0,
-      "clips": []
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
     },
     {
       "file": "models/imported-orange-bird.glb",
@@ -181,6 +286,114 @@
       "clips": [
         "Scene"
       ]
+    },
+    {
+      "file": "models/miracle-birch-1.glb",
+      "bytes": 1782844,
+      "sha256": "9f56681314801d7eece638c1f5de2fba2d241e1f8294318497c603be164dbd72",
+      "triangles": 2819,
+      "meshes": 2,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-cactus-1.glb",
+      "bytes": 471344,
+      "sha256": "9335455b95004935e61ba785e017af2735f6d858230dd10f26c2193cc3ef1425",
+      "triangles": 342,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-cactus-2.glb",
+      "bytes": 466608,
+      "sha256": "ef509a7aa53269eda02a7381b6fe9aa92e286799d49c81063adb2098b185bd08",
+      "triangles": 246,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-daisy-1.glb",
+      "bytes": 491816,
+      "sha256": "0d70be9d5a49362cf0f3ad59ee5140d08415ba27ce224cf138f8d3b726238d5f",
+      "triangles": 738,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-daisy-2.glb",
+      "bytes": 488348,
+      "sha256": "102a31a3bfe728cd8c0ec25e2cd88f3b9b2e053afd6b4f4f3d28b7d4c761c6e0",
+      "triangles": 704,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-green-grass-1.glb",
+      "bytes": 808096,
+      "sha256": "a398420a62ef60f99d407cf47938ab3c61b17d5f8988167c02763b70ea5c9a1c",
+      "triangles": 12,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-green-grass-2.glb",
+      "bytes": 808080,
+      "sha256": "f8c21a74aaf6321b6e0decfe6c480ad494a92e105b4a9a71d806cc3cb63020c7",
+      "triangles": 12,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-green-grass-3.glb",
+      "bytes": 808736,
+      "sha256": "4b2d9b77801dc2db9dedf9b018b1bba9a1c2d527b73c10003d29a31ec43c84c6",
+      "triangles": 18,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-lilac-1.glb",
+      "bytes": 943984,
+      "sha256": "a7557142a6786545c1b51c16c6099792262b26dbff780a325fcc2b3fdef134be",
+      "triangles": 317,
+      "meshes": 2,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-lilac-2.glb",
+      "bytes": 976476,
+      "sha256": "163ba076787ef1dab54780c2b980d0be07205fa24545d456f583a70035b22885",
+      "triangles": 748,
+      "meshes": 2,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-snowdrop-1.glb",
+      "bytes": 575156,
+      "sha256": "bbce3f29355c4a41bb7ef769c4b74caebe79aef369d839cf9b8a8fefff2cfc3d",
+      "triangles": 609,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/miracle-snowdrop-2.glb",
+      "bytes": 540300,
+      "sha256": "497b86d98ccab7c85056cb35ad85f262d59f74775ed6d786f2d2ece20db859fd",
+      "triangles": 265,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
     },
     {
       "file": "models/resident-lod.glb",
