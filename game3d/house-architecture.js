@@ -30,6 +30,18 @@ export function createHouseArchitecture(B,scene,b,m){
   const dp=[0,.6,1.03],di=[];for(const v of shape)dp.push(v.x,v.y,1.03);for(let i=0;i<shape.length;i++)di.push(0,1+i,1+(i+1)%shape.length);const dn=[];B.VertexData.ComputeNormals(dp,di,dn);const dd=new B.VertexData();Object.assign(dd,{positions:dp,indices:di,normals:dn,uvs:dp.filter((_,i)=>i%3!==2)});const inset=new B.Mesh('hut-entry-shadow',scene);dd.applyToMesh(inset);add(inset,m.shade,'entry-shadow');
   block('threshold',0,.07,1.21,.9,.14,.55,m.trim);canopy('reed-porch',0,1.76,1.6,1.42,1.52);
   block('small-vent',0,2.13,.54,.19,.12,.035,m.shade);jar('water-jar',1.05,1.63,.63);jar('door-planter',-1.03,1.7,.54,0,true);
+ }else if(kind==='courtyard-1'){
+  // A buildable first dwelling is a small plastered room with a working yard;
+  // the founding corbelled hut remains a separate, unbuildable origin house.
+  room('modest-back-room',0,-1.18,3.65,2.15,1.74);
+  block('modest-yard-wall',-2.03,.46,.77,.2,.92,2.83);
+  block('modest-yard-wall',1.98,.36,.93,.2,.72,2.5);
+  canopy('modest-entrance-shade',0,.79,2.18,1.5,1.56);
+  block('modest-bench',-1.58,.22,1.6,.5,.44,.87,m.trim);
+  block('woven-mat',.04,.09,1.75,1.25,.025,.66,m.reed);
+  jar('water-jar',1.46,1.69,.64);jar('small-pot',1.07,1.98,.37);
+  if(variant===1){canopy('side-reed-shelter',-1.16,1.03,1.12,1.9,1.52);jar('door-planter',-1.55,2.02,.47,0,true);}
+  if(variant===2){block('storage-bin',-1.28,.32,1.19,.64,.64,.71,m.trim);block('storage-bin-lid',-1.28,.66,1.19,.69,.065,.76,m.reed);jar('door-planter',1.74,.29,.48,0,true);}
  }else if(kind==='courtyard-2'){
   room('court-back-room',.2,-1.55,4.35,1.6,2.05);room('court-west-wing',-1.62,.28,1.45,1.9,1.84);
   block('court-east-wall',2.34,.66,.57,.2,1.32,2.7);block('court-front-wall',-1.43,.58,2.23,1.9,1.16,.2);block('court-front-wall',1.45,.58,2.23,1.9,1.16,.2);
@@ -44,6 +56,20 @@ export function createHouseArchitecture(B,scene,b,m){
   canopy('courtyard-shade',-.05,.48,2.5,1.48,2.17);
   block('court-front-wall',-1.46,.72,2.23,1.92,1.44,.22);block('court-front-wall',1.25,.72,2.23,1.5,1.44,.22);
   block('court-bench',-1.58,.28,1.49,.55,.56,.95,m.trim);jar('water-jar',.89,-.11,.68);jar('terrace-planter',.38,-1.55,.54,2.51,true);jar('court-planter',-1.8,1.82,.53,0,true);block('courtyard-mat',-.06,.09,1.42,1.05,.025,.65,m.reed);
+ }
+ if(kind!=='hut'){
+  const roof=kind==='courtyard-3'?4.08:kind==='courtyard-2'?2.26:1.95;
+  for(let i=0;i<3;i++)block('roof-reed-ends',(kind==='courtyard-3'?-1.7:-.6)+i*.43,roof-.17,kind==='courtyard-3'?-.51:kind==='courtyard-2'?-.68:-.04,.1,.1,.18,m.wood);
+  if(variant===1){
+   block('courtyard-storage-bench',1.86,.25,1.65,.45,.5,.7,m.trim);
+   jar('household-bowl',1.83,1.63,.34,.5);
+   // Lean reed screen makes the shaded yard visibly distinct without adding a room.
+   const screen=block('woven-court-screen',-1.93,.84,1.1,.05,1.25,.75,m.reed);screen.rotation.z=-.06;
+  }else if(variant===2){
+   for(let i=0;i<3;i++)jar('roof-drying-pot',(kind==='courtyard-3'?-1.8:-.5)+i*.32,-1.64,.35,roof);
+   block('raised-herb-trough',1.74,.24,.59,.44,.48,.8,m.terracotta);
+   for(let i=0;i<3;i++)jar('small-herb-pot',1.74,.34+i*.23,.32,.48,true);
+  }
  }
  const meshes=[];for(const [material,parts]of groups){const names=[...new Set(parts.map(p=>p.metadata.housePart))],openDoor=parts.some(p=>p.metadata.openDoor);for(const p of parts)p.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name=`game-house-${kind}-${material.name}`;mesh.material=material;mesh.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;mesh.metadata={houseParts:names,openDoor,houseVisual:kind};
   if(variant){const positions=Array.from(mesh.getVerticesData(B.VertexBuffer.PositionKind));for(let i=0;i<positions.length;i+=3){const q=organicHousePoint(positions[i],positions[i+1],positions[i+2],variant);positions[i]=q[0];positions[i+1]=q[1];positions[i+2]=q[2];}mesh.setVerticesData(B.VertexBuffer.PositionKind,positions);const normals=[];B.VertexData.ComputeNormals(positions,mesh.getIndices(),normals);mesh.setVerticesData(B.VertexBuffer.NormalKind,normals);}meshes.push(mesh);

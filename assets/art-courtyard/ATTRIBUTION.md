@@ -108,3 +108,11 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 | `sky-bird-single.glb` | Zacxophone (https://sketchfab.com/Zacxophone) · https://sketchfab.com/3d-models/birds-3a9bb97be78944f9bffc23fb25c2154e · SKETCHFAB Standard (https://sketchfab.com/licenses) | Выделена одна птица, сохранены шесть авторских каналов крыльев; убран перенос тела, нормализован настоящий перед модели; полёт по касательной. |
 
 Улей и домаII/III, рабочие галереи/столы и точки взаимодействия — оригинальная процедурная геометрия Нового Вавилона. Дома-ульи на старте — игровое допущение, не точная реконструкция Шумера.
+
+## 2026-10-23 · шакал и караван
+
+| Модель | Автор | Источник | Лицензия | Адаптация |
+|---|---|---|---|---|
+| `jackal.glb` | OLEKSO (https://sketchfab.com/oleksabasarab) | https://sketchfab.com/3d-models/wolf-e319f122c2474d3186b841b019fb0edd | CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/) | Художественный шакал из Wolf; калибровка морды, поза уноса. Некоммерческий прототип. |
+| `caravan-merchant.glb` | Dr Helmi Norman (https://sketchfab.com/helmi.norman) | https://sketchfab.com/3d-models/parameswara-chronicles-shaikh-abdul-aziz-ca665011d8a044edaa19d8c678436e7c | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Убраны поздние головной убор/силуэт, сглажен костюм, добавлена шерстяная обёртка и авторская походка на исходном скелете. |
+| `caravan-camel.glb` | eb78 (https://sketchfab.com/E.A.Cornell) | https://sketchfab.com/3d-models/camel-99af7daa5baf450ea7b809937937e6d5 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Нормализованный масштаб/направление/клипы, оптимизированные текстуры; авторская поклажа. |

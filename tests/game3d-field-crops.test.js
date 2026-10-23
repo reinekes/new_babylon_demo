@@ -100,7 +100,7 @@ test('house gardens preserve shared courtyard templates and rebuild only their o
  const t=setup();let layer;try{
   layer=await createGameBuildings(B,t.scene,t.materials);
   const a={type:'house',id:'home',x:3,y:4,level:1},b={...a,id:'second',x:8},state={buildings:[a,b],citizens:[]};layer.sync(state);
-  const house=layer.meshes.find(m=>m.metadata.buildingKey==='home'&&m.name.includes('game-courtyard')),other=layer.meshes.find(m=>m.metadata.buildingKey==='second'&&m.name.includes('game-courtyard'));
+  const house=layer.meshes.find(m=>m.metadata.buildingKey==='home'&&m.name.includes('game-house-courtyard')),other=layer.meshes.find(m=>m.metadata.buildingKey==='second'&&m.name.includes('game-house-courtyard'));
   assert.equal(house.sourceMesh,other.sourceMesh);
   const garden=layer.meshes.find(m=>m.metadata.householdGarden&&m.metadata.buildingKey==='home');assert.ok(garden);const n=t.scene.meshes.length;layer.sync(state);assert.equal(t.scene.meshes.length,n);
   a.rotation=1;layer.sync(state);assert.ok(garden.isDisposed());assert.ok(layer.meshes.includes(house));assert.equal(t.scene.meshes.length,n);

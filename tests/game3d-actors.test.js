@@ -433,3 +433,34 @@ test('adapted Sumerian civilian is the default city resident and retains work, c
 });
 
 test('city hides rejected legacy land birds and rodents while preserving real fauna and pest state',async()=>{const {cityAnimalVisible}=await import('../game3d/actors.js');const s=createGame({start:'established'});miracle(s,'cat');const before=JSON.stringify(s),all=animalsFor(s);for(const kind of ['bird','mouse','rat'])assert.equal(cityAnimalVisible({kind}),false);for(const kind of ['cat','goat','gazelle','fish','sheep','jackal'])assert.equal(cityAnimalVisible({kind}),true);assert.ok(all.some(a=>a.kind==='bird'));assert.ok(all.some(a=>a.kind==='mouse'||a.kind==='rat'));assert.equal(JSON.stringify(s),before);});
+
+test('real shipped Sumerian GLB palms meet each funeral rail, flame layers freeze and a bier exists per deceased',async()=>{
+ const {startFuneral,advanceFuneral,funeralView}=await import('../funerals.js'),{surfaceElevation}=await import('../district3d/terrain.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/sumer-people.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(sumer-people|resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{}, {includeFauna:false});const s=createGame({start:'established'});
+  s.citizens.forEach(c=>{c.age=30;c.cargo={};c.buildCargo={};});startFuneral(s,[{id:100,name:'Один',x:8,y:8},{id:101,name:'Два',x:8,y:8}]);
+  while(s.funeral.stage!=='procession')advanceFuneral(s,.2);advanceFuneral(s,2);view.update(s,.1);scene.render();
+  const f=funeralView(s);assert.equal(scene.transformNodes.filter(n=>n.metadata?.funeralBier).length,2);
+  let contactCount=0;for(const b of f.biers)for(const c of b.carriers)for(const [side,key]of [['l','left'],['r','right']]){const root=view.rootFor({citizenId:c.id}),hand=root.getChildTransformNodes().find(n=>n.name.endsWith(`-hand_${side}`));hand.computeWorldMatrix(true);const target=c.hands[key],expected=new B.Vector3(target.x*6,surfaceElevation(target.x,target.y,s)+target.height,target.y*6),error=B.Vector3.Distance(hand.getAbsolutePosition(),expected);assert.ok(error<.05,`${c.id} ${side} palm ${error.toFixed(3)}m from rail`);contactCount++;}
+  assert.ok(contactCount>=4);
+  let maxPalmError=0;for(const seconds of [.2,.5,1,2,3,4]){advanceFuneral(s,seconds);if(s.funeral.stage!=='procession')break;view.update(s,.1);scene.render();for(const b of funeralView(s).biers)for(const c of b.carriers)for(const [side,key]of [['l','left'],['r','right']]){const root=view.rootFor({citizenId:c.id}),hand=root.getChildTransformNodes().find(n=>n.name.endsWith(`-hand_${side}`)),target=c.hands[key];hand.computeWorldMatrix(true);const error=B.Vector3.Distance(hand.getAbsolutePosition(),new B.Vector3(target.x*6,surfaceElevation(target.x,target.y,s)+target.height,target.y*6));maxPalmError=Math.max(maxPalmError,error);assert.ok(error<.05,`moving ${c.id} ${side} palm ${error.toFixed(3)}m from rail`);}}
+  console.log(`Funeral actual GLB moving palm maximum: ${(maxPalmError*100).toFixed(2)}cm`);
+  const fire=scene.transformNodes.find(n=>n.name.startsWith('funeral-fire-'));assert.ok(fire);assert.ok(scene.meshes.some(m=>m.name==='torch-outer-flame'));assert.ok(!scene.meshes.some(m=>m.name==='torch-flame'));assert.ok(scene.lights.filter(l=>l.name.startsWith('funeral-fire-light')).length<=3);
+  const frozen=fire.scaling.asArray();view.update(s,.1,{paused:true,speed:4});scene.render();assert.deepEqual(fire.scaling.asArray(),frozen);
+  for(let i=0;i<3;i++){view.update(s,.1,{speed:4});scene.render();}assert.notDeepEqual(fire.scaling.asArray(),frozen);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('mass funeral retains every deceased using two shared geometry sources and releases all props',async()=>{
+ const {createFuneralRitual}=await import('../game3d/funeral-ritual.js'),engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[],rite=createFuneralRitual(B,scene,meshes),state=createGame({start:'established'});
+ try{const biers=Array.from({length:1000},(_,i)=>({id:`bier-${i}`,deceasedId:i,x:2+Math.floor(i/60)*.4,y:1+(i%60)*.4,yaw:0,height:.16,carriers:[]}));rite.update({biers,participants:[],jackals:[]},state,0);assert.equal(meshes.length,2000);assert.equal(new Set(meshes.map(m=>m.sourceMesh)).size,2);assert.equal(scene.transformNodes.filter(n=>n.metadata?.funeralBier).length,1000);rite.update(null,state,0);assert.equal(meshes.length,0);}finally{rite.dispose();assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();}
+});
+
+test('legacy saved desert funerals retain adult palm-held torches and exclude children without state mutation',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync,data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/sumer-people.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(sumer-people|resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{},{includeFauna:false});const s=createGame({start:'established'}),base=s.citizens[0];s.citizens=[{...base,id:870,age:30,x:8,y:7},{...base,id:871,age:8,x:8,y:7.3}];s.funeral={style:'desert',scope:'family',stage:'procession',timer:1,gather:{x:9,y:8},boundary:{x:0,y:8},coffin:{x:6,y:8},deceased:[{id:900,name:'Покойный',x:8,y:8}],actors:s.citizens.map(c=>({id:c.id}))};const before=JSON.stringify(s);view.update(s,.1);scene.render();const torch=scene.transformNodes.find(n=>n.name==='funeral-torch-870');assert.ok(torch,'legacy adult receives the new flame prop');assert.ok(!scene.transformNodes.some(n=>n.name==='funeral-torch-871'),'children never carry torches');const root=view.rootFor({citizenId:870}),hand=root.getChildTransformNodes().find(n=>n.name.endsWith('-hand_r'));hand.computeWorldMatrix(true);assert.ok(B.Vector3.Distance(torch.position,hand.getAbsolutePosition())<.001);assert.equal(JSON.stringify(s),before);}finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});

@@ -62,14 +62,14 @@ function loadGeometry(scene,file='date-palm.glb'){
 test('real GLB palms share baked geometry; canals, road work and trade update a live mesh list read-only',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;let loads=0;
- B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^(?:valley-(?:dry-grass-[123]|reed-[123]|date-palm)|miracle-green-grass-[123])\.glb$/);return loadGeometry(scene,file);};
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;file=file.split('?')[0];assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^(?:valley-(?:dry-grass-[123]|reed-[123]|date-palm)|miracle-green-grass-[123]|caravan-(?:merchant|camel))\.glb$/);return loadGeometry(scene,file);};
  let view;const s=createGame({start:'established'});s.roads=[{id:'local',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2}];
  let canalX=0;while(terrain(canalX,8)==='water'||terrain(canalX+1,8)!=='water')canalX++;
  s.buildings.push({type:'canal',x:canalX,y:8,level:1});
  s.trade.caravan={x:12.6,y:8.1,transport:'river',stock:{food:30},route:[],routeIndex:0};
  const before=JSON.stringify(s);
  try{
-  view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,10);assert.equal(JSON.stringify(s),before);
+  view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,12);assert.equal(JSON.stringify(s),before);
   assert.ok(live.some(m=>m.name.startsWith('valley-grass-')&&m.sourceMesh));assert.ok(live.some(m=>m.name.startsWith('valley-reed-')&&m.sourceMesh));assert.ok(!live.some(m=>['volumetric-riparian-colonies','deposit-reed-bed'].includes(m.name)),'imported plants replace old grass ribbons and reed cylinders');
   for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets','living-river','saved-lakes'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
   const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);assert.ok(palms.every(m=>m.isEnabled()));assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);

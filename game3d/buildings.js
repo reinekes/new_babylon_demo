@@ -99,7 +99,7 @@ export async function createGameBuildings(B,scene,materials){
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
   if(b.construction?.kind==='new'){
    sources=createConstructionSite(B,scene,b,materialSet);for(const mesh of sources)mesh.parent=root;
-  }else if(isHouse(b)&&(tier(b)>=2||houseVisualKind(b)==='hut')){
+  }else if(isHouse(b)){
    sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade});for(const mesh of sources)mesh.parent=root;
   }else if(isHouse(b)){
    for(const original of originals){
@@ -142,8 +142,8 @@ export async function createGameBuildings(B,scene,materials){
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
    for(let index=0;index<4;index++){
-    const renewed=tier(b)>=2||houseVisualKind(b)==='hut',doorCentre=tier(b)===3?-.75:tier(b)===2?.2:0;
-    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b)==='hut'?1.07:tier(b)===3?-.69:-.875):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
+    const renewed=true,doorCentre=tier(b)===3?-.75:tier(b)===2?.2:0;
+    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
   for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}

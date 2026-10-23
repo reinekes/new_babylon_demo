@@ -43,7 +43,7 @@ async function setup(configure){
 const house=(level=1,x=3,y=4,id='home')=>({id,type:'house',level,x,y});
 function bounds(meshes){let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,maxY=0;for(const m of meshes){m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;minX=Math.min(minX,b.minimumWorld.x);maxX=Math.max(maxX,b.maximumWorld.x);minZ=Math.min(minZ,b.minimumWorld.z);maxZ=Math.max(maxZ,b.maximumWorld.z);maxY=Math.max(maxY,b.maximumWorld.y);}return {minX,maxX,minZ,maxZ,maxY};}
 
-test('actual courtyard GLB transforms stay centered in one tile, tiers are distinct and reflected winding survives merge',async()=>{
+test('actual renewed houses stay centered in one tile, tiers differ and outward winding survives merge',async()=>{
  const t=await setup();try{
   let previousHeight=0;
   for(const level of [1,2,3]){
@@ -52,8 +52,7 @@ test('actual courtyard GLB transforms stay centered in one tile, tiers are disti
    assert.ok(Math.abs((b.minX+b.maxX)/2-18)<.25);assert.ok(Math.abs((b.minZ+b.maxZ)/2-24)<.25);
    assert.ok(b.maxY>previousHeight);previousHeight=b.maxY;
    const glb=t.layer.meshes.filter(m=>m.name.includes('game-courtyard'));
-   if(level===1){assert.ok(glb.length>=7);for(const m of glb)assert.equal(m.sourceMesh.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);}
-   else {assert.equal(glb.length,0);assert.ok(t.layer.meshes.some(m=>m.name.includes(`game-house-courtyard-${level}`)));}
+   assert.equal(glb.length,0);assert.ok(t.layer.meshes.some(m=>m.name.includes(`game-house-courtyard-${level}`)));for(const m of t.layer.meshes.filter(m=>m.name.includes('game-house-courtyard')))assert.equal(m.sourceMesh.overrideMaterialSideOrientation,B.Material.CounterClockWiseSideOrientation);
    for(const m of t.layer.meshes){assert.equal(m.metadata.buildingKey,'home');assert.deepEqual(m.metadata.tile,{x:3,y:4});assert.equal(m.checkCollisions,false);assert.equal(m.isPickable,true);}
    if(level===2)assert.ok(t.layer.meshes.some(m=>m.material.name.startsWith('game-home-plaster-2')));
    if(level===3)assert.ok(t.layer.meshes.some(m=>m.material.name.startsWith('game-home-plaster-3')));
@@ -85,9 +84,9 @@ test('all defined buildings produce visible pickable architecture; construction 
    if(type!=='bridge'){assert.ok(bb.minX>=15.1&&bb.maxX<=20.9,`${type} ${JSON.stringify(bb)}`);assert.ok(bb.minZ>=21.1&&bb.maxZ<=26.9,`${type} ${JSON.stringify(bb)}`);}
   }
   const b={...house(),construction:{kind:'new',target:1,required:{clay:10},delivered:{clay:0},work:0}},state={buildings:[b],citizens:[]};
-  const signature=gameBuildingSignature(b);t.layer.sync(state);assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-courtyard')));const old=t.layer.meshes[0];
+  const signature=gameBuildingSignature(b);t.layer.sync(state);assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-courtyard')));const old=t.layer.meshes[0];
   b.construction.delivered.clay=10;b.construction.work=10;assert.notEqual(gameBuildingSignature(b),signature);t.layer.sync(state);assert.ok(old.isDisposed());
-  b.construction={kind:'upgrade',target:2,required:{},delivered:{},work:0};t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-courtyard')));assert.ok(t.layer.meshes.some(m=>m.name.includes('game-raw-brick-facing')));
+  b.construction={kind:'upgrade',target:2,required:{},delivered:{},work:0};t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-courtyard')));assert.ok(t.layer.meshes.some(m=>m.name.includes('game-raw-brick-facing')));
   delete b.construction;t.layer.sync(state);assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-raw-brick-facing')));
  }finally{t.dispose();}
 });
@@ -137,7 +136,7 @@ test('river and saved-lake fields keep their dry portions and clip all crop tria
 test('level-one homes share three organic variants with coherent non-affine walls and ground contact',async()=>{
  const t=await setup();try{
   const houses=[house(1,3,4,'a'),house(1,8,4,'b'),house(1,4,4,'c')];t.layer.sync({buildings:houses,citizens:[]});
-  const a=t.layer.meshes.find(m=>m.metadata.buildingKey==='a'&&m.name.includes('plastered')),b=t.layer.meshes.find(m=>m.metadata.buildingKey==='b'&&m.name.includes('plastered')),c=t.layer.meshes.find(m=>m.metadata.buildingKey==='c'&&m.name.includes('plastered'));
+  const a=t.layer.meshes.find(m=>m.metadata.buildingKey==='a'&&m.material.name.startsWith('game-home-plaster-1')),b=t.layer.meshes.find(m=>m.metadata.buildingKey==='b'&&m.material.name.startsWith('game-home-plaster-1')),c=t.layer.meshes.find(m=>m.metadata.buildingKey==='c'&&m.material.name.startsWith('game-home-plaster-1'));
   assert.equal(organicHouseVariant(houses[0]),organicHouseVariant(houses[1]));assert.equal(a.sourceMesh,b.sourceMesh);assert.notEqual(a.sourceMesh.geometry,c.sourceMesh.geometry);
   const left=organicHousePoint(-2,0,1,0),middle=organicHousePoint(0,0,1,0),right=organicHousePoint(2,0,1,0);
   assert.ok(Math.abs(middle[2]-(left[2]+right[2])/2)>.003,'wall outline is curved rather than a rigid skew');
@@ -147,26 +146,15 @@ test('level-one homes share three organic variants with coherent non-affine wall
  }finally{t.dispose();}
 });
 
-test('organic GLB variants preserve outward authored normals including sky-facing roofs after reflection',async()=>{
- const t=await setup();try{
-  for(const x of [3,4,10]){
-   t.layer.sync({buildings:[house(1,x,4)],citizens:[]});let compared=0,upward=0;
-   for(const m of t.layer.meshes.filter(m=>m.name.includes('game-courtyard'))){
-    const mesh=m.sourceMesh,original=t.scene.meshes.find(s=>s.name===mesh.name.replace(/-tier1$/,''));
-    assert.ok(original,'actual merged GLB source is retained');
-    const before=original.getVerticesData(B.VertexBuffer.NormalKind),after=mesh.getVerticesData(B.VertexBuffer.NormalKind);
-    for(let i=0;i<before.length;i+=3){
-     const a=new B.Vector3(before[i]/.52,before[i+1]/.74,before[i+2]/.52).normalize(),b=new B.Vector3(after[i],after[i+1],after[i+2]).normalize();
-     if(a.length()<.1||b.length()<.1)continue;
-     assert.ok(B.Vector3.Dot(a,b)>.97,`${mesh.name}: outward authored normal reversed at vertex ${i/3}`);compared++;
-     if(a.y>.999&&/roof-earth|plastered/.test(mesh.name)){assert.ok(b.y>.97,`roof tops must face daylight: ${mesh.name} ${b.y}`);upward++;}
-    }
-   }
-   assert.ok(compared>1000);assert.ok(upward>50);
-  }
- }finally{t.dispose();}
+test('renewed organic houses have upward roof normals and all authored normals agree with face winding',async()=>{
+ const t=await setup();try{for(const x of [3,4,10]){
+  t.layer.sync({buildings:[house(1,x,4)],citizens:[]});let upward=0,compared=0;
+  for(const instance of t.layer.meshes.filter(m=>m.name.includes('game-house-courtyard'))){const mesh=instance.sourceMesh,p=mesh.getVerticesData(B.VertexBuffer.PositionKind),n=mesh.getVerticesData(B.VertexBuffer.NormalKind),idx=mesh.getIndices();
+   for(let i=0;i<n.length;i+=3)if(n[i+1]>.95&&p[i+1]>1.6)upward++;
+   for(let i=0;i<idx.length;i+=3){const v=j=>B.Vector3.FromArray(p,idx[i+j]*3),face=B.Vector3.Cross(v(2).subtract(v(0)),v(1).subtract(v(0))).normalize(),normal=B.Vector3.FromArray(n,idx[i]*3).add(B.Vector3.FromArray(n,idx[i+1]*3)).add(B.Vector3.FromArray(n,idx[i+2]*3)).normalize();if(face.length()>.1&&normal.length()>.1){assert.ok(B.Vector3.Dot(face,normal)>-.05,`${mesh.name} triangle${i/3} dot=${B.Vector3.Dot(face,normal)}`);compared++;}}
+  }assert.ok(compared>300);assert.ok(upward>30);
+ }}finally{t.dispose();}
 });
-
 
 test('main building adapter never duplicates landscape canals with legacy crossbars or scaffolds',async()=>{
  const t=await setup();try{
@@ -193,7 +181,7 @@ test('each house tier shares only three deterministic finishes/layouts and famil
  const t=await setup();try{
   for(const level of [1,2,3]){
    const houses=[house(level,3,4,'a'),house(level,8,4,'b'),house(level,4,4,'c')];t.layer.sync({buildings:houses,citizens:[]});
-   const facade=id=>t.layer.meshes.find(m=>m.metadata.buildingKey===id&&(level===1?m.name.includes('game-courtyard')&&m.name.includes('plastered'):m.material.name.startsWith(`game-home-plaster-${level}`)));
+   const facade=id=>t.layer.meshes.find(m=>m.metadata.buildingKey===id&&m.material.name.startsWith(`game-home-plaster-${level}`));
    assert.equal(facade('a').sourceMesh,facade('b').sourceMesh);assert.notEqual(facade('a').material,facade('c').material);assert.notEqual(facade('a').sourceMesh.geometry,facade('c').sourceMesh.geometry);assert.notEqual(gameBuildingSignature(houses[0]),gameBuildingSignature(houses[2]));
    for(const h of houses){const bb=bounds(t.layer.meshes.filter(m=>m.metadata.buildingKey===h.id));assert.ok(bb.minX>=h.x*6-2.8&&bb.maxX<=h.x*6+2.8&&bb.minZ>=h.y*6-2.8&&bb.maxZ<=h.y*6+2.8,JSON.stringify(bb));}
   }
@@ -234,7 +222,7 @@ test('placement preview uses the exact shared building geometry and pivot with s
 test('house preview is complete, lamp-free, follows its position variant and does not alter a construction order',async()=>{
  const t=await setup();try{
   const b={...house(),rotation:3,construction:{kind:'new',target:1,required:{clay:8},delivered:{clay:0},work:0}},state={buildings:[],citizens:[]},before=structuredClone(b);
-  const p=t.layer.preview(b,state,{allowed:true});assert.ok(p.meshes.some(m=>m.name.includes('game-courtyard')));assert.ok(p.meshes.every(m=>!m.name.includes('home-lamp')));assert.equal(t.layer.meshes.length,0);assert.deepEqual(b,before);
+  const p=t.layer.preview(b,state,{allowed:true});assert.ok(p.meshes.some(m=>m.name.includes('game-house-courtyard')));assert.ok(p.meshes.every(m=>!m.name.includes('home-lamp')));assert.equal(t.layer.meshes.length,0);assert.deepEqual(b,before);
   const count=t.scene.meshes.length,first=p.meshes[0];for(let i=0;i<20;i++)t.layer.preview({...b,x:8},state,{allowed:true});assert.equal(t.scene.meshes.length,count);assert.equal(t.layer.preview({...b,x:8},state).meshes[0],first);assert.equal(p.root.metadata.tile.x,8);
   t.layer.preview(null,state);assert.ok(first.isDisposed());
  }finally{t.dispose();}
@@ -243,7 +231,7 @@ test('house preview is complete, lamp-free, follows its position variant and doe
 test('starter hut templates remain through upgrade, then become ordinary II geometry with no permanent hut cache identity',async()=>{
  const t=await setup();try{
   const b={...house(),starterHut:true},state={buildings:[b],citizens:[]};t.layer.sync(state);
-  assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-courtyard')));
+  assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-courtyard')));
   const count=t.scene.meshes.length,first=t.layer.meshes[0];for(let i=0;i<12;i++)t.layer.sync(state);assert.equal(t.scene.meshes.length,count);assert.equal(t.layer.meshes[0],first);
   b.construction={kind:'upgrade',target:2,required:{clay:8},delivered:{clay:4},work:0};t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-courtyard-2')));
   b.level=2;delete b.construction;t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-courtyard-2')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.equal(gameBuildingSignature(b),gameBuildingSignature({...b,starterHut:undefined}));

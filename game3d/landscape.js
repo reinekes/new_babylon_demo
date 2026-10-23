@@ -1,3 +1,4 @@
+import {createTradeCaravan} from './caravan.js';
 import {createDateClusters,createBotanicalMaterial} from './crop-varieties.js';
 import {canalNetworkGeometry,openCanalMouths} from './canal-network.js';
 import {createDistrictTerrain, districtRoadEdges, surfaceElevation, TILE, shoreDistance} from '../district3d/terrain.js';
@@ -202,12 +203,14 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(const p of cargoLayout(stock,options)){const m=goods.sources.get(p.kind).createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=parent||null;m.position.set(origin.x+p.x,origin.y+p.y,origin.z+p.z);m.metadata={goods:{...p,supportY:origin.y+p.y}};add(m,collection);}
  }
  function updateStocks(s){const stocks=groundStocks(s,streetNetwork,signature),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:surfaceElevation(stocks.x,stocks.y,s),z:stocks.y*TILE});}
- function updateTrader(c,time){const next=JSON.stringify(c?[c.river,c.stock]:null);if(next!==traderSignature){traderSignature=next;remove(traderMeshes);traderRoot?.dispose();traderRoot=null;if(c){traderRoot=new B.TransformNode('actual-trade-caravan',scene);
-    if(c.river){const hull=box('trade-reed-boat',0,.04,0,1.65,.42,5.2,materials.reed,traderMeshes);hull.parent=traderRoot;for(const side of [-1,1]){const bow=B.MeshBuilder.CreateSphere('boat-raised-bow',{diameter:1,segments:6},scene);bow.scaling.set(.7,.5,1.2);bow.position.set(0,.17,side*2.2);bow.material=materials.reed;bow.parent=traderRoot;add(bow,traderMeshes);}for(const x of [-.8,.8]){const rim=box('boat-gunwale',x,.36,0,.13,.35,4.5,materials.wood,traderMeshes);rim.parent=traderRoot;}cargo(c.stock,traderMeshes,traderRoot,{x:0,y:.25,z:-1.35},{columns:2,layers:1,maxKinds:10});
-    }else{ // Original pack donkey and merchant, deliberately modest beside licensed residents.
-     const body=box('caravan-pack-donkey',0,.91,0,.65,.65,1.35,materials.wood,traderMeshes);body.parent=traderRoot;for(const x of [-.23,.23])for(const z of [-.45,.45]){const leg=box('donkey-leg',x,.35,z,.15,.7,.15,materials.wood,traderMeshes);leg.parent=traderRoot;}const head=box('donkey-head',0,1.3,.8,.36,.5,.6,materials.wood,traderMeshes);head.parent=traderRoot;for(const x of [-.13,.13]){const ear=box('donkey-ear',x,1.72,.8,.11,.4,.12,materials.wood,traderMeshes);ear.parent=traderRoot;}const rack=box('donkey-wood-pack-support',0,1.2,-.1,1.5,.07,.6,materials.wood,traderMeshes);rack.parent=traderRoot;cargo(c.stock,traderMeshes,traderRoot,{x:0,y:1.235,z:-.1},{columns:2,layers:1,maxKinds:2});const person=box('trade-merchant',1.1,.85,.1,.52,1.5,.4,materials.linen,traderMeshes);person.parent=traderRoot;const merchantHead=B.MeshBuilder.CreateSphere('merchant-head',{diameter:.48,segments:6},scene);merchantHead.position.set(1.1,1.8,.1);merchantHead.material=materials.terracotta;merchantHead.parent=traderRoot;add(merchantHead,traderMeshes);
-    }}}
-  if(!c||!traderRoot)return;traderRoot.position.set(c.x*TILE,c.river?-.08+Math.sin(time*1.7)*.025:surfaceElevation(c.x,c.y,currentState),c.y*TILE);const target=c.route[c.routeIndex];if(target&&Math.hypot(target.x-c.x,target.y-c.y)>.01)traderRoot.rotation.y=Math.atan2(target.x-c.x,target.y-c.y);
+ const caravanView=await createTradeCaravan(B,scene,meshes,materials,goods,options);
+ function updateTrader(c,time){
+  caravanView.update(currentState,c?.river?null:c,time);
+  const next=JSON.stringify(c?.river?c.stock:null);if(next!==traderSignature){traderSignature=next;remove(traderMeshes);traderRoot?.dispose();traderRoot=null;if(c?.river){traderRoot=new B.TransformNode('actual-trade-caravan',scene);
+const hull=box('trade-reed-boat',0,.04,0,1.65,.42,5.2,materials.reed,traderMeshes);hull.parent=traderRoot;for(const side of [-1,1]){const bow=B.MeshBuilder.CreateSphere('boat-raised-bow',{diameter:1,segments:6},scene);bow.scaling.set(.7,.5,1.2);bow.position.set(0,.17,side*2.2);bow.material=materials.reed;bow.parent=traderRoot;add(bow,traderMeshes);}for(const x of [-.8,.8]){const rim=box('boat-gunwale',x,.36,0,.13,.35,4.5,materials.wood,traderMeshes);rim.parent=traderRoot;}cargo(c.stock,traderMeshes,traderRoot,{x:0,y:.25,z:-1.35},{columns:2,layers:1,maxKinds:10});
+
+  }}
+  if(!c?.river||!traderRoot)return;traderRoot.position.set(c.x*TILE,-.08+Math.sin(time*1.7)*.025,c.y*TILE);const target=c.route[c.routeIndex];if(target&&Math.hypot(target.x-c.x,target.y-c.y)>.01)traderRoot.rotation.y=Math.atan2(target.x-c.x,target.y-c.y);
  }
  const drops=[];for(let i=0;i<90;i++){const m=box('weather-rain',0,0,0,.018,.8,.018,rainMaterial, drops);m.receiveShadows=false;m.setEnabled(false);}
  let weatherSignature='',landscapePlanRoads=[];
@@ -230,5 +233,5 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);
  }
  let night=0,currentState=initialState;update(initialState,initialState.simTime||0);
- return {meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;traderRoot?.dispose();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
+ return {meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;caravanView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;traderRoot?.dispose();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
 }

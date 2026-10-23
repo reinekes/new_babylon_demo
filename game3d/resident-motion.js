@@ -35,6 +35,8 @@ export function residentViewPositions(state,citizens){
  const key=(x,y)=>`${Math.floor(x/gap)},${Math.floor(y/gap)}`;
  const neighbours=(x,y)=>{const found=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)found.push(...(cells.get(`${Math.floor(x/gap)+dx},${Math.floor(y/gap)+dy}`)||[]));return found;};
  for(const c of order){
+  // Funeral rails and the solved palms share these exact presentation anchors.
+  if(c.funeralContact){result.set(c.id,{x:c.funeralContact.x,y:c.funeralContact.y});continue;}
   let p={x:c.x,y:c.y};
   const target=c.activity?.target,workKey=target?.type?`${target.x},${target.y}`:c.activity?.kind==='healing'?`patient:${c.activity.patientId}`:null,slot=workKey?(workSlots.get(workKey)||0):0;
   let contact=workKey?workstationFor(target,c,slot):null;

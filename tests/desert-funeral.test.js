@@ -7,7 +7,7 @@ test('desert crowd gathers at the ziggurat, adds no roads, carries torches and s
  const seen=new Set();let broad=false;for(let i=0;i<3000&&s.funeral;i++){const f=s.funeral;if(!seen.has(f.stage)){seen.add(f.stage);assert.ok(decode(encode(s)),f.stage);}
  if(f.stage==='procession'){const moving=f.actors.filter(a=>a.route.length);assert.ok(moving.every(a=>a.delay===0));assert.ok(funeralView(s).torches);broad ||= new Set(moving.map(a=>a.route.at(-1).y)).size>2;}
  advanceFuneral(s,.1);if(s.funeral)assert.equal(validateFuneral(s),true);}
- assert.ok(broad);assert.deepEqual([...seen],['gathering','procession','jackals','returning']);assert.equal(s.funeral,null);
+ assert.ok(broad);assert.deepEqual([...seen],['gathering','procession','farewell','receding','jackals','returning']);assert.equal(s.funeral,null);
 });
 test('deaths give mournful and cruel names without erasing earned titles',()=>{
  const s=createGame({start:'established'});s.deaths=2;startFuneral(s,[{id:12,name:'Умерший',x:9,y:9}]);assert.match(s.name,/плач|пеп|скорб|смерт|пустын/i);const name=s.name;s.funeral=null;s.deaths=30;startFuneral(s,[{id:13,name:'Умерший',x:9,y:9}]);assert.match(s.name,/жесток|смерт|поглот/i);assert.ok(s.divinity.names.includes(name));

@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 22452,
-      "sha256": "01c31e034eaefe8d8e1cc2e8f1ef622d952e3beb553a820d3f2d7fe46b5288bc"
+      "bytes": 23807,
+      "sha256": "056ee9c07cc999a464233750fe811c160d70290e54df6a41cc18e1ebf3f4237f"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 20219,
-      "sha256": "b9cda353559a4eb767320e6227af091eb40934336843a64559bc2af5491513bd"
+      "bytes": 21966,
+      "sha256": "2faa5989dbe799179cea433cb3a1a078c9e778297818e470d3ad5d82d68369a9"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -98,6 +98,31 @@
         "Walk",
         "Idle",
         "SourceOriginal-Animation"
+      ]
+    },
+    {
+      "file": "models/caravan-camel.glb",
+      "bytes": 5579484,
+      "sha256": "17628cddc9232d8fc4722f64790440c0857dacfd70d222bb004bd627d14673d4",
+      "triangles": 25914,
+      "meshes": 3,
+      "bones": 109,
+      "clips": [
+        "Idle",
+        "Idle2",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/caravan-merchant.glb",
+      "bytes": 2044340,
+      "sha256": "d27e2ab8720bda392d878484f7e9b1d575042fdc93db11428b5ad25883647d19",
+      "triangles": 16854,
+      "meshes": 10,
+      "bones": 66,
+      "clips": [
+        "Idle",
+        "Walk"
       ]
     },
     {
@@ -285,6 +310,20 @@
       "bones": 10,
       "clips": [
         "Scene"
+      ]
+    },
+    {
+      "file": "models/jackal.glb",
+      "bytes": 1424196,
+      "sha256": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19",
+      "triangles": 7285,
+      "meshes": 1,
+      "bones": 46,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Pull",
+        "SourceTake001"
       ]
     },
     {

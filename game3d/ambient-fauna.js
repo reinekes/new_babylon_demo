@@ -29,7 +29,7 @@ export function ambientAnchor(state,species,index=0,occupied=[]){
  return null;
 }
 export async function createAmbientFauna(B,scene,meshes=[],options={}){
- const assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${file}?v=founding-village-20261023-1`,scene,undefined,'.glb'));
+ const assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${file}?v=rites-and-caravan-20261023-1`,scene,undefined,'.glb'));
  const entries=Object.entries(AMBIENT_MODELS);if(options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
  const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
