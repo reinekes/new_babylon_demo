@@ -50,6 +50,7 @@ const groundYards=new WeakMap();
 // Full four-column/four-row parcel footprint, in map tiles, plus trunk clearance.
 const yardTreeClear=(yard,tree)=>Math.hypot(Math.max(Math.abs(tree.x-yard.x)-.26,0),Math.max(yard.y-.05-tree.y,tree.y-yard.y-.38,0))>=.45;
 function findGroundYard(s,net){
+ if(s.buildings.some(b=>b.starterHut))return null;
  if(s.buildings.some(b=>b.type==='granary'&&b.construction?.kind!=='new'))return null;
  const depot=s.buildings.find(b=>b.type==='shrine'&&b.construction?.kind!=='new')||s.buildings.find(b=>b.type==='house'&&b.construction?.kind!=='new');if(!depot)return null;
  const port=net.ports.find(p=>p.building.x===depot.x&&p.building.y===depot.y);

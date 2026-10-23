@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 19946,
-      "sha256": "998f0e6ad41986ea940d4806e55efa4c7d1cba9dd59f8731335bb85dee2842e2"
+      "bytes": 22452,
+      "sha256": "01c31e034eaefe8d8e1cc2e8f1ef622d952e3beb553a820d3f2d7fe46b5288bc"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 17813,
-      "sha256": "2b294b59b359f972499ddbd117fd686a5c2b35cb1afab9925635968baffd02bb"
+      "bytes": 20219,
+      "sha256": "b9cda353559a4eb767320e6227af091eb40934336843a64559bc2af5491513bd"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -437,10 +437,45 @@
       ]
     },
     {
+      "file": "models/sky-bird-single.glb",
+      "bytes": 38304,
+      "sha256": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7",
+      "triangles": 162,
+      "meshes": 2,
+      "bones": 10,
+      "clips": [
+        "WingFlight"
+      ]
+    },
+    {
+      "file": "models/sumer-adolescent.glb",
+      "bytes": 2887604,
+      "sha256": "f72963202f48d61b1640a85bfd2fd7eada1358cb0354a50313c2f19e76b419ab",
+      "triangles": 18046,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/sumer-child.glb",
+      "bytes": 2887448,
+      "sha256": "c21281130895d6899493270a0c16fd382a409a8676b6fa9d70f96215ca9adfa2",
+      "triangles": 18046,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
       "file": "models/sumer-people.glb",
-      "bytes": 2356068,
-      "sha256": "4570891336403f614b351e7796bb672b35b87773c62b7ef4b3123f61fea0e57a",
-      "triangles": 16124,
+      "bytes": 2451700,
+      "sha256": "ccf4d10d585968012b7ac9d436241794ea4a7ea953a28e2725808b88d7697a77",
+      "triangles": 18046,
       "meshes": 4,
       "bones": 53,
       "clips": [

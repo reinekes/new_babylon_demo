@@ -10,7 +10,7 @@ vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',imp
 const B=sandbox.exports.NullEngine?sandbox.exports:sandbox.module.exports;
 
 test('wildlife has rounded species anatomy, shared geometry, exact identity/positions, and no stock mutation',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[],view=createWildlife(B,scene,meshes),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[],view=createWildlife(B,scene,meshes),s=createGame({start:'established'});
  const animals=['goat','gazelle','cat','jackal','bird','mouse'].flatMap((kind,i)=>[0,1].map(n=>({id:`${kind}${n}`,kind,x:4+i,y:4+n,behavior:'looking'})));
  const before=JSON.stringify(s);view.update(s,animals,1/60,{speed:.25});assert.equal(JSON.stringify(s),before);
  const bodySources=[];
@@ -29,7 +29,7 @@ test('wildlife has rounded species anatomy, shared geometry, exact identity/posi
 });
 
 test('gait follows distance, birds alternate feet, grazing lowers head, pause freezes every transform',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame(),animals=[{id:'goat',kind:'goat',x:4,y:4,behavior:'looking'},{id:'bird',kind:'bird',x:5,y:5,behavior:'walking'}];
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame({start:'established'}),animals=[{id:'goat',kind:'goat',x:4,y:4,behavior:'looking'},{id:'bird',kind:'bird',x:5,y:5,behavior:'walking'}];
  view.update(s,animals,.05,{speed:.25});const root=view.rootFor({animalId:'goat'}),head=root.getChildTransformNodes().find(n=>n.name.endsWith('-head-pivot')),body=root.getChildTransformNodes().find(n=>n.name.endsWith('-body-pivot'));
  for(let i=0;i<15;i++){animals[0].x+=.002;animals[1].x+=.002;view.update(s,animals,.05,{speed:.25});}
  const gait=root.metadata.gait;for(let i=0;i<10;i++)view.update(s,animals,.05,{speed:.25});assert.equal(root.metadata.gait,gait,'waiting must not march on the spot');
@@ -41,7 +41,7 @@ test('gait follows distance, birds alternate feet, grazing lowers head, pause fr
 });
 
 test('fish swim with shared outward anatomy, rodents are small, cats have feline details, hunted prey lies still',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame({start:'established'});
  const animals=[{id:'fish-a',kind:'fish',x:4,y:4,behavior:'swimming',waterLevel:.12,swimDepth:.2},{id:'fish-b',kind:'fish',x:5,y:4,behavior:'swimming'},{id:'cat-a',kind:'cat',x:6,y:4,behavior:'looking'},{id:'mouse-a',kind:'mouse',x:7,y:4,behavior:'looking'},{id:'prey',kind:'gazelle',x:8,y:4,behavior:'looking'}];
  const saved=JSON.stringify(animals);view.update(s,animals,.05);
  const fish=view.rootFor({animalId:'fish-a'}),fishB=view.rootFor({animalId:'fish-b'}),cat=view.rootFor({animalId:'cat-a'}),mouse=view.rootFor({animalId:'mouse-a'}),prey=view.rootFor({animalId:'prey'});
@@ -63,7 +63,7 @@ test('fish swim with shared outward anatomy, rodents are small, cats have feline
 });
 
 test('mammal coats have UV mapped hair relief, stable ID variants and cached disposable textures',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame({start:'established'});
  const animals=['goat','gazelle','cat','jackal','mouse'].flatMap(kind=>Array.from({length:6},(_,i)=>({id:`coat-${kind}-${i}`,kind,x:5+i,y:5,behavior:'looking'})));
  view.update(s,animals,.05);
  for(const kind of ['goat','gazelle','cat','jackal','mouse']){
@@ -103,7 +103,7 @@ test('every goat coat retains warm flanks and cream patches instead of near-blac
 
 
 test('cat and goat torsos are slim in width and depth, with a smaller feline silhouette',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame({start:'established'});
  const animals=['cat','goat'].map(kind=>({id:kind,kind,x:5,y:5,behavior:'looking'}));view.update(s,animals,.05);
  for(const kind of ['cat','goat']){const root=view.rootFor({animalId:kind}),torso=root.getChildMeshes().find(m=>m.name.includes('-torso')),p=torso.getVerticesData(B.VertexBuffer.PositionKind),xs=p.filter((_,i)=>i%3===0),ys=p.filter((_,i)=>i%3===1),zs=p.filter((_,i)=>i%3===2),width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...ys)-Math.min(...ys),length=Math.max(...zs)-Math.min(...zs);
   assert.ok(width/length<(kind==='cat'?.37:.46));assert.ok(depth/length<(kind==='cat'?.45:.55),`${kind} depth/length ${depth/length}`);
@@ -114,7 +114,7 @@ test('cat and goat torsos are slim in width and depth, with a smaller feline sil
 
 
 test('tabby cats have no raised stripe objects; three ID coats share natural anatomy and dispose cleanly',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame(),ids=new Map();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),s=createGame({start:'established'}),ids=new Map();
  for(let i=0;ids.size<3;i++){const id=`natural-cat-${i}`,variant=coatVariant(id);if(!ids.has(variant))ids.set(variant,id);}
  const cats=[...ids.values()].flatMap(id=>[{id,kind:'cat',x:5,y:5,behavior:'looking'},{id:id+'-paired',kind:'cat',x:6,y:5,behavior:'looking'}]),before=JSON.stringify([s,cats]);view.update(s,cats,.05);
  for(const c of cats){const root=view.rootFor({animalId:c.id}),parts=root.getChildMeshes(),torso=parts.find(m=>m.name.includes('-torso')),face=parts.find(m=>m.name.includes('-face'));
@@ -149,7 +149,7 @@ test('quadruped recovery bends front and hind legs in opposite directions with l
 });
 
 test('new animal anatomy has one head-neck skin and no floating belly/back shell',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),state=createGame(),animals=['goat','cat','gazelle','jackal'].map(kind=>({kind,id:kind,x:4,y:4,behavior:'looking'}));view.update(state,animals,.05);
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createWildlife(B,scene),state=createGame({start:'established'}),animals=['goat','cat','gazelle','jackal'].map(kind=>({kind,id:kind,x:4,y:4,behavior:'looking'}));view.update(state,animals,.05);
  for(const {id}of animals){const meshes=view.rootFor({animalId:id}).getChildMeshes();assert.equal(meshes.filter(m=>m.name.endsWith('-face')).length,1);assert.ok(!meshes.some(m=>/-neck$|-belly$|-saddle$/.test(m.name)));}
  view.dispose();assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();
 });

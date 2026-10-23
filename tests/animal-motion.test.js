@@ -4,10 +4,10 @@ const skin=r=>r.getChildMeshes().filter(m=>m.getTotalVertices()>0).flatMap(m=>Ar
 const packed=new Set(['goose','fox','boar','lioness']);
 const snap=r=>JSON.stringify([r,...r.getDescendants()].map(n=>[n.position?.asArray(),n.rotation?.asArray(),n.rotationQuaternion?.asArray(),n.scaling?.asArray(),n.morphTargetManager&&Array.from({length:n.morphTargetManager.numTargets},(_,i)=>n.morphTargetManager.getTarget(i).influence)]));
 test('real GLBs parse, every terrestrial species walks with deforming skin, pause and dry routes hold at 4×',async()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine);scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,3,-6),scene);const state=createGame(),saved=JSON.stringify(state),meshes=[];let view;
+ const engine=new B.NullEngine(),scene=new B.Scene(engine);scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,3,-6),scene);const state=createGame({start:'established'}),saved=JSON.stringify(state),meshes=[];let view;
  try{
   view=await createAmbientFauna(B,scene,meshes,{warn:(...a)=>{throw Error(a.join(' '));},includeRestrictedBirds:false,loadAsset:async file=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>{p.skipMaterials=true;});return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');}});
-  view.update(state,.05,{speed:4});scene.render();const roots=view.roots().filter(r=>AMBIENT_MODELS[r.metadata.ambientSpecies]);assert.equal(roots.length,14);const start=new Map(roots.map(r=>[r,snap(r)])),positions=new Map(roots.map(r=>[r,skin(r)])),skinChanged=new Set(),moving=new Set(),deforming=new Set();
+  view.update(state,.05,{speed:4});for(const m of meshes)m.alwaysSelectAsActiveMesh=true;scene.render();const roots=view.roots().filter(r=>AMBIENT_MODELS[r.metadata.ambientSpecies]);assert.equal(roots.length,20);const start=new Map(roots.map(r=>[r,snap(r)])),positions=new Map(roots.map(r=>[r,skin(r)])),skinChanged=new Set(),moving=new Set(),deforming=new Set();
   for(let i=0;i<160;i++){
    const before=new Map(roots.map(r=>[r,{x:r.position.x/6,y:r.position.z/6}]));view.update(state,.05,{speed:4});scene.render();
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}

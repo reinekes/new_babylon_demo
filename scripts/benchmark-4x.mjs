@@ -5,7 +5,7 @@ const root=process.argv[2]?pathToFileURL(resolve(process.argv[2])+'/'):new URL('
 const {createGame,advanceTime,terrain,encode}=await import(new URL('engine.js',root));
 const {syncCitizens,invalidateAssignments}=await import(new URL('workforce.js',root));
 const {housingOf}=await import(new URL('definitions.js',root));
-const s=createGame();for(let y=2;y<22;y+=2)for(let x=2;x<30;x+=2)if(terrain(x,y,s)!=='water'&&!s.buildings.some(b=>b.x===x&&b.y===y))s.buildings.push({type:(x+y)%4?'house':'field',x,y,level:1});s.population=200;s.capacity=housingOf(s);syncCitizens(s);
+const s=createGame({start:'established'});for(let y=2;y<22;y+=2)for(let x=2;x<30;x+=2)if(terrain(x,y,s)!=='water'&&!s.buildings.some(b=>b.x===x&&b.y===y))s.buildings.push({type:(x+y)%4?'house':'field',x,y,level:1});s.population=200;s.capacity=housingOf(s);syncCitizens(s);
 invalidateAssignments(s);let a=performance.now();syncCitizens(s);const assignmentMs=performance.now()-a;
 const samples=[];for(let i=0;i<900;i++){a=performance.now();advanceTime(s,4/60);samples.push(performance.now()-a);}samples.sort((a,b)=>a-b);
 const saves=[];let raw='';for(let i=0;i<100;i++){a=performance.now();raw=encode(s);saves.push(performance.now()-a);}saves.sort((a,b)=>a-b);

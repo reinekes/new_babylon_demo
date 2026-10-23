@@ -7,7 +7,7 @@ import {syncCitizens} from '../workforce.js';
 import {seasonBalance} from '../season-balance.js';
 import {weatherAt} from '../environment.js';
 import {workRate} from '../wellbeing.js';
-const fixture=type=>{const s=createGame();s.buildings.push({type,x:10,y:9,level:1});initializeArtisans(s);syncCitizens(s);return s;};
+const fixture=type=>{const s=createGame({start:'established'});s.buildings.push({type,x:10,y:9,level:1});initializeArtisans(s);syncCitizens(s);return s;};
 for(const [type,recipe,stage]of [['pottery',{clay:4,reed:2,water:2},'forming'],['brewery',{food:4,water:3,pottery:1},'brewing']]){
  test(`${type} accepts rounding-size recipe deficits without negative buffers or invalid saves`,()=>{
   for(const material of Object.keys(recipe)){

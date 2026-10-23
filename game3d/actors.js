@@ -1,6 +1,8 @@
+import {workstationHands} from './workstations.js';
 import {visibleCitizens} from '../workforce.js';
 import {animalsFor} from '../fauna.js';
 import {funeralView} from '../funerals.js';
+import {residentAnatomy} from './resident-anatomy.js';
 import {residentAppearance} from '../resident-appearance.js';
 import {residentPose} from '../actor-art.js';
 import {onBridge} from '../world.js';
@@ -34,7 +36,7 @@ export const cityAnimalVisible=animal=>!['bird','mouse','rat'].includes(animal.k
 export function actorViewCitizens(state){return actorViewFrame(state).citizens;}
 export function residentVisual(c,state){
  const look=residentAppearance(c,state.buildings||[]);
- return {...look,scale:c.age<16?.55+Math.max(0,Math.min(c.age,15))*.022:1,
+ return {...look,...residentAnatomy(c.age),
   inspired:!!((c.calling&&c.calling!=='auto')||(c.futureRole&&c.futureRole!=='auto')||state.buffs?.inspiration&&['clay','reed'].includes(look.work)),
   motion:residentMotion(c.id),identity:residentIdentity(c.id),mood:c.mood??50,role:c.role||look.work||'resident'};
 }
@@ -45,24 +47,24 @@ export function actorAnimation(c,distance=0){
 }
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
-export async function createGameActors(B,scene,materials){
+export async function createGameActors(B,scene,materials,{includeFauna=true}={}){
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
  let disposed=false,poseTime=0,bier=null;
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
-  const load=name=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${name}.glb?v=city-creatures-20261022-1`,scene,undefined,'.glb');
+  const load=name=>B.SceneLoader.LoadAssetContainerAsync('assets/art-courtyard/models/',`${name}.glb?v=founding-village-20261023-1`,scene,undefined,'.glb');
   const resident=async()=>{try{const asset=await load('sumer-people');if(['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip)))return asset;asset.dispose();throw Error('Adapted civilian clips missing');}catch(error){console.warn('Adapted civilian unavailable; using original resident.',error);return load('resident');}};
-  const loaded=await Promise.allSettled([resident(),load('sheep')]);
+  const loaded=await Promise.allSettled([resident(),load('sheep'),load('sumer-child'),load('sumer-adolescent')]);
   for(const r of loaded)if(r.status==='fulfilled')containers.push(r.value);
   const failed=loaded.find(r=>r.status==='rejected');if(failed)throw failed.reason;
  }catch(error){for(const c of containers)c.dispose();throw error;}
- const [residentSource,sheepSource]=containers;
+ const [residentSource,sheepSource,childSource,adolescentSource]=containers;
  const wildlife=createWildlife(B,scene,meshes);
  const [goats,imported,ambient]=await Promise.all([
-  createGameGoats(B,scene,meshes,{variants:['downloaded']}).catch(error=>{console.warn('Downloaded goats unavailable; herd remains in simulation.',error);return null;}),
-  createImportedFauna(B,scene,meshes).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
-  createAmbientFauna(B,scene,meshes).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;})]);
+  (includeFauna?createGameGoats(B,scene,meshes,{variants:['downloaded']}):Promise.resolve(null)).catch(error=>{console.warn('Downloaded goats unavailable; herd remains in simulation.',error);return null;}),
+  (includeFauna?createImportedFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
+  (includeFauna?createAmbientFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;})]);
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
  const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#829e91'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952');
@@ -99,16 +101,16 @@ export async function createGameActors(B,scene,materials){
    for(const side of ['l','r'])a.legs[side]={upper:nodes.find(n=>n.name.endsWith(`-thigh_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-calf_${side}`)),foot:nodes.find(n=>n.name.endsWith(`-foot_${side}`))};
    a.head=nodes.find(n=>n.name.endsWith('-head'));a.headBase=a.head?.scaling.clone();
    a.hairMeshes=model.getChildMeshes().filter(m=>/scalp hair/i.test(m.name));a.beardMeshes=model.getChildMeshes().filter(m=>/beard/i.test(m.name));
-   if(a.head&&a.hairMeshes[0]&&a.beardMeshes[0]){
+   if(a.head&&a.hairMeshes[0]){
     a.head.computeWorldMatrix(true);const inverse=a.head.getWorldMatrix().clone().invert();
     // Measure the authored scalp/jaw in the head's bind space. World guesses put
     // the bun outside the skull after the GLB's handedness and rest transforms.
     const bounds=mesh=>{mesh.computeWorldMatrix(true);const points=mesh.getBoundingInfo().boundingBox.vectorsWorld.map(p=>B.Vector3.TransformCoordinates(p,inverse)),min=vec(Infinity,Infinity,Infinity),max=vec(-Infinity,-Infinity,-Infinity);for(const p of points){min.minimizeInPlace(p);max.maximizeInPlace(p);}return {min,max,centre:min.add(max).scale(.5),size:max.subtract(min)};};
-    const scalp=bounds(a.hairMeshes[0]),jaw=bounds(a.beardMeshes[0]);
+    const scalp=bounds(a.hairMeshes[0]),jaw=a.beardMeshes[0]?bounds(a.beardMeshes[0]):null;
     const attach=(label,centre,size,source)=>{const mesh=sphere(`${name}-${label}`,a.head,a.hair[0]||dark,0,0,0,size.x,size.y,size.z);mesh.position.copyFrom(centre);mesh.metadata={...metadata,attachmentBounds:{min:source.min.asArray(),max:source.max.asArray()}};return mesh;};
-    a.fullHair=attach('full-hair',vec(scalp.centre.x,scalp.max.y-scalp.size.y*.23,scalp.centre.z),vec(scalp.size.x*1.03,scalp.size.y*.52,scalp.size.z*.97),scalp);
+    // Hair is the real normal-separated, head-weighted GLB scalp; no sphere overlay.
     a.bun=attach('hair-bun',vec(scalp.centre.x,scalp.min.y+scalp.size.y*.67,scalp.min.z+scalp.size.z*.04),vec(scalp.size.x*.42,scalp.size.y*.40,scalp.size.z*.35),scalp);
-    a.fullBeard=attach('full-beard',jaw.centre,vec(jaw.size.x*.97,jaw.size.y*1.5,jaw.size.z*.95),jaw);a.jawBounds=jaw;
+    if(jaw){a.fullBeard=attach('full-beard',jaw.centre,vec(jaw.size.x*.97,jaw.size.y*1.5,jaw.size.z*.95),jaw);a.jawBounds=jaw;}
    }
    for(const side of ['l','r']){a.hands[side]=nodes.find(n=>n.name.endsWith(`-hand_${side}`));a.arms[side]={upper:nodes.find(n=>n.name.endsWith(`-upperarm_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-lowerarm_${side}`))};}
    if(a.hands.r){a.tool.parent=a.hands.r;a.tool.position.set(0,.045,0);}
@@ -133,13 +135,13 @@ export async function createGameActors(B,scene,materials){
   a.root.computeWorldMatrix(true);upper.computeWorldMatrix(true);lower.computeWorldMatrix(true);hand.computeWorldMatrix(true);
   const shoulder=upper.getAbsolutePosition(),elbow=lower.getAbsolutePosition(),palm=hand.getAbsolutePosition();
   const l1=B.Vector3.Distance(shoulder,elbow),l2=B.Vector3.Distance(elbow,palm),goal=B.Vector3.TransformCoordinates(local,a.root.getWorldMatrix());
-  const ray=goal.subtract(shoulder),length=Math.max(.001,Math.min(ray.length(),l1+l2-.005)),direction=ray.normalize();
+  const ray=goal.subtract(shoulder),length=Math.max(.001,Math.max(Math.abs(l1-l2)+.005,Math.min(ray.length(),l1+l2-.005))),direction=ray.normalize();
   const along=(l1*l1-l2*l2+length*length)/(2*length),height=Math.sqrt(Math.max(0,l1*l1-along*along));
   let bend=B.Vector3.TransformNormal(vec(side==='l'?-1:1,-.7,-.35),a.root.getWorldMatrix());bend=bend.subtract(direction.scale(B.Vector3.Dot(bend,direction))).normalize();
   const joint=shoulder.add(direction.scale(along)).add(bend.scale(height));
-  const aim=(node,end)=>{node.parent.computeWorldMatrix(true);const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
-   const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();B.Axis.Y.rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);};
-  aim(upper,joint);lower.computeWorldMatrix(true);aim(lower,shoulder.add(direction.scale(length)));
+  const aim=(node,child,end)=>{node.parent.computeWorldMatrix(true);const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
+   const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();child.position.normalizeToNew().rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);};
+  aim(upper,lower,joint);lower.computeWorldMatrix(true);aim(lower,hand,shoulder.add(direction.scale(length)));
  }
  function aimForward(node,end){
   node.computeWorldMatrix(true);const inverse=node.parent.getWorldMatrix().clone().invert(),origin=node.getAbsolutePosition();
@@ -153,6 +155,7 @@ export async function createGameActors(B,scene,materials){
   if(a.shotArrow){prune(a.shotArrow);a.shotArrow.dispose();a.shotArrow=null;}
   a.tool.setEnabled(!!kind);if(!kind)return;
   // Every implement shares its grip origin with the GLB palm. No detached tools.
+  if(kind==='water-vessel'){sphere('water-fill-vessel',a.tool,clay,0,-.08,0,.28,.28,.28);sphere('water-fill-mouth',a.tool,dark,0,.045,0,.15,.025,.15);return;}
   if(kind==='hunting'){
    const arc=[];for(let i=0;i<=10;i++){const t=i/10*Math.PI;arc.push(vec(Math.sin(t)*.20,Math.cos(t)*.48,0));}
    const bow=B.MeshBuilder.CreateTube('hunter-bow',{path:arc,radius:.017,tessellation:6},scene);bow.parent=a.tool;bow.material=wood;meshes.push(bow);
@@ -218,13 +221,14 @@ export async function createGameActors(B,scene,materials){
   cargo(a,c);
  }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
+  a.workContact=viewPosition.contact||null;
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
   if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),blend=fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY;
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);
-  if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){a.yaw=Math.atan2(c.activity.target.x-viewPosition.x,c.activity.target.y-viewPosition.y);}
+  if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
   if(distance>.00001&&!paused){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   a.lastX=shownX;a.lastY=shownY;
@@ -234,7 +238,7 @@ export async function createGameActors(B,scene,materials){
   a.paused=paused;
   if(a.playProps&&!paused){const playing=c.playing&&c.age<16;a.playProps.setEnabled(!!playing);a.playBoard.setEnabled(!!playing&&!c.walking);a.playAnimal.setEnabled(!!playing);}
   if(a.tool&&(!paused||a.toolKind===null)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
-   const kind=c.activity?workPose(c.activity.kind,a.time,c.activity.task).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
+   const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
   if(a.clip==='Walk_Loop'&&!paused&&distance<3){
    a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z);
@@ -292,6 +296,10 @@ export async function createGameActors(B,scene,materials){
    }else if(a.pose==='petting'){
     const target=a.c.activity?.target,pet=target?B.Vector3.TransformCoordinates(vec(target.x*6,surfaceElevation(target.x,target.y,a.state)+.58,target.y*6),a.root.computeWorldMatrix(true).clone().invert()):vec(.15,.44,.65);
     pet.z+=Math.sin(a.time*4)*.07;poseArm(a,'r',pet);poseArm(a,'l',vec(-.24,.79,.30));
+   }else if(work&&a.workContact){
+    const hands=workstationHands(a.workContact,a.time),inverse=a.root.computeWorldMatrix(true).clone().invert();
+    const local=p=>B.Vector3.TransformCoordinates(vec(p.x*6,surfaceElevation(p.x,p.y,a.state)+p.height,p.y*6),inverse);
+    poseArm(a,'r',local(hands.right));poseArm(a,'l',local(hands.left));
    }else if(work){
     poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
    }else if(a.pose==='play'&&!a.c.walking){
@@ -306,6 +314,15 @@ export async function createGameActors(B,scene,materials){
      const rootMatrix=a.root.computeWorldMatrix(true),inverse=rootMatrix.clone().invert(),grip=B.Vector3.TransformCoordinates(a.hands.r.getAbsolutePosition(),inverse),shaft=B.Vector3.TransformNormal(vec(0,.92,0),a.hands.r.getWorldMatrix().multiply(inverse)).length();
      const lift=(Math.sin(a.time*3.6)+1)*.5,drop=Math.max(-shaft*.98,Math.min(shaft*.98,.055+lift*.34-grip.y)),forward=Math.sqrt(Math.max(0,shaft*shaft-drop*drop));
      const end=B.Vector3.TransformCoordinates(vec(grip.x,grip.y+drop,grip.z+forward),rootMatrix);direction=end.subtract(a.hands.r.getAbsolutePosition());
+    }
+    if(a.workContact&&['building','farming'].includes(a.workContact.kind)){
+     const target=a.workContact.target,lift=(1-Math.cos(a.time*3.6))*.5;
+     const point=vec(target.x*6,surfaceElevation(target.x,target.y,a.state)+target.height+lift*.26,target.y*6);
+     direction=point.subtract(a.hands.r.getAbsolutePosition());
+    }
+    if(a.workContact?.kind==='vat'){
+     const target=a.workContact.target,stand=a.workContact.stand,dx=target.x-stand.x,dz=target.y-stand.y,d=Math.hypot(dx,dz);
+     direction=vec((target.x+dx/d*.18/6)*6,surfaceElevation(target.x,target.y,a.state)+target.height-.38,(target.y+dz/d*.18/6)*6).subtract(a.hands.r.getAbsolutePosition());
     }
     const local=B.Vector3.TransformNormal(direction,a.tool.parent.getWorldMatrix().clone().invert()).normalize();
     a.tool.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,local,new B.Quaternion());a.tool.computeWorldMatrix(true);
@@ -343,7 +360,7 @@ export async function createGameActors(B,scene,materials){
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
-  for(const c of visible){seen.add(c.id);let a=people.get(c.id);if(!a){a=instantiate(residentSource,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
+  for(const c of visible){seen.add(c.id);let a=people.get(c.id);const anatomy=residentAnatomy(c.age);if(a&&a.anatomy!==anatomy.source){remove(a);people.delete(c.id);a=null;}if(!a){const source=anatomy.source==='child'?childSource:anatomy.source==='adolescent'?adolescentSource:residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=anatomy.source;a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}

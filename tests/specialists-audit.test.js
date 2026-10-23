@@ -8,7 +8,7 @@ import {invalidateAssignments,syncCitizens} from '../workforce.js';
 // Exercise the real scheduler, work stage, hand-carried load and storage
 // deposit independently for every direct producer, including local extraction.
 for(const type of ['clay','reed','garden','logging','quarry','hunting','fishing','shrine','ziggurat'])test(`${type}: actual worker completes work, carries its output and credits a delivery`,()=>{
- const s=createGame();s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));
+ const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));
  for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;b.water=100;b.waterDelivered=100;}
  for(const c of s.citizens)if(c.age>=16)c.role='builder';
  let b=s.buildings.find(b=>b.type===type);

@@ -1,3 +1,4 @@
+import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
 // not reconstructions. One merged mesh per shared material and building template.
@@ -89,6 +90,26 @@ export function createArchitecture(B,scene,b,m){
  case 'fishing':ground();room(-1.3,-1.65,2.1,1.4,1.8);for(const x of [-2.1,1.2])beam([x,.1,-.2],[x,2,-.4],.06);beam([-2.1,2,-.4],[1.2,2,-.4]);for(let i=0;i<17;i++)beam([-2+i*.19,.4,-.2],[-2+i*.19,1.95,-.4],.009,m.linen);for(let i=0;i<9;i++)beam([-2,.4+i*.18,-.2-i*.024],[1.1,.4+i*.18,-.2-i*.024],.009,m.linen);for(let i=0;i<4;i++)jar(-1.6+i*.8,1.6,.6);cloth(1.65,-1.15,1.5,2,1.6,m.reed);break;
  case 'healer':ground();room(-1.6,-.5,1.6,3.8,2.1);room(.5,-1.65,2.55,1.5,2.4);cloth(.65,.75,2.6,2,1.95);for(const x of [0,1.3]){bench(x,.75,.8);block(x,.88,.75,.7,.06,1.5,m.linen);}for(let i=0;i<5;i++)jar(-1.9+i*.32,-1.5,.25,2.2);basin(-1.9,1.7,.6,.55);break;
  default:throw Error(`Missing original architecture for ${b.type}`);
+ }
+ // A single street-facing working gallery shares coordinates with palm IK.
+ for(const a of workstationLayout(b)){
+  const {x,z,height:h,kind}=a;
+  if(kind==='loom'){
+   for(const side of [-1,1])beam([x+side*.30,.08,z],[x+side*.30,1.38,z],.035);
+   beam([x-.30,1.38,z+a.sz*.20],[x+.30,1.38,z+a.sz*.20],.035);block(x,1.05,z+a.sz*.20,.54,.62,.035,m.linen);
+   for(const side of [-1,1])beam([x+a.sx*.20,.08,z+side*.30],[x+a.sx*.20,1.38,z+side*.30],.035);beam([x+a.sx*.20,1.38,z-.30],[x+a.sx*.20,1.38,z+.30],.035);block(x+a.sx*.20,1.05,z,.035,.62,.54,m.linen);
+  }else if(kind==='vat'){jar(x,z,.91);cylinder(x,.91,z,.12,.035,m.shade);}
+  else if(kind==='kiln'){block(x,.4,z,.62,.8,.62,m.fired);block(x,h,z,.5,.035,.5,m.raw);block(x,h+.06,z,.38,.10,.32,m.raw);}
+  else {
+   block(x,h-.065,z,.65,.13,.65,m.wood);for(const dx of [-.24,.24])for(const dz of [-.24,.24])block(x+dx,(h-.13)/2,z+dz,.055,h-.13,.055,m.wood);
+   if(kind==='wheel'){cylinder(x,h+.018,z,.26,.035,m.stone);cylinder(x,h+.065,z,.12,.07,m.terracotta,.10);}
+   else if(kind==='mould'){for(const dx of [-.20,.20])block(x+dx,h+.035,z,.035,.07,.4,m.wood);for(const dz of [-.20,.20])block(x,h+.035,z+dz,.4,.07,.035,m.wood);block(x,h+.025,z,.36,.05,.36,m.raw);}
+   else if(kind==='fleece')block(x,h+.025,z,.48,.05,.45,m.linen);
+   else if(kind==='reed')for(const dx of [-.16,-.08,0,.08,.16])beam([x+dx,h+.025,z-.23],[x+dx,h+.025,z+.23],.018,m.reed);
+   else if(kind==='mortar')cylinder(x,h+.035,z,.22,.07,m.stone);
+   else if(kind==='clay')block(x,h+.025,z,.45,.05,.45,m.raw);
+   else block(x,h+.025,z,.50,.05,.50,m.linen);
+  }
  }
  const meshes=[];for(const [material,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);if(mesh){mesh.name=`original-${b.type}-${material.name}`;mesh.material=material;meshes.push(mesh);}}
  return meshes;

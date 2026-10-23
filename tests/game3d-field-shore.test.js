@@ -14,7 +14,7 @@ function dryTriangles(g,b,s){
 function sampledDryArea(b,s){let count=0;const n=220;for(let y=0;y<n;y++)for(let x=0;x<n;x++){const p=fieldWorldPoint(b,((x+.5)/n-.5)*5.35,((y+.5)/n-.5)*5.35);if(renderedShoreDistance(p.x,p.y,s)>=FIELD_SHORE_BUFFER)count++;}return count/(n*n)*5.35**2;}
 
 test('starting field keeps its dry middle and over half the plot instead of three narrow rows',()=>{
- const s=createGame(),b=s.buildings.find(b=>b.type==='field'),before=JSON.stringify(s),data=plane(),g=clippedFieldGeometry(data,b,s),ratio=area(g)/area(data);
+ const s=createGame({start:'established'}),b=s.buildings.find(b=>b.type==='field'),before=JSON.stringify(s),data=plane(),g=clippedFieldGeometry(data,b,s),ratio=area(g)/area(data);
  assert.deepEqual([b.x,b.y],[12,8]);assert.ok(ratio>.5&&ratio<.65,`dry area ratio ${ratio}`);assert.ok(Math.abs(area(g)-sampledDryArea(b,s))<.025,'filled triangles cover all actual dry ground without an extra bank strip');
  const vertices=g.positions.filter((_,i)=>i%3===0);assert.ok(Math.max(...vertices)>.2,'dry centre and middle crop rows remain');assert.ok(Math.min(...vertices)<-2.67);dryTriangles(g,b,s);assert.equal(JSON.stringify(s),before);
 });

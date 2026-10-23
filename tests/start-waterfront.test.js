@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {Renderer} from '../renderer.js';import {createGame} from '../engine.js';import {river} from '../world.js';
 test('new city has no unbuilt brown landing drawn at the fixed river bend',()=>{
- const s=createGame(),r=Object.create(Renderer.prototype),gradient={addColorStop(){}};
+ const s=createGame({start:'established'}),r=Object.create(Renderer.prototype),gradient={addColorStop(){}};
  const ctx=new Proxy({}, {get(t,k){if(k==='createRadialGradient')return()=>gradient;return t[k]??(()=>{});},set(t,k,v){t[k]=v;return true;}});
  Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:1000,h:700,zoom:1.75,pan:{x:0,y:0},ambient:0,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
  r.layout();const dock=r.point(river(10)-1.4,10),boxes=[];r.box=(...args)=>boxes.push(args);r.draw(s,null,1000);

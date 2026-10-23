@@ -5,7 +5,7 @@ import {invalidateAssignments,syncCitizens} from '../workforce.js';
 import {newMedicalSkill} from '../education.js';
 
 function clinicCity(){
- const s=createGame();s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.buildings.push({type:'healer',x:6,y:15,level:1});
+ const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.buildings.push({type:'healer',x:6,y:15,level:1});
  s.citizens=[s.citizens[0],s.citizens[8]];s.population=2;
  const [doctor,patient]=s.citizens;Object.assign(doctor,{role:'healer',calling:'healer',medicine:newMedicalSkill(1,1)});Object.assign(patient,{role:'builder',health:40,home:'9,9'});
  for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=0;b.water=100;b.waterDelivered=100;}
@@ -23,7 +23,7 @@ test('a worker arriving after 20 can still buy dinner without dropping their wor
  assert.ok(carried);assert.ok(patient.mealEaten>0);assert.equal(patient.cargo.clay,2);assert.ok(s.resources.food<200);
 });
 test('a newly assigned market porter supplies their empty home before starting the paid job',async()=>{
- const {trade}=await import('../trading.js');const s=createGame();s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.buildings.push({type:'market',x:10,y:9,level:1});s.citizens=[s.citizens[0]];s.population=1;const c=s.citizens[0];c.role='builder';
+ const {trade}=await import('../trading.js');const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.buildings.push({type:'market',x:10,y:9,level:1});s.citizens=[s.citizens[0]];s.population=1;const c=s.citizens[0];c.role='builder';
  for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;b.water=100;b.waterDelivered=100;}
  invalidateAssignments(s);for(let i=0;i<1200&&s.trade.caravan?.phase!=='trading';i++){s.event=null;advanceTime(s,.1);}assert.equal(s.trade.caravan?.phase,'trading');
  s.event=null;assert.ok(trade(s,'stone','buy',2).ok);c.role='carrier';const home=s.buildings.find(b=>`${b.x},${b.y}`===c.home);home.pantry=0;c.phase='home';invalidateAssignments(s);syncCitizens(s);
@@ -32,7 +32,7 @@ test('a newly assigned market porter supplies their empty home before starting t
  assert.ok(delivered,'paid purchase resumes after groceries');assert.ok(home.pantry>0);
 });
 function childrenCity(isolated=false){
- const s=createGame();s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.citizens=[s.citizens[0],s.citizens[10]];s.population=2;const [adult,child]=s.citizens;
+ const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.citizens=[s.citizens[0],s.citizens[10]];s.population=2;const [adult,child]=s.citizens;
  adult.role='builder';child.home=isolated?'22,8':'9,9';if(isolated)s.buildings.push({type:'house',x:22,y:8,level:1,pantry:0,pantryDelivered:0});
  for(const b of s.buildings.filter(b=>b.type==='house')){b.water=100;b.waterDelivered=100;b.pantry=b.x===8?10:0;b.pantryDelivered=b.pantry;}
  invalidateAssignments(s);syncCitizens(s);return {s,adult,child,target:child.home};
@@ -68,7 +68,7 @@ test('a severely hungry resident with food already at home eats before another l
  assert.ok(ate,'the hungry supplier must eat the meal already available at home');assert.equal(s.deaths,0);assert.equal(s.population,2);assert.ok(s.citizens.every(c=>c.health>0));assert.ok(decode(encode(s)));
 });
 test('a hungry home worker rests with their work cargo, eats pantry food, and later resumes its delivery',async()=>{
- const {initializeLifeAnalytics}=await import('../life-analytics.js');const s=createGame(),c=s.citizens[0];s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.citizens=[c];s.population=1;
+ const {initializeLifeAnalytics}=await import('../life-analytics.js');const s=createGame({start:'established'}),c=s.citizens[0];s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.citizens=[c];s.population=1;
  Object.assign(c,{phase:'home',role:'builder',work:null,site:null,store:'9,8',x:8.5,y:8.5,cargo:{wood:2},health:40,hunger:100,missedMeals:1,lastMealQuality:0});const b=s.buildings.find(b=>b.type==='house'&&b.x===8);b.pantry=.8;b.pantryDelivered=.8;b.water=100;b.waterDelivered=100;s.resources.food=0;s.simTime=29;s.seasonElapsed=29;delete s.lifeAnalytics;initializeLifeAnalytics(s);invalidateAssignments(s);
  const wood=s.resources.wood+c.cargo.wood;let ate=false;
  for(let i=0;i<80;i++){s.event=null;advanceTime(s,.1);ate ||= c.mealDay===0&&c.mealEaten>.75;assert.ok(decode(encode(s)));}

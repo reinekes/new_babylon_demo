@@ -5,7 +5,7 @@ import {syncInventory,validateInventory} from '../inventory.js';
 import {networkFor,advanceWorkers,recoverCitizenCargo} from '../workforce.js';
 import {setCitizenRole,canDemolish} from '../management.js';
 import {festivalReason,orderFestival,cancelFestival,advanceFestival,validateFestival,festivalView} from '../festival.js';
-const city=()=>{const s=createGame();s.resources.prestige=100;s.resources.beer=20;s.resources.food=100;syncInventory(s);for(const c of s.citizens){c.age=25;c.role='carrier';c.work=null;c.phase='home';c.cargo={};c.buildCargo={};delete c.pantryTrip;delete c.waterTrip;}return s;};
+const city=()=>{const s=createGame({start:'established'});s.resources.prestige=100;s.resources.beer=20;s.resources.food=100;syncInventory(s);for(const c of s.citizens){c.age=25;c.role='carrier';c.work=null;c.phase='home';c.cargo={};c.buildCargo={};delete c.pantryTrip;delete c.waterTrip;}return s;};
 function step(s,dt=1){for(let t=0;t<dt;t+=.1){advanceFestival(s,.1);s.simTime+=.1;}}
 function saved(s){s.tick=Math.floor(s.simTime/45);s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);s.seasonElapsed=s.simTime-s.tick*45;return decode(JSON.stringify(s));}
 test('festival protects seeds and a complete meal reserve, books exact sources and fully refunds once',()=>{const s=city(),before=structuredClone(s.resources);assert.equal(festivalReason(s),'');assert.equal(orderFestival(s).ok,true);assert.equal(s.resources.food,before.food-12);assert.equal(s.resources.beer,before.beer-6);assert.equal(s.resources.prestige,before.prestige-15);assert.ok(validateFestival(s));assert.ok(cancelFestival(s).ok);assert.equal(s.resources.food,before.food);assert.equal(s.resources.beer,before.beer);assert.equal(s.resources.prestige,before.prestige);assert.equal(cancelFestival(s).ok,false);s.resources.food=15;s.foodPlan.protectSeeds=false;syncInventory(s);assert.match(festivalReason(s),/резерв|семен/);});
@@ -38,7 +38,7 @@ test('guests still travelling when evening ends return home without consuming or
  assert.equal(cancelFestival(s).refunded,true);assert.equal(s.resources.food,100);assert.equal(s.resources.beer,20);assert.equal(s.resources.prestige,100);
 });
 test('saved festival invitations show the current physical order instead of obsolete instant exchange',()=>{
- const s=createGame();s.event={id:'festival',title:'Ночь тысячи огней',text:'Жрецы предлагают праздник у воды. 20 еды превратятся в 15 веры, 5 престижа и 10 довольства.'};
+ const s=createGame({start:'established'});s.event={id:'festival',title:'Ночь тысячи огней',text:'Жрецы предлагают праздник у воды. 20 еды превратятся в 15 веры, 5 престижа и 10 довольства.'};
  const ids=s.citizens.map(c=>c.id),resources=structuredClone(s.resources);
  const restored=decode(JSON.stringify(s));assert.ok(restored);
  assert.match(restored.event.text,/15 престижа, 12 еды и 6 пива/);

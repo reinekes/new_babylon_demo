@@ -97,3 +97,14 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 | `miracle-snowdrop-2.glb` | LOLIPOP (https://sketchfab.com/lolipop_1707) | https://sketchfab.com/3d-models/snowdrop-pack-lowpoly-gameready-lod-14890248c9374b569a7bc0d497ccdbe0 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Нормализованы масштаб/начало; текстуры до 512; выбран полный LOD. |
 
 Четырём прежним imported-goose/fox/boar/lioness добавлены оригинальные morph-походки; автор/CC BY-NC 4.0 сохранены. Лён/бобовые/лук/финиковые грозди — оригинальная геометрия проекта. Полный реестр: docs/MODEL_INVENTORY_2026-10-23.md.
+
+## 2026-10-23 · поселение, дети и исправленный полёт
+
+| Модель | Автор/источник/лицензия | Изменения |
+|---|---|---|
+| `sumer-people.glb` | Trident.AI · https://sketchfab.com/3d-models/egyptian-people-b24eba1c3d56439a9dda74fc84065c37 · SKETCHFAB Standard (отдельное разрешение подтверждено пользователем) | Цельная новая геометрия волос, правильные локальные оси рук; дети/подростки: изменены вершины, суставы, bind-матрицы и клипы, а не только масштаб. |
+| `sumer-child.glb` | Trident.AI · https://sketchfab.com/3d-models/egyptian-people-b24eba1c3d56439a9dda74fc84065c37 · SKETCHFAB Standard (отдельное разрешение подтверждено пользователем) | Цельная новая геометрия волос, правильные локальные оси рук; дети/подростки: изменены вершины, суставы, bind-матрицы и клипы, а не только масштаб. |
+| `sumer-adolescent.glb` | Trident.AI · https://sketchfab.com/3d-models/egyptian-people-b24eba1c3d56439a9dda74fc84065c37 · SKETCHFAB Standard (отдельное разрешение подтверждено пользователем) | Цельная новая геометрия волос, правильные локальные оси рук; дети/подростки: изменены вершины, суставы, bind-матрицы и клипы, а не только масштаб. |
+| `sky-bird-single.glb` | Zacxophone (https://sketchfab.com/Zacxophone) · https://sketchfab.com/3d-models/birds-3a9bb97be78944f9bffc23fb25c2154e · SKETCHFAB Standard (https://sketchfab.com/licenses) | Выделена одна птица, сохранены шесть авторских каналов крыльев; убран перенос тела, нормализован настоящий перед модели; полёт по касательной. |
+
+Улей и домаII/III, рабочие галереи/столы и точки взаимодействия — оригинальная процедурная геометрия Нового Вавилона. Дома-ульи на старте — игровое допущение, не точная реконструкция Шумера.

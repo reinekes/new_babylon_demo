@@ -14,11 +14,11 @@ sandbox.BABYLON=B;sandbox.exports=undefined;sandbox.module=undefined;sandbox.Tex
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url),'utf8'),sandbox);
 
 test('presentation preserves IDs, ages, occupation, clothing and funeral participants without changing state',()=>{
- const s=createGame(),c=s.citizens.find(c=>c.age>=16);c.phase='home';c.clothing=12;c.role='healer';
+ const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);c.phase='home';c.clothing=12;c.role='healer';
  s.funeral={style:'desert',scope:'family',stage:'returning',timer:0,boundary:{x:0,y:1},gather:{x:1,y:1},coffin:{x:1,y:1},deceased:[],actors:[{id:c.id}]};
  const before=JSON.stringify(s),p=actorViewCitizens(s).find(p=>p.id===c.id);
  assert.ok(p);assert.equal(p.phase,'mourning');assert.equal(p.carrying,false);
- assert.equal(residentVisual(p,s).wear,'ragged');assert.equal(residentVisual({...p,age:5},s).scale,.66);
+ assert.equal(residentVisual(p,s).wear,'ragged');assert.equal(residentVisual({...p,age:5},s).scale,.67);
  assert.equal(residentVisual({...p,age:40},s).scale,1);assert.equal(JSON.stringify(s),before);
 });
 
@@ -54,10 +54,10 @@ function mockContainer(scene,name){
 
 test('GLB clones track exact simulation positions, pause, release vanished IDs, and keep live shadow list',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync,loaded=[];
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{loaded.push(path+file);return mockContainer(scene,file.startsWith('resident')?'resident':'sheep');};
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{loaded.push(path+file);return mockContainer(scene,/^(resident|sumer-child|sumer-adolescent)/.test(file)?'resident':'sheep');};
  let view;
  try{
-  view=await createGameActors(B,scene,{});const live=view.meshes,s=createGame(),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.cargo={clay:2};
+  view=await createGameActors(B,scene,{});const live=view.meshes,s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.cargo={clay:2};
   c.calling='builder';c.role='builder';const before=JSON.stringify(s);view.update(s,1/60);assert.equal(JSON.stringify(s),before);assert.ok(loaded.some(p=>p.includes('resident.glb')));assert.ok(loaded.some(p=>p.includes('sheep.glb')));
   const root=view.rootFor({citizenId:c.id});assert.ok(root);assert.equal(root.position.x,c.x*6);assert.equal(root.position.z,c.y*6);
   assert.ok(!root.getChildMeshes().some(m=>m.name==='builder-tool-blade'),'a worker carrying cargo has no loose tool');
@@ -84,11 +84,11 @@ test('GLB clones track exact simulation positions, pause, release vanished IDs, 
 test('real resident GLB retains skeleton clips, independent clothing and a frozen working arm pose',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  let view;
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);
-  view=await createGameActors(B,scene,{});const s=createGame(),c=s.citizens.find(c=>c.age>=16);c.phase='working';c.clothing=100;
+  view=await createGameActors(B,scene,{});const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);c.phase='working';c.clothing=100;
   const other={...c,id:c.id+1000,role:'tailor',clothing:10};s.citizens=[c,other];view.update(s,1/60);scene.render();
   const root=view.rootFor({citizenId:c.id}),otherRoot=view.rootFor({citizenId:other.id});
   assert.ok(root.getChildMeshes().some(m=>m.skeleton?.bones.length===53));
@@ -103,7 +103,7 @@ test('real resident GLB retains skeleton clips, independent clothing and a froze
 });
 
 test('stable visual lanes separate neighbours without moving simulation people, entering water or leaving bridges',()=>{
- const state=createGame(),citizens=Array.from({length:16},(_,id)=>({id,x:7,y:10,cargo:{wood:2}})),before=JSON.stringify(citizens);
+ const state=createGame({start:'established'}),citizens=Array.from({length:16},(_,id)=>({id,x:7,y:10,cargo:{wood:2}})),before=JSON.stringify(citizens);
  const positions=residentViewPositions(state,citizens),again=residentViewPositions(state,[...citizens].reverse());
  assert.equal(JSON.stringify(citizens),before);assert.deepEqual(positions,again);
  const points=[...positions.values()];assert.ok(points.every(p=>isDryPoint(state,p.x,p.y)&&Math.hypot(p.x-7,p.y-10)<=.281));for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++)assert.ok(Math.hypot(points[i].x-points[j].x,points[i].y-points[j].y)>.095);
@@ -115,11 +115,11 @@ test('stable visual lanes separate neighbours without moving simulation people, 
 test('real articulated palms touch cargo and hold role tools; casts, petting and disposal preserve state',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  let view;
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.carrying=true;c.cargo={wood:3};
+  const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.carrying=true;c.cargo={wood:3};
   const before=JSON.stringify(s);view.update(s,1/60);scene.render();assert.equal(JSON.stringify(s),before);
   const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert();
   for(const side of ['l','r']){const hand=root.getChildTransformNodes().find(n=>n.name.endsWith(`-hand_${side}`));hand.computeWorldMatrix(true);
@@ -154,7 +154,7 @@ test('real articulated palms touch cargo and hold role tools; casts, petting and
 
 
 test('petting pairs use visible child positions once and the matching cat receives its affectionate pose',async()=>{
- const s=createGame();miracle(s,'cat');s.pests.sites[0].mice=0;s.simTime=0;
+ const s=createGame({start:'established'});miracle(s,'cat');s.pests.sites[0].mice=0;s.simTime=0;
  const cat=pestActors(s).find(a=>a.kind==='cat'),child=s.citizens.find(c=>c.age>=3&&c.age<16);
  child.phase='home';child.x=cat.x;child.y=cat.y;
  const frame=actorViewFrame(s),visible=frame.citizens.find(c=>c.id===child.id);
@@ -163,7 +163,7 @@ test('petting pairs use visible child positions once and the matching cat receiv
  const before=JSON.stringify(s),paired=actorViewFrame(s);assert.equal(JSON.stringify(s),before);
  assert.equal(paired.pettingPairs.length,1);assert.equal(paired.pettingPairs[0].citizenId,adult.id);assert.equal(paired.citizens.find(c=>c.id===adult.id).activity.kind,'petting');
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{if(file.startsWith('cat-'))throw Error('exercise legacy cat fallback');return mockContainer(scene,file.startsWith('resident')?'resident':'sheep');};
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{if(file.startsWith('cat-'))throw Error('exercise legacy cat fallback');return mockContainer(scene,/^(resident|sumer-child|sumer-adolescent)/.test(file)?'resident':'sheep');};
  try{view=await createGameActors(B,scene,{});view.update(s,1/60);const root=view.rootFor({animalId:cat.id}),tail=root.getChildTransformNodes().find(n=>n.name===`${cat.id}-tail`);assert.equal(tail.rotation.x,-1.25,'the exact paired cat gets the petting pose');assert.equal(JSON.stringify(s),before);}
  finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
@@ -190,10 +190,10 @@ test('walk phase follows rendered metres for adults, children and smoothed lanes
  const {residentWalkPhase}=await import('../game3d/resident-motion.js');
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),adult={...s.citizens.find(c=>c.age>=16),id:10001,phase:'toStore',x:7,y:10,cargo:{},carrying:false},child={...adult,id:10002,age:7,x:8};s.citizens=[adult,child];
+  const s=createGame({start:'established'}),adult={...s.citizens.find(c=>c.age>=16),id:10001,phase:'toStore',x:7,y:10,cargo:{},carrying:false},child={...adult,id:10002,age:7,x:8};s.citizens=[adult,child];
   view.update(s,1/60);scene.render();
   for(const c of [adult,child]){
    const root=view.rootFor({citizenId:c.id}),model=root.getChildTransformNodes().find(n=>n.name.endsWith('-model')),g=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`);
@@ -220,16 +220,16 @@ test('resident identities are stable, visibly varied and respect age/sex without
  assert.deepEqual(residentIdentity(37),residentIdentity(37));assert.ok(Math.max(...identities.map((_,id)=>residentMotion(id).height))-Math.min(...identities.map((_,id)=>residentMotion(id).height))>.18);
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view,source;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?(source=await originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb')):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?(source=await originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb')):mockContainer(scene,'sheep');
  try{
-  view=await createGameActors(B,scene,{});const sourceSkin=source.materials.find(m=>/skin/i.test(m.name)),original=sourceSkin.albedoColor.asArray(),s=createGame(),base=s.citizens.find(c=>c.age>=16);
+  view=await createGameActors(B,scene,{});const sourceSkin=source.materials.find(m=>/skin/i.test(m.name)),original=sourceSkin.albedoColor.asArray(),s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16);
   s.citizens=Array.from({length:16},(_,id)=>({...base,id,age:id===0?8:30,sex:id===1?'f':'m',phase:'toStore',x:7+id*.2,y:10,clothing:100}));view.update(s,1/60);
   const skins=new Set(),robes=new Set(),hair=new Set();
-  for(const c of s.citizens){const root=view.rootFor({citizenId:c.id}),meshes=root.getChildMeshes();skins.add(meshes.find(m=>m.material?.name.startsWith('citizen-skin')).material.albedoColor.toHexString());robes.add(meshes.find(m=>m.material?.name.startsWith('citizen-cloth')).material.albedoColor.toHexString());hair.add(meshes.find(m=>m.name.endsWith('-full-hair')).isEnabled());
+  for(const c of s.citizens){const root=view.rootFor({citizenId:c.id}),meshes=root.getChildMeshes();skins.add(meshes.find(m=>m.material?.name.startsWith('citizen-skin')).material.albedoColor.toHexString());robes.add(meshes.find(m=>m.material?.name.startsWith('citizen-cloth')).material.albedoColor.toHexString());hair.add(meshes.find(m=>/scalp hair/i.test(m.name)).isVisible);
    if(c.age<16||c.sex==='f')assert.ok(meshes.filter(m=>/beard/i.test(m.name)).every(m=>!m.isEnabled()||!m.isVisible));
    const head=root.getChildTransformNodes().find(n=>n.name.endsWith('-head'));head.computeWorldMatrix(true);const inverse=head.getWorldMatrix().clone().invert();
    const localBounds=mesh=>{mesh.computeWorldMatrix(true);const p=mesh.getBoundingInfo().boundingBox.vectorsWorld.map(v=>B.Vector3.TransformCoordinates(v,inverse));return {min:[0,1,2].map(k=>Math.min(...p.map(v=>v.asArray()[k]))),max:[0,1,2].map(k=>Math.max(...p.map(v=>v.asArray()[k])))};};
-   const cap=meshes.find(m=>m.name.endsWith('-full-hair')),bun=meshes.find(m=>m.name.endsWith('-hair-bun')),beard=meshes.find(m=>m.name.endsWith('-full-beard')),scalp=cap.metadata.attachmentBounds,jaw=beard.metadata.attachmentBounds,capBox=localBounds(cap),bunBox=localBounds(bun),beardBox=localBounds(beard);
+   const cap=meshes.find(m=>/scalp hair/i.test(m.name)),bun=meshes.find(m=>m.name.endsWith('-hair-bun')),beard=meshes.find(m=>m.name.endsWith('-full-beard')),scalp=bun.metadata.attachmentBounds,jaw=beard.metadata.attachmentBounds,capBox=localBounds(cap),bunBox=localBounds(bun),beardBox=localBounds(beard);
    const scalpWidth=scalp.max[0]-scalp.min[0],scalpDepth=scalp.max[2]-scalp.min[2];
    assert.ok(capBox.max[0]-capBox.min[0]<scalpWidth*1.04,'cap hugs the actual GLB scalp width');
    assert.ok(Math.abs((bunBox.min[0]+bunBox.max[0])*.5-(scalp.min[0]+scalp.max[0])*.5)<.001,'one bun is centred behind the skull, never beside it');
@@ -243,7 +243,7 @@ test('resident identities are stable, visibly varied and respect age/sex without
 });
 
 test('workplace activities follow real construction, crop and craft phases instead of a generic work label',()=>{
- const s=createGame(),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];
+ const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];
  const site={type:'house',x:7,y:9,construction:{target:1,required:{clay:2},delivered:{clay:2},work:3}};s.buildings.push(site);
  Object.assign(c,{phase:'constructing',site:'7,9',siteDuty:'builder',cargo:{},buildCargo:{},work:null});
  let p=actorViewCitizens(s)[0];assert.equal(p.activity?.kind,'building');assert.equal(actorAnimation(p).pose,'building');
@@ -258,10 +258,10 @@ test('workplace activities follow real construction, crop and craft phases inste
 test('real GLB gently narrows hip translation while preserving authored ankle stride and sole height',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:433,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,1/60);scene.render();
+  const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:433,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,1/60);scene.render();
   c.y+=.02;view.update(s,1/60);scene.render();
   const root=view.rootFor({citizenId:c.id}),inverse=root.computeWorldMatrix(true).clone().invert(),group=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),feet=['l','r'].map(side=>root.getChildTransformNodes().find(n=>n.name.endsWith(`-foot_${side}`)));
   const sample=()=>feet.map(n=>{n.computeWorldMatrix(true);return B.Vector3.TransformCoordinates(n.getAbsolutePosition(),inverse);});
@@ -280,10 +280,10 @@ test('real GLB gently narrows hip translation while preserving authored ankle st
 test('real workplace joints visibly cycle by trade, freeze on pause and children handle local clay toys',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:434,phase:'working',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
+  const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:434,phase:'working',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
   const poses=[];
   for(const kind of ['building','farming','pottery','weaving','brewing','healing']){
    c.activity={kind,task:'sowing',stage:'working',target:{x:7,y:9}};view.update(s,.1);scene.render();
@@ -308,10 +308,10 @@ test('real workplace joints visibly cycle by trade, freeze on pause and children
 test('real GLB hoe cycles into soil with grounded feet and building implement strikes forward of the face',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:8102,age:30,phase:'working',x:7,y:10,cargo:{},buildCargo:{},activity:{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}};s.citizens=[c];
+  const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:8102,age:30,phase:'working',x:7,y:10,cargo:{},buildCargo:{},activity:{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}};s.citizens=[c];
   let low=Infinity,high=-Infinity;
   for(let i=0;i<28;i++){
    view.update(s,.1);scene.render();const root=view.rootFor({citizenId:c.id}),blade=root.getChildMeshes().find(m=>m.name==='field-hoe-blade');blade.computeWorldMatrix(true);
@@ -325,7 +325,7 @@ test('real GLB hoe cycles into soil with grounded feet and building implement st
 });
 
 test('stationary colleagues receive stable dry workplace slots rather than identical rendered coordinates',()=>{
- const s=createGame(),base=s.citizens.find(c=>c.age>=16),site={type:'pottery',x:7,y:10,level:1,artisan:{stage:'forming',elapsed:1}};s.buildings.push(site);
+ const s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16),site={type:'pottery',x:7,y:10,level:1,artisan:{stage:'forming',elapsed:1}};s.buildings.push(site);
  const workers=Array.from({length:6},(_,i)=>({...base,id:9000+i,phase:'working',work:'7,10',x:7,y:10.55,cargo:{},buildCargo:{},activity:{kind:'pottery',stage:'working',target:site}}));
  const before=JSON.stringify(workers),positions=residentViewPositions(s,workers);assert.equal(JSON.stringify(workers),before);assert.deepEqual(positions,residentViewPositions(s,[...workers].reverse()));
  for(const [id,p]of positions){assert.ok(isDryPoint(s,p.x,p.y));assert.ok(Math.hypot(p.x-7,p.y-10.55)<.46,'slots stay on the same workplace apron');for(const [other,q]of positions)if(other!==id)assert.ok(Math.hypot(p.x-q.x,p.y-q.y)*6>=.59,`${id} overlaps ${other}`);}
@@ -334,10 +334,10 @@ test('stationary colleagues receive stable dry workplace slots rather than ident
 test('real GLB knees stay forward of the hip-ankle line through idle, work, walking and child poses',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),base=s.citizens.find(c=>c.age>=16),c={...base,id:9100,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
+  const s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16),c={...base,id:9100,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
   for(const kind of ['idle','walk','farming','child']){
    c.age=kind==='child'?7:30;c.activity=kind==='farming'?{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}:null;
    for(let frame=0;frame<24;frame++){
@@ -353,10 +353,10 @@ test('real GLB knees stay forward of the hip-ankle line through idle, work, walk
 test('real GLB stance adjustment preserves authored knee surface orientation rather than twisting limb meshes',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
-  const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:9101,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,.03);scene.render();c.y+=.02;view.update(s,.03);scene.render();
+  const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:9101,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,.03);scene.render();c.y+=.02;view.update(s,.03);scene.render();
   const root=view.rootFor({citizenId:c.id}),clip=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),limbs=root.getChildTransformNodes().filter(n=>/-(thigh|calf)_[lr]$/.test(n.name));
   const normals=()=>limbs.map(n=>{n.computeWorldMatrix(true);return n.getDirection(B.Axis.X).normalize();}),adjusted=normals();clip.goToFrame(clip.animatables[0].masterFrame);const authored=normals();
   for(let i=0;i<limbs.length;i++)assert.ok(B.Vector3.Dot(adjusted[i],authored[i])>.70,`${limbs[i].name} lost authored limb roll, dot=${B.Vector3.Dot(adjusted[i],authored[i])}`);
@@ -366,9 +366,9 @@ test('real GLB stance adjustment preserves authored knee surface orientation rat
 test('real stationary colleagues render clear slots, hold them on pause and return along canonical routes',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
-  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),base=s.citizens.find(c=>c.age>=16),site={type:'weaver',x:7,y:10,level:1,weaving:{wool:3}};s.buildings.push(site);
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16),site={type:'weaver',x:7,y:10,level:1,weaving:{wool:3}};s.buildings.push(site);
   s.citizens=Array.from({length:4},(_,i)=>({...base,id:9300+i,age:30,phase:'working',work:'7,10',x:7,y:10.55,cargo:{},buildCargo:{}}));const before=JSON.stringify(s);view.update(s,.05);scene.render();assert.equal(JSON.stringify(s),before);
   const roots=s.citizens.map(c=>view.rootFor({citizenId:c.id}));for(let i=0;i<roots.length;i++)for(let j=i+1;j<roots.length;j++)assert.ok(B.Vector3.Distance(roots[i].position,roots[j].position)>=.59,'rendered work roots must separate');
   const frozen=roots.map(r=>r.position.asArray());view.update(s,.05,{paused:true,speed:4});scene.render();assert.deepEqual(roots.map(r=>r.position.asArray()),frozen);
@@ -379,9 +379,9 @@ test('real stationary colleagues render clear slots, hold them on pause and retu
 test('work pose time follows real unpaused 1x/2x/4x seconds even when the calendar advances at quarter speed',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
-  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),base=s.citizens.find(c=>c.age>=16),samples=[];let elapsed=0;
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16),samples=[];let elapsed=0;
   for(const speed of [1,2,4]){
    const c={...base,id:9400,age:30,phase:'working',x:7,y:10,cargo:{},buildCargo:{},activity:{kind:'farming',task:'sowing',stage:'working',target:{x:7,y:9}}};s.citizens=[c];
    // Each run advances 1.25 actual task seconds, regardless of UI speed.
@@ -399,9 +399,9 @@ test('work pose time follows real unpaused 1x/2x/4x seconds even when the calend
 test('actual GLB toe axes and leg rotations remain authored through walking turns and cargo poses',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
  const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>file.startsWith('resident')?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{
-  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),c={...s.citizens.find(c=>c.age>=16),id:9500,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,.02);scene.render();
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:9500,age:30,phase:'toStore',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];view.update(s,.02);scene.render();
   const root=view.rootFor({citizenId:c.id});
   for(const yaw of [0,Math.PI/2,Math.PI,-Math.PI/2])for(const mode of ['idle','walk','cargo'])for(let frame=0;frame<8;frame++){
    if(mode!=='idle'){c.x+=Math.sin(yaw)*.02;c.y+=Math.cos(yaw)*.02;}c.cargo=mode==='cargo'?{wood:2}:{};view.update(s,.02);root.rotation.y=yaw;scene.render();
@@ -417,9 +417,9 @@ test('actual GLB toe axes and leg rotations remain authored through walking turn
 
 test('inspiration remains a tiny glow and worn clothing changes the actual garment without detached patches',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
- B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>mockContainer(scene,file.startsWith('resident')?'resident':'sheep');let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>mockContainer(scene,/^(resident|sumer-child|sumer-adolescent)/.test(file)?'resident':'sheep');let view;
  try{
-  view=await createGameActors(B,scene,{});const s=createGame(),c={...s.citizens.find(c=>c.age>=16),age:30,phase:'toStore',clothing:100,calling:'builder',cargo:{},buildCargo:{}};s.citizens=[c];
+  view=await createGameActors(B,scene,{});const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),age:30,phase:'toStore',clothing:100,calling:'builder',cargo:{},buildCargo:{}};s.citizens=[c];
   for(let i=0;i<12;i++){view.update(s,.05);const root=view.rootFor({citizenId:c.id}),marker=root.getChildMeshes().find(m=>m.name.endsWith('-inspired'));assert.ok(marker.scaling.x<=.08&&marker.scaling.y<=.12,'persistent inspiration must never inflate into a large sphere');}
   const root=view.rootFor({citizenId:c.id}),cloth=root.getChildMeshes().find(m=>m.material?.name.startsWith('citizen-cloth')).material,clean=cloth.albedoColor.asArray();c.clothing=8;view.update(s,.05);assert.notDeepEqual(cloth.albedoColor.asArray(),clean);assert.equal(root.getChildMeshes().some(m=>m.name==='clothing-patch'),false,'wear belongs to the skinned material, never a floating rectangle');
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
@@ -428,8 +428,8 @@ test('inspiration remains a tiny glow and worn clothing changes the actual garme
 test('adapted Sumerian civilian is the default city resident and retains work, cargo, pause and identity',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync,loaded=[];
  B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{loaded.push(file);return file.startsWith('sumer-people')?originalLoader.call(B.SceneLoader,'',new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/sumer-people.glb',import.meta.url))),scene,undefined,'.glb'):mockContainer(scene,'sheep');};
- let view;try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame(),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='working';c.role='builder';const before=JSON.stringify(s);view.update(s,.05);scene.render();assert.equal(JSON.stringify(s),before);assert.ok(loaded.some(f=>f.startsWith('sumer-people')),'new civilian must load by default');const root=view.rootFor({citizenId:c.id});assert.ok(root.getChildMeshes().some(m=>m.skeleton?.bones.length===53));assert.ok(root.getChildMeshes().some(m=>/Sumer|civilian/i.test(m.name)));c.cargo={wood:3};c.phase='toStore';c.x+=.015;view.update(s,.05);scene.render();assert.ok(root.getChildMeshes().some(m=>m.name.includes('cargo')));const arm=root.getChildTransformNodes().find(n=>/upperarm_r$/.test(n.name));view.update(s,.05,{paused:true});const frozen=arm.rotationQuaternion.asArray();scene.render();assert.deepEqual(arm.rotationQuaternion.asArray(),frozen);assert.equal(root.metadata.citizenId,c.id);
+ let view;try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='working';c.role='builder';const before=JSON.stringify(s);view.update(s,.05);scene.render();assert.equal(JSON.stringify(s),before);assert.ok(loaded.some(f=>f.startsWith('sumer-people')),'new civilian must load by default');const root=view.rootFor({citizenId:c.id});assert.ok(root.getChildMeshes().some(m=>m.skeleton?.bones.length===53));assert.ok(root.getChildMeshes().some(m=>/Sumer|civilian/i.test(m.name)));c.cargo={wood:3};c.phase='toStore';c.x+=.015;view.update(s,.05);scene.render();assert.ok(root.getChildMeshes().some(m=>m.name.includes('cargo')));const arm=root.getChildTransformNodes().find(n=>/upperarm_r$/.test(n.name));view.update(s,.05,{paused:true});const frozen=arm.rotationQuaternion.asArray();scene.render();assert.deepEqual(arm.rotationQuaternion.asArray(),frozen);assert.equal(root.metadata.citizenId,c.id);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
 
-test('city hides rejected legacy land birds and rodents while preserving real fauna and pest state',async()=>{const {cityAnimalVisible}=await import('../game3d/actors.js');const s=createGame();miracle(s,'cat');const before=JSON.stringify(s),all=animalsFor(s);for(const kind of ['bird','mouse','rat'])assert.equal(cityAnimalVisible({kind}),false);for(const kind of ['cat','goat','gazelle','fish','sheep','jackal'])assert.equal(cityAnimalVisible({kind}),true);assert.ok(all.some(a=>a.kind==='bird'));assert.ok(all.some(a=>a.kind==='mouse'||a.kind==='rat'));assert.equal(JSON.stringify(s),before);});
+test('city hides rejected legacy land birds and rodents while preserving real fauna and pest state',async()=>{const {cityAnimalVisible}=await import('../game3d/actors.js');const s=createGame({start:'established'});miracle(s,'cat');const before=JSON.stringify(s),all=animalsFor(s);for(const kind of ['bird','mouse','rat'])assert.equal(cityAnimalVisible({kind}),false);for(const kind of ['cat','goat','gazelle','fish','sheep','jackal'])assert.equal(cityAnimalVisible({kind}),true);assert.ok(all.some(a=>a.kind==='bird'));assert.ok(all.some(a=>a.kind==='mouse'||a.kind==='rat'));assert.equal(JSON.stringify(s),before);});

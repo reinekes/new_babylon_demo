@@ -1,3 +1,5 @@
+import {footprintSize} from '../footprints.js';
+import {workstationFor} from './workstations.js';
 import {isDryPoint,onBridge} from '../world.js';
 
 // Stable identity variation belongs to the view; it never enters a save or a route.
@@ -26,14 +28,25 @@ export function residentIdentity(id){
 // Resolve actual visible neighbours only, keeping route coordinates, cargo and IDs intact.
 // A small spatial hash avoids an all-pairs pass in the large city.
 export function residentViewPositions(state,citizens){
- const cells=new Map(),result=new Map(),gap=.10;
+ const cells=new Map(),result=new Map(),gap=.10,workSlots=new Map();
  const fixed=c=>!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase);
  // Allocate work aprons first so passing pedestrians cannot reshuffle colleagues.
  const order=[...citizens].sort((a,b)=>Number(fixed(b))-Number(fixed(a))||String(a.id).localeCompare(String(b.id)));
  const key=(x,y)=>`${Math.floor(x/gap)},${Math.floor(y/gap)}`;
  const neighbours=(x,y)=>{const found=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)found.push(...(cells.get(`${Math.floor(x/gap)+dx},${Math.floor(y/gap)+dy}`)||[]));return found;};
  for(const c of order){
-  let p={x:c.x,y:c.y};const bridge=onBridge(state.buildings||[],c.x,c.y),phase=residentMotion(c.id).phase;
+  let p={x:c.x,y:c.y};
+  const target=c.activity?.target,workKey=target?.type?`${target.x},${target.y}`:c.activity?.kind==='healing'?`patient:${c.activity.patientId}`:null,slot=workKey?(workSlots.get(workKey)||0):0;
+  let contact=workKey?workstationFor(target,c,slot):null;
+  if(c.activity?.kind==='healing'&&c.activity.stage==='working'&&!c.carrying&&!c.walking){
+   const dx=c.x-target.x,dy=c.y-target.y,d=Math.hypot(dx,dy)||1,q={x:target.x+dx/d*.095,y:target.y+dy/d*.095};
+   if(Math.hypot(q.x-c.x,q.y-c.y)<.3)contact={kind:'healing',stand:q,target:{...target,height:1.12},building:target};
+  }
+  if(contact){workSlots.set(workKey,slot+1);const q=contact.stand;
+   const clearApproach=[0,.25,.5,.75,1].every(t=>{const x=c.x+(q.x-c.x)*t,y=c.y+(q.y-c.y)*t;return isDryPoint(state,x,y)&&!(state.buildings||[]).some(b=>b!==target&&(b.x!==target.x||b.y!==target.y)&&!['road','bridge','field','canal'].includes(b.type)&&Math.abs(x-b.x-(footprintSize(b)-1)/2)<footprintSize(b)/2-.04&&Math.abs(y-b.y-(footprintSize(b)-1)/2)<footprintSize(b)/2-.04);});
+   if(clearApproach&&neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001)){p={x:q.x,y:q.y,contact};}
+  }
+  const bridge=onBridge(state.buildings||[],c.x,c.y),phase=residentMotion(c.id).phase;
   const safe=q=>{if(bridge)return !!onBridge(state.buildings||[],q.x,q.y)&&Math.abs(q.y-c.y)<.025;
    if(!isDryPoint(state,q.x,q.y))return false;
    return !(state.buildings||[]).some(b=>!['road','bridge','field','canal'].includes(b.type)&&Math.abs(q.x-b.x)<.42&&Math.abs(q.y-b.y)<.42&&!(Math.abs(c.x-b.x)<.42&&Math.abs(c.y-b.y)<.42));};

@@ -78,7 +78,7 @@ test('construction model uses the engine ratio, including no-material orders',()
  assert.equal(districtBuildingPlan(b).progress,constructionProgress(b).ratio);
 });
 test('real build deliveries and labor raise the construction walls through completion',()=>{
- const s=createGame();assert.ok(build(s,'house',10,9).ok);const b=s.buildings.at(-1);
+ const s=createGame({start:'established'});assert.ok(build(s,'house',10,9).ok);const b=s.buildings.at(-1);
  let previous=districtBuildingPlan(b).wallHeight,materialsSeen=false,workSeen=false;
  for(let i=0;i<2400&&b.construction;i++){
   if(s.event)s.event=null;advanceTime(s,.1);

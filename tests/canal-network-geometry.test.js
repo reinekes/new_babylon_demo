@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createGame} from '../engine.js';import {irrigationFor,fieldWater} from '../irrigation.js';import {canalArm,WATER_HEIGHT} from '../game3d/water.js';import {canalNetworkGeometry,canalDistance,openCanalMouths} from '../game3d/canal-network.js';import {renderedShoreDistance} from '../game3d/shore-profile.js';
-function world(){const s=createGame();s.world.lakes=[{id:'test',cells:[{x:3,y:3},{x:3,y:4}]}];s.buildings=s.buildings.filter(b=>b.type!=='field');for(const [x,y]of [[4,4],[5,4],[5,5],[5,6],[6,5]])s.buildings.push({type:'canal',x,y,level:1});return s;}
+function world(){const s=createGame({start:'established'});s.world.lakes=[{id:'test',cells:[{x:3,y:3},{x:3,y:4}]}];s.buildings=s.buildings.filter(b=>b.type!=='field');for(const [x,y]of [[4,4],[5,4],[5,5],[5,6],[6,5]])s.buildings.push({type:'canal',x,y,level:1});return s;}
 const plan=s=>{const n=irrigationFor(s);return [...n.cells].map(([id,b])=>({...b,wet:n.wet.has(id),progress:1,arms:n.arms.get(id)}));};
 function covers(g,x,z){for(let j=0;j<g.indices.length;j+=3){const a=g.indices.slice(j,j+3).map(i=>[g.positions[i*3],g.positions[i*3+2]]),cross=(p,q)=> (q[0]-p[0])*(z-p[1])-(q[1]-p[1])*(x-p[0]),c=a.map((p,i)=>cross(p,a[(i+1)%3]));if(c.every(v=>v>=-1e-7)||c.every(v=>v<=1e-7))return true;}return false;}
 test('canal geometry reuses one derived result across unrelated construction and invalidates actual inputs',()=>{

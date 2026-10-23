@@ -5,7 +5,7 @@ import {irrigationFor,fieldWater} from '../irrigation.js';
 import {syncCitizens} from '../workforce.js';
 const canal=(x,y)=>({type:'canal',x,y,level:1});
 test('only completed cardinal chains from the river carry water; cache invalidates on breaks',()=>{
- const s=createGame();s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6));
+ const s=createGame({start:'established'});s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6));
  assert.ok(irrigationFor(s).wet.has('9,6'));assert.equal(irrigationFor(s),irrigationFor(s));
  s.buildings.find(b=>b.type==='canal'&&b.x===11).construction={kind:'new'};
  assert.ok(!irrigationFor(s).wet.has('9,6'));delete s.buildings.find(b=>b.type==='canal'&&b.x===11).construction;
@@ -13,7 +13,7 @@ test('only completed cardinal chains from the river carry water; cache invalidat
  assert.ok(!irrigationFor(s).wet.has('9,6'));
 });
 test('dryland fields require a wet adjacent canal; natural fields survive and dry fields remain saveable',()=>{
- const s=createGame();assert.ok(canBuild(s,'field',8,6));
+ const s=createGame({start:'established'});assert.ok(canBuild(s,'field',8,6));
  s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6));
  assert.equal(canBuild(s,'field',8,6),'');assert.ok(build(s,'field',8,6).ok);
  const b=s.buildings.at(-1);assert.equal(fieldWater(s,b).productive,true);
@@ -21,45 +21,45 @@ test('dryland fields require a wet adjacent canal; natural fields survive and dr
  assert.ok(decode(encode(s)));assert.equal(fieldWater(s,s.buildings.find(b=>b.type==='field'&&b.x===12)).productive,true);
 });
 test('workers actually deliver materials and finish canals before water arrives, preserving saves',()=>{
- const s=createGame();assert.ok(build(s,'canal',13,6).ok);const b=s.buildings.at(-1);let cargo=false;
+ const s=createGame({start:'established'});assert.ok(build(s,'canal',13,6).ok);const b=s.buildings.at(-1);let cargo=false;
  assert.equal(irrigationFor(s).wet.size,0);
  for(let i=0;i<2400&&b.construction;i++){s.event=null;advanceTime(s,.1);cargo ||= s.citizens.some(c=>Object.values(c.buildCargo||{}).some(n=>n>0));if(b.construction)assert.equal(irrigationFor(s).wet.size,0);}
  assert.ok(cargo);assert.equal(b.construction,undefined);assert.ok(irrigationFor(s).wet.has('13,6'));assert.ok(decode(encode(s)));
 });
 test('old cities preserve residents and cargo; canals without cardinal contact with a source stay dry',()=>{
- const s=createGame(),copy=decode(encode(s));assert.deepEqual(copy,s);
+ const s=createGame({start:'established'}),copy=decode(encode(s));assert.deepEqual(copy,s);
  s.buildings.push(canal(3,3),canal(4,4));assert.equal(irrigationFor(s).wet.size,0);
 });
 test('summer dryland crops stop growing and resume when the river connection returns',async()=>{
- const {cropFor,advanceCrops}=await import('../agriculture.js');const s=createGame();s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6),{type:'field',x:8,y:6,level:1});
+ const {cropFor,advanceCrops}=await import('../agriculture.js');const s=createGame({start:'established'});s.buildings.push(canal(13,6),canal(12,6),canal(11,6),canal(10,6),canal(9,6),{type:'field',x:8,y:6,level:1});
  const b=s.buildings.at(-1),crop=cropFor(s,b);crop.sown=1;s.season=1;advanceCrops(s,10);assert.ok(crop.growth>0);
  const source=s.buildings.find(b=>b.type==='canal'&&b.x===13);s.buildings=s.buildings.filter(b=>b!==source);const before=crop.growth;advanceCrops(s,10);assert.equal(crop.growth,before);
  s.buildings.push(source);advanceCrops(s,10);assert.ok(crop.growth>before);
 });
 test('canal cancellation refunds reserved and carried goods; demolition cuts downstream water',async()=>{
- const {cancelConstruction,demolish}=await import('../management.js');const s=createGame(),clay=s.resources.clay,reed=s.resources.reed;
+ const {cancelConstruction,demolish}=await import('../management.js');const s=createGame({start:'established'}),clay=s.resources.clay,reed=s.resources.reed;
  build(s,'canal',13,6);for(let i=0;i<100;i++){s.event=null;advanceTime(s,.1);if(s.citizens.some(c=>Object.values(c.buildCargo||{}).some(n=>n>0)))break;}
  assert.ok(decode(encode(s)));assert.ok(cancelConstruction(s,13,6).ok);assert.equal(s.resources.clay,clay);assert.equal(s.resources.reed,reed);assert.ok(decode(encode(s)));
  s.buildings.push(canal(13,6),canal(12,6));syncCitizens(s);assert.ok(irrigationFor(s).wet.has('12,6'));assert.ok(demolish(s,13,6).ok);assert.equal(irrigationFor(s).wet.size,0);assert.ok(decode(encode(s)));
 });
 test('field inlet is drawn to the canal without letting a field carry water farther',()=>{
- const s=createGame();s.buildings.push(canal(13,6),{type:'field',x:12,y:6,level:1},canal(11,6));const n=irrigationFor(s);
+ const s=createGame({start:'established'});s.buildings.push(canal(13,6),{type:'field',x:12,y:6,level:1},canal(11,6));const n=irrigationFor(s);
  assert.ok(n.arms.get('13,6').some(([dx,dy])=>dx===-1&&dy===0));assert.ok(!n.wet.has('11,6'));
 });
 test('canals render below residents with finite coordinates and cross existing roads',async()=>{
  const {Renderer}=await import('../renderer.js');const gradient={addColorStop(){}};let strokes=0;
  const ctx=new Proxy({}, {get(t,k){if(k==='createRadialGradient')return()=>gradient;if(k==='moveTo'||k==='lineTo')return(...n)=>n.forEach(v=>assert.ok(Number.isFinite(v)));if(k==='stroke')return()=>strokes++;return t[k]??(()=>{});},set(t,k,v){t[k]=v;return true;}});
  const r=Object.create(Renderer.prototype);Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
- const s=createGame();s.buildings.push(canal(13,6),canal(12,6));r.draw(s,null,1000);assert.ok(strokes>0);
+ const s=createGame({start:'established'});s.buildings.push(canal(13,6),canal(12,6));r.draw(s,null,1000);assert.ok(strokes>0);
 });
 test('a road crossing receives a three-plank deck above the finished canal',async()=>{
- const {drawCanal}=await import('../irrigation.js'),s=createGame();s.buildings.push(canal(13,6));const lines=[];
+ const {drawCanal}=await import('../irrigation.js'),s=createGame({start:'established'});s.buildings.push(canal(13,6));const lines=[];
  const r={s:1,point:(x,y)=>({x,y}),line:(points,color,width)=>lines.push({points,color,width}),streets:{edges:[[{x:13.5,y:5.5},{x:13.5,y:6.5}]]}};
  drawCanal(r,s.buildings.at(-1),s,{crossings:true});assert.equal(lines.length,3);assert.ok(lines.every(l=>l.color==='#c5ad7d'));
 });
 
 function lakeCanals(){
- const s=createGame();s.world.lakes=[{id:'lake-irrigation-probe',cells:[{x:3,y:3},{x:4,y:3},{x:3,y:4}]}];s.world.deposits=s.world.deposits.filter(d=>!s.world.lakes[0].cells.some(c=>c.x===d.x&&c.y===d.y));
+ const s=createGame({start:'established'});s.world.lakes=[{id:'lake-irrigation-probe',cells:[{x:3,y:3},{x:4,y:3},{x:3,y:4}]}];s.world.deposits=s.world.deposits.filter(d=>!s.world.lakes[0].cells.some(c=>c.x===d.x&&c.y===d.y));
  s.buildings.push(canal(4,4),canal(5,4),canal(5,5),canal(6,5));return s;
 }
 test('a completed turning canal carries lake water to a desert field without making the field a conduit',()=>{

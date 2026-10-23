@@ -11,7 +11,7 @@ test('picking retrieves actual citizen ID through mesh parents and selects only 
  const road={id:'a',a:{x:3,y:4},b:{x:4,y:4}},state={roads:[road]};assert.equal(roadNear(state,{x:3.4,y:4.1}),road);assert.equal(roadNear(state,{x:8,y:8}),null);
 });
 test('building preview reports actual placement rules and never modifies state',()=>{
- const s=createGame(),before=JSON.stringify(s),at=s.buildings[0];const p=previewFor(s,'house',{x:at.x,y:at.y});assert.equal(p.allowed,false);
+ const s=createGame({start:'established'}),before=JSON.stringify(s),at=s.buildings[0];const p=previewFor(s,'house',{x:at.x,y:at.y});assert.equal(p.allowed,false);
  assert.equal(previewFor(s,null,{x:8,y:8}),null);assert.equal(JSON.stringify(s),before);
 });
 test('unavailable WebGL chooses working Canvas renderer before acquiring any graphics context',async()=>{

@@ -47,6 +47,8 @@ def prepare(source):
  collar=(pos[:,1]>1.17)&(pos[:,1]<1.46)&(np.abs(pos[:,0])<.25)
  cuffs=(np.abs(pos[:,0])>.39)&(pos[:,1]<1.20);ankle=(pos[:,1]>.13)&(pos[:,1]<.24);cap=pos[:,1]>1.65
  shade[collar|cuffs|ankle|cap]=.90
+ # Imported paint is not anatomy: remove the painted head wrap/black bands.
+ shade[pos[:,1]>1.47]=np.clip(shade[pos[:,1]>1.47],.80,1.05)
  colors=np.c_[np.repeat(shade[:,None],3,axis=1),np.ones(len(pos))]
  def normal(vertices,indices):
   n=np.zeros_like(vertices);t=vertices[indices];face=np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]);
@@ -61,9 +63,31 @@ def prepare(source):
  centre=pos[tri].mean(1)
  hairtri=tri[(centre[:,1]>1.625)|((centre[:,1]>1.56)&(centre[:,2]<-.005))]
  beardtri=tri[(centre[:,1]>1.465)&(centre[:,1]<1.535)&(centre[:,2]>.067)&(np.abs(centre[:,0])<.070)]
- hairpos=pos.copy();hairpos[:,2]+=.001
- beardpos=pos.copy();beardpos[:,2]+=.003
- hair=mesh('Fitted short scalp hair',hairpos,hairtri,2)
+ # A normal offset separates every scalp triangle from the skin in every view;
+ # a Z-only shift left side-facing facets coplanar and caused black stripes.
+ surface_normal=normal(pos,tri)
+ hairpos=pos+surface_normal*.004
+ beardpos=pos+surface_normal*.004
+ # Continuous cap with a natural high forehead and lower nape. It contains
+ # no copied/painted face triangles and has a single non-intersecting surface.
+ centre_head=np.array([-.0008,1.595,.006]);radii=np.array([.083,.114,.103])
+ q=(pos-centre_head)/radii;rho=np.linalg.norm(q,axis=1);theta=np.arccos(np.clip(q[:,1]/np.maximum(rho,1e-9),-1,1));azimuth=np.arctan2(q[:,0],q[:,2]);limit=1.72-.34*np.cos(azimuth)
+ scalp=(pos[:,1]>1.50)&(theta<limit-.025)
+ # Fit to the ACTUAL skull surface, including its broad rear crown. The old
+ # guessed ellipse left 38 crown vertices outside and exposed a bald circle.
+ radii*=max(1.,float(rho[scalp].max()))+.035
+ capv=[(centre_head+np.array([0,radii[1],0])).tolist()];capt=[];nr=18;ns=64
+ for row in range(1,nr+1):
+  for col in range(ns):
+   angle=2*math.pi*col/ns;limit=1.72-.34*math.cos(angle);theta=limit*row/nr
+   capv.append((centre_head+radii*np.array([math.sin(theta)*math.sin(angle),math.cos(theta),math.sin(theta)*math.cos(angle)])).tolist())
+ # A shared pole closes the crown. Winding and normals point outwards.
+ for col in range(ns):capt.append([0,1+col,1+(col+1)%ns])
+ for row in range(nr-1):
+  for col in range(ns):
+   a0=1+row*ns+col;b0=1+row*ns+(col+1)%ns;c0=a0+ns;d0=b0+ns;capt.extend([[a0,c0,b0],[b0,c0,d0]])
+ hair=mesh('Fitted short scalp hair',np.array(capv),np.array(capt),2)
+ hp=hair['primitives'][0]['attributes'];hp['JOINTS_0']=add(np.tile([44,0,0,0],(g['accessors'][hp['POSITION']]['count'],1)),'VEC4',5123);hp['WEIGHTS_0']=add(np.tile([1,0,0,0],(g['accessors'][hp['POSITION']]['count'],1)),'VEC4')
  beard=mesh('Close cropped curved beard',beardpos,beardtri,2)
  skin=mesh('Trident civilian adapted skin',pos,tri,0,colors)
  # One continuous wrap surface, with shallow overlapping wool tufts rather than Egyptian motifs.
@@ -82,7 +106,7 @@ def prepare(source):
   node.pop('mesh',None);node.pop('skin',None)
  for ni,mi,name in [(53,0,'Sumerian civilian skin'),(54,1,'Undyed wool wrap'),(56,2,'Fitted short scalp hair'),(57,3,'Close cropped curved beard')]:g['nodes'][ni].update(mesh=mi,skin=0,name=name)
  g['nodes'][60]['children']=[53,54,56,57,52]
- provenance={'original':s['asset']['extras'],'source_sha256':hashlib.sha256(raw).hexdigest(),'selected_source_mesh':'Slave_Material.002_0','adaptation':'New Babylon, 2026-10-22: civilian surface only; scene offsets discarded; Egyptian collar/cuff/cap colours removed; original kilt replaced by authored undyed tufted wool wrap; adapted to existing 53-joint rig with nearest-surface weights','rig_and_motion':'Existing resident.glb CC0 Innerscene/MakeHuman-derived rig, Walk_Loop and Idle_Loop sampler data unchanged','limitations':'Approximate automated skin transfer; not artist-retopologized. Wool wrap is a game approximation, not evidence all workers wore votive attire. Source SKETCHFAB Standard is not CC0; source entitlement comes from supplied download.'}
+ provenance={'original':s['asset']['extras'],'source_sha256':hashlib.sha256(raw).hexdigest(),'selected_source_mesh':'Slave_Material.002_0','adaptation':'New Babylon, 2026-10-22: civilian surface only; scene offsets discarded; Egyptian collar/cuff/cap colours removed; original kilt replaced by authored undyed tufted wool wrap; adapted to existing 53-joint rig with nearest-surface weights','rig_and_motion':'Existing resident.glb CC0 Innerscene/MakeHuman-derived rig, Walk_Loop and Idle_Loop sampler data unchanged','scalp_fit':{'centre':centre_head.tolist(),'radii':radii.tolist(),'method':'actual skull radial envelope plus clearance, closed shared pole, head-weighted'},'limitations':'Fitted closed head-weighted scalp; head paint removed. Approximate automated skin transfer; not artist-retopologized. Wool wrap is a game approximation, not evidence all workers wore votive attire. Source SKETCHFAB Standard is not CC0; source entitlement comes from supplied download.'}
  g['asset']={'version':'2.0','generator':'New Babylon prepare_sumer_people.py','extras':provenance};g.pop('images',None);g.pop('textures',None);g.pop('samplers',None)
  out=bytearray()
  for vi,chunk in enumerate(chunks):

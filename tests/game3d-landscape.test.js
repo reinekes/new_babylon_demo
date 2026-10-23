@@ -5,7 +5,7 @@ import {createGame} from '../engine.js';
 import {terrain} from '../world.js';
 
 test('landscape derives actual canal water, arms and construction without changing city state',()=>{
- const s=createGame();s.buildings=[];s.roads=[];
+ const s=createGame({start:'established'});s.buildings=[];s.roads=[];
  let x=0;while(terrain(x,8)==='water'||terrain(x+1,8)!=='water')x++;
  s.buildings=[{type:'canal',x,y:8,level:1},{type:'canal',x:x-1,y:8,level:1},{type:'canal',x:2,y:2,construction:{kind:'new',target:1,required:{clay:4},delivered:{clay:2},remaining:{clay:2},work:0}}];
  const before=JSON.stringify(s),plan=landscapePlan(s);
@@ -18,14 +18,14 @@ test('landscape derives actual canal water, arms and construction without changi
  assert.equal(JSON.stringify(s),before);
 });
 test('roads retain real endpoints, level and staged upgrade; unchanged state retains signature',()=>{
- const s=createGame();s.roads=[{id:'test',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2,construction:{kind:'upgrade',target:3,required:{stone:2},delivered:{stone:2},remaining:{stone:0},work:9}}];
+ const s=createGame({start:'established'});s.roads=[{id:'test',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2,construction:{kind:'upgrade',target:3,required:{stone:2},delivered:{stone:2},remaining:{stone:0},work:9}}];
  const before=JSON.stringify(s),plan=landscapePlan(s),road=plan.roads.find(r=>r.id==='test');
  assert.deepEqual(road.a,{x:2.5,y:4.5});assert.deepEqual(road.b,{x:3.5,y:4.5});assert.equal(road.level,2);assert.equal(road.target,3);assert.ok(road.progress>.4);
  const signature=landscapeSignature(s);s.simTime+=1;assert.equal(landscapeSignature(s),signature);s.roads[0].level=3;assert.notEqual(landscapeSignature(s),signature);
  s.simTime-=1;s.roads[0].level=2;assert.equal(JSON.stringify(s),before);
 });
 test('palms are deterministic dry cells clear of buildings; caravan follows its actual coordinates and stocks',()=>{
- const s=createGame(),before=JSON.stringify(s),a=landscapePlan(s),b=landscapePlan(s);assert.deepEqual(a.palms,b.palms);assert.ok(a.palms.length);
+ const s=createGame({start:'established'}),before=JSON.stringify(s),a=landscapePlan(s),b=landscapePlan(s);assert.deepEqual(a.palms,b.palms);assert.ok(a.palms.length);
  for(const p of a.palms){assert.notEqual(terrain(Math.round(p.x),Math.round(p.y),s),'water');assert.ok(!s.buildings.some(b=>Math.abs(b.x-p.x)<.7&&Math.abs(b.y-p.y)<.7));}
  assert.equal(JSON.stringify(s),before);
  s.trade.caravan={x:12.6,y:8.1,transport:'river',stock:{food:30}};const c=landscapePlan(s).caravan;assert.equal(c.x,12.6);assert.equal(c.y,8.1);assert.equal(c.river,true);assert.equal(c.stock.food,30);
@@ -63,7 +63,7 @@ test('real GLB palms share baked geometry; canals, road work and trade update a 
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;let loads=0;
  B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^(?:valley-(?:dry-grass-[123]|reed-[123]|date-palm)|miracle-green-grass-[123])\.glb$/);return loadGeometry(scene,file);};
- let view;const s=createGame();s.roads=[{id:'local',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2}];
+ let view;const s=createGame({start:'established'});s.roads=[{id:'local',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2}];
  let canalX=0;while(terrain(canalX,8)==='water'||terrain(canalX+1,8)!=='water')canalX++;
  s.buildings.push({type:'canal',x:canalX,y:8,level:1});
  s.trade.caravan={x:12.6,y:8.1,transport:'river',stock:{food:30},route:[],routeIndex:0};
@@ -96,7 +96,7 @@ test('real GLB palms share baked geometry; canals, road work and trade update a 
 });
 
 test('deposit plans use saved coordinates/kinds and resource selections examine only matching local sites',()=>{
- const s=createGame();s.buildings=[];s.world.deposits=[{kind:'clay',x:2,y:3},{kind:'stone',x:3,y:4},{kind:'forest',x:6,y:6},{kind:'wildlife',x:28,y:17},{kind:'dates',x:20,y:6},{kind:'reed',x:4,y:4}];
+ const s=createGame({start:'established'});s.buildings=[];s.world.deposits=[{kind:'clay',x:2,y:3},{kind:'stone',x:3,y:4},{kind:'forest',x:6,y:6},{kind:'wildlife',x:28,y:17},{kind:'dates',x:20,y:6},{kind:'reed',x:4,y:4}];
  const before=JSON.stringify(s),signature=landscapeSignature(s),plan=landscapePlan(s);
  assert.deepEqual(plan.deposits,s.world.deposits);assert.equal(JSON.stringify(s),before);
  assert.deepEqual(resourcePlacementSites(s,'clay'),[{x:2,y:3}]);assert.deepEqual(resourcePlacementSites(s,'quarry'),[{x:3,y:4}]);assert.deepEqual(resourcePlacementSites(s,'garden'),[{x:20,y:6}]);
@@ -116,7 +116,7 @@ import {floodplainTufts,tuftGeometry,riverbankGeometry,rectangularSiteGeometry} 
 import {lakeDistance} from '../game3d/lake-shore.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 test('volumetric floodplain colonies preserve dry open ground, foundations and real roads',()=>{
- const s=createGame(),plan=landscapePlan(s),before=JSON.stringify(s),a=floodplainTufts(s,plan.roads);
+ const s=createGame({start:'established'}),plan=landscapePlan(s),before=JSON.stringify(s),a=floodplainTufts(s,plan.roads);
  assert.deepEqual(a,floodplainTufts(s,plan.roads));assert.ok(a.length>250);assert.ok(a.length<4000);
  assert.ok(a.some(p=>p.kind==='reed'));assert.ok(a.some(p=>p.kind==='grass'));
  for(const p of a){assert.ok(shoreDistance(p.x,p.y,s)>=.23||(p.kind==='reed'&&lakeDistance(p.x,p.y,s)>=.07));assert.ok(!s.buildings.some(b=>Math.abs(b.x-p.x)<.79&&Math.abs(b.y-p.y)<.79));
@@ -125,7 +125,7 @@ test('volumetric floodplain colonies preserve dry open ground, foundations and r
  assert.ok(g.positions.some((v,i)=>i%3===1&&v>.7),'grass has real height and bent upright leaves');assert.equal(JSON.stringify(s),before);
 });
 test('shore margin has irregular width and lies directly on the canonical physical bank',()=>{
- const s=createGame(),before=JSON.stringify(s),g=riverbankGeometry(s),widths=[];assert.equal(g.colors.length,g.positions.length/3*4);
+ const s=createGame({start:'established'}),before=JSON.stringify(s),g=riverbankGeometry(s),widths=[];assert.equal(g.colors.length,g.positions.length/3*4);
  for(let i=0;i<g.positions.length;i+=3){const x=g.positions[i]/TILE,y=g.positions[i+2]/TILE;assert.ok(Math.abs(g.positions[i+1]-surfaceElevation(x,y,s)-.024)<1e-9);if(i%(7*3)===18)widths.push(shoreDistance(x,y,s));}
  assert.ok(new Set(widths.map(v=>v.toFixed(3))).size>40);assert.ok(g.colors.some((v,i)=>i%4===3&&v===0));assert.equal(JSON.stringify(s),before);
 });
@@ -137,7 +137,7 @@ test('resource placement uses four straight rectangular edges with no circular f
 test('real gathering tree falls at saved target, leaves a stump and recovers without new geometry or save edits',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
- const s=createGame();s.gathering={features:[{id:'tree:test:0',kind:'tree',x:4,y:5,health:1,felledAt:null,recoverAt:null},{id:'rock:test:0',kind:'rock',x:5,y:5,health:1,felledAt:null,recoverAt:null}],jobs:[],kills:[]};
+ const s=createGame({start:'established'});s.gathering={features:[{id:'tree:test:0',kind:'tree',x:4,y:5,health:1,felledAt:null,recoverAt:null},{id:'rock:test:0',kind:'rock',x:5,y:5,health:1,felledAt:null,recoverAt:null}],jobs:[],kills:[]};
  try{const before=JSON.stringify(s);view=await createGameLandscape(B,scene,s,materials);const tree=scene.getTransformNodeByName('gathering-feature-tree:test:0'),parts=view.meshes.filter(m=>m.name.startsWith('working-tree-')),stump=view.meshes.find(m=>m.name==='felled-tree-stump-tree:test:0'),rock=view.meshes.find(m=>m.name==='working-rock-rock:test:0');
   assert.equal(tree.position.x,24);assert.equal(tree.position.z,30);assert.ok(parts.length);assert.equal(stump.isEnabled(),false);assert.equal(JSON.stringify(s),before);const count=scene.meshes.length;
   for(const m of parts){assert.equal(m.overrideMaterialSideOrientation??null,m.sourceMesh.metadata?.nativeDates?null:B.Material.CounterClockWiseSideOrientation);m.computeWorldMatrix(true);assert.ok(m.getWorldMatrix().determinant()>0);}
@@ -167,7 +167,7 @@ test('goods are detailed shared rectangular geometry resting on exact support pl
  }finally{scene.dispose();engine.dispose();}
 });
 test('ground stock yard avoids real roads and building footprints without editing quantities',()=>{
- const s=createGame(),net=generateStreets(s.buildings,s),before=JSON.stringify(s),yard=groundStocks(s,net);assert.ok(yard);assert.equal(JSON.stringify(s),before);
+ const s=createGame({start:'established'}),net=generateStreets(s.buildings,s),before=JSON.stringify(s),yard=groundStocks(s,net);assert.ok(yard);assert.equal(JSON.stringify(s),before);
  assert.ok(shoreDistance(yard.x,yard.y,s)>=.55);
  for(const b of s.buildings)assert.ok(Math.abs(b.x-yard.x)>=.85||Math.abs(b.y-yard.y)>=.95);
  for(const [a,b]of net.edges){const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((yard.x-a.x)*dx+(yard.y-a.y)*dy)/(dx*dx+dy*dy||1)));assert.ok(Math.hypot(yard.x-a.x-dx*t,yard.y-a.y-dy*t)>=.6);}
@@ -176,7 +176,7 @@ test('ground stock yard avoids real roads and building footprints without editin
 test('changing actual stock recreates only display instances and disposes old piles',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;
  B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
- try{const s=createGame();view=await createGameLandscape(B,scene,s,materials);const old=view.meshes.filter(m=>m.metadata?.goods&&!m.parent);assert.ok(old.length);for(const m of old){m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-m.metadata.goods.supportY)<1e-6);if(!m.metadata.goods.layer)assert.ok(Math.abs(b.minimumWorld.y-surfaceElevation(m.position.x/TILE,m.position.z/TILE,s))<1e-6);}
+ try{const s=createGame({start:'established'});view=await createGameLandscape(B,scene,s,materials);const old=view.meshes.filter(m=>m.metadata?.goods&&!m.parent);assert.ok(old.length);for(const m of old){m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-m.metadata.goods.supportY)<1e-6);if(!m.metadata.goods.layer)assert.ok(Math.abs(b.minimumWorld.y-surfaceElevation(m.position.x/TILE,m.position.z/TILE,s))<1e-6);}
   const src=old[0].sourceMesh,before=JSON.stringify(s);view.update(s,3);assert.equal(JSON.stringify(s),before);assert.ok(view.meshes.includes(old[0]));
   s.resources.food+=75;const changed=JSON.stringify(s);view.update(s,4);assert.equal(JSON.stringify(s),changed);assert.ok(old.every(m=>m.isDisposed()));assert.ok(view.meshes.some(m=>m.sourceMesh===src));assert.equal(src.isDisposed(),false);
   const sources=view.meshes.filter(m=>m.name.startsWith('goods-source-'));assert.equal(sources.length,GOODS_KINDS.length);view.dispose();assert.ok(sources.every(m=>m.isDisposed()));assert.equal(scene.meshes.length,0);
@@ -196,7 +196,7 @@ test('ground display represents every actual material including clothing and raw
 });
 
 test('stock yard clears complete parcel bounds around actual palms and gathering trees, with cached search',()=>{
- const s=createGame(),net=generateStreets(s.buildings,s);let edgeReads=0;const edges=net.edges;Object.defineProperty(net,'edges',{get(){edgeReads++;return edges;}});
+ const s=createGame({start:'established'}),net=generateStreets(s.buildings,s);let edgeReads=0;const edges=net.edges;Object.defineProperty(net,'edges',{get(){edgeReads++;return edges;}});
  const before=JSON.stringify(s),yard=groundStocks(s,net);assert.ok(yard);assert.ok(edgeReads>0);const coldReads=edgeReads;
  const clear=(yard,tree)=>Math.hypot(Math.max(Math.abs(tree.x-yard.x)-.26,0),Math.max(yard.y-.05-tree.y,tree.y-yard.y-.38,0));
  for(const tree of landscapePlan(s).palms)assert.ok(clear(yard,tree)>=.45);
@@ -210,7 +210,7 @@ test('stock yard clears complete parcel bounds around actual palms and gathering
 import {insideFootprint} from '../footprints.js';
 import {sceneryClear} from '../game3d/nature.js';
 test('expanded monument clears palms and tuft colonies across all four cells; legacy footprint stays small',()=>{
- const s=createGame(),z={type:'ziggurat',x:28,y:1,footprint:2,level:1};s.buildings.push(z);s.world.deposits.push({kind:'forest',x:29,y:2},{kind:'dates',x:28,y:2});const before=JSON.stringify(s),plan=landscapePlan(s);
+ const s=createGame({start:'established'}),z={type:'ziggurat',x:28,y:1,footprint:2,level:1};s.buildings.push(z);s.world.deposits.push({kind:'forest',x:29,y:2},{kind:'dates',x:28,y:2});const before=JSON.stringify(s),plan=landscapePlan(s);
  assert.ok(plan.palms.every(p=>!insideFootprint(z,p.x,p.y)),'both ambient and deposit palms clear the complete platform');
  assert.ok(!plan.palms.some(p=>p.id===109),'the reproducible palm on the formerly ignored corner is excluded');
  for(const p of floodplainTufts(s,plan.roads))assert.ok(!insideFootprint(z,p.x,p.y));
@@ -220,7 +220,7 @@ test('expanded monument clears palms and tuft colonies across all four cells; le
 test('building a 2 by 2 platform hides overlapping gathering trees, stones and deposit fixtures then restores them on removal',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
- const s=createGame(),z={type:'ziggurat',x:28,y:1,footprint:2,level:1};s.world.deposits=[{kind:'stone',x:29,y:2},{kind:'reed',x:28,y:2},{kind:'forest',x:29,y:1}];s.gathering={features:[{id:'platform-tree',kind:'tree',x:29,y:2,health:1,felledAt:null,recoverAt:null},{id:'platform-rock',kind:'rock',x:28,y:2,health:1}],jobs:[],kills:[]};
+ const s=createGame({start:'established'}),z={type:'ziggurat',x:28,y:1,footprint:2,level:1};s.world.deposits=[{kind:'stone',x:29,y:2},{kind:'reed',x:28,y:2},{kind:'forest',x:29,y:1}];s.gathering={features:[{id:'platform-tree',kind:'tree',x:29,y:2,health:1,felledAt:null,recoverAt:null},{id:'platform-rock',kind:'rock',x:28,y:2,health:1}],jobs:[],kills:[]};
  try{
   view=await createGameLandscape(B,scene,s,materials);assert.ok(scene.getTransformNodeByName('gathering-feature-platform-tree'));assert.ok(view.meshes.some(m=>m.name==='deposit-stone-pile'));
   s.buildings.push(z);const before=JSON.stringify(s);view.update(s,1);assert.equal(JSON.stringify(s),before);
@@ -235,5 +235,5 @@ test('building a 2 by 2 platform hides overlapping gathering trees, stones and d
 test('missing imported palm files retain grounded procedural trunks and crowns, never floating fruit',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;let view;
  B.SceneLoader.LoadAssetContainerAsync=async()=>{throw Error('optional asset offline');};
- try{const s=createGame(),before=JSON.stringify(s);view=await createGameLandscape(B,scene,s,materials);view.update(s,0);const parts=view.meshes.filter(m=>['date-palm-trunks','date-palm-crowns'].includes(m.name));assert.equal(parts.length,2);assert.ok(parts.every(m=>m.isEnabled()));assert.ok(!view.meshes.some(m=>m.metadata?.nativeDates));assert.equal(JSON.stringify(s),before);}finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+ try{const s=createGame({start:'established'}),before=JSON.stringify(s);view=await createGameLandscape(B,scene,s,materials);view.update(s,0);const parts=view.meshes.filter(m=>['date-palm-trunks','date-palm-crowns'].includes(m.name));assert.equal(parts.length,2);assert.ok(parts.every(m=>m.isEnabled()));assert.ok(!view.meshes.some(m=>m.metadata?.nativeDates));assert.equal(JSON.stringify(s),before);}finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });

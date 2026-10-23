@@ -1,9 +1,11 @@
+import {workstationBuilding} from './workstations.js';
 import {cropSeed,fieldCropKind} from './crop-varieties.js';
 import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
 import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js';
 import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {createArchitecture} from './architecture.js';
+import {createHouseArchitecture,houseVisualKind} from './house-architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
 import {constructionProgress} from '../construction.js';
 import {buildingKey,capacityOf} from '../definitions.js';
@@ -17,7 +19,7 @@ const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgr
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?organicHouseVariant(b):'',foundationSignature(b,state,shoreContext)].join('|');
+ return [workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?`${houseVisualKind(b)}:${organicHouseVariant(b)}`:'',foundationSignature(b,state,shoreContext)].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -77,8 +79,9 @@ export async function createGameBuildings(B,scene,materials){
  const shade=finish('door-shadow','#40382d');
  const warm=finish('occupied-home','#bd8950');warm.emissiveColor=new B.Color3(.5,.29,.1);
  const trim=finish('plaster-trim','#d9c4a1',materials.plaster);
- const houseFinishes=[1,2,3].map(level=>['#dfc8a1','#cab18c','#ead6b5'].map((color,variant)=>finish(`house-${level}-finish-${variant}`,level===3?['#b98760','#a77453','#c09269'][variant]:color,level>=2?materials.brick:materials.plaster)));
- const textiles=['#d9c39e','#ba9d77','#ded4b9'].map((color,i)=>finish(`household-cloth-${i}`,color,materials.linen));
+ const houseFinishes=[1,2,3].map(level=>['#dfc8a1','#cab18c','#ead6b5'].map((color,variant)=>finish(`house-${level}-finish-${variant}`,color,materials.plaster)));
+ const homeShade=finish('home-interior-shadow','#100c08');
+ const homePlasters=houseFinishes.map((variants,level)=>variants.map((base,variant)=>{const mat=finish(`home-plaster-${level+1}-${variant}`,['#ceb18a','#d8c29e','#e0cdaa'][variant],materials.plaster);mat.albedoTexture=null;mat.albedoColor=mat.albedoColor.toLinearSpace();return mat;}));
  const materialSet={...materials,raw,fired,shade,trim,warm};
  // Share photographic surface maps with the high detail asset's authored UVs.
  for(const mesh of originals){
@@ -91,54 +94,13 @@ export async function createGameBuildings(B,scene,materials){
  // Width is about 8.8 m including wall thickness; .52 preserves a clear tile margin.
  const scale=Math.min(.52,5.15/(max.x-min.x),5.15/(max.z-min.z));
  const center=min.add(max).scale(.5),verticalScale=.74;
- function additions(b,root){
-  const groups=new Map(),variant=organicHouseVariant(b);
-  const box=(name,x,y,z,w,h,d,mat)=>{
-   if(isHouse(b)&&variant===1)x=-x;
-   if(isHouse(b)&&variant===2){x*=.94;z*=.96;}
-   if(b.type==='ziggurat'&&b.footprint===2){x=3+x*2;z=3+z*2;w*=2;d*=2;y*=2;h*=2;}
-   const m=B.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);m.position.set(x,y,z);m.material=mat||trim;
-   if(!groups.has(m.material))groups.set(m.material,[]);groups.get(m.material).push(m);return m;
-  };
-  const level=tier(b),facing=level===3?fired:raw;
-  if(isHouse(b)){
-   // Three repeatable family layouts: courtyard screens, drying mats and vessels
-   // vary without allocating a unique template or material per resident.
-   const textile=textiles[variant],shadeX=[.9,-.7,.2][variant],shadeZ=[.05,.45,.9][variant],shadeW=[1.35,1.8,1.1][variant];
-   for(const side of [-1,1])box('house-reed-screen-post',shadeX+side*shadeW/2,.65,shadeZ,.055,1.3,.055,materials.wood);
-   box('house-courtyard-screen',shadeX,.97,shadeZ,shadeW,.6,.045,textile);
-   box('house-roof-drying-mat',[-.9,.3,1.1][variant],2.21,-1.48,[1.15,1.6,.8][variant],.035,.62,textile);
-   for(let i=0;i<variant+1;i++){
-    const px=-1.6+i*.39,pz=1.85-variant*.17,body=B.MeshBuilder.CreateSphere('house-family-jar',{diameter:1,segments:8},scene);body.scaling.set(.27,.44,.27);body.position.set(px,.25,pz);body.material=materials.terracotta;
-    if(!groups.has(body.material))groups.set(body.material,[]);groups.get(body.material).push(body);
-    const rim=B.MeshBuilder.CreateCylinder('house-family-jar-rim',{height:.085,diameter:.16,tessellation:10},scene);rim.position.set(px,.5,pz);rim.material=materials.terracotta;groups.get(body.material).push(rim);
-   }
-   // Open court remains clear: no solid picking/collision cube around the home.
-   if(level>=2){
-    for(const x of [-2.25,2.25])box('house-masonry-pier',x,.55,1.75,.32,1.1,.42,facing);
-    for(const x of [-1.6,.1,1.8])box('house-repair-course',x,.18,1.55,1.35,.32,.16,facing);
-    box('house-upper-room',-1.15,2.47,1.08,1.55,.8,1.2,level===3?fired:trim);
-    box('house-upper-roof',-1.15,2.91,1.08,1.72,.12,1.35,materials.soil);
-    box('house-upper-door',-1.15,2.36,.47,.43,.57,.025,shade);
-   }
-   if(level===3){
-    for(let i=0;i<7;i++)box('house-fired-plinth',-1.9+i*.59,.14,1.94,.56,.28,.22,fired);
-    box('house-roof-parapet',-1.15,3.05,1.67,1.72,.25,.15,fired);
-    box('house-roof-parapet',-1.94,3.05,1.08,.15,.25,1.35,fired);
-   }
-  }
-
-  const result=[];
-  for(const [material,parts] of groups){
-   const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.material=material;mesh.name=`game-detail-${material.name}`;mesh.parent=root;result.push(mesh);
-  }
-  return result;
- }
  function acquire(b,key,state,shoreContext){
   let t=templates.get(key);if(t){t.users++;return t;}
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
   if(b.construction?.kind==='new'){
    sources=createConstructionSite(B,scene,b,materialSet);for(const mesh of sources)mesh.parent=root;
+  }else if(isHouse(b)&&(tier(b)>=2||houseVisualKind(b)==='hut')){
+   sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade});for(const mesh of sources)mesh.parent=root;
   }else if(isHouse(b)){
    for(const original of originals){
     const mesh=original.clone(`${original.name}-tier${tier(b)}`,null,true);mesh.isVisible=false;
@@ -168,10 +130,9 @@ export async function createGameBuildings(B,scene,materials){
     const base=createDistrictBuilding(B,scene,{...adapted,id:'template'},materialSet);
     for(const mesh of base.meshes){mesh.unfreezeWorldMatrix();mesh.parent=root;sources.push(mesh);}
     base.root.dispose();
-   }else for(const mesh of createArchitecture(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
+   }else for(const mesh of createArchitecture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
 
   }
-  if(b.construction?.kind!=='new')sources.push(...additions(b,root));
   if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>{
    const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
@@ -181,7 +142,8 @@ export async function createGameBuildings(B,scene,materials){
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
    for(let index=0;index<4;index++){
-    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:.22,height:.2,depth:.04},scene);lamp.position.set(.22+index*.34,1.08,.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
+    const renewed=tier(b)>=2||houseVisualKind(b)==='hut',doorCentre=tier(b)===3?-.75:tier(b)===2?.2:0;
+    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b)==='hut'?1.07:tier(b)===3?-.69:-.875):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
   for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}

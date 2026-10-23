@@ -13,7 +13,7 @@ vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',imp
 const B=sandbox.exports.NullEngine?sandbox.exports:sandbox.module.exports;
 
 test('3D actors instance shared geometry, preserve simulation and track real positions and cargo',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame({start:'established'});
  const c=s.citizens.find(c=>c.age>=16);c.phase='toStore';c.cargo={clay:2};
  const before=JSON.stringify(s);view.update(s,s.simTime);
  assert.equal(JSON.stringify(s),before,'rendering must not change saved identity, positions or stock');
@@ -44,7 +44,7 @@ test('3D actors instance shared geometry, preserve simulation and track real pos
 });
 
 test('camera frustum skips actor rigs and restores current simulated position on return',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame({start:'established'});
  const c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.cargo={};
  const camera=new B.FreeCamera('test-camera',new B.Vector3(c.x*6,8,c.y*6-10),scene);
  camera.setTarget(new B.Vector3(c.x*6,0,c.y*6));camera.minZ=.1;camera.maxZ=100;scene.activeCamera=camera;
@@ -57,7 +57,7 @@ test('camera frustum skips actor rigs and restores current simulated position on
 });
 
 test('residents ease into turns, settle their feet when stopped and keep real cargo and position',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame({start:'established'});
  const c=s.citizens.find(c=>c.age>=16);s.citizens=[c];c.phase='toStore';c.cargo={clay:2};
  view.update(s,0,1/60);
  const root=scene.transformNodes.find(n=>n.metadata?.citizenId===c.id),before=JSON.stringify(s);
@@ -75,7 +75,7 @@ test('residents ease into turns, settle their feet when stopped and keep real ca
 });
 
 test('cloth faces outward and all shared model vertices stay finite',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame({start:'established'});
  view.update(s,0,1/60);
  const cloth=scene.meshes.find(m=>m.name.startsWith('actor-source-wrap:'));assert.ok(cloth);
  const positions=cloth.getVerticesData(B.VertexBuffer.PositionKind),normals=cloth.getVerticesData(B.VertexBuffer.NormalKind);
@@ -87,7 +87,7 @@ test('cloth faces outward and all shared model vertices stay finite',()=>{
 });
 
 test('birds alternate their two legs instead of hopping with both together',()=>{
- const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame();
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createDistrictActors(B,scene,{}),s=createGame({start:'established'});
  let alternating=false;
  for(let i=0;i<80&&!alternating;i++){
   s.simTime=i*.05;view.update(s,s.simTime,.05);

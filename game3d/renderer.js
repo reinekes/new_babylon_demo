@@ -1,3 +1,4 @@
+import {foundingCameraTarget} from '../starter-settlement.js';
 import {createBuildingReach,nearbySimilar} from './building-reach.js';
 import {bindMapControls} from './map-controls.js';
 import {Renderer as CanvasRenderer} from '../renderer.js';
@@ -13,7 +14,7 @@ import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
 import {weatherAt} from '../environment.js';
 
-export const GAME3D_RELEASE='blooming-valley-20261023-1';
+export const GAME3D_RELEASE='founding-village-20261023-1';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
@@ -55,7 +56,7 @@ export class GameRenderer3D{
   this.buildings=results[0].status==='fulfilled'?results[0].value:null;this.actors=results[1].status==='fulfilled'?results[1].value:null;this.landscape=results[2].status==='fulfilled'?results[2].value:null;
   this.miracleGarden=await createMiracleGarden(this.B,this.scene,{groundHeight:(x,y)=>visualSurfaceElevation(x,y,this.state||state),canPlant:(x,y)=>x>0&&y>0&&x<WIDTH-1&&y<HEIGHT-1&&vegetationBankDistance(x,y,this.state||state)>.08&&sceneryClear(this.state||state,{x,y},.16)});
   const failure=results.find(r=>r.status==='rejected');if(failure)throw failure.reason;
-  document.querySelector('.game3d-loading small')?.replaceChildren(document.createTextNode('Модели готовы · подготавливаем материалы…'));this.state=state;this.buildings.sync(state);this.actors.update(state,0,{paused:true,speed:1});this.landscape.update(state,state.simTime);this.layersReady=true;try{await Promise.race([this.scene.whenReadyAsync(),new Promise((_,reject)=>{this.loadingTimer=setTimeout(()=>reject(Error('Материалы 3D не ответили вовремя')),45000);})]);}finally{clearTimeout(this.loadingTimer);this.engine.stopRenderLoop();}this.resize();
+  document.querySelector('.game3d-loading small')?.replaceChildren(document.createTextNode('Модели готовы · подготавливаем материалы…'));this.state=state;this.buildings.sync(state);this.actors.update(state,0,{paused:true,speed:1});this.landscape.update(state,state.simTime);this.layersReady=true;try{await Promise.race([this.scene.whenReadyAsync(),new Promise((_,reject)=>{this.loadingTimer=setTimeout(()=>reject(Error('Материалы 3D не ответили вовремя')),45000);})]);}finally{clearTimeout(this.loadingTimer);this.engine.stopRenderLoop();}this.resize();if(foundingCameraTarget(state))this.home();
  }
  createControls(){
   const panel=document.createElement('div');panel.className='game3d-options';panel.innerHTML='<span>3D · ЖИВОЙ ГОРОД</span><button type="button" data-turn="-1" title="Повернуть камеру влево">↶</button><button type="button" data-turn="1" title="Повернуть камеру вправо">↷</button><select aria-label="Качество 3D"><option value="high">Высокая</option><option value="low">Лёгкая</option></select><a href="?view=2d" title="Открыть прежнюю графику с тем же сохранением">2D</a><a href="assets/art-courtyard/CREDITS.html" target="_blank" rel="noopener" title="Модели и авторы">Авторы ↗</a>';
@@ -82,7 +83,7 @@ export class GameRenderer3D{
  set zoom(value){this._zoom=Math.max(.3,Math.min(4,value));if(this.camera){this.mapOverview=false;this.camera.radius=104/this._zoom;}}
  layout(){if(this.camera)this.camera.radius=this.mapOverview?240:104/this._zoom;}
  resize(){if(!this.engine)return;this.engine.resize();const r=this.canvas.getBoundingClientRect();this.w=r.width;this.h=r.height;}
- home(){this.mapOverview=false;this._zoom=2.5;this.pan={x:0,y:0};this.camera?.setTarget(new this.B.Vector3(53,0,55));if(this.camera){this.camera.alpha=Math.PI/3;this.camera.beta=.96;this.camera.radius=104/this._zoom;}}
+ home(){const founding=foundingCameraTarget(this.state);this.mapOverview=false;this._zoom=founding?104/founding.radius:2.5;this.pan={x:0,y:0};this.camera?.setTarget(new this.B.Vector3(founding?founding.x*6:53,0,founding?founding.y*6:55));if(this.camera){this.camera.alpha=Math.PI/3;this.camera.beta=.96;this.camera.radius=104/this._zoom;}}
  overview(){this.mapOverview=true;this.camera.setTarget(new this.B.Vector3((WIDTH-1)*3,0,(HEIGHT-1)*3));this.camera.beta=.68;this.camera.radius=240;}
  focusOn(x,y){this.mapOverview=false;this.camera.setTarget(new this.B.Vector3(x*6,1,y*6));this.camera.radius=30;this.hover={x,y};}
  captureView(){return {target:this.camera.target.clone(),alpha:this.camera.alpha,beta:this.camera.beta,radius:this.camera.radius};}
@@ -109,7 +110,7 @@ export class GameRenderer3D{
   const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,.12,r.a.y*6),b=new B.Vector3(r.b.x*6,.12,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
  }
  draw(state,selection,now,options={}){
-  if(!this.layersReady)return;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;
+  if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState&&foundingCameraTarget(state))this.home();
   const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1});this.updateLight(state);this.updateSelection();this.updateEffects(state,paused?0:dt);this.miracleGarden?.update(dt,{paused});
   this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}

@@ -3,7 +3,7 @@ import {isArtisan,artisanOutput} from './artisan.js';
 import {isTradePort} from './river-trade.js';
 import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
-import {putStock,stockStores,refundSources,syncInventory} from './inventory.js';
+import {putStock,stockStores,storeCapacity,refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
@@ -74,7 +74,22 @@ function relocations(s,b){
  for(const c of residents){const target=beds.find(h=>h.free>0&&source&&map.get(h.key)&&net.components.get(source.key)===net.components.get(map.get(h.key).key));if(!target)return null;target.free--;result.set(c.id,target.key);}
  return result;
 }
+// A founding hut may be removed with its supplies. Plan first without writes:
+// connected storage and capacity must exist for every unit before demolition.
+function foundingStockTransfer(s,b){
+ if(!b.starterHut||b.type!=='house')return null;
+ const {net,map}=ports(s),source=map.get(buildingKey(b));if(!source)return null;
+ const component=net.components.get(source.key),targets=s.buildings.filter(t=>t!==b&&isComplete(t)&&['house','shrine','granary','depot'].includes(t.type)&&map.get(buildingKey(t))&&net.components.get(map.get(buildingKey(t)).key)===component).sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y));
+ const plan=[];
+ for(const k of MATERIALS){let left=b.stock?.[k]||0;
+  for(const target of targets){const n=Math.min(left,Math.max(0,storeCapacity(target)-(target.stock?.[k]||0)));if(n>0){plan.push({target,key:k,amount:n});left-=n;}if(left<1e-7)break;}
+  if(left>1e-7)return null;
+ }
+ return plan;
+}
 export function canDemolish(s,b){
+ // networkFor lazily materializes automatic roads; preview a private road array.
+ if(b?.starterHut)s={...s,roads:[...(s.roads||[])]};
  const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
  if(isArtisan(b)&&!['idle','ready'].includes(b.artisan.stage))return 'Дождись завершения ремесленной партии';
@@ -83,7 +98,7 @@ export function canDemolish(s,b){
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
  if(s.citizens.some(c=>c.pantryTrip&&c.pantryTarget===buildingKey(b)))return 'Дождись доставки еды соседям';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';
- const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
+ const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';if(!b.starterHut)syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7)&&!foundingStockTransfer(s,b))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary','depot'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
@@ -116,7 +131,10 @@ export function canDemolish(s,b){
 }
 export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
- const homes=relocations(s,b),refund=demolitionRefund(b);
+ const homes=relocations(s,b),refund=demolitionRefund(b),transfer=b.starterHut?foundingStockTransfer(s,b):null;
+ // All capacity, reservation, resident and route gates above have succeeded.
+ // This emergency relocation follows the existing demolition-refund abstraction.
+ if(transfer)for(const {target,key,amount}of transfer){target.stock??=Object.fromEntries(MATERIALS.map(k=>[k,0]));target.stock[key]+=amount;b.stock[key]-=amount;}
  if(b.brickmaking){const amounts={clay:b.brickmaking.clay,reed:b.brickmaking.reed,brick:b.brickmaking.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья и сырца'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.brickmaking.clay=0;b.brickmaking.reed=0;b.brickmaking.ready=0;}}
 if(isArtisan(b)){const v=b.artisan,amounts={clay:v.clay,reed:v.reed,food:v.food,pottery:v.pottery};amounts[artisanOutput(b)]=(amounts[artisanOutput(b)]||0)+v.ready;if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата ремесленных грузов'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});}}
 if(b.firing){const amounts={brick:b.firing.brick,reed:b.firing.reed,firedBrick:b.firing.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата топлива и кирпича'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.firing.brick=0;b.firing.reed=0;b.firing.ready=0;}}

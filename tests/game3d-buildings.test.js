@@ -51,11 +51,12 @@ test('actual courtyard GLB transforms stay centered in one tile, tiers are disti
    assert.ok(b.minX>=15.2&&b.maxX<=20.8,JSON.stringify(b));assert.ok(b.minZ>=21.2&&b.maxZ<=26.8,JSON.stringify(b));
    assert.ok(Math.abs((b.minX+b.maxX)/2-18)<.25);assert.ok(Math.abs((b.minZ+b.maxZ)/2-24)<.25);
    assert.ok(b.maxY>previousHeight);previousHeight=b.maxY;
-   const glb=t.layer.meshes.filter(m=>m.name.includes('game-courtyard'));assert.ok(glb.length>=7);
-   for(const m of glb)assert.equal(m.sourceMesh.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);
+   const glb=t.layer.meshes.filter(m=>m.name.includes('game-courtyard'));
+   if(level===1){assert.ok(glb.length>=7);for(const m of glb)assert.equal(m.sourceMesh.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);}
+   else {assert.equal(glb.length,0);assert.ok(t.layer.meshes.some(m=>m.name.includes(`game-house-courtyard-${level}`)));}
    for(const m of t.layer.meshes){assert.equal(m.metadata.buildingKey,'home');assert.deepEqual(m.metadata.tile,{x:3,y:4});assert.equal(m.checkCollisions,false);assert.equal(m.isPickable,true);}
-   if(level===2)assert.ok(t.layer.meshes.some(m=>m.material.name==='game-raw-brick-facing'));
-   if(level===3)assert.ok(t.layer.meshes.some(m=>m.material.name==='game-fired-brick-facing'));
+   if(level===2)assert.ok(t.layer.meshes.some(m=>m.material.name.startsWith('game-home-plaster-2')));
+   if(level===3)assert.ok(t.layer.meshes.some(m=>m.material.name.startsWith('game-home-plaster-3')));
   }
  }finally{t.dispose();}
 });
@@ -192,7 +193,7 @@ test('each house tier shares only three deterministic finishes/layouts and famil
  const t=await setup();try{
   for(const level of [1,2,3]){
    const houses=[house(level,3,4,'a'),house(level,8,4,'b'),house(level,4,4,'c')];t.layer.sync({buildings:houses,citizens:[]});
-   const facade=id=>t.layer.meshes.find(m=>m.metadata.buildingKey===id&&m.name.includes('game-courtyard')&&m.name.includes('plastered'));
+   const facade=id=>t.layer.meshes.find(m=>m.metadata.buildingKey===id&&(level===1?m.name.includes('game-courtyard')&&m.name.includes('plastered'):m.material.name.startsWith(`game-home-plaster-${level}`)));
    assert.equal(facade('a').sourceMesh,facade('b').sourceMesh);assert.notEqual(facade('a').material,facade('c').material);assert.notEqual(facade('a').sourceMesh.geometry,facade('c').sourceMesh.geometry);assert.notEqual(gameBuildingSignature(houses[0]),gameBuildingSignature(houses[2]));
    for(const h of houses){const bb=bounds(t.layer.meshes.filter(m=>m.metadata.buildingKey===h.id));assert.ok(bb.minX>=h.x*6-2.8&&bb.maxX<=h.x*6+2.8&&bb.minZ>=h.y*6-2.8&&bb.maxZ<=h.y*6+2.8,JSON.stringify(bb));}
   }
@@ -236,5 +237,15 @@ test('house preview is complete, lamp-free, follows its position variant and doe
   const p=t.layer.preview(b,state,{allowed:true});assert.ok(p.meshes.some(m=>m.name.includes('game-courtyard')));assert.ok(p.meshes.every(m=>!m.name.includes('home-lamp')));assert.equal(t.layer.meshes.length,0);assert.deepEqual(b,before);
   const count=t.scene.meshes.length,first=p.meshes[0];for(let i=0;i<20;i++)t.layer.preview({...b,x:8},state,{allowed:true});assert.equal(t.scene.meshes.length,count);assert.equal(t.layer.preview({...b,x:8},state).meshes[0],first);assert.equal(p.root.metadata.tile.x,8);
   t.layer.preview(null,state);assert.ok(first.isDisposed());
+ }finally{t.dispose();}
+});
+
+test('starter hut templates remain through upgrade, then become ordinary II geometry with no permanent hut cache identity',async()=>{
+ const t=await setup();try{
+  const b={...house(),starterHut:true},state={buildings:[b],citizens:[]};t.layer.sync(state);
+  assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-courtyard')));
+  const count=t.scene.meshes.length,first=t.layer.meshes[0];for(let i=0;i<12;i++)t.layer.sync(state);assert.equal(t.scene.meshes.length,count);assert.equal(t.layer.meshes[0],first);
+  b.construction={kind:'upgrade',target:2,required:{clay:8},delivered:{clay:4},work:0};t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-courtyard-2')));
+  b.level=2;delete b.construction;t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-courtyard-2')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.equal(gameBuildingSignature(b),gameBuildingSignature({...b,starterHut:undefined}));
  }finally{t.dispose();}
 });

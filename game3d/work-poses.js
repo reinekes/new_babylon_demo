@@ -1,3 +1,4 @@
+import {workstationBuilding} from './workstations.js';
 import {isWorkday,treatmentViewPosition} from '../workforce.js';
 import {qualifiedHealer} from '../education.js';
 import {stockStores} from '../inventory.js';
@@ -14,9 +15,11 @@ export function workplaceIndex(s){return new Map([...(s.buildings||[]),...(s.roa
 // View-only contract: the same active/waiting gates as workforce, without cropFor
 // or any initializer (rendering must never migrate or mutate a saved city).
 export function workplaceActivity(s,c,index){
- if(c.carrying||c.age<16)return null;
+ if(c.age<16)return null;
+ if(c.waterTrip?.phase==='fill')return {kind:'gathering',task:'water-filling',stage:'working',target:{x:c.x,y:c.y},progress:(c.waterTrip.elapsed||0)/2};
+ if(c.carrying)return null;
  const b=index.get(c.phase==='constructing'?c.site:c.work);
- if(c.phase==='constructing'&&b?.construction&&c.siteDuty==='builder')return {kind:'building',stage:materialsReady(b.construction)?'working':'waiting',target:b,progress:b.construction.work/workRequired(b)};
+ if(c.phase==='constructing'&&b?.construction&&c.siteDuty==='builder')return {kind:'building',stage:materialsReady(b.construction)?'working':'waiting',target:workstationBuilding(b,s),progress:b.construction.work/workRequired(b)};
  if(c.phase!=='working'||!b)return null;
  if(b.type==='healer'){
   const waiting={kind:'healing',stage:'waiting',target:b};
@@ -41,12 +44,13 @@ export function workplaceActivity(s,c,index){
  else if(b.type==='brickyard'){kind='brickmaking';active=!!b.brickmaking&&!b.brickmaking.wet&&(b.brickmaking.ready>0||!Object.values(brickNeeds(b)).some(n=>n>1e-8));}
  else if(b.type==='kiln')active=!!b.firing&&!b.firing.hot&&(b.firing.ready>0||!Object.values(kilnNeeds(b)).some(n=>n>1e-8));
  else if(b.type==='sheepfold')active=(b.flock?.fleece||0)>=1-1e-8;
- return {kind,task,stage:active?'working':'waiting',target:b,progress:(c.workElapsed||0)/(BUILDINGS[b.type]?.workTime||12)};
+ return {kind,task,stage:active?'working':'waiting',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/(BUILDINGS[b.type]?.workTime||12)};
 }
 // Palm coordinates are in the resident root's metre space. Cargo and the specialised
 // hunting/fishing solves retain priority in actors.js. Distinct cycles read task time.
 export function workPose(kind,time,task){
  const cycle=Math.sin(time*3.6),lift=(cycle+1)*.5;
+ if(task==='water-filling')return {bend:.5,twist:cycle*.025,right:[.12,.60+lift*.09,.43],left:[-.12,.65+lift*.09,.43],tool:'water-vessel'};
  if(kind==='healing')return {bend:.14+lift*.05,twist:cycle*.025,right:[.12,1.02+cycle*.055,.49],left:[-.14,1.04,.42+lift*.035],tool:null};
  if(kind==='building')return {bend:.13+lift*.16,twist:cycle*.045,right:[.20,.75+lift*.60,.50-lift*.18],left:[-.13,.88,.48],tool:'building'};
  if(kind==='farming')return {bend:.55-lift*.24,twist:cycle*.055,right:[.17,.76+lift*.18,.45+lift*.10],left:[.10,.98+lift*.16,.30+lift*.10],tool:task==='harvesting'?'sickle':'hoe'};

@@ -3,7 +3,7 @@ import {createGame,yieldSummary,encode,decode} from '../engine.js';
 import {initializeArtisans,workArtisan,advanceArtisans,collectArtisan,artisanSummary} from '../artisan.js';
 import {weatherAt} from '../environment.js';import {seasonBalance} from '../season-balance.js';
 import {syncCitizens} from '../workforce.js';import {setCitizenRole,assignWorkplace} from '../management.js';
-const fixture=(type,level=1)=>{const s=createGame();s.buildings.push({type,x:10,y:9,level});initializeArtisans(s);syncCitizens(s);return s;};
+const fixture=(type,level=1)=>{const s=createGame({start:'established'});s.buildings.push({type,x:10,y:9,level});initializeArtisans(s);syncCitizens(s);return s;};
 for(const [type,recipe,work,stage,amount]of [['pottery',{clay:4,reed:2,water:2},5,'drying',2],['brewery',{food:4,water:3,pottery:1},15,'ready',3]]){
  test(`${type} level III accelerates labor without increasing inputs or batch output`,()=>{
   const low=fixture(type),high=fixture(type,3),a=low.buildings.at(-1),b=high.buildings.at(-1);Object.assign(a.artisan,recipe);Object.assign(b.artisan,recipe);
