@@ -9,8 +9,7 @@ import {Renderer as CanvasRenderer} from '../renderer.js';
 import {canBuild} from '../engine.js';
 import {WIDTH,HEIGHT,terrain} from '../world.js';
 import {lightingAt} from '../city-life.js';
-import {houseLightCount} from '../households.js';
-import {buildingKey} from '../definitions.js';
+import {createHouseLights} from './house-lights.js';
 import {createDistrictMaterials} from '../district3d/materials.js';
 import {createMiracleGarden} from './miracle-garden.js';
 import {vegetationBankDistance} from './valley-vegetation.js';
@@ -18,7 +17,7 @@ import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
 import {weatherAt} from '../environment.js';
 
-export const GAME3D_RELEASE='source-walk-cloth-20261026-1';
+export const GAME3D_RELEASE='town-stocks-20261026-5';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
@@ -45,6 +44,10 @@ export class GameRenderer3D{
   this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,1.5));
   this.scene=new B.Scene(this.engine);this.scene.skipPointerMovePicking=true;this.scene.clearColor=B.Color4.FromHexString('#d0c8aeff');this.scene.fogMode=B.Scene.FOGMODE_EXP2;this.scene.fogDensity=.0018;
   const ip=this.scene.imageProcessingConfiguration;ip.toneMappingEnabled=true;ip.toneMappingType=B.ImageProcessingConfiguration.TONEMAPPING_ACES;ip.exposure=1.1;ip.contrast=1.1;
+  // Keep shared image processing fixed: changing exposure broadcasts PBR
+  // dirtiness across the whole city. Sun, sky, fog and windows carry twilight.
+  // .26 is the midpoint of the old .17–.35 environment range.
+  this.scene.environmentIntensity=.26;
   this.camera=new B.ArcRotateCamera('city-camera',Math.PI/3,.96,62,new B.Vector3(53,0,55),this.scene);this.camera.attachControl(canvas,true);this.camera.inputs.removeByType('ArcRotateCameraPointersInput');this.camera.minZ=.1;this.camera.maxZ=900;this.camera.lowerRadiusLimit=8;this.camera.upperRadiusLimit=360;this.camera.lowerBetaLimit=.35;this.camera.upperBetaLimit=1.48;this.camera.wheelDeltaPercentage=.025;this.camera.panningSensibility=70;this.camera.inertia=0;
   this.sun=new B.DirectionalLight('city-sun',new B.Vector3(-.6,-.85,-.5),this.scene);this.sun.shadowMinZ=.1;this.sun.shadowMaxZ=350;this.sun.shadowFrustumSize=90;
   this.fill=new B.HemisphericLight('city-sky',new B.Vector3(0,1,0),this.scene);this.fill.intensity=.35;
@@ -111,9 +114,8 @@ export class GameRenderer3D{
  updateLight(state){
   const B=this.B,forced={day:10,sunset:28,night:37.5},clock=lightingAt(this.lightMode==='auto'?state.simTime:forced[this.lightMode]??state.simTime),n=clock.night,warm=clock.warm;
   const weather=weatherAt(state),cloud=weather.type==='rain'?.7:weather.type==='clouds'?.85:1;
-  this.sun.direction.set(-.6,-.85+warm*.35,-.5);this.sun.position=this.camera.target.subtract(this.sun.direction.normalizeToNew().scale(140));this.sun.shadowFrustumSize=Math.max(42,Math.min(260,this.camera.radius*1.5));this.sun.intensity=((1-n)*2.9+.32)*cloud;this.sun.diffuse=B.Color3.Lerp(B.Color3.FromHexString('#fff0da').toLinearSpace(),B.Color3.FromHexString('#a3b2d8').toLinearSpace(),n);this.fill.intensity=.4-.17*n;this.fill.diffuse=B.Color3.Lerp(new B.Color3(.9,.9,.85),new B.Color3(.35,.46,.65),n);this.fill.groundColor=new B.Color3(.38,.30,.19);this.scene.environmentIntensity=.35-.18*n;this.scene.imageProcessingConfiguration.exposure=1.1+.2*n;this.scene.fogColor=B.Color3.Lerp(B.Color3.FromHexString('#c7bfa5'),B.Color3.FromHexString('#252f42'),n);this.scene.clearColor=new B.Color4(this.scene.fogColor.r,this.scene.fogColor.g,this.scene.fogColor.b,1);this.landscape.light(n);this.buildings.light?.(n);
-  const homes=state.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new'),live=new Set();for(const b of homes){const residents=state.citizens.filter(c=>c.home===buildingKey(b)),count=houseLightCount(b,residents.length);if(!count)continue;const key=buildingKey(b);live.add(key);let lamp=this.lamps.get(key);if(!lamp){lamp=new B.PointLight(`occupied-house-${key}`,new B.Vector3(b.x*6,1.5,b.y*6+1.2),this.scene);lamp.diffuse=new B.Color3(1,.60,.22);lamp.range=7;this.lamps.set(key,lamp);}lamp.intensity=n*count*3.5;}
-  for(const [key,lamp]of this.lamps)if(!live.has(key)){lamp.dispose();this.lamps.delete(key);}
+  this.sun.direction.set(-.6,-.85+warm*.35,-.5);this.sun.position=this.camera.target.subtract(this.sun.direction.normalizeToNew().scale(140));this.sun.shadowFrustumSize=Math.max(42,Math.min(260,this.camera.radius*1.5));this.sun.intensity=((1-n)*2.9+.32)*cloud;this.sun.diffuse=B.Color3.Lerp(B.Color3.FromHexString('#fff0da').toLinearSpace(),B.Color3.FromHexString('#a3b2d8').toLinearSpace(),n);this.fill.intensity=.4-.17*n;this.fill.diffuse=B.Color3.Lerp(new B.Color3(.9,.9,.85),new B.Color3(.35,.46,.65),n);this.fill.groundColor=new B.Color3(.38,.30,.19);this.scene.fogColor=B.Color3.Lerp(B.Color3.FromHexString('#c7bfa5'),B.Color3.FromHexString('#252f42'),n);this.scene.clearColor=new B.Color4(this.scene.fogColor.r,this.scene.fogColor.g,this.scene.fogColor.b,1);this.landscape.light(n);this.buildings.light?.(n);
+  this.houseLights??=createHouseLights(B,this.scene,{lamps:this.lamps});this.houseLights.update(state,n,this.camera.target);
  }
  updateSelection(){
   if(this.photoMode){this.reach.clear();this.reachNote.hidden=true;this.buildings.highlight([]);this.buildings.clearPreview();this.marker.setEnabled(false);for(const m of this.routeMarkers||[])m.setEnabled(false);return;}for(const m of this.routeMarkers||[])m.setEnabled(true);
@@ -129,5 +131,5 @@ export class GameRenderer3D{
   this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }
- dispose(){this.disposed=true;this.detailQueue?.dispose();this.detailNote?.remove();this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.scene?.dispose();this.engine?.dispose();}
+ dispose(){this.disposed=true;this.detailQueue?.dispose();this.detailNote?.remove();this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.houseLights?.dispose();this.scene?.dispose();this.engine?.dispose();}
 }

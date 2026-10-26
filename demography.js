@@ -14,8 +14,8 @@ function news(s,title,text,kind='good'){s.news.unshift({title,text,kind,tick:s.t
 export function advanceGenerations(s,recover=()=>{}){
  initializeDemography(s);const d=s.demography,deceased=[],grown=[];
  for(const c of s.citizens){const previous=c.age;c.age+=.5;if(previous<16&&c.age>=16){grown.push(c.id);news(s,'Новое поколение работников',`${citizenName(c.id)} исполнилось 16 лет. Теперь житель может работать.`);}if(!s.funeral&&c.age>=65&&(c.age>=85||random(s)<Math.min(.3,.008+(c.age-65)*.006)))deceased.push({id:c.id,name:citizenName(c.id),x:c.x,y:c.y});}
+ for(let i=deceased.length-1;i>=0;i--)if(recover(deceased[i].id)===false){const c=s.citizens.find(c=>c.id===deceased[i].id);if(c)c.age-=.5;deceased.splice(i,1);}
  if(deceased.length)mournResidents(s,deceased.map(c=>c.id),true);
- for(const c of deceased)recover(c.id);
  const dead=new Set(deceased.map(c=>c.id));s.citizens=s.citizens.filter(c=>!dead.has(c.id));s.population=s.citizens.length;s.deaths+=deceased.length;d.naturalDeaths+=deceased.length;
  if(deceased.length){s.name='Хранитель памяти';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}
  if(deceased.length)news(s,'Завершилась жизнь',`${deceased.map(c=>c.name).join(', ')} умерли от старости. Их дети и дела остаются в городе.`,'info');

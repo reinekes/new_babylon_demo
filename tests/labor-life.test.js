@@ -30,7 +30,7 @@ test('real worker integration yields materials only after target work and preser
  assert.ok(sawJob);assert.ok(sawCargo);assert.ok(validateGathering(s));
 });
 test('two fishermen reserve distinct fish and dry stances; fabricated prey cannot survive loading',()=>{
- const s=createGame({start:'established'});let b;for(let y=3;y<14&&!b;y++)for(let x=9;x<17;x++)if(!canBuild(s,'fishing',x,y,true)){b={type:'fishing',x,y,level:1};break;}s.buildings.push(b);
+ const s=createGame({start:'established'});let b;for(let y=3;y<14&&!b;y++)for(let x=9;x<17;x++)if(!canBuild(s,'fishing',x,y,true)){b={type:'fishing',x,y,level:1};break;}s.buildings.push(b);syncCitizens(s);
  const p={x:b.x-.5,y:b.y+.5},cs=s.citizens.filter(c=>c.age>=16).slice(0,2);for(const c of cs){Object.assign(c,{work:`${b.x},${b.y}`,phase:'working',workElapsed:0,x:p.x,y:p.y});workGathering(s,c,b,.1,1,p);}
  assert.equal(s.gathering.jobs.length,2);assert.notEqual(s.gathering.jobs[0].target.id,s.gathering.jobs[1].target.id);assert.ok(Math.hypot(s.gathering.jobs[0].stand.x-s.gathering.jobs[1].stand.x,s.gathering.jobs[0].stand.y-s.gathering.jobs[1].stand.y)>.18);
  const good=encode(s);assert.ok(decode(good));const raw=JSON.parse(good);raw.gathering.jobs[0].target.id='fish:does-not-exist';assert.equal(decode(JSON.stringify(raw)),null);

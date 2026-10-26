@@ -1,3 +1,4 @@
+import {recordBuildingProduction} from './building-production-history.js';
 import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {weatherAt} from './environment.js';
 
@@ -26,7 +27,7 @@ export function artisanNeeds(b){
  const recipe=artisanRecipe(b),v=b?.artisan;
  return Object.fromEntries(Object.entries(recipe).map(([k,n])=>[k,isArtisan(b)&&isOperational(b)&&valid(b)&&v.stage==='idle'?Math.max(0,n-(k==='pottery'&&v.vesselUses?1:v[k])):0]));
 }
-export function workArtisan(b,seconds){
+export function workArtisan(b,seconds,s=null){
  if(!isArtisan(b)||!isOperational(b)||!valid(b)||!Number.isFinite(seconds)||seconds<=0)return;
  const v=b.artisan;
  if(v.stage==='idle'){
@@ -39,7 +40,7 @@ export function workArtisan(b,seconds){
  }
  if(!['forming','brewing'].includes(v.stage))return;
  v.elapsed=Math.min(durations[v.stage],v.elapsed+seconds*outputMultiplier(b));
- if(v.elapsed>=durations[v.stage]){v.elapsed=0;if(v.stage==='forming')v.stage='drying';else{v.stage='ready';v.ready=3;}}
+ if(v.elapsed>=durations[v.stage]){v.elapsed=0;if(v.stage==='forming')v.stage='drying';else{v.stage='ready';v.ready=3;if(s)recordBuildingProduction(s,b,'beer',3);}}
 }
 export function advanceArtisans(s,seconds){
  if(!Number.isFinite(seconds)||seconds<=0)return;
@@ -48,7 +49,7 @@ export function advanceArtisans(s,seconds){
   for(let i=0;i<3&&remaining>0&&['drying','firing','cooling'].includes(v.stage);i++){
    const speed=v.stage==='drying'?rate:1;if(!speed)break;
    const used=Math.min(remaining,(durations[v.stage]-v.elapsed)/speed);v.elapsed+=used*speed;remaining-=used;
-   if(v.elapsed+1e-8>=durations[v.stage]){v.elapsed=0;v.stage={drying:'firing',firing:'cooling',cooling:'ready'}[v.stage];if(v.stage==='ready')v.ready=2;}
+   if(v.elapsed+1e-8>=durations[v.stage]){v.elapsed=0;v.stage={drying:'firing',firing:'cooling',cooling:'ready'}[v.stage];if(v.stage==='ready'){v.ready=2;recordBuildingProduction(s,b,'pottery',2);}}
   }
  }
 }

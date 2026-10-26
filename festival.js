@@ -5,11 +5,12 @@ import {seedTarget,foodForecast} from './food-planning.js';
 import {mealRation,hourOf,affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
+import {navigationGridStep} from './navigation.js';
 import {roadSpeed} from './roads.js';
 export const FESTIVAL_COST=Object.freeze({food:12,beer:6,prestige:15});
 export const festivalInvitation=()=>`Закажи общинный праздник: ${FESTIVAL_COST.prestige} престижа, ${FESTIVAL_COST.food} еды и ${FESTIVAL_COST.beer} пива. Жители доставят угощение к храму и соберутся после вечернего ужина.`;
 export const FESTIVAL_SECONDS=12;
-const keys=['food','beer'],sum=o=>Object.values(o||{}).reduce((n,v)=>n+v,0),distance=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+const keys=['food','beer'],sum=o=>Object.values(o||{}).reduce((n,v)=>n+v,0),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const readyTemple=b=>['shrine','ziggurat'].includes(b.type)&&isOperational(b)&&!b.construction;
 export function initializeFestival(s){if(s.festival===undefined)s.festival=null;}
 function port(s,key){return networkFor(s).ports.find(p=>!p.building.siteKey&&buildingKey(p.building)===key);}
@@ -96,7 +97,7 @@ export function validateFestival(s){
  if(!exact(q,['temple','stage','sources','allocations','delivered','actors','rewarded','consumed','started','ordered'])||!s.buildings.some(b=>buildingKey(b)===q.temple&&readyTemple(b))||!['supplying','waiting','celebrating'].includes(q.stage)||!exact(q.delivered,keys)||!keys.every(k=>finite(q.delivered[k],FESTIVAL_COST[k]))||!finite(q.ordered,s.simTime)||typeof q.consumed!=='boolean'||(q.consumed?(q.stage!=='celebrating'||!finite(q.started,s.simTime)||q.started<q.ordered):(q.started!==null||q.stage==='celebrating'))||!Array.isArray(q.actors)||q.actors.length>24||!Array.isArray(q.rewarded)||q.rewarded.length>24||new Set(q.rewarded).size!==q.rewarded.length||!q.rewarded.every(id)||(!q.consumed&&q.rewarded.length))return false;
  const stores=new Set(stockStores(s).map(buildingKey)),totals={food:0,beer:0},left={food:0,beer:0};
  for(const [map,total]of [[q.allocations,totals],[q.sources,left]]){if(!map||typeof map!=='object'||Array.isArray(map))return false;for(const [key,v]of Object.entries(map)){if(!stores.has(key)||!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).some(k=>!keys.includes(k)))return false;for(const [k,n]of Object.entries(v)){if(!finite(n,FESTIVAL_COST[k]))return false;total[k]+=n;if(map===q.sources&&n>(q.allocations[key]?.[k]||0)+1e-7)return false;}}}
- const ids=new Set();for(const a of q.actors){const c=s.citizens.find(c=>c.id===a.id);if(!exact(a,['id','kind','stage','source','material','load','route','routeIndex','role'])||!c||!id(a.id)||ids.has(a.id)||c.phase!=='festival'||!canWork(c)||busy(c)||typeof a.role!=='string'||!finite(a.load,6)||!Array.isArray(a.route)||!a.route.length||a.route.length>4096||!id(a.routeIndex)||a.routeIndex>a.route.length||a.route.some((p,i)=>!exact(p,['x','y','key'])||!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.key!==`${p.x+.5},${p.y+.5}`||i&&Math.abs(distance(p,a.route[i-1])-1)>1e-7)||!connected(s,a))return false;ids.add(a.id);
+ const ids=new Set();for(const a of q.actors){const c=s.citizens.find(c=>c.id===a.id);if(!exact(a,['id','kind','stage','source','material','load','route','routeIndex','role'])||!c||!id(a.id)||ids.has(a.id)||c.phase!=='festival'||!canWork(c)||busy(c)||typeof a.role!=='string'||!finite(a.load,6)||!Array.isArray(a.route)||!a.route.length||a.route.length>4096||!id(a.routeIndex)||a.routeIndex>a.route.length||a.route.some((p,i)=>!exact(p,['x','y','key'])||!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.key!==`${p.x+.5},${p.y+.5}`||i&&!navigationGridStep(p,a.route[i-1]))||!connected(s,a))return false;ids.add(a.id);
   if(a.kind==='carrier'){if(q.stage!=='supplying'||!['pickup','delivery'].includes(a.stage)||!stores.has(a.source)||!keys.includes(a.material)||!(q.allocations[a.source]?.[a.material]>0)||a.stage==='pickup'&&a.load!==0||a.stage==='delivery'&&a.load<=0||a.route.at(-1)?.key!==port(s,a.stage==='pickup'?a.source:q.temple)?.key)return false;left[a.material]+=a.load;
   }else if(a.kind==='guest'){if(q.stage==='supplying'||a.source!==null||a.material!==null||a.load!==0||!['arriving','dancing'].includes(a.stage)||a.stage==='dancing'&&!q.rewarded.includes(a.id)||distance(a.route.at(-1),port(s,q.temple))>2)return false;}else return false;
  }

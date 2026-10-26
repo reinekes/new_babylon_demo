@@ -1,5 +1,6 @@
 import {WIDTH, HEIGHT, river} from '../world.js';
 import {generateStreets} from '../city-life.js';
+import {RIVER_BANK_SECTION,riverRows,SCENERY_MARGIN} from './river-profile.js';
 
 export const TILE = 6;
 const clamp = (v,a=0,b=1) => Math.max(a,Math.min(b,v));
@@ -28,12 +29,52 @@ export function districtRoadEdges(s) {
   return generateStreets([...(s?.buildings||[]),...(s?.roadAnchors||[])],s).edges;
 }
 
+const unique=values=>[...new Set(values.map(x=>Math.round(x*1e9)/1e9))].sort((a,b)=>a-b);
+const innerXs=Array.from({length:WIDTH*4+1},(_,i)=>-.5+i/4);
+const outerXs=[-36.5,-24.5,-12.5,-6.5,-2.5,-.5,WIDTH-.5,WIDTH+1.5,WIDTH+5.5,WIDTH+11.5,WIDTH+23.5,WIDTH+35.5];
+function terrainRowXs(y,dense=true,min=-.5,max=WIDTH-.5){
+ const bank=RIVER_BANK_SECTION.map(x=>river(y)+x);
+ return unique([...(dense?innerXs:outerXs),...bank,min,max].filter(x=>x>=min&&x<=max));
+}
+function alluvialHeight(x,y,s){const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(WIDTH-.5),-.5-y,y-(HEIGHT-.5));return surfaceElevation(x,y,s)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);}
+export function alluvialNormal(x,y,s){const e=.02,dx=(alluvialHeight(x+e,y,s)-alluvialHeight(x-e,y,s))/(2*e*TILE),dz=(alluvialHeight(x,y+e,s)-alluvialHeight(x,y-e,s))/(2*e*TILE),length=Math.hypot(dx,1,dz);return [-dx/length,1/length,-dz/length];}
+function terrainVertex(g,x,y,s,scenery){
+ const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(WIDTH-.5),-.5-y,y-(HEIGHT-.5));
+ // At the common rim the height/color/UV are identical, then the distant plain
+ // gains dunes gradually. The continued river is carved through those dunes.
+ const h=surfaceElevation(x,y,s)+(scenery?smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2):0);
+ const fertile=smooth((4.3-Math.abs(x-river(y)))/3),fleck=noise(x*1.3,y*1.3)*.055,wet=1-smooth((d+.05)/.7);
+ g.positions.push(x*TILE,h,y*TILE);g.normals??=[];g.normals.push(...alluvialNormal(x,y,s));g.colors.push(.92-fertile*.20-wet*.20+fleck,.83-fertile*.09-wet*.17+fleck,.64-fertile*.12-wet*.12+fleck,1);
+}
+function stripGeometry(g,rows,xs,s,scenery){
+ let previous=null;
+ for(const y of rows){const coordinates=xs(y),start=g.positions.length/3;for(const x of coordinates)terrainVertex(g,x,y,s,scenery);
+  const row={coordinates,start};if(previous){let a=0,b=0;while(a<previous.coordinates.length-1||b<coordinates.length-1){
+   if(a===previous.coordinates.length-1||(b<coordinates.length-1&&coordinates[b+1]<previous.coordinates[a+1])){g.indices.push(previous.start+a,start+b,start+b+1);b++;}
+   else{g.indices.push(previous.start+a,start+b,previous.start+a+1);a++;}
+  }}previous=row;
+ }
+}
+export function alluvialTerrainGeometry(s){
+ const g={positions:[],indices:[],colors:[]};stripGeometry(g,riverRows(),y=>terrainRowXs(y),s,false);return g;
+}
+export function alluvialSceneryGeometry(s){
+ const g={positions:[],indices:[],colors:[]},rows=riverRows(true),main=riverRows();
+ const min=-.5-SCENERY_MARGIN,max=WIDTH-.5+SCENERY_MARGIN;
+ const rim=y=>y===-.5||y===HEIGHT-.5;
+ const xs=y=>terrainRowXs(y,rim(y),min,max);
+ stripGeometry(g,rows.filter(y=>y<=-.5),xs,s,true);
+ stripGeometry(g,rows.filter(y=>y>=HEIGHT-.5),xs,s,true);
+ for(const [a,b]of [[min,-.5],[WIDTH-.5,max]])stripGeometry(g,main,y=>terrainRowXs(y,false,a,b),s,true);
+ return g;
+}
+
 export function createDistrictTerrain(B,scene,initialState,materials) {
   const meshes=[],ownedMaterials=[],textures=[];
   let state=initialState,roadMeshes=[],roadSignature='',waterTime=0;
   const leafBatches=new Map();
   const C=(r,g,b)=>new B.Color3(r,g,b);
-  const geometry=(name,positions,indices,material,colors)=>{
+  const geometry=(name,positions,indices,material,colors,sharedNormals)=>{
     const mesh=new B.Mesh(name,scene),data=new B.VertexData();
     data.positions=positions;data.indices=indices;data.uvs=[];data.normals=[];
     for(let i=0;i<positions.length;i+=3)data.uvs.push(positions[i]/(name.includes('grass')?8:4.5),positions[i+2]/(name.includes('grass')?8:4.5));
@@ -44,6 +85,7 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
       for(let i=0;i<indices.length;i+=3)[indices[i+1],indices[i+2]]=[indices[i+2],indices[i+1]];
       B.VertexData.ComputeNormals(positions,indices,data.normals);
     }
+    if(sharedNormals)data.normals=sharedNormals;
     if(colors)data.colors=colors;
     data.applyToMesh(mesh);mesh.material=material;mesh.isPickable=false;mesh.receiveShadows=true;
     if(colors)mesh.useVertexColors=true;
@@ -55,29 +97,11 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     merged.name=name;merged.material=material;merged.isPickable=false;merged.receiveShadows=true;
     merged.freezeWorldMatrix();meshes.push(merged);return merged;
   };
-  // Dense enough to soften banks without exposing the logical tile boundaries.
-  const nx=WIDTH*4,ny=HEIGHT*4,p=[],idx=[],colors=[];
-  for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
-    const x=-.5+WIDTH*i/nx,y=-.5+HEIGHT*j/ny,h=surfaceElevation(x,y,state),d=shoreDistance(x,y,state);
-    p.push(x*TILE,h,y*TILE);
-    const fertile=smooth((4.3-Math.abs(x-river(y)))/3),fleck=noise(x*1.3,y*1.3)*.055;
-    const wet=1-smooth((d+.05)/.7);
-    colors.push(.92-fertile*.20-wet*.20+fleck,.83-fertile*.09-wet*.17+fleck,.64-fertile*.12-wet*.12+fleck,1);
-    if(i<nx&&j<ny){const a=j*(nx+1)+i;idx.push(a,a+nx+1,a+1,a+1,a+nx+1,a+nx+2);}
-  }
-  geometry('alluvial-valley',p,idx,materials.soil,colors).freezeWorldMatrix();
-  const bp=[],bi=[],bc=[],steps=40;
-  for(let j=0;j<=steps;j++)for(let i=0;i<=steps;i++){
-    const x=-36+(WIDTH+72)*i/steps,y=-36+(HEIGHT+72)*j/steps;
-    const outside=Math.max(-.5-x,x-(WIDTH-.5),-.5-y,y-(HEIGHT-.5));
-    const height=-.15+smooth(outside/9)*(1.2+2.8*Math.sin(x*.09+y*.055)**2);
-    bp.push(x*TILE,height,y*TILE);bc.push(.84,.76,.60,1);
-    if(i<steps&&j<steps){const a=j*(steps+1)+i;
-      const x2=-36+(WIDTH+72)*(i+1)/steps,y2=-36+(HEIGHT+72)*(j+1)/steps;
-      if(x2<1||x>WIDTH-2||y2<1||y>HEIGHT-2)bi.push(a,a+steps+1,a+1,a+1,a+steps+1,a+steps+2);
-    }
-  }
-  geometry('distant-alluvial-plain',bp,bi,materials.soil,bc).freezeWorldMatrix();
+  // Extra columns follow the exact water cross-section, so coarse land triangles
+  // cannot poke through the separate transparent river as angular dry patches.
+  const ground=alluvialTerrainGeometry(state),background=alluvialSceneryGeometry(state);
+  geometry('alluvial-valley',ground.positions,ground.indices,materials.soil,ground.colors,ground.normals).freezeWorldMatrix();
+  geometry('distant-alluvial-plain',background.positions,background.indices,materials.soil,background.colors,background.normals).freezeWorldMatrix();
   // Original lightweight water shader: directional ripples, Fresnel sky and sun glints.
   // No mirrored scene render, downloaded environment, or per-frame geometry allocation.
   B.Effect.ShadersStore.districtRiverVertexShader=`
@@ -112,10 +136,11 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);});
   ownedMaterials.push(water);
   const wp=[],wi=[],uv=[];
-  for(let j=0;j<=HEIGHT*12;j++){
-    const y=-.5+j/12,c=river(y);
+  const waterRows=riverRows(true);
+  for(let j=0;j<waterRows.length;j++){
+    const y=waterRows[j],c=river(y);
     for(const x of [c-1.1,c+1.1]){wp.push(x*TILE,-.18,y*TILE);uv.push(x/WIDTH,(y+.5)/HEIGHT);}
-    if(j<HEIGHT*12){const a=j*2;wi.push(a,a+2,a+1,a+1,a+2,a+3);}
+    if(j<waterRows.length-1){const a=j*2;wi.push(a,a+2,a+1,a+1,a+2,a+3);}
   }
   const riverMesh=geometry('living-river',wp,wi,water);
   riverMesh.setVerticesData(B.VertexBuffer.UVKind,uv);riverMesh.receiveShadows=false;
@@ -153,17 +178,17 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     }
     return alpha;
   };
-  for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
-    const x=-.5+WIDTH*i/nx,y=-.5+HEIGHT*j/ny,variation=.93+noise(x*.3,y*.3)*.07;
-    gp.push(x*TILE,surfaceElevation(x,y,state)+.018,y*TILE);
+  const grassGround={positions:[...ground.positions,...background.positions],indices:[...ground.indices,...background.indices.map(i=>i+ground.positions.length/3)]};
+  for(let i=0;i<grassGround.positions.length;i+=3){
+    const x=grassGround.positions[i]/TILE,y=grassGround.positions[i+2]/TILE,variation=.93+noise(x*.3,y*.3)*.07;
+    gp.push(x*TILE,grassGround.positions[i+1]+.018,y*TILE);
     gc.push(variation*.88,variation,variation*.79,grassAlpha(x,y));
   }
-  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
-    const a=j*(nx+1)+i,b=a+nx+1;
-    if([a,b,a+1,b+1].every(k=>gc[k*4+3]===0))continue;
-    gi.push(a,b,a+1,a+1,b,b+1);
+  for(let i=0;i<grassGround.indices.length;i+=3){
+    const tri=grassGround.indices.slice(i,i+3);if(tri.every(k=>gc[k*4+3]===0))continue;
+    gi.push(...tri);
   }
-  if(gi.length){const grass=geometry('soft-riparian-grass',gp,gi,grassMaterial,gc);grass.hasVertexAlpha=true;grass.freezeWorldMatrix();}
+  if(gi.length){const grass=geometry('soft-riparian-grass',gp,gi,grassMaterial,gc,[...ground.normals,...background.normals]);grass.hasVertexAlpha=true;grass.freezeWorldMatrix();}
   const palmMaterial=new B.PBRMaterial('living-date-palm-leaves',scene);ownedMaterials.push(palmMaterial);
   palmMaterial.albedoColor=C(.16,.25,.075);palmMaterial.roughness=.88;palmMaterial.metallic=0;
   const cylinder=(name,x,y,z,h,r1,r2,parts)=>{

@@ -1,7 +1,7 @@
 // Specializations extend calling, never the saved workforce role or cargo schema.
 const entry=(name,role,buildings=[])=>Object.freeze({name,role,buildings:Object.freeze(buildings)});
 export const PROFESSIONS=Object.freeze({
- auto:entry('Авто','auto'),builder:entry('Строитель','builder'),carrier:entry('Носильщик','carrier'),
+ auto:entry('Авто','auto'),builder:entry('Строитель','builder'),carrier:entry('Носильщик','carrier',['depot']),
  production:entry('Производство','production'),healer:entry('Лекарь','healer',['healer']),
  tailor:entry('Мастер одежды','tailor',['tailor']),watercarrier:entry('Водонос','watercarrier',['waterpoint']),
  farmer:entry('Земледелец','production',['field']),gardener:entry('Садовник','production',['garden']),
@@ -9,6 +9,7 @@ export const PROFESSIONS=Object.freeze({
  reedcutter:entry('Заготовитель тростника','production',['reed']),quarrier:entry('Каменотёс','production',['quarry']),
  potter:entry('Гончар','production',['pottery']),brewer:entry('Пивовар','production',['brewery']),
  weaver:entry('Ткач','production',['weaver']),shepherd:entry('Пастух','production',['sheepfold']),
+ dairyman:entry('Молочник','production',['cowshed']),
  fisher:entry('Рыбак','production',['fishing']),hunter:entry('Охотник','production',['hunting']),
  brickmaker:entry('Формовщик кирпича','production',['brickyard']),kilnworker:entry('Обжигальщик','production',['kiln']),
  priest:entry('Жрец','production',['shrine','ziggurat'])
@@ -29,6 +30,7 @@ export function canStaffBuilding(c,b){
  if(b.type==='healer')return c.role==='healer'&&c.medicine?.level>0;
  if(b.type==='tailor')return c.role==='tailor';
  if(b.type==='waterpoint')return c.role==='watercarrier';
+ if(b.type==='depot')return ['auto','production','carrier'].includes(c.role);
  return ['auto','production'].includes(c.role);
 }
 export function staffingCandidates(citizens,b){

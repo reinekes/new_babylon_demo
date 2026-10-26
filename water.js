@@ -1,3 +1,5 @@
+import {recordCitizenDelivery} from './citizen-epithets.js';
+import {dairyNeeds} from './dairy.js';
 import {isArtisan,artisanNeeds} from './artisan.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {isDryPoint,river,WIDTH,HEIGHT} from './world.js';
@@ -32,8 +34,8 @@ function bankRoute(s,nav,origin){
 function roadRoute(nav,from,to){
  const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key):null);}return nav.roads.get(id);
 }
-const targetStock=b=>b.type==='house'?b.water:(isArtisan(b)?b.artisan?.water:b.brickmaking?.water)||0;
-function targetCapacity(s,b){return b.type==='house'?Math.max(2,s.citizens.filter(c=>c.home===buildingKey(b)).reduce((n,c)=>n+demand(c),0)*3):b.type==='brewery'?3:2;}
+const targetStock=b=>b.type==='house'?b.water:(b.type==='cowshed'?b.dairy?.water:isArtisan(b)?b.artisan?.water:b.brickmaking?.water)||0;
+function targetCapacity(s,b){return b.type==='cowshed'?12:b.type==='house'?Math.max(2,s.citizens.filter(c=>c.home===buildingKey(b)).reduce((n,c)=>n+demand(c),0)*3):b.type==='brewery'?3:2;}
 export function waterSummary(s,b){
  const residents=s.citizens.filter(c=>c.home===buildingKey(b)),daily=residents.reduce((n,c)=>n+demand(c),0),trips=s.citizens.filter(c=>c.waterTrip?.target===buildingKey(b));
  return {stock:targetStock(b)||0,demand:daily,capacity:targetCapacity(s,b),delivered:b.waterDelivered||0,inTransit:trips.reduce((n,c)=>n+c.waterTrip.load,0),couriers:trips.length,thirsty:residents.filter(c=>(c.thirst||0)>30).length};
@@ -44,8 +46,9 @@ export function initializeWater(s){
 }
 function eligible(c){return c.age>=16&&c.health>20&&!c.clinic&&!c.school&&!c.waterTrip&&!c.pantryTrip&&!c.craftSite&&!c.seedField&&c.clothingTarget===undefined&&!c.districtJob&&!c.tradeJob&&!c.saleJob&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);}
 function need(s,b){
- if(!isOperational(b)||!['house','brickyard','pottery','brewery'].includes(b.type))return 0;
+ if(!isOperational(b)||!['house','brickyard','pottery','brewery','cowshed'].includes(b.type))return 0;
  const id=buildingKey(b);if(s.citizens.some(c=>c.waterTrip?.target===id))return 0;
+ if(b.type==='cowshed')return dairyNeeds(b).water;
  if(isArtisan(b))return artisanNeeds(b).water||0;
  if(b.type==='brickyard')return b.brickmaking&&!b.brickmaking.wet&&!b.brickmaking.ready?Math.max(0,2-b.brickmaking.water):0;
  const v=waterSummary(s,b);return v.demand>0&&v.stock<v.demand?Math.max(0,v.capacity-v.stock):0;
@@ -87,7 +90,7 @@ function advanceTrip(s,c,dt,nav){
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
    const amount=Math.min(t.load,Math.max(0,targetCapacity(s,b)-targetStock(b)));
-   if(b.type==='house')b.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;t.load-=amount;
+   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;recordCitizenDelivery(s,c,{water:amount});t.load-=amount;
    if(t.origin!==t.target){const back=roadRoute(nav,t.target,t.origin);if(!back)return;setRoute(t,back,'return',c);}else finish(s,c);
    if(!c.waterTrip)return;continue;
   }
@@ -105,7 +108,7 @@ export function advanceWater(s,dt){
  // Build household demand once per step: never rescan every resident per courier.
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),daily=new Map(),adults=new Set(),assigned=new Set();
  for(const c of s.citizens){daily.set(c.home,(daily.get(c.home)||0)+demand(c));if(c.age>=16&&c.health>20)adults.add(c.home);if(c.waterTrip)assigned.add(c.waterTrip.target);}
- const targets=s.buildings.filter(b=>isOperational(b)&&(b.type==='house'?(daily.get(buildingKey(b))||0)>0&&b.water<(daily.get(buildingKey(b))||0):isArtisan(b)?(artisanNeeds(b).water||0)>eps:b.type==='brickyard'&&b.brickmaking&&!b.brickmaking.wet&&!b.brickmaking.ready&&b.brickmaking.water<2-eps));
+ const targets=s.buildings.filter(b=>isOperational(b)&&(b.type==='house'?(daily.get(buildingKey(b))||0)>0&&b.water<(daily.get(buildingKey(b))||0):b.type==='cowshed'?dairyNeeds(b).water>eps:isArtisan(b)?(artisanNeeds(b).water||0)>eps:b.type==='brickyard'&&b.brickmaking&&!b.brickmaking.wet&&!b.brickmaking.ready&&b.brickmaking.water<2-eps));
  const needy=new Set(targets.map(buildingKey)),orphans=targets.filter(b=>b.type==='house'&&!adults.has(buildingKey(b)));
  const wanted=b=>b&&needy.has(buildingKey(b))&&!assigned.has(buildingKey(b));
  const dispatch=(c,b,station=null,origin=null)=>{if(begin(s,c,b,station,nav,origin)){assigned.add(buildingKey(b));return true;}return false;};
@@ -119,7 +122,7 @@ export function advanceWater(s,dt){
   if(c.phase==='home'&&home&&home.water>(daily.get(c.home)||0)){
    const neighbor=orphans.find(b=>wanted(b)&&roadRoute(nav,c.home,buildingKey(b)));if(neighbor&&dispatch(c,neighbor,null,c.home))continue;
   }
-  if(c.phase==='working'&&(work?.type==='brickyard'||isArtisan(work))&&wanted(work))dispatch(c,work);
+  if(c.phase==='working'&&(work?.type==='brickyard'||work?.type==='cowshed'||isArtisan(work))&&wanted(work))dispatch(c,work);
  }
  return changes.delete(s);
 }
@@ -127,6 +130,6 @@ export function validateWater(s){
  const finite=(v,max=1e9)=>Number.isFinite(v)&&v>=0&&v<=max;
  if(!s.buildings.every(b=>b.type==='house'?finite(b.water)&&finite(b.waterDelivered):b.water===undefined))return false;
  return s.citizens.every(c=>{if(!finite(c.thirst,100)||c.phase==='waterTrip'&&!c.waterTrip)return false;const t=c.waterTrip;if(!t)return true;
-  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<4000&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
+  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<4000&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
  });
 }

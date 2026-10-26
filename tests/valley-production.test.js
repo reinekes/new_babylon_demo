@@ -12,7 +12,7 @@ for(const [type,x,y,outputs] of [['fishing',11,11,['food']],['hunting',5,15,['fo
  });
 }
 test('a full warehouse waits with a serializable load and resumes without loss',()=>{
- const s=createGame({start:'established'});s.resources.clay=200;advanceTime(s,20);
+ const s=createGame({start:'established'});s.resources.clay=200;const carrier=s.citizens[0];Object.assign(carrier,{cargo:{clay:6},phase:'unloading',store:'9,8'});advanceTime(s,.1);
  const c=s.citizens.find(c=>c.phase==='unloading'&&c.cargo.clay>0);assert.ok(c);const cargo=c.cargo.clay;
  const restored=decode(encode(s));assert.ok(restored);const person=restored.citizens.find(p=>p.id===c.id);assert.equal(person.cargo.clay,cargo);
  restored.resources.clay=200-cargo;advanceTime(restored,.1);assert.equal(restored.resources.clay,200);assert.equal(person.cargo.clay,undefined);

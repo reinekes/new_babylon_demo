@@ -1,4 +1,4 @@
-import {PROFESSION_NAMES,professionRole} from './professions.js';
+import {PROFESSION_NAMES,professionRole,professionMatchesTask} from './professions.js';
 import {BUILDINGS,buildingKey,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {stockStores,storeCapacity} from './inventory.js';
@@ -6,6 +6,8 @@ import {seedReserve} from './food-planning.js';
 import {fieldWater} from './irrigation.js';
 import {artisanSummary} from './artisan.js';
 import {mealRation,mealCycle,isDinnerTime} from './wellbeing.js';
+import {buildingInventory} from './building-inventory.js';
+import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
 
 const topologyCache=new WeakMap();
 const sum=o=>Object.values(o||{}).reduce((n,v)=>n+(Number.isFinite(v)&&v>0?v:0),0);
@@ -30,7 +32,7 @@ function cargoAmount(c){
 }
 function localFood(s,stores){
  let reserve=seedReserve({...s,resources:{...s.resources,food:amount(s.resources?.food)}});
- const food=new Map();for(const b of stores){const n=amount(b.stock?.food),protectedFood=Math.min(reserve,n);food.set(buildingKey(b),n-protectedFood);reserve-=protectedFood;}return food;
+ const food=new Map();for(const b of stores){const n=amount(b.stock?.food),protectedFood=Math.min(reserve,n);food.set(buildingKey(b),n-protectedFood+amount(b.stock?.milk)*.5);reserve-=protectedFood;}return food;
 }
 const homeDemand=(people,s)=>people.reduce((n,c)=>n+(isDinnerTime(s.simTime||0)?Math.max(0,mealRation(c)-(c.mealDay===mealCycle(s.simTime||0)?amount(c.mealEaten):0)):mealRation(c)),0);
 const waterDemand=people=>people.reduce((n,c)=>n+(adult(c)?1:.5),0);
@@ -68,7 +70,7 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
  if(b.type==='sheepfold'&&amount(b.flock?.fleece)<1)return reason('input','Шерсть отрастает','Стадо восстанавливает руно',key);
  const output=Object.keys(def.output||{}).filter(k=>!['faith','prestige'].includes(k));
  if(output.some(k=>connected.every(st=>amount(st.stock?.[k])>=storeCapacity(st)-1e-7)))return reason('storage','Склад заполнен','Нет места для следующего груза; освободи местный склад',buildingKey(connected[0]));
- if(workers.some(c=>cargoAmount(c)>0||['toStore','toCraftSupply','toWork','returnWork'].includes(c.phase)))return reason('delivery','Доставка / дорога','Работник несёт груз или идёт к месту работы',key);
+ if(workers.some(c=>cargoAmount(c)>0||['toWorkshop','toStore','toCraftSupply','toWork','returnWork'].includes(c.phase)))return reason('delivery','Доставка / дорога','Работник несёт груз или идёт к месту работы',key);
  if(workers.some(c=>c.phase==='working'))return reason('working','Работа идёт','Работник находится на месте',key);
  return reason('away','Работник занят','Дом, вода, семейная еда, лечение или другой личный уход',key);
 }
@@ -81,10 +83,10 @@ export function cityDiagnostics(s){
  const same=(a,b)=>components.has(a)&&components.get(a)!==undefined&&components.get(a)===components.get(b);
  for(const c of citizens){if(c.pantryTrip){const target=c.pantryTarget||c.home;if(!byPantryTarget.has(target))byPantryTarget.set(target,[]);byPantryTarget.get(target).push(c);}if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);if(c.work&&adult(c)){if(!byWork.has(c.work))byWork.set(c.work,[]);byWork.get(c.work).push(c);}if(c.site&&adult(c)){if(!bySite.has(c.site))bySite.set(c.site,[]);bySite.get(c.site).push(c);}}
  const homes=buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>{
-  const key=buildingKey(b),residents=byHome.get(key)||[],couriers=byPantryTarget.get(key)||[],connected=stores.filter(st=>same(key,buildingKey(st))),demand=homeDemand(residents,s),waterNeed=waterDemand(residents),pantry=amount(b.pantry),water=amount(b.water),foodInTransit=couriers.reduce((n,c)=>n+amount(c.pantryFood),0),waterInTransit=citizens.reduce((n,c)=>n+(c.waterTrip?.target===key?amount(c.waterTrip.load):0),0),accessibleFood=connected.reduce((n,st)=>n+(food.get(buildingKey(st))||0),0),reasons=[];
-  const h={key,x:b.x,y:b.y,residents:residents.map(c=>c.id),population:residents.length,adults:residents.filter(adult).length,workers:residents.filter(c=>adult(c)&&(c.work||c.site||c.districtJob||c.tradeJob||c.saleJob)).length,hungry:residents.filter(c=>hungry(c,s)).length,ill:residents.filter(ill).length,food:pantry,demand,water,waterDemand:waterNeed,foodInTransit,waterInTransit,accessibleFood,reasons};
+  const key=buildingKey(b),residents=byHome.get(key)||[],couriers=homeFoodCouriers(s,key),connected=stores.filter(st=>same(key,buildingKey(st))),demand=homeDemand(residents,s),waterNeed=waterDemand(residents),pantry=homeMealFood(b),water=amount(b.water),foodInTransit=homeFoodInTransit(s,key),waterInTransit=citizens.reduce((n,c)=>n+(c.waterTrip?.target===key?amount(c.waterTrip.load):0),0),accessibleFood=connected.reduce((n,st)=>n+(food.get(buildingKey(st))||0),0),reasons=[];
+  const h={key,x:b.x,y:b.y,residents:residents.map(c=>c.id),population:residents.length,adults:residents.filter(adult).length,workers:residents.filter(c=>adult(c)&&(c.workplace||c.work||c.site||c.guardPost||c.districtJob||c.tradeJob||c.saleJob)).length,hungry:residents.filter(c=>hungry(c,s)).length,ill:residents.filter(ill).length,food:pantry,demand,water,waterDemand:waterNeed,foodInTransit,waterInTransit,accessibleFood,reasons,inventory:buildingInventory(s,b)};
   if(residents.length&&!connected.length)reasons.push(reason('path','Нет пути к складу','Общий запас не доступен этому дому',key));
-  const deliverable=couriers.reduce((n,c)=>n+(c.phase!=='blocked'?amount(c.pantryFood):0),0),foodNeeded=pantry+1e-7<demand,canFetch=residents.some(c=>adult(c)&&!c.clinic&&!c.school)||couriers.some(c=>c.phase!=='blocked');
+  const deliverable=homeFoodInTransit(s,key,{deliverable:true}),foodNeeded=pantry+1e-7<demand,canFetch=residents.some(c=>adult(c)&&!c.clinic&&!c.school)||couriers.some(c=>c.phase!=='blocked');
   h.foodStatus='ready';
   if(h.hungry)reasons.push(reason('food','Недоедание',accessibleFood>0?'Еда есть на доступном складе: нужна доставка домой':'На доступных складах нет свободной еды',key));
   if(foodNeeded){
@@ -100,16 +102,21 @@ export function cityDiagnostics(s){
  const workshops=buildings.filter(b=>b.construction||b.type!=='house'&&(Object.keys(BUILDINGS[b.type]?.output||{}).length||['healer','waterpoint','depot','pottery','brewery'].includes(b.type))).map(b=>{
   const key=buildingKey(b),workers=b.construction?(bySite.get(key)||[]):(byWork.get(key)||[]),connected=stores.filter(st=>same(key,buildingKey(st))),hasHomes=homes.some(h=>h.population&&same(key,h.key));
   const why=productionReason(s,b,workers,connected,hasHomes,isDay);
-  return {key,x:b.x,y:b.y,type:b.type,name:BUILDINGS[b.type]?.name||b.type,workers:workers.map(c=>c.id),builders:workers.filter(c=>c.site===key&&c.siteDuty==='builder').map(c=>c.id),carriers:workers.filter(c=>c.site===key&&c.siteDuty==='carrier').map(c=>c.id),working:workers.filter(c=>['working','constructing'].includes(c.phase)).length,reason:why,status:(why.code==='construction'&&workers.some(c=>c.phase==='constructing')||['drying','firing','working','delivery','season','night'].includes(why.code))?'process':'attention'};
+  // Assigned places remain occupied while their worker eats, fetches water or
+  // completes a previous load. Never count a worker pinned to another building.
+  const assigned=b.construction?[]:citizens.filter(c=>adult(c)&&(c.workplace===key||c.work===key&&!c.workplace)),fixed=assigned.filter(c=>c.workplace===key),capacity=b.type==='healer'?1:2,matching=assigned.filter(c=>professionMatchesTask(c,b.type)).length,count=assigned.length;
+  const state=!count?'empty':count<capacity?'partial':matching>=count?'matched':'full';
+  const staffing=b.construction?null:{count,capacity,matching,state,label:{empty:'Нет работников',partial:'Не все места заняты',full:'Все места заняты',matched:'Все места заняты по призванию'}[state]};
+  return {key,x:b.x,y:b.y,type:b.type,name:BUILDINGS[b.type]?.name||b.type,workers:workers.map(c=>c.id),assigned:assigned.map(c=>c.id),fixed:fixed.map(c=>c.id),staffing,inventory:buildingInventory(s,b),builders:workers.filter(c=>c.site===key&&c.siteDuty==='builder').map(c=>c.id),carriers:workers.filter(c=>c.site===key&&c.siteDuty==='carrier').map(c=>c.id),working:workers.filter(c=>['working','constructing'].includes(c.phase)).length,reason:why,status:(why.code==='construction'&&workers.some(c=>c.phase==='constructing')||['drying','firing','working','delivery','season','night'].includes(why.code))?'process':'attention'};
  });
  const neighborhoods=new Map();
  const groupFor=(id,label,focus)=>{if(!neighborhoods.has(id))neighborhoods.set(id,{key:id,label,focus,homeKeys:[],storeKeys:[],population:0,workers:0,cargo:0,food:0,homeFood:0,foodInTransit:0,water:0,waterInTransit:0,waterDemand:0,troubled:0,reasons:[]});return neighborhoods.get(id);};
- for(const st of stores){const key=buildingKey(st),n=groupFor(`store:${key}`,`${BUILDINGS[st.type]?.name||'Склад'} · ${st.x}, ${st.y}`,key);n.storeKeys.push(key);n.food+=food.get(key)||0;}
+ for(const st of stores){const key=buildingKey(st),n=groupFor(`store:${key}`,`${BUILDINGS[st.type]?.name||'Склад'} · ${st.x}, ${st.y}`,key);n.type=st.type;n.storeKeys.push(key);n.food+=food.get(key)||0;}
  for(const h of homes){const near=stores.filter(st=>same(h.key,buildingKey(st))).sort((a,b)=>Math.hypot(a.x-h.x,a.y-h.y)-Math.hypot(b.x-h.x,b.y-h.y))[0],component=components.get(h.key),n=near?neighborhoods.get(`store:${buildingKey(near)}`):groupFor(`isolated:${component??h.key}`,'Без местного склада',h.key);
   n.homeKeys.push(h.key);n.population+=h.population;n.workers+=h.workers;n.homeFood+=h.food;n.foodInTransit+=h.foodInTransit;n.water+=h.water;n.waterInTransit+=h.waterInTransit;n.waterDemand+=h.waterDemand;n.troubled+=Number(h.reasons.length>0);for(const r of h.reasons)if(!n.reasons.some(v=>v.code===r.code))n.reasons.push(r);
  }
  for(const c of citizens){const n=[...neighborhoods.values()].find(n=>n.homeKeys.includes(c.home));if(n&&cargoAmount(c)>0)n.cargo++;}
- return {hour,isDay,homes,workshops,neighborhoods:[...neighborhoods.values()].sort((a,b)=>b.troubled-a.troubled||b.population-a.population),totals:{population:citizens.length,adults:citizens.filter(adult).length,workers:citizens.filter(c=>adult(c)&&(c.work||c.site||c.districtJob||c.tradeJob||c.saleJob)).length,carrying:citizens.filter(c=>cargoAmount(c)>0).length,hungry:citizens.filter(c=>hungry(c,s)).length,ill:citizens.filter(ill).length,storedFood:stores.reduce((n,b)=>n+amount(b.stock?.food),0),availableFood:[...food.values()].reduce((a,b)=>a+b,0),homeFood:homes.reduce((n,h)=>n+h.food,0),foodInTransit:homes.reduce((n,h)=>n+h.foodInTransit,0)}};
+ return {hour,isDay,homes,workshops,neighborhoods:[...neighborhoods.values()].sort((a,b)=>b.troubled-a.troubled||b.population-a.population),totals:{population:citizens.length,adults:citizens.filter(adult).length,workers:citizens.filter(c=>adult(c)&&(c.workplace||c.work||c.site||c.guardPost||c.districtJob||c.tradeJob||c.saleJob)).length,carrying:citizens.filter(c=>cargoAmount(c)>0).length,hungry:citizens.filter(c=>hungry(c,s)).length,ill:citizens.filter(ill).length,storedFood:stores.reduce((n,b)=>n+amount(b.stock?.food),0),availableFood:[...food.values()].reduce((a,b)=>a+b,0),homeFood:homes.reduce((n,h)=>n+h.food,0),foodInTransit:homes.reduce((n,h)=>n+h.foodInTransit,0)}};
 }
 
 /** Combines filters; never edits or renumbers the returned resident objects. */

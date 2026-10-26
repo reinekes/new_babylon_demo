@@ -19,10 +19,10 @@ for(const type of ['clay','reed','garden','logging','quarry','hunting','fishing'
   else location={x:10,y:9};
   assert.ok(location,`placement for ${type}`);b={type,x:location.x,y:location.y,level:1};s.buildings.push(b);
  }
- const worker=s.citizens[0];worker.role='production';invalidateAssignments(s);syncCitizens(s);assert.ok(assignWorkplace(s,worker.id,buildingKey(b)).ok);
+ const worker=s.citizens[0];worker.role='production';if(!['shrine','ziggurat'].includes(type))s.citizens[1].role='carrier';invalidateAssignments(s);syncCitizens(s);assert.ok(assignWorkplace(s,worker.id,buildingKey(b)).ok);
  const output=Object.keys(BUILDINGS[type].output);let worked=false,loaded=false,targetWorked=false;
  for(let i=0;i<1500;i++){
-  s.event=null;advanceTime(s,.1);worked ||= worker.phase==='working';loaded ||= output.some(k=>(worker.cargo[k]||0)>0);
+  s.event=null;advanceTime(s,.1);worked ||= worker.phase==='working';loaded ||= s.citizens.some(c=>output.some(k=>(c.cargo[k]||0)>0)&&(c.id===worker.id||s.district.jobs.some(q=>q.id===c.districtJob&&q.source===buildingKey(b))));
   targetWorked ||= type==='logging'?s.gathering.features.some(f=>f.kind==='tree'&&f.health===0):type==='quarry'?s.gathering.features.some(f=>f.kind==='rock'&&f.health<1):type==='hunting'?s.gathering.kills.length>0:type==='fishing'?s.gathering.jobs.some(j=>j.citizen===worker.id&&j.progress>0):true;
   if(i%100===0)assert.ok(decode(encode(s)),`${type} save ${i}`);
   if(output.every(k=>(s.delivered[k]||0)>0))break;

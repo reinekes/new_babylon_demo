@@ -1,11 +1,12 @@
 import {recoverFestivalCitizen} from './festival.js';
+import {recordProfessionEpithet,recordInspirationOutcome} from './citizen-epithets.js';
 import {isArtisan,artisanOutput} from './artisan.js';
 import {isTradePort} from './river-trade.js';
 import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
 import {putStock,stockStores,storeCapacity,refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
-import {PROFESSION_IDS,professionRole} from './professions.js';
+import {PROFESSION_IDS,professionRole,canStaffBuilding} from './professions.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
@@ -40,10 +41,10 @@ export function setPriority(s,x,y,priority){
 export function setCitizenRole(s,id,role){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);
  if(!c||!roles.includes(role))return {ok:false,reason:'Неизвестный житель или роль'};if(!canWork(c))return {ok:false,reason:'Дети начинают работать с 16 лет'};
- if(c.phase==='festival')recoverFestivalCitizen(s,id);
+ const previousRole=c.role||'auto';if(c.phase==='festival')recoverFestivalCitizen(s,id);
  if(hasLoad(c)){if(role===(c.role||'auto'))delete c.pendingRole;else c.pendingRole=role;}
  else{c.role=role;delete c.pendingRole;}
- invalidateAssignments(s);syncCitizens(s);return {ok:true};
+ invalidateAssignments(s);syncCitizens(s);const current=s.citizens.find(v=>v.id===id);if(current&&current.role!==previousRole)recordProfessionEpithet(s,current);return {ok:true};
 }
 function rememberApproaches(s,b){
  s.roadAnchors??=[];
@@ -88,6 +89,8 @@ function foundingStockTransfer(s,b){
  }
  return plan;
 }
+function localDemolitionStock(b){const goods={...b.workshopStock?.output};if(b.dairy?.reed)goods.reed=(goods.reed||0)+b.dairy.reed;for(const [k,n]of Object.entries(b.workshopStock?.input||{}))goods[k]=(goods[k]||0)+n;for(const [k,n]of Object.entries(b.householdStock||{}))if(MATERIALS.includes(k))goods[k]=(goods[k]||0)+n;return goods;}
+function localRefundStore(s,b){const net=networkFor(s),p=net.ports.find(p=>p.building===b);return stockStores(s).find(a=>a!==b&&net.ports.some(port=>port.building===a&&p&&net.components.get(port.key)===net.components.get(p.key)));}
 export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.
  if(b?.starterHut)s={...s,roads:[...(s.roads||[])]};
@@ -96,10 +99,11 @@ export function canDemolish(s,b){
  if(isArtisan(b)&&!['idle','ready'].includes(b.artisan.stage))return 'Дождись завершения ремесленной партии';
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
  if(b.brickmaking?.wet>0)return 'Дождись высыхания партии сырца';
+ if(Object.values(localDemolitionStock(b)).some(n=>n>1e-7)&&!localRefundStore(s,b))return 'Нужен доступный склад для домашних запасов и готовой продукции';
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
  if(s.citizens.some(c=>c.pantryTrip&&c.pantryTarget===buildingKey(b)))return 'Дождись доставки еды соседям';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';
- const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';if(!b.starterHut)syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7)&&!foundingStockTransfer(s,b))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
+ const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';if(!b.starterHut)syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7)&&!foundingStockTransfer(s,b))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)&&(!q.automatic||s.citizens.some(c=>c.districtJob===q.id&&Object.values(c.cargo||{}).some(n=>n>0)))))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary','depot'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
@@ -133,9 +137,11 @@ export function canDemolish(s,b){
 export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
  const homes=relocations(s,b),refund=demolitionRefund(b),transfer=b.starterHut?foundingStockTransfer(s,b):null;
+ for(const q of s.district?.jobs||[])if(q.automatic&&(q.source===buildingKey(b)||q.target===buildingKey(b))){q.cancelled+=q.remaining;q.remaining=0;for(const c of s.citizens.filter(c=>c.districtJob===q.id))recoverCitizenCargo(s,c.id);}
  // All capacity, reservation, resident and route gates above have succeeded.
  // This emergency relocation follows the existing demolition-refund abstraction.
  if(transfer)for(const {target,key,amount}of transfer){target.stock??=Object.fromEntries(MATERIALS.map(k=>[k,0]));target.stock[key]+=amount;b.stock[key]-=amount;}
+ const localGoods=localDemolitionStock(b),localTarget=Object.values(localGoods).some(n=>n>0)?localRefundStore(s,b):null;if(localTarget){for(const [k,n]of Object.entries(localGoods))if(n>0)putStock(s,buildingKey(localTarget),k,n,{overflow:true});if(b.workshopStock){b.workshopStock.output={};if(b.workshopStock.input)for(const k of Object.keys(b.workshopStock.input))b.workshopStock.input[k]=0;}if(b.householdStock)for(const k of Object.keys(b.householdStock))b.householdStock[k]=0;if(b.dairy)b.dairy.reed=0;}
  if(b.brickmaking){const amounts={clay:b.brickmaking.clay,reed:b.brickmaking.reed,brick:b.brickmaking.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья и сырца'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.brickmaking.clay=0;b.brickmaking.reed=0;b.brickmaking.ready=0;}}
 if(isArtisan(b)){const v=b.artisan,amounts={clay:v.clay,reed:v.reed,food:v.food,pottery:v.pottery};amounts[artisanOutput(b)]=(amounts[artisanOutput(b)]||0)+v.ready;if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата ремесленных грузов'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});}}
 if(b.firing){const amounts={brick:b.firing.brick,reed:b.firing.reed,firedBrick:b.firing.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата топлива и кирпича'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.firing.brick=0;b.firing.reed=0;b.firing.ready=0;}}
@@ -148,14 +154,22 @@ if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.
 }
 
 export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
-export function inspireCitizen(s,id,profession){const reason=inspirationReason(s,id,profession);if(reason)return {ok:false,reason,message:reason};s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),success=s.rngState/4294967296<inspirationChance(subject,profession);registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};}
+export function inspireCitizen(s,id,profession){
+ const reason=inspirationReason(s,id,profession);if(reason)return {ok:false,reason,message:reason};
+ s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
+ const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),success=s.rngState/4294967296<inspirationChance(subject,profession);
+ registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);
+ if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
+ recordInspirationOutcome(s,s.citizens.find(c=>c.id===id),success);
+ const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};
+}
 
 export function cancelRoadRoute(s,group){if(!Number.isSafeInteger(group)||group<0)return {ok:false,reason:'Неизвестный дорожный маршрут'};const reason=blocked(s);if(reason)return {ok:false,reason};const roads=(s.roads||[]).filter(r=>r.construction?.routeOrder===group);if(!roads.length)return {ok:false,reason:'У маршрута нет незавершённых работ'};for(const r of roads)refundOrder(s,r);rerouteCitizens(s);note(s,'Маршрут отменён','Незавершённые дорожные работы отменены, их материалы возвращены. Готовые участки сохранены.');return {ok:true,count:roads.length};}
 
 export function assignWorkplace(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c))return {ok:false,reason:'Нужен взрослый работник'};
  if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!Object.keys(BUILDINGS[b.type].output).length&&!['healer','depot','waterpoint'].includes(b.type))return {ok:false,reason:'Нужна готовая производственная постройка'};
-  if(b.type==='healer'?c.role!=='healer'||!c.medicine?.level:b.type==='tailor'?c.role!=='tailor':b.type==='waterpoint'?c.role!=='watercarrier':!['auto','production'].includes(c.role))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
+  if(!canStaffBuilding(c,b))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
   if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(b.type==='healer'?1:2))return {ok:false,reason:'Все постоянные места заняты'};
   const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к работе'};
   c.workplace=key;delete c.guardPost;

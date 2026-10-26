@@ -2,7 +2,7 @@ import {professionRole} from '../professions.js';
 // Dyed wool/linen wraps are a readable artistic vocabulary, not a claim that
 // Sumerian professions wore standardized uniforms. Save identities stay intact.
 const CLOTH={
- farmer:['#8a7850','short'],lumberjack:['#73533c','sash'],clayworker:['#947154','apron'],reedcutter:['#7a8656','sash'],quarrier:['#8b8374','short'],
+ dairyman:['#b8a17b','apron'],farmer:['#8a7850','short'],lumberjack:['#73533c','sash'],clayworker:['#947154','apron'],reedcutter:['#7a8656','sash'],quarrier:['#8b8374','short'],
  potter:['#a56537','apron'],brewer:['#936d32','apron'],weaver:['#537f79','wrap'],shepherd:['#9d906d','sash'],fisher:['#5d7b78','short'],hunter:['#7b6748','sash'],
  brickmaker:['#987549','apron'],kilnworker:['#81543c','apron'],gardener:['#6e8251','wrap'],priest:['#bda45e','wrap'],
  production:['#948259','wrap'],builder:['#9c7d4c','short'],carrier:['#8e7651','sash'],watercarrier:['#5b8080','sash'],healer:['#7a8868','apron'],tailor:['#ac833f','wrap']

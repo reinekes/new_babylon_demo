@@ -1,5 +1,6 @@
 import {createLazyFeature} from './asset-loading.js';
 import {createTradeCaravan} from './caravan.js';
+import {createTradeRiverCraft} from './river-craft.js';
 import {createDateClusters,createBotanicalMaterial} from './crop-varieties.js';
 import {canalNetworkGeometry,openCanalMouths} from './canal-network.js';
 import {createDistrictTerrain, districtRoadEdges, surfaceElevation, TILE, shoreDistance} from '../district3d/terrain.js';
@@ -82,7 +83,7 @@ export function groundStocks(s,net,topologySignature=landscapeSignature(s)){
 
 export async function createGameLandscape(B,scene,initialState,materials,options={}){
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map();
- let base=null,staticMeshes=[],stockMeshes=[],traderMeshes=[],signature='',terrainSignature='',stockSignature='',traderSignature='',traderRoot=null,disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='';
+ let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='';
  const color=(r,g,b)=>new B.Color3(r,g,b);
  const material=(name,hex)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=1;m.metallic=0;ownedMaterials.push(m);return m;};
  const waterView=createGameWater(B,scene,materials);
@@ -205,13 +206,10 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  }
  function updateStocks(s){const stocks=groundStocks(s,streetNetwork,signature),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:surfaceElevation(stocks.x,stocks.y,s),z:stocks.y*TILE});}
  const caravanView=options.deferOptional?createLazyFeature(()=>createTradeCaravan(B,scene,meshes,materials,goods,options),{required:(_s,c)=>!!c,onError:error=>console.warn('Caravan detail unavailable',error)}):await createTradeCaravan(B,scene,meshes,materials,goods,options);
+ const riverCraftView=createTradeRiverCraft(B,scene,meshes,materials,goods,options);
  function updateTrader(c,time){
   caravanView.update(currentState,c?.river?null:c,time);
-  const next=JSON.stringify(c?.river?c.stock:null);if(next!==traderSignature){traderSignature=next;remove(traderMeshes);traderRoot?.dispose();traderRoot=null;if(c?.river){traderRoot=new B.TransformNode('actual-trade-caravan',scene);
-const hull=box('trade-reed-boat',0,.04,0,1.65,.42,5.2,materials.reed,traderMeshes);hull.parent=traderRoot;for(const side of [-1,1]){const bow=B.MeshBuilder.CreateSphere('boat-raised-bow',{diameter:1,segments:6},scene);bow.scaling.set(.7,.5,1.2);bow.position.set(0,.17,side*2.2);bow.material=materials.reed;bow.parent=traderRoot;add(bow,traderMeshes);}for(const x of [-.8,.8]){const rim=box('boat-gunwale',x,.36,0,.13,.35,4.5,materials.wood,traderMeshes);rim.parent=traderRoot;}cargo(c.stock,traderMeshes,traderRoot,{x:0,y:.25,z:-1.35},{columns:2,layers:1,maxKinds:10});
-
-  }}
-  if(!c?.river||!traderRoot)return;traderRoot.position.set(c.x*TILE,-.08+Math.sin(time*1.7)*.025,c.y*TILE);const target=c.route[c.routeIndex];if(target&&Math.hypot(target.x-c.x,target.y-c.y)>.01)traderRoot.rotation.y=Math.atan2(target.x-c.x,target.y-c.y);
+  riverCraftView.update(currentState,c?.river?{...c,transport:'river'}:null,time);
  }
  const drops=[];for(let i=0;i<90;i++){const m=box('weather-rain',0,0,0,.018,.8,.018,rainMaterial, drops);m.receiveShadows=false;m.setEnabled(false);}
  let weatherSignature='',landscapePlanRoads=[];
@@ -234,5 +232,5 @@ const hull=box('trade-reed-boat',0,.04,0,1.65,.42,5.2,materials.reed,traderMeshe
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);
  }
  let night=0,currentState=initialState;update(initialState,initialState.simTime||0);
- return {meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;caravanView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;traderRoot?.dispose();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
+ return {meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
 }

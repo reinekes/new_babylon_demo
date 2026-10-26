@@ -18,12 +18,15 @@ export function clippedFieldGeometry(data,building,state){
  const centerX=(minX+maxX)/2,centerZ=(minZ+maxZ)/2;
  // Most fields are wholly inland: retain their original compact shared indices.
  if(distance(centerX,centerZ)-Math.hypot(maxX-minX,maxZ-minZ)/12*BOUND>=CLIP)return data;
- const positions=[],normals=[],uvs=[],indices=[];
+ const positions=[],normals=[],uvs=[],indices=[],vertices=new Map();
  const point=index=>({p:Array.from(data.positions.slice(index*3,index*3+3)),n:Array.from(data.normals?.slice(index*3,index*3+3)||[0,1,0]),uv:Array.from(data.uvs?.slice(index*2,index*2+2)||[0,0])});
  const dry=v=>distance(v.p[0],v.p[2]);
  const mix=(a,b,t)=>({p:lerp(a.p,b.p,t),n:lerp(a.n,b.n,t),uv:lerp(a.uv,b.uv,t)});
  const edge=(a,b)=>Math.hypot(a.p[0]-b.p[0],a.p[2]-b.p[2]);
- const emit=(a,b,c)=>{for(const v of [a,b,c]){indices.push(positions.length/3);positions.push(...v.p);normals.push(...v.n);uvs.push(...v.uv);}};
+ // Adjacent adaptive triangles share most of their vertices. Keep the original
+ // position/normal/UV seams, but reuse identical interpolated surface vertices
+ // instead of emitting three new GPU vertices for every tiny shore triangle.
+ const emit=(a,b,c)=>{for(const v of [a,b,c]){const key=[...v.p,...v.n,...v.uv].map(n=>Math.round(n*1e8)).join(',');let index=vertices.get(key);if(index===undefined){index=positions.length/3;vertices.set(key,index);positions.push(...v.p);normals.push(...v.n);uvs.push(...v.uv);}indices.push(index);}};
  const crossing=(a,b)=>{
   let low=0,high=1;const inside=dry(a)>=CLIP;
   for(let i=0;i<25;i++){const t=(low+high)/2;if((dry(mix(a,b,t))>=CLIP)===inside)low=t;else high=t;}

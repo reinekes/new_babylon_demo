@@ -1,8 +1,9 @@
 import {isDryPoint} from '../world.js';
 import {insideFootprint,footprintSize} from '../footprints.js';
+import {dairyMilkingLayout} from './dairy-layout.js';
 // Shared metre-space equipment and palm targets. Pure view data: no production,
 // inventory initializers, route edits or simulation coordinates enter this module.
-const equipment={pottery:'wheel',brewery:'vat',weaver:'loom',tailor:'table',brickyard:'mould',kiln:'kiln',clay:'clay',reed:'reed',garden:'mortar',sheepfold:'fleece'};
+const equipment={cowshed:'dairy',pottery:'wheel',brewery:'vat',weaver:'loom',tailor:'table',brickyard:'mould',kiln:'kiln',clay:'clay',reed:'reed',garden:'mortar',sheepfold:'fleece'};
 export function workstationWorldPoint(b,[x,height,z]){
  const angle=((b.rotation||0)%4)*Math.PI/2,c=Math.cos(angle),s=Math.sin(angle),snap=n=>Math.abs(n)<1e-12?0:n;
  return {x:b.x+snap(x*c+z*s)/6,y:b.y+snap(-x*s+z*c)/6,height};
@@ -17,7 +18,8 @@ export function workstationBuilding(b,state){
 }
 export function workstationLayout(b){
  if(!equipment[b.type]||b.construction)return [];
- return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*1.94,z:sz*1.94,height:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
+ if(b.type==='cowshed')return [dairyMilkingLayout(b)];
+ return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*1.94,z:sz*1.94,height:b.type==='cowshed'?.72:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
 }
 export function workstationFor(b,c,index=0){
  if(!b?.type||!['working','strike'].includes(c.activity?.stage)||c.walking||c.carrying)return null;
@@ -35,6 +37,7 @@ export function workstationPose(contact,time){
  if(contact.kind==='building')return {right:[.10,1.28+lift*.13,.49],left:[-.10,height,.49],tool:'building',bend:.15,twist:wave*.012};
  if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.012};
  if(contact.kind==='farming')return {right:[.10,.89+lift*.11,.49],left:[-.10,1.03+lift*.11,.20],tool:'hoe',bend:.30,twist:wave*.012};
+ if(contact.kind==='dairy')return {right:[.10,.45+lift*.035,.49],left:[-.10,.45+(1-lift)*.035,.49],tool:null,bend:.5,twist:wave*.01};
  if(contact.kind==='loom')return {right:[.12,height,.49+wave*.022],left:[-.12,height,.49-wave*.022],tool:null,bend:.08,twist:wave*.012};
  // The low vat rim needs a forward lean, keeping the near palm within the
  // supplied residents' native arm reach while the workers retain their slots.

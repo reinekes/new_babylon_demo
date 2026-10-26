@@ -1,0 +1,24 @@
+/* These view preferences change layout only; the city and its clock keep running. */
+.panel-controls{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:55;color:#294440;font:12px Arial,sans-serif}
+.panels-toggle{min-height:44px;border:1px solid #bcae8a;border-radius:5px;background:#f6f0df;color:#294440;padding:8px 12px;box-shadow:0 2px 8px #352e2226;cursor:pointer}
+body:not(.hide-top-panels) .panel-controls{top:auto;bottom:max(10px,env(safe-area-inset-bottom))}
+.panel-options{position:absolute;right:0;top:50px;width:232px;padding:16px;background:#f6f0df;border:1px solid #bcae8a;border-radius:6px;box-shadow:0 6px 24px #29251940;display:grid;gap:12px}
+.panel-options[hidden]{display:none}body:not(.hide-top-panels) .panel-options{top:auto;bottom:50px}
+.panel-options label{display:flex;align-items:center;gap:9px;min-height:28px}.panel-options input{width:18px;height:18px;accent-color:#526950}.panel-options button{min-height:40px;color:#294440;background:#e9e2cb;border:1px solid #bcae8a;border-radius:3px}.panel-options small{line-height:1.5;color:#626758}
+.hide-top-panels .topbar,.hide-top-panels .resourcebar,.hide-bottom-panels .miraclebar,.hide-bottom-panels .timebar,.hide-sides-panels .build-panel,.hide-sides-panels .story-panel{display:none!important}
+body.hide-sides-panels .game-layout{display:flex!important;flex-direction:column;grid-template-columns:1fr;margin:0;min-height:0;flex:1}
+body.hide-sides-panels .world{flex:1;min-height:0;height:auto;max-height:none}
+body.map-only{height:100dvh;min-height:0;padding:0;overflow:hidden}body.map-only .game-layout{margin:0;padding:0;height:100dvh;max-height:none}body.map-only .world{height:100dvh;border:0;border-radius:0;min-height:0}
+.map-only .world-top,.map-only .world>.weather,.map-only .world>.ambient-controls,.map-only .world>.map-corner,.map-only .world>.map-buttons,.map-only .world>.map-hint,.map-only .world>.food-warnings,.map-only .world>.mourning-notice,.map-only #ground-storage-note,.map-only .game3d-options,.map-only .game3d-performance,.map-only .game3d-metrics{display:none!important}
+.tile-detail>.detail-close{position:absolute;right:8px;top:7px;width:36px;height:36px;min-width:36px;z-index:4;line-height:1;border:1px solid #c8bea2;background:#f4efdf;border-radius:50%;font-size:23px;color:#304841}
+.tile-detail>.eyebrow{display:block;padding-right:42px;min-height:32px}.tile-detail>h3{margin-right:0;overflow-wrap:anywhere;padding-right:8px;line-height:1.2}.tile-detail #set-store-min{position:static;inset:auto;display:block;max-width:100%;font:inherit;margin:8px 0}
+.dialog-inner>.management-close{position:sticky;float:right;top:0;right:0;min-width:40px;margin:0 0 8px 12px;z-index:9;background:#f4efdf}.dialog-inner>.management-close~h2,.dialog-inner>.management-close~.eyebrow{padding-right:46px;overflow-wrap:anywhere}
+@media(max-width:760px){body.hide-sides-panels .game-layout{height:auto;min-height:0}body.hide-sides-panels .world{flex:1;min-height:0;height:auto}body.map-only .world{height:100dvh}.panel-controls{right:max(8px,env(safe-area-inset-right))}.panels-toggle{padding:8px 10px}.tile-detail{max-width:calc(100vw - 24px)}.dialog-inner>.management-close{margin-right:0}}
+
+@media(max-width:600px){.resourcebar #resources .resource-frame-processed .resource-group-items{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 5px}.resourcebar #resources .resource-frame-processed .resource{min-width:0}.resourcebar #resources .resource-frame-processed .resource strong{font-size:13px}.resourcebar #resources .resource-frame-processed .resource small{font-size:7px;overflow-wrap:anywhere}}
+/* A definite viewport box also works when the mobile document normally scrolls. */
+body.map-only .game-layout{position:fixed!important;inset:0;display:block!important;width:100vw;height:100dvh!important;margin:0!important;padding:0!important}
+body.map-only .world{position:absolute!important;inset:0;width:100%;height:100%!important;min-height:0;max-height:none}
+body.map-only #city{position:absolute;inset:0;width:100%!important;height:100%!important}
+@media(max-width:1100px){body.hide-sides-panels:not(.map-only) .game-layout{display:block!important;height:auto}body.hide-sides-panels:not(.map-only) .world{height:max(480px,calc(100dvh - 220px));min-height:480px}}
+@media(min-width:1101px){.resourcebar #resources .resource-frame-processed .resource-group-items{grid-template-columns:repeat(4,minmax(0,1fr))}}

@@ -2,7 +2,8 @@ import {WIDTH,HEIGHT,river,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
 import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
-import {renderedShoreDistance,RIVER_HALF_WIDTH,RIVER_STEPS_PER_TILE} from './shore-profile.js';
+import {renderedShoreDistance,RIVER_HALF_WIDTH} from './shore-profile.js';
+import {riverRows} from '../district3d/river-profile.js';
 
 export const WATER_HEIGHT=-.18;
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -11,10 +12,10 @@ export function waterDepth(x,y,s){return Math.max(0,WATER_HEIGHT-visualSurfaceEl
 const sheet=()=>({positions:[],indices:[],colors:[],uvs:[],points:[],depths:[]});
 function vertex(g,x,y,s,lake){const d=waterDepth(x,y,s);g.positions.push(x*TILE,WATER_HEIGHT,y*TILE);g.points.push({x,y});g.depths.push(d);g.colors.push(d,lake?1:0,0,1);g.uvs.push(x,y);}
 export function waterSurfaceGeometry(s){
- const flow=sheet(),lakes=sheet(),across=24,along=HEIGHT*RIVER_STEPS_PER_TILE;
+ const flow=sheet(),lakes=sheet(),across=24,rows=riverRows(true);
  // The shallow edge reaches the actual intersection of the terrain and water,
  // beyond the old uniform strip. Adjacent rows share all cross-section vertices.
- for(let j=0;j<=along;j++){const y=-.5+HEIGHT*j/along,c=river(y);for(let i=0;i<=across;i++){const x=c+(i/across*2-1)*RIVER_HALF_WIDTH;vertex(flow,x,y,s,false);if(i<across&&j<along){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
+ for(let j=0;j<rows.length;j++){const y=rows[j],c=river(y);for(let i=0;i<=across;i++){const x=c+(i/across*2-1)*RIVER_HALF_WIDTH;vertex(flow,x,y,s,false);if(i<across&&j<rows.length-1){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
  const organic=organicLakeGeometry(s,WATER_HEIGHT);Object.assign(lakes,organic);
  return {river:flow,lakes};
 }
@@ -85,7 +86,7 @@ export function createGameWater(B,scene,materials){
   vec3 n=normalize(vec3(.035*cos(a)+.019*cos(b),1.0,.025*cos(a)-.027*cos(b)));
   vec3 eye=normalize(cameraPosition-vWorld);float fresnel=pow(1.0-max(dot(n,eye),0.0),3.0);
   float depth=clamp(vDepth/.7,0.0,1.0),edge=smoothstep(.002,.075,vDepth);
-  vec3 clear=mix(vec3(.43,.64,.50),vec3(.13,.36,.32),depth);
+  vec3 clear=mix(vec3(.37,.53,.40),vec3(.10,.31,.29),depth);
   vec3 sky=mix(vec3(.78,.83,.77),vec3(.37,.60,.69),clamp(reflect(-eye,n).y,0.0,1.0));
   vec3 water=mix(clear,sky,.09+fresnel*.28);
   water=mix(water,vec3(.16,.40,.32),vCanal*.5);
@@ -95,7 +96,7 @@ export function createGameWater(B,scene,materials){
   water=mix(water,water*vec3(.25,.36,.52),night*.88);
   // Bed and submerged pebbles remain visible through genuine alpha blending.
   // Fine moving highlights suggest refraction without another scene render.
-  float alpha=max(edge*(.09+.43*depth+fresnel*.16),vCanal*.46);
+  float alpha=max(edge*(.08+.29*depth+fresnel*.12),vCanal*.42);
   gl_FragColor=vec4(water,clamp(alpha,.0,.72));
  }`;
  const water=new B.ShaderMaterial('clear-flowing-water',scene,{vertex:'gameClearWater',fragment:'gameClearWater'},{attributes:['position','color'],uniforms:['world','worldViewProjection','cameraPosition','time','night'],needAlphaBlending:true});

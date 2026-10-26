@@ -2,8 +2,9 @@ import {startDesertFuneral,advanceDesertFuneral,desertFuneralView,validateDesert
 import {registerLoss} from './divinity.js';
 import {networkFor,routeBetween,rerouteCitizens} from './workforce.js';
 import {WIDTH,HEIGHT} from './world.js';
+import {navigationGridStep} from './navigation.js';
 const copy=p=>({x:p.x,y:p.y,key:p.key});
-const distance=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 function nearest(net,p){let best=null,d=Infinity;for(const n of net.nodes.values()){const next=distance(n,p);if(next<d){d=next;best=n;}}return best;}
 function path(s,a,b){return (a&&b&&routeBetween(s,a.key,b.key)||[]).map(copy);}
 export function startFuneral(s,deceased,options){const started=startDesertFuneral(s,deceased,options);if(started&&!options?.family)registerLoss(s,deceased.length);return started;}
@@ -44,7 +45,7 @@ export function validateFuneral(s){
  if(s.funeral?.style==='desert')return validateDesertFuneral(s);
  const f=s.funeral;if(f==null)return true;
  const exact=(o,keys)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length===keys.length&&keys.every(k=>k in o),point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5,keyed=p=>exact(p,['x','y','key'])&&point(p)&&p.key===`${p.x+.5},${p.y+.5}`;
- const route=r=>Array.isArray(r)&&r.length<=WIDTH*HEIGHT*2&&r.every((p,i)=>keyed(p)&&(!i||Math.abs(distance(p,r[i-1])-1)<1e-7));
+ const route=r=>Array.isArray(r)&&r.length<=WIDTH*HEIGHT*2&&r.every((p,i)=>keyed(p)&&(!i||navigationGridStep(p,r[i-1])));
  if(!exact(f,['stage','deceased','actors','coffin','gather','boundary','procession','bierRouteIndex','timer'])||!['gathering','procession','jackals','returning'].includes(f.stage)||!Array.isArray(f.deceased)||!f.deceased.length||f.deceased.length>1000||f.deceased.some(d=>!exact(d,['id','name','x','y'])||!Number.isSafeInteger(d.id)||d.id<0||typeof d.name!=='string'||!d.name||d.name.length>100||!point(d))||!keyed(f.gather)||!keyed(f.boundary)||!route(f.procession)||!f.procession.length||!Number.isSafeInteger(f.bierRouteIndex)||f.bierRouteIndex<0||f.bierRouteIndex>f.procession.length||!Number.isFinite(f.timer)||f.timer<0||f.timer>1e6||!exact(f.coffin,['x','y'])||!Number.isFinite(f.coffin.x)||!Number.isFinite(f.coffin.y)||f.coffin.x< -3.5||f.coffin.x>WIDTH+2.5||f.coffin.y<-.5||f.coffin.y>HEIGHT-.5||!Array.isArray(f.actors)||f.actors.length!==s.citizens.length)return false;
  const net=networkFor(s),connected=r=>r.every((p,i)=>net.nodes.has(p.key)&&(!i||net.graph.get(r[i-1].key)?.has(p.key)));
  if(new Set(f.deceased.map(d=>d.id)).size!==f.deceased.length||!connected(f.procession)||f.procession[0].key!==f.gather.key||f.procession.at(-1).key!==f.boundary.key||!net.nodes.has(f.gather.key)||!net.nodes.has(f.boundary.key))return false;

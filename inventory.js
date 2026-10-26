@@ -3,12 +3,12 @@ const keyOf=b=>`${b.x},${b.y}`;
 const empty=()=>Object.fromEntries(MATERIALS.map(k=>[k,0]));
 const amount=n=>Number.isFinite(n)&&n>0?n:0;
 function referencedStores(s){
- const refs=new Set(),allocation=q=>{for(const map of [q?.sources,q?.allocations])for(const key of Object.keys(map||{}))refs.add(key);};
+ const refs=new Set(),loadedJobs=new Set(),allocation=q=>{for(const map of [q?.sources,q?.allocations])for(const key of Object.keys(map||{}))refs.add(key);};
  for(const b of [...s.buildings||[],...s.roads||[]])if(b.construction)allocation(b.construction);
  allocation(s.festival);
  for(const q of s.trade?.sales||[])if(q.amount>q.loaded+q.cancelled)allocation(q);
- for(const q of s.district?.jobs||[]){const carried=(s.citizens||[]).some(c=>c.districtJob===q.id&&Object.values(c.cargo||{}).some(n=>n>0));if(q.remaining>0||carried){refs.add(q.source);refs.add(q.target);}}
- for(const c of s.citizens||[])if(c.clothingTarget!==undefined||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0))refs.add(c.store);
+ for(const c of s.citizens||[]){const loaded=Object.values(c.cargo||{}).some(n=>n>0);if(loaded&&c.districtJob!=null)loadedJobs.add(c.districtJob);if(c.clothingTarget!==undefined||c.craftSite||c.seedField||c.pantryTrip||loaded)refs.add(c.store);}
+ for(const q of s.district?.jobs||[])if(q.remaining>0||loadedJobs.has(q.id)){refs.add(q.source);refs.add(q.target);}
  return refs;
 }
 export function stockStores(s){
@@ -17,7 +17,7 @@ export function stockStores(s){
   if(!isOperational(b))continue;
   if(b.type==='shrine')central.push(b);
   else if(b.type==='granary'||b.type==='depot')others.push(b);
-  else if(b.type==='house'){home??=b;if(b.stock&&(MATERIALS.some(k=>b.stock[k]>0)||(refs??=referencedStores(s)).has(keyOf(b))))ground.push(b);}
+  else if(b.type==='house'||b.recoveryOnly===true){if(b.type==='house')home??=b;if(b.stock&&(MATERIALS.some(k=>b.stock[k]>0)||(refs??=referencedStores(s)).has(keyOf(b))))ground.push(b);}
  }
  const stores=central.concat(others);
  if(!stores.length&&home&&!ground.includes(home))ground.unshift(home);
@@ -28,7 +28,7 @@ export function storeCapacity(b){return b.type==='granary'?150*levelOf(b):b.type
 // Local transfers always update both sides, so reconciliation never redistributes them.
 export function syncInventory(s){
  const stores=stockStores(s),set=new Set(stores);
- for(const b of s.buildings||[])if(!set.has(b)&&b.stock){if(Object.values(b.stock).some(n=>n>0))throw new Error('Cannot abandon stocked building');if(b.type==='house')delete b.stock;}
+ for(const b of s.buildings||[])if(!set.has(b)&&b.stock){if(Object.values(b.stock).some(n=>n>0))throw new Error('Cannot abandon stocked building');if(b.type==='house'||b.recoveryOnly===true){if(b.recoveryOnly)for(const c of s.citizens||[])if(c.store===keyOf(b)&&c.districtJob==null)c.store=null;delete b.stock;delete b.recoveryOnly;}}
  const first=!s.inventory;s.inventory??={version:1};
  for(const b of stores){b.stock??=empty();for(const k of MATERIALS)b.stock[k]??=0;}
  for(const k of MATERIALS){
@@ -46,6 +46,13 @@ export function storeStock(s,key,k){syncInventory(s);return MATERIALS.includes(k
 export function putStock(s,key,k,n,{overflow=false}={}){
  syncInventory(s);const b=store(s,key);if(!b||!MATERIALS.includes(k))return 0;
  const accepted=Math.min(amount(n),overflow?Infinity:Math.max(0,storeCapacity(b)-b.stock[k]));b.stock[k]+=accepted;s.resources[k]+=accepted;return accepted;
+}
+// Emergency recovery keeps a real holder on the same reachable bank. A
+// depleted home can become ground storage again; another yard is temporary.
+export function putRecoveryStock(s,key,k,n){
+ syncInventory(s);const b=s.buildings?.find(b=>keyOf(b)===key&&isOperational(b)),accepted=amount(n);if(!b||!MATERIALS.includes(k)||!accepted)return 0;
+ if(!['house','shrine','granary','depot'].includes(b.type))b.recoveryOnly=true;
+ b.stock??=empty();b.stock[k]+=accepted;s.resources[k]+=accepted;return accepted;
 }
 export function takeStock(s,key,k,n){
  syncInventory(s);const b=store(s,key);if(!b||!MATERIALS.includes(k))return 0;
@@ -71,6 +78,7 @@ export function validateInventory(s){
  if(!s.inventory||s.inventory.version!==1||!s.resources||!Array.isArray(s.buildings))return false;
  const stores=stockStores(s),set=new Set(stores),totals=empty();
  for(const b of s.buildings){
+  if(b.recoveryOnly!==undefined&&(b.recoveryOnly!==true||['house','shrine','granary','depot'].includes(b.type)||!isOperational(b)))return false;
   if(!set.has(b)){if(b.stock!==undefined)return false;continue;}
   if(!b.stock||typeof b.stock!=='object'||Array.isArray(b.stock))return false;
   if(Object.keys(b.stock).some(k=>!MATERIALS.includes(k)))return false;

@@ -21,7 +21,7 @@ test('workers can be pinned to a building; children cannot; pin survives saving 
  assert.equal(assignWorkplace(s,s.citizens.find(c=>c.age<16).id,`${b.x},${b.y}`).ok,false);const saved=decode(encode(s));assert.ok(saved);assert.equal(saved.citizens.find(v=>v.id===c.id).workplace,c.workplace);
 });
 test('legacy migration retains people, carried goods and pantry; crop state survives deterministic reload',()=>{
- const s=createGame({start:'established'});s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,27);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
+ const s=createGame({start:'established'});s.version=11;for(const b of s.buildings)delete b.crop;const people=structuredClone(s.citizens),resources={...s.resources};const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.version,28);assert.deepEqual(loaded.citizens,people);assert.deepEqual(loaded.resources,resources);assert.ok(field(loaded).crop);
  const next=decode(encode(loaded));assert.deepEqual(next,loaded);
 });
 test('cats and mice inhabit storage yards, move and rest without entering water or buildings',async()=>{
@@ -32,7 +32,7 @@ test('cats and mice inhabit storage yards, move and rest without entering water 
 test('actual residents sow, harvest once and deliver finite autumn crop to storage',async()=>{
  const {build}=await import('../engine.js');const s=createGame({start:'established'}),b=field(s);assert.ok(build(s,'canal',12,7).ok);assignWorkplace(s,0,'12,8');assignWorkplace(s,1,'12,8');
  const run=n=>{for(let i=0;i<n*10;i++){s.event=null;advanceTime(s,.1);}};run(44);assert.equal(b.crop.sown,1);assert.equal(s.delivered.food,0);run(46);assert.equal(s.season,2);assert.ok(b.crop.remaining>0);const total=b.crop.total;
- run(40);assert.ok(s.delivered.food>0);assert.ok(b.crop.harvested<=total);assert.ok(decode(encode(s)));const carried=s.citizens.reduce((n,c)=>n+(c.cargo.food||0),0);assert.ok(Math.abs(b.crop.harvested-s.delivered.food-carried-b.crop.sheaves)<1e-6);
+ run(44);assert.ok(s.delivered.food>0);assert.ok(b.crop.harvested<=total);assert.ok(decode(encode(s)));const carried=s.citizens.reduce((n,c)=>n+(c.work==='12,8'||s.district.jobs.some(q=>q.id===c.districtJob&&q.source==='12,8')?c.cargo.food||0:0),0),onsite=b.workshopStock.output.food||0;assert.ok(Math.abs(b.crop.harvested-s.delivered.food-carried-onsite-b.crop.sheaves)<1e-6);
  const copy=decode(encode(s));run(6);for(let i=0;i<60;i++){copy.event=null;advanceTime(copy,.1);}assert.deepEqual(copy,s);
 });
 test('an empty workforce never seeds a field; unharvested crop spoils on winter boundary',()=>{

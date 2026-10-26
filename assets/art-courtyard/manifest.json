@@ -1,5 +1,5 @@
 {
-  "release": "source-walk-cloth-20261026-1",
+  "release": "town-stocks-20261026-5",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
@@ -9,8 +9,8 @@
     },
     {
       "file": "CREDITS.html",
-      "bytes": 26304,
-      "sha256": "a0be3a1c6387bddd948d4106429066c73141d623812bc96f2713ead682c24aac"
+      "bytes": 27634,
+      "sha256": "08d6c9ffc3a088dd800061e8765be6340b97afcd3ac5d983eb9c523bcbaca27d"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -505,6 +505,15 @@
         "Walk_Loop",
         "Idle_Loop"
       ]
+    },
+    {
+      "file": "models/river-cargo-boat.glb",
+      "bytes": 947632,
+      "sha256": "63a783f5a4af16bd733cf22155d2fb746d7b631c6890b05eaa2c88bfe6dcc9ec",
+      "triangles": 26935,
+      "meshes": 3,
+      "bones": 0,
+      "clips": []
     },
     {
       "file": "models/sheep.glb",

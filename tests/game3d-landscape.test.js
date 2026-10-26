@@ -62,7 +62,7 @@ function loadGeometry(scene,file='date-palm.glb'){
 test('real GLB palms share baked geometry; canals, road work and trade update a live mesh list read-only',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;let loads=0;
- B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;file=file.split('?')[0];assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^(?:valley-(?:dry-grass-[123]|reed-[123]|date-palm)|miracle-green-grass-[123]|caravan-(?:merchant|camel))\.glb$/);return loadGeometry(scene,file);};
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;file=file.split('?')[0];assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^(?:valley-(?:dry-grass-[123]|reed-[123]|date-palm)|miracle-green-grass-[123]|caravan-(?:merchant|camel)|river-cargo-boat)\.glb$/);return loadGeometry(scene,file);};
  let view;const s=createGame({start:'established'});s.roads=[{id:'local',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2}];
  let canalX=0;while(terrain(canalX,8)==='water'||terrain(canalX+1,8)!=='water')canalX++;
  s.buildings.push({type:'canal',x:canalX,y:8,level:1});
@@ -158,7 +158,7 @@ test('goods are detailed shared rectangular geometry resting on exact support pl
   assert.equal(layout.length,GOODS_KINDS.length*3);assert.equal(JSON.stringify(stock),before);assert.deepEqual(cargoLayout({faith:100,prestige:100}),[]);
   for(const [kind,src]of goods.sources){src.computeWorldMatrix(true);const bounds=src.getBoundingInfo().boundingBox;
    assert.ok(Math.abs(bounds.minimum.y)<1e-6,`${kind} bottom rests on ground`);assert.ok(bounds.maximum.y<=GOODS_HEIGHT+1e-6);assert.ok(src.getTotalVertices()>24,`${kind} includes physical details`);assert.equal(src.isEnabled(),false);
-   if(!['water','beer','pottery'].includes(kind)){assert.ok(bounds.maximum.x-bounds.minimum.x>.6);assert.ok(bounds.maximum.z-bounds.minimum.z>.5);assert.ok(src.getIndices().length%36===0,`${kind} consists of straight rectangular goods, never round sacks`);}
+   if(!['milk','water','beer','pottery'].includes(kind)){assert.ok(bounds.maximum.x-bounds.minimum.x>.6);assert.ok(bounds.maximum.z-bounds.minimum.z>.5);assert.ok(src.getIndices().length%36===0,`${kind} consists of straight rectangular goods, never round sacks`);}
    const parcel=src.createInstance('support-test');parcel.setEnabled(true);
    for(const p of layout.filter(p=>p.kind===kind)){parcel.position.set(p.x,p.y,p.z);parcel.computeWorldMatrix(true);const b=parcel.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-p.layer*GOODS_HEIGHT)<1e-6);if(p.layer)assert.ok(layout.some(q=>q.kind===kind&&q.x===p.x&&q.z===p.z&&q.layer===p.layer-1));}
    assert.equal(parcel.sourceMesh,src);parcel.dispose();

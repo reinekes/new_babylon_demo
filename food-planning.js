@@ -1,3 +1,4 @@
+import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
 import {isOperational,outputMultiplier} from './definitions.js';
 import {mealRation,mealCycle,isDinnerTime,hourOf} from './wellbeing.js';
 import {fieldWater} from './irrigation.js';
@@ -14,7 +15,7 @@ export function foodForecast(s,{includeCrops=true}={}){
  const time=s.simTime||0;let harvestAt=Math.floor(time/180)*180+90;if(harvestAt<=time+1e-7)harvestAt+=180;const secondsToHarvest=harvestAt-time;
  const daily=s.citizens.reduce((n,c)=>n+mealRation(c),0);let meals=0;for(let at=30+Math.floor((time-30)/60+1)*60;at<=harvestAt+1e-7;at+=60)meals++;
  const outstanding=isDinnerTime(time)?s.citizens.reduce((n,c)=>n+Math.max(0,mealRation(c)-(c.mealDay===mealCycle(time)?c.mealEaten:0)),0):0;
- const homes=s.buildings.reduce((n,b)=>n+(b.pantry||0),0),inTransit=s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(!c.saleJob?(c.cargo?.food||0):0),0),reserve=seedReserve(s),ready=availableFood(s)+homes+inTransit;
+ const homes=s.buildings.reduce((n,b)=>n+homeMealFood(b),0),inTransit=s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(!c.saleJob?(c.cargo?.food||0)+(c.cargo?.milk||0)*.5:0),0),reserve=seedReserve(s),ready=availableFood(s)+(s.resources.milk||0)*.5+homes+inTransit+s.buildings.reduce((n,b)=>n+(b.workshopStock?.output?.food||0)+(b.workshopStock?.output?.milk||0)*.5,0);
  let unthreshed=0,standing=0,cropPotential=0,seedAtFields=0;for(const b of s.buildings){if(b.type!=='field'||!isOperational(b))continue;const c=b.crop||{},water=includeCrops?fieldWater(s,b):null;unthreshed+=c.sheaves||0;standing+=c.remaining||0;seedAtFields+=c.seedStock||0;
   if(includeCrops&&s.season<2){const wet=water.canal||s.rain>0||c.legacyYear===s.year&&water.natural,growth=s.season===0?(wet?1:0):Math.min(1,(c.growth||0)+(wet?(45-s.seasonElapsed)/45:0));cropPotential+=84*outputMultiplier(b)*(c.sown||0)*growth*(s.buffs?.fertility?1.6:1);}
  }
@@ -28,9 +29,9 @@ export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
  const night=isDinnerTime(s.simTime),day=mealCycle(s.simTime),nearDinner=hourOf(s.simTime)>=16||night,byHome=new Map(),byTarget=new Map(),noFood=availableFood(s)<=1e-7;
  for(const c of s.citizens){if(c.pantryTrip){const key=c.pantryTarget||c.home;if(!byTarget.has(key))byTarget.set(key,[]);byTarget.get(key).push(c);}if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);}
  const houses=[];
- for(const b of s.buildings){if(b.type!=='house'||!isOperational(b))continue;const key=`${b.x},${b.y}`,residents=byHome.get(key)||[],couriers=byTarget.get(key)||[];if(!residents.length)continue;
+ for(const b of s.buildings){if(b.type!=='house'||!isOperational(b))continue;const key=`${b.x},${b.y}`,residents=byHome.get(key)||[],couriers=homeFoodCouriers(s,key);if(!residents.length)continue;
   const hungryResidents=residents.filter(c=>(c.hunger||0)>=30||((c.missedMeals||0)>0&&(c.lastMealQuality??1)<.95&&!(night&&c.mealDay===day&&c.mealEaten>=mealRation(c)*.95)));
-  const need=residents.reduce((n,c)=>n+(night?Math.max(0,mealRation(c)-(c.mealDay===day?c.mealEaten:0)):mealRation(c)),0),food=b.pantry||0,inTransit=couriers.reduce((n,c)=>n+(c.pantryFood||0),0),deliverable=couriers.reduce((n,c)=>n+(c.phase!=='blocked'?c.pantryFood||0:0),0),blockedDelivery=couriers.some(c=>c.phase==='blocked'),shortfall=Math.max(0,need-food-deliverable),atRisk=shortfall>1e-7&&(nearDinner||noFood);
+  const need=residents.reduce((n,c)=>n+(night?Math.max(0,mealRation(c)-(c.mealDay===day?c.mealEaten:0)):mealRation(c)),0),food=homeMealFood(b),inTransit=homeFoodInTransit(s,key),deliverable=homeFoodInTransit(s,key,{deliverable:true}),blockedDelivery=couriers.some(c=>c.phase==='blocked'),shortfall=Math.max(0,need-food-deliverable),atRisk=shortfall>1e-7&&(nearDinner||noFood);
   houses.push({key,x:b.x,y:b.y,residents,hungryResidents,hungry:hungryResidents.length,hungryChildren:hungryResidents.filter(c=>c.age<16).length,severe:hungryResidents.some(c=>(c.hunger||0)>=70),need,food,inTransit,shortfall,atRisk,blockedDelivery,awaitingDelivery:need>food+1e-7&&deliverable>0});
  }
  houses.sort((a,b)=>Number(b.severe)-Number(a.severe)||b.hungry-a.hungry||Number(b.atRisk)-Number(a.atRisk)||b.shortfall-a.shortfall||a.y-b.y||a.x-b.x);

@@ -31,3 +31,7 @@ test('river clipping profile exactly follows the current water mesh rows',()=>{
  const s={buildings:[],world:{lakes:[]}},g=waterSurfaceGeometry(s).river,columns=25;
  for(let j=0;j<g.points.length/columns-1;j+=11){const a=g.points[j*columns],b=g.points[(j+1)*columns],y=(a.y+b.y)/2,edge=(a.x+b.x)/2;assert.ok(Math.abs(renderedRiverCenter(y)-RIVER_HALF_WIDTH-edge)<1e-10);assert.ok(Math.abs(renderedShoreDistance(edge,y,s))<1e-10);}
 });
+test('adaptive shore triangles share matching GPU vertices while preserving their area and dry interiors',()=>{
+ const s={buildings:[],world:{lakes:[]}},b={x:12,y:8},g=clippedFieldGeometry(plane(),b,s);
+ assert.ok(g.positions.length/3<g.indices.length*.35,'shared adaptive vertices avoid per-triangle copies');assert.equal(g.normals.length,g.positions.length);assert.equal(g.uvs.length,g.positions.length/3*2);assert.ok(g.indices.every(i=>i>=0&&i<g.positions.length/3));dryTriangles(g,b,s);assert.ok(Math.abs(area(g)-sampledDryArea(b,s))<.025);
+});

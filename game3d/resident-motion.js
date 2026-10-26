@@ -51,8 +51,12 @@ export function residentViewPositions(state,citizens){
   const bridge=onBridge(state.buildings||[],c.x,c.y),phase=residentMotion(c.id).phase;
   const safe=q=>{if(bridge)return !!onBridge(state.buildings||[],q.x,q.y)&&Math.abs(q.y-c.y)<.025;
    if(!isDryPoint(state,q.x,q.y))return false;
-   return !(state.buildings||[]).some(b=>!['road','bridge','field','canal'].includes(b.type)&&Math.abs(q.x-b.x)<.42&&Math.abs(q.y-b.y)<.42&&!(Math.abs(c.x-b.x)<.42&&Math.abs(c.y-b.y)<.42));};
+   return !(state.buildings||[]).some(b=>{if(['road','bridge','field','canal'].includes(b.type))return false;const size=footprintSize(b),x=b.x+(size-1)/2,y=b.y+(size-1)/2,half=size/2-.035;return Math.abs(q.x-x)<half&&Math.abs(q.y-y)<half&&!(Math.abs(c.x-x)<half&&Math.abs(c.y-y)<half);});};
   const clear=q=>neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001);
+  if(c.walking&&!contact&&!bridge){
+   const route=c.waterTrip?.route||c.route,next=route?.[c.waterTrip?.index??c.routeIndex],dx=(next?.x??c.x)-c.x,dy=(next?.y??c.y)-c.y,length=Math.hypot(dx,dy);
+   if(length>1e-6){const lane=.065+.015*(phase/(Math.PI*2)),q={x:c.x+dy/length*lane,y:c.y-dx/length*lane};if([.25,.5,.75,1].every(t=>safe({x:c.x+(q.x-c.x)*t,y:c.y+(q.y-c.y)*t})))p=q;}
+  }
   if(fixed(c)&&!clear(p)){
    const target=c.activity?.target;let dx=(target?.x??c.x)-c.x,dy=(target?.y??c.y-1)-c.y;if(Math.hypot(dx,dy)<1e-6)dy=-1;
    const length=Math.hypot(dx,dy),tangent={x:-dy/length,y:dx/length},away={x:-dx/length,y:-dy/length};

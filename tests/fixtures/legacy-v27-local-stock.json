@@ -1,0 +1,1472 @@
+{
+  "version": 27,
+  "year": 1,
+  "season": 0,
+  "tick": 0,
+  "seasonElapsed": 8.899999999999984,
+  "simTime": 8.899999999999984,
+  "population": 12,
+  "capacity": 16,
+  "happiness": 75,
+  "rngState": 117,
+  "roads": [
+    {
+      "type": "road",
+      "id": "road:10,9|9,9",
+      "x": 9,
+      "y": 8.5,
+      "a": {
+        "x": 8.5,
+        "y": 8.5,
+        "key": "9,9"
+      },
+      "b": {
+        "x": 9.5,
+        "y": 8.5,
+        "key": "10,9"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:10,10|10,9",
+      "x": 9.5,
+      "y": 9,
+      "a": {
+        "x": 9.5,
+        "y": 9.5,
+        "key": "10,10"
+      },
+      "b": {
+        "x": 9.5,
+        "y": 8.5,
+        "key": "10,9"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:11,9|12,9",
+      "x": 11,
+      "y": 8.5,
+      "a": {
+        "x": 11.5,
+        "y": 8.5,
+        "key": "12,9"
+      },
+      "b": {
+        "x": 10.5,
+        "y": 8.5,
+        "key": "11,9"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:10,9|11,9",
+      "x": 10,
+      "y": 8.5,
+      "a": {
+        "x": 10.5,
+        "y": 8.5,
+        "key": "11,9"
+      },
+      "b": {
+        "x": 9.5,
+        "y": 8.5,
+        "key": "10,9"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:8,8|9,8",
+      "x": 8,
+      "y": 7.5,
+      "a": {
+        "x": 7.5,
+        "y": 7.5,
+        "key": "8,8"
+      },
+      "b": {
+        "x": 8.5,
+        "y": 7.5,
+        "key": "9,8"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:9,8|9,9",
+      "x": 8.5,
+      "y": 8,
+      "a": {
+        "x": 8.5,
+        "y": 7.5,
+        "key": "9,8"
+      },
+      "b": {
+        "x": 8.5,
+        "y": 8.5,
+        "key": "9,9"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:10,10|11,10",
+      "x": 10,
+      "y": 9.5,
+      "a": {
+        "x": 10.5,
+        "y": 9.5,
+        "key": "11,10"
+      },
+      "b": {
+        "x": 9.5,
+        "y": 9.5,
+        "key": "10,10"
+      },
+      "level": 1
+    },
+    {
+      "type": "road",
+      "id": "road:11,10|12,10",
+      "x": 11,
+      "y": 9.5,
+      "a": {
+        "x": 11.5,
+        "y": 9.5,
+        "key": "12,10"
+      },
+      "b": {
+        "x": 10.5,
+        "y": 9.5,
+        "key": "11,10"
+      },
+      "level": 1
+    }
+  ],
+  "funeral": null,
+  "deaths": 0,
+  "resources": {
+    "food": 78.29320000000025,
+    "clay": 102,
+    "reed": 45,
+    "wood": 20,
+    "stone": 0,
+    "hides": 0,
+    "wool": 0,
+    "cloth": 0,
+    "clothing": 0,
+    "brick": 0,
+    "firedBrick": 0,
+    "pottery": 0,
+    "beer": 0,
+    "faith": 26.700000000000003,
+    "prestige": 10.34
+  },
+  "buildings": [
+    {
+      "type": "house",
+      "x": 8,
+      "y": 8,
+      "level": 1,
+      "water": 14.813333333333148,
+      "waterDelivered": 16,
+      "pantry": 12.799999999999999,
+      "pantryDelivered": 12.799999999999999
+    },
+    {
+      "type": "house",
+      "x": 9,
+      "y": 9,
+      "level": 1,
+      "water": 7.55499999999993,
+      "waterDelivered": 8,
+      "pantry": 4.8,
+      "pantryDelivered": 4.8
+    },
+    {
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "level": 1,
+      "crop": {
+        "year": 1,
+        "sown": 0.36587301587301746,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 2.5365079365079364,
+        "seedUsed": 1.4634920634920698,
+        "sheaves": 0,
+        "threshed": 0
+      }
+    },
+    {
+      "type": "clay",
+      "x": 7,
+      "y": 7,
+      "level": 1
+    },
+    {
+      "type": "shrine",
+      "x": 9,
+      "y": 8,
+      "level": 1,
+      "stock": {
+        "food": 78.29320000000025,
+        "clay": 102,
+        "reed": 45,
+        "wood": 20,
+        "stone": 0,
+        "hides": 0,
+        "wool": 0,
+        "cloth": 0,
+        "clothing": 0,
+        "brick": 0,
+        "firedBrick": 0,
+        "pottery": 0,
+        "beer": 0
+      }
+    },
+    {
+      "type": "sheepfold",
+      "x": 10,
+      "y": 9,
+      "level": 1,
+      "flock": {
+        "fleece": 2.3955555555555383
+      }
+    },
+    {
+      "type": "weaver",
+      "x": 11,
+      "y": 9,
+      "level": 1,
+      "weaving": {
+        "wool": 0
+      }
+    }
+  ],
+  "cooldowns": {
+    "cat": 0,
+    "rain": 0,
+    "abundance": 0,
+    "bless": 0,
+    "fertility": 0,
+    "inspiration": 0,
+    "haste": 0,
+    "revelation": 0,
+    "peace": 0,
+    "sunlight": 0,
+    "healing": 0,
+    "stars": 0,
+    "shaping": 0
+  },
+  "buffs": {
+    "fertility": 0,
+    "inspiration": 0,
+    "haste": 0,
+    "sunlight": 0
+  },
+  "divinity": {
+    "domains": {
+      "water": 0,
+      "harvest": 0,
+      "life": 0,
+      "craft": 0,
+      "knowledge": 0,
+      "sun": 0
+    },
+    "names": [],
+    "rating": 0,
+    "inspirationAttempts": 0,
+    "inspirationSuccesses": 0
+  },
+  "citizens": [
+    {
+      "id": 0,
+      "home": "8,8",
+      "work": "10,9",
+      "store": "9,8",
+      "x": 10.5,
+      "y": 9.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0.04285714285715423,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 1,
+      "sex": "m",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 20,
+      "workplace": "10,9"
+    },
+    {
+      "id": 1,
+      "home": "8,8",
+      "work": "11,9",
+      "store": "9,8",
+      "x": 11.5,
+      "y": 9.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 0,
+      "sex": "f",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 27,
+      "workplace": "11,9"
+    },
+    {
+      "id": 2,
+      "home": "8,8",
+      "work": "12,8",
+      "store": "9,8",
+      "x": 11.5,
+      "y": 8.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 3,
+      "sex": "m",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 34
+    },
+    {
+      "id": 3,
+      "home": "8,8",
+      "work": "12,8",
+      "store": "9,8",
+      "x": 11.5,
+      "y": 8.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 2,
+      "sex": "f",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 41
+    },
+    {
+      "id": 4,
+      "home": "8,8",
+      "work": "10,9",
+      "store": "9,8",
+      "x": 10.454999999999993,
+      "y": 9.5,
+      "phase": "toStore",
+      "route": [
+        {
+          "x": 10.5,
+          "y": 9.5
+        },
+        {
+          "x": 10.5,
+          "y": 9.5
+        },
+        {
+          "x": 9.5,
+          "y": 9.5
+        },
+        {
+          "x": 9.5,
+          "y": 8.5
+        }
+      ],
+      "routeIndex": 2,
+      "workElapsed": 0,
+      "cargo": {
+        "wool": 2
+      },
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 5,
+      "sex": "m",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 48
+    },
+    {
+      "id": 5,
+      "home": "8,8",
+      "work": "11,9",
+      "store": "9,8",
+      "x": 11.5,
+      "y": 9.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 4,
+      "sex": "f",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 26
+    },
+    {
+      "id": 6,
+      "home": "8,8",
+      "work": "7,7",
+      "store": "9,8",
+      "x": 8.5,
+      "y": 8.304999999999975,
+      "phase": "returnWork",
+      "route": [
+        {
+          "x": 9.5,
+          "y": 8.5
+        },
+        {
+          "x": 9.5,
+          "y": 8.5
+        },
+        {
+          "x": 8.5,
+          "y": 8.5
+        },
+        {
+          "x": 8.5,
+          "y": 7.5
+        },
+        {
+          "x": 7.5,
+          "y": 7.5
+        }
+      ],
+      "routeIndex": 3,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 7,
+      "sex": "m",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 33
+    },
+    {
+      "id": 7,
+      "home": "8,8",
+      "work": "7,7",
+      "store": "9,8",
+      "x": 8.5,
+      "y": 8.304999999999975,
+      "phase": "returnWork",
+      "route": [
+        {
+          "x": 9.5,
+          "y": 8.5
+        },
+        {
+          "x": 9.5,
+          "y": 8.5
+        },
+        {
+          "x": 8.5,
+          "y": 8.5
+        },
+        {
+          "x": 8.5,
+          "y": 7.5
+        },
+        {
+          "x": 7.5,
+          "y": 7.5
+        }
+      ],
+      "routeIndex": 3,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 6,
+      "sex": "f",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 40
+    },
+    {
+      "id": 8,
+      "home": "9,9",
+      "work": "9,8",
+      "store": "9,8",
+      "x": 9.5,
+      "y": 8.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 1.9476190476190542,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 9,
+      "sex": "m",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 38
+    },
+    {
+      "id": 9,
+      "home": "9,9",
+      "work": "9,8",
+      "store": "9,8",
+      "x": 9.5,
+      "y": 8.5,
+      "phase": "working",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 3.947619047619056,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [],
+      "generation": 1,
+      "partner": 8,
+      "sex": "f",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.7999999999999999,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 34
+    },
+    {
+      "id": 10,
+      "home": "9,9",
+      "work": null,
+      "store": null,
+      "x": 9.5,
+      "y": 9.5,
+      "phase": "home",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [
+        8,
+        9
+      ],
+      "generation": 2,
+      "partner": null,
+      "sex": "m",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.39999999999999997,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 6
+    },
+    {
+      "id": 11,
+      "home": "9,9",
+      "work": null,
+      "store": null,
+      "x": 9.5,
+      "y": 9.5,
+      "phase": "home",
+      "route": [],
+      "routeIndex": 0,
+      "workElapsed": 0,
+      "cargo": {},
+      "site": null,
+      "sitePort": null,
+      "buildCargo": {},
+      "role": "auto",
+      "siteDuty": null,
+      "parents": [
+        8,
+        9
+      ],
+      "generation": 2,
+      "partner": null,
+      "sex": "f",
+      "hunger": 0,
+      "health": 100,
+      "mood": 75,
+      "faith": 60,
+      "mealDay": -1,
+      "mealEaten": 0.39999999999999997,
+      "mealEvaluated": -1,
+      "missedMeals": 0,
+      "lastMealQuality": 1,
+      "familyMeal": false,
+      "diningUntil": 0,
+      "prayerTotal": 0,
+      "clothing": 98.3518518518518,
+      "thirst": 0,
+      "tradeJob": null,
+      "tradeMarket": null,
+      "saleJob": null,
+      "saleMarket": null,
+      "age": 12
+    }
+  ],
+  "deliveries": 4,
+  "delivered": {
+    "food": 0,
+    "clay": 12,
+    "reed": 0,
+    "wood": 0,
+    "stone": 0,
+    "hides": 0,
+    "wool": 0,
+    "cloth": 0,
+    "clothing": 0,
+    "brick": 0,
+    "firedBrick": 0,
+    "pottery": 0,
+    "beer": 0,
+    "faith": 1.7,
+    "prestige": 0.34
+  },
+  "lastDelivery": {
+    "time": 7.699999999999989,
+    "citizen": 7,
+    "store": "9,8",
+    "cargo": {
+      "clay": 6
+    }
+  },
+  "drought": 0,
+  "rain": 0,
+  "droughtSeen": false,
+  "memories": [],
+  "news": [
+    {
+      "title": "У города появился покровитель",
+      "text": "Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.",
+      "kind": "good",
+      "year": 1,
+      "season": 0,
+      "tick": 0
+    }
+  ],
+  "event": null,
+  "won": false,
+  "lost": false,
+  "continued": false,
+  "hungry": 0,
+  "miracleCount": 0,
+  "name": "Безымянный дух",
+  "achievements": [],
+  "ecology": {
+    "version": 1,
+    "legacyFauna": true,
+    "populations": {
+      "goat": {
+        "count": 7,
+        "nextBirth": 240
+      },
+      "gazelle": {
+        "count": 12,
+        "nextBirth": 257
+      },
+      "jackal": {
+        "count": 4,
+        "nextBirth": 274
+      },
+      "fish": {
+        "count": 36,
+        "nextBirth": 291
+      },
+      "orange-bird": {
+        "count": 2,
+        "nextBirth": 308
+      },
+      "goose": {
+        "count": 2,
+        "nextBirth": 325
+      },
+      "fox": {
+        "count": 2,
+        "nextBirth": 342
+      },
+      "boar": {
+        "count": 2,
+        "nextBirth": 359
+      },
+      "lioness": {
+        "count": 2,
+        "nextBirth": 376
+      },
+      "dog": {
+        "count": 2,
+        "nextBirth": 393
+      },
+      "duck": {
+        "count": 2,
+        "nextBirth": 410
+      },
+      "donkey": {
+        "count": 2,
+        "nextBirth": 427
+      },
+      "bull": {
+        "count": 2,
+        "nextBirth": 444
+      },
+      "sheep-kenchoo": {
+        "count": 2,
+        "nextBirth": 461
+      },
+      "sky-birds": {
+        "count": 2,
+        "nextBirth": 478
+      }
+    }
+  },
+  "gathering": {
+    "features": [],
+    "jobs": [],
+    "kills": []
+  },
+  "festival": null,
+  "world": {
+    "seed": 73129,
+    "lakes": [
+      {
+        "id": "lake-0",
+        "cells": [
+          {
+            "x": 26,
+            "y": 6
+          },
+          {
+            "x": 27,
+            "y": 6
+          },
+          {
+            "x": 25,
+            "y": 7
+          },
+          {
+            "x": 26,
+            "y": 7
+          },
+          {
+            "x": 27,
+            "y": 7
+          },
+          {
+            "x": 25,
+            "y": 8
+          },
+          {
+            "x": 26,
+            "y": 8
+          },
+          {
+            "x": 27,
+            "y": 8
+          }
+        ]
+      },
+      {
+        "id": "lake-1",
+        "cells": [
+          {
+            "x": 31,
+            "y": 21
+          },
+          {
+            "x": 32,
+            "y": 21
+          },
+          {
+            "x": 30,
+            "y": 22
+          },
+          {
+            "x": 31,
+            "y": 22
+          },
+          {
+            "x": 32,
+            "y": 22
+          },
+          {
+            "x": 30,
+            "y": 23
+          },
+          {
+            "x": 31,
+            "y": 23
+          },
+          {
+            "x": 32,
+            "y": 23
+          }
+        ]
+      },
+      {
+        "id": "lake-2",
+        "cells": [
+          {
+            "x": 20,
+            "y": 25
+          },
+          {
+            "x": 21,
+            "y": 25
+          },
+          {
+            "x": 19,
+            "y": 26
+          },
+          {
+            "x": 20,
+            "y": 26
+          },
+          {
+            "x": 21,
+            "y": 26
+          },
+          {
+            "x": 19,
+            "y": 27
+          },
+          {
+            "x": 20,
+            "y": 27
+          },
+          {
+            "x": 21,
+            "y": 27
+          }
+        ]
+      },
+      {
+        "id": "lake-3",
+        "cells": [
+          {
+            "x": 4,
+            "y": 22
+          },
+          {
+            "x": 5,
+            "y": 22
+          },
+          {
+            "x": 3,
+            "y": 23
+          },
+          {
+            "x": 4,
+            "y": 23
+          },
+          {
+            "x": 5,
+            "y": 23
+          },
+          {
+            "x": 3,
+            "y": 24
+          },
+          {
+            "x": 4,
+            "y": 24
+          },
+          {
+            "x": 5,
+            "y": 24
+          }
+        ]
+      }
+    ],
+    "deposits": [
+      {
+        "kind": "clay",
+        "x": 7,
+        "y": 7
+      },
+      {
+        "kind": "reed",
+        "x": 11,
+        "y": 12
+      },
+      {
+        "kind": "forest",
+        "x": 6,
+        "y": 10
+      },
+      {
+        "kind": "wildlife",
+        "x": 5,
+        "y": 15
+      },
+      {
+        "kind": "stone",
+        "x": 5,
+        "y": 6
+      },
+      {
+        "kind": "clay",
+        "x": 24,
+        "y": 13
+      },
+      {
+        "kind": "forest",
+        "x": 28,
+        "y": 15
+      },
+      {
+        "kind": "wildlife",
+        "x": 30,
+        "y": 17
+      },
+      {
+        "kind": "stone",
+        "x": 33,
+        "y": 13
+      },
+      {
+        "kind": "clay",
+        "x": 8,
+        "y": 9
+      },
+      {
+        "kind": "reed",
+        "x": 11,
+        "y": 9
+      },
+      {
+        "kind": "dates",
+        "x": 10,
+        "y": 9
+      },
+      {
+        "kind": "dates",
+        "x": 9,
+        "y": 10
+      },
+      {
+        "kind": "clay",
+        "x": 18,
+        "y": 9
+      },
+      {
+        "kind": "reed",
+        "x": 15,
+        "y": 8
+      },
+      {
+        "kind": "reed",
+        "x": 16,
+        "y": 6
+      },
+      {
+        "kind": "dates",
+        "x": 18,
+        "y": 8
+      },
+      {
+        "kind": "dates",
+        "x": 17,
+        "y": 9
+      }
+    ],
+    "resourceVersion": 1
+  },
+  "trade": {
+    "silver": 40,
+    "visits": 0,
+    "nextArrival": 1,
+    "caravan": null,
+    "deliveries": [],
+    "nextDelivery": 1,
+    "sales": [],
+    "nextSale": 1
+  },
+  "foodPlan": {
+    "protectSeeds": true
+  },
+  "pests": {
+    "cats": [],
+    "sites": [
+      {
+        "key": "9,8",
+        "mice": 1,
+        "clock": 8.899999999999984,
+        "spawn": 8.899999999999984,
+        "hunt": 0,
+        "guardTime": 0,
+        "loss": 0.10680000000000023,
+        "caught": 0,
+        "scared": 0,
+        "reported": 0,
+        "flash": null
+      }
+    ],
+    "nextCat": 0,
+    "totalLoss": 0.10680000000000023
+  },
+  "inventory": {
+    "version": 1
+  },
+  "district": {
+    "nextId": 1,
+    "jobs": [],
+    "lastScan": 8
+  },
+  "demography": {
+    "nextId": 12,
+    "rngState": 7919,
+    "births": 0,
+    "naturalDeaths": 0,
+    "lastBirth": {}
+  },
+  "lifeAnalytics": {
+    "version": 1,
+    "startedTick": 0,
+    "baseline": {
+      "births": 0,
+      "deaths": 0
+    },
+    "people": [
+      {
+        "id": 0,
+        "name": "Амал",
+        "age": 20,
+        "sex": "m",
+        "parents": [],
+        "partner": 1,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 1,
+        "name": "Нин-Ая",
+        "age": 27,
+        "sex": "f",
+        "parents": [],
+        "partner": 0,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 2,
+        "name": "Илду",
+        "age": 34,
+        "sex": "m",
+        "parents": [],
+        "partner": 3,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 3,
+        "name": "Энлил",
+        "age": 41,
+        "sex": "f",
+        "parents": [],
+        "partner": 2,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 4,
+        "name": "Шуба",
+        "age": 48,
+        "sex": "m",
+        "parents": [],
+        "partner": 5,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 5,
+        "name": "Тари",
+        "age": 26,
+        "sex": "f",
+        "parents": [],
+        "partner": 4,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 6,
+        "name": "Ишме",
+        "age": 33,
+        "sex": "m",
+        "parents": [],
+        "partner": 7,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 7,
+        "name": "Нанна",
+        "age": 40,
+        "sex": "f",
+        "parents": [],
+        "partner": 6,
+        "generation": 1,
+        "home": "8,8",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 8,
+        "name": "Лугаль",
+        "age": 38,
+        "sex": "m",
+        "parents": [],
+        "partner": 9,
+        "generation": 1,
+        "home": "9,9",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 9,
+        "name": "Сила",
+        "age": 34,
+        "sex": "f",
+        "parents": [],
+        "partner": 8,
+        "generation": 1,
+        "home": "9,9",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 10,
+        "name": "Уту",
+        "age": 6,
+        "sex": "m",
+        "parents": [
+          8,
+          9
+        ],
+        "partner": null,
+        "generation": 2,
+        "home": "9,9",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      },
+      {
+        "id": 11,
+        "name": "Белет",
+        "age": 12,
+        "sex": "f",
+        "parents": [
+          8,
+          9
+        ],
+        "partner": null,
+        "generation": 2,
+        "home": "9,9",
+        "firstSeenTick": 0,
+        "bornTick": null,
+        "diedTick": null,
+        "cause": null
+      }
+    ],
+    "history": [
+      {
+        "tick": 0,
+        "population": 12,
+        "children": 2,
+        "adults": 10,
+        "elders": 0,
+        "births": 0,
+        "deaths": 0,
+        "causes": {
+          "oldAge": 0,
+          "starvation": 0,
+          "unknown": 0
+        },
+        "health": 100,
+        "mood": 75,
+        "hunger": 0,
+        "thirst": 0,
+        "faith": 60
+      }
+    ]
+  }
+}

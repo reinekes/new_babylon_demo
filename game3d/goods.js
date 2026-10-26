@@ -1,6 +1,6 @@
 // Display-only goods. Rectangular parcels share baked geometry; amounts remain in simulation.
 export const GOODS_HEIGHT=.36;
-export const GOODS_KINDS=['food','wood','clay','stone','reed','pottery','wool','cloth','beer','hides','clothing','brick','firedBrick','water'];
+export const GOODS_KINDS=['food','wood','clay','stone','reed','pottery','wool','cloth','beer','hides','clothing','brick','firedBrick','water','milk'];
 export function cargoLayout(stock,{columns=4,layers=3,maxKinds=Infinity}={}){
  const result=[];let i=0;
  for(const kind of GOODS_KINDS){if(i>=maxKinds)break;const amount=stock?.[kind];if(!Number.isFinite(amount)||amount<=0)continue;
@@ -10,9 +10,9 @@ export function cargoLayout(stock,{columns=4,layers=3,maxKinds=Infinity}={}){
 export function createGoodsSources(B,scene,materials){
  const sources=new Map(),owned=[];
  for(const kind of GOODS_KINDS){
-  const pieces=[],mat=['water','beer','pottery','clay','firedBrick'].includes(kind)?materials.terracotta:kind==='brick'?(materials.soil||materials.terracotta):kind==='stone'?materials.stone:kind==='wood'?materials.wood:['cloth','wool','hides','clothing'].includes(kind)?materials.linen:materials.reed;
+  const pieces=[],mat=['milk','water','beer','pottery','clay','firedBrick'].includes(kind)?materials.terracotta:kind==='brick'?(materials.soil||materials.terracotta):kind==='stone'?materials.stone:kind==='wood'?materials.wood:['cloth','wool','hides','clothing'].includes(kind)?materials.linen:materials.reed;
   const box=(x,y,z,w,h,d)=>{const m=B.MeshBuilder.CreateBox(`goods-part-${kind}`,{width:w,height:h,depth:d},scene);m.position.set(x,y,z);pieces.push(m);return m;};
-  if(['water','beer','pottery'].includes(kind)){
+  if(['milk','water','beer','pottery','milk'].includes(kind)){
    // Clay vessels retain their functional shape, resting in a rectangular carrier.
    box(0,.035,0,.68,.07,.56);
    for(const x of [-.16,.16]){const m=B.MeshBuilder.CreateCylinder('goods-clay-vessel',{height:.29,diameterTop:.15,diameterBottom:.21,tessellation:8},scene);m.position.set(x,.215,0);pieces.push(m);}
@@ -27,7 +27,7 @@ export function createGoodsSources(B,scene,materials){
    // Folded fabric and wool bales stay block shaped, with visible folded ends.
    else for(const y of [.08,.16,.24])box(0,y,.269,.61,.018,.025);
   }
-  if(!['clay','stone','brick','firedBrick','water','beer','pottery'].includes(kind))for(const z of [-.16,.16]){
+  if(!['clay','stone','brick','firedBrick','water','beer','pottery','milk'].includes(kind))for(const z of [-.16,.16]){
    box(0,.35,z,.70,.02,.035);box(-.34,.18,z,.025,.34,.035);box(.34,.18,z,.025,.34,.035);
   }
   const mesh=B.Mesh.MergeMeshes(pieces,true,true,undefined,false,false);mesh.name=`goods-source-${kind}`;mesh.material=mat;mesh.isPickable=false;mesh.receiveShadows=true;mesh.setEnabled(false);sources.set(kind,mesh);owned.push(mesh);

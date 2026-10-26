@@ -1,3 +1,4 @@
+import {recordBuildingProduction} from './building-production-history.js';
 import {isOperational} from './definitions.js';
 import {weatherAt} from './environment.js';
 
@@ -34,7 +35,7 @@ export function advanceBricks(s,dt){
   const v=b.brickmaking;
   if(b.type!=='brickyard'||!isOperational(b)||!validBuffer(v)||!v.wet)continue;
   v.drying=Math.min(BRICK_DRYING_TIME,v.drying+dt*rate);
-  if(v.drying>=BRICK_DRYING_TIME){v.ready=v.wet;v.wet=0;v.drying=0;}
+  if(v.drying>=BRICK_DRYING_TIME){v.ready=v.wet;v.wet=0;v.drying=0;recordBuildingProduction(s,b,'brick',v.ready);}
  }
 }
 export function collectBricks(b){

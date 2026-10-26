@@ -2,7 +2,7 @@ import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
 // not reconstructions. One merged mesh per shared material and building template.
-export const ARCHITECTURE_TYPES=Object.freeze(['pottery','brewery','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market']);
+export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market']);
 export function createArchitecture(B,scene,b,m){
  const canopies=[],groups=new Map(),level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
  let serial=0;const add=(mesh,mat)=>{mesh.material=mat||wall;if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
@@ -87,6 +87,7 @@ export function createArchitecture(B,scene,b,m){
  case 'waterpoint':ground();basin(0,.4,2.6,2.1);cloth(-.25,-.8,3.6,1.5,2.1,m.reed);for(let i=0;i<6;i++)jar(-2.1+i*.8,1.95,.55);beam([-1.8,.3,-2],[1.8,.3,-2],.13,m.reed);block(0,.26,-1.7,.55,.1,.6,m.shade);break;
  case 'weaver':ground();room(-1.5,-.4,1.7,3.8,2);cloth(.65,.05,3,3.6,2.25,m.reed);loom(.3,-.9);loom(.5,1.1);for(let i=0;i<5;i++)cylinder(1.8,.28,-1.4+i*.66,.24,.52,m.linen,.18);break;
  case 'tailor':ground();room(0,-1.55,4.3,1.65,2.35);cloth(-.5,.55,3.3,2,2.05);bench(-.7,.5,2.5);for(let i=0;i<3;i++)block(-1.4+i*.65,.86,.5,.55,.06,.58,m.linen);for(let i=0;i<4;i++){beam([1.65,.1,-.5+i*.65],[1.65,1.7,-.5+i*.65]);block(1.65,1.27,-.5+i*.65,.6,.8,.07,m.linen);}break;
+ case 'cowshed':ground();fence(0,0,5,5);cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
  case 'sheepfold':ground();fence(0,0,5,5);cloth(-1,-1.3,2.8,2,1.55,m.reed);basin(1.8,-1,.6,2);for(let i=0;i<6;i++)block(-1.9+i*.65,-.01,1.3,.54,.15,1.4,m.reed,.1);break;
  case 'harbor':for(let i=0;i<17;i++)block(0,.35,-2.55+i*.32,5.2,.15,.29,m.wood);for(const x of [-2.3,2.3])for(const z of [-2.3,0,2.3])cylinder(x,.3,z,.13,1.55);cloth(-1.2,-1.3,2.4,1.8,2.1,m.reed);stack(-1.9,-1.7,7);jar(-.5,-1.2,.7,.45);for(let i=0;i<4;i++)beam([.3+i*.42,.6,.4],[.3+i*.42,.6,2.2],.12,m.reed);break;
  case 'market':ground();cloth(0,-1.55,4.5,1.6,2.15);cloth(-1.6,.8,1.65,2.6,1.9,m.reed);cloth(1.65,.8,1.5,2.6,2.35);bench(0,-1.55,3.8);for(let i=0;i<6;i++)jar(-1.5+i*.6,-1.55,.4,.85);for(let i=0;i<3;i++)block(1.65,.3,.1+i*.75,.8,.5,.6,m.reed);break;
@@ -106,7 +107,7 @@ export function createArchitecture(B,scene,b,m){
   const {x,z,height:h,kind}=a;
   // The active equipment belongs to an attached open work bay. Its edge
   // shades the tools while leaving both front/side working bodies readable.
-  if(!['garden','sheepfold'].includes(b.type)){
+  if(!['garden','sheepfold','cowshed'].includes(b.type)){
    const bx=x-a.sx*.28,bz=z-a.sz*.28,shade=canopies.find(c=>Math.abs(c.x-bx)<(c.w+1.72)/2-.05&&Math.abs(c.z-bz)<(c.d+1.72)/2-.05);
    if(shade){const x0=Math.min(shade.x-shade.w/2,bx-.86),x1=Math.max(shade.x+shade.w/2,bx+.86),z0=Math.min(shade.z-shade.d/2,bz-.86),z1=Math.max(shade.z+shade.d/2,bz+.86);for(const part of shade.parts){const parts=groups.get(part.material),i=parts.indexOf(part);if(i>=0)parts.splice(i,1);part.dispose();}canopies.splice(canopies.indexOf(shade),1);cloth((x0+x1)/2,(z0+z1)/2,x1-x0,z1-z0,Math.max(2.18,shade.y),shade.mat);}
    else cloth(bx,bz,1.72,1.72,2.18,m.reed);
@@ -116,6 +117,7 @@ export function createArchitecture(B,scene,b,m){
    beam([x-.30,1.38,z+a.sz*.20],[x+.30,1.38,z+a.sz*.20],.035);block(x,1.05,z+a.sz*.20,.54,.62,.035,m.linen);
    for(const side of [-1,1])beam([x+a.sx*.20,.08,z+side*.30],[x+a.sx*.20,1.38,z+side*.30],.035);beam([x+a.sx*.20,1.38,z-.30],[x+a.sx*.20,1.38,z+.30],.035);block(x+a.sx*.20,1.05,z,.035,.62,.54,m.linen);
   }else if(kind==='vat'){jar(x,z,.91);cylinder(x,.91,z,.12,.035,m.shade);}
+  else if(kind==='dairy'){jar(x-a.sx*.38,z-a.sz*.38,.28);cylinder(x-a.sx*.38,.25,z-a.sz*.38,.055,.012,m.linen);}
   else if(kind==='kiln'){block(x,.4,z,.62,.8,.62,m.fired);block(x,h,z,.5,.035,.5,m.raw);block(x,h+.06,z,.38,.10,.32,m.raw);}
   else {
    block(x,h-.065,z,.65,.13,.65,m.wood);for(const dx of [-.24,.24])for(const dz of [-.24,.24])block(x+dx,(h-.13)/2,z+dz,.055,h-.13,.055,m.wood);

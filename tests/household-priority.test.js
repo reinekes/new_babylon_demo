@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,advanceTime,encode,decode} from '../engine.js';
-import {invalidateAssignments,syncCitizens} from '../workforce.js';
+import {invalidateAssignments,syncCitizens,recoverCitizenCargo} from '../workforce.js';
 import {newMedicalSkill} from '../education.js';
 
 function clinicCity(){
@@ -60,12 +60,12 @@ test('diagnostics and food warnings attribute a neighboring courier to the recei
 });
 test('a severely hungry resident with food already at home eats before another long optional refill',async()=>{
  const {makeStressDistrict}=await import('../district3d/state.js');const {initializeLifeAnalytics}=await import('../life-analytics.js');const s=makeStressDistrict();
- s.citizens=s.citizens.filter(c=>[31,34].includes(c.id));s.population=2;
+ for(const c of s.citizens)recoverCitizenCargo(s,c.id);s.citizens=s.citizens.filter(c=>[31,34].includes(c.id));s.population=2;
  for(const c of s.citizens)Object.assign(c,{home:'8,18',x:8.5,y:18.5,phase:'home',route:[],routeIndex:0,work:null,site:null,store:null,role:'builder',cargo:{},health:42,hunger:100,mealEaten:0,mealDay:-1,mealEvaluated:-1,missedMeals:1,lastMealQuality:0,partner:c.id===31?34:31});
  const b=s.buildings.find(b=>b.type==='house'&&b.x===8&&b.y===18);b.pantry=2.4;b.pantryDelivered=2.4;b.water=100;b.waterDelivered=100;
  invalidateAssignments(s);syncCitizens(s);delete s.lifeAnalytics;initializeLifeAnalytics(s);let ate=false;
  for(let i=0;i<900;i++){s.event=null;advanceTime(s,.2);ate ||= s.citizens.find(c=>c.id===31)?.mealEaten>.75;}
- assert.ok(ate,'the hungry supplier must eat the meal already available at home');assert.equal(s.deaths,0);assert.equal(s.population,2);assert.ok(s.citizens.every(c=>c.health>0));assert.ok(decode(encode(s)));
+ assert.ok(ate,'the hungry supplier must eat the meal already available at home');assert.equal(s.deaths,0);assert.ok(s.population>=2);assert.ok([31,34].every(id=>s.citizens.some(c=>c.id===id)));assert.ok(s.citizens.every(c=>c.health>0));assert.ok(decode(encode(s)));
 });
 test('a hungry home worker rests with their work cargo, eats pantry food, and later resumes its delivery',async()=>{
  const {initializeLifeAnalytics}=await import('../life-analytics.js');const s=createGame({start:'established'}),c=s.citizens[0];s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.citizens=[c];s.population=1;

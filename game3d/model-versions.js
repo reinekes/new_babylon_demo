@@ -42,6 +42,7 @@ export const MODEL_VERSIONS=Object.freeze({
  "miracle-snowdrop-2.glb": "497b86d98cca",
  "resident-lod.glb": "c8c6c2dc43c0",
  "resident.glb": "a37c622a07b4",
+ "river-cargo-boat.glb": "63a783f5a4af",
  "sheep.glb": "e370ab497359",
  "sky-bird-single.glb": "964c4b58caf5",
  "source-walk-adolescent.glb": "e4bef22f87cd",

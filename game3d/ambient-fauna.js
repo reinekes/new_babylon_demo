@@ -1,3 +1,4 @@
+import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
@@ -6,7 +7,6 @@ import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 export const AMBIENT_MODELS=Object.freeze({
  'orange-bird':{file:'imported-orange-bird.glb',count:3,stride:.14,pace:.18},
- goose:{file:'imported-goose.glb',count:2,stride:.16,pace:.15},
  fox:{file:'imported-fox.glb',count:1,stride:.23,pace:.24},
  boar:{file:'imported-boar.glb',count:1,stride:.32,pace:.26},
  lioness:{file:'imported-lioness.glb',count:1,stride:.42,pace:.3},
@@ -30,16 +30,17 @@ export function ambientAnchor(state,species,index=0,occupied=[]){
  return null;
 }
 export async function createAmbientFauna(B,scene,meshes=[],options={}){
- const assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb'));
+ const farmMaterials=new Map(),assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb'));
  const entries=Object.entries(AMBIENT_MODELS);if(options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
  const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
  let disposed=false,clock=0,initialized=false;
  function register(a){a.owned=a.root.getChildMeshes();for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
- function imported(species,index){const source=assets.get(species);if(!source)return null;const id=`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
-  root.metadata={ambientId:id,ambientSpecies:species,sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
+ function imported(species,index,farm=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=farm?farm.id:`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
+  root.metadata={ambientId:id,ambientSpecies:species,...(farm?{dairyBuilding:farm.building.id||`${farm.building.x},${farm.building.y}`,calf:farm.calf}:{}),sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(id+'-')?g.name.slice(id.length+1):g.name,g);}
-  return register({root,model,groups,skeletons:copy.skeletons,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
+  if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
+  return register({root,model,groups,skeletons:copy.skeletons,farm,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
  function originalSky(index,shared){const root=new B.TransformNode(`ambient-sky-${index}`,scene);root.metadata={ambientId:`ambient-sky-${index}`,ambientSpecies:'sky-bird',sourceMotion:'original procedural wing flaps'};const body=shared.body.createInstance(`ambient-sky-${index}-body`),left=shared.wing.createInstance(`ambient-sky-${index}-left`),right=shared.wing.createInstance(`ambient-sky-${index}-right`);for(const m of [body,left,right])m.parent=root;body.scaling.set(.20,.13,.48);left.position.x=-.1;right.position.x=.1;right.rotation.z=Math.PI;return register({root,model:root,species:'original-sky',index,phase:index*.8,groups:new Map(),wings:[left,right],enabled:true});}
  const templates=[];let skyMaterial;
  if(!assets.has('sky-birds')){
@@ -54,14 +55,15 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const phase=name==='Walk'?a.walkPhase:((t-a.clipClock+a.phase)%duration)/duration;g.goToFrame(g.from+phase*(g.to-g.from));
   Object.assign(a.root.metadata,{clip:name,gaitPhase:a.walkPhase});
  }
- function removeActor(a){for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);}
+ function removeActor(a){farmMaterials.get(a.root)?.dispose();farmMaterials.delete(a.root);for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);}
  function update(state,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;
-  for(const a of [...actors]){const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
+  const farms=new Map(dairyHerd(state).map(f=>[f.id,f]));for(const a of [...actors]){if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
   for(const species of Object.keys(AMBIENT_MODELS)){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>a.species===species).length;i<desired;i++)imported(species,i);}
+  for(const f of farms.values())if(!actors.some(a=>a.farm?.id===f.id))imported('cow',f.index,f);
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(4,speed)):1;const advancing=!paused&&dt>0&&speed>0;if(advancing)clock+=dt*speed;
-  for(const a of actors){const sky=a.species==='sky-birds'||a.species==='original-sky';
+  for(const a of actors){if(a.farm){a.farm=farms.get(a.farm.id);const p=dairyPose(a.farm,clock);a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);a.root.rotation.y=p.yaw;a.root.metadata.herdAnimal=true;if(advancing)a.walkPhase=(a.walkPhase+dt*speed*.035)%1;animate(a,clock,p.walking);continue;}const sky=a.species==='sky-birds'||a.species==='original-sky';
    if(sky){if(!advancing&&a.skyPlaced)continue;const p=skyFlightPose(clock*.045,a.index);a.root.position.set(p.x,p.y,p.z);a.root.rotation.y=p.yaw;a.root.rotation.z=p.bank;a.skyPlaced=true;if(a.wings){a.wings[0].rotation.z=.55*Math.sin(clock*7+a.phase);a.wings[1].rotation.z=Math.PI-.55*Math.sin(clock*7+a.phase);}animate(a,clock);continue;}
    if(!a.anchor)seek(a,state);if(!advancing)continue;
    const x=a.root.position.x/6,y=a.root.position.z/6;
@@ -83,6 +85,6 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   }
   initialized=true;
  }
- function dispose(){if(disposed)return;disposed=true;for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const a of assets.values())a.dispose();assets.clear();}
+ function dispose(){if(disposed)return;disposed=true;for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const a of assets.values())a.dispose();assets.clear();}
  return {update,dispose,roots:()=>actors.map(a=>a.root)};
 }

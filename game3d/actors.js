@@ -113,10 +113,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    a.details=new B.TransformNode(`${name}-details`,scene);a.details.parent=root;
    a.tool=new B.TransformNode(`${name}-tool`,scene);a.tool.parent=root;a.tool.setEnabled(false);a.toolKind=null;
    a.inspired=B.MeshBuilder.CreatePolyhedron(`${name}-inspired`,{type:1,size:1},scene);a.inspired.parent=root;a.inspired.material=gold;a.inspired.position.set(0,1.82,0);a.inspired.scaling.set(.035,.06,.035);a.inspired.setEnabled(false);a.inspired.isPickable=false;meshes.push(a.inspired);
-   const nodes=model.getChildTransformNodes();a.hands={};a.arms={};
-   a.spine=nodes.find(n=>n.name.endsWith('-spine_01'));a.spineBase=a.spine?.rotationQuaternion?.clone();a.legs={};
+   const nodes=model.getChildTransformNodes();a.hands={};a.arms={};a.lastHands={};
+   a.spine=nodes.find(n=>n.name.endsWith('-spine_01'));a.spineBase=a.spine?.rotationQuaternion?.clone();a.pelvis=nodes.find(n=>n.name.endsWith('-pelvis'));a.pelvisBase=a.pelvis?.position.clone();a.legs={};
    for(const side of ['l','r'])a.legs[side]={upper:nodes.find(n=>n.name.endsWith(`-thigh_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-calf_${side}`)),foot:nodes.find(n=>n.name.endsWith(`-foot_${side}`))};
-   for(const leg of Object.values(a.legs))if(leg.upper)leg.basePosition=leg.upper.position.clone();
+   for(const leg of Object.values(a.legs))if(leg.upper){leg.basePosition=leg.upper.position.clone();leg.baseRotations=[leg.upper,leg.lower,leg.foot].map(n=>n?.rotationQuaternion?.clone());leg.toe=leg.foot?.getChildren().find(n=>/toe/i.test(n.name));}
    a.head=nodes.find(n=>n.name.endsWith('-head'));a.headBase=a.head?.scaling.clone();
    a.hairMeshes=model.getChildMeshes().filter(m=>/scalp hair/i.test(m.name));a.beardMeshes=model.getChildMeshes().filter(m=>/beard/i.test(m.name));
    if(!a.nativeResident&&a.head&&a.hairMeshes[0]){
@@ -148,6 +148,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  }
  // Solve the authored y-axis upper/lower arm bones toward a palm target in world space.
  // This uses the real glTF joints, keeping skin, hands and attached tools connected.
+ function aimJoint(node,child,end){
+  node.parent.computeWorldMatrix(true);const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
+  const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();child.position.normalizeToNew().rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);
+ }
  function poseArm(a,side,local){
   const {upper,lower}=a.arms[side],hand=a.hands[side];if(!upper||!lower||!hand)return;
   a.root.computeWorldMatrix(true);upper.computeWorldMatrix(true);lower.computeWorldMatrix(true);hand.computeWorldMatrix(true);
@@ -157,9 +161,25 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const along=(l1*l1-l2*l2+length*length)/(2*length),height=Math.sqrt(Math.max(0,l1*l1-along*along));
   let bend=B.Vector3.TransformNormal(vec(side==='l'?-1:1,-.7,-.35),a.root.getWorldMatrix());bend=bend.subtract(direction.scale(B.Vector3.Dot(bend,direction))).normalize();
   const joint=shoulder.add(direction.scale(along)).add(bend.scale(height));
-  const aim=(node,child,end)=>{node.parent.computeWorldMatrix(true);const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
-   const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();child.position.normalizeToNew().rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);};
-  aim(upper,lower,joint);lower.computeWorldMatrix(true);aim(lower,hand,shoulder.add(direction.scale(length)));
+  aimJoint(upper,lower,joint);lower.computeWorldMatrix(true);aimJoint(lower,hand,shoulder.add(direction.scale(length)));
+ }
+ function milkingSeat(a,enabled){
+  if(enabled&&!a.milkingSeat){a.milkingSeat=new B.TransformNode(`${a.root.name}-milking-seat`,scene);a.milkingSeat.parent=a.root;box('milking-stool-seat',a.milkingSeat,wood,0,.38,-.025,.30,.045,.26);for(const x of [-.11,.11])for(const z of [-.12,.07])box('milking-stool-leg',a.milkingSeat,wood,x,.18,z,.035,.36,.035);}
+  a.milkingSeat?.setEnabled(!!enabled);
+ }
+ // Sit on a low stool using the native pelvis and bent leg chains. The feet
+ // keep their authored ground points and every upper/lower segment keeps its length.
+ function seatedMilking(a){
+  if(!a.pelvis)return;
+  const planted=Object.values(a.legs).filter(l=>l.upper&&l.lower&&l.foot).map(leg=>{for(const n of [leg.upper,leg.lower,leg.foot,leg.toe].filter(Boolean))n.computeWorldMatrix(true);return {leg,hip:leg.upper.getAbsolutePosition().clone(),knee:leg.lower.getAbsolutePosition().clone(),foot:leg.foot.getAbsolutePosition().clone(),toe:leg.toe?.getAbsolutePosition().clone()};});
+  a.root.computeWorldMatrix(true);a.pelvis.computeWorldMatrix(true);a.pelvis.parent.computeWorldMatrix(true);
+  const target=a.pelvis.getAbsolutePosition().clone();target.y=a.root.position.y+.45*a.root.scaling.y;
+  a.pelvis.position.copyFrom(B.Vector3.TransformCoordinates(target,a.pelvis.parent.getWorldMatrix().clone().invert()));a.pelvis.computeWorldMatrix(true);
+  for(const {leg,hip,knee,foot,toe}of planted){
+   leg.upper.computeWorldMatrix(true);const origin=leg.upper.getAbsolutePosition(),l1=B.Vector3.Distance(hip,knee),l2=B.Vector3.Distance(knee,foot),ray=foot.subtract(origin),length=Math.max(.005,Math.min(ray.length(),l1+l2-.005)),direction=ray.normalize(),along=(l1*l1-l2*l2+length*length)/(2*length),height=Math.sqrt(Math.max(0,l1*l1-along*along));
+   let forward=B.Vector3.TransformNormal(vec(0,0,1),a.root.getWorldMatrix());forward=forward.subtract(direction.scale(B.Vector3.Dot(forward,direction))).normalize();const bend=origin.add(direction.scale(along)).add(forward.scale(height));
+   aimJoint(leg.upper,leg.lower,bend);leg.lower.computeWorldMatrix(true);aimJoint(leg.lower,leg.foot,foot);if(leg.toe&&toe)aimJoint(leg.foot,leg.toe,toe);
+  }
  }
  function aimForward(node,end){
   node.computeWorldMatrix(true);const inverse=node.parent.getWorldMatrix().clone().invert(),origin=node.getAbsolutePosition();
@@ -258,7 +278,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   }
   a.lastX=shownX;a.lastY=shownY;
-  const decision=actorAnimation(c,distance<3?distance:0);
+  const decision=actorAnimation(c,a.workContact?.kind==='dairy'&&!c.walking?0:distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
   if(!paused||!a.clip){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
   a.paused=paused;
@@ -298,9 +318,17 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // Apply the distance sample once, before task IK and skeleton upload.
    if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
-   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
+   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
+   const milking=work&&a.workContact?.kind==='dairy',resetSeated=milking||a.wasSeated&&a.clip==='Idle_Loop';
+   // Sample the real idle keys before sitting. A constant idle channel can
+   // otherwise retain our previous IK transform instead of rewriting its value.
+   if(resetSeated&&a.clip==='Idle_Loop'){const idle=a.groups.get('Idle_Loop');idle.goToFrame(idle.from);authoredStance(a,targets);}
+   if(a.pelvis&&!targets?.position.has(a.pelvis))a.pelvis.position.copyFrom(a.pelvisBase);
+   for(const leg of Object.values(a.legs))for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(n&&!targets?.rotationQuaternion.has(n)&&leg.baseRotations[i])n.rotationQuaternion=leg.baseRotations[i].clone();
+   milkingSeat(a,milking);if(milking)seatedMilking(a);a.wasSeated=milking;
+   if(a.pelvis)a.lastPelvis=a.pelvis.position.clone();for(const leg of Object.values(a.legs))leg.lastRotations=[leg.upper,leg.lower,leg.foot].map(n=>n?.rotationQuaternion?.clone());
    if(a.spine){
     const animated=targets?.rotationQuaternion.has(a.spine);
     const base=animated?a.spine.rotationQuaternion:a.spineBase;
@@ -388,6 +416,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     }
    }
    for(const arm of a.armNodes)arm.last=arm.node.rotationQuaternion?.clone();
+   a.lastPelvisRotation=a.pelvis?.rotationQuaternion?.clone();for(const side of ['l','r'])a.lastHands[side]=a.hands[side]?.rotationQuaternion?.clone();
    if(a.fishingLine&&a.tool.isEnabled()){
     // A real line descends from the rod tip to the worker's water target.
     const tip=a.rodTip.getAbsolutePosition(),target=a.c.activity?.target;

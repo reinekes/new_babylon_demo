@@ -1,5 +1,5 @@
-const topologyRevisions=new WeakMap();
-export const roadTopologyRevision=s=>topologyRevisions.get(s)||0;
+import {markRoadTopologyChanged} from './road-revisions.js';
+export {roadTopologyRevision} from './road-revisions.js';
 import {reserveStock} from './inventory.js';
 import {generateStreets} from './city-life.js';
 import {terrain,onBridge,isDryPoint} from './world.js';
@@ -51,4 +51,4 @@ export function planNewRoad(s,from,to){
  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],id=roadKey(a,b);if(existing.has(id)||!dry(a)||!dry(b)||![.25,.5,.75].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t})))continue;roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a,b,level:1});}
  return {roads,reason:roads.length?'':'Этот путь уже проложен'};
 }
-export function layRoad(s,from,to){const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};s.roads.push(...plan.roads);topologyRevisions.set(s,roadTopologyRevision(s)+1);return {ok:true,count:plan.roads.length};}
+export function layRoad(s,from,to){const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};s.roads.push(...plan.roads);markRoadTopologyChanged(s);return {ok:true,count:plan.roads.length};}
