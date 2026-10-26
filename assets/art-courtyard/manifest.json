@@ -1,16 +1,16 @@
 {
-  "release": "native-residents-20261026-1",
+  "release": "source-walk-cloth-20261026-1",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 23807,
-      "sha256": "056ee9c07cc999a464233750fe811c160d70290e54df6a41cc18e1ebf3f4237f"
+      "bytes": 24856,
+      "sha256": "12773809922995e779169c522b321f510c0a2eff19776bf7fc5489a83a6cbb4c"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 25063,
-      "sha256": "346c904b704d7e39f8f975949f350dcd7ac2ae430c930c28fa5a2bdbf0622095"
+      "bytes": 26304,
+      "sha256": "a0be3a1c6387bddd948d4106429066c73141d623812bc96f2713ead682c24aac"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -532,6 +532,54 @@
       "bones": 10,
       "clips": [
         "WingFlight"
+      ]
+    },
+    {
+      "file": "models/source-walk-adolescent.glb",
+      "bytes": 505500,
+      "sha256": "e4bef22f87cd9cd5495d89a2484608fa60c72bfec4fdc3158145f90d3ffca8ee",
+      "triangles": 7169,
+      "meshes": 8,
+      "bones": 79,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/source-walk-child.glb",
+      "bytes": 505340,
+      "sha256": "15edccef3e0be906699414e20ceed609ebb95b91b725a6e88f4c75427068c666",
+      "triangles": 7169,
+      "meshes": 8,
+      "bones": 79,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/source-walk-female.glb",
+      "bytes": 716404,
+      "sha256": "aa326f1a562b1c5bea3d96488c5d03aa59953a4e0dbfffea3f57ba6d26be490a",
+      "triangles": 9884,
+      "meshes": 8,
+      "bones": 92,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/source-walk-male.glb",
+      "bytes": 505464,
+      "sha256": "3400d4b0792d0379427a269b60a7b885e33c3e77c73b77f32e9363688fa12acf",
+      "triangles": 7169,
+      "meshes": 8,
+      "bones": 79,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
       ]
     },
     {

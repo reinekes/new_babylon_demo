@@ -36,8 +36,10 @@ export function workstationPose(contact,time){
  if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.012};
  if(contact.kind==='farming')return {right:[.10,.89+lift*.11,.49],left:[-.10,1.03+lift*.11,.20],tool:'hoe',bend:.30,twist:wave*.012};
  if(contact.kind==='loom')return {right:[.12,height,.49+wave*.022],left:[-.12,height,.49-wave*.022],tool:null,bend:.08,twist:wave*.012};
- if(contact.kind==='vat')return {right:[.08,height+.10+lift*.04,.47],left:[-.14,height+.02,.50],tool:'stirring',bend:.1,twist:wave*.018};
- return {right:[.10,height+.045,.49+wave*.018],left:[-.10,height+.045,.49-wave*.018],tool:null,bend:.15,twist:wave*.012};
+ // The low vat rim needs a forward lean, keeping the near palm within the
+ // supplied residents' native arm reach while the workers retain their slots.
+ if(contact.kind==='vat')return {right:[.08,height+.10+lift*.04,.47],left:[-.14,height+.02,.50],tool:'stirring',bend:.5,twist:wave*.018};
+ return {right:[.10,height+.045,.49+wave*.018],left:[-.10,height+.045,.49-wave*.018],tool:null,bend:.3,twist:wave*.012};
 }
 // World targets preserve contact under identity height/width variation and yaw.
 export function workstationHands(contact,time){

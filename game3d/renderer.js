@@ -1,4 +1,5 @@
 import {createBackgroundQueue,createLazyFeature} from './asset-loading.js';
+import {loadBabylonVendors} from './vendor-loading.js';
 import {createBootstrapActors} from './bootstrap-actors.js';
 import {createBootstrapLandscape} from './bootstrap-landscape.js';
 import {foundingCameraTarget} from '../starter-settlement.js';
@@ -17,18 +18,21 @@ import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
 import {weatherAt} from '../environment.js';
 
-export const GAME3D_RELEASE='native-residents-20261026-1';
+export const GAME3D_RELEASE='source-walk-cloth-20261026-1';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
 export function previewFor(state,type,cell,rotation=0){if(!type||!cell)return null;const reason=canBuild(state,type,cell.x,cell.y,false,rotation);return {...cell,allowed:!reason,reason};}
 export async function createGameRenderer(canvas,onSelect,options={}){
- const B=Object.hasOwn(options,'BABYLON')?options.BABYLON:globalThis.BABYLON;
+ const injected=Object.hasOwn(options,'BABYLON');let B=injected?options.BABYLON:globalThis.BABYLON;
  const legacy=options.legacyFactory||((c,fn)=>new CanvasRenderer(c,fn));
  const manual=typeof location!=='undefined'&&new URLSearchParams(location.search).get('view')==='2d';
+ const showLoading=()=>{const element=document.createElement('div');element.className='game3d-loading';element.setAttribute('role','status');element.innerHTML='<span>НОВЫЙ ВАВИЛОН</span><strong>Город обретает объём</strong><small>Загружаем 3D-движок…</small>';canvas.parentNode.append(element);return element;};
+ let loading=null,vendorError=null;
+ if(!manual&&!injected&&typeof document!=='undefined'){loading=showLoading();try{B=await loadBabylonVendors();}catch(error){vendorError=error;console.error('3D vendor loading:',error);}}
  let supported=false;try{supported=!!B?.Engine.IsSupported;}catch{}
- if(manual||!supported){const r=legacy(canvas,onSelect);if(typeof document!=='undefined'){document.body.dataset.renderer='2d';if(!manual){const note=document.createElement('div');note.className='game3d-fallback';note.textContent='WebGL недоступен. Город открыт в 2D с прежним сохранением.';canvas.parentNode?.append(note);}const link=document.querySelector('.district-link');if(link){link.href='?view=3d';link.textContent='Открыть 3D ↗';}}return r;}
- const loading=document.createElement('div');loading.className='game3d-loading';loading.setAttribute('role','status');loading.innerHTML='<span>НОВЫЙ ВАВИЛОН</span><strong>Город обретает объём</strong><small>Загружаем здания, жителей и долину…</small>';canvas.parentNode.append(loading);
+ if(manual||!supported||vendorError){loading?.remove();const r=legacy(canvas,onSelect);if(typeof document!=='undefined'){document.body.dataset.renderer='2d';if(!manual){const note=document.createElement('div');note.className='game3d-fallback';note.textContent=vendorError?'3D не загрузился. Город открыт в 2D с прежним сохранением.':'WebGL недоступен. Город открыт в 2D с прежним сохранением.';canvas.parentNode?.append(note);}const link=document.querySelector('.district-link');if(link){link.href='?view=3d';link.textContent='Открыть 3D ↗';}}return r;}
+ loading??=showLoading();loading.innerHTML='<span>НОВЫЙ ВАВИЛОН</span><strong>Город обретает объём</strong><small>Загружаем здания, жителей и долину…</small>';
  let r;
  try{r=new GameRenderer3D(B,canvas,onSelect);await r.initialize(options.initialState);r.interactive=true;loading.remove();document.body.dataset.renderer='3d';return r;}
  catch(error){console.error('Main 3D renderer:',error);r?.dispose();const replacement=canvas.cloneNode(false);canvas.replaceWith(replacement);loading.remove();const fallback=legacy(replacement,onSelect);document.body.dataset.renderer='2d';const note=document.createElement('div');note.className='game3d-fallback';note.textContent='3D не загрузился. Город открыт в 2D, сохранение доступно.';replacement.parentNode.append(note);return fallback;}

@@ -58,11 +58,12 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
-  const load=name=>loadModel(B,scene,'assets/art-courtyard/models/',`${name}.glb?v=native-residents-20261026-1`,scene,undefined,'.glb');
-  const human=async(name,native=false)=>{const asset=await load(name);if(!['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip))){asset.dispose();throw Error('Civilian clips missing: '+name);}asset.nativeResident=native&&asset.skeletons.some(s=>s.bones.length===41);asset.residentVariant=name.replace('human-native-','');const meta=[...(asset.transformNodes||[]),...(asset.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident).find(Boolean);asset.walkMetres=meta?.strideMetres;return asset;};
-  const resident=async()=>{try{return await human('human-native-male',true);}catch(error){console.warn('Native civilian unavailable; using previous resident.',error);try{return await human('sumer-people');}catch{return human('resident');}}};
-  const ageSource=async(age)=>{try{return await human('human-native-'+age,true);}catch{return human('sumer-'+age);}};
-  const loaded=await Promise.allSettled([resident(),load('sheep'),ageSource('child'),ageSource('adolescent'),human('human-native-female',true)]);
+  const load=name=>loadModel(B,scene,'assets/art-courtyard/models/',`${name}.glb?v=source-walk-cloth-20261026-1`,scene,undefined,'.glb');
+  const human=async(name,native=false)=>{const asset=await load(name);if(!['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip))){asset.dispose();throw Error('Civilian clips missing: '+name);}const meta=[...(asset.transformNodes||[]),...(asset.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident).find(Boolean);asset.sourceWalk=meta?.sourceWalk===true;asset.nativeResident=native&&(asset.sourceWalk||asset.skeletons.some(s=>s.bones.length===41));asset.residentVariant=name.replace(/^(?:human-native-|source-walk-)/,'');asset.walkMetres=meta?.strideMetres;return asset;};
+  const sourceHuman=async variant=>{try{return await human('source-walk-'+variant,true);}catch(error){console.warn('Source walking resident unavailable; using previous model.',error);return human('human-native-'+variant,true);}};
+  const resident=async()=>{try{return await sourceHuman('male');}catch(error){console.warn('Native civilian unavailable; using previous resident.',error);try{return await human('sumer-people');}catch{return human('resident');}}};
+  const ageSource=async(age)=>{try{return await sourceHuman(age);}catch{return human('sumer-'+age);}};
+  const loaded=await Promise.allSettled([resident(),load('sheep'),ageSource('child'),ageSource('adolescent'),sourceHuman('female')]);
   for(const r of loaded)containers.push(r.status==='fulfilled'?r.value:null);
   const failed=loaded.slice(0,2).find(r=>r.status==='rejected');if(failed)throw failed.reason;
  }catch(error){for(const c of containers)c?.dispose();throw error;}
@@ -88,20 +89,25 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const copy=source.instantiateModelsToScene(n=>`${name}-${n}`,false,{doNotInstantiate:true});
   const root=new B.TransformNode(name,scene),model=new B.TransformNode(`${name}-model`,scene);model.parent=root;root.metadata=metadata;
   for(const n of copy.rootNodes)n.parent=model;
-  const groups=new Map();for(const g of copy.animationGroups){g.stop();const key=g.name.startsWith(`${name}-`)?g.name.slice(name.length+1):g.name;groups.set(key,g);}
+  const groups=new Map(),clipTargets=new Map();for(const g of copy.animationGroups){g.stop();const key=g.name.startsWith(`${name}-`)?g.name.slice(name.length+1):g.name;groups.set(key,g);
+   // These cloned clips keep the same channels for the lifetime of this actor.
+   const targets={all:new Set(),position:new Set(),rotationQuaternion:new Set()};
+   for(const {target,animation} of g.targetedAnimations){targets.all.add(target);if(animation.targetProperty==='position')targets.position.add(target);else if(animation.targetProperty==='rotationQuaternion')targets.rotationQuaternion.add(target);}
+   clipTargets.set(key,targets);
+  }
   // GLBs use metres; ground their authored soles before applying child size.
   model.computeWorldMatrix(true);for(const m of model.getChildMeshes())m.computeWorldMatrix(true);
   const bounds=model.getHierarchyBoundingVectors(true),height=bounds.max.y-bounds.min.y;
   const unit=metadata.citizenId!==undefined&&height>0?1.7/height:1;
   model.scaling.setAll(unit);model.position.y=-bounds.min.y*unit;
   register(root);
-  const a={root,model,unit,nativeResident:!!source.nativeResident,walkMetres:source.walkMetres||2.48,walkPhase:residentMotion(metadata.citizenId).phase/(Math.PI*2),groups,skeletons:copy.skeletons,materials:[],lastX:null,lastY:null,yaw:null,clip:null,cargoKey:null,pose:'idle',time:0,paused:false};
-  if(metadata.citizenId!==undefined){root.metadata.nativeResident=a.nativeResident;root.metadata.residentVariant=source.residentVariant;root.metadata.nativeStrideMetres=a.walkMetres;}
+  const a={root,model,unit,nativeResident:!!source.nativeResident,sourceWalk:!!source.sourceWalk,walkMetres:source.walkMetres||2.48,walkPhase:residentMotion(metadata.citizenId).phase/(Math.PI*2),groups,clipTargets,skeletons:copy.skeletons,materials:[],lastX:null,lastY:null,yaw:null,clip:null,cargoKey:null,pose:'idle',time:0,paused:false};
+  if(metadata.citizenId!==undefined){root.metadata.nativeResident=a.nativeResident;root.metadata.sourceWalk=a.sourceWalk;root.metadata.residentVariant=source.residentVariant;root.metadata.nativeStrideMetres=a.walkMetres;}
   // Clone recolored surfaces per resident; shared source materials stay immutable.
   if(metadata.citizenId!==undefined){
-   const cloned=new Map();a.cloth=[];a.skin=[];a.hair=[];
+   const cloned=new Map();a.cloth=[];a.skin=[];a.hair=[];a.upperCloth=new Set();
    for(const m of model.getChildMeshes())if(m.material&&/undyed|wool|cloth|skin|hair/i.test(m.material.name)){
-    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-${/skin/i.test(m.material.name)?'skin':/hair/i.test(m.material.name)?'hair':'cloth'}-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);(/skin/i.test(m.material.name)?a.skin:/hair/i.test(m.material.name)?a.hair:a.cloth).push(cloth);}m.material=cloth;if(a.nativeResident&&!/skin|hair/i.test(cloth.name)&&m.isVerticesDataPresent(B.VertexBuffer.UVKind))cloth.albedoTexture=materials.linen?.albedoTexture||null;
+    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-${/skin/i.test(m.material.name)?'skin':/hair/i.test(m.material.name)?'hair':'cloth'}-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);(/skin/i.test(m.material.name)?a.skin:/hair/i.test(m.material.name)?a.hair:a.cloth).push(cloth);if(a.sourceWalk&&/undyed linen/i.test(m.material.name))a.upperCloth.add(cloth);}m.material=cloth;if(a.nativeResident&&!/skin|hair/i.test(cloth.name)&&m.isVerticesDataPresent(B.VertexBuffer.UVKind))cloth.albedoTexture=materials.linen?.albedoTexture||null;
    }
    a.load=new B.TransformNode(`${name}-carried`,scene);a.load.parent=root;a.load.position.set(0,1,.37);
    a.details=new B.TransformNode(`${name}-details`,scene);a.details.parent=root;
@@ -217,7 +223,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Earth/wool shades distinguish individuals; worn/ragged and mourning still communicate state.
   const palette=['#e0cda4','#9d7855','#b69b78','#c7baa1','#8f9272','#aa795d','#d7d0bb'];
   const color=c.phase==='mourning'?'#c7c9ae':look.wear==='new'&&!look.craft?palette[identity.cloth]:look.robe;
-  for(const m of a.cloth){m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=look.wear==='new'?.88:look.wear==='worn'?.96:1;}
+  const clothTint=B.Color3.FromHexString(color);
+  for(const m of a.cloth){m.albedoColor=(a.upperCloth.has(m)?B.Color3.Lerp(clothTint,B.Color3.FromHexString('#eee0c0'),.46):clothTint).toLinearSpace();m.roughness=look.wear==='new'?.88:look.wear==='worn'?.96:1;}
   a.inspired.setEnabled(look.inspired);
   const profession=professionClothing(c);
   const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}:${profession?.id||''}`;
@@ -241,10 +248,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY;
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);
-  if(c.funeralContact){a.yaw=c.funeralContact.yaw;a.root.rotation.y=a.yaw;}
-  if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
-  if(distance>.00001&&!paused){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
-  else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
+  if(c.funeralContact){
+   // Both rail targets and the bearer share this ceremony orientation. Generic
+   // path smoothing must not rotate them apart or snap the root when paused.
+   if(!paused||a.yaw===null){a.yaw=c.funeralContact.yaw;a.root.rotation.y=a.yaw;}
+  }else{
+   if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
+   if(distance>.00001&&!paused){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
+   else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
+  }
   a.lastX=shownX;a.lastY=shownY;
   const decision=actorAnimation(c,distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
@@ -269,11 +281,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // foot rotations reversed the actual toe axis, even when knee points looked OK.
  // A small symmetric hip translation narrows the stance without solving or
  // rotating the limb; stride, knee flexion and the entire foot remain authored.
- function authoredStance(a){
+ function authoredStance(a,targets){
   for(const leg of Object.values(a.legs))if(leg.upper){
    // A clip can animate rotation without resetting translation. Always narrow
    // either this frame's authored position or the original rest position once.
-   const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===leg.upper&&t.animation.targetProperty==='position');
+   const animated=targets?.position.has(leg.upper);
    leg.upper.position.x=(animated?leg.upper.position.x:leg.basePosition.x)*(a.nativeResident?1:RESIDENT_STANCE.hipWidthScale);
    leg.lastPosition=leg.upper.position.clone();
   }
@@ -287,16 +299,16 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
-   authoredStance(a);
+   const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
    if(a.spine){
-    const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===a.spine&&t.animation.targetProperty==='rotationQuaternion');
+    const animated=targets?.rotationQuaternion.has(a.spine);
     const base=animated?a.spine.rotationQuaternion:a.spineBase;
     if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    }
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
-    const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===n);
+    const animated=targets?.all.has(n);
     const base=animated?n.rotationQuaternion:arm.base;
     if(!base)continue;
     const upper=/upperarm/.test(n.name),side=/_l$/.test(n.name)?1:-1;
@@ -335,7 +347,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    }else if(a.pose==='play'&&!a.c.walking){
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
-   if(!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&a.pose!=='petting'){
+   if(!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&a.pose!=='petting'){
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;

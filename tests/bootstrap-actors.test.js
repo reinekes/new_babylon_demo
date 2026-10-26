@@ -56,7 +56,7 @@ test('renderer initialization exposes real selectable bootstrap layers before an
 });
 test('an invalid detailed rig cannot replace or destroy the working bootstrap layer',async t=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoad=B.SceneLoader.LoadAssetContainerAsync,originalDocument=globalThis.document,s=fixture();s.buildings=s.buildings.filter(b=>b.type!=='field');
- globalThis.document={createElement:()=>({dataset:{},setAttribute(){},remove(){}})};t.mock.method(console,'warn',()=>{});const releasedSources=[],requiredSources=['human-native-male.glb','human-native-female.glb','human-native-child.glb','human-native-adolescent.glb','sheep.glb'];
+ globalThis.document={createElement:()=>({dataset:{},setAttribute(){},remove(){}})};t.mock.method(console,'warn',()=>{});const releasedSources=[],requiredSources=['source-walk-male.glb','source-walk-female.glb','source-walk-child.glb','source-walk-adolescent.glb','sheep.glb'];
  B.SceneLoader.LoadAssetContainerAsync=(_path,file)=>{
   const name=file.split('?')[0];if(!requiredSources.includes(name))return new Promise(()=>{});
   return Promise.resolve({animationGroups:[{name:'Walk_Loop'},{name:'Idle_Loop'}],skeletons:[{bones:Array.from({length:41})}],instantiateModelsToScene(){throw Error('rig geometry unavailable');},dispose(){releasedSources.push(name);}});

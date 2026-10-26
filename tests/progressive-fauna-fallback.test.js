@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import {readFileSync} from 'node:fs';
 import {createGame} from '../engine.js';import {createGameActors} from '../game3d/actors.js';import {animalsFor} from '../fauna.js';
 const sandbox={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.exports.NullEngine?sandbox.exports:sandbox.module.exports;
-const requiredSources=['human-native-male.glb','human-native-female.glb','human-native-child.glb','human-native-adolescent.glb','sheep.glb'];
+const requiredSources=['source-walk-male.glb','source-walk-female.glb','source-walk-child.glb','source-walk-adolescent.glb','sheep.glb'];
 function requiredSource(file){return requiredSources.includes(file.split('?')[0])?{animationGroups:[{name:'Walk_Loop'},{name:'Idle_Loop'}],skeletons:[{bones:Array.from({length:41})}],dispose(){}}:null;}
 test('pending and failed optional goat models retain selectable procedural animals with their saved IDs',async t=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),load=B.SceneLoader.LoadAssetContainerAsync,loaded=[];let view;t.mock.method(console,'warn',()=>{});

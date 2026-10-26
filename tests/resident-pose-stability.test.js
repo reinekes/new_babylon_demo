@@ -88,3 +88,23 @@ test('real GLB switches from animated walk channels to unanimated idle rest with
   assert.ok(quaternionDistance(joint(root,'spine_01').rotationQuaternion,restSpine)<1e-6,'missing rotation channel uses the original rest pose');
  });
 });
+
+test('real cloned clips do not scan their channels during repeated idle, work, walk and pause frames',async()=>{
+ const fixture=withoutChannels({hips:true,spine:true,idleOnly:true});
+ await studio(fixture,({scene,actors,state,citizen})=>{
+  actors.update(state,1/60);scene.render();
+  const clips=scene.animationGroups.filter(g=>g.name.startsWith(`citizen-${citizen.id}-`));
+  assert.equal(clips.length,2,'both actual cloned GLB clips are observed');
+  let scans=0;
+  for(const clip of clips){const some=clip.targetedAnimations.some;clip.targetedAnimations.some=function(...args){scans++;return some.apply(this,args);};}
+  for(const phase of ['working','toStore','waiting']){
+   citizen.phase=phase;citizen.walking=phase==='toStore';
+   for(let frame=0;frame<12;frame++){
+    if(citizen.walking)citizen.y+=.005;
+    actors.update(state,1/60);scene.render();
+   }
+  }
+  actors.update(state,1/60,{paused:true});for(let frame=0;frame<12;frame++)scene.render();
+  assert.equal(scans,0,'rendering uses cached channel membership after instantiation');
+ });
+});
