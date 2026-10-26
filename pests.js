@@ -47,7 +47,7 @@ export function advancePests(s,dt){
  const exposed=s.pests.sites.filter(q=>routes.has(q.key)),cap=exposed.length?1/exposed.length:0;
  for(const q of exposed){q.clock+=dt;const guarded=activeGuards.has(q.key),cat=s.pests.cats.some(c=>c.site===q.key);
   q.spawn+=dt;if(q.spawn>=45){q.spawn%=45;if(storeStock(s,q.key,'food')>0)q.mice=Math.min(3,q.mice+1);}
-  if(q.mice>0){const amount=takeStock(s,q.key,'food',.012*q.mice*dt*cap*(guarded?.15:1));q.loss+=amount;s.pests.totalLoss+=amount;}
+  if(q.mice>0){const amount=takeStock(s,q.key,'food',.012*q.mice*dt*cap*(guarded?.15:1)*(s.buffs?.inannaProtection?.5:1));q.loss+=amount;s.pests.totalLoss+=amount;}
   const resting=q.flash&&q.clock-q.flash.time<2;
   if(q.mice>0&&!resting){q.hunt=cat?q.hunt+dt:0;q.guardTime=guarded?q.guardTime+dt:0;
    if(q.hunt>=10||q.guardTime>=8){const by=cat&&q.hunt>=10?'cat':'guard';const phase=q.clock+(q.mice-1)*2.2;q.mice--;q[by==='cat'?'caught':'scared']++;q.flash={time:q.clock,phase,by};q.hunt=0;q.guardTime=0;if(q.caught+q.scared===1)note(s,by==='cat'?'Кошка поймала мышь':'Сторож прогнал мышь',`У хранилища ${q.key} запасы стали безопаснее.`, 'good');}

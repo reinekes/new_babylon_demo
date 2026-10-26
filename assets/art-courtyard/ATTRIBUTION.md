@@ -120,3 +120,20 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## 2026-10-26 · исходная ходьба и складчатая одежда
 
 `source-walk-{male,female,child,adolescent}.glb` — производные от Man Woman Walk, Iko Nia (https://sketchfab.com/iko.gazette), https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2, CC-BY-4.0 (https://creativecommons.org/licenses/by/4.0/). Сохранены родные веса/ходьба/лица, адаптированы одежда, возраст, единицы/направление и материалы; удалены галстук/брюки/каблуки, мужская юбка подогнана из женской ткани того же исходника, исправлен единичный повреждённый вес волос. Подготовка: scripts/art-courtyard/prepare_source_walk_people.py; подробная инвентаризация: docs/MODEL_INVENTORY_SOURCE_WALK_2026-10-26.md. Предыдущие модели и их лицензии сохраняются.
+
+
+## 2026-10-26 · священные постройки и мужчина ASYKIN
+
+Все пять исходных GLB оставлены неизменными в Downloads. Четыре здания нормализованы по реальному зарезервированному участку, объединены по материалам, RGB-текстуры уменьшены до 512 и JPEG; карта нормалей врат остаётся PNG. Экспортированные рёбра SketchUp исключены. У Этеменанки удалены 12 серых плоскостей водопадов, мелкая геометрия объединена по сетке 2 см (максимальное перемещение вершины 2,04 см). Это художественные чудеса с поздними вавилонскими образами, не реконструкция Шумера. Старые одноклеточные зиккураты не меняются.
+
+| Файл | Автор и источник | Лицензия | Использование |
+|---|---|---|---|
+| `sacred-ishtar-gate.glb` | zporp (https://sketchfab.com/zporp) · https://sketchfab.com/3d-models/ishtar-gate-babylon-cedaba88f4974431a27f3b30ad34f655 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Врата Иштар, после завершения постройки; синий процедурный вид до загрузки |
+| `sacred-shrine-3.glb` | giulien (https://sketchfab.com/giulien) · https://sketchfab.com/3d-models/ziggurat-1d5f43618e534766a2b2ebc91c09e154 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Святилище III, после завершения улучшения |
+| `sacred-ziggurat-1.glb` | chaze (https://sketchfab.com/chaze) · https://sketchfab.com/3d-models/ziggurat-d27eccd7e1b343da8d26441fbc3b0983 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Великий зиккурат I, только новый участок 2×2 |
+| `sacred-ziggurat-3.glb` | haddly Anand Kumar S (https://sketchfab.com/hadleyanand) · https://sketchfab.com/3d-models/babylon-building-etemenanki-f4ca3d57822e4e73a4952a4fde7693f0 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Великий зиккурат III, только новый участок 2×2 |
+| `historical-man.glb` | ASYKIN (https://sketchfab.com/ASYKIN) · https://sketchfab.com/3d-models/talking-1-499aeb7a9c0941b295a3ae983cc06e11 | CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/) | Реальные взрослые мужчины, вдохновлённые в жрецов или музыкантов; тот же ID, путь и груз |
+
+Мужчина сохраняет собственную поверхность, лицо, бороду, обёртку и 34 родных сустава. Атлас 1024→512 JPEG; 57 261→35 999 треугольников. Статика тела упрощена по сетке 16 мм, лица — 3 мм, максимум перемещения 13,54 мм; соседние веса усреднены и нормализованы. Реальная ходьба перенесена с **Man Woman Walk**, **Iko Nia (https://sketchfab.com/iko.gazette)**, https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2, **CC BY 4.0**: семантические изменения мировых вращений и двухкостная подгонка стоп без растяжения ног. Исходный Talking сохранён отдельным `Source_Talking` и не используется при ходьбе. Это дополнительный облик реального жителя после вдохновения, не декоративный персонаж. Исходный атлас не заменяется общей текстурой ткани.
+
+Подготовка: `scripts/art-courtyard/prepare_sacred_models.py`, `prepare_historical_man.py`; точные размеры/контрольные суммы — `sacred-models-report.json`, `historical-man-report.json`.

@@ -1,5 +1,9 @@
 // One local set of engraved, 24-unit pictograms: no emoji/font dependencies.
 const paths={
+ musicHouse:'M3 21h18M4 9l8-6 8 6M5 9v12m14-12v12M9 18l-2-3 5-4 5 4-2 3-3-2-3 2Zm3-7V7',
+ ishtarGate:'M3 21V4h5v3h8V4h5v17h-6v-7a3 3 0 0 0-6 0v7H3ZM3 9h5m8 0h5M4 2v3m3-3v3m10-3v3m3-3v3',
+ inannaProtection:'M12 2l3 6 7 4-7 3-3 7-3-7-7-3 7-4 3-6Zm0 6v8M8 12h8',
+ relicAwakening:'M12 2v4m-8 5 4 2m12-2-4 2M3 20q4-4 9 0 5-4 9 0M8 9l4-3 4 3-1 6h-6L8 9Z',
  cowshed:'M3 21V8l9-5 9 5v13M3 10h18M6 17v-4h10l2 2v3H7l-1-1Zm1 1v3m8-3v3M6 14l-2-2m12 1 2-2',
  kiln:'M4 21V11a8 8 0 0 1 16 0v10H4Zm5 0v-5a3 3 0 0 1 6 0v5M7 10h10M10 6V2m4 4V2M3 21h18',
  brickyard:'M2 21h20M3 15h8v6H3v-6Zm10 0h8v6h-8v-6ZM7 9h10v6H7V9ZM12 2v3m-5-2 2 3m8-3-2 3',

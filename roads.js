@@ -1,3 +1,4 @@
+import {relicCommandReason} from './city-command-lock.js';
 import {markRoadTopologyChanged} from './road-revisions.js';
 export {roadTopologyRevision} from './road-revisions.js';
 import {reserveStock} from './inventory.js';
@@ -13,7 +14,7 @@ export function ensureRoads(s,network){
 }
 export function roadAt(s,x,y){return ensureRoads(s).map(r=>({r,d:Math.hypot(r.x-x,r.y-y)})).filter(v=>v.d<.8).sort((a,b)=>a.d-b.d)[0]?.r;}
 export const roadUpgradeCost=r=>r.level===1?{clay:3,reed:1}:{clay:6,reed:2,stone:2};
-export function upgradeRoad(s,roadOrId){const r=typeof roadOrId==='string'?ensureRoads(s).find(r=>r.id===roadOrId):roadOrId;let reason=s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':!r||!ensureRoads(s).includes(r)?'Выбери существующую дорогу':r.construction?'Улучшение уже идёт':r.level>=3?'Достигнут третий уровень':'';if(reason)return {ok:false,reason};const cost=roadUpgradeCost(r);if(Object.entries(cost).some(([k,n])=>(s.resources[k]||0)<n))return {ok:false,reason:'Не хватает материалов'};const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};r.construction={...createOrder(cost,r.level+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};return {ok:true};}
+export function upgradeRoad(s,roadOrId){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const r=typeof roadOrId==='string'?ensureRoads(s).find(r=>r.id===roadOrId):roadOrId;let reason=s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':!r||!ensureRoads(s).includes(r)?'Выбери существующую дорогу':r.construction?'Улучшение уже идёт':r.level>=3?'Достигнут третий уровень':'';if(reason)return {ok:false,reason};const cost=roadUpgradeCost(r);if(Object.entries(cost).some(([k,n])=>(s.resources[k]||0)<n))return {ok:false,reason:'Не хватает материалов'};const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};r.construction={...createOrder(cost,r.level+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};return {ok:true};}
 export function roadSpeed(s,a,b){const r=(s.roads||[]).find(r=>{const dx=r.b.x-r.a.x,dy=r.b.y-r.a.y;return Math.abs((a.x-r.a.x)*dy-(a.y-r.a.y)*dx)<1e-7&&Math.abs((b.x-r.a.x)*dy-(b.y-r.a.y)*dx)<1e-7&&[a,b].every(p=>p.x>=Math.min(r.a.x,r.b.x)-1e-7&&p.x<=Math.max(r.a.x,r.b.x)+1e-7&&p.y>=Math.min(r.a.y,r.b.y)-1e-7&&p.y<=Math.max(r.a.y,r.b.y)+1e-7);});return 1+((r?.level||1)-1)*.2;}
 
 // Preview traverses the existing network; a bridge is traversable but has no road order.
@@ -31,7 +32,7 @@ export function planRoadRoute(s,fromId,toId,target=2){
  const reason=s.funeral?'Жители провожают умерших':s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':route.some(r=>r.level<target-1)?'Сначала доведи весь путь до уровня II':!pending.length?'Все участки готовы или уже заказаны':Object.entries(cost).some(([k,n])=>(s.resources[k]||0)<n)?'Не хватает материалов на весь маршрут':'';
  return {roads:route,pending,cost,reason};
 }
-export function upgradeRoadRoute(s,from,to,target=2){const plan=planRoadRoute(s,from,to,target);if(plan.reason)return {ok:false,reason:plan.reason};const group=nextOrder(s);for(const [i,r]of plan.pending.entries()){const sources=reserveStock(s,roadUpgradeCost(r));r.construction={...createOrder(roadUpgradeCost(r),target,'upgrade'),sources,allocations:structuredClone(sources),order:group+i,routeOrder:group};}s.news.unshift({title:'Заказан дорожный маршрут',text:`Уровень ${target}: ${plan.pending.length} участков. Материалы зарезервированы, работы выполнят жители.`,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);return {ok:true,count:plan.pending.length,group};}
+export function upgradeRoadRoute(s,from,to,target=2){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const plan=planRoadRoute(s,from,to,target);if(plan.reason)return {ok:false,reason:plan.reason};const group=nextOrder(s);for(const [i,r]of plan.pending.entries()){const sources=reserveStock(s,roadUpgradeCost(r));r.construction={...createOrder(roadUpgradeCost(r),target,'upgrade'),sources,allocations:structuredClone(sources),order:group+i,routeOrder:group};}s.news.unshift({title:'Заказан дорожный маршрут',text:`Уровень ${target}: ${plan.pending.length} участков. Материалы зарезервированы, работы выполнят жители.`,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);return {ok:true,count:plan.pending.length,group};}
 
 // Player selects two tiles; the path follows their south-east street corners.
 // Unpaved streets cost no materials, matching the existing automatic approaches.
@@ -51,4 +52,4 @@ export function planNewRoad(s,from,to){
  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],id=roadKey(a,b);if(existing.has(id)||!dry(a)||!dry(b)||![.25,.5,.75].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t})))continue;roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a,b,level:1});}
  return {roads,reason:roads.length?'':'Этот путь уже проложен'};
 }
-export function layRoad(s,from,to){const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};s.roads.push(...plan.roads);markRoadTopologyChanged(s);return {ok:true,count:plan.roads.length};}
+export function layRoad(s,from,to){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};s.roads.push(...plan.roads);markRoadTopologyChanged(s);return {ok:true,count:plan.roads.length};}

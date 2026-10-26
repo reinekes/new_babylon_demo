@@ -8,6 +8,7 @@ import {artisanSummary} from './artisan.js';
 import {mealRation,mealCycle,isDinnerTime} from './wellbeing.js';
 import {buildingInventory} from './building-inventory.js';
 import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
+import {musicPlaying} from './music.js';
 
 const topologyCache=new WeakMap();
 const sum=o=>Object.values(o||{}).reduce((n,v)=>n+(Number.isFinite(v)&&v>0?v:0),0);
@@ -53,7 +54,7 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
   if(s.season===1&&crop.sown>0&&!fieldWater(s,b).canal&&!(s.rain>0)&&!(crop.legacyYear===s.year&&fieldWater(s,b).natural))return reason('water','Нужен полив','Соедини наполненный канал с полем',key);
   if(!(crop.sheaves>0)&&!(s.season===0&&(crop.sown||0)<1)&&!(s.season===2&&crop.remaining>0))return reason('season','Сезонное ожидание',s.season===1?'Ячмень растёт; жатва осенью':'Сейчас нет посева, срезки или снопов для обмолота',key);
  }
- if(!workers.length)return reason('worker','Нет работника',b.type==='tailor'?'Нужен взрослый мастер одежды':b.type==='healer'?'Нужен обученный лекарь':b.type==='waterpoint'?'Нужен водонос':'Назначь взрослого или освободи рабочие руки',key);
+ if(!workers.length)return reason('worker','Нет работника',b.type==='musicHouse'?'Нужен вдохновлённый музыкант, закреплённый за двором':b.type==='tailor'?'Нужен взрослый мастер одежды':b.type==='healer'?'Нужен обученный лекарь':b.type==='waterpoint'?'Нужен водонос':'Назначь взрослого или освободи рабочие руки',key);
  if(workers.some(c=>c.phase==='blocked'))return reason('path','Маршрут заблокирован','Проверь дорогу и пункт назначения груза',key);
  if(artisan?.stage==='idle'){
   const missing=Object.entries(artisan.needs).filter(([k,n])=>k!=='water'&&n>1e-7);
@@ -71,6 +72,7 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
  const output=Object.keys(def.output||{}).filter(k=>!['faith','prestige'].includes(k));
  if(output.some(k=>connected.every(st=>amount(st.stock?.[k])>=storeCapacity(st)-1e-7)))return reason('storage','Склад заполнен','Нет места для следующего груза; освободи местный склад',buildingKey(connected[0]));
  if(workers.some(c=>cargoAmount(c)>0||['toWorkshop','toStore','toCraftSupply','toWork','returnWork'].includes(c.phase)))return reason('delivery','Доставка / дорога','Работник несёт груз или идёт к месту работы',key);
+ if(b.type==='musicHouse')return musicPlaying(s,b)?reason('working','Тихая музыка','Вдохновлённый музыкант играет на месте; соседи отдыхают',key):reason('away','Музыкант отсутствует','Музыка начинается только после прихода закреплённого музыканта',key);
  if(workers.some(c=>c.phase==='working'))return reason('working','Работа идёт','Работник находится на месте',key);
  return reason('away','Работник занят','Дом, вода, семейная еда, лечение или другой личный уход',key);
 }
@@ -104,7 +106,7 @@ export function cityDiagnostics(s){
   const why=productionReason(s,b,workers,connected,hasHomes,isDay);
   // Assigned places remain occupied while their worker eats, fetches water or
   // completes a previous load. Never count a worker pinned to another building.
-  const assigned=b.construction?[]:citizens.filter(c=>adult(c)&&(c.workplace===key||c.work===key&&!c.workplace)),fixed=assigned.filter(c=>c.workplace===key),capacity=b.type==='healer'?1:2,matching=assigned.filter(c=>professionMatchesTask(c,b.type)).length,count=assigned.length;
+  const assigned=b.construction?[]:citizens.filter(c=>adult(c)&&(c.workplace===key||c.work===key&&!c.workplace)),fixed=assigned.filter(c=>c.workplace===key),capacity=['healer','musicHouse'].includes(b.type)?1:2,matching=assigned.filter(c=>professionMatchesTask(c,b.type)).length,count=assigned.length;
   const state=!count?'empty':count<capacity?'partial':matching>=count?'matched':'full';
   const staffing=b.construction?null:{count,capacity,matching,state,label:{empty:'Нет работников',partial:'Не все места заняты',full:'Все места заняты',matched:'Все места заняты по призванию'}[state]};
   return {key,x:b.x,y:b.y,type:b.type,name:BUILDINGS[b.type]?.name||b.type,workers:workers.map(c=>c.id),assigned:assigned.map(c=>c.id),fixed:fixed.map(c=>c.id),staffing,inventory:buildingInventory(s,b),builders:workers.filter(c=>c.site===key&&c.siteDuty==='builder').map(c=>c.id),carriers:workers.filter(c=>c.site===key&&c.siteDuty==='carrier').map(c=>c.id),working:workers.filter(c=>['working','constructing'].includes(c.phase)).length,reason:why,status:(why.code==='construction'&&workers.some(c=>c.phase==='constructing')||['drying','firing','working','delivery','season','night'].includes(why.code))?'process':'attention'};

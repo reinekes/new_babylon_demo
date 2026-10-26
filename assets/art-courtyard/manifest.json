@@ -4,13 +4,18 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 24856,
-      "sha256": "12773809922995e779169c522b321f510c0a2eff19776bf7fc5489a83a6cbb4c"
+      "bytes": 29045,
+      "sha256": "f03e6f49e1844fbcef741ebd3ca02f5edffe83a3f0ebec3e79bbd588dab622dc"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 27634,
-      "sha256": "08d6c9ffc3a088dd800061e8765be6340b97afcd3ac5d983eb9c523bcbaca27d"
+      "bytes": 30554,
+      "sha256": "fa69e4b82c15e50e8bb90e273cfdf85c49d62bf92141f177c82fe58c1ac2d1ef"
+    },
+    {
+      "file": "historical-man-report.json",
+      "bytes": 1110,
+      "sha256": "b39f8b64ca8b3823474ac24d003304cded6c10621b1e4f8ba0b826badb002abf"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -240,6 +245,19 @@
       "bones": 34,
       "clips": [
         "rigAction"
+      ]
+    },
+    {
+      "file": "models/historical-man.glb",
+      "bytes": 2157480,
+      "sha256": "77a56ff3693face64f95c20b5b7e4f384ad757103bae8ae3bdf45105e3a04f66",
+      "triangles": 35999,
+      "meshes": 1,
+      "bones": 34,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop",
+        "Source_Talking"
       ]
     },
     {
@@ -516,6 +534,42 @@
       "clips": []
     },
     {
+      "file": "models/sacred-ishtar-gate.glb",
+      "bytes": 742200,
+      "sha256": "28a1d83f539191461acd9e1565ad2f8c11a590fa2c4d72c488a5bd8da654f3fa",
+      "triangles": 2808,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/sacred-shrine-3.glb",
+      "bytes": 808408,
+      "sha256": "fe5378a54c4c42a45e2e3c08a130d3dd080219dc639b3527dc23e3e1290245b1",
+      "triangles": 13400,
+      "meshes": 4,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/sacred-ziggurat-1.glb",
+      "bytes": 44496,
+      "sha256": "c7896b1fc2901942327505bb595e536b50b7f4af804df5e846e78ee4908656fc",
+      "triangles": 560,
+      "meshes": 4,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/sacred-ziggurat-3.glb",
+      "bytes": 3424520,
+      "sha256": "22b47280c8400788af91369b24eac2e8942ae040f55e5af9ae6aff6df992f7b2",
+      "triangles": 51463,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
       "file": "models/sheep.glb",
       "bytes": 2024888,
       "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
@@ -698,6 +752,11 @@
       "meshes": 2,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "sacred-models-report.json",
+      "bytes": 10548,
+      "sha256": "3001d289a958056ac5b6154f23ed7470b1fc7beb3af3d699bc3152bc17e101bb"
     },
     {
       "file": "sources/README.md",

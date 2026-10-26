@@ -1,3 +1,4 @@
+import {relicControlActive,relicCommandReason} from './relic-quest.js';
 import {recoverFestivalCitizen} from './festival.js';
 import {recordProfessionEpithet,recordInspirationOutcome} from './citizen-epithets.js';
 import {isArtisan,artisanOutput} from './artisan.js';
@@ -17,7 +18,7 @@ import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
 const roles=ROLES;
 const hasLoad=c=>!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||c.pantryFood>0||Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
 const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
-const blocked=s=>s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
+const blocked=s=>relicControlActive(s)?relicCommandReason(s):s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
 const upgradePrice=(b,level)=>({...level===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{},clay:Math.ceil(BUILDINGS[b.type].clay*(level===1?1.5:2.5)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*(level===1?1.5:2.5)))});
 function note(s,title,text){s.news.unshift({title,text,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
 export function cancellationRefund(b){const q=b?.construction;return q?{...q.required,faith:q.kind==='new'?(BUILDINGS[b.type]?.faith||0):0}:{clay:0,reed:0,faith:0};}
@@ -94,7 +95,7 @@ function localRefundStore(s,b){const net=networkFor(s),p=net.ports.find(p=>p.bui
 export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.
  if(b?.starterHut)s={...s,roads:[...(s.roads||[])]};
- const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
+ const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(s.relicQuest?.artifact?.location==='temple'&&s.relicQuest.artifact.temple===buildingKey(b))return 'Здесь хранится единственный артефакт бога';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
  if(isArtisan(b)&&!['idle','ready'].includes(b.artisan.stage))return 'Дождись завершения ремесленной партии';
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
@@ -170,7 +171,7 @@ export function assignWorkplace(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c))return {ok:false,reason:'Нужен взрослый работник'};
  if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!Object.keys(BUILDINGS[b.type].output).length&&!['healer','depot','waterpoint'].includes(b.type))return {ok:false,reason:'Нужна готовая производственная постройка'};
   if(!canStaffBuilding(c,b))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
-  if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(b.type==='healer'?1:2))return {ok:false,reason:'Все постоянные места заняты'};
+  if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(['healer','musicHouse'].includes(b.type)?1:2))return {ok:false,reason:'Все постоянные места заняты'};
   const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к работе'};
   c.workplace=key;delete c.guardPost;
  }else{delete c.workplace;delete c.guardPost;}

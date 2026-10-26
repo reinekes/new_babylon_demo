@@ -11,6 +11,8 @@ import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './fiel
 import {constructionProgress} from '../construction.js';
 import {buildingKey,capacityOf} from '../definitions.js';
 import {createDistrictBuilding, districtCropVisual} from '../district3d/buildings.js';
+import {createSacredModels} from './sacred-models.js';
+import {createMusicCourtyard} from './music-courtyard.js';
 
 const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
 const HOME_ASSET='assets/art-courtyard/models/adobe-courtyard.glb';
@@ -53,6 +55,8 @@ export async function createGameBuildings(B,scene,materials,options={}){
  let cropAssets=options.deferAssets?null:await loadFieldCrops(B,scene),cropPromise=null;
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
+ const sacredModels=createSacredModels(B,scene);
+ const visualSignature=(b,state,shoreContext)=>gameBuildingSignature(b,state,shoreContext)+(sacredModels.ready(b)?'|sacred-ready':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
  function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
  function highlight(keys=[]){
@@ -96,10 +100,17 @@ export async function createGameBuildings(B,scene,materials,options={}){
     const base=createDistrictBuilding(B,scene,{...adapted,id:'template'},materialSet);
     for(const mesh of base.meshes){mesh.unfreezeWorldMatrix();mesh.parent=root;sources.push(mesh);}
     base.root.dispose();
-   }else for(const mesh of createArchitecture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
+   }else if(b.type==='musicHouse'){
+    for(const mesh of createMusicCourtyard(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
+   }else if(sacredModels.sources(b)){
+    const center=(footprintSize(b)-1)*3;
+    for(const source of sacredModels.sources(b)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
+   }else for(const mesh of sacredModels.fallback(b,materialSet)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
 
   }
-  for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
+  // Supplied stepped sanctuaries have real stair flights; the former flat-roof
+  // ladder would pass through their terraces at the obsolete roof height.
+  if(!sacredModels.sources(b))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>{
    const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
@@ -132,7 +143,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function clearPreview(){if(previewRecord){previewRecord.root.dispose();previewRecord=null;}}
  function preview(input,state,options={}){
   if(disposed)return null;if(!input){clearPreview();return null;}
-  const b={...input,level:1,construction:undefined},shoreContext=foundationContext(state),signature=gameBuildingSignature(b,state,shoreContext),allowed=options.allowed!==false;
+  const b={...input,level:1,construction:undefined},shoreContext=foundationContext(state),signature=visualSignature(b,state,shoreContext),allowed=options.allowed!==false;
   if(!previewRecord||previewRecord.signature!==signature){
    clearPreview();let template=previewTemplates.get(signature);
    if(template){previewTemplates.delete(signature);previewTemplates.set(signature,template);}else{template=acquire(b,signature,state,shoreContext);previewTemplates.set(signature,template);}
@@ -165,7 +176,8 @@ export async function createGameBuildings(B,scene,materials,options={}){
    // Landscape owns connected canal beds, wetness, banks and construction.
    // The legacy standalone side walls would span across those real channels.
    if(b.type==='canal')continue;
-   const key=buildingKey(b),signature=gameBuildingSignature(b,state,shoreContext);seen.add(key);
+   sacredModels.request(b);
+   const key=buildingKey(b),signature=visualSignature(b,state,shoreContext);seen.add(key);
    let record=active.get(key);
    if(record&&(record.signature!==signature||record.x!==b.x||record.y!==b.y)){remove(key);record=null;}
    if(!record){
@@ -197,5 +209,5 @@ export async function createGameBuildings(B,scene,materials,options={}){
   for(const key of active.keys())if(!seen.has(key))remove(key);
  }
  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
- return {sync,meshes,loadDetails,refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

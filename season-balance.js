@@ -23,6 +23,7 @@ export function seasonBalance(s){
  const credit=(id,k,n)=>{n=Math.max(0,n);r[k].income+=n;if(MATERIALS.includes(k)){flow(id,k,n);if(!incomeByComponent.has(id))incomeByComponent.set(id,empty());incomeByComponent.get(id)[k]+=n;}};
  const debit=(id,k,n)=>{n=Math.max(0,n);r[k].outgo+=n;if(MATERIALS.includes(k)&&id!==undefined)flow(id,k,-n);};
  for(const [key,people] of groups){const b=buildings.get(key),def=BUILDINGS[b.type],id=component(key);let trips=0;
+  if(b.type==='musicHouse'){const musicians=people.filter(c=>c.workplace===key&&c.calling==='musician'&&c.role==='production');credit(id,'prestige',45*13/24*musicians.reduce((n,c)=>n+workRate(c,'musicHouse'),0)/def.workTime*def.output.prestige*outputMultiplier(b));continue;}
   for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,b.type))),inputTravel=isArtisan(b)?travel*4:['weaver','tailor','kiln'].includes(b.type)?travel*(b.type==='kiln'?3:Math.ceil(craftBatch(b)/3)):0;trips+=45*13/24/((def.workTime||4)/(rate*(isArtisan(b)?outputMultiplier(b):1))+travel+inputTravel);}
   production.set(key,trips);
   if(isArtisan(b)||['kiln','brickyard','waterpoint','weaver','tailor','healer','depot','cowshed'].includes(b.type))continue;
@@ -57,7 +58,7 @@ export function seasonBalance(s){
   credit(id,output,(batches+active)*(pottery?2:3));
  }
  for(const c of s.citizens){debit(component(c.home),'food',mealRation(c)*45/60);debit(component(c.home),'clothing',45/(540*.75));r.faith.income+=(c.faith??60)/100*.15*45/60;}
- const sites=s.pests?.sites||[];for(const q of sites){const guard=s.citizens.some(c=>c.guardPost===q.key&&c.work===q.key&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)),cat=s.pests.cats.some(c=>c.site===q.key);debit(component(q.key),'food',Math.min(buildings.get(q.key)?.stock?.food||0,.012*q.mice*45/Math.max(1,sites.length)*(guard?.15:cat?.4:1)));}
+ const sites=s.pests?.sites||[];for(const q of sites){const guard=s.citizens.some(c=>c.guardPost===q.key&&c.work===q.key&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)),cat=s.pests.cats.some(c=>c.site===q.key);debit(component(q.key),'food',Math.min(buildings.get(q.key)?.stock?.food||0,.012*q.mice*45/Math.max(1,sites.length)*(guard?.15:cat?.4:1)*(s.buffs?.inannaProtection?.5:1)));}
  for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='healer')continue;const patients=s.citizens.filter(c=>c.clinic===key),need=patients.reduce((n,c)=>n+Math.max(0,(c.careGoal||85)-c.health),0),healing=Math.min(need,people.reduce((n,c)=>n+45*13/24*workRate(c,'healer'),0));debit(component(key),'food',healing*.04);debit(component(key),'reed',healing*.02);}
  // Local surpluses cannot grow a full warehouse; demand is still shown even if stock is empty.
  for(const [id,flow]of byComponent)for(const k of MATERIALS){const overflow=Math.max(0,flow[k]-((capacities.get(id)?.[k]||0)-(stocks.get(id)?.[k]||0)));if(overflow>0)r[k].income=Math.max(0,r[k].income-Math.min(overflow,incomeByComponent.get(id)?.[k]||0));}

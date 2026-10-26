@@ -10,6 +10,7 @@ export const PROFESSIONS=Object.freeze({
  potter:entry('Гончар','production',['pottery']),brewer:entry('Пивовар','production',['brewery']),
  weaver:entry('Ткач','production',['weaver']),shepherd:entry('Пастух','production',['sheepfold']),
  dairyman:entry('Молочник','production',['cowshed']),
+ musician:entry('Музыкант','production',['musicHouse']),
  fisher:entry('Рыбак','production',['fishing']),hunter:entry('Охотник','production',['hunting']),
  brickmaker:entry('Формовщик кирпича','production',['brickyard']),kilnworker:entry('Обжигальщик','production',['kiln']),
  priest:entry('Жрец','production',['shrine','ziggurat'])
@@ -27,6 +28,7 @@ export function professionMatchesTask(c,task){
 }
 export function canStaffBuilding(c,b){
  if(c.age<16)return false;
+ if(b.type==='musicHouse')return c.role==='production'&&c.calling==='musician';
  if(b.type==='healer')return c.role==='healer'&&c.medicine?.level>0;
  if(b.type==='tailor')return c.role==='tailor';
  if(b.type==='waterpoint')return c.role==='watercarrier';

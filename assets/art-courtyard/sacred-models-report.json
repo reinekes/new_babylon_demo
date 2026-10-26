@@ -1,0 +1,361 @@
+[
+  {
+    "source_file": "ishtar_gate_babylon.glb",
+    "source_bytes": 4173036,
+    "source_sha256": "7c7e0d6e5e68d6a1a91de104b9b2a90f94b71da88608dd48f5410f17b99a98c6",
+    "output": "sacred-ishtar-gate.glb",
+    "triangles_before": 2808,
+    "triangles": 2808,
+    "meshes": 1,
+    "cluster_grid_metres": 0,
+    "max_vertex_displacement_metres": 0,
+    "omitted_nodes": [],
+    "texture_metrics": [
+      {
+        "source": [
+          1024,
+          1024
+        ],
+        "output": [
+          512,
+          512
+        ],
+        "normal": false,
+        "bytes": 106897
+      },
+      {
+        "source": [
+          1024,
+          1024
+        ],
+        "output": [
+          512,
+          512
+        ],
+        "normal": true,
+        "bytes": 440876
+      }
+    ],
+    "scale_metres_per_source_unit": 0.25715341865883007,
+    "bounds_metres": {
+      "min": [
+        -2.6000000000000005,
+        0.0,
+        -0.7468922048668377
+      ],
+      "max": [
+        2.6000000000000005,
+        3.480240836655322,
+        0.7468922048668377
+      ]
+    },
+    "historical_status": "Artistic wonder asset; later Babylonian imagery is not a Sumerian reconstruction",
+    "source": {
+      "author": "zporp (https://sketchfab.com/zporp)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/ishtar-gate-babylon-cedaba88f4974431a27f3b30ad34f655",
+      "title": "Ishtar Gate Babylon"
+    },
+    "bytes": 742200,
+    "sha256": "28a1d83f539191461acd9e1565ad2f8c11a590fa2c4d72c488a5bd8da654f3fa"
+  },
+  {
+    "source_file": "3 level ziggurat.glb",
+    "source_bytes": 1328804,
+    "source_sha256": "eb6a95b7be985635b36d911c99b4abbc1d9ec70d6c21c8c04dc31caf68e4d274",
+    "output": "sacred-shrine-3.glb",
+    "triangles_before": 13400,
+    "triangles": 13400,
+    "meshes": 4,
+    "cluster_grid_metres": 0,
+    "max_vertex_displacement_metres": 0,
+    "omitted_nodes": [
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material5 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material2 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material4 (exported wire edges)",
+      "Material5 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material2 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)",
+      "Material3 (exported wire edges)"
+    ],
+    "texture_metrics": [
+      {
+        "source": [
+          256,
+          128
+        ],
+        "output": [
+          256,
+          128
+        ],
+        "normal": false,
+        "bytes": 9079
+      },
+      {
+        "source": [
+          256,
+          256
+        ],
+        "output": [
+          256,
+          256
+        ],
+        "normal": false,
+        "bytes": 17920
+      },
+      {
+        "source": [
+          256,
+          256
+        ],
+        "output": [
+          256,
+          256
+        ],
+        "normal": false,
+        "bytes": 19652
+      }
+    ],
+    "scale_metres_per_source_unit": 0.1414615875256322,
+    "bounds_metres": {
+      "min": [
+        -1.8712983546392457,
+        0.0,
+        -2.6
+      ],
+      "max": [
+        1.8712983546392454,
+        4.754625322972231,
+        2.6
+      ]
+    },
+    "historical_status": "Artistic wonder asset; later Babylonian imagery is not a Sumerian reconstruction",
+    "source": {
+      "author": "giulien (https://sketchfab.com/giulien)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/ziggurat-1d5f43618e534766a2b2ebc91c09e154",
+      "title": "Ziggurat"
+    },
+    "bytes": 808408,
+    "sha256": "fe5378a54c4c42a45e2e3c08a130d3dd080219dc639b3527dc23e3e1290245b1"
+  },
+  {
+    "source_file": "ziggurat.glb",
+    "source_bytes": 91624,
+    "source_sha256": "f4380e1bb9b18fc179bd943f612655f6d2f94361544fb02b74438bac821b35de",
+    "output": "sacred-ziggurat-1.glb",
+    "triangles_before": 560,
+    "triangles": 560,
+    "meshes": 4,
+    "cluster_grid_metres": 0,
+    "max_vertex_displacement_metres": 0,
+    "omitted_nodes": [
+      "Material2 (exported wire edges)"
+    ],
+    "texture_metrics": [
+      {
+        "source": [
+          128,
+          64
+        ],
+        "output": [
+          128,
+          64
+        ],
+        "normal": false,
+        "bytes": 3275
+      },
+      {
+        "source": [
+          256,
+          128
+        ],
+        "output": [
+          256,
+          128
+        ],
+        "normal": false,
+        "bytes": 4512
+      },
+      {
+        "source": [
+          128,
+          64
+        ],
+        "output": [
+          128,
+          64
+        ],
+        "normal": false,
+        "bytes": 3055
+      }
+    ],
+    "scale_metres_per_source_unit": 0.05216341316978384,
+    "bounds_metres": {
+      "min": [
+        -5.4,
+        0.0,
+        -5.327188532653994
+      ],
+      "max": [
+        5.4,
+        5.578260813617086,
+        5.327188532653994
+      ]
+    },
+    "historical_status": "Artistic wonder asset; later Babylonian imagery is not a Sumerian reconstruction",
+    "source": {
+      "author": "chaze (https://sketchfab.com/chaze)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/ziggurat-d27eccd7e1b343da8d26441fbc3b0983",
+      "title": "Ziggurat"
+    },
+    "bytes": 44496,
+    "sha256": "c7896b1fc2901942327505bb595e536b50b7f4af804df5e846e78ee4908656fc"
+  },
+  {
+    "source_file": "babylon_building_etemenanki.glb",
+    "source_bytes": 6984776,
+    "source_sha256": "46025af40881dd25eaba3e9a3c6fe4ce3de24dca22feb2732caba87baeba614c",
+    "output": "sacred-ziggurat-3.glb",
+    "triangles_before": 132352,
+    "triangles": 51463,
+    "meshes": 1,
+    "cluster_grid_metres": 0.02,
+    "max_vertex_displacement_metres": 0.020381211944505224,
+    "omitted_nodes": [
+      "waterfall12_lambert1_0",
+      "waterfall11_lambert1_0",
+      "waterfall10_lambert1_0",
+      "waterfall9_lambert1_0",
+      "waterfall8_lambert1_0",
+      "waterfall7_lambert1_0",
+      "waterfall6_lambert1_0",
+      "waterfall5_lambert1_0",
+      "waterfall4_lambert1_0",
+      "waterfall3_lambert1_0",
+      "waterfall2_lambert1_0",
+      "waterfall1_lambert1_0"
+    ],
+    "texture_metrics": [
+      {
+        "source": [
+          1024,
+          1024
+        ],
+        "output": [
+          512,
+          512
+        ],
+        "normal": false,
+        "bytes": 63518
+      }
+    ],
+    "scale_metres_per_source_unit": 0.18474603617704893,
+    "bounds_metres": {
+      "min": [
+        -5.4,
+        0.0,
+        -4.216423824022522
+      ],
+      "max": [
+        5.4,
+        4.576103533050031,
+        4.216423824022522
+      ]
+    },
+    "historical_status": "Artistic wonder asset; later Babylonian imagery is not a Sumerian reconstruction",
+    "source": {
+      "author": "haddly Anand Kumar S (https://sketchfab.com/hadleyanand)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/babylon-building-etemenanki-f4ca3d57822e4e73a4952a4fde7693f0",
+      "title": "BabyLon_Building_Etemenanki"
+    },
+    "bytes": 3424520,
+    "sha256": "22b47280c8400788af91369b24eac2e8942ae040f55e5af9ae6aff6df992f7b2"
+  }
+]

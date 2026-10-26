@@ -1,0 +1,33 @@
+{
+  "output": "historical-man.glb",
+  "bytes": 2157480,
+  "source_bytes": 4101996,
+  "source_sha256": "1d6549e0b72c20f09a736dcda1c0cc186e6e0a12703b8cf082468ac518c6db21",
+  "sha256": "77a56ff3693face64f95c20b5b7e4f384ad757103bae8ae3bdf45105e3a04f66",
+  "triangles_before": 57261,
+  "triangles": 35999,
+  "vertices": 30392,
+  "bones": 34,
+  "texture": [
+    512,
+    512
+  ],
+  "max_vertex_displacement_metres": 0.013535196965404317,
+  "source": {
+    "author": "ASYKIN (https://sketchfab.com/ASYKIN)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/talking-1-499aeb7a9c0941b295a3ae983cc06e11",
+    "title": "Talking (1)"
+  },
+  "walk_source": {
+    "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+    "sha256": "b98f7d15b68c0d3948989973451ca1f528fbb7a21f164c4ed0faadb9028d8e71"
+  },
+  "clips": [
+    "Walk_Loop",
+    "Idle_Loop",
+    "Source_Talking"
+  ]
+}

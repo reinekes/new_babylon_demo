@@ -1,9 +1,10 @@
 import {isDryPoint} from '../world.js';
 import {insideFootprint,footprintSize} from '../footprints.js';
 import {dairyMilkingLayout} from './dairy-layout.js';
+import {musicCourtyardLayout} from './music-courtyard.js';
 // Shared metre-space equipment and palm targets. Pure view data: no production,
 // inventory initializers, route edits or simulation coordinates enter this module.
-const equipment={cowshed:'dairy',pottery:'wheel',brewery:'vat',weaver:'loom',tailor:'table',brickyard:'mould',kiln:'kiln',clay:'clay',reed:'reed',garden:'mortar',sheepfold:'fleece'};
+const equipment={musicHouse:'lithophone',cowshed:'dairy',pottery:'wheel',brewery:'vat',weaver:'loom',tailor:'table',brickyard:'mould',kiln:'kiln',clay:'clay',reed:'reed',garden:'mortar',sheepfold:'fleece'};
 export function workstationWorldPoint(b,[x,height,z]){
  const angle=((b.rotation||0)%4)*Math.PI/2,c=Math.cos(angle),s=Math.sin(angle),snap=n=>Math.abs(n)<1e-12?0:n;
  return {x:b.x+snap(x*c+z*s)/6,y:b.y+snap(-x*s+z*c)/6,height};
@@ -19,12 +20,14 @@ export function workstationBuilding(b,state){
 export function workstationLayout(b){
  if(!equipment[b.type]||b.construction)return [];
  if(b.type==='cowshed')return [dairyMilkingLayout(b)];
+ if(b.type==='musicHouse')return [musicCourtyardLayout(b)];
  return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*1.94,z:sz*1.94,height:b.type==='cowshed'?.72:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
 }
 export function workstationFor(b,c,index=0){
  if(!b?.type||!['working','strike'].includes(c.activity?.stage)||c.walking||c.carrying)return null;
  const layout=b.construction||b.type==='field'?[{kind:b.construction?'building':'farming',x:(b.workCorner?.[0]||1)*(b.construction?2.72:2.62),z:(b.workCorner?.[1]||1)*(b.construction?2.72:2.62),height:b.construction?.95:c.activity.task==='harvesting'?.65:.12,sx:b.workCorner?.[0]||1,sz:b.workCorner?.[1]||1}]:workstationLayout(b);if(!layout.length)return null;
  const stations=layout.map(a=>({...a,world:workstationWorldPoint(b,[a.x,a.height,a.z])})).sort((a,d)=>Math.hypot(a.world.x-c.x,a.world.y-c.y)-Math.hypot(d.world.x-c.x,d.world.y-c.y));
+ if(b.type==='musicHouse'){const a=stations[0],stand=workstationWorldPoint(b,[a.x,0,a.z]),target=workstationWorldPoint(b,[a.x+a.sx*.325,.215,a.z+a.sz*.325]);return Math.hypot(stand.x-c.x,stand.y-c.y)>.3?null:{kind:a.kind,task:'lithophone',stand,target,axis:0,building:b,layout:a};}
  const a=stations[0],axis=index%2,stand=workstationWorldPoint(b,[a.x+(axis?a.sx*.48:0),0,a.z+(axis?0:a.sz*.48)]),rim=workstationWorldPoint(b,[a.x+(axis?a.sx*.20:0),a.height,a.z+(axis?0:a.sz*.20)]),target=['building','farming'].includes(a.kind)?a.world:rim;
  if(Math.hypot(stand.x-c.x,stand.y-c.y)>.3)return null;
  return {kind:a.kind,task:c.activity.task,stand,target,axis,building:b};
@@ -34,6 +37,7 @@ export function workstationFor(b,c,index=0){
 export function workstationPose(contact,time){
  const wave=Math.sin(time*3.6),lift=(1-Math.cos(time*3.6))*.5;
  const height=contact.target.height;
+ if(contact.kind==='lithophone')return {right:[.1,.50,.49],left:[-.1,.50,.49],tool:null,bend:.50,twist:wave*.012};
  if(contact.kind==='building')return {right:[.10,1.28+lift*.13,.49],left:[-.10,height,.49],tool:'building',bend:.15,twist:wave*.012};
  if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.012};
  if(contact.kind==='farming')return {right:[.10,.89+lift*.11,.49],left:[-.10,1.03+lift*.11,.20],tool:'hoe',bend:.30,twist:wave*.012};
@@ -46,6 +50,13 @@ export function workstationPose(contact,time){
 }
 // World targets preserve contact under identity height/width variation and yaw.
 export function workstationHands(contact,time){
+ if(contact.kind==='lithophone'){
+  const a=contact.layout,b=contact.building,beat=Math.sin(time*4),rightLift=(1+beat)*.065,leftLift=(1-beat)*.065;
+  const petals=[workstationWorldPoint(b,[a.x+a.sx*.55,.215,a.z]),workstationWorldPoint(b,[a.x,.215,a.z+a.sz*.55])],dx=contact.target.x-contact.stand.x,dz=contact.target.y-contact.stand.y;
+  petals.sort((p,q)=>(q.x-contact.stand.x)*dz-(q.y-contact.stand.y)*dx-((p.x-contact.stand.x)*dz-(p.y-contact.stand.y)*dx));
+  const strikes={right:{...petals[0],height:.215+rightLift},left:{...petals[1],height:.215+leftLift}};
+  return {right:{...strikes.right,height:strikes.right.height+.28},left:{...strikes.left,height:strikes.left.height+.28},strikes,tool:null};
+ }
  const p=workstationPose(contact,time),dx=contact.target.x-contact.stand.x,dy=contact.target.y-contact.stand.y,l=Math.hypot(dx,dy),tx=dy/l,tz=-dx/l;
  const toolReach=contact.kind==='building'?.32:contact.kind==='farming'?(contact.task==='harvesting'?.20:.50):0;
  return {right:{x:contact.target.x+tx*p.right[0]/6+dx/l*(p.right[2]-.49-toolReach)/6,y:contact.target.y+tz*p.right[0]/6+dy/l*(p.right[2]-.49-toolReach)/6,height:p.right[1]},left:{x:contact.target.x+tx*p.left[0]/6+dx/l*(p.left[2]-.49)/6,y:contact.target.y+tz*p.left[0]/6+dy/l*(p.left[2]-.49)/6,height:p.left[1]},tool:p.tool};

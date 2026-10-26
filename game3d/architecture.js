@@ -1,9 +1,13 @@
 import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
+import {createMusicCourtyard} from './music-courtyard.js';
+import {createIshtarGateFallback} from './sacred-models.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
 // not reconstructions. One merged mesh per shared material and building template.
-export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market']);
+export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market','musicHouse','ishtarGate']);
 export function createArchitecture(B,scene,b,m){
+ if(b.type==='musicHouse')return createMusicCourtyard(B,scene,b,m);
+ if(b.type==='ishtarGate')return createIshtarGateFallback(B,scene,m);
  const canopies=[],groups=new Map(),level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
  let serial=0;const add=(mesh,mat)=>{mesh.material=mat||wall;if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
  // Bevelled corners, a slightly bowed middle and a battered top: this breaks

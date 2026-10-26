@@ -36,6 +36,18 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
+  if(b.type==='musicHouse') {
+    poly([[0,-15],[29,0],[0,15],[-29,0]],'#b9a17d');
+    for(const [a,z] of [[-24,0],[0,-12],[24,0],[0,12]])line([[a,z],[a,z-27]],'#705136',1.5);
+    poly([[-28,-27],[0,-41],[28,-27],[0,-13]],'#beaa78');
+    for(let i=0;i<8;i++){const a=i*Math.PI/4,u=11+Math.sin(a)*7,v=4+Math.cos(a)*3.5;c.fillStyle=i%2?'#c3bcaa':'#a9a594';c.beginPath();c.ellipse(x+u*q,y+v*q,4.4*q,1.8*q,a*.25,0,Math.PI*2);c.fill();}
+    pot(-15,3,.7);
+  }
+  if(b.type==='ishtarGate') {
+    for(const a of [-19,19]){box(a,0,9,5,40,'#648b9b','#234c6f','#366c88');box(a,-40,10,5,4,'#9ab6b5','#426c87','#5b8a9d');for(let j=0;j<3;j++)line([[a-5,-9-j*11],[a+4,-5-j*11]],'#cbb47d',1.5);}
+    box(0,-31,21,5,9,'#6a91a0','#315c7c','#3b718f');
+  }
+
   if(b.type==='kiln') {
     const active=b.firing?.hot>0,burning=active&&b.firing.time<20;
     poly([[0,-15],[29,0],[0,15],[-29,0]],'#a99572');

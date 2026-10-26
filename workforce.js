@@ -1,5 +1,7 @@
+import {advanceRelicQuest,relicCitizenView,recoverRelicCitizen} from './relic-quest.js';
 import {recordCitizenDelivery,recordCitizenHarvest,recordProfessionEpithet} from './citizen-epithets.js';
 import {recordBuildingProduction} from './building-production-history.js';
+import {workMusic} from './music.js';
 import {canStaffBuilding} from './professions.js';
 import {workDairy} from './dairy.js';
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
@@ -119,13 +121,13 @@ export function syncCitizens(s){
  }
  s.citizens=citizens;initializeDemography(s);initializeWellbeing(s);initializeClothing(s);initializeWater(s);const livingIds=new Set(citizens.map(c=>c.id));for(const c of citizens)if(c.partner!==null&&!livingIds.has(c.partner))c.partner=null;
  for(const c of citizens)if(c.clothingTarget!==undefined&&!citizens.some(p=>p.id===c.clothingTarget&&p.home===c.home))recoverCitizenCargo(s,c.id);
- for(const c of citizens)if(c.rehousing){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
+ for(const c of citizens)if(c.rehousing&&!['relic','relicGuest'].includes(c.phase)){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
  for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
  for(const c of citizens)if(c.school&&(!['shrine','ziggurat'].includes(ctx.buildings.get(c.school)?.type)||!isComplete(ctx.buildings.get(c.school))||c.role!=='healer'||medicalLevel(c)>0)){delete c.school;startTrip(s,c,c.home,'toHome',ctx);}
  for(const c of citizens)if(c.workplace&&(!ctx.buildings.has(c.workplace)||!isComplete(ctx.buildings.get(c.workplace))||!canStaffBuilding(c,ctx.buildings.get(c.workplace))))delete c.workplace;
  for(const c of citizens)if(c.guardPost&&(!isPestStore(ctx.buildings.get(c.guardPost))||!['auto','production'].includes(c.role)))delete c.guardPost;
  const reserved=new Set(citizens.filter(c=>c.workplace||c.guardPost).map(c=>c.id));
- const assignments=new Map(),locked=new Set(citizens.filter(c=>c.phase==='festival'||!canWork(c)||c.pantryTrip||c.clinic||c.school).map(c=>c.id));
+ const assignments=new Map(),locked=new Set(citizens.filter(c=>['festival','relic','relicGuest'].includes(c.phase)||!canWork(c)||c.pantryTrip||c.clinic||c.school).map(c=>c.id));
  for(const c of citizens)if(c.pantryTrip){if(c.work&&!ctx.buildings.has(c.work))c.work=null;if(c.site&&!ctx.buildings.get(c.site)?.construction){c.site=null;c.sitePort=null;c.siteDuty=null;}}
  for(const c of citizens)if(!canWork(c)){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.store=null;}
  if(s.funeral?.scope==='family')for(const a of s.funeral.actors)locked.add(a.id);
@@ -162,9 +164,9 @@ export function syncCitizens(s){
    districtAssignments.set(c.id,{districtJob:q.id,store:q.source,target:q.target,source:q.source});n++;routeAssigned.set(pair,n);
   }
  }
- const priority={waterpoint:-.5,pottery:1,brewery:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5};
+ const priority={waterpoint:-.5,pottery:1,brewery:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
  const jobs=s.buildings.filter(b=>isComplete(b)&&(['depot','healer','waterpoint'].includes(b.type)||Object.keys(BUILDINGS[b.type].output).length)).sort((a,b)=>priority[a.type]-priority[b.type]);
- const slots=jobs.flatMap(b=>b.type==='healer'?[buildingKey(b)]:[buildingKey(b),buildingKey(b)]),used=new Set();
+ const slots=jobs.flatMap(b=>['healer','musicHouse'].includes(b.type)?[buildingKey(b)]:[buildingKey(b),buildingKey(b)]),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work&&!c.guardPost)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
  // A pinned worker completing an old delivery still owns their new workplace
  // seat. Do not give that promised seat to an automatic replacement.
@@ -179,7 +181,7 @@ export function syncCitizens(s){
   else if(districtAssignments.has(c.id)){const {target,source,...job}=districtAssignments.get(c.id);Object.assign(c,job);}
   else{
    const p=ctx.ports.get(c.home);
-   for(let j=0;j<slots.length&&['auto','production','healer','tailor','watercarrier','carrier'].includes(c.role);j++){if(used.has(j))continue;const work=slots[j];if(c.workplace&&c.workplace!==work)continue;if(!c.workplace&&ctx.buildings.get(work).type==='depot')continue;if(!c.workplace&&ctx.buildings.get(work).type==='field'&&!fieldActive(s,ctx.buildings.get(work)))continue;if(!canStaffBuilding(c,ctx.buildings.get(work)))continue;const workPort=ctx.ports.get(work),store=closestStore(s,ctx,work);if(workPort&&store&&routeBetween(s,p.key,workPort.key,ctx)){used.add(j);c.work=work;c.store=store;break;}}
+   for(let j=0;j<slots.length&&['auto','production','healer','tailor','watercarrier','carrier'].includes(c.role);j++){if(used.has(j))continue;const work=slots[j];if(c.workplace&&c.workplace!==work)continue;if(!c.workplace&&['depot','musicHouse'].includes(ctx.buildings.get(work).type))continue;if(!c.workplace&&ctx.buildings.get(work).type==='field'&&!fieldActive(s,ctx.buildings.get(work)))continue;if(!canStaffBuilding(c,ctx.buildings.get(work)))continue;const workPort=ctx.ports.get(work),store=closestStore(s,ctx,work);if(workPort&&store&&routeBetween(s,p.key,workPort.key,ctx)){used.add(j);c.work=work;c.store=store;break;}}
    if(!c.work)c.store=closestStore(s,ctx,c.home);
   }
   if(oldDistrict!==c.districtJob||oldSale!==c.saleJob||oldTrade!==c.tradeJob||oldHome!==c.home||oldWork!==c.work||oldStore!==c.store||oldSite!==c.site||oldPort!==c.sitePort||oldDuty!==c.siteDuty){
@@ -406,6 +408,7 @@ function advanceCitizen(s,c,dt,ctx){
   if(c.phase==='working'){
    const b=ctx.buildings.get(c.work);if(!b){startTrip(s,c,c.home,'toHome',ctx);continue;}
    if(c.guardPost===c.work||['depot','waterpoint'].includes(b.type))return;
+   if(b.type==='musicHouse'){workMusic(s,b,c,remaining*workRate(c,'musicHouse'));return;}
    if(b.type==='cowshed'){if(outputRoom(b,'milk')<3-1e-7)return;const amount=workDairy(b,remaining*workRate(c,'cowshed')*outputMultiplier(b));if(amount){putProductionOutput(s,b,{milk:amount});recordCitizenHarvest(s,c,{milk:amount});}return;}
    if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*outputMultiplier(b)*(k==='food'&&s.buffs?.fertility?1.6:['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1)))return;
    if(isArtisan(b)){
@@ -457,7 +460,7 @@ function prepareCare(s,ctx){
 export function advanceWorkers(s,seconds){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;advanceGathering(s);advanceFestival(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;advanceGathering(s);advanceFestival(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
  s.simTime=start+seconds;
 }
 // Clinic waiting places are view offsets only: identities, routes and saved
@@ -472,7 +475,7 @@ export function treatmentViewPosition(s,c){
  return {x:dry?x:c.x,y:dry?y:c.y,sourcePhase:c.phase,sourceX:c.x,sourceY:c.y,activity:{kind:'recovery',stage:'waiting',target:b}};
 }
 export function visibleCitizens(s){
- return (s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:waterBusy(c)||['toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),guarding:c.guardPost===c.work&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...treatmentViewPosition(s,c)}));
+ return (s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:waterBusy(c)||['toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),guarding:c.guardPost===c.work&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...relicCitizenView(s,c),...treatmentViewPosition(s,c)}));
 }
 export function workforceStats(s){
  syncCitizens(s);const ctx=context(s),people=s.citizens;
@@ -485,7 +488,7 @@ export function workforceStats(s){
 export function rerouteCitizens(s){
  invalidateAssignments(s);syncCitizens(s);const ctx=context(s);
  for(const c of s.citizens){
-  if(c.phase==='festival')continue;
+  if(['festival','relic','relicGuest'].includes(c.phase))continue;
   if(waterBusy(c)){resumeWaterAtHome(s,c);continue;}
   if(c.school)startTrip(s,c,c.school,'toSchool',ctx);
   else if(c.clinic)startTrip(s,c,c.clinic,'toHealer',ctx);
@@ -502,7 +505,7 @@ export function rerouteCitizens(s){
  }
 }
 
-export function recoverCitizenCargo(s,id){
+export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  const c=s.citizens?.find(c=>c.id===id);if(!c)return false;
  const site=constructionEntities(s).find(b=>buildingKey(b)===c.site)?.construction,purchase=s.trade?.deliveries?.find(q=>q.id===c.tradeJob),sale=s.trade?.sales?.find(q=>q.id===c.saleJob),district=s.district?.jobs.find(q=>q.id===c.districtJob);
  const needsHolder=(!site&&hasBuildCargo(c))||craftLoad(c)>0||c.clothingLoad>0||c.seedFood>0||c.pantryFood>0||Object.entries(c.cargo||{}).some(([k,n])=>n>0&&MATERIALS.includes(k)&&!(purchase&&k===purchase.resource)&&!(sale&&k===sale.resource)),recovery=needsHolder?localRecoveryStore(s,c):null;

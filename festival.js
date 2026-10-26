@@ -1,3 +1,4 @@
+import {relicCommandReason} from './city-command-lock.js';
 // A festival is an order with local reservations and citizen-owned trips, never a flat exchange.
 import {buildingKey,isOperational} from './definitions.js';
 import {refundSources,takeReserved,stockStores,syncInventory,foodAvailability,takeStock} from './inventory.js';
@@ -24,7 +25,7 @@ function festivalSources(s,temple){
  return sources;
 }
 export function festivalReason(s,{ignoreEvent=false}={}){
- if(s.festival)return 'Праздник уже заказан';if(s.funeral)return 'Сначала проводи умерших';if(s.event&&!ignoreEvent||s.lost)return 'Сначала заверши событие';
+ const lock=relicCommandReason(s);if(lock)return lock;if(s.festival)return 'Праздник уже заказан';if(s.funeral)return 'Сначала проводи умерших';if(s.event&&!ignoreEvent||s.lost)return 'Сначала заверши событие';
  if(!s.buildings.some(readyTemple))return 'Нужен готовый храм или зиккурат';if(!templeFor(s))return 'Нужен свободный взрослый носильщик (авто/носильщик) и дорога к храму';
  syncInventory(s);if(s.resources.prestige<15)return 'Нужно 15 престижа';if(s.resources.beer<6)return 'Нужно 6 пива';
  // Even opening the seed reserve for emergency food does not authorize spending it on a feast.
@@ -42,7 +43,8 @@ export function orderFestival(s){
  return {ok:true,warning:festivalSummary(s).warning};
 }
 function release(s,a){const c=s.citizens.find(c=>c.id===a.id);if(!c)return;if(c.phase==='festival'){const path=route(s,c,c.home);c.route=path?.map(p=>({x:p.x,y:p.y}))||[];c.routeIndex=0;c.phase=path?'toHome':'blocked';}invalidateAssignments(s);}
-export function cancelFestival(s){
+export function cancelFestival(s){const lock=relicCommandReason(s);return lock?{ok:false,reason:lock}:finishFestival(s);}
+function finishFestival(s){
  const q=s.festival;if(!q)return {ok:false,reason:'Нет заказанного праздника'};
  if(!q.consumed){refundSources(s,q.allocations);s.resources.prestige+=15;}
  for(const a of q.actors)release(s,a);s.festival=null;invalidateAssignments(s);return {ok:true,refunded:!q.consumed};
@@ -59,10 +61,10 @@ const evening=s=>eveningAt(s.simTime);
 export function advanceFestival(s,dt){
  initializeFestival(s);const q=s.festival;if(!q||!Number.isFinite(dt)||dt<=0)return;
  const stores=new Set(stockStores(s).map(buildingKey));
- if(s.funeral||s.lost||!s.buildings.some(b=>buildingKey(b)===q.temple&&readyTemple(b))||Object.keys(q.allocations).some(k=>!stores.has(k))){cancelFestival(s);return;}
- for(const a of [...q.actors]){const c=s.citizens.find(c=>c.id===a.id);if(!c||!canWork(c)||c.pendingRole||(c.role||'auto')!==a.role||c.phase!=='festival'){recoverFestivalCitizen(s,a.id);continue;}if(!connected(s,a)){cancelFestival(s);return;}}
+ if(s.funeral||s.lost||!s.buildings.some(b=>buildingKey(b)===q.temple&&readyTemple(b))||Object.keys(q.allocations).some(k=>!stores.has(k))){finishFestival(s);return;}
+ for(const a of [...q.actors]){const c=s.citizens.find(c=>c.id===a.id);if(!c||!canWork(c)||c.pendingRole||(c.role||'auto')!==a.role||c.phase!=='festival'){recoverFestivalCitizen(s,a.id);continue;}if(!connected(s,a)){finishFestival(s);return;}}
  // Close the gathering window before moving or rewarding any late guests.
- if(q.stage==='celebrating'&&(s.simTime-q.started>=FESTIVAL_SECONDS||!evening(s))){cancelFestival(s);return;}
+ if(q.stage==='celebrating'&&(s.simTime-q.started>=FESTIVAL_SECONDS||!evening(s))){finishFestival(s);return;}
  if(q.stage==='waiting'&&!evening(s)){for(const a of q.actors)release(s,a);q.actors=[];return;}
  if(q.stage==='supplying'){
   for(const c of s.citizens){if(q.actors.length>=2)break;if(!eligible(c)||!['auto','carrier'].includes(c.role||'auto')||!['home','working','resting'].includes(c.phase))continue;
@@ -78,7 +80,7 @@ export function advanceFestival(s,dt){
   if(a.kind==='carrier'){
    if(a.stage==='pickup'){
     a.load=takeReserved(s,q.sources,a.source,a.material,6);if(a.load<=1e-7){release(s,a);q.actors=q.actors.filter(v=>v!==a);continue;}
-    const path=route(s,c,q.temple);if(!path){cancelFestival(s);return;}a.route=path;a.routeIndex=0;a.stage='delivery';
+    const path=route(s,c,q.temple);if(!path){finishFestival(s);return;}a.route=path;a.routeIndex=0;a.stage='delivery';
    }else{q.delivered[a.material]+=a.load;a.load=0;release(s,a);q.actors=q.actors.filter(v=>v!==a);}
   }else{
    if(!eveningAt(s.simTime+dt)){release(s,a);q.actors=q.actors.filter(v=>v!==a);continue;}
@@ -87,7 +89,7 @@ export function advanceFestival(s,dt){
   }
  }
  if(q.stage==='supplying'&&keys.every(k=>Math.abs(q.delivered[k]-FESTIVAL_COST[k])<1e-7)&&!q.actors.length)q.stage='waiting';
- if(q.stage==='celebrating'&&(s.simTime-q.started>=FESTIVAL_SECONDS||!evening(s)))cancelFestival(s);
+ if(q.stage==='celebrating'&&(s.simTime-q.started>=FESTIVAL_SECONDS||!evening(s)))finishFestival(s);
 }
 export function festivalSummary(s){const q=s.festival,forecast=foodForecast(s,{includeCrops:false}),warning=forecast.balance-(q?0:12)<0?'После заказа прогнозируется нехватка еды до жатвы':'';return {active:!!q,stage:q?.stage||'none',label:!q?'Общинный праздник':q.stage==='supplying'?'Жители несут угощение':q.stage==='waiting'?'Ждём вечера и сытых взрослых':'Праздник у храма',cost:FESTIVAL_COST,delivered:q?{...q.delivered}:{food:0,beer:0},participants:q?.actors.filter(a=>a.kind==='guest').length||0,warning,reason:festivalReason(s)};}
 export function festivalView(s){const q=s.festival;if(!q)return null;const b=s.buildings.find(b=>buildingKey(b)===q.temple);return {stage:q.stage,temple:q.temple,x:b?.x,y:b?.y,consumed:q.consumed,participants:q.actors.filter(a=>a.kind==='guest').map(a=>a.id),dancing:q.actors.filter(a=>a.stage==='dancing').map(a=>a.id),carriers:q.actors.filter(a=>a.kind==='carrier').map(a=>({id:a.id,load:a.load,material:a.material})),elapsed:q.started===null?0:s.simTime-q.started};}
