@@ -17,14 +17,15 @@ export function professionClothing(c){
 // skin weights and inverse bind pose, bends with work, and leaves arms uncovered.
 // No rigid rectangles, floating patches or cylinders over moving upper arms.
 export function createProfessionClothing(B,scene,model,spec,material){
- const source=model.getChildMeshes().find(m=>m.skeleton&&/civilian skin|adapted skin/i.test(m.name));if(!source)return [];
+ const nativeUpper=model.getChildMeshes().find(m=>m.skeleton&&/native upper cloth/i.test(m.name));
+ const source=nativeUpper||model.getChildMeshes().find(m=>m.skeleton&&/civilian skin|adapted skin/i.test(m.name));if(!source)return [];
  const positions=source.getVerticesData(B.VertexBuffer.PositionKind),normals=source.getVerticesData(B.VertexBuffer.NormalKind),joints=source.getVerticesData(B.VertexBuffer.MatricesIndicesKind),weights=source.getVerticesData(B.VertexBuffer.MatricesWeightsKind),sourceIndices=source.getIndices();if(!positions||!joints||!weights)return [];
  const p=[],n=[],uv=[],ji=[],we=[],indices=[],mapping=new Map(),isTorso=i=>{let torso=0;for(let k=0;k<4;k++){const bone=source.skeleton.bones[Math.round(joints[i*4+k])];if(bone&&!/arm|hand|finger|clavicle|neck|head/i.test(bone.name))torso+=weights[i*4+k];}return torso>.78;};
- const include=i=>{const x=positions[i*3],y=positions[i*3+1],z=positions[i*3+2],side=Math.min(1,Math.abs(x)/.16),top=spec.shape==='sash'?1.405+(x<0?.055:-.015):1.445-side*.095;
+ const include=i=>{if(nativeUpper)return true;const x=positions[i*3],y=positions[i*3+1],z=positions[i*3+2],side=Math.min(1,Math.abs(x)/.16),top=spec.shape==='sash'?1.405+(x<0?.055:-.015):1.445-side*.095;
   return y>1.005&&y<top&&Math.abs(x)<.215&&z<.125&&isTorso(i);};
  const add=i=>{if(mapping.has(i))return mapping.get(i);const index=p.length/3,x=positions[i*3],y=positions[i*3+1],z=positions[i*3+2];
   // A loose cloth shell clears the torso while sharing all of its deformation.
-  p.push(x*1.075,y+.002,(z+.025)*1.08-.025);n.push(normals?.[i*3]||0,normals?.[i*3+1]||0,normals?.[i*3+2]||1);uv.push(x*3+.5,y*3);for(let k=0;k<4;k++){ji.push(joints[i*4+k]);we.push(weights[i*4+k]);}mapping.set(i,index);return index;};
+  if(nativeUpper){p.push(x+(normals?.[i*3]||0)*.004,y+(normals?.[i*3+1]||0)*.004,z+(normals?.[i*3+2]||0)*.004);}else p.push(x*1.075,y+.002,(z+.025)*1.08-.025);n.push(normals?.[i*3]||0,normals?.[i*3+1]||0,normals?.[i*3+2]||1);uv.push(x*3+.5,y*3);for(let k=0;k<4;k++){ji.push(joints[i*4+k]);we.push(weights[i*4+k]);}mapping.set(i,index);return index;};
  for(let i=0;i<sourceIndices.length;i+=3){const face=sourceIndices.slice(i,i+3);if(face.every(include))indices.push(...face.map(add));}
  if(!indices.length)return [];
  const mesh=new B.Mesh(`profession-upper-wrap-${spec.id}`,scene),data=new B.VertexData();Object.assign(data,{positions:p,normals:n,uvs:uv,indices,matricesIndices:ji,matricesWeights:we});data.applyToMesh(mesh);mesh.parent=source.parent;mesh.position.copyFrom(source.position);mesh.scaling.copyFrom(source.scaling);mesh.rotationQuaternion=source.rotationQuaternion?.clone()||null;mesh.rotation.copyFrom(source.rotation);mesh.skeleton=source.skeleton;mesh.material=material;material.backFaceCulling=false;mesh.receiveShadows=true;mesh.isPickable=true;mesh.metadata={profession:spec.id,clothShape:spec.shape,skinnedUpperCloth:true};return [mesh];

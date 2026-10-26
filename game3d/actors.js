@@ -58,13 +58,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
-  const load=name=>loadModel(B,scene,'assets/art-courtyard/models/',`${name}.glb?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb');
-  const resident=async()=>{try{const asset=await load('sumer-people');if(['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip)))return asset;asset.dispose();throw Error('Adapted civilian clips missing');}catch(error){console.warn('Adapted civilian unavailable; using original resident.',error);return load('resident');}};
-  const loaded=await Promise.allSettled([resident(),load('sheep'),load('sumer-child'),load('sumer-adolescent')]);
+  const load=name=>loadModel(B,scene,'assets/art-courtyard/models/',`${name}.glb?v=native-residents-20261026-1`,scene,undefined,'.glb');
+  const human=async(name,native=false)=>{const asset=await load(name);if(!['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip))){asset.dispose();throw Error('Civilian clips missing: '+name);}asset.nativeResident=native&&asset.skeletons.some(s=>s.bones.length===41);asset.residentVariant=name.replace('human-native-','');const meta=[...(asset.transformNodes||[]),...(asset.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident).find(Boolean);asset.walkMetres=meta?.strideMetres;return asset;};
+  const resident=async()=>{try{return await human('human-native-male',true);}catch(error){console.warn('Native civilian unavailable; using previous resident.',error);try{return await human('sumer-people');}catch{return human('resident');}}};
+  const ageSource=async(age)=>{try{return await human('human-native-'+age,true);}catch{return human('sumer-'+age);}};
+  const loaded=await Promise.allSettled([resident(),load('sheep'),ageSource('child'),ageSource('adolescent'),human('human-native-female',true)]);
   for(const r of loaded)containers.push(r.status==='fulfilled'?r.value:null);
   const failed=loaded.slice(0,2).find(r=>r.status==='rejected');if(failed)throw failed.reason;
  }catch(error){for(const c of containers)c?.dispose();throw error;}
- const [residentSource,sheepSource,childSource,adolescentSource]=containers;
+ const [residentSource,sheepSource,childSource,adolescentSource,femaleSource]=containers;
  const wildlife=createWildlife(B,scene,meshes);
  let goats=null,imported=null,ambient=null,jackals=null;
  const loadFauna=async()=>{const values=await Promise.all([
@@ -93,12 +95,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const unit=metadata.citizenId!==undefined&&height>0?1.7/height:1;
   model.scaling.setAll(unit);model.position.y=-bounds.min.y*unit;
   register(root);
-  const a={root,model,unit,walkPhase:residentMotion(metadata.citizenId).phase/(Math.PI*2),groups,skeletons:copy.skeletons,materials:[],lastX:null,lastY:null,yaw:null,clip:null,cargoKey:null,pose:'idle',time:0,paused:false};
+  const a={root,model,unit,nativeResident:!!source.nativeResident,walkMetres:source.walkMetres||2.48,walkPhase:residentMotion(metadata.citizenId).phase/(Math.PI*2),groups,skeletons:copy.skeletons,materials:[],lastX:null,lastY:null,yaw:null,clip:null,cargoKey:null,pose:'idle',time:0,paused:false};
+  if(metadata.citizenId!==undefined){root.metadata.nativeResident=a.nativeResident;root.metadata.residentVariant=source.residentVariant;root.metadata.nativeStrideMetres=a.walkMetres;}
   // Clone recolored surfaces per resident; shared source materials stay immutable.
   if(metadata.citizenId!==undefined){
    const cloned=new Map();a.cloth=[];a.skin=[];a.hair=[];
    for(const m of model.getChildMeshes())if(m.material&&/undyed|wool|cloth|skin|hair/i.test(m.material.name)){
-    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-${/skin/i.test(m.material.name)?'skin':/hair/i.test(m.material.name)?'hair':'cloth'}-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);(/skin/i.test(m.material.name)?a.skin:/hair/i.test(m.material.name)?a.hair:a.cloth).push(cloth);}m.material=cloth;
+    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-${/skin/i.test(m.material.name)?'skin':/hair/i.test(m.material.name)?'hair':'cloth'}-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);(/skin/i.test(m.material.name)?a.skin:/hair/i.test(m.material.name)?a.hair:a.cloth).push(cloth);}m.material=cloth;if(a.nativeResident&&!/skin|hair/i.test(cloth.name)&&m.isVerticesDataPresent(B.VertexBuffer.UVKind))cloth.albedoTexture=materials.linen?.albedoTexture||null;
    }
    a.load=new B.TransformNode(`${name}-carried`,scene);a.load.parent=root;a.load.position.set(0,1,.37);
    a.details=new B.TransformNode(`${name}-details`,scene);a.details.parent=root;
@@ -107,9 +110,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    const nodes=model.getChildTransformNodes();a.hands={};a.arms={};
    a.spine=nodes.find(n=>n.name.endsWith('-spine_01'));a.spineBase=a.spine?.rotationQuaternion?.clone();a.legs={};
    for(const side of ['l','r'])a.legs[side]={upper:nodes.find(n=>n.name.endsWith(`-thigh_${side}`)),lower:nodes.find(n=>n.name.endsWith(`-calf_${side}`)),foot:nodes.find(n=>n.name.endsWith(`-foot_${side}`))};
+   for(const leg of Object.values(a.legs))if(leg.upper)leg.basePosition=leg.upper.position.clone();
    a.head=nodes.find(n=>n.name.endsWith('-head'));a.headBase=a.head?.scaling.clone();
    a.hairMeshes=model.getChildMeshes().filter(m=>/scalp hair/i.test(m.name));a.beardMeshes=model.getChildMeshes().filter(m=>/beard/i.test(m.name));
-   if(a.head&&a.hairMeshes[0]){
+   if(!a.nativeResident&&a.head&&a.hairMeshes[0]){
     a.head.computeWorldMatrix(true);const inverse=a.head.getWorldMatrix().clone().invert();
     // Measure the authored scalp/jaw in the head's bind space. World guesses put
     // the bun outside the skull after the GLB's handedness and rest transforms.
@@ -199,11 +203,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   else sphere('cargo-sack',a.load,['cloth','clothing','wool'].includes(k)?linen:reed,0,0,0,.39,.31,.30);
  }
  function appearance(a,c,state){
-  const look=residentVisual(c,state),scale=look.scale,motion=look.motion;a.root.scaling.set(scale*motion.width,scale*motion.height,scale*(.96+motion.width*.04));a.look=look;
+  const look=residentVisual(c,state),scale=look.scale,motion=look.motion;const width=a.nativeResident?.97+(motion.width-.80)*.15:motion.width,height=a.nativeResident?.97+(motion.height-.89)*.27:motion.height;a.root.scaling.set(scale*width,scale*height,scale*(a.nativeResident?1:(.96+motion.width*.04)));a.look=look;
   const identity=look.identity,adult=c.age>=16,bearded=adult&&c.sex!=='f'&&identity.beard>0;
   for(const m of a.beardMeshes)m.isVisible=bearded;
   for(const m of a.hairMeshes)m.isVisible=identity.hair!==0||!adult;
-  if(a.head){a.head.scaling.set(a.headBase.x*identity.headWidth,a.headBase.y*identity.headHeight,a.headBase.z);
+  if(a.head){a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,identity.headWidth)):identity.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,identity.headHeight)):identity.headHeight),a.headBase.z);
    a.fullHair?.setEnabled(identity.hair===2);a.bun?.setEnabled(identity.hair===3);
    if(a.fullBeard){a.fullBeard.setEnabled(bearded&&identity.beard>=2);a.fullBeard.scaling.y=a.jawBounds.size.y*(identity.beard===3?2.1:1.5);a.fullBeard.position.y=a.jawBounds.max.y-a.fullBeard.scaling.y*.5;}
 
@@ -251,7 +255,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
   if(a.clip==='Walk_Loop'&&!paused&&distance<3){
-   a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z);
+   a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z,a.walkMetres);
    const g=a.groups.get(a.clip);a.walkFrame=g.from+a.walkPhase*(g.to-g.from);
   }
   if(!paused){a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=(c.funeralContact?.bow||0)+(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=a.pose==='dance'?beat*.055:0;
@@ -266,7 +270,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // A small symmetric hip translation narrows the stance without solving or
  // rotating the limb; stride, knee flexion and the entire foot remain authored.
  function authoredStance(a){
-  for(const leg of Object.values(a.legs))if(leg.upper){leg.upper.position.x*=RESIDENT_STANCE.hipWidthScale;leg.lastPosition=leg.upper.position.clone();}
+  for(const leg of Object.values(a.legs))if(leg.upper){
+   // A clip can animate rotation without resetting translation. Always narrow
+   // either this frame's authored position or the original rest position once.
+   const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===leg.upper&&t.animation.targetProperty==='position');
+   leg.upper.position.x=(animated?leg.upper.position.x:leg.basePosition.x)*(a.nativeResident?1:RESIDENT_STANCE.hipWidthScale);
+   leg.lastPosition=leg.upper.position.clone();
+  }
  }
  // Animation clips set the skeletal base, then apply small task-specific arm gestures.
  const observer=scene.onAfterAnimationsObservable.add(()=>{
@@ -275,11 +285,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // Walking animatables are paused, avoiding a second clock-based evaluation.
    // Apply the distance sample once, before task IK and skeleton upload.
    if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
-   if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*i.headWidth,a.headBase.y*i.headHeight,a.headBase.z);}
+   if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs))if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    authoredStance(a);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
-   if(a.spine){const base=a.spine.rotationQuaternion||a.spineBase; a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
+   if(a.spine){
+    const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===a.spine&&t.animation.targetProperty==='rotationQuaternion');
+    const base=animated?a.spine.rotationQuaternion:a.spineBase;
+    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
+   }
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
     const animated=a.groups.get(a.clip)?.targetedAnimations.some(t=>t.target===n);
@@ -325,7 +339,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
-    for(const side of ['l','r']){const arm=a.arms[side],hand=a.hands[side];if(!arm?.upper||!arm.lower||!hand)continue;for(const n of [arm.upper,arm.lower,hand])n.computeWorldMatrix(true);const shoulder=B.Vector3.TransformCoordinates(arm.upper.getAbsolutePosition(),inverse),elbow=B.Vector3.TransformCoordinates(arm.lower.getAbsolutePosition(),inverse),palm=B.Vector3.TransformCoordinates(hand.getAbsolutePosition(),inverse),length=B.Vector3.Distance(shoulder,elbow)+B.Vector3.Distance(elbow,palm);poseArm(a,side,vec(shoulder.x+(side==='l'?-.035:.035),shoulder.y-length*.94,shoulder.z+.025+(side==='l'?swing:-swing)));}
+    for(const side of ['l','r']){const arm=a.arms[side],hand=a.hands[side];if(!arm?.upper||!arm.lower||!hand)continue;for(const n of [arm.upper,arm.lower,hand])n.computeWorldMatrix(true);const shoulder=B.Vector3.TransformCoordinates(arm.upper.getAbsolutePosition(),inverse),elbow=B.Vector3.TransformCoordinates(arm.lower.getAbsolutePosition(),inverse),palm=B.Vector3.TransformCoordinates(hand.getAbsolutePosition(),inverse),length=B.Vector3.Distance(shoulder,elbow)+B.Vector3.Distance(elbow,palm);poseArm(a,side,vec(shoulder.x+(side==='l'?-1:1)*(a.nativeResident?.12:.035),shoulder.y-length*.94,shoulder.z+.025+(side==='l'?swing:-swing)));}
    }
    if(a.tool.isEnabled()&&a.hands.r&&a.hands.l){
     a.hands.r.computeWorldMatrix(true);a.hands.l.computeWorldMatrix(true);
@@ -384,7 +398,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
-  for(const c of visible){seen.add(c.id);let a=people.get(c.id);const anatomy=residentAnatomy(c.age);if(a&&a.anatomy!==anatomy.source){remove(a);people.delete(c.id);a=null;}if(!a){const source=anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=anatomy.source;a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
+  for(const c of visible){seen.add(c.id);let a=people.get(c.id);const anatomy=residentAnatomy(c.age),variant=anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;if(a&&a.anatomy!==variant){remove(a);people.delete(c.id);a=null;}if(!a){const source=anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;people.set(c.id,a);}a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}

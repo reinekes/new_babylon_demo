@@ -8,4 +8,4 @@ for p in sorted(root.rglob('*')):
  if p.suffix=='.glb':
   g=json.loads(d[20:20+struct.unpack_from('<I',d,12)[0]]);r.update(triangles=sum(g['accessors'][q['indices']]['count']//3 for m in g['meshes'] for q in m['primitives']),meshes=len(g['meshes']),bones=max([len(s['joints']) for s in g.get('skins',[])]+[0]),clips=[a['name'] for a in g.get('animations',[])])
  rows.append(r)
-(root/'manifest.json').write_text(json.dumps({'release':'craft-and-fast-start-20261023-1','purpose':'current runtime art assets for New Babylon; no save data','files':rows},indent=2)+'\n')
+(root/'manifest.json').write_text(json.dumps({'release':'native-residents-20261026-1','purpose':'current runtime art assets for New Babylon; no save data','files':rows},indent=2)+'\n')

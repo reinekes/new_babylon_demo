@@ -45,7 +45,7 @@ test('renderer initialization exposes real selectable bootstrap layers before an
  const node=()=>({dataset:{},setAttribute(){},remove(){},textContent:'',hidden:false});
  globalThis.document={createElement:node};let loads=0,stopCalls=0;
  B.SceneLoader.LoadAssetContainerAsync=()=>{loads++;return new Promise(()=>{});};
- const materials=Object.fromEntries(['soil','wood','plaster','brick','reed','linen','terracotta','stone','grass'].map(name=>[name,new B.PBRMaterial(name,scene)]));Object.defineProperty(materials,'loadPhotos',{value(){}});
+ const materials=Object.fromEntries(['soil','wood','plaster','brick','reed','linen','terracotta','stone','grass'].map(name=>[name,new B.PBRMaterial(name,scene)]));Object.defineProperty(materials,'loadPhotos',{async value(){}});
  const renderer=Object.create(GameRenderer3D.prototype);Object.assign(renderer,{B,scene,engine,materials,canvas:{parentNode:{append(){}}},resize(){},home(){},camera:{target:{x:3,z:4},alpha:.4,beta:1.1,radius:48}});
  const stop=engine.stopRenderLoop.bind(engine);engine.stopRenderLoop=()=>{stopCalls++;stop();};let timer;
  try{
@@ -56,16 +56,16 @@ test('renderer initialization exposes real selectable bootstrap layers before an
 });
 test('an invalid detailed rig cannot replace or destroy the working bootstrap layer',async t=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoad=B.SceneLoader.LoadAssetContainerAsync,originalDocument=globalThis.document,s=fixture();s.buildings=s.buildings.filter(b=>b.type!=='field');
- globalThis.document={createElement:()=>({dataset:{},setAttribute(){},remove(){}})};t.mock.method(console,'warn',()=>{});let releasedSources=0;
+ globalThis.document={createElement:()=>({dataset:{},setAttribute(){},remove(){}})};t.mock.method(console,'warn',()=>{});const releasedSources=[],requiredSources=['human-native-male.glb','human-native-female.glb','human-native-child.glb','human-native-adolescent.glb','sheep.glb'];
  B.SceneLoader.LoadAssetContainerAsync=(_path,file)=>{
-  if(!/^(sumer-people|sheep|sumer-child|sumer-adolescent)\.glb/.test(file))return new Promise(()=>{});
-  return Promise.resolve({animationGroups:[{name:'Walk_Loop'},{name:'Idle_Loop'}],instantiateModelsToScene(){throw Error('rig geometry unavailable');},dispose(){releasedSources++;}});
+  const name=file.split('?')[0];if(!requiredSources.includes(name))return new Promise(()=>{});
+  return Promise.resolve({animationGroups:[{name:'Walk_Loop'},{name:'Idle_Loop'}],skeletons:[{bones:Array.from({length:41})}],instantiateModelsToScene(){throw Error('rig geometry unavailable');},dispose(){releasedSources.push(name);}});
  };
- const materials=Object.fromEntries(['soil','wood','plaster','brick','reed','linen','terracotta','stone','grass'].map(name=>[name,new B.PBRMaterial(name,scene)]));Object.defineProperty(materials,'loadPhotos',{value(){}});
+ const materials=Object.fromEntries(['soil','wood','plaster','brick','reed','linen','terracotta','stone','grass'].map(name=>[name,new B.PBRMaterial(name,scene)]));Object.defineProperty(materials,'loadPhotos',{async value(){}});
  const renderer=Object.create(GameRenderer3D.prototype);Object.assign(renderer,{B,scene,engine,materials,canvas:{parentNode:{append(){}}},resize(){},home(){},quality:'high'});
  try{await renderer.initialize(s);const bootstrap=renderer.actors,root=bootstrap.rootFor({citizenId:4007}),before=JSON.stringify(s);
   for(let i=0;i<100&&!renderer.detailQueue.errors.length;i++)await new Promise(resolve=>setTimeout(resolve,1));
-  assert.ok(renderer.detailQueue.errors.some(error=>/rig geometry unavailable/.test(error.message)));assert.equal(renderer.actors,bootstrap);assert.equal(root.isDisposed(),false);assert.equal(bootstrap.rootFor({citizenId:4007}),root);assert.equal(releasedSources,4);assert.equal(JSON.stringify(s),before);assert.doesNotThrow(()=>bootstrap.update(s));
+  assert.ok(renderer.detailQueue.errors.some(error=>/rig geometry unavailable/.test(error.message)));assert.equal(renderer.actors,bootstrap);assert.equal(root.isDisposed(),false);assert.equal(bootstrap.rootFor({citizenId:4007}),root);assert.deepEqual(releasedSources.sort(),requiredSources.sort(),'all five owned sources are released exactly once');assert.equal(JSON.stringify(s),before);assert.doesNotThrow(()=>bootstrap.update(s));
  }finally{renderer.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoad;if(originalDocument===undefined)delete globalThis.document;else globalThis.document=originalDocument;}
 });
 test('a city without initial fields requests crop detail only when its first field is later built',async()=>{

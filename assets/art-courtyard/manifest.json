@@ -1,5 +1,5 @@
 {
-  "release": "craft-and-fast-start-20261023-1",
+  "release": "native-residents-20261026-1",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
@@ -9,8 +9,8 @@
     },
     {
       "file": "CREDITS.html",
-      "bytes": 23128,
-      "sha256": "1bb6d292061269f7cce80c1ccd734d60efc62d9c71180a67aae7b36a46932d28"
+      "bytes": 25063,
+      "sha256": "346c904b704d7e39f8f975949f350dcd7ac2ae430c930c28fa5a2bdbf0622095"
     },
     {
       "file": "models/adobe-courtyard.glb",
@@ -240,6 +240,54 @@
       "bones": 34,
       "clips": [
         "rigAction"
+      ]
+    },
+    {
+      "file": "models/human-native-adolescent.glb",
+      "bytes": 395408,
+      "sha256": "25eeb9a345c151170b375a325eda7029b621b7d10266660fdfd57a7deca38a61",
+      "triangles": 2240,
+      "meshes": 5,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/human-native-child.glb",
+      "bytes": 395328,
+      "sha256": "424ffc52f765d1ba3c95740425a5618d96e2e375e75d831c0aa15090924081b1",
+      "triangles": 2240,
+      "meshes": 5,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/human-native-female.glb",
+      "bytes": 406208,
+      "sha256": "04bc74c6cfc6b1ae92270394a7f4e6f3c3e197270685d78bce9624231acf41e5",
+      "triangles": 2318,
+      "meshes": 6,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/human-native-male.glb",
+      "bytes": 395448,
+      "sha256": "3b4129dc75724897c17754fa5964c780eb6bb952de0e1b5aead0d38606f89929",
+      "triangles": 2240,
+      "meshes": 5,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
       ]
     },
     {
