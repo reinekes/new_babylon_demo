@@ -20,3 +20,8 @@ test('unavailable WebGL chooses working Canvas renderer before acquiring any gra
 test('zoom buttons retain native camera zoom direction after wheel or focus',async()=>{
  const {GameRenderer3D}=await import('../game3d/renderer.js');const r=Object.create(GameRenderer3D.prototype);r.camera={radius:30};assert.equal(r.zoom,104/30);r.zoomBy(.2);assert.ok(r.camera.radius<30);const near=r.camera.radius;r.zoomBy(-.2);assert.ok(r.camera.radius>near);r.camera.radius=9;r.zoomBy(.2);assert.equal(r.camera.radius,8);
 });
+test('orbit buttons move horizontal and vertical view without changing target, zoom or city state',async()=>{
+ const {GameRenderer3D}=await import('../game3d/renderer.js');const r=Object.create(GameRenderer3D.prototype),state={people:[{id:81,name:'Амал'}]},before=JSON.stringify(state);r.state=state;r.camera={alpha:1,beta:1,radius:50,target:{x:23,y:0,z:42},lowerBetaLimit:.18,upperBetaLimit:1.48};
+ r.orbitBy?.(.5,-.3);assert.equal(r.camera.alpha,1.5);assert.equal(r.camera.beta,.7);assert.deepEqual(r.camera.target,{x:23,y:0,z:42});assert.equal(r.camera.radius,50);
+ r.orbitBy?.(0,10);assert.equal(r.camera.beta,1.48);r.orbitBy?.(0,-10);assert.equal(r.camera.beta,.18);assert.equal(JSON.stringify(state),before);
+});

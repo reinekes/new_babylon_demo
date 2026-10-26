@@ -212,7 +212,12 @@ function harvest(s,c,ctx,via=null){
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   c.cargo[resource]=base*mult;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,c.cargo[resource]);
  }
- if(isProductionStore(b)){if(via){startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;}const goods=c.cargo;c.cargo={};return produced(goods);}
+ if(isProductionStore(b)){if(via){
+  // The target has already yielded this load. Returning to the local shed is
+  // transport, even if New Year or a save/reload happens while it is carried.
+  for(const [resource,amount]of Object.entries(c.cargo))recordBuildingProduction(s,b,resource,amount);
+  recordCitizenHarvest(s,c,c.cargo);startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
+ }const goods=c.cargo;c.cargo={};return produced(goods);}
  startTrip(s,c,c.store,'toStore',ctx,via);return true;
 }
 function deposit(s,c){
@@ -226,7 +231,7 @@ function deposit(s,c){
 }
 function arrival(s,c,ctx){
  c.route=[];c.routeIndex=0;
- if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo)){recordCitizenHarvest(s,c,c.cargo);c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
+ if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo,{record:false})){c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
  if(c.phase==='toClothesSupply'){
   const target=s.citizens.find(p=>p.id===c.clothingTarget&&p.home===c.home),amount=target&&target.clothing<=REPLACE_CLOTHING_AT&&storeStock(s,c.store,'clothing')>=1?takeStock(s,c.store,'clothing',1):0;
   if(amount===1){c.clothingLoad=1;startTrip(s,c,c.home,'toClothesHome',ctx);}else{delete c.clothingTarget;delete c.clothingLoad;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}return;

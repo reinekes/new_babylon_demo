@@ -6,7 +6,7 @@ import {buildingProductionHistoryHTML} from '../ui-building-production.js';
 test('legacy buildings show unknown past seasons and a readonly history view never creates data',()=>{
  const s={year:3,season:1},b={type:'pottery'},before=JSON.stringify(b);Object.freeze(b);
  const rows=productionHistory(s,b);assert.equal(rows.length,3);assert.deepEqual(rows.map(r=>[r.year,r.season,r.known]),[[2,3,false],[3,0,false],[3,1,false]]);assert.equal(JSON.stringify(b),before);
- const html=buildingProductionHistoryHTML(s,b);assert.match(html,/Нет данных/);assert.match(html,/текущий/);assert.ok(!html.includes('NaN'));
+ const html=buildingProductionHistoryHTML(s,b);assert.match(html,/Нет данных/);assert.match(html,/завершённые годы/);assert.ok(!html.includes('NaN'));
 });
 test('only positive real output records accumulate and readonly summaries do not credit another unit',()=>{
  const s={year:1,season:0},b={type:'pottery'};
@@ -26,9 +26,9 @@ test('actual buckets retain only the last three season records across the year b
  assert.deepEqual(b.productionHistory.map(r=>[r.year,r.season]),[[1,3],[2,0],[2,1]]);assert.deepEqual(b.productionHistory.map(r=>r.resources.clay||0),[0,0,3]);
  for(let season=2;season<4;season++){s.season=season;recordBuildingProduction(s,b,'clay',2);}assert.equal(b.productionHistory.length,3);
 });
-test('production table has named seasons and actual resource quantities with icons including zero seasons',()=>{
+test('production table has completed years and actual resource quantities with icons',()=>{
  const s={year:2,season:0},b={type:'hunting'};recordBuildingProduction(s,b,'food',4);recordBuildingProduction(s,b,'hides',1);
- const html=buildingProductionHistoryHTML(s,b);assert.match(html,/Последние 3 сезона/);assert.match(html,/resource-food/);assert.match(html,/resource-hides/);assert.match(html,/Весна/);assert.match(html,/>4</);assert.match(html,/>1</);
+ const html=buildingProductionHistoryHTML({year:3,season:0},b);assert.match(html,/Последние 3 полных года/);assert.match(html,/resource-food/);assert.match(html,/resource-hides/);assert.match(html,/Год 2/);assert.match(html,/>4</);assert.match(html,/>1</);
 });
 
 test('optional save validation rejects oversized, duplicate, future and invented history records',()=>{

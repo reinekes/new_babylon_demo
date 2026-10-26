@@ -1,5 +1,6 @@
 import {validateCitizenEpithets} from './citizen-epithets.js';
-import {validateProductionHistory} from './building-production-history.js';
+import {stampBuildingCompletion,validateBuildingChronology} from './building-chronology.js';
+import {initializeProductionAccounting,validateProductionHistory} from './building-production-history.js';
 import {validateDairy} from './dairy.js';
 import {initializeBuildingInventory,validateBuildingInventory} from './building-inventory.js';
 import {initializeEcology,advanceEcology,validateEcology} from './ecology.js';
@@ -46,6 +47,7 @@ export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&l
 export function createGame({start='beehives'}={}){
  const s={version:VERSION,year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:100,clay:90,reed:45,wood:20,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
  if(start!=='established'){s.buildings=starterHomes(s.resources);s.capacity=housingOf(s);}
+ for(const b of s.buildings)stampBuildingCompletion(s,b);initializeProductionAccounting(s);
  initializeBuildingInventory(s);initializeEcology(s,{legacy:start==='established'});initializeGathering(s);initializeFestival(s);initializeWorld(s);ensureResourceSites(s);initializeTrade(s);initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);initializeFoodPlan(s);initializePests(s);syncPestSites(s);syncCitizens(s);for(const c of s.citizens)delete c.age;initializeDemography(s,{mixed:true});for(const c of s.citizens)c.mealEaten=mealRation(c);if(start!=='established')distributeFounders(s);syncCitizens(s);syncInventory(s);initializeDistricts(s);initializeWater(s);initializeLifeAnalytics(s);snapshotLifeAnalytics(s);log(s,'У города появился покровитель',start==='established'?'Двенадцать жителей оставили у реки первое подношение. Храм принимает первые грузы; рабочие отправляются на поля и в карьер.':'Пять сырцовых домов-ульев дали кров двенадцати жителям. Еда и материалы хранятся внутри домов; первые мастерские и поля ещё предстоит построить.','good');return s;
 }
 export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b)).length;
@@ -141,7 +143,7 @@ function settleSeason(s){
 }
 export function advanceTime(s,seconds){
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
- syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
+ initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   const dt=Math.min(remaining,45-s.seasonElapsed);advanceWorkers(s,dt);s.seasonElapsed+=dt;remaining-=dt;advanced+=dt;
   if(s.seasonElapsed>=45-1e-7){s.seasonElapsed=0;settleSeason(s);}
@@ -312,7 +314,7 @@ export function decode(raw){
   initializeFestival(s);if(!validateFestival(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
-  if(!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
+  if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();

@@ -4,7 +4,7 @@ import {createBootstrapActors} from './bootstrap-actors.js';
 import {createBootstrapLandscape} from './bootstrap-landscape.js';
 import {foundingCameraTarget} from '../starter-settlement.js';
 import {createBuildingReach,nearbySimilar} from './building-reach.js';
-import {bindMapControls} from './map-controls.js';
+import {bindMapControls,orbitCamera} from './map-controls.js';
 import {Renderer as CanvasRenderer} from '../renderer.js';
 import {canBuild} from '../engine.js';
 import {WIDTH,HEIGHT,terrain} from '../world.js';
@@ -17,7 +17,7 @@ import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
 import {weatherAt} from '../environment.js';
 
-export const GAME3D_RELEASE='town-stocks-20261026-5';
+export const GAME3D_RELEASE='town-overview-years-20261026-1';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
@@ -48,7 +48,7 @@ export class GameRenderer3D{
   // dirtiness across the whole city. Sun, sky, fog and windows carry twilight.
   // .26 is the midpoint of the old .17–.35 environment range.
   this.scene.environmentIntensity=.26;
-  this.camera=new B.ArcRotateCamera('city-camera',Math.PI/3,.96,62,new B.Vector3(53,0,55),this.scene);this.camera.attachControl(canvas,true);this.camera.inputs.removeByType('ArcRotateCameraPointersInput');this.camera.minZ=.1;this.camera.maxZ=900;this.camera.lowerRadiusLimit=8;this.camera.upperRadiusLimit=360;this.camera.lowerBetaLimit=.35;this.camera.upperBetaLimit=1.48;this.camera.wheelDeltaPercentage=.025;this.camera.panningSensibility=70;this.camera.inertia=0;
+  this.camera=new B.ArcRotateCamera('city-camera',Math.PI/3,.96,62,new B.Vector3(53,0,55),this.scene);this.camera.attachControl(canvas,true);this.camera.inputs.removeByType('ArcRotateCameraPointersInput');this.camera.minZ=.1;this.camera.maxZ=900;this.camera.lowerRadiusLimit=8;this.camera.upperRadiusLimit=360;this.camera.lowerBetaLimit=.18;this.camera.upperBetaLimit=1.48;this.camera.wheelDeltaPercentage=.025;this.camera.panningSensibility=70;this.camera.inertia=0;
   this.sun=new B.DirectionalLight('city-sun',new B.Vector3(-.6,-.85,-.5),this.scene);this.sun.shadowMinZ=.1;this.sun.shadowMaxZ=350;this.sun.shadowFrustumSize=90;
   this.fill=new B.HemisphericLight('city-sky',new B.Vector3(0,1,0),this.scene);this.fill.intensity=.35;
   this.shadow=new B.ShadowGenerator(2048,this.sun);this.shadow.usePercentageCloserFiltering=true;this.shadow.filteringQuality=B.ShadowGenerator.QUALITY_MEDIUM;this.shadow.bias=.0004;this.shadow.normalBias=.025;
@@ -76,8 +76,8 @@ export class GameRenderer3D{
   setTimeout(()=>{if(this.disposed)return;this.materials.loadPhotos().then(()=>{if(!this.disposed)this.buildings.refreshMaterials?.();});const hdr=new this.B.HDRCubeTexture('assets/art-courtyard/textures/kiara_1_dawn_1k.hdr',this.scene,128,false,true,false,true);hdr.onLoadObservable.addOnce(()=>{if(!this.disposed)this.scene.environmentTexture=hdr;});},250);
  }
  createControls(){
-  const panel=document.createElement('div');panel.className='game3d-options';panel.innerHTML='<span>3D · ЖИВОЙ ГОРОД</span><button type="button" data-turn="-1" title="Повернуть камеру влево">↶</button><button type="button" data-turn="1" title="Повернуть камеру вправо">↷</button><select aria-label="Качество 3D"><option value="high">Высокая</option><option value="low">Лёгкая</option></select><a href="?view=2d" title="Открыть прежнюю графику с тем же сохранением">2D</a><a href="assets/art-courtyard/CREDITS.html" target="_blank" rel="noopener" title="Модели и авторы">Авторы ↗</a>';
-  this.canvas.parentNode.append(panel);this.controls=panel;for(const b of panel.querySelectorAll('[data-turn]'))b.onclick=()=>{this.camera.alpha+=Number(b.dataset.turn)*Math.PI/4;};panel.querySelector('select').onchange=e=>{const low=e.target.value==='low';this.quality=low?'low':'high';this.scene.shadowsEnabled=!low;this.landscape?.setQuality?.(low?'low':'high');this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,low?1:1.5));this.resize();};
+  const panel=document.createElement('div');panel.className='game3d-options';panel.title='Перетаскивание — перемещение карты; средняя кнопка мыши — вращение и наклон; колесо — масштаб';panel.innerHTML='<span>3D · ЖИВОЙ ГОРОД</span><div class="game3d-orbit" role="group" aria-label="Направление и наклон камеры"><button type="button" data-turn="-1" aria-label="Повернуть камеру влево" title="Повернуть камеру влево">↶</button><button type="button" data-turn="1" aria-label="Повернуть камеру вправо" title="Повернуть камеру вправо">↷</button><button type="button" data-tilt="-1" aria-label="Поднять камеру: вид сверху" title="Поднять камеру: вид сверху">↑</button><button type="button" data-tilt="1" aria-label="Опустить камеру: вид к горизонту" title="Опустить камеру: вид к горизонту">↓</button><button type="button" data-camera-home aria-label="Вернуть исходный наклон и вид города" title="Вернуть исходный наклон и вид города">⌂</button></div><select aria-label="Качество 3D"><option value="high">Высокая</option><option value="low">Лёгкая</option></select><a href="?view=2d" title="Открыть прежнюю графику с тем же сохранением">2D</a><a href="assets/art-courtyard/CREDITS.html" target="_blank" rel="noopener" title="Модели и авторы">Авторы ↗</a>';
+  this.canvas.parentNode.append(panel);this.controls=panel;for(const b of panel.querySelectorAll('[data-turn]'))b.onclick=()=>this.orbitBy(Number(b.dataset.turn)*Math.PI/4,0);for(const b of panel.querySelectorAll('[data-tilt]'))b.onclick=()=>this.orbitBy(0,Number(b.dataset.tilt)*.18);panel.querySelector('[data-camera-home]').onclick=()=>this.home();panel.querySelector('select').onchange=e=>{const low=e.target.value==='low';this.quality=low?'low':'high';this.scene.shadowsEnabled=!low;this.landscape?.setQuality?.(low?'low':'high');this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,low?1:1.5));this.resize();};
   const metrics=document.createElement('output');metrics.className='game3d-metrics';metrics.setAttribute('aria-label','Производительность 3D');this.canvas.parentNode.append(metrics);this.metrics=metrics;this.samples=[];this.frameCount=0;this.windowStart=0;
  }
  bindInput(){
@@ -97,6 +97,7 @@ export class GameRenderer3D{
  selectPoint(point,onSelect){if(this.roadDrawMode){this.onRoadGround?.(point);return;}if(!this.interactive)return;if(this.roadMode){const road=this.roadNear(point);if(road)this.onRoadSelect?.(road);}else onSelect(point);}
  get zoom(){return this.camera?104/this.camera.radius:this._zoom;}
  zoomBy(amount){this.mapOverview=false;this.camera.radius=Math.max(8,Math.min(360,this.camera.radius*Math.exp(-amount)));this._zoom=104/this.camera.radius;}
+ orbitBy(alpha,beta=0){orbitCamera(this.camera,alpha,beta);}
  set zoom(value){this._zoom=Math.max(.3,Math.min(4,value));if(this.camera){this.mapOverview=false;this.camera.radius=104/this._zoom;}}
  layout(){if(this.camera)this.camera.radius=this.mapOverview?240:104/this._zoom;}
  resize(){if(!this.engine)return;this.engine.resize();const r=this.canvas.getBoundingClientRect();this.w=r.width;this.h=r.height;}
