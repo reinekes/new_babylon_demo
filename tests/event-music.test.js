@@ -6,7 +6,19 @@ const town=()=>({simTime:0,citizens:[],buildings:[]});
 function rig(){let now=0;const media=[],messages=[],listeners=new Map();function createMedia(){const el={src:'',preload:'auto',loop:false,volume:1,paused:true,currentTime:0,plays:0,pauses:0,async play(){this.plays++;if(this.reject)throw Error('autoplay denied');this.paused=false;},pause(){this.pauses++;this.paused=true;},addEventListener(name,fn){this[name]=fn;},removeEventListener(){},removeAttribute(){},load(){}};media.push(el);return el;}const doc={hidden:false,addEventListener:(k,f)=>listeners.set(k,f),removeEventListener:(k,f)=>{if(listeners.get(k)===f)listeners.delete(k);}};const old=globalThis.document;globalThis.document=doc;const audio=createCityAudio(t=>messages.push(t),{createMedia,now:()=>now});return {audio,media,messages,doc,step:seconds=>{now+=seconds;},visibility:()=>listeners.get('visibilitychange')?.(),cleanup(){audio.dispose();if(old===undefined)delete globalThis.document;else globalThis.document=old;}};}
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 
-test('recorded event music is lazy, streamed, opt-in and crossfades the current theme without replaying past events',async()=>{const r=rig(),s=town();try{r.audio.tick(s,false);assert.equal(r.media.length,0);await r.audio.toggle();r.audio.tick(s,false);await settle();assert.equal(r.media.length,1);const start=r.media[0];assert.match(start.src,/main-theme\.mp3/);assert.equal(start.preload,'none');assert.equal(start.plays,1);r.step(2);r.audio.tick(s,false);assert.ok(start.volume>0&&start.volume<=.2);s.citizens=Array.from({length:24},(_,id)=>({id}));r.audio.tick(s,false);await settle();const grown=r.media.at(-1);assert.match(grown.src,/growing-city\.mp3/);r.step(2);r.audio.tick(s,false);assert.equal(start.paused,true);assert.ok(grown.volume>0);s.simTime=35;r.audio.tick(s,false);await settle();assert.match(r.media.at(-1).src,/night-theme\.mp3/);assert.equal(r.media.filter(m=>!m.paused).length<=2,true);r.audio.tick(s,true);assert.ok(r.media.every(m=>m.paused));s.funeral={stage:'procession',deceased:[{id:9}]};r.audio.tick(s,true);s.funeral=null;s.simTime=0;r.audio.tick(s,false);await settle();assert.match(r.media.findLast(m=>!m.paused).src,/growing-city\.mp3/);assert.equal(r.media.some(m=>m.src.includes('funeral')),false);}finally{r.cleanup();}});
+test('recorded event music stays continuous during simulation pauses, windows and pending events',async()=>{
+ const r=rig(),s=town();try{
+  r.audio.tick(s,false);assert.equal(r.media.length,0);await r.audio.toggle();r.audio.tick(s,false);await settle();
+  const start=r.media[0];assert.match(start.src,/main-theme\.mp3/);assert.equal(start.preload,'none');assert.equal(start.plays,1);
+  r.step(2);r.audio.tick(s,false);assert.ok(start.volume>0&&start.volume<=.2);start.currentTime=12;
+  // A game dialog freezes the simulation; the existing soundtrack must keep its media cursor.
+  s.event={id:'nightLights'};r.audio.tick(s,true);r.step(2);r.audio.tick(s,true);await settle();
+  assert.equal(start.paused,false);assert.equal(start.pauses,0);assert.equal(start.currentTime,12);assert.equal(start.plays,1);
+  s.event=null;s.citizens=Array.from({length:24},(_,id)=>({id}));r.audio.tick(s,false);await settle();
+  const grown=r.media.at(-1);assert.match(grown.src,/growing-city\.mp3/);r.step(2);r.audio.tick(s,false);assert.equal(start.paused,true);assert.ok(grown.volume>0);
+  s.simTime=35;r.audio.tick(s,true);await settle();assert.match(r.media.at(-1).src,/night-theme\.mp3/);assert.ok(r.media.filter(m=>!m.paused).length<=2);
+ }finally{r.cleanup();}
+});
 
 test('funeral themes outrank night and alternate only for a new ceremony',async()=>{const r=rig(),s=town();try{await r.audio.toggle();s.simTime=35;s.funeral={stage:'gathering',deceased:[{id:3}]};r.audio.tick(s,false);await settle();assert.match(r.media.at(-1).src,/funeral-1\.mp3/);s.funeral={...s.funeral,stage:'procession'};r.audio.tick(s,false);assert.equal(r.media.length,1);s.funeral=null;r.audio.tick(s,false);s.funeral={stage:'procession',deceased:[{id:4}]};r.audio.tick(s,false);await settle();assert.match(r.media.at(-1).src,/funeral-2\.mp3/);r.step(2);r.audio.tick(s,false);assert.ok(r.media.filter(m=>!m.paused).length<=1);}finally{r.cleanup();}});
 
@@ -14,7 +26,7 @@ test('lithophone recording requires actual inspired work near camera, ducks back
 
 test('mute cancels pending play and autoplay rejection is reported once without a tick retry storm',async()=>{const r=rig(),s=town();try{await r.audio.toggle();r.audio.tick(s,false);await settle();const el=r.media[0];await r.audio.toggle();assert.equal(el.paused,true);el.reject=true;await r.audio.toggle();r.audio.tick(s,false);await settle();const plays=el.plays;r.step(2);r.audio.tick(s,false);await settle();assert.equal(el.plays,plays);assert.equal(r.messages.length,1);assert.equal(r.audio.enabled,false);}finally{r.cleanup();}});
 
-test('a pending media play resolving after pause cannot restart an obsolete theme',async()=>{let resolvePlay,paused=0;const el={src:'',volume:0,paused:true,play(){this.paused=false;return new Promise(resolve=>resolvePlay=resolve);},pause(){this.paused=true;paused++;},addEventListener(){},removeAttribute(){},load(){}};const audio=createCityAudio(undefined,{createMedia:()=>el,now:()=>0});try{await audio.toggle();audio.tick(town(),false);audio.tick(town(),true);assert.equal(el.paused,true);resolvePlay();await settle();assert.equal(el.paused,true);assert.ok(paused>=2);assert.deepEqual(audio.status.playing,[]);}finally{audio.dispose();}});
+test('a pending media play resolving after mute cannot restart an obsolete theme',async()=>{let resolvePlay,paused=0;const el={src:'',volume:0,paused:true,play(){this.paused=false;return new Promise(resolve=>resolvePlay=resolve);},pause(){this.paused=true;paused++;},addEventListener(){},removeAttribute(){},load(){}};const audio=createCityAudio(undefined,{createMedia:()=>el,now:()=>0});try{await audio.toggle();audio.tick(town(),false);await audio.toggle();assert.equal(el.paused,true);resolvePlay();await settle();assert.equal(el.paused,true);assert.ok(paused>=2);assert.deepEqual(audio.status.playing,[]);}finally{audio.dispose();}});
 
 const feast=(occasion='firstBeer')=>({occasion,stage:'celebrating',consumed:true,actors:[{id:1,kind:'guest',stage:'dancing'}]});
 test('first beer and Night of Lights recordings wait for an actual feast and guests, including legacy festivals',()=>{
@@ -33,7 +45,7 @@ test('a real feast outranks ordinary night and growth music while funerals retai
  assert.equal(eventMusicTheme(s,2),'funeral2');s.funeral.stage='returning';assert.equal(eventMusicTheme(s),'nightLights');
  s.funeral=null;s.festival=null;assert.equal(eventMusicTheme(s),'night');s.simTime=0;assert.equal(eventMusicTheme(s),'grown');
 });
-test('recorded feasts crossfade, duck near lithophone, stop on pause and resume only the current feast',async()=>{
+test('recorded feasts crossfade, duck near lithophone, continue on pause and resume after visibility only the current feast',async()=>{
  const r=rig(),s=town();try{
   s.buildings=[{type:'musicHouse',x:5,y:5,level:1}];s.citizens=[{id:1,age:30,role:'production',calling:'musician',work:'5,5',workplace:'5,5',phase:'working',x:5.5,y:5.5,cargo:{}}];
   r.audio.tick(s,false,{x:5,y:5});assert.equal(r.media.length,0);await r.audio.toggle();r.audio.tick(s,false,{x:5,y:5});await settle();
@@ -41,7 +53,7 @@ test('recorded feasts crossfade, duck near lithophone, stop on pause and resume 
   const beer=r.media.find(el=>el.src.includes('first-beer-feast'));assert.ok(beer);assert.ok(beer.volume>0&&beer.volume<.1);assert.equal(r.audio.status.lithophone,true);
   s.funeral={stage:'procession',deceased:[{id:3}]};r.audio.tick(s,false,{x:5,y:5});await settle();assert.equal(r.audio.status.theme,'funeral1');
   s.funeral=null;s.festival=feast('nightLights');r.audio.tick(s,false,{x:5,y:5});await settle();assert.equal(r.audio.status.theme,'nightLights');assert.ok(r.media.filter(el=>!el.paused&&!el.src.includes('lithophone')).length<=2);
-  r.audio.tick(s,true,{x:5,y:5});assert.ok(r.media.every(el=>el.paused));r.doc.hidden=true;r.visibility();s.festival=null;r.audio.tick(s,false,{x:5,y:5});assert.deepEqual(r.audio.status.playing,[]);
+  r.audio.tick(s,true,{x:5,y:5});assert.equal(r.audio.status.theme,'nightLights');assert.equal(r.audio.status.lithophone,true);assert.ok(r.media.some(el=>!el.paused));r.doc.hidden=true;r.visibility();s.festival=null;r.audio.tick(s,false,{x:5,y:5});assert.deepEqual(r.audio.status.playing,[]);
   r.doc.hidden=false;r.audio.tick(s,false,{x:5,y:5});await settle();assert.equal(r.audio.status.theme,'main');assert.ok(r.media.filter(el=>!el.paused).every(el=>!el.src.includes('feast')&&!el.src.includes('night-lights')));
  }finally{r.cleanup();}
 });

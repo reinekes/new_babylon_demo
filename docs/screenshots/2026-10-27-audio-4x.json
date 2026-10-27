@@ -1,0 +1,18 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "assignmentMs": 6.036875000000009,
+  "simulation4x": {
+    "medianMs": 5.247875000000022,
+    "p95Ms": 11.19458399999985,
+    "maxMs": 151.8920420000004
+  },
+  "encode": {
+    "medianMs": 1.284208000000035,
+    "maxMs": 3.1350830000001224,
+    "bytes": 253015
+  },
+  "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c",
+  "command": "node scripts/benchmark-4x.mjs",
+  "scope": "CPU simulation only; not FPS or browser render measurement"
+}

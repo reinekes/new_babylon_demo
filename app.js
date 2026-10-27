@@ -20,6 +20,7 @@ import {calendarAt,monthTrackHTML,simulationSeconds,secondsToNextMonth} from './
 import {grantTestResources} from './test-tools.js';
 import {festivalReason,orderFestival,cancelFestival,festivalSummary} from './festival.js';
 import {createCityAudio} from './city-audio.js';
+import {cityAudioListener} from './music-audio.js';
 import {createPhotoMode} from './photo-mode.js';
 import {CITY_ART,artworkHTML} from './ui-art.js';
 import {productionReadout} from './ui-production.js';
@@ -262,7 +263,7 @@ async function showEncyclopedia(){
  if(relicControlActive(state)){toast('Сначала заверши путь избранного');return;}
  openDialog('encyclopedia','<button class="management-close" id="close-encyclopedia" aria-label="Вернуться в город">×</button><div id="encyclopedia-root"><span class="eyebrow">ГЛИНЯНЫЕ ТАБЛИЧКИ</span><h2>Энциклопедия</h2><p role="status">Открываем песенные таблички…</p></div>');$('close-encyclopedia').onclick=closeDialog;
  const request=encyclopediaRequest,root=$('encyclopedia-root');
- try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=beer-feasts-encyclopedia-20261027-1',import.meta.url)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
+ try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=audio-continuity-20261027-1',import.meta.url)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
  catch{if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;root.innerHTML='<h2>Энциклопедия</h2><p>Не удалось загрузить песенные таблички.</p><button id="encyclopedia-retry">Попробовать снова</button>';$('encyclopedia-retry').onclick=showEncyclopedia;}
 }
 function showLifeAnalytics(selectedId){
@@ -408,7 +409,7 @@ function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;
  if(!document.hidden&&!photo.active&&!paused&&!dialog.open&&(!state.lost||state.funeral)){const oldTick=state.tick;advanceTime(state,simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
  if(now-lastUI>350){update();lastUI=now;}
- renderer.inspected=inspected;cityAudio.tick(state,paused||dialog.open||document.hidden,renderer.camera?.target?{x:renderer.camera.target.x/6,y:renderer.camera.target.z/6}:undefined);renderer.draw(state,photo.active?null:selection,now,{paused:paused||dialog.open||photo.active||document.hidden,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
+ renderer.inspected=inspected;cityAudio.tick(state,paused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:paused||dialog.open||photo.active||document.hidden,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
 }
 update();requestAnimationFrame(frame);
 if(!loaded)chooseNewMode();else{toast(legacyRaw?'Город обновлён: дворы, ремёсла, обзор кварталов и фоторежим. Прежние запасы, семьи, грузы и оплаченные стройки сохранены.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}

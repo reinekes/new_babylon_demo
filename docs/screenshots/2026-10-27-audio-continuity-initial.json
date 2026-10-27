@@ -1,0 +1,117 @@
+{
+  "checks": [
+    {
+      "name": "До opt-in нет MP3",
+      "pass": true
+    },
+    {
+      "name": "Фон декодирован и играет",
+      "pass": false
+    },
+    {
+      "name": "HTML-модалка не прерывает фон",
+      "pass": false
+    },
+    {
+      "name": "Событие создано игровым движком",
+      "pass": true
+    },
+    {
+      "name": "Окно игрового события не прерывает фон",
+      "pass": true
+    },
+    {
+      "name": "Решение события обработано движком",
+      "pass": true
+    },
+    {
+      "name": "Ручная пауза времени не прерывает фон",
+      "pass": true
+    },
+    {
+      "name": "Обычный 3D вид не загружает литофон",
+      "pass": true
+    },
+    {
+      "name": "Рядом и крупно литофон играет",
+      "pass": true
+    },
+    {
+      "name": "Окно и пауза сохраняют игру литофона",
+      "pass": true
+    },
+    {
+      "name": "В полутора клетках двор уже не слышен",
+      "pass": true
+    },
+    {
+      "name": "Отдаление камеры глушит только литофон",
+      "pass": true
+    },
+    {
+      "name": "Крупный 2D вид возле двора включает литофон",
+      "pass": true
+    },
+    {
+      "name": "2D панорамирование уводит слушателя от двора",
+      "pass": true
+    },
+    {
+      "name": "Обычный масштаб 2D не включает литофон",
+      "pass": true
+    },
+    {
+      "detail": [
+        "main-theme.mp3",
+        "lithophone.mp3"
+      ],
+      "name": "Восемь MP3 не запросились все разом",
+      "pass": true
+    },
+    {
+      "name": "Явное выключение останавливает все записи",
+      "pass": true
+    },
+    {
+      "name": "Нет ошибок декодирования",
+      "pass": true
+    }
+  ],
+  "message": "FAIL — см. проверки",
+  "metrics": {
+    "cached": 2,
+    "dialog": false,
+    "enabled": false,
+    "event": null,
+    "listener": {
+      "proximity": 0,
+      "x": 5,
+      "y": 5
+    },
+    "lithophone": false,
+    "paused": true,
+    "playing": [],
+    "requests": 2,
+    "theme": null,
+    "tracks": [
+      {
+        "error": null,
+        "file": "main-theme.mp3",
+        "paused": true,
+        "plays": 1,
+        "ready": 4,
+        "time": 5.53,
+        "volume": 0
+      },
+      {
+        "error": null,
+        "file": "lithophone.mp3",
+        "paused": true,
+        "plays": 2,
+        "ready": 4,
+        "time": 2.65,
+        "volume": 0
+      }
+    ]
+  }
+}

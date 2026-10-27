@@ -8,9 +8,9 @@ function createSyntheticCityAudio(onMessage){
  function track(id,nodes){if(!voices.has(id))voices.set(id,new Set());const active=voices.get(id);for(const osc of nodes){const ended=osc.onended;osc.onended=()=>{active.delete(osc);ended?.();};active.add(osc);}while(active.size>12){const first=active.values().next().value;stopVoice(first);active.delete(first);}}
  async function toggle(){try{if(!context){const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)throw Error('unavailable');context=new C();}enabled=!enabled;if(enabled)await context.resume();else{silence();await context.suspend();}return enabled;}catch{silence();enabled=false;onMessage?.('Звук недоступен в этом браузере');return false;}}
  function tick(s,paused,listener){
-  if(!enabled||!context||paused||globalThis.document?.hidden){silence();return;}
+  if(!enabled||!context||globalThis.document?.hidden){silence();return;}
   const sources=musicSoundSources(s,listener),festival=activeFestival(s),active=new Set(sources.map(source=>`music:${source.id}`));if(festival)active.add('festival');for(const id of voices.keys())if(!active.has(id))stopSource(id);
-  const beat=Math.floor((s.simTime||0)*2),pattern=[0,2,4,3,2,5,4,1];
+  const beat=Math.floor(context.currentTime*2),pattern=[0,2,4,3,2,5,4,1];
   for(const source of sources){const id=`music:${source.id}`;if(beats.get(id)===beat)continue;beats.set(id,beat);track(id,playStoneNote(context,STONE_NOTES[pattern[((beat%pattern.length)+pattern.length)%pattern.length]],source.gain));}
   if(festival&&beats.get('festival')!==beat){beats.set('festival',beat);const notes=[62,65,69,67,65,72,69,67],note=notes[((beat%notes.length)+notes.length)%notes.length],osc=context.createOscillator(),gain=context.createGain(),now=context.currentTime;osc.type='triangle';osc.frequency.value=440*2**((note-69)/12);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.026,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.65);osc.connect(gain);gain.connect(context.destination);osc.start(now);osc.stop(now+.7);osc.onended=()=>{osc.disconnect?.();gain.disconnect?.();};track('festival',[osc]);}
  }
@@ -38,6 +38,7 @@ export function eventMusicTheme(s,funeralVariant=1){
  * Stream only the currently audible recordings. No Audio, src, decode or fetch
  * is created before the user opts in. A crossfade keeps at most two background
  * voices; the nearest courtyard shares one positional lithophone voice.
+ * Simulation pauses and dialogs never pause music; visibility and mute do.
  */
 export function createCityAudio(onMessage,options={}){
  const createMedia=options.createMedia||(typeof globalThis.Audio==='function'?()=>new globalThis.Audio():null);
@@ -56,7 +57,7 @@ export function createCityAudio(onMessage,options={}){
  async function toggle(){if(disposed)return false;enabled=!enabled;if(!enabled)silence();else if(lastFrame)tick(lastFrame.s,lastFrame.paused,lastFrame.listener);return enabled;}
  function tick(s,paused,listener){
   if(disposed)return;lastFrame={s,paused,listener};
-  if(!enabled||paused||doc?.hidden){silence();return;}
+  if(!enabled||doc?.hidden){silence();return;}
   if(activeFuneral(s)){const key=(s.funeral.deceased||[]).map(d=>d.id).join(',')||'ceremony';if(key!==lastFuneral){lastFuneral=key;funeralCount++;}}
   const id=eventMusicTheme(s,funeralCount%2?1:2),source=musicSoundSources(s,listener)[0];select(id);
   if(source){if(!lithophone){lithophone=voice('lithophone');play(lithophone);}target(lithophone,.20*clamp(source.gain/.012),.35);}
