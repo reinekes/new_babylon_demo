@@ -1,3 +1,4 @@
+import {knowsPresence} from './godhood.js';
 import {isArtisan,artisanOutput} from './artisan.js';
 import {seedReserve} from './food-planning.js';
 import {weatherAt} from './environment.js';
@@ -57,7 +58,7 @@ export function seasonBalance(s){
   if(!pottery)debit(id,'pottery',Math.max(0,Math.ceil(Math.max(0,batches-v.vesselUses)/4)-buffers.pottery));
   credit(id,output,(batches+active)*(pottery?2:3));
  }
- for(const c of s.citizens){debit(component(c.home),'food',mealRation(c)*45/60);debit(component(c.home),'clothing',45/(540*.75));r.faith.income+=(c.faith??60)/100*.15*45/60;}
+ for(const c of s.citizens){debit(component(c.home),'food',mealRation(c)*45/60);debit(component(c.home),'clothing',45/(540*.75));if(knowsPresence(s,c))r.faith.income+=(c.faith??60)/100*.15*45/60;}
  const sites=s.pests?.sites||[];for(const q of sites){const guard=s.citizens.some(c=>c.guardPost===q.key&&c.work===q.key&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)),cat=s.pests.cats.some(c=>c.site===q.key);debit(component(q.key),'food',Math.min(buildings.get(q.key)?.stock?.food||0,.012*q.mice*45/Math.max(1,sites.length)*(guard?.15:cat?.4:1)*(s.buffs?.inannaProtection?.5:1)));}
  for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='healer')continue;const patients=s.citizens.filter(c=>c.clinic===key),need=patients.reduce((n,c)=>n+Math.max(0,(c.careGoal||85)-c.health),0),healing=Math.min(need,people.reduce((n,c)=>n+45*13/24*workRate(c,'healer'),0));debit(component(key),'food',healing*.04);debit(component(key),'reed',healing*.02);}
  // Local surpluses cannot grow a full warehouse; demand is still shown even if stock is empty.

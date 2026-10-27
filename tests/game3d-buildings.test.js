@@ -81,7 +81,7 @@ test('all defined buildings produce visible pickable architecture; construction 
   for(const type of Object.keys(BUILDINGS)){
    const b={type,x:3,y:4,id:type,level:1};t.layer.sync({buildings:[b],citizens:[]});if(type==='canal'){assert.equal(t.layer.meshes.length,0,'landscape owns canals');continue;}assert.ok(t.layer.meshes.length,type);
    const bb=bounds(t.layer.meshes);assert.ok(Number.isFinite(bb.maxY),type);
-   if(type!=='bridge'){assert.ok(bb.minX>=15.1&&bb.maxX<=20.9,`${type} ${JSON.stringify(bb)}`);assert.ok(bb.minZ>=21.1&&bb.maxZ<=26.9,`${type} ${JSON.stringify(bb)}`);}
+   if(type!=='bridge'){const halfWidth=type==='ishtarGate'?3.91:2.9;assert.ok(bb.minX>=18-halfWidth&&bb.maxX<=18+halfWidth,`${type} ${JSON.stringify(bb)}`);assert.ok(bb.minZ>=21.1&&bb.maxZ<=26.9,`${type} ${JSON.stringify(bb)}`);if(type==='ishtarGate')assert.ok(Math.abs(bb.maxX-bb.minX-7.8)<.03,'legacy gate is explicitly 7.8m wide');}
   }
   const b={...house(),construction:{kind:'new',target:1,required:{clay:10},delivered:{clay:0},work:0}},state={buildings:[b],citizens:[]};
   const signature=gameBuildingSignature(b);t.layer.sync(state);assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-courtyard')));const old=t.layer.meshes[0];
@@ -89,6 +89,9 @@ test('all defined buildings produce visible pickable architecture; construction 
   b.construction={kind:'upgrade',target:2,required:{},delivered:{},work:0};t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-courtyard')));assert.ok(t.layer.meshes.some(m=>m.name.includes('game-raw-brick-facing')));
   delete b.construction;t.layer.sync(state);assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-raw-brick-facing')));
  }finally{t.dispose();}
+});
+test('three-cell gate adapter keeps its 15.6m fallback inside the reserved area without moving saved buildings',async()=>{
+ const t=await setup();try{const b={type:'ishtarGate',id:'new-gate',x:3,y:4,level:1,footprint:3},state={buildings:[b],citizens:[]},before=structuredClone(state);t.layer.sync(state);const bb=bounds(t.layer.meshes),gate=bounds(t.layer.meshes.filter(m=>m.name.includes('game-ishtar-procedural')));assert.deepEqual(state,before);assert.ok(Math.abs(gate.maxX-gate.minX-15.6)<.03);assert.ok(Math.abs((gate.minX+gate.maxX)/2-24)<.03);assert.ok(bb.minX>=15&&bb.maxX<=33&&bb.minZ>=21&&bb.maxZ<=39,JSON.stringify(bb));}finally{t.dispose();}
 });
 
 

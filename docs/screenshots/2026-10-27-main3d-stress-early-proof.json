@@ -1,0 +1,17 @@
+{
+  "display": "32 FPS · CPU p95 31.8 мс",
+  "phases": "Samples 632 · 209 residents (63 enabled) · meshes 8082 · active 1073\nDistrict jobs 164 / active 122 / complete 42 · carriers 0 · sim 45.0s\nadvanceTime         mean    4.9 ms  p95    5.1 ms\nbuildings.sync      mean    0.6 ms  p95    0.7 ms\nlandscape.update    mean    0.4 ms  p95    0.5 ms\nactors.update       mean    6.4 ms  p95    8.8 ms\nlighting            mean    0.0 ms  p95    0.1 ms\nselection           mean    0.0 ms  p95    0.1 ms\neffects             mean    0.0 ms  p95    0.0 ms\ngarden effects      mean    0.0 ms  p95    0.0 ms\nscene.render        mean   21.0 ms  p95   22.6 ms\ndraw total          mean   29.0 ms  p95   30.5 ms",
+  "errors": [],
+  "dayObservationBeforeScreenshot": {
+    "samples": 199,
+    "residents": 200,
+    "enabledResidents": 131,
+    "simTime": 28.8,
+    "fps": 14,
+    "renderCpuP95Ms": 82.7,
+    "advanceTimeMeanMs": 4.7,
+    "advanceTimeP95Ms": 9.0,
+    "sceneRenderMeanMs": 53.6,
+    "note": "Observed by CUA before the later screenshot; population and active models change as simulation runs."
+  }
+}

@@ -1,0 +1,20 @@
+import {godhoodView,gameMode,builderLevel,firstBuilderInspiration} from './godhood.js';
+import {relicControlActive} from './relic-quest.js';
+import {residentLinkHTML} from './ui-resident-links.js';
+export function modeChooserHTML({replace=false}={}){
+ return `<span class="eyebrow">НОВАЯ ИСТОРИЯ</span><h2>Каким богом ты придёшь?</h2><p>${replace?'Выбор заменит текущий город и его сохранение.':'Пять домов на берегу. Люди ещё не знают, кто рядом с ними.'}</p><div class="god-mode-grid"><article><span class="dialog-emblem">◌</span><h3>Пробуждение</h3><p>0 веры. Сначала подай знак одному человеку и дождись, пока он дойдёт до источника. Только признанная вера позволит вдохновлять.</p><small>Вдохновлённые строители учатся на завершённых работах: простые дворы → мастерские → великие храмы.</small><button class="primary" data-new-mode="awakening">Пробудиться · 0 веры</button></article><article><span class="dialog-emblem">✺</span><h3>Взрослый бог</h3><p>1000 веры и 250 престижа. Все здания, профессии и способности доступны с самого начала.</p><small>Жителям всё ещё нужны материалы, еда, вода и время. Производство и доставка продолжают работать.</small><button class="primary" data-new-mode="mature">Стать покровителем</button></article></div>${replace?'<button class="secondary" id="cancel-mode">Остаться в городе</button>':''}<p class="keyboard-note">Режим выбирается для новой долины. Старые города сохраняют прежние правила.</p>`;
+}
+export function awakeningHTML(s){
+ const v=godhoodView(s);if(v.mode!=='awakening')return '';
+ const c=s.citizens.find(c=>c.id===v.witnessId),link=c?residentLinkHTML(s,c):'',first=c&&firstBuilderInspiration(s,c,'builder');
+ if(v.stage==='unseen')return `<span class="eyebrow">ПРОБУЖДЕНИЕ · ${Math.floor(s.resources.faith)} ВЕРЫ</span><h3>Пусть кто-то заметит тебя</h3><p>Позови свободного взрослого к источнику. Он должен сам дойти до воды.</p><button data-first-sign>Подать первый знак</button><small>Это действие не требует веры.</small>`;
+ if(v.stage==='sign')return `<span class="eyebrow">ПЕРВЫЙ СВИДЕТЕЛЬ</span><h3>${link} идёт к источнику</h3><p>Вера появится после прибытия. Продолжи время, чтобы человек завершил путь.</p><button data-focus-witness>Показать человека</button>`;
+ return `<span class="eyebrow">ПРОБУЖДЕНИЕ · ВЕРЯТ ${v.believers}</span><h3>${v.builderLevel?`Мастерство строителей · ${['','I','II','III'][v.builderLevel]}`:'Тебя услышали'}</h3>${first?`<p>${link} признал твой знак. Первое вдохновение строителя обязательно удастся.</p><button data-first-builder="${c.id}" ${s.resources.faith<1?'disabled':''}>Вдохновить строителем · 1 вера</button>`:`<p>Завершай работы: после двух проектов строитель станет мастером II уровня, после пяти — III. Помощники и соседи увидят результат и начнут верить.</p>`}${c?.builderSkill?`<small>${link} · проектов ${c.builderSkill.projects} · уровень ${builderLevel(c)}</small>`:''}<button class="godhood-dismiss" data-hide-awakening aria-label="Свернуть подсказку">Свернуть</button>`;
+}
+export function gameModeLabel(s){return {awakening:'Пробуждение',mature:'Взрослый бог',legacy:'Прежняя история'}[gameMode(s)];}
+export function createGodhoodControls({root,getState,onSign,onInspire,onFocus,document=globalThis.document}={}){
+ const hud=document.createElement('section');hud.className='godhood-hud';hud.setAttribute('aria-label','Пробуждение бога');root.append(hud);let collapsed=false,lastState;
+ hud.addEventListener('click',e=>{const b=e.target.closest?.('button');if(!b||b.disabled)return;if(b.hasAttribute('data-first-sign'))onSign?.();if(b.hasAttribute('data-first-builder'))onInspire?.(Number(b.dataset.firstBuilder));if(b.hasAttribute('data-focus-witness'))onFocus?.();if(b.hasAttribute('data-hide-awakening')){collapsed=true;refresh();}if(b.hasAttribute('data-show-awakening')){collapsed=false;refresh();}});
+ function refresh(){const s=getState();if(lastState!==s){lastState=s;collapsed=false;}hud.hidden=gameMode(s)!=='awakening'||relicControlActive(s);const html=collapsed?'<button data-show-awakening>◌ Путь пробуждения</button>':awakeningHTML(s);if(hud.innerHTML!==html)hud.innerHTML=html;}
+ refresh();return {refresh,dispose:()=>hud.remove()};
+}

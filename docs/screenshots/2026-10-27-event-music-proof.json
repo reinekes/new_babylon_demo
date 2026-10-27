@@ -1,0 +1,190 @@
+{
+  "metrics": {
+    "enabled": true,
+    "theme": null,
+    "lithophone": false,
+    "playing": [],
+    "cached": 6,
+    "paused": true,
+    "hidden": false,
+    "tracks": [
+      {
+        "file": "main-theme.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 47.36,
+        "duration": 217.57,
+        "volume": 0,
+        "error": null
+      },
+      {
+        "file": "growing-city.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 14.38,
+        "duration": 247.89,
+        "volume": 0,
+        "error": null
+      },
+      {
+        "file": "night-theme.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 17.6,
+        "duration": 209.93,
+        "volume": 0,
+        "error": null
+      },
+      {
+        "file": "funeral-1.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 13.5,
+        "duration": 160,
+        "volume": 0,
+        "error": null
+      },
+      {
+        "file": "funeral-2.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 22.96,
+        "duration": 202.81,
+        "volume": 0,
+        "error": null
+      },
+      {
+        "file": "lithophone.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 13.43,
+        "duration": 45.51,
+        "volume": 0,
+        "error": null
+      }
+    ],
+    "audioRequests": 6
+  },
+  "events": [
+    {
+      "event": "play",
+      "track": "growing-city.mp3",
+      "time": 0
+    },
+    {
+      "event": "loadedmetadata",
+      "track": "growing-city.mp3",
+      "time": 0
+    },
+    {
+      "event": "playing",
+      "track": "growing-city.mp3",
+      "time": 0
+    },
+    {
+      "event": "pause",
+      "track": "main-theme.mp3",
+      "time": 11.79
+    },
+    {
+      "event": "play",
+      "track": "night-theme.mp3",
+      "time": 0
+    },
+    {
+      "event": "loadedmetadata",
+      "track": "night-theme.mp3",
+      "time": 0
+    },
+    {
+      "event": "playing",
+      "track": "night-theme.mp3",
+      "time": 0
+    },
+    {
+      "event": "pause",
+      "track": "growing-city.mp3",
+      "time": 14.38
+    },
+    {
+      "event": "play",
+      "track": "funeral-1.mp3",
+      "time": 0
+    },
+    {
+      "event": "loadedmetadata",
+      "track": "funeral-1.mp3",
+      "time": 0
+    },
+    {
+      "event": "playing",
+      "track": "funeral-1.mp3",
+      "time": 0
+    },
+    {
+      "event": "pause",
+      "track": "night-theme.mp3",
+      "time": 17.6
+    },
+    {
+      "event": "play",
+      "track": "funeral-2.mp3",
+      "time": 0
+    },
+    {
+      "event": "loadedmetadata",
+      "track": "funeral-2.mp3",
+      "time": 0
+    },
+    {
+      "event": "playing",
+      "track": "funeral-2.mp3",
+      "time": 0
+    },
+    {
+      "event": "pause",
+      "track": "funeral-1.mp3",
+      "time": 13.5
+    },
+    {
+      "event": "play",
+      "track": "main-theme.mp3",
+      "time": 12.03
+    },
+    {
+      "event": "playing",
+      "track": "main-theme.mp3",
+      "time": 12.03
+    },
+    {
+      "event": "play",
+      "track": "lithophone.mp3",
+      "time": 0
+    },
+    {
+      "event": "loadedmetadata",
+      "track": "lithophone.mp3",
+      "time": 0
+    },
+    {
+      "event": "playing",
+      "track": "lithophone.mp3",
+      "time": 0
+    },
+    {
+      "event": "pause",
+      "track": "funeral-2.mp3",
+      "time": 22.96
+    },
+    {
+      "event": "pause",
+      "track": "lithophone.mp3",
+      "time": 13.43
+    },
+    {
+      "event": "pause",
+      "track": "main-theme.mp3",
+      "time": 47.36
+    }
+  ]
+}

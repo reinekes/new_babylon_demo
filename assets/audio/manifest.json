@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-27",
+  "provenance": "Recordings supplied by the user for this game; no claim of historical reconstruction or third-party authorship. Original Downloads files and user audio/ directory are unchanged.",
+  "processing": "MP3 without cover art, stereo44.1kHz, two-pass loudness normalization, no first-load fetch",
+  "tracks": [
+    {
+      "id": "main-theme",
+      "file": "main-theme.mp3",
+      "usage": "Дневная тема малого поселения",
+      "source": {
+        "name": "Main theme - start game.mp3",
+        "bytes": 4978620,
+        "sha256": "965dff065028b59cc6ddc94ee2cf1816e15c4fb1e48d6649f6cd92991f8e2fc1",
+        "duration": 217.5735
+      },
+      "optimized": {
+        "bytes": 2611558,
+        "sha256": "7af22d6c11a892cd5e9f4fb35cd2d41463edf08cde7a124a688ef9ba876172cf",
+        "duration": 217.573515,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.44,
+        "truePeakDBTP": -6.02
+      }
+    },
+    {
+      "id": "growing-city",
+      "file": "growing-city.mp3",
+      "usage": "Дневная тема города от 24 жителей",
+      "source": {
+        "name": "Город становится больше - 2 тема.mp3",
+        "bytes": 5807506,
+        "sha256": "910ddad35575f497e7288e3309df41d026ae344e0a87b796b480235e8c3b6c5c",
+        "duration": 247.8935
+      },
+      "optimized": {
+        "bytes": 2975496,
+        "sha256": "999e0d0b66737cd5d3d584d00badcbf066068ff450d88edd5ba94ebcdbfe608e",
+        "duration": 247.893515,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.44,
+        "truePeakDBTP": -6.03
+      }
+    },
+    {
+      "id": "night-theme",
+      "file": "night-theme.mp3",
+      "usage": "Ночь, с 19:00 до 06:00",
+      "source": {
+        "name": "Ночная музыка - 3 тема.mp3",
+        "bytes": 4803396,
+        "sha256": "bd2dad7799eea47bc5fb2b796e129b5e8b914df3feed01772f6f7d9a58308037",
+        "duration": 209.9335
+      },
+      "optimized": {
+        "bytes": 2520025,
+        "sha256": "78d768e31ca421ee11d8a3f5e951b5b877f1a14bb6a08d44516419a88f8c37f0",
+        "duration": 209.933515,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.44,
+        "truePeakDBTP": -4.33
+      }
+    },
+    {
+      "id": "funeral-1",
+      "file": "funeral-1.mp3",
+      "usage": "Первое и нечётные погребальные шествия",
+      "source": {
+        "name": "Кто-то умер - несут труп 1.mp3",
+        "bytes": 3857632,
+        "sha256": "bfb2173a889d9bac2062655e603a20506aa12f8c2d4f59cd059bd5c8f410be37",
+        "duration": 160.0
+      },
+      "optimized": {
+        "bytes": 1920671,
+        "sha256": "c77a4f262e7bcdb1ed554728388f9b589610db3d4a6e0b5f45d7d4e1ef3220a0",
+        "duration": 160.0,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.44,
+        "truePeakDBTP": -4.5
+      }
+    },
+    {
+      "id": "funeral-2",
+      "file": "funeral-2.mp3",
+      "usage": "Второе и чётные погребальные шествия",
+      "source": {
+        "name": "Кто-то умер несут труп - 2 - женский голос.mp3",
+        "bytes": 4885942,
+        "sha256": "3bf737e5fef5e5cadb194bba00addc79bcdab85eee4b3eedbf6b8e1e93b7fa9d",
+        "duration": 202.814667
+      },
+      "optimized": {
+        "bytes": 2434448,
+        "sha256": "5b5dd53d02df8091d41a33af2cfdcba97921b43999654639f50f301905480573",
+        "duration": 202.814694,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.44,
+        "truePeakDBTP": -6.04
+      }
+    },
+    {
+      "id": "lithophone",
+      "file": "lithophone.mp3",
+      "usage": "Вдохновлённый музыкант на месте днём, рядом с камерой",
+      "source": {
+        "name": "литофон.mp3",
+        "bytes": 1077652,
+        "sha256": "aee93ed3940e3997ebc446739f9243d5a8c097bf019ae8e5752d761eef1b07ae",
+        "duration": 45.511125
+      },
+      "optimized": {
+        "bytes": 455882,
+        "sha256": "2f23fab82965216bc097569bdfac46d799b3bef066db09abb0e480c4cd41d3ca",
+        "duration": 45.511134,
+        "codec": "mp3",
+        "bitrateKbps": 80,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -22.52,
+        "truePeakDBTP": -4.76
+      }
+    }
+  ]
+}

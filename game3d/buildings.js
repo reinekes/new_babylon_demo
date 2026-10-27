@@ -11,7 +11,7 @@ import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './fiel
 import {constructionProgress} from '../construction.js';
 import {buildingKey,capacityOf} from '../definitions.js';
 import {createDistrictBuilding, districtCropVisual} from '../district3d/buildings.js';
-import {createSacredModels} from './sacred-models.js';
+import {createSacredModels,sacredModelTransform} from './sacred-models.js';
 import {createMusicCourtyard} from './music-courtyard.js';
 
 const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
@@ -103,8 +103,8 @@ export async function createGameBuildings(B,scene,materials,options={}){
    }else if(b.type==='musicHouse'){
     for(const mesh of createMusicCourtyard(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
    }else if(sacredModels.sources(b)){
-    const center=(footprintSize(b)-1)*3;
-    for(const source of sacredModels.sources(b)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
+    const {center,scale}=sacredModelTransform(b);
+    for(const source of sacredModels.sources(b)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
    }else for(const mesh of sacredModels.fallback(b,materialSet)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
 
   }

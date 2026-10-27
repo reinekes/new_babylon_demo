@@ -1,6 +1,8 @@
+import {buildingKnowledgeReason} from './godhood.js';
 import {relicCommandReason} from './city-command-lock.js';
 import {markRoadTopologyChanged} from './road-revisions.js';
 export {roadTopologyRevision} from './road-revisions.js';
+import {insideFootprint} from './footprints.js';
 import {reserveStock} from './inventory.js';
 import {generateStreets} from './city-life.js';
 import {terrain,onBridge,isDryPoint} from './world.js';
@@ -14,13 +16,15 @@ export function ensureRoads(s,network){
 }
 export function roadAt(s,x,y){return ensureRoads(s).map(r=>({r,d:Math.hypot(r.x-x,r.y-y)})).filter(v=>v.d<.8).sort((a,b)=>a.d-b.d)[0]?.r;}
 export const roadUpgradeCost=r=>r.level===1?{clay:3,reed:1}:{clay:6,reed:2,stone:2};
-export function upgradeRoad(s,roadOrId){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const r=typeof roadOrId==='string'?ensureRoads(s).find(r=>r.id===roadOrId):roadOrId;let reason=s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':!r||!ensureRoads(s).includes(r)?'Выбери существующую дорогу':r.construction?'Улучшение уже идёт':r.level>=3?'Достигнут третий уровень':'';if(reason)return {ok:false,reason};const cost=roadUpgradeCost(r);if(Object.entries(cost).some(([k,n])=>(s.resources[k]||0)<n))return {ok:false,reason:'Не хватает материалов'};const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};r.construction={...createOrder(cost,r.level+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};return {ok:true};}
+export function upgradeRoad(s,roadOrId){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const r=typeof roadOrId==='string'?ensureRoads(s).find(r=>r.id===roadOrId):roadOrId;const knowledge=buildingKnowledgeReason(s,'road',(r?.level||1)+1);if(knowledge)return {ok:false,reason:knowledge};let reason=s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':!r||!ensureRoads(s).includes(r)?'Выбери существующую дорогу':r.construction?'Улучшение уже идёт':r.level>=3?'Достигнут третий уровень':'';if(reason)return {ok:false,reason};const cost=roadUpgradeCost(r);if(Object.entries(cost).some(([k,n])=>(s.resources[k]||0)<n))return {ok:false,reason:'Не хватает материалов'};const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};r.construction={...createOrder(cost,r.level+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};return {ok:true};}
 export function roadSpeed(s,a,b){const r=(s.roads||[]).find(r=>{const dx=r.b.x-r.a.x,dy=r.b.y-r.a.y;return Math.abs((a.x-r.a.x)*dy-(a.y-r.a.y)*dx)<1e-7&&Math.abs((b.x-r.a.x)*dy-(b.y-r.a.y)*dx)<1e-7&&[a,b].every(p=>p.x>=Math.min(r.a.x,r.b.x)-1e-7&&p.x<=Math.max(r.a.x,r.b.x)+1e-7&&p.y>=Math.min(r.a.y,r.b.y)-1e-7&&p.y<=Math.max(r.a.y,r.b.y)+1e-7);});return 1+((r?.level||1)-1)*.2;}
 
 // Preview traverses the existing network; a bridge is traversable but has no road order.
 export function planRoadRoute(s,fromId,toId,target=2){
- const roads=ensureRoads(s),lookup=new Map(roads.map(r=>[r.id,r])),from=lookup.get(fromId),to=lookup.get(toId),empty=reason=>({roads:[],pending:[],cost:{},reason});
- if(!from||!to)return empty('Выбери начало и конец существующей дороги');if(![2,3].includes(target))return empty('Выбери уровень II или III');
+ const empty=reason=>({roads:[],pending:[],cost:{},reason});if(![2,3].includes(target))return empty('Выбери уровень II или III');
+ const knowledge=buildingKnowledgeReason(s,'road',target);if(knowledge)return empty(knowledge);
+ const roads=ensureRoads(s),lookup=new Map(roads.map(r=>[r.id,r])),from=lookup.get(fromId),to=lookup.get(toId);
+ if(!from||!to)return empty('Выбери начало и конец существующей дороги');
  const net=generateStreets([...s.buildings,...s.roadAnchors||[]],s),graph=new Map([...net.graph].map(([k,v])=>[k,new Set(v)]));
  for(const r of roads){for(const [a,b]of [[r.a,r.b],[r.b,r.a]]){if(!graph.has(a.key))graph.set(a.key,new Set());graph.get(a.key).add(b.key);}}
  const queue=[from.a.key,from.b.key],prev=new Map(queue.map(k=>[k,null])),goals=new Set([to.a.key,to.b.key]);let end=null;
@@ -38,10 +42,11 @@ export function upgradeRoadRoute(s,from,to,target=2){const lock=relicCommandReas
 // Unpaved streets cost no materials, matching the existing automatic approaches.
 export function planNewRoad(s,from,to){
  const empty=reason=>({roads:[],reason});
+ const knowledge=buildingKnowledgeReason(s,'road',1);if(knowledge)return empty(knowledge);
  if(s.event||s.lost||s.funeral)return empty(s.funeral?'Жители провожают умерших':'Сначала заверши текущее событие');
  const node=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)?{x:p.x+.5,y:p.y+.5,key:`${p.x+1},${p.y+1}`}:null,a=node(from),b=node(to);
  if(!a||!b)return empty('Выбери начало и конец дороги');
- const blocked=p=>s.buildings.some(v=>v.type==='ziggurat'&&v.footprint===2&&p.x>v.x-.5&&p.x<v.x+1.5&&p.y>v.y-.5&&p.y<v.y+1.5);
+ const blocked=p=>s.buildings.some(v=>insideFootprint(v,p.x,p.y));
  const dry=p=>isDryPoint(s,p.x,p.y)&&!blocked(p),allowed=p=>dry(p)||onBridge(s.buildings,p.x,p.y);
  if(!allowed(a)||!allowed(b))return empty('Начало и конец должны быть на сухой улице');
  const prev=new Map([[a.key,null]]),points=new Map([[a.key,a]]),queue=[a];

@@ -20,6 +20,7 @@ import {createAmbientFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
 import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity,RESIDENT_STANCE} from './resident-motion.js';
 import {usesHistoricalMan} from './historical-resident.js';
+import {WATER_HEIGHT} from './water.js';
 export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 
 // These helpers read state only. The renderer never advances workers or writes saves.
@@ -48,13 +49,15 @@ export function residentVisual(c,state){
 export function actorAnimation(c,distance=0){
  if(c.kind==='sheep')return {clip:distance>.00001?'Walk':['grazing','drinking'].includes(c.behavior)?'Graze':'Idle',pose:c.behavior||'idle'};
  const pose=residentPose(c,null,0).kind;
- return {clip:distance>.00001?'Walk_Loop':'Idle_Loop',pose:c.relic?'carry':c.activity&&!c.carrying?(!c.activity.stage||['working','strike','searching'].includes(c.activity.stage)?c.activity.kind:'idle'):['carry','unload','play','dance','elder'].includes(pose)?pose:c.phase==='working'||c.phase==='constructing'?'work':'idle'};
+ return {clip:!c.swimming&&distance>.00001?'Walk_Loop':'Idle_Loop',pose:c.relic?'carry':c.activity&&!c.carrying?(!c.activity.stage||['working','strike','searching'].includes(c.activity.stage)?c.activity.kind:'idle'):c.swimming?'swim':['carry','unload','play','dance','elder'].includes(pose)?pose:c.phase==='working'||c.phase==='constructing'?'work':'idle'};
 }
+export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){return c.swimming?{height:WATER_HEIGHT-.48,pitch:1.12,stroke:reducedMotion?0:Math.sin(time*2.3),sway:reducedMotion?0:Math.sin(time*1.15)*.025}:null;}
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
 export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false}={}){
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
- let disposed=false,poseTime=0,bier=null,riteState=null;
+ let disposed=false,poseTime=0,bier=null,riteState=null,presentedState=null;
+ const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
  const ritual=createFuneralRitual(B,scene,meshes);
  const containers=[];
  try{
@@ -236,10 +239,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   }
  }
  function cargo(a,c){
-  const goods=c.carrying?Object.entries(c.cargo||{}).filter(([,n])=>n>0):[],key=goods.map(([k,n])=>`${k}:${n}`).sort().join('|')+`:${a.look?.work||''}:${!!c.relic}`;
+  const goods=c.carrying?Object.entries(c.cargo||{}).filter(([,n])=>n>0):[],key=goods.map(([k,n])=>`${k}:${n}`).sort().join('|')+`:${a.look?.work||''}:${!!c.relic}:${c.relicId||''}`;
   if(a.cargoKey===key)return;a.cargoKey=key;prune(a.load);for(const m of a.load.getChildMeshes())m.dispose();
   if(c.relic&&c.carrying){
-   sphere('carried-relic-lapis',a.load,lapis,0,0,0,.36,.36,.10);
+   sphere('carried-relic-lapis',a.load,c.relicId==='land'?clay:lapis,0,0,0,.36,.36,.10);
    const ring=B.MeshBuilder.CreateTorus('carried-relic-gold',{diameter:.40,thickness:.045,tessellation:16},scene);ring.parent=a.load;ring.rotation.x=Math.PI/2;ring.material=gold;meshes.push(ring);
    box('carried-relic-linen',a.load,linen,0,-.18,.005,.43,.045,.16);return;
   }
@@ -290,9 +293,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
   if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),blend=fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
-  const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY;
+  // Possession follows the exact authored route, including its water crossing;
+  // pedestrian lane offsets must not slide the swimmer onto a different bank.
+  if(c.controlled){a.viewOffsetX=0;a.viewOffsetY=0;}
+  const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY,swim=residentSwimmingPresentation(c,a.time,{reducedMotion});
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
-  a.root.position.set(shownX*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);
+  a.root.position.set(shownX*6,swim?swim.height:onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);a.root.metadata.swimming=!!swim;
+  if(a.details)a.details.setEnabled(!swim);
   if(c.funeralContact){
    // Both rail targets and the bearer share this ceremony orientation. Generic
    // path smoothing must not rotate them apart or snap the root when paused.
@@ -315,7 +322,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z,a.walkMetres);
    const g=a.groups.get(a.clip);a.walkFrame=g.from+a.walkPhase*(g.to-g.from);
   }
-  if(!paused){a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=(c.funeralContact?.bow||0)+(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=a.pose==='dance'?beat*.055:0;
+  if(!paused||!a.hasModelPose){if(!paused)a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);a.hasModelPose=true;if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=swim?swim.pitch:(c.funeralContact?.bow||0)+(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=swim?swim.sway:a.pose==='dance'?beat*.055:0;
    const glow=1+Math.sin(a.time*2.3)*.08,inspiredHeight=a.workContact?.kind==='lithophone'?1.25:a.workContact?.kind==='dairy'?1.3:1.82;a.inspired.position.y=inspiredHeight+Math.sin(a.time*2.3)*.015;a.inspired.scaling.set(.035*glow,.06*glow,.035*glow);
    // Play and dance bounce is a presentation pose at the resident's exact route position.
    a.model.position.y=a.footOffset+(a.pose==='play'||a.pose==='dance'?Math.abs(beat)*.04:0);
@@ -346,7 +353,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
-   const milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seated=milking||music,resetSeated=seated||a.wasSeated&&a.clip==='Idle_Loop';
+   const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seated=milking||music,resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop';a.wasSwimming=swimming;
    // Sample the real idle keys before sitting. A constant idle channel can
    // otherwise retain our previous IK transform instead of rewriting its value.
    if(resetSeated&&a.clip==='Idle_Loop'){const idle=a.groups.get('Idle_Loop');idle.goToFrame(idle.from);authoredStance(a,targets);}
@@ -354,10 +361,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    for(const leg of Object.values(a.legs))for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(n&&!targets?.rotationQuaternion.has(n)&&leg.baseRotations[i])n.rotationQuaternion=leg.baseRotations[i].clone();
    milkingSeat(a,milking);if(seated)seatedMilking(a,music?.40:.45);a.wasSeated=seated;
    if(a.pelvis)a.lastPelvis=a.pelvis.position.clone();for(const leg of Object.values(a.legs))leg.lastRotations=[leg.upper,leg.lower,leg.foot].map(n=>n?.rotationQuaternion?.clone());
+   if(swimming){const stroke=residentSwimmingPresentation(a.c,a.time,{reducedMotion}).stroke;for(const [side,leg]of Object.entries(a.legs))if(leg.upper?.rotationQuaternion){leg.upper.rotationQuaternion=leg.upper.rotationQuaternion.multiply(B.Quaternion.FromEulerAngles((side==='l'?1:-1)*stroke*.09,0,0));leg.lastRotations=[leg.upper,leg.lower,leg.foot].map(n=>n?.rotationQuaternion?.clone());}}
    if(a.spine){
     const animated=targets?.rotationQuaternion.has(a.spine);
     const base=animated?a.spine.rotationQuaternion:a.spineBase;
-    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
+    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(!swimming&&work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,!swimming&&work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    }
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
@@ -374,6 +382,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     // solve; iterate the actual GLB chain until both palms settle on the rails.
     for(let solve=0;solve<4;solve++){poseArm(a,'l',local(a.c.funeralContact.hands.left));poseArm(a,'r',local(a.c.funeralContact.hands.right));}
    }else if(a.c.mourningTorch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
+   }else if(swimming){
+    const stroke=residentSwimmingPresentation(a.c,a.time,{reducedMotion}).stroke;
+    if(carry){a.load.position.set(0,.50,1.05);for(let solve=0;solve<4;solve++){poseArm(a,'l',vec(-.21,.50,1.05));poseArm(a,'r',vec(.21,.50,1.05));}}
+    else for(let solve=0;solve<3;solve++){poseArm(a,'l',vec(-.38-stroke*.10,.34,1.0+stroke*.18));poseArm(a,'r',vec(.38+stroke*.10,.34,1.0-stroke*.18));}
    }else if(carry){
     // Both palms meet the actual load, not a floating object ahead of the torso.
     a.load.position.set(0,1.02,.34);
@@ -401,7 +413,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
    musicianMallets(a,music?a.workContact:null);
-   if(!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&a.pose!=='petting'){
+   if(!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&a.pose!=='petting'){
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
@@ -461,6 +473,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  }
  function update(state,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
+  const replacedState=presentedState!==state;presentedState=state;
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused)poseTime+=dt*speed;
@@ -473,6 +486,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // route sample, facing and gait phase when optional detail becomes ready.
    if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
+   if(replacedState){
+    // A loaded save can reuse this ID while changing land/water and task. Keep
+    // its rig, but never restore a frozen pose sampled from the previous city.
+    a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
+    for(const arm of a.armNodes)arm.last=null;for(const leg of Object.values(a.legs)){leg.lastPosition=null;leg.lastRotations=null;}
+    a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
+   }
    a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
   }
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}

@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {createGame,advanceTime} from '../engine.js';
+import {modeChooserHTML,awakeningHTML,gameModeLabel} from '../ui-godhood.js';
+import {beginFirstSign} from '../godhood.js';
+test('mode choice states its real starting resources, replacement boundary and knowledge progression',()=>{const html=modeChooserHTML({replace:true});assert.match(html,/data-new-mode="awakening"/);assert.match(html,/data-new-mode="mature"/);assert.match(html,/1000 веры и 250/);assert.match(html,/заменит текущий город/);assert.match(html,/id="cancel-mode"/);assert.doesNotMatch(modeChooserHTML(),/id="cancel-mode"/);});
+test('awakening UI follows a real witness and links that same identity after arrival',()=>{const s=createGame({mode:'awakening'});assert.match(awakeningHTML(s),/data-first-sign/);assert.equal(beginFirstSign(s).ok,true);const id=s.godhood.witnessId;assert.match(awakeningHTML(s),/data-focus-witness/);assert.doesNotMatch(awakeningHTML(s),/data-first-builder/);for(let i=0;i<400&&s.godhood.stage!=='recognized';i++)advanceTime(s,.1);const html=awakeningHTML(s);assert.match(html,new RegExp(`data-first-builder="${id}"`));assert.match(html,/обязательно удастся/);assert.match(html,/data-resident/);});
+test('legacy and mature histories receive no awakening commands',()=>{for(const s of [createGame(),createGame({mode:'mature'})]){assert.equal(awakeningHTML(s),'');assert.ok(gameModeLabel(s));}});

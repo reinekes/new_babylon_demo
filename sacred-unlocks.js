@@ -1,8 +1,9 @@
+import {isMatureGod} from './godhood.js';
 import {BUILDINGS,MIRACLES,buildingKey,isOperational} from './definitions.js';
 import {affectResidents} from './wellbeing.js';
 import {WIDTH,HEIGHT} from './world.js';
 
-export const SACRED_MIRACLE_IDS=Object.freeze(['inannaProtection','relicAwakening']);
+export const SACRED_MIRACLE_IDS=Object.freeze(['inannaProtection','relicAwakening','earthMemory']);
 export function initializeSacredUnlocks(s){s.sacred??={version:1,unlocks:{}};}
 /** Called after simulation construction updates, never while rendering a panel. */
 export function syncSacredUnlocks(s){
@@ -16,13 +17,15 @@ export function syncSacredUnlocks(s){
  return changed;
 }
 export function miracleLockReason(s,id){
- const m=MIRACLES[id];if(m?.unlockBuilding&&!s.sacred?.unlocks?.[id])return `Сначала заверши: ${BUILDINGS[m.unlockBuilding].name}`;
+ if(isMatureGod(s))return '';const m=MIRACLES[id];if(m?.unlockBuilding&&!s.sacred?.unlocks?.[id])return `Сначала заверши: ${BUILDINGS[m.unlockBuilding].name}`;
  if(m?.unlockQuest==='relic'&&s.relicQuest?.phase!=='completed')return 'Сначала найди артефакт и доставь его в храм';
+ if(m?.unlockQuest==='land'&&s.landRelicQuest?.phase!=='completed')return 'Сначала найди Печать земли и доставь её в храм';
  return '';
 }
 export const sacredMiracleUnlocked=(s,id)=>SACRED_MIRACLE_IDS.includes(id)&&!miracleLockReason(s,id);
 export function applySacredMiracle(s,id){
  if(id==='inannaProtection'){s.buffs.inannaProtection=3;affectResidents(s,{mood:8});return true;}
+ if(id==='earthMemory'){s.buffs.earthMemory=3;affectResidents(s,{mood:8});return true;}
  if(id==='relicAwakening'){s.rain=Math.max(s.rain||0,2);s.drought=0;affectResidents(s,{mood:6,faith:3});return true;}
  return false;
 }

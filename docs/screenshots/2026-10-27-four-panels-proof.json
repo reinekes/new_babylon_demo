@@ -1,0 +1,383 @@
+{
+  "phone": {
+    "viewport": {
+      "width": 390,
+      "height": 760
+    },
+    "mode": "3d",
+    "mask": 15,
+    "preferences": {
+      "top": false,
+      "bottom": false,
+      "left": true,
+      "right": false
+    },
+    "world": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 500
+    },
+    "horizontalOverflow": false,
+    "edges": [
+      {
+        "key": "top",
+        "visible": true,
+        "label": "Показать верхние панели"
+      },
+      {
+        "key": "bottom",
+        "visible": true,
+        "label": "Показать нижние панели"
+      },
+      {
+        "key": "left",
+        "visible": true,
+        "label": "Скрыть левую панель"
+      },
+      {
+        "key": "right",
+        "visible": true,
+        "label": "Показать правую панель"
+      }
+    ],
+    "greenDock": true,
+    "fallbackDock": false,
+    "results": [
+      {
+        "mask": 0,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 1,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 2,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 3,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 4,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 5,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 6,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 7,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 8,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 9,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 10,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 11,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 12,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 13,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 14,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 15,
+        "passed": true,
+        "issues": []
+      }
+    ]
+  },
+  "tablet": {
+    "viewport": {
+      "width": 768,
+      "height": 760
+    },
+    "mode": "2d",
+    "mask": 15,
+    "preferences": {
+      "top": true,
+      "bottom": true,
+      "left": true,
+      "right": true
+    },
+    "world": {
+      "x": 185,
+      "y": 90,
+      "width": 568,
+      "height": 500
+    },
+    "horizontalOverflow": false,
+    "edges": [
+      {
+        "key": "top",
+        "visible": true,
+        "label": "Скрыть верхние панели"
+      },
+      {
+        "key": "bottom",
+        "visible": true,
+        "label": "Скрыть нижние панели"
+      },
+      {
+        "key": "left",
+        "visible": true,
+        "label": "Скрыть левую панель"
+      },
+      {
+        "key": "right",
+        "visible": true,
+        "label": "Скрыть правую панель"
+      }
+    ],
+    "greenDock": false,
+    "fallbackDock": true,
+    "results": [
+      {
+        "mask": 0,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 1,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 2,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 3,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 4,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 5,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 6,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 7,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 8,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 9,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 10,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 11,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 12,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 13,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 14,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 15,
+        "passed": true,
+        "issues": []
+      }
+    ]
+  },
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 760
+    },
+    "mode": "3d",
+    "mask": 15,
+    "preferences": {
+      "top": true,
+      "bottom": true,
+      "left": true,
+      "right": true
+    },
+    "world": {
+      "x": 215,
+      "y": 92,
+      "width": 985,
+      "height": 622
+    },
+    "horizontalOverflow": false,
+    "edges": [
+      {
+        "key": "top",
+        "visible": true,
+        "label": "Скрыть верхние панели"
+      },
+      {
+        "key": "bottom",
+        "visible": true,
+        "label": "Скрыть нижние панели"
+      },
+      {
+        "key": "left",
+        "visible": true,
+        "label": "Скрыть левую панель"
+      },
+      {
+        "key": "right",
+        "visible": true,
+        "label": "Скрыть правую панель"
+      }
+    ],
+    "greenDock": true,
+    "fallbackDock": false,
+    "results": [
+      {
+        "mask": 0,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 1,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 2,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 3,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 4,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 5,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 6,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 7,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 8,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 9,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 10,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 11,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 12,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 13,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 14,
+        "passed": true,
+        "issues": []
+      },
+      {
+        "mask": 15,
+        "passed": true,
+        "issues": []
+      }
+    ]
+  }
+}

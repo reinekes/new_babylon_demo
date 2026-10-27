@@ -1,0 +1,92 @@
+{
+  "renderer": "3d",
+  "quest": "oasis",
+  "phase": "controlled",
+  "swimming": true,
+  "paused": true,
+  "time": 16.1,
+  "faith": 0,
+  "actorId": 0,
+  "actor": {
+    "x": 5,
+    "y": 22,
+    "phase": "relic",
+    "routeIndex": 16,
+    "routeLength": 16,
+    "walking": false,
+    "cargo": {},
+    "buildCargo": {}
+  },
+  "artifact": {
+    "location": "lake",
+    "x": 5,
+    "y": 22,
+    "temple": null,
+    "underwater": true
+  },
+  "searchPoint": {
+    "x": 5,
+    "y": 22
+  },
+  "shoreClickTile": {
+    "x": 5,
+    "y": 22
+  },
+  "shoreClickScreen": {
+    "x": 633,
+    "y": 536
+  },
+  "canSearch": true,
+  "celebrants": [],
+  "carriedVisual": false,
+  "viewEffects": {
+    "portals": 0,
+    "bursts": 0,
+    "meshes": 0
+  },
+  "visibleRelics": {
+    "visibleIds": [
+      "oasis",
+      "land"
+    ],
+    "meshes": 11
+  },
+  "swimmerHead": {
+    "height": -0.004,
+    "waterHeight": -0.18,
+    "swimming": true
+  },
+  "temples": [
+    {
+      "key": "9,8",
+      "type": "shrine",
+      "x": 9,
+      "y": 8
+    }
+  ],
+  "divineName": "Безымянный дух",
+  "relicPower": false,
+  "validQuest": true,
+  "roundtripValid": null,
+  "lastCommand": "Проверка плавания: реальный путь в оазис пройден, голова над водой; пауза сохраняет позу.",
+  "guards": null,
+  "reloadChecks": null,
+  "scenarioChecks": [
+    {
+      "name": "start-cost-250",
+      "ok": true
+    },
+    {
+      "name": "save-roundtrip-controlled",
+      "ok": true
+    },
+    {
+      "name": "route-to-relic-real",
+      "ok": true
+    },
+    {
+      "name": "swimming-actual-oasis",
+      "ok": true
+    }
+  ]
+}

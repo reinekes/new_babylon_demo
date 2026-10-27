@@ -25,3 +25,8 @@ test('orbit buttons move horizontal and vertical view without changing target, z
  r.orbitBy?.(.5,-.3);assert.equal(r.camera.alpha,1.5);assert.equal(r.camera.beta,.7);assert.deepEqual(r.camera.target,{x:23,y:0,z:42});assert.equal(r.camera.radius,50);
  r.orbitBy?.(0,10);assert.equal(r.camera.beta,1.48);r.orbitBy?.(0,-10);assert.equal(r.camera.beta,.18);assert.equal(JSON.stringify(state),before);
 });
+test('new monument selection reserves and previews all nine gate cells, centred on the actual footprint',async()=>{
+ const {GameRenderer3D}=await import('../game3d/renderer.js'),r=Object.create(GameRenderer3D.prototype),s=createGame({start:'established'}),before=JSON.stringify(s),shown={};let enabled=false;
+ Object.assign(r,{state:s,selection:'ishtarGate',hover:{x:2,y:2},B:{Color3:{FromHexString:v=>v}},canvas:{},marker:{material:{},setEnabled:v=>enabled=v,isEnabled:()=>enabled,scaling:{set:(...v)=>shown.scale=v},position:{set:(...v)=>shown.position=v}},buildings:{preview:b=>shown.preview=b,clearPreview(){},highlight(){}},reach:{update:()=>''},reachNote:{},routeSignature:'||'});
+ r.updateSelection();assert.deepEqual(shown.scale,[3,1,3]);assert.deepEqual(shown.position,[18,.1,18]);assert.equal(shown.preview.footprint,3);assert.equal(JSON.stringify(s),before);
+});

@@ -1,4 +1,5 @@
 import {loadModel} from './asset-loading.js';
+import {footprintSize} from '../footprints.js';
 
 export const SACRED_MODELS=Object.freeze({
  ishtarGate:{file:'sacred-ishtar-gate.glb',width:5.2},
@@ -7,7 +8,13 @@ export const SACRED_MODELS=Object.freeze({
  ziggurat3:{file:'sacred-ziggurat-3.glb',width:10.8}
 });
 
-// Existing one-cell monuments retain their geometry and reserved area. A new
+/** Assets stay at their compact authored metre size. Rendering can enlarge a
+ * gate without rewriting the GLB or moving cells in an existing saved town. */
+export function sacredModelTransform(b){
+ return {scale:b?.type==='ishtarGate'?(b.footprint===3?3:1.5):1,center:(footprintSize(b)-1)*3};
+}
+
+// Existing one-cell monuments retain their reserved area. A new
 // construction remains scaffolding; an upgrade displays the current tier.
 export function sacredModelKey(b){
  if(!b||b.construction?.kind==='new')return null;
@@ -36,7 +43,7 @@ export function flattenSacredContainer(B,container){
 }
 
 const fallbackBlueMaterials=new WeakMap();
-export function createIshtarGateFallback(B,scene,m,blue){
+export function createIshtarGateFallback(B,scene,m,blue,b={type:'ishtarGate'}){
  if(!blue){blue=fallbackBlueMaterials.get(scene);if(!blue||blue.isDisposed?.()){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;fallbackBlueMaterials.set(scene,blue);scene.onDisposeObservable.add(()=>fallbackBlueMaterials.delete(scene));}}
  const groups=new Map(),add=(mesh,mat)=>{mesh.material=mat;if(!groups.has(mat))groups.set(mat,[]);groups.get(mat).push(mesh);return mesh;};
  const box=(name,x,y,z,w,h,d,mat=blue)=>{const mesh=B.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);mesh.position.set(x,y,z);return add(mesh,mat);};
@@ -59,7 +66,8 @@ export function createIshtarGateFallback(B,scene,m,blue){
  const uvs=[];for(let i=0;i<p.length;i+=3)uvs.push(p[i]/2,p[i+1]/2);
  B.VertexData.ComputeNormals(p,indices,normals);const data=new B.VertexData();Object.assign(data,{positions:p,indices,normals,uvs});const arch=new B.Mesh('gate-open-arch',scene);data.applyToMesh(arch);add(arch,blue);
  for(const side of [-1,1])box('gate-opening-pier',side*.985,.87,0,.41,1.74,1.34);
- return [...groups].map(([mat,parts])=>{const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='game-ishtar-procedural-'+mat.name;mesh.material=mat;return mesh;});
+ const {scale,center}=sacredModelTransform(b);
+ return [...groups].map(([mat,parts])=>{const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='game-ishtar-procedural-'+mat.name;mesh.material=mat;mesh.scaling.setAll(scale);mesh.position.set(center,0,center);return mesh;});
 }
 
 // No sacred GLB is requested on startup or placement previews. Built monuments
@@ -79,7 +87,7 @@ export function createSacredModels(B,scene,{onError=error=>console.warn('Sacred 
   pending.set(key,promise);return promise;
  }
  return {request,key:sacredModelKey,ready(b){return loaded.has(sacredModelKey(b));},sources(b){return loaded.get(sacredModelKey(b))?.sources||null;},
-  fallback(b,m){if(b.type!=='ishtarGate')return null;if(!blue){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;}return createIshtarGateFallback(B,scene,m,blue);},
+  fallback(b,m){if(b.type!=='ishtarGate')return null;if(!blue){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;}return createIshtarGateFallback(B,scene,m,blue,b);},
   idle(){return Promise.all([...pending.values()]);},
   dispose(){if(disposed)return;disposed=true;for(const {container} of loaded.values())container.dispose();loaded.clear();failed.clear();blue?.dispose();}
  };

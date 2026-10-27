@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import vm from 'node:vm';
-import {createSacredModels,sacredModelKey,SACRED_MODELS} from '../game3d/sacred-models.js';
+import {createSacredModels,sacredModelKey,SACRED_MODELS,createIshtarGateFallback,sacredModelTransform} from '../game3d/sacred-models.js';
 import {createGameBuildings} from '../game3d/buildings.js';
 
 const sandbox={module:{exports:{}},console,setTimeout,clearTimeout,performance,self:{}};
@@ -62,5 +62,18 @@ test('real building adapter starts with procedural construction, swaps only afte
   const first=imported[0],source=first.sourceMesh,count=scene.meshes.length;for(let i=0;i<12;i++)layer.sync(state);assert.equal(scene.meshes.length,count);assert.equal(layer.meshes.find(m=>m.name.includes('sacred-shrine-3')),first);
   b.rotation=1;layer.sync(state);assert.equal(first.sourceMesh,source);first.computeWorldMatrix(true);assert.ok(first.getBoundingInfo().boundingBox.minimumWorld.y>=.03);
   layer.sync({buildings:[],citizens:[]});assert.ok(first.isDisposed());assert.equal(layer.meshes.length,0);
+ }finally{layer.dispose();B.SceneLoader.LoadAssetContainerAsync=previous;scene.dispose();engine.dispose();}
+});
+test('Ishtar gates use a monumental 3-cell width while legacy gates enlarge without changing their saved footprint',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),previous=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>geometry(scene,file.split('?')[0]);
+ const m=Object.fromEntries(['plaster','brick','wood','linen','reed','terracotta','soil','grass','stone'].map(k=>[k,new B.PBRMaterial(k,scene)])),layer=await createGameBuildings(B,scene,m,{deferAssets:true});
+ try{
+  assert.deepEqual(sacredModelTransform({type:'ishtarGate',footprint:3}),{scale:3,center:6});assert.deepEqual(sacredModelTransform({type:'ishtarGate'}),{scale:1.5,center:0});
+  const gate={id:'gate',type:'ishtarGate',level:1,x:3,y:4,footprint:3},legacy={id:'old-gate',type:'ishtarGate',level:1,x:15,y:4},state={buildings:[gate,legacy],citizens:[]},before=JSON.stringify(state);
+  layer.sync(state);await layer.sacredReady();layer.sync(state);
+  const bounds=id=>{const meshes=layer.meshes.filter(m=>m.metadata.buildingKey===id&&m.name.includes('sacred-ishtar-gate'));for(const m of meshes)m.computeWorldMatrix(true);return {min:Math.min(...meshes.map(m=>m.getBoundingInfo().boundingBox.minimumWorld.x)),max:Math.max(...meshes.map(m=>m.getBoundingInfo().boundingBox.maximumWorld.x))};};
+  const large=bounds('gate'),small=bounds('old-gate');assert.ok(Math.abs(large.max-large.min-15.6)<.03);assert.ok(Math.abs((large.max+large.min)/2-24)<.03);assert.ok(Math.abs(small.max-small.min-7.8)<.03);assert.ok(Math.abs((small.max+small.min)/2-90)<.03);assert.equal(JSON.stringify(state),before);
+  const fallback=createIshtarGateFallback(B,scene,{...m,trim:m.plaster},null,gate);const min=Math.min(...fallback.map(mesh=>{mesh.computeWorldMatrix(true);return mesh.getBoundingInfo().boundingBox.minimumWorld.x;})),max=Math.max(...fallback.map(mesh=>mesh.getBoundingInfo().boundingBox.maximumWorld.x));assert.ok(Math.abs(max-min-15.6)<.03);assert.ok(Math.abs((max+min)/2-6)<.03);for(const mesh of fallback)mesh.dispose();
  }finally{layer.dispose();B.SceneLoader.LoadAssetContainerAsync=previous;scene.dispose();engine.dispose();}
 });

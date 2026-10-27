@@ -17,7 +17,7 @@ export function advanceGenerations(s,recover=()=>{}){
  for(let i=deceased.length-1;i>=0;i--)if(recover(deceased[i].id)===false){const c=s.citizens.find(c=>c.id===deceased[i].id);if(c)c.age-=.5;deceased.splice(i,1);}
  if(deceased.length)mournResidents(s,deceased.map(c=>c.id),true);
  const dead=new Set(deceased.map(c=>c.id));s.citizens=s.citizens.filter(c=>!dead.has(c.id));s.population=s.citizens.length;s.deaths+=deceased.length;d.naturalDeaths+=deceased.length;
- if(deceased.length){s.name='Хранитель памяти';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}
+ if(deceased.length&&!(s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized')){s.name='Хранитель памяти';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}
  if(deceased.length)news(s,'Завершилась жизнь',`${deceased.map(c=>c.name).join(', ')} умерли от старости. Их дети и дела остаются в городе.`,'info');
  const living=new Map(s.citizens.map(c=>[c.id,c]));for(const c of s.citizens)if(c.partner!==null&&!living.has(c.partner))c.partner=null;
  const homes=new Map();for(const c of s.citizens){if(!homes.has(c.home))homes.set(c.home,[]);homes.get(c.home).push(c);}

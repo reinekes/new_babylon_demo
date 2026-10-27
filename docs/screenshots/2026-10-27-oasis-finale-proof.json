@@ -1,0 +1,119 @@
+{
+  "renderer": "3d",
+  "quest": "oasis",
+  "phase": "completed",
+  "swimming": false,
+  "paused": true,
+  "time": 51.8,
+  "faith": 0,
+  "actorId": null,
+  "actor": null,
+  "artifact": {
+    "location": "temple",
+    "x": 9,
+    "y": 8,
+    "temple": "9,8",
+    "underwater": false
+  },
+  "searchPoint": {
+    "x": 5,
+    "y": 22
+  },
+  "shoreClickTile": {
+    "x": 5,
+    "y": 22
+  },
+  "shoreClickScreen": {
+    "x": -200,
+    "y": -87
+  },
+  "canSearch": false,
+  "celebrants": [],
+  "carriedVisual": false,
+  "viewEffects": {
+    "portals": 0,
+    "bursts": 1,
+    "meshes": 15
+  },
+  "visibleRelics": {
+    "visibleIds": [
+      "oasis",
+      "land"
+    ],
+    "meshes": 11
+  },
+  "swimmerHead": null,
+  "temples": [
+    {
+      "key": "9,8",
+      "type": "shrine",
+      "x": 9,
+      "y": 8
+    }
+  ],
+  "divineName": "Пробуждающий глубины",
+  "relicPower": true,
+  "validQuest": true,
+  "roundtripValid": null,
+  "lastCommand": "Автоматический сценарий пройден: 14 проверок. Тестовый дневной свет; ручное управление проверяется отдельно.",
+  "guards": null,
+  "reloadChecks": null,
+  "scenarioChecks": [
+    {
+      "name": "start-cost-250",
+      "ok": true
+    },
+    {
+      "name": "save-roundtrip-controlled",
+      "ok": true
+    },
+    {
+      "name": "route-to-relic-real",
+      "ok": true
+    },
+    {
+      "name": "search",
+      "ok": true
+    },
+    {
+      "name": "save-roundtrip-searching",
+      "ok": true
+    },
+    {
+      "name": "real-guests",
+      "ok": true
+    },
+    {
+      "name": "carried-unique-token",
+      "ok": true
+    },
+    {
+      "name": "save-roundtrip-carrying",
+      "ok": true
+    },
+    {
+      "name": "temple-command",
+      "ok": true
+    },
+    {
+      "name": "save-roundtrip-carrying",
+      "ok": true
+    },
+    {
+      "name": "temple-celebration",
+      "ok": true
+    },
+    {
+      "name": "completed-name",
+      "ok": true
+    },
+    {
+      "name": "city-unlocked",
+      "ok": true
+    },
+    {
+      "name": "final-state-valid",
+      "ok": true
+    }
+  ]
+}

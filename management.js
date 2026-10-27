@@ -1,3 +1,4 @@
+import {godhoodInspirationReason,firstBuilderInspiration,acceptGodhoodInspiration} from './godhood.js';
 import {relicControlActive,relicCommandReason} from './relic-quest.js';
 import {recoverFestivalCitizen} from './festival.js';
 import {recordProfessionEpithet,recordInspirationOutcome} from './citizen-epithets.js';
@@ -95,7 +96,7 @@ function localRefundStore(s,b){const net=networkFor(s),p=net.ports.find(p=>p.bui
 export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.
  if(b?.starterHut)s={...s,roads:[...(s.roads||[])]};
- const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if(s.relicQuest?.artifact?.location==='temple'&&s.relicQuest.artifact.temple===buildingKey(b))return 'Здесь хранится единственный артефакт бога';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
+ const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if([s.relicQuest,s.landRelicQuest].some(q=>q?.artifact?.location==='temple'&&q.artifact.temple===buildingKey(b)))return 'Здесь хранится единственный артефакт бога';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
  if(isArtisan(b)&&!['idle','ready'].includes(b.artisan.stage))return 'Дождись завершения ремесленной партии';
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
@@ -154,13 +155,13 @@ if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.
  syncInventory(s);note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
-export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
+export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';const knowledge=godhoodInspirationReason(s,c,profession);if(knowledge)return knowledge;if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
 export function inspireCitizen(s,id,profession){
  const reason=inspirationReason(s,id,profession);if(reason)return {ok:false,reason,message:reason};
  s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
- const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),success=s.rngState/4294967296<inspirationChance(subject,profession);
+ const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),success=firstBuilderInspiration(s,subject,profession)||s.rngState/4294967296<inspirationChance(subject,profession);
  registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);
- if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
+ if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;acceptGodhoodInspiration(s,c,profession);if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
  recordInspirationOutcome(s,s.citizens.find(c=>c.id===id),success);
  const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};
 }

@@ -1,0 +1,77 @@
+[
+  {
+    "buttons": [
+      {
+        "text": "Пробудиться · 0 веры",
+        "width": 261
+      },
+      {
+        "text": "Стать покровителем",
+        "width": 261
+      }
+    ],
+    "cards": [
+      {
+        "left": 40,
+        "right": 335
+      },
+      {
+        "left": 40,
+        "right": 335
+      }
+    ],
+    "choiceWidth": 345,
+    "scrollWidth": 375,
+    "width": 390
+  },
+  {
+    "buttons": [
+      {
+        "text": "Пробудиться · 0 веры",
+        "width": 281.5
+      },
+      {
+        "text": "Стать покровителем",
+        "width": 281.5
+      }
+    ],
+    "cards": [
+      {
+        "left": 40,
+        "right": 367.5
+      },
+      {
+        "left": 385.5,
+        "right": 713
+      }
+    ],
+    "choiceWidth": 723,
+    "scrollWidth": 753,
+    "width": 768
+  },
+  {
+    "buttons": [
+      {
+        "text": "Пробудиться · 0 веры",
+        "width": 345
+      },
+      {
+        "text": "Стать покровителем",
+        "width": 345
+      }
+    ],
+    "cards": [
+      {
+        "left": 312.5,
+        "right": 703.5
+      },
+      {
+        "left": 721.5,
+        "right": 1112.5
+      }
+    ],
+    "choiceWidth": 850,
+    "scrollWidth": 1425,
+    "width": 1440
+  }
+]

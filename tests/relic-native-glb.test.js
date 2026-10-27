@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {createGame,advanceTime} from '../engine.js';
+import {createGame,advanceTime,encode,decode} from '../engine.js';
 import {syncCitizens} from '../workforce.js';
 import {startRelicQuest,orderRelicMove,searchRelic,relicQuestView} from '../relic-quest.js';
 import {createGameActors,actorViewFrame,actorAnimation} from '../game3d/actors.js';
@@ -22,5 +22,23 @@ test('native male and female hands hold one visible gold-lapis artifact with no 
    for(const side of ['l','r']){const hand=root.getChildTransformNodes().find(n=>n.name.endsWith('-hand_'+side));assert.ok(hand);hand.computeWorldMatrix(true);const d=B.Vector3.Distance(hand.getAbsolutePosition(),load.getAbsolutePosition());worst=Math.max(worst,d);assert.ok(d<.30,`${sex} palm ${side} must touch relic edge, distance ${d}`);}
    const pose=()=>root.getChildTransformNodes().filter(n=>/hand_[lr]$|upperarm_[lr]$|lowerarm_[lr]$/.test(n.name)).map(n=>[n.position.asArray(),n.rotationQuaternion?.asArray()]),frozen=pose(),before=JSON.stringify(s);for(let i=0;i<8;i++){actors.update(s,1/60,{paused:true});scene.render();}assert.deepEqual(pose(),frozen);assert.equal(JSON.stringify(s),before);
   }t.diagnostic(`Native male/female maximum palm-to-artifact centre distance ${worst.toFixed(5)} m (hands meet the ±0.21 m edges).`);
+ }finally{actors?.dispose();B.SceneLoader.LoadAssetContainerAsync=loader;scene.dispose();engine.dispose();}
+});
+test('chosen swimmers float at the surface with their native heads above water and no walking clip; pause and shore restore are stable',async t=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),loader=B.SceneLoader.LoadAssetContainerAsync;let actors;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>loader.call(B.SceneLoader,'',new Uint8Array(readFileSync(new URL('../'+path+file.split('?')[0],import.meta.url))),scene,undefined,'.glb');
+ try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);actors=await createGameActors(B,scene,{},{includeFauna:false});const s=searching(),id=s.relicQuest.actorId;
+  for(const sex of ['m','f']){s.citizens.find(c=>c.id===id).sex=sex;const before=JSON.stringify(s);actors.update(s,1/60);scene.render();const c=actorViewFrame(s).citizens.find(c=>c.id===id),root=actors.rootFor({citizenId:id}),head=root.getChildTransformNodes().find(n=>n.name.endsWith('-head'));assert.equal(c.swimming,true);assert.equal(root.metadata.swimming,true);assert.equal(actorAnimation(c,.4).clip,'Idle_Loop');assert.ok(root.position.y>-.8&&root.position.y<-.4);head.computeWorldMatrix(true);assert.ok(head.getAbsolutePosition().y>-.18,`${sex}: head ${head.getAbsolutePosition().y} must stay above water -0.18`);assert.ok(root.getChildTransformNodes().find(n=>n.name.endsWith('-model')).rotation.x>1);assert.equal(JSON.stringify(s),before);
+   const headY=head.getAbsolutePosition().y,position=root.position.asArray(),model=root.getChildTransformNodes().find(n=>n.name.endsWith('-model')),pitch=model.rotation.x;for(let i=0;i<8;i++){actors.update(s,1/60,{paused:true});scene.render();}head.computeWorldMatrix(true);assert.deepEqual(root.position.asArray(),position);assert.equal(model.rotation.x,pitch);assert.ok(Math.abs(head.getAbsolutePosition().y-headY)<1e-6);t.diagnostic(`${sex} native swimmer head ${headY.toFixed(3)}m, water -0.180m, root ${root.position.y.toFixed(3)}m.`);
+  }
+  assert.equal(actorAnimation({swimming:true,walking:true},.4).pose,'swim');
+  const citizen=s.citizens.find(c=>c.id===id);citizen.x=s.relicQuest.site.shore.x;citizen.y=s.relicQuest.site.shore.y;citizen.route=[];citizen.routeIndex=0;actors.update(s,1/60);scene.render();const root=actors.rootFor({citizenId:id});assert.equal(root.metadata.swimming,false);assert.ok(root.getChildTransformNodes().find(n=>n.name.endsWith('-model')).rotation.x<.2);
+ }finally{actors?.dispose();B.SceneLoader.LoadAssetContainerAsync=loader;scene.dispose();engine.dispose();}
+});
+test('paused replacement of the state object refreshes the same native citizen from shore to swimming without advancing the save',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),loader=B.SceneLoader.LoadAssetContainerAsync;let actors;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>loader.call(B.SceneLoader,'',new Uint8Array(readFileSync(new URL('../'+path+file.split('?')[0],import.meta.url))),scene,undefined,'.glb');
+ try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);actors=await createGameActors(B,scene,{},{includeFauna:false});const wet=searching(),id=wet.relicQuest.actorId,dry=structuredClone(wet),c=dry.citizens.find(c=>c.id===id);c.x=dry.relicQuest.site.shore.x;c.y=dry.relicQuest.site.shore.y;c.route=[];c.routeIndex=0;dry.relicQuest.phase='controlled';dry.relicQuest.lastPosition={x:c.x,y:c.y};actors.update(dry,1/60);scene.render();const root=actors.rootFor({citizenId:id}),model=root.getChildTransformNodes().find(n=>n.name.endsWith('-model'));assert.ok(model.rotation.x<.2);
+  const loaded=decode(encode(wet));assert.ok(loaded);const before=JSON.stringify(loaded);actors.update(loaded,0,{paused:true});scene.render();assert.equal(actors.rootFor({citizenId:id}),root,'only presentation cache is reset, same rig instance survives');assert.ok(model.rotation.x>1,'loaded swimmer must not keep a frozen shore pose');assert.equal(root.metadata.swimming,true);const head=root.getChildTransformNodes().find(n=>n.name.endsWith('-head'));head.computeWorldMatrix(true);assert.ok(head.getAbsolutePosition().y>-.18);const frozen=root.getChildTransformNodes().filter(n=>/hand_[lr]$|upperarm_[lr]$/.test(n.name)).map(n=>n.rotationQuaternion?.asArray());for(let i=0;i<5;i++){actors.update(loaded,1/60,{paused:true});scene.render();}assert.deepEqual(root.getChildTransformNodes().filter(n=>/hand_[lr]$|upperarm_[lr]$/.test(n.name)).map(n=>n.rotationQuaternion?.asArray()),frozen);assert.equal(JSON.stringify(loaded),before);
  }finally{actors?.dispose();B.SceneLoader.LoadAssetContainerAsync=loader;scene.dispose();engine.dispose();}
 });
