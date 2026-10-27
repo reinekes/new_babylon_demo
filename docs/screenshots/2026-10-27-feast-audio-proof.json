@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "name": "До opt-in нет MP3",
+      "pass": true
+    },
+    {
+      "name": "Доставка не включает праздничный трек",
+      "pass": true
+    },
+    {
+      "name": "Сбор гостей не включает праздничный трек",
+      "pass": true
+    },
+    {
+      "name": "Настоящий MP3 первой кружки играет",
+      "pass": true
+    },
+    {
+      "name": "Пауза останавливает первую кружку",
+      "pass": true
+    },
+    {
+      "name": "Текущий пир возобновляется",
+      "pass": true
+    },
+    {
+      "name": "Настоящий MP3 Ночи огней играет",
+      "pass": true
+    },
+    {
+      "name": "Первая кружка затихла",
+      "pass": true
+    },
+    {
+      "name": "Похороны выше праздника",
+      "pass": true
+    },
+    {
+      "name": "Старый праздник без occasion получает Ночь огней",
+      "pass": true
+    },
+    {
+      "name": "Пауза останавливает все записи",
+      "pass": true
+    },
+    {
+      "name": "Закончившийся пир не переигрывается",
+      "pass": true
+    },
+    {
+      "name": "Выключение звука останавливает все записи",
+      "pass": true
+    },
+    {
+      "name": "Оба файла декодированы",
+      "pass": true
+    },
+    {
+      "name": "Нет ошибок декодирования",
+      "pass": true
+    }
+  ],
+  "metrics": {
+    "audioRequests": 4,
+    "cached": 4,
+    "enabled": false,
+    "lithophone": false,
+    "paused": false,
+    "playing": [],
+    "seen": [
+      "main-theme.mp3",
+      "first-beer-feast.mp3",
+      "night-lights-feast.mp3",
+      "funeral-1.mp3"
+    ],
+    "theme": null,
+    "tracks": [
+      {
+        "duration": 217.57,
+        "error": null,
+        "file": "main-theme.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 3.47,
+        "volume": 0
+      },
+      {
+        "duration": 56.45,
+        "error": null,
+        "file": "first-beer-feast.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 3.11,
+        "volume": 0
+      },
+      {
+        "duration": 220,
+        "error": null,
+        "file": "night-lights-feast.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 4.52,
+        "volume": 0
+      },
+      {
+        "duration": 160,
+        "error": null,
+        "file": "funeral-1.mp3",
+        "paused": true,
+        "ready": 4,
+        "time": 2.84,
+        "volume": 0
+      }
+    ]
+  },
+  "status": "PASS — оба MP3 и переходы подтверждены"
+}

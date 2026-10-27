@@ -1,0 +1,139 @@
+{
+  "firstFeast": {
+    "simTime": 13.6,
+    "running": false,
+    "ledger": {
+      "version": 1,
+      "status": "done",
+      "brewery": "10,9",
+      "producedAt": 11.299999999999976
+    },
+    "festival": {
+      "occasion": "firstBeer",
+      "stage": "celebrating",
+      "consumed": true,
+      "venue": "10,9",
+      "delivered": {
+        "food": 0,
+        "beer": 1
+      },
+      "actors": [
+        {
+          "id": 0,
+          "kind": "guest",
+          "stage": "dancing",
+          "load": 0
+        },
+        {
+          "id": 2,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 3,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 4,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 5,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 6,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 7,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 8,
+          "kind": "guest",
+          "stage": "dancing",
+          "load": 0
+        }
+      ],
+      "rewarded": [
+        0,
+        8,
+        7,
+        3,
+        6,
+        4,
+        2,
+        5
+      ]
+    },
+    "produced": 3,
+    "beer": {
+      "stored": 0,
+      "ready": 0,
+      "local": 0,
+      "homes": 0,
+      "hands": 2,
+      "reserved": 0,
+      "consumed": 1,
+      "accounted": 3
+    },
+    "sameCitizenIds": true,
+    "ordinaryCargo": [
+      {
+        "id": 9,
+        "cargo": {}
+      }
+    ],
+    "inventoryValid": true,
+    "festivalValid": true,
+    "saveRoundtrip": null,
+    "audioTheme": "firstBeer",
+    "audioStatus": {
+      "enabled": true,
+      "theme": null,
+      "lithophone": false,
+      "playing": [],
+      "cached": 3
+    },
+    "roundtrip": true
+  },
+  "media": [
+    {
+      "file": "first-beer-feast.mp3",
+      "ready": 4,
+      "paused": true,
+      "time": 25.81,
+      "volume": 0,
+      "error": null
+    },
+    {
+      "file": "main-theme.mp3",
+      "ready": 4,
+      "paused": true,
+      "time": 14.39,
+      "volume": 0,
+      "error": null
+    },
+    {
+      "file": "night-theme.mp3",
+      "ready": 4,
+      "paused": false,
+      "time": 39.57,
+      "volume": 0.16,
+      "error": null
+    }
+  ],
+  "errors": []
+}

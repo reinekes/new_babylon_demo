@@ -1,0 +1,32 @@
+{
+  "mobile": {
+    "viewport": 390,
+    "document": 378,
+    "shell": 378,
+    "article": 340,
+    "navigationColumns": "168px 168px",
+    "articleTitle": "Сердце полно радости — Ночь огней",
+    "lyricsLines": 69,
+    "closeWithinShell": true
+  },
+  "tablet": {
+    "viewport": 768,
+    "document": 756,
+    "shell": 756,
+    "article": 477,
+    "navigationColumns": "225px",
+    "articleTitle": "Сердце полно радости — Ночь огней",
+    "lyricsLines": 69,
+    "closeWithinShell": true
+  },
+  "desktop": {
+    "viewport": 1440,
+    "document": 1428,
+    "shell": 1428,
+    "article": 1149,
+    "navigationColumns": "225px",
+    "articleTitle": "Сердце полно радости — Ночь огней",
+    "lyricsLines": 69,
+    "closeWithinShell": true
+  }
+}

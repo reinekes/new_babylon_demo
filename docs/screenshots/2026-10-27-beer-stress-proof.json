@@ -1,0 +1,6 @@
+{
+  "display": "34 FPS · CPU p95 30.5 мс",
+  "phases": "Samples 593 · 200 residents (3 enabled) · meshes 8039 · active 777\nDistrict jobs 98 / active 82 / complete 16 · carriers 0 · sim 41.8s\nadvanceTime         mean    3.5 ms  p95    4.9 ms\nbuildings.sync      mean    0.5 ms  p95    0.6 ms\nlandscape.update    mean    0.5 ms  p95    0.6 ms\nactors.update       mean    4.7 ms  p95    8.0 ms\nlighting            mean    0.0 ms  p95    0.1 ms\nselection           mean    0.0 ms  p95    0.1 ms\neffects             mean    0.0 ms  p95    0.0 ms\ngarden effects      mean    0.0 ms  p95    0.0 ms\nscene.render        mean   19.2 ms  p95   22.5 ms\ndraw total          mean   25.4 ms  p95   28.8 ms",
+  "status": "Ready · 129 buildings · 200 residents · 4× · 3d",
+  "errors": []
+}

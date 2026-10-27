@@ -10,6 +10,8 @@ TRACKS = [
  ('funeral-1','Кто-то умер - несут труп 1.mp3','Первое и нечётные погребальные шествия',96,-20),
  ('funeral-2','Кто-то умер несут труп - 2 - женский голос.mp3','Второе и чётные погребальные шествия',96,-20),
  ('lithophone','литофон.mp3','Вдохновлённый музыкант на месте днём, рядом с камерой',80,-22),
+ ('first-beer-feast','Сделали первую кружку пива - праздник.mp3','Первое действительно сваренное пиво: пир у пивоварни',96,-20),
+ ('night-lights-feast','Праздник Ночь огней.mp3','Ночь огней: жители уже танцуют на празднике',96,-20),
 ]
 
 def command(args):
@@ -43,11 +45,16 @@ def prepare(track,source_dir,out):
  return {'id':key,'file':f'{key}.mp3','usage':usage,'source':{'name':name,'bytes':source.stat().st_size,'sha256':original_sha,'duration':float(before['format']['duration'])},'optimized':{'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'duration':float(optimized['format']['duration']),'codec':'mp3','bitrateKbps':kbps,'sampleRate':44100,'channels':2,'integratedLUFS':float(quality['input_i']),'truePeakDBTP':float(quality['input_tp'])}}
 
 def main():
- parser=argparse.ArgumentParser();parser.add_argument('--source-dir',type=Path,default=Path.home()/'Downloads');parser.add_argument('--output-dir',type=Path,default=Path(__file__).resolve().parents[1]/'assets/audio');args=parser.parse_args()
+ parser=argparse.ArgumentParser();parser.add_argument('--source-dir',type=Path,default=Path.home()/'Downloads');parser.add_argument('--output-dir',type=Path,default=Path(__file__).resolve().parents[1]/'assets/audio');parser.add_argument('--tracks',nargs='+',choices=[t[0] for t in TRACKS],help='Prepare only named tracks; preserve other assets and manifest rows');args=parser.parse_args()
  args.output_dir.mkdir(parents=True,exist_ok=True)
- with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool: rows=list(pool.map(lambda t:prepare(t,args.source_dir,args.output_dir),TRACKS))
+ selected=[track for track in TRACKS if not args.tracks or track[0] in args.tracks]
+ with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool: prepared=list(pool.map(lambda t:prepare(t,args.source_dir,args.output_dir),selected))
+ existing_path=args.output_dir/'manifest.json'
+ existing=json.loads(existing_path.read_text())['tracks'] if args.tracks and existing_path.exists() else []
+ merged={row['id']:row for row in [*existing,*prepared]}
+ rows=[merged[track[0]] for track in TRACKS if track[0] in merged]
  manifest={'date':'2026-10-27','provenance':'Recordings supplied by the user for this game; no claim of historical reconstruction or third-party authorship. Original Downloads files and user audio/ directory are unchanged.','processing':'MP3 without cover art, stereo44.1kHz, two-pass loudness normalization, no first-load fetch','tracks':rows}
  (args.output_dir/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
- for row in rows: print(f'{row["id"]}: {row["source"]["bytes"]} -> {row["optimized"]["bytes"]} bytes, {row["optimized"]["integratedLUFS"]}LUFS, peak{row["optimized"]["truePeakDBTP"]}dBTP')
- print('TOTAL',sum(t['source']['bytes'] for t in rows),'->',sum(t['optimized']['bytes'] for t in rows))
+ for row in prepared: print(f'{row["id"]}: {row["source"]["bytes"]} -> {row["optimized"]["bytes"]} bytes, {row["optimized"]["integratedLUFS"]}LUFS, peak{row["optimized"]["truePeakDBTP"]}dBTP')
+ print('TOTAL_PREPARED',sum(t['source']['bytes'] for t in prepared),'->',sum(t['optimized']['bytes'] for t in prepared))
 if __name__=='__main__':main()

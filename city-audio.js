@@ -9,7 +9,7 @@ function createSyntheticCityAudio(onMessage){
  async function toggle(){try{if(!context){const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)throw Error('unavailable');context=new C();}enabled=!enabled;if(enabled)await context.resume();else{silence();await context.suspend();}return enabled;}catch{silence();enabled=false;onMessage?.('Звук недоступен в этом браузере');return false;}}
  function tick(s,paused,listener){
   if(!enabled||!context||paused||globalThis.document?.hidden){silence();return;}
-  const sources=musicSoundSources(s,listener),festival=s.festival?.stage==='celebrating',active=new Set(sources.map(source=>`music:${source.id}`));if(festival)active.add('festival');for(const id of voices.keys())if(!active.has(id))stopSource(id);
+  const sources=musicSoundSources(s,listener),festival=activeFestival(s),active=new Set(sources.map(source=>`music:${source.id}`));if(festival)active.add('festival');for(const id of voices.keys())if(!active.has(id))stopSource(id);
   const beat=Math.floor((s.simTime||0)*2),pattern=[0,2,4,3,2,5,4,1];
   for(const source of sources){const id=`music:${source.id}`;if(beats.get(id)===beat)continue;beats.set(id,beat);track(id,playStoneNote(context,STONE_NOTES[pattern[((beat%pattern.length)+pattern.length)%pattern.length]],source.gain));}
   if(festival&&beats.get('festival')!==beat){beats.set('festival',beat);const notes=[62,65,69,67,65,72,69,67],note=notes[((beat%notes.length)+notes.length)%notes.length],osc=context.createOscillator(),gain=context.createGain(),now=context.currentTime;osc.type='triangle';osc.frequency.value=440*2**((note-69)/12);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.026,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.65);osc.connect(gain);gain.connect(context.destination);osc.start(now);osc.stop(now+.7);osc.onended=()=>{osc.disconnect?.();gain.disconnect?.();};track('festival',[osc]);}
@@ -21,12 +21,15 @@ function createSyntheticCityAudio(onMessage){
 // Recordings are user-provided artistic music, not reconstructed ancient scores.
 export const EVENT_MUSIC_TRACKS=Object.freeze({
  main:'main-theme.mp3',grown:'growing-city.mp3',night:'night-theme.mp3',
- funeral1:'funeral-1.mp3',funeral2:'funeral-2.mp3',lithophone:'lithophone.mp3'
+ funeral1:'funeral-1.mp3',funeral2:'funeral-2.mp3',lithophone:'lithophone.mp3',
+ firstBeer:'first-beer-feast.mp3',nightLights:'night-lights-feast.mp3'
 });
 export const GROWN_CITY_MUSIC_POPULATION=24;
 const activeFuneral=s=>s.funeral&&s.funeral.stage!=='returning';
+const activeFestival=s=>s.festival?.stage==='celebrating'&&s.festival.consumed&&s.festival.actors?.some(a=>a.kind==='guest'&&a.stage==='dancing');
 export function eventMusicTheme(s,funeralVariant=1){
  if(activeFuneral(s))return funeralVariant===2?'funeral2':'funeral1';
+ if(activeFestival(s))return s.festival.occasion==='firstBeer'?'firstBeer':'nightLights';
  const hour=((8+(s.simTime||0)*.4)%24+24)%24;
  if(hour<6||hour>=19)return 'night';
  return (s.citizens?.length||0)>=GROWN_CITY_MUSIC_POPULATION?'grown':'main';

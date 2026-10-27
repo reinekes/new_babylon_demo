@@ -134,6 +134,50 @@
         "integratedLUFS": -22.52,
         "truePeakDBTP": -4.76
       }
+    },
+    {
+      "id": "first-beer-feast",
+      "file": "first-beer-feast.mp3",
+      "usage": "Первое действительно сваренное пиво: пир у пивоварни",
+      "source": {
+        "name": "Сделали первую кружку пива - праздник.mp3",
+        "bytes": 1374351,
+        "sha256": "0169400837f7618d1c49f75edcb54a21694effcb376911bfae8e5ee073176510",
+        "duration": 56.450589
+      },
+      "optimized": {
+        "bytes": 678079,
+        "sha256": "b56cdc1a6752432cab2d9a242b479ed2e633da6191e574667a4b45d9b6d4c136",
+        "duration": 56.450612,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.44,
+        "truePeakDBTP": -3.12
+      }
+    },
+    {
+      "id": "night-lights-feast",
+      "file": "night-lights-feast.mp3",
+      "usage": "Ночь огней: жители уже танцуют на празднике",
+      "source": {
+        "name": "Праздник Ночь огней.mp3",
+        "bytes": 5302655,
+        "sha256": "1a9f4d49a8f1abad23bad3b65490fdafe20cf3b91a4161ea158a49c339d745cf",
+        "duration": 220.003256
+      },
+      "optimized": {
+        "bytes": 2640711,
+        "sha256": "2af05db37baab94af5136ac18a6d314d308b423687d3198159d6740a72d92c8d",
+        "duration": 220.003265,
+        "codec": "mp3",
+        "bitrateKbps": 96,
+        "sampleRate": 44100,
+        "channels": 2,
+        "integratedLUFS": -20.45,
+        "truePeakDBTP": -4.68
+      }
     }
   ]
 }

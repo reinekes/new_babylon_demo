@@ -1,0 +1,126 @@
+{
+  "firstFeast": {
+    "simTime": 33.5,
+    "running": false,
+    "ledger": {
+      "version": 1,
+      "status": "unbrewed",
+      "brewery": null,
+      "producedAt": null
+    },
+    "festival": {
+      "occasion": "nightLights",
+      "stage": "celebrating",
+      "consumed": true,
+      "venue": "9,8",
+      "delivered": {
+        "food": 12,
+        "beer": 6
+      },
+      "actors": [
+        {
+          "id": 2,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 3,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 4,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 5,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 6,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 7,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        },
+        {
+          "id": 8,
+          "kind": "guest",
+          "stage": "dancing",
+          "load": 0
+        },
+        {
+          "id": 9,
+          "kind": "guest",
+          "stage": "arriving",
+          "load": 0
+        }
+      ],
+      "rewarded": [
+        8,
+        4,
+        7,
+        9,
+        5,
+        2,
+        3,
+        6
+      ]
+    },
+    "produced": 0,
+    "beer": {
+      "stored": 10,
+      "ready": 0,
+      "local": 0,
+      "homes": 4,
+      "hands": 0,
+      "reserved": 0,
+      "consumed": 6,
+      "accounted": 20
+    },
+    "sameCitizenIds": true,
+    "ordinaryCargo": [],
+    "inventoryValid": true,
+    "festivalValid": true,
+    "saveRoundtrip": null,
+    "audioTheme": "nightLights",
+    "audioStatus": {
+      "enabled": true,
+      "theme": null,
+      "lithophone": false,
+      "playing": [],
+      "cached": 0
+    },
+    "roundtrip": true
+  },
+  "media": [
+    {
+      "file": "night-lights-feast.mp3",
+      "ready": 4,
+      "paused": true,
+      "time": 12.97,
+      "volume": 0,
+      "error": null
+    },
+    {
+      "file": "night-theme.mp3",
+      "ready": 4,
+      "paused": false,
+      "time": 8.31,
+      "volume": 0.16,
+      "error": null
+    }
+  ],
+  "errors": []
+}

@@ -1,3 +1,4 @@
+import {noteFirstBeer} from './festival.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {weatherAt} from './environment.js';
@@ -40,7 +41,7 @@ export function workArtisan(b,seconds,s=null){
  }
  if(!['forming','brewing'].includes(v.stage))return;
  v.elapsed=Math.min(durations[v.stage],v.elapsed+seconds*outputMultiplier(b));
- if(v.elapsed>=durations[v.stage]){v.elapsed=0;if(v.stage==='forming')v.stage='drying';else{v.stage='ready';v.ready=3;if(s)recordBuildingProduction(s,b,'beer',3);}}
+ if(v.elapsed>=durations[v.stage]){v.elapsed=0;if(v.stage==='forming')v.stage='drying';else{v.stage='ready';v.ready=3;if(s){recordBuildingProduction(s,b,'beer',3);noteFirstBeer(s,b);}}}
 }
 export function advanceArtisans(s,seconds){
  if(!Number.isFinite(seconds)||seconds<=0)return;
