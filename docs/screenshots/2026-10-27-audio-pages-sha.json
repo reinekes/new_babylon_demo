@@ -1,0 +1,169 @@
+{
+  "commit": "91bc3864bbbd348c463acec349f051be85515317",
+  "base": "c3e8537db893eaeeb563441255a2c284689a7b77",
+  "pagesRun": 40506423444,
+  "matched": 16,
+  "total": 16,
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 181668,
+      "expected": "e82d747b26b7eaacd48d997daac7b299503f816ee32b9189f503d593e37248b1",
+      "actual": "e82d747b26b7eaacd48d997daac7b299503f816ee32b9189f503d593e37248b1",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 123875,
+      "expected": "9e392b0daa7779f9ea3c8491a45aaef9b3e2cfa018e1ced9896fbd65a897fc3f",
+      "actual": "9e392b0daa7779f9ea3c8491a45aaef9b3e2cfa018e1ced9896fbd65a897fc3f",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 7760,
+      "expected": "a1365c6d5fbc30e8b35537a7dc446ee1bd8c936ecebf243d376aaa02f715cc7a",
+      "actual": "a1365c6d5fbc30e8b35537a7dc446ee1bd8c936ecebf243d376aaa02f715cc7a",
+      "match": true
+    },
+    {
+      "path": "docs/AUDIO_CONTINUITY_2026-10-27.md",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 7783,
+      "expected": "e341a7943e748283f1d586e19ca6cc5fab23d408dc5b9cb492916e223a133acf",
+      "actual": "e341a7943e748283f1d586e19ca6cc5fab23d408dc5b9cb492916e223a133acf",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-audio-4x.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 515,
+      "expected": "dab9689364c7b4ed8b5f73a30f49cfb3d44ce1e68470f108f4d1f3cca0ba092b",
+      "actual": "dab9689364c7b4ed8b5f73a30f49cfb3d44ce1e68470f108f4d1f3cca0ba092b",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-audio-continuity-initial.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2824,
+      "expected": "0f58bdb8eeb44eaa190c27f40f8d68c9571fd2d51af24f7ca3f7ce35e90fe984",
+      "actual": "0f58bdb8eeb44eaa190c27f40f8d68c9571fd2d51af24f7ca3f7ce35e90fe984",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-audio-continuity.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2865,
+      "expected": "d08b9369d302662fee667f61289c4332f49011deb875c9a0ef3f909297101c6d",
+      "actual": "d08b9369d302662fee667f61289c4332f49011deb875c9a0ef3f909297101c6d",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-audio-continuity.png",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 51716,
+      "expected": "554aeb8d59e8e884a74f3e1bdf806bd30f96f2193552e46c8dd4a21a5e1da01d",
+      "actual": "554aeb8d59e8e884a74f3e1bdf806bd30f96f2193552e46c8dd4a21a5e1da01d",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 24722,
+      "expected": "a48a69dc6b54f23d604f0c8ecd292b77d7568fffdf9c8ba60ed48a42128f1d9b",
+      "actual": "a48a69dc6b54f23d604f0c8ecd292b77d7568fffdf9c8ba60ed48a42128f1d9b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 20608,
+      "expected": "69c96ec47ffc6c3e765af51c8c5fa4c788f2d388d89b655de0aa8d0b2af07668",
+      "actual": "69c96ec47ffc6c3e765af51c8c5fa4c788f2d388d89b655de0aa8d0b2af07668",
+      "match": true
+    },
+    {
+      "path": "music-audio.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2245,
+      "expected": "fbc243f9121b66117c1f864d0d8a3af515580fea33d533e120de4f1087c71979",
+      "actual": "fbc243f9121b66117c1f864d0d8a3af515580fea33d533e120de4f1087c71979",
+      "match": true
+    },
+    {
+      "path": "tests/city-audio.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 3335,
+      "expected": "c4b311f696e07f747caebc5bf69fc44ad6dd903311137f9459492bd39dc36aad",
+      "actual": "c4b311f696e07f747caebc5bf69fc44ad6dd903311137f9459492bd39dc36aad",
+      "match": true
+    },
+    {
+      "path": "tests/event-music.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 8857,
+      "expected": "1898dcd4b84fc525763b45d30a2c96ec5ac2c0a92925eca00d219933b2660d98",
+      "actual": "1898dcd4b84fc525763b45d30a2c96ec5ac2c0a92925eca00d219933b2660d98",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/audio-continuity.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 7917,
+      "expected": "4afb8dd88b2ee2306618b9beae1b41246886beb763fb6ad4637f6f1d393ce655",
+      "actual": "4afb8dd88b2ee2306618b9beae1b41246886beb763fb6ad4637f6f1d393ce655",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/feast-music.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 19705,
+      "expected": "f0c36cfacc2a51d8b22718818feaa56566db123b8497cd156b752d0d7a622840",
+      "actual": "f0c36cfacc2a51d8b22718818feaa56566db123b8497cd156b752d0d7a622840",
+      "match": true
+    },
+    {
+      "path": "tests/music-audio.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 3453,
+      "expected": "b1da6eac816c38945f75f83098cccae59d3221f710ed8e52488c4c27c079091f",
+      "actual": "b1da6eac816c38945f75f83098cccae59d3221f710ed8e52488c4c27c079091f",
+      "match": true
+    }
+  ]
+}
