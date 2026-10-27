@@ -1,0 +1,245 @@
+{
+  "commit": "abb0651568ee7422240616d983b439e2dd6bd630",
+  "results": [
+    {
+      "path": "GAME_DESIGN.md",
+      "ok": true,
+      "expected": "376ffa57d70c05a0800e4d8c3bce6baa41717487aa01eba32287304aeaf4b28a",
+      "actual": "376ffa57d70c05a0800e4d8c3bce6baa41717487aa01eba32287304aeaf4b28a"
+    },
+    {
+      "path": "app.js",
+      "ok": true,
+      "expected": "ca92443af0d668e317cf703f884593ebf3b3b0d6316f44d0b70ba7ad2dae3fcd",
+      "actual": "ca92443af0d668e317cf703f884593ebf3b3b0d6316f44d0b70ba7ad2dae3fcd"
+    },
+    {
+      "path": "artisan.js",
+      "ok": true,
+      "expected": "988dbb8490235c8a051add75b987c12eda1b6977b991459e821960aaa1dde660",
+      "actual": "988dbb8490235c8a051add75b987c12eda1b6977b991459e821960aaa1dde660"
+    },
+    {
+      "path": "assets/audio/first-beer-feast.mp3",
+      "ok": true,
+      "expected": "b56cdc1a6752432cab2d9a242b479ed2e633da6191e574667a4b45d9b6d4c136",
+      "actual": "b56cdc1a6752432cab2d9a242b479ed2e633da6191e574667a4b45d9b6d4c136"
+    },
+    {
+      "path": "assets/audio/manifest.json",
+      "ok": true,
+      "expected": "f22ee7a69249af00e74a8cd5a638750e4ddd25ab8711dd846cdc3d6d0b06314e",
+      "actual": "f22ee7a69249af00e74a8cd5a638750e4ddd25ab8711dd846cdc3d6d0b06314e"
+    },
+    {
+      "path": "assets/audio/night-lights-feast.mp3",
+      "ok": true,
+      "expected": "2af05db37baab94af5136ac18a6d314d308b423687d3198159d6740a72d92c8d",
+      "actual": "2af05db37baab94af5136ac18a6d314d308b423687d3198159d6740a72d92c8d"
+    },
+    {
+      "path": "assets/encyclopedia/songs.json",
+      "ok": true,
+      "expected": "fce9936078a49160474de6ebc16fbc75ef08091e3a600e74d40144dddb2d307c",
+      "actual": "fce9936078a49160474de6ebc16fbc75ef08091e3a600e74d40144dddb2d307c"
+    },
+    {
+      "path": "city-audio.js",
+      "ok": true,
+      "expected": "df1b015df6d6753c3764e5a0ce5648f436fa63651fcd0513fb144670b823055d",
+      "actual": "df1b015df6d6753c3764e5a0ce5648f436fa63651fcd0513fb144670b823055d"
+    },
+    {
+      "path": "docs/BEER_FEAST_ENCYCLOPEDIA_2026-10-27.md",
+      "ok": true,
+      "expected": "5b7b245ac7892352b777109b964c880c6e6c533638d05f60477dfb72997cf964",
+      "actual": "5b7b245ac7892352b777109b964c880c6e6c533638d05f60477dfb72997cf964"
+    },
+    {
+      "path": "docs/FEAST_AUDIO_2026-10-27.md",
+      "ok": true,
+      "expected": "a8707862193559f03fa14c3ba4cef6dabf621801727c66203a3b950750824d18",
+      "actual": "a8707862193559f03fa14c3ba4cef6dabf621801727c66203a3b950750824d18"
+    },
+    {
+      "path": "docs/FIRST_BEER_FEAST_2026-10-27.md",
+      "ok": true,
+      "expected": "5e33034f778e910f581ea0b84d78c3d72a1d4c5f917291ad8a7ede3991562f6e",
+      "actual": "5e33034f778e910f581ea0b84d78c3d72a1d4c5f917291ad8a7ede3991562f6e"
+    },
+    {
+      "path": "docs/SONG_ENCYCLOPEDIA_2026-10-27.md",
+      "ok": true,
+      "expected": "cccdaa6e5658e25bbd63b9584131aa63589d04744619428a59f8082b7965eab7",
+      "actual": "cccdaa6e5658e25bbd63b9584131aa63589d04744619428a59f8082b7965eab7"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-beer-stress-proof.json",
+      "ok": true,
+      "expected": "34910f7f0e45bb87f829dbf53a85349e3142b8697b2a20870240d20dcf03e3e5",
+      "actual": "34910f7f0e45bb87f829dbf53a85349e3142b8697b2a20870240d20dcf03e3e5"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-encyclopedia-in-game.png",
+      "ok": true,
+      "expected": "4eaa052473a20c6be4cf84ba4b71a39e897ca0702cd9f7fcce9a30ec66aaac91",
+      "actual": "4eaa052473a20c6be4cf84ba4b71a39e897ca0702cd9f7fcce9a30ec66aaac91"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-feast-audio-proof.json",
+      "ok": true,
+      "expected": "2f767767e493b6a9b260ec78ed334cebbf5a514c41f1f580b3e2b6db8e56efec",
+      "actual": "2f767767e493b6a9b260ec78ed334cebbf5a514c41f1f580b3e2b6db8e56efec"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-feast-audio.png",
+      "ok": true,
+      "expected": "d479e51a0805b18f0e0a5863d79a903fb3bd16e0983edfa375253989828f871b",
+      "actual": "d479e51a0805b18f0e0a5863d79a903fb3bd16e0983edfa375253989828f871b"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-first-beer-game-proof.json",
+      "ok": true,
+      "expected": "51ddbf0d8baa51f590ef8e4c270f3c971c6b01886299bc646ebbf93b7c29cfc3",
+      "actual": "51ddbf0d8baa51f590ef8e4c270f3c971c6b01886299bc646ebbf93b7c29cfc3"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-night-lights-game-proof.json",
+      "ok": true,
+      "expected": "bc8a64809a605701b6452b472e85f18ce8d083352299ec36668bc00f0e17d180",
+      "actual": "bc8a64809a605701b6452b472e85f18ce8d083352299ec36668bc00f0e17d180"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-song-encyclopedia-390.png",
+      "ok": true,
+      "expected": "5eb34b46ad1af580202d24614277d4d022535f200e69d311fda9d88294e45b67",
+      "actual": "5eb34b46ad1af580202d24614277d4d022535f200e69d311fda9d88294e45b67"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-song-encyclopedia-768.png",
+      "ok": true,
+      "expected": "f75083e22d84186e8029841b8696561465002213f3fda1873f1592f39800ca18",
+      "actual": "f75083e22d84186e8029841b8696561465002213f3fda1873f1592f39800ca18"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-song-encyclopedia-desktop.png",
+      "ok": true,
+      "expected": "52e74f535776782774950c99ad4c5282e2de6d8e92b91593f5bd64f1e91228d7",
+      "actual": "52e74f535776782774950c99ad4c5282e2de6d8e92b91593f5bd64f1e91228d7"
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-song-encyclopedia-layout.json",
+      "ok": true,
+      "expected": "107827c7c1f79c48cf1bd590aa0b96744ef930310cb6d0997a724d920ccc0b12",
+      "actual": "107827c7c1f79c48cf1bd590aa0b96744ef930310cb6d0997a724d920ccc0b12"
+    },
+    {
+      "path": "encyclopedia.css",
+      "ok": true,
+      "expected": "a159d48b5189c98857535e921c43bcd6f8a6cb60db76804df2da2b754e2b35aa",
+      "actual": "a159d48b5189c98857535e921c43bcd6f8a6cb60db76804df2da2b754e2b35aa"
+    },
+    {
+      "path": "engine.js",
+      "ok": true,
+      "expected": "75179b0adc3a955a6d1c1653d96117f885eac300a569e087ad12d5a862af62fe",
+      "actual": "75179b0adc3a955a6d1c1653d96117f885eac300a569e087ad12d5a862af62fe"
+    },
+    {
+      "path": "festival.js",
+      "ok": true,
+      "expected": "35f8d7f1a51f0e22adb160277f940ab37b4f9c2696011e19ba1b6d139f2755ab",
+      "actual": "35f8d7f1a51f0e22adb160277f940ab37b4f9c2696011e19ba1b6d139f2755ab"
+    },
+    {
+      "path": "game3d/renderer.js",
+      "ok": true,
+      "expected": "82f2aa6803d9d4e34303c6320f5e9edd5de8bc2451b8b119e2490d25364a5ad9",
+      "actual": "82f2aa6803d9d4e34303c6320f5e9edd5de8bc2451b8b119e2490d25364a5ad9"
+    },
+    {
+      "path": "index.html",
+      "ok": true,
+      "expected": "758a8acb44f84b2bf17a25ac953c3cb3e59dea5bbaca90d416ed7ca93c6208bd",
+      "actual": "758a8acb44f84b2bf17a25ac953c3cb3e59dea5bbaca90d416ed7ca93c6208bd"
+    },
+    {
+      "path": "scripts/build-song-encyclopedia.mjs",
+      "ok": true,
+      "expected": "7425c8906790b5f39471aaf1e1fb6d8274adfd16510c6ba4647deb7d4477903f",
+      "actual": "7425c8906790b5f39471aaf1e1fb6d8274adfd16510c6ba4647deb7d4477903f"
+    },
+    {
+      "path": "scripts/prepare-event-audio.py",
+      "ok": true,
+      "expected": "8314d7c7520c5e737fbe1cf947d85ac5ad0da2075fdf802dad9806c108559b5e",
+      "actual": "8314d7c7520c5e737fbe1cf947d85ac5ad0da2075fdf802dad9806c108559b5e"
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "ok": true,
+      "expected": "4a06a29306e539c7f5718d12d3b5a37d7d0f5aa210262bf9db881e25b70cf9fa",
+      "actual": "4a06a29306e539c7f5718d12d3b5a37d7d0f5aa210262bf9db881e25b70cf9fa"
+    },
+    {
+      "path": "tests/event-audio-assets.test.js",
+      "ok": true,
+      "expected": "1afdbf86dac84c840cd409cebcfca920abf2bc18c98003a9ec2a9e4213f0e8dd",
+      "actual": "1afdbf86dac84c840cd409cebcfca920abf2bc18c98003a9ec2a9e4213f0e8dd"
+    },
+    {
+      "path": "tests/event-music.test.js",
+      "ok": true,
+      "expected": "ba0fa1ca08d758647c936d22595d1480177ebde75dda12a553e5d1553c3986f5",
+      "actual": "ba0fa1ca08d758647c936d22595d1480177ebde75dda12a553e5d1553c3986f5"
+    },
+    {
+      "path": "tests/first-beer-festival.test.js",
+      "ok": true,
+      "expected": "de2f7e1d93b3200f4d02218944b04b07c91ea03d7667cc3394a69aa9935e8d4d",
+      "actual": "de2f7e1d93b3200f4d02218944b04b07c91ea03d7667cc3394a69aa9935e8d4d"
+    },
+    {
+      "path": "tests/fixtures/feast-music.html",
+      "ok": true,
+      "expected": "2819cad202e99126a9f236f36b8d8fc9bb8fd523da49283a6f03b18c7e9188df",
+      "actual": "2819cad202e99126a9f236f36b8d8fc9bb8fd523da49283a6f03b18c7e9188df"
+    },
+    {
+      "path": "tests/fixtures/first-beer-feast.html",
+      "ok": true,
+      "expected": "58e2fcaba0ad79fe915bf7600f7653400bdaf0741284891ada1ee20ae644c492",
+      "actual": "58e2fcaba0ad79fe915bf7600f7653400bdaf0741284891ada1ee20ae644c492"
+    },
+    {
+      "path": "tests/fixtures/main3d-stress.html",
+      "ok": true,
+      "expected": "c8f61e248841427e5124fdd14329149f05e2fb91d178f250759f7d496c29d48c",
+      "actual": "c8f61e248841427e5124fdd14329149f05e2fb91d178f250759f7d496c29d48c"
+    },
+    {
+      "path": "tests/fixtures/song-encyclopedia-responsive.html",
+      "ok": true,
+      "expected": "22df4ab268d95b6a992c1c1b01066a6b2217af2a47f76856a8c03535e7989c43",
+      "actual": "22df4ab268d95b6a992c1c1b01066a6b2217af2a47f76856a8c03535e7989c43"
+    },
+    {
+      "path": "tests/fixtures/song-encyclopedia.html",
+      "ok": true,
+      "expected": "23185e06c7f7f34703e5e0ebd70c41360d5c72e32a69773fde1be112fae52d8d",
+      "actual": "23185e06c7f7f34703e5e0ebd70c41360d5c72e32a69773fde1be112fae52d8d"
+    },
+    {
+      "path": "tests/song-encyclopedia.test.js",
+      "ok": true,
+      "expected": "ff3077c7e9a961af20c88b97fc4fad248aaa937d087f1e73e4cadce1a8926cc3",
+      "actual": "ff3077c7e9a961af20c88b97fc4fad248aaa937d087f1e73e4cadce1a8926cc3"
+    },
+    {
+      "path": "ui-encyclopedia.js",
+      "ok": true,
+      "expected": "07f79d5642fda897128e80ca11fb75776bb2ea8206b69b26f02068e54c55f6bf",
+      "actual": "07f79d5642fda897128e80ca11fb75776bb2ea8206b69b26f02068e54c55f6bf"
+    }
+  ]
+}
