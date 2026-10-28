@@ -210,7 +210,7 @@ export class Renderer{
  }
  person(person) {
   const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.onBridge?5:0);
-  const playTime=this.state?.simTime||0;
+  const playTime=(this.state?.simTime||0)+(person.celebrating?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
   const dance=person.celebrating&&!this.reduce?Math.sin(playTime*4+(Number(person.id)||0))*.7:0;p.y-=Math.abs(dance)*q;
   const stride=person.walking&&!this.reduce?Math.sin((person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
@@ -226,7 +226,7 @@ export class Renderer{
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();
   c.fillStyle='#d2ad7c';c.beginPath();c.arc(p.x+.6*q,p.y-10.7*q,.8*q,0,7);c.fill();
   this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.age>=55?'#deddd3':person.id%2?'#eee0b7':'#5c5140',1.7*q);
-  if(person.mourningTorch){const x=p.x+5*q,y=p.y-12*q,flicker=this.reduce?0:Math.sin((this.state?.simTime||0)*9+(person.id||0))*q;
+  if(person.mourningTorch){const x=p.x+5*q,y=p.y-12*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q;
    this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q],[x,y]],'#936746',1.4*q);
    this.polygon([[x-2*q,y],[x+flicker,y-6*q],[x+2*q,y]],'#ee983f');this.polygon([[x-q,y],[x,y-4*q],[x+q,y]],'#ffe19a');
    if((person.id||0)%4===0)this.lights.push({x,y:y-2*q,size:17*q});
@@ -309,7 +309,7 @@ export class Renderer{
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
  const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...visibleCitizens(s).map(person=>({...person,kind:'person',onBridge:onBridge(s.buildings,person.x,person.y)}))];
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.x+.25,y:feast.y+.35,view:feast});
- const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:(s.simTime||0)*4});}}}
+ const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpan(b.y);for(let x=span.left;x<span.right;x+=.5)entities.push({x:x+.25,y:span.y+.13,kind:'bridgeRail',end:Math.min(x+.5,span.right)});}
  const lamps=[...this.streets.nodes.values()].filter((p,i)=>i%4===0||this.streets.graph.get(p.key).size>=3).map(p=>({...p,kind:'lamp'}));
  entities.push(...lamps);if(!underBridge&&s.trade?.caravan&&Number.isFinite(s.trade.caravan.x)&&Number.isFinite(s.trade.caravan.y))entities.push({...s.trade.caravan,kind:'caravan'});

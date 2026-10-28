@@ -1,3 +1,12 @@
+import {MIRACLES} from './definitions.js';
+import {sacredMiracleUnlocked} from './sacred-unlocks.js';
+
+// Ordinary powers remain in the catalogue while unavailable. Only earned blue
+// gifts appear after their building or relic has actually unlocked them.
+export function shouldShowMiracle(s,id){
+ const m=MIRACLES[id];return !!m&&(!(m.unlockBuilding||m.unlockQuest)||sacredMiracleUnlocked(s,id));
+}
+
 export const BUILDING_GROUPS=[
  {id:'life',name:'Жители',types:['house','healer','musicHouse']},
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},

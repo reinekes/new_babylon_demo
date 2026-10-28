@@ -1,0 +1,1067 @@
+{
+  "checks": [
+    {
+      "name": "Звук включён явным нажатием",
+      "pass": true
+    },
+    {
+      "name": "Покупное пиво не запускает первый пир",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа pending::",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа pending:supplying:",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа pending:waiting:",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа done:celebrating:",
+      "pass": true
+    },
+    {
+      "name": "Работники сварили партию и реально пришли на пир",
+      "pass": true
+    },
+    {
+      "name": "Первая партия объявлена ровно один раз",
+      "pass": true
+    },
+    {
+      "name": "Танцуют настоящие гости",
+      "pass": true
+    },
+    {
+      "name": "Музыка первой кружки декодируется и играет",
+      "pass": true
+    },
+    {
+      "name": "Во время первого пира календарь и нужды заморожены",
+      "pass": true
+    },
+    {
+      "name": "Сохраняется локальный таймер первого пира",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа done:celebrating:",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа done::",
+      "pass": true
+    },
+    {
+      "name": "Первый пир завершается после загрузки",
+      "pass": true
+    },
+    {
+      "name": "Пир не перелистнул календарь",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней заказана штатной командой",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed:supplying:",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed:waiting:",
+      "pass": true
+    },
+    {
+      "name": "Доставка идёт при открытом окне",
+      "pass": true
+    },
+    {
+      "name": "Физический груз доставлен без ручного наполнения",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed:celebrating:",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней ждёт настоящего ужина и собирает гостей",
+      "pass": true
+    },
+    {
+      "name": "Ночная песня праздника действительно играет",
+      "pass": true
+    },
+    {
+      "name": "Во время Ночи огней календарь стоит",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed:celebrating:",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней заканчивается с сохранённым таймером",
+      "pass": true
+    },
+    {
+      "name": "Тест убивает пять выбранных живых жителей",
+      "pass": true
+    },
+    {
+      "name": "Число и личности носилок совпадают с умершими",
+      "pass": true
+    },
+    {
+      "name": "Похоронная MP3 действительно играет",
+      "pass": true
+    },
+    {
+      "name": "Похороны движутся, календарь стоит",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::gathering",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::procession",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::farewell",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::collecting",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::procession",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::farewell",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::collecting",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::procession",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::farewell",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::collecting",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::procession",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::farewell",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::collecting",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::procession",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::farewell",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::receding",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::jackals",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::returning",
+      "pass": true
+    },
+    {
+      "name": "Сохранение этапа unbrewed::",
+      "pass": true
+    },
+    {
+      "name": "Процессия возвращается и завершает обряд",
+      "pass": true
+    },
+    {
+      "name": "Завершённые похороны сохраняются",
+      "pass": true
+    },
+    {
+      "name": "Событие Ночь огней: вызов",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "night-lights-feast.mp3",
+        "theme": "nightLights"
+      },
+      "name": "Ночь огней: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней: принять",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Ночь огней: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Торговые гости: вызов",
+      "pass": true
+    },
+    {
+      "name": "Торговые гости: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "growing-city.mp3",
+        "theme": "grown"
+      },
+      "name": "Торговые гости: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Торговые гости: принять",
+      "pass": true
+    },
+    {
+      "name": "Торговые гости: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Торговые гости: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Новые семьи: вызов",
+      "pass": true
+    },
+    {
+      "name": "Новые семьи: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "growing-city.mp3",
+        "theme": "grown"
+      },
+      "name": "Новые семьи: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Новые семьи: принять",
+      "pass": true
+    },
+    {
+      "name": "Новые семьи: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Новые семьи: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Дар разлива: вызов",
+      "pass": true
+    },
+    {
+      "name": "Дар разлива: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "growing-city.mp3",
+        "theme": "grown"
+      },
+      "name": "Дар разлива: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Дар разлива: принять",
+      "pass": true
+    },
+    {
+      "name": "Дар разлива: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Дар разлива: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Странствующий гончар: вызов",
+      "pass": true
+    },
+    {
+      "name": "Странствующий гончар: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "night-lights-feast.mp3",
+        "theme": "nightLights"
+      },
+      "name": "Странствующий гончар: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Странствующий гончар: принять",
+      "pass": true
+    },
+    {
+      "name": "Странствующий гончар: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Странствующий гончар: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Забота об источнике: вызов",
+      "pass": true
+    },
+    {
+      "name": "Забота об источнике: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "night-theme.mp3",
+        "theme": "night"
+      },
+      "name": "Забота об источнике: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Забота об источнике: принять",
+      "pass": true
+    },
+    {
+      "name": "Забота об источнике: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Забота об источнике: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Благодарность за урожай: вызов",
+      "pass": true
+    },
+    {
+      "name": "Благодарность за урожай: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "night-lights-feast.mp3",
+        "theme": "nightLights"
+      },
+      "name": "Благодарность за урожай: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Благодарность за урожай: принять",
+      "pass": true
+    },
+    {
+      "name": "Благодарность за урожай: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Благодарность за урожай: отказаться",
+      "pass": true
+    },
+    {
+      "name": "Событие Певец у вечернего огня: вызов",
+      "pass": true
+    },
+    {
+      "name": "Певец у вечернего огня: решение останавливает город",
+      "pass": true
+    },
+    {
+      "detail": {
+        "file": "night-lights-feast.mp3",
+        "theme": "nightLights"
+      },
+      "name": "Певец у вечернего огня: настоящая MP3",
+      "pass": true
+    },
+    {
+      "name": "Певец у вечернего огня: принять",
+      "pass": true
+    },
+    {
+      "name": "Певец у вечернего огня: повторный вызов",
+      "pass": true
+    },
+    {
+      "name": "Певец у вечернего огня: отказаться",
+      "pass": true
+    },
+    {
+      "name": "MP3 без ошибок декодирования",
+      "pass": true
+    }
+  ],
+  "media": [
+    {
+      "error": null,
+      "file": "main-theme.mp3",
+      "paused": true,
+      "ready": 4,
+      "time": 42.98,
+      "volume": 0.16
+    },
+    {
+      "error": null,
+      "file": "first-beer-feast.mp3",
+      "paused": true,
+      "ready": 4,
+      "time": 0.67,
+      "volume": 0
+    },
+    {
+      "error": null,
+      "file": "night-theme.mp3",
+      "paused": true,
+      "ready": 4,
+      "time": 0.77,
+      "volume": 0
+    },
+    {
+      "error": null,
+      "file": "night-lights-feast.mp3",
+      "paused": true,
+      "ready": 4,
+      "time": 3.81,
+      "volume": 0
+    },
+    {
+      "error": null,
+      "file": "funeral-1.mp3",
+      "paused": true,
+      "ready": 4,
+      "time": 1.54,
+      "volume": 0
+    },
+    {
+      "error": null,
+      "file": "growing-city.mp3",
+      "paused": true,
+      "ready": 4,
+      "time": 0.42,
+      "volume": 0
+    }
+  ],
+  "metrics": {
+    "audio": {
+      "cached": 6,
+      "enabled": true,
+      "lithophone": false,
+      "playing": [
+        "main"
+      ],
+      "theme": "main"
+    },
+    "clock": {
+      "season": 0,
+      "seasonElapsed": 0,
+      "simTime": 0,
+      "tick": 0,
+      "year": 1
+    },
+    "festival": {
+      "active": false,
+      "cost": {
+        "beer": 6,
+        "food": 12,
+        "prestige": 15
+      },
+      "delivered": {
+        "beer": 0,
+        "food": 0
+      },
+      "inTransit": {
+        "beer": 0,
+        "food": 0
+      },
+      "label": "Общинный праздник",
+      "occasion": "nightLights",
+      "participants": 0,
+      "progress": {
+        "code": "none",
+        "text": "Закажи праздник: угощение зарезервируется на складах, а жители сами доставят его к месту сбора."
+      },
+      "reason": "",
+      "reserved": {
+        "beer": 0,
+        "food": 0
+      },
+      "stage": "none",
+      "title": "Ночь огней",
+      "venueLabel": "у храма",
+      "warning": ""
+    },
+    "funeral": null,
+    "running": false,
+    "save": true
+  },
+  "snapshots": [
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0.1,
+        "simTime": 0.1,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Первая партия: unbrewed::",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 11.399999999999975,
+        "simTime": 11.399999999999975,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "pending",
+      "funeral": null,
+      "label": "Первая партия: pending::",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 11.499999999999975,
+        "simTime": 11.499999999999975,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": "supplying",
+      "firstBeer": "pending",
+      "funeral": null,
+      "label": "Первая партия: pending:supplying:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 11.599999999999977,
+        "simTime": 11.599999999999977,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": "waiting",
+      "firstBeer": "pending",
+      "funeral": null,
+      "label": "Первая партия: pending:waiting:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 13.599999999999968,
+        "simTime": 13.599999999999968,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 2,
+      "festival": "celebrating",
+      "firstBeer": "done",
+      "funeral": null,
+      "label": "Первая партия: done:celebrating:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 13.599999999999968,
+        "simTime": 13.599999999999968,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 8,
+      "festival": "celebrating",
+      "firstBeer": "done",
+      "funeral": null,
+      "label": "Конец первого пира: done:celebrating:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 13.599999999999968,
+        "simTime": 13.599999999999968,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "done",
+      "funeral": null,
+      "label": "Конец первого пира: done::",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0.1,
+        "simTime": 0.1,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": "supplying",
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Угощение: unbrewed:supplying:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 2.2000000000000006,
+        "simTime": 2.2000000000000006,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": "waiting",
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Угощение: unbrewed:waiting:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 33.500000000000206,
+        "simTime": 33.500000000000206,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 1,
+      "festival": "celebrating",
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Ночь огней: unbrewed:celebrating:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 33.500000000000206,
+        "simTime": 33.500000000000206,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 10,
+      "festival": "celebrating",
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Конец Ночи огней: unbrewed:celebrating:",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 33.500000000000206,
+        "simTime": 33.500000000000206,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Конец Ночи огней: unbrewed::",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "gathering",
+      "label": "Пять похорон: unbrewed::gathering",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "procession",
+      "label": "Пять похорон: unbrewed::procession",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "farewell",
+      "label": "Пять похорон: unbrewed::farewell",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "collecting",
+      "label": "Пять похорон: unbrewed::collecting",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "procession",
+      "label": "Пять похорон: unbrewed::procession",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "farewell",
+      "label": "Пять похорон: unbrewed::farewell",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "collecting",
+      "label": "Пять похорон: unbrewed::collecting",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "procession",
+      "label": "Пять похорон: unbrewed::procession",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "farewell",
+      "label": "Пять похорон: unbrewed::farewell",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "collecting",
+      "label": "Пять похорон: unbrewed::collecting",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "procession",
+      "label": "Пять похорон: unbrewed::procession",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "farewell",
+      "label": "Пять похорон: unbrewed::farewell",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "collecting",
+      "label": "Пять похорон: unbrewed::collecting",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "procession",
+      "label": "Пять похорон: unbrewed::procession",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "farewell",
+      "label": "Пять похорон: unbrewed::farewell",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "receding",
+      "label": "Пять похорон: unbrewed::receding",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "jackals",
+      "label": "Пять похорон: unbrewed::jackals",
+      "save": true
+    },
+    {
+      "biers": 5,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": "returning",
+      "label": "Пять похорон: unbrewed::returning",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Пять похорон: unbrewed::",
+      "save": true
+    },
+    {
+      "biers": 0,
+      "clock": {
+        "season": 0,
+        "seasonElapsed": 0,
+        "simTime": 0,
+        "tick": 0,
+        "year": 1
+      },
+      "dancers": 0,
+      "festival": null,
+      "firstBeer": "unbrewed",
+      "funeral": null,
+      "label": "Все проверки завершены",
+      "save": true
+    }
+  ],
+  "status": "PASS — 103/103; реальные пиры, 5 умерших, 8 событий.",
+  "console": []
+}

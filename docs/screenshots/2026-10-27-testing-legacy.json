@@ -1,0 +1,167 @@
+{
+  "passed": 20,
+  "total": 20,
+  "scope": "all legacy fixture decoding, existing citizen IDs, homes and normalized ordinary/build/pantry freight through save reload",
+  "files": [
+    {
+      "name": "legacy-v1.json",
+      "oldVersion": 1,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "3ff01370024f6075ff947397cd5faaf386bcd48ab89b0207c0e89a4ae11d226c"
+    },
+    {
+      "name": "legacy-v10-healer.json",
+      "oldVersion": 10,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "e45e18340c9d6e67616af6263c37e231b9383b5e53b78d7ee3bfb88bf8ec98bf"
+    },
+    {
+      "name": "legacy-v11-autumn.json",
+      "oldVersion": 11,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "0e6e79f4a95564f70ec7468f6d99ee2ca2c76a77094c8efbd39c42200936178a"
+    },
+    {
+      "name": "legacy-v12-harvest.json",
+      "oldVersion": 12,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "6e777ea65c35daa9e98bb402ab584b428b2361521cd5629636646f062babce7a"
+    },
+    {
+      "name": "legacy-v13-autumn.json",
+      "oldVersion": 13,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "802101d39fd4c8d3c95b9a041614efa051ae052ce9bc2facc3807b2b795e2fea"
+    },
+    {
+      "name": "legacy-v14-warning-city.json",
+      "oldVersion": 14,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "0ac938f5d2c9937aef11b51e88427d3f955b007e709909192759d9e123208113"
+    },
+    {
+      "name": "legacy-v15-districts.json",
+      "oldVersion": 15,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "7338043495b324dc559bcf8887de6e987429e8333619ff7eb7dfd65f81d09c00"
+    },
+    {
+      "name": "legacy-v16-textiles.json",
+      "oldVersion": 16,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "b693455904214688fdf6694417a761403c7de74f315f33257afa3d2b4240e675"
+    },
+    {
+      "name": "legacy-v17-water-bricks.json",
+      "oldVersion": 17,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "dfbdfc19f1752b1589c777409b1aaa23d4c37e48ca2579ba0a6fc54091e97a55"
+    },
+    {
+      "name": "legacy-v18-kiln.json",
+      "oldVersion": 18,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "83f691c685e3a2a5cdf5e58d210621e36a12c632749a1e1f4c36f60f15f50cb7"
+    },
+    {
+      "name": "legacy-v19-masonry.json",
+      "oldVersion": 19,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "f1c0c5601e96b1752a5f21352be453dc73020955a21adbdbb3730a8d622caf2a"
+    },
+    {
+      "name": "legacy-v2.json",
+      "oldVersion": 2,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "d0ef46657b2adfc7c6dd14045b44e18dadb4ad36a46541c5beb0ad34758b3033"
+    },
+    {
+      "name": "legacy-v27-local-stock.json",
+      "oldVersion": 27,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "01f326f54faf34f0543922c5ef105cc5b4470b0f602352546bb07303781d6098"
+    },
+    {
+      "name": "legacy-v3.json",
+      "oldVersion": 3,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "8a30dc32f81d7dd6cc512a24d92690e6e68d2edceaf542ef454f56687f405c4a"
+    },
+    {
+      "name": "legacy-v4.json",
+      "oldVersion": 4,
+      "version": 28,
+      "people": 14,
+      "pass": true,
+      "sourceSHA256": "b83f2c760b5f47ef8021873a6af1e26ca6b85d7e1aeb44c5d0cec43b6f34316f"
+    },
+    {
+      "name": "legacy-v5.json",
+      "oldVersion": 5,
+      "version": 28,
+      "people": 14,
+      "pass": true,
+      "sourceSHA256": "3e1b2ca6540404b7438169900b14cf5a5c2dc8de6b43a121aa7fa194bc222b1a"
+    },
+    {
+      "name": "legacy-v6-city.json",
+      "oldVersion": 6,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "64f522a3f8600c32320bec0782d3f1298160b7ae4954999dc80e140ead7a630f"
+    },
+    {
+      "name": "legacy-v6-funeral.json",
+      "oldVersion": 6,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "3066e5d3bd7de2471c8e06cc48e358d71dfdfdcd4692a6c8fa9a6963dba5fb68"
+    },
+    {
+      "name": "legacy-v7-city.json",
+      "oldVersion": 7,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "fcd5f2c88cffa839c2a8963d808a52202634116a3f62aa2b3b40262a5f921877"
+    },
+    {
+      "name": "legacy-v8-city.json",
+      "oldVersion": 8,
+      "version": 28,
+      "people": 12,
+      "pass": true,
+      "sourceSHA256": "43069edced2bcc7e0929ed3e0c4f4ca7e81f42352f82966a5f6e07a0c057bd33"
+    }
+  ]
+}

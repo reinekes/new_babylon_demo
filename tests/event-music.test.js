@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createCityAudio,eventMusicTheme} from '../city-audio.js';
+import {createCityAudio,eventMusicTheme,EVENT_MUSIC_TRACKS} from '../city-audio.js';
+import {CITY_EVENTS} from '../city-events.js';
 
 const town=()=>({simTime:0,citizens:[],buildings:[]});
 function rig(){let now=0;const media=[],messages=[],listeners=new Map();function createMedia(){const el={src:'',preload:'auto',loop:false,volume:1,paused:true,currentTime:0,plays:0,pauses:0,async play(){this.plays++;if(this.reject)throw Error('autoplay denied');this.paused=false;},pause(){this.pauses++;this.paused=true;},addEventListener(name,fn){this[name]=fn;},removeEventListener(){},removeAttribute(){},load(){}};media.push(el);return el;}const doc={hidden:false,addEventListener:(k,f)=>listeners.set(k,f),removeEventListener:(k,f)=>{if(listeners.get(k)===f)listeners.delete(k);}};const old=globalThis.document;globalThis.document=doc;const audio=createCityAudio(t=>messages.push(t),{createMedia,now:()=>now});return {audio,media,messages,doc,step:seconds=>{now+=seconds;},visibility:()=>listeners.get('visibilitychange')?.(),cleanup(){audio.dispose();if(old===undefined)delete globalThis.document;else globalThis.document=old;}};}
@@ -12,7 +13,7 @@ test('recorded event music stays continuous during simulation pauses, windows an
   const start=r.media[0];assert.match(start.src,/main-theme\.mp3/);assert.equal(start.preload,'none');assert.equal(start.plays,1);
   r.step(2);r.audio.tick(s,false);assert.ok(start.volume>0&&start.volume<=.2);start.currentTime=12;
   // A game dialog freezes the simulation; the existing soundtrack must keep its media cursor.
-  s.event={id:'nightLights'};r.audio.tick(s,true);r.step(2);r.audio.tick(s,true);await settle();
+  s.event={id:'unknown-event'};r.audio.tick(s,true);r.step(2);r.audio.tick(s,true);await settle();
   assert.equal(start.paused,false);assert.equal(start.pauses,0);assert.equal(start.currentTime,12);assert.equal(start.plays,1);
   s.event=null;s.citizens=Array.from({length:24},(_,id)=>({id}));r.audio.tick(s,false);await settle();
   const grown=r.media.at(-1);assert.match(grown.src,/growing-city\.mp3/);r.step(2);r.audio.tick(s,false);assert.equal(start.paused,true);assert.ok(grown.volume>0);
@@ -59,4 +60,29 @@ test('recorded feasts crossfade, duck near lithophone, continue on pause and res
 });
 test('a feast that ended while muted never fetches or replays its recording',async()=>{
  const r=rig(),s=town();try{s.festival=feast();r.audio.tick(s,false);s.festival=null;r.audio.tick(s,false);await r.audio.toggle();r.audio.tick(s,false);await settle();assert.equal(r.audio.status.theme,'main');assert.equal(r.media.length,1);assert.match(r.media[0].src,/main-theme/);}finally{r.cleanup();}
+});
+
+test('a pending Night of Lights event crossfades while paused and retains the same recording during the feast',async()=>{
+ const r=rig(),s=town();try{
+  await r.audio.toggle();r.audio.tick(s,false);await settle();r.step(2);r.audio.tick(s,false);
+  const ordinary=r.media[0];s.event={id:'festival'};
+  assert.equal(eventMusicTheme(s),'nightLights');r.audio.tick(s,true);await settle();
+  const celebration=r.media.at(-1);assert.match(celebration.src,/night-lights-feast\.mp3/);
+  assert.equal(ordinary.paused,false,'ordinary music continues through the crossfade');
+  r.step(.6);r.audio.tick(s,true);assert.ok(ordinary.volume>0);assert.ok(celebration.volume>0);
+  r.step(1);r.audio.tick(s,true);assert.equal(ordinary.paused,true);assert.equal(celebration.paused,false);
+  celebration.currentTime=8;s.event=null;s.festival=feast('nightLights');r.audio.tick(s,true);await settle();
+  assert.equal(r.audio.status.theme,'nightLights');assert.equal(celebration.plays,1);assert.equal(celebration.currentTime,8);
+  assert.equal(r.audio.status.lithophone,false,'an event does not turn the positional instrument into background music');
+  s.event={id:'festival'};s.festival=feast('firstBeer');assert.equal(eventMusicTheme(s),'firstBeer');
+  s.funeral={stage:'procession',deceased:[{id:7}]};assert.equal(eventMusicTheme(s),'funeral1');
+ }finally{r.cleanup();}
+});
+
+test('playable pending events select their declared recording without starting the local lithophone',()=>{
+ for(const def of CITY_EVENTS){
+  assert.ok(Object.hasOwn(EVENT_MUSIC_TRACKS,def.music),def.id);assert.notEqual(def.music,'lithophone');
+  const s=town();s.event={id:def.id};assert.equal(eventMusicTheme(s),def.music,def.id);
+  s.funeral={stage:'procession',deceased:[{id:2}]};assert.equal(eventMusicTheme(s,2),'funeral2');
+ }
 });

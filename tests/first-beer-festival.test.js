@@ -17,6 +17,14 @@ test('first actual brewed batch queues once; construction and purchased beer nev
  const s=city();assert.equal(s.firstBeerFeast?.status,'unbrewed');s.resources.beer=7;syncInventory(s);step(s,1);assert.equal(s.firstBeerFeast.status,'unbrewed');assert.equal(s.festival,null);
  const b=brew(s);assert.equal(s.firstBeerFeast.status,'pending');assert.equal(s.firstBeerFeast.brewery,'10,9');assert.equal(b.productionHistory.at(-1).resources.beer,3);assert.equal(s.festival,null);const stamp=structuredClone(s.firstBeerFeast);brew(s);assert.deepEqual(s.firstBeerFeast,stamp);
 });
+test('the first real brewed batch announces its local feast once instead of silently waiting for guests',()=>{
+ const s=city();s.resources.beer=50;syncInventory(s);step(s,1);
+ const announcements=()=>s.news.filter(n=>n.title==='Первая партия пива выпущена');
+ assert.equal(announcements().length,0,'purchased stock and an idle brewery do not announce brewing');
+ brew(s);assert.equal(announcements().length,1);assert.match(announcements()[0].text,/пивоварн/i);assert.match(announcements()[0].text,/пир|праздник/i);
+ const announcement=structuredClone(announcements()[0]);brew(s);assert.equal(announcements().length,1);assert.deepEqual(announcements()[0],announcement);
+ const restored=saved(s);assert.ok(restored);brew(restored);assert.equal(restored.news.filter(n=>n.title==='Первая партия пива выпущена').length,1);
+});
 test('one real local cup supports a small daytime brewery party without a temple or prestige charge',()=>{
  const s=city('beehives');s.resources.prestige=0;const b=brew(s),faith=s.resources.faith,food=s.resources.food;assert.equal(allBeer(s),3);step(s);assert.equal(s.festival?.occasion,'firstBeer');assert.equal(s.festival.temple,'10,9');assert.equal(allBeer(s),3);assert.equal(b.workshopStock.output.beer,2);assert.equal(s.resources.prestige,0);assert.ok(validateFestival(s));toParty(s);assert.ok(s.festival.actors.some(a=>a.stage==='dancing'));assert.equal(s.resources.faith,faith);assert.equal(s.resources.food,food);assert.equal(s.firstBeerFeast.status,'done');assert.equal(allBeer(s),2);assert.deepEqual(festivalSummary(s).cost,{food:0,beer:1,prestige:0});assert.match(festivalSummary(s).venueLabel,/пивовар/);assert.ok(saved(s));step(s,15);assert.equal(s.festival,null);assert.equal(s.firstBeerFeast.status,'done');brew(s);step(s);assert.equal(s.festival,null);
 });

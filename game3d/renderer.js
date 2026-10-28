@@ -20,7 +20,7 @@ import {createRelicScene} from './relic-scene.js';
 import {createSacredEffects} from './sacred-effects.js';
 import {newFootprint} from '../footprints.js';
 
-export const GAME3D_RELEASE='audio-continuity-20261027-1';
+export const GAME3D_RELEASE='testing-ceremonies-20261027-3';
 export function worldCell(point){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<WIDTH&&y<HEIGHT?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
@@ -110,9 +110,9 @@ export class GameRenderer3D{
  captureView(){return {target:this.camera.target.clone(),alpha:this.camera.alpha,beta:this.camera.beta,radius:this.camera.radius};}
  restoreView(v){if(v){this.camera.setTarget(v.target);this.camera.alpha=v.alpha;this.camera.beta=v.beta;this.camera.radius=v.radius;}}
  resetPresentation(){this.miracleGarden?.clear?.();this.sacredEffects?.reset(this.state);this.effects=[];for(const v of this.effectViews){v.mesh.dispose();v.mat.dispose();}this.effectViews=[];this.lastSim=null;this.lastTime=null;}
- addEffect(id){this.effects.push({id,born:this.state?.simTime||0,at:this.hover?{...this.hover}:{x:9,y:9}});}
+ addEffect(id,at){this.effects.push({id,born:this.state?.simTime||0,at:at?{...at}:this.hover?{...this.hover}:{x:9,y:9}});}
  updateEffects(state,dt){
-  const B=this.B;while(this.effects.length){const effect=this.effects.shift(),m=B.MeshBuilder.CreateTorus(`miracle-${effect.id}`,{diameter:3,thickness:.08,tessellation:48},this.scene),mat=new B.StandardMaterial('divine-light',this.scene);mat.emissiveColor=B.Color3.FromHexString('#f7dc8c');mat.disableLighting=true;mat.alpha=.8;m.material=mat;m.isPickable=false;const p=effect.at||{x:9,y:9};if(effect.id==='fertility')this.miracleGarden?.show(p,2);m.position.set(p.x*6,.35,p.y*6);this.effectViews.push({mesh:m,mat,age:0});}
+  const B=this.B;while(this.effects.length){const effect=this.effects.shift(),m=B.MeshBuilder.CreateTorus(`miracle-${effect.id}`,{diameter:3,thickness:.08,tessellation:48},this.scene),mat=new B.StandardMaterial('divine-light',this.scene);mat.emissiveColor=B.Color3.FromHexString(effect.id==='rain'?'#88c7df':effect.id==='festival'?'#ffc86c':'#f7dc8c');mat.disableLighting=true;mat.alpha=.8;m.material=mat;m.isPickable=false;const p=effect.at||{x:9,y:9};if(effect.id==='fertility')this.miracleGarden?.show(p,2);m.position.set(p.x*6,.35,p.y*6);this.effectViews.push({mesh:m,mat,age:0});}
   for(const v of [...this.effectViews]){v.age+=dt;v.mesh.scaling.setAll(1+v.age*3);v.mat.alpha=Math.max(0,.8-v.age*.3);if(v.age>2.7){v.mesh.dispose();v.mat.dispose();this.effectViews.splice(this.effectViews.indexOf(v),1);}}
  }
  updateLight(state){
@@ -131,7 +131,7 @@ export class GameRenderer3D{
  }
  draw(state,selection,now,options={}){
   if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState&&foundingCameraTarget(state))this.home();
-  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,paused?0:dt);this.miracleGarden?.update(dt,{paused});
+  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(dt,{paused});
   this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }

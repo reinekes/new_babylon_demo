@@ -1,0 +1,17 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "assignmentMs": 10.117291999999964,
+  "simulation4x": {
+    "medianMs": 8.426165999999284,
+    "p95Ms": 18.299291999999696,
+    "maxMs": 266.73133300000063
+  },
+  "encode": {
+    "medianMs": 2.1455839999998716,
+    "maxMs": 7.265666999999667,
+    "bytes": 253015
+  },
+  "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c",
+  "scope": "CPU simulation only; not FPS. Separate run after full suite finished."
+}

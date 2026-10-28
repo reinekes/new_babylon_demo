@@ -1,0 +1,11 @@
+{
+  "breakdown": "Samples 92 · 200 residents (171 enabled) · meshes 7849 · active 1732\nDistrict jobs 76 / active 59 / complete 17 · carriers 32 · sim 19.5s\nadvanceTime         mean    7.3 ms  p95   14.6 ms\nbuildings.sync      mean    7.6 ms  p95    0.9 ms\nlandscape.update    mean    0.2 ms  p95    0.7 ms\nactors.update       mean   41.1 ms  p95   83.8 ms\nlighting            mean    0.0 ms  p95    0.1 ms\nselection           mean    0.0 ms  p95    0.1 ms\neffects             mean    0.0 ms  p95    0.0 ms\ngarden effects      mean    0.0 ms  p95    0.1 ms\nscene.render        mean   54.5 ms  p95  105.1 ms\ndraw total          mean  104.7 ms  p95  191.4 ms",
+  "data": {
+    "buildings": "129",
+    "citizens": "200",
+    "paused": "false",
+    "simTime": "19.47"
+  },
+  "metrics": "10 FPS · CPU p95 139.9 мс",
+  "status": "Ready · 129 buildings · 200 residents · 4× · 3d"
+}

@@ -39,7 +39,13 @@ export function syncPestSites(s){
  for(const key of keys)if(!s.pests.sites.some(q=>q.key===key))s.pests.sites.push({key,mice:(s.inventory?s.buildings.find(b=>buildingKey(b)===key)?.stock?.food:s.resources.food)>0?1:0,clock:0,spawn:0,hunt:0,guardTime:0,loss:0,caught:0,scared:0,reported:0,flash:null});
  // Cats keep their old yard when its store is removed; a later miracle can call a cat to a new store.
 }
-export function catReason(s){initializePests(s);const routes=yards(s);return s.buildings.some(b=>isPestStore(b)&&routes.has(buildingKey(b))&&!s.pests.cats.some(c=>c.site===buildingKey(b)))?'':'Все доступные хранилища уже под защитой кошек';}
+export function catReason(s){
+ initializePests(s);const stores=s.buildings.filter(isPestStore);
+ if(!stores.length)return 'Сначала построй святилище или хранилище';
+ const free=stores.filter(b=>!s.pests.cats.some(c=>c.site===buildingKey(b)));
+ if(!free.length)return 'Все доступные хранилища уже под защитой кошек';
+ const routes=yards(s);return free.some(b=>routes.has(buildingKey(b)))?'':'У незащищённого хранилища нужен свободный сухой двор';
+}
 export function bringCat(s){syncPestSites(s);const routes=yards(s),site=s.pests.sites.filter(q=>routes.has(q.key)&&!s.pests.cats.some(c=>c.site===q.key)).sort((a,b)=>b.mice-a.mice)[0];if(!site)return false;s.pests.cats.push({id:s.pests.nextCat++,site:site.key});return true;}
 const note=(s,title,text,kind)=>{s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);};
 export function advancePests(s,dt){

@@ -1,5 +1,7 @@
+import {ceremonyActive} from './ceremony-time.js';
+import {cityEventDefinition,createCityEvent,isAdditionalCityEvent,cityEventReason,applyCityEvent} from './city-events.js';
 import {initializeGodhood,validateGodhood,buildingKnowledgeReason,miracleKnowledgeReason} from './godhood.js';
-import {initializeRelicQuest,validateRelicQuest,relicControlActive,relicCommandReason,deferRelicEvent,relicSiteReserved} from './relic-quest.js';
+import {initializeRelicQuest,validateRelicQuest,relicControlActive,relicCommandReason,deferRelicEvent,relicSiteReserved,interruptRelicForFuneral} from './relic-quest.js';
 import {initializeSacredUnlocks,syncSacredUnlocks,validateSacredUnlocks,miracleLockReason,applySacredMiracle} from './sacred-unlocks.js';
 import {validateMusic} from './music.js';
 import {validateCitizenEpithets} from './citizen-epithets.js';
@@ -13,7 +15,7 @@ import {initializeLifeAnalytics,syncLifeAnalytics,recordLifeBirth,recordLifeDeat
 import {validRotation} from './placement.js';
 import {newFootprint,footprintCells,occupiesCell,insideFootprint} from './footprints.js';
 import {initializeGathering,validateGathering} from './labor-life.js';
-import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation} from './festival.js';
+import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation,advanceFestival} from './festival.js';
 import {initializeArtisans,validateArtisans} from './artisan.js';
 import {isRiverBank} from './river-trade.js';
 import {upgradeCost,legacyUpgradeCost} from './masonry.js';
@@ -34,7 +36,7 @@ import {PROFESSION_IDS,professionRole,canStaffBuilding} from './professions.js';
 import {initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
 import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
-import {startFuneral,validateFuneral} from './funerals.js';
+import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
 import {initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {roadUpgradeCost,roadKey} from './roads.js';
 import {createOrder,isComplete,nextOrder,constructionEntities,workRequired} from './construction.js';
@@ -153,10 +155,11 @@ function settleSeason(s){
  if(s.season===0){
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');
   if(s.year===3||(!s.droughtSeen&&s.year>=4)){s.drought=3;s.droughtSeen=true;affectResidents(s,{faith:-8,mood:-7});log(s,'На долину опустилась засуха','Нужен полив ячменя: соедини поля с рекой каналами или призови Небесный дождь.','bad');}
-  else if(s.year%5===0)s.event={id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'};
+  else if(!s.funeral&&s.year%5===0)s.event={id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'};
   else if(s.year%3===1){s.resources.food+=Math.max(0,Math.min(30,storage(s)-s.resources.food));log(s,'Щедрый разлив','Река принесла плодородный ил. Общие амбары получили 30 еды.','good');}
-  else s.event={id:'festival',title:'Ночь тысячи огней',text:festivalInvitation()};
+  else if(!s.funeral)s.event={id:'festival',title:'Ночь тысячи огней',text:festivalInvitation()};
  }
+ if(!s.event&&!s.funeral&&!s.festival&&s.tick>=6&&s.season===2){const events=['riverGift','potterVisit','wellRepair','harvestThanks','storyteller'];s.event=createCityEvent(s,events[(s.year-2)%events.length]);}
  syncCitizens(s);snapshotLifeAnalytics(s);check(s);
 }
 export function advanceTime(s,seconds){
@@ -164,18 +167,21 @@ export function advanceTime(s,seconds){
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
-  const dt=Math.min(remaining,45-s.seasonElapsed);advanceWorkers(s,dt);syncSacredUnlocks(s);s.seasonElapsed+=dt;remaining-=dt;advanced+=dt;
+  if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
+  if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
+  const dt=Math.min(remaining,45-s.seasonElapsed),worked=advanceWorkers(s,dt,{stopForCeremony:true});syncSacredUnlocks(s);s.seasonElapsed+=worked;remaining-=worked;advanced+=worked;
   if(s.seasonElapsed>=45-1e-7){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,45-s.seasonElapsed)>0;}
-export function eventReason(s){if(!s.event)return 'Нет события';if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
+export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};
  if(!s.event||!['accept','skip'].includes(choice))return {ok:false,reason:'Нет такого решения'};
  if(choice==='accept'&&s.event.id==='festival'){const event=s.event;s.event=null;const result=orderFestival(s);if(!result.ok){s.event=event;return result;}log(s,event.title,'Жители готовят угощение и вечерний сбор у храма.','good');syncCitizens(s);check(s);return result;}
- if(choice==='accept'){
+ if(isAdditionalCityEvent(s.event.id)){const result=applyCityEvent(s,s.event.id,choice);if(!result.ok)return result;}
+ else if(choice==='accept'){
   const reason=eventReason(s);if(reason)return {ok:false,reason};const id=s.event.id;s.resources.food-=id==='caravan'?35:20;
   if(id==='caravan'){s.resources.clay+=25;s.resources.reed+=20;}if(id==='refugees')s.population+=Math.min(6,s.capacity-s.population);
  }
@@ -271,7 +277,7 @@ export function decode(raw){
   for(const k of ['rating','inspirationAttempts','inspirationSuccesses'])if(!integer(s.divinity[k]))return null;
   if(s.divinity.inspirationSuccesses>s.divinity.inspirationAttempts)return null;
   if(!Array.isArray(s.news)||s.news.length>80||s.news.some(n=>typeof n.title!=='string'||typeof n.text!=='string'||!integer(n.year,1)||!integer(n.season,0,3)||typeof n.kind!=='string'))return null;
-  if(s.event!==null&&(!s.event||!['caravan','refugees','festival'].includes(s.event.id)||typeof s.event.title!=='string'||typeof s.event.text!=='string'))return null;
+  if(s.event!==null&&(!s.event||!cityEventDefinition(s.event.id)||typeof s.event.title!=='string'||typeof s.event.text!=='string'))return null;
   if(legacy)syncCitizens(s);
   if(!Array.isArray(s.citizens)||s.citizens.length!==s.population)return null;
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));

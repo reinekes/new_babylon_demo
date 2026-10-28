@@ -1,4 +1,5 @@
 import {musicSoundSources,playStoneNote,STONE_NOTES} from './music-audio.js';
+import {cityEventDefinition} from './city-events.js';
 // Quiet original phrases, not reconstructed ancient scores. User opt-in only.
 function createSyntheticCityAudio(onMessage){
  let context=null,enabled=false;const beats=new Map(),voices=new Map();
@@ -30,6 +31,8 @@ const activeFestival=s=>s.festival?.stage==='celebrating'&&s.festival.consumed&&
 export function eventMusicTheme(s,funeralVariant=1){
  if(activeFuneral(s))return funeralVariant===2?'funeral2':'funeral1';
  if(activeFestival(s))return s.festival.occasion==='firstBeer'?'firstBeer':'nightLights';
+ const eventTheme=cityEventDefinition(s.event?.id)?.music;
+ if(eventTheme&&eventTheme!=='lithophone'&&Object.hasOwn(EVENT_MUSIC_TRACKS,eventTheme))return eventTheme;
  const hour=((8+(s.simTime||0)*.4)%24+24)%24;
  if(hour<6||hour>=19)return 'night';
  return (s.citizens?.length||0)>=GROWN_CITY_MUSIC_POPULATION?'grown':'main';

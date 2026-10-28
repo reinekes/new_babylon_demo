@@ -1,6 +1,6 @@
 export function drawFestivalCourt(r,s,view){
  if(!view||!Number.isFinite(view.x)||!Number.isFinite(view.y))return;
- const q=r.s,p=r.point(view.x+.25,view.y+.35),c=r.ctx,t=s.simTime||0;
+ const q=r.s,p=r.point(view.x+.25,view.y+.35),c=r.ctx,t=(s.simTime||0)+(view.elapsed||0);
  const food=s.festival?.delivered.food||0,beer=s.festival?.delivered.beer||0;if(!food&&!beer)return;
  r.polygon([[p.x-19*q,p.y],[p.x,p.y-9*q],[p.x+19*q,p.y],[p.x,p.y+9*q]],'#b1936c');
  for(let i=-12;i<=12;i+=4)r.line([[p.x+i*q,p.y+(15-Math.abs(i))*.45*q],[p.x+i*q,p.y-(15-Math.abs(i))*.45*q]],'#ddc79d',.55*q);

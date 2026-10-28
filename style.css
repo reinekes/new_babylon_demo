@@ -161,3 +161,22 @@ body .resourcebar .citizens{position:static;grid-column:2;grid-row:2;display:fle
 .production-materials tbody th{font-weight:normal}
 .production-readout .production-output{margin:8px 0!important;padding:8px 10px;background:#e9ecdf;border:1px solid #ccd2bb;border-radius:4px;font-size:11px!important;line-height:1.6!important;font-variant-numeric:tabular-nums}
 .production-note{display:block;font-size:10px;line-height:1.6;color:var(--muted)}
+
+/* Explicit testing tools and live ceremony feedback. */
+.city-tools-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.test-tools-heading h3{margin:8px 0;font:25px var(--serif)}
+.test-tools-note{font-size:11px!important;line-height:1.6!important;color:var(--muted);margin:9px 0!important}
+.test-tools fieldset{padding:0;border:0;min-width:0}
+.test-tools-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+.test-tools-card,.test-tools-audio{padding:15px;border:1px solid #cfc6ae;border-radius:5px;background:#faf6e9;min-width:0;text-align:left}
+.test-tools-card h4,.test-tools-audio h4{margin:0 0 12px;color:#365f53;font-size:14px}
+.test-tools-audio{background:#e7ebda;margin:12px 0 18px}
+.test-tools-audio p{font-weight:600;margin:6px 0!important}.test-tools-audio small{display:block;margin-top:5px}
+.test-tools-field{display:block;font-size:11px;line-height:1.5;margin:10px 0}
+.test-tools-field select,.test-tools-field input{display:block;width:100%;box-sizing:border-box;min-width:0;margin-top:5px;padding:9px;color:#29453e;background:#faf7ec;border:1px solid #aeb59c;border-radius:3px;font:12px Arial;min-height:40px}
+.test-tools-card button{padding:10px 8px;min-height:40px;width:100%;border:1px solid #aebd9b;background:#e0e8d5;color:#2b5146;border-radius:3px;font:12px Arial;margin-top:7px}
+.test-tools-card button:disabled{opacity:.5;cursor:not-allowed}.test-tools-death button{border-color:#c7a087;background:#f0dfd1;color:#854329}.test-tools-lock{background:#f0e6cf;padding:10px;border-left:3px solid #b28b40}
+.festival-progress{padding:10px;background:#e6ebda;border:1px solid #bac3a6;border-radius:4px;font-size:12px!important}
+.ceremony-notice{position:absolute;left:50%;bottom:82px;transform:translateX(-50%);max-width:75%;z-index:8;border:1px solid #b6a478;border-radius:5px;padding:10px 14px;background:#f9efc9eF;color:#355046;font-size:12px;box-shadow:0 2px 18px #0003}.ceremony-notice[hidden]{display:none}.test-map-upgrade #city{cursor:cell}.test-map-upgrade .map-hint{background:#c8dfb8;color:#254d37}
+@media(max-width:1050px){.test-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.city-tools-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.test-tools-grid{grid-template-columns:1fr}.test-tools-card{padding:12px}.ceremony-notice{font-size:10px;max-width:85%;bottom:80px}.test-tools-heading h3{font-size:21px}}

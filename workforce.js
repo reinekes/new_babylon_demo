@@ -1,3 +1,4 @@
+import {ceremonyActive} from './ceremony-time.js';
 import {advanceGodhood,godhoodCitizenView,canLeadConstruction} from './godhood.js';
 import {advanceRelicQuest,relicCitizenView,recoverRelicCitizen} from './relic-quest.js';
 import {recordCitizenDelivery,recordCitizenHarvest,recordProfessionEpithet} from './citizen-epithets.js';
@@ -459,11 +460,11 @@ function prepareCare(s,ctx){
  ctx.care=new Map(ctx.healers.filter(isComplete).map(b=>[buildingKey(b),{key:buildingKey(b),building:b,staff:false,patients:[]}]));
  for(const c of s.citizens){const workplace=ctx.care.get(c.work);if(workplace&&qualifiedHealer(c))workplace.staff=c;const clinic=ctx.care.get(c.clinic);if(clinic)clinic.patients.push(c);}
 }
-export function advanceWorkers(s,seconds){
+export function advanceWorkers(s,seconds,{stopForCeremony=false}={}){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- for(let elapsed=0;elapsed<seconds-1e-8;){const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
- s.simTime=start+seconds;
+ let elapsed=0;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt);advancePests(s,dt);const finished=finishConstruction(s);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ const advanced=elapsed>=seconds-1e-8?seconds:elapsed;s.simTime=start+advanced;return advanced;
 }
 // Clinic waiting places are view offsets only: identities, routes and saved
 // treatment coordinates remain the actual simulation state.

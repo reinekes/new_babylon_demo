@@ -9,6 +9,7 @@ import {affectResidents} from './wellbeing.js';
 import {validateFuneral} from './funerals.js';
 import {startDesertFuneral} from './desert-funeral.js';
 import {relicPathTo,relicSegmentClear,relicExitRoute,relicSwimming} from './relic-navigation.js';
+import {cityEventDefinition} from './city-events.js';
 export const RELIC_FAITH_COST=250;
 export const RELIC_DIVINE_NAME='Пробуждающий глубины';
 export const LAND_RELIC_DIVINE_NAME='Хранящий память земли';
@@ -111,10 +112,18 @@ function returnToBank(s,q,reason){const c=s.citizens.find(c=>c.id===q.actorId),r
 export function cancelRelicQuest(s){const q=activeRelicQuest(s);if(!q)return {ok:false,reason:'Сейчас ты не ведёшь человека'};if(!['controlled','searching'].includes(q.phase))return {ok:false,reason:q.phase==='returning'?'Человек уже возвращается к берегу':'Артефакт уже найден: отнеси его в храм'};const c=s.citizens.find(c=>c.id===q.actorId);if(c&&!isDryPoint(s,c.x,c.y)&&relicSwimming(s,q,c)){if(!returnToBank(s,q,'cancel'))return {ok:false,reason:'Нужен безопасный выход к берегу'};return {ok:true,pending:true};}interrupt(s,q);news(s,'Поиск отложен','Человек вернулся к своей жизни. Потраченная вера не возвращается.','info');return {ok:true};}
 export function recoverRelicCitizen(s,id){for(const {q}of entries(s)){if(!q)continue;if(isActive(q)&&q.actorId===id){interrupt(s,q);return true;}const guest=q.celebrants.find(a=>a.id===id);if(guest){const c=s.citizens.find(c=>c.id===id);if(c)releaseCitizen(s,c);q.celebrants=q.celebrants.filter(a=>a!==guest);return true;}}return false;}
 function walk(s,q,c,seconds){let left=seconds;for(let guard=0;guard<256&&left>1e-8&&c.routeIndex<c.route.length;guard++){const next=c.route[c.routeIndex];if(!relicSegmentClear(s,q,c,next)){c.route=[];c.routeIndex=0;return false;}const d=distance(c,next),speed=(relicSwimming(s,q,c)||relicSwimming(s,q,next))?.62:1.05,travel=d/speed;if(travel<=left+1e-8){c.x=next.x;c.y=next.y;c.routeIndex++;left-=travel;}else{const f=left/travel;c.x+=(next.x-c.x)*f;c.y+=(next.y-c.y)*f;left=0;}}return true;}
+// Ceremony ownership changes immediately, without advancing either clock or
+// moving the chosen resident twice when the main loop enters funeral mode.
+export function interruptRelicForFuneral(s){
+ if(!s.funeral)return false;const q=activeRelicQuest(s),c=q&&s.citizens.find(c=>c.id===q.actorId);if(!q||!c)return false;
+ if(relicSwimming(s,q,c)){q.deferredFuneral=s.funeral;s.funeral=null;returnToBank(s,q,'funeral');}
+ else{interrupt(s,q);news(s,'Поиск прерван прощанием','Человек вернулся к городу. Найденный артефакт сохранён на ближайшем безопасном берегу.','info');}
+ return true;
+}
 export function advanceRelicQuest(s,dt){
  const entry=entries(s).find(v=>isActive(v.q)),q=entry?.q;if(!q||!Number.isFinite(dt)||dt<=0)return;
  const c=s.citizens.find(c=>c.id===q.actorId);if(!c||s.lost){interrupt(s,q);return;}
- if(s.funeral){if(relicSwimming(s,q,c)){q.deferredFuneral=s.funeral;s.funeral=null;returnToBank(s,q,'funeral');}else{interrupt(s,q);news(s,'Поиск прерван прощанием','Человек вернулся к городу. Найденный артефакт сохранён на ближайшем безопасном берегу.','info');return;}}
+ if(s.funeral){interruptRelicForFuneral(s);if(!isActive(q))return;}
  deferRelicEvent(s);walk(s,q,c,dt);q.lastPosition={x:c.x,y:c.y};if(q.artifact.location==='carried'){q.artifact.x=c.x;q.artifact.y=c.y;}
  if(q.phase==='returning'){if(isDryPoint(s,c.x,c.y)&&c.routeIndex>=c.route.length){interrupt(s,q);news(s,'Человек вышел на берег','Поиск прерван, управление городом возвращено. Потраченная вера не возвращается.','info');}return;}
  for(const a of q.celebrants){const guest=s.citizens.find(c=>c.id===a.id);if(guest?.phase==='relicGuest')walk(s,null,guest,dt);}
@@ -153,7 +162,7 @@ function validateQuest(s,q,id,config){
  if(q.celebrants.length&&!['rejoicing','celebrating'].includes(q.phase))return false;
  if(q.temple!==null&&(!['carrying','celebrating','completed','returning'].includes(q.phase)||!s.buildings.some(b=>buildingKey(b)===q.temple&&['shrine','ziggurat'].includes(b.type)&&isOperational(b))))return false;
  if(q.lastPosition!==null&&!point(q.lastPosition))return false;
- if(q.deferredEvent!==null&&(!q.deferredEvent||!['caravan','refugees','festival'].includes(q.deferredEvent.id)||typeof q.deferredEvent.title!=='string'||typeof q.deferredEvent.text!=='string'))return false;
+ if(q.deferredEvent!==null){const e=q.deferredEvent;if(!e||typeof e!=='object'||Array.isArray(e)||Object.keys(e).length!==3||!['id','title','text'].every(key=>Object.hasOwn(e,key))||!cityEventDefinition(e.id)||typeof e.title!=='string'||e.title.length>200||typeof e.text!=='string'||e.text.length>5000)return false;}
  if(q.returnReason!==undefined&&q.returnReason!==null&&!['cancel','funeral'].includes(q.returnReason)||q.phase==='returning'&&!['cancel','funeral'].includes(q.returnReason))return false;
  if(q.rejoicingReady!==undefined&&typeof q.rejoicingReady!=='boolean')return false;
  if(q.deferredFuneral!==undefined&&q.deferredFuneral!==null&&(q.phase!=='returning'||q.returnReason!=='funeral'||!validateFuneral({...s,funeral:q.deferredFuneral})))return false;
