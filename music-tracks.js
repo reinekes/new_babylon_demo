@@ -33,7 +33,7 @@ export const MUSIC_TRACKS=Object.freeze([
   },
   {
     "id": "funeral2",
-    "file": "Ud-re-a-nam-Кто-то-умер-несут-труп-2-женский-голос.mp3",
+    "file": "Ud-re-a-nam-Кто-то-умер-несут-труп-2-женский-голос.mp3",
     "title": "Ud re-a nam",
     "usage": "Погребальная процессия · женский голос",
     "articleId": "enki"
@@ -54,7 +54,7 @@ export const MUSIC_TRACKS=Object.freeze([
   },
   {
     "id": "nightLights",
-    "file": "Shag-Hul-la-Ngal-La-Bi-Ночь-огней.mp3",
+    "file": "Shag-Hul-la-Ngal-La-Bi-Ночь-огней.mp3",
     "title": "Shag hul-la ngal-la-bi",
     "usage": "Ночь огней",
     "articleId": "night-feast"

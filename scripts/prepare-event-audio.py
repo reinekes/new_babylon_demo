@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Copy user-compressed MP3s byte-for-byte. Strip only their export suffix."""
+import unicodedata
 import argparse, hashlib, json, os, re, shutil, subprocess
 from pathlib import Path
 
@@ -20,6 +21,7 @@ def main():
  sources={}
  for source in args.source_dir.glob('*.mp3'):
   clean=re.sub(r'-\d{13}-[A-Za-z0-9]+-compressed(?=\.mp3$)','',source.name)
+  clean=unicodedata.normalize('NFC',clean)
   if clean in sources:raise ValueError(f'Duplicate cleaned filename: {clean}')
   sources[clean]=source
  for t in tracks:

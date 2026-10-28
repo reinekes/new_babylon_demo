@@ -17,3 +17,5 @@ test('old play completion cannot pause newer playback after rapid mute and unmut
  const resolutions=[];const media=[];const audio=createCityAudio(undefined,{createMedia(){const el={paused:true,volume:0,src:'',play(){this.paused=false;return new Promise(resolve=>resolutions.push(resolve));},pause(){this.paused=true;},addEventListener(){},removeAttribute(){},load(){}};media.push(el);return el;},now:()=>0});
  try{const s=town();await audio.toggle();audio.tick(s,false);await audio.toggle();await audio.toggle();audio.tick(s,false);assert.equal(resolutions.length,2);resolutions[0]();await settle();assert.equal(media[0].paused,false);resolutions[1]();await settle();assert.equal(media[0].paused,false);}finally{audio.dispose();}
 });
+
+test('published filenames use NFC for GitHub Pages Unicode paths',()=>{for(const file of Object.values(EVENT_MUSIC_TRACKS))assert.equal(file,file.normalize('NFC'));});
