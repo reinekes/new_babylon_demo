@@ -1,0 +1,323 @@
+{
+  "commit": "8312c986c060385b2338e2859b1ad33f0b6de5cb",
+  "release": "festival-candles-tests-20261028-1",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "verified": 39,
+  "total": 39,
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "bytes": 188202,
+      "expectedSHA256": "f98b9299ed2ff6fbaf8a28b741969dade8221cf34b830bcd1dcea434b72f3930",
+      "actualSHA256": "f98b9299ed2ff6fbaf8a28b741969dade8221cf34b830bcd1dcea434b72f3930",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "bytes": 130571,
+      "expectedSHA256": "d3545213a8574409bee1bd94fcbc742400ff8496c10695bde10975c159dbddaa",
+      "actualSHA256": "d3545213a8574409bee1bd94fcbc742400ff8496c10695bde10975c159dbddaa",
+      "match": true
+    },
+    {
+      "path": "assets/art-courtyard/ATTRIBUTION.md",
+      "status": 200,
+      "bytes": 29962,
+      "expectedSHA256": "9f736df9ed01d50cbea84fd81f5afa7337bbdfd75bbb5a55e35ea78962553cb6",
+      "actualSHA256": "9f736df9ed01d50cbea84fd81f5afa7337bbdfd75bbb5a55e35ea78962553cb6",
+      "match": true
+    },
+    {
+      "path": "assets/art-courtyard/CREDITS.html",
+      "status": 200,
+      "bytes": 31066,
+      "expectedSHA256": "ff30daa12730b0d66d634f1a053ff95845bd26be37cee2de78f82a57e5b5706d",
+      "actualSHA256": "ff30daa12730b0d66d634f1a053ff95845bd26be37cee2de78f82a57e5b5706d",
+      "match": true
+    },
+    {
+      "path": "assets/art-courtyard/festival-candle-report.json",
+      "status": 200,
+      "bytes": 1351,
+      "expectedSHA256": "6ef7a6381492a90fe65b61694be2782d2a162c4ecc17cd4d19d532911dac1411",
+      "actualSHA256": "6ef7a6381492a90fe65b61694be2782d2a162c4ecc17cd4d19d532911dac1411",
+      "match": true
+    },
+    {
+      "path": "assets/art-courtyard/manifest.json",
+      "status": 200,
+      "bytes": 21369,
+      "expectedSHA256": "03561c9f5511e4b2f2b76eacade2933835d0b47e38db9f314b26f02996758b1f",
+      "actualSHA256": "03561c9f5511e4b2f2b76eacade2933835d0b47e38db9f314b26f02996758b1f",
+      "match": true
+    },
+    {
+      "path": "assets/art-courtyard/models/festival-candle.glb",
+      "status": 200,
+      "bytes": 24484,
+      "expectedSHA256": "a10d84770678d428175ca35078fa8a2ae1ba9493bed5b34cfb6d49d969bed93e",
+      "actualSHA256": "a10d84770678d428175ca35078fa8a2ae1ba9493bed5b34cfb6d49d969bed93e",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "bytes": 8904,
+      "expectedSHA256": "990b2aba2d5d05c5f88e438e2e25bc620be089f72ab8891fc301b05174ffd9f8",
+      "actualSHA256": "990b2aba2d5d05c5f88e438e2e25bc620be089f72ab8891fc301b05174ffd9f8",
+      "match": true
+    },
+    {
+      "path": "docs/PERFORMANCE_3D_AUDIT_2026-10-28.md",
+      "status": 200,
+      "bytes": 22392,
+      "expectedSHA256": "ac4f24ee9fd6df2ad1c17df91e5bbadb3c6fdc40c5761a4df693ef0d50f701e2",
+      "actualSHA256": "ac4f24ee9fd6df2ad1c17df91e5bbadb3c6fdc40c5761a4df693ef0d50f701e2",
+      "match": true
+    },
+    {
+      "path": "docs/TEST_SCENES_CANDLES_PERFORMANCE_2026-10-28.md",
+      "status": 200,
+      "bytes": 7324,
+      "expectedSHA256": "891058f3e62d5159e6d78eae8310a899375a215e0cef801c2655bbfe731ab261",
+      "actualSHA256": "891058f3e62d5159e6d78eae8310a899375a215e0cef801c2655bbfe731ab261",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-scene-performance-cpu.json",
+      "status": 200,
+      "bytes": 331,
+      "expectedSHA256": "46d717f9b235bd2df95b811f27c2bc5f575acbffa22baecbab6c38bb25539f09",
+      "actualSHA256": "46d717f9b235bd2df95b811f27c2bc5f575acbffa22baecbab6c38bb25539f09",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-scene-performance.json",
+      "status": 200,
+      "bytes": 8419,
+      "expectedSHA256": "923fef09a83a53f387941bface76dbfe3417f902365de17f81f1e2f9b51a667b",
+      "actualSHA256": "923fef09a83a53f387941bface76dbfe3417f902365de17f81f1e2f9b51a667b",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/festival-candle-hand-2026-10-28.png",
+      "status": 200,
+      "bytes": 85656,
+      "expectedSHA256": "8d7006d3728cd7d96c4aeb8d7ca1d0d2f246a5a491a6148c8f727bd0986da252",
+      "actualSHA256": "8d7006d3728cd7d96c4aeb8d7ca1d0d2f246a5a491a6148c8f727bd0986da252",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/festival-light-snow-2026-10-28.png",
+      "status": 200,
+      "bytes": 104565,
+      "expectedSHA256": "82e2e8c03e877c0428a26773783404abe0c809c347a30119283f2a1aa9bc6948",
+      "actualSHA256": "82e2e8c03e877c0428a26773783404abe0c809c347a30119283f2a1aa9bc6948",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/test-miracle-buttons-2026-10-28.png",
+      "status": 200,
+      "bytes": 68276,
+      "expectedSHA256": "9eb13f805d327738e43a3bb2afa9d1fd37836b0a62cf5152bf7b430005214041",
+      "actualSHA256": "9eb13f805d327738e43a3bb2afa9d1fd37836b0a62cf5152bf7b430005214041",
+      "match": true
+    },
+    {
+      "path": "festival-art.js",
+      "status": 200,
+      "bytes": 3145,
+      "expectedSHA256": "d9d552acaa65443b21c18db83b854a1897b5a7856e6ad6286993b38cf5c2ad12",
+      "actualSHA256": "d9d552acaa65443b21c18db83b854a1897b5a7856e6ad6286993b38cf5c2ad12",
+      "match": true
+    },
+    {
+      "path": "festival-blessing.js",
+      "status": 200,
+      "bytes": 1459,
+      "expectedSHA256": "d29f92227f1306eb521293e22bb4f4302ec32eb4d6c7e0f19739417a1300b655",
+      "actualSHA256": "d29f92227f1306eb521293e22bb4f4302ec32eb4d6c7e0f19739417a1300b655",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "bytes": 58158,
+      "expectedSHA256": "534fa0e38d5abc6e5da17a90dac1369f0e20965731779061cd1293085401f02a",
+      "actualSHA256": "534fa0e38d5abc6e5da17a90dac1369f0e20965731779061cd1293085401f02a",
+      "match": true
+    },
+    {
+      "path": "game3d/festival-blessing.js",
+      "status": 200,
+      "bytes": 3131,
+      "expectedSHA256": "e1c9030e6006cab2a35a221af1d83e56c356fb620b2707a4c2de77e5a3cd23f3",
+      "actualSHA256": "e1c9030e6006cab2a35a221af1d83e56c356fb620b2707a4c2de77e5a3cd23f3",
+      "match": true
+    },
+    {
+      "path": "game3d/festival-candles.js",
+      "status": 200,
+      "bytes": 3995,
+      "expectedSHA256": "f65a301847cc20e41f263ab835f2a770600deff424d996f9a9d6d99700b486c2",
+      "actualSHA256": "f65a301847cc20e41f263ab835f2a770600deff424d996f9a9d6d99700b486c2",
+      "match": true
+    },
+    {
+      "path": "game3d/festival-court.js",
+      "status": 200,
+      "bytes": 6028,
+      "expectedSHA256": "7fada5be60ecf2a62d1a54af6c449c6b988e2b822f9e99ad27dedff32acabdef",
+      "actualSHA256": "7fada5be60ecf2a62d1a54af6c449c6b988e2b822f9e99ad27dedff32acabdef",
+      "match": true
+    },
+    {
+      "path": "game3d/funeral-ritual.js",
+      "status": 200,
+      "bytes": 7323,
+      "expectedSHA256": "f3fcac6c9e8dd56475cff57f07d7216d62127b809c1b9b9663dcd9d47cdea562",
+      "actualSHA256": "f3fcac6c9e8dd56475cff57f07d7216d62127b809c1b9b9663dcd9d47cdea562",
+      "match": true
+    },
+    {
+      "path": "game3d/model-versions.js",
+      "status": 200,
+      "bytes": 2751,
+      "expectedSHA256": "298e82b2efdc44343a132b122be856cebf205ce75f61d7491f9614ac80826cdf",
+      "actualSHA256": "298e82b2efdc44343a132b122be856cebf205ce75f61d7491f9614ac80826cdf",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 22355,
+      "expectedSHA256": "fdab2cb3231274feb47640f70dfbc0b8afba5b9bd179b45b4796bb24b3e8dd87",
+      "actualSHA256": "fdab2cb3231274feb47640f70dfbc0b8afba5b9bd179b45b4796bb24b3e8dd87",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "bytes": 45267,
+      "expectedSHA256": "f029e62defc12b9947ee56ec6bca62691f3cb3c8797f4648433cc708e9970838",
+      "actualSHA256": "f029e62defc12b9947ee56ec6bca62691f3cb3c8797f4648433cc708e9970838",
+      "match": true
+    },
+    {
+      "path": "scripts/art-courtyard/prepare_festival_candle.py",
+      "status": 200,
+      "bytes": 11944,
+      "expectedSHA256": "ed3010b6b6203d6db2b56d1e6504dadbeebbf9fdc850aed515bee21cb213df6d",
+      "actualSHA256": "ed3010b6b6203d6db2b56d1e6504dadbeebbf9fdc850aed515bee21cb213df6d",
+      "match": true
+    },
+    {
+      "path": "test-tools.js",
+      "status": 200,
+      "bytes": 7208,
+      "expectedSHA256": "44e10d51e508d8395d9214ffd5ced28037610bb197693152dddcc8f80d215ca1",
+      "actualSHA256": "44e10d51e508d8395d9214ffd5ced28037610bb197693152dddcc8f80d215ca1",
+      "match": true
+    },
+    {
+      "path": "tests/ceremony-dance.test.js",
+      "status": 200,
+      "bytes": 9614,
+      "expectedSHA256": "8c79dc8c743912cc95c8b3c951c1b564c524a12589edd41e991c8c47f830ef07",
+      "actualSHA256": "8c79dc8c743912cc95c8b3c951c1b564c524a12589edd41e991c8c47f830ef07",
+      "match": true
+    },
+    {
+      "path": "tests/festival-blessing.test.js",
+      "status": 200,
+      "bytes": 5930,
+      "expectedSHA256": "0865d5d9a2758107b221cfaa40f1fac76f46211155b652be3698e69425cef652",
+      "actualSHA256": "0865d5d9a2758107b221cfaa40f1fac76f46211155b652be3698e69425cef652",
+      "match": true
+    },
+    {
+      "path": "tests/festival-candles.test.js",
+      "status": 200,
+      "bytes": 3132,
+      "expectedSHA256": "ed3bd14b607997128e7bdb6abd3a1849e1696caf7679012cb57de018bb48ed8f",
+      "actualSHA256": "ed3bd14b607997128e7bdb6abd3a1849e1696caf7679012cb57de018bb48ed8f",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/ceremony-presentation.html",
+      "status": 200,
+      "bytes": 21767,
+      "expectedSHA256": "8ee838483a7595ddf9bb8979b9bdca261f6584a6fd78c5f854fcdad09c294906",
+      "actualSHA256": "8ee838483a7595ddf9bb8979b9bdca261f6584a6fd78c5f854fcdad09c294906",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/miracle-celebrations.html",
+      "status": 200,
+      "bytes": 16559,
+      "expectedSHA256": "67a8b209ebf265643f6cdbc681936262ab2fc8da696e2289d832f9c3363dcc23",
+      "actualSHA256": "67a8b209ebf265643f6cdbc681936262ab2fc8da696e2289d832f9c3363dcc23",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "bytes": 2151,
+      "expectedSHA256": "f6d69aa4da29c3b8cd1ace448b41394317edd7f2434a9df6eb5946d3c0452923",
+      "actualSHA256": "f6d69aa4da29c3b8cd1ace448b41394317edd7f2434a9df6eb5946d3c0452923",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.js",
+      "status": 200,
+      "bytes": 8082,
+      "expectedSHA256": "7c29545b12ea268073d5d826e767ea25d7141bb404d25f081b8ce14e48e74900",
+      "actualSHA256": "7c29545b12ea268073d5d826e767ea25d7141bb404d25f081b8ce14e48e74900",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/testing-ceremonies.html",
+      "status": 200,
+      "bytes": 28404,
+      "expectedSHA256": "2e00370a4129a0de23acaecc6788d6ebd12e56c7ed5a9c884ad0b862f578d7d8",
+      "actualSHA256": "2e00370a4129a0de23acaecc6788d6ebd12e56c7ed5a9c884ad0b862f578d7d8",
+      "match": true
+    },
+    {
+      "path": "tests/music-library-update.test.js",
+      "status": 200,
+      "bytes": 6916,
+      "expectedSHA256": "ecdd487dee612e2f844198217b0f118244b046b62812882570c09954749ca203",
+      "actualSHA256": "ecdd487dee612e2f844198217b0f118244b046b62812882570c09954749ca203",
+      "match": true
+    },
+    {
+      "path": "tests/test-miracle-scenes.test.js",
+      "status": 200,
+      "bytes": 4151,
+      "expectedSHA256": "4e9f36cde9d505dad82bb3f5e1f51a63e109884628d49ccc62103b7b801d2c5f",
+      "actualSHA256": "4e9f36cde9d505dad82bb3f5e1f51a63e109884628d49ccc62103b7b801d2c5f",
+      "match": true
+    },
+    {
+      "path": "tests/test-tools-ui.test.js",
+      "status": 200,
+      "bytes": 3404,
+      "expectedSHA256": "648328bb3b028e495136cf2ebcff575dcd3637bb264ba0ed4a88b040ffc9d539",
+      "actualSHA256": "648328bb3b028e495136cf2ebcff575dcd3637bb264ba0ed4a88b040ffc9d539",
+      "match": true
+    },
+    {
+      "path": "ui-test-tools.js",
+      "status": 200,
+      "bytes": 6676,
+      "expectedSHA256": "2e2cabf01f6bf89cde8ad7576f262d0606ccbb643541b2a2df0e556eca5d89f9",
+      "actualSHA256": "2e2cabf01f6bf89cde8ad7576f262d0606ccbb643541b2a2df0e556eca5d89f9",
+      "match": true
+    }
+  ],
+  "pagesRun": "https://github.com/reinekes/new_babylon_demo/actions/runs/40700395155",
+  "pagesConclusion": "success"
+}
