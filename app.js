@@ -266,7 +266,7 @@ async function showEncyclopedia(){
  if(relicControlActive(state)){toast('Сначала заверши путь избранного');return;}
  openDialog('encyclopedia','<button class="management-close" id="close-encyclopedia" aria-label="Вернуться в город">×</button><div id="encyclopedia-root"><span class="eyebrow">ГЛИНЯНЫЕ ТАБЛИЧКИ</span><h2>Энциклопедия</h2><p role="status">Открываем песенные таблички…</p></div>');$('close-encyclopedia').onclick=closeDialog;
  const request=encyclopediaRequest,root=$('encyclopedia-root');
- try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=ceremony-poses-20261028-1',import.meta.url),onPreviewChange:value=>cityAudio.setPreviewing(value)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
+ try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=music-library-20261028-1',import.meta.url),onPreviewChange:value=>cityAudio.setPreviewing(value)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
  catch{if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;root.innerHTML='<h2>Энциклопедия</h2><p>Не удалось загрузить песенные таблички.</p><button id="encyclopedia-retry">Попробовать снова</button>';$('encyclopedia-retry').onclick=showEncyclopedia;}
 }
 function showLifeAnalytics(selectedId){

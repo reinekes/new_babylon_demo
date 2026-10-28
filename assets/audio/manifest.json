@@ -1,182 +1,186 @@
 {
-  "date": "2026-10-27",
-  "provenance": "Recordings supplied by the user for this game; no claim of historical reconstruction or third-party authorship. Original Downloads files and user audio/ directory are unchanged.",
-  "processing": "MP3 without cover art, stereo44.1kHz, two-pass loudness normalization, no first-load fetch",
+  "date": "2026-10-28",
+  "provenance": "User-supplied compressed recordings; original Downloads files unchanged. Contemporary artistic music, not historical reconstruction.",
+  "processing": "Byte-identical copies; only trailing timestamp, random ID and -compressed removed from filenames. No transcoding or loudness processing.",
   "tracks": [
     {
-      "id": "main-theme",
-      "file": "main-theme.mp3",
-      "usage": "Дневная тема малого поселения",
+      "id": "main",
+      "file": "Main-theme-start-game.mp3",
+      "usage": "Начало игры и малое поселение",
       "source": {
-        "name": "Main theme - start game.mp3",
-        "bytes": 4978620,
-        "sha256": "965dff065028b59cc6ddc94ee2cf1816e15c4fb1e48d6649f6cd92991f8e2fc1",
-        "duration": 217.5735
+        "name": "Main-theme-start-game-1793174894797-agyew-compressed.mp3",
+        "bytes": 3482333,
+        "sha256": "178ff53269afa4e03206bd58136b341d5930badaae24b3f705d23790365cf797"
       },
-      "optimized": {
-        "bytes": 2611558,
-        "sha256": "7af22d6c11a892cd5e9f4fb35cd2d41463edf08cde7a124a688ef9ba876172cf",
+      "asset": {
+        "bytes": 3482333,
+        "sha256": "178ff53269afa4e03206bd58136b341d5930badaae24b3f705d23790365cf797",
         "duration": 217.573515,
         "codec": "mp3",
-        "bitrateKbps": 96,
         "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.44,
-        "truePeakDBTP": -6.02
+        "channels": 2
       }
     },
     {
-      "id": "growing-city",
-      "file": "growing-city.mp3",
+      "id": "grown",
+      "file": "Город-становится-больше-2-тема.mp3",
       "usage": "Дневная тема города от 24 жителей",
       "source": {
-        "name": "Город становится больше - 2 тема.mp3",
-        "bytes": 5807506,
-        "sha256": "910ddad35575f497e7288e3309df41d026ae344e0a87b796b480235e8c3b6c5c",
-        "duration": 247.8935
+        "name": "Город-становится-больше-2-тема-1793174894797-s22np-compressed.mp3",
+        "bytes": 3967580,
+        "sha256": "c6885068863979bf5850a306ef3e3227c720f8c2167108015134331655d842ef"
       },
-      "optimized": {
-        "bytes": 2975496,
-        "sha256": "999e0d0b66737cd5d3d584d00badcbf066068ff450d88edd5ba94ebcdbfe608e",
+      "asset": {
+        "bytes": 3967580,
+        "sha256": "c6885068863979bf5850a306ef3e3227c720f8c2167108015134331655d842ef",
         "duration": 247.893515,
         "codec": "mp3",
-        "bitrateKbps": 96,
         "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.44,
-        "truePeakDBTP": -6.03
+        "channels": 2
       }
     },
     {
-      "id": "night-theme",
-      "file": "night-theme.mp3",
-      "usage": "Ночь, с 19:00 до 06:00",
+      "id": "night",
+      "file": "Ночная-музыка-3-тема.mp3",
+      "usage": "Обычная ночь в поселении",
       "source": {
-        "name": "Ночная музыка - 3 тема.mp3",
-        "bytes": 4803396,
-        "sha256": "bd2dad7799eea47bc5fb2b796e129b5e8b914df3feed01772f6f7d9a58308037",
-        "duration": 209.9335
+        "name": "Ночная-музыка-3-тема-1793174894797-c19ue-compressed.mp3",
+        "bytes": 3360287,
+        "sha256": "f12c85b3c31a7449a1f6eb4b5a0fec3991904502314fe88e5c3798d53e92e5ca"
       },
-      "optimized": {
-        "bytes": 2520025,
-        "sha256": "78d768e31ca421ee11d8a3f5e951b5b877f1a14bb6a08d44516419a88f8c37f0",
+      "asset": {
+        "bytes": 3360287,
+        "sha256": "f12c85b3c31a7449a1f6eb4b5a0fec3991904502314fe88e5c3798d53e92e5ca",
         "duration": 209.933515,
         "codec": "mp3",
-        "bitrateKbps": 96,
         "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.44,
-        "truePeakDBTP": -4.33
-      }
-    },
-    {
-      "id": "funeral-1",
-      "file": "funeral-1.mp3",
-      "usage": "Первое и нечётные погребальные шествия",
-      "source": {
-        "name": "Кто-то умер - несут труп 1.mp3",
-        "bytes": 3857632,
-        "sha256": "bfb2173a889d9bac2062655e603a20506aa12f8c2d4f59cd059bd5c8f410be37",
-        "duration": 160.0
-      },
-      "optimized": {
-        "bytes": 1920671,
-        "sha256": "c77a4f262e7bcdb1ed554728388f9b589610db3d4a6e0b5f45d7d4e1ef3220a0",
-        "duration": 160.0,
-        "codec": "mp3",
-        "bitrateKbps": 96,
-        "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.44,
-        "truePeakDBTP": -4.5
-      }
-    },
-    {
-      "id": "funeral-2",
-      "file": "funeral-2.mp3",
-      "usage": "Второе и чётные погребальные шествия",
-      "source": {
-        "name": "Кто-то умер несут труп - 2 - женский голос.mp3",
-        "bytes": 4885942,
-        "sha256": "3bf737e5fef5e5cadb194bba00addc79bcdab85eee4b3eedbf6b8e1e93b7fa9d",
-        "duration": 202.814667
-      },
-      "optimized": {
-        "bytes": 2434448,
-        "sha256": "5b5dd53d02df8091d41a33af2cfdcba97921b43999654639f50f301905480573",
-        "duration": 202.814694,
-        "codec": "mp3",
-        "bitrateKbps": 96,
-        "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.44,
-        "truePeakDBTP": -6.04
+        "channels": 2
       }
     },
     {
       "id": "lithophone",
-      "file": "lithophone.mp3",
-      "usage": "Вдохновлённый музыкант на месте днём, рядом с камерой",
+      "file": "литофон.mp3",
+      "usage": "Музыкант рядом с камерой",
       "source": {
-        "name": "литофон.mp3",
-        "bytes": 1077652,
-        "sha256": "aee93ed3940e3997ebc446739f9243d5a8c097bf019ae8e5752d761eef1b07ae",
-        "duration": 45.511125
+        "name": "литофон-1793174894797-t6pxn-compressed.mp3",
+        "bytes": 729485,
+        "sha256": "13cc2ce1f451469f8eb05c0b2d25c9c1e3302951e8e39e5dd12a558a034d5058"
       },
-      "optimized": {
-        "bytes": 455882,
-        "sha256": "2f23fab82965216bc097569bdfac46d799b3bef066db09abb0e480c4cd41d3ca",
-        "duration": 45.511134,
+      "asset": {
+        "bytes": 729485,
+        "sha256": "13cc2ce1f451469f8eb05c0b2d25c9c1e3302951e8e39e5dd12a558a034d5058",
+        "duration": 45.511111,
         "codec": "mp3",
-        "bitrateKbps": 80,
         "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -22.52,
-        "truePeakDBTP": -4.76
+        "channels": 2
       }
     },
     {
-      "id": "first-beer-feast",
-      "file": "first-beer-feast.mp3",
-      "usage": "Первое действительно сваренное пиво: пир у пивоварни",
+      "id": "funeral1",
+      "file": "Nin-me-shar-ra-Кто-то-умер-несут-труп-1.mp3",
+      "usage": "Погребальная процессия · первый вариант",
       "source": {
-        "name": "Сделали первую кружку пива - праздник.mp3",
-        "bytes": 1374351,
-        "sha256": "0169400837f7618d1c49f75edcb54a21694effcb376911bfae8e5ee073176510",
-        "duration": 56.450589
+        "name": "Nin-me-shar-ra-Кто-то-умер-несут-труп-1-1793174894797-rbtc2-compressed.mp3",
+        "bytes": 2561874,
+        "sha256": "446f7ba525b354300e0a9649222e804de848809f2c1b26e0392664427883f39e"
       },
-      "optimized": {
-        "bytes": 678079,
-        "sha256": "b56cdc1a6752432cab2d9a242b479ed2e633da6191e574667a4b45d9b6d4c136",
+      "asset": {
+        "bytes": 2561874,
+        "sha256": "446f7ba525b354300e0a9649222e804de848809f2c1b26e0392664427883f39e",
+        "duration": 160.0,
+        "codec": "mp3",
+        "sampleRate": 44100,
+        "channels": 2
+      }
+    },
+    {
+      "id": "funeral2",
+      "file": "Ud-re-a-nam-Кто-то-умер-несут-труп-2-женский-голос.mp3",
+      "usage": "Погребальная процессия · женский голос",
+      "source": {
+        "name": "Ud-re-a-nam-Кто-то-умер-несут-труп-2-женский-голос-1793174894798-hj6bc-compressed.mp3",
+        "bytes": 3247782,
+        "sha256": "e11f79e4a2fa9a5c7229e2cca48c703fdf61693e3deeb6b26e36f42d119500ae"
+      },
+      "asset": {
+        "bytes": 3247782,
+        "sha256": "e11f79e4a2fa9a5c7229e2cca48c703fdf61693e3deeb6b26e36f42d119500ae",
+        "duration": 202.814694,
+        "codec": "mp3",
+        "sampleRate": 44100,
+        "channels": 2
+      }
+    },
+    {
+      "id": "afterFuneral",
+      "file": "An-gal-ta-ki-gal-she-Грустная-музыка-сразу-после-похорон.mp3",
+      "usage": "Грустная музыка сразу после похорон",
+      "source": {
+        "name": "An-gal-ta-ki-gal-she-Грустная-музыка-сразу-после-похорон-1793174894797-c8bxl-compressed.mp3",
+        "bytes": 3593661,
+        "sha256": "8674b727f36eb37e47be9f08cf754eb4c8e14cb8c3779dcc489fcf0bd130811f"
+      },
+      "asset": {
+        "bytes": 3593661,
+        "sha256": "8674b727f36eb37e47be9f08cf754eb4c8e14cb8c3779dcc489fcf0bd130811f",
+        "duration": 224.444082,
+        "codec": "mp3",
+        "sampleRate": 44100,
+        "channels": 2
+      }
+    },
+    {
+      "id": "firstBeer",
+      "file": "Gakkul-e-Lam-sa-re-Сделали-первую-кружку-пива.mp3",
+      "usage": "Пир первой кружки пива",
+      "source": {
+        "name": "Gakkul-e-Lam-sa-re-Сделали-первую-кружку-пива-1793174894797-giljf-compressed.mp3",
+        "bytes": 905547,
+        "sha256": "1297662aedb53e5978f919bc6537a2d60dfe8982c235246fc7c57752b1496e04"
+      },
+      "asset": {
+        "bytes": 905547,
+        "sha256": "1297662aedb53e5978f919bc6537a2d60dfe8982c235246fc7c57752b1496e04",
         "duration": 56.450612,
         "codec": "mp3",
-        "bitrateKbps": 96,
         "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.44,
-        "truePeakDBTP": -3.12
+        "channels": 2
       }
     },
     {
-      "id": "night-lights-feast",
-      "file": "night-lights-feast.mp3",
-      "usage": "Ночь огней: жители уже танцуют на празднике",
+      "id": "nightLights",
+      "file": "Shag-Hul-la-Ngal-La-Bi-Ночь-огней.mp3",
+      "usage": "Ночь огней",
       "source": {
-        "name": "Праздник Ночь огней.mp3",
-        "bytes": 5302655,
-        "sha256": "1a9f4d49a8f1abad23bad3b65490fdafe20cf3b91a4161ea158a49c339d745cf",
-        "duration": 220.003256
+        "name": "Shag-Hul-la-Ngal-La-Bi-Ночь-огней-1793174894798-2eht5-compressed.mp3",
+        "bytes": 3522847,
+        "sha256": "f901498cfdb15a170e4ab7b983a74751e6f2b1e59b44b882e50a57b68663da88"
       },
-      "optimized": {
-        "bytes": 2640711,
-        "sha256": "2af05db37baab94af5136ac18a6d314d308b423687d3198159d6740a72d92c8d",
+      "asset": {
+        "bytes": 3522847,
+        "sha256": "f901498cfdb15a170e4ab7b983a74751e6f2b1e59b44b882e50a57b68663da88",
         "duration": 220.003265,
         "codec": "mp3",
-        "bitrateKbps": 96,
         "sampleRate": 44100,
-        "channels": 2,
-        "integratedLUFS": -20.45,
-        "truePeakDBTP": -4.68
+        "channels": 2
+      }
+    },
+    {
+      "id": "extinction",
+      "file": "Uru-a-she-er-gig-ga-конце-игры-потому-что-поселение-вымерло.mp3",
+      "usage": "Гибель поселения",
+      "source": {
+        "name": "Uru-a-she-er-gig-ga-конце-игры-потому-что-поселение-вымерло-1793174894798-l23tc-compressed.mp3",
+        "bytes": 2223671,
+        "sha256": "46c0df73b6037ce006612f6b6c3925bf65beb6a25cf72de74cffa22af5ff8dab"
+      },
+      "asset": {
+        "bytes": 2223671,
+        "sha256": "46c0df73b6037ce006612f6b6c3925bf65beb6a25cf72de74cffa22af5ff8dab",
+        "duration": 138.840816,
+        "codec": "mp3",
+        "sampleRate": 44100,
+        "channels": 2
       }
     }
   ]
