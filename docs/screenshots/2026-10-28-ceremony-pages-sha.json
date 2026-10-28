@@ -1,0 +1,183 @@
+{
+  "release": "ceremony-poses-20261028-1",
+  "commit": "3e8cd5441aa7a178b503168d7176e78f69189ff3",
+  "pagesRun": 40666776831,
+  "passed": 29,
+  "total": 29,
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "pass": true,
+      "sha256": "97beaa8512b6ff5564e681f093ac077da93da7f196af1b540513fd9739295dd5",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "app.js",
+      "pass": true,
+      "sha256": "1af455f2ed570e9e2095e978aade0fdb4b9e76b044edfbde9b51d34b74931d91",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "desert-funeral.js",
+      "pass": true,
+      "sha256": "1ab5ef92d2369b45b82b936759b2be359e8343b627b3573cfea2c41ba6daf938",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/CEREMONY_PRESENTATION_2026-10-28.md",
+      "pass": true,
+      "sha256": "61d3cfea1f17c7ceaa6a7f08d6f41cd3a615e41e3c6fb74713e5bb847ef18503",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-ceremony-cpu.json",
+      "pass": true,
+      "sha256": "ae935ad4f2a9aabd193b9cd69001f40d8aace8e251755d77e6807eb6bbd60216",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-ceremony-legacy.json",
+      "pass": true,
+      "sha256": "b6cae441a7a1121d8b432988209d8ac910d4c2edf01c34f5ae5ab87c31824774",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-event-cost-desktop.png",
+      "pass": true,
+      "sha256": "e73e891b56bfefc936e1030ac76258d636799def0ad2a152f17680dc4fe8a778",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-event-cost-narrow.png",
+      "pass": true,
+      "sha256": "573850756ba76e744fbc480ea20357da93353eaa3402b40f4044ab57873929ce",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-farewell-3d.png",
+      "pass": true,
+      "sha256": "8ded5a9f04fed7e5a539a7d47e32b39d3d517622f3a2d2a4099273242e207146",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-feast-3d.png",
+      "pass": true,
+      "sha256": "34f42beaf94179f1aa164480d3fdf1d5fef3739717e6eca97d429ed723064921",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-procession-3d.png",
+      "pass": true,
+      "sha256": "250a5e2c28bd9c50b53542c9235da100baece2a46190e9ea6b8fc1fc681d769d",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "festival-art.js",
+      "pass": true,
+      "sha256": "4b13db24f10160e9d2ebde07ecc50a2856655f7e7d0ebacddd2a94d75f2f9d45",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "festival-layout.js",
+      "pass": true,
+      "sha256": "b76b4c7e7d528ace0b8d97a5cb27d71e8cff56c9e3bec0f8c090b3e8cacfc1e2",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "festival.js",
+      "pass": true,
+      "sha256": "c1651d118e5acfd0f02130abba9c0a67df791c4a3e8e48dfc544ef44b606f64c",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "game3d/actors.js",
+      "pass": true,
+      "sha256": "920332acc88b1ac87e95546cea6b1fd6b0bc0ba48b86885a533b562b76c3619e",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "game3d/festival-court.js",
+      "pass": true,
+      "sha256": "09cb4e0f1914c5eb268e5ce3461e73ba91b562c0eec32cc2a231f6f33d3ec3ca",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "game3d/renderer.js",
+      "pass": true,
+      "sha256": "7b7fed8674277d8308a2341e2792446e352c27a599e6d48ca058484ccacbcb89",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "game3d/resident-motion.js",
+      "pass": true,
+      "sha256": "9e8cd7312a639c912b035a5893ce706052b8a873c563d8917310b315335d4a4f",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "index.html",
+      "pass": true,
+      "sha256": "8aef7c1b2edd421df0f7346c86436b074c5acc2eecae3c5f6269c87e27752c6c",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "renderer.js",
+      "pass": true,
+      "sha256": "20165d2b12440d479072a913951cdb62aa0db7ec25fe7ebae84ffc505dbba445",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "style.css",
+      "pass": true,
+      "sha256": "aaebf18cbf17b23efacaf8a3a1422f9595ee2a424605a89ffa67f9f07fe5da34",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/ceremony-dance.test.js",
+      "pass": true,
+      "sha256": "31d460992c5c828df5eb8011556f4ae6172eddd469bdeab6a591f2d0053cf2e0",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/festival-court.test.js",
+      "pass": true,
+      "sha256": "1f2167334b288b568bf6f27df49a4ec1e1b2cbdb96d94784f74e514d5852640d",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/festival-court3d.test.js",
+      "pass": true,
+      "sha256": "ba735e58f700b9f15f58375d9215406b9020feab07810c67df618ca053b977e8",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/festival.test.js",
+      "pass": true,
+      "sha256": "018dd48dacf03bd5f1bfb9eaecd3c5b2de116983dcf94c48e1f2949a97dedc40",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/first-beer-festival.test.js",
+      "pass": true,
+      "sha256": "0b3186ecbf5456d5ad663b232a1498c5cc194c97dad8ccdd25dcd10258f8922a",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/fixtures/ceremony-presentation.html",
+      "pass": true,
+      "sha256": "a5136ae163c339677c6dad5a7b31bd1acc9a0915f552d7802549a9914d2a3987",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/funeral-crowd-geometry.test.js",
+      "pass": true,
+      "sha256": "bdec5ec13b13fe7e454f492c4502d3049ed4d29b52e95e6a8714cd8ac41f56de",
+      "http": "HTTP/2 200 "
+    },
+    {
+      "path": "tests/funeral-pose-regression.test.js",
+      "pass": true,
+      "sha256": "3853c34bca00982eadeacf3f210ae9cb15853275da79761dfc4fce1d49f8c179",
+      "http": "HTTP/2 200 "
+    }
+  ]
+}
