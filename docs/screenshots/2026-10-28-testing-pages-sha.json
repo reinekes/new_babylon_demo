@@ -1,0 +1,519 @@
+{
+  "commit": "74c9a8c3e5208bbbc54d59e74e0aba07ed718ddf",
+  "base": "7ff71e05d0b9fd43d48dbad1453c7547a3e7ba71",
+  "pagesRun": 40650594563,
+  "matched": 51,
+  "total": 51,
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 182766,
+      "expected": "f58d46cb5fe329b2f5fb73bfd40c85557e5bc463ead7bc3263b01e48d65a907e",
+      "actual": "f58d46cb5fe329b2f5fb73bfd40c85557e5bc463ead7bc3263b01e48d65a907e",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 128631,
+      "expected": "1656e2e1b346835e0a5e091213b24b2164d76f4a3100597372f682a324a0e491",
+      "actual": "1656e2e1b346835e0a5e091213b24b2164d76f4a3100597372f682a324a0e491",
+      "match": true
+    },
+    {
+      "path": "ceremony-time.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 363,
+      "expected": "cdf16cbd091400c98b29a7c0f7fbf1508e69208e47e594583edf9ad6943d6282",
+      "actual": "cdf16cbd091400c98b29a7c0f7fbf1508e69208e47e594583edf9ad6943d6282",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 7980,
+      "expected": "b96c11b82bf87fe6a1c4fdf9331ec0a206a64fb3485571ce8657d6dad690ec83",
+      "actual": "b96c11b82bf87fe6a1c4fdf9331ec0a206a64fb3485571ce8657d6dad690ec83",
+      "match": true
+    },
+    {
+      "path": "city-events.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 4947,
+      "expected": "de4ce8d691aafab6f93363800017618cd88a7df82e6f000be265b8f122e8142d",
+      "actual": "de4ce8d691aafab6f93363800017618cd88a7df82e6f000be265b8f122e8142d",
+      "match": true
+    },
+    {
+      "path": "docs/TESTING_CEREMONIES_EVENTS_2026-10-27.md",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 13556,
+      "expected": "5653eaa87cfbec6fe216cc4698a34b114c2714ccb4571b51e3efd94b0427f930",
+      "actual": "5653eaa87cfbec6fe216cc4698a34b114c2714ccb4571b51e3efd94b0427f930",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-festival-live-window.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 1682,
+      "expected": "41c4360e7eaaa3942844da44b056cf2e56df67d61ad28bedcfe7db73b113c7f7",
+      "actual": "41c4360e7eaaa3942844da44b056cf2e56df67d61ad28bedcfe7db73b113c7f7",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-festival-live-window.png",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 96421,
+      "expected": "ce3cf5aa6704a9e41af4e5e0ab8f784eabd74f0c7eee911ec08685b45f245698",
+      "actual": "ce3cf5aa6704a9e41af4e5e0ab8f784eabd74f0c7eee911ec08685b45f245698",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-4x-browser.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 898,
+      "expected": "53f05ba3753575b292dc7eeb03ea9556891d04f5b32483513a596040f3a6d51d",
+      "actual": "53f05ba3753575b292dc7eeb03ea9556891d04f5b32483513a596040f3a6d51d",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-4x-browser.png",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 189540,
+      "expected": "e306720d17162738602cc5d1421548cba438603ba0f56386da9e2c88f81c535d",
+      "actual": "e306720d17162738602cc5d1421548cba438603ba0f56386da9e2c88f81c535d",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-4x-cpu.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 483,
+      "expected": "4c26e25b36ebf8860b82b4b3061092c7e6a4f84e944758cabaec248c9d356756",
+      "actual": "4c26e25b36ebf8860b82b4b3061092c7e6a4f84e944758cabaec248c9d356756",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-ceremonies.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 25800,
+      "expected": "af987efd8a99822cb709ce851d210d233192fcf2074b1261123a2124d66963ba",
+      "actual": "af987efd8a99822cb709ce851d210d233192fcf2074b1261123a2124d66963ba",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-ceremonies.png",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 68673,
+      "expected": "0f1fa5f29c8a6f2c9dd73306f91886adfd30a3e0fa845c6964f8fb58d4dc1a42",
+      "actual": "0f1fa5f29c8a6f2c9dd73306f91886adfd30a3e0fa845c6964f8fb58d4dc1a42",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-legacy.json",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 4691,
+      "expected": "966a22d010c31a52c8a4d741a52cd5f91bebbec5c25e102d63bda8266ba6f144",
+      "actual": "966a22d010c31a52c8a4d741a52cd5f91bebbec5c25e102d63bda8266ba6f144",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-27-testing-tab.png",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 64883,
+      "expected": "ac15a77103595f34bdfd5bf0fa5d45aee940be4d5226bde6bef3b01bfd016c2f",
+      "actual": "ac15a77103595f34bdfd5bf0fa5d45aee940be4d5226bde6bef3b01bfd016c2f",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 48506,
+      "expected": "4bcb34abd679bda2aef47edf7fba3119020e1823efb83c32621ba7963a39abfe",
+      "actual": "4bcb34abd679bda2aef47edf7fba3119020e1823efb83c32621ba7963a39abfe",
+      "match": true
+    },
+    {
+      "path": "festival-art.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 1337,
+      "expected": "2b5e53fd8e1d0b6fe8d9de6feaa02d202e8877e96ff367baec0c81af1996b4f2",
+      "actual": "2b5e53fd8e1d0b6fe8d9de6feaa02d202e8877e96ff367baec0c81af1996b4f2",
+      "match": true
+    },
+    {
+      "path": "festival.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 26892,
+      "expected": "bb43584bf56e4f7ff662709e558b14ef47d55acf5269e33348d63bbefd9cc8d1",
+      "actual": "bb43584bf56e4f7ff662709e558b14ef47d55acf5269e33348d63bbefd9cc8d1",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 24815,
+      "expected": "bc85db0e6b630ca8945864aa7b8b74d0fc7fc295ffdd26bf2f49f9bb9977ac42",
+      "actual": "bc85db0e6b630ca8945864aa7b8b74d0fc7fc295ffdd26bf2f49f9bb9977ac42",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 21152,
+      "expected": "43d109a081c4d60142af44a65f1c78aba728eafefa41d32cdf50ae343d9b27cf",
+      "actual": "43d109a081c4d60142af44a65f1c78aba728eafefa41d32cdf50ae343d9b27cf",
+      "match": true
+    },
+    {
+      "path": "pests.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 11054,
+      "expected": "8cdce45e15fffaf458b852be0f311f35e599b09e5660acf7b4053da56383b490",
+      "actual": "8cdce45e15fffaf458b852be0f311f35e599b09e5660acf7b4053da56383b490",
+      "match": true
+    },
+    {
+      "path": "relic-quest.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 24020,
+      "expected": "d4067b9bbd19c299a8cb73dece21644bc8ee6c3018bef76f98ff64a334556106",
+      "actual": "d4067b9bbd19c299a8cb73dece21644bc8ee6c3018bef76f98ff64a334556106",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 40991,
+      "expected": "dedcb74eff334f662bf76a35bade87e2b5294cc722f7bcfe2075697a80c20f4f",
+      "actual": "dedcb74eff334f662bf76a35bade87e2b5294cc722f7bcfe2075697a80c20f4f",
+      "match": true
+    },
+    {
+      "path": "sacred-unlocks.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2718,
+      "expected": "8b20687165518a3625fcda9787874255041617ae0fec9e38f744f8e701282264",
+      "actual": "8b20687165518a3625fcda9787874255041617ae0fec9e38f744f8e701282264",
+      "match": true
+    },
+    {
+      "path": "style.css",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 65265,
+      "expected": "96f003a0a9d512542f7f3990c3900dd9cf99c98fd71a42079b73496ffa142af7",
+      "actual": "96f003a0a9d512542f7f3990c3900dd9cf99c98fd71a42079b73496ffa142af7",
+      "match": true
+    },
+    {
+      "path": "test-tools.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 5590,
+      "expected": "110c4ad690d44aabcc202b133cecbd9e024bd56187178ce8a93c0f127056944f",
+      "actual": "110c4ad690d44aabcc202b133cecbd9e024bd56187178ce8a93c0f127056944f",
+      "match": true
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 13282,
+      "expected": "532798b93af4f3899163f7bf188fae9a63a26a1183ee72a2977ce02a79adee44",
+      "actual": "532798b93af4f3899163f7bf188fae9a63a26a1183ee72a2977ce02a79adee44",
+      "match": true
+    },
+    {
+      "path": "tests/ceremony-time.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2371,
+      "expected": "f9d9c297ace7aa51babf7dce3939f18c3c719bce5404e6d406a44a567091705a",
+      "actual": "f9d9c297ace7aa51babf7dce3939f18c3c719bce5404e6d406a44a567091705a",
+      "match": true
+    },
+    {
+      "path": "tests/city-events.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 1630,
+      "expected": "f705ef802793ee4ec0b0c282be975f4a5568b59e8fe6b65bde0ff137a45d1997",
+      "actual": "f705ef802793ee4ec0b0c282be975f4a5568b59e8fe6b65bde0ff137a45d1997",
+      "match": true
+    },
+    {
+      "path": "tests/event-music.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 10717,
+      "expected": "c29bb70a2b073e3839680065a6bbf45058c74531ec4f6b7c5e3c668999417404",
+      "actual": "c29bb70a2b073e3839680065a6bbf45058c74531ec4f6b7c5e3c668999417404",
+      "match": true
+    },
+    {
+      "path": "tests/festival-progress.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 4990,
+      "expected": "457de28d48e86c8ac38d345f73a9b7b82f61d28bb8fa42cd7a195685a9e02daf",
+      "actual": "457de28d48e86c8ac38d345f73a9b7b82f61d28bb8fa42cd7a195685a9e02daf",
+      "match": true
+    },
+    {
+      "path": "tests/first-beer-festival.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 11794,
+      "expected": "2ab89ccc592821eb0a42ee0537fd63f0c16c140246a98b9accf37edb55913231",
+      "actual": "2ab89ccc592821eb0a42ee0537fd63f0c16c140246a98b9accf37edb55913231",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/audio-continuity.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 21940,
+      "expected": "39267365398abaecfa8e57e568fc1317451fae937f009b00cde0d26a10e8bfef",
+      "actual": "39267365398abaecfa8e57e568fc1317451fae937f009b00cde0d26a10e8bfef",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/main3d-stress.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 17280,
+      "expected": "866b1abbbeb5080b67009eaf81ec981fd78a3617d09dda4d6d90bb6024c0f1f8",
+      "actual": "866b1abbbeb5080b67009eaf81ec981fd78a3617d09dda4d6d90bb6024c0f1f8",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/testing-ceremonies.html",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 27336,
+      "expected": "9770bd33545c50b702cfd6a9946e678ac76ae660b000e8ce27046281d5aad958",
+      "actual": "9770bd33545c50b702cfd6a9946e678ac76ae660b000e8ce27046281d5aad958",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 6931,
+      "expected": "0b11700e34fa71595b735597a51f51548ae7545d543c0e48511f5f54388aa44e",
+      "actual": "0b11700e34fa71595b735597a51f51548ae7545d543c0e48511f5f54388aa44e",
+      "match": true
+    },
+    {
+      "path": "tests/godhood-modes.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 11559,
+      "expected": "202b67be1ac7276aa580cbd8d9f7d59e1631681fe6d6255750f78c1443f6f4f2",
+      "actual": "202b67be1ac7276aa580cbd8d9f7d59e1631681fe6d6255750f78c1443f6f4f2",
+      "match": true
+    },
+    {
+      "path": "tests/helpers/testing-ceremonies.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 1999,
+      "expected": "4b63e2a729846ea38d53333af510c5788f7f6752d3522c3c46ed9d2eb922cc72",
+      "actual": "4b63e2a729846ea38d53333af510c5788f7f6752d3522c3c46ed9d2eb922cc72",
+      "match": true
+    },
+    {
+      "path": "tests/households.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 6958,
+      "expected": "f0625549188f20870885b9dfa07fb2caf0b21b88f26b06d9aa67f5101b7cc1e5",
+      "actual": "f0625549188f20870885b9dfa07fb2caf0b21b88f26b06d9aa67f5101b7cc1e5",
+      "match": true
+    },
+    {
+      "path": "tests/miracle-access.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 4958,
+      "expected": "f1132aae1d6e25d6c95314bfb4ca0d126327c43a7c212a667a2b135ecc869ac4",
+      "actual": "f1132aae1d6e25d6c95314bfb4ca0d126327c43a7c212a667a2b135ecc869ac4",
+      "match": true
+    },
+    {
+      "path": "tests/relic-deferred-events.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2079,
+      "expected": "37a100b23a9028eba1f0f8e74b7d191da00c50cf756103438e62a2cdb8b732bc",
+      "actual": "37a100b23a9028eba1f0f8e74b7d191da00c50cf756103438e62a2cdb8b732bc",
+      "match": true
+    },
+    {
+      "path": "tests/relic-funeral-interruption.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2642,
+      "expected": "907bc575f716496917e9bf28beee0a118b4b34d714ed3902da7cf0fb2c4fd965",
+      "actual": "907bc575f716496917e9bf28beee0a118b4b34d714ed3902da7cf0fb2c4fd965",
+      "match": true
+    },
+    {
+      "path": "tests/test-tools-actions.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 6313,
+      "expected": "b51796398ba534fedf3d20e3cfe185320c53a8e56f4478cc731fd0892c9efc3f",
+      "actual": "b51796398ba534fedf3d20e3cfe185320c53a8e56f4478cc731fd0892c9efc3f",
+      "match": true
+    },
+    {
+      "path": "tests/test-tools-ui.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 2599,
+      "expected": "409754a5fce838f20a5c39a9605d403b7f0a1f7886add69032052d2c26f64ff5",
+      "actual": "409754a5fce838f20a5c39a9605d403b7f0a1f7886add69032052d2c26f64ff5",
+      "match": true
+    },
+    {
+      "path": "tests/testing-ceremonies-e2e.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 4221,
+      "expected": "b1a7402440a7a1cdcdd6017d6c7429415d83fb9dc03db25987079b256de42037",
+      "actual": "b1a7402440a7a1cdcdd6017d6c7429415d83fb9dc03db25987079b256de42037",
+      "match": true
+    },
+    {
+      "path": "tests/testing-tab-integration.test.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 710,
+      "expected": "190bcd117c8ea365354d5b9d1490ebab950b92bb53a00f1c33cc5d939016d1e5",
+      "actual": "190bcd117c8ea365354d5b9d1490ebab950b92bb53a00f1c33cc5d939016d1e5",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 1103,
+      "expected": "edb0c33528d467d3ac1620f2bbd1dcda063c8e2aac81b3bc3998b788e6e9bf7d",
+      "actual": "edb0c33528d467d3ac1620f2bbd1dcda063c8e2aac81b3bc3998b788e6e9bf7d",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 23482,
+      "expected": "0e58e7e8cd64cbe552258ba41aafaab3a20a278ebe34e7077c96ac88a11d2852",
+      "actual": "0e58e7e8cd64cbe552258ba41aafaab3a20a278ebe34e7077c96ac88a11d2852",
+      "match": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 5508,
+      "expected": "1c2c7b57a79707eb7aa68bd6905b723027e1a09ba30d8f511afbbbca0dbd3d86",
+      "actual": "1c2c7b57a79707eb7aa68bd6905b723027e1a09ba30d8f511afbbbca0dbd3d86",
+      "match": true
+    },
+    {
+      "path": "ui-test-tools.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 5954,
+      "expected": "7b7bbde4202c3994693ad08bb4ed89e6403633ce8afcf6130017aefecc2782c0",
+      "actual": "7b7bbde4202c3994693ad08bb4ed89e6403633ce8afcf6130017aefecc2782c0",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "http": [
+        "HTTP/2 200 "
+      ],
+      "bytes": 62164,
+      "expected": "d0cd0f60aeaad40a9f0f8b076370fc1707fa1eec64043c096afc9bed0ef1e97d",
+      "actual": "d0cd0f60aeaad40a9f0f8b076370fc1707fa1eec64043c096afc9bed0ef1e97d",
+      "match": true
+    }
+  ]
+}
