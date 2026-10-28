@@ -1,3 +1,19 @@
+// These low clay oil dishes are painted after each depth-sorted building,
+// outside the cached architectural sprite. They disappear with the ceremony.
+export function drawFestivalBuildingLights(r,b,s){
+ const feast=s.festival;
+ if(feast?.stage!=='celebrating'||(feast.occasion||'nightLights')!=='nightLights'||b.construction?.kind==='new'||['field','canal','bridge'].includes(b.type))return;
+ const p=r.point(b.x,b.y),q=r.s,c=r.ctx,t=feast.elapsed||0;
+ for(const [i,[a,z]]of [[-19,2],[0,12],[19,2]].entries()){
+  const x=p.x+a*q,y=p.y+z*q,flame=r.reduce?0:Math.sin(t*7+b.x*1.9+b.y+i*2)*.55*q;
+  c.fillStyle='#a66b45';c.beginPath();c.ellipse(x,y,2.7*q,1.3*q,0,0,Math.PI*2);c.fill();
+  c.fillStyle='#694831';c.beginPath();c.ellipse(x,y-.65*q,2.1*q,.7*q,0,0,Math.PI*2);c.fill();
+  r.polygon([[x-1.2*q,y-q],[x+flame,y-6*q],[x+1.2*q,y-q]],'#ee983f');
+  r.polygon([[x-.65*q,y-q],[x,y-4*q],[x+.65*q,y-q]],'#ffe4a2');
+  r.lights.push({x,y:y-3*q,size:22*q});
+ }
+}
+
 export function drawFestivalCourt(r,s,view){
  if(!view||!Number.isFinite(view.x)||!Number.isFinite(view.y))return;
  const q=r.s,p=r.point(view.court?.x??view.x+.25,view.court?.y??view.y+.35),c=r.ctx,t=(s.simTime||0)+(view.elapsed||0);

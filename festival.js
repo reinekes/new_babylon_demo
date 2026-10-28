@@ -8,7 +8,7 @@ import {canWork} from './demography.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationGridStep} from './navigation.js';
 import {roadSpeed} from './roads.js';
-import {festivalCourtLayout} from './festival-layout.js';
+import {festivalCourtLayout,festivalTorchContact} from './festival-layout.js';
 export const FESTIVAL_COST=Object.freeze({food:12,beer:6,prestige:15});
 export const festivalInvitation=()=>`Закажи общинный праздник: ${FESTIVAL_COST.prestige} престижа, ${FESTIVAL_COST.food} еды и ${FESTIVAL_COST.beer} пива. Жители доставят угощение к храму и соберутся после вечернего ужина.`;
 export const FESTIVAL_SECONDS=90;
@@ -215,7 +215,15 @@ export function festivalCitizenView(s,c){
   const layout=festivalCourtLayout(s,networkFor(s),q.temple),center=layout?.center;
   // Legacy parties may already be dancing two cells away. Never move those
   // people across the city just because their old save now uses a richer view.
-  if(center&&a.route.at(-1)?.key===center.key&&distance(c,center)<.01){const slot=q.actors.filter(a=>a.kind==='guest').findIndex(a=>a.id===c.id),place=layout.places[slot];if(place)view.festivalContact={...place,center:{x:center.x,y:center.y},slot};}
+  if(center&&a.route.at(-1)?.key===center.key&&distance(c,center)<.01){
+   if(!firstBeer(q)&&q.stage==='celebrating'&&layout.torchPatrol){
+    // The invitation roster is stable while guests arrive. Later arrivals
+    // must not replace torchbearers or redistribute their patrol phases.
+    const guests=q.actors.filter(guest=>guest.kind==='guest'),count=guests.length>=6?Math.min(3,Math.floor(guests.length/3)):0,slot=guests.slice(0,count).findIndex(guest=>guest.id===c.id);
+    if(slot>=0){view.walking=true;view.celebrating=false;view.festivalTorch=true;view.eventContact=festivalTorchContact(layout,elapsedFestival(s,q),slot,count);return view;}
+   }
+   const slot=q.actors.filter(a=>a.kind==='guest').findIndex(a=>a.id===c.id),place=layout.places[slot];if(place)view.festivalContact={...place,center:{x:center.x,y:center.y},slot};
+  }
  }
  return view;
 }

@@ -1,6 +1,7 @@
 import {roadTopologyRevision} from './roads.js';
 import {festivalView} from './festival.js';
-import {drawFestivalCourt} from './festival-art.js';
+import {drawFestivalCourt,drawFestivalBuildingLights} from './festival-art.js';
+import {ceremonyJoinStep} from './festival-layout.js';
 import {houseVariant} from './map-art.js';
 import {residentPose,drawActorGesture} from './actor-art.js';
 import {drawTradeBoat} from './waterfront-art.js';
@@ -12,7 +13,7 @@ import {drawConstruction,drawConstructionLabel} from './construction-art.js';
 import {canBuild,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
 import {WIDTH,HEIGHT,terrain,river,bridgeSpan,onBridge,depositAt,isShore,nearDeposit} from './world.js';
-import {visibleCitizens} from './workforce.js';
+import {visibleCitizens,networkFor} from './workforce.js';
 import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
@@ -210,9 +211,9 @@ export class Renderer{
  }
  person(person) {
   const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.onBridge?5:0);
-  const playTime=(this.state?.simTime||0)+(person.celebrating?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
+  const playTime=(this.state?.simTime||0)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
   const dance=person.celebrating&&!this.reduce?Math.sin(playTime*4+(Number(person.id)||0))*.7:0;p.y-=Math.abs(dance)*q;
-  const stride=person.walking&&!this.reduce?Math.sin((person.step||0)+(Number(person.id)||0))*1.45:0;
+  const stride=person.walking&&!this.reduce?Math.sin((person.festivalTorch?playTime*4:person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
   if(person.playing&&person.id%2===0){c.fillStyle='#b4804f';c.beginPath();c.arc(p.x+6*q,p.y-Math.abs(Math.sin(playTime*3))*3*q,1.8*q,0,7);c.fill();}
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
@@ -226,10 +227,10 @@ export class Renderer{
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();
   c.fillStyle='#d2ad7c';c.beginPath();c.arc(p.x+.6*q,p.y-10.7*q,.8*q,0,7);c.fill();
   this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.age>=55?'#deddd3':person.id%2?'#eee0b7':'#5c5140',1.7*q);
-  if(person.mourningTorch){const x=p.x+5*q,y=p.y-12*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q;
+  if(person.mourningTorch||person.festivalTorch){const x=p.x+5*q,y=p.y-12*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q;
    this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q],[x,y]],'#936746',1.4*q);
    this.polygon([[x-2*q,y],[x+flicker,y-6*q],[x+2*q,y]],'#ee983f');this.polygon([[x-q,y],[x,y-4*q],[x+q,y]],'#ffe19a');
-   if((person.id||0)%4===0)this.lights.push({x,y:y-2*q,size:17*q});
+   if(person.festivalTorch||(person.id||0)%4===0)this.lights.push({x,y:y-2*q,size:17*q});
   }
   if(person.guarding){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-5*q],[p.x+(7+swing)*q,p.y-10*q]],'#92764f',1.4*q);for(let i=0;i<4;i++)this.line([[p.x+(6+swing)*q,p.y-10*q],[p.x+(6+i+swing)*q,p.y-14*q]],'#b5a36c',q);}
   else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
@@ -290,7 +291,25 @@ export class Renderer{
  for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(x-river(y))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}const deposit=depositAt(s,x,y);if(deposit&&terrain(x,y,s)!=='water'){const kind=typeof deposit==='string'?deposit:deposit.kind,colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};this.tile(x,y,(colors[kind]||'#a8ad7a')+'77');const p=this.point(x,y);if(kind==='stone'||kind==='clay')for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*this.s,p.y+(k%2)*3*this.s,4*this.s,2*this.s,(3+k)*this.s,colors[kind],'#999276','#b1a282');}}
  }
  addEffect(id){this.effects.push({id,start:performance.now()});}
- draw(s,selection,time=performance.now()){this.layout();
+ ceremonyCitizens(s,dt,{paused=false,speed=1}={}){
+  if(this.presentedCeremonyState!==s){this.presentedCeremonyState=s;this.ceremonyPositions=new Map();}
+  const records=this.ceremonyPositions,seen=new Set();let network;
+  const people=visibleCitizens(s).map(person=>{
+   seen.add(person.id);const contact=person.eventContact||person.festivalContact,target={x:contact?.x??person.x,y:contact?.y??person.y},eventContact=!!person.eventContact;
+   let record=records.get(person.id),point=target;
+   if(!record){record={lastX:target.x,lastY:target.y,eventContactActive:eventContact,ceremonyJoin:null};records.set(person.id,record);}
+   else if(eventContact!==record.eventContactActive)record.ceremonyJoin={path:null,index:0,target:null};
+   record.eventContactActive=eventContact;
+   if(person.funeralContact||person.controlled)record.ceremonyJoin=null;
+   else if(record.ceremonyJoin){network??=networkFor(s);point=ceremonyJoinStep(record,s,network,target,dt,paused,speed);}
+   record.lastX=point.x;record.lastY=point.y;
+   return {...person,...point,kind:'person',onBridge:onBridge(s.buildings,point.x,point.y)};
+  });
+  for(const id of records.keys())if(!seen.has(id))records.delete(id);
+  return people;
+ }
+ draw(s,selection,time=performance.now(),{paused=false,speed=1}={}){this.layout();
+ const dt=this.visualLast===null?0:Math.min(.1,Math.max(0,(time-this.visualLast)/1000));speed=Math.max(0,Number.isFinite(speed)?speed:1);
  if(this.visualLast!==null&&!(typeof document!=='undefined'&&document.hidden))this.ambient+=Math.min(.25,Math.max(0,(time-this.visualLast)/1000));
  this.visualLast=time;
  const c=this.ctx,w=this.w,h=this.h,t=this.reduce?0:this.ambient;
@@ -307,7 +326,7 @@ export class Renderer{
  const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpan(b.y).y-vessel.y)<.65);
  if(underBridge&&this.inView(vessel.x,vessel.y,150))this.caravan(vessel);
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
- const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...visibleCitizens(s).map(person=>({...person,kind:'person',onBridge:onBridge(s.buildings,person.x,person.y)}))];
+ const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed})];
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
  const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpan(b.y);for(let x=span.left;x<span.right;x+=.5)entities.push({x:x+.25,y:span.y+.13,kind:'bridgeRail',end:Math.min(x+.5,span.right)});}
@@ -318,7 +337,7 @@ export class Renderer{
   if(e.kind==='person'&&s.funeral?.actors.some(a=>a.id===e.id)&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;
   const p=this.point(e.x,e.y);
   if(e.kind==='bridgeRail')this.bridgeRail(e.x-.25,e.end,e.y);
-  else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);}
+  else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='person')this.person(e);
   else if(e.kind==='festivalCourt')drawFestivalCourt(this,s,e.view);
   else if(e.kind==='caravan')this.caravan(e);

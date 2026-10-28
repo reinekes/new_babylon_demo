@@ -1,4 +1,4 @@
-import {ceremonyActive,ceremonyLabel} from './ceremony-time.js';
+import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
 import {cityEventDefinition} from './city-events.js';
 import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,firstBuilderInspiration,gameMode} from './godhood.js';
 import {modeChooserHTML,createGodhoodControls,gameModeLabel} from './ui-godhood.js';
@@ -73,6 +73,9 @@ let state=createGame(),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
 try{const raw=localStorage.getItem(key);if(raw){const saved=decode(raw);if(saved){state=saved;loaded=true;if(JSON.parse(raw).version<22)legacyRaw=raw;}else corrupt=true;}}catch{storageOK=false;}
 let encyclopediaUI=null,encyclopediaRequest=0;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
+const ceremonySpeed=createCeremonySpeedControl();
+function setSpeed(value){speed=value;for(const button of document.querySelectorAll('[data-speed]')){const active=Number(button.dataset.speed)===speed;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}}
+function syncCeremonySpeed(){const next=ceremonySpeed(state,speed);if(next!==speed)setSpeed(next);}
 const dialog=$('dialog');
 const renderer=await createGameRenderer($('city'),tile=>{
  if(dialog.open||photo?.active)return;
@@ -91,7 +94,7 @@ const renderer=await createGameRenderer($('city'),tile=>{
 let photoWasPaused=true;
 const cityAudio=createCityAudio(text=>toast(text));
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
-const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;speed=1;for(const b of document.querySelectorAll('[data-speed]'))b.classList.toggle('active',b.dataset.speed==='1');selection=null;inspected=null;inspectedPerson=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
+const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
 document.addEventListener('click',event=>{if(!relicControlActive(state))return;const target=event.target;if(target.closest?.('.relic-hud,.game3d-options,.panel-controls')||['city','pause','toggle-sound','zoom-out','zoom-in','home','overview'].includes(target.id))return;event.preventDefault();event.stopImmediatePropagation();toast('Ты ведёшь избранного: городские команды закрыты до возвращения.');},true);
 
@@ -266,7 +269,7 @@ async function showEncyclopedia(){
  if(relicControlActive(state)){toast('Сначала заверши путь избранного');return;}
  openDialog('encyclopedia','<button class="management-close" id="close-encyclopedia" aria-label="Вернуться в город">×</button><div id="encyclopedia-root"><span class="eyebrow">ГЛИНЯНЫЕ ТАБЛИЧКИ</span><h2>Энциклопедия</h2><p role="status">Открываем песенные таблички…</p></div>');$('close-encyclopedia').onclick=closeDialog;
  const request=encyclopediaRequest,root=$('encyclopedia-root');
- try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=music-library-20261028-2',import.meta.url),onPreviewChange:value=>cityAudio.setPreviewing(value)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
+ try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=ceremony-speed-lights-20261028-1',import.meta.url),onPreviewChange:value=>cityAudio.setPreviewing(value)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
  catch{if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;root.innerHTML='<h2>Энциклопедия</h2><p>Не удалось загрузить песенные таблички.</p><button id="encyclopedia-retry">Попробовать снова</button>';$('encyclopedia-retry').onclick=showEncyclopedia;}
 }
 function showLifeAnalytics(selectedId){
@@ -410,7 +413,7 @@ $('rotate-building').onclick=()=>rotatePlacement();
 $('open-encyclopedia').onclick=showEncyclopedia;$('open-song-library').onclick=showEncyclopedia;
 $('reset').onclick=askReset;$('help').onclick=intro;$('pantheon').onclick=pantheon;
 $('pause').onclick=()=>{if(state.lost&&!state.funeral)return;paused=!paused;save();update();};
-for(const el of document.querySelectorAll('[data-speed]'))el.onclick=()=>{speed=Number(el.dataset.speed);for(const b of document.querySelectorAll('[data-speed]'))b.classList.toggle('active',b===el);};
+for(const el of document.querySelectorAll('[data-speed]'))el.onclick=()=>setSpeed(Number(el.dataset.speed));setSpeed(speed);
 $('next-season').title='Перейти к следующему месяцу';$('next-season').setAttribute('aria-label','Следующий месяц');$('next-season').onclick=()=>{advanceTime(state,secondsToNextMonth(state));save();update();checkDialogs();};
 $('day-cycle').onclick=()=>{const clock=lightingAt(state.simTime),target=isWorkday(state.simTime)?20.25:6,seconds=((target-clock.hour+24)%24)*DAY_SECONDS/24+.05;advanceTime(state,seconds);renderer.lightMode='auto';save();update();checkDialogs();};
 $('zoom-in').onclick=()=>renderer.zoomBy?renderer.zoomBy(.2):renderer.zoom=Math.min(3,renderer.zoom+.2);$('zoom-out').onclick=()=>renderer.zoomBy?renderer.zoomBy(-.2):renderer.zoom=Math.max(.3,renderer.zoom-.2);$('home').onclick=()=>renderer.home();$('overview').onclick=()=>renderer.overview();
@@ -424,14 +427,14 @@ function ceremonyPresentation(){
  const q=state.festival;if(q?.stage==='celebrating'&&q!==shownFeast){shownFeast=q;const view=festivalView(state),p=view?.court||view;if(p){renderer.addEffect('festival',{x:p.x,y:p.y});renderer.focusOn(p.x,p.y);}toast(q.occasion==='firstBeer'?'Первая партия пива выпущена! Начался пир у пивоварни.':'Ночь огней началась: жители пируют и танцуют.');}
  if(!q)shownFeast=null;
  if(lastBeerStatus!==state.firstBeerFeast?.status){lastBeerStatus=state.firstBeerFeast?.status;if(lastBeerStatus==='pending')toast('Первая партия пива выпущена! Жители готовят малый пир у пивоварни.');}
- const text=ceremonyLabel(state);ceremonyNotice.hidden=!text;ceremonyNotice.textContent=`${text} · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
+ const text=ceremonyLabel(state);ceremonyNotice.hidden=!text;ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
 }
 function frame(now){
- const dt=Math.min(250,Math.max(0,now-last));last=now;
+ const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=document.hidden||photo.active||paused||windowBlocks||!!state.event;
- if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick;advanceTime(state,ceremonyActive(state)?dt/1000:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
- ceremonyPresentation();if(now-lastUI>350){update();lastUI=now;}
- renderer.inspected=inspected;cityAudio.tick(state,paused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,speed:relicControlActive(state)||ceremonyActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
+ if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick;advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
+ syncCeremonySpeed();ceremonyPresentation();if(now-lastUI>350){update();lastUI=now;}
+ renderer.inspected=inspected;cityAudio.tick(state,paused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
 }
 update();requestAnimationFrame(frame);
 if(!loaded)chooseNewMode();else{toast(legacyRaw?'Город обновлён: дворы, ремёсла, обзор кварталов и фоторежим. Прежние запасы, семьи, грузы и оплаченные стройки сохранены.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}

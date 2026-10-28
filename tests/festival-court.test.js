@@ -31,7 +31,7 @@ test('festival guests walk to one shared courtyard instead of twelve distant roa
 });
 
 test('arrived guests have compact dry separate places facing the feast without changing saved people or cargo',()=>{
- const s=gatheredCity(),before=encode(s),view=festivalView(s),people=s.festival.actors.filter(a=>a.kind==='guest').map(a=>s.citizens.find(c=>c.id===a.id));
+ const s=gatheredCity(),before=encode(s),view=festivalView(s),people=s.festival.actors.filter(a=>a.kind==='guest').map(a=>s.citizens.find(c=>c.id===a.id)).filter(c=>!festivalCitizenView(s,c).festivalTorch);
  const contacts=people.map(c=>festivalCitizenView(s,c).festivalContact);
  assert.ok(view.court,'the 3D court and people need the same anchor');
  assert.ok(contacts.every(Boolean),'every arrived guest needs a safe courtyard place');
@@ -44,6 +44,41 @@ test('arrived guests have compact dry separate places facing the feast without c
  }
  assert.deepEqual(contacts,people.map(c=>festivalCitizenView(s,c).festivalContact));
  assert.equal(encode(s),before,'render geometry cannot move identities, loads, routes or reservations');
+});
+
+test('Night of Lights gives two or three real guests torches and dry street patrols instead of copying residents',()=>{
+ const s=gatheredCity(),net=networkFor(s),ids=s.citizens.map(c=>c.id),actorIds=s.festival.actors.map(a=>a.id),clock=clockOf(s),resources=structuredClone(s.resources),positions=[];
+ for(const elapsed of [0,1,5,12,27,60,89]){
+  s.festival.elapsed=elapsed;const before=encode(s),views=s.citizens.map(c=>({id:c.id,...festivalCitizenView(s,c)})),walkers=views.filter(v=>v.festivalTorch);
+  assert.ok(walkers.length>=2&&walkers.length<=3,'a few real arrived guests carry the lights');
+  for(const v of walkers){
+   assert.ok(actorIds.includes(v.id));assert.equal(v.walking,true);assert.equal(v.celebrating,false);assert.equal(v.festivalContact,undefined);
+   const p=v.eventContact,from=net.nodes.get(p.fromKey),to=net.nodes.get(p.toKey);
+   assert.ok(from&&to&&net.graph.get(from.key).has(to.key),'walking stays on a real street graph edge');
+   assert.ok(isDryPoint(s,p.x,p.y));assert.ok(navigationSegmentClear(s,from,to));
+   assert.ok(Math.hypot(p.x-festivalView(s).court.x,p.y-festivalView(s).court.y)<=2.61);
+   assert.ok(Math.abs(Math.hypot(p.x-from.x,p.y-from.y)+Math.hypot(p.x-to.x,p.y-to.y)-Math.hypot(to.x-from.x,to.y-from.y))<1e-7,'the shown person lies on the safe edge');
+  }
+  positions.push(walkers.map(v=>[v.id,v.eventContact.x,v.eventContact.y]));
+  assert.equal(encode(s),before,'rendering cannot move people or touch the saved festival ledger');
+ }
+ assert.notDeepEqual(positions[0],positions[2],'the torchbearers actually walk over ceremony time');
+ assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.deepEqual(clockOf(s),clock);assert.deepEqual(s.resources,resources);
+});
+
+test('torch patrols freeze with ceremony time and retain the same people and route after reload',()=>{
+ const s=testingCity();assert.ok(orderFestival(s).ok);assert.ok(advanceUntil(s,state=>state.festival?.stage==='celebrating'));advanceTime(s,3);s.festival.elapsed=17.25;
+ const views=state=>state.citizens.map(c=>({id:c.id,...festivalCitizenView(state,c)})).filter(v=>v.festivalTorch),before=views(s);
+ assert.ok(before.length>=2);assert.deepEqual(views(s),before,'redrawing paused time must not advance a patrol');
+ const restored=decode(encode(s));assert.ok(restored);assert.deepEqual(views(restored),before,'save/load does not change torchbearer identities or their route');
+ const clock=clockOf(s);advanceTime(s,4);assert.ok(Math.abs(s.festival.elapsed-21.25)<1e-7);assert.notDeepEqual(views(s),before);assert.deepEqual(clockOf(s),clock);
+});
+
+test('the first-beer gathering and guests who are still arriving never receive Night of Lights torches',()=>{
+ const s=brewingCity();assert.ok(advanceUntil(s,state=>state.festival?.stage==='celebrating'));advanceTime(s,3);
+ assert.ok(s.citizens.every(c=>!festivalCitizenView(s,c).festivalTorch));
+ const q=gatheredCity();for(const a of q.festival.actors)a.stage='arriving';
+ assert.ok(q.citizens.every(c=>!festivalCitizenView(q,c).festivalTorch));
 });
 
 test('the feast lasts ninety ceremony seconds across reload while the calendar and goods stay frozen',()=>{
@@ -111,4 +146,14 @@ test('the first-cup server returns to ordinary life when the brewery has no safe
  assert.deepEqual(s.festival.actors,[]);assert.ok(s.citizens.every(c=>c.phase!=='festival'),'a rejected invitation cannot strand its former porter outside the actor ledger');
  assert.equal(festivalSummary(s).progress.code,'noCourtyard');assert.ok(validateFestival(s));assert.ok(cancelFestival(s).refunded);
  assert.equal(s.firstBeerFeast.status,'pending','the unique first-cup occasion can retry after making room');
+});
+
+
+test('late guests do not reshuffle existing torchbearers or their street positions',()=>{
+ const s=gatheredCity(),guests=s.festival.actors.filter(a=>a.kind==='guest');s.festival.elapsed=12;
+ for(const a of guests.slice(6))a.stage='arriving';
+ const views=()=>s.citizens.map(c=>({id:c.id,...festivalCitizenView(s,c)})).filter(v=>v.festivalTorch);
+ const before=views();assert.ok(before.length>=2);
+ for(const a of guests.slice(6))a.stage='dancing';
+ assert.deepEqual(views(),before,'later arrivals cannot shift the existing patrol');
 });

@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import {GameRenderer3D} from '../game3d/renderer.js';
 import {lightingAt} from '../city-life.js';
 import {houseLightCount} from '../households.js';
+import {createHouseLights} from '../game3d/house-lights.js';
+import {surfaceElevation} from '../district3d/terrain.js';
 
 const sandbox={console,setTimeout,clearTimeout,performance,self:{}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
@@ -81,5 +83,60 @@ test('forced day, sunset, night and paused repeats keep shared PBR configuration
    if(mode==='day'){daytimeSun=f.r.sun.intensity;assert.equal(active(f.points()).length,0);}if(mode==='night'){assert.ok(f.r.sun.intensity<daytimeSun);assert.equal(active(f.points()).length,6);}
   }
   assert.equal(notifications,0);
+ }finally{f.close();}
+});
+
+test('Night of Lights decorates every completed building, including empty homes, without adding a light per lamp',()=>{
+ const f=setup();try{
+  f.state.citizens=[];f.state.buildings=[{type:'house',x:0,y:0,level:1},{type:'brewery',x:1,y:0,level:1},{type:'shrine',x:2,y:0,level:2},{type:'house',x:3,y:0,level:2,construction:{kind:'upgrade'}},{type:'field',x:4,y:0},{type:'canal',x:5,y:0},{type:'bridge',x:6,y:0},{type:'depot',x:7,y:0,construction:{kind:'new'}}];
+  f.state.festival={stage:'celebrating',occasion:'nightLights',elapsed:0};
+  const before=JSON.stringify(f.state);f.r.updateLight(f.state);const view=f.r.houseLights;
+  assert.equal(view.festivalBuildingCount,4,'a citywide celebration includes every completed building, regardless of occupancy');
+  assert.ok(view.festivalLampCount>=24,'many visible lamps instead of only six local point lights');
+  assert.equal(view.festivalMeshes.length,4,'the whole city shares four instanced batches');
+  assert.ok(view.festivalMeshes.every(mesh=>mesh.isEnabled()&&mesh.thinInstanceCount===view.festivalLampCount));
+  assert.ok(f.points().length<=6,'real point-light budget remains bounded');assert.equal(active(f.points()).length,4);
+  assert.equal(JSON.stringify(f.state),before,'lighting never changes simulation or save data');
+ }finally{f.close();}
+});
+
+test('festival lamp batches and point lights are reused across 200-building frames and released after the event',()=>{
+ const f=setup();try{
+  f.state.citizens=[];f.state.buildings=Array.from({length:200},(_,i)=>({type:i%2?'house':'pottery',x:i%20,y:Math.floor(i/20),level:1+i%3}));
+  f.state.festival={stage:'celebrating',occasion:'nightLights',elapsed:5};f.r.updateLight(f.state);const view=f.r.houseLights;
+  assert.equal(view.festivalBuildingCount,200);assert.ok(view.festivalLampCount>=1200);const ids=(view.festivalMeshes||[]).map(m=>m.uniqueId),meshCount=f.scene.meshes.length,materialCount=f.scene.materials.length;
+  for(let i=0;i<40;i++){f.state.festival.elapsed=i;f.r.camera.target.x=i*6;f.r.updateLight(f.state);assert.equal(f.scene.meshes.length,meshCount);assert.equal(f.scene.materials.length,materialCount);assert.deepEqual(view.festivalMeshes.map(m=>m.uniqueId),ids);assert.ok(f.points().length<=6);}
+  f.state.buildings.pop();f.r.updateLight(f.state);assert.equal(view.festivalBuildingCount,199);
+  f.state.festival=null;f.r.updateLight(f.state);assert.ok(view.festivalMeshes.every(m=>!m.isEnabled()));assert.equal(active(f.points()).length,0);
+  view.dispose();assert.ok(view.festivalMeshes.every(m=>m.isDisposed()));assert.equal(f.points().length,0);
+ }finally{f.close();}
+});
+
+test('preparation and first-beer feasts do not enable the citywide Night of Lights decorations',()=>{
+ const f=setup();try{
+  const view=createHouseLights(B,f.scene);for(const festival of [null,{stage:'waiting',occasion:'nightLights'},{stage:'supplying',occasion:'nightLights'},{stage:'celebrating',occasion:'firstBeer'}]){f.state.festival=festival;view.update(f.state,0,f.r.camera.target);assert.equal(view.festivalLampCount,0);assert.equal(view.festivalMeshes.length,0);}
+  view.dispose();
+ }finally{f.close();}
+});
+
+test('shoreline festival lamps stay above the building platform instead of sinking to the river bed',()=>{
+ const f=setup();try{
+  f.state.citizens=[];f.state.buildings=[{type:'fishing',x:14,y:9,level:1}];f.state.festival={stage:'celebrating',occasion:'nightLights',elapsed:10};
+  const bed=surfaceElevation(14,9,f.state);assert.ok(bed<-.2,'the existing shoreline building stands above a genuinely lower river bank');
+  const before=JSON.stringify(f.state);f.r.updateLight(f.state);const view=f.r.houseLights;
+  const bowlPositions=Array.from(view.festivalMeshes[0].thinInstanceGetWorldMatrices(),matrix=>matrix.getTranslation());assert.equal(bowlPositions.length,8);
+  for(const position of bowlPositions)assert.ok([position.x,position.y,position.z].every(Number.isFinite)&&position.y>.13,'oil bowls remain above the authored y=0 platform');
+  assert.ok(bowlPositions.slice(-2).every(position=>position.y>1.9),'roof lamps follow the authored roof, not the negative shoreline elevation');
+  assert.equal(active(f.points())[0].position.y,1.5,'bounded real lights illuminate the same raised platform');assert.equal(JSON.stringify(f.state),before);
+ }finally{f.close();}
+});
+
+test('large-gate ground lamps clear an unflattened dune at the map edge',()=>{
+ const f=setup();try{
+  f.state.citizens=[];f.state.buildings=[{type:'ishtarGate',x:0,y:0,level:1,footprint:3}];f.state.festival={stage:'celebrating',occasion:'nightLights',elapsed:10};
+  const before=JSON.stringify(f.state);f.r.updateLight(f.state);const positions=Array.from(f.r.houseLights.festivalMeshes[0].thinInstanceGetWorldMatrices(),matrix=>matrix.getTranslation());
+  assert.equal(positions.length,6);assert.ok(positions.some(p=>surfaceElevation(p.x/6,p.z/6,f.state)>.4),'large footprints reach genuinely raised, unflattened scenery');
+  for(const p of positions){const support=Math.max(0,surfaceElevation(p.x/6,p.z/6,f.state));assert.ok(Math.abs(p.y-support-.14)<1e-6,`ground lamp at ${p.x},${p.z} must clear its dune`);}
+  assert.equal(JSON.stringify(f.state),before);
  }finally{f.close();}
 });

@@ -1,7 +1,7 @@
 // Pure presentation. Never changes simulation tasks, routes, cargo or residents.
 export function residentPose(person,craft,time=0,reduce=false){
  const beat=reduce?0:Math.sin(time*3.5+(Number(person.id)||0)*1.7);
- if(person.mourningTorch||person.guarding)return {kind:'walk',beat};
+ if(person.mourningTorch||person.festivalTorch||person.guarding)return {kind:'walk',beat};
  if(person.celebrating)return {kind:'dance',beat};
  if(person.phase==='unloading'&&person.carrying)return {kind:'unload',beat};
  if(person.carrying||person.waterTrip?.load>0)return {kind:'carry',beat};

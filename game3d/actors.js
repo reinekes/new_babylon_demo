@@ -3,7 +3,8 @@ import {createFestivalCourt} from './festival-court.js';
 import {loadModel} from './asset-loading.js';
 import {workstationHands,workstationPose} from './workstations.js';
 import {professionClothing,createProfessionClothing} from './profession-clothing.js';
-import {visibleCitizens} from '../workforce.js';
+import {visibleCitizens,networkFor} from '../workforce.js';
+import {ceremonyJoinStep} from '../festival-layout.js';
 import {animalsFor} from '../fauna.js';
 import {funeralView} from '../funerals.js';
 import {createFuneralRitual} from './funeral-ritual.js';
@@ -27,7 +28,7 @@ export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity}
 
 // These helpers read state only. The renderer never advances workers or writes saves.
 export function actorViewFrame(state){
- const residents=visibleCitizens(state),byId=new Map(residents.map(c=>[c.id,c]));
+ const residents=visibleCitizens(state).map(c=>c.eventContact?{...c,x:c.eventContact.x,y:c.eventContact.y}:c),byId=new Map(residents.map(c=>[c.id,c]));
  // Pair once, using the actual rendered child-play positions and walking flags.
  // A hand must be able to reach the cat; the general neighbourhood test is wider.
  const pettingPairs=catPettingPairs(state,residents).filter(p=>{const c=byId.get(p.citizenId),scale=c.age<16?.55+Math.max(0,Math.min(c.age,15))*.022:1;return Math.hypot(c.x-p.x,c.y-p.y)<=.16*scale;});
@@ -291,10 +292,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   cargo(a,c);
  }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
-  a.workContact=viewPosition.contact||null;
+  a.workContact=viewPosition.contact||null;a.presentationCitizen=c;
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
-  if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){
+  const eventContact=!!c.eventContact;
+  if(a.lastX!==null&&a.eventContactActive!==undefined&&eventContact!==a.eventContactActive)a.ceremonyJoin={path:null,index:0,target:null};
+  a.eventContactActive=eventContact;
+  if(c.funeralContact||c.controlled){a.ceremonyJoin=null;a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}
+  else if(a.ceremonyJoin){const point=ceremonyJoinStep(a,state,networkFor(state),viewPosition,dt,paused,speed);a.viewOffsetX=point.x-c.x;a.viewOffsetY=point.y-c.y;}
+  else if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){
    const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),distance=Math.hypot(offsetX-a.viewOffsetX,offsetY-a.viewOffsetY);
    // Final gathering steps stay at walking speed instead of snapping to a spot.
    const blend=c.festivalContact?Math.min(1,.24*dt*speed/Math.max(.00001,distance)):fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;
@@ -306,10 +312,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,swim?swim.height:onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);a.root.metadata.swimming=!!swim;
   if(a.details)a.details.setEnabled(!swim);
-  if(c.funeralContact){
+  if(c.funeralContact||c.eventContact&&!a.ceremonyJoin){
    // Both rail targets and the bearer share this ceremony orientation. Generic
    // path smoothing must not rotate them apart or snap the root when paused.
-   if(!paused||a.yaw===null){a.yaw=c.funeralContact.yaw;a.root.rotation.y=a.yaw;}
+   if(!paused||a.yaw===null){a.yaw=(c.funeralContact||c.eventContact).yaw;a.root.rotation.y=a.yaw;}
   }else{
    if(c.festivalContact&&!paused){const center=c.festivalContact.center,dx=center.x-shownX,dy=center.y-shownY;a.yaw=Math.hypot(dx,dy)>.001?Math.atan2(dx,dy):c.festivalContact.yaw;}
    if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
@@ -388,7 +394,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     // Per-person nonuniform stature changes effective segment lengths after a
     // solve; iterate the actual GLB chain until both palms settle on the rails.
     for(let solve=0;solve<4;solve++){poseArm(a,'l',local(a.c.funeralContact.hands.left));poseArm(a,'r',local(a.c.funeralContact.hands.right));}
-   }else if(a.c.mourningTorch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
+   }else if(a.c.mourningTorch||a.c.festivalTorch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
    }else if(swimming){
     const stroke=residentSwimmingPresentation(a.c,a.time,{reducedMotion}).stroke;
     if(carry){a.load.position.set(0,.50,1.05);for(let solve=0;solve<4;solve++){poseArm(a,'l',vec(-.21,.50,1.05));poseArm(a,'r',vec(.21,.50,1.05));}}
@@ -425,7 +431,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
    musicianMallets(a,music?a.workContact:null);
-   if(!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&a.pose!=='petting'){
+   if(!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&a.pose!=='petting'){
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
@@ -477,8 +483,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(riteState)funeralProps(riteState);
  });
  function funeralProps(state){
-  const savedView=funeralView(state),f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map();for(const [id,a]of people)if(a.c?.mourningTorch&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());}
-  ritual.update(f,state,poseTime,grips,id=>jackals?.mouthFor(id));
+  const savedView=funeralView(state),f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map(),festivalTorches=[];
+  for(const [id,a]of people){const current=a.presentationCitizen;if((current?.mourningTorch||current?.festivalTorch)&&a.root.isEnabled()&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());if(current.festivalTorch)festivalTorches.push({id,torch:true});}}
+  const torchView=festivalTorches.length?{...f,participants:[...(f?.participants||[]),...festivalTorches]}:f;
+  ritual.update(torchView,state,poseTime,grips,id=>jackals?.mouthFor(id));
   if(f?.coffin){if(!bier){const root=new B.TransformNode('funeral-bier',scene);box('bier-cloth',root,linen,0,.58,0,.7,.22,1.8);for(const x of [-.35,.35])box('bier-pole',root,wood,x,.42,0,.045,.045,2.5);bier={root};}bier.root.position.set(f.coffin.x*6,surfaceElevation(f.coffin.x,f.coffin.y,state),f.coffin.y*6);}
   else if(bier){remove(bier);bier=null;}
 
@@ -496,12 +504,12 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    const anatomy=residentAnatomy(c.age),historical=historicalSource&&usesHistoricalMan(c)&&(!paused||!a||a.anatomy==='historical-man'),variant=historical?'historical-man':anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;
    // Only the presentation skin changes. Keep the real person's identity,
    // route sample, facing and gait phase when optional detail becomes ready.
-   if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
+   if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,eventContactActive:a.eventContactActive,ceremonyJoin:a.ceremonyJoin,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
    if(replacedState){
     // A loaded save can reuse this ID while changing land/water and task. Keep
     // its rig, but never restore a frozen pose sampled from the previous city.
-    a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
+    a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
     for(const arm of a.armNodes)arm.last=null;for(const leg of Object.values(a.legs)){leg.lastPosition=null;leg.lastRotations=null;}
     a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
    }
