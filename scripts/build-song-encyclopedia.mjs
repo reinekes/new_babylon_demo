@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 
 const sourceURL=new URL('../docs/SONGS_TEXTS_TRANSLATIONS_2026-10-27.md',import.meta.url);
 const outputURL=new URL('../assets/encyclopedia/songs.json',import.meta.url);
-const IDS=['inanna','enki','descent','drinking-song','night-feast','city-lament'];
+const IDS=['inanna','enki','descent','drinking-song','night-feast','city-lament','cat-arrival','earth-breath'];
 function cells(line){return line.split('|').slice(1,-1).map(s=>s.trim());}
 function blocks(text){
  const lines=text.trim().split('\n'),out=[];let i=0;
@@ -25,13 +25,13 @@ function blocks(text){
 export function buildSongEncyclopedia(source){
  const normalized=source.replace(/\r\n/g,'\n');
  const matches=[...normalized.matchAll(/^## (\d+)\. (.+)\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
- if(matches.length!==IDS.length||matches.some((m,i)=>Number(m[1])!==i+1))throw Error('Ожидались шесть песенных статей (1–6)');
+ if(matches.length!==IDS.length||matches.some((m,i)=>Number(m[1])!==i+1))throw Error(`Ожидались ${IDS.length} песенных статей (1–${IDS.length})`);
  const caveats=normalized.match(/^## Как читать и использовать сборник\n([\s\S]*?)(?=^## )/m)?.[1];
  const principles=normalized.match(/^## Принципы будущей энциклопедической карточки\n([\s\S]*)$/m)?.[1];
  const contents=normalized.match(/^## Состав\n([\s\S]*?)(?=^## )/m)?.[1];
  if(!caveats||!principles||!contents)throw Error('Не найдены пояснения или состав сборника');
  const summaries=blocks(contents).find(b=>b.type==='table')?.rows;
- if(summaries?.length!==IDS.length)throw Error('Состав сборника должен перечислять шесть песен');
+ if(summaries?.length!==IDS.length)throw Error(`Состав сборника должен перечислять ${IDS.length} песен`);
  const articles=matches.map((m,i)=>{const all=blocks(m[3]),prompt=all.findIndex(b=>b.type==='heading'&&b.text.startsWith('Промпт Suno'));const content=prompt<0?all:all.slice(0,prompt);if(content.filter(b=>b.type==='lyrics').length!==1||content.filter(b=>b.type==='table').length!==1)throw Error(`Неполная песенная статья ${i+1}`);return {id:IDS[i],number:i+1,title:m[2],shortTitle:summaries[i][1],work:summaries[i][2],usage:summaries[i][3],blocks:content};});
  return {format:1,title:'Песни Нового Вавилона',source:{name:'SONGS_TEXTS_TRANSLATIONS_2026-10-27.md',sha256:createHash('sha256').update(source).digest('hex')},caveats:blocks(caveats),principles:blocks(principles),articles};
 }

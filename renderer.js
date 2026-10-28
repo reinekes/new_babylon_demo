@@ -1,3 +1,6 @@
+import {miracleCelebrationView} from './miracle-celebration.js';
+import {miracleGardenPlan} from './miracle-garden-plan.js';
+import {footprintSize} from './footprints.js';
 import {roadTopologyRevision} from './roads.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights} from './festival-art.js';
@@ -12,7 +15,7 @@ import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
 import {canBuild,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
-import {WIDTH,HEIGHT,terrain,river,bridgeSpan,onBridge,depositAt,isShore,nearDeposit} from './world.js';
+import {WIDTH,HEIGHT,terrain,river,bridgeSpan,onBridge,depositAt,isShore,nearDeposit,isDryPoint} from './world.js';
 import {visibleCitizens,networkFor} from './workforce.js';
 import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
@@ -22,6 +25,10 @@ const spriteTypes=new Set(['house','brickyard','waterpoint','sheepfold','weaver'
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
+// Match the 3D garden's foundation clearance without loading 3D scenery assets.
+export function miraclePlantClear(s,p){
+ return isDryPoint(s,p.x,p.y)&&!(s.buildings||[]).some(b=>{const size=footprintSize(b),center=(size-1)/2,half=size/2+.16;return Math.abs(b.x+center-p.x)<half&&Math.abs(b.y+center-p.y)<half;});
+}
 export class Renderer{
  constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.75;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(moves[e.key]){e.preventDefault();const current=this.hover||{x:10,y:9};const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(WIDTH-1,current.x+dx)),y:Math.max(0,Math.min(HEIGHT-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= {x:10,y:9};this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
  setRoadMode(enabled){this.roadMode=!!enabled;if(!enabled)this.roadDrawMode=false;}
@@ -211,7 +218,7 @@ export class Renderer{
  }
  person(person) {
   const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.onBridge?5:0);
-  const playTime=(this.state?.simTime||0)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
+  const playTime=person.miracleContact?this.state?.miracleCelebration?.elapsed||0:(this.state?.simTime||0)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
   const dance=person.celebrating&&!this.reduce?Math.sin(playTime*4+(Number(person.id)||0))*.7:0;p.y-=Math.abs(dance)*q;
   const stride=person.walking&&!this.reduce?Math.sin((person.festivalTorch?playTime*4:person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
@@ -290,17 +297,27 @@ export class Renderer{
  const riverPoints=[];for(let y=-.5;y<=HEIGHT-.5;y+=.25)riverPoints.push(this.point(river(y)-1.12,y));for(let y=HEIGHT-.5;y>=-.5;y-=.25)riverPoints.push(this.point(river(y)+1.12,y));this.polygon(riverPoints,s.drought?'#80aaa0':'#77aaa0');const inner=[];for(let y=-.5;y<=HEIGHT-.5;y+=.25)inner.push(this.point(river(y)-.7,y));for(let y=HEIGHT-.5;y>=-.5;y-=.25)inner.push(this.point(river(y)+.6,y));this.polygon(inner,'#4d9192');for(const side of [-1,1]){const bank=[],shallows=[];for(let yy=-.5;yy<=HEIGHT-.5;yy+=.25){bank.push(this.point(river(yy)+side*1.15,yy));shallows.push(this.point(river(yy)+side*.91,yy));}this.line(bank,'#a9b58a',2.2*this.s);this.line(shallows,'#a4c5af70',1.3*this.s);}
  for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(x-river(y))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}const deposit=depositAt(s,x,y);if(deposit&&terrain(x,y,s)!=='water'){const kind=typeof deposit==='string'?deposit:deposit.kind,colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};this.tile(x,y,(colors[kind]||'#a8ad7a')+'77');const p=this.point(x,y);if(kind==='stone'||kind==='clay')for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*this.s,p.y+(k%2)*3*this.s,4*this.s,2*this.s,(3+k)*this.s,colors[kind],'#999276','#b1a282');}}
  }
+ miraclePlant(e){
+  const grow=Math.max(0,Math.min(1,(e.age-e.delay)/2.4)),fade=Math.max(0,Math.min(1,(60-e.age)/5));if(!grow||!fade)return;
+  const p=this.point(e.x,e.y),q=this.s*grow*fade,c=this.ctx,kind=e.plantKind;c.save();
+  if(kind==='grass'){this.line([[p.x-2*q,p.y],[p.x,p.y-4*q],[p.x+2*q,p.y]],'#579c51',1.4*q);}
+  else if(kind==='birch'){this.line([[p.x,p.y],[p.x-2*q,p.y-38*q]],'#eeead8',3*q);for(let i=0;i<5;i++){c.fillStyle='#80bd64';c.beginPath();c.ellipse(p.x+(i%2?6:-6)*q,p.y-(25+i*4)*q,10*q,6*q,0,0,7);c.fill();}}
+  else if(kind==='cactus'){this.line([[p.x,p.y],[p.x,p.y-14*q]],'#4e9d6e',4*q);this.line([[p.x-5*q,p.y-12*q],[p.x-5*q,p.y-7*q],[p.x+5*q,p.y-7*q],[p.x+5*q,p.y-13*q]],'#60ac78',3*q);}
+  else {const h=kind==='lilac'?13:5;this.line([[p.x,p.y],[p.x,p.y-h*q]],'#579b50',q);c.fillStyle=kind==='lilac'?'#c69bd8':'#fffcdf';for(let i=0;i<5;i++){const a=i*Math.PI*2/5;c.beginPath();c.arc(p.x+Math.cos(a)*2*q,p.y-h*q+Math.sin(a)*2*q,1.8*q,0,7);c.fill();}c.fillStyle='#e5bc49';c.beginPath();c.arc(p.x,p.y-h*q,q,0,7);c.fill();}c.restore();
+ }
  addEffect(id){this.effects.push({id,start:performance.now()});}
  ceremonyCitizens(s,dt,{paused=false,speed=1}={}){
   if(this.presentedCeremonyState!==s){this.presentedCeremonyState=s;this.ceremonyPositions=new Map();}
   const records=this.ceremonyPositions,seen=new Set();let network;
-  const people=visibleCitizens(s).map(person=>{
+  const miracle=miracleCelebrationView(s),overrides=new Map(miracle?.participants.map(p=>[p.id,p])||[]),source=miracle?s.citizens:visibleCitizens(s);
+  const people=source.map(original=>{
+   const participant=overrides.get(original.id),person=participant?{...original,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,eventContact:null,festivalContact:null,miracleContact:participant}:original;
    seen.add(person.id);const contact=person.eventContact||person.festivalContact,target={x:contact?.x??person.x,y:contact?.y??person.y},eventContact=!!person.eventContact;
    let record=records.get(person.id),point=target;
    if(!record){record={lastX:target.x,lastY:target.y,eventContactActive:eventContact,ceremonyJoin:null};records.set(person.id,record);}
    else if(eventContact!==record.eventContactActive)record.ceremonyJoin={path:null,index:0,target:null};
    record.eventContactActive=eventContact;
-   if(person.funeralContact||person.controlled)record.ceremonyJoin=null;
+   if(person.miracleContact||person.funeralContact||person.controlled)record.ceremonyJoin=null;
    else if(record.ceremonyJoin){network??=networkFor(s);point=ceremonyJoinStep(record,s,network,target,dt,paused,speed);}
    record.lastX=point.x;record.lastY=point.y;
    return {...person,...point,kind:'person',onBridge:onBridge(s.buildings,point.x,point.y)};
@@ -327,6 +344,7 @@ export class Renderer{
  if(underBridge&&this.inView(vessel.x,vessel.y,150))this.caravan(vessel);
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
  const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed})];
+ const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
  const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpan(b.y);for(let x=span.left;x<span.right;x+=.5)entities.push({x:x+.25,y:span.y+.13,kind:'bridgeRail',end:Math.min(x+.5,span.right)});}
@@ -339,6 +357,7 @@ export class Renderer{
   if(e.kind==='bridgeRail')this.bridgeRail(e.x-.25,e.end,e.y);
   else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='person')this.person(e);
+  else if(e.kind==='miraclePlant')this.miraclePlant(e);
   else if(e.kind==='festivalCourt')drawFestivalCourt(this,s,e.view);
   else if(e.kind==='caravan')this.caravan(e);
   else if(e.kind==='groundStocks')this.stockPile(e);

@@ -1,3 +1,4 @@
+import {advanceCalendar} from './helpers/calendar-time.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -7,7 +8,7 @@ import {capacityOf,outputMultiplier} from '../definitions.js';
 import {initializeWorld} from '../world.js';
 import {DIVINE_NAMES} from '../divinity.js';
 const settle=s=>{if(s.event)s.event=null;};
-function run(s,seconds){for(let t=0;t<seconds;t+=1){settle(s);advanceTime(s,Math.min(1,seconds-t));}settle(s);}
+function run(s,seconds){for(let t=0;t<seconds;t+=1){settle(s);advanceCalendar(s,Math.min(1,seconds-t));}settle(s);}
 test('map is larger while initial town terrain remains compatible',()=>{assert.equal(WIDTH,40);assert.equal(HEIGHT,32);assert.equal(terrain(39,31),'sand');assert.equal(terrain(12,8),'fertile');});
 test('people have real homes/jobs; resources only increase after actual deliveries',()=>{const s=createGame({start:'established'});assert.equal(s.citizens.length,12);assert.ok(s.citizens.every(c=>c.home));const before=s.resources.clay;advanceTime(s,1);assert.equal(s.resources.clay,before);run(s,23);assert.ok(s.deliveries>0);assert.ok(s.resources.clay>before);assert.ok(s.citizens.some(c=>c.work));assert.ok(Object.values(s.delivered).some(v=>v>0));});
 test('workers finish deliveries and return home at night instead of fading away',()=>{const s=createGame({start:'established'});run(s,50);assert.ok(s.citizens.every(c=>['home','resting'].includes(c.phase)),'workers return home, keeping cargo if the store is full');assert.equal(visibleCitizens(s).length,0);const before=structuredClone(s.resources);const loss=s.pests.totalLoss;run(s,3);assert.deepEqual({...s.resources,food:before.food},before);assert.ok(Math.abs(before.food-s.resources.food-(s.pests.totalLoss-loss))<1e-7);run(s,8);assert.ok(visibleCitizens(s).length>0);});

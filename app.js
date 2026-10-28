@@ -63,7 +63,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const foodAmount=n=>Number(n.toFixed(1));
 const rounded=n=>Number(n.toFixed(n<10?1:0));
 const resourceText=cargo=>Object.entries(cargo).filter(([,v])=>v>.001).map(([k,v])=>`${rounded(v)} ${DISPLAY_RESOURCE_NAMES[k]||resourceLabel(k)}`).join(' · ')||'пусто';
-let placementRotation=0,testMapUpgrade=false;
+let placementRotation=0,testMapUpgrade=false,lastMiracleTarget=null;
 let roadDrawFrom=null,roadDrawTo=null;
 let inspectedPerson=null,roadMode=false,householdTab='family',routeFrom=null,routeTo=null,routeTarget=2,routeCache=null;
 const desiredRoles=new Map();
@@ -79,6 +79,7 @@ function syncCeremonySpeed(){const next=ceremonySpeed(state,speed);if(next!==spe
 const dialog=$('dialog');
 const renderer=await createGameRenderer($('city'),tile=>{
  if(dialog.open||photo?.active)return;
+ lastMiracleTarget={x:tile.x,y:tile.y};
  if(testMapUpgrade){const b=buildingAt(state,tile.x,tile.y);if(!b){toast('Выбери готовое здание для мгновенного улучшения');return;}const r=instantTestUpgrade(state,buildingKey(b));mutate(r,r.ok?`${BUILDINGS[b.type].name}: уровень ${b.level}`:'');return;}
  if(relicControlActive(state)){const b=buildingAt(state,tile.x,tile.y),q=relicQuestView(state);if(q.phase==='carrying'&&b&&['shrine','ziggurat'].includes(b.type))relicUI.deliver(buildingKey(b));else relicUI.move(tile);return;}
  if(selection){const result=build(state,selection,tile.x,tile.y,placementRotation);if(result.ok){toast(`${BUILDINGS[selection].name}: стройплощадка заложена`);save();update();checkDialogs();}else toast(result.reason);return;}
@@ -330,7 +331,7 @@ function makeMiracleCard(id,m){
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
  const el=details.querySelector('.miracle-cast');
- el.onclick=()=>{const result=miracle(state,id);if(result.ok){details.open=false;renderer.addEffect(id);toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
+ el.onclick=()=>{const result=miracle(state,id,lastMiracleTarget);if(result.ok){details.open=false;renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
 }
 for(const [id,m]of Object.entries(MIRACLES))if(shouldShowMiracle(state,id))makeMiracleCard(id,m);
 function update(){
@@ -394,7 +395,7 @@ function checkDialogs(){
 function pantheon(){
  openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p><div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
 }
-function newGame(mode){state=createGame({mode});desiredRoles.clear();clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;loaded=false;closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();save();update();intro();}
+function newGame(mode){state=createGame({mode});lastMiracleTarget=null;desiredRoles.clear();clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;loaded=false;closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();save();update();intro();}
 function chooseNewMode(replace=false){openDialog('mode',modeChooserHTML({replace}));dialog.dataset.replace=String(replace);document.querySelectorAll('[data-new-mode]').forEach(button=>button.onclick=()=>newGame(button.dataset.newMode));if($('cancel-mode'))$('cancel-mode').onclick=()=>{closeDialog();checkDialogs();};}
 function askReset(){chooseNewMode(true);}
 $('building-count').textContent=Object.keys(BUILDINGS).length;
@@ -420,9 +421,10 @@ $('zoom-in').onclick=()=>renderer.zoomBy?renderer.zoomBy(.2):renderer.zoom=Math.
 dialog.addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='mode'&&dialog.dataset.replace==='true'){closeDialog();return;}if(['help','reset','pantheon','construction','residents','confirmation','trade','citytools','festival','life','relicIntro','encyclopedia'].includes(modalKind)){closeDialog();checkDialogs();}});
 document.addEventListener('keydown',e=>{if(relicControlActive(state)){if(e.code==='Space'&&!['INPUT','SELECT','BUTTON'].includes(e.target.tagName)){e.preventDefault();paused=!paused;save();update();}return;}if(photo.active||dialog.open||['INPUT','TEXTAREA','SELECT','SUMMARY'].includes(e.target.tagName))return;if(e.code==='KeyR'&&selection){e.preventDefault();rotatePlacement(e.shiftKey?-1:1);return;}if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(testMapUpgrade){testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');toast('Тестовое улучшение закончено');return;}if(roadMode){clearRoadRoute();$('tile-detail').hidden=true;roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
-let shownEvent=null,shownFeast=null,lastBeerStatus=state.firstBeerFeast?.status;
-const ceremonyNotice=document.createElement('button');ceremonyNotice.className='ceremony-notice';ceremonyNotice.hidden=true;$('city').parentNode.append(ceremonyNotice);ceremonyNotice.onclick=()=>{if(state.festival)showFestival();else if(state.funeral?.gather)renderer.focusOn(state.funeral.gather.x,state.funeral.gather.y);};
+let shownEvent=null,shownFeast=null,shownMiracle=null,lastBeerStatus=state.firstBeerFeast?.status;
+const ceremonyNotice=document.createElement('button');ceremonyNotice.className='ceremony-notice';ceremonyNotice.hidden=true;$('city').parentNode.append(ceremonyNotice);ceremonyNotice.onclick=()=>{if(state.miracleCelebration){const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);}else if(state.festival)showFestival();else if(state.funeral?.gather)renderer.focusOn(state.funeral.gather.x,state.funeral.gather.y);};
 function ceremonyPresentation(){
+ const miracleScene=state.miracleCelebration;if(miracleScene&&shownMiracle!==miracleScene){shownMiracle=miracleScene;renderer.focusOn(miracleScene.center.x,miracleScene.center.y);toast(miracleScene.kind==='cat'?'Неожиданный гость: жители встречают кошку!':'Дыхание земли: жители собираются у чудесного сада!');}if(!miracleScene)shownMiracle=null;
  if(state.event!==shownEvent){shownEvent=state.event;if(shownEvent)renderer.addEffect(cityEventDefinition(shownEvent.id)?.effectId||'blessing');}
  const q=state.festival;if(q?.stage==='celebrating'&&q!==shownFeast){shownFeast=q;const view=festivalView(state),p=view?.court||view;if(p){renderer.addEffect('festival',{x:p.x,y:p.y});renderer.focusOn(p.x,p.y);}toast(q.occasion==='firstBeer'?'Первая партия пива выпущена! Начался пир у пивоварни.':'Ночь огней началась: жители пируют и танцуют.');}
  if(!q)shownFeast=null;

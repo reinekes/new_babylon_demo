@@ -62,6 +62,7 @@ export function initializeRelicQuest(s,{reconcileUnusedSite=false}={}){
 const searchPoint=q=>({x:q.artifact.location==='ground'?q.artifact.x:q.site.x,y:q.artifact.location==='ground'?q.artifact.y:q.site.y});
 export function relicSiteReserved(s,x,y){return entries(s).some(({id,q})=>id==='land'&&q&&q.artifact.location==='ground'&&Math.hypot(q.artifact.x-x,q.artifact.y-y)<.8);}
 export function relicStartReason(s,id,questId='oasis'){
+ if(s.miracleCelebration)return 'Дождись завершения встречи чуда';
  const choice=selected(s,questId),q=choice?.q;if(!q)return questId==='land'?'В этой долине нет доступной сухопутной реликвии':'В этой долине нет доступного оазиса';if(q.phase==='completed')return 'Артефакт уже хранится в храме';if(relicControlActive(s))return 'Ты уже ведёшь человека';if(s.lost||s.funeral||s.festival||s.event)return 'Дождись завершения события, праздника или прощания';
  const c=s.citizens?.find(c=>c.id===id);if(!eligible(c))return 'Нужен здоровый свободный взрослый до 55 лет, дома и без груза';
  if((s.resources?.faith||0)<RELIC_FAITH_COST)return `Нужно ${RELIC_FAITH_COST} веры`;

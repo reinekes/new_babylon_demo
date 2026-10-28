@@ -1,3 +1,4 @@
+import {startMiracleCelebration,advanceMiracleCelebration,validateMiracleCelebration,miracleCelebrationReason,miracleCelebrationTargetReason} from './miracle-celebration.js';
 import {ceremonyActive} from './ceremony-time.js';
 import {cityEventDefinition,createCityEvent,isAdditionalCityEvent,cityEventReason,applyCityEvent} from './city-events.js';
 import {initializeGodhood,validateGodhood,buildingKnowledgeReason,miracleKnowledgeReason} from './godhood.js';
@@ -61,6 +62,7 @@ export const storage=storageOf;
 export function workers(s){const needed=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).reduce((n,b)=>n+(b.type==='musicHouse'?1:2),0);return needed?Math.min(1,workforceStats(s).employed/needed):1;}
 export function buildingAt(s,x,y){return s.buildings.find(b=>occupiesCell(b,x,y))||s.buildings.find(b=>{if(b.type!=='bridge'||b.y!==y)return false;const span=bridgeSpan(y);return terrain(x,y,s)==='water'&&x>=span.left&&x<=span.right;});}
 export function canBuild(s,type,x,y,placementOnly=false,rotation=0){
+ if(!placementOnly&&s.miracleCelebration)return miracleCelebrationReason(s);
  if(!placementOnly&&relicControlActive(s))return relicCommandReason(s);
  const knowledge=buildingKnowledgeReason(s,type);if(knowledge)return knowledge;
  if(BUILDINGS[type]?.unique&&s.buildings.some(b=>b.type===type))return 'Эта уникальная постройка уже заложена';
@@ -88,7 +90,7 @@ export function canBuild(s,type,x,y,placementOnly=false,rotation=0){
 export const canPlace=(s,type,x,y,rotation=0)=>canBuild(s,type,x,y,true,rotation);
 export function build(s,type,x,y,rotation=0){const reason=canBuild(s,type,x,y,false,rotation);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type]);if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,rotation,...(newFootprint(type)>1?{footprint:newFootprint(type)}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${BUILDINGS[type].name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 
-export function canUpgrade(s,b){if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(b.type==='canal')return 'Канал готовится в один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
+export function canUpgrade(s,b){if(s.miracleCelebration)return miracleCelebrationReason(s);if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(b.type==='canal')return 'Канал готовится в один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${BUILDINGS[b.type].name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.type==='house')return `${b.starterHut&&level===1?'Дом-улей · только улучшение или снос · ':''}Жильё: ${capacityOf(b)} жителей`;
@@ -108,11 +110,14 @@ export function yieldSummary(s,b){
  const output=Object.entries(def.output).map(([k,n])=>`${(n*outputMultiplier(b)).toFixed(n<1?2:1)} ${RESOURCE_NAMES[k]}`).join(' + ');
  return `${b.type==='field'?(Number.isInteger(b.x)?fieldWater(s,b).label:'Приречная земля или полив из канала')+' · ':''}${output} за рейс работника · 2 рабочих места${b.type==='garden'?` · +${2+2*level} довольства`:''}`;
 }
-export function miracle(s,id){
+export function miracle(s,id,target){
+ if((s.miracleCelebration||['cat','fertility'].includes(id))&&miracleCelebrationReason(s))return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};const lock=miracleKnowledgeReason(s,id)||miracleLockReason(s,id);if(lock)return {ok:false,reason:lock};
  const m=MIRACLES[id];if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<m.cost)return {ok:false,reason:`Нужно ${m.cost} веры`};if(id==='cat'&&catReason(s))return {ok:false,reason:catReason(s)};if(id==='abundance'&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
  if(s.funeral&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
  if(['bless','healing'].includes(id)&&s.population>=s.capacity&&s.happiness>=100)return {ok:false,reason:'Город уже счастлив; для новых жителей нужны дома'};
+ if(['cat','fertility'].includes(id)){const reason=miracleCelebrationTargetReason(s,id==='fertility'?target:null);if(reason)return {ok:false,reason};}
+ if(id==='fertility'&&!startMiracleCelebration(s,id,{center:target}))return {ok:false,reason:'Нет безопасного места для церемонии'};
  s.resources.faith-=m.cost;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
  const oldName=s.name;registerMiracle(s,m.domain);
@@ -168,7 +173,7 @@ export function advanceTime(s,seconds){
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
-  if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
+  if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
   const dt=Math.min(remaining,45-s.seasonElapsed),worked=advanceWorkers(s,dt,{stopForCeremony:true});syncSacredUnlocks(s);s.seasonElapsed+=worked;remaining-=worked;advanced+=worked;
   if(s.seasonElapsed>=45-1e-7){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
@@ -177,6 +182,7 @@ export function advanceTime(s,seconds){
 export function advanceSeason(s){return advanceTime(s,45-s.seasonElapsed)>0;}
 export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
+ if(s.miracleCelebration)return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};
  if(!s.event||!['accept','skip'].includes(choice))return {ok:false,reason:'Нет такого решения'};
  if(choice==='accept'&&s.event.id==='festival'){const event=s.event;s.event=null;const result=orderFestival(s);if(!result.ok){s.event=event;return result;}log(s,event.title,'Жители готовят угощение и вечерний сбор у храма.','good');syncCitizens(s);check(s);return result;}
@@ -338,7 +344,7 @@ export function decode(raw){
   if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateWellbeing(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
-  initializeFestival(s,{legacy:true});if(!validateFestival(s))return null;
+  initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
   if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;

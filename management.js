@@ -1,5 +1,6 @@
 import {godhoodInspirationReason,firstBuilderInspiration,acceptGodhoodInspiration} from './godhood.js';
 import {relicControlActive,relicCommandReason} from './relic-quest.js';
+import {cityCommandReason} from './city-command-lock.js';
 import {recoverFestivalCitizen} from './festival.js';
 import {recordProfessionEpithet,recordInspirationOutcome} from './citizen-epithets.js';
 import {isArtisan,artisanOutput} from './artisan.js';
@@ -19,7 +20,7 @@ import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
 const roles=ROLES;
 const hasLoad=c=>!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||c.pantryFood>0||Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
 const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
-const blocked=s=>relicControlActive(s)?relicCommandReason(s):s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'';
+const blocked=s=>cityCommandReason(s)||(s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'');
 const upgradePrice=(b,level)=>({...level===2?(b.type==='house'?{wood:4,hides:2}:b.type!=='bridge'?{stone:8}:{}):{},clay:Math.ceil(BUILDINGS[b.type].clay*(level===1?1.5:2.5)),reed:Math.max(4,Math.ceil(BUILDINGS[b.type].reed*(level===1?1.5:2.5)))});
 function note(s,title,text){s.news.unshift({title,text,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
 export function cancellationRefund(b){const q=b?.construction;return q?{...q.required,faith:q.kind==='new'?(BUILDINGS[b.type]?.faith||0):0}:{clay:0,reed:0,faith:0};}

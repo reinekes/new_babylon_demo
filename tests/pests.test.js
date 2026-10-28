@@ -1,3 +1,4 @@
+import {advanceMiracleCelebration} from '../miracle-celebration.js';
 import {emptyStore} from './inventory-test-helpers.js';
 import {projectLegacy} from './inventory-test-helpers.js';
 import {test} from 'node:test';
@@ -10,7 +11,7 @@ test('mice consume only warehouse food and record exact losses; cats do not exis
  assert.equal(pestActors(s).filter(a=>a.kind==='cat').length,0);advancePests(s,10);assert.ok(s.resources.food<before);assert.ok(Math.abs(before-s.resources.food-s.pests.totalLoss)<1e-7);assert.deepEqual(s.buildings.filter(b=>b.type==='house').map(b=>b.pantry),homes);assert.deepEqual(s.citizens.map(c=>c.cargo),cargo);
 });
 test('god brings the first cat, visible catches reduce mice and loss compared with no protection',()=>{
- const s=createGame({start:'established'}),bare=createGame({start:'established'});assert.ok(miracle(s,'cat').ok);assert.equal(s.pests.cats.length,1);assert.ok(pestActors(s).some(a=>a.kind==='cat'));for(let i=0;i<400;i++){advancePests(s,.1);advancePests(bare,.1);}assert.ok(s.pests.sites[0].caught>0);assert.ok(s.pests.totalLoss<bare.pests.totalLoss);assert.ok(pestReport(s,'9,8').includes('Кошка'));
+ const s=createGame({start:'established'}),bare=createGame({start:'established'});assert.ok(miracle(s,'cat').ok);advanceMiracleCelebration(s,60);assert.equal(s.pests.cats.length,1);assert.ok(pestActors(s).some(a=>a.kind==='cat'));for(let i=0;i<400;i++){advancePests(s,.1);advancePests(bare,.1);}assert.ok(s.pests.sites[0].caught>0);assert.ok(s.pests.totalLoss<bare.pests.totalLoss);assert.ok(pestReport(s,'9,8').includes('Кошка'));
  assert.deepEqual(decode(encode(s)),s);
 });
 test('an assigned adult actually walks to guard; at home gives no protection and cannot be taken to construction',()=>{
@@ -22,7 +23,7 @@ test('old saves add no cats and lose no food; malformed pest stocks are rejected
  loaded.pests.totalLoss=-1;assert.equal(decode(encode(loaded)),null);
 });
 test('the visible chase converges before the target vanishes and reload keeps catches deterministic',()=>{
- const s=createGame({start:'established'});miracle(s,'cat');for(let i=0;i<99;i++)advancePests(s,.1);const actors=pestActors(s),cat=actors.find(a=>a.kind==='cat'),mouse=actors.find(a=>a.kind==='mouse');assert.ok(Math.hypot(cat.x-mouse.x,cat.y-mouse.y)<.03);
+ const s=createGame({start:'established'});miracle(s,'cat');advanceMiracleCelebration(s,60);for(let i=0;i<99;i++)advancePests(s,.1);const actors=pestActors(s),cat=actors.find(a=>a.kind==='cat'),mouse=actors.find(a=>a.kind==='mouse');assert.ok(Math.hypot(cat.x-mouse.x,cat.y-mouse.y)<.03);
  const copy=decode(encode(s));assert.ok(copy);advancePests(s,.2);advancePests(copy,.2);assert.equal(pestActors(s).filter(a=>a.kind==='mouse').length,0);assert.ok(pestActors(s).some(a=>a.kind==='pestCatch'));assert.deepEqual(copy,s);
 });
 test('guarding does not create temple offerings, preserves old cargo, and stops providing protection at night',async()=>{
@@ -32,13 +33,13 @@ test('guarding does not create temple offerings, preserves old cargo, and stops 
  advanceTime(s,20);assert.equal(c.phase,'home');const loss=s.pests.totalLoss,scared=s.pests.sites[0].scared;advanceTime(s,3);assert.equal(s.pests.sites[0].scared,scared);assert.ok(s.pests.totalLoss>loss);
 });
 test('demolishing a guarded store clears its post, retains the cat as a stray and keeps saves valid',async()=>{
- const {syncCitizens}=await import('../workforce.js'),{demolish}=await import('../management.js'),{isDryPoint}=await import('../world.js');const s=createGame({start:'established'});s.buildings.push({type:'granary',x:10,y:9,level:1});syncCitizens(s);miracle(s,'cat');assignGuard(s,6,'9,8');emptyStore(s,'9,8');assert.ok(demolish(s,9,8).ok);assert.equal(s.citizens[6].guardPost,undefined);assert.ok(decode(encode(s)));const cat=pestActors(s).find(a=>a.kind==='cat');assert.ok(cat);assert.ok(isDryPoint(s,cat.x,cat.y));assert.ok(!s.buildings.some(b=>Math.abs(b.x-cat.x)<.48&&Math.abs(b.y-cat.y)<.48));
+ const {syncCitizens}=await import('../workforce.js'),{demolish}=await import('../management.js'),{isDryPoint}=await import('../world.js');const s=createGame({start:'established'});s.buildings.push({type:'granary',x:10,y:9,level:1});syncCitizens(s);miracle(s,'cat');advanceMiracleCelebration(s,60);assignGuard(s,6,'9,8');emptyStore(s,'9,8');assert.ok(demolish(s,9,8).ok);assert.equal(s.citizens[6].guardPost,undefined);assert.ok(decode(encode(s)));const cat=pestActors(s).find(a=>a.kind==='cat');assert.ok(cat);assert.ok(isDryPoint(s,cat.x,cat.y));assert.ok(!s.buildings.some(b=>Math.abs(b.x-cat.x)<.48&&Math.abs(b.y-cat.y)<.48));
 });
 test('bad duplicate guards and cats are rejected; old towns do not get free cats',()=>{
  const s=createGame({start:'established'});assignGuard(s,6,'9,8');s.citizens[7].guardPost='9,8';assert.equal(decode(encode(s)),null);delete s.citizens[7].guardPost;miracle(s,'cat');s.pests.cats.push({...s.pests.cats[0],id:s.pests.nextCat++});assert.equal(decode(encode(s)),null);
 });
 test('with three mice the one chased is the one removed, while the two others remain visible',()=>{
- const s=createGame({start:'established'});s.pests.sites[0].mice=3;miracle(s,'cat');for(let i=0;i<99;i++)advancePests(s,.1);const actors=pestActors(s),cat=actors.find(a=>a.kind==='cat'),target=actors.find(a=>a.id==='mouse:9,8:2');assert.ok(Math.hypot(cat.x-target.x,cat.y-target.y)<.03);advancePests(s,.2);const after=pestActors(s);assert.equal(after.some(a=>a.id===target.id),false);assert.ok(after.some(a=>a.id==='mouse:9,8:0'));assert.ok(after.some(a=>a.id==='mouse:9,8:1'));
+ const s=createGame({start:'established'});s.pests.sites[0].mice=3;miracle(s,'cat');advanceMiracleCelebration(s,60);for(let i=0;i<99;i++)advancePests(s,.1);const actors=pestActors(s),cat=actors.find(a=>a.kind==='cat'),target=actors.find(a=>a.id==='mouse:9,8:2');assert.ok(Math.hypot(cat.x-target.x,cat.y-target.y)<.03);advancePests(s,.2);const after=pestActors(s);assert.equal(after.some(a=>a.id===target.id),false);assert.ok(after.some(a=>a.id==='mouse:9,8:0'));assert.ok(after.some(a=>a.id==='mouse:9,8:1'));
 });
 test('real v12 harvest city migrates without changing crops, pinned jobs, family food or resources',async()=>{
  const {readFileSync}=await import('node:fs');const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v12-harvest.json',import.meta.url)));assert.equal(old.version,12);const s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,28);assert.deepEqual(s.citizens.map((c,i)=>Object.fromEntries(Object.keys(old.citizens[i]).map(k=>[k,c[k]]))),old.citizens);assert.deepEqual(Object.fromEntries(Object.keys(old.resources).map(k=>[k,s.resources[k]])),old.resources);assert.deepEqual(projectLegacy(s.buildings,old.buildings),old.buildings);assert.equal(s.pests.cats.length,0);assert.equal(s.pests.totalLoss,0);assert.deepEqual(decode(encode(s)),s);

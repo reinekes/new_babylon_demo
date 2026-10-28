@@ -1,3 +1,4 @@
+import {advanceMiracleCelebration} from '../miracle-celebration.js';
 import {projectLegacy} from './inventory-test-helpers.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
@@ -25,15 +26,15 @@ test('legacy migration retains people, carried goods and pantry; crop state surv
  const next=decode(encode(loaded));assert.deepEqual(next,loaded);
 });
 test('cats and mice inhabit storage yards, move and rest without entering water or buildings',async()=>{
- const {miracle}=await import('../engine.js');const {advancePests}=await import('../pests.js');const {animalsFor}=await import('../fauna.js'),{isDryPoint}=await import('../world.js');const s=createGame({start:'established'}),actions=new Set(),positions=new Set();miracle(s,'cat');
+ const {miracle}=await import('../engine.js');const {advancePests}=await import('../pests.js');const {animalsFor}=await import('../fauna.js'),{isDryPoint}=await import('../world.js');const s=createGame({start:'established'}),actions=new Set(),positions=new Set();miracle(s,'cat');advanceMiracleCelebration(s,60);
  for(let t=0;t<60;t+=.5){s.simTime=t;advancePests(s,.5);for(const a of animalsFor(s).filter(a=>['cat','mouse'].includes(a.kind))){assert.ok(isDryPoint(s,a.x,a.y));assert.ok(!s.buildings.some(b=>Math.abs(b.x-a.x)<.48&&Math.abs(b.y-a.y)<.48));actions.add(a.behavior);positions.add(`${a.id}:${a.x.toFixed(2)}`);}}
  assert.ok(actions.has('resting'));assert.ok(actions.has('wandering'));assert.ok(actions.has('hunting'));assert.ok(positions.size>20);
 });
 test('actual residents sow, harvest once and deliver finite autumn crop to storage',async()=>{
  const {build}=await import('../engine.js');const s=createGame({start:'established'}),b=field(s);assert.ok(build(s,'canal',12,7).ok);assignWorkplace(s,0,'12,8');assignWorkplace(s,1,'12,8');
- const run=n=>{for(let i=0;i<n*10;i++){s.event=null;advanceTime(s,.1);}};run(44);assert.equal(b.crop.sown,1);assert.equal(s.delivered.food,0);run(46);assert.equal(s.season,2);assert.ok(b.crop.remaining>0);const total=b.crop.total;
+ const run=n=>{for(let i=0;i<n*10;i++){s.event=null;advanceMiracleCelebration(s,60);advanceTime(s,.1);}};run(44);assert.equal(b.crop.sown,1);assert.equal(s.delivered.food,0);run(46);assert.equal(s.season,2);assert.ok(b.crop.remaining>0);const total=b.crop.total;
  run(44);assert.ok(s.delivered.food>0);assert.ok(b.crop.harvested<=total);assert.ok(decode(encode(s)));const carried=s.citizens.reduce((n,c)=>n+(c.work==='12,8'||s.district.jobs.some(q=>q.id===c.districtJob&&q.source==='12,8')?c.cargo.food||0:0),0),onsite=b.workshopStock.output.food||0;assert.ok(Math.abs(b.crop.harvested-s.delivered.food-carried-onsite-b.crop.sheaves)<1e-6);
- const copy=decode(encode(s));run(6);for(let i=0;i<60;i++){copy.event=null;advanceTime(copy,.1);}assert.deepEqual(copy,s);
+ const copy=decode(encode(s));run(6);for(let i=0;i<60;i++){copy.event=null;advanceMiracleCelebration(copy,60);advanceTime(copy,.1);}assert.deepEqual(copy,s);
 });
 test('an empty workforce never seeds a field; unharvested crop spoils on winter boundary',()=>{
  const s=createGame({start:'established'}),b=field(s);for(const c of s.citizens)if(c.age>=16)c.role='builder';syncCitizens(s);

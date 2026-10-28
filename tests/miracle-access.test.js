@@ -1,3 +1,4 @@
+import {advanceMiracleCelebration} from '../miracle-celebration.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,miracle,encode,decode} from '../engine.js';
@@ -46,7 +47,7 @@ test('ordinary miracles stay visible before a first cat, after summoning and dur
  assert.equal(catalogue.shouldShowMiracle(s,'cat'),true);
  assert.equal(miracle(s,'cat').ok,true);assert.equal(s.pests.cats.length,1);
  assert.equal(catalogue.shouldShowMiracle(s,'cat'),true);
- assert.match(miracle(s,'cat').reason,/через .*сез/i);
+ assert.match(miracle(s,'cat').reason,/церемонии/i);advanceMiracleCelebration(s,60);assert.match(miracle(s,'cat').reason,/через .*сез/i);
  s.cooldowns.cat=0;assert.match(miracle(s,'cat').reason,/под защитой/);
  assert.equal(catalogue.shouldShowMiracle(s,'cat'),true);
  const unseen=createGame({mode:'awakening'});

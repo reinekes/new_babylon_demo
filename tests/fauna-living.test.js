@@ -1,3 +1,4 @@
+import {advanceMiracleCelebration} from '../miracle-celebration.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,miracle} from '../engine.js';
@@ -22,7 +23,7 @@ test('hunting pins working prey, shows corpse briefly, suppresses killed identit
 });
 
 test('gift cats wander streets safely when mice absent; petting uses only available nearby citizens',()=>{
- const s=createGame({start:'established'});miracle(s,'cat');s.pests.sites[0].mice=0;const before=structuredClone(s),positions=new Set();
+ const s=createGame({start:'established'});miracle(s,'cat');advanceMiracleCelebration(s,60);s.pests.sites[0].mice=0;const before=structuredClone(s),positions=new Set();
  for(let t=0;t<80;t+=.5){s.simTime=t;const cat=pestActors(s).find(a=>a.kind==='cat');positions.add(`${cat.x.toFixed(2)},${cat.y.toFixed(2)}`);assert.ok(isDryPoint(s,cat.x,cat.y));assert.ok(!s.buildings.some(b=>Math.abs(b.x-cat.x)<.48&&Math.abs(b.y-cat.y)<.48));}
  assert.ok(positions.size>40);s.simTime=0;const cat=pestActors(s).find(a=>a.kind==='cat'),child={id:999,age:8,phase:'home',x:cat.x,y:cat.y,cargo:{}};
  let pair;for(let t=0;t<80;t+=.1){s.simTime=t;const current=pestActors(s).find(a=>a.kind==='cat');child.x=current.x;child.y=current.y;pair=catPettingPairs(s,[child])[0];if(pair)break;}assert.ok(pair);assert.equal(pair.catId,cat.id);assert.equal(pair.citizenId,999);

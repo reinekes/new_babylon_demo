@@ -1,3 +1,4 @@
+import {advanceMiracleCelebration} from '../miracle-celebration.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -154,7 +155,7 @@ test('real articulated palms touch cargo and hold role tools; casts, petting and
 
 
 test('petting pairs use visible child positions once and the matching cat receives its affectionate pose',async()=>{
- const s=createGame({start:'established'});miracle(s,'cat');s.pests.sites[0].mice=0;s.simTime=0;
+ const s=createGame({start:'established'});miracle(s,'cat');advanceMiracleCelebration(s,60);s.pests.sites[0].mice=0;s.simTime=0;
  const cat=pestActors(s).find(a=>a.kind==='cat'),child=s.citizens.find(c=>c.age>=3&&c.age<16);
  child.phase='home';child.x=cat.x;child.y=cat.y;
  const frame=actorViewFrame(s),visible=frame.citizens.find(c=>c.id===child.id);

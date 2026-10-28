@@ -11,8 +11,8 @@ const publishedData=JSON.parse(await readFile(new URL('../assets/encyclopedia/so
 const data = source===null?publishedData:buildSongEncyclopedia(source);
 const articleSource = [...(source||'').matchAll(/^## (\d+)\. (.+)\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
 
-test('encyclopedia retains the six complete performance texts including every repeated line', {skip:source===null?'Protected user Markdown is not present in this checkout':false}, () => {
- assert.equal(data.articles.length, 6);
+test('encyclopedia retains the eight complete performance texts including every repeated line', {skip:source===null?'Protected user Markdown is not present in this checkout':false}, () => {
+ assert.equal(data.articles.length, 8);
  for (const [i, match] of articleSource.entries()) {
   const lyrics = match[3].match(/```text\n([\s\S]*?)\n```/)[1];
   const block = data.articles[i].blocks.find(b => b.type === 'lyrics');
@@ -103,7 +103,7 @@ test('load failure displays a retry and a later opening can recover', async () =
 
 test('published performances retain reviewed exact hashes and all 60 translation rows even without the user Markdown', () => {
  const expected=[['inanna','d5933567cf187fd8bc3ab9d61cc4933778f0ff2f76052a72f2d6090880d2dd88',5],['enki','fe1c29dbbb9d731da71d1f236df0188d2ed6e64c8ff6d5cd747a6175cc79229c',18],['descent','3b8ffa742ff021af7cc05559c1160a201472ed31414eca093bda012cc0f55be6',14],['drinking-song','6d535ab717064c99aa349a3cbcbe4313dabc089f4e9a638591147fc9a42b8b10',12],['night-feast','ff146401a619464426b27871491da3f68a75cbd116310dfab20beecda947d12a',11]];
- assert.equal(publishedData.articles.length,6);
+ assert.equal(publishedData.articles.length,8);
  for(const [id,hash,rows]of expected){const article=publishedData.articles.find(a=>a.id===id);assert.ok(article);assert.equal(createHash('sha256').update(article.blocks.find(b=>b.type==='lyrics').text).digest('hex'),hash);assert.equal(article.blocks.find(b=>b.type==='table').rows.length,rows);}
  assert.match(publishedData.source.sha256,/^[a-f0-9]{64}$/);const last=publishedData.articles.find(a=>a.id==='city-lament');assert.ok(last);assert.equal(last.blocks.find(b=>b.type==='table').rows.length,7);
 });
@@ -111,7 +111,19 @@ test('published performances retain reviewed exact hashes and all 60 translation
 test('published meaning, translation, notes, sources and historical caveats retain the reviewed source snapshot',()=>{
  const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
  const expected={'inanna':'55d081b3a295298b477bc75279ead98c0c62eefd18064ee0f16499f5afbb6527','enki':'9d9b1976822eead4a79b8fc75c7341e9e5d5867d24cc7561a160c26d570cbc1a','descent':'6f6679b426eece75f090748dfab3465f56b492d1901812e5e869988beec7188b','drinking-song':'600b52268efb6257e33c6304635e0b5de541a5b7a99aa19a25c11194f77943f5','night-feast':'ce7b0454913b8a58b5d0969cba856198eb3c3b5fd5fa352f8a156f0721ac1fef'};
- for(const article of publishedData.articles.filter(a=>a.id!=='city-lament'))assert.equal(hash(article.blocks),expected[article.id],article.id);
+ for(const article of publishedData.articles.filter(a=>Object.hasOwn(expected,a.id)))assert.equal(hash(article.blocks),expected[article.id],article.id);
  assert.equal(hash(publishedData.caveats),'bc766340ef04bec81d8c264257cbdfdeca9f4e8f9c232ab6b2dcba1cfd484611');
  assert.equal(hash(publishedData.principles),'5b2920cecead948c93b0155fc9924e47dbebf8107cdb1a17dc309591d0aa1b08');
+});
+
+
+test('miracle songs retain supplied complete lyrics and translate every distinct performance line',()=>{
+ const hashes={'cat-arrival':'ad0bb4577036dd20e5de629a3722ca53e6a7bfb17e4811c8ddb6fdbaa1faa335','earth-breath':'71f257d20bf1e2a8e42ff39d1ffb81e1ebfa7072a75d6c34ee322827fd578c82'};
+ for(const [id,expected] of Object.entries(hashes)){
+  const article=publishedData.articles.find(a=>a.id===id),lyrics=article.blocks.find(b=>b.type==='lyrics').text,rows=article.blocks.find(b=>b.type==='table').rows;
+  assert.equal(createHash('sha256').update(lyrics).digest('hex'),expected);
+  assert.deepEqual(rows.map(r=>r[0]),[...new Set(lyrics.split('\n'))]);
+  assert.ok(article.blocks.some(b=>b.text?.includes('не засвидетельствованный древний гимн')));
+  const html=encyclopediaHTML(publishedData,{selectedId:id});assert.match(html,/href="https:\/\/oracc.museum.upenn.edu/);assert.match(html,/8/);
+ }
 });

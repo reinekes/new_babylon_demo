@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createGame,advanceTime,encode,decode} from '../engine.js';
 import {startFuneral} from '../funerals.js';
 import {calendarAt} from '../calendar.js';
+import {advanceCalendar} from './helpers/calendar-time.js';
 const dead=[{id:1000,name:'Покойный',x:8,y:8}];
 test('funeral advances participants while calendar, needs, resources and production remain frozen',()=>{
  const s=createGame({start:'established'});startFuneral(s,dead);
@@ -23,7 +24,7 @@ test('ceremonies never advance through pending decisions or invalid time',()=>{
 });
 test('a seasonal event never blocks a new family funeral',async()=>{
  const {grantTestResources}=await import('../test-tools.js');const s=createGame({start:'established'});grantTestResources(s);
- for(let i=0;i<5;i++){s.event=null;advanceTime(s,45-s.seasonElapsed);}assert.equal(s.tick,5);
- s.citizens[0].age=85;s.event=null;advanceTime(s,45-s.seasonElapsed);assert.ok(s.funeral);assert.equal(s.event,null);assert.ok(decode(encode(s)));
+ for(let i=0;i<5;i++){s.event=null;advanceCalendar(s,45-s.seasonElapsed);}assert.equal(s.tick,5);
+ s.citizens[0].age=85;s.event=null;advanceCalendar(s,45-s.seasonElapsed);assert.ok(s.funeral);assert.equal(s.event,null);assert.ok(decode(encode(s)));
  const before=s.funeral.timer;advanceTime(s,1);assert.ok(s.funeral.timer>before||s.funeral.stage!=='gathering');
 });

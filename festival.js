@@ -75,7 +75,7 @@ function festivalSources(s,temple){
  return sources;
 }
 export function festivalReason(s,{ignoreEvent=false}={}){
- const lock=relicCommandReason(s);if(lock)return lock;if(s.festival)return 'Праздник уже заказан';if(s.funeral)return 'Сначала проводи умерших';if(s.event&&!ignoreEvent||s.lost)return 'Сначала заверши событие';
+ const lock=relicCommandReason(s);if(lock)return lock;if(s.miracleCelebration)return 'Сначала заверши встречу чуда';if(s.festival)return 'Праздник уже заказан';if(s.funeral)return 'Сначала проводи умерших';if(s.event&&!ignoreEvent||s.lost)return 'Сначала заверши событие';
  if(!s.buildings.some(readyTemple))return 'Нужен готовый храм или зиккурат';if(!templeFor(s))return 'Нужен свободный взрослый носильщик (авто/носильщик) и дорога к храму';
  syncInventory(s);if(s.resources.prestige<15)return 'Нужно 15 престижа';if(s.resources.beer<6)return 'Нужно 6 пива';
  // Even opening the seed reserve for emergency food does not authorize spending it on a feast.

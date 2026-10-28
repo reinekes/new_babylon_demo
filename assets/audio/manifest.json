@@ -1,7 +1,7 @@
 {
   "date": "2026-10-28",
   "provenance": "User-supplied compressed recordings; original Downloads files unchanged. Contemporary artistic music, not historical reconstruction.",
-  "processing": "Byte-identical copies; only trailing timestamp, random ID and -compressed removed from filenames. No transcoding or loudness processing.",
+  "processing": "Byte-identical copies; only trailing timestamp, random ID and -compressed removed from filenames. No transcoding or loudness processing. Miracle recordings retain their full supplied names (NFC URL spelling), without processing.",
   "tracks": [
     {
       "id": "main",
@@ -180,6 +180,42 @@
         "duration": 138.840816,
         "codec": "mp3",
         "sampleRate": 44100,
+        "channels": 2
+      }
+    },
+    {
+      "id": "catArrival",
+      "file": "Sa-a! Sa-a! - пришла кошка.mp3",
+      "usage": "Приход кошки · общинный танец",
+      "source": {
+        "name": "Sa-a! Sa-a! - пришла кошка.mp3",
+        "bytes": 2645863,
+        "sha256": "25c93aa94647c7c93a8f843bda1be4d22a1d1ec984ccd0a9e8832c504b5e4ddb"
+      },
+      "asset": {
+        "bytes": 2645863,
+        "sha256": "25c93aa94647c7c93a8f843bda1be4d22a1d1ec984ccd0a9e8832c504b5e4ddb",
+        "duration": 108.0,
+        "codec": "mp3",
+        "sampleRate": 48000,
+        "channels": 2
+      }
+    },
+    {
+      "id": "earthBreath",
+      "file": "Numun he-mu... - Чудо Дыхание земли.mp3",
+      "usage": "Дыхание земли · общинный танец",
+      "source": {
+        "name": "Numun he-mu... - Чудо Дыхание земли.mp3",
+        "bytes": 3108792,
+        "sha256": "4378003b7f24b44b8d6dc478a8ed002297fcb785113b8a3a2a600ec7a4172a80"
+      },
+      "asset": {
+        "bytes": 3108792,
+        "sha256": "4378003b7f24b44b8d6dc478a8ed002297fcb785113b8a3a2a600ec7a4172a80",
+        "duration": 133.632,
+        "codec": "mp3",
+        "sampleRate": 48000,
         "channels": 2
       }
     }

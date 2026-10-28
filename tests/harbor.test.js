@@ -1,10 +1,11 @@
+import {advanceCalendar} from './helpers/calendar-time.js';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createGame,canPlace,advanceTime,encode,decode} from '../engine.js';
 import {advanceTrade,advanceTradeLogistics,trade} from '../trading.js';
 import {canDemolish} from '../management.js';
 import {syncCitizens} from '../workforce.js';
 import {river,terrain} from '../world.js';
-const run=(s,n)=>{for(let i=0;i<n*10;i++){s.event=null;advanceTime(s,.1);}};
+const run=(s,n)=>{for(let i=0;i<n*10;i++){s.event=null;advanceCalendar(s,.1);}};
 const ready=()=>{const s=createGame({start:'established'});s.buildings.push({type:'harbor',x:11,y:9,level:1});syncCitizens(s);run(s,62);return s;};
 test('harbor needs the main river bank, not inland or an isolated lake',()=>{const s=createGame({start:'established'});assert.equal(canPlace(s,'harbor',11,9),'');assert.ok(canPlace(s,'harbor',4,4));const l=s.world.lakes[0],cell=l.cells[0];let shore;for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]])if(terrain(cell.x+dx,cell.y+dy,s)!=='water'){shore={x:cell.x+dx,y:cell.y+dy};break;}assert.ok(shore);assert.ok(canPlace(s,'harbor',shore.x,shore.y));});
 test('boat reaches harbor along the river and unloads before trade, saves mid-voyage',()=>{const s=createGame({start:'established'});s.buildings.push({type:'harbor',x:11,y:9,level:1});syncCitizens(s);s.tick=1;s.year=1;s.season=1;s.simTime=45;advanceTrade(s);advanceTradeLogistics(s,.1);const c=s.trade.caravan;assert.equal(c.transport,'river');assert.equal(c.phase,'arriving');assert.ok(c.route.length>10);for(const p of c.route)assert.ok(Math.abs(p.x-river(p.y))<.01);assert.ok(decode(encode(s)));for(let i=0;i<600&&c.phase!=='unloading';i++)advanceTradeLogistics(s,.1);assert.equal(c.phase,'unloading');advanceTradeLogistics(s,3);assert.equal(c.phase,'unloading');advanceTradeLogistics(s,1);assert.equal(c.phase,'trading');assert.ok(c.stock.wood>=100);assert.ok(decode(encode(s)));});

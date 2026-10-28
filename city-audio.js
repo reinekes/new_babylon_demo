@@ -27,6 +27,7 @@ const activeFuneral=s=>s.funeral&&s.funeral.stage!=='returning';
 const activeFestival=s=>s.festival?.stage==='celebrating'&&s.festival.consumed&&s.festival.actors?.some(a=>a.kind==='guest'&&a.stage==='dancing');
 export function eventMusicTheme(s,funeralVariant=1){
  if(activeFuneral(s))return funeralVariant===2?'funeral2':'funeral1';
+ if(s.miracleCelebration)return s.miracleCelebration.kind==='cat'?'catArrival':'earthBreath';
  if(s.lost)return 'extinction';
  if(activeFestival(s))return s.festival.occasion==='firstBeer'?'firstBeer':'nightLights';
  const eventTheme=cityEventDefinition(s.event?.id)?.music;

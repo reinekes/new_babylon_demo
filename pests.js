@@ -1,3 +1,4 @@
+import {startMiracleCelebration,miracleCelebrationView,miracleCelebrationReason} from './miracle-celebration.js';
 import {storeStock,takeStock} from './inventory.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {WIDTH,HEIGHT,isDryPoint,terrain} from './world.js';
@@ -46,7 +47,7 @@ export function catReason(s){
  if(!free.length)return 'Все доступные хранилища уже под защитой кошек';
  const routes=yards(s);return free.some(b=>routes.has(buildingKey(b)))?'':'У незащищённого хранилища нужен свободный сухой двор';
 }
-export function bringCat(s){syncPestSites(s);const routes=yards(s),site=s.pests.sites.filter(q=>routes.has(q.key)&&!s.pests.cats.some(c=>c.site===q.key)).sort((a,b)=>b.mice-a.mice)[0];if(!site)return false;s.pests.cats.push({id:s.pests.nextCat++,site:site.key});return true;}
+export function bringCat(s){syncPestSites(s);const routes=yards(s),site=s.pests.sites.filter(q=>routes.has(q.key)&&!s.pests.cats.some(c=>c.site===q.key)).sort((a,b)=>b.mice-a.mice)[0];if(!site)return false;s.pests.cats.push({id:s.pests.nextCat++,site:site.key});const cat=s.pests.cats.at(-1),destination=pestActors(s).find(a=>a.id===`cat:${cat.id}`);startMiracleCelebration(s,'cat',{catId:cat.id,catDestination:destination});return true;}
 const note=(s,title,text,kind)=>{s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);};
 export function advancePests(s,dt){
  syncPestSites(s);const routes=yards(s),activeGuards=new Set(s.citizens.filter(c=>c.guardPost&&c.work===c.guardPost&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)).map(c=>c.guardPost));
@@ -60,7 +61,7 @@ export function advancePests(s,dt){
   }else if(!q.mice){q.hunt=0;q.guardTime=0;}
   if(q.loss-q.reported>=1){q.reported=q.loss;note(s,'Мыши портят запасы',`У хранилища ${q.key} потеряно ${q.loss.toFixed(1)} еды за всё время. Назначь сторожа: жители пока защищают запасы своими силами.`, 'bad');}
  }
- if(s.pests.nextCat===0&&s.pests.totalLoss>=3&&bringCat(s))note(s,'Неожиданный гость','После долгой борьбы с мышами бог послал к амбарам маленького охотника. Люди впервые увидели, как кошка ловит мышь.','good');
+ if(s.pests.nextCat===0&&s.pests.totalLoss>=3&&!miracleCelebrationReason(s)&&bringCat(s))note(s,'Неожиданный гость','После долгой борьбы с мышами бог послал к амбарам маленького охотника. Люди впервые увидели, как кошка ловит мышь.','good');
 }
 export function pestActors(s){
  if(!s.pests)return [];const routes=yards(s),wander=roamingRoutes(s),result=[];
@@ -70,7 +71,7 @@ export function pestActors(s){
   if(flash)result.push({id:`catch:${q.key}`,kind:'pestCatch',...loopMotion(route,q.flash.phase,.42,0),progress:(q.clock-q.flash.time)/2,by:q.flash.by});
  }
  for(const cat of s.pests.cats)if(!s.pests.sites.some(q=>q.key===cat.site)&&routes.has(cat.site))result.push({id:`cat:${cat.id}`,kind:'cat',...loopMotion(wander.get(cat.site)||routes.get(cat.site),s.simTime||0,.18,1.2),step:(s.simTime||0)*5,behavior:'wandering'});
- return result;
+ const celebrated=miracleCelebrationView(s)?.cat;if(celebrated){const index=result.findIndex(a=>a.id===celebrated.id);if(index>=0)result[index]=celebrated;else result.push(celebrated);}return result;
 }
 /** Brief deterministic visual affection; no resident movement, cargo, jobs or protection change. */
 export function catPettingPairs(s,citizens=s.citizens||[]){

@@ -1,5 +1,5 @@
 import {buildingKnowledgeReason} from './godhood.js';
-import {relicCommandReason} from './city-command-lock.js';
+import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {markRoadTopologyChanged} from './road-revisions.js';
 export {roadTopologyRevision} from './road-revisions.js';
 import {insideFootprint} from './footprints.js';

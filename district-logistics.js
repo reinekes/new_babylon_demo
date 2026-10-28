@@ -1,4 +1,4 @@
-import {relicCommandReason} from './city-command-lock.js';
+import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {MATERIALS,BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {stockStores,storeCapacity,storeStock,foodAvailableAt,foodAvailability,takeStock,syncInventory} from './inventory.js';
 import {networkFor,invalidateAssignments} from './workforce.js';

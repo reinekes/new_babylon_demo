@@ -65,7 +65,21 @@ export const MUSIC_TRACKS=Object.freeze([
     "title": "Uru a-she-er gig-ga",
     "usage": "Гибель поселения",
     "articleId": "city-lament"
-  }
+  },
+{
+  "id": "catArrival",
+  "file": "Sa-a! Sa-a! - пришла кошка.mp3",
+  "title": "Sa-a! Sa-a!",
+  "usage": "Приход кошки · общинный танец",
+  "articleId": "cat-arrival"
+},
+{
+  "id": "earthBreath",
+  "file": "Numun he-mu... - Чудо Дыхание земли.mp3",
+  "title": "Numun he-mu...",
+  "usage": "Дыхание земли · общинный танец",
+  "articleId": "earth-breath"
+}
 ].map(Object.freeze));
 export const EVENT_MUSIC_TRACKS=Object.freeze(Object.fromEntries(MUSIC_TRACKS.map(t=>[t.id,t.file])));
 export const musicTrackURL=id=>{const file=EVENT_MUSIC_TRACKS[id];return file?new URL(`./assets/audio/${file}`,import.meta.url).href:null;};

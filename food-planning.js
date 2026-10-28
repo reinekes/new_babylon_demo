@@ -1,4 +1,4 @@
-import {relicCommandReason} from './city-command-lock.js';
+import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
 import {isOperational,outputMultiplier} from './definitions.js';
 import {mealRation,mealCycle,isDinnerTime,hourOf} from './wellbeing.js';

@@ -1,6 +1,7 @@
+import {advanceCalendar} from './helpers/calendar-time.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,encode,decode,advanceTime} from '../engine.js';
+import {createGame,encode,decode} from '../engine.js';
 import * as planning from '../food-planning.js';
 import {mealRation,mealCycle} from '../wellbeing.js';
 const read=s=>planning.foodWarnings(s);
@@ -15,5 +16,5 @@ test('blocked carrier cannot hide an evening family shortage',()=>{const s=suppl
 
 import {setCitizenRole} from '../management.js';
 test('real missed family dinner creates warnings and feeding over following dinners clears them after reload',()=>{
- const s=createGame({start:'established'});s.resources.food=2;for(const c of s.citizens)setCitizenRole(s,c.id,'builder');for(let i=0;i<600;i++){s.event=null;advanceTime(s,.1);}assert.ok(read(s).hungry>0);const loaded=decode(encode(s));assert.ok(loaded);assert.equal(read(loaded).hungry,read(s).hungry);loaded.resources.food=200;for(const b of loaded.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;}for(let i=0;i<1200;i++){loaded.event=null;advanceTime(loaded,.1);}assert.equal(read(loaded).hungry,0);assert.ok(!read(loaded).alerts.some(a=>a.id==='families'));
+ const s=createGame({start:'established'});s.resources.food=2;for(const c of s.citizens)setCitizenRole(s,c.id,'builder');for(let i=0;i<600;i++){s.event=null;advanceCalendar(s,.1);}assert.ok(read(s).hungry>0);const loaded=decode(encode(s));assert.ok(loaded);assert.equal(read(loaded).hungry,read(s).hungry);loaded.resources.food=200;for(const b of loaded.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;}for(let i=0;i<1200;i++){loaded.event=null;advanceCalendar(loaded,.1);}assert.equal(read(loaded).hungry,0);assert.ok(!read(loaded).alerts.some(a=>a.id==='families'));
 });

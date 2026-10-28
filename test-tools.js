@@ -1,6 +1,6 @@
 import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,levelOf} from './definitions.js';
 import {stockStores,syncInventory,putStock} from './inventory.js';
-import {relicCommandReason} from './city-command-lock.js';
+import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {syncCitizens,recoverCitizenCargo} from './workforce.js';
 import {createOrder,workRequired,finishConstruction} from './construction.js';
 import {syncSacredUnlocks} from './sacred-unlocks.js';

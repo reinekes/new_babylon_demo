@@ -1,3 +1,4 @@
+import {miracleCelebrationView} from '../miracle-celebration.js';
 import {createBackgroundQueue,createLazyFeature} from './asset-loading.js';
 import {loadBabylonVendors} from './vendor-loading.js';
 import {createBootstrapActors} from './bootstrap-actors.js';
@@ -74,7 +75,7 @@ export class GameRenderer3D{
   this.detailQueue.add(async()=>{const {createGameActors}=await import('./actors.js');return createGameActors(this.B,this.scene,this.materials,{deferFauna:true});},value=>replace('actors',value));
   this.detailQueue.add(async()=>{const {createGameLandscape}=await import('./landscape.js');return createGameLandscape(this.B,this.scene,this.state,this.materials,{tier:this.quality,deferOptional:true});},value=>replace('landscape',value));
   // A miracle and its vegetation are loaded on first invocation, not before playing.
-  this.miracleGarden=createLazyFeature(()=>createMiracleGarden(this.B,this.scene,{groundHeight:(x,y)=>visualSurfaceElevation(x,y,this.state),canPlant:(x,y)=>x>0&&y>0&&x<WIDTH-1&&y<HEIGHT-1&&vegetationBankDistance(x,y,this.state)>.08&&sceneryClear(this.state,{x,y},.16)}),{required:()=>false,onError:error=>console.warn('Miracle plants unavailable',error)});
+  this.miracleGarden=createLazyFeature(()=>createMiracleGarden(this.B,this.scene,{groundHeight:(x,y)=>visualSurfaceElevation(x,y,this.state),canPlant:(x,y)=>x>0&&y>0&&x<WIDTH-1&&y<HEIGHT-1&&vegetationBankDistance(x,y,this.state)>.08&&sceneryClear(this.state,{x,y},.16)}),{required:(_dt,options)=>!!options?.celebration,onError:error=>console.warn('Miracle plants unavailable',error)});
   this.detailsReady=this.detailQueue.idle().then(()=>this.actors.faunaReady).then(()=>{if(!this.disposed){this.detailNote.textContent=this.detailQueue.errors.length?'Часть деталей недоступна · игра продолжается':'Подробный город готов';this.detailNote.dataset.complete='true';setTimeout(()=>{if(!this.disposed)this.detailNote.hidden=true;},4000);}});
   setTimeout(()=>{if(this.disposed)return;this.materials.loadPhotos().then(()=>{if(!this.disposed)this.buildings.refreshMaterials?.();});const hdr=new this.B.HDRCubeTexture('assets/art-courtyard/textures/kiara_1_dawn_1k.hdr',this.scene,128,false,true,false,true);hdr.onLoadObservable.addOnce(()=>{if(!this.disposed)this.scene.environmentTexture=hdr;});},250);
  }
@@ -112,7 +113,7 @@ export class GameRenderer3D{
  resetPresentation(){this.miracleGarden?.clear?.();this.sacredEffects?.reset(this.state);this.effects=[];for(const v of this.effectViews){v.mesh.dispose();v.mat.dispose();}this.effectViews=[];this.lastSim=null;this.lastTime=null;}
  addEffect(id,at){this.effects.push({id,born:this.state?.simTime||0,at:at?{...at}:this.hover?{...this.hover}:{x:9,y:9}});}
  updateEffects(state,dt){
-  const B=this.B;while(this.effects.length){const effect=this.effects.shift(),m=B.MeshBuilder.CreateTorus(`miracle-${effect.id}`,{diameter:3,thickness:.08,tessellation:48},this.scene),mat=new B.StandardMaterial('divine-light',this.scene);mat.emissiveColor=B.Color3.FromHexString(effect.id==='rain'?'#88c7df':effect.id==='festival'?'#ffc86c':'#f7dc8c');mat.disableLighting=true;mat.alpha=.8;m.material=mat;m.isPickable=false;const p=effect.at||{x:9,y:9};if(effect.id==='fertility')this.miracleGarden?.show(p,2);m.position.set(p.x*6,.35,p.y*6);this.effectViews.push({mesh:m,mat,age:0});}
+  const B=this.B;while(this.effects.length){const effect=this.effects.shift(),m=B.MeshBuilder.CreateTorus(`miracle-${effect.id}`,{diameter:3,thickness:.08,tessellation:48},this.scene),mat=new B.StandardMaterial('divine-light',this.scene);mat.emissiveColor=B.Color3.FromHexString(effect.id==='rain'?'#88c7df':effect.id==='festival'?'#ffc86c':'#f7dc8c');mat.disableLighting=true;mat.alpha=.8;m.material=mat;m.isPickable=false;const p=effect.at||{x:9,y:9};m.position.set(p.x*6,.35,p.y*6);this.effectViews.push({mesh:m,mat,age:0});}
   for(const v of [...this.effectViews]){v.age+=dt;v.mesh.scaling.setAll(1+v.age*3);v.mat.alpha=Math.max(0,.8-v.age*.3);if(v.age>2.7){v.mesh.dispose();v.mat.dispose();this.effectViews.splice(this.effectViews.indexOf(v),1);}}
  }
  updateLight(state){
@@ -131,7 +132,7 @@ export class GameRenderer3D{
  }
  draw(state,selection,now,options={}){
   if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState&&foundingCameraTarget(state))this.home();
-  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(dt,{paused});
+  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
   this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }

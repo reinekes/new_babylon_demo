@@ -1,4 +1,4 @@
-import {relicCommandReason} from './city-command-lock.js';
+import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {isTradePort,riverEntry,routeBoat,moveBoat,validBoatPoint} from './river-trade.js';
 import {reserveStock,refundSources,stockStores} from './inventory.js';
 import {availableFood} from './food-planning.js';

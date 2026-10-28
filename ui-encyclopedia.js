@@ -2,7 +2,7 @@ import {MUSIC_TRACKS,musicTrackURL} from './music-tracks.js';
 /** Read-only song library. Importing this module does not fetch content or play audio. */
 const controllers=new WeakMap(),contentCache=new Map();
 const sourceURL=new URL('./assets/encyclopedia/songs.json',import.meta.url);sourceURL.search=new URL(import.meta.url).search;
-const allowedHosts=new Set(['etcsl.orinst.ox.ac.uk','cdli.earth']);
+const allowedHosts=new Set(['etcsl.orinst.ox.ac.uk','cdli.earth','oracc.museum.upenn.edu','oracc2.museum.upenn.edu']);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normalized=value=>String(value??'').toLocaleLowerCase('ru-RU').replaceAll('ё','е').normalize('NFC');
 function safeLink(value){try{const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password&&allowedHosts.has(url.hostname)?url.href:null;}catch{return null;}}
@@ -35,7 +35,7 @@ function listeningHTML(articleId,selected){
  const track=MUSIC_TRACKS.find(t=>t.id===selected)||MUSIC_TRACKS.find(t=>t.articleId===articleId)||MUSIC_TRACKS[0];
  return `<section class="encyclopedia-listening" aria-label="Прослушать записи"><h3>Послушать музыку</h3><label>Запись<select data-encyclopedia-track>${MUSIC_TRACKS.map(t=>`<option value="${esc(t.id)}"${t.id===track.id?' selected':''}>${esc(t.title)} — ${esc(t.usage)}</option>`).join('')}</select></label><audio controls preload="none" data-encyclopedia-audio src="${esc(musicTrackURL(track.id))}" aria-label="Прослушать: ${esc(track.title)}"></audio><p>Во время прослушивания фон города замолкает. При закрытии энциклопедии запись останавливается.</p><small data-encyclopedia-audio-error role="status"></small></section>`;
 }
-function validateData(data){if(data?.format!==1||!Array.isArray(data.articles)||data.articles.length!==6||!Array.isArray(data.caveats)||!Array.isArray(data.principles))throw Error('Некорректный сборник');return data;}
+function validateData(data){if(data?.format!==1||!Array.isArray(data.articles)||data.articles.length===0||!Array.isArray(data.caveats)||!Array.isArray(data.principles))throw Error('Некорректный сборник');return data;}
 async function loadData(options){const url=String(options.dataUrl||options.url||sourceURL),key=url;if(options.cache!==false&&contentCache.has(key))return contentCache.get(key);const promise=Promise.resolve().then(async()=>{const response=await (options.fetcher||globalThis.fetch)(url,{credentials:'same-origin'});if(!response.ok)throw Error('Энциклопедия недоступна');return validateData(await response.json());});if(options.cache!==false){contentCache.set(key,promise);promise.catch(()=>contentCache.delete(key));}return promise;}
 export async function renderSongEncyclopedia(root,options={}){
  if(controllers.has(root))return controllers.get(root).ready;

@@ -1,3 +1,4 @@
+import {miracleCelebrationView} from '../miracle-celebration.js';
 import {festivalView} from '../festival.js';
 import {createFestivalCourt} from './festival-court.js';
 import {loadModel} from './asset-loading.js';
@@ -39,7 +40,9 @@ export function actorViewFrame(state){
   const c=visible.get(id)||(state.citizens||[]).find(c=>c.id===id);
   if(c){const rite=funeral.participants?.find(p=>p.id===id);visible.set(id,{...c,...rite?{x:rite.x,y:rite.y}:{},activity:null,phase:'mourning',walking:rite?.walking??true,carrying:false,cargo:{},robe:'#c7c9ae',mourningTorch:rite?.torch??(!!funeral.torches&&c.age>=16),funeralContact:rite});}
  }
- return {citizens:[...visible.values()],pettingPairs};
+ const miracle=miracleCelebrationView(state);
+ if(miracle)for(const participant of miracle.participants){const c=visible.get(participant.id)||(state.citizens||[]).find(c=>c.id===participant.id);if(c)visible.set(c.id,{...c,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,swimming:false,eventContact:null,festivalContact:null,funeralContact:null,miracleContact:participant});}
+ return {citizens:[...visible.values()],pettingPairs:miracle?[]:pettingPairs};
 }
 export const cityAnimalVisible=animal=>!['bird','mouse','rat'].includes(animal.kind);
 export function actorViewCitizens(state){return actorViewFrame(state).citizens;}
@@ -298,7 +301,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const eventContact=!!c.eventContact;
   if(a.lastX!==null&&a.eventContactActive!==undefined&&eventContact!==a.eventContactActive)a.ceremonyJoin={path:null,index:0,target:null};
   a.eventContactActive=eventContact;
-  if(c.funeralContact||c.controlled){a.ceremonyJoin=null;a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}
+  if(c.miracleContact||c.funeralContact||c.controlled){a.ceremonyJoin=null;a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}
   else if(a.ceremonyJoin){const point=ceremonyJoinStep(a,state,networkFor(state),viewPosition,dt,paused,speed);a.viewOffsetX=point.x-c.x;a.viewOffsetY=point.y-c.y;}
   else if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){
    const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),distance=Math.hypot(offsetX-a.viewOffsetX,offsetY-a.viewOffsetY);
@@ -307,15 +310,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   }
   // Possession follows the exact authored route, including its water crossing;
   // pedestrian lane offsets must not slide the swimmer onto a different bank.
-  if(c.controlled){a.viewOffsetX=0;a.viewOffsetY=0;}
+  if(c.controlled||c.miracleContact){a.viewOffsetX=0;a.viewOffsetY=0;}
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY,swim=residentSwimmingPresentation(c,a.time,{reducedMotion});
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,swim?swim.height:onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(shownX,shownY,state),shownY*6);a.root.metadata.swimming=!!swim;
   if(a.details)a.details.setEnabled(!swim);
-  if(c.funeralContact||c.eventContact&&!a.ceremonyJoin){
+  if(c.miracleContact||c.funeralContact||c.eventContact&&!a.ceremonyJoin){
    // Both rail targets and the bearer share this ceremony orientation. Generic
    // path smoothing must not rotate them apart or snap the root when paused.
-   if(!paused||a.yaw===null){a.yaw=(c.funeralContact||c.eventContact).yaw;a.root.rotation.y=a.yaw;}
+   if(!paused||a.yaw===null){a.yaw=(c.miracleContact||c.funeralContact||c.eventContact).yaw;a.root.rotation.y=a.yaw;}
   }else{
    if(c.festivalContact&&!paused){const center=c.festivalContact.center,dx=center.x-shownX,dy=center.y-shownY;a.yaw=Math.hypot(dx,dy)>.001?Math.atan2(dx,dy):c.festivalContact.yaw;}
    if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
