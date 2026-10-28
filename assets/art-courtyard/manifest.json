@@ -1,16 +1,21 @@
 {
-  "release": "town-stocks-20261026-5",
+  "release": "festival-candles-tests-20261028-1",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 29045,
-      "sha256": "f03e6f49e1844fbcef741ebd3ca02f5edffe83a3f0ebec3e79bbd588dab622dc"
+      "bytes": 29962,
+      "sha256": "9f736df9ed01d50cbea84fd81f5afa7337bbdfd75bbb5a55e35ea78962553cb6"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 30554,
-      "sha256": "fa69e4b82c15e50e8bb90e273cfdf85c49d62bf92141f177c82fe58c1ac2d1ef"
+      "bytes": 31066,
+      "sha256": "ff30daa12730b0d66d634f1a053ff95845bd26be37cee2de78f82a57e5b5706d"
+    },
+    {
+      "file": "festival-candle-report.json",
+      "bytes": 1351,
+      "sha256": "6ef7a6381492a90fe65b61694be2782d2a162c4ecc17cd4d19d532911dac1411"
     },
     {
       "file": "historical-man-report.json",
@@ -176,6 +181,15 @@
       "sha256": "acf22f5fd38d6d734ad99c442095d63ee1f8af26133b1dd247a7884e85d0b9ea",
       "triangles": 42560,
       "meshes": 4,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/festival-candle.glb",
+      "bytes": 24484,
+      "sha256": "a10d84770678d428175ca35078fa8a2ae1ba9493bed5b34cfb6d49d969bed93e",
+      "triangles": 422,
+      "meshes": 1,
       "bones": 0,
       "clips": []
     },

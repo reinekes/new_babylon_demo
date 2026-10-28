@@ -65,7 +65,7 @@ export function createCityAudio(onMessage,options={}){
   if(funeral){const key=(s.funeral.deceased||[]).map(d=>d.id).join(',')||'ceremony';if(!funeralWasActive||key!==lastFuneral){lastFuneral=key;funeralCount++;}afterFuneralPending=false;}
   else if(funeralWasActive&&enabled&&!s.lost){afterFuneralPending=true;const old=cache.get('afterFuneral');if(old){stop(old);old.element.currentTime=0;}}
   funeralWasActive=funeral;
-  if(s.lost||activeFestival(s)||s.event)afterFuneralPending=false;
+  if(s.lost||activeFestival(s)||s.miracleCelebration||s.event)afterFuneralPending=false;
   if(!enabled||previewing||doc?.hidden){silence();return;}
   const id=afterFuneralPending?'afterFuneral':eventMusicTheme(s,funeralCount%2?1:2),source=s.lost?null:musicSoundSources(s,listener)[0];select(id);
   if(source){if(!lithophone){lithophone=voice('lithophone');play(lithophone);}target(lithophone,.20*clamp(source.gain/.012),.35);}

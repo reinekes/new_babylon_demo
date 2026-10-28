@@ -59,7 +59,7 @@ test('real Night of Lights guests carry torches on their street patrol without d
    const contact=festivalCitizenView(s,c).eventContact,root=actors.rootFor({citizenId:c.id});
    assert.ok(Math.hypot(root.position.x-contact.x*6,root.position.z-contact.y*6)<.001,'actual resident follows the dry street contact');
    const hand=joint(root,'hand_r');hand.computeWorldMatrix(true);
-   const torch=scene.getTransformNodeByName('funeral-torch-'+c.id);assert.ok(torch?.isEnabled(),'a real flame prop must be visible');
+   const torch=scene.getTransformNodeByName('festival-candle-'+c.id);assert.ok(torch?.isEnabled(),'a real flame prop must be visible');
    assert.ok(B.Vector3.Distance(torch.position,hand.getAbsolutePosition())<.001,'torch handle remains in the actual right palm');
   }
   assert.equal(JSON.stringify(s),before,'no resident, route or cargo changes during drawing');
@@ -84,7 +84,7 @@ test('torchbearers walk back safely after the feast instead of jumping to the sa
    }previous=next;
   }
   assert.equal(JSON.stringify(s),before,'the return is presentation-only and cannot move saved people or cargo');
-  assert.equal(scene.transformNodes.filter(n=>n.name.startsWith('funeral-torch-')).length,0);
+  assert.equal(scene.transformNodes.filter(n=>n.metadata?.festivalCandle).length,0);
   for(const id of ids){const c=s.citizens.find(c=>c.id===id),root=actors.rootFor({citizenId:id});assert.ok(Math.hypot(root.position.x-c.x*6,root.position.z-c.y*6)<2,'each former torchbearer returns to their ordinary crowd position');}
  }finally{actors?.dispose();B.SceneLoader.LoadAssetContainerAsync=loader;scene.dispose();engine.dispose();}
 });
@@ -98,7 +98,7 @@ test('canceling a paused feast removes its torches while preserving frozen resid
   const ids=s.citizens.filter(c=>festivalCitizenView(s,c).festivalTorch).map(c=>c.id),snapshot=()=>ids.map(id=>{const root=actors.rootFor({citizenId:id});return {position:root.position.asArray(),hands:['hand_l','hand_r'].map(name=>joint(root,name).rotationQuaternion.asArray())};}),frozen=snapshot();
   assert.ok(ids.length>=2);assert.ok(cancelFestival(s).ok);const before=JSON.stringify(s);
   actors.update(s,.1,{paused:true,speed:4});for(let n=0;n<3;n++)scene.render();
-  assert.equal(scene.transformNodes.filter(n=>n.name.startsWith('funeral-torch-')).length,0,'removed ceremonies cannot retain their old torch props on pause');
+  assert.equal(scene.transformNodes.filter(n=>n.metadata?.festivalCandle).length,0,'removed ceremonies cannot retain their old torch props on pause');
   assert.deepEqual(snapshot(),frozen,'structural cleanup must not advance the frozen walking pose or coordinates');assert.equal(JSON.stringify(s),before);
  }finally{actors?.dispose();B.SceneLoader.LoadAssetContainerAsync=loader;scene.dispose();engine.dispose();}
 });

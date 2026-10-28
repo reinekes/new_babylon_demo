@@ -1,0 +1,67 @@
+{
+  "sourceBytes": 2591368,
+  "outputBytes": 24484,
+  "triangles": 422,
+  "vertices": 399,
+  "textureSource": [
+    1024,
+    1024
+  ],
+  "textureOutput": [
+    256,
+    256
+  ],
+  "bounds": [
+    [
+      -0.110009208,
+      0.0,
+      -0.100408103
+    ],
+    [
+      0.115827477,
+      0.4,
+      0.102741289
+    ]
+  ],
+  "closedManifold": true,
+  "boundaryEdges": 0,
+  "nonManifoldEdges": 0,
+  "sourceWaxTriangles": 664,
+  "cuts": [
+    {
+      "plane": "base above shared melted pool",
+      "triangles": 51
+    },
+    {
+      "plane": "between adjacent candle axes",
+      "triangles": 60
+    },
+    {
+      "plane": "between adjacent candle axes",
+      "triangles": 74
+    },
+    {
+      "plane": "short candle lip; removes neighbouring tall wax",
+      "triangles": 21
+    }
+  ],
+  "palmGripMetres": [
+    0,
+    0.1,
+    0
+  ],
+  "wickTipMetres": [
+    -8.103130755064546e-05,
+    0.3826151012891345,
+    -0.001031307550644565
+  ],
+  "flameCenterMetres": [
+    -8.103130755064546e-05,
+    0.4176151012891345,
+    -0.001031307550644565
+  ],
+  "author": "al0sral0 (https://sketchfab.com/al0sral0)",
+  "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+  "source": "https://sketchfab.com/3d-models/candle-light-d9d5ed5de83b4d899ab93f55bdc3d0bc",
+  "sha256": "a10d84770678d428175ca35078fa8a2ae1ba9493bed5b34cfb6d49d969bed93e"
+}

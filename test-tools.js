@@ -1,7 +1,7 @@
 import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,levelOf} from './definitions.js';
 import {stockStores,syncInventory,putStock} from './inventory.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
-import {syncCitizens,recoverCitizenCargo} from './workforce.js';
+import {syncCitizens,recoverCitizenCargo,networkFor} from './workforce.js';
 import {createOrder,workRequired,finishConstruction} from './construction.js';
 import {syncSacredUnlocks} from './sacred-unlocks.js';
 import {mournResidents} from './wellbeing.js';
@@ -9,6 +9,8 @@ import {recordLifeDeath,snapshotLifeAnalytics} from './life-analytics.js';
 import {displayName} from './citizen-epithets.js';
 import {startFuneral} from './funerals.js';
 import {CITY_EVENTS,createCityEvent} from './city-events.js';
+import {startMiracleCelebration,miracleCelebrationTargetReason} from './miracle-celebration.js';
+import {isPestStore,pestActors} from './pests.js';
 
 export const TEST_EVENTS=CITY_EVENTS;
 export function testToolsReason(state){
@@ -26,6 +28,25 @@ export function triggerTestEvent(state,id){
  const reason=testToolsReason(state);if(reason)return denied(reason);
  const event=createCityEvent(state,id);if(!event)return denied('Неизвестное событие');
  state.event=event;return {ok:true,id};
+}
+
+// Scene previews skip only miracle unlocks, payment and cooldown. They keep the
+// normal ceremony, save validation and command lock; no growth buff is granted.
+export function triggerTestMiracleScene(state,kind){
+ const reason=testToolsReason(state);if(reason)return denied(reason);
+ if(!['cat','fertility'].includes(kind))return denied('Неизвестная сцена чуда');
+ const targetReason=miracleCelebrationTargetReason(state);if(targetReason)return denied(targetReason);
+ if(kind==='fertility')return startMiracleCelebration(state,kind)?{ok:true,kind}:denied('Нет безопасного места для церемонии');
+ const previousNextCat=state.pests.nextCat,existing=state.pests.cats[0],ports=networkFor(state).ports;
+ // A new village has no shrine or granary yet. A normal unassigned yard cat is
+ // already supported by pest actors/saves, so the preview needs no new building.
+ const port=ports.find(p=>isPestStore(p.building))||ports[0];
+ const cat=existing||{id:state.pests.nextCat++,site:buildingKey(port.building)};
+ if(!existing)state.pests.cats.push(cat);
+ const destination=pestActors(state).find(a=>a.id===`cat:${cat.id}`);
+ if(startMiracleCelebration(state,kind,{catId:cat.id,catDestination:destination}))return {ok:true,kind};
+ if(!existing){state.pests.cats.pop();state.pests.nextCat=previousNextCat;}
+ return denied('Нет безопасного места для церемонии');
 }
 
 // Explicit player-invoked testing aid. It never runs on load or on a clock.

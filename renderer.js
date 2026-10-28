@@ -3,7 +3,7 @@ import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintSize} from './footprints.js';
 import {roadTopologyRevision} from './roads.js';
 import {festivalView} from './festival.js';
-import {drawFestivalCourt,drawFestivalBuildingLights} from './festival-art.js';
+import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
 import {ceremonyJoinStep} from './festival-layout.js';
 import {houseVariant} from './map-art.js';
 import {residentPose,drawActorGesture} from './actor-art.js';
@@ -234,10 +234,11 @@ export class Renderer{
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();
   c.fillStyle='#d2ad7c';c.beginPath();c.arc(p.x+.6*q,p.y-10.7*q,.8*q,0,7);c.fill();
   this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.age>=55?'#deddd3':person.id%2?'#eee0b7':'#5c5140',1.7*q);
-  if(person.mourningTorch||person.festivalTorch){const x=p.x+5*q,y=p.y-12*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q;
-   this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q],[x,y]],'#936746',1.4*q);
-   this.polygon([[x-2*q,y],[x+flicker,y-6*q],[x+2*q,y]],'#ee983f');this.polygon([[x-q,y],[x,y-4*q],[x+q,y]],'#ffe19a');
-   if(person.festivalTorch||(person.id||0)%4===0)this.lights.push({x,y:y-2*q,size:17*q});
+  if(person.mourningTorch||person.festivalTorch){const candle=person.festivalTorch,x=p.x+5*q,y=p.y-(candle?10:12)*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q*(candle?.25:1);
+   this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q]],'#936746',1.4*q);
+   this.line([[x,p.y-8*q],[x,y]],candle?'#ead8b4':'#936746',(candle?2.4:1.4)*q);
+   const h=candle?2.8:6,w=candle?.85:2;this.polygon([[x-w*q,y],[x+flicker,y-h*q],[x+w*q,y]],'#ee983f');this.polygon([[x-w*.5*q,y],[x,y-h*.66*q],[x+w*.5*q,y]],'#ffe19a');
+   if(candle||(person.id||0)%4===0)this.lights.push({x,y:y-q,size:(candle?11:17)*q});
   }
   if(person.guarding){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-5*q],[p.x+(7+swing)*q,p.y-10*q]],'#92764f',1.4*q);for(let i=0;i<4;i++)this.line([[p.x+(6+swing)*q,p.y-10*q],[p.x+(6+i+swing)*q,p.y-14*q]],'#b5a36c',q);}
   else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
@@ -372,6 +373,6 @@ export class Renderer{
  const p=this.point(8.5,4.7);c.textAlign='center';c.fillStyle='#5e7057';c.font=`${Math.max(9,13*this.s)}px Georgia`;c.fillText('Э Р И Д У',p.x,p.y-12*this.s);c.fillStyle='#7c8b70';c.font=`${Math.max(7,9*this.s)}px Arial`;c.fillText(`${s.population} жителей · ${s.name}`,p.x,p.y+3*this.s);
  if(this.hover&&!this.photoMode){const {x,y}=this.hover;const reason=selection?canBuild(s,selection,x,y):'';this.tile(x,y,selection?(reason?'#bd65433b':'#edf0b86b'):'#fff7cf38',selection?(reason?'#a8573e':'#79905c'):'#f6edd1');if(selection&&!reason){c.globalAlpha=.55;this.building({x,y,type:selection},s,t);c.globalAlpha=1;}}
  this.effects=this.effects.filter(e=>time-e.start<4000);for(const e of this.effects){const actualAge=(time-e.start)/1000,age=this.reduce?.6:actualAge,alpha=Math.max(0,1-actualAge/4);if(e.id==='rain'){c.strokeStyle=`rgba(210,233,220,${alpha*.8})`;c.lineWidth=1;for(let k=0;k<100;k++){const xx=hash(k,1)*w,yy=(hash(k,2)*h+age*180)%h;c.beginPath();c.moveTo(xx,yy);c.lineTo(xx-6,yy+15);c.stroke();}}else{const pos=this.point(9,8);for(let k=0;k<24;k++){const theta=k*2.4;const r=age*35*this.s*(.6+hash(k,7));const xx=pos.x+Math.cos(theta)*r,yy=pos.y+Math.sin(theta)*r*.5-age*18*this.s;c.fillStyle=`rgba(227,190,91,${alpha})`;c.beginPath();c.arc(xx,yy,2*this.s,0,7);c.fill();}}}
- const vignette=c.createRadialGradient(w/2,h/2,w*.25,w/2,h/2,w*.75);vignette.addColorStop(0,'#f0edd900');vignette.addColorStop(1,'#e3e7d777');c.fillStyle=vignette;c.fillRect(0,0,w,h);this.nightLayer(this.lighting,t);this.weatherLayer(s);this.placementLayer(s,selection);c.restore();
+ const vignette=c.createRadialGradient(w/2,h/2,w*.25,w/2,h/2,w*.75);vignette.addColorStop(0,'#f0edd900');vignette.addColorStop(1,'#e3e7d777');c.fillStyle=vignette;c.fillRect(0,0,w,h);this.nightLayer(this.lighting,t);this.weatherLayer(s);drawFestivalBlessing(this,feast);this.placementLayer(s,selection);c.restore();
  }
 }

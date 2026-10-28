@@ -1,3 +1,4 @@
+import {festivalBlessingFrame} from './festival-blessing.js';
 import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
 import {cityEventDefinition} from './city-events.js';
 import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,firstBuilderInspiration,gameMode} from './godhood.js';
@@ -19,7 +20,7 @@ import {CROP_NAMES,fieldCropKind} from './game3d/crop-varieties.js';
 import {renderLifeAnalytics} from './ui-life-analytics.js';
 import {canRotateBuilding,nextRotation} from './placement.js';
 import {calendarAt,monthTrackHTML,simulationSeconds,secondsToNextMonth} from './calendar.js';
-import {grantTestResources,triggerTestEvent,instantTestUpgrade,killTestCitizens,testToolsReason} from './test-tools.js';
+import {grantTestResources,triggerTestEvent,triggerTestMiracleScene,instantTestUpgrade,killTestCitizens,testToolsReason} from './test-tools.js';
 import {FESTIVAL_COST,festivalReason,orderFestival,cancelFestival,festivalSummary,festivalView} from './festival.js';
 import {createCityAudio} from './city-audio.js';
 import {cityAudioListener} from './music-audio.js';
@@ -288,6 +289,10 @@ function refreshCityOverview(tab){
  renderCityTools(root,state,{...(tab?{tab}:{}),audioStatus:cityAudio.status,mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const [x,y]=key.split(',').map(Number),b=buildingAt(state,x,y);if(!b)return;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
 }
 function handleTestAction(action,data){
+ if(action==='cat-scene'||action==='earth-scene'){
+  const kind=action==='cat-scene'?'cat':'fertility',result=triggerTestMiracleScene(state,kind);if(!result.ok){toast(result.reason);return;}
+  closeDialog();paused=false;syncCeremonySpeed();const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);renderer.addEffect(kind,p);save();update();return;
+ }
  if(action==='map-upgrade'){const reason=testToolsReason(state);if(reason){toast(reason);return;}testMapUpgrade=!testMapUpgrade;selection=null;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');document.body.classList.remove('is-building');$('map-hint').textContent=testMapUpgrade?'Тест: выбери здание для мгновенного улучшения · Esc — выйти':'Выбери здание или жителя';document.body.classList.toggle('test-map-upgrade',testMapUpgrade);if(testMapUpgrade){closeDialog();toast('Тест: кликай здания для мгновенного улучшения. Esc — закончить.');}return;}
  const result=action==='resources'?grantTestResources(state,data.resource||'all'):action==='event'?triggerTestEvent(state,data.event):action==='upgrade'?instantTestUpgrade(state,data.building):action==='kill'?killTestCitizens(state,data.citizen===''?[]:[Number(data.citizen)]):action==='kill-many'?killTestCitizens(state,Number(data.count)):{ok:false,reason:'Нет такого действия'};
  if(!mutate(result,action==='resources'?'Тест: ресурсы добавлены':action==='upgrade'?'Тест: здание улучшено':action==='event'?'Тестовое событие вызвано':'Начались настоящие похороны'))return;
@@ -429,7 +434,7 @@ function ceremonyPresentation(){
  const q=state.festival;if(q?.stage==='celebrating'&&q!==shownFeast){shownFeast=q;const view=festivalView(state),p=view?.court||view;if(p){renderer.addEffect('festival',{x:p.x,y:p.y});renderer.focusOn(p.x,p.y);}toast(q.occasion==='firstBeer'?'Первая партия пива выпущена! Начался пир у пивоварни.':'Ночь огней началась: жители пируют и танцуют.');}
  if(!q)shownFeast=null;
  if(lastBeerStatus!==state.firstBeerFeast?.status){lastBeerStatus=state.firstBeerFeast?.status;if(lastBeerStatus==='pending')toast('Первая партия пива выпущена! Жители готовят малый пир у пивоварни.');}
- const text=ceremonyLabel(state);ceremonyNotice.hidden=!text;ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
+ const text=festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);ceremonyNotice.hidden=!text;ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
 }
 function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();

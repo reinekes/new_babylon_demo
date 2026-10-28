@@ -1,9 +1,11 @@
 import {surfaceElevation,TILE} from '../district3d/terrain.js';
+import {createFestivalBlessing} from './festival-blessing.js';
 
 // A serving mat and modest hearths belong to the real, supplied festival.
 // This layer never advances the ceremony or changes its resource ledger.
 export function createFestivalCourt(B,scene,meshes=[]){
  let root=null,disposed=false;
+ const blessing=createFestivalBlessing(B,scene);
  const owned=[],materials=[],lights=[],flames=[];
  function clear(){
   for(const mesh of owned){const i=meshes.indexOf(mesh);if(i>=0)meshes.splice(i,1);}
@@ -62,6 +64,7 @@ export function createFestivalCourt(B,scene,meshes=[]){
  }
  function update(view,state,time=0){
   if(disposed)return;
+  blessing.update(view,state);
   const center=view?.court;
   if(!center||!Number.isFinite(center.x)||!Number.isFinite(center.y)||!['waiting','celebrating'].includes(view.stage)){clear();return;}
   if(!root)create();
@@ -75,5 +78,5 @@ export function createFestivalCourt(B,scene,meshes=[]){
    fire.light.intensity=.34*flicker;
   }
  }
- return {update,dispose(){clear();disposed=true;},get root(){return root;}};
+ return {update,dispose(){clear();blessing.dispose();disposed=true;},get root(){return root;}};
 }

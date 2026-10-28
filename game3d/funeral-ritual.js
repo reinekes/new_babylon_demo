@@ -1,8 +1,9 @@
 import {surfaceElevation} from '../district3d/terrain.js';
+import {createFestivalCandles} from './festival-candles.js';
 // Funeral props are presentation-only. Stable deceased IDs own one shrouded bier;
 // route coordinates, personal identity and inventories remain in the simulation.
 export function createFuneralRitual(B,scene,meshes){
- const biers=new Map(),torches=new Map(),materials=[],lights=[];let template=null;
+ const biers=new Map(),torches=new Map(),materials=[],lights=[],candles=createFestivalCandles(B,scene,meshes);let template=null;
  const material=(name,color,emissive=false)=>{const m=new B.StandardMaterial(`rite-${name}`,scene);m.diffuseColor=B.Color3.FromHexString(color);m.specularColor=B.Color3.Black();if(emissive){m.emissiveColor=m.diffuseColor;m.disableLighting=true;}materials.push(m);return m;};
  const wood=material('reed-wood','#705139'),wrap=material('torch-wrapping','#b6a283'),white=material('white-shroud','#f4f0e5'),outer=material('flame-amber','#f57a14',true),inner=material('flame-core','#fff0aa',true);
  function track(m,parent,mat){m.parent=parent;m.material=mat;m.isPickable=false;m.receiveShadows=true;meshes.push(m);return m;}
@@ -37,10 +38,11 @@ export function createFuneralRitual(B,scene,meshes){
    if(mouth){const dx=(animal.faceX-animal.x),dz=(animal.faceY-animal.y),length=Math.hypot(dx,dz)||1,forward=new B.Vector3(dx/length,0,dz/length),centre=mouth.add(forward.scale(.80)),local=B.Vector3.TransformCoordinates(centre,a.root.computeWorldMatrix(true).clone().invert());a.bundle.position.copyFrom(local);a.bundle.position.y-=.18;a.bundle.rotation.y=Math.atan2(forward.x,forward.z)-b.yaw;}
   }
   for(const [id,a]of biers)if(!seen.has(id)){disposeRoot(a.root);biers.delete(id);}
-  const flames=new Set();for(const p of view?.participants||[]){if(!p.torch)continue;flames.add(p.id);const a=torchFor(p.id),grip=torchGrips.get(p.id);a.root.setEnabled(!!grip);if(grip)a.root.position.copyFrom(grip);
+  candles.update((view?.participants||[]).filter(p=>p.candle),state.festival?.elapsed||0,torchGrips);
+  const flames=new Set();for(const p of view?.participants||[]){if(!p.torch||p.candle)continue;flames.add(p.id);const a=torchFor(p.id),grip=torchGrips.get(p.id);a.root.setEnabled(!!grip);if(grip)a.root.position.copyFrom(grip);
    const flicker=.91+.09*Math.sin(time*19+p.id*2.1)+.045*Math.sin(time*31+p.id);a.fire.scaling.set(.96+.08*Math.sin(time*13+p.id),flicker,1);a.fire.rotation.z=.06*Math.sin(time*11+p.id);a.tongue.rotation.z=.20*Math.sin(time*17+p.id);if(a.light)a.light.intensity=.40*flicker;
   }
   for(const [id,a]of torches)if(!flames.has(id)){if(a.light){a.light.dispose();const i=lights.indexOf(a.light);if(i>=0)lights.splice(i,1);}disposeRoot(a.root);torches.delete(id);}
  }
- return {update,dispose(){for(const a of biers.values())disposeRoot(a.root);for(const a of torches.values())disposeRoot(a.root);for(const l of lights)l.dispose();if(template)template.root.dispose();for(const m of materials)m.dispose();biers.clear();torches.clear();},rootForBier(id){return biers.get(id)?.root;}};
+ return {update,dispose(){candles.dispose();for(const a of biers.values())disposeRoot(a.root);for(const a of torches.values())disposeRoot(a.root);for(const l of lights)l.dispose();if(template)template.root.dispose();for(const m of materials)m.dispose();biers.clear();torches.clear();},rootForBier(id){return biers.get(id)?.root;}};
 }

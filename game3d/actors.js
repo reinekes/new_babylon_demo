@@ -487,7 +487,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  });
  function funeralProps(state){
   const savedView=funeralView(state),f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map(),festivalTorches=[];
-  for(const [id,a]of people){const current=a.presentationCitizen;if((current?.mourningTorch||current?.festivalTorch)&&a.root.isEnabled()&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());if(current.festivalTorch)festivalTorches.push({id,torch:true});}}
+  for(const [id,a]of people){const current=a.presentationCitizen;if((current?.mourningTorch||current?.festivalTorch)&&a.root.isEnabled()&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());if(current.festivalTorch)festivalTorches.push({id,torch:true,candle:true});}}
   const torchView=festivalTorches.length?{...f,participants:[...(f?.participants||[]),...festivalTorches]}:f;
   ritual.update(torchView,state,poseTime,grips,id=>jackals?.mouthFor(id));
   if(f?.coffin){if(!bier){const root=new B.TransformNode('funeral-bier',scene);box('bier-cloth',root,linen,0,.58,0,.7,.22,1.8);for(const x of [-.35,.35])box('bier-pole',root,wood,x,.42,0,.045,.045,2.5);bier={root};}bier.root.position.set(f.coffin.x*6,surfaceElevation(f.coffin.x,f.coffin.y,state),f.coffin.y*6);}

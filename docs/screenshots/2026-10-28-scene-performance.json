@@ -1,0 +1,414 @@
+[
+  {
+    "scenario": "near",
+    "frames": 229,
+    "wallSeconds": 12.03,
+    "fps": 19.04,
+    "frameIntervals": {
+      "medianMs": 49.9,
+      "p95Ms": 74.8,
+      "meanMs": 52.51
+    },
+    "simulationCPU": {
+      "medianMs": 4.8,
+      "p95Ms": 10.8,
+      "meanMs": 5.64
+    },
+    "drawCPU": {
+      "medianMs": 41.1,
+      "p95Ms": 63.3,
+      "meanMs": 46.55
+    },
+    "stages": {
+      "buildings": {
+        "medianMs": 0.7,
+        "p95Ms": 1.1,
+        "meanMs": 4.76
+      },
+      "landscape": {
+        "medianMs": 1.5,
+        "p95Ms": 2.4,
+        "meanMs": 1.58
+      },
+      "actors": {
+        "medianMs": 5.1,
+        "p95Ms": 8.2,
+        "meanMs": 5.65
+      },
+      "light": {
+        "medianMs": 0,
+        "p95Ms": 0.1,
+        "meanMs": 0.03
+      },
+      "activeMeshesEvaluation": {
+        "medianMs": 11,
+        "p95Ms": 14.1,
+        "meanMs": 11.34
+      },
+      "animation": {
+        "medianMs": 6.6,
+        "p95Ms": 8.5,
+        "meanMs": 6.86
+      },
+      "renderTargets": {
+        "medianMs": 10,
+        "p95Ms": 13,
+        "meanMs": 10.35
+      },
+      "sceneRender": {
+        "medianMs": 32.6,
+        "p95Ms": 43.4,
+        "meanMs": 33.8
+      }
+    },
+    "drawCalls": {
+      "median": 1872,
+      "p95": 1910,
+      "mean": 1874.03
+    },
+    "scene": {
+      "totalMeshes": 6222,
+      "enabledMeshes": 5988,
+      "activeMeshes": 1413,
+      "skeletons": 98,
+      "materials": 438,
+      "actorMeshes": 3158,
+      "buildingMeshes": 965,
+      "landscapeMeshes": 1731
+    },
+    "world": {
+      "residents": 200,
+      "buildings": 129,
+      "speed": 4,
+      "event": null,
+      "simTime": 13.280799999994038
+    },
+    "screen": {
+      "width": 1280,
+      "height": 720,
+      "renderWidth": 1280,
+      "renderHeight": 720,
+      "devicePixelRatio": 1,
+      "hardwareScaling": 1,
+      "visibility": "visible"
+    },
+    "startup": {
+      "interactiveMs": 1370,
+      "detailsMs": 6241,
+      "modelRequests": 32,
+      "modelDecodedBytes": 56778064,
+      "modelTransferredBytes": 0
+    },
+    "detailsReady": true,
+    "errors": []
+  },
+  {
+    "scenario": "shadows",
+    "frames": 253,
+    "wallSeconds": 12.02,
+    "fps": 21.05,
+    "frameIntervals": {
+      "medianMs": 41.7,
+      "p95Ms": 66.7,
+      "meanMs": 47.5
+    },
+    "simulationCPU": {
+      "medianMs": 5.2,
+      "p95Ms": 10.4,
+      "meanMs": 6.18
+    },
+    "drawCPU": {
+      "medianMs": 35,
+      "p95Ms": 54.1,
+      "meanMs": 40.99
+    },
+    "stages": {
+      "buildings": {
+        "medianMs": 0.6,
+        "p95Ms": 1.3,
+        "meanMs": 4.9
+      },
+      "landscape": {
+        "medianMs": 1.6,
+        "p95Ms": 2.5,
+        "meanMs": 1.67
+      },
+      "actors": {
+        "medianMs": 5.2,
+        "p95Ms": 9.1,
+        "meanMs": 5.89
+      },
+      "light": {
+        "medianMs": 0,
+        "p95Ms": 0.1,
+        "meanMs": 0.02
+      },
+      "activeMeshesEvaluation": {
+        "medianMs": 12.8,
+        "p95Ms": 18.8,
+        "meanMs": 13.51
+      },
+      "animation": {
+        "medianMs": 8,
+        "p95Ms": 12.1,
+        "meanMs": 8.37
+      },
+      "renderTargets": {
+        "medianMs": 0,
+        "p95Ms": 0,
+        "meanMs": 0
+      },
+      "sceneRender": {
+        "medianMs": 26.4,
+        "p95Ms": 38.2,
+        "meanMs": 27.83
+      }
+    },
+    "drawCalls": {
+      "median": 811,
+      "p95": 836,
+      "mean": 802.7
+    },
+    "scene": {
+      "totalMeshes": 6230,
+      "enabledMeshes": 6000,
+      "activeMeshes": 1470,
+      "skeletons": 99,
+      "materials": 442,
+      "actorMeshes": 3167,
+      "buildingMeshes": 964,
+      "landscapeMeshes": 1732
+    },
+    "world": {
+      "residents": 200,
+      "buildings": 129,
+      "speed": 4,
+      "event": null,
+      "simTime": 14.443399999997032
+    },
+    "screen": {
+      "width": 1280,
+      "height": 720,
+      "renderWidth": 1280,
+      "renderHeight": 720,
+      "devicePixelRatio": 1,
+      "hardwareScaling": 1,
+      "visibility": "visible"
+    },
+    "startup": {
+      "interactiveMs": 1370,
+      "detailsMs": 6241,
+      "modelRequests": 32,
+      "modelDecodedBytes": 56778064,
+      "modelTransferredBytes": 0
+    },
+    "detailsReady": true,
+    "errors": []
+  },
+  {
+    "scenario": "low",
+    "frames": 282,
+    "wallSeconds": 12.03,
+    "fps": 23.43,
+    "frameIntervals": {
+      "medianMs": 41.4,
+      "p95Ms": 50,
+      "meanMs": 42.67
+    },
+    "simulationCPU": {
+      "medianMs": 5,
+      "p95Ms": 8.8,
+      "meanMs": 5.65
+    },
+    "drawCPU": {
+      "medianMs": 32.3,
+      "p95Ms": 44.4,
+      "meanMs": 36.72
+    },
+    "stages": {
+      "buildings": {
+        "medianMs": 0.6,
+        "p95Ms": 1.3,
+        "meanMs": 4.14
+      },
+      "landscape": {
+        "medianMs": 1.7,
+        "p95Ms": 2.3,
+        "meanMs": 1.75
+      },
+      "actors": {
+        "medianMs": 5.1,
+        "p95Ms": 7.6,
+        "meanMs": 5.37
+      },
+      "light": {
+        "medianMs": 0,
+        "p95Ms": 0.1,
+        "meanMs": 0.02
+      },
+      "activeMeshesEvaluation": {
+        "medianMs": 11.2,
+        "p95Ms": 14.8,
+        "meanMs": 11.65
+      },
+      "animation": {
+        "medianMs": 7.7,
+        "p95Ms": 10.4,
+        "meanMs": 8.04
+      },
+      "renderTargets": {
+        "medianMs": 0,
+        "p95Ms": 0,
+        "meanMs": 0
+      },
+      "sceneRender": {
+        "medianMs": 23.9,
+        "p95Ms": 31.8,
+        "meanMs": 24.86
+      }
+    },
+    "drawCalls": {
+      "median": 809,
+      "p95": 832,
+      "mean": 795.91
+    },
+    "scene": {
+      "totalMeshes": 5820,
+      "enabledMeshes": 5567,
+      "activeMeshes": 1371,
+      "skeletons": 99,
+      "materials": 442,
+      "actorMeshes": 3170,
+      "buildingMeshes": 964,
+      "landscapeMeshes": 1319
+    },
+    "world": {
+      "residents": 200,
+      "buildings": 129,
+      "speed": 4,
+      "event": null,
+      "simTime": 14.854699999994041
+    },
+    "screen": {
+      "width": 1280,
+      "height": 720,
+      "renderWidth": 1280,
+      "renderHeight": 720,
+      "devicePixelRatio": 1,
+      "hardwareScaling": 1,
+      "visibility": "visible"
+    },
+    "startup": {
+      "interactiveMs": 1370,
+      "detailsMs": 6241,
+      "modelRequests": 32,
+      "modelDecodedBytes": 56778064,
+      "modelTransferredBytes": 0
+    },
+    "detailsReady": true,
+    "errors": []
+  },
+  {
+    "scenario": "far",
+    "frames": 216,
+    "wallSeconds": 12.03,
+    "fps": 17.96,
+    "frameIntervals": {
+      "medianMs": 50,
+      "p95Ms": 66.8,
+      "meanMs": 55.67
+    },
+    "simulationCPU": {
+      "medianMs": 4.7,
+      "p95Ms": 9.8,
+      "meanMs": 5.56
+    },
+    "drawCPU": {
+      "medianMs": 44.8,
+      "p95Ms": 62,
+      "meanMs": 49.78
+    },
+    "stages": {
+      "buildings": {
+        "medianMs": 0.6,
+        "p95Ms": 1,
+        "meanMs": 4.97
+      },
+      "landscape": {
+        "medianMs": 1.3,
+        "p95Ms": 2.1,
+        "meanMs": 1.39
+      },
+      "actors": {
+        "medianMs": 4.9,
+        "p95Ms": 7.3,
+        "meanMs": 5.22
+      },
+      "light": {
+        "medianMs": 0,
+        "p95Ms": 0.1,
+        "meanMs": 0.02
+      },
+      "activeMeshesEvaluation": {
+        "medianMs": 12.1,
+        "p95Ms": 15,
+        "meanMs": 12.35
+      },
+      "animation": {
+        "medianMs": 6.5,
+        "p95Ms": 9,
+        "meanMs": 6.71
+      },
+      "renderTargets": {
+        "medianMs": 9.3,
+        "p95Ms": 12.7,
+        "meanMs": 9.79
+      },
+      "sceneRender": {
+        "medianMs": 36.8,
+        "p95Ms": 47.3,
+        "meanMs": 37.62
+      }
+    },
+    "drawCalls": {
+      "median": 2412,
+      "p95": 2454,
+      "mean": 2407.42
+    },
+    "scene": {
+      "totalMeshes": 6235,
+      "enabledMeshes": 5982,
+      "activeMeshes": 4296,
+      "skeletons": 99,
+      "materials": 442,
+      "actorMeshes": 3170,
+      "buildingMeshes": 965,
+      "landscapeMeshes": 1732
+    },
+    "world": {
+      "residents": 200,
+      "buildings": 129,
+      "speed": 4,
+      "event": null,
+      "simTime": 14.85890000000003
+    },
+    "screen": {
+      "width": 1280,
+      "height": 720,
+      "renderWidth": 1280,
+      "renderHeight": 720,
+      "devicePixelRatio": 1,
+      "hardwareScaling": 1,
+      "visibility": "visible"
+    },
+    "startup": {
+      "interactiveMs": 1370,
+      "detailsMs": 6241,
+      "modelRequests": 32,
+      "modelDecodedBytes": 56778064,
+      "modelTransferredBytes": 0
+    },
+    "detailsReady": true,
+    "errors": []
+  }
+]

@@ -1,3 +1,19 @@
+import {festivalBlessingFrame,festivalBlessingParticle,FESTIVAL_BLESSING_COUNT} from './festival-blessing.js';
+
+// Draw after the night overlay so the falling light remains self-luminous.
+export function drawFestivalBlessing(r,view){
+ const frame=festivalBlessingFrame(view);if(!frame)return;
+ const c=r.ctx,particle={};c.save();
+ for(let i=0;i<FESTIVAL_BLESSING_COUNT;i++){
+  festivalBlessingParticle(frame,i,particle);if(particle.alpha<.01)continue;
+  const p=r.point(particle.x,particle.y,particle.height*7),size=particle.size*10*r.s;
+  c.globalAlpha=particle.alpha;c.fillStyle='#fff2bd';c.beginPath();
+  for(let j=0;j<12;j++){const a=particle.rotation+j*Math.PI/6,radius=size*(j%2?.23:1),x=p.x+Math.cos(a)*radius,y=p.y+Math.sin(a)*radius;j?c.lineTo(x,y):c.moveTo(x,y);}
+  c.closePath();c.fill();
+ }
+ c.restore();
+}
+
 // These low clay oil dishes are painted after each depth-sorted building,
 // outside the cached architectural sprite. They disappear with the ceremony.
 export function drawFestivalBuildingLights(r,b,s){
