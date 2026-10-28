@@ -1,0 +1,267 @@
+{
+  "revision": "c969f54",
+  "matched": 52,
+  "total": 52,
+  "results": [
+    {
+      "file": "app.js",
+      "match": true,
+      "sha256": "7103545ca62bd30fa10c907fead55f8a13c6543511f06b09da155bcd61d60e74"
+    },
+    {
+      "file": "assets/audio/manifest.json",
+      "match": true,
+      "sha256": "ca4d4dde270f5d1d5433a836db6cdff8be9799e95bab0e3a0ce010b487755c61"
+    },
+    {
+      "file": "assets/encyclopedia/songs.json",
+      "match": true,
+      "sha256": "dcc2bae6b01233822d54b3c3687820a4f1182345bb70102da99bbaf2a17b6e3f"
+    },
+    {
+      "file": "ceremony-time.js",
+      "match": true,
+      "sha256": "1a63618bb11e3850efc0f36aeda7738d88638a216d73bf0b6ddb96daa58ffbd2"
+    },
+    {
+      "file": "city-audio.js",
+      "match": true,
+      "sha256": "4e06fb8d96a80bfe5e17ca9742e33188544094f42c20db999d46123fe809742c"
+    },
+    {
+      "file": "city-command-lock.js",
+      "match": true,
+      "sha256": "34a23536af5a8862564dab6b7864a5d933e5c617d58532b278ab019f3105b16f"
+    },
+    {
+      "file": "district-logistics.js",
+      "match": true,
+      "sha256": "6fd6d0483f8008419753d60977d17f0b928d77c80b1d9a600cce48796d88312b"
+    },
+    {
+      "file": "docs/SONGS_TEXTS_TRANSLATIONS_2026-10-27.md",
+      "match": true,
+      "sha256": "ea26587a9569580e593f41f55502cea259b98898d9d5edb1ceb81218f9741ffe"
+    },
+    {
+      "file": "docs/MIRACLE_CELEBRATIONS_2026-10-28.md",
+      "match": true,
+      "sha256": "33ff7eb145d5e5202c0431312fd117d34c9c2b16911e527e667a4cf550ec3f83"
+    },
+    {
+      "file": "engine.js",
+      "match": true,
+      "sha256": "d63d14803e8b329aa29d3013a7ce721cea1afdfb4579f4335001a40349b9288e"
+    },
+    {
+      "file": "festival.js",
+      "match": true,
+      "sha256": "1693c2edaad167a6cc31736ff4252c86e2606e16d550004ba8fc43c4418398ea"
+    },
+    {
+      "file": "food-planning.js",
+      "match": true,
+      "sha256": "832db27086e53822b4da4a2b201e30110227b6d72836da242794959cac9feac8"
+    },
+    {
+      "file": "game3d/actors.js",
+      "match": true,
+      "sha256": "7de108bf5cf47760842c09328fbef4f27fb923e7199404d50579161811e689b2"
+    },
+    {
+      "file": "game3d/miracle-garden.js",
+      "match": true,
+      "sha256": "bcba5c056c48c7a3c11dc31c7155e26d6fe0dc60ed9863c97eb49f3209fde56e"
+    },
+    {
+      "file": "game3d/renderer.js",
+      "match": true,
+      "sha256": "226f37226c07c05baf0efe4f9475afeb41a24c79a2a322f156794c17db8491d0"
+    },
+    {
+      "file": "index.html",
+      "match": true,
+      "sha256": "6fc38c5fb845203eee61f75bad1ba2890775477d058224b7d82a7c054af17fe2"
+    },
+    {
+      "file": "management.js",
+      "match": true,
+      "sha256": "65564f963bace6d05358de2ed69ca27ea44c87c89b28fbc85f6491090e41f6af"
+    },
+    {
+      "file": "music-tracks.js",
+      "match": true,
+      "sha256": "96ea0af52f91644d363cc95e37d5e1a7420daefd4bf81dee4c5015770b68bbb9"
+    },
+    {
+      "file": "pests.js",
+      "match": true,
+      "sha256": "7b469ac1cc5ec64a5cc79308f54737950607e253bc004d60656c8d4b38d3d02a"
+    },
+    {
+      "file": "relic-quest.js",
+      "match": true,
+      "sha256": "a7293cb642729518cbbefc79680f612beecb534c32a44f62c6496b530b707861"
+    },
+    {
+      "file": "renderer.js",
+      "match": true,
+      "sha256": "82475fe5a3e52be4baa8b3eb670fd224917830985a2448114b2ef5a18856ac60"
+    },
+    {
+      "file": "roads.js",
+      "match": true,
+      "sha256": "7e7f1eb72e7bdb163a5e4028b1c047f518875e239d2812411f4b4a07878a02bd"
+    },
+    {
+      "file": "scripts/build-song-encyclopedia.mjs",
+      "match": true,
+      "sha256": "78b2e06e7eac792deffb0cc78bca959216810355051dfb4124425d9851de75a7"
+    },
+    {
+      "file": "test-tools.js",
+      "match": true,
+      "sha256": "e357e4a90ffaa3d3eec8aee06aaeb7ba9435e49a9b0df1a870911536d23dc145"
+    },
+    {
+      "file": "tests/agriculture.test.js",
+      "match": true,
+      "sha256": "2f4bab0c9829bab940591e78c3ca33027cd4033fe01d9cb801e905395c5e97eb"
+    },
+    {
+      "file": "tests/calendar.test.js",
+      "match": true,
+      "sha256": "3b5d85f53b9fc1a0c89d6a566bb1a7d39b231519bb3109cb62ac218ee1a42063"
+    },
+    {
+      "file": "tests/ceremony-time.test.js",
+      "match": true,
+      "sha256": "97036e47bdb1a231590700022030fa53e2b589b6a8e59153869ecc42f5465bc9"
+    },
+    {
+      "file": "tests/engine.test.js",
+      "match": true,
+      "sha256": "bb4806b3fed400ae36a2d40b026163dc89cec0db48d41f659be69005087818ed"
+    },
+    {
+      "file": "tests/event-audio-assets.test.js",
+      "match": true,
+      "sha256": "516c64e580cd8acb45f43fa07b2a8484d23ac23a94aa2a590d5b50b42fcdc2b6"
+    },
+    {
+      "file": "tests/fauna-living.test.js",
+      "match": true,
+      "sha256": "34456a53e3e564569a697982737b337533331451999509c12d9f61afc949d296"
+    },
+    {
+      "file": "tests/food-warnings.test.js",
+      "match": true,
+      "sha256": "cd266444731c10e06424bd549985344553f3e1851b886420211863166fd3bda0"
+    },
+    {
+      "file": "tests/game3d-actors.test.js",
+      "match": true,
+      "sha256": "88b9f0ffbbf248f24e4c74450841eeb4fca4c03be1802fa0b4cfa2d3365a8a70"
+    },
+    {
+      "file": "tests/harbor.test.js",
+      "match": true,
+      "sha256": "d2056607f1db567029220849728f969df1e4eee14e944d3fa36c406f240917cb"
+    },
+    {
+      "file": "tests/market-logistics.test.js",
+      "match": true,
+      "sha256": "e783bd467052ec87991ae3367a404c882a95444d98d30435463613730b0c451d"
+    },
+    {
+      "file": "tests/medical-education.test.js",
+      "match": true,
+      "sha256": "89532e6d20cafbc406f589ac844127e8cc028d3b04ce12a6d608d60087be2cb9"
+    },
+    {
+      "file": "tests/miracle-access.test.js",
+      "match": true,
+      "sha256": "f35844c928acf4c172cbf29ec7ba15748523cd6ffce5238428916aa5e8ae7658"
+    },
+    {
+      "file": "tests/music-library-update.test.js",
+      "match": true,
+      "sha256": "afebb8f80a1e4a7c6ac0ce78ad0a8da3dd5db2b3f4205b05ac5106a68753b420"
+    },
+    {
+      "file": "tests/pests.test.js",
+      "match": true,
+      "sha256": "7fb7551f1076821b4a1c3d483210f9ab4d7ef91364992b260c70627be94d387b"
+    },
+    {
+      "file": "tests/song-encyclopedia.test.js",
+      "match": true,
+      "sha256": "35bcd1c754ad06e82b6c6ba8c6e8c2315597d2a3fd6b072d555d748b4d1dd245"
+    },
+    {
+      "file": "trading.js",
+      "match": true,
+      "sha256": "4c539a3fd76c2b67ce309e6081a1fcf102df1154918a06b4a88b8553c393c712"
+    },
+    {
+      "file": "ui-encyclopedia.js",
+      "match": true,
+      "sha256": "fb41e6524b895e48b8a77ff667df93e5bf70d3817ef6cda09e6d9cba0d0c1045"
+    },
+    {
+      "file": "workforce.js",
+      "match": true,
+      "sha256": "99739f5e38500491bd210e3d4af89b90adeeda03661ca56ec2e34e682055290e"
+    },
+    {
+      "file": "miracle-celebration.js",
+      "match": true,
+      "sha256": "4ed972853b22a86556cd0ab1f7385be9af0f440174c38668b781d773d3224a95"
+    },
+    {
+      "file": "miracle-garden-plan.js",
+      "match": true,
+      "sha256": "9c0f358d35b3b198ceda35c7ded4835b3d75cf13a81dc30ea51859c80fe1a8d2"
+    },
+    {
+      "file": "tests/miracle-celebration.test.js",
+      "match": true,
+      "sha256": "88df7cca5b05eec2dc62deeaa77bc63d8d94013e530125e8017d5eb806afdb4a"
+    },
+    {
+      "file": "tests/miracle-presentation.test.js",
+      "match": true,
+      "sha256": "ab2fcc1849df04e517b4d5fbf77288132b9f8c1ffd2e45458a21a107b19d62bc"
+    },
+    {
+      "file": "tests/helpers/calendar-time.js",
+      "match": true,
+      "sha256": "e20c79934171821e3c732db9031fc6046982d32da960b479d3fc640486cae352"
+    },
+    {
+      "file": "tests/fixtures/miracle-celebrations.html",
+      "match": true,
+      "sha256": "e9a46be9546925cd2c9770bdcdc9ee68afcdcde5769b9802e5a3d811ffc473a3"
+    },
+    {
+      "file": "assets/audio/Numun he-mu... - Чудо Дыхание земли.mp3",
+      "match": true,
+      "sha256": "4378003b7f24b44b8d6dc478a8ed002297fcb785113b8a3a2a600ec7a4172a80"
+    },
+    {
+      "file": "assets/audio/Sa-a! Sa-a! - пришла кошка.mp3",
+      "match": true,
+      "sha256": "25c93aa94647c7c93a8f843bda1be4d22a1d1ec984ccd0a9e8832c504b5e4ddb"
+    },
+    {
+      "file": "tests/trading.test.js",
+      "match": true,
+      "sha256": "9982d565bdd057731edb9047b59a3442fd86804699978053095e549427133756"
+    },
+    {
+      "file": "tests/working-city.test.js",
+      "match": true,
+      "sha256": "b75a6732b7c0cc1622ae5bc6873d85775631ae98a2d9cb30c398e681a684fdf1"
+    }
+  ]
+}

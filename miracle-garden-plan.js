@@ -12,4 +12,3 @@ export function miracleGardenPlan(center,radius=2){
  for(let i=0;i<9;i++){const a=i*Math.PI*2/9;put('cactus',Math.cos(a)*.96,Math.sin(a)*.96,.8+noise(i+300)*.35,1.3+i*.1);}
  return out;
 }
-
