@@ -20,7 +20,7 @@ import {renderLifeAnalytics} from './ui-life-analytics.js';
 import {canRotateBuilding,nextRotation} from './placement.js';
 import {calendarAt,monthTrackHTML,simulationSeconds,secondsToNextMonth} from './calendar.js';
 import {grantTestResources,triggerTestEvent,instantTestUpgrade,killTestCitizens,testToolsReason} from './test-tools.js';
-import {festivalReason,orderFestival,cancelFestival,festivalSummary} from './festival.js';
+import {FESTIVAL_COST,festivalReason,orderFestival,cancelFestival,festivalSummary} from './festival.js';
 import {createCityAudio} from './city-audio.js';
 import {cityAudioListener} from './music-audio.js';
 import {createPhotoMode} from './photo-mode.js';
@@ -266,7 +266,7 @@ async function showEncyclopedia(){
  if(relicControlActive(state)){toast('Сначала заверши путь избранного');return;}
  openDialog('encyclopedia','<button class="management-close" id="close-encyclopedia" aria-label="Вернуться в город">×</button><div id="encyclopedia-root"><span class="eyebrow">ГЛИНЯНЫЕ ТАБЛИЧКИ</span><h2>Энциклопедия</h2><p role="status">Открываем песенные таблички…</p></div>');$('close-encyclopedia').onclick=closeDialog;
  const request=encyclopediaRequest,root=$('encyclopedia-root');
- try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=testing-ceremonies-20261027-3',import.meta.url)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
+ try{const {renderSongEncyclopedia}=await import('./ui-encyclopedia.js');if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;const controller=await renderSongEncyclopedia(root,{dataUrl:new URL('./assets/encyclopedia/songs.json?v=event-costs-20261028-1',import.meta.url)});if(request!==encyclopediaRequest||modalKind!=='encyclopedia'){controller.destroy();return;}encyclopediaUI=controller;}
  catch{if(request!==encyclopediaRequest||modalKind!=='encyclopedia')return;root.innerHTML='<h2>Энциклопедия</h2><p>Не удалось загрузить песенные таблички.</p><button id="encyclopedia-retry">Попробовать снова</button>';$('encyclopedia-retry').onclick=showEncyclopedia;}
 }
 function showLifeAnalytics(selectedId){
@@ -381,8 +381,10 @@ function checkDialogs(){
   if($('continue-game'))$('continue-game').onclick=()=>{state.continued=true;closeDialog();save();update();checkDialogs();};$('end-new').onclick=askReset;return;
  }
  if(state.event){
-  const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state);
-  openDialog('event',`${ev.id==='festival'?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:''}<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><div class="event-resources">${Object.entries(state.resources).map(([k,v])=>`<span><b>${Math.floor(v)}</b> ${RESOURCE_NAMES[k]}</span>`).join('')}</div><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span><h2>${esc(ev.title)}</h2><p>${esc(ev.text)}</p>${reason?`<p class="warning-note">${reason}</p>`:''}<div class="dialog-actions"><button class="primary" id="event-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button class="secondary" id="event-skip">${esc(definition?.skipLabel||'Отказаться')}</button></div><p class="keyboard-note">Время на паузе. Ресурсы сверху остаются видны.</p>`);
+  const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
+  const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':ev.text;
+  const eventCost=festival?`<div class="event-costs" role="group" aria-label="Цена праздника">${[['prestige','престижа'],['food','еды'],['beer','пива']].map(([kind,name])=>`<span>${resourceIcon(kind)}<span><b>${FESTIVAL_COST[kind]}</b> ${name}</span></span>`).join('')}</div>`:'';
+  openDialog('event',`${ev.id==='festival'?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:''}<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span><h2>${esc(ev.title)}</h2><p>${esc(description)}</p>${eventCost}${reason?`<p class="warning-note">${reason}</p>`:''}<div class="dialog-actions"><button class="primary" id="event-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button class="secondary" id="event-skip">${esc(definition?.skipLabel||'Отказаться')}</button></div><p class="keyboard-note">Время на паузе. Ресурсы сверху остаются видны.</p>`);
   for(const choice of ['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(result.ok){closeDialog();if(choice==='accept'&&ev.id==='festival'){paused=false;showFestival();}save();update();checkDialogs();}else toast(result.reason);};
  }
 }
