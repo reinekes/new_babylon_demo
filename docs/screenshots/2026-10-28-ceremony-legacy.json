@@ -1,0 +1,105 @@
+{
+  "passed": 20,
+  "fixtures": [
+    {
+      "file": "legacy-v1.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v10-healer.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v11-autumn.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v12-harvest.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v13-autumn.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v14-warning-city.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v15-districts.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v16-textiles.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v17-water-bricks.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v18-kiln.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v19-masonry.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v2.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v27-local-stock.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v3.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v4.json",
+      "people": 14,
+      "pass": true
+    },
+    {
+      "file": "legacy-v5.json",
+      "people": 14,
+      "pass": true
+    },
+    {
+      "file": "legacy-v6-city.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v6-funeral.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v7-city.json",
+      "people": 12,
+      "pass": true
+    },
+    {
+      "file": "legacy-v8-city.json",
+      "people": 12,
+      "pass": true
+    }
+  ]
+}

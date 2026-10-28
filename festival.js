@@ -8,9 +8,10 @@ import {canWork} from './demography.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationGridStep} from './navigation.js';
 import {roadSpeed} from './roads.js';
+import {festivalCourtLayout} from './festival-layout.js';
 export const FESTIVAL_COST=Object.freeze({food:12,beer:6,prestige:15});
 export const festivalInvitation=()=>`Закажи общинный праздник: ${FESTIVAL_COST.prestige} престижа, ${FESTIVAL_COST.food} еды и ${FESTIVAL_COST.beer} пива. Жители доставят угощение к храму и соберутся после вечернего ужина.`;
-export const FESTIVAL_SECONDS=12;
+export const FESTIVAL_SECONDS=90;
 export const FIRST_BEER_COST=Object.freeze({food:0,beer:1,prestige:0});
 const occasion=q=>q?.occasion||'nightLights',firstBeer=q=>occasion(q)==='firstBeer',costFor=q=>firstBeer(q)?FIRST_BEER_COST:FESTIVAL_COST;
 const completedBrewery=b=>b?.type==='brewery'&&isOperational(b);
@@ -58,6 +59,7 @@ function refundFestival(s,q){
 }
 
 function port(s,key){return networkFor(s).ports.find(p=>!p.building.siteKey&&buildingKey(p.building)===key);}
+const guestLimit=(s,q)=>Math.min(firstBeer(q)?8:24,festivalCourtLayout(s,networkFor(s),q.temple)?.places.length||0);
 function route(s,c,key){const net=networkFor(s),target=port(s,key);if(!target)return null;let near=null,d=Infinity;for(const n of net.nodes.values()){const v=distance(c,n);if(v<d){near=n;d=v;}}return near&&routeBetween(s,near.key,target.key)?.map(p=>({x:p.x,y:p.y,key:p.key}));}
 const busy=c=>!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||!!c.pantryTrip||!!c.clinic||!!c.school||!!c.districtJob||!!c.saleJob||!!c.tradeJob||sum(c.cargo)>0||sum(c.buildCargo)>0;
 const freeAdult=c=>canWork(c)&&c.age>=16&&(c.health??100)>=60&&!c.recovering&&!c.site&&!busy(c)&&!c.pendingRole&&!c.guardPost;
@@ -99,8 +101,10 @@ function finishFestival(s){
 }
 // Death/role change gives a festival load back to its original reserved ledger, never ordinary cargo.
 export function recoverFestivalCitizen(s,id){const q=s.festival,a=q?.actors.find(a=>a.id===id);if(!a)return false;if(a.load>0)(q.sources[a.source]??={})[a.material]=(q.sources[a.source]?.[a.material]||0)+a.load;release(s,a);q.actors=q.actors.filter(v=>v!==a);return true;}
-function enlist(s,q,c,kind,target,source=null,material=null){const path=route(s,c,target);if(!path)return false;
- if(kind==='guest'){const net=networkFor(s),center=port(s,target),places=[...net.nodes.values()].filter(p=>distance(p,center)<=2&&net.components.get(p.key)===net.components.get(center.key));const place=places[q.actors.filter(a=>a.kind==='guest').length%places.length],approach=place&&routeBetween(s,path.at(-1).key,place.key);if(approach)path.push(...approach.slice(1).map(p=>({x:p.x,y:p.y,key:p.key})));}
+function enlist(s,q,c,kind,target,source=null,material=null){
+ if(kind==='guest'&&q.actors.filter(a=>a.kind==='guest').length>=guestLimit(s,q))return false;
+ const path=route(s,c,target);if(!path)return false;
+ if(kind==='guest'){const net=networkFor(s),center=festivalCourtLayout(s,net,target)?.center,approach=center&&routeBetween(s,path.at(-1).key,center.key);if(!approach)return false;path.push(...approach.slice(1).map(p=>({x:p.x,y:p.y,key:p.key})));}
  q.actors.push({id:c.id,kind,stage:kind==='carrier'?'pickup':'arriving',source,material,load:0,route:path,routeIndex:0,role:c.role||'auto'});c.phase='festival';c.route=[];c.routeIndex=0;invalidateAssignments(s);return true;}
 function connected(s,a){const net=networkFor(s);return a.route.every((p,i)=>net.nodes.has(p.key)&&(!i||net.graph.get(a.route[i-1].key)?.has(p.key)));}
 function walk(s,c,a,dt){let remaining=dt;while(remaining>1e-8){const target=a.route[a.routeIndex];if(!target)return true;const d=distance(c,target),speed=1.05*roadSpeed(s,c,target),travel=d/speed;if(travel<=remaining+1e-8){c.x=target.x;c.y=target.y;a.routeIndex++;remaining-=travel;}else{c.x+=(target.x-c.x)*remaining/travel;c.y+=(target.y-c.y)*remaining/travel;return false;}}return a.routeIndex>=a.route.length;}
@@ -117,6 +121,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
  // Close the gathering window before moving or rewarding any late guests.
  if(q.stage==='celebrating'&&(q.elapsed>=FESTIVAL_SECONDS||!gathering())){finishFestival(s);return;}
  if(q.stage==='waiting'&&!gathering()){for(const a of q.actors)release(s,a);q.actors=[];return;}
+ if(q.stage==='waiting'){const limit=guestLimit(s,q),guests=q.actors.filter(a=>a.kind==='guest');for(const a of guests.slice(limit)){release(s,a);q.actors=q.actors.filter(v=>v!==a);}}
  if(q.stage==='supplying'){
   for(const c of s.citizens){if(q.actors.length>=(firstBeer(q)?1:2))break;if(!eligibleFor(c,q)||!canCarry(c,q)||!['home','working','resting'].includes(c.phase))continue;
    const entry=Object.entries(q.sources).find(([key,v])=>keys.some(k=>v[k]>1e-7)&&route(s,c,key)&&routeBetween(s,port(s,key)?.key,port(s,q.temple)?.key));if(!entry)continue;
@@ -124,7 +129,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
   }
  }
  if((q.stage==='waiting'||firstBeer(q)&&q.stage==='celebrating')&&gathering()){
-  for(const c of s.citizens)if(q.actors.length<(firstBeer(q)?8:24)&&!q.rewarded.includes(c.id)&&eligibleGuest(c,q)&&(firstBeer(q)?['home','working','resting'].includes(c.phase)&&(c.hunger||0)<30:['home','resting'].includes(c.phase)&&c.mealEaten>=mealRation(c)*.95))enlist(s,q,c,'guest',q.temple);
+  const limit=guestLimit(s,q);for(const c of s.citizens)if(q.actors.length<limit&&!q.rewarded.includes(c.id)&&eligibleGuest(c,q)&&(firstBeer(q)?['home','working','resting'].includes(c.phase)&&(c.hunger||0)<30:['home','resting'].includes(c.phase)&&c.mealEaten>=mealRation(c)*.95))enlist(s,q,c,'guest',q.temple);
  }
  for(const a of [...q.actors]){
   const c=s.citizens.find(c=>c.id===a.id);if(!c)continue;if(a.stage==='dancing')continue;if(!walk(s,c,a,dt))continue;
@@ -135,7 +140,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
    }else{q.delivered[a.material]+=a.load;a.load=0;q.actors=q.actors.filter(v=>v!==a);
     // The first-cup server stays at the brewery instead of missing the entire
     // short gathering while walking home and immediately starting another job.
-    if(firstBeer(q)&&keys.every(k=>Math.abs(q.delivered[k]-cost[k])<1e-7)&&(c.hunger||0)<30){q.stage='waiting';enlist(s,q,c,'guest',q.temple);}else release(s,a);
+    if(firstBeer(q)&&keys.every(k=>Math.abs(q.delivered[k]-cost[k])<1e-7)&&(c.hunger||0)<30){q.stage='waiting';if(!enlist(s,q,c,'guest',q.temple))release(s,a);}else release(s,a);
    }
   }else{
    if(!gatheringAt(s.simTime+(ceremony?0:dt))){release(s,a);q.actors=q.actors.filter(v=>v!==a);continue;}
@@ -165,6 +170,7 @@ function festivalProgress(s,q,{paused=false}={}){
   if(!reachable)return status('roadBlocked','Нет прохода от свободного носильщика через склад к месту праздника. Проверь свободные берега и мосты.');
   return status('dispatching','Угощение уже зарезервировано. Свободные носильщики отправятся за ним автоматически на следующем шаге времени.');
  }
+ if(!guestLimit(s,q))return status('noCourtyard','Нужна свободная сухая площадка рядом с местом праздника: сейчас двору мешают здания или вода. Угощение сохранено; отмена вернёт неиспользованные припасы.');
  if(!firstBeer(q)&&!eveningAt(s.simTime))return status('evening','Угощение доставлено. Ждём 21:00: сытые взрослые соберутся после ужина; вручную заполнять храм больше не нужно.');
  if(q.actors.some(a=>a.kind==='guest'))return status('gathering','Угощение доставлено, гости идут к месту праздника. Пир начнётся, когда первый гость подойдёт.');
  const guests=s.citizens.filter(c=>eligibleGuest(c,q)&&(firstBeer(q)?['home','working','resting'].includes(c.phase):['home','resting'].includes(c.phase)));
@@ -179,7 +185,7 @@ export function festivalSummary(s,options={}){
  const reserved=Object.fromEntries(keys.map(k=>[k,Object.values(q?.sources||{}).reduce((n,v)=>n+(v[k]||0),0)])),inTransit=Object.fromEntries(keys.map(k=>[k,(q?.actors||[]).reduce((n,a)=>n+(a.material===k?a.load:0),0)]));
  return {active:!!q,occasion:which,title,venueLabel,stage:q?.stage||'none',label:!q?'Общинный праздник':q.stage==='supplying'?'Жители несут угощение':q.stage==='waiting'?(firstBeer(q)?'Жители собираются у пивоварни':'Ждём вечера и сытых взрослых'):`Праздник ${venueLabel}`,cost,delivered:q?{...q.delivered}:{food:0,beer:0},reserved,inTransit,progress:festivalProgress(s,q,options),participants:q?.actors.filter(a=>a.kind==='guest').length||0,warning,reason:festivalReason(s)};
 }
-export function festivalView(s){const q=s.festival;if(!q)return null;const b=s.buildings.find(b=>buildingKey(b)===q.temple);return {occasion:occasion(q),title:firstBeer(q)?'Первая кружка пива':'Ночь огней',stage:q.stage,temple:q.temple,x:b?.x,y:b?.y,consumed:q.consumed,participants:q.actors.filter(a=>a.kind==='guest').map(a=>a.id),dancing:q.actors.filter(a=>a.stage==='dancing').map(a=>a.id),carriers:q.actors.filter(a=>a.kind==='carrier').map(a=>({id:a.id,load:a.load,material:a.material})),elapsed:elapsedFestival(s,q)};}
+export function festivalView(s){const q=s.festival;if(!q)return null;const b=s.buildings.find(b=>buildingKey(b)===q.temple),court=festivalCourtLayout(s,networkFor(s),q.temple)?.center;return {occasion:occasion(q),title:firstBeer(q)?'Первая кружка пива':'Ночь огней',stage:q.stage,temple:q.temple,x:b?.x,y:b?.y,court:court?{...court}:null,consumed:q.consumed,participants:q.actors.filter(a=>a.kind==='guest').map(a=>a.id),dancing:q.actors.filter(a=>a.stage==='dancing').map(a=>a.id),carriers:q.actors.filter(a=>a.kind==='carrier').map(a=>({id:a.id,load:a.load,material:a.material})),elapsed:elapsedFestival(s,q)};}
 export function validateFirstBeerFeast(s){
  const q=s.firstBeerFeast;if(q===undefined)return true;
  if(!q||typeof q!=='object'||Array.isArray(q)||Object.keys(q).length!==4||q.version!==1||!['unbrewed','pending','done','legacy'].includes(q.status)||!['version','status','brewery','producedAt'].every(k=>k in q))return false;
@@ -202,4 +208,14 @@ export function validateFestival(s){
  return keys.every(k=>Math.abs(totals[k]-cost[k])<1e-7&&Math.abs(left[k]+q.delivered[k]-cost[k])<1e-7)&&(q.stage==='supplying'||keys.every(k=>Math.abs(q.delivered[k]-cost[k])<1e-7));
 }
 
-export function festivalCitizenView(s,c){const a=s.festival?.actors.find(a=>a.id===c.id);return a?{walking:a.stage!=='dancing',carrying:a.load>0,cargo:a.load>0?{[a.material]:a.load}:{},celebrating:a.stage==='dancing'}:{};}
+export function festivalCitizenView(s,c){
+ const q=s.festival,a=q?.actors.find(a=>a.id===c.id);if(!a)return {};
+ const view={walking:a.stage!=='dancing',carrying:a.load>0,cargo:a.load>0?{[a.material]:a.load}:{},celebrating:a.stage==='dancing'};
+ if(a.stage==='dancing'){
+  const layout=festivalCourtLayout(s,networkFor(s),q.temple),center=layout?.center;
+  // Legacy parties may already be dancing two cells away. Never move those
+  // people across the city just because their old save now uses a richer view.
+  if(center&&a.route.at(-1)?.key===center.key&&distance(c,center)<.01){const slot=q.actors.filter(a=>a.kind==='guest').findIndex(a=>a.id===c.id),place=layout.places[slot];if(place)view.festivalContact={...place,center:{x:center.x,y:center.y},slot};}
+ }
+ return view;
+}

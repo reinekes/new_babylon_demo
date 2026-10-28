@@ -1,3 +1,5 @@
+import {festivalView} from '../festival.js';
+import {createFestivalCourt} from './festival-court.js';
 import {loadModel} from './asset-loading.js';
 import {workstationHands,workstationPose} from './workstations.js';
 import {professionClothing,createProfessionClothing} from './profession-clothing.js';
@@ -49,7 +51,7 @@ export function residentVisual(c,state){
 export function actorAnimation(c,distance=0){
  if(c.kind==='sheep')return {clip:distance>.00001?'Walk':['grazing','drinking'].includes(c.behavior)?'Graze':'Idle',pose:c.behavior||'idle'};
  const pose=residentPose(c,null,0).kind;
- return {clip:!c.swimming&&distance>.00001?'Walk_Loop':'Idle_Loop',pose:c.relic?'carry':c.activity&&!c.carrying?(!c.activity.stage||['working','strike','searching'].includes(c.activity.stage)?c.activity.kind:'idle'):c.swimming?'swim':['carry','unload','play','dance','elder'].includes(pose)?pose:c.phase==='working'||c.phase==='constructing'?'work':'idle'};
+ return {clip:!c.swimming&&(distance>.00001||pose==='dance')?'Walk_Loop':'Idle_Loop',pose:c.relic?'carry':c.activity&&!c.carrying?(!c.activity.stage||['working','strike','searching'].includes(c.activity.stage)?c.activity.kind:'idle'):c.swimming?'swim':['carry','unload','play','dance','elder'].includes(pose)?pose:c.phase==='working'||c.phase==='constructing'?'work':'idle'};
 }
 export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){return c.swimming?{height:WATER_HEIGHT-.48,pitch:1.12,stroke:reducedMotion?0:Math.sin(time*2.3),sway:reducedMotion?0:Math.sin(time*1.15)*.025}:null;}
 
@@ -58,7 +60,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
  let disposed=false,poseTime=0,bier=null,riteState=null,presentedState=null;
  const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
- const ritual=createFuneralRitual(B,scene,meshes);
+ const ritual=createFuneralRitual(B,scene,meshes),festivalCourt=createFestivalCourt(B,scene,meshes);
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
@@ -292,7 +294,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.workContact=viewPosition.contact||null;
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
-  if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),blend=fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;}
+  if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){
+   const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),distance=Math.hypot(offsetX-a.viewOffsetX,offsetY-a.viewOffsetY);
+   // Final gathering steps stay at walking speed instead of snapping to a spot.
+   const blend=c.festivalContact?Math.min(1,.24*dt*speed/Math.max(.00001,distance)):fixed?1:1-Math.exp(-dt*9);a.viewOffsetX+=(offsetX-a.viewOffsetX)*blend;a.viewOffsetY+=(offsetY-a.viewOffsetY)*blend;
+  }
   // Possession follows the exact authored route, including its water crossing;
   // pedestrian lane offsets must not slide the swimmer onto a different bank.
   if(c.controlled){a.viewOffsetX=0;a.viewOffsetY=0;}
@@ -305,8 +311,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // path smoothing must not rotate them apart or snap the root when paused.
    if(!paused||a.yaw===null){a.yaw=c.funeralContact.yaw;a.root.rotation.y=a.yaw;}
   }else{
+   if(c.festivalContact&&!paused){const center=c.festivalContact.center,dx=center.x-shownX,dy=center.y-shownY;a.yaw=Math.hypot(dx,dy)>.001?Math.atan2(dx,dy):c.festivalContact.yaw;}
    if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
-   if(distance>.00001&&!paused){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
+   if(distance>.00001&&!paused&&!c.festivalContact){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
    else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   }
   a.lastX=shownX;a.lastY=shownY;
@@ -319,10 +326,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
   if(a.clip==='Walk_Loop'&&!paused&&distance<3){
-   a.walkPhase=residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z,a.walkMetres);
+   a.walkPhase=a.pose==='dance'?(poseTime*.28+(a.look?.motion.phase||0)/(Math.PI*2))%1:residentWalkPhase(a.walkPhase,distance,a.unit*a.root.scaling.z,a.walkMetres);
    const g=a.groups.get(a.clip);a.walkFrame=g.from+a.walkPhase*(g.to-g.from);
   }
-  if(!paused||!a.hasModelPose){if(!paused)a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);a.hasModelPose=true;if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=swim?swim.pitch:(c.funeralContact?.bow||0)+(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=swim?swim.sway:a.pose==='dance'?beat*.055:0;
+  if(!paused||!a.hasModelPose){if(!paused)a.time=poseTime*(a.look?.motion.gait||1)+(a.look?.motion.phase||0);a.hasModelPose=true;if(a.look){const beat=Math.sin(a.time*3.5);a.model.rotation.x=swim?swim.pitch:(c.age>=55?.06:0)+(a.look.mood<25?.045:0)+(a.pose==='petting'?.60:0);a.model.rotation.z=swim?swim.sway:a.pose==='dance'?beat*.055:0;
    const glow=1+Math.sin(a.time*2.3)*.08,inspiredHeight=a.workContact?.kind==='lithophone'?1.25:a.workContact?.kind==='dairy'?1.3:1.82;a.inspired.position.y=inspiredHeight+Math.sin(a.time*2.3)*.015;a.inspired.scaling.set(.035*glow,.06*glow,.035*glow);
    // Play and dance bounce is a presentation pose at the resident's exact route position.
    a.model.position.y=a.footOffset+(a.pose==='play'||a.pose==='dance'?Math.abs(beat)*.04:0);
@@ -353,7 +360,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
-   const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seated=milking||music,resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop';a.wasSwimming=swimming;
+   const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seated=milking||music,resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop'||a.wasDancing&&a.clip==='Idle_Loop';a.wasSwimming=swimming;a.wasDancing=a.pose==='dance';
    // Sample the real idle keys before sitting. A constant idle channel can
    // otherwise retain our previous IK transform instead of rewriting its value.
    if(resetSeated&&a.clip==='Idle_Loop'){const idle=a.groups.get('Idle_Loop');idle.goToFrame(idle.from);authoredStance(a,targets);}
@@ -365,7 +372,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(a.spine){
     const animated=targets?.rotationQuaternion.has(a.spine);
     const base=animated?a.spine.rotationQuaternion:a.spineBase;
-    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(!swimming&&work?taskPose.bend:a.pose==='play'&&!a.c.walking?.12:0,!swimming&&work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
+    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(!swimming&&work?taskPose.bend:a.c.funeralContact?Math.min(.16,(a.c.funeralContact.bow||0)*.4):a.pose==='play'&&!a.c.walking?.12:0,!swimming&&work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    }
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
@@ -409,6 +416,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     for(let solve=0;solve<(music?4:1);solve++){poseArm(a,'r',local(hands.right));poseArm(a,'l',local(hands.left));}
    }else if(work){
     poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
+   }else if(a.pose==='dance'){
+    // Celebrate with the actual palms and authored stepping legs. Each resident
+    // keeps a stable place; no animation displacement enters the simulation.
+    const opening=(1-Math.cos(a.time*3.5))*.5,spread=.045+.38*opening,lift=1.16+Math.sin(a.time*3.5)*.12;
+    for(let solve=0;solve<4;solve++){poseArm(a,'l',vec(-spread,lift,.46));poseArm(a,'r',vec(spread,lift,.46));}
    }else if(a.pose==='play'&&!a.c.walking){
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
@@ -501,8 +513,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
   imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed});
   const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
-  wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);
+  wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
  return {update,dispose,meshes,faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

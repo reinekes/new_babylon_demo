@@ -115,9 +115,19 @@ function routePoint(route,progress){let remaining=routeLength(route)*progress;fo
 function farewellStations(layout,f,first){
  const key=`${first}:${f.actors.length}`;if(layout.crowds.has(key))return layout.crowds.get(key);
  const base=layout.laid[first]||f.boundary,inward=f.boundary.x<f.gather.x?1:-1,occupied=layout.laid.slice(0,Math.min(f.deceased.length,first+4));
- // Reuse the clearance-tested dry grid, rather than projecting a rectangular
- // crowd into whatever houses happen to occupy the edge of the settlement.
- const stations=layout.points.filter(p=>(p.x-base.x)*inward>=.30&&occupied.every(b=>Math.hypot(p.x-b.x,p.y-b.y)>=.45)).sort((a,b)=>Math.hypot(a.x-base.x,a.y-base.y)-Math.hypot(b.x-base.x,b.y-base.y)||a.y-b.y||a.x-b.x).slice(0,f.actors.length);
+ // A half-tile navigation grid is three metres wide in the 3D view. Use a
+ // closer standing grid for the farewell, while retaining dry-ground and
+ // building clearance checks and a clear space around every laid bier.
+ let candidates=[];const bank=f.gather.x<river(f.gather.y),limit=Math.hypot(WIDTH,HEIGHT);
+ for(let reach=Math.max(1.2,Math.sqrt(f.actors.length)*.22);;reach=Math.min(limit,reach*2)){
+  candidates=[];
+  for(let y=Math.max(.5,base.y-reach);y<Math.min(HEIGHT-1,base.y+reach);y+=.18)for(let x=Math.max(.5,base.x-reach);x<Math.min(WIDTH-1,base.x+reach);x+=.18){
+   const p={x,y};if((x<river(y))!==bank||(p.x-base.x)*inward<.22||!layout.nav.free(p)||occupied.some(b=>Math.hypot(p.x-b.x,p.y-b.y)<.32))continue;
+   candidates.push(p);
+  }
+  if(candidates.length>=f.actors.length||reach>=limit)break;
+ }
+ const stations=candidates.sort((a,b)=>Math.hypot(a.x-base.x,a.y-base.y)-Math.hypot(b.x-base.x,b.y-base.y)||a.y-b.y||a.x-b.x).slice(0,f.actors.length);
  layout.crowds.set(key,stations);return stations;
 }
 export function desertFuneralView(s){
@@ -138,10 +148,11 @@ export function desertFuneralView(s){
   const visible=f.stage==='jackals'?i>=wave*waveSize&&i<(wave+1)*waveSize:f.deceased.length<=24||active||i>=Math.max(0,f.laid-8)&&i<Math.max(last+8,f.laid);
   return {id:`funeral-bier-${d.id}`,deceasedId:d.id,visible,...slot,yaw:bierYaw,height,shroud:'#f4f0e5',carriers,laid,transport:adults.length<2?'sledge':'carried'};
  });
- const stations=farewell?farewellStations(layout,f,first):null;let torchCount=0;const assigned=new Map(biers.flatMap(b=>b.carriers.map(c=>[c.id,c]))),participants=f.actors.map((a,i)=>{
+ const stations=farewell?farewellStations(layout,f,first):null,laidBiers=biers.filter(b=>b.laid&&b.visible!==false);let torchCount=0;const assigned=new Map(biers.flatMap(b=>b.carriers.map(c=>[c.id,c]))),participants=f.actors.map((a,i)=>{
   const c=s.citizens.find(c=>c.id===a.id);if(!c)return null;const carrier=assigned.get(a.id);if(carrier)return {...carrier,role:'carrier',walking:moving,bow:farewell?.25:0,torch:false};
   const station=stations?.[i];
-  return {id:c.id,x:station?station.x:c.x,y:station?station.y:c.y,yaw,role:'mourner',walking:!farewell&&['gathering','procession','collecting','receding'].includes(f.stage),bow:farewell?.32+.18*Math.sin(clamp(f.timer/5,0,1)*Math.PI):0,torch:c.age>=16&&torchCount++<8};
+  const x=station?station.x:c.x,y=station?station.y:c.y,nearest=station&&laidBiers.reduce((near,b)=>!near||Math.hypot(b.x-x,b.y-y)<Math.hypot(near.x-x,near.y-y)?b:near,null),target=nearest||a.route[a.routeIndex],heading=target&&Math.hypot(target.x-x,target.y-y)>.001?Math.atan2(target.x-x,target.y-y):yaw;
+  return {id:c.id,x,y,yaw:heading,role:'mourner',walking:!farewell&&['gathering','procession','collecting','receding'].includes(f.stage),bow:farewell?.10+.05*Math.sin(clamp(f.timer/5,0,1)*Math.PI):0,torch:c.age>=16&&torchCount++<8};
  }).filter(Boolean);
  const side=dx<0?-1:1,waveSeconds=7/Math.ceil(f.deceased.length/3),waveTime=(f.timer%waveSeconds)/waveSeconds*7,t=clamp(waveTime/4,0,1),jackals=f.stage==='jackals'?biers.filter(b=>b.visible).slice(0,3).map((b,i)=>({id:`funeral-jackal-${i}`,kind:'jackal',x:clamp(b.x+side*(1.4*(1-t)+.22+Math.max(0,waveTime-4)*.06),.1,WIDTH-.6),y:b.y,yaw:Math.atan2(-side,0),faceX:b.x,faceY:b.y,behavior:waveTime<4?'approaching':'pulling',walking:true,pulling:waveTime>=4,bundleId:b.id})):[];
  return {stage:f.stage,torches:true,gather:f.gather,coffin:null,biers,participants,mourners:participants.map(p=>p.id),jackals};
