@@ -1,0 +1,537 @@
+{
+  "release": "world64-rivers-awakening-20261102-1",
+  "commit": "4c9ef7db1ad334360d094abb19260ab2383b445a",
+  "url": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "bytes": 195587,
+      "expectedSha256": "e77c2d60c113ed49872e12f655a905542ffc5057c64055e1cc4fe1a6ccb80818",
+      "actualSha256": "e77c2d60c113ed49872e12f655a905542ffc5057c64055e1cc4fe1a6ccb80818",
+      "matches": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "bytes": 133999,
+      "expectedSha256": "bc5e7df92828035c43a52af78e3353dab7d9659ca5affcf238a75c2c339f65b0",
+      "actualSha256": "bc5e7df92828035c43a52af78e3353dab7d9659ca5affcf238a75c2c339f65b0",
+      "matches": true
+    },
+    {
+      "path": "assets/vendor/babylon-9.31.0.js",
+      "status": 200,
+      "bytes": 8627936,
+      "expectedSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "actualSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "matches": true
+    },
+    {
+      "path": "city-life.js",
+      "status": 200,
+      "bytes": 7705,
+      "expectedSha256": "a661169e944d53bd09cc5d9c0a273cf5bcc5a0495c2f36760b1821c778ead293",
+      "actualSha256": "a661169e944d53bd09cc5d9c0a273cf5bcc5a0495c2f36760b1821c778ead293",
+      "matches": true
+    },
+    {
+      "path": "construction-art.js",
+      "status": 200,
+      "bytes": 4520,
+      "expectedSha256": "f2155aae7a02d3f676262b816534e028fabdf87c26eafad6c3c8f2cd14ebcb9a",
+      "actualSha256": "f2155aae7a02d3f676262b816534e028fabdf87c26eafad6c3c8f2cd14ebcb9a",
+      "matches": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "bytes": 14271,
+      "expectedSha256": "81b697e5b9c88556ca31db4a22c56716e8fe6a54d4e40f6d1fe24f0d71b8cd04",
+      "actualSha256": "81b697e5b9c88556ca31db4a22c56716e8fe6a54d4e40f6d1fe24f0d71b8cd04",
+      "matches": true
+    },
+    {
+      "path": "desert-funeral.js",
+      "status": 200,
+      "bytes": 22997,
+      "expectedSha256": "f9812f94b8801bc0652256647f57b3e047e611b73ed11c3f6bc52458801bc425",
+      "actualSha256": "f9812f94b8801bc0652256647f57b3e047e611b73ed11c3f6bc52458801bc425",
+      "matches": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "bytes": 14872,
+      "expectedSha256": "cc400046fe542879c1992e2bab790edc9a612dfff69c921743a780a4b388363f",
+      "actualSha256": "cc400046fe542879c1992e2bab790edc9a612dfff69c921743a780a4b388363f",
+      "matches": true
+    },
+    {
+      "path": "district3d/buildings.js",
+      "status": 200,
+      "bytes": 18151,
+      "expectedSha256": "e1f9547628d6ae0e5337f9ec522d82e7b23a46ebe1b4ceec99d2a0db6ad8f06a",
+      "actualSha256": "e1f9547628d6ae0e5337f9ec522d82e7b23a46ebe1b4ceec99d2a0db6ad8f06a",
+      "matches": true
+    },
+    {
+      "path": "district3d/river-profile.js",
+      "status": 200,
+      "bytes": 1464,
+      "expectedSha256": "bbd64dc22e27828c05fe0021c1f44ced402ff44bf306556a0927314495c72ba5",
+      "actualSha256": "bbd64dc22e27828c05fe0021c1f44ced402ff44bf306556a0927314495c72ba5",
+      "matches": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "bytes": 18992,
+      "expectedSha256": "cd9273e26400ffd4f90b5bac5a6442ef838f94b9c17f45c7ee4ff9a5f7191176",
+      "actualSha256": "cd9273e26400ffd4f90b5bac5a6442ef838f94b9c17f45c7ee4ff9a5f7191176",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-world64-cpu.json",
+      "status": 200,
+      "bytes": 3469,
+      "expectedSha256": "51a3fa0c78617961ea6297563ac2abcd7ae531d4e6c582c311b8ce50506a0339",
+      "actualSha256": "51a3fa0c78617961ea6297563ac2abcd7ae531d4e6c582c311b8ce50506a0339",
+      "matches": true
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-02-world64-rivers-awakening.md",
+      "status": 200,
+      "bytes": 4855,
+      "expectedSha256": "7b805b5e343f88f75d9c1f02cb4144b6615db90e0548fc6e2361e78af5912a7e",
+      "actualSha256": "7b805b5e343f88f75d9c1f02cb4144b6615db90e0548fc6e2361e78af5912a7e",
+      "matches": true
+    },
+    {
+      "path": "docs/superpowers/specs/2026-11-02-world64-design.md",
+      "status": 200,
+      "bytes": 3028,
+      "expectedSha256": "58aaa53d2b2965473c33749a3225a4dbbdfbda38a7d5db1b84dcf94ac17fe79d",
+      "actualSha256": "58aaa53d2b2965473c33749a3225a4dbbdfbda38a7d5db1b84dcf94ac17fe79d",
+      "matches": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "bytes": 49905,
+      "expectedSha256": "e4819436d77ac6dfc53773ae04245560bb711abd21f3629607fbbe49e92472e8",
+      "actualSha256": "e4819436d77ac6dfc53773ae04245560bb711abd21f3629607fbbe49e92472e8",
+      "matches": true
+    },
+    {
+      "path": "environment.js",
+      "status": 200,
+      "bytes": 1788,
+      "expectedSha256": "fbb5e88172e83bd67a4810698f4ef94c060364636e2631b191fa988bb98db7d3",
+      "actualSha256": "fbb5e88172e83bd67a4810698f4ef94c060364636e2631b191fa988bb98db7d3",
+      "matches": true
+    },
+    {
+      "path": "fauna.js",
+      "status": 200,
+      "bytes": 4825,
+      "expectedSha256": "fb1d8f505cbf53b8cdb3c13c57c77d6d46900f2d5ff1b76b1bccf024ecd96046",
+      "actualSha256": "fb1d8f505cbf53b8cdb3c13c57c77d6d46900f2d5ff1b76b1bccf024ecd96046",
+      "matches": true
+    },
+    {
+      "path": "funerals.js",
+      "status": 200,
+      "bytes": 5883,
+      "expectedSha256": "03da2ee3e8ea77a3b14d0e7d0f5d0b3b472c7e91ee487104565218b24cfc4ae0",
+      "actualSha256": "03da2ee3e8ea77a3b14d0e7d0f5d0b3b472c7e91ee487104565218b24cfc4ae0",
+      "matches": true
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "status": 200,
+      "bytes": 11395,
+      "expectedSha256": "3c77e627800832b6c0569993711b8405471935931a74a68886134190f6a4655b",
+      "actualSha256": "3c77e627800832b6c0569993711b8405471935931a74a68886134190f6a4655b",
+      "matches": true
+    },
+    {
+      "path": "game3d/bootstrap-landscape.js",
+      "status": 200,
+      "bytes": 4970,
+      "expectedSha256": "f418e98d4327fa0cc524cee5b877f9dace4624b16781212b5e0ac2acd79aca1b",
+      "actualSha256": "f418e98d4327fa0cc524cee5b877f9dace4624b16781212b5e0ac2acd79aca1b",
+      "matches": true
+    },
+    {
+      "path": "game3d/construction-sites.js",
+      "status": 200,
+      "bytes": 4473,
+      "expectedSha256": "ae870eea0cc852bc213a8648bc167e14b0189f91f5968720e65d31f8e03f4f2c",
+      "actualSha256": "ae870eea0cc852bc213a8648bc167e14b0189f91f5968720e65d31f8e03f4f2c",
+      "matches": true
+    },
+    {
+      "path": "game3d/lake-shore.js",
+      "status": 200,
+      "bytes": 7442,
+      "expectedSha256": "045bb1a8aa630ca7d4140b7641c35727e0f3cb7e7fd41625cda3854ba3fa5332",
+      "actualSha256": "045bb1a8aa630ca7d4140b7641c35727e0f3cb7e7fd41625cda3854ba3fa5332",
+      "matches": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "bytes": 29720,
+      "expectedSha256": "944f05485080c0c6b3b6385803cee50165e3235719bfa13a98972015ad6d1a4d",
+      "actualSha256": "944f05485080c0c6b3b6385803cee50165e3235719bfa13a98972015ad6d1a4d",
+      "matches": true
+    },
+    {
+      "path": "game3d/nature-details.js",
+      "status": 200,
+      "bytes": 9352,
+      "expectedSha256": "9873593ca67a0cb650d42bd20adfe5837e8fe5496a1df3f906d97a3cde19e4f4",
+      "actualSha256": "9873593ca67a0cb650d42bd20adfe5837e8fe5496a1df3f906d97a3cde19e4f4",
+      "matches": true
+    },
+    {
+      "path": "game3d/nature.js",
+      "status": 200,
+      "bytes": 6200,
+      "expectedSha256": "fa7b5e06c1843c0c7ec445308f041fd9cf2db4c27e6aed81e8ce468f770b9554",
+      "actualSha256": "fa7b5e06c1843c0c7ec445308f041fd9cf2db4c27e6aed81e8ce468f770b9554",
+      "matches": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "bytes": 26024,
+      "expectedSha256": "38337674298c07fec757a191f5301db0a5a4aeb8da3a869c57df0edb8b1dcf1e",
+      "actualSha256": "38337674298c07fec757a191f5301db0a5a4aeb8da3a869c57df0edb8b1dcf1e",
+      "matches": true
+    },
+    {
+      "path": "game3d/river-craft.js",
+      "status": 200,
+      "bytes": 5463,
+      "expectedSha256": "afd5876cb1c383e3f506330f60d74bd7c835beb8b78a7ccbc86c1ae5b53d11f1",
+      "actualSha256": "afd5876cb1c383e3f506330f60d74bd7c835beb8b78a7ccbc86c1ae5b53d11f1",
+      "matches": true
+    },
+    {
+      "path": "game3d/shore-profile.js",
+      "status": 200,
+      "bytes": 737,
+      "expectedSha256": "50336c5dcfc0920ec9aa8fac771737a04f8570b7ac120ddbbd2ff4547be21f65",
+      "actualSha256": "50336c5dcfc0920ec9aa8fac771737a04f8570b7ac120ddbbd2ff4547be21f65",
+      "matches": true
+    },
+    {
+      "path": "game3d/sky-flight.js",
+      "status": 200,
+      "bytes": 748,
+      "expectedSha256": "9c7aeedd5c8984e67dd203d91b93066bdc23a16c09a6691b64ba87024fcc5463",
+      "actualSha256": "9c7aeedd5c8984e67dd203d91b93066bdc23a16c09a6691b64ba87024fcc5463",
+      "matches": true
+    },
+    {
+      "path": "game3d/terrain-deformation.js",
+      "status": 200,
+      "bytes": 2305,
+      "expectedSha256": "08b24307d2bfd5bb4d65b4a642324c584541541a24b1ef3d459790fd9e352636",
+      "actualSha256": "08b24307d2bfd5bb4d65b4a642324c584541541a24b1ef3d459790fd9e352636",
+      "matches": true
+    },
+    {
+      "path": "game3d/valley-vegetation.js",
+      "status": 200,
+      "bytes": 8303,
+      "expectedSha256": "02fcb135ad4a99818ea5124353982787b9b9cf2482e82696d3ba62d1b9e01d4b",
+      "actualSha256": "02fcb135ad4a99818ea5124353982787b9b9cf2482e82696d3ba62d1b9e01d4b",
+      "matches": true
+    },
+    {
+      "path": "game3d/water.js",
+      "status": 200,
+      "bytes": 10884,
+      "expectedSha256": "adbc1f08018e5b980836dffc4ca57179096e00902539d5a800e0be3d8b9d2fee",
+      "actualSha256": "adbc1f08018e5b980836dffc4ca57179096e00902539d5a800e0be3d8b9d2fee",
+      "matches": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "bytes": 18679,
+      "expectedSha256": "21c85ef9cda4eacb53c0e252ba10d470ce8118ff2c09ba2d421d8036cc83a786",
+      "actualSha256": "21c85ef9cda4eacb53c0e252ba10d470ce8118ff2c09ba2d421d8036cc83a786",
+      "matches": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "bytes": 13694,
+      "expectedSha256": "1711a824aa28e0278aa57328a027736965096dc34adf36c2675f934ba92f3a33",
+      "actualSha256": "1711a824aa28e0278aa57328a027736965096dc34adf36c2675f934ba92f3a33",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 23012,
+      "expectedSha256": "a672017c4cdd98c3e6e60869f9f4391d6ec655ace89e4f4426b7acae8d3fbec8",
+      "actualSha256": "a672017c4cdd98c3e6e60869f9f4391d6ec655ace89e4f4426b7acae8d3fbec8",
+      "matches": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "bytes": 8373,
+      "expectedSha256": "3ce94d04c17f87c7c160c29e926a03ffad3afbec54573f95d947d01a8cddda27",
+      "actualSha256": "3ce94d04c17f87c7c160c29e926a03ffad3afbec54573f95d947d01a8cddda27",
+      "matches": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "bytes": 25456,
+      "expectedSha256": "806ed295d4e180095f992a87d0d32a54c8d60ff2e616b5bef120d9ad029e62d8",
+      "actualSha256": "806ed295d4e180095f992a87d0d32a54c8d60ff2e616b5bef120d9ad029e62d8",
+      "matches": true
+    },
+    {
+      "path": "miracle-celebration.js",
+      "status": 200,
+      "bytes": 6973,
+      "expectedSha256": "c803c40bab6f83efdb47abdd50d28e4dc6289c56a49b3668b92be0d585f40ac9",
+      "actualSha256": "c803c40bab6f83efdb47abdd50d28e4dc6289c56a49b3668b92be0d585f40ac9",
+      "matches": true
+    },
+    {
+      "path": "navigation.js",
+      "status": 200,
+      "bytes": 7421,
+      "expectedSha256": "6d4a3332b8befc5265ea710c306bc2a7f82a69305a8637739fc9d6bbdf35eb36",
+      "actualSha256": "6d4a3332b8befc5265ea710c306bc2a7f82a69305a8637739fc9d6bbdf35eb36",
+      "matches": true
+    },
+    {
+      "path": "pests.js",
+      "status": 200,
+      "bytes": 11619,
+      "expectedSha256": "b8eb122abb80cd45f253b5b603fd700145b0551155468d50d796ae68ef0e4178",
+      "actualSha256": "b8eb122abb80cd45f253b5b603fd700145b0551155468d50d796ae68ef0e4178",
+      "matches": true
+    },
+    {
+      "path": "relic-quest.js",
+      "status": 200,
+      "bytes": 24177,
+      "expectedSha256": "2357d7701bcd3244d335c4fa0092d1ba7b2a95b09bac4175776b070b9f28667b",
+      "actualSha256": "2357d7701bcd3244d335c4fa0092d1ba7b2a95b09bac4175776b070b9f28667b",
+      "matches": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "bytes": 46270,
+      "expectedSha256": "1e7bdd4e8175bf324d3bf0ee1f82a619ce346ec1d285de8a9dc111568f066489",
+      "actualSha256": "1e7bdd4e8175bf324d3bf0ee1f82a619ce346ec1d285de8a9dc111568f066489",
+      "matches": true
+    },
+    {
+      "path": "river-trade.js",
+      "status": 200,
+      "bytes": 1767,
+      "expectedSha256": "9bbb298c481d1df71ad97e624454562afeafedd9ef15e8833e6bba6c5ad2928d",
+      "actualSha256": "9bbb298c481d1df71ad97e624454562afeafedd9ef15e8833e6bba6c5ad2928d",
+      "matches": true
+    },
+    {
+      "path": "sacred-unlocks.js",
+      "status": 200,
+      "bytes": 2744,
+      "expectedSha256": "f3d5dc30943c44d8c650d7c4ab32e46fd5d6eb55aaec5c56485dcc41a2657a67",
+      "actualSha256": "f3d5dc30943c44d8c650d7c4ab32e46fd5d6eb55aaec5c56485dcc41a2657a67",
+      "matches": true
+    },
+    {
+      "path": "scripts/benchmark-4x.mjs",
+      "status": 200,
+      "bytes": 2083,
+      "expectedSha256": "5d65973518f8da0217feaf947e3b8697dd243305d504df7ca929c9ff43dab231",
+      "actualSha256": "5d65973518f8da0217feaf947e3b8697dd243305d504df7ca929c9ff43dab231",
+      "matches": true
+    },
+    {
+      "path": "terrain-texture.js",
+      "status": 200,
+      "bytes": 1334,
+      "expectedSha256": "74115a0bfb076c597da6694b366be95df470ca0f62c00e5b5140f373614f58cc",
+      "actualSha256": "74115a0bfb076c597da6694b366be95df470ca0f62c00e5b5140f373614f58cc",
+      "matches": true
+    },
+    {
+      "path": "tests/ambient-fauna.test.js",
+      "status": 200,
+      "bytes": 8806,
+      "expectedSha256": "6ca5dba1536e5c59b8d8ef8cfd3f1c00b5f7756da69865b3dba98d0477125de3",
+      "actualSha256": "6ca5dba1536e5c59b8d8ef8cfd3f1c00b5f7756da69865b3dba98d0477125de3",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "bytes": 7138,
+      "expectedSha256": "a27385bd42f4e649fa936cb00242efb598dbd73f021aeea1c8ad97cb98c2c8ac",
+      "actualSha256": "a27385bd42f4e649fa936cb00242efb598dbd73f021aeea1c8ad97cb98c2c8ac",
+      "matches": true
+    },
+    {
+      "path": "tests/game3d-water-rendering.test.js",
+      "status": 200,
+      "bytes": 4902,
+      "expectedSha256": "5f6706f414703ff8671921cda79b271fa1ff07373026921c4c52c9584e928404",
+      "actualSha256": "5f6706f414703ff8671921cda79b271fa1ff07373026921c4c52c9584e928404",
+      "matches": true
+    },
+    {
+      "path": "tests/large-world-art.test.js",
+      "status": 200,
+      "bytes": 4173,
+      "expectedSha256": "60660d0d8b121e7ff755d4f73042c719bb6565f7f5254a9ad63eaf7b77f57e9a",
+      "actualSha256": "60660d0d8b121e7ff755d4f73042c719bb6565f7f5254a9ad63eaf7b77f57e9a",
+      "matches": true
+    },
+    {
+      "path": "tests/large-world-nature.test.js",
+      "status": 200,
+      "bytes": 3110,
+      "expectedSha256": "7336a223bcef47ef4f2e2e3673abc563b92f4589e72d16306e6249ec0bf6877a",
+      "actualSha256": "7336a223bcef47ef4f2e2e3673abc563b92f4589e72d16306e6249ec0bf6877a",
+      "matches": true
+    },
+    {
+      "path": "tests/terrain-detail-rim.test.js",
+      "status": 200,
+      "bytes": 2924,
+      "expectedSha256": "1ae6f161a00a4a60de714b0295e6b24f9572cf6c5303ff7eaacd2010b8c3d004",
+      "actualSha256": "1ae6f161a00a4a60de714b0295e6b24f9572cf6c5303ff7eaacd2010b8c3d004",
+      "matches": true
+    },
+    {
+      "path": "tests/terrain-rim-topology.test.js",
+      "status": 200,
+      "bytes": 1755,
+      "expectedSha256": "164a41339931fb9b8e57ad0b51a30ffa2f56e600422cfc246a193e8e495b7f08",
+      "actualSha256": "164a41339931fb9b8e57ad0b51a30ffa2f56e600422cfc246a193e8e495b7f08",
+      "matches": true
+    },
+    {
+      "path": "tests/ui-godhood.test.js",
+      "status": 200,
+      "bytes": 5142,
+      "expectedSha256": "6e01f923dd64c8718eee893cdc0ffce5e4faee8f4621023d58f5fa1ec0e2254c",
+      "actualSha256": "6e01f923dd64c8718eee893cdc0ffce5e4faee8f4621023d58f5fa1ec0e2254c",
+      "matches": true
+    },
+    {
+      "path": "tests/world-generation.test.js",
+      "status": 200,
+      "bytes": 6234,
+      "expectedSha256": "9597240c389f9b352ec95aefabbce91cdffe6a9f1ae4d4674dbf81c5aa2c583f",
+      "actualSha256": "9597240c389f9b352ec95aefabbce91cdffe6a9f1ae4d4674dbf81c5aa2c583f",
+      "matches": true
+    },
+    {
+      "path": "tests/world64-bridges3d.test.js",
+      "status": 200,
+      "bytes": 3416,
+      "expectedSha256": "54ac7842d97243afb50f26aff383a5f74fa36cc56ab10044ab0eead8255d922a",
+      "actualSha256": "54ac7842d97243afb50f26aff383a5f74fa36cc56ab10044ab0eead8255d922a",
+      "matches": true
+    },
+    {
+      "path": "tests/world64-camera.test.js",
+      "status": 200,
+      "bytes": 3290,
+      "expectedSha256": "c56447356e91d11da8bc6c743d89b15a3f57de40f8b9e2d77d4e6c05872a0f4e",
+      "actualSha256": "c56447356e91d11da8bc6c743d89b15a3f57de40f8b9e2d77d4e6c05872a0f4e",
+      "matches": true
+    },
+    {
+      "path": "tests/world64-generation.test.js",
+      "status": 200,
+      "bytes": 6582,
+      "expectedSha256": "706d7e36ffd4b8c9f16fe12bff9d4513d3caa3fda8df8f3b6963018b58208948",
+      "actualSha256": "706d7e36ffd4b8c9f16fe12bff9d4513d3caa3fda8df8f3b6963018b58208948",
+      "matches": true
+    },
+    {
+      "path": "tests/world64-lake-budget.test.js",
+      "status": 200,
+      "bytes": 1982,
+      "expectedSha256": "12d000a42d1120cc56adb87a77973fd3dd8d4eeedf09e72236d3188be8fbee92",
+      "actualSha256": "12d000a42d1120cc56adb87a77973fd3dd8d4eeedf09e72236d3188be8fbee92",
+      "matches": true
+    },
+    {
+      "path": "tests/world64-rendering.test.js",
+      "status": 200,
+      "bytes": 2401,
+      "expectedSha256": "6ef682b82b730752b18bd2e231c519f0089d7f04c05c989f714fe077160e0f83",
+      "actualSha256": "6ef682b82b730752b18bd2e231c519f0089d7f04c05c989f714fe077160e0f83",
+      "matches": true
+    },
+    {
+      "path": "tests/world64-simulation.test.js",
+      "status": 200,
+      "bytes": 6497,
+      "expectedSha256": "7f922ba6090d544b0b2b31df848831a27a29bbe6a77400c15491d2f4da9e3b30",
+      "actualSha256": "7f922ba6090d544b0b2b31df848831a27a29bbe6a77400c15491d2f4da9e3b30",
+      "matches": true
+    },
+    {
+      "path": "trading.js",
+      "status": 200,
+      "bytes": 18443,
+      "expectedSha256": "0df7cb0ecdb1d605397adf603373446e65ed2cb934295d91aa4e6e5bd2b7a581",
+      "actualSha256": "0df7cb0ecdb1d605397adf603373446e65ed2cb934295d91aa4e6e5bd2b7a581",
+      "matches": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "status": 200,
+      "bytes": 9637,
+      "expectedSha256": "bc1cfa8d83ece4f86f4018650589f952645e0832c4286ed4650017bf6bda9d4b",
+      "actualSha256": "bc1cfa8d83ece4f86f4018650589f952645e0832c4286ed4650017bf6bda9d4b",
+      "matches": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "bytes": 12042,
+      "expectedSha256": "2a35d48da6585e5f04370b3483b81a1d98fbb8e06bd0687321c8489d11d1aaa0",
+      "actualSha256": "2a35d48da6585e5f04370b3483b81a1d98fbb8e06bd0687321c8489d11d1aaa0",
+      "matches": true
+    },
+    {
+      "path": "waterfront-art.js",
+      "status": 200,
+      "bytes": 5733,
+      "expectedSha256": "0a5a6f24258080025f20d15011b3ce938af98f05c04e9571754e4a1dd9ffe8ef",
+      "actualSha256": "0a5a6f24258080025f20d15011b3ce938af98f05c04e9571754e4a1dd9ffe8ef",
+      "matches": true
+    },
+    {
+      "path": "world.js",
+      "status": 200,
+      "bytes": 17905,
+      "expectedSha256": "967229e112dd4c48ffeaf6ad1b242e6bf843a7142cf503c05e89df9b15c4b906",
+      "actualSha256": "967229e112dd4c48ffeaf6ad1b242e6bf843a7142cf503c05e89df9b15c4b906",
+      "matches": true
+    }
+  ],
+  "passed": 66,
+  "total": 66
+}
