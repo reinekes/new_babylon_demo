@@ -5,7 +5,7 @@ const copy=p=>({x:p.x,y:p.y}),key=p=>`${p.x},${p.y}`,distance=(a,b)=>Math.abs(a.
 const navigation=new WeakMap(),ritualLayouts=new WeakMap();
 function navigator(s,gather,clearance=0,blockGather=false){
  const solids=blockGather?s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)):[];
- const bridges=s.buildings.filter(b=>b.type==='bridge'),blocked=new Set(s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)&&distance(b,gather)>.01).map(key)),baseFree=p=>p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5&&(isDryPoint(s,p.x,p.y)||onBridge(bridges,p.x,p.y))&&!(Math.abs(p.x-Math.round(p.x))<.38&&Math.abs(p.y-Math.round(p.y))<.38&&blocked.has(`${Math.round(p.x)},${Math.round(p.y)}`))&&!solids.some(b=>{const size=footprintSize(b);return Math.abs(p.x-b.x-(size-1)/2)<size/2-.04&&Math.abs(p.y-b.y-(size-1)/2)<size/2-.04;});
+ const bridges=s.buildings.filter(b=>b.type==='bridge'),blocked=new Set(s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)&&distance(b,gather)>.01).map(key)),baseFree=p=>p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5&&(isDryPoint(s,p.x,p.y)||onBridge(bridges,p.x,p.y,s))&&!(Math.abs(p.x-Math.round(p.x))<.38&&Math.abs(p.y-Math.round(p.y))<.38&&blocked.has(`${Math.round(p.x)},${Math.round(p.y)}`))&&!solids.some(b=>{const size=footprintSize(b);return Math.abs(p.x-b.x-(size-1)/2)<size/2-.04&&Math.abs(p.y-b.y-(size-1)/2)<size/2-.04;});
  const free=p=>baseFree(p)&&(!clearance||[-clearance,clearance].every(dx=>[-clearance,clearance].every(dy=>baseFree({x:p.x+dx,y:p.y+dy}))));
  const clear=(a,b)=>{const n=Math.max(1,Math.ceil(distance(a,b)*8));for(let i=0;i<=n;i++)if(!free({x:a.x+(b.x-a.x)*i/n,y:a.y+(b.y-a.y)*i/n}))return false;return true;};
  function nearest(p){for(let r=0;r<=8;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;const q={x:Math.round(p.x*2)/2+dx*.5,y:Math.round(p.y*2)/2+dy*.5};if(free(q)&&clear(p,q))return q;}return null;}
@@ -17,10 +17,10 @@ function navigator(s,gather,clearance=0,blockGather=false){
  path=[];if(end){for(let k=end;k!==undefined;k=previous.get(k))path.push(copy(points.get(k)));path.reverse();}paths.set(id,path);}
  return path.length?[copy(from),...path.map(copy),copy(to)]:[];
  }
- return {free,clear,nearest,route};
+ return {free,clear,nearest,route,state:s};
 }
 function move(entity,actor,dt){let remaining=dt*(actor.id===undefined?.85:.72+((actor.id*.61803398875)%1)*.22);while(remaining>1e-8){const target=actor.route[actor.routeIndex];if(!target)return true;const d=distance(entity,target);if(d<=remaining+1e-8){entity.x=target.x;entity.y=target.y;actor.routeIndex++;remaining-=d;}else{entity.x+=(target.x-entity.x)*remaining/d;entity.y+=(target.y-entity.y)*remaining/d;return false;}}return actor.routeIndex>=actor.route.length;}
-function boundary(nav,gather,lane=0){const x=gather.x<river(gather.y)?0:WIDTH-1;for(let r=0;r<HEIGHT;r++)for(const sign of r?[1,-1]:[1]){const y=Math.max(0,Math.min(HEIGHT-1,Math.round((gather.y+lane+r*sign)*2)/2)),p={x,y};if(nav.free(p)&&nav.route(gather,p).length)return p;}return copy(gather);}
+function boundary(nav,gather,lane=0){const x=gather.x<river(gather.y,nav.state)?0:WIDTH-1;for(let r=0;r<HEIGHT;r++)for(const sign of r?[1,-1]:[1]){const y=Math.max(0,Math.min(HEIGHT-1,Math.round((gather.y+lane+r*sign)*2)/2)),p={x,y};if(nav.free(p)&&nav.route(gather,p).length)return p;}return copy(gather);}
 function startLegacyDesertFuneral(s,deceased,{family=false}={}){
  if(s.funeral||!deceased?.length)return false;
  const host=['ziggurat','shrine','house'].map(type=>s.buildings.find(b=>b.type===type&&b.construction?.kind!=='new')).find(Boolean),gather=host?{x:host.x,y:host.y}:copy(deceased[0]),nav=navigator(s,gather),edge=boundary(nav,gather);
@@ -105,24 +105,24 @@ export function advanceDesertFuneral(s,dt){
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function riteSlot(origin,index){const rows=Math.floor((HEIGHT-2)/.43),start=clamp(Math.round((origin.y-.5)/.43),0,rows-1),row=(start+index%rows)%rows,col=Math.floor(index/rows),inward=origin.x<WIDTH/2?1:-1;return {x:clamp(origin.x+inward*col*.50,.5,WIDTH-1.5),y:.5+row*.43};}
-function ritualLayout(s,f){let result=ritualLayouts.get(f);if(result)return result;const nav=navigator(s,f.gather,.19,true),bank=f.gather.x<river(f.gather.y),points=[];
- for(let y=.5;y<HEIGHT-1;y+=.5)for(let x=.5;x<WIDTH-1;x+=.5){const p={x,y};if((x<river(y))!==bank||!nav.free(p)||![-.22,.22].every(dx=>[-.22,.22].every(dy=>nav.free({x:x+dx,y:y+dy}))))continue;points.push(p);}
+function ritualLayout(s,f){let result=ritualLayouts.get(f);if(result)return result;const nav=navigator(s,f.gather,.19,true),bank=f.gather.x<river(f.gather.y,s),points=[];
+ for(let y=.5;y<HEIGHT-1;y+=.5)for(let x=.5;x<WIDTH-1;x+=.5){const p={x,y};if((x<river(y,s))!==bank||!nav.free(p)||![-.22,.22].every(dx=>[-.22,.22].every(dy=>nav.free({x:x+dx,y:y+dy}))))continue;points.push(p);}
  const slots=origin=>[...points].sort((a,b)=>Math.hypot(a.x-origin.x,a.y-origin.y)-Math.hypot(b.x-origin.x,b.y-origin.y)||a.y-b.y||a.x-b.x).slice(0,f.deceased.length);
  result={gather:slots(f.gather),laid:slots(f.boundary),routes:new Map(),crowds:new Map(),points,nav};ritualLayouts.set(f,result);return result;
 }
 function routeLength(route){let n=0;for(let i=1;i<route.length;i++)n+=Math.hypot(route[i].x-route[i-1].x,route[i].y-route[i-1].y);return n;}
 function routePoint(route,progress){let remaining=routeLength(route)*progress;for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i],length=Math.hypot(b.x-a.x,b.y-a.y);if(remaining<=length&&length>.00001)return {x:a.x+(b.x-a.x)*remaining/length,y:a.y+(b.y-a.y)*remaining/length,yaw:Math.atan2(b.x-a.x,b.y-a.y)};remaining-=length;}const end=route.at(-1),previous=[...route].reverse().find(p=>distance(p,end)>.001);return {...end,yaw:previous?Math.atan2(end.x-previous.x,end.y-previous.y):0};}
-function farewellStations(layout,f,first){
+function farewellStations(layout,f,first,s){
  const key=`${first}:${f.actors.length}`;if(layout.crowds.has(key))return layout.crowds.get(key);
  const base=layout.laid[first]||f.boundary,inward=f.boundary.x<f.gather.x?1:-1,occupied=layout.laid.slice(0,Math.min(f.deceased.length,first+4));
  // A half-tile navigation grid is three metres wide in the 3D view. Use a
  // closer standing grid for the farewell, while retaining dry-ground and
  // building clearance checks and a clear space around every laid bier.
- let candidates=[];const bank=f.gather.x<river(f.gather.y),limit=Math.hypot(WIDTH,HEIGHT);
+ let candidates=[];const bank=f.gather.x<river(f.gather.y,s),limit=Math.hypot(WIDTH,HEIGHT);
  for(let reach=Math.max(1.2,Math.sqrt(f.actors.length)*.22);;reach=Math.min(limit,reach*2)){
   candidates=[];
   for(let y=Math.max(.5,base.y-reach);y<Math.min(HEIGHT-1,base.y+reach);y+=.18)for(let x=Math.max(.5,base.x-reach);x<Math.min(WIDTH-1,base.x+reach);x+=.18){
-   const p={x,y};if((x<river(y))!==bank||(p.x-base.x)*inward<.22||!layout.nav.free(p)||occupied.some(b=>Math.hypot(p.x-b.x,p.y-b.y)<.32))continue;
+   const p={x,y};if((x<river(y,s))!==bank||(p.x-base.x)*inward<.22||!layout.nav.free(p)||occupied.some(b=>Math.hypot(p.x-b.x,p.y-b.y)<.32))continue;
    candidates.push(p);
   }
   if(candidates.length>=f.actors.length||reach>=limit)break;
@@ -148,7 +148,7 @@ export function desertFuneralView(s){
   const visible=f.stage==='jackals'?i>=wave*waveSize&&i<(wave+1)*waveSize:f.deceased.length<=24||active||i>=Math.max(0,f.laid-8)&&i<Math.max(last+8,f.laid);
   return {id:`funeral-bier-${d.id}`,deceasedId:d.id,visible,...slot,yaw:bierYaw,height,shroud:'#f4f0e5',carriers,laid,transport:adults.length<2?'sledge':'carried'};
  });
- const stations=farewell?farewellStations(layout,f,first):null,laidBiers=biers.filter(b=>b.laid&&b.visible!==false);let torchCount=0;const assigned=new Map(biers.flatMap(b=>b.carriers.map(c=>[c.id,c]))),participants=f.actors.map((a,i)=>{
+ const stations=farewell?farewellStations(layout,f,first,s):null,laidBiers=biers.filter(b=>b.laid&&b.visible!==false);let torchCount=0;const assigned=new Map(biers.flatMap(b=>b.carriers.map(c=>[c.id,c]))),participants=f.actors.map((a,i)=>{
   const c=s.citizens.find(c=>c.id===a.id);if(!c)return null;const carrier=assigned.get(a.id);if(carrier)return {...carrier,role:'carrier',walking:moving,bow:farewell?.25:0,torch:false};
   const station=stations?.[i];
   const x=station?station.x:c.x,y=station?station.y:c.y,nearest=station&&laidBiers.reduce((near,b)=>!near||Math.hypot(b.x-x,b.y-y)<Math.hypot(near.x-x,near.y-y)?b:near,null),target=nearest||a.route[a.routeIndex],heading=target&&Math.hypot(target.x-x,target.y-y)>.001?Math.atan2(target.x-x,target.y-y):yaw;

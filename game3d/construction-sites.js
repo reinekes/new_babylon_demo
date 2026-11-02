@@ -6,12 +6,12 @@ export function siteLayout(b){
  const n=footprintSize(b),p=Math.max(0,Math.min(1,constructionProgress(b).ratio)),low=['field','garden','bridge','canal'].includes(b.type);
  return {n,center:(n-1)*3,width:n*6-.8,height:low?.65:b.type==='ziggurat'?8.8:b.type==='shrine'?3.5:2.8,p,upgrade:b.construction?.kind==='upgrade',low};
 }
-export function createConstructionSite(B,scene,b,m){
+export function createConstructionSite(B,scene,b,m,s){
  const a=siteLayout(b),groups=new Map();let serial=0;
  function add(mesh,mat){mesh.material=mat;mesh.isPickable=false;const parts=groups.get(mat)||[];parts.push(mesh);groups.set(mat,parts);return mesh;}
  function box(x,y,z,w,h,d,mat){const mesh=B.MeshBuilder.CreateBox(`site-${serial++}`,{width:w,height:h,depth:d},scene);mesh.position.set(x,y,z);return add(mesh,mat);}
  function beam(from,to,width=.07){const start=B.Vector3.FromArray(from),end=B.Vector3.FromArray(to),v=end.subtract(start),mesh=B.MeshBuilder.CreateCylinder(`site-timber-${serial++}`,{height:v.length(),diameter:width,tessellation:6},scene);mesh.position.copyFrom(start.add(end).scale(.5));mesh.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,v.normalize(),new B.Quaternion());return add(mesh,m.wood);}
- if(b.type==='bridge'){const span=bridgeSpan(b.y),left=(span.left-b.x)*6,right=(span.right-b.x)*6;for(let x=left;x<=right;x+=1.3)for(const side of [-1,1])beam([x,-.4,side*.86],[x,1,side*.86],.10);for(const side of [-1,1])beam([left,.4,side*.86],[right,.4,side*.86],.07);for(let x=left;x<left+(right-left)*a.p;x+=.34)box(x,.17,0,.30,.14,1.7,m.wood);const result=[];for(const [mat,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='construction-bridge-timber';mesh.material=mat;mesh.metadata={constructionSite:true};result.push(mesh);}return result;}
+ if(b.type==='bridge'){const span=bridgeSpan(b.y,s),left=(span.left-b.x)*6,right=(span.right-b.x)*6;for(let x=left;x<=right;x+=1.3)for(const side of [-1,1])beam([x,-.4,side*.86],[x,1,side*.86],.10);for(const side of [-1,1])beam([left,.4,side*.86],[right,.4,side*.86],.07);for(let x=left;x<left+(right-left)*a.p;x+=.34)box(x,.17,0,.30,.14,1.7,m.wood);const result=[];for(const [mat,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='construction-bridge-timber';mesh.material=mat;mesh.metadata={constructionSite:true};result.push(mesh);}return result;}
  const c=a.center,r=a.width/2,ground=m.raw||m.brick,finish=b.level>=2?(m.fired||ground):ground;
  if(!a.upgrade){
   box(c,.025,c,a.width,.05,a.width,m.soil);

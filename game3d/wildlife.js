@@ -115,7 +115,8 @@ export function createWildlife(B,scene,meshes=[]){
   if(disposed)return;dt=Math.max(0,Math.min(.1,dt));paused=paused||!dt||!speed;if(!paused)time+=dt*speed;
   seen.clear();for(const c of animals){if(c.kind==='sheep')continue;seen.add(c.id);let a=actors.get(c.id);if(a&&a.root.metadata.animalKind!==c.kind){remove(a);actors.delete(c.id);a=null;}let fresh=false;if(!a){a=build(c);actors.set(c.id,a);fresh=true;}
    const {d}=a,dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
-   a.root.position.set(c.x*6,d.fish?Math.min(WATER_HEIGHT-.22,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   // Include the dorsal fin and its small animated roll, not just the body centre.
+   a.root.position.set(c.x*6,d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    a.lastX=c.x;a.lastY=c.y;
    if(paused&&!fresh)continue;
    const delta=fresh?1:1-Math.exp(-dt*9);blend=delta;

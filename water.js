@@ -17,11 +17,11 @@ const key=p=>`${Math.round(p.x+.5)},${Math.round(p.y+.5)}`;
 const dryEdge=(s,a,b)=>[0,.25,.5,.75,1].every(t=>isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t));
 function navigation(s){
  const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
- let cache=caches.get(s);if(cache?.signature===signature)return cache;
+ let cache=caches.get(s);if(cache?.signature===signature&&cache.world===s.world)return cache;
  const network=generateStreets([...s.buildings,...s.roadAnchors||[]],s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),nodes=new Map(),graph=new Map();
  for(let y=0;y<=HEIGHT;y++)for(let x=0;x<=WIDTH;x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q))graph.get(k).push(qk);}
- cache={signature,network,ports,nodes,graph,banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
+ cache={signature,world:s.world,network,ports,nodes,graph,banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
 }
 function path(nodes,graph,from,to){
  if(!nodes.has(from))return null;const prev=new Map([[from,null]]),queue=[from];
@@ -29,7 +29,7 @@ function path(nodes,graph,from,to){
  return null;
 }
 function bankRoute(s,nav,origin){
- if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?path(nav.nodes,nav.graph,key(p),(_,q)=>Math.abs(q.x-river(q.y))<2.25):null);}return nav.banks.get(origin);
+ if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?path(nav.nodes,nav.graph,key(p),(_,q)=>Math.abs(q.x-river(q.y,s))<2.25):null);}return nav.banks.get(origin);
 }
 function roadRoute(nav,from,to){
  const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key):null);}return nav.roads.get(id);

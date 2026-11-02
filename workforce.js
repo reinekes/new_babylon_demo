@@ -47,7 +47,7 @@ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 export function networkFor(s){
  const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:''}`).join('|')+`|roads:${roadTopologyRevision(s)}`;
  let cache=caches.get(s);
- if(!cache||cache.signature!==signature||cache.lakes!==s.world?.lakes||cache.lakeCount!==(s.world?.lakes?.length||0)){cache={signature,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network:createWalkingNetwork(s,generateStreets([...s.buildings,...s.roadAnchors||[]],s)),paths:new Map(),synced:null};caches.set(s,cache);}
+ if(!cache||cache.signature!==signature||cache.river!==s.world?.river||cache.lakes!==s.world?.lakes||cache.lakeCount!==(s.world?.lakes?.length||0)){cache={signature,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network:createWalkingNetwork(s,generateStreets([...s.buildings,...s.roadAnchors||[]],s)),paths:new Map(),synced:null};caches.set(s,cache);}
  if(cache.roads!==s.roads||cache.roadCount!==s.roads?.length){ensureRoads(s,cache.network);cache.roads=s.roads;cache.roadCount=s.roads.length;}return cache.network;
 }
 // Internal callers reuse a validated access context within the same city network.
@@ -447,7 +447,7 @@ function advanceCitizen(s,c,dt,ctx){
   if(!next){arrival(s,c,ctx);if(c.phase==='home'||c.phase==='resting')return;continue;}
   const dist=distance(c,next);
   let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?ctx.buildings.get(c.work)?.type:null);
-  if(onBridge(s.buildings,c.x,c.y)){
+  if(onBridge(s.buildings,c.x,c.y,s)){
    const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
   }
   const travel=dist/speed;

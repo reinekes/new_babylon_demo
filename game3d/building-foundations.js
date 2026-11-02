@@ -11,7 +11,7 @@ export function foundationWorldPoint(b,x,z){
  return {x:b.x+(offset+c*(x-offset)+s*(z-offset))/6,y:b.y+(offset-s*(x-offset)+c*(z-offset))/6};
 }
 export function foundationContext(state={}){
- return {state,contours:lakeContours(state),signature:JSON.stringify(state.world?.lakes||[])};
+ return {state,contours:lakeContours(state),signature:JSON.stringify([state.world?.river,state.world?.lakes||[]])};
 }
 function nearShore(b,context){
  if(excluded.has(b.type))return false;

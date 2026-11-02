@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGame} from '../engine.js';
 import {createRelicScene,drawRelic2D} from '../game3d/relic-scene.js';
-import {createSacredEffects,SACRED_EFFECT_LIMITS} from '../game3d/sacred-effects.js';
+import {createSacredEffects} from '../game3d/sacred-effects.js';
 
 const sandbox={module:{exports:{}},console,setTimeout,clearTimeout,performance,self:{}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
@@ -27,8 +27,8 @@ test('completed temple effects trigger on an observed transition once, pause, ex
   fx.reset(s);fx.update(s,.1);assert.equal(fx.stats().bursts,0);fx.update(structuredClone(s),.1);assert.equal(fx.stats().bursts,0,'loaded completed reward never replays');
  }finally{fx.dispose();scene.dispose();engine.dispose();}
 });
-test('portals have a fixed count cap, remain unpickable and all meshes/materials release on disposal',()=>{
+test('Ishtar gates have no permanent portal, ring or floating sigil even during the ward',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),s=createGame({start:'established'});for(let i=0;i<20;i++)s.buildings.push({type:'ishtarGate',x:i,y:15,level:1,footprint:3});const fx=createSacredEffects(B,scene,{reducedMotion:true});
- try{const before=JSON.stringify(s);fx.update(s,.1);assert.equal(fx.stats().portals,SACRED_EFFECT_LIMITS.portals);assert.ok(fx.meshes.length<=SACRED_EFFECT_LIMITS.meshes);const count=scene.meshes.length,positions=fx.meshes.map(m=>[m.position.asArray(),m.scaling.asArray(),m.material.alpha]);for(let i=0;i<20;i++)fx.update(s,.1);assert.equal(scene.meshes.length,count);assert.deepEqual(fx.meshes.map(m=>[m.position.asArray(),m.scaling.asArray(),m.material.alpha]),positions);assert.ok(fx.meshes.every(m=>!m.isPickable));assert.equal(JSON.stringify(s),before);const owned=[...fx.meshes];fx.dispose();fx.dispose();assert.ok(owned.every(m=>m.isDisposed()));
+ try{const before=JSON.stringify(s);fx.update(s,.1);assert.equal(fx.stats().portals,0);assert.equal(fx.meshes.length,0);s.buffs.inannaProtection=30;fx.update(s,.1);assert.equal(fx.meshes.length,0);s.buffs.inannaProtection=0;const count=scene.meshes.length,positions=fx.meshes.map(m=>[m.position.asArray(),m.scaling.asArray(),m.material.alpha]);for(let i=0;i<20;i++)fx.update(s,.1);assert.equal(scene.meshes.length,count);assert.deepEqual(fx.meshes.map(m=>[m.position.asArray(),m.scaling.asArray(),m.material.alpha]),positions);assert.ok(fx.meshes.every(m=>!m.isPickable));assert.equal(JSON.stringify(s),before);const owned=[...fx.meshes];fx.dispose();fx.dispose();assert.ok(owned.every(m=>m.isDisposed()));
  }finally{fx.dispose();scene.dispose();engine.dispose();}
 });

@@ -51,7 +51,7 @@ export function setCitizenRole(s,id,role){
 }
 function rememberApproaches(s,b){
  s.roadAnchors??=[];
- const anchors=b.type==='bridge'?[bridgeSpan(b.y).left,bridgeSpan(b.y).right].map(x=>({type:'road',x:x-.5,y:b.y})):[{type:'road',x:b.x,y:b.y}];
+ const anchors=b.type==='bridge'?[bridgeSpan(b.y,s).left,bridgeSpan(b.y,s).right].map(x=>({type:'road',x:x-.5,y:b.y})):[{type:'road',x:b.x,y:b.y}];
  // Preserve the removed doorstep and the nodes currently occupied by residents.
  const old=networkFor(s);
  for(const c of s.citizens){let nearest=null,d=Infinity;for(const p of old.nodes.values()){const n=Math.abs(p.x-c.x)+Math.abs(p.y-c.y);if(n<d){d=n;nearest=p;}}
@@ -128,8 +128,8 @@ export function canDemolish(s,b){
   }
  }
  if(b.type==='bridge'){
-  const caravan=s.trade?.caravan;if(caravan&&caravan.transport!=='river'&&caravan.x!==null){if(onBridge([b],caravan.x,caravan.y))return 'Дождись, пока караван сойдёт с моста';const net=networkFor(future),near=[...net.nodes.values()].sort((a,b)=>Math.abs(a.x-caravan.x)+Math.abs(a.y-caravan.y)-Math.abs(b.x-caravan.x)-Math.abs(b.y-caravan.y))[0],market=net.ports.find(p=>buildingKey(p.building)===caravan.market);if(near&&(!net.nodes.has(caravan.entry)||net.components.get(near.key)!==net.components.get(caravan.entry)||market&&net.components.get(near.key)!==net.components.get(market.key)))return 'Снос перекроет путь каравана';}
-  if(s.citizens.some(c=>onBridge([b],c.x,c.y)))return 'Дождись, пока все жители сойдут с моста';
+  const caravan=s.trade?.caravan;if(caravan&&caravan.transport!=='river'&&caravan.x!==null){if(onBridge([b],caravan.x,caravan.y,s))return 'Дождись, пока караван сойдёт с моста';const net=networkFor(future),near=[...net.nodes.values()].sort((a,b)=>Math.abs(a.x-caravan.x)+Math.abs(a.y-caravan.y)-Math.abs(b.x-caravan.x)-Math.abs(b.y-caravan.y))[0],market=net.ports.find(p=>buildingKey(p.building)===caravan.market);if(near&&(!net.nodes.has(caravan.entry)||net.components.get(near.key)!==net.components.get(caravan.entry)||market&&net.components.get(near.key)!==net.components.get(market.key)))return 'Снос перекроет путь каравана';}
+  if(s.citizens.some(c=>onBridge([b],c.x,c.y,s)))return 'Дождись, пока все жители сойдут с моста';
   const {net,map}=ports(future);
   for(const c of s.citizens){let nearest=null,min=Infinity;for(const p of net.nodes.values()){const d=Math.abs(c.x-p.x)+Math.abs(c.y-p.y);if(d<min){min=d;nearest=p;}}
    const home=map.get(c.home);if(!nearest||!home||net.components.get(nearest.key)!==net.components.get(home.key))return 'Снос отрежет жителей от их домов';

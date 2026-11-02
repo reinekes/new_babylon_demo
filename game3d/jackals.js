@@ -21,7 +21,7 @@ export async function createJackals(B,scene,shadow,meshes=[],options={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);const frozen=paused||!dt||!speed,seen=new Set();
   for(const c of animals){if(c.kind!=='jackal')continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(frozen&&!fresh)continue;
    const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6,dead=!!(c.dead||c.behavior==='dead');a.lastX=c.x;a.lastY=c.y;
-   a.root.position.set(c.x*6,onBridge(state.buildings||[],c.x,c.y)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   a.root.position.set(c.x*6,onBridge(state.buildings||[],c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    const yaw=jackalHeading(c,dx,dz);if(yaw!==null&&!dead){const d=Math.atan2(Math.sin(yaw-a.root.rotation.y),Math.cos(yaw-a.root.rotation.y));a.root.rotation.y+=d*(fresh||c.pulling?1:1-Math.exp(-dt*12));}
    const growth=Number.isFinite(c.growth)?Math.max(.3,Math.min(1,c.growth)):1;a.root.scaling.setAll(growth);
    const moving=distance>.00001&&distance<3&&!dead,clip=c.pulling&&!dead?'Pull':moving?'Walk':'Idle',group=a.groups.get(clip);

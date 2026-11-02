@@ -11,7 +11,7 @@ const random=(x,y)=>{const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;return n
 const distance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t);};
 // Unlike saved water-cell distance, the signed lake distance follows the visible,
 // rounded outside shore. These are display positions, never resource deposits.
-export function vegetationBankDistance(x,y,s,contours=lakeContours(s)){return Math.min(Math.abs(x-river(y))-1.1,lakeDistance(x,y,s,contours));}
+export function vegetationBankDistance(x,y,s,contours=lakeContours(s)){return Math.min(Math.abs(x-river(y,s))-1.1,lakeDistance(x,y,s,contours));}
 export function valleyVegetationPlan(s,roads=[],tier='balanced'){
  const budget=VEGETATION_BUDGETS[tier]||VEGETATION_BUDGETS.balanced,contours=lakeContours(s),plan={grass:[],greenGrass:[],reed:[]};
  const clear=(p,r=.24)=>p.x>0&&p.y>0&&p.x<WIDTH-1&&p.y<HEIGHT-1&&sceneryClear(s,p,r)&&roads.every(e=>distance(p,e.a,e.b)>.28+r);

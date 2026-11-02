@@ -32,7 +32,7 @@ export function generateStreets(buildings,s) {
   const nodes = new Map(), land = new Map(), graph = new Map(), edges = [];
   const bridgeNodes=new Set(),bridgeEdges=new Set();
   for(const b of buildings.filter(b=>b.type==='bridge'&&b.construction?.kind!=='new')){
-    const span=bridgeSpan(b.y),from=span.left+.5,to=span.right+.5;
+    const span=bridgeSpan(b.y,s),from=span.left+.5,to=span.right+.5;
     for(let x=from;x<=to;x++){const key=keyOf(x,span.keyY);bridgeNodes.add(key);if(x<to){const next=keyOf(x+1,span.keyY);bridgeEdges.add(`${key}|${next}`);bridgeEdges.add(`${next}|${key}`);}}
   }
   for (let y = 0; y <= HEIGHT; y++) for (let x = 0; x <= WIDTH; x++) {
@@ -48,7 +48,7 @@ export function generateStreets(buildings,s) {
     return result;
   };
   // Both bridge banks get approaches, even while the crossing is closed.
-  const approaches=buildings.filter(b=>b.type==='bridge').flatMap(b=>{const span=bridgeSpan(b.y);return [span.left,span.right].map((x,i)=>({type:'approach',x:x-.5,y:b.y,siteKey:`${b.x},${b.y}`,side:i}));});
+  const approaches=buildings.filter(b=>b.type==='bridge').flatMap(b=>{const span=bridgeSpan(b.y,s);return [span.left,span.right].map((x,i)=>({type:'approach',x:x-.5,y:b.y,siteKey:`${b.x},${b.y}`,side:i}));});
   const roadBuildings=[...buildings.filter(b=>b.type!=='bridge'),...approaches];
   const ports = [];
   const root=roadBuildings.find(b=>b.type==='shrine')||roadBuildings[0];

@@ -12,7 +12,7 @@ export function drawConstruction(r,b,s,t){
   for(const a of [-7,7]){r.line([[p.x+a*scale,p.y+3*scale],[p.x+a*scale,p.y-8*scale]],'#8b704c',1.4*scale);}
   r.line([[p.x-8*scale,p.y-8*scale],[p.x+8*scale,p.y-8*scale]],'#dbc08c',2*scale);
  }else if(b.type==='bridge'){
-  const span=bridgeSpan(b.y),fraction=q.kind==='upgrade'?1:.08+progress.work*.92,east=s.citizens.some(c=>c.site===`${b.x},${b.y}`&&c.sitePort?.endsWith(':1')),start=east?span.right:span.left,end=start+(east?-1:1)*(span.right-span.left)*fraction,low=Math.min(start,end),high=Math.max(start,end);
+  const span=bridgeSpan(b.y,s),fraction=q.kind==='upgrade'?1:.08+progress.work*.92,east=s.citizens.some(c=>c.site===`${b.x},${b.y}`&&c.sitePort?.endsWith(':1')),start=east?span.right:span.left,end=start+(east?-1:1)*(span.right-span.left)*fraction,low=Math.min(start,end),high=Math.max(start,end);
   r.polygon([r.point(start,span.y-.13,5),r.point(end,span.y-.13,5),r.point(end,span.y+.13,5),r.point(start,span.y+.13,5)],'#c6ad7d','#8e7654');
   for(let x=span.left;x<=span.right;x+=.5){r.line([r.point(x,span.y,0),r.point(x,span.y,8)],'#8b704c',2*scale);}
   for(let x=low;x<high;x+=.2)r.line([r.point(x,span.y-.13,5),r.point(x,span.y+.13,5)],'#8c7651',.7*scale);
@@ -42,7 +42,7 @@ export function drawConstruction(r,b,s,t){
  }
 }
 export function drawConstructionLabel(r,b){
- const progress=constructionProgress(b),c=r.ctx,p=b.type==='bridge'?r.point(bridgeSpan(b.y).left,b.y+.5):r.point(b.x,b.y);
+ const progress=constructionProgress(b),c=r.ctx,p=b.type==='bridge'?r.point(bridgeSpan(b.y,r.state).left,b.y+.5):r.point(b.x,b.y);
  const y=p.y-(b.type==='road'?15:b.construction.kind==='upgrade'?88:40+progress.work*62)*r.s,width=46*r.s;
  c.fillStyle='#f7efd8ed';c.fillRect(p.x-width/2-3*r.s,y-13*r.s,width+6*r.s,21*r.s);
  c.fillStyle='#617459';c.font=`${Math.max(8,9*r.s)}px Arial`;c.textAlign='center';c.fillText(`${b.construction.kind==='upgrade'?'↑':'⚒'} ${Math.floor(progress.ratio*100)}%`,p.x,y-3*r.s);

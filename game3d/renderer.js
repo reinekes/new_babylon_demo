@@ -110,7 +110,7 @@ export class GameRenderer3D{
  focusOn(x,y){this.mapOverview=false;this.camera.setTarget(new this.B.Vector3(x*6,1,y*6));this.camera.radius=30;this.hover={x,y};}
  captureView(){return {target:this.camera.target.clone(),alpha:this.camera.alpha,beta:this.camera.beta,radius:this.camera.radius};}
  restoreView(v){if(v){this.camera.setTarget(v.target);this.camera.alpha=v.alpha;this.camera.beta=v.beta;this.camera.radius=v.radius;}}
- resetPresentation(){this.miracleGarden?.clear?.();this.sacredEffects?.reset(this.state);this.effects=[];for(const v of this.effectViews){v.mesh.dispose();v.mat.dispose();}this.effectViews=[];this.lastSim=null;this.lastTime=null;}
+ resetPresentation(){this.miracleGarden?.clear?.();this.sacredEffects?.reset(this.state);if(this.state){if(this.actors?.resetPresentation)this.actors.resetPresentation(this.state);else this.actors?.update(this.state,0,{paused:true});}this.effects=[];for(const v of this.effectViews){v.mesh.dispose();v.mat.dispose();}this.effectViews=[];this.lastSim=null;this.lastTime=null;}
  addEffect(id,at){this.effects.push({id,born:this.state?.simTime||0,at:at?{...at}:this.hover?{...this.hover}:{x:9,y:9}});}
  updateEffects(state,dt){
   const B=this.B;while(this.effects.length){const effect=this.effects.shift(),m=B.MeshBuilder.CreateTorus(`miracle-${effect.id}`,{diameter:3,thickness:.08,tessellation:48},this.scene),mat=new B.StandardMaterial('divine-light',this.scene);mat.emissiveColor=B.Color3.FromHexString(effect.id==='rain'?'#88c7df':effect.id==='festival'?'#ffc86c':'#f7dc8c');mat.disableLighting=true;mat.alpha=.8;m.material=mat;m.isPickable=false;const p=effect.at||{x:9,y:9};m.position.set(p.x*6,.35,p.y*6);this.effectViews.push({mesh:m,mat,age:0});}

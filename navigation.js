@@ -23,12 +23,12 @@ function obstacleIndex(s){
 function localObstacles(index,a,b=a){const found=new Set();for(let y=Math.floor(Math.min(a.y,b.y));y<=Math.ceil(Math.max(a.y,b.y));y++)for(let x=Math.floor(Math.min(a.x,b.x));x<=Math.ceil(Math.max(a.x,b.x));x++)for(const box of index.get(`${x},${y}`)||[])found.add(box);return found;}
 export function navigationSegmentClear(s,a,b,index=obstacleIndex(s)){
  const length=Math.hypot(b.x-a.x,b.y-a.y),steps=Math.max(4,Math.ceil(length/.1)),horizontal=Math.abs(a.y-b.y)<EPS;
- for(let i=0;i<=steps;i++){const t=i/steps,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;if(!isDryPoint(s,x,y)&&!(horizontal&&onBridge(s.buildings||[],x,y)))return false;}
+ for(let i=0;i<=steps;i++){const t=i/steps,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;if(!isDryPoint(s,x,y)&&!(horizontal&&onBridge(s.buildings||[],x,y,s)))return false;}
  for(const box of localObstacles(index,a,b))if(intersectsBox(a,b,box))return false;return true;
 }
 function speedFor(s,a,b,roads){
  const road=roads.get(pairKey(a.key,b.key)),roadFactor=1+((road?.level||1)-1)*.2;
- const bridge=(s.buildings||[]).find(v=>v.type==='bridge'&&v.construction?.kind!=='new'&&Math.abs(a.y-bridgeSpan(v.y).y)<EPS&&Math.abs(b.y-a.y)<EPS&&onBridge([v],(a.x+b.x)/2,a.y));
+ const bridge=(s.buildings||[]).find(v=>v.type==='bridge'&&v.construction?.kind!=='new'&&Math.abs(a.y-bridgeSpan(v.y,s).y)<EPS&&Math.abs(b.y-a.y)<EPS&&onBridge([v],(a.x+b.x)/2,a.y,s));
  return roadFactor*(bridge?1+((bridge.level||1)-1)*.25:1);
 }
 function roadLookup(s){const roads=new Map();for(const r of s.roads||[]){if(!r.a||!r.b)continue;const a=r.a.key||pointKey(r.a.x,r.a.y),b=r.b.key||pointKey(r.b.x,r.b.y);roads.set(pairKey(a,b),r);roads.set(pairKey(b,a),r);}return roads;}
@@ -39,7 +39,7 @@ export function navigationTravelCost(s,route){const roads=roadLookup(s);let n=0;
 export function createWalkingNetwork(s,streets){
  const nodes=new Map(),graph=new Map(),costs=new Map(),index=obstacleIndex(s),roads=roadLookup(s),bridges=(s.buildings||[]).filter(b=>b.type==='bridge'&&b.construction?.kind!=='new');
  for(let y=0;y<=HEIGHT;y++)for(let x=0;x<=WIDTH;x++){
-  const p={x:x-.5,y:y-.5,key:`${x},${y}`};if(!isDryPoint(s,p.x,p.y)&&!onBridge(bridges,p.x,p.y))continue;
+  const p={x:x-.5,y:y-.5,key:`${x},${y}`};if(!isDryPoint(s,p.x,p.y)&&!onBridge(bridges,p.x,p.y,s))continue;
   if([...localObstacles(index,p)].some(r=>p.x>r.minX&&p.x<r.maxX&&p.y>r.minY&&p.y<r.maxY))continue;nodes.set(p.key,p);graph.set(p.key,new Set());
  }
  let maxSpeed=1;

@@ -15,7 +15,7 @@ export function riverCraftPose(s,c,time=0){
  const route=c.route||[],next=route[c.routeIndex||0];let yaw=null;
  if(next&&Math.hypot(next.x-c.x,next.y-c.y)>1e-5)yaw=Math.atan2(next.x-c.x,next.y-c.y);
  if(yaw===null){const previous=route.slice(0,c.routeIndex||0).reverse().find(p=>Math.hypot(p.x-c.x,p.y-c.y)>1e-5);if(previous)yaw=Math.atan2(c.x-previous.x,c.y-previous.y);}
- const lowered=(s.buildings||[]).some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(c.y-bridgeSpan(b.y).y)<.95);
+ const lowered=(s.buildings||[]).some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(c.y-bridgeSpan(b.y,s).y)<.95);
  return {x:c.x*TILE,y:WATER_HEIGHT+Math.sin(time*1.7)*.012,z:c.y*TILE,yaw:yaw??0,roll:Math.sin(time*1.1)*.006,lowered,draft:.29};
 }
 

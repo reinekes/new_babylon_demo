@@ -48,7 +48,7 @@ function supplements(B,scene) {
  materialCache.set(scene,mats);return mats;
 }
 
-export function createDistrictBuilding(B,scene,b,materials) {
+export function createDistrictBuilding(B,scene,b,materials,s) {
  const plan=districtBuildingPlan(b), extra=supplements(B,scene),m={...extra,...materials};
  const finish=extra.plasters[plan.variant];
  if(!finish.albedoTexture){finish.albedoTexture=materials.plaster?.albedoTexture;finish.bumpTexture=materials.plaster?.bumpTexture;}
@@ -215,7 +215,7 @@ export function createDistrictBuilding(B,scene,b,materials) {
    for(let i=0;i<4;i++)mat(-1.8+i*.7,-1.55,.6,.85);pot(1.9,1.8,.9);break;
   case 'field':field();break;
   case 'bridge':{
-   const span=bridgeSpan(b.y),left=(span.left-b.x)*6,right=(span.right-b.x)*6,z=(span.y-b.y)*6;
+   const span=bridgeSpan(b.y,s),left=(span.left-b.x)*6,right=(span.right-b.x)*6,z=(span.y-b.y)*6;
    const pieces=Math.ceil((right-left)/.32),step=(right-left)/pieces;
    for(let i=0;i<pieces;i++)box(left+step*(i+.5),.14,z,step-.02,.16,1.65,'wood');
    for(let x=left+.14;x<=right;x+=Math.max(1,(right-left-.28)/6))for(const side of [-1,1]){

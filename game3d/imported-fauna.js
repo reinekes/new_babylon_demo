@@ -31,7 +31,7 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
  function update(state,animals,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||!dt||!speed;const seen=new Set();
   for(const c of animals){if(!supports(c.kind))continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(paused&&!fresh)continue;
-   const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6,dead=!!(c.dead||c.behavior==='dead');a.lastX=c.x;a.lastY=c.y;a.root.position.set(c.x*6,onBridge(state.buildings,c.x,c.y)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6,dead=!!(c.dead||c.behavior==='dead');a.lastX=c.x;a.lastY=c.y;a.root.position.set(c.x*6,onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    let action=importedFaunaAction(c,paused?0:distance),key=c.kind==='gazelle'?'gazelle':action==='Walk'?'catWalk':'catSit';if(!sources.has(key))key=sources.has('catWalk')?'catWalk':'catSit';
    const v=variant(a,key),changed=a.key!==key;for(const other of a.variants.values())other.root.setEnabled(true);if(changed){if(fresh)v.weight=1;a.key=key;}
    if(distance>.00001&&distance<3&&!paused&&!dead)a.yaw=Math.atan2(dx,dz);if(a.yaw!==null&&!dead){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(fresh?1:1-Math.exp(-dt*10));}

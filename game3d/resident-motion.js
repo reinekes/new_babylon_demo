@@ -49,8 +49,8 @@ export function residentViewPositions(state,citizens){
    const clearApproach=[0,.25,.5,.75,1].every(t=>{const x=c.x+(q.x-c.x)*t,y=c.y+(q.y-c.y)*t;return isDryPoint(state,x,y)&&!(state.buildings||[]).some(b=>b!==target&&(b.x!==target.x||b.y!==target.y)&&!['road','bridge','field','canal'].includes(b.type)&&Math.abs(x-b.x-(footprintSize(b)-1)/2)<footprintSize(b)/2-.04&&Math.abs(y-b.y-(footprintSize(b)-1)/2)<footprintSize(b)/2-.04);});
    if(clearApproach&&neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001)){p={x:q.x,y:q.y,contact};}
   }
-  const bridge=onBridge(state.buildings||[],c.x,c.y),phase=residentMotion(c.id).phase;
-  const safe=q=>{if(bridge)return !!onBridge(state.buildings||[],q.x,q.y)&&Math.abs(q.y-c.y)<.025;
+  const bridge=onBridge(state.buildings||[],c.x,c.y,state),phase=residentMotion(c.id).phase;
+  const safe=q=>{if(bridge)return !!onBridge(state.buildings||[],q.x,q.y,state)&&Math.abs(q.y-c.y)<.025;
    if(!isDryPoint(state,q.x,q.y))return false;
    return !(state.buildings||[]).some(b=>{if(['road','bridge','field','canal'].includes(b.type))return false;const size=footprintSize(b),x=b.x+(size-1)/2,y=b.y+(size-1)/2,half=size/2-.035;return Math.abs(q.x-x)<half&&Math.abs(q.y-y)<half&&!(Math.abs(c.x-x)<half&&Math.abs(c.y-y)<half);});};
   const clear=q=>neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001);

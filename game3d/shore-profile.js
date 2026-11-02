@@ -6,6 +6,6 @@ import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js'
 export {RIVER_HALF_WIDTH,RIVER_STEPS_PER_TILE};
 export const renderedRiverCenter=riverProfileCenter;
 export function renderedShoreDistance(x,y,s,contours=lakeContours(s)){
- return Math.min(Math.abs(x-renderedRiverCenter(y))-RIVER_HALF_WIDTH,lakeDistance(x,y,s,contours));
+ return Math.min(Math.abs(x-renderedRiverCenter(y,s))-RIVER_HALF_WIDTH,lakeDistance(x,y,s,contours));
 }
 export {visualSurfaceElevation};

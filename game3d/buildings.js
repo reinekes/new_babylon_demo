@@ -22,7 +22,7 @@ const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgr
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'?JSON.stringify(state?.world?.lakes||[]):'',isHouse(b)?`${houseVisualKind(b)}:${organicHouseVariant(b)}`:'',foundationSignature(b,state,shoreContext)].join('|');
+ return [workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b)}:${organicHouseVariant(b)}`:'',foundationSignature(b,state,shoreContext)].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -92,7 +92,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function clearFieldBeds(){for(const entry of fieldBeds.values())entry.owner.dispose();fieldBeds.clear();}
  function fieldBedContext(state){if(fieldBedState!==state){clearFieldBeds();fieldBedState=state;}}
  function clipField(mesh,b,state){
-  const key=mesh.metadata?.fieldBed?JSON.stringify([b.x,b.y,rotationOf(b),state?.world?.lakes||[],(state?.buildings||[]).map(v=>[v.x,v.y])]):null;
+  const key=mesh.metadata?.fieldBed?JSON.stringify([b.x,b.y,rotationOf(b),state?.world?.river,state?.world?.lakes||[],(state?.buildings||[]).map(v=>[v.x,v.y])]):null;
   const cached=key&&fieldBeds.get(key);
   if(cached){fieldBeds.delete(key);fieldBeds.set(key,cached);mesh.geometry.releaseForMesh(mesh,true);cached.owner.geometry.applyToMesh(mesh);return true;}
   const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
@@ -109,13 +109,13 @@ export async function createGameBuildings(B,scene,materials,options={}){
   let t=templates.get(key);if(t){t.users++;return t;}
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
   if(b.construction?.kind==='new'){
-   sources=createConstructionSite(B,scene,b,materialSet);for(const mesh of sources)mesh.parent=root;
+   sources=createConstructionSite(B,scene,b,materialSet,state);for(const mesh of sources)mesh.parent=root;
   }else if(isHouse(b)){
    sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade});for(const mesh of sources)mesh.parent=root;
   }else{
    if(b.type==='field'||b.type==='bridge'||b.type==='house'||b.type==='canal'){
     const adapted=cropAssets&&usesBarleyCards(b)?{...b,crop:{...b.crop,sown:0}}:b;
-    const base=createDistrictBuilding(B,scene,{...adapted,id:'template'},materialSet);
+    const base=createDistrictBuilding(B,scene,{...adapted,id:'template'},materialSet,state);
     for(const mesh of base.meshes){mesh.unfreezeWorldMatrix();mesh.parent=root;sources.push(mesh);}
     base.root.dispose();
    }else if(b.type==='musicHouse'){
@@ -129,7 +129,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   // Supplied stepped sanctuaries have real stair flights; the former flat-roof
   // ladder would pass through their terraces at the obsolete roof height.
   if(!sacredModels.sources(b))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
-  if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
+  if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>clipField(mesh,b,state));
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){

@@ -14,8 +14,8 @@ export function riverRows(scenery=false){
  if(distances.at(-1)!==SCENERY_MARGIN)distances.push(SCENERY_MARGIN);
  return [...distances.map(d=>-.5-d).reverse(),...main,...distances.map(d=>HEIGHT-.5+d)];
 }
-export function riverProfileCenter(y){
- if(y<-.5||y>HEIGHT-.5){const rows=riverRows(true);let lo=0,hi=rows.length-1;while(hi-lo>1){const mid=(lo+hi)>>1;if(rows[mid]<=y)lo=mid;else hi=mid;}const a=rows[lo],b=rows[hi],t=(y-a)/(b-a);return river(a)*(1-t)+river(b)*t;}
+export function riverProfileCenter(y,s){
+ if(y<-.5||y>HEIGHT-.5){const rows=riverRows(true);let lo=0,hi=rows.length-1;while(hi-lo>1){const mid=(lo+hi)>>1;if(rows[mid]<=y)lo=mid;else hi=mid;}const a=rows[lo],b=rows[hi],t=(y-a)/(b-a);return river(a,s)*(1-t)+river(b,s)*t;}
  const start=-.5+Math.floor((y+.5)*RIVER_STEPS_PER_TILE)/RIVER_STEPS_PER_TILE,t=(y-start)*RIVER_STEPS_PER_TILE;
- return river(start)*(1-t)+river(start+1/RIVER_STEPS_PER_TILE)*t;
+ return river(start,s)*(1-t)+river(start+1/RIVER_STEPS_PER_TILE,s)*t;
 }

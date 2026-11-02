@@ -49,7 +49,7 @@ export function riverbankGeometry(s){
  const g={positions:[],indices:[],colors:[],uvs:[]},rows=riverRows(true),across=6;
  for(const side of [-1,1]){const offset=g.positions.length/3;
   for(let j=0;j<rows.length;j++){const y=rows[j],width=.13+.14*(.5+.5*Math.sin(y*1.13+side*3))+.05*Math.sin(y*3.7)**2;
-   for(let i=0;i<=across;i++){const t=i/across,x=river(y)+side*(1.07+width*t),Y=surfaceElevation(x,y,s),n=noise(x*2,y*2);
+   for(let i=0;i<=across;i++){const t=i/across,x=river(y,s)+side*(1.07+width*t),Y=surfaceElevation(x,y,s),n=noise(x*2,y*2);
     g.positions.push(x*TILE,Y+.024,y*TILE);g.uvs.push(x/3,y/3);g.colors.push(.61+(.18+n*.045)*t,.57+(.12+n*.035)*t,.43+(.09+n*.025)*t,i===across||(s.buildings||[]).some(b=>Math.abs(b.x-x)<.31&&Math.abs(b.y-y)<.3)?0:Math.sin(Math.PI*(.12+.88*t))*.7);
     if(j<rows.length-1&&i<across){const a=offset+j*(across+1)+i;g.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}
    }

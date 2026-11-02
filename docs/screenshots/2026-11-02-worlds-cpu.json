@@ -1,0 +1,39 @@
+{
+  "release": "worlds-saves-water-20261102-1",
+  "method": "Node simulation CPU only; 900 steps at 4/60 seconds, 200 citizens, 129 buildings; runs outside test suite",
+  "fpsMeasured": false,
+  "baselineCommit": "84f395b3825b1efa53af89921056ec03bd55614b",
+  "baseline": {
+    "buildings": 129,
+    "population": 200,
+    "assignmentMs": 4.944333000000029,
+    "simulation4x": {
+      "medianMs": 4.603874999999789,
+      "p95Ms": 9.559166999999889,
+      "maxMs": 131.69954099999995
+    },
+    "encode": {
+      "medianMs": 1.258958000000348,
+      "maxMs": 2.440292000000227,
+      "bytes": 253015
+    },
+    "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c"
+  },
+  "current": {
+    "buildings": 129,
+    "population": 200,
+    "assignmentMs": 5.224291999999991,
+    "simulation4x": {
+      "medianMs": 4.570582999999942,
+      "p95Ms": 9.159625000000233,
+      "maxMs": 137.45683400000007
+    },
+    "encode": {
+      "medianMs": 1.2637080000004062,
+      "maxMs": 3.381000000000313,
+      "bytes": 253015
+    },
+    "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c"
+  },
+  "sameSimulationState": true
+}

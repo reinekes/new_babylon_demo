@@ -26,7 +26,7 @@ export function naturalAnimalsFor(s){
  // River coordinates follow the actual continuous river instead of cutting across bends.
  for(let i=0;i<ecologyCount(s,'fish',36);i++){
   const phase=time*.075+i*2.399963,cy=(HEIGHT-1)/2+Math.sin(phase)*(HEIGHT-2)/2;
-  result.push({id:`fish:river:${i}`,kind:'fish',x:river(cy)+Math.sin(phase*2.1+i)*.24,y:cy,behavior:'swimming',walking:true,waterLevel:-.18,swimDepth:.22});
+  result.push({id:`fish:river:${i}`,kind:'fish',x:river(cy,s)+Math.sin(phase*2.1+i)*.24,y:cy,behavior:'swimming',walking:true,waterLevel:-.18,swimDepth:.22});
  }
  let fishCount=0;for(const lake of (s.ecology&&!s.ecology.legacyFauna?[]:s.world?.lakes||[]))for(const cell of lake.cells)for(let i=0;i<2&&fishCount<80;i++,fishCount++){
   const phase=time*.5+seed(cell.x+i,cell.y)*23;

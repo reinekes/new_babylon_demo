@@ -180,7 +180,7 @@ export function createDistrictActors(B,scene,materials){
   if(moving)a.gait+=Math.min(distance*2.4,frameDelta*15);
   a.snap=false;a.lastX=c.x;a.lastY=c.y;
   a.root.position.x=c.x*6;a.root.position.z=c.y*6;
-  a.root.position.y=onBridge(s.buildings,c.x,c.y)?.22:surfaceElevation(c.x,c.y,s);
+  a.root.position.y=onBridge(s.buildings,c.x,c.y,s)?.22:surfaceElevation(c.x,c.y,s);
  }
  function poseHuman(a,c,time,look,s){
   position(a,c,s);setCargo(a,c);

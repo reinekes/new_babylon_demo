@@ -92,12 +92,16 @@ export function orderFestival(s){
  s.resources.prestige-=15;invalidateAssignments(s);
  return {ok:true,warning:festivalSummary(s).warning};
 }
-function release(s,a){const c=s.citizens.find(c=>c.id===a.id);if(!c)return;if(c.phase==='festival'){const path=route(s,c,c.home);c.route=path?.map(p=>({x:p.x,y:p.y}))||[];c.routeIndex=0;c.phase=path?'toHome':'blocked';}invalidateAssignments(s);}
+function release(s,a,{immediate=false}={}){const c=s.citizens.find(c=>c.id===a.id);if(!c)return;if(c.phase==='festival'){const home=immediate&&port(s,c.home);if(home){c.x=home.x;c.y=home.y;c.route=[];c.routeIndex=0;c.phase='home';}else{const path=route(s,c,c.home);c.route=path?.map(p=>({x:p.x,y:p.y}))||[];c.routeIndex=0;c.phase=path?'toHome':'blocked';}}invalidateAssignments(s);}
 export function cancelFestival(s){const lock=relicCommandReason(s);return lock?{ok:false,reason:lock}:finishFestival(s);}
-function finishFestival(s){
+// A deliberate calendar jump closes this one occasion, including its pending
+// local deliveries. Ordinary cancellation may retry the first-cup celebration.
+export function skipFestival(s){const lock=relicCommandReason(s);return lock?{ok:false,reason:lock}:finishFestival(s,{immediate:true,skipped:true});}
+function finishFestival(s,{immediate=false,skipped=false}={}){
  const q=s.festival;if(!q)return {ok:false,reason:'Нет заказанного праздника'};
  if(!q.consumed){refundFestival(s,q);s.resources.prestige+=costFor(q).prestige;}
- for(const a of q.actors)release(s,a);s.festival=null;invalidateAssignments(s);return {ok:true,refunded:!q.consumed};
+ if(skipped&&firstBeer(q)&&!q.consumed)s.firstBeerFeast.status='skipped';
+ for(const a of q.actors)release(s,a,{immediate});s.festival=null;invalidateAssignments(s);return {ok:true,refunded:!q.consumed};
 }
 // Death/role change gives a festival load back to its original reserved ledger, never ordinary cargo.
 export function recoverFestivalCitizen(s,id){const q=s.festival,a=q?.actors.find(a=>a.id===id);if(!a)return false;if(a.load>0)(q.sources[a.source]??={})[a.material]=(q.sources[a.source]?.[a.material]||0)+a.load;release(s,a);q.actors=q.actors.filter(v=>v!==a);return true;}
@@ -188,7 +192,7 @@ export function festivalSummary(s,options={}){
 export function festivalView(s){const q=s.festival;if(!q)return null;const b=s.buildings.find(b=>buildingKey(b)===q.temple),court=festivalCourtLayout(s,networkFor(s),q.temple)?.center;return {occasion:occasion(q),title:firstBeer(q)?'Первая кружка пива':'Ночь огней',stage:q.stage,temple:q.temple,x:b?.x,y:b?.y,court:court?{...court}:null,consumed:q.consumed,participants:q.actors.filter(a=>a.kind==='guest').map(a=>a.id),dancing:q.actors.filter(a=>a.stage==='dancing').map(a=>a.id),carriers:q.actors.filter(a=>a.kind==='carrier').map(a=>({id:a.id,load:a.load,material:a.material})),elapsed:elapsedFestival(s,q)};}
 export function validateFirstBeerFeast(s){
  const q=s.firstBeerFeast;if(q===undefined)return true;
- if(!q||typeof q!=='object'||Array.isArray(q)||Object.keys(q).length!==4||q.version!==1||!['unbrewed','pending','done','legacy'].includes(q.status)||!['version','status','brewery','producedAt'].every(k=>k in q))return false;
+ if(!q||typeof q!=='object'||Array.isArray(q)||Object.keys(q).length!==4||q.version!==1||!['unbrewed','pending','done','skipped','legacy'].includes(q.status)||!['version','status','brewery','producedAt'].every(k=>k in q))return false;
  if(['unbrewed','legacy'].includes(q.status))return q.brewery===null&&q.producedAt===null&&!firstBeer(s.festival);
  if(typeof q.brewery!=='string'||!/^\d+,\d+$/.test(q.brewery)||!Number.isFinite(q.producedAt)||q.producedAt<0||q.producedAt>s.simTime)return false;
  return !firstBeer(s.festival)||(s.festival.consumed?q.status==='done':q.status==='pending');

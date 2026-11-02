@@ -9,7 +9,7 @@ const noise = (x,y) => {const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;retur
 
 // Positive on dry land. Lake outlines retain the actual saved cell footprint.
 export function shoreDistance(x,y,s) {
-  let d=Math.abs(x-river(y))-1.1;
+  let d=Math.abs(x-river(y,s))-1.1;
   for(const lake of s?.world?.lakes||[])for(const c of lake.cells){
     const qx=Math.abs(x-c.x)-.5,qy=Math.abs(y-c.y)-.5;
     d=Math.min(d,Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0));
@@ -32,8 +32,8 @@ export function districtRoadEdges(s) {
 const unique=values=>[...new Set(values.map(x=>Math.round(x*1e9)/1e9))].sort((a,b)=>a-b);
 const innerXs=Array.from({length:WIDTH*4+1},(_,i)=>-.5+i/4);
 const outerXs=[-36.5,-24.5,-12.5,-6.5,-2.5,-.5,WIDTH-.5,WIDTH+1.5,WIDTH+5.5,WIDTH+11.5,WIDTH+23.5,WIDTH+35.5];
-function terrainRowXs(y,dense=true,min=-.5,max=WIDTH-.5){
- const bank=RIVER_BANK_SECTION.map(x=>river(y)+x);
+function terrainRowXs(y,dense=true,min=-.5,max=WIDTH-.5,s){
+ const bank=RIVER_BANK_SECTION.map(x=>river(y,s)+x);
  return unique([...(dense?innerXs:outerXs),...bank,min,max].filter(x=>x>=min&&x<=max));
 }
 function alluvialHeight(x,y,s){const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(WIDTH-.5),-.5-y,y-(HEIGHT-.5));return surfaceElevation(x,y,s)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);}
@@ -43,7 +43,7 @@ function terrainVertex(g,x,y,s,scenery){
  // At the common rim the height/color/UV are identical, then the distant plain
  // gains dunes gradually. The continued river is carved through those dunes.
  const h=surfaceElevation(x,y,s)+(scenery?smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2):0);
- const fertile=smooth((4.3-Math.abs(x-river(y)))/3),fleck=noise(x*1.3,y*1.3)*.055,wet=1-smooth((d+.05)/.7);
+ const fertile=smooth((4.3-Math.abs(x-river(y,s)))/3),fleck=noise(x*1.3,y*1.3)*.055,wet=1-smooth((d+.05)/.7);
  g.positions.push(x*TILE,h,y*TILE);g.normals??=[];g.normals.push(...alluvialNormal(x,y,s));g.colors.push(.92-fertile*.20-wet*.20+fleck,.83-fertile*.09-wet*.17+fleck,.64-fertile*.12-wet*.12+fleck,1);
 }
 function stripGeometry(g,rows,xs,s,scenery){
@@ -56,16 +56,16 @@ function stripGeometry(g,rows,xs,s,scenery){
  }
 }
 export function alluvialTerrainGeometry(s){
- const g={positions:[],indices:[],colors:[]};stripGeometry(g,riverRows(),y=>terrainRowXs(y),s,false);return g;
+ const g={positions:[],indices:[],colors:[]};stripGeometry(g,riverRows(),y=>terrainRowXs(y,true,-.5,WIDTH-.5,s),s,false);return g;
 }
 export function alluvialSceneryGeometry(s){
  const g={positions:[],indices:[],colors:[]},rows=riverRows(true),main=riverRows();
  const min=-.5-SCENERY_MARGIN,max=WIDTH-.5+SCENERY_MARGIN;
  const rim=y=>y===-.5||y===HEIGHT-.5;
- const xs=y=>terrainRowXs(y,rim(y),min,max);
+ const xs=y=>terrainRowXs(y,rim(y),min,max,s);
  stripGeometry(g,rows.filter(y=>y<=-.5),xs,s,true);
  stripGeometry(g,rows.filter(y=>y>=HEIGHT-.5),xs,s,true);
- for(const [a,b]of [[min,-.5],[WIDTH-.5,max]])stripGeometry(g,main,y=>terrainRowXs(y,false,a,b),s,true);
+ for(const [a,b]of [[min,-.5],[WIDTH-.5,max]])stripGeometry(g,main,y=>terrainRowXs(y,false,a,b,s),s,true);
  return g;
 }
 
@@ -138,7 +138,7 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   const wp=[],wi=[],uv=[];
   const waterRows=riverRows(true);
   for(let j=0;j<waterRows.length;j++){
-    const y=waterRows[j],c=river(y);
+    const y=waterRows[j],c=river(y,state);
     for(const x of [c-1.1,c+1.1]){wp.push(x*TILE,-.18,y*TILE);uv.push(x/WIDTH,(y+.5)/HEIGHT);}
     if(j<waterRows.length-1){const a=j*2;wi.push(a,a+2,a+1,a+1,a+2,a+3);}
   }
@@ -267,7 +267,7 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   roadMaterial.albedoColor=C(.53,.39,.25);roadMaterial.roughness=1;roadMaterial.metallic=0;
   if(materials.soil?.albedoTexture)roadMaterial.albedoTexture=materials.soil.albedoTexture;
   function updateRoads(s){
-    const signature=JSON.stringify([s.buildings?.map(b=>[b.type,b.x,b.y,!!b.construction]),s.roadAnchors,s.roads?.map(r=>[r.id,r.level,!!r.construction])]);
+    const signature=JSON.stringify([s.world?.river,s.world?.lakes,s.buildings?.map(b=>[b.type,b.x,b.y,!!b.construction]),s.roadAnchors,s.roads?.map(r=>[r.id,r.level,!!r.construction])]);
     if(signature===roadSignature)return;roadSignature=signature;
     for(const m of roadMeshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();}roadMeshes=[];
     const pos=[],inds=[];

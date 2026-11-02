@@ -17,3 +17,10 @@ test('saved and newly built canals remain visible while detailed landscape is pe
 test('disposing the bootstrap at a detail swap releases its canal geometry and private materials only',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),shared=materials(scene),view=createBootstrapLandscape(B,scene,fixture(),shared);try{const meshes=[...view.meshes],water=canal(view);assert.ok(water);const privateMaterials=scene.materials.filter(m=>!Object.values(shared).includes(m));view.dispose();view.dispose();assert.equal(view.meshes.length,0);assert.ok(meshes.every(m=>m.isDisposed()));assert.ok(privateMaterials.every(m=>!scene.materials.includes(m)));assert.ok(Object.values(shared).every(m=>scene.materials.includes(m)));}finally{view.dispose();for(const m of Object.values(shared))m.dispose();scene.dispose();engine.dispose();}
 });
+test('loading another seeded map during progressive startup replaces the river and lake terrain together',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),shared=materials(scene),first=createGame({seed:1}),second=createGame({seed:96}),view=createBootstrapLandscape(B,scene,first,shared);
+ try{const oldGround=view.meshes.find(m=>m.name==='alluvial-valley'),oldRiver=view.meshes.find(m=>m.name==='living-river'),oldPositions=oldRiver.getVerticesData(B.VertexBuffer.PositionKind).slice(),before=JSON.stringify(second);view.light(.8);view.update(second,0);
+  const ground=view.meshes.find(m=>m.name==='alluvial-valley'),river=view.meshes.find(m=>m.name==='living-river');assert.notEqual(ground,oldGround);assert.notEqual(river,oldRiver);assert.ok(oldGround.isDisposed()&&oldRiver.isDisposed());assert.notDeepEqual(river.getVerticesData(B.VertexBuffer.PositionKind),oldPositions);assert.equal(JSON.stringify(second),before);assert.ok(Object.values(shared).every(m=>scene.materials.includes(m)));
+  view.update(second,1);assert.equal(view.meshes.find(m=>m.name==='living-river'),river,'unchanged world retains static water geometry');
+ }finally{view.dispose();for(const m of Object.values(shared))m.dispose();scene.dispose();engine.dispose();}
+});

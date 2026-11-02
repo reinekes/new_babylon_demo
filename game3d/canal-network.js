@@ -17,7 +17,7 @@ function append(g,poly,sample,arms,water){if(poly.length<3)return;const index=g.
 export function canalNetworkGeometry(s,canals){
  // Ground dunes depend on building positions, but never on their work counters.
  // Keep only one result per state; drawing and foreign construction remain pure.
- const signature=JSON.stringify([canals.map(c=>[c.x,c.y,c.wet,c.progress,c.arms]),s.world?.lakes,(s.buildings||[]).map(b=>[b.x,b.y])]),cached=geometryCache.get(s);
+ const signature=JSON.stringify([canals.map(c=>[c.x,c.y,c.wet,c.progress,c.arms]),s.world?.river,s.world?.lakes,(s.buildings||[]).map(b=>[b.x,b.y])]),cached=geometryCache.get(s);
  if(cached?.signature===signature)return cached.result;
  const sample=surfaceSampler(s);
  const arms=canalArms(s,canals).filter(a=>a.progress>0),cells=new Map(),water=empty(),wetBed=empty(),dryBed=empty();

@@ -11,7 +11,7 @@ export const roadKey=(a,b)=>`road:${[a.key||`${a.x},${a.y}`,b.key||`${b.x},${b.y
 export function ensureRoads(s,network){
  s.roads??=[];const net=network||generateStreets([...s.buildings,...s.roadAnchors||[]],s);
  const existing=new Set(s.roads.map(r=>r.id));
- for(const [a,b]of net.edges){const id=roadKey(a,b);if(existing.has(id))continue;if(onBridge(s.buildings,(a.x+b.x)/2,(a.y+b.y)/2)||[.25,.5,.75].some(t=>!isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t)))continue;existing.add(id);s.roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a:{x:a.x,y:a.y,key:a.key},b:{x:b.x,y:b.y,key:b.key},level:1});}
+ for(const [a,b]of net.edges){const id=roadKey(a,b);if(existing.has(id))continue;if(onBridge(s.buildings,(a.x+b.x)/2,(a.y+b.y)/2,s)||[.25,.5,.75].some(t=>!isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t)))continue;existing.add(id);s.roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a:{x:a.x,y:a.y,key:a.key},b:{x:b.x,y:b.y,key:b.key},level:1});}
  return s.roads;
 }
 export function roadAt(s,x,y){return ensureRoads(s).map(r=>({r,d:Math.hypot(r.x-x,r.y-y)})).filter(v=>v.d<.8).sort((a,b)=>a.d-b.d)[0]?.r;}
@@ -47,7 +47,7 @@ export function planNewRoad(s,from,to){
  const node=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)?{x:p.x+.5,y:p.y+.5,key:`${p.x+1},${p.y+1}`}:null,a=node(from),b=node(to);
  if(!a||!b)return empty('Выбери начало и конец дороги');
  const blocked=p=>s.buildings.some(v=>insideFootprint(v,p.x,p.y));
- const dry=p=>isDryPoint(s,p.x,p.y)&&!blocked(p),allowed=p=>dry(p)||onBridge(s.buildings,p.x,p.y);
+ const dry=p=>isDryPoint(s,p.x,p.y)&&!blocked(p),allowed=p=>dry(p)||onBridge(s.buildings,p.x,p.y,s);
  if(!allowed(a)||!allowed(b))return empty('Начало и конец должны быть на сухой улице');
  const prev=new Map([[a.key,null]]),points=new Map([[a.key,a]]),queue=[a];
  for(let i=0;i<queue.length&&!prev.has(b.key);i++){const p=queue[i];for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1]]){const q={x:p.x+dx,y:p.y+dy,key:`${p.x+dx+.5},${p.y+dy+.5}`};if(prev.has(q.key)||!allowed(q)||![.25,.5,.75].every(t=>allowed({x:p.x+dx*t,y:p.y+dy*t})))continue;prev.set(q.key,p.key);points.set(q.key,q);queue.push(q);}}
