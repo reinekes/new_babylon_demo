@@ -4,7 +4,7 @@ import {createTradeRiverCraft} from './river-craft.js';
 import {createDateClusters,createBotanicalMaterial} from './crop-varieties.js';
 import {canalNetworkGeometry,openCanalMouths} from './canal-network.js';
 import {createDistrictTerrain, districtRoadEdges, surfaceElevation, TILE, shoreDistance} from '../district3d/terrain.js';
-import {WIDTH, HEIGHT, terrain, river} from '../world.js';
+import {worldWidth,worldHeight,riverLength,worldFromRiver,terrain,river} from '../world.js';
 import {vegetationFor, weatherAt} from '../environment.js';
 import {irrigationFor, CARDINAL} from '../irrigation.js';
 import {constructionProgress} from '../construction.js';
@@ -27,7 +27,7 @@ export function resourcePlacementSites(s,selection){
  if(!kind&&selection!=='fishing')return [];
  if(kind){const radius=['forest','wildlife'].includes(kind)?2:0;for(const d of s.world?.deposits||[])if(d.kind===kind)for(let dy=-radius;dy<=radius;dy++)for(let dx=-radius;dx<=radius;dx++)if(Math.hypot(dx,dy)<=radius)put(d.x+dx,d.y+dy);}
  else{ // Inspect only river/lake banks, never every tile of the map.
-  const water=[];for(let y=0;y<HEIGHT;y++)for(let x=Math.floor(river(y,s)-1.1);x<=Math.ceil(river(y,s)+1.1);x++)if(terrain(x,y,s)==='water')water.push({x,y});
+  const water=[];for(let along=0;along<riverLength(s);along++)for(let across=Math.floor(river(along,s)-1.1);across<=Math.ceil(river(along,s)+1.1);across++){const p=worldFromRiver(across,along,s);if(terrain(p.x,p.y,s)==='water')water.push(p);}
   for(const lake of s.world?.lakes||[])water.push(...lake.cells);for(const p of water)for(const [dx,dy]of CARDINAL)put(p.x+dx,p.y+dy);
  }
  return [...points.values()].filter(p=>!canPlace(s,selection,p.x,p.y));
@@ -37,7 +37,7 @@ const clamp=v=>Math.max(0,Math.min(1,v));
 const progress=b=>b.construction?constructionProgress(b).ratio:1;
 const pointDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1));return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t);};
 // These plans contain display data only. Never initialize resources, roads or trade here.
-export function landscapeSignature(s){return JSON.stringify([s.world?.river,s.world?.lakes,s.world?.deposits,s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b)]),s.roadAnchors,s.roads?.map(r=>[r.id,r.a,r.b,r.level,r.construction])]);}
+export function landscapeSignature(s){return JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.world?.deposits,s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b)]),s.roadAnchors,s.roads?.map(r=>[r.id,r.a,r.b,r.level,r.construction])]);}
 export function landscapePlan(s){
  const edges=districtRoadEdges(s),network=irrigationFor(s),known=new Map((s.roads||[]).map(r=>[r.id,r]));
  const roads=edges.map(([a,b])=>{const id=roadKey(a,b),r=known.get(id);return {id,a,b,level:r?.level||1,target:r?.construction?.target||null,progress:r?progress(r):1};});
@@ -63,7 +63,7 @@ function findGroundYard(s,net){
  const anchor=port||{x:depot.x+.5,y:depot.y+.5},candidates=[];
  for(let radius=1;radius<=4;radius+=.5)for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1],[1,1],[-1,1],[-1,-1],[1,-1]]){
   const x=depot.x+dx*radius,y=depot.y+dy*radius;
-  if(x<.5||y<.5||x>WIDTH-1.5||y>HEIGHT-1.5||shoreDistance(x,y,s)<.55)continue;
+  if(x<.5||y<.5||x>worldWidth(s)-1.5||y>worldHeight(s)-1.5||shoreDistance(x,y,s)<.55)continue;
   if(!sceneryClear(s,{x,y},.45))continue;
   if(net.edges.some(([a,b])=>pointDistance({x,y},a,b)<.6))continue;
   if(trees.some(t=>!yardTreeClear({x,y},t)))continue;
@@ -102,7 +102,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  function box(name,x,y,z,width,height,depth,mat,collection=staticMeshes){const m=B.MeshBuilder.CreateBox(name,{width,height,depth},scene);m.position.set(x,y,z);m.material=mat;return add(m,collection);}
  function strip(name,a,b,width,height,mat){const length=Math.hypot(b.x-a.x,b.y-a.y)*TILE;if(!length)return;const m=box(name,(a.x+b.x)*TILE/2,height,(a.y+b.y)*TILE/2,width,.035,length,mat);m.rotation.y=Math.atan2(b.x-a.x,b.y-a.y);m.freezeWorldMatrix();return m;}
  function rebuildBase(s){
-  const next=JSON.stringify([s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1]),s.roadAnchors]);if(next===terrainSignature)return;terrainSignature=next;
+  const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1]),s.roadAnchors]);if(next===terrainSignature)return;terrainSignature=next;
   if(base){for(const m of base.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}base.dispose();}
   base=createDistrictTerrain(B,scene,s,materials);
   for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes','valley-scrub','river-reed-beds'].includes(m.name)||palmSources.length&&['date-palm-trunks','date-palm-crowns'].includes(m.name))m.setEnabled(false);if(m.name==='soft-riparian-grass'){const c=m.getVerticesData(B.VertexBuffer.ColorKind);for(let i=3;i<c.length;i+=4)c[i]*=.43;m.setVerticesData(B.VertexBuffer.ColorKind,c,true);}meshes.push(m);}
@@ -128,7 +128,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  }
  function instanceResource(src,name,x,y,z,scale,spec){const m=src.createInstance(name);m.setEnabled(true);m.position.set(x,y,z);m.scaling.set(...scale);m.metadata={resourceSite:{kind:spec.kind,x:spec.x,y:spec.y,label:RESOURCE_SITES[spec.kind].label}};add(m,resourceMeshes);m.freezeWorldMatrix();return m;}
  function updateResourceSites(s){
-  const next=JSON.stringify([s.world?.river,s.world?.deposits,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1])]);if(next===resourceSignature)return;resourceSignature=next;selectionSignature='';remove(resourceMeshes);
+  const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.deposits,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1])]);if(next===resourceSignature)return;resourceSignature=next;selectionSignature='';remove(resourceMeshes);
   for(const d of s.world?.deposits||[]){if(!RESOURCE_SITES[d.kind]||terrain(d.x,d.y,s)==='water')continue;const X=d.x*TILE,Z=d.y*TILE,Y=surfaceElevation(d.x,d.y,s),occupied=!sceneryClear(s,d,.12);
    const patch=instanceResource(resourceModels.get(d.kind),`resource-site-${d.kind}-${d.x}-${d.y}`,X,Y+.045,Z,[1,1,1],d);patch.setEnabled(false);
 
@@ -162,7 +162,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
     }}
    m.setVerticesData(B.VertexBuffer.PositionKind,positions,true);if(colors)m.setVerticesData(B.VertexBuffer.ColorKind,colors,true);m.setVerticesData(B.VertexBuffer.NormalKind,deformedTerrainNormals(B,original,positions,m.getIndices()),true);m.refreshBoundingInfo();
   }
-  stitchTerrainRim(B,base.meshes);
+  stitchTerrainRim(B,base.meshes,s);
  }
  function rebuildGeometry(s,plan){
   remove(staticMeshes);
@@ -224,7 +224,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   natureDetails.update(s,time,weather,landscapePlanRoads,signature);
   if(valleyVegetation.update(s,landscapePlanRoads,signature)){const registered=new Set(meshes);for(const m of valleyVegetation.meshes)if(!registered.has(m))meshes.push(m);}
   for(const m of natureDetails.meshes)if(!meshes.includes(m))meshes.push(m);
-  for(let i=0;i<drops.length;i++){const m=drops[i];m.setEnabled(rain);if(rain){const h=((i*.618+time*1.6)%1)*20;m.position.set(((i*53.71+time*3)% (WIDTH*TILE)),20-h,((i*37.29)% (HEIGHT*TILE)));m.rotation.z=.16;}}
+  for(let i=0;i<drops.length;i++){const m=drops[i];m.setEnabled(rain);if(rain){const h=((i*.618+time*1.6)%1)*20;m.position.set(((i*53.71+time*3)% (worldWidth(s)*TILE)),20-h,((i*37.29)% (worldHeight(s)*TILE)));m.rotation.z=.16;}}
   // Wind moves only shared source foliage instances, with no allocation or save edits.
   for(let i=0;i<palmInstances.length;i++){const m=palmInstances[i];if(!wind&&m.rotation.z===0)continue;m.unfreezeWorldMatrix();m.rotation.z=wind?Math.sin(time*1.7+Math.floor(i/palmSources.length))*.008:0;m.computeWorldMatrix(true);if(!wind)m.freezeWorldMatrix();}
  }

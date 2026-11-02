@@ -1,11 +1,11 @@
-import {WIDTH,HEIGHT,isDryPoint,river,onBridge} from './world.js';
+import {worldWidth,worldHeight,isDryPoint,riverAxis,signedRiverDistance,onBridge} from './world.js';
 import {networkFor,rerouteCitizens} from './workforce.js';
 import {footprintSize} from './footprints.js';
 const copy=p=>({x:p.x,y:p.y}),key=p=>`${p.x},${p.y}`,distance=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 const navigation=new WeakMap(),ritualLayouts=new WeakMap();
 function navigator(s,gather,clearance=0,blockGather=false){
  const solids=blockGather?s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)):[];
- const bridges=s.buildings.filter(b=>b.type==='bridge'),blocked=new Set(s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)&&distance(b,gather)>.01).map(key)),baseFree=p=>p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5&&(isDryPoint(s,p.x,p.y)||onBridge(bridges,p.x,p.y,s))&&!(Math.abs(p.x-Math.round(p.x))<.38&&Math.abs(p.y-Math.round(p.y))<.38&&blocked.has(`${Math.round(p.x)},${Math.round(p.y)}`))&&!solids.some(b=>{const size=footprintSize(b);return Math.abs(p.x-b.x-(size-1)/2)<size/2-.04&&Math.abs(p.y-b.y-(size-1)/2)<size/2-.04;});
+ const bridges=s.buildings.filter(b=>b.type==='bridge'),blocked=new Set(s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)&&distance(b,gather)>.01).map(key)),baseFree=p=>p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5&&(isDryPoint(s,p.x,p.y)||onBridge(bridges,p.x,p.y,s))&&!(Math.abs(p.x-Math.round(p.x))<.38&&Math.abs(p.y-Math.round(p.y))<.38&&blocked.has(`${Math.round(p.x)},${Math.round(p.y)}`))&&!solids.some(b=>{const size=footprintSize(b);return Math.abs(p.x-b.x-(size-1)/2)<size/2-.04&&Math.abs(p.y-b.y-(size-1)/2)<size/2-.04;});
  const free=p=>baseFree(p)&&(!clearance||[-clearance,clearance].every(dx=>[-clearance,clearance].every(dy=>baseFree({x:p.x+dx,y:p.y+dy}))));
  const clear=(a,b)=>{const n=Math.max(1,Math.ceil(distance(a,b)*8));for(let i=0;i<=n;i++)if(!free({x:a.x+(b.x-a.x)*i/n,y:a.y+(b.y-a.y)*i/n}))return false;return true;};
  function nearest(p){for(let r=0;r<=8;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;const q={x:Math.round(p.x*2)/2+dx*.5,y:Math.round(p.y*2)/2+dy*.5};if(free(q)&&clear(p,q))return q;}return null;}
@@ -20,7 +20,7 @@ function navigator(s,gather,clearance=0,blockGather=false){
  return {free,clear,nearest,route,state:s};
 }
 function move(entity,actor,dt){let remaining=dt*(actor.id===undefined?.85:.72+((actor.id*.61803398875)%1)*.22);while(remaining>1e-8){const target=actor.route[actor.routeIndex];if(!target)return true;const d=distance(entity,target);if(d<=remaining+1e-8){entity.x=target.x;entity.y=target.y;actor.routeIndex++;remaining-=d;}else{entity.x+=(target.x-entity.x)*remaining/d;entity.y+=(target.y-entity.y)*remaining/d;return false;}}return actor.routeIndex>=actor.route.length;}
-function boundary(nav,gather,lane=0){const x=gather.x<river(gather.y,nav.state)?0:WIDTH-1;for(let r=0;r<HEIGHT;r++)for(const sign of r?[1,-1]:[1]){const y=Math.max(0,Math.min(HEIGHT-1,Math.round((gather.y+lane+r*sign)*2)/2)),p={x,y};if(nav.free(p)&&nav.route(gather,p).length)return p;}return copy(gather);}
+function boundary(nav,gather,lane=0){const s=nav.state;const bank=signedRiverDistance(gather.x,gather.y,s)<0,left=riverAxis(s)==='x'?gather.x<worldWidth(s)/2:bank,x=left?0:worldWidth(s)-1;for(let r=0;r<worldHeight(s);r++)for(const sign of r?[1,-1]:[1]){const y=Math.max(0,Math.min(worldHeight(s)-1,Math.round((gather.y+lane+r*sign)*2)/2)),p={x,y};if((signedRiverDistance(p.x,p.y,s)<0)===bank&&nav.free(p)&&nav.route(gather,p).length)return p;}return copy(gather);}
 function startLegacyDesertFuneral(s,deceased,{family=false}={}){
  if(s.funeral||!deceased?.length)return false;
  const host=['ziggurat','shrine','house'].map(type=>s.buildings.find(b=>b.type===type&&b.construction?.kind!=='new')).find(Boolean),gather=host?{x:host.x,y:host.y}:copy(deceased[0]),nav=navigator(s,gather),edge=boundary(nav,gather);
@@ -38,7 +38,7 @@ function advanceLegacyDesertFuneral(s,dt){const f=s.funeral;if(!f)return false;i
  for(const [i,a]of f.actors.entries()){
   if(!budget)break;
   if(f.stage==='gathering'&&a.departure===null){budget--;a.departure=[];
-   const lane=((i*.61803398875)%1-.5)*5,end=boundary(nav,f.gather,lane),middle={x:f.gather.x+side*Math.min(3,Math.abs(f.boundary.x-f.gather.x)/2),y:Math.max(.5,Math.min(HEIGHT-1.5,f.gather.y+lane))};
+   const lane=((i*.61803398875)%1-.5)*5,end=boundary(nav,f.gather,lane),middle={x:f.gather.x+side*Math.min(3,Math.abs(f.boundary.x-f.gather.x)/2),y:Math.max(.5,Math.min(worldHeight(s)-1.5,f.gather.y+lane))};
    if(nav.free(middle)){const first=nav.route(f.gather,middle),last=nav.route(middle,end);if(first.length&&last.length)a.departure=[...first,...last.slice(1)];}if(!a.departure.length)a.departure=nav.route(f.gather,end);
   }else if(f.stage==='returning'&&a.pending){budget--;const c=citizens.get(a.id),net=networkFor(s),home=c&&net.ports.find(p=>`${p.building.x},${p.building.y}`===c.home&&!p.building.siteKey);a.route=c&&home?nav.route(c,home):[];a.routeIndex=0;a.pending=false;}
  }
@@ -47,15 +47,15 @@ function advanceLegacyDesertFuneral(s,dt){const f=s.funeral;if(!f)return false;i
  }else if(f.stage==='procession'){
  const bier={route:f.procession,routeIndex:f.bierRouteIndex};let done=move(f.coffin,bier,dt);f.bierRouteIndex=bier.routeIndex;for(const a of f.actors){const c=citizens.get(a.id);if(c&&!move(c,a,dt))done=false;}if(done){f.stage='jackals';f.timer=0;}
  }else if(f.stage==='jackals'){
- const side=f.boundary.x<WIDTH/2?-1:1,t=Math.max(0,Math.min(1,(f.timer-2)/4));f.coffin.x=f.boundary.x+side*3*t;f.coffin.y=f.boundary.y;
+ const side=f.boundary.x<worldWidth(s)/2?-1:1,t=Math.max(0,Math.min(1,(f.timer-2)/4));f.coffin.x=f.boundary.x+side*3*t;f.coffin.y=f.boundary.y;
  if(f.timer>=6){f.stage='returning';f.timer=0;for(const a of f.actors){a.route=[];a.routeIndex=0;a.delay=0;a.pending=true;}}}
  return true;
 }
-function legacyDesertFuneralView(s){const f=s.funeral;if(!f)return null;const side=f.boundary.x<WIDTH/2?-1:1,t=Math.min(1,f.timer/2);return {stage:f.stage,torches:true,gather:f.gather,coffin:f.stage==='returning'?null:{kind:'bier',...f.coffin,count:f.deceased.length},mourners:f.actors.filter(a=>{const c=s.citizens.find(c=>c.id===a.id);return c&&(f.stage!=='gathering'||distance(c,f.gather)>.05);}).map(a=>a.id),jackals:f.stage==='jackals'?[0,1,2].map(i=>({id:`funeral-jackal-${i}`,kind:'jackal',x:f.timer<2?f.boundary.x+side*(3*(1-t)+.4*i):f.coffin.x+side*.3*i,y:f.boundary.y+(i-1)*.18})):[]};}
+function legacyDesertFuneralView(s){const f=s.funeral;if(!f)return null;const side=f.boundary.x<worldWidth(s)/2?-1:1,t=Math.min(1,f.timer/2);return {stage:f.stage,torches:true,gather:f.gather,coffin:f.stage==='returning'?null:{kind:'bier',...f.coffin,count:f.deceased.length},mourners:f.actors.filter(a=>{const c=s.citizens.find(c=>c.id===a.id);return c&&(f.stage!=='gathering'||distance(c,f.gather)>.05);}).map(a=>a.id),jackals:f.stage==='jackals'?[0,1,2].map(i=>({id:`funeral-jackal-${i}`,kind:'jackal',x:f.timer<2?f.boundary.x+side*(3*(1-t)+.4*i):f.coffin.x+side*.3*i,y:f.boundary.y+(i-1)*.18})):[]};}
 function validateLegacyDesertFuneral(s){
- const f=s.funeral,exact=(o,keys)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).filter(k=>o!==f||k!=='scope').length===keys.length&&keys.every(k=>k in o),point=p=>exact(p,['x','y'])&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5;
- if(!exact(f,['style','stage','deceased','actors','coffin','gather','boundary','procession','bierRouteIndex','timer'])||f.style!=='desert'||!['gathering','procession','jackals','returning'].includes(f.stage)||!point(f.gather)||!point(f.boundary)||!Array.isArray(f.deceased)||!f.deceased.length||f.deceased.length>1000||new Set(f.deceased.map(d=>d.id)).size!==f.deceased.length||f.deceased.some(d=>!exact(d,['id','name','x','y'])||!Number.isSafeInteger(d.id)||d.id<0||typeof d.name!=='string'||!d.name||d.name.length>100||!point({x:d.x,y:d.y}))||!Number.isFinite(f.timer)||f.timer<0||f.timer>1e6||!exact(f.coffin,['x','y'])||!Number.isFinite(f.coffin.x)||!Number.isFinite(f.coffin.y)||f.coffin.x< -3.5||f.coffin.x>WIDTH+2.5||f.coffin.y<-.5||f.coffin.y>HEIGHT-.5||!Array.isArray(f.actors)||(f.scope==='family'?f.actors.length>4:f.actors.length!==s.citizens.length)||f.scope!==undefined&&f.scope!=='family')return false;
- const nav=navigator(s,f.gather),route=r=>Array.isArray(r)&&r.length<=WIDTH*HEIGHT*4&&r.every((p,i)=>point(p)&&nav.free(p)&&(!i||nav.clear(r[i-1],p))),index=(v,r)=>Number.isSafeInteger(v)&&v>=0&&v<=r.length;
+ const f=s.funeral,exact=(o,keys)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).filter(k=>o!==f||k!=='scope').length===keys.length&&keys.every(k=>k in o),point=p=>exact(p,['x','y'])&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5;
+ if(!exact(f,['style','stage','deceased','actors','coffin','gather','boundary','procession','bierRouteIndex','timer'])||f.style!=='desert'||!['gathering','procession','jackals','returning'].includes(f.stage)||!point(f.gather)||!point(f.boundary)||!Array.isArray(f.deceased)||!f.deceased.length||f.deceased.length>1000||new Set(f.deceased.map(d=>d.id)).size!==f.deceased.length||f.deceased.some(d=>!exact(d,['id','name','x','y'])||!Number.isSafeInteger(d.id)||d.id<0||typeof d.name!=='string'||!d.name||d.name.length>100||!point({x:d.x,y:d.y}))||!Number.isFinite(f.timer)||f.timer<0||f.timer>1e6||!exact(f.coffin,['x','y'])||!Number.isFinite(f.coffin.x)||!Number.isFinite(f.coffin.y)||f.coffin.x< -3.5||f.coffin.x>worldWidth(s)+2.5||f.coffin.y<-.5||f.coffin.y>worldHeight(s)-.5||!Array.isArray(f.actors)||(f.scope==='family'?f.actors.length>4:f.actors.length!==s.citizens.length)||f.scope!==undefined&&f.scope!=='family')return false;
+ const nav=navigator(s,f.gather),route=r=>Array.isArray(r)&&r.length<=worldWidth(s)*worldHeight(s)*4&&r.every((p,i)=>point(p)&&nav.free(p)&&(!i||nav.clear(r[i-1],p))),index=(v,r)=>Number.isSafeInteger(v)&&v>=0&&v<=r.length;
  if(!route(f.procession)||!f.procession.length||distance(f.procession[0],f.gather)>.001||distance(f.procession.at(-1),f.boundary)>.001||!index(f.bierRouteIndex,f.procession))return false;
  const ids=new Set();for(const a of f.actors){if(!exact(a,['id','route','routeIndex','delay','departure','pending'])||ids.has(a.id)||!s.citizens.some(c=>c.id===a.id)||!route(a.route)||!index(a.routeIndex,a.route)||a.delay!==0||typeof a.pending!=='boolean'||a.departure!==null&&!route(a.departure))return false;ids.add(a.id);}navigation.set(f,nav);return true;
 }
@@ -65,7 +65,7 @@ function validateLegacyDesertFuneral(s){
 const riteStages=['gathering','procession','farewell','collecting','receding','jackals','returning'];
 function transporters(s,f){return f.actors.map(a=>s.citizens.find(c=>c.id===a.id)).filter(c=>c&&c.age>=16&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0));}
 function capacity(s,f){const n=transporters(s,f).length;return Math.max(1,Math.min(4,Math.floor(n/4)||1));}
-function ritualEnd(nav,gather){const edge=boundary(nav,gather),inland={x:edge.x<WIDTH/2?2:WIDTH-3,y:edge.y};return nav.free(inland)&&nav.route(gather,inland).length?inland:nav.nearest(inland)||copy(gather);}
+function ritualEnd(nav,gather){const s=nav.state;const edge=boundary(nav,gather),inland={x:edge.x<worldWidth(s)/2?2:worldWidth(s)-3,y:edge.y};return nav.free(inland)&&nav.route(gather,inland).length?inland:nav.nearest(inland)||copy(gather);}
 export function startDesertFuneral(s,deceased,options={}){
  if(!startLegacyDesertFuneral(s,deceased,options))return false;
  const f=s.funeral,nav=navigator(s,s.funeral.gather,.19);navigation.set(f,nav);f.ritualVersion=2;f.batch=0;f.laid=0;
@@ -83,7 +83,7 @@ export function advanceDesertFuneral(s,dt){
  if(['gathering','collecting','receding','returning'].includes(f.stage)){
   let done=true,budget=1;
   for(const [i,a]of f.actors.entries()){
-   const c=citizens.get(a.id);if(f.stage==='gathering'&&a.departure===null&&budget){budget--;const lane=((i*.61803398875)%1-.5)*2,end=nav.nearest({x:f.boundary.x+(f.boundary.x<f.gather.x?.45:-.45),y:Math.max(.5,Math.min(HEIGHT-1.5,f.boundary.y+lane))});a.departure=end?nav.route(f.gather,end):[];}
+   const c=citizens.get(a.id);if(f.stage==='gathering'&&a.departure===null&&budget){budget--;const lane=((i*.61803398875)%1-.5)*2,end=nav.nearest({x:f.boundary.x+(f.boundary.x<f.gather.x?.45:-.45),y:Math.max(.5,Math.min(worldHeight(s)-1.5,f.boundary.y+lane))});a.departure=end?nav.route(f.gather,end):[];}
    if(f.stage==='gathering'&&a.departure===null)done=false;
    if(c&&!move(c,a,dt))done=false;
   }
@@ -104,9 +104,9 @@ export function advanceDesertFuneral(s,dt){
  return true;
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function riteSlot(origin,index){const rows=Math.floor((HEIGHT-2)/.43),start=clamp(Math.round((origin.y-.5)/.43),0,rows-1),row=(start+index%rows)%rows,col=Math.floor(index/rows),inward=origin.x<WIDTH/2?1:-1;return {x:clamp(origin.x+inward*col*.50,.5,WIDTH-1.5),y:.5+row*.43};}
-function ritualLayout(s,f){let result=ritualLayouts.get(f);if(result)return result;const nav=navigator(s,f.gather,.19,true),bank=f.gather.x<river(f.gather.y,s),points=[];
- for(let y=.5;y<HEIGHT-1;y+=.5)for(let x=.5;x<WIDTH-1;x+=.5){const p={x,y};if((x<river(y,s))!==bank||!nav.free(p)||![-.22,.22].every(dx=>[-.22,.22].every(dy=>nav.free({x:x+dx,y:y+dy}))))continue;points.push(p);}
+function riteSlot(origin,index,s){const rows=Math.floor((worldHeight(s)-2)/.43),start=clamp(Math.round((origin.y-.5)/.43),0,rows-1),row=(start+index%rows)%rows,col=Math.floor(index/rows),inward=origin.x<worldWidth(s)/2?1:-1;return {x:clamp(origin.x+inward*col*.50,.5,worldWidth(s)-1.5),y:.5+row*.43};}
+function ritualLayout(s,f){let result=ritualLayouts.get(f);if(result)return result;const nav=navigator(s,f.gather,.19,true),bank=signedRiverDistance(f.gather.x,f.gather.y,s)<0,points=[];
+ for(let y=.5;y<worldHeight(s)-1;y+=.5)for(let x=.5;x<worldWidth(s)-1;x+=.5){const p={x,y};if((signedRiverDistance(x,y,s)<0)!==bank||!nav.free(p)||![-.22,.22].every(dx=>[-.22,.22].every(dy=>nav.free({x:x+dx,y:y+dy}))))continue;points.push(p);}
  const slots=origin=>[...points].sort((a,b)=>Math.hypot(a.x-origin.x,a.y-origin.y)-Math.hypot(b.x-origin.x,b.y-origin.y)||a.y-b.y||a.x-b.x).slice(0,f.deceased.length);
  result={gather:slots(f.gather),laid:slots(f.boundary),routes:new Map(),crowds:new Map(),points,nav};ritualLayouts.set(f,result);return result;
 }
@@ -118,11 +118,11 @@ function farewellStations(layout,f,first,s){
  // A half-tile navigation grid is three metres wide in the 3D view. Use a
  // closer standing grid for the farewell, while retaining dry-ground and
  // building clearance checks and a clear space around every laid bier.
- let candidates=[];const bank=f.gather.x<river(f.gather.y,s),limit=Math.hypot(WIDTH,HEIGHT);
+ let candidates=[];const bank=signedRiverDistance(f.gather.x,f.gather.y,s)<0,limit=Math.hypot(worldWidth(s),worldHeight(s));
  for(let reach=Math.max(1.2,Math.sqrt(f.actors.length)*.22);;reach=Math.min(limit,reach*2)){
   candidates=[];
-  for(let y=Math.max(.5,base.y-reach);y<Math.min(HEIGHT-1,base.y+reach);y+=.18)for(let x=Math.max(.5,base.x-reach);x<Math.min(WIDTH-1,base.x+reach);x+=.18){
-   const p={x,y};if((x<river(y,s))!==bank||(p.x-base.x)*inward<.22||!layout.nav.free(p)||occupied.some(b=>Math.hypot(p.x-b.x,p.y-b.y)<.32))continue;
+  for(let y=Math.max(.5,base.y-reach);y<Math.min(worldHeight(s)-1,base.y+reach);y+=.18)for(let x=Math.max(.5,base.x-reach);x<Math.min(worldWidth(s)-1,base.x+reach);x+=.18){
+   const p={x,y};if((signedRiverDistance(x,y,s)<0)!==bank||(p.x-base.x)*inward<.22||!layout.nav.free(p)||occupied.some(b=>Math.hypot(p.x-b.x,p.y-b.y)<.32))continue;
    candidates.push(p);
   }
   if(candidates.length>=f.actors.length||reach>=limit)break;
@@ -137,7 +137,7 @@ export function desertFuneralView(s){
  if(moving){const target=f.procession[f.bierRouteIndex];if(target&&distance(target,f.coffin)>.001)yaw=Math.atan2(target.x-f.coffin.x,target.y-f.coffin.y);}else if(farewell){const end=f.procession.at(-1),previous=[...f.procession].reverse().find(p=>distance(p,end)>.001);if(previous)yaw=Math.atan2(end.x-previous.x,end.y-previous.y);}
  const forward={x:Math.sin(yaw),y:Math.cos(yaw)},right={x:Math.cos(yaw),y:-Math.sin(yaw)};
  const biers=f.deceased.map((d,i)=>{
-  const active=i>=first&&i<last,laid=i<f.laid||active&&farewell;let slot=laid?layout.laid[i]||riteSlot(f.boundary,i):layout.gather[i]||riteSlot(f.gather,i),bierYaw=yaw;
+  const active=i>=first&&i<last,laid=i<f.laid||active&&farewell;let slot=laid?layout.laid[i]||riteSlot(f.boundary,i,s):layout.gather[i]||riteSlot(f.gather,i,s),bierYaw=yaw;
   if(active&&(moving||farewell)){let route=layout.routes.get(i);if(!route){route=layout.nav.route(layout.gather[i]||f.gather,layout.laid[i]||f.boundary);layout.routes.set(i,route);}if(route.length){const total=routeLength(f.procession),remaining=routeLength([f.coffin,...f.procession.slice(f.bierRouteIndex)]),point=routePoint(route,farewell?1:total?clamp(1-remaining/total,0,1):1);slot={x:point.x,y:point.y};bierYaw=point.yaw;}}
   const direction={x:Math.sin(bierYaw),y:Math.cos(bierYaw)},lateral={x:Math.cos(bierYaw),y:-Math.sin(bierYaw)},height=active&&farewell&&adults.length>=2?1.12-.96*clamp(f.timer/1.2,0,1):laid?.16:active&&moving&&adults.length>=2?1.12:.16;
   const group=active&&(moving||farewell&&f.timer<1.2)?adults.slice((i-first)*(adults.length>=4?4:Math.max(1,adults.length)),(i-first+1)*(adults.length>=4?4:Math.max(1,adults.length))):[];
@@ -154,7 +154,7 @@ export function desertFuneralView(s){
   const x=station?station.x:c.x,y=station?station.y:c.y,nearest=station&&laidBiers.reduce((near,b)=>!near||Math.hypot(b.x-x,b.y-y)<Math.hypot(near.x-x,near.y-y)?b:near,null),target=nearest||a.route[a.routeIndex],heading=target&&Math.hypot(target.x-x,target.y-y)>.001?Math.atan2(target.x-x,target.y-y):yaw;
   return {id:c.id,x,y,yaw:heading,role:'mourner',walking:!farewell&&['gathering','procession','collecting','receding'].includes(f.stage),bow:farewell?.10+.05*Math.sin(clamp(f.timer/5,0,1)*Math.PI):0,torch:c.age>=16&&torchCount++<8};
  }).filter(Boolean);
- const side=dx<0?-1:1,waveSeconds=7/Math.ceil(f.deceased.length/3),waveTime=(f.timer%waveSeconds)/waveSeconds*7,t=clamp(waveTime/4,0,1),jackals=f.stage==='jackals'?biers.filter(b=>b.visible).slice(0,3).map((b,i)=>({id:`funeral-jackal-${i}`,kind:'jackal',x:clamp(b.x+side*(1.4*(1-t)+.22+Math.max(0,waveTime-4)*.06),.1,WIDTH-.6),y:b.y,yaw:Math.atan2(-side,0),faceX:b.x,faceY:b.y,behavior:waveTime<4?'approaching':'pulling',walking:true,pulling:waveTime>=4,bundleId:b.id})):[];
+ const side=dx<0?-1:1,waveSeconds=7/Math.ceil(f.deceased.length/3),waveTime=(f.timer%waveSeconds)/waveSeconds*7,t=clamp(waveTime/4,0,1),jackals=f.stage==='jackals'?biers.filter(b=>b.visible).slice(0,3).map((b,i)=>({id:`funeral-jackal-${i}`,kind:'jackal',x:clamp(b.x+side*(1.4*(1-t)+.22+Math.max(0,waveTime-4)*.06),.1,worldWidth(s)-.6),y:b.y,yaw:Math.atan2(-side,0),faceX:b.x,faceY:b.y,behavior:waveTime<4?'approaching':'pulling',walking:true,pulling:waveTime>=4,bundleId:b.id})):[];
  return {stage:f.stage,torches:true,gather:f.gather,coffin:null,biers,participants,mourners:participants.map(p=>p.id),jackals};
 }
 export function validateDesertFuneral(s){

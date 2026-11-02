@@ -1,7 +1,7 @@
 import {buildingKey} from './definitions.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
-import {isDryPoint,WIDTH,HEIGHT} from './world.js';
+import {isDryPoint,worldWidth,worldHeight} from './world.js';
 import {footprintSize} from './footprints.js';
 const BASIC=new Set(['house','clay','reed','field','garden','fishing','hunting','waterpoint','bridge','canal','brickyard','granary','sheepfold']);
 const MONUMENTS=new Set(['shrine','ziggurat','ishtarGate','harbor']);
@@ -65,8 +65,8 @@ function clearSignSegment(s,c,a,b,first=false){
  return navigationSegmentClear(view,a,b);
 }
 function signPathValid(s,c,g){
- const route=c?.route;if(!Array.isArray(route)||route.length<2||route.length>WIDTH*HEIGHT*2||!Number.isInteger(c.routeIndex)||c.routeIndex<1||c.routeIndex>route.length||!samePoint(route[0],g.signOrigin)||!samePoint(route.at(-1),g.signTarget))return false;
- return route.every((p,i)=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5&&(!i||clearSignSegment(s,c,route[i-1],p,i===1)));
+ const route=c?.route;if(!Array.isArray(route)||route.length<2||route.length>worldWidth(s)*worldHeight(s)*2||!Number.isInteger(c.routeIndex)||c.routeIndex<1||c.routeIndex>route.length||!samePoint(route[0],g.signOrigin)||!samePoint(route.at(-1),g.signTarget))return false;
+ return route.every((p,i)=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5&&(!i||clearSignSegment(s,c,route[i-1],p,i===1)));
 }
 
 function signRoute(s,c){
@@ -95,17 +95,17 @@ export function advanceGodhood(s,dt){
 }
 
 export function godhoodCitizenView(s,c){return c.phase==='awakening'?{walking:c.routeIndex<c.route.length,controlled:false}:{};}
-function validProjectStamp(value){
+function validProjectStamp(value,s){
  if(typeof value!=='string'||value.length>128)return false;
  const match=/^(.*):([123])$/.exec(value);if(!match)return false;const key=match[1],building=/^(\d+),(\d+)$/.exec(key);
- if(building)return Number(building[1])<WIDTH&&Number(building[2])<HEIGHT;
+ if(building)return Number(building[1])<worldWidth(s)&&Number(building[2])<worldHeight(s);
  const road=/^road:(\d+),(\d+)\|(\d+),(\d+)$/.exec(key);if(!road)return false;
- const [x,y,u,v]=road.slice(1).map(Number);return Math.max(x,u)<=WIDTH&&Math.max(y,v)<=HEIGHT&&Math.abs(x-u)+Math.abs(y-v)===1;
+ const [x,y,u,v]=road.slice(1).map(Number);return Math.max(x,u)<=worldWidth(s)&&Math.max(y,v)<=worldHeight(s)&&Math.abs(x-u)+Math.abs(y-v)===1;
 }
 export function validateGodhood(s){
  const g=s.godhood;if(g===undefined)return !(s.citizens||[]).some(c=>c.phase==='awakening');
- const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId,point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5&&isDryPoint(s,p.x,p.y);
- if(!g||typeof g!=='object'||Array.isArray(g)||g.version!==1||!['awakening','mature'].includes(g.mode)||!['unseen','sign','recognized'].includes(g.stage)||!Array.isArray(g.believerIds)||new Set(g.believerIds).size!==g.believerIds.length||g.believerIds.some(n=>!id(n))||typeof g.firstBuilderGift!=='boolean'||!Array.isArray(g.completedProjects)||g.completedProjects.length>10000||new Set(g.completedProjects).size!==g.completedProjects.length||g.completedProjects.some(v=>!validProjectStamp(v)))return false;
+ const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId,point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5&&isDryPoint(s,p.x,p.y);
+ if(!g||typeof g!=='object'||Array.isArray(g)||g.version!==1||!['awakening','mature'].includes(g.mode)||!['unseen','sign','recognized'].includes(g.stage)||!Array.isArray(g.believerIds)||new Set(g.believerIds).size!==g.believerIds.length||g.believerIds.some(n=>!id(n))||typeof g.firstBuilderGift!=='boolean'||!Array.isArray(g.completedProjects)||g.completedProjects.length>10000||new Set(g.completedProjects).size!==g.completedProjects.length||g.completedProjects.some(v=>!validProjectStamp(v,s)))return false;
  if(g.witnessId!==null&&!id(g.witnessId)||g.recognitionAt!==null&&(!Number.isFinite(g.recognitionAt)||g.recognitionAt<0||g.recognitionAt>(s.simTime||0)+.1))return false;
  if(g.signTarget!==null&&!point(g.signTarget)||g.signOrigin!==null&&!point(g.signOrigin))return false;
  if(g.mode==='mature'&&(g.stage!=='recognized'||g.witnessId!==null||g.signTarget!==null||g.signOrigin!==null||g.recognitionAt!==null||g.believerIds.length||g.firstBuilderGift||g.completedProjects.length))return false;

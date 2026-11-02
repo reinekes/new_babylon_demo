@@ -1,5 +1,5 @@
 import {insideFootprint,footprintSize} from './footprints.js';
-import {WIDTH, HEIGHT, river, bridgeSpan, isDryPoint} from './world.js';
+import {worldWidth, worldHeight, bridgeSpanAt, worldFromRiver, isDryPoint} from './world.js';
 
 export const DAY_SECONDS = 60;
 export const seed = (x, y = 0) => {
@@ -32,10 +32,10 @@ export function generateStreets(buildings,s) {
   const nodes = new Map(), land = new Map(), graph = new Map(), edges = [];
   const bridgeNodes=new Set(),bridgeEdges=new Set();
   for(const b of buildings.filter(b=>b.type==='bridge'&&b.construction?.kind!=='new')){
-    const span=bridgeSpan(b.y,s),from=span.left+.5,to=span.right+.5;
-    for(let x=from;x<=to;x++){const key=keyOf(x,span.keyY);bridgeNodes.add(key);if(x<to){const next=keyOf(x+1,span.keyY);bridgeEdges.add(`${key}|${next}`);bridgeEdges.add(`${next}|${key}`);}}
+    const span=bridgeSpanAt(b,s),from=span.left+.5,to=span.right+.5;
+    for(let x=from;x<=to;x++){const p=worldFromRiver(x,span.keyY,s),key=keyOf(p.x,p.y);bridgeNodes.add(key);if(x<to){const p=worldFromRiver(x+1,span.keyY,s),next=keyOf(p.x,p.y);bridgeEdges.add(`${key}|${next}`);bridgeEdges.add(`${next}|${key}`);}}
   }
-  for (let y = 0; y <= HEIGHT; y++) for (let x = 0; x <= WIDTH; x++) {
+  for (let y = 0; y <= worldHeight(s); y++) for (let x = 0; x <= worldWidth(s); x++) {
     const p = at(x, y);
     if ((dry(p,s)||bridgeNodes.has(p.key))&&!buildings.some(b=>insideFootprint(b,p.x,p.y))) land.set(p.key, p);
   }
@@ -48,7 +48,7 @@ export function generateStreets(buildings,s) {
     return result;
   };
   // Both bridge banks get approaches, even while the crossing is closed.
-  const approaches=buildings.filter(b=>b.type==='bridge').flatMap(b=>{const span=bridgeSpan(b.y,s);return [span.left,span.right].map((x,i)=>({type:'approach',x:x-.5,y:b.y,siteKey:`${b.x},${b.y}`,side:i}));});
+  const approaches=buildings.filter(b=>b.type==='bridge').flatMap(b=>{const span=bridgeSpanAt(b,s);return [span.left,span.right].map((x,i)=>({type:'approach',...worldFromRiver(x-.5,span.y-.5,s),siteKey:`${b.x},${b.y}`,side:i}));});
   const roadBuildings=[...buildings.filter(b=>b.type!=='bridge'),...approaches];
   const ports = [];
   const root=roadBuildings.find(b=>b.type==='shrine')||roadBuildings[0];

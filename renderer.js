@@ -15,7 +15,7 @@ import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
 import {canBuild,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
-import {WIDTH,HEIGHT,terrain,river,bridgeSpan,onBridge,depositAt,isShore,nearDeposit,isDryPoint} from './world.js';
+import {worldWidth,worldHeight,terrain,riverPoint,riverLocal,worldFromRiver,riverLength,riverFlowSign,signedRiverDistance,bridgeSpanAt,onBridge,depositAt,isShore,nearDeposit,isDryPoint} from './world.js';
 import {visibleCitizens,networkFor} from './workforce.js';
 import {drawBuilding} from './architecture.js';
 import {weatherAt,vegetationFor} from './environment.js';
@@ -30,12 +30,12 @@ export function miraclePlantClear(s,p){
  return isDryPoint(s,p.x,p.y)&&!(s.buildings||[]).some(b=>{const size=footprintSize(b),center=(size-1)/2,half=size/2+.16;return Math.abs(b.x+center-p.x)<half&&Math.abs(b.y+center-p.y)<half;});
 }
 export class Renderer{
- constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.75;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(moves[e.key]){e.preventDefault();const current=this.hover||{x:10,y:9};const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(WIDTH-1,current.x+dx)),y:Math.max(0,Math.min(HEIGHT-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= {x:10,y:9};this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
+ constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.75;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(moves[e.key]){e.preventDefault();const current=this.hover||{x:10,y:9};const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(worldWidth(this.state)-1,current.x+dx)),y:Math.max(0,Math.min(worldHeight(this.state)-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= {x:10,y:9};this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
  setRoadMode(enabled){this.roadMode=!!enabled;if(!enabled)this.roadDrawMode=false;}
  selectPoint(point,onSelect){if(this.roadDrawMode){this.onRoadGround?.(point);return;}if(!this.roadMode){onSelect(point);return;}const road=this.roadNear(point);if(road)this.onRoadSelect?.(road);}
  roadNear(point){let best=null,distance=Infinity;for(const road of this.state?.roads||[]){const a=road.a,b=road.b;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return distance<.85?best:null;}
  resize(){const r=this.canvas.getBoundingClientRect();this.w=r.width;this.h=r.height;const d=Math.min(devicePixelRatio||1,2);this.canvas.width=Math.round(r.width*d);this.canvas.height=Math.round(r.height*d);this.ctx.setTransform(d,0,0,d,0,0);this.layout();}
- layout(){const scale=Math.min((this.w-22)/1200,(this.h-165)/670)*this.zoom;this.s=this.mapOverview?Math.max(.1,Math.min((this.w-30)/((WIDTH+HEIGHT)*30),(this.h-60)/((WIDTH+HEIGHT)*15))):Math.max(.22,scale);this.tw=60*this.s;this.th=30*this.s;const focus=this.mapOverview?{x:(WIDTH-1)/2,y:(HEIGHT-1)/2}:{x:10,y:9};this.ox=this.w*.49-(focus.x-focus.y)*this.tw/2+(this.pan?.x||0);this.oy=this.h*.52-(focus.x+focus.y)*this.th/2+(this.pan?.y||0);}
+ layout(){const WIDTH=worldWidth(this.state),HEIGHT=worldHeight(this.state),scale=Math.min((this.w-22)/1200,(this.h-165)/670)*this.zoom;this.s=this.mapOverview?Math.max(.1,Math.min((this.w-30)/((WIDTH+HEIGHT)*30),(this.h-60)/((WIDTH+HEIGHT)*15))):Math.max(.22,scale);this.tw=60*this.s;this.th=30*this.s;const focus=this.mapOverview?{x:(WIDTH-1)/2,y:(HEIGHT-1)/2}:{x:10,y:9};this.ox=this.w*.49-(focus.x-focus.y)*this.tw/2+(this.pan?.x||0);this.oy=this.h*.52-(focus.x+focus.y)*this.th/2+(this.pan?.y||0);}
  home(){this.mapOverview=false;this.zoom=1.75;this.pan={x:0,y:0};this.layout();}
  focusOn(x,y){this.home();const p=this.point(x+.5,y+.5);this.pan={x:this.w*(this.w>=600?.67:.88)-p.x,y:this.h*.48-p.y};this.layout();this.hover={x,y};}
  overview(){this.mapOverview=true;this.zoom=.72;this.pan={x:0,y:0};this.layout();}
@@ -121,7 +121,7 @@ export class Renderer{
   if(!placementTypes.has(selection))return [];
   const key=JSON.stringify([selection,s.buildings.map(b=>[b.type,b.x,b.y]),s.world]);
   if(this.placementCache?.state===s&&this.placementCache.key===key)return this.placementCache.tiles;
-  const tiles=[];for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++)if(!canPlace(s,selection,x,y))tiles.push({x,y});
+  const tiles=[];for(let y=0;y<worldHeight(s);y++)for(let x=0;x<worldWidth(s);x++)if(!canPlace(s,selection,x,y))tiles.push({x,y});
   this.placementCache={state:s,key,tiles};return tiles;
  }
  placementLayer(s,selection){
@@ -182,7 +182,7 @@ export class Renderer{
   }
   if(e.kind==='bird'&&e.walking===false){c.fillStyle='#eee6c9';c.beginPath();c.ellipse(p.x,p.y-2*q,3.3*q,2*q,-.2,0,7);c.fill();c.fillStyle='#6c7e6a';c.beginPath();c.arc(p.x+2*q,p.y-(e.behavior==='drinking'?1:4)*q,1.5*q,0,7);c.fill();this.line([[p.x+3*q,p.y-(e.behavior==='drinking'?1:4)*q],[p.x+5*q,p.y-(e.behavior==='drinking'?0:4)*q]],'#bd9561',q);c.restore();return;}
   if(e.kind==='bird'){const flap=this.reduce?2:Math.sin(t*5+(Number(e.id)||0))*3;this.line([[p.x-5*q,p.y-(3+flap)*q],[p.x,p.y],[p.x+5*q,p.y-(3+flap)*q]],'#758473',1.2*q);c.restore();return;}
-  const facing=e.heading||e.facing||(String(e.id).startsWith('funeral-')?(this.state.funeral?.boundary.x<WIDTH/2?-1:1):1),x=p.x,y=p.y;
+  const facing=e.heading||e.facing||(String(e.id).startsWith('funeral-')?(this.state.funeral?.boundary.x<worldWidth(this.state)/2?-1:1):1),x=p.x,y=p.y;
   c.translate(x,y);c.scale(facing,1);if(e.behavior==='grazing'||e.behavior==='drinking'){c.translate(0,2*q);c.rotate(.13);}if(e.behavior==='resting')c.translate(0,3*q);
 
   for(const a of [-4,3]){const foot=e.behavior==='resting'?1:4;this.line([[a*q,-2*q],[(a+step*.6)*q,foot*q]],'#81704f',q);this.line([[(a+2)*q,-2*q],[(a+2-step*.6)*q,foot*q]],'#97835d',q);}
@@ -213,7 +213,7 @@ export class Renderer{
   const c=this.ctx,weather=this.weather,{w,h}=this,t=this.reduce?0:(s.simTime||0),weight=type=>(weather.type===type?weather.blend:0)+(weather.previous===type?1-weather.blend:0);
   const cloud=weight('cloudy')+weight('rain')*.65;
   if(cloud){c.fillStyle=`rgba(73,94,101,${cloud*.11})`;c.fillRect(0,0,w,h);}
-  const rain=weight('rain');if(rain){c.save();c.globalAlpha=rain;c.strokeStyle='#c7e2dc88';c.lineWidth=.8;for(let k=0;k<(this.reduce?28:120);k++){const x=hash(k,31)*w,y=(hash(k,76)*h+t*190)%h;this.line([[x,y],[x-4,y+11]],'#c7e2dc88',.8);}for(let k=0;k<20;k++){const y=hash(k,8)*(HEIGHT-1),p=this.point(river(y,this.state)+(hash(k,9)-.5),y);c.beginPath();c.ellipse(p.x,p.y,(2+(t*2+k)%4)*this.s,this.s,0,0,7);c.stroke();}c.restore();}
+  const rain=weight('rain');if(rain){c.save();c.globalAlpha=rain;c.strokeStyle='#c7e2dc88';c.lineWidth=.8;for(let k=0;k<(this.reduce?28:120);k++){const x=hash(k,31)*w,y=(hash(k,76)*h+t*190)%h;this.line([[x,y],[x-4,y+11]],'#c7e2dc88',.8);}for(let k=0;k<20;k++){const along=hash(k,8)*(riverLength(this.state)-1),at=riverPoint(along,this.state,hash(k,9)-.5),p=this.point(at.x,at.y);c.beginPath();c.ellipse(p.x,p.y,(2+(t*2+k)%4)*this.s,this.s,0,0,7);c.stroke();}c.restore();}
   if(weight('wind')&&!this.reduce){c.save();c.globalAlpha=weight('wind')*.5;for(let k=0;k<16;k++){const x=(hash(k,63)*w+t*27)%w,y=hash(k,28)*h;this.line([[x,y],[x+5,y-2]],'#b0ad76',1);}c.restore();}
  }
  person(person) {
@@ -247,8 +247,9 @@ export class Renderer{
   if(person.waterTrip?.load>0){for(const side of [-1,1]){const x=p.x+side*4*q,y=p.y-4*q;c.fillStyle='#b4784f';c.beginPath();c.ellipse(x,y,2.4*q,3.1*q,0,0,7);c.fill();this.line([[x-1.4*q,y-2.7*q],[x+1.4*q,y-2.7*q]],'#78aaa6',1.2*q);this.line([[p.x+side*1.5*q,p.y-7*q],[x,y-3*q]],'#a3835e',1.2*q);}}else if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={firedBrick:'#bd7550',brick:'#cba373',food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
   c.restore();
  }
- bridge(b,rails=true){const span=bridgeSpan(b.y,this.state),{left,right,y}=span;this.polygon([this.point(left,y-.13,5),this.point(right,y-.13,5),this.point(right,y+.13,5),this.point(left,y+.13,5)],'#c7ad7c','#8e7853');this.line([this.point(left,y+.13,5),this.point(right,y+.13,5)],'#92784d',3*this.s);for(let x=left;x<right;x+=.18)this.line([this.point(x,y-.13,5),this.point(x,y+.13,5)],'#8b754e',this.s*.65);this.bridgeRail(left,right,y-.13);if(rails)this.bridgeRail(left,right,y+.13);}
- bridgeRail(left,right,y){this.line([this.point(left,y,13),this.point(right,y,13)],'#ac8e5e',1.7*this.s);for(let x=left;x<=right+.01;x+=.5)this.line([this.point(x,y,3),this.point(x,y,14)],'#8e754e',2*this.s);}
+ riverScreen(across,along,z=0){const p=worldFromRiver(across,along,this.state);return this.point(p.x,p.y,z);}
+ bridge(b,rails=true){const span=bridgeSpanAt(b,this.state),{left,right,y}=span;this.polygon([this.riverScreen(left,y-.13,5),this.riverScreen(right,y-.13,5),this.riverScreen(right,y+.13,5),this.riverScreen(left,y+.13,5)],'#c7ad7c','#8e7853');this.line([this.riverScreen(left,y+.13,5),this.riverScreen(right,y+.13,5)],'#92784d',3*this.s);for(let x=left;x<right;x+=.18)this.line([this.riverScreen(x,y-.13,5),this.riverScreen(x,y+.13,5)],'#8b754e',this.s*.65);this.bridgeRail(left,right,y-.13);if(rails)this.bridgeRail(left,right,y+.13);}
+ bridgeRail(left,right,y){this.line([this.riverScreen(left,y,13),this.riverScreen(right,y,13)],'#ac8e5e',1.7*this.s);for(let x=left;x<=right+.01;x+=.5)this.line([this.riverScreen(x,y,3),this.riverScreen(x,y,14)],'#8e754e',2*this.s);}
  streetLamp(lamp,t) {
   const p=this.point(lamp.x,lamp.y),q=this.s;
   this.line([[p.x,p.y],[p.x,p.y-16*q]],'#80704f',1.5*q);
@@ -291,12 +292,12 @@ export class Renderer{
   this.ctx.drawImage(cache.canvas,0,0,this.w,this.h);
  }
  drawTerrain(s){
-  const c=this.ctx;
+  const c=this.ctx,WIDTH=worldWidth(s),HEIGHT=worldHeight(s),length=riverLength(s),waterPoint=(along,offset=0)=>{const p=riverPoint(along,s,offset);return this.point(p.x,p.y);};
  // A raised alluvial plain, its strata visible along the southern edge.
  const a=this.point(-.5,HEIGHT-.5),b=this.point(WIDTH-.5,HEIGHT-.5),d=this.point(WIDTH-.5,-.5);this.polygon([a,b,{x:b.x,y:b.y+12*this.s},{x:a.x,y:a.y+12*this.s}],'#c4b68d');this.polygon([b,d,{x:d.x,y:d.y+12*this.s},{x:b.x,y:b.y+12*this.s}],'#b2ab83');
- for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;const k=hash(x,y),type=terrain(x,y,s),dist=Math.abs(x-river(y,this.state));const blend=Math.max(0,Math.min(1,(dist-1.2)/4.3)),smooth=blend*blend*(3-2*blend),near=s.drought?[193,181,132]:[179,190,139],far=[216,201,158],base=near.map((n,i)=>n+(far[i]-n)*smooth);const variation=(k-.5)*4;let color=`rgb(${base.map(n=>Math.round(n+variation)).join(',')})`;this.tile(x,y,color);drawGroundTexture(this,s,x,y,type);if(k>.88&&type==='sand'){const p=this.point(x,y);this.line([[p.x-5*this.s,p.y],[p.x+3*this.s,p.y+2*this.s]],'#bdb58b',this.s);}}
- const riverPoints=[];for(let y=-.5;y<=HEIGHT-.5;y+=.25)riverPoints.push(this.point(river(y,this.state)-1.12,y));for(let y=HEIGHT-.5;y>=-.5;y-=.25)riverPoints.push(this.point(river(y,this.state)+1.12,y));this.polygon(riverPoints,s.drought?'#80aaa0':'#77aaa0');const inner=[];for(let y=-.5;y<=HEIGHT-.5;y+=.25)inner.push(this.point(river(y,this.state)-.7,y));for(let y=HEIGHT-.5;y>=-.5;y-=.25)inner.push(this.point(river(y,this.state)+.6,y));this.polygon(inner,'#4d9192');for(const side of [-1,1]){const bank=[],shallows=[];for(let yy=-.5;yy<=HEIGHT-.5;yy+=.25){bank.push(this.point(river(yy,this.state)+side*1.15,yy));shallows.push(this.point(river(yy,this.state)+side*.91,yy));}this.line(bank,'#a9b58a',2.2*this.s);this.line(shallows,'#a4c5af70',1.3*this.s);}
- for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(x-river(y,this.state))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}const deposit=depositAt(s,x,y);if(deposit&&terrain(x,y,s)!=='water'){const kind=typeof deposit==='string'?deposit:deposit.kind,colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};this.tile(x,y,(colors[kind]||'#a8ad7a')+'77');const p=this.point(x,y);if(kind==='stone'||kind==='clay')for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*this.s,p.y+(k%2)*3*this.s,4*this.s,2*this.s,(3+k)*this.s,colors[kind],'#999276','#b1a282');}}
+ for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;const k=hash(x,y),type=terrain(x,y,s),dist=Math.abs(signedRiverDistance(x,y,s));const blend=Math.max(0,Math.min(1,(dist-1.2)/4.3)),smooth=blend*blend*(3-2*blend),near=s.drought?[193,181,132]:[179,190,139],far=[216,201,158],base=near.map((n,i)=>n+(far[i]-n)*smooth);const variation=(k-.5)*4;let color=`rgb(${base.map(n=>Math.round(n+variation)).join(',')})`;this.tile(x,y,color);drawGroundTexture(this,s,x,y,type);if(k>.88&&type==='sand'){const p=this.point(x,y);this.line([[p.x-5*this.s,p.y],[p.x+3*this.s,p.y+2*this.s]],'#bdb58b',this.s);}}
+ const riverPoints=[];for(let y=-.5;y<=length-.5;y+=.25)riverPoints.push(waterPoint(y,-1.12));for(let y=length-.5;y>=-.5;y-=.25)riverPoints.push(waterPoint(y,1.12));this.polygon(riverPoints,s.drought?'#80aaa0':'#77aaa0');const inner=[];for(let y=-.5;y<=length-.5;y+=.25)inner.push(waterPoint(y,-.7));for(let y=length-.5;y>=-.5;y-=.25)inner.push(waterPoint(y,.6));this.polygon(inner,'#4d9192');for(const side of [-1,1]){const bank=[],shallows=[];for(let yy=-.5;yy<=length-.5;yy+=.25){bank.push(waterPoint(yy,side*1.15));shallows.push(waterPoint(yy,side*.91));}this.line(bank,'#a9b58a',2.2*this.s);this.line(shallows,'#a4c5af70',1.3*this.s);}
+ for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(signedRiverDistance(x,y,s))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}const deposit=depositAt(s,x,y);if(deposit&&terrain(x,y,s)!=='water'){const kind=typeof deposit==='string'?deposit:deposit.kind,colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};this.tile(x,y,(colors[kind]||'#a8ad7a')+'77');const p=this.point(x,y);if(kind==='stone'||kind==='clay')for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*this.s,p.y+(k%2)*3*this.s,4*this.s,2*this.s,(3+k)*this.s,colors[kind],'#999276','#b1a282');}}
  }
  miraclePlant(e){
   const grow=Math.max(0,Math.min(1,(e.age-e.delay)/2.4)),fade=Math.max(0,Math.min(1,(60-e.age)/5));if(!grow||!fade)return;
@@ -327,7 +328,7 @@ export class Renderer{
   for(const id of records.keys())if(!seen.has(id))records.delete(id);
   return people;
  }
- draw(s,selection,time=performance.now(),{paused=false,speed=1}={}){this.layout();
+ draw(s,selection,time=performance.now(),{paused=false,speed=1}={}){this.state=s;this.layout();
  const dt=this.visualLast===null?0:Math.min(.1,Math.max(0,(time-this.visualLast)/1000));speed=Math.max(0,Number.isFinite(speed)?speed:1);
  if(this.visualLast!==null&&!(typeof document!=='undefined'&&document.hidden))this.ambient+=Math.min(.25,Math.max(0,(time-this.visualLast)/1000));
  this.visualLast=time;
@@ -337,26 +338,26 @@ export class Renderer{
  this.refreshCity(s);this.weather=weatherAt(s);this.lights=[];c.clearRect(0,0,w,h);c.save();const ground=this.point(10,9);const glow=c.createRadialGradient(ground.x,ground.y,10,ground.x,ground.y,w*.7);glow.addColorStop(0,'#f0ecd9');glow.addColorStop(1,'#e2e6d8');c.fillStyle=glow;c.fillRect(0,0,w,h);
  if(this.lighting.night){c.fillStyle=`rgba(239,232,207,${this.lighting.night*.65})`;for(let k=0;k<55;k++){const px=hash(k,34)*w,py=hash(k,56)*(h-80);c.beginPath();c.arc(px,py,(k%5===0?1.2:.6)*this.s,0,7);c.fill();}}
  this.terrainLayer(s);
- for(let k=0;k<42;k++){const yy=((k*.47+t*.13)%(HEIGHT-.3))-.4;const xx=river(yy,this.state)+(hash(k,9)-.5)*1.45;const p=this.point(xx,yy),p2=this.point(xx+.13+hash(k,8)*.4,yy+.06);this.line([p,p2],'#c3d9bd70',this.s);}
+ for(let k=0;k<42;k++){const length=riverLength(s)-.3,along=((k*.47+t*.13*riverFlowSign(s))%length+length)%length-.4,offset=(hash(k,9)-.5)*1.45,at=riverPoint(along,s,offset),to=riverPoint(along+.13+hash(k,8)*.4,s,offset+.06),p=this.point(at.x,at.y),p2=this.point(to.x,to.y);this.line([p,p2],'#c3d9bd70',this.s);}
  const irrigation=irrigationFor(s);
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
  this.streetsLayer();
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});
- const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpan(b.y,this.state).y-vessel.y)<.65);
+ const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,s).y-riverLocal(vessel.x,vessel.y,s).along)<.65);
  if(underBridge&&this.inView(vessel.x,vessel.y,150))this.caravan(vessel);
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
  const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed})];
  const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
  const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
- for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpan(b.y,this.state);for(let x=span.left;x<span.right;x+=.5)entities.push({x:x+.25,y:span.y+.13,kind:'bridgeRail',end:Math.min(x+.5,span.right)});}
+ for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpanAt(b,s);for(let across=span.left;across<span.right;across+=.5)entities.push({...worldFromRiver(across+.25,span.y+.13,s),across,along:span.y+.13,kind:'bridgeRail',end:Math.min(across+.5,span.right)});}
  const lamps=[...this.streets.nodes.values()].filter((p,i)=>i%4===0||this.streets.graph.get(p.key).size>=3).map(p=>({...p,kind:'lamp'}));
  entities.push(...lamps);if(!underBridge&&s.trade?.caravan&&Number.isFinite(s.trade.caravan.x)&&Number.isFinite(s.trade.caravan.y))entities.push({...s.trade.caravan,kind:'caravan'});
  for(const e of sortScene(entities)){
   if(!this.inView(e.x,e.y,150))continue;
   if(e.kind==='person'&&s.funeral?.actors.some(a=>a.id===e.id)&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;
   const p=this.point(e.x,e.y);
-  if(e.kind==='bridgeRail')this.bridgeRail(e.x-.25,e.end,e.y);
+  if(e.kind==='bridgeRail')this.bridgeRail(e.across,e.end,e.along);
   else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='person')this.person(e);
   else if(e.kind==='miraclePlant')this.miraclePlant(e);

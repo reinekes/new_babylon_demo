@@ -21,3 +21,7 @@ test('paused loading of another world relocates ambient animals before pause fre
   const pose=()=>JSON.stringify(animals().map(r=>[r.position.asArray(),r.rotation.asArray()])),frozen=pose();for(let i=0;i<5;i++)view.update(second,.1,{paused:true,speed:4});assert.equal(pose(),frozen);assert.equal(JSON.stringify(second),before);
  }finally{view.dispose();scene.dispose();e.dispose();}
 });
+test('paused load re-centres sky birds over a larger saved world without adding actors',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),first=createGame({start:'established'}),second=structuredClone(first);Object.assign(second.world,{width:64,height:64});const view=await createAmbientFauna(B,scene,[],{loadAsset:async file=>source(scene,file)});
+ try{view.update(first,0,{paused:true});const birds=view.roots().filter(r=>r.metadata.ambientSpecies==='sky-birds'),positions=birds.map(r=>r.position.clone()),count=view.roots().length;view.update(second,0,{paused:true});assert.equal(view.roots().length,count);for(const [i,bird]of birds.entries()){assert.equal(bird.position.x-positions[i].x,72);assert.equal(bird.position.z-positions[i].z,96);}const frozen=birds.map(r=>r.position.asArray());view.update(second,.1,{paused:true});assert.deepEqual(birds.map(r=>r.position.asArray()),frozen);}finally{view.dispose();scene.dispose();engine.dispose();}
+});

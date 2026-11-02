@@ -1,4 +1,4 @@
-import {WIDTH,HEIGHT,river,terrain} from '../world.js';
+import {worldWidth,worldHeight,riverPoint,riverAxis,terrain} from '../world.js';
 import {TILE,shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 import {footprintSize} from '../footprints.js';
 import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js';
@@ -13,7 +13,7 @@ export function sceneryClear(s,p,padding=.29){return !(s.buildings||[]).some(b=>
 // Small uneven colonies occupy damp margins; their centres never cover a real
 // foundation, path or channel. The low dry plain deliberately remains open.
 export function floodplainTufts(s,roads=[]){
- const result=[],contours=lakeContours(s);
+ const result=[],contours=lakeContours(s),WIDTH=worldWidth(s),HEIGHT=worldHeight(s);
  const clear=p=>sceneryClear(s,p)&&roads.every(r=>distance(p,r.a,r.b)>.29);
  for(let j=0;j<HEIGHT;j++)for(let i=0;i<WIDTH;i++){
   const x=i+(noise(i,j)-.5)*.32,y=j+(noise(j,i+9)-.5)*.32,d=shoreDistance(x,y,s),colony=.5+.5*Math.sin(x*2.1+Math.sin(y*1.7))*Math.sin(y*1.4-x*.35);
@@ -26,6 +26,8 @@ export function floodplainTufts(s,roads=[]){
   }
  }
  for(const {points}of contours)for(let i=0;i<points.length;i+=7){const a=points[i],b=points[(i+1)%points.length],dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1;if(noise(a.x,a.y)>.68)continue;for(let k=0;k<3;k++){const outward=.13+k*.055,p={x:a.x+dy/length*outward,y:a.y-dx/length*outward};if(!clear(p)||lakeDistance(p.x,p.y,s,contours)<.07)continue;result.push({...p,kind:'reed',height:.65+noise(i+k,42)*.8,width:.065,angle:i*2.399,tone:.8+noise(i+k,43)*.2});}}
+ // The expanded valley spreads the same fallback geometry budget over more land.
+ if(WIDTH*HEIGHT>40*32&&result.length>1800)return Array.from({length:1800},(_,i)=>result[Math.floor(i*result.length/1800)]);
  return result;
 }
 export function tuftGeometry(s,tufts){
@@ -46,15 +48,17 @@ export function tuftGeometry(s,tufts){
 // A thin contour mesh follows the physical slope, with a varying, fading outer
 // margin rather than a painted ring or evenly spaced decorative stones.
 export function riverbankGeometry(s){
- const g={positions:[],indices:[],colors:[],uvs:[]},rows=riverRows(true),across=6;
+ const g={positions:[],indices:[],colors:[],uvs:[]},rows=riverRows(true,s),across=6;
  for(const side of [-1,1]){const offset=g.positions.length/3;
-  for(let j=0;j<rows.length;j++){const y=rows[j],width=.13+.14*(.5+.5*Math.sin(y*1.13+side*3))+.05*Math.sin(y*3.7)**2;
-   for(let i=0;i<=across;i++){const t=i/across,x=river(y,s)+side*(1.07+width*t),Y=surfaceElevation(x,y,s),n=noise(x*2,y*2);
+  for(let j=0;j<rows.length;j++){const along=rows[j],width=.13+.14*(.5+.5*Math.sin(along*1.13+side*3))+.05*Math.sin(along*3.7)**2;
+   for(let i=0;i<=across;i++){const t=i/across,{x,y}=riverPoint(along,s,side*(1.07+width*t)),Y=surfaceElevation(x,y,s),n=noise(x*2,y*2);
     g.positions.push(x*TILE,Y+.024,y*TILE);g.uvs.push(x/3,y/3);g.colors.push(.61+(.18+n*.045)*t,.57+(.12+n*.035)*t,.43+(.09+n*.025)*t,i===across||(s.buildings||[]).some(b=>Math.abs(b.x-x)<.31&&Math.abs(b.y-y)<.3)?0:Math.sin(Math.PI*(.12+.88*t))*.7);
     if(j<rows.length-1&&i<across){const a=offset+j*(across+1)+i;g.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}
    }
   }
  }
+ // Swapping the river axes reflects the plane; preserve the original face side.
+ if(riverAxis(s)==='x')for(let i=0;i<g.indices.length;i+=3)[g.indices[i+1],g.indices[i+2]]=[g.indices[i+2],g.indices[i+1]];
  return g;
 }
 export function rectangularSiteGeometry(size=5.25,thickness=.09){

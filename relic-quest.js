@@ -4,7 +4,7 @@ export {relicControlActive,relicCommandReason} from './city-command-lock.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {networkFor,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
-import {isDryPoint,WIDTH,HEIGHT} from './world.js';
+import {isDryPoint,worldWidth,worldHeight} from './world.js';
 import {affectResidents} from './wellbeing.js';
 import {validateFuneral} from './funerals.js';
 import {startDesertFuneral} from './desert-funeral.js';
@@ -16,7 +16,7 @@ export const LAND_RELIC_DIVINE_NAME='Хранящий память земли';
 const CONFIG={oasis:{stateKey:'relicQuest',title:'Знак глубин',divineName:RELIC_DIVINE_NAME,memory:'oasisRelic',miracleId:'relicAwakening',miracleName:'Пробуждение глубин'},land:{stateKey:'landRelicQuest',title:'Печать земли',divineName:LAND_RELIC_DIVINE_NAME,memory:'landRelic',miracleId:'earthMemory',miracleName:'Память земли'}};
 const ACTIVE=['controlled','searching','rejoicing','carrying','celebrating','returning'],isActive=q=>ACTIVE.includes(q?.phase);
 const sum=o=>Object.values(o||{}).some(v=>v>1e-8),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.y>=-.5&&p.x<=WIDTH-.5&&p.y<=HEIGHT-.5;
+const point=(p,s)=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.y>=-.5&&p.x<=worldWidth(s)-.5&&p.y<=worldHeight(s)-.5;
 const readyTemple=b=>['shrine','ziggurat'].includes(b.type)&&isOperational(b)&&!b.construction;
 const busy=c=>!!c.site||!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||!!c.pantryTrip||!!c.clinic||!!c.school||!!c.districtJob||!!c.saleJob||!!c.tradeJob||!!c.pendingRole||!!c.workplace||!!c.guardPost||sum(c.cargo)||sum(c.buildCargo)||c.pantryFood>0;
 const eligible=c=>c&&c.age>=16&&c.age<55&&c.health>=60&&!c.recovering&&!busy(c)&&['home','resting','blocked'].includes(c.phase);
@@ -40,7 +40,7 @@ function siteFor(s){
 }
 function landSiteFor(s){
  const net=networkFor(s),homes=net.ports.filter(p=>p.building.type==='house'),candidates=[];
- for(let y=2;y<HEIGHT-2;y++)for(let x=2;x<WIDTH-2;x++){
+ for(let y=2;y<worldHeight(s)-2;y++)for(let x=2;x<worldWidth(s)-2;x++){
   const p={x,y};if(!isDryPoint(s,x,y)||!navigationSegmentClear(s,p,p,net.navigation?.obstacles)||s.world.deposits.some(d=>d.x===x&&d.y===y))continue;
   const nearest=Math.min(...homes.map(h=>distance(p,h)));if(nearest<4||nearest>8)continue;candidates.push({...p,rank:Math.abs(nearest-5.5)});
  }
@@ -51,7 +51,7 @@ function pristine(q){return q?.version===1&&q.phase==='dormant'&&q.attempts===0&
 function newQuest(site,id){return site?{version:1,phase:'dormant',site,artifact:{location:id==='oasis'?'lake':'ground',x:site.x,y:site.y,temple:null},actorId:null,spentFaith:0,attempts:0,startedAt:null,elapsed:0,temple:null,celebrants:[],foundRewarded:false,completedAt:null,deferredEvent:null,lastPosition:null}:null;}
 export function initializeRelicQuest(s,{reconcileUnusedSite=false}={}){
  for(const [id,config]of Object.entries(CONFIG)){
-  const q=s[config.stateKey];if(reconcileUnusedSite&&pristine(q)&&point(q.site)&&point(q.site.shore)&&q.artifact?.temple===null&&q.artifact.x===q.site.x&&q.artifact.y===q.site.y){
+  const q=s[config.stateKey];if(reconcileUnusedSite&&pristine(q)&&point(q.site,s)&&point(q.site.shore,s)&&q.artifact?.temple===null&&q.artifact.x===q.site.x&&q.artifact.y===q.site.y){
    const valid=id==='oasis'?s.world?.lakes?.some(l=>l.id===q.site.lakeId&&l.cells.some(p=>p.x===q.site.x&&p.y===q.site.y)):isDryPoint(s,q.site.x,q.site.y)&&navigationSegmentClear(s,q.site,q.site);
    if(!valid)delete s[config.stateKey];
   }
@@ -76,7 +76,7 @@ export function startRelicQuest(s,id,questId='oasis'){
 }
 export function orderRelicMove(s,target){
  const q=activeRelicQuest(s),c=s.citizens?.find(c=>c.id===q?.actorId);if(!c||!['controlled','carrying'].includes(q.phase))return {ok:false,reason:'Сейчас человек не готов идти'};
- if(!point(target))return {ok:false,reason:'Точка за пределами долины'};const route=relicPathTo(s,q,c,target);if(!route)return {ok:false,reason:'Туда нет безопасного пути: избранный может входить только в свой оазис, не в реку или стены'};
+ if(!point(target,s))return {ok:false,reason:'Точка за пределами долины'};const route=relicPathTo(s,q,c,target);if(!route)return {ok:false,reason:'Туда нет безопасного пути: избранный может входить только в свой оазис, не в реку или стены'};
  c.route=route;c.routeIndex=1;q.temple=null;return {ok:true};
 }
 export function searchRelic(s){
@@ -106,7 +106,7 @@ function safeArtifactDrop(s,q,p){
 }
 function interrupt(s,q){
  const c=s.citizens.find(c=>c.id===q.actorId);releaseGuests(s,q);
- if(q.artifact.location==='carried'){const p=c||q.lastPosition;if(p&&point(p))q.artifact={location:'ground',...safeArtifactDrop(s,q,p),temple:null};}
+ if(q.artifact.location==='carried'){const p=c||q.lastPosition;if(p&&point(p,s))q.artifact={location:'ground',...safeArtifactDrop(s,q,p),temple:null};}
  if(c)releaseCitizen(s,c);q.phase='dormant';q.actorId=null;q.temple=null;q.elapsed=0;q.returnReason=null;restoreEvent(s,q);restoreFuneral(s,q);invalidateAssignments(s);
 }
 function returnToBank(s,q,reason){const c=s.citizens.find(c=>c.id===q.actorId),route=c&&relicExitRoute(s,q,c);if(!route)return false;q.phase='returning';q.returnReason=reason;q.elapsed=0;c.route=route;c.routeIndex=1;releaseGuests(s,q);return true;}
@@ -148,11 +148,11 @@ export function relicQuestView(s,options={}){const id=typeof options==='string'?
 export function relicQuestViews(s){return entries(s).map(entry=>view(s,entry)).filter(Boolean);}
 function validateQuest(s,q,id,config){
  const int=n=>Number.isSafeInteger(n)&&n>=0,finite=n=>Number.isFinite(n)&&n>=0,phases=['dormant',...ACTIVE,'completed'];
- if(q.version!==1||!phases.includes(q.phase)||!int(q.spentFaith)||!int(q.attempts)||q.spentFaith!==q.attempts*RELIC_FAITH_COST||!finite(q.elapsed)||q.elapsed>30.1||typeof q.foundRewarded!=='boolean'||!point(q.site)||!point(q.site.shore))return false;
+ if(q.version!==1||!phases.includes(q.phase)||!int(q.spentFaith)||!int(q.attempts)||q.spentFaith!==q.attempts*RELIC_FAITH_COST||!finite(q.elapsed)||q.elapsed>30.1||typeof q.foundRewarded!=='boolean'||!point(q.site,s)||!point(q.site.shore,s))return false;
  if(id==='oasis'&&(!s.world?.lakes.some(l=>l.id===q.site.lakeId&&l.cells.some(p=>p.x===q.site.x&&p.y===q.site.y))||!isDryPoint(s,q.site.shore.x,q.site.shore.y))||id==='land'&&(q.site.lakeId!==null||!isDryPoint(s,q.site.x,q.site.y)))return false;
  if(['rejoicing','carrying','celebrating','completed'].includes(q.phase)&&(!q.foundRewarded||q.attempts<1||q.startedAt===null))return false;
  if(q.startedAt!==null&&(!finite(q.startedAt)||q.startedAt>(s.simTime||0)+.11)||q.completedAt!==null&&(!finite(q.completedAt)||q.completedAt>(s.simTime||0)+.11))return false;
- const a=q.artifact;if(!a||!['lake','ground','carried','temple'].includes(a.location)||!point(a))return false;
+ const a=q.artifact;if(!a||!['lake','ground','carried','temple'].includes(a.location)||!point(a,s))return false;
  if(a.location==='lake'&&(id!=='oasis'||a.x!==q.site.x||a.y!==q.site.y||a.temple!==null)||a.location==='ground'&&(!isDryPoint(s,a.x,a.y)||a.temple!==null))return false;
  const active=isActive(q),c=s.citizens.find(c=>c.id===q.actorId);
  if(active&&(!c||c.phase!=='relic'||q.attempts<1||q.startedAt===null||sum(c.cargo)||sum(c.buildCargo)||busy(c))||!active&&q.actorId!==null)return false;
@@ -162,7 +162,7 @@ function validateQuest(s,q,id,config){
  for(const a of q.celebrants){const guest=s.citizens.find(c=>c.id===a.id);if(!int(a.id)||a.id===q.actorId||typeof a.rewarded!=='boolean'||!guest||guest.phase!=='relicGuest'||busy(guest))return false;}
  if(q.celebrants.length&&!['rejoicing','celebrating'].includes(q.phase))return false;
  if(q.temple!==null&&(!['carrying','celebrating','completed','returning'].includes(q.phase)||!s.buildings.some(b=>buildingKey(b)===q.temple&&['shrine','ziggurat'].includes(b.type)&&isOperational(b))))return false;
- if(q.lastPosition!==null&&!point(q.lastPosition))return false;
+ if(q.lastPosition!==null&&!point(q.lastPosition,s))return false;
  if(q.deferredEvent!==null){const e=q.deferredEvent;if(!e||typeof e!=='object'||Array.isArray(e)||Object.keys(e).length!==3||!['id','title','text'].every(key=>Object.hasOwn(e,key))||!cityEventDefinition(e.id)||typeof e.title!=='string'||e.title.length>200||typeof e.text!=='string'||e.text.length>5000)return false;}
  if(q.returnReason!==undefined&&q.returnReason!==null&&!['cancel','funeral'].includes(q.returnReason)||q.phase==='returning'&&!['cancel','funeral'].includes(q.returnReason))return false;
  if(q.rejoicingReady!==undefined&&typeof q.rejoicingReady!=='boolean')return false;

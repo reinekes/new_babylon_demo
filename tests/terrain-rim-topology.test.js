@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../engine.js';
-import {WIDTH,HEIGHT} from '../world.js';
+import {riverAcrossSize,riverLength,riverLocal} from '../world.js';
 import {alluvialSceneryGeometry,TILE} from '../district3d/terrain.js';
 
 function boundaryEdges(geometry){
@@ -19,9 +19,9 @@ function boundaryEdges(geometry){
 }
 
 for(const seed of [undefined,1,42,0xffffffff])test(`distant terrain strips share every corner seam segment (seed ${seed??'legacy'})`,()=>{
- const state=createGame({seed}),edges=boundaryEdges(alluvialSceneryGeometry(state));
- for(const y of [-.5,HEIGHT-.5])for(const side of ['left','right']){
-  const rim=edges.filter(edge=>edge.every(p=>p[2]===y*TILE&&(side==='left'?p[0]<=-.5*TILE:p[0]>=(WIDTH-.5)*TILE)));
+ const state=createGame({seed}),edges=boundaryEdges(alluvialSceneryGeometry(state)).map(edge=>edge.map(p=>{const q=riverLocal(p[0]/TILE,p[2]/TILE,state);return [q.across*TILE,p[1],q.along*TILE];}));
+ for(const y of [-.5,riverLength(state)-.5])for(const side of ['left','right']){
+  const rim=edges.filter(edge=>edge.every(p=>p[2]===y*TILE&&(side==='left'?p[0]<=-.5*TILE:p[0]>=(riverAcrossSize(state)-.5)*TILE)));
   const segments=new Map();
   for(const edge of rim){
    // Coordinates include height: matching X/Z alone would miss an actual crack.

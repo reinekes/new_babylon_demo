@@ -1,4 +1,4 @@
-import {WIDTH,HEIGHT,terrain} from '../world.js';
+import {worldWidth,worldHeight,terrain} from '../world.js';
 import {TILE,shoreDistance} from '../district3d/terrain.js';
 import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
@@ -9,7 +9,7 @@ const segmentDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.mi
 // All coordinates below are disposable display plans, independent of the resource
 // ledger and saved animal population. Reserve the entire small movement envelope.
 export function natureDetailPlan(s,roads=[],tier='balanced'){
- const budget=NATURE_BUDGETS[tier]||NATURE_BUDGETS.balanced,result={debris:[],puddles:[],tumbleweeds:[],snakes:[]};
+ const WIDTH=worldWidth(s),HEIGHT=worldHeight(s),budget=NATURE_BUDGETS[tier]||NATURE_BUDGETS.balanced,result={debris:[],puddles:[],tumbleweeds:[],snakes:[]};
  const clear=(x,y,r=.12)=>x>r&&y>r&&x<WIDTH-1-r&&y<HEIGHT-1-r&&terrain(Math.round(x),Math.round(y),s)!=='water'&&shoreDistance(x,y,s)>.65+r&&sceneryClear(s,{x,y},r)&&roads.every(e=>segmentDistance({x,y},e.a,e.b)>.24+r);
  // A relatively prime walk distributes details throughout the map rather than
  // exhausting a quota along its first row. Seeds are stable across quality tiers.

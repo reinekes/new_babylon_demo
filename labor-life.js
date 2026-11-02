@@ -1,6 +1,6 @@
 import {naturalAnimalsFor} from './fauna.js';
 import {catPettingPairs} from './pests.js';
-import {isDryPoint,WIDTH,HEIGHT} from './world.js';
+import {isDryPoint,worldWidth,worldHeight} from './world.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 
 export const GATHERING_TYPES=['logging','quarry','hunting','fishing'];
@@ -75,8 +75,8 @@ export function actorWorkActivity(s,c,pettingPairs){
  const pair=(pettingPairs||catPettingPairs(s)).find(p=>p.citizenId===c.id);return pair?{kind:'petting',target:{x:pair.x,y:pair.y},progress:((s.simTime||0)%3)/3,stage:'working'}:null;
 }
 export function validateGathering(s){
- const g=s.gathering,finite=(n,min=0,max=1e9)=>Number.isFinite(n)&&n>=min&&n<=max,point=p=>p&&finite(p.x,-.5,WIDTH-.5)&&finite(p.y,-.5,HEIGHT-.5),unique=a=>new Set(a).size===a.length;
- if(!g||!Array.isArray(s.citizens)||!Array.isArray(s.buildings)||!Array.isArray(g.features)||!Array.isArray(g.jobs)||!Array.isArray(g.kills)||g.features.length>5120||g.jobs.length>s.population||g.kills.length>128)return false;
+ const g=s.gathering,finite=(n,min=0,max=1e9)=>Number.isFinite(n)&&n>=min&&n<=max,point=p=>p&&finite(p.x,-.5,worldWidth(s)-.5)&&finite(p.y,-.5,worldHeight(s)-.5),unique=a=>new Set(a).size===a.length;
+ if(!g||!Array.isArray(s.citizens)||!Array.isArray(s.buildings)||!Array.isArray(g.features)||!Array.isArray(g.jobs)||!Array.isArray(g.kills)||g.features.length>worldWidth(s)*worldHeight(s)*4||g.jobs.length>s.population||g.kills.length>128)return false;
  if(!unique(g.features.map(f=>f.id))||!unique(g.jobs.map(j=>j.citizen))||!unique(g.kills.map(k=>k.id)))return false;
  if(g.features.some(f=>typeof f.id!=='string'||!/^((tree)|(rock)):\d+,\d+:[0-3]$/.test(f.id)||!['tree','rock'].includes(f.kind)||!point(f)||!finite(f.health,0,1)||(f.felledAt!==null&&!finite(f.felledAt,0,s.simTime+.1))||(f.recoverAt!==null&&!finite(f.recoverAt))||((f.health===0)!==(f.recoverAt!==null))))return false;
  if(g.kills.some(k=>typeof k.id!=='string'||!/^gazelle-\d+$/.test(k.id)||k.kind!=='gazelle'||!point(k)||!finite(k.time,0,s.simTime+.1)||!finite(k.respawnAt,k.time, k.time+180.001)))return false;

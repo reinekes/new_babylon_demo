@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,encode,decode,canPlace} from '../engine.js';
+import {createGame as createCurrentGame,encode,decode,canPlace} from '../engine.js';
 import {initializeGeneratedWorld,initializeWorld,validateWorld,river,terrain,isDryPoint,isShore,bridgeSpan,onBridge,WIDTH,HEIGHT} from '../world.js';
 import {networkFor} from '../workforce.js';
 import {navigationSegmentClear,shortestWalkingPath} from '../navigation.js';
@@ -9,6 +9,8 @@ import {shoreDistance,alluvialTerrainGeometry} from '../district3d/terrain.js';
 import {renderedShoreDistance} from '../game3d/shore-profile.js';
 import {landscapeSignature} from '../game3d/landscape.js';
 import {gameBuildingSignature} from '../game3d/buildings.js';
+
+const createGame=options=>createCurrentGame({...options,generationVersion:1});
 
 const seeds=[...Array.from({length:180},(_,i)=>i),...Array.from({length:20},(_,i)=>(Math.imul(i+1,2654435761)>>>0)),0xffffffff];
 
@@ -40,7 +42,7 @@ test('hundreds of seeded founding and established maps retain dry connected star
 
 test('same seed is deterministic and loading a world never rerolls its geography',()=>{
  const a=createGame({seed:187436}),b=createGame({seed:187436});assert.deepEqual(a.world,b.world);
- const before=JSON.stringify(a.world);initializeWorld(a);initializeGeneratedWorld(a,999);assert.equal(JSON.stringify(a.world),before);
+ const before=JSON.stringify(a.world);initializeWorld(a);initializeGeneratedWorld(a,999,{version:1});assert.equal(JSON.stringify(a.world),before);
  const legacy=createGame(),legacyWorld=JSON.stringify(legacy.world);assert.equal(legacy.world.river,undefined);
  for(let y=-.5;y<HEIGHT;y+=.125)assert.equal(river(y,legacy),16-y*.27+Math.sin(y*.55)*.7);
  assert.equal(JSON.stringify(decode(encode(legacy)).world),legacyWorld);

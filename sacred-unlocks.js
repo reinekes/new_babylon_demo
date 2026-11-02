@@ -1,6 +1,6 @@
 import {BUILDINGS,MIRACLES,buildingKey,isOperational} from './definitions.js';
 import {affectResidents} from './wellbeing.js';
-import {WIDTH,HEIGHT} from './world.js';
+import {worldWidth,worldHeight} from './world.js';
 
 export const SACRED_MIRACLE_IDS=Object.freeze(['inannaProtection','relicAwakening','earthMemory']);
 export function initializeSacredUnlocks(s){s.sacred??={version:1,unlocks:{}};}
@@ -31,5 +31,5 @@ export function applySacredMiracle(s,id){
 export function validateSacredUnlocks(s){
  const sacred=s.sacred;if(sacred===undefined)return true;
  if(!sacred||sacred.version!==1||!sacred.unlocks||typeof sacred.unlocks!=='object'||Array.isArray(sacred.unlocks))return false;
- return Object.entries(sacred.unlocks).every(([id,row])=>MIRACLES[id]?.unlockBuilding&&row&&Number.isSafeInteger(row.year)&&row.year>=1&&row.year<=s.year&&Number.isSafeInteger(row.tick)&&row.tick>=0&&row.tick<=s.tick&&row.year===1+Math.floor(row.tick/4)&&typeof row.source==='string'&&/^\d+,\d+$/.test(row.source)&&Number(row.source.split(',')[0])<WIDTH&&Number(row.source.split(',')[1])<HEIGHT);
+ return Object.entries(sacred.unlocks).every(([id,row])=>MIRACLES[id]?.unlockBuilding&&row&&Number.isSafeInteger(row.year)&&row.year>=1&&row.year<=s.year&&Number.isSafeInteger(row.tick)&&row.tick>=0&&row.tick<=s.tick&&row.year===1+Math.floor(row.tick/4)&&typeof row.source==='string'&&/^\d+,\d+$/.test(row.source)&&Number(row.source.split(',')[0])<worldWidth(s)&&Number(row.source.split(',')[1])<worldHeight(s));
 }

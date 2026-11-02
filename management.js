@@ -16,7 +16,7 @@ import {registerInspiration} from './divinity.js';
 import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS} from './definitions.js';
 import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor,recoverCitizenCargo} from './workforce.js';
-import {bridgeSpan,onBridge,WIDTH,HEIGHT} from './world.js';
+import {bridgeSpanAt,worldFromRiver,onBridge,worldWidth,worldHeight} from './world.js';
 const roles=ROLES;
 const hasLoad=c=>!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||c.pantryFood>0||Object.values(c.cargo||{}).some(v=>v>0)||Object.values(c.buildCargo||{}).some(v=>v>0);
 const find=(s,x,y)=>constructionEntities(s).find(b=>b.x===x&&b.y===y);
@@ -51,11 +51,11 @@ export function setCitizenRole(s,id,role){
 }
 function rememberApproaches(s,b){
  s.roadAnchors??=[];
- const anchors=b.type==='bridge'?[bridgeSpan(b.y,s).left,bridgeSpan(b.y,s).right].map(x=>({type:'road',x:x-.5,y:b.y})):[{type:'road',x:b.x,y:b.y}];
+ const anchors=b.type==='bridge'?[bridgeSpanAt(b,s).left,bridgeSpanAt(b,s).right].map(x=>({type:'road',...worldFromRiver(x-.5,bridgeSpanAt(b,s).y-.5,s)})):[{type:'road',x:b.x,y:b.y}];
  // Preserve the removed doorstep and the nodes currently occupied by residents.
  const old=networkFor(s);
  for(const c of s.citizens){let nearest=null,d=Infinity;for(const p of old.nodes.values()){const n=Math.abs(p.x-c.x)+Math.abs(p.y-c.y);if(n<d){d=n;nearest=p;}}
-  if(nearest){const x=nearest.x-.5,y=nearest.y-.5;if(x>=0&&y>=0&&x<WIDTH&&y<HEIGHT)anchors.push({type:'road',x,y});}
+  if(nearest){const x=nearest.x-.5,y=nearest.y-.5;if(x>=0&&y>=0&&x<worldWidth(s)&&y<worldHeight(s))anchors.push({type:'road',x,y});}
  }
  for(const a of anchors)if(!s.roadAnchors.some(p=>p.x===a.x&&p.y===a.y))s.roadAnchors.push(a);
 }

@@ -2,7 +2,7 @@ import {recordCitizenDelivery} from './citizen-epithets.js';
 import {dairyNeeds} from './dairy.js';
 import {isArtisan,artisanNeeds} from './artisan.js';
 import {buildingKey,isOperational} from './definitions.js';
-import {isDryPoint,river,WIDTH,HEIGHT} from './world.js';
+import {isDryPoint,signedRiverDistance,worldWidth,worldHeight} from './world.js';
 import {generateStreets} from './city-life.js';
 
 // Water remains in vessels and homes, never in the city's abstract material stock.
@@ -19,7 +19,7 @@ function navigation(s){
  const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
  let cache=caches.get(s);if(cache?.signature===signature&&cache.world===s.world)return cache;
  const network=generateStreets([...s.buildings,...s.roadAnchors||[]],s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),nodes=new Map(),graph=new Map();
- for(let y=0;y<=HEIGHT;y++)for(let x=0;x<=WIDTH;x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
+ for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q))graph.get(k).push(qk);}
  cache={signature,world:s.world,network,ports,nodes,graph,banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
 }
@@ -29,7 +29,7 @@ function path(nodes,graph,from,to){
  return null;
 }
 function bankRoute(s,nav,origin){
- if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?path(nav.nodes,nav.graph,key(p),(_,q)=>Math.abs(q.x-river(q.y,s))<2.25):null);}return nav.banks.get(origin);
+ if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?path(nav.nodes,nav.graph,key(p),(_,q)=>Math.abs(signedRiverDistance(q.x,q.y,s))<2.25):null);}return nav.banks.get(origin);
 }
 function roadRoute(nav,from,to){
  const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key):null);}return nav.roads.get(id);
@@ -130,6 +130,6 @@ export function validateWater(s){
  const finite=(v,max=1e9)=>Number.isFinite(v)&&v>=0&&v<=max;
  if(!s.buildings.every(b=>b.type==='house'?finite(b.water)&&finite(b.waterDelivered):b.water===undefined))return false;
  return s.citizens.every(c=>{if(!finite(c.thirst,100)||c.phase==='waterTrip'&&!c.waterTrip)return false;const t=c.waterTrip;if(!t)return true;
-  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<4000&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=WIDTH-.5&&p.y>=-.5&&p.y<=HEIGHT-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
+  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<worldWidth(s)*worldHeight(s)*4&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
  });
 }

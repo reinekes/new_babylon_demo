@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createGame} from '../engine.js';
+import {signedRiverDistance,riverPoint} from '../world.js';
+import {floodplainTufts,riverbankGeometry} from '../game3d/nature.js';
+import {valleyVegetationPlan,VEGETATION_BUDGETS,vegetationBankDistance} from '../game3d/valley-vegetation.js';
+import {natureDetailPlan,NATURE_BUDGETS} from '../game3d/nature-details.js';
+import {ambientDryPoint,ambientAnchor} from '../game3d/ambient-fauna.js';
+import {skyFlightPose} from '../game3d/sky-flight.js';
+import {TILE,surfaceElevation} from '../district3d/terrain.js';
+function largeWorld(axis='x'){const s=createGame({start:'established'});Object.assign(s.world,{generationVersion:2,width:64,height:64,river:{axis,flowSign:-1,offset:32,slope:.07,amplitude:.7,frequency:.2,phase:1}});return s;}
+test('large-world vegetation and details reach the far half while keeping their existing draw budgets',()=>{const s=largeWorld(),before=JSON.stringify(s),tufts=floodplainTufts(s);assert.ok(tufts.some(p=>p.x>50));assert.ok(tufts.length<=1800);for(const tier of ['low','balanced','high']){const plants=valleyVegetationPlan(s,[],tier),details=natureDetailPlan(s,[],tier);for(const [kind,list]of Object.entries(plants)){assert.ok(list.length<=VEGETATION_BUDGETS[tier][kind]+(kind==='reed'?90:0));assert.ok(list.some(p=>p.x>40),kind);for(const p of list)assert.ok(vegetationBankDistance(p.x,p.y,s)>.1);}for(const [kind,list]of Object.entries(details))assert.ok(list.length<=NATURE_BUDGETS[tier][kind]);assert.ok(details.debris.some(p=>p.x>45));assert.ok(details.debris.some(p=>p.y>45));}assert.equal(JSON.stringify(s),before);});
+test('riverbank mesh follows canonical shores on both orientations and all 64 tiles',()=>{for(const axis of ['x','y']){const s=largeWorld(axis),g=riverbankGeometry(s),along=[];for(let i=0;i<g.positions.length;i+=3){const x=g.positions[i]/TILE,y=g.positions[i+2]/TILE;assert.ok(Math.abs(g.positions[i+1]-surfaceElevation(x,y,s)-.024)<1e-9);assert.ok(Math.abs(signedRiverDistance(x,y,s))>=1.069);assert.ok(Math.abs(signedRiverDistance(x,y,s))<1.5);along.push(axis==='x'?x:y);}assert.ok(Math.max(...along)>64);assert.ok(Math.min(...along)<0);}});
+test('rotating the river keeps bank triangles facing the same side',()=>{const facing=g=>{const [a,b,c]=g.indices.slice(0,3).map(i=>g.positions.slice(i*3,i*3+3));return Math.sign((b[2]-a[2])*(c[0]-a[0])-(b[0]-a[0])*(c[2]-a[2]));};assert.equal(facing(riverbankGeometry(largeWorld('x'))),facing(riverbankGeometry(largeWorld('y'))));});
+test('ambient ground and flight placements follow saved dimensions with no river-side shortcut',()=>{const s=largeWorld(),p=riverPoint(50,s);assert.equal(ambientDryPoint(s,p.x,p.y),false);assert.equal(ambientDryPoint(s,55,55),true);assert.equal(ambientDryPoint(s,63,55),false);const lion=ambientAnchor(s,'lioness');assert.ok(lion&&lion.x>40&&lion.y>40);assert.ok(ambientDryPoint(s,lion.x,lion.y));const legacy=skyFlightPose(0),expanded=skyFlightPose(0,0,{state:s});assert.equal(expanded.x-legacy.x,(64-40)*3);assert.equal(expanded.z-legacy.z,(64-32)*3);});

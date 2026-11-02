@@ -1,5 +1,5 @@
 import {constructionProgress} from '../construction.js';
-import {bridgeSpan} from '../world.js';
+import {bridgeSpanAt,riverLocal,riverAxis} from '../world.js';
 // Original procedural adobe architecture. All vertices are local to one 6 m tile.
 // Archaeological forms are a stylisation, not reconstructions of specific excavated houses.
 const materialCache = new WeakMap();
@@ -215,13 +215,13 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
    for(let i=0;i<4;i++)mat(-1.8+i*.7,-1.55,.6,.85);pot(1.9,1.8,.9);break;
   case 'field':field();break;
   case 'bridge':{
-   const span=bridgeSpan(b.y,s),left=(span.left-b.x)*6,right=(span.right-b.x)*6,z=(span.y-b.y)*6;
-   const pieces=Math.ceil((right-left)/.32),step=(right-left)/pieces;
-   for(let i=0;i<pieces;i++)box(left+step*(i+.5),.14,z,step-.02,.16,1.65,'wood');
+   const span=bridgeSpanAt(b,s),origin=riverLocal(b.x,b.y,s),left=(span.left-origin.across)*6,right=(span.right-origin.across)*6,z=(span.y-origin.along)*6,horizontal=riverAxis(s)==='x';
+   const point=(x,y,z)=>horizontal?[z,y,x]:[x,y,z],pieces=Math.ceil((right-left)/.32),step=(right-left)/pieces;
+   for(let i=0;i<pieces;i++)box(...point(left+step*(i+.5),.14,z),horizontal?1.65:step-.02,.16,horizontal?step-.02:1.65,'wood');
    for(let x=left+.14;x<=right;x+=Math.max(1,(right-left-.28)/6))for(const side of [-1,1]){
-    cyl(x,-.12,z+side*.8,.09,.68,'wood');cyl(x,.46,z+side*.8,.055,.78,'wood');
+    cyl(...point(x,-.12,z+side*.8),.09,.68,'wood');cyl(...point(x,.46,z+side*.8),.055,.78,'wood');
    }
-   for(const side of [-1,1])beam([left,.75,z+side*.8],[right,.75,z+side*.8],.045,'wood');
+   for(const side of [-1,1])beam(point(left,.75,z+side*.8),point(right,.75,z+side*.8),.045,'wood');
    break;
   }
   case 'harbor':

@@ -1,4 +1,4 @@
-import {WIDTH,HEIGHT,river,terrain} from '../world.js';
+import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,riverFlowVector,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
 import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
@@ -12,10 +12,11 @@ export function waterDepth(x,y,s){return Math.max(0,WATER_HEIGHT-visualSurfaceEl
 const sheet=()=>({positions:[],indices:[],colors:[],uvs:[],points:[],depths:[]});
 function vertex(g,x,y,s,lake){const d=waterDepth(x,y,s);g.positions.push(x*TILE,WATER_HEIGHT,y*TILE);g.points.push({x,y});g.depths.push(d);g.colors.push(d,lake?1:0,0,1);g.uvs.push(x,y);}
 export function waterSurfaceGeometry(s){
- const flow=sheet(),lakes=sheet(),across=24,rows=riverRows(true);
+ const flow=sheet(),lakes=sheet(),across=24,rows=riverRows(true,s);
  // The shallow edge reaches the actual intersection of the terrain and water,
  // beyond the old uniform strip. Adjacent rows share all cross-section vertices.
- for(let j=0;j<rows.length;j++){const y=rows[j],c=river(y,s);for(let i=0;i<=across;i++){const x=c+(i/across*2-1)*RIVER_HALF_WIDTH;vertex(flow,x,y,s,false);if(i<across&&j<rows.length-1){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
+ for(let j=0;j<rows.length;j++){const along=rows[j];for(let i=0;i<=across;i++){const p=riverPoint(along,s,(i/across*2-1)*RIVER_HALF_WIDTH);vertex(flow,p.x,p.y,s,false);if(i<across&&j<rows.length-1){const a=j*(across+1)+i;flow.indices.push(a,a+across+1,a+1,a+1,a+across+1,a+across+2);}}}
+ if(riverAxis(s)==='x')for(let i=0;i<flow.indices.length;i+=3)[flow.indices[i+1],flow.indices[i+2]]=[flow.indices[i+2],flow.indices[i+1]];
  const organic=organicLakeGeometry(s,WATER_HEIGHT);Object.assign(lakes,organic);
  return {river:flow,lakes};
 }
@@ -48,8 +49,8 @@ export function submergedPebbles(s){
  const result=[],put=(x,y,i,riverStone)=>{if(waterDepth(x,y,s)<=.14)return;const size=.065+Math.pow(noise(i,41),1.6)*.235;result.push({x,y,size,tone:Math.floor(noise(i,71)*3),angle:noise(i,32)*Math.PI*2,flat:.07+noise(i,84)*.10,river:riverStone});};
  // Sparse deterministic clusters with gaps, varying offsets and several muted
  // stone colours; no alternating rows or equal spacing along the banks.
- for(let j=0;j<46;j++){if(noise(j,16)>.66)continue;const cy=(j+noise(j,12))/46*HEIGHT,side=noise(j,22)<.5?-1:1,count=1+Math.floor(noise(j,31)*5);
-  for(let k=0;k<count;k++){const id=j*11+k,y=clamp(cy+(noise(id,18)-.5)*1.5,0,HEIGHT-.01),x=river(y,s)+side*(.25+noise(id,25)*.7);put(x,y,id,true);}
+ for(let j=0;j<46;j++){if(noise(j,16)>.66)continue;const cy=(j+noise(j,12))/46*riverLength(s),side=noise(j,22)<.5?-1:1,count=1+Math.floor(noise(j,31)*5);
+  for(let k=0;k<count;k++){const id=j*11+k,along=clamp(cy+(noise(id,18)-.5)*1.5,0,riverLength(s)-.01),p=riverPoint(along,s,side*(.25+noise(id,25)*.7));put(p.x,p.y,id,true);}
  }
  for(const lake of s.world?.lakes||[])for(const c of lake.cells){if(noise(c.x,c.y)>.58)continue;for(let k=0;k<1+Math.floor(noise(c.y,c.x)*3);k++){const id=10000+c.y*100+c.x*3+k;put(c.x+(noise(id,1)-.5)*.76,c.y+(noise(id,2)-.5)*.76,id,false);}}
  return result;
@@ -79,10 +80,10 @@ export function createGameWater(B,scene,materials){
  precision highp float;attribute vec3 position;attribute vec4 color;uniform mat4 world,worldViewProjection;varying vec3 vWorld;varying float vDepth;varying float vLake;varying float vCanal;
  void main(){vWorld=(world*vec4(position,1.0)).xyz;vDepth=color.r;vLake=color.g;vCanal=color.b;gl_Position=worldViewProjection*vec4(position,1.0);}`;
  B.Effect.ShadersStore.gameClearWaterFragmentShader=`
- precision highp float;varying vec3 vWorld;varying float vDepth;varying float vLake;varying float vCanal;uniform vec3 cameraPosition;uniform float time,night;
+ precision highp float;varying vec3 vWorld;varying float vDepth;varying float vLake;varying float vCanal;uniform vec3 cameraPosition;uniform float time,night;uniform vec2 riverFlow;
  void main(){
-  vec2 p=vWorld.xz;float flow=mix(time*.62,time*.12,vLake);
-  float a=p.x*1.8+p.y*.75-flow,b=p.x*.63-p.y*2.3+flow*.7;
+  vec2 p=vWorld.xz-riverFlow*mix(time*.62,time*.12,vLake);
+  float a=p.x*1.8+p.y*.75,b=p.x*.63-p.y*2.3;
   vec3 n=normalize(vec3(.035*cos(a)+.019*cos(b),1.0,.025*cos(a)-.027*cos(b)));
   vec3 eye=normalize(cameraPosition-vWorld);float fresnel=pow(1.0-max(dot(n,eye),0.0),3.0);
   float depth=clamp(vDepth/.7,0.0,1.0),edge=smoothstep(.002,.075,vDepth);
@@ -99,13 +100,13 @@ export function createGameWater(B,scene,materials){
   float alpha=max(edge*(.08+.29*depth+fresnel*.12),vCanal*.42);
   gl_FragColor=vec4(water,clamp(alpha,.0,.72));
  }`;
- const water=new B.ShaderMaterial('clear-flowing-water',scene,{vertex:'gameClearWater',fragment:'gameClearWater'},{attributes:['position','color'],uniforms:['world','worldViewProjection','cameraPosition','time','night'],needAlphaBlending:true});
- water.backFaceCulling=false;water.disableDepthWrite=true;water.transparencyMode=B.Material.MATERIAL_ALPHABLEND;water.setFloat('time',0);water.setFloat('night',0);water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);});owned.push(water);
+ const water=new B.ShaderMaterial('clear-flowing-water',scene,{vertex:'gameClearWater',fragment:'gameClearWater'},{attributes:['position','color'],uniforms:['world','worldViewProjection','cameraPosition','time','night','riverFlow'],needAlphaBlending:true});
+ water.backFaceCulling=false;water.disableDepthWrite=true;water.transparencyMode=B.Material.MATERIAL_ALPHABLEND;water.setFloat('time',0);water.setFloat('night',0);const flowUniform=new B.Vector2(0,1);water.setVector2('riverFlow',flowUniform);water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);});owned.push(water);
  const stones=['#8d8e78','#a49e86','#777d73'].map((hex,i)=>{const m=new B.PBRMaterial(`submerged-rounded-pebbles-${i}`,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.85;m.metallic=0;owned.push(m);return m;});
  function geometry(name,g,mat){if(!g.indices.length)return;const m=new B.Mesh(name,scene),d=new B.VertexData();d.positions=g.positions.slice();d.indices=g.indices.slice();d.uvs=g.uvs;d.colors=g.colors;
   d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);if(d.normals[1]<0){for(let i=0;i<d.indices.length;i+=3)[d.indices[i+1],d.indices[i+2]]=[d.indices[i+2],d.indices[i+1]];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);}d.applyToMesh(m);m.material=mat;m.isPickable=false;m.receiveShadows=false;m.useVertexColors=true;m.freezeWorldMatrix();meshes.push(m);return m;
  }
- function update(s,t=0){if(disposed)return;time=t;water.setFloat('time',time);water.setFloat('night',night);const next=JSON.stringify([s.world?.river,s.world?.lakes||[]]);if(next===signature)return;signature=next;for(const m of meshes)m.dispose();meshes.length=0;
+ function update(s,t=0){if(disposed)return;time=t;water.setFloat('time',time);water.setFloat('night',night);const flow=riverFlowVector(s);if(flowUniform.x!==flow.x||flowUniform.y!==flow.y){flowUniform.set(flow.x,flow.y);water.setVector2('riverFlow',flowUniform);}const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes||[]]);if(next===signature)return;signature=next;for(const m of meshes)m.dispose();meshes.length=0;
   // The terrain owner already carves the river and lake bed. A second opaque
   // ribbon intersects its differently triangulated slope, producing dark shards.
   const g=waterSurfaceGeometry(s);geometry('clear-living-river',g.river,water);geometry('clear-saved-lakes',g.lakes,water);

@@ -1,4 +1,4 @@
-import {WIDTH,HEIGHT,terrain,isShore} from './world.js';
+import {worldWidth,worldHeight,terrain,isShore} from './world.js';
 import {seed} from './city-life.js';
 export function weatherAt(s){
  const time=Math.max(0,s.simTime||0),worldSeed=s.world?.seed||73129;
@@ -11,12 +11,12 @@ export function weatherAt(s){
 }
 export function vegetationFor(s,network){
  const result=[],weather=weatherAt(s),vigor=s.drought>0?.25:weather.type==='rain'?1:(s.season===1?.65:.85);
- for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){
+ for(let y=0;y<worldHeight(s);y++)for(let x=0;x<worldWidth(s);x++){
   if(terrain(x,y,s)==='water'||s.buildings.some(b=>b.x===x&&b.y===y))continue;
   const n=seed(x+731,y+29);if(n>.24)continue;
   const px=x+(seed(x,y)-.5)*.36,py=y+(seed(y,x+2)-.5)*.36;
   if(network?.edges?.some(([a,b])=>{const t=Math.max(0,Math.min(1,((px-a.x)*(b.x-a.x)+(py-a.y)*(b.y-a.y))/((b.x-a.x)**2+(b.y-a.y)**2)));return Math.hypot(px-a.x-(b.x-a.x)*t,py-a.y-(b.y-a.y)*t)<.22;}))continue;
-  result.push({id:y*WIDTH+x,kind:isShore(s,x,y)?'reed':n<.035?'palm':n<.1?'shrub':'grass',x:px,y:py,vigor,growth:.65+.35*(.5-.5*Math.cos(Math.PI*2*((s.simTime||0)/360+seed(x,y))))});
+  result.push({id:y*worldWidth(s)+x,kind:isShore(s,x,y)?'reed':n<.035?'palm':n<.1?'shrub':'grass',x:px,y:py,vigor,growth:.65+.35*(.5-.5*Math.cos(Math.PI*2*((s.simTime||0)/360+seed(x,y))))});
  }
  return result;
 }

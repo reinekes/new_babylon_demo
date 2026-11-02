@@ -1,0 +1,137 @@
+{
+  "release": "world64-rivers-awakening-20261102-1",
+  "method": "Sequential Node benchmark,200 residents,129 buildings,900 simulation updates at4/60s. Legacy fixture unchanged;64 fixture distributes buildings across enlarged valley. CPU timings,notFPS.",
+  "legacy": {
+    "fixture": "legacy",
+    "width": 40,
+    "height": 32,
+    "buildings": 129,
+    "population": 200,
+    "assignmentMs": 5.244790999999992,
+    "simulation4x": {
+      "medianMs": 5.026625000000422,
+      "p95Ms": 11.525582999999642,
+      "maxMs": 180.96979100000044
+    },
+    "encode": {
+      "medianMs": 1.2468339999995806,
+      "maxMs": 4.226292000000285,
+      "bytes": 253015
+    },
+    "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c"
+  },
+  "world64": {
+    "fixture": "world64-seed137",
+    "width": 64,
+    "height": 64,
+    "buildings": 129,
+    "population": 200,
+    "assignmentMs": 5.4230420000000095,
+    "simulation4x": {
+      "medianMs": 4.912707999999839,
+      "p95Ms": 11.479542000000038,
+      "maxMs": 238.67712500000016
+    },
+    "encode": {
+      "medianMs": 2.0035420000003796,
+      "maxMs": 3.027834000000439,
+      "bytes": 343039
+    },
+    "stateSHA256": "e5f4ba01c397c79516f8320570018ef6d1fe8a75f7251401100d9518f852d48d"
+  },
+  "legacyStateMatchesPreviousRelease": true,
+  "legacySaveCheck": {
+    "count": 20,
+    "passed": true,
+    "files": [
+      "legacy-v1.json",
+      "legacy-v10-healer.json",
+      "legacy-v11-autumn.json",
+      "legacy-v12-harvest.json",
+      "legacy-v13-autumn.json",
+      "legacy-v14-warning-city.json",
+      "legacy-v15-districts.json",
+      "legacy-v16-textiles.json",
+      "legacy-v17-water-bricks.json",
+      "legacy-v18-kiln.json",
+      "legacy-v19-masonry.json",
+      "legacy-v2.json",
+      "legacy-v27-local-stock.json",
+      "legacy-v3.json",
+      "legacy-v4.json",
+      "legacy-v5.json",
+      "legacy-v6-city.json",
+      "legacy-v6-funeral.json",
+      "legacy-v7-city.json",
+      "legacy-v8-city.json"
+    ]
+  },
+  "geometry": {
+    "legacyGroundTriangles": 48890,
+    "world64GroundTriangles": 40704,
+    "riverTrianglesBoth": 9408
+  },
+  "webGLFPS": null,
+  "lakeGeometry": {
+    "kind": "CPU geometry construction; not FPS",
+    "rows": [
+      {
+        "seed": 0,
+        "lakes": 6,
+        "cells": 114,
+        "before": {
+          "triangles": 15548,
+          "vertices": 44860,
+          "cpuMedianMs": 697.21
+        },
+        "after": {
+          "triangles": 12892,
+          "vertices": 7362,
+          "cpuMedianMs": 119.39
+        }
+      },
+      {
+        "seed": 1,
+        "lakes": 6,
+        "cells": 114,
+        "before": {
+          "triangles": 15576,
+          "vertices": 44936,
+          "cpuMedianMs": 883.1
+        },
+        "after": {
+          "triangles": 12776,
+          "vertices": 7308,
+          "cpuMedianMs": 176.55
+        }
+      },
+      {
+        "seed": 42,
+        "lakes": 5,
+        "cells": 101,
+        "before": {
+          "triangles": 13796,
+          "vertices": 39832,
+          "cpuMedianMs": 1296
+        },
+        "after": {
+          "triangles": 11204,
+          "vertices": 6400,
+          "cpuMedianMs": 175.94
+        }
+      }
+    ]
+  },
+  "tests": {
+    "pass": 1305,
+    "fail": 0,
+    "durationMs": 153519.940792
+  },
+  "importMaps": {
+    "index.html": 167,
+    "courtyard.html": 147,
+    "district3d.html": 147,
+    "goat-studio.html": 147,
+    "tests/fixtures/scene-performance.html": 60
+  }
+}

@@ -1,7 +1,7 @@
 import {startMiracleCelebration,miracleCelebrationView,miracleCelebrationReason} from './miracle-celebration.js';
 import {storeStock,takeStock} from './inventory.js';
 import {buildingKey,isOperational} from './definitions.js';
-import {WIDTH,HEIGHT,isDryPoint,terrain} from './world.js';
+import {worldWidth,worldHeight,isDryPoint,terrain} from './world.js';
 import {safeLoop,loopMotion} from './local-motion.js';
 import {generateStreets} from './city-life.js';
 const layouts=new WeakMap(),roaming=new WeakMap();
@@ -87,8 +87,8 @@ export function catPettingPairs(s,citizens=s.citizens||[]){
 export function pestReport(s,key){const q=s.pests?.sites.find(q=>q.key===key);if(!q)return 'Мыши пока не замечены';const cat=s.pests.cats.some(c=>c.site===key),guard=s.citizens.find(c=>c.guardPost===key),onDuty=guard?.work===key&&guard?.phase==='working'&&!s.funeral?.actors.some(a=>a.id===guard.id);return `Мыши: ${q.mice} · ${cat?(q.mice?'Кошка охотится':'Кошка отдыхает · защита есть'):onDuty?'Сторож на посту':guard?'Сторож назначен · сейчас отсутствует':'Нет защиты'} · потеряно ${q.loss.toFixed(1)} еды · поймано ${q.caught} · прогнано ${q.scared}`;}
 export function validatePests(s){
  const p=s.pests,finite=n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<=1e9,int=(n,max=1e6)=>Number.isInteger(n)&&n>=0&&n<=max;
- if(!p||!Array.isArray(p.cats)||!Array.isArray(p.sites)||p.cats.length>1280||p.sites.length>1280||!int(p.nextCat)||!finite(p.totalLoss))return false;
- const ids=new Set(),keys=new Set(),catSites=new Set(),validKey=key=>typeof key==='string'&&/^[0-9]+,[0-9]+$/.test(key)&&Number(key.split(',')[0])<WIDTH&&Number(key.split(',')[1])<HEIGHT;for(const c of p.cats){if(!int(c.id)||c.id>=p.nextCat||ids.has(c.id)||!validKey(c.site)||catSites.has(c.site))return false;ids.add(c.id);catSites.add(c.site);}
+ if(!p||!Array.isArray(p.cats)||!Array.isArray(p.sites)||p.cats.length>worldWidth(s)*worldHeight(s)||p.sites.length>worldWidth(s)*worldHeight(s)||!int(p.nextCat)||!finite(p.totalLoss))return false;
+ const ids=new Set(),keys=new Set(),catSites=new Set(),validKey=key=>typeof key==='string'&&/^[0-9]+,[0-9]+$/.test(key)&&Number(key.split(',')[0])<worldWidth(s)&&Number(key.split(',')[1])<worldHeight(s);for(const c of p.cats){if(!int(c.id)||c.id>=p.nextCat||ids.has(c.id)||!validKey(c.site)||catSites.has(c.site))return false;ids.add(c.id);catSites.add(c.site);}
  for(const q of p.sites){if(typeof q.key!=='string'||keys.has(q.key)||!s.buildings.some(b=>buildingKey(b)===q.key&&isPestStore(b))||!int(q.mice,3)||!['clock','spawn','hunt','guardTime','loss','reported'].every(k=>finite(q[k]))||q.spawn>=45||q.hunt>10.1||q.guardTime>8.1||q.reported>q.loss||!int(q.caught)||!int(q.scared)||q.flash!==null&&(!q.flash||!finite(q.flash.time)||!finite(q.flash.phase)||q.flash.phase>q.flash.time+4.400001||q.flash.phase<q.flash.time||q.flash.time>q.clock||!['cat','guard'].includes(q.flash.by)))return false;keys.add(q.key);}
  return p.sites.reduce((n,q)=>n+q.loss,0)<=p.totalLoss+1e-6;
 }

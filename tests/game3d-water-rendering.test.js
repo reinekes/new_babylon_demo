@@ -39,3 +39,24 @@ test('switching saved river courses replaces water geometry even when lake cells
   const current=second.getVerticesData(B.VertexBuffer.PositionKind);for(let i=12*3;i<current.length;i+=25*3){const x=current[i]/6,y=current[i+2]/6;assert.ok(Math.abs(x-river(y,s))<1e-5);}
  }finally{view.dispose();scene.dispose();engine.dispose();}
 });
+
+test('both water layers move ripples in the saved river direction and reuse the uniform across frames',async()=>{
+ const {createDistrictTerrain}=await import('../district3d/terrain.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','grass','reed','stone'].map(k=>[k,new B.PBRMaterial(k,scene)])),full=createGameWater(B,scene,materials);
+ try{
+  for(const axis of ['x','y']){
+   const s={buildings:[],roads:[],world:{generationVersion:2,width:64,height:64,seed:1,river:{axis,flowSign:1,offset:32,slope:.08,amplitude:1.2,frequency:.12,phase:1},lakes:[]}};
+   const startup=createDistrictTerrain(B,scene,s,materials);
+   try{
+    const early=startup.meshes.find(m=>m.name==='living-river').material;
+    for(const sign of [-1,1]){
+     s.world.river.flowSign=sign;startup.update(s,5);full.update(s,5);
+     for(const material of [early,full.material]){const flow=material._vectors2.riverFlow;assert.equal(flow.x,axis==='x'?sign:0);assert.equal(flow.y,axis==='y'?sign:0);}
+     const previous=full.material._vectors2.riverFlow;full.update(s,6);assert.equal(full.material._vectors2.riverFlow,previous);
+    }
+   }finally{startup.dispose();}
+  }
+  assert.match(B.Effect.ShadersStore.districtRiverFragmentShader,/vWorld\.xz-riverFlow\*time/);
+  assert.match(B.Effect.ShadersStore.gameClearWaterFragmentShader,/vWorld\.xz-riverFlow\*mix\(time/);
+ }finally{full.dispose();scene.dispose();engine.dispose();}
+});

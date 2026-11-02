@@ -2,7 +2,7 @@ import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
-import {WIDTH,HEIGHT} from '../world.js';
+import {worldWidth,worldHeight} from '../world.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 export const AMBIENT_MODELS=Object.freeze({
@@ -18,14 +18,14 @@ export const AMBIENT_MODELS=Object.freeze({
 });
 // Ambient actors are deliberately absent from saves, hunting, stocks and selection.
 export function ambientDryPoint(state,x,y,margin=.18){
- if(!Number.isFinite(x)||!Number.isFinite(y)||x<1||y<1||x>WIDTH-2||y>HEIGHT-2||shoreDistance(x,y,state)<margin)return false;
+ if(!Number.isFinite(x)||!Number.isFinite(y)||x<1||y<1||x>worldWidth(state)-2||y>worldHeight(state)-2||shoreDistance(x,y,state)<margin)return false;
  return !(state.buildings||[]).some(b=>{const r=b.type==='canal'?.36:.72,n=footprintSize(b);return x>b.x-r&&x<b.x+n-1+r&&y>b.y-r&&y<b.y+n-1+r;});
 }
 export function ambientClearSegment(state,a,b){const n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/.06));for(let i=0;i<=n;i++)if(!ambientDryPoint(state,a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false;return true;}
 export function ambientAnchor(state,species,index=0,occupied=[]){
  const kinds=Object.keys(AMBIENT_MODELS),id=kinds.indexOf(species),houses=(state.buildings||[]).filter(b=>b.type==='house'),home=houses[(Math.max(0,id)*2+index*3)%Math.max(1,houses.length)]||{x:8,y:8};
  const wild={goose:{x:27,y:10},duck:{x:29,y:21},fox:{x:4,y:24},boar:{x:28,y:17},lioness:{x:34,y:27},bull:{x:22,y:12},'sheep-kenchoo':{x:5,y:15},donkey:{x:home.x+2,y:home.y+2}};
- const base=wild[species]||home,seed={x:base.x+(index%2)*4.5-Math.floor(index/2)*2,y:base.y+Math.floor(index/2)*4-(index%2)*2};
+ const wildBase=wild[species],base=wildBase&&species!=='donkey'?{x:wildBase.x*worldWidth(state)/40,y:wildBase.y*worldHeight(state)/32}:wildBase||home,seed={x:base.x+(index%2)*4.5-Math.floor(index/2)*2,y:base.y+Math.floor(index/2)*4-(index%2)*2};
  for(let ring=0;ring<32;ring++)for(let j=0;j<16;j++){const angle=(j+index*.73+id*1.37)*Math.PI/8,r=.9+ring*.28,x=seed.x+Math.cos(angle)*r,y=seed.y+Math.sin(angle)*r;if(ambientDryPoint(state,x,y,.3)&&occupied.every(p=>Math.hypot(p.x-x,p.y-y)>2.2)&&(!['fox','boar','lioness'].includes(species)||!(state.buildings||[]).some(b=>Math.hypot(b.x-x,b.y-y)<3)))return {x,y};}
  return null;
 }
@@ -58,14 +58,14 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function removeActor(a){farmMaterials.get(a.root)?.dispose();farmMaterials.delete(a.root);for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);}
  function update(state,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;
-  const stateChanged=state!==lastState;if(stateChanged){lastState=state;for(const a of actors)if(!a.farm&&!['sky-birds','original-sky'].includes(a.species)){a.anchor=null;a.target=null;a.enabled=false;a.restUntil=clock;a.routeAttempt=0;}}
+  const stateChanged=state!==lastState;if(stateChanged){lastState=state;for(const a of actors){if(['sky-birds','original-sky'].includes(a.species)){a.skyPlaced=false;continue;}if(!a.farm){a.anchor=null;a.target=null;a.enabled=false;a.restUntil=clock;a.routeAttempt=0;}}}
   const farms=new Map(dairyHerd(state).map(f=>[f.id,f]));for(const a of [...actors]){if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
   for(const species of Object.keys(AMBIENT_MODELS)){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>a.species===species).length;i<desired;i++)imported(species,i);}
   for(const f of farms.values())if(!actors.some(a=>a.farm?.id===f.id))imported('cow',f.index,f);
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(4,speed)):1;const advancing=!paused&&dt>0&&speed>0;if(advancing)clock+=dt*speed;
   for(const a of actors){if(a.farm){a.farm=farms.get(a.farm.id);const p=dairyPose(a.farm,clock);a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);a.root.rotation.y=p.yaw;a.root.metadata.herdAnimal=true;if(advancing)a.walkPhase=(a.walkPhase+dt*speed*.035)%1;animate(a,clock,p.walking);continue;}const sky=a.species==='sky-birds'||a.species==='original-sky';
-   if(sky){if(!advancing&&a.skyPlaced)continue;const p=skyFlightPose(clock*.045,a.index);a.root.position.set(p.x,p.y,p.z);a.root.rotation.y=p.yaw;a.root.rotation.z=p.bank;a.skyPlaced=true;if(a.wings){a.wings[0].rotation.z=.55*Math.sin(clock*7+a.phase);a.wings[1].rotation.z=Math.PI-.55*Math.sin(clock*7+a.phase);}animate(a,clock);continue;}
+   if(sky){if(!advancing&&a.skyPlaced)continue;const p=skyFlightPose(clock*.045,a.index,{state});a.root.position.set(p.x,p.y,p.z);a.root.rotation.y=p.yaw;a.root.rotation.z=p.bank;a.skyPlaced=true;if(a.wings){a.wings[0].rotation.z=.55*Math.sin(clock*7+a.phase);a.wings[1].rotation.z=Math.PI-.55*Math.sin(clock*7+a.phase);}animate(a,clock);continue;}
    if(!a.anchor)seek(a,state);
    if(stateChanged)animate(a,clock);if(!advancing)continue;
    const x=a.root.position.x/6,y=a.root.position.z/6;
