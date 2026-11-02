@@ -1,0 +1,129 @@
+{
+  "release": "terrain-seam-20261102-1",
+  "commit": "892d7695af3bd04742ab336babce2ec55e4e7568",
+  "url": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "bytes": 193401,
+      "expectedSha256": "efdfef952340ed2b462739a8538a976fa8630578da95b9f4a8412b88e71822f7",
+      "actualSha256": "efdfef952340ed2b462739a8538a976fa8630578da95b9f4a8412b88e71822f7",
+      "matches": true
+    },
+    {
+      "path": "assets/vendor/babylon-9.31.0.js",
+      "status": 200,
+      "bytes": 8627936,
+      "expectedSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "actualSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "matches": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "bytes": 13800,
+      "expectedSha256": "39b61d09699a9164d4576ad2d02c56b41942815d58df01b26353b6f400ffe08d",
+      "actualSha256": "39b61d09699a9164d4576ad2d02c56b41942815d58df01b26353b6f400ffe08d",
+      "matches": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "bytes": 14401,
+      "expectedSha256": "303b77ae106daebf6166098647b2d96ce159256c394a147477864ffa17efdcd7",
+      "actualSha256": "303b77ae106daebf6166098647b2d96ce159256c394a147477864ffa17efdcd7",
+      "matches": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "bytes": 17897,
+      "expectedSha256": "fdd5c43690fcd72d6ffe88d0fe669d3051fdf5566d376d38d53ea270c3483312",
+      "actualSha256": "fdd5c43690fcd72d6ffe88d0fe669d3051fdf5566d376d38d53ea270c3483312",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-terrain-cpu.json",
+      "status": 200,
+      "bytes": 754,
+      "expectedSha256": "927cdf581263a92bdce5dfc8df6119dca6717db93e44a321dc5b60b2f5c9df4c",
+      "actualSha256": "927cdf581263a92bdce5dfc8df6119dca6717db93e44a321dc5b60b2f5c9df4c",
+      "matches": true
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-02-terrain-seam.md",
+      "status": 200,
+      "bytes": 5587,
+      "expectedSha256": "fde8fa489fad6a2adb6c68d11669d2a2cf81d6970e961b827afb22aca181999b",
+      "actualSha256": "fde8fa489fad6a2adb6c68d11669d2a2cf81d6970e961b827afb22aca181999b",
+      "matches": true
+    },
+    {
+      "path": "game3d/bootstrap-landscape.js",
+      "status": 200,
+      "bytes": 4912,
+      "expectedSha256": "db5f9df74d695f5934758a802762e381dbc9a0096c04758be386e30587933027",
+      "actualSha256": "db5f9df74d695f5934758a802762e381dbc9a0096c04758be386e30587933027",
+      "matches": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "bytes": 29481,
+      "expectedSha256": "a95b36290606661cbf585473be4bbcf04e03306c9f637c668e38eafee23eac60",
+      "actualSha256": "a95b36290606661cbf585473be4bbcf04e03306c9f637c668e38eafee23eac60",
+      "matches": true
+    },
+    {
+      "path": "game3d/terrain-deformation.js",
+      "status": 200,
+      "bytes": 2265,
+      "expectedSha256": "402673fb4469556c92f9a11fdbd1889bd1d0275e52134daa4d68d1536f09e66e",
+      "actualSha256": "402673fb4469556c92f9a11fdbd1889bd1d0275e52134daa4d68d1536f09e66e",
+      "matches": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "bytes": 18208,
+      "expectedSha256": "f14e2716ab722232e5832375de8f3fcdec4011d9bd86b9bd341c67d19d2e48b4",
+      "actualSha256": "f14e2716ab722232e5832375de8f3fcdec4011d9bd86b9bd341c67d19d2e48b4",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 22756,
+      "expectedSha256": "c12cda7e047bfca904811f7e5fce8e9e2d68782847cfeef12d6af776a7dfa4ca",
+      "actualSha256": "c12cda7e047bfca904811f7e5fce8e9e2d68782847cfeef12d6af776a7dfa4ca",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "bytes": 6146,
+      "expectedSha256": "d29f89d6a0da99d34e3311632c0c3bea7f9ceff2d05f4a13d5c8a19c86cb7526",
+      "actualSha256": "d29f89d6a0da99d34e3311632c0c3bea7f9ceff2d05f4a13d5c8a19c86cb7526",
+      "matches": true
+    },
+    {
+      "path": "tests/terrain-detail-rim.test.js",
+      "status": 200,
+      "bytes": 2872,
+      "expectedSha256": "4d803f0e4e92ac269994b9ab99b33675bcca261a33e3dafa332bfe5f8f1c1693",
+      "actualSha256": "4d803f0e4e92ac269994b9ab99b33675bcca261a33e3dafa332bfe5f8f1c1693",
+      "matches": true
+    },
+    {
+      "path": "tests/terrain-rim-topology.test.js",
+      "status": 200,
+      "bytes": 1586,
+      "expectedSha256": "6dca25429a3820ba21d7fae704c6d89127a3c3d12c599d5249e601fa310226a9",
+      "actualSha256": "6dca25429a3820ba21d7fae704c6d89127a3c3d12c599d5249e601fa310226a9",
+      "matches": true
+    }
+  ],
+  "passed": 15,
+  "total": 15
+}
