@@ -1,0 +1,217 @@
+{
+  "release": "performance-caches-20261102-1",
+  "commit": "badcfc449982d327b54290fb93925809e6bf8fdf",
+  "url": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "bytes": 190766,
+      "expectedSha256": "79dee0395bef2c46f5957f9ae1ad54ed219823d3cf3ec9136866d6ea7621a0c3",
+      "actualSha256": "79dee0395bef2c46f5957f9ae1ad54ed219823d3cf3ec9136866d6ea7621a0c3",
+      "matches": true
+    },
+    {
+      "path": "assets/vendor/babylon-9.31.0.js",
+      "status": 200,
+      "bytes": 8627936,
+      "expectedSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "actualSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "matches": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "bytes": 13314,
+      "expectedSha256": "ad52d88d81e2a1a9bce18d43ba914ff6f34d0df63ccc03e21eaa16494765c7ae",
+      "actualSha256": "ad52d88d81e2a1a9bce18d43ba914ff6f34d0df63ccc03e21eaa16494765c7ae",
+      "matches": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "bytes": 13916,
+      "expectedSha256": "16ef59ba3eea01ca3d5c7e5a12f3fc571453633d979d6ccbe04c69b6cddbf5a9",
+      "actualSha256": "16ef59ba3eea01ca3d5c7e5a12f3fc571453633d979d6ccbe04c69b6cddbf5a9",
+      "matches": true
+    },
+    {
+      "path": "district3d/buildings.js",
+      "status": 200,
+      "bytes": 17918,
+      "expectedSha256": "71c3565bb7d9af66457ebf0d42da7c770cce47c5cf766d0ecf9f43d47bbdc94f",
+      "actualSha256": "71c3565bb7d9af66457ebf0d42da7c770cce47c5cf766d0ecf9f43d47bbdc94f",
+      "matches": true
+    },
+    {
+      "path": "docs/PERFORMANCE_ITERATIONS_2026-10-28.md",
+      "status": 200,
+      "bytes": 22279,
+      "expectedSha256": "2d8f71493538bf90b66def1d5546cc24521be2972dfd4c4cf0118f3abfbceeb5",
+      "actualSha256": "2d8f71493538bf90b66def1d5546cc24521be2972dfd4c4cf0118f3abfbceeb5",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-10-28-performance-baseline.json",
+      "status": 200,
+      "bytes": 7012,
+      "expectedSha256": "fa0b82102dd3e5fdc0a5c7b1c2d500cac05546edc7c4700443ae9a5f4e0024a7",
+      "actualSha256": "fa0b82102dd3e5fdc0a5c7b1c2d500cac05546edc7c4700443ae9a5f4e0024a7",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-field-cpu-after-repeat.json",
+      "status": 200,
+      "bytes": 82631,
+      "expectedSha256": "d85802068601a5588a80e24f2c1ca8186de0b5ab69cdcd7afd7e58eba1f49fc4",
+      "actualSha256": "d85802068601a5588a80e24f2c1ca8186de0b5ab69cdcd7afd7e58eba1f49fc4",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-field-cpu-after.json",
+      "status": 200,
+      "bytes": 82686,
+      "expectedSha256": "92181c7be7976c3504754751bf180b4dfafc949df3865d507069d213485c39cd",
+      "actualSha256": "92181c7be7976c3504754751bf180b4dfafc949df3865d507069d213485c39cd",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-field-cpu-before-repeat.json",
+      "status": 200,
+      "bytes": 85252,
+      "expectedSha256": "4bcee29559abc83b03c9afb25a7689c7c638c4c51da0d85445dc4d65d4596e6c",
+      "actualSha256": "4bcee29559abc83b03c9afb25a7689c7c638c4c51da0d85445dc4d65d4596e6c",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-field-cpu-before.json",
+      "status": 200,
+      "bytes": 84994,
+      "expectedSha256": "8201dcc2bfb4428676698b221a4e3015737a9559203c2a0afb76b230ebfe7546",
+      "actualSha256": "8201dcc2bfb4428676698b221a4e3015737a9559203c2a0afb76b230ebfe7546",
+      "matches": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "bytes": 49455,
+      "expectedSha256": "d63d14803e8b329aa29d3013a7ce721cea1afdfb4579f4335001a40349b9288e",
+      "actualSha256": "d63d14803e8b329aa29d3013a7ce721cea1afdfb4579f4335001a40349b9288e",
+      "matches": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "bytes": 59553,
+      "expectedSha256": "9529d9727fcfffa8bb16a1bc24a140379dbb2c5432a33c5f94aa041d3b8166f3",
+      "actualSha256": "9529d9727fcfffa8bb16a1bc24a140379dbb2c5432a33c5f94aa041d3b8166f3",
+      "matches": true
+    },
+    {
+      "path": "game3d/buildings.js",
+      "status": 200,
+      "bytes": 19979,
+      "expectedSha256": "58104532b3ba545413c7b858785c357cf1db10c35eddc15e560e876c5889257b",
+      "actualSha256": "58104532b3ba545413c7b858785c357cf1db10c35eddc15e560e876c5889257b",
+      "matches": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "bytes": 24896,
+      "expectedSha256": "226f37226c07c05baf0efe4f9475afeb41a24c79a2a322f156794c17db8491d0",
+      "actualSha256": "226f37226c07c05baf0efe4f9475afeb41a24c79a2a322f156794c17db8491d0",
+      "matches": true
+    },
+    {
+      "path": "game3d/valley-vegetation.js",
+      "status": 200,
+      "bytes": 8221,
+      "expectedSha256": "e99a3cda8c9b074832bc05a0b460557d4838722226f5c9f2eb06f0de5ac56b40",
+      "actualSha256": "e99a3cda8c9b074832bc05a0b460557d4838722226f5c9f2eb06f0de5ac56b40",
+      "matches": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "bytes": 17722,
+      "expectedSha256": "c33db8918b84e7996cfa839a48686e02f287dcc6e8b036100af85b2bdc490f9a",
+      "actualSha256": "c33db8918b84e7996cfa839a48686e02f287dcc6e8b036100af85b2bdc490f9a",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 22345,
+      "expectedSha256": "bcd91264b01e62e5523b9cabd9ab1f6cea9d2da596ce3c2e9dbb9e8156d8afcd",
+      "actualSha256": "bcd91264b01e62e5523b9cabd9ab1f6cea9d2da596ce3c2e9dbb9e8156d8afcd",
+      "matches": true
+    },
+    {
+      "path": "scripts/benchmark-field-render.mjs",
+      "status": 200,
+      "bytes": 12357,
+      "expectedSha256": "a5ee1e234e6d0a2029837d769355f18cf12bbbbab46704c1e6d4d52c256b8b2e",
+      "actualSha256": "a5ee1e234e6d0a2029837d769355f18cf12bbbbab46704c1e6d4d52c256b8b2e",
+      "matches": true
+    },
+    {
+      "path": "tests/field-render-cache.test.js",
+      "status": 200,
+      "bytes": 9069,
+      "expectedSha256": "ae2d54d6745e26e60f3faed2384724b7569d0ff822b7edf1b49c4fea5d41f8f0",
+      "actualSha256": "ae2d54d6745e26e60f3faed2384724b7569d0ff822b7edf1b49c4fea5d41f8f0",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "bytes": 2574,
+      "expectedSha256": "3eca688ea633775a94ff653728a57bb50c77cfd8d8ee76d3cdbc8a08b2eebbaf",
+      "actualSha256": "3eca688ea633775a94ff653728a57bb50c77cfd8d8ee76d3cdbc8a08b2eebbaf",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.js",
+      "status": 200,
+      "bytes": 8679,
+      "expectedSha256": "417e4f0a021a4a3374709edaa21156d32f7850555b3fe719060ddc5d38fc8c36",
+      "actualSha256": "417e4f0a021a4a3374709edaa21156d32f7850555b3fe719060ddc5d38fc8c36",
+      "matches": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "bytes": 29954,
+      "expectedSha256": "b8ea2cc62ff9da6045ce3b4ff0b6f9acea552e141a2fbc3b918031df249cddfd",
+      "actualSha256": "b8ea2cc62ff9da6045ce3b4ff0b6f9acea552e141a2fbc3b918031df249cddfd",
+      "matches": true
+    },
+    {
+      "path": "tests/resident-appearance-cache.test.js",
+      "status": 200,
+      "bytes": 11050,
+      "expectedSha256": "14de0cdc9b37936d00eabdd9d7fbb83ae1ba08da7c5052f457593f42e45baac2",
+      "actualSha256": "14de0cdc9b37936d00eabdd9d7fbb83ae1ba08da7c5052f457593f42e45baac2",
+      "matches": true
+    },
+    {
+      "path": "tests/valley-vegetation.test.js",
+      "status": 200,
+      "bytes": 11150,
+      "expectedSha256": "b4073d29c8578c56443f487cf0c229086d29d2f5d576159b623922379c62dae1",
+      "actualSha256": "b4073d29c8578c56443f487cf0c229086d29d2f5d576159b623922379c62dae1",
+      "matches": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "bytes": 62164,
+      "expectedSha256": "99739f5e38500491bd210e3d4af89b90adeeda03661ca56ec2e34e682055290e",
+      "actualSha256": "99739f5e38500491bd210e3d4af89b90adeeda03661ca56ec2e34e682055290e",
+      "matches": true
+    }
+  ],
+  "passed": 26,
+  "total": 26
+}
