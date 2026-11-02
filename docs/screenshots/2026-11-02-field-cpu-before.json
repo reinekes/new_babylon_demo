@@ -1,0 +1,4206 @@
+{
+  "method": "Node NullEngine CPU only; dt=1/60 real, speed4,calendarRate.25;900steps;first180warmup;actual static GLB geometry,1x1textures;no scene.render",
+  "shape": {
+    "residents": 200,
+    "buildings": 129,
+    "fields": 62,
+    "construction": 0,
+    "startSim": 0,
+    "startSeasonElapsed": 0
+  },
+  "end": {
+    "simTime": 15.000000000000325,
+    "seasonElapsed": 15.000000000000325,
+    "residents": 200,
+    "event": null
+  },
+  "loads": [
+    "assets/art-courtyard/models/valley-barley.glb",
+    "assets/art-courtyard/models/crop-emmer.glb"
+  ],
+  "readOnly": true,
+  "productionSourceUnchanged": true,
+  "signatureChangeCounts": {
+    "field.crop": 9
+  },
+  "signatureTransitionCount": 9,
+  "changedFrameCount": 8,
+  "syncAll": {
+    "n": 900,
+    "totalMs": 1930.993,
+    "meanMs": 2.146,
+    "medianMs": 0.566,
+    "p95Ms": 1.238,
+    "maxMs": 320.256
+  },
+  "syncMeasured": {
+    "n": 720,
+    "totalMs": 1824.53,
+    "meanMs": 2.534,
+    "medianMs": 0.58,
+    "p95Ms": 1.272,
+    "maxMs": 320.256
+  },
+  "syncMeasuredUnchanged": {
+    "n": 712,
+    "totalMs": 465.96,
+    "meanMs": 0.654,
+    "medianMs": 0.579,
+    "p95Ms": 1.214,
+    "maxMs": 3.723
+  },
+  "syncMeasuredChanged": {
+    "n": 8,
+    "totalMs": 1358.569,
+    "meanMs": 169.821,
+    "medianMs": 240.402,
+    "p95Ms": 320.256,
+    "maxMs": 320.256
+  },
+  "simulation": {
+    "n": 900,
+    "totalMs": 4585.868,
+    "meanMs": 5.095,
+    "medianMs": 4.564,
+    "p95Ms": 7.552,
+    "maxMs": 89.126
+  },
+  "phases": {
+    "acquire": {
+      "n": 9,
+      "totalMs": 1348.474,
+      "meanMs": 149.83,
+      "medianMs": 231.646,
+      "p95Ms": 318.614,
+      "maxMs": 318.614
+    },
+    "clip": {
+      "n": 13,
+      "totalMs": 1283.543,
+      "meanMs": 98.734,
+      "medianMs": 21.206,
+      "p95Ms": 283.353,
+      "maxMs": 283.353
+    },
+    "procedural": {
+      "n": 9,
+      "totalMs": 44.193,
+      "meanMs": 4.91,
+      "medianMs": 2.701,
+      "p95Ms": 13.768,
+      "maxMs": 13.768
+    }
+  },
+  "initialPhases": {
+    "acquire": {
+      "n": 75,
+      "totalMs": 721.182,
+      "meanMs": 9.616,
+      "medianMs": 0.824,
+      "p95Ms": 55.147,
+      "maxMs": 224.208
+    },
+    "clip": {
+      "n": 62,
+      "totalMs": 461.074,
+      "meanMs": 7.437,
+      "medianMs": 0.022,
+      "p95Ms": 53.92,
+      "maxMs": 216.412
+    },
+    "procedural": {
+      "n": 62,
+      "totalMs": 51.914,
+      "meanMs": 0.837,
+      "medianMs": 0.659,
+      "p95Ms": 1.789,
+      "maxMs": 4.418
+    }
+  },
+  "slowFrames": [
+    {
+      "frame": 616,
+      "simTime": 10.283333333333424,
+      "syncMs": 320.25566700000036,
+      "simMs": 5.090624999999818,
+      "changed": [
+        "12,8"
+      ],
+      "eventStart": 11,
+      "eventEnd": 15,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 616,
+          "id": "template",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 9.901667000000089,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            },
+            {
+              "name": "field-grass",
+              "vertices": 3654,
+              "indices": 7560
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 616,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 283.3528749999996,
+          "inputVertices": 216,
+          "outputVertices": 27305,
+          "sameData": false
+        },
+        {
+          "kind": "clip",
+          "frame": 616,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 21.205541999999696,
+          "inputVertices": 3654,
+          "outputVertices": 3419,
+          "sameData": false
+        },
+        {
+          "kind": "acquire",
+          "frame": 616,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 318.6144999999997,
+          "vertices": 30724,
+          "meshes": 2
+        }
+      ]
+    },
+    {
+      "frame": 688,
+      "simTime": 11.483333333333483,
+      "syncMs": 301.4157090000008,
+      "simMs": 4.349707999999737,
+      "changed": [
+        "12,8"
+      ],
+      "eventStart": 15,
+      "eventEnd": 19,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 688,
+          "id": "template",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 13.76825000000008,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            },
+            {
+              "name": "field-grass",
+              "vertices": 4814,
+              "indices": 9960
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 688,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 256.6779580000002,
+          "inputVertices": 216,
+          "outputVertices": 27305,
+          "sameData": false
+        },
+        {
+          "kind": "clip",
+          "frame": 688,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 25.511500000000524,
+          "inputVertices": 4814,
+          "outputVertices": 3582,
+          "sameData": false
+        },
+        {
+          "kind": "acquire",
+          "frame": 688,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 300.5843329999998,
+          "vertices": 30887,
+          "meshes": 2
+        }
+      ]
+    },
+    {
+      "frame": 544,
+      "simTime": 9.083333333333364,
+      "syncMs": 253.87929200000053,
+      "simMs": 4.430166999999528,
+      "changed": [
+        "12,8"
+      ],
+      "eventStart": 7,
+      "eventEnd": 11,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 544,
+          "id": "template",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 10.457666000000245,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            },
+            {
+              "name": "field-grass",
+              "vertices": 2436,
+              "indices": 5040
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 544,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 228.1519160000007,
+          "inputVertices": 216,
+          "outputVertices": 27305,
+          "sameData": false
+        },
+        {
+          "kind": "clip",
+          "frame": 544,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 11.08587499999976,
+          "inputVertices": 2436,
+          "outputVertices": 2417,
+          "sameData": false
+        },
+        {
+          "kind": "acquire",
+          "frame": 544,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 253.04670799999985,
+          "vertices": 29722,
+          "meshes": 2
+        }
+      ]
+    },
+    {
+      "frame": 472,
+      "simTime": 7.883333333333311,
+      "syncMs": 240.40191700000014,
+      "simMs": 4.874207999999271,
+      "changed": [
+        "12,8"
+      ],
+      "eventStart": 3,
+      "eventEnd": 7,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 472,
+          "id": "template",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 4.315249999999651,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            },
+            {
+              "name": "field-grass",
+              "vertices": 1218,
+              "indices": 2520
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 472,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 225.6077089999999,
+          "inputVertices": 216,
+          "outputVertices": 27305,
+          "sameData": false
+        },
+        {
+          "kind": "clip",
+          "frame": 472,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 4.886540999999852,
+          "inputVertices": 1218,
+          "outputVertices": 1176,
+          "sameData": false
+        },
+        {
+          "kind": "acquire",
+          "frame": 472,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 239.05474999999933,
+          "vertices": 28481,
+          "meshes": 2
+        }
+      ]
+    },
+    {
+      "frame": 400,
+      "simTime": 6.683333333333315,
+      "syncMs": 233.1256659999999,
+      "simMs": 15.555292000000009,
+      "changed": [
+        "12,8"
+      ],
+      "eventStart": 0,
+      "eventEnd": 3,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 400,
+          "id": "template",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 0.7918749999998909,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 400,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 227.00987499999974,
+          "inputVertices": 216,
+          "outputVertices": 27305,
+          "sameData": false
+        },
+        {
+          "kind": "acquire",
+          "frame": 400,
+          "id": "12,8",
+          "type": "field",
+          "x": 12,
+          "y": 8,
+          "ms": 231.64616700000033,
+          "vertices": 27305,
+          "meshes": 1
+        }
+      ]
+    },
+    {
+      "frame": 814,
+      "simTime": 13.583333333333588,
+      "syncMs": 5.038958000000093,
+      "simMs": 19.354083000000173,
+      "changed": [
+        "8,4"
+      ],
+      "eventStart": 28,
+      "eventEnd": 31,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 814,
+          "id": "template",
+          "type": "field",
+          "x": 8,
+          "y": 4,
+          "ms": 2.701125000000502,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 814,
+          "id": "8,4",
+          "type": "field",
+          "x": 8,
+          "y": 4,
+          "ms": 0.02345900000000256,
+          "inputVertices": 216,
+          "outputVertices": 216,
+          "sameData": true
+        },
+        {
+          "kind": "acquire",
+          "frame": 814,
+          "id": "8,4",
+          "type": "field",
+          "x": 8,
+          "y": 4,
+          "ms": 2.9864580000003116,
+          "vertices": 216,
+          "meshes": 1
+        }
+      ]
+    },
+    {
+      "frame": 772,
+      "simTime": 12.883333333333553,
+      "syncMs": 3.722917000000052,
+      "simMs": 8.14141699999982,
+      "changed": [],
+      "eventStart": 22,
+      "eventEnd": 22,
+      "events": []
+    },
+    {
+      "frame": 663,
+      "simTime": 11.066666666666796,
+      "syncMs": 2.8500410000006013,
+      "simMs": 4.227708000000348,
+      "changed": [],
+      "eventStart": 15,
+      "eventEnd": 15,
+      "events": []
+    },
+    {
+      "frame": 780,
+      "simTime": 13.016666666666893,
+      "syncMs": 2.6082500000002256,
+      "simMs": 18.584125000000313,
+      "changed": [
+        "6,6",
+        "10,10"
+      ],
+      "eventStart": 22,
+      "eventEnd": 28,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 780,
+          "id": "template",
+          "type": "field",
+          "x": 6,
+          "y": 6,
+          "ms": 0.6879580000004353,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 780,
+          "id": "6,6",
+          "type": "field",
+          "x": 6,
+          "y": 6,
+          "ms": 0.00929199999973207,
+          "inputVertices": 216,
+          "outputVertices": 216,
+          "sameData": true
+        },
+        {
+          "kind": "acquire",
+          "frame": 780,
+          "id": "6,6",
+          "type": "field",
+          "x": 6,
+          "y": 6,
+          "ms": 0.7795420000002196,
+          "vertices": 216,
+          "meshes": 1
+        },
+        {
+          "kind": "procedural",
+          "frame": 780,
+          "id": "template",
+          "type": "field",
+          "x": 10,
+          "y": 10,
+          "ms": 0.8091670000003433,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 780,
+          "id": "10,10",
+          "type": "field",
+          "x": 10,
+          "y": 10,
+          "ms": 0.008874999999534339,
+          "inputVertices": 216,
+          "outputVertices": 216,
+          "sameData": true
+        },
+        {
+          "kind": "acquire",
+          "frame": 780,
+          "id": "10,10",
+          "type": "field",
+          "x": 10,
+          "y": 10,
+          "ms": 0.8789999999999054,
+          "vertices": 216,
+          "meshes": 1
+        }
+      ]
+    },
+    {
+      "frame": 521,
+      "simTime": 8.700000000000012,
+      "syncMs": 2.429124999999658,
+      "simMs": 5.038249999999607,
+      "changed": [],
+      "eventStart": 7,
+      "eventEnd": 7,
+      "events": []
+    },
+    {
+      "frame": 755,
+      "simTime": 12.600000000000206,
+      "syncMs": 2.3133340000003955,
+      "simMs": 6.304124999999658,
+      "changed": [],
+      "eventStart": 22,
+      "eventEnd": 22,
+      "events": []
+    },
+    {
+      "frame": 422,
+      "simTime": 7.04999999999998,
+      "syncMs": 2.2368329999999332,
+      "simMs": 4.2983329999997295,
+      "changed": [],
+      "eventStart": 3,
+      "eventEnd": 3,
+      "events": []
+    },
+    {
+      "frame": 878,
+      "simTime": 14.650000000000308,
+      "syncMs": 2.042333999999755,
+      "simMs": 11.475541000001613,
+      "changed": [],
+      "eventStart": 31,
+      "eventEnd": 31,
+      "events": []
+    },
+    {
+      "frame": 498,
+      "simTime": 8.31666666666666,
+      "syncMs": 1.8437919999996666,
+      "simMs": 5.4789160000000265,
+      "changed": [],
+      "eventStart": 7,
+      "eventEnd": 7,
+      "events": []
+    },
+    {
+      "frame": 713,
+      "simTime": 11.90000000000017,
+      "syncMs": 1.84375,
+      "simMs": 13.323584000000665,
+      "changed": [
+        "10,6"
+      ],
+      "eventStart": 19,
+      "eventEnd": 22,
+      "events": [
+        {
+          "kind": "procedural",
+          "frame": 713,
+          "id": "template",
+          "type": "field",
+          "x": 10,
+          "y": 6,
+          "ms": 0.7601670000003651,
+          "meshes": [
+            {
+              "name": "field-district-wet-silt",
+              "vertices": 216,
+              "indices": 324
+            }
+          ]
+        },
+        {
+          "kind": "clip",
+          "frame": 713,
+          "id": "10,6",
+          "type": "field",
+          "x": 10,
+          "y": 6,
+          "ms": 0.011457999999947788,
+          "inputVertices": 216,
+          "outputVertices": 216,
+          "sameData": true
+        },
+        {
+          "kind": "acquire",
+          "frame": 713,
+          "id": "10,6",
+          "type": "field",
+          "x": 10,
+          "y": 6,
+          "ms": 0.8821250000000873,
+          "vertices": 216,
+          "meshes": 1
+        }
+      ]
+    }
+  ],
+  "byField": {
+    "field:12,8": {
+      "n": 5,
+      "totalMs": 1342.946457999999,
+      "maxMs": 318.6144999999997
+    },
+    "field:8,4": {
+      "n": 1,
+      "totalMs": 2.9864580000003116,
+      "maxMs": 2.9864580000003116
+    },
+    "field:10,6": {
+      "n": 1,
+      "totalMs": 0.8821250000000873,
+      "maxMs": 0.8821250000000873
+    },
+    "field:10,10": {
+      "n": 1,
+      "totalMs": 0.8789999999999054,
+      "maxMs": 0.8789999999999054
+    },
+    "field:6,6": {
+      "n": 1,
+      "totalMs": 0.7795420000002196,
+      "maxMs": 0.7795420000002196
+    }
+  },
+  "transitions": [
+    {
+      "frame": 400,
+      "simTime": 6.683333333333315,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0,
+        "seedUsed": 0,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0,
+          "growth": 0,
+          "standing": 0,
+          "sheaves": 0,
+          "stage": "empty",
+          "signature": "1:empty:0:0:0:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.00198412698412827,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.9920634920634868,
+        "seedUsed": 0.00793650793651308,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.00198412698412827,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:1:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 472,
+      "simTime": 7.883333333333311,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0.19920634920635005,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.2031746031746007,
+        "seedUsed": 0.7968253968254002,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.19920634920635005,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:1:0:6:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.20198412698412782,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.1920634920634896,
+        "seedUsed": 0.8079365079365113,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.20198412698412782,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:2:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 544,
+      "simTime": 9.083333333333364,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0.39920634920634934,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 2.4031746031746035,
+        "seedUsed": 1.5968253968253974,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.39920634920634934,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:2:0:6:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.4019841269841271,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 2.3920634920634924,
+        "seedUsed": 1.6079365079365084,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.4019841269841271,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:3:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 616,
+      "simTime": 10.283333333333424,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0.5992063492063486,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 1.6031746031746064,
+        "seedUsed": 2.3968253968253945,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.5992063492063486,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:3:0:6:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.6019841269841264,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 1.5920634920634953,
+        "seedUsed": 2.4079365079365056,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.6019841269841264,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:4:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 688,
+      "simTime": 11.483333333333483,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0.7992063492063479,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0.8031746031746092,
+        "seedUsed": 3.1968253968253917,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.7992063492063479,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:4:0:6:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.8019841269841257,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0.7920634920634981,
+        "seedUsed": 3.2079365079365028,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.8019841269841257,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:5:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 713,
+      "simTime": 11.90000000000017,
+      "id": "10,6",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0,
+        "seedUsed": 0,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0,
+          "growth": 0,
+          "standing": 0,
+          "sheaves": 0,
+          "stage": "empty",
+          "signature": "1:empty:0:0:0:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.0015137202582374938,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.99394511896705,
+        "seedUsed": 0.006054881032949975,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.0015137202582374938,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:1:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 780,
+      "simTime": 13.016666666666893,
+      "id": "6,6",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0,
+        "seedUsed": 0,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0,
+          "growth": 0,
+          "standing": 0,
+          "sheaves": 0,
+          "stage": "empty",
+          "signature": "1:empty:0:0:0:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.0007200694645879184,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.9971197221416483,
+        "seedUsed": 0.0028802778583516737,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.0007200694645879184,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:1:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 780,
+      "simTime": 13.016666666666893,
+      "id": "10,10",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0,
+        "seedUsed": 0,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0,
+          "growth": 0,
+          "standing": 0,
+          "sheaves": 0,
+          "stage": "empty",
+          "signature": "1:empty:0:0:0:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.0001248313693487433,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.999500674522605,
+        "seedUsed": 0.0004993254773949732,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.0001248313693487433,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:1:0:6:0"
+        }
+      }
+    },
+    {
+      "frame": 814,
+      "simTime": 13.583333333333588,
+      "id": "8,4",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "fields": [
+        "crop"
+      ],
+      "before": {
+        "year": 1,
+        "sown": 0,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 0,
+        "seedUsed": 0,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0,
+          "growth": 0,
+          "standing": 0,
+          "sheaves": 0,
+          "stage": "empty",
+          "signature": "1:empty:0:0:0:0"
+        }
+      },
+      "after": {
+        "year": 1,
+        "sown": 0.0007200694645880047,
+        "growth": 0,
+        "remaining": 0,
+        "total": 0,
+        "harvested": 0,
+        "spoiled": 0,
+        "seedStock": 3.997119722141648,
+        "seedUsed": 0.002880277858352019,
+        "sheaves": 0,
+        "threshed": 0,
+        "visual": {
+          "sown": 0.0007200694645880047,
+          "growth": 0,
+          "standing": 1,
+          "sheaves": 0,
+          "stage": "sown",
+          "signature": "1:sown:1:0:6:0"
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "kind": "procedural",
+      "frame": 400,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 0.7918749999998909,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 400,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 227.00987499999974,
+      "inputVertices": 216,
+      "outputVertices": 27305,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": 400,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 231.64616700000033,
+      "vertices": 27305,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": 472,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 4.315249999999651,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        },
+        {
+          "name": "field-grass",
+          "vertices": 1218,
+          "indices": 2520
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 472,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 225.6077089999999,
+      "inputVertices": 216,
+      "outputVertices": 27305,
+      "sameData": false
+    },
+    {
+      "kind": "clip",
+      "frame": 472,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 4.886540999999852,
+      "inputVertices": 1218,
+      "outputVertices": 1176,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": 472,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 239.05474999999933,
+      "vertices": 28481,
+      "meshes": 2
+    },
+    {
+      "kind": "procedural",
+      "frame": 544,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 10.457666000000245,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        },
+        {
+          "name": "field-grass",
+          "vertices": 2436,
+          "indices": 5040
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 544,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 228.1519160000007,
+      "inputVertices": 216,
+      "outputVertices": 27305,
+      "sameData": false
+    },
+    {
+      "kind": "clip",
+      "frame": 544,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 11.08587499999976,
+      "inputVertices": 2436,
+      "outputVertices": 2417,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": 544,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 253.04670799999985,
+      "vertices": 29722,
+      "meshes": 2
+    },
+    {
+      "kind": "procedural",
+      "frame": 616,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 9.901667000000089,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        },
+        {
+          "name": "field-grass",
+          "vertices": 3654,
+          "indices": 7560
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 616,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 283.3528749999996,
+      "inputVertices": 216,
+      "outputVertices": 27305,
+      "sameData": false
+    },
+    {
+      "kind": "clip",
+      "frame": 616,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 21.205541999999696,
+      "inputVertices": 3654,
+      "outputVertices": 3419,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": 616,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 318.6144999999997,
+      "vertices": 30724,
+      "meshes": 2
+    },
+    {
+      "kind": "procedural",
+      "frame": 688,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 13.76825000000008,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        },
+        {
+          "name": "field-grass",
+          "vertices": 4814,
+          "indices": 9960
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 688,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 256.6779580000002,
+      "inputVertices": 216,
+      "outputVertices": 27305,
+      "sameData": false
+    },
+    {
+      "kind": "clip",
+      "frame": 688,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 25.511500000000524,
+      "inputVertices": 4814,
+      "outputVertices": 3582,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": 688,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 300.5843329999998,
+      "vertices": 30887,
+      "meshes": 2
+    },
+    {
+      "kind": "procedural",
+      "frame": 713,
+      "id": "template",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "ms": 0.7601670000003651,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 713,
+      "id": "10,6",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "ms": 0.011457999999947788,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": 713,
+      "id": "10,6",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "ms": 0.8821250000000873,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": 780,
+      "id": "template",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "ms": 0.6879580000004353,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 780,
+      "id": "6,6",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "ms": 0.00929199999973207,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": 780,
+      "id": "6,6",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "ms": 0.7795420000002196,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": 780,
+      "id": "template",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "ms": 0.8091670000003433,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 780,
+      "id": "10,10",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "ms": 0.008874999999534339,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": 780,
+      "id": "10,10",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "ms": 0.8789999999999054,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": 814,
+      "id": "template",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "ms": 2.701125000000502,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": 814,
+      "id": "8,4",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "ms": 0.02345900000000256,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": 814,
+      "id": "8,4",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "ms": 2.9864580000003116,
+      "vertices": 216,
+      "meshes": 1
+    }
+  ],
+  "initialEvents": [
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "8,8",
+      "type": "house",
+      "x": 8,
+      "y": 8,
+      "ms": 24.84295800000001,
+      "vertices": 3590,
+      "meshes": 12
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 4.418333000000075,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 216.41212500000006,
+      "inputVertices": 216,
+      "outputVertices": 27305,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "12,8",
+      "type": "field",
+      "x": 12,
+      "y": 8,
+      "ms": 224.20825000000002,
+      "vertices": 27305,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "7,7",
+      "type": "clay",
+      "x": 7,
+      "y": 7,
+      "ms": 14.544666000000007,
+      "vertices": 5136,
+      "meshes": 8
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "9,8",
+      "type": "shrine",
+      "x": 9,
+      "y": 8,
+      "ms": 9.322916999999961,
+      "vertices": 3264,
+      "meshes": 11
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 2,
+      "y": 2,
+      "ms": 0.8406669999999394,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "2,2",
+      "type": "field",
+      "x": 2,
+      "y": 2,
+      "ms": 0.06587500000000546,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "2,2",
+      "type": "field",
+      "x": 2,
+      "y": 2,
+      "ms": 1.0153329999999414,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "4,2",
+      "type": "house",
+      "x": 4,
+      "y": 2,
+      "ms": 31.49675000000002,
+      "vertices": 9574,
+      "meshes": 13
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 6,
+      "y": 2,
+      "ms": 1.0004159999999729,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "6,2",
+      "type": "field",
+      "x": 6,
+      "y": 2,
+      "ms": 0.03641699999991488,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "6,2",
+      "type": "field",
+      "x": 6,
+      "y": 2,
+      "ms": 1.1725000000000136,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "8,2",
+      "type": "house",
+      "x": 8,
+      "y": 2,
+      "ms": 15.931332999999995,
+      "vertices": 6326,
+      "meshes": 13
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 10,
+      "y": 2,
+      "ms": 0.8035830000000033,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "10,2",
+      "type": "field",
+      "x": 10,
+      "y": 2,
+      "ms": 0.0262079999999969,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "10,2",
+      "type": "field",
+      "x": 10,
+      "y": 2,
+      "ms": 0.9132080000000542,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 14,
+      "y": 2,
+      "ms": 0.7784159999999929,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "14,2",
+      "type": "field",
+      "x": 14,
+      "y": 2,
+      "ms": 0.026084000000082597,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "14,2",
+      "type": "field",
+      "x": 14,
+      "y": 2,
+      "ms": 0.8991250000000264,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 18,
+      "y": 2,
+      "ms": 0.7467499999999063,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "18,2",
+      "type": "field",
+      "x": 18,
+      "y": 2,
+      "ms": 2.7572079999999914,
+      "inputVertices": 216,
+      "outputVertices": 607,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "18,2",
+      "type": "field",
+      "x": 18,
+      "y": 2,
+      "ms": 3.6504170000000613,
+      "vertices": 607,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 22,
+      "y": 2,
+      "ms": 1.4326249999999163,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "22,2",
+      "type": "field",
+      "x": 22,
+      "y": 2,
+      "ms": 0.02858400000002348,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "22,2",
+      "type": "field",
+      "x": 22,
+      "y": 2,
+      "ms": 1.5795420000000604,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 26,
+      "y": 2,
+      "ms": 0.8111249999999472,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "26,2",
+      "type": "field",
+      "x": 26,
+      "y": 2,
+      "ms": 0.02616699999998673,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "26,2",
+      "type": "field",
+      "x": 26,
+      "y": 2,
+      "ms": 0.9253750000000309,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 4,
+      "y": 4,
+      "ms": 0.7900839999999789,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "4,4",
+      "type": "field",
+      "x": 4,
+      "y": 4,
+      "ms": 0.025582999999983258,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "4,4",
+      "type": "field",
+      "x": 4,
+      "y": 4,
+      "ms": 0.9451249999999618,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "ms": 0.7158329999999751,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "8,4",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "ms": 0.027375000000006366,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "8,4",
+      "type": "field",
+      "x": 8,
+      "y": 4,
+      "ms": 0.8206669999999576,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 4,
+      "ms": 0.804834000000028,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "12,4",
+      "type": "field",
+      "x": 12,
+      "y": 4,
+      "ms": 0.031582999999955064,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "12,4",
+      "type": "field",
+      "x": 12,
+      "y": 4,
+      "ms": 0.9109589999999343,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "14,4",
+      "type": "house",
+      "x": 14,
+      "y": 4,
+      "ms": 8.616124999999897,
+      "vertices": 4094,
+      "meshes": 13
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 20,
+      "y": 4,
+      "ms": 0.7339999999999236,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "20,4",
+      "type": "field",
+      "x": 20,
+      "y": 4,
+      "ms": 0.024208000000044194,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "20,4",
+      "type": "field",
+      "x": 20,
+      "y": 4,
+      "ms": 0.8340829999999642,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 24,
+      "y": 4,
+      "ms": 0.6368330000000242,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "24,4",
+      "type": "field",
+      "x": 24,
+      "y": 4,
+      "ms": 0.023207999999954154,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "24,4",
+      "type": "field",
+      "x": 24,
+      "y": 4,
+      "ms": 0.7208749999999782,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 28,
+      "y": 4,
+      "ms": 0.6317500000000109,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "28,4",
+      "type": "field",
+      "x": 28,
+      "y": 4,
+      "ms": 0.03283299999998235,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "28,4",
+      "type": "field",
+      "x": 28,
+      "y": 4,
+      "ms": 0.7571660000000975,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 2,
+      "y": 6,
+      "ms": 1.4869170000000622,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "2,6",
+      "type": "field",
+      "x": 2,
+      "y": 6,
+      "ms": 0.024916999999959444,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "2,6",
+      "type": "field",
+      "x": 2,
+      "y": 6,
+      "ms": 1.6669580000000224,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "ms": 0.6301249999999072,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "6,6",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "ms": 0.021916999999916698,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "6,6",
+      "type": "field",
+      "x": 6,
+      "y": 6,
+      "ms": 0.7072079999999232,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "ms": 0.6844580000000633,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "10,6",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "ms": 0.022707999999965978,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "10,6",
+      "type": "field",
+      "x": 10,
+      "y": 6,
+      "ms": 0.77049999999997,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "12,6",
+      "type": "house",
+      "x": 12,
+      "y": 6,
+      "ms": 15.836957999999981,
+      "vertices": 6326,
+      "meshes": 13
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "16,6",
+      "type": "house",
+      "x": 16,
+      "y": 6,
+      "ms": 24.377208999999993,
+      "vertices": 9742,
+      "meshes": 14
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 18,
+      "y": 6,
+      "ms": 0.7073339999999462,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "18,6",
+      "type": "field",
+      "x": 18,
+      "y": 6,
+      "ms": 0.024874999999951797,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "18,6",
+      "type": "field",
+      "x": 18,
+      "y": 6,
+      "ms": 0.8000000000000682,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 22,
+      "y": 6,
+      "ms": 0.6124169999999367,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "22,6",
+      "type": "field",
+      "x": 22,
+      "y": 6,
+      "ms": 0.029958000000078755,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "22,6",
+      "type": "field",
+      "x": 22,
+      "y": 6,
+      "ms": 0.7200829999999314,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "24,6",
+      "type": "house",
+      "x": 24,
+      "y": 6,
+      "ms": 7.708082999999988,
+      "vertices": 3590,
+      "meshes": 12
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "28,6",
+      "type": "house",
+      "x": 28,
+      "y": 6,
+      "ms": 7.68425000000002,
+      "vertices": 3782,
+      "meshes": 13
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 4,
+      "y": 8,
+      "ms": 0.674666000000002,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "4,8",
+      "type": "field",
+      "x": 4,
+      "y": 8,
+      "ms": 0.02437499999996362,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "4,8",
+      "type": "field",
+      "x": 4,
+      "y": 8,
+      "ms": 0.7665419999999585,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 16,
+      "y": 8,
+      "ms": 1.7889590000002045,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "16,8",
+      "type": "field",
+      "x": 16,
+      "y": 8,
+      "ms": 0.027124999999841748,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "16,8",
+      "type": "field",
+      "x": 16,
+      "y": 8,
+      "ms": 1.912458000000015,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 20,
+      "y": 8,
+      "ms": 2.382041999999956,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "20,8",
+      "type": "field",
+      "x": 20,
+      "y": 8,
+      "ms": 0.029958000000078755,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "20,8",
+      "type": "field",
+      "x": 20,
+      "y": 8,
+      "ms": 2.5100420000001122,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 24,
+      "y": 8,
+      "ms": 0.7690000000000055,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "24,8",
+      "type": "field",
+      "x": 24,
+      "y": 8,
+      "ms": 53.92004100000008,
+      "inputVertices": 216,
+      "outputVertices": 2341,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "24,8",
+      "type": "field",
+      "x": 24,
+      "y": 8,
+      "ms": 55.147083000000066,
+      "vertices": 2341,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 28,
+      "y": 8,
+      "ms": 0.71225000000004,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "28,8",
+      "type": "field",
+      "x": 28,
+      "y": 8,
+      "ms": 70.58899999999994,
+      "inputVertices": 216,
+      "outputVertices": 2994,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "28,8",
+      "type": "field",
+      "x": 28,
+      "y": 8,
+      "ms": 71.77074999999991,
+      "vertices": 2994,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 2,
+      "y": 10,
+      "ms": 1.5027500000001055,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "2,10",
+      "type": "field",
+      "x": 2,
+      "y": 10,
+      "ms": 0.029583000000002357,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "2,10",
+      "type": "field",
+      "x": 2,
+      "y": 10,
+      "ms": 1.6138750000000073,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 6,
+      "y": 10,
+      "ms": 2.0012919999999212,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "6,10",
+      "type": "field",
+      "x": 6,
+      "y": 10,
+      "ms": 0.03175000000010186,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "6,10",
+      "type": "field",
+      "x": 6,
+      "y": 10,
+      "ms": 2.173042000000123,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "ms": 0.6398329999999532,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "10,10",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "ms": 0.02508299999999508,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "10,10",
+      "type": "field",
+      "x": 10,
+      "y": 10,
+      "ms": 0.7394170000000031,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 14,
+      "y": 10,
+      "ms": 0.8512090000001535,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "14,10",
+      "type": "field",
+      "x": 14,
+      "y": 10,
+      "ms": 112.86129200000005,
+      "inputVertices": 216,
+      "outputVertices": 7693,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "14,10",
+      "type": "field",
+      "x": 14,
+      "y": 10,
+      "ms": 114.757791,
+      "vertices": 7693,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 18,
+      "y": 10,
+      "ms": 0.5812079999998332,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "18,10",
+      "type": "field",
+      "x": 18,
+      "y": 10,
+      "ms": 0.05133299999988594,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "18,10",
+      "type": "field",
+      "x": 18,
+      "y": 10,
+      "ms": 0.697832999999946,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 22,
+      "y": 10,
+      "ms": 0.7375839999999698,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "22,10",
+      "type": "field",
+      "x": 22,
+      "y": 10,
+      "ms": 0.009000000000014552,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "22,10",
+      "type": "field",
+      "x": 22,
+      "y": 10,
+      "ms": 0.8240840000000844,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 26,
+      "y": 10,
+      "ms": 0.6850420000000668,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "26,10",
+      "type": "field",
+      "x": 26,
+      "y": 10,
+      "ms": 0.009915999999975611,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "26,10",
+      "type": "field",
+      "x": 26,
+      "y": 10,
+      "ms": 0.7785420000000158,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 4,
+      "y": 12,
+      "ms": 0.6327920000001086,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "4,12",
+      "type": "field",
+      "x": 4,
+      "y": 12,
+      "ms": 0.007707999999865933,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "4,12",
+      "type": "field",
+      "x": 4,
+      "y": 12,
+      "ms": 0.7077079999999114,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 8,
+      "y": 12,
+      "ms": 0.6282079999998587,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "8,12",
+      "type": "field",
+      "x": 8,
+      "y": 12,
+      "ms": 0.008374999999887223,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "8,12",
+      "type": "field",
+      "x": 8,
+      "y": 12,
+      "ms": 0.73700000000008,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 16,
+      "y": 12,
+      "ms": 0.5892919999998867,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "16,12",
+      "type": "field",
+      "x": 16,
+      "y": 12,
+      "ms": 0.006542000000081316,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "16,12",
+      "type": "field",
+      "x": 16,
+      "y": 12,
+      "ms": 0.657457999999906,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 20,
+      "y": 12,
+      "ms": 0.5509159999999156,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "20,12",
+      "type": "field",
+      "x": 20,
+      "y": 12,
+      "ms": 0.005750000000034561,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "20,12",
+      "type": "field",
+      "x": 20,
+      "y": 12,
+      "ms": 0.6122080000000096,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 24,
+      "y": 12,
+      "ms": 0.6567500000001019,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "24,12",
+      "type": "field",
+      "x": 24,
+      "y": 12,
+      "ms": 0.007000000000061846,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "24,12",
+      "type": "field",
+      "x": 24,
+      "y": 12,
+      "ms": 0.7337499999998727,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 28,
+      "y": 12,
+      "ms": 0.6593330000000606,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "28,12",
+      "type": "field",
+      "x": 28,
+      "y": 12,
+      "ms": 0.007082999999965978,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "28,12",
+      "type": "field",
+      "x": 28,
+      "y": 12,
+      "ms": 0.7357919999999467,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 2,
+      "y": 14,
+      "ms": 0.6167500000001382,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "2,14",
+      "type": "field",
+      "x": 2,
+      "y": 14,
+      "ms": 0.005249999999932697,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "2,14",
+      "type": "field",
+      "x": 2,
+      "y": 14,
+      "ms": 0.6734590000000935,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 6,
+      "y": 14,
+      "ms": 0.8266670000000431,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "6,14",
+      "type": "field",
+      "x": 6,
+      "y": 14,
+      "ms": 0.008665999999948326,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "6,14",
+      "type": "field",
+      "x": 6,
+      "y": 14,
+      "ms": 0.9049170000000686,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 10,
+      "y": 14,
+      "ms": 0.6737089999999171,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "10,14",
+      "type": "field",
+      "x": 10,
+      "y": 14,
+      "ms": 0.007499999999936335,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "10,14",
+      "type": "field",
+      "x": 10,
+      "y": 14,
+      "ms": 0.759708000000046,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 18,
+      "y": 14,
+      "ms": 0.7142079999998714,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "18,14",
+      "type": "field",
+      "x": 18,
+      "y": 14,
+      "ms": 0.007249999999885404,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "18,14",
+      "type": "field",
+      "x": 18,
+      "y": 14,
+      "ms": 0.9945419999999103,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 22,
+      "y": 14,
+      "ms": 0.5960000000000036,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "22,14",
+      "type": "field",
+      "x": 22,
+      "y": 14,
+      "ms": 0.006791999999904874,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "22,14",
+      "type": "field",
+      "x": 22,
+      "y": 14,
+      "ms": 0.6672909999999774,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 26,
+      "y": 14,
+      "ms": 0.53774999999996,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "26,14",
+      "type": "field",
+      "x": 26,
+      "y": 14,
+      "ms": 0.005542000000104963,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "26,14",
+      "type": "field",
+      "x": 26,
+      "y": 14,
+      "ms": 0.5984170000001541,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 4,
+      "y": 16,
+      "ms": 0.59375,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "4,16",
+      "type": "field",
+      "x": 4,
+      "y": 16,
+      "ms": 0.0061670000000049185,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "4,16",
+      "type": "field",
+      "x": 4,
+      "y": 16,
+      "ms": 0.6617089999999735,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 8,
+      "y": 16,
+      "ms": 0.6433750000001055,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "8,16",
+      "type": "field",
+      "x": 8,
+      "y": 16,
+      "ms": 0.007749999999987267,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "8,16",
+      "type": "field",
+      "x": 8,
+      "y": 16,
+      "ms": 0.7215000000001055,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "10,16",
+      "type": "house",
+      "x": 10,
+      "y": 16,
+      "ms": 4.5618750000001,
+      "vertices": 3590,
+      "meshes": 12
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "14,16",
+      "type": "house",
+      "x": 14,
+      "y": 16,
+      "ms": 13.406417000000147,
+      "vertices": 6350,
+      "meshes": 14
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 16,
+      "y": 16,
+      "ms": 1.2592919999999594,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "16,16",
+      "type": "field",
+      "x": 16,
+      "y": 16,
+      "ms": 0.009125000000040018,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "16,16",
+      "type": "field",
+      "x": 16,
+      "y": 16,
+      "ms": 1.3378750000001673,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 20,
+      "y": 16,
+      "ms": 0.5207920000000286,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "20,16",
+      "type": "field",
+      "x": 20,
+      "y": 16,
+      "ms": 0.005499999999983629,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "20,16",
+      "type": "field",
+      "x": 20,
+      "y": 16,
+      "ms": 0.5806669999999485,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 24,
+      "y": 16,
+      "ms": 0.6388329999999769,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "24,16",
+      "type": "field",
+      "x": 24,
+      "y": 16,
+      "ms": 0.008374999999887223,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "24,16",
+      "type": "field",
+      "x": 24,
+      "y": 16,
+      "ms": 0.7176669999998921,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 28,
+      "y": 16,
+      "ms": 0.5366249999999582,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "28,16",
+      "type": "field",
+      "x": 28,
+      "y": 16,
+      "ms": 0.005458000000089669,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "28,16",
+      "type": "field",
+      "x": 28,
+      "y": 16,
+      "ms": 0.5972500000000309,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 2,
+      "y": 18,
+      "ms": 0.48441699999989396,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "2,18",
+      "type": "field",
+      "x": 2,
+      "y": 18,
+      "ms": 0.004083000000036918,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "2,18",
+      "type": "field",
+      "x": 2,
+      "y": 18,
+      "ms": 0.5323750000000018,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 6,
+      "y": 18,
+      "ms": 0.5255409999999756,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "6,18",
+      "type": "field",
+      "x": 6,
+      "y": 18,
+      "ms": 0.00616600000012113,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "6,18",
+      "type": "field",
+      "x": 6,
+      "y": 18,
+      "ms": 0.5849160000000211,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "12,18",
+      "type": "house",
+      "x": 12,
+      "y": 18,
+      "ms": 19.301500000000033,
+      "vertices": 7382,
+      "meshes": 14
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 14,
+      "y": 18,
+      "ms": 0.6033330000000205,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "14,18",
+      "type": "field",
+      "x": 14,
+      "y": 18,
+      "ms": 0.007875000000012733,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "14,18",
+      "type": "field",
+      "x": 14,
+      "y": 18,
+      "ms": 0.6996249999999691,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 18,
+      "y": 18,
+      "ms": 0.555625000000191,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "18,18",
+      "type": "field",
+      "x": 18,
+      "y": 18,
+      "ms": 0.006708000000116954,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "18,18",
+      "type": "field",
+      "x": 18,
+      "y": 18,
+      "ms": 0.6236670000000686,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 22,
+      "y": 18,
+      "ms": 0.5734580000000733,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "22,18",
+      "type": "field",
+      "x": 22,
+      "y": 18,
+      "ms": 0.00641700000005585,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "22,18",
+      "type": "field",
+      "x": 22,
+      "y": 18,
+      "ms": 0.6405839999999898,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 26,
+      "y": 18,
+      "ms": 0.5367499999999836,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "26,18",
+      "type": "field",
+      "x": 26,
+      "y": 18,
+      "ms": 0.006542000000081316,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "26,18",
+      "type": "field",
+      "x": 26,
+      "y": 18,
+      "ms": 0.6042909999998756,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 4,
+      "y": 20,
+      "ms": 0.5698749999999109,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "4,20",
+      "type": "field",
+      "x": 4,
+      "y": 20,
+      "ms": 0.006917000000157714,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "4,20",
+      "type": "field",
+      "x": 4,
+      "y": 20,
+      "ms": 0.6404999999999745,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 8,
+      "y": 20,
+      "ms": 0.5946249999999509,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "8,20",
+      "type": "field",
+      "x": 8,
+      "y": 20,
+      "ms": 3.579291999999896,
+      "inputVertices": 216,
+      "outputVertices": 729,
+      "sameData": false
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "8,20",
+      "type": "field",
+      "x": 8,
+      "y": 20,
+      "ms": 4.363125000000082,
+      "vertices": 729,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 12,
+      "y": 20,
+      "ms": 0.8042499999999109,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "12,20",
+      "type": "field",
+      "x": 12,
+      "y": 20,
+      "ms": 0.021500000000060027,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "12,20",
+      "type": "field",
+      "x": 12,
+      "y": 20,
+      "ms": 1.2863749999999072,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 16,
+      "y": 20,
+      "ms": 0.536583999999948,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "16,20",
+      "type": "field",
+      "x": 16,
+      "y": 20,
+      "ms": 0.005540999999993801,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "16,20",
+      "type": "field",
+      "x": 16,
+      "y": 20,
+      "ms": 0.5974999999998545,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 20,
+      "y": 20,
+      "ms": 0.5235829999999169,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "20,20",
+      "type": "field",
+      "x": 20,
+      "y": 20,
+      "ms": 0.008166999999957625,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "20,20",
+      "type": "field",
+      "x": 20,
+      "y": 20,
+      "ms": 0.5975419999999758,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 24,
+      "y": 20,
+      "ms": 0.6402920000000449,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "24,20",
+      "type": "field",
+      "x": 24,
+      "y": 20,
+      "ms": 0.006834000000026208,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "24,20",
+      "type": "field",
+      "x": 24,
+      "y": 20,
+      "ms": 0.7170000000000982,
+      "vertices": 216,
+      "meshes": 1
+    },
+    {
+      "kind": "procedural",
+      "frame": -1,
+      "id": "template",
+      "type": "field",
+      "x": 28,
+      "y": 20,
+      "ms": 0.49854100000015933,
+      "meshes": [
+        {
+          "name": "field-district-wet-silt",
+          "vertices": 216,
+          "indices": 324
+        }
+      ]
+    },
+    {
+      "kind": "clip",
+      "frame": -1,
+      "id": "28,20",
+      "type": "field",
+      "x": 28,
+      "y": 20,
+      "ms": 0.005583999999998923,
+      "inputVertices": 216,
+      "outputVertices": 216,
+      "sameData": true
+    },
+    {
+      "kind": "acquire",
+      "frame": -1,
+      "id": "28,20",
+      "type": "field",
+      "x": 28,
+      "y": 20,
+      "ms": 0.5561249999998381,
+      "vertices": 216,
+      "meshes": 1
+    }
+  ]
+}

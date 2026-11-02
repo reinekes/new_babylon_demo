@@ -29,6 +29,8 @@ function finish(cancelled=false){
  const viewport=renderer.canvas.getBoundingClientRect(),scene=renderer.scene;
  const models=performance.getEntriesByType('resource').filter(r=>new URL(r.name).pathname.endsWith('.glb'));
  const report={scenario:run.scenario,frames:run.intervals.length,wallSeconds:rounded(run.intervals.reduce((a,b)=>a+b,0)/1000),fps:rounded(1000*run.intervals.length/run.intervals.reduce((a,b)=>a+b,0)),frameIntervals:summary(run.intervals),simulationCPU:summary(run.simulation),drawCPU:summary(run.draw),stages:Object.fromEntries(Object.entries(run.stages).map(([k,v])=>[k,summary(v)])),drawCalls:summary(run.calls),scene:{totalMeshes:scene.meshes.length,enabledMeshes:scene.meshes.filter(m=>m.isEnabled()).length,activeMeshes:scene.getActiveMeshes().length,skeletons:scene.skeletons.length,materials:scene.materials.length,actorMeshes:renderer.actors.meshes.length,buildingMeshes:renderer.buildings.meshes.length,landscapeMeshes:renderer.landscape.meshes.length},world:{residents:state.citizens.length,buildings:state.buildings.length,speed:4,event:state.event?.id||null,simTime:state.simTime},screen:{width:viewport.width,height:viewport.height,renderWidth:renderer.engine.getRenderWidth(),renderHeight:renderer.engine.getRenderHeight(),devicePixelRatio,hardwareScaling:renderer.engine.getHardwareScalingLevel(),visibility:document.visibilityState},startup:{...startup,modelRequests:models.length,modelDecodedBytes:models.reduce((sum,r)=>sum+r.decodedBodySize,0),modelTransferredBytes:models.reduce((sum,r)=>sum+r.transferSize,0)},detailsReady:renderer.detailQueue?.errors?.length===0,errors:[...errors]};
+ report.slowFrames=run.slowFrames;
+ report.meshGroups=Object.entries(scene.meshes.reduce((groups,m)=>{const key=m.name.replace(/\d+/g,'#');groups[key]=(groups[key]||0)+1;return groups;},{})).sort((a,b)=>b[1]-a[1]).slice(0,35);
  // Draw calls are counts, not milliseconds; keep their names explicit.
  if(report.drawCalls)report.drawCalls={median:report.drawCalls.medianMs,p95:report.drawCalls.p95Ms,mean:report.drawCalls.meanMs};
  results.push(report);output.textContent=JSON.stringify(report,null,2);history.textContent=JSON.stringify(results,null,2);status.textContent=`Готово: ${run.scenario} · ${report.fps} FPS · кадр p95 ${report.frameIntervals.p95Ms} мс. CPU ниже указан отдельно.`;
@@ -38,7 +40,7 @@ function start(scenario){
  renderer.resetPresentation();renderer.lastTime=null;renderer.lastSim=null;renderer.home();
  renderer.camera.setTarget(new BABYLON.Vector3(53,0,55));renderer.camera.alpha=Math.PI/3;renderer.camera.beta=scenario==='far'?.68:.96;renderer.camera.radius=scenario==='far'?240:62;
  const low=scenario==='low';renderer.scene.shadowsEnabled=!low&&scenario!=='shadows';renderer.quality=low?'low':'high';renderer.landscape.setQuality(low?'low':'high');renderer.engine.setHardwareScalingLevel((low||scenario==='resolution')?1:1/Math.min(devicePixelRatio||1,1.5));renderer.resize();
- controls.forEach(b=>b.disabled=true);stop.disabled=false;output.textContent='';last=performance.now();running={scenario,start:last,measureStart:null,previous:null,intervals:[],simulation:[],draw:[],stages:{},calls:[]};status.textContent=`${scenario}: прогрев…`;
+ controls.forEach(b=>b.disabled=true);stop.disabled=false;output.textContent='';last=performance.now();running={scenario,start:last,measureStart:null,previous:null,intervals:[],simulation:[],draw:[],stages:{},calls:[],slowFrames:[]};status.textContent=`${scenario}: прогрев…`;
 }
 controls.forEach(b=>b.onclick=()=>start(b.dataset.scenario));stop.onclick=()=>finish(true);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&running)finish(true);});
@@ -49,6 +51,7 @@ function frame(now){
  if(running&&now-running.start>=3000){
   const run=running;if(run.measureStart===null){run.measureStart=now;status.textContent=`${run.scenario}: измерение 12 секунд…`;}
   if(run.previous!==null){run.intervals.push(now-run.previous);run.simulation.push(simCPU);run.draw.push(drawCPU);for(const [k,v]of Object.entries(stage))(run.stages[k]??=[]).push(v);run.calls.push(instrument.drawCallsCounter.current);}
+  if(drawCPU>40){run.slowFrames.push({simTime:rounded(state.simTime),drawCPU:rounded(drawCPU),stages:Object.fromEntries(Object.entries(stage).map(([k,v])=>[k,rounded(v)]))});run.slowFrames.sort((a,b)=>b.drawCPU-a.drawCPU);run.slowFrames.length=Math.min(5,run.slowFrames.length);}
   run.previous=now;if(now-run.measureStart>=12000)finish();
  }
  if(!ready||running)requestAnimationFrame(frame);
@@ -59,6 +62,7 @@ requestAnimationFrame(frame);
 await renderer.detailsReady;await renderer.actors.residentDetailsReady?.();await renderer.buildings.sacredReady?.();
 startup.detailsMs=Math.round(performance.now()-bootStarted);
 wrap(renderer.buildings,'sync','buildings');wrap(renderer.landscape,'update','landscape');wrap(renderer.actors,'update','actors');wrap(renderer,'updateLight','light');wrap(renderer.scene,'render','sceneRender');
+wrap(renderer.scene.onAfterAnimationsObservable,'notifyObservers','poses');
 instrument=new BABYLON.SceneInstrumentation(renderer.scene);instrument.captureActiveMeshesEvaluationTime=true;instrument.captureAnimationsTime=true;instrument.captureRenderTargetsRenderTime=true;
 // The existing actor IK is inside scene.render/onAfterAnimations; it therefore
 // belongs to sceneRender CPU, not exclusively to the actors.update stage.
