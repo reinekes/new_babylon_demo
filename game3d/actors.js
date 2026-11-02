@@ -46,8 +46,8 @@ export function actorViewFrame(state){
 }
 export const cityAnimalVisible=animal=>!['bird','mouse','rat'].includes(animal.kind);
 export function actorViewCitizens(state){return actorViewFrame(state).citizens;}
-export function residentVisual(c,state){
- const look=residentAppearance(c,state.buildings||[]);
+export function residentVisual(c,state,buildingTypes=state.buildings||[]){
+ const look=residentAppearance(c,buildingTypes);
  return {...look,...residentAnatomy(c.age),
   inspired:!!((c.calling&&c.calling!=='auto')||(c.futureRole&&c.futureRole!=='auto')||state.buffs?.inspiration&&['clay','reed'].includes(look.work)),
   motion:residentMotion(c.id),identity:residentIdentity(c.id),mood:c.mood??50,role:c.role||look.work||'resident'};
@@ -262,8 +262,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   else if(['clay','brick','firedBrick','stone'].includes(k))for(let i=0;i<3;i++)box('cargo-material',a.load,k==='stone'?stone:clay,(i%2-.5)*.15,Math.floor(i/2)*.1,0,.145,.09,.23);
   else sphere('cargo-sack',a.load,['cloth','clothing','wool'].includes(k)?linen:reed,0,0,0,.39,.31,.30);
  }
- function appearance(a,c,state){
-  const look=residentVisual(c,state),scale=look.scale,motion=look.motion;const width=a.nativeResident?.97+(motion.width-.80)*.15:motion.width,height=a.nativeResident?.97+(motion.height-.89)*.27:motion.height;a.root.scaling.set(scale*width,scale*height,scale*(a.nativeResident?1:(.96+motion.width*.04)));a.look=look;
+ function appearance(a,c,state,buildingTypes){
+  const work=buildingTypes.get(c.work),wear=(c.clothing??100)>50?'new':(c.clothing??100)>25?'worn':'ragged',mourning=c.phase==='mourning',inspiration=!!state.buffs?.inspiration,previous=a.appearanceInputs;
+  // Only scalar inputs that can change the rendered surfaces belong here.
+  // Clothing decays every tick; cargo, mood and animated head scale stay live.
+  if(!previous||previous.age!==c.age||previous.sex!==c.sex||previous.robe!==c.robe||previous.wear!==wear||previous.work!==work||previous.role!==c.role||previous.calling!==c.calling||previous.futureRole!==c.futureRole||previous.pendingRole!==c.pendingRole||previous.inspiration!==inspiration||previous.mourning!==mourning||previous.siteDuty!==c.siteDuty||previous.guarding!==c.guarding){
+  a.appearanceInputs={age:c.age,sex:c.sex,robe:c.robe,wear,work,role:c.role,calling:c.calling,futureRole:c.futureRole,pendingRole:c.pendingRole,inspiration,mourning,siteDuty:c.siteDuty,guarding:c.guarding};
+  const look=residentVisual(c,state,buildingTypes),scale=look.scale,motion=look.motion;const width=a.nativeResident?.97+(motion.width-.80)*.15:motion.width,height=a.nativeResident?.97+(motion.height-.89)*.27:motion.height;a.root.scaling.set(scale*width,scale*height,scale*(a.nativeResident?1:(.96+motion.width*.04)));a.look=look;
   const identity=look.identity,adult=c.age>=16,bearded=adult&&c.sex!=='f'&&identity.beard>0;
   for(const m of a.beardMeshes)m.isVisible=bearded;
   for(const m of a.hairMeshes)m.isVisible=identity.hair!==0||!adult;
@@ -292,6 +297,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(c.guarding)box('guard-staff',a.details,wood,.35,.83,.04,.035,1.6,.035);
   }
 
+  }
+  a.look.mood=c.mood??50;
   cargo(a,c);
  }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
@@ -501,6 +508,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused)poseTime+=dt*speed;
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
+  // Match residentAppearance's first array.find, including falsy-ID fallback.
+  // Rebuild each update: a building may keep its ID while changing its type.
+  const buildingTypes=new Map();for(const b of state.buildings||[]){const key=b.id||`${b.x},${b.y}`;if(!buildingTypes.has(key))buildingTypes.set(key,b.type);}
   if(visible.some(usesHistoricalMan))requestHistoricalResident();
   for(const c of visible){
    seen.add(c.id);let a=people.get(c.id),continuity=null;
@@ -512,11 +522,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(replacedState){
     // A loaded save can reuse this ID while changing land/water and task. Keep
     // its rig, but never restore a frozen pose sampled from the previous city.
-    a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
+    a.appearanceInputs=null;a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
     for(const arm of a.armNodes)arm.last=null;for(const leg of Object.values(a.legs)){leg.lastPosition=null;leg.lastRotations=null;}
     a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
    }
-   a.root.setEnabled(true);appearance(a,c,state);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
+   a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
   }
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
