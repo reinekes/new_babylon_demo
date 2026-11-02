@@ -7,7 +7,7 @@ export function residentPose(person,craft,time=0,reduce=false){
  if(person.carrying||person.waterTrip?.load>0)return {kind:'carry',beat};
  if(person.walking)return {kind:'walk',beat};
  if(person.playing)return {kind:'play',beat};
- if(person.phase==='working')return {kind:craft==='brewery'?'stir':craft==='weaver'?'weave':['brickyard','clay','pottery'].includes(craft)?'mould':['field','garden','reed'].includes(craft)?'harvest':'work',beat};
+ if(['working','manualGathering'].includes(person.phase))return {kind:craft==='brewery'?'stir':craft==='weaver'?'weave':['brickyard','clay','pottery'].includes(craft)?'mould':['field','garden','reed'].includes(craft)?'harvest':'work',beat};
  return {kind:person.age>=55?'elder':'idle',beat};
 }
 export function drawActorGesture(r,p,q,person,pose){

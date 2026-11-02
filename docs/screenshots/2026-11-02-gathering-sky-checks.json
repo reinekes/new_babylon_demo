@@ -1,0 +1,106 @@
+{
+  "release": "gathering-living-sky-20261102-1",
+  "measurement": "Node simulation CPU milliseconds, not browser FPS",
+  "tests": {
+    "command": "node --test --test-concurrency=4",
+    "passed": 1345,
+    "failed": 0,
+    "legacySavesExactRoundTrip": 20
+  },
+  "standalone": {
+    "legacy": {
+      "fixture": "legacy",
+      "width": 40,
+      "height": 32,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 10.160416999999825,
+      "simulation4x": {
+        "medianMs": 5.706707999999708,
+        "p95Ms": 19.71466700000019,
+        "maxMs": 233.90095900000006
+      },
+      "encode": {
+        "medianMs": 1.3760419999998703,
+        "maxMs": 2.3914590000003955,
+        "bytes": 253015
+      },
+      "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c"
+    },
+    "world64": {
+      "fixture": "world64-seed137",
+      "width": 64,
+      "height": 64,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 7.201958999999988,
+      "simulation4x": {
+        "medianMs": 5.732625000000098,
+        "p95Ms": 14.238916000000245,
+        "maxMs": 265.4167499999994
+      },
+      "encode": {
+        "medianMs": 2.102415999999721,
+        "maxMs": 3.363459000000148,
+        "bytes": 343039
+      },
+      "stateSHA256": "e5f4ba01c397c79516f8320570018ef6d1fe8a75f7251401100d9518f852d48d"
+    }
+  },
+  "pairedWorld64": {
+    "baseline": {
+      "fixture": "world64-seed137",
+      "width": 64,
+      "height": 64,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 5.004082999999923,
+      "simulation4x": {
+        "medianMs": 5,
+        "p95Ms": 11.875875000000178,
+        "maxMs": 240.6507499999998
+      },
+      "encode": {
+        "medianMs": 2.0943749999996726,
+        "maxMs": 4.5390419999994265,
+        "bytes": 343039
+      },
+      "stateSHA256": "e5f4ba01c397c79516f8320570018ef6d1fe8a75f7251401100d9518f852d48d"
+    },
+    "current": {
+      "fixture": "world64-seed137",
+      "width": 64,
+      "height": 64,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 5.155249999999967,
+      "simulation4x": {
+        "medianMs": 4.8512919999993755,
+        "p95Ms": 10.552666999999929,
+        "maxMs": 247.3645000000006
+      },
+      "encode": {
+        "medianMs": 2.0151669999995647,
+        "maxMs": 3.751208000000588,
+        "bytes": 343039
+      },
+      "stateSHA256": "e5f4ba01c397c79516f8320570018ef6d1fe8a75f7251401100d9518f852d48d"
+    }
+  },
+  "geometry": {
+    "horizonTriangles": 4192,
+    "horizonMeshes": 3,
+    "additionalShadowLights": 0,
+    "birdSharedGeometries": 2,
+    "birdsLow": 4,
+    "birdsHigh": 10,
+    "birdTrianglesLow": 1048,
+    "birdTrianglesHigh": 2620,
+    "tumbleweedTrianglesHighBefore": 6600,
+    "tumbleweedTrianglesHighAfter": 5040
+  },
+  "limitations": [
+    "Browser GPU/FPS not remeasured; numerical geometry and Babylon NullEngine verified.",
+    "CPU timings vary between runs; paired control uses identical world64 seed137 fixture and identical final state SHA256."
+  ]
+}

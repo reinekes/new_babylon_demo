@@ -1,3 +1,4 @@
+import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from '../game3d/atmosphere.js';
 import {worldWidth,worldHeight,river,riverAxis,riverLength,riverAcrossSize,worldFromRiver,signedRiverDistance,riverFlowVector} from '../world.js';
 import {generateStreets} from '../city-life.js';
 import {RIVER_BANK_SECTION,riverRows,riverStepsPerTile,SCENERY_MARGIN} from './river-profile.js';
@@ -122,6 +123,8 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     uniform vec3 cameraPosition;
     uniform float time,night;
     uniform vec2 riverFlow;
+    uniform vec3 sunLightDirection;
+    ${atmosphereDeclarations}
     void main(){
       vec2 p=vWorld.xz-riverFlow*time*.62;
       float a=p.x*2.8+p.y*1.4,b=p.x*1.1-p.y*3.7;
@@ -132,16 +135,16 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
       vec3 sky=mix(vec3(.69,.76,.73),vec3(.36,.58,.68),clamp(reflected.y,0.0,1.0));
       float fine=sin(a+sin(b)*.55)*.5+.5;
       vec3 water=mix(vec3(.12,.27,.23),sky,fresnel)+fine*.035;
-      float sun=pow(max(dot(reflect(normalize(vec3(-.65,-.9,.45)),n),view),0.0),80.0);
+      float sun=pow(max(dot(reflect(normalize(sunLightDirection),n),view),0.0),80.0);
       water+=vec3(1.0,.87,.62)*sun*.65;
       water=mix(water,water*vec3(.29,.39,.55),night*.88);
-      gl_FragColor=vec4(water,1.0);
+      gl_FragColor=applyImageProcessing(vec4(valleyFog(toLinearSpace(water),vWorld,cameraPosition),1.0));
     }`;
   const water=new B.ShaderMaterial('river-water',scene,{vertex:'districtRiver',fragment:'districtRiver'},
-    {attributes:['position'],uniforms:['world','worldViewProjection','cameraPosition','time','night','riverFlow']});
+    {attributes:['position'],uniforms:['world','worldViewProjection','cameraPosition','time','night','riverFlow','sunLightDirection',...atmosphereUniforms],defines:atmosphereDefines(scene)});
   water.backFaceCulling=false;water.setFloat('time',0);water.setFloat('night',0);
   const flow=riverFlowVector(state),flowUniform=new B.Vector2(flow.x,flow.y);water.setVector2('riverFlow',flowUniform);
-  water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);});
+  const fallbackSun=new B.Vector3(-.65,-.9,.45);water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);water.setVector3('sunLightDirection',scene.getLightByName('city-sun')?.direction||fallbackSun);bindAtmosphere(scene,water);});
   ownedMaterials.push(water);
   const wp=[],wi=[],uv=[];
   const waterRows=riverRows(true,state);

@@ -1,3 +1,4 @@
+import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from './atmosphere.js';
 import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,riverFlowVector,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
@@ -80,7 +81,8 @@ export function createGameWater(B,scene,materials){
  precision highp float;attribute vec3 position;attribute vec4 color;uniform mat4 world,worldViewProjection;varying vec3 vWorld;varying float vDepth;varying float vLake;varying float vCanal;
  void main(){vWorld=(world*vec4(position,1.0)).xyz;vDepth=color.r;vLake=color.g;vCanal=color.b;gl_Position=worldViewProjection*vec4(position,1.0);}`;
  B.Effect.ShadersStore.gameClearWaterFragmentShader=`
- precision highp float;varying vec3 vWorld;varying float vDepth;varying float vLake;varying float vCanal;uniform vec3 cameraPosition;uniform float time,night;uniform vec2 riverFlow;
+ precision highp float;varying vec3 vWorld;varying float vDepth;varying float vLake;varying float vCanal;uniform vec3 cameraPosition;uniform float time,night;uniform vec2 riverFlow;uniform vec3 sunLightDirection;
+ ${atmosphereDeclarations}
  void main(){
   vec2 p=vWorld.xz-riverFlow*mix(time*.62,time*.12,vLake);
   float a=p.x*1.8+p.y*.75,b=p.x*.63-p.y*2.3;
@@ -92,16 +94,16 @@ export function createGameWater(B,scene,materials){
   vec3 water=mix(clear,sky,.09+fresnel*.28);
   water=mix(water,vec3(.16,.40,.32),vCanal*.5);
   float ripple=pow(max(0.0,sin(a+sin(b)*.55)),18.0)*pow(max(0.0,sin(b*.9)),5.0);
-  float glint=pow(max(dot(reflect(normalize(vec3(-.6,-.9,.4)),n),eye),0.0),130.0);
+  float glint=pow(max(dot(reflect(normalize(sunLightDirection),n),eye),0.0),130.0);
   water+=vec3(.28,.29,.21)*ripple*(1.0-depth)*.45+vec3(.8,.73,.5)*glint*.35;
   water=mix(water,water*vec3(.25,.36,.52),night*.88);
   // Bed and submerged pebbles remain visible through genuine alpha blending.
   // Fine moving highlights suggest refraction without another scene render.
   float alpha=max(edge*(.08+.29*depth+fresnel*.12),vCanal*.42);
-  gl_FragColor=vec4(water,clamp(alpha,.0,.72));
+  gl_FragColor=applyImageProcessing(vec4(valleyFog(toLinearSpace(water),vWorld,cameraPosition),clamp(alpha,.0,.72)));
  }`;
- const water=new B.ShaderMaterial('clear-flowing-water',scene,{vertex:'gameClearWater',fragment:'gameClearWater'},{attributes:['position','color'],uniforms:['world','worldViewProjection','cameraPosition','time','night','riverFlow'],needAlphaBlending:true});
- water.backFaceCulling=false;water.disableDepthWrite=true;water.transparencyMode=B.Material.MATERIAL_ALPHABLEND;water.setFloat('time',0);water.setFloat('night',0);const flowUniform=new B.Vector2(0,1);water.setVector2('riverFlow',flowUniform);water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);});owned.push(water);
+ const water=new B.ShaderMaterial('clear-flowing-water',scene,{vertex:'gameClearWater',fragment:'gameClearWater'},{attributes:['position','color'],uniforms:['world','worldViewProjection','cameraPosition','time','night','riverFlow','sunLightDirection',...atmosphereUniforms],defines:atmosphereDefines(scene),needAlphaBlending:true});
+ water.backFaceCulling=false;water.disableDepthWrite=true;water.transparencyMode=B.Material.MATERIAL_ALPHABLEND;water.setFloat('time',0);water.setFloat('night',0);const flowUniform=new B.Vector2(0,1);water.setVector2('riverFlow',flowUniform);const fallbackSun=new B.Vector3(-.6,-.9,.4);water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);water.setVector3('sunLightDirection',scene.getLightByName('city-sun')?.direction||fallbackSun);bindAtmosphere(scene,water);});owned.push(water);
  const stones=['#8d8e78','#a49e86','#777d73'].map((hex,i)=>{const m=new B.PBRMaterial(`submerged-rounded-pebbles-${i}`,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.85;m.metallic=0;owned.push(m);return m;});
  function geometry(name,g,mat){if(!g.indices.length)return;const m=new B.Mesh(name,scene),d=new B.VertexData();d.positions=g.positions.slice();d.indices=g.indices.slice();d.uvs=g.uvs;d.colors=g.colors;
   d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);if(d.normals[1]<0){for(let i=0;i<d.indices.length;i+=3)[d.indices[i+1],d.indices[i+2]]=[d.indices[i+2],d.indices[i+1]];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);}d.applyToMesh(m);m.material=mat;m.isPickable=false;m.receiveShadows=false;m.useVertexColors=true;m.freezeWorldMatrix();meshes.push(m);return m;

@@ -1,3 +1,4 @@
+import {manualGatheringActivity} from './manual-gathering.js';
 import {naturalAnimalsFor} from './fauna.js';
 import {catPettingPairs} from './pests.js';
 import {isDryPoint,worldWidth,worldHeight} from './world.js';
@@ -70,6 +71,7 @@ export function advanceGathering(s){
 /** Read-only renderer contract; no rewards, moves or writes occur in a view. */
 export function actorWorkActivity(s,c,pettingPairs){
  if(c.activity)return c.activity;
+ const manual=manualGatheringActivity(s,c);if(manual)return manual;
  const j=s.gathering?.jobs.find(j=>j.citizen===c.id&&j.work===c.work&&c.phase==='working');
  if(j)return {kind:j.kind,target:j.target,progress:j.progress,stage:j.stage==='working'&&j.progress>.8?'strike':j.stage};
  const pair=(pettingPairs||catPettingPairs(s)).find(p=>p.citizenId===c.id);return pair?{kind:'petting',target:{x:pair.x,y:pair.y},progress:((s.simTime||0)%3)/3,stage:'working'}:null;

@@ -37,5 +37,5 @@ export function createBootstrapLandscape(B,scene,state,materials){
   const g=canalNetworkGeometry(s,canals),replacement=[surface('wet-bed',g.wetBed,wet,g.arms),surface('dry-bed',g.dryBed,dry,g.arms),surface('water',g.water,water,g.arms)].filter(Boolean);if(g.arms.length||channelMeshes.length)carve(g.arms,s);for(const m of channelMeshes)m.dispose();channelMeshes=replacement;
  }
  update(state,state.simTime);
- return {get meshes(){return [...base.meshes,...channelMeshes];},update,light(n){night=n;if(!disposed)base.light(n);},dispose(){if(disposed)return;disposed=true;for(const m of channelMeshes)m.dispose();channelMeshes=[];originals.clear();base.dispose();for(const m of owned)m.dispose(false,false);}};
+ return {get waterMaterial(){return water;},get meshes(){return [...base.meshes,...channelMeshes];},update,light(n){night=n;if(!disposed)base.light(n);},dispose(){if(disposed)return;disposed=true;for(const m of channelMeshes)m.dispose();channelMeshes=[];originals.clear();base.dispose();for(const m of owned)m.dispose(false,false);}};
 }
