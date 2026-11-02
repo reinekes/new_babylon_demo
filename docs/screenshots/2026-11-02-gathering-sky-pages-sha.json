@@ -1,0 +1,321 @@
+{
+  "release": "gathering-living-sky-20261102-1",
+  "commit": "8d4b0596c4792a65a8d07e3cd49a24ef76c1af17",
+  "url": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "bytes": 198464,
+      "expectedSha256": "1761a202dbbc59bc4b9cf96e0a8a87632f2d74a5ac52e34d55834b5c188a9c32",
+      "actualSha256": "1761a202dbbc59bc4b9cf96e0a8a87632f2d74a5ac52e34d55834b5c188a9c32",
+      "matches": true
+    },
+    {
+      "path": "actor-art.js",
+      "status": 200,
+      "bytes": 2438,
+      "expectedSha256": "198443f4c90239c8fe8115f380dd4a658e9d5ab5f7a4f250f28f4c6618d92abf",
+      "actualSha256": "198443f4c90239c8fe8115f380dd4a658e9d5ab5f7a4f250f28f4c6618d92abf",
+      "matches": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "bytes": 136001,
+      "expectedSha256": "4d1de324aab52534ea8e949bf309ec5ce03b16adb7c04efab4bc31f25a288d50",
+      "actualSha256": "4d1de324aab52534ea8e949bf309ec5ce03b16adb7c04efab4bc31f25a288d50",
+      "matches": true
+    },
+    {
+      "path": "assets/vendor/babylon-9.31.0.js",
+      "status": 200,
+      "bytes": 8627936,
+      "expectedSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "actualSha256": "bd2b5c55c4a5eeabc50346cf8c6d3ce26ffa7e9a4e352165b1345a3e683c66e4",
+      "matches": true
+    },
+    {
+      "path": "city-diagnostics.js",
+      "status": 200,
+      "bytes": 17649,
+      "expectedSha256": "3347163a8785c8093d1dc45f4a80cfc80ac8dc769ba417dcd3e0bd270e57eebc",
+      "actualSha256": "3347163a8785c8093d1dc45f4a80cfc80ac8dc769ba417dcd3e0bd270e57eebc",
+      "matches": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "bytes": 14754,
+      "expectedSha256": "857612f7d7b7be20a55fa3f756fe6d128f5e7bcd97a4dedad6ff7db6a2f7aad3",
+      "actualSha256": "857612f7d7b7be20a55fa3f756fe6d128f5e7bcd97a4dedad6ff7db6a2f7aad3",
+      "matches": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "bytes": 15355,
+      "expectedSha256": "c20dabad5d7eb933e8c350880bbcdaed6cfa4f8077e3f666a92a0e8454e66bae",
+      "actualSha256": "c20dabad5d7eb933e8c350880bbcdaed6cfa4f8077e3f666a92a0e8454e66bae",
+      "matches": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "bytes": 19487,
+      "expectedSha256": "4b4d39dc36b3927a5cd7f3eb66e87af423d052c88976c1947cf2e544d11103fb",
+      "actualSha256": "4b4d39dc36b3927a5cd7f3eb66e87af423d052c88976c1947cf2e544d11103fb",
+      "matches": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-02-gathering-sky-checks.json",
+      "status": 200,
+      "bytes": 3044,
+      "expectedSha256": "2053cb43a027b3913361420c408fbc545a13aae44d2e1a1e5392d4ada1d9457c",
+      "actualSha256": "2053cb43a027b3913361420c408fbc545a13aae44d2e1a1e5392d4ada1d9457c",
+      "matches": true
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-02-gathering-sky-horizon.md",
+      "status": 200,
+      "bytes": 4679,
+      "expectedSha256": "4710744b1047e04e227015b14ba61061cf3554d056023e510cbe3c3527ef2b5e",
+      "actualSha256": "4710744b1047e04e227015b14ba61061cf3554d056023e510cbe3c3527ef2b5e",
+      "matches": true
+    },
+    {
+      "path": "docs/superpowers/specs/2026-11-02-gathering-sky-horizon.md",
+      "status": 200,
+      "bytes": 3075,
+      "expectedSha256": "23f2a3c7bf2015ce6d7d423b2fbfd4c0c63d1d0e105fef75c19f546b98af0de2",
+      "actualSha256": "23f2a3c7bf2015ce6d7d423b2fbfd4c0c63d1d0e105fef75c19f546b98af0de2",
+      "matches": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "bytes": 50052,
+      "expectedSha256": "869dbed3577dae0c3ed6e1da3f5db5a47067bde7135b85e070e86ef1d5edf7e4",
+      "actualSha256": "869dbed3577dae0c3ed6e1da3f5db5a47067bde7135b85e070e86ef1d5edf7e4",
+      "matches": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "bytes": 59836,
+      "expectedSha256": "a7d6039cf6c9c27c8c5faf1194e75e509c81cf8674337b18485e9d1aaea3873a",
+      "actualSha256": "a7d6039cf6c9c27c8c5faf1194e75e509c81cf8674337b18485e9d1aaea3873a",
+      "matches": true
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "status": 200,
+      "bytes": 11530,
+      "expectedSha256": "5f9733c412537ceba24568b1326ce6de3914ad67d989b9e60e251ff5a2c8fc1b",
+      "actualSha256": "5f9733c412537ceba24568b1326ce6de3914ad67d989b9e60e251ff5a2c8fc1b",
+      "matches": true
+    },
+    {
+      "path": "game3d/atmosphere.js",
+      "status": 200,
+      "bytes": 1218,
+      "expectedSha256": "6c6c371845bbcff929aae9badb406e3aefdb8b56947ffb622ae6519d50409d2d",
+      "actualSha256": "6c6c371845bbcff929aae9badb406e3aefdb8b56947ffb622ae6519d50409d2d",
+      "matches": true
+    },
+    {
+      "path": "game3d/bird-flocks.js",
+      "status": 200,
+      "bytes": 4115,
+      "expectedSha256": "c40c2008712c5349565e06426018930705870b94036f0a8a9e11ae103d257a1d",
+      "actualSha256": "c40c2008712c5349565e06426018930705870b94036f0a8a9e11ae103d257a1d",
+      "matches": true
+    },
+    {
+      "path": "game3d/bootstrap-landscape.js",
+      "status": 200,
+      "bytes": 5005,
+      "expectedSha256": "b2aa87b1b3cac348381bb17219266dc79f7e498eb65854583b9b22d1d4bed88a",
+      "actualSha256": "b2aa87b1b3cac348381bb17219266dc79f7e498eb65854583b9b22d1d4bed88a",
+      "matches": true
+    },
+    {
+      "path": "game3d/deposit-picking.js",
+      "status": 200,
+      "bytes": 3075,
+      "expectedSha256": "e0ff1393a1abd72fb39ea6ff7a455eba43638af1ac7e9e65037c711a2c864de6",
+      "actualSha256": "e0ff1393a1abd72fb39ea6ff7a455eba43638af1ac7e9e65037c711a2c864de6",
+      "matches": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "bytes": 29768,
+      "expectedSha256": "cf71a5a1f33a0ef6b42fb47e65a519c7a05de22a29b21da96804206b713814a4",
+      "actualSha256": "cf71a5a1f33a0ef6b42fb47e65a519c7a05de22a29b21da96804206b713814a4",
+      "matches": true
+    },
+    {
+      "path": "game3d/nature-details.js",
+      "status": 200,
+      "bytes": 10786,
+      "expectedSha256": "767a99292fbcb277ee788415f1b84ac70002af5450b5298466054d57c17ad52c",
+      "actualSha256": "767a99292fbcb277ee788415f1b84ac70002af5450b5298466054d57c17ad52c",
+      "matches": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "bytes": 26914,
+      "expectedSha256": "ee6e7c2c38ace7db0421e7cd84377769fe1736c0b26e7768836a3247abfca4ef",
+      "actualSha256": "ee6e7c2c38ace7db0421e7cd84377769fe1736c0b26e7768836a3247abfca4ef",
+      "matches": true
+    },
+    {
+      "path": "game3d/sky-horizon.js",
+      "status": 200,
+      "bytes": 9610,
+      "expectedSha256": "298e6ae979d95db2e22ec70006c7991ef2f8aeac62d0c54912d229fa0a885137",
+      "actualSha256": "298e6ae979d95db2e22ec70006c7991ef2f8aeac62d0c54912d229fa0a885137",
+      "matches": true
+    },
+    {
+      "path": "game3d/water.js",
+      "status": 200,
+      "bytes": 11363,
+      "expectedSha256": "cd486899c58160a3ca99387d1633a97c3518e22fb0af34b887bdd4c8d275a7bd",
+      "actualSha256": "cd486899c58160a3ca99387d1633a97c3518e22fb0af34b887bdd4c8d275a7bd",
+      "matches": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "bytes": 19162,
+      "expectedSha256": "687f6cd3abaf0c0c5d289477a87141bf8399078dfa8463592e9f57010e73d798",
+      "actualSha256": "687f6cd3abaf0c0c5d289477a87141bf8399078dfa8463592e9f57010e73d798",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 23484,
+      "expectedSha256": "3a7164d1d122af2730c70481664a4af937c68ccda28b8ee4e5553cb242c379c2",
+      "actualSha256": "3a7164d1d122af2730c70481664a4af937c68ccda28b8ee4e5553cb242c379c2",
+      "matches": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "bytes": 8504,
+      "expectedSha256": "5d55f098e177b6f47a926f7f192d4fd6ff4f9a00bcd4c97e685fb62a079fc230",
+      "actualSha256": "5d55f098e177b6f47a926f7f192d4fd6ff4f9a00bcd4c97e685fb62a079fc230",
+      "matches": true
+    },
+    {
+      "path": "life-analytics.js",
+      "status": 200,
+      "bytes": 11768,
+      "expectedSha256": "7a6508448fde1c10fd968a6c0dd02fa2b07191a99d98211f5359f51730d0eb5d",
+      "actualSha256": "7a6508448fde1c10fd968a6c0dd02fa2b07191a99d98211f5359f51730d0eb5d",
+      "matches": true
+    },
+    {
+      "path": "manual-gathering.js",
+      "status": 200,
+      "bytes": 9347,
+      "expectedSha256": "bc2098ff0c22c15130bbf6d25734a95233203f020d1890223b9d00e856358b74",
+      "actualSha256": "bc2098ff0c22c15130bbf6d25734a95233203f020d1890223b9d00e856358b74",
+      "matches": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "bytes": 46401,
+      "expectedSha256": "12d1b7b0cebc1bd0dc982f67b907c6364acfb586b06602ea9ee55cc30b4c5aac",
+      "actualSha256": "12d1b7b0cebc1bd0dc982f67b907c6364acfb586b06602ea9ee55cc30b4c5aac",
+      "matches": true
+    },
+    {
+      "path": "style.css",
+      "status": 200,
+      "bytes": 65996,
+      "expectedSha256": "f9143429275eee7a62944a78d810c61f573de17ed78aa6e84f8361681e9349ce",
+      "actualSha256": "f9143429275eee7a62944a78d810c61f573de17ed78aa6e84f8361681e9349ce",
+      "matches": true
+    },
+    {
+      "path": "tests/deposit-picking.test.js",
+      "status": 200,
+      "bytes": 4013,
+      "expectedSha256": "9ec0ad6240895e6fa2f6cebe288ec30c987887b55ac8d5ca368e9776a83970fb",
+      "actualSha256": "9ec0ad6240895e6fa2f6cebe288ec30c987887b55ac8d5ca368e9776a83970fb",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "bytes": 7846,
+      "expectedSha256": "f914614971395acc03c304da326aa37f97c554ad077a6d1b4f2d03eb146a7a80",
+      "actualSha256": "f914614971395acc03c304da326aa37f97c554ad077a6d1b4f2d03eb146a7a80",
+      "matches": true
+    },
+    {
+      "path": "tests/manual-gathering-focus.test.js",
+      "status": 200,
+      "bytes": 3131,
+      "expectedSha256": "13c3dbac9d3110acf1bae81bfd493e558252a3d270dda7faf83cf9028f7b0a08",
+      "actualSha256": "13c3dbac9d3110acf1bae81bfd493e558252a3d270dda7faf83cf9028f7b0a08",
+      "matches": true
+    },
+    {
+      "path": "tests/manual-gathering.test.js",
+      "status": 200,
+      "bytes": 12804,
+      "expectedSha256": "0df5828cb6b8eacbb1513189d76fa780571da4c002b4d529b1c2020c3af54bf8",
+      "actualSha256": "0df5828cb6b8eacbb1513189d76fa780571da4c002b4d529b1c2020c3af54bf8",
+      "matches": true
+    },
+    {
+      "path": "tests/sky-horizon.test.js",
+      "status": 200,
+      "bytes": 8555,
+      "expectedSha256": "be2e9274700a51e7919cb968d6e06e58280662f8226384034c65c5a1a88bacd5",
+      "actualSha256": "be2e9274700a51e7919cb968d6e06e58280662f8226384034c65c5a1a88bacd5",
+      "matches": true
+    },
+    {
+      "path": "tests/ui-manual-gathering.test.js",
+      "status": 200,
+      "bytes": 4505,
+      "expectedSha256": "9653ebe3e8b0c4c3dc87899abbf8cc57cb3d1082adde4b0d795426e9d013289b",
+      "actualSha256": "9653ebe3e8b0c4c3dc87899abbf8cc57cb3d1082adde4b0d795426e9d013289b",
+      "matches": true
+    },
+    {
+      "path": "tests/valley-ambient-life.test.js",
+      "status": 200,
+      "bytes": 5796,
+      "expectedSha256": "677ebd5c5cf62f194578004ba7bfba4ebae6dfba248ae26c1df04838ab706f29",
+      "actualSha256": "677ebd5c5cf62f194578004ba7bfba4ebae6dfba248ae26c1df04838ab706f29",
+      "matches": true
+    },
+    {
+      "path": "ui-manual-gathering.js",
+      "status": 200,
+      "bytes": 3254,
+      "expectedSha256": "fb53853c89dce2841aa9c1b8de46ff9804c9538d30360cc33d6645c3a9c3f210",
+      "actualSha256": "fb53853c89dce2841aa9c1b8de46ff9804c9538d30360cc33d6645c3a9c3f210",
+      "matches": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "bytes": 63299,
+      "expectedSha256": "9972cac8031078a1fb73020d56633846ac9b8c514d3925bdbc3bf8af84de5db3",
+      "actualSha256": "9972cac8031078a1fb73020d56633846ac9b8c514d3925bdbc3bf8af84de5db3",
+      "matches": true
+    }
+  ],
+  "passed": 39,
+  "total": 39
+}
