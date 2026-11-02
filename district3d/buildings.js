@@ -267,7 +267,9 @@ export function createDistrictBuilding(B,scene,b,materials) {
  for(const [material,parts] of groups){
   for(const mesh of parts)mesh.computeWorldMatrix(true);
   const mesh=parts.length===1?parts[0]:B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);
-  if(!mesh)continue;mesh.name=`${b.type}-${material?.name||'surface'}`;mesh.material=material;mesh.parent=root;mesh.receiveShadows=true;mesh.isPickable=true;meshes.push(mesh);
+  if(!mesh)continue;mesh.name=`${b.type}-${material?.name||'surface'}`;mesh.material=material;mesh.parent=root;mesh.receiveShadows=true;mesh.isPickable=true;
+  if(b.type==='field'&&!plan.construction&&material===m.silt)mesh.metadata={fieldBed:true};
+  meshes.push(mesh);
  }
  for(const mesh of lights){mesh.receiveShadows=true;meshes.push(mesh);}
  root.position.set(...plan.position);root.computeWorldMatrix(true);for(const mesh of meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}

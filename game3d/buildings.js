@@ -53,7 +53,7 @@ export function mergeCourtyardAsset(B,container){
 
 export async function createGameBuildings(B,scene,materials,options={}){
  let cropAssets=options.deferAssets?null:await loadFieldCrops(B,scene),cropPromise=null;
- const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[];
+ const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
  const visualSignature=(b,state,shoreContext)=>gameBuildingSignature(b,state,shoreContext)+(sacredModels.ready(b)?'|sacred-ready':'');
@@ -87,6 +87,24 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const homeShade=finish('home-interior-shadow','#100c08');
  const homePlasters=houseFinishes.map((variants,level)=>variants.map((base,variant)=>{const mat=finish(`home-plaster-${level+1}-${variant}`,['#ceb18a','#d8c29e','#e0cdaa'][variant],materials.plaster);mat.albedoTexture=null;mat.albedoColor=mat.albedoColor.toLinearSpace();return mat;}));
  const materialSet={...materials,raw,fired,shade,trim,warm};
+ // Keep the already clipped/uploaded soil across sowing and harvest templates.
+ // A disabled owner keeps Geometry alive after the previous template is released.
+ function clearFieldBeds(){for(const entry of fieldBeds.values())entry.owner.dispose();fieldBeds.clear();}
+ function fieldBedContext(state){if(fieldBedState!==state){clearFieldBeds();fieldBedState=state;}}
+ function clipField(mesh,b,state){
+  const key=mesh.metadata?.fieldBed?JSON.stringify([b.x,b.y,rotationOf(b),state?.world?.lakes||[],(state?.buildings||[]).map(v=>[v.x,v.y])]):null;
+  const cached=key&&fieldBeds.get(key);
+  if(cached){fieldBeds.delete(key);fieldBeds.set(key,cached);mesh.geometry.releaseForMesh(mesh,true);cached.owner.geometry.applyToMesh(mesh);return true;}
+  const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
+  if(!clipped.indices.length){mesh.dispose();return false;}
+  const geometry=new B.VertexData();Object.assign(geometry,clipped);geometry.applyToMesh(mesh);
+  if(key&&clipped!==data){
+   const owner=mesh.clone('game-field-bed-cache',null,true);owner.parent=null;owner.isVisible=false;owner.isPickable=false;owner.setEnabled(false);owner.metadata={fieldBedCache:true};owner.freezeWorldMatrix();
+   fieldBeds.set(key,{owner,x:b.x,y:b.y});
+   while(fieldBeds.size>128){const oldest=fieldBeds.keys().next().value;fieldBeds.get(oldest).owner.dispose();fieldBeds.delete(oldest);}
+  }
+  return true;
+ }
  function acquire(b,key,state,shoreContext){
   let t=templates.get(key);if(t){t.users++;return t;}
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
@@ -112,11 +130,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   // ladder would pass through their terraces at the obsolete roof height.
   if(!sacredModels.sources(b))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
-  if(b.type==='field')sources=sources.filter(mesh=>{
-   const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
-   if(!clipped.indices.length){mesh.dispose();return false;}
-   const geometry=new B.VertexData();Object.assign(geometry,clipped);geometry.applyToMesh(mesh);return true;
-  });
+  if(b.type==='field')sources=sources.filter(mesh=>clipField(mesh,b,state));
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
    for(let index=0;index<4;index++){
@@ -143,6 +157,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function clearPreview(){if(previewRecord){previewRecord.root.dispose();previewRecord=null;}}
  function preview(input,state,options={}){
   if(disposed)return null;if(!input){clearPreview();return null;}
+  fieldBedContext(state);
   const b={...input,level:1,construction:undefined},shoreContext=foundationContext(state),signature=visualSignature(b,state,shoreContext),allowed=options.allowed!==false;
   if(!previewRecord||previewRecord.signature!==signature){
    clearPreview();let template=previewTemplates.get(signature);
@@ -171,6 +186,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  }
  function sync(state){
   if(disposed)return;if(options.deferAssets&&state.buildings.some(b=>b.type==='field'))loadDetails();
+  fieldBedContext(state);
   const shoreContext=foundationContext(state),seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
   for(const b of state.buildings||[]){
    // Landscape owns connected canal beds, wetness, banks and construction.
@@ -207,7 +223,9 @@ export async function createGameBuildings(B,scene,materials,options={}){
    for(const mesh of record.meshes)if(mesh.metadata.homeLamp)mesh.material=mesh.metadata.lampIndex<litWindows?warm:shade;
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
+  const fieldSites=new Set((state.buildings||[]).filter(b=>b.type==='field').map(b=>`${b.x},${b.y}`));
+  for(const [key,entry]of fieldBeds)if(!fieldSites.has(`${entry.x},${entry.y}`)&&!(previewRecord?.x===entry.x&&previewRecord?.y===entry.y)){entry.owner.dispose();fieldBeds.delete(key);}
  }
  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
- return {sync,meshes,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }
