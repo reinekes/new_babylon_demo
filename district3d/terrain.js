@@ -34,7 +34,9 @@ const innerXs=Array.from({length:WIDTH*4+1},(_,i)=>-.5+i/4);
 const outerXs=[-36.5,-24.5,-12.5,-6.5,-2.5,-.5,WIDTH-.5,WIDTH+1.5,WIDTH+5.5,WIDTH+11.5,WIDTH+23.5,WIDTH+35.5];
 function terrainRowXs(y,dense=true,min=-.5,max=WIDTH-.5,s){
  const bank=RIVER_BANK_SECTION.map(x=>river(y,s)+x);
- return unique([...(dense?innerXs:outerXs),...bank,min,max].filter(x=>x>=min&&x<=max));
+ // The top/bottom rim touches both dense playable ground and coarse side dunes.
+ // Keep both sets there so adjacent strips share segments, not T-junctions.
+ return unique([...outerXs,...(dense?innerXs:[]),...bank,min,max].filter(x=>x>=min&&x<=max));
 }
 function alluvialHeight(x,y,s){const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(WIDTH-.5),-.5-y,y-(HEIGHT-.5));return surfaceElevation(x,y,s)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);}
 export function alluvialNormal(x,y,s){const e=.02,dx=(alluvialHeight(x+e,y,s)-alluvialHeight(x-e,y,s))/(2*e*TILE),dz=(alluvialHeight(x,y+e,s)-alluvialHeight(x,y-e,s))/(2*e*TILE),length=Math.hypot(dx,1,dz);return [-dx/length,1/length,-dz/length];}

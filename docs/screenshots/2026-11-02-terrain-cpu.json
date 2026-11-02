@@ -1,0 +1,27 @@
+{
+  "release": "terrain-seam-20261102-1",
+  "metric": "CPU simulation time, NOT FPS",
+  "fixture": "200 residents, 129 buildings, 4x; scripts/benchmark-4x.mjs",
+  "results": {
+    "buildings": 129,
+    "population": 200,
+    "assignmentMs": 5.4947500000000105,
+    "simulation4x": {
+      "medianMs": 4.752292000000125,
+      "p95Ms": 9.167790999999852,
+      "maxMs": 138.71354199999996
+    },
+    "encode": {
+      "medianMs": 1.3427089999995587,
+      "maxMs": 2.082875000000058,
+      "bytes": 253015
+    },
+    "stateSHA256": "c7bf3bec803171608b1feeb79bb7e7fb450104891fcb71b0393153c3bc221f6c"
+  },
+  "renderingDelta": {
+    "sceneryVertices": 16,
+    "sceneryTriangles": 16,
+    "playableTerrainChanged": false
+  },
+  "browserFPS": "not measured"
+}

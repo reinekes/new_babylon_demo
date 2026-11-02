@@ -3,6 +3,7 @@ import {canalNetworkGeometry} from './canal-network.js';
 import {irrigationFor,CARDINAL} from '../irrigation.js';
 import {constructionProgress} from '../construction.js';
 import {terrain} from '../world.js';
+import {deformedTerrainNormals,stitchTerrainRim} from './terrain-deformation.js';
 
 export function createBootstrapLandscape(B,scene,state,materials){
  let base=createDistrictTerrain(B,scene,state,materials);const originals=new Map(),owned=[];
@@ -14,13 +15,14 @@ export function createBootstrapLandscape(B,scene,state,materials){
  const clamp=v=>Math.max(0,Math.min(1,v));
  function carve(arms){
   // Cut the display mesh only; retain the original for demolition and topology changes.
-  if(!originals.size)for(const m of base.meshes)if(['alluvial-valley','soft-riparian-grass'].includes(m.name))originals.set(m,{positions:m.getVerticesData(B.VertexBuffer.PositionKind).slice(),colors:m.getVerticesData(B.VertexBuffer.ColorKind)?.slice()});
+  if(!originals.size)for(const m of base.meshes)if(['alluvial-valley','soft-riparian-grass'].includes(m.name))originals.set(m,{positions:m.getVerticesData(B.VertexBuffer.PositionKind).slice(),normals:m.getVerticesData(B.VertexBuffer.NormalKind).slice(),colors:m.getVerticesData(B.VertexBuffer.ColorKind)?.slice()});
   for(const [m,original]of originals){const positions=original.positions.slice(),colors=original.colors?.slice();
    for(let i=0;i<positions.length;i+=3)for(const arm of arms){const dx=arm.b.x-arm.a.x,dy=arm.b.y-arm.a.y,x=positions[i]/TILE,y=positions[i+2]/TILE,t=clamp(((x-arm.a.x)*dx+(y-arm.a.y)*dy)/(dx*dx+dy*dy||1)),distance=Math.hypot(x-arm.a.x-dx*t,y-arm.a.y-dy*t)*TILE;if(distance>1.85)continue;
     const weight=1-clamp((distance-.85)/1),cut=arm.startHeight+(arm.endHeight-arm.startHeight)*t-.2;positions[i+1]=Math.min(positions[i+1],original.positions[i+1]*(1-weight)+cut*weight);if(colors&&m.name==='soft-riparian-grass')colors[i/3*4+3]*=1-Math.min(1,weight*2);
    }
-   m.setVerticesData(B.VertexBuffer.PositionKind,positions,true);if(colors)m.setVerticesData(B.VertexBuffer.ColorKind,colors,true);const normals=[];B.VertexData.ComputeNormals(positions,m.getIndices(),normals);m.setVerticesData(B.VertexBuffer.NormalKind,normals,true);m.refreshBoundingInfo();
+   m.setVerticesData(B.VertexBuffer.PositionKind,positions,true);if(colors)m.setVerticesData(B.VertexBuffer.ColorKind,colors,true);m.setVerticesData(B.VertexBuffer.NormalKind,deformedTerrainNormals(B,original,positions,m.getIndices()),true);m.refreshBoundingInfo();
   }
+  stitchTerrainRim(B,base.meshes);
  }
  function surface(name,g,material,arms){
   if(!g.indices.length)return null;const mesh=new B.Mesh(`bootstrap-canal-${name}`,scene),data=new B.VertexData();
