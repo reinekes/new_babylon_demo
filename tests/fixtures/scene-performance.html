@@ -9,6 +9,7 @@ html,body{margin:0;height:100%;background:#94866d;color:#293b36;font:12px Arial}
 <canvas aria-label="Измеряемый большой город"></canvas>
 <aside>
  <strong>200 жителей · 129 зданий · 4× · настоящий 3D</strong>
+ <p>Выпуск: performance-caches-20261102-1. <a href="./">Вернуться в игру</a></p>
  <p>Каждый замер: одинаковое начальное состояние, 3 секунды прогрева и 12 секунд измерения. Вкладка должна оставаться видимой; другие 3D-вкладки и тесты закрыть.</p>
  <div id="controls">
   <button data-scenario="near" disabled>Близко · высокая</button>
@@ -24,5 +25,6 @@ html,body{margin:0;height:100%;background:#94866d;color:#293b36;font:12px Arial}
 </aside>
 <script src="assets/vendor/babylon-9.31.0.js"></script>
 <script src="assets/vendor/babylonjs-loaders-9.31.0.min.js"></script>
-<script type="module" src="tests/fixtures/scene-performance.js"></script>
+<script type="importmap">{"imports":{"./game3d/actors.js":"./game3d/actors.js?v=performance-caches-20261102-1","./game3d/buildings.js":"./game3d/buildings.js?v=performance-caches-20261102-1","./district3d/buildings.js":"./district3d/buildings.js?v=performance-caches-20261102-1"}}</script>
+<script type="module" src="tests/fixtures/scene-performance.js?v=performance-caches-20261102-1"></script>
 </html>
