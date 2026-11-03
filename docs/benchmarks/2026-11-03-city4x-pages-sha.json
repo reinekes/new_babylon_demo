@@ -1,0 +1,149 @@
+{
+  "release": "city4x-screen-budget-20261103-1",
+  "commit": "51e92967ff23f006e96a19281ae272b7f8cc3725",
+  "pagesRun": 41631518118,
+  "verified": [
+    {
+      "path": "app.js",
+      "sha256": "fdab74c14227ec5fb1839aa7fcb093356d6e419ba9cfe88b12b4a7d9be1a4ac4"
+    },
+    {
+      "path": "game3d/actors.js",
+      "sha256": "836633e42eadd0f8dced277472cecaf5b97f4fbf381ec860d6b9096cf1055c22"
+    },
+    {
+      "path": "game3d/renderer.js",
+      "sha256": "56448385ddf679363622b913ce2cdd99067727baff941323ec30675b8927097f"
+    },
+    {
+      "path": "game3d/valley-vegetation.js",
+      "sha256": "c7ca5f6cbcb5065df7755e45af73d8195986e7930954be111d0dcd3356cc0040"
+    },
+    {
+      "path": "game3d/resident-pose-schedule.js",
+      "sha256": "730c4ff98c6f272414babb90a6dfa753fbd191951de4ea1dd520842c86ac9981"
+    },
+    {
+      "path": "game3d/shadow-casters.js",
+      "sha256": "a0ba81f4523424a81c066552648157515a5b687a960ef83bbffd456f3ce3ffcd"
+    },
+    {
+      "path": "game3d/renderable-mesh-candidates.js",
+      "sha256": "6e42146dde53156d968cce2896dce007d30c079e61a0bb11e7c5a0ee4701adab"
+    },
+    {
+      "path": "index.html",
+      "sha256": "2c6b271b4690526a3b457b8ba3213533c910c99681552cf170f4882136ddacb3"
+    },
+    {
+      "path": "courtyard.html",
+      "sha256": "39073c8b39b7e75e7aba5da26a2b4d358299341d3f1242cf64f8761341925414"
+    },
+    {
+      "path": "district3d.html",
+      "sha256": "0bf2cc96ca4a2df11ecd9819746fc094aadbbc65ebbc3fc1bfeffa92c6578fa2"
+    },
+    {
+      "path": "goat-studio.html",
+      "sha256": "a6904b71d2985cb0b37d9afc1a93530bc0c67c9c528f75fa329f86be48b18933"
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "sha256": "4ec05f6f17461ffa31f2b4d9e73fd0c06d18fbaf5db720683f7d328b70489bab"
+    },
+    {
+      "path": "scripts/perf-city-4x.html",
+      "sha256": "b3c992d2877f57c704e1b60f69a65f1193cf1f4b3b7d5ef80b432dab377afddb"
+    },
+    {
+      "path": "scripts/perf-city-4x.js",
+      "sha256": "c65107a57693d3be8820cf8f3e3b3334c24ed16417b36454d040ea237c0e29a9"
+    },
+    {
+      "path": "tests/game3d-actors.test.js",
+      "sha256": "9a0ccefe49d7815c6dfae3f6ef1826c13d20a64661f15d7a866228778ec17806"
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "sha256": "b1680c17202fa9d00e7a667d806c7d306adc02cb4f579109ef75f782261bccc4"
+    },
+    {
+      "path": "tests/valley-vegetation.test.js",
+      "sha256": "e1f3a3de5887217760716ee0855d47295724dab6e58e532d740f77de8f8bffd0"
+    },
+    {
+      "path": "tests/resident-pose-schedule.test.js",
+      "sha256": "ec4751f61f56d778017b1e2d2ad36237f7e07f75fac1fa4959312a69ea775ea2"
+    },
+    {
+      "path": "tests/shadow-casters.test.js",
+      "sha256": "feef005366327020aa567d1c3224c09f1b5944c09a8d153ac57200a8b4bae35b"
+    },
+    {
+      "path": "tests/renderable-mesh-candidates.test.js",
+      "sha256": "770dd899e097476fe8fd1157ea12e477f669bff06a1d79c05c565c415173d5be"
+    },
+    {
+      "path": "docs/PERF_CITY_4X_2026-11-03.md",
+      "sha256": "7e76949d87f4d0b2910ac9a2d97305011f39d1f0cb1c8407d5e917ae9c2cb03b"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-03-city4x-before.json",
+      "sha256": "d5b5f3df35c94d4a2599f0387e1c8c2f471e0cac1744c16648787595802caa58"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-03-city4x-after.json",
+      "sha256": "b8d282eacadd82993fa238566b1072c07c1893d91b14e3712d9c12c50c21f27f"
+    },
+    {
+      "path": "roadmap/index.html",
+      "sha256": "9677b157e0322454c133abc42edf9c9d17c32c6ab83a823540c69e2d6c815ac6"
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "sha256": "2dc559df067f11a66a9203d0f10322a06f6166e59689c11964a53c273bb64d1f"
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "sha256": "13fed261b01924da1052ce3f192910e50855798fd66a26d63222bdf49de8c89d"
+    },
+    {
+      "path": "roadmap/plan.md",
+      "sha256": "2d6860a4366c47a18f8ebe7c13216da94a19d3583bf59eb78e869647911239c2"
+    },
+    {
+      "path": "roadmap/overview.md",
+      "sha256": "e63607ccd0bb6b0c54fb944ae7d8d65059271284019a20f660963cb4b466d736"
+    },
+    {
+      "path": "roadmap/reports/2026-11-03-02.md",
+      "sha256": "b469caad1fb31c8a50180852fc9269c2cd8c9ca150b63e584b09277be065d465"
+    },
+    {
+      "path": "roadmap/tests/app.test.mjs",
+      "sha256": "e70ef4a694cb892ee1ebbdb3e545fea9c7cfd8ad86548b8cf8ca6bbc1ee8392d"
+    },
+    {
+      "path": "engine.js",
+      "sha256": "869dbed3577dae0c3ed6e1da3f5db5a47067bde7135b85e070e86ef1d5edf7e4"
+    },
+    {
+      "path": "workforce.js",
+      "sha256": "9972cac8031078a1fb73020d56633846ac9b8c514d3925bdbc3bf8af84de5db3"
+    },
+    {
+      "path": "inventory.js",
+      "sha256": "23c39d8a882028fc4cba26b18d6880d636779734272a13f8300c8a46d87fd09e"
+    },
+    {
+      "path": "definitions.js",
+      "sha256": "163fdb310dab3e2976197b296f6430567e7b869245d010143bd755052f219d17"
+    }
+  ],
+  "unchangedSimulation": [
+    "engine.js",
+    "workforce.js",
+    "inventory.js",
+    "definitions.js"
+  ]
+}
