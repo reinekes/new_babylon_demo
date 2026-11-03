@@ -465,3 +465,40 @@ test('legacy saved desert funerals retain adult palm-held torches and exclude ch
  B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(sumer-people|resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
  try{scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{},{includeFauna:false});const s=createGame({start:'established'}),base=s.citizens[0];s.citizens=[{...base,id:870,age:30,x:8,y:7},{...base,id:871,age:8,x:8,y:7.3}];s.funeral={style:'desert',scope:'family',stage:'procession',timer:1,gather:{x:9,y:8},boundary:{x:0,y:8},coffin:{x:6,y:8},deceased:[{id:900,name:'Покойный',x:8,y:8}],actors:s.citizens.map(c=>({id:c.id}))};const before=JSON.stringify(s);view.update(s,.1);scene.render();const torch=scene.transformNodes.find(n=>n.name==='funeral-torch-870');assert.ok(torch,'legacy adult receives the new flame prop');assert.ok(!scene.transformNodes.some(n=>n.name==='funeral-torch-871'),'children never carry torches');const root=view.rootFor({citizenId:870}),hand=root.getChildTransformNodes().find(n=>n.name.endsWith('-hand_r'));hand.computeWorldMatrix(true);assert.ok(B.Vector3.Distance(torch.position,hand.getAbsolutePosition())<.001);assert.equal(JSON.stringify(s),before);}finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
+
+test('distant pose/shadow LOD preserves live root motion, IDs and cargo and restores inspected detail',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{}, {includeFauna:false});
+  const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:10001,phase:'toStore',walking:true,x:7,y:10,cargo:{clay:2},carrying:true};s.citizens=[c];
+  const camera={position:{x:0,y:0,z:-400},fov:.8},options={camera,viewportHeight:720,speed:4};
+  const before=JSON.stringify(s);view.update(s,1/60,options);scene.render();assert.equal(JSON.stringify(s),before);
+  const root=view.rootFor({citizenId:c.id});assert.equal(root.simplifiedShadow,true);
+  const proxy=root.getChildMeshes().find(m=>m.shadowProxy);assert.ok(proxy);assert.equal(proxy.layerMask,0);assert.equal(proxy.isPickable,false);assert.ok(view.shadowMeshes().includes(proxy));
+  let frames=0;const walk=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),sample=walk.goToFrame.bind(walk);walk.goToFrame=f=>{frames++;return sample(f);};
+  for(let i=0;i<60;i++){c.x+=.001;const snapshot=JSON.stringify(s);view.update(s,1/60,options);scene.render();assert.equal(root.position.x,c.x*6);assert.equal(JSON.stringify(s),snapshot);}
+  assert.ok(frames<25,`${frames} bone samples for a sub-12px person, not 60`);
+  c.x+=.001;view.update(s,1/60,{...options,focusId:c.id});scene.render();assert.equal(root.simplifiedShadow,false);assert.ok(!view.shadowMeshes().includes(proxy));
+  const pose=walk.animatables[0].masterFrame;view.update(s,1/60,{...options,focusId:c.id,paused:true});scene.render();assert.equal(walk.animatables[0].masterFrame,pose);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});
+
+test('paused Idle zoom and unsampled distant Walk keep their last rendered clip frames',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync;
+ const data=new Uint8Array(readFileSync(new URL('../assets/art-courtyard/models/resident.glb',import.meta.url)));let view;
+ B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>/^(resident|sumer-child|sumer-adolescent)/.test(file)?originalLoader.call(B.SceneLoader,'',data,scene,undefined,'.glb'):mockContainer(scene,'sheep');
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{}, {includeFauna:false});
+  const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:10001,phase:'waiting',x:7,y:10,cargo:{},carrying:false,walking:false};s.citizens=[c];
+  const near={position:{x:42,y:5,z:50},fov:.8},far={position:{x:0,y:0,z:-400},fov:.8},options={camera:near,viewportHeight:720};
+  view.update(s,.05,options);scene.render();const idle=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Idle_Loop`);idle.goToFrame(idle.from+(idle.to-idle.from)*.31);
+  view.update(s,.05,{...options,paused:true});scene.render();const frozenIdle=idle.animatables[0].masterFrame;
+  view.update(s,.05,{...options,camera:far,paused:true});scene.render();assert.equal(idle.animatables[0].masterFrame,frozenIdle,'paused near→far must not change Idle timebase');
+  view.update(s,.05,{...options,paused:true});scene.render();assert.equal(idle.animatables[0].masterFrame,frozenIdle,'paused zoom back retains authored frame');
+  c.phase='toStore';c.walking=true;c.carrying=true;c.cargo={clay:2};c.x+=.01;view.update(s,.05,{...options,camera:far});scene.render();const walk=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),frozenWalk=walk.animatables[0].masterFrame;
+  c.x+=.001;view.update(s,.000001,{...options,camera:far});scene.render();assert.equal(walk.animatables[0].masterFrame,frozenWalk,'tiny elapsed time stays between LOD samples');
+  view.update(s,.01,{...options,camera:far,paused:true});scene.render();assert.equal(walk.animatables[0].masterFrame,frozenWalk,'pause must hold the rendered frame, not the newer unsampled walk phase');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
+});

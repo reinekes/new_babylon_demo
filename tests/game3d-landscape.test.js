@@ -70,7 +70,7 @@ test('real GLB palms share baked geometry; canals, road work and trade update a 
  const before=JSON.stringify(s);
  try{
   view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,12);assert.equal(JSON.stringify(s),before);
-  assert.ok(live.some(m=>m.name.startsWith('valley-grass-')&&m.sourceMesh));assert.ok(live.some(m=>m.name.startsWith('valley-reed-')&&m.sourceMesh));assert.ok(!live.some(m=>['volumetric-riparian-colonies','deposit-reed-bed'].includes(m.name)),'imported plants replace old grass ribbons and reed cylinders');
+  assert.ok(live.some(m=>m.name.startsWith('valley-grass-')&&m.thinInstanceCount>0));assert.ok(live.some(m=>m.name.startsWith('valley-reed-')&&m.thinInstanceCount>0));assert.ok(!live.some(m=>['volumetric-riparian-colonies','deposit-reed-bed'].includes(m.name)),'imported plants replace old grass ribbons and reed cylinders');
   for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets','living-river','saved-lakes'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
   const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);assert.ok(palms.every(m=>m.isEnabled()));assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);
   for(const m of palms){assert.equal(m.overrideMaterialSideOrientation??null,m.sourceMesh.metadata?.nativeDates?null:B.Material.CounterClockWiseSideOrientation);assert.ok(m.getWorldMatrix().determinant()>0);}

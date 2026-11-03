@@ -1,3 +1,5 @@
+import {createActorShadowFilter} from './shadow-casters.js';
+import {residentPoseInterval,residentPoseSlot} from './resident-pose-schedule.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
 import {festivalView} from '../festival.js';
 import {createFestivalCourt} from './festival-court.js';
@@ -62,7 +64,7 @@ export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
 export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false}={}){
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
- let disposed=false,poseTime=0,bier=null,riteState=null,presentedState=null;
+ let disposed=false,poseTime=0,poseClock=0,bier=null,riteState=null,presentedState=null;
  const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
  const ritual=createFuneralRitual(B,scene,meshes),festivalCourt=createFestivalCourt(B,scene,meshes);
  const containers=[];
@@ -100,6 +102,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
  const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#829e91'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952'),lapis=mat('relic-lapis','#276b94');
+ const shadowShape=B.MeshBuilder.CreateCapsule('resident-shadow-shape',{height:1.7,radius:.26,tessellation:6,capSubdivisions:2,subdivisions:1},scene);shadowShape.isVisible=false;shadowShape.isPickable=false;shadowShape.material=linen;const shadowFilter=createActorShadowFilter();
  gold.emissiveColor=B.Color3.FromHexString('#77541c').toLinearSpace();
  function register(root){for(const m of root.getChildMeshes()){m.receiveShadows=true;m.isPickable=true;if(!meshes.includes(m))meshes.push(m);}}
  function prune(root){for(const m of root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}}
@@ -165,6 +168,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    a.armNodes=[];
    for(const n of model.getChildTransformNodes())if(/(?:upperarm|lowerarm)_[lr]$/.test(n.name))a.armNodes.push({node:n,base:n.rotationQuaternion?.clone()||B.Quaternion.FromEulerVector(n.rotation),last:null});
   }
+  if(metadata.citizenId!==undefined){root.simplifiedShadow=false;const proxy=shadowShape.clone(`${name}-shadow-lod`,root);proxy.position.y=.85;proxy.isVisible=true;proxy.layerMask=0;proxy.isPickable=false;proxy.shadowProxy=true;meshes.push(proxy);}
   return a;
  }
  // Solve the authored y-axis upper/lower arm bones toward a palm target in world space.
@@ -368,10 +372,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // Animation clips set the skeletal base, then apply small task-specific arm gestures.
  const observer=scene.onAfterAnimationsObservable.add(()=>{
   for(const a of people.values()){
-   if(!a.root.isEnabled())continue;
+   if(!a.root.isEnabled()||a.poseSample===false)continue;
+   if(a.manualIdle&&!a.paused){const g=a.groups.get(a.clip),fps=g.targetedAnimations[0]?.animation.framePerSecond||30,span=g.to-g.from;if(span>0)g.goToFrame(g.from+(a.time*fps)%span);}
    // Walking animatables are paused, avoiding a second clock-based evaluation.
    // Apply the distance sample once, before task IK and skeleton upload.
-   if(a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
+   if(!a.paused&&a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
    if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
@@ -504,7 +509,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  function resetResidentPresentation(a){
   // Keep the rig and identity, but forget every sampled task/ceremony pose.
   // Hidden residents need this too: they can reappear after a skipped season.
-  a.appearanceInputs=null;a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.yaw=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
+  a.poseSlot=undefined;a.poseSample=true;a.manualIdle=false;a.appearanceInputs=null;a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.yaw=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
   for(const arm of a.armNodes)arm.last=null;for(const leg of Object.values(a.legs)){leg.lastPosition=null;leg.lastRotations=null;}
   a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
  }
@@ -512,13 +517,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(disposed)return;presentedState=null;
   if(state)update(state,0,{paused:true});
  }
- function update(state,dt=1/60,{paused=false,speed=1}={}){
+ function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   const replacedState=presentedState!==state;presentedState=state;
   if(replacedState)for(const a of people.values())resetResidentPresentation(a);
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
-  if(!paused)poseTime+=dt*speed;
+  if(!paused){poseTime+=dt*speed;poseClock+=dt;}
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   // Match residentAppearance's first array.find, including falsy-ID fallback.
   // Rebuild each update: a building may keep its ID while changing its type.
@@ -531,7 +536,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // route sample, facing and gait phase when optional detail becomes ready.
    if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,eventContactActive:a.eventContactActive,ceremonyJoin:a.ceremonyJoin,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
-   a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;animate(a,c,state,dt,paused,speed,positions.get(c.id));if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
+   a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;
+   const interval=residentPoseInterval(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale,!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.id===focusId));
+   a.root.simplifiedShadow=interval>0&&!c.swimming;const slot=residentPoseSlot(poseClock,interval,c.id);a.poseSample=slot===null||slot!==a.poseSlot||a.paused!==paused||!a.hasModelPose;a.poseSlot=slot;
+   animate(a,c,state,dt,paused,speed,positions.get(c.id));
+   // The root keeps following the real route each frame. Only small skeletal
+   // gestures are sampled less often; near/inspected people stay full rate.
+   const manualIdle=interval>0&&a.clip==='Idle_Loop',g=a.groups.get(a.clip);
+   if(manualIdle&&!a.manualIdle)g.pause();else if(!manualIdle&&a.manualIdle&&a.clip==='Idle_Loop')g.play(true);
+   a.manualIdle=manualIdle;if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
   }
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
@@ -541,6 +554,6 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
   wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
- return {update,resetPresentation,dispose,meshes,faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

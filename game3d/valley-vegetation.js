@@ -77,9 +77,17 @@ export async function createValleyVegetation(B,scene,{tier='balanced',assets=VAL
  function clear(){for(const m of batches){m.dispose();const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}batches.length=0;}
  return {meshes,sources,get plan(){return plan;},setQuality(next){if(VEGETATION_BUDGETS[next]&&next!==currentTier){currentTier=next;signature='';}},update(s,roads,key){if(disposed||signature===`${key}|${currentTier}`)return false;signature=`${key}|${currentTier}`;clear();plan=valleyVegetationPlan(s,roads,currentTier);
   for(const kind of ['grass','greenGrass','reed']){const variants=1+Math.max(-1,...sources[kind].map(m=>m.metadata.valleyVariant));for(const src of sources[kind]){
-   // Regular instances share geometry/material and remain visible to the existing
-   // shadow/culling registry. No geometry or transforms change each frame.
-   for(const [i,p]of plan[kind].entries()){if(p.variant%variants!==src.metadata.valleyVariant)continue;const m=src.createInstance(`valley-${kind}-${i}`);m.setEnabled(true);m.position.set(p.x*TILE,visualSurfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(p.scale);m.rotation.y=p.angle;m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.isPickable=false;m.receiveShadows=true;m.metadata={valleyVegetation:{kind,...p}};m.freezeWorldMatrix();meshes.push(m);batches.push(m);}
+   // Static plants keep their exact transforms/materials, grouped in 16-tile
+   // cells. One GPU instance buffer replaces hundreds of scene graph objects;
+   // cells retain useful frustum bounds for close views of the enlarged valley.
+   const cells=new Map();
+   for(const p of plan[kind]){if(p.variant%variants!==src.metadata.valleyVariant)continue;const key=`${Math.floor(p.x/16)},${Math.floor(p.y/16)}`;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(p);}
+   for(const [cell,points]of cells){
+    const m=src.clone(`valley-${kind}-batch-${cell}-${src.uniqueId}`);m.setEnabled(true);m.isVisible=true;m.position.setAll(0);m.rotation.setAll(0);m.rotationQuaternion=null;m.scaling.setAll(1);
+    const matrices=new Float32Array(points.length*16);
+    for(const [i,p]of points.entries())B.Matrix.Compose(new B.Vector3(p.scale,p.scale,p.scale),B.Quaternion.RotationYawPitchRoll(p.angle,0,0),new B.Vector3(p.x*TILE,visualSurfaceElevation(p.x,p.y,s),p.y*TILE)).copyToArray(matrices,i*16);
+    m.thinInstanceSetBuffer('matrix',matrices,16,true);m.thinInstanceRefreshBoundingInfo();m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.isPickable=false;m.receiveShadows=true;m.metadata={valleyBatch:{kind,cell,points}};m.freezeWorldMatrix();meshes.push(m);batches.push(m);
+   }
   }}
   return true;
  },dispose(){if(disposed)return;disposed=true;clear();for(const m of meshes)if(!m.isDisposed?.())m.dispose();meshes.length=0;for(const c of containers)c.dispose();}};

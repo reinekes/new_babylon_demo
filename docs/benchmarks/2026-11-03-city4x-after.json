@@ -1,0 +1,340 @@
+[
+  {
+    "at": "2026-11-03T11:42:44.489Z",
+    "rendererRelease": "city4x-screen-budget-20261103-1",
+    "shadowProxies": 40,
+    "camera": "near",
+    "cameraSetup": {
+      "radius": 41.6,
+      "target": [
+        53,
+        0,
+        55
+      ],
+      "alpha": 1.0471975511965976,
+      "beta": 0.96
+    },
+    "quality": "high",
+    "shadows": true,
+    "people": true,
+    "viewport": [
+      1280,
+      720
+    ],
+    "dpr": 1,
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "initial": {
+      "population": 200,
+      "buildings": 129,
+      "seed": 137
+    },
+    "end": {
+      "population": 200,
+      "buildings": 129
+    },
+    "seconds": 20.012300000071527,
+    "fps": 34.53,
+    "frameMs": {
+      "mean": 28.932,
+      "p50": 25.4,
+      "p95": 33.7,
+      "max": 66.7
+    },
+    "profile": {
+      "simulation": {
+        "mean": 4.372,
+        "p50": 3.9,
+        "p95": 6.5,
+        "max": 12.8
+      },
+      "buildings": {
+        "mean": 0.653,
+        "p50": 0.6,
+        "p95": 0.8,
+        "max": 13.7
+      },
+      "landscape": {
+        "mean": 1.711,
+        "p50": 1.7,
+        "p95": 2.2,
+        "max": 4.1
+      },
+      "actors": {
+        "mean": 3.69,
+        "p50": 3.3,
+        "p95": 5,
+        "max": 37.8
+      },
+      "light": {
+        "mean": 0.036,
+        "p50": 0,
+        "p95": 0.1,
+        "max": 0.2
+      },
+      "selection": {
+        "mean": 0.017,
+        "p50": 0,
+        "p95": 0.1,
+        "max": 0.1
+      },
+      "render": {
+        "mean": 16.854,
+        "p50": 16.6,
+        "p95": 19.1,
+        "max": 29.8
+      },
+      "engine-activeMeshesEvaluation": {
+        "mean": 5.503,
+        "p50": 5.4,
+        "p95": 6.1,
+        "max": 9.9
+      },
+      "engine-renderTargetsRender": {
+        "mean": 6.014,
+        "p50": 6,
+        "p95": 7,
+        "max": 8.2
+      },
+      "engine-animations": {
+        "mean": 2.576,
+        "p50": 2.5,
+        "p95": 3.2,
+        "max": 4.4
+      },
+      "engine-render": {
+        "mean": 2.707,
+        "p50": 2.6,
+        "p95": 3.2,
+        "max": 14.2
+      }
+    },
+    "scene": {
+      "meshBreakdown": [
+        [
+          "fish:lake",
+          1920
+        ],
+        [
+          "road",
+          618
+        ],
+        [
+          "date",
+          607
+        ],
+        [
+          "citizen",
+          440
+        ],
+        [
+          "submerged",
+          248
+        ],
+        [
+          "game",
+          237
+        ],
+        [
+          "valley",
+          153
+        ],
+        [
+          "wildlife",
+          116
+        ],
+        [
+          "weather",
+          90
+        ],
+        [
+          "deposit",
+          87
+        ],
+        [
+          "goat",
+          42
+        ],
+        [
+          "resource",
+          41
+        ]
+      ],
+      "candidates": 429,
+      "meshes": 7067,
+      "active": 429,
+      "drawCalls": 1083,
+      "indices": 10827111,
+      "queueErrors": []
+    }
+  },
+  {
+    "at": "2026-11-03T11:43:22.252Z",
+    "rendererRelease": "city4x-screen-budget-20261103-1",
+    "shadowProxies": 40,
+    "camera": "wide",
+    "cameraSetup": {
+      "radius": 739.10423044749,
+      "target": [
+        189,
+        0,
+        189
+      ],
+      "alpha": 3.8623075237773334,
+      "beta": 0.68
+    },
+    "quality": "high",
+    "shadows": true,
+    "people": true,
+    "viewport": [
+      1280,
+      720
+    ],
+    "dpr": 1,
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "initial": {
+      "population": 200,
+      "buildings": 129,
+      "seed": 137
+    },
+    "end": {
+      "population": 200,
+      "buildings": 129
+    },
+    "seconds": 20.00870000009537,
+    "fps": 24.89,
+    "frameMs": {
+      "mean": 40.161,
+      "p50": 41.6,
+      "p95": 50.1,
+      "max": 116.5
+    },
+    "profile": {
+      "simulation": {
+        "mean": 4.759,
+        "p50": 3.9,
+        "p95": 8.8,
+        "max": 58.7
+      },
+      "buildings": {
+        "mean": 0.753,
+        "p50": 0.6,
+        "p95": 0.8,
+        "max": 23
+      },
+      "landscape": {
+        "mean": 1.68,
+        "p50": 1.6,
+        "p95": 2.3,
+        "max": 4.2
+      },
+      "actors": {
+        "mean": 4.182,
+        "p50": 3.9,
+        "p95": 6.2,
+        "max": 14.2
+      },
+      "light": {
+        "mean": 0.04,
+        "p50": 0,
+        "p95": 0.1,
+        "max": 0.2
+      },
+      "selection": {
+        "mean": 0.019,
+        "p50": 0,
+        "p95": 0.1,
+        "max": 0.1
+      },
+      "render": {
+        "mean": 26.986,
+        "p50": 25.9,
+        "p95": 34.8,
+        "max": 67.2
+      },
+      "engine-activeMeshesEvaluation": {
+        "mean": 12.495,
+        "p50": 12,
+        "p95": 15.1,
+        "max": 35.8
+      },
+      "engine-renderTargetsRender": {
+        "mean": 5.018,
+        "p50": 4.9,
+        "p95": 6.7,
+        "max": 10.7
+      },
+      "engine-animations": {
+        "mean": 2.102,
+        "p50": 2,
+        "p95": 3.1,
+        "max": 10.1
+      },
+      "engine-render": {
+        "mean": 7.318,
+        "p50": 7,
+        "p95": 9.1,
+        "max": 14.1
+      }
+    },
+    "scene": {
+      "meshBreakdown": [
+        [
+          "fish:lake",
+          1920
+        ],
+        [
+          "road",
+          618
+        ],
+        [
+          "date",
+          607
+        ],
+        [
+          "citizen",
+          440
+        ],
+        [
+          "submerged",
+          248
+        ],
+        [
+          "game",
+          237
+        ],
+        [
+          "valley",
+          153
+        ],
+        [
+          "wildlife",
+          116
+        ],
+        [
+          "weather",
+          90
+        ],
+        [
+          "deposit",
+          87
+        ],
+        [
+          "goat",
+          42
+        ],
+        [
+          "resource",
+          41
+        ]
+      ],
+      "candidates": 2860,
+      "meshes": 7067,
+      "active": 2860,
+      "drawCalls": 1800,
+      "indices": 19011126,
+      "queueErrors": []
+    }
+  }
+]

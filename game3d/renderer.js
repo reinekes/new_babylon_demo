@@ -1,3 +1,4 @@
+import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js';
 import {pickResourceDeposit} from './deposit-picking.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
 import {createBackgroundQueue,createLazyFeature} from './asset-loading.js';
@@ -23,7 +24,7 @@ import {createRelicScene} from './relic-scene.js';
 import {createSacredEffects} from './sacred-effects.js';
 import {newFootprint} from '../footprints.js';
 
-export const GAME3D_RELEASE='ceremony-speed-lights-20261028-1';
+export const GAME3D_RELEASE='city4x-screen-budget-20261103-1';
 // Keep atmospheric visibility comparable when viewing an enlarged valley.
 export const valleyFogDensity=radius=>.0018*Math.min(1,240/Math.max(1,radius));
 export function worldCell(point,state){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<worldWidth(state)&&y<worldHeight(state)?{x,y}:null;}
@@ -50,7 +51,7 @@ export class GameRenderer3D{
   this.B=B;this.canvas=canvas;this.onSelect=onSelect;this.mode='3d';this.quality='high';this.effects=[];this.lightMode='auto';this.pan={x:0,y:0};this._zoom=2.5;this.hover=null;this.selected=null;this.ambient=0;this.mapOverview=false;this.state=null;this.lastTime=null;this.lastSim=null;this.layersReady=false;this.lamps=new Map();this.effectViews=[];
   this.engine=new B.Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true,powerPreference:'high-performance'});
   this.engine.setHardwareScalingLevel(1/Math.min(globalThis.devicePixelRatio||1,1.5));
-  this.scene=new B.Scene(this.engine);this.scene.skipPointerMovePicking=true;this.scene.clearColor=B.Color4.FromHexString('#d0c8aeff');this.scene.fogMode=B.Scene.FOGMODE_EXP2;this.scene.fogDensity=.0018;
+  this.scene=new B.Scene(this.engine);this.scene.getActiveMeshCandidates=createRenderableMeshCandidates(this.scene);this.scene.skipPointerMovePicking=true;this.scene.clearColor=B.Color4.FromHexString('#d0c8aeff');this.scene.fogMode=B.Scene.FOGMODE_EXP2;this.scene.fogDensity=.0018;
   const ip=this.scene.imageProcessingConfiguration;ip.toneMappingEnabled=true;ip.toneMappingType=B.ImageProcessingConfiguration.TONEMAPPING_ACES;ip.exposure=1.1;ip.contrast=1.1;
   // Keep shared image processing fixed: changing exposure broadcasts PBR
   // dirtiness across the whole city. Sun, sky, fog and windows carry twilight.
@@ -140,8 +141,8 @@ export class GameRenderer3D{
  }
  draw(state,selection,now,options={}){
   if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState)this.resize();if(changedState&&foundingCameraTarget(state))this.home();
-  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.birdFlocks?.update(state,state.simTime);this.actors.update(state,dt,{paused,speed:options.speed??1});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
-  this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...this.actors.meshes,...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
+  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.birdFlocks?.update(state,state.simTime);this.actors.update(state,dt,{paused,speed:options.speed??1,camera:this.camera,viewportHeight:this.engine.getRenderHeight(),focusId:this.focusCitizenId??this.inspected?.citizenId});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
+  this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...(this.actors.shadowMeshes?.()||this.actors.meshes),...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }
  dispose(){this.disposed=true;this.detailQueue?.dispose();this.detailNote?.remove();this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.relicScene?.dispose();this.sacredEffects?.dispose();this.houseLights?.dispose();this.skyHorizon?.dispose();this.birdFlocks?.dispose();this.scene?.dispose();this.engine?.dispose();}
