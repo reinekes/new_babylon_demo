@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "plan": "plan.md",
+  "reports": [
+    "reports/2026-10-19.md",
+    "reports/2026-10-20.md",
+    "reports/2026-10-21.md",
+    "reports/2026-10-22.md",
+    "reports/2026-10-23.md",
+    "reports/2026-10-26.md",
+    "reports/2026-10-27.md",
+    "reports/2026-10-28.md",
+    "reports/2026-11-02.md",
+    "reports/2026-11-03.md"
+  ],
+  "history": "historical-review.md",
+  "overview": "overview.md",
+  "guide": "README.md"
+}
