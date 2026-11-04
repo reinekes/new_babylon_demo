@@ -2,6 +2,7 @@
 date: 2026-11-04
 type: completion
 release: season-relocation-ui-20261104-1
+commit: 81faab7d25463099fb3fe3aa1601e87077410c0e
 publication: not_published
 groups: ux; performance
 completed: ux-resident-links; ux-inspiration-chance
