@@ -1,0 +1,254 @@
+{
+  "at": "2026-11-04T11:21:36.368561+00:00",
+  "commit": "811e74f24f09d2c05b1bdb68fc57f90b146f2e7a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7ea9528fb9683498660700cfef79afc3c8aa1c7659ef10319996393b03e1b61f",
+      "actual": "7ea9528fb9683498660700cfef79afc3c8aa1c7659ef10319996393b03e1b61f",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "ea5500b6d07628ee684b0044ce66c4050237be122c0eb964a32f169043bfca5d",
+      "actual": "ea5500b6d07628ee684b0044ce66c4050237be122c0eb964a32f169043bfca5d",
+      "match": true
+    },
+    {
+      "path": "city-life.js",
+      "status": 200,
+      "expected": "3f2c2cd24285ed60f274d9e6b144c3f2442b9de76685ed4a9e523c25229572e8",
+      "actual": "3f2c2cd24285ed60f274d9e6b144c3f2442b9de76685ed4a9e523c25229572e8",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "a969de2be943e6ff370a868dcf6f116c9114ae4896ca109efd4f44d4355ac8a6",
+      "actual": "a969de2be943e6ff370a868dcf6f116c9114ae4896ca109efd4f44d4355ac8a6",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "ecea866ba5a20b071b25aea196b582877dc7910e054518070dca0faa2060825f",
+      "actual": "ecea866ba5a20b071b25aea196b582877dc7910e054518070dca0faa2060825f",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "2fe8ac71d47f6ab66aab1f01d77772ce4108d926295efcd0ccbf2f54870f1368",
+      "actual": "2fe8ac71d47f6ab66aab1f01d77772ce4108d926295efcd0ccbf2f54870f1368",
+      "match": true
+    },
+    {
+      "path": "divine-control.css",
+      "status": 200,
+      "expected": "9f7406e3133c478ef3c3c6e369c90ff24c995b14471bdc3f04e273d0dbcd04a4",
+      "actual": "9f7406e3133c478ef3c3c6e369c90ff24c995b14471bdc3f04e273d0dbcd04a4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-performance.json",
+      "status": 200,
+      "expected": "63d8479d530b3a7631ab4debdb988d2445c5c8049a1e21a5cf43ef00f1502d4a",
+      "actual": "63d8479d530b3a7631ab4debdb988d2445c5c8049a1e21a5cf43ef00f1502d4a",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-04-03.md",
+      "status": 200,
+      "expected": "b70d149bddf2fa22c6d7f6c702c40b15f39b327db7c063f12e416ca96d01d2c2",
+      "actual": "b70d149bddf2fa22c6d7f6c702c40b15f39b327db7c063f12e416ca96d01d2c2",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "792739c3f76a7468c9586f62cae56c7add6817ec2d5f7611ac21a9ea32b9d756",
+      "actual": "792739c3f76a7468c9586f62cae56c7add6817ec2d5f7611ac21a9ea32b9d756",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d64c422a2060b848c0149ac7aae7355d2984fc009c0da6a99efb2be221de1104",
+      "actual": "d64c422a2060b848c0149ac7aae7355d2984fc009c0da6a99efb2be221de1104",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "ecff324e832fe2d7220c1573b10bc841a4a5c7c9194b08dff7be77c51dea0ca2",
+      "actual": "ecff324e832fe2d7220c1573b10bc841a4a5c7c9194b08dff7be77c51dea0ca2",
+      "match": true
+    },
+    {
+      "path": "miracle-celebration.js",
+      "status": 200,
+      "expected": "e7bc0048fdcdcc738d793452f494c6d521d345e5adc3bd6765aee2ea0fccbd57",
+      "actual": "e7bc0048fdcdcc738d793452f494c6d521d345e5adc3bd6765aee2ea0fccbd57",
+      "match": true
+    },
+    {
+      "path": "navigation.js",
+      "status": 200,
+      "expected": "fa049e488796a6115eca6cb2309c16cf673ed14d784726beb774d994d8206585",
+      "actual": "fa049e488796a6115eca6cb2309c16cf673ed14d784726beb774d994d8206585",
+      "match": true
+    },
+    {
+      "path": "roadmap/README.md",
+      "status": 200,
+      "expected": "b2db417a3f989e579a7b035c8b78e07aeab2b6660ac5bfd36c0e8a65580692ae",
+      "actual": "b2db417a3f989e579a7b035c8b78e07aeab2b6660ac5bfd36c0e8a65580692ae",
+      "match": true
+    },
+    {
+      "path": "roadmap/build.py",
+      "status": 200,
+      "expected": "92cd436b5954b4db99c6f10faf2e3624526db86b2d8f711511f678e0661f57ce",
+      "actual": "92cd436b5954b4db99c6f10faf2e3624526db86b2d8f711511f678e0661f57ce",
+      "match": true
+    },
+    {
+      "path": "roadmap/document-archive.json",
+      "status": 200,
+      "expected": "d59c669d2af91ab4b18e51d6ecfec426536aae4d989ebd6d3b82b4f7aa1b156a",
+      "actual": "d59c669d2af91ab4b18e51d6ecfec426536aae4d989ebd6d3b82b4f7aa1b156a",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fb6fd9d9fe14e5107380584773660fdf1240b37139bd0693793c6b6f437f0957",
+      "actual": "fb6fd9d9fe14e5107380584773660fdf1240b37139bd0693793c6b6f437f0957",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "73a34fbf48ad31f08ff47c8b35616602947d51befd91882eff65fca7dd102e24",
+      "actual": "73a34fbf48ad31f08ff47c8b35616602947d51befd91882eff65fca7dd102e24",
+      "match": true
+    },
+    {
+      "path": "roadmap/overview.md",
+      "status": 200,
+      "expected": "69c3fe9b7a1232fc59288c4a9e7f105fff87cc000ab31cc3cbc7b89cbcdd48f2",
+      "actual": "69c3fe9b7a1232fc59288c4a9e7f105fff87cc000ab31cc3cbc7b89cbcdd48f2",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f2a1d0fad7c7cf090df679afbff1c40e61edfdb827de0755b63fb69f64b230b0",
+      "actual": "f2a1d0fad7c7cf090df679afbff1c40e61edfdb827de0755b63fb69f64b230b0",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-ui-performance.md",
+      "status": 200,
+      "expected": "90a76c456584a6e2f36a4c267ec668585e650234ff1151a5574cd432c795da0f",
+      "actual": "90a76c456584a6e2f36a4c267ec668585e650234ff1151a5574cd432c795da0f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d740976b6bc227a0ce02afaf4c81d592f8de93755f4bafbb6104bc14c74a269b",
+      "actual": "d740976b6bc227a0ce02afaf4c81d592f8de93755f4bafbb6104bc14c74a269b",
+      "match": true
+    },
+    {
+      "path": "roadmap/tests/app.test.mjs",
+      "status": 200,
+      "expected": "2de4ff1b7207917161162ee20f1964d5194e4893d44e41133e52f50917585549",
+      "actual": "2de4ff1b7207917161162ee20f1964d5194e4893d44e41133e52f50917585549",
+      "match": true
+    },
+    {
+      "path": "roadmap/tests/test_build.py",
+      "status": 200,
+      "expected": "8a188c69b66b38fe3db11a6727585b02b4da99a570a6293915fa1096ae927790",
+      "actual": "8a188c69b66b38fe3db11a6727585b02b4da99a570a6293915fa1096ae927790",
+      "match": true
+    },
+    {
+      "path": "scripts/benchmark-season-transitions.mjs",
+      "status": 200,
+      "expected": "94c9306beb3b436d5e95a976f85e1d2836aa5b910060c25a0158352edc761c4a",
+      "actual": "94c9306beb3b436d5e95a976f85e1d2836aa5b910060c25a0158352edc761c4a",
+      "match": true
+    },
+    {
+      "path": "tests/caravan-network-cache.test.js",
+      "status": 200,
+      "expected": "d66636c9de587fd7ae69ad4bb2498bffa0bc764dcd62db22eb5477272ff626b9",
+      "actual": "d66636c9de587fd7ae69ad4bb2498bffa0bc764dcd62db22eb5477272ff626b9",
+      "match": true
+    },
+    {
+      "path": "tests/ceremony-distance-budget.test.js",
+      "status": 200,
+      "expected": "49c4bfba2bc9967eaa32dc7902df672f956246c10a9b917a2a167c326e97d716",
+      "actual": "49c4bfba2bc9967eaa32dc7902df672f956246c10a9b917a2a167c326e97d716",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "expected": "3a5752e83bfd4da9a80c00c998842d7ca496e67e01328ff32f9ff2c97f0d46d3",
+      "actual": "3a5752e83bfd4da9a80c00c998842d7ca496e67e01328ff32f9ff2c97f0d46d3",
+      "match": true
+    },
+    {
+      "path": "tests/roadmap-ui-fixes.test.js",
+      "status": 200,
+      "expected": "5af7a2bb9d011fe8dc90f3b77a4882145cf383a1ad491fcd745e7ba098a3615a",
+      "actual": "5af7a2bb9d011fe8dc90f3b77a4882145cf383a1ad491fcd745e7ba098a3615a",
+      "match": true
+    },
+    {
+      "path": "tests/season-relocation-performance.test.js",
+      "status": 200,
+      "expected": "63cbb50984885ee152cab6c9c3de67720037993eb829fc9c0dec79a475ba4eac",
+      "actual": "63cbb50984885ee152cab6c9c3de67720037993eb829fc9c0dec79a475ba4eac",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "c5e6636266a527832f498632582d4c31a3c9ec4fae87e296b3a12d893f0de52a",
+      "actual": "c5e6636266a527832f498632582d4c31a3c9ec4fae87e296b3a12d893f0de52a",
+      "match": true
+    },
+    {
+      "path": "ui-relic-control.js",
+      "status": 200,
+      "expected": "b2e4519207916adf71fab4b77558b90607f1c392e712a8830949042f3c1d59a4",
+      "actual": "b2e4519207916adf71fab4b77558b90607f1c392e712a8830949042f3c1d59a4",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "4bb768e70c57628ab80f94c39e0b866362a9e274855231d8b5a95c04b61d3e4b",
+      "actual": "4bb768e70c57628ab80f94c39e0b866362a9e274855231d8b5a95c04b61d3e4b",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "fe8ee4b4ca4c4345d8129669c3853be3d92b340fcc76f5f00058e3242f8dc374",
+      "actual": "fe8ee4b4ca4c4345d8129669c3853be3d92b340fcc76f5f00058e3242f8dc374",
+      "match": true
+    }
+  ],
+  "matched": 35,
+  "total": 35
+}

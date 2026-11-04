@@ -3,10 +3,10 @@ date: 2026-11-04
 type: completion
 release: season-relocation-ui-20261104-1
 commit: 81faab7d25463099fb3fe3aa1601e87077410c0e
-publication: not_published
+publication: recorded
 groups: ux; performance
 completed: ux-resident-links; ux-inspiration-chance
-source: docs/benchmarks/2026-11-04-season-performance.json
+source: docs/versions/2026-11-04-04.md
 
 ### Изменения
 Имя избранного в HUD открывает карточку по ID без снятия блокировки городских команд. Список и карточка используют тот же шанс, что выполнение: первое гарантированное вдохновение строителя показывает 100%. Убраны лишние поиски пути при переселении, пересборки сетей при входе каравана и проверки недостижимо далёких участников церемонии.
@@ -53,3 +53,6 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; ui-city-tools.js; godh
 
 ##### Готово когда
 Первый строитель показывает 100%; последующие попытки соответствуют реальному шансу.
+
+### Публикация
+Коммит811e74f, Pages41820019404 success,35/35SHA256. Снимок2026-11-04-04; общая 3D-пауза остаётся открытой.
