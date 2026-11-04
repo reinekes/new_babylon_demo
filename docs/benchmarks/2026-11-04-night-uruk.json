@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-04",
+  "device": "Apple M5",
+  "viewport": [
+    1280,
+    720
+  ],
+  "dpr": 1,
+  "quality": "high",
+  "scenario": "Established world64 seed137, 200 residents /129 buildings; initialsim0; close camera;20 seconds4x; HUD/autosave; asset warmup excluded; no concurrent full test suite",
+  "newInterface": {
+    "seconds": 20.0598,
+    "frames": 497,
+    "fps": 24.77592,
+    "p95Ms": 66.6,
+    "maxMs": 633.4,
+    "canvasCss": [
+      1280,
+      570
+    ],
+    "population": 200,
+    "buildings": 129,
+    "validSave": true,
+    "simTime": 19.6351
+  },
+  "baseline7fda3e5": {
+    "seconds": 20.0475,
+    "frames": 534,
+    "fps": 26.63674,
+    "p95Ms": 51.9,
+    "maxMs": 649.9,
+    "canvasCss": [
+      825,
+      401.5
+    ],
+    "population": 200,
+    "buildings": 129,
+    "validSave": true,
+    "simTime": 19.6178
+  },
+  "limits": "Same city, outer viewport and quality, but intentionally different actual canvas areas (new2.20x). Natural wall-time runs are not state-SHA comparisons. No claim of FPS improvement or resolution of existing large-city/seasonal stalls."
+}

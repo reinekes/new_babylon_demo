@@ -1,3 +1,4 @@
+import {createUrukInterface} from './ui-uruk.js';
 import {createMonthNotice} from './ui-calendar.js';
 import {manualGatheringView,orderManualGathering,cancelManualGathering} from './manual-gathering.js';
 import {manualGatheringHTML,bindManualGathering} from './ui-manual-gathering.js';
@@ -82,6 +83,7 @@ const saveLibrary=createSaveLibrary();
 let savesUI=null,switchingCity=false,citySwitchRevision=0;
 let encyclopediaUI=null,encyclopediaRequest=0;
 let seasonJumping=false;
+let urukUI=null;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
 const ceremonySpeed=createCeremonySpeedControl();
 function setSpeed(value){speed=value;for(const button of document.querySelectorAll('[data-speed]')){const active=Number(button.dataset.speed)===speed;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}}
@@ -112,7 +114,7 @@ const cityAudio=createCityAudio(text=>toast(text));
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
-document.addEventListener('click',event=>{if(!relicControlActive(state))return;const target=event.target;if(target.closest?.('.relic-hud,.game3d-options,.panel-controls')||['city','pause','toggle-sound','zoom-out','zoom-in','home','overview'].includes(target.id))return;event.preventDefault();event.stopImmediatePropagation();toast('Ты ведёшь избранного: городские команды закрыты до возвращения.');},true);
+document.addEventListener('click',event=>{if(!relicControlActive(state))return;const target=event.target;if(target.closest?.('.relic-hud,.game3d-options,.panel-controls,[data-uruk-action="menu"],[data-uruk-close]')||['city','pause','toggle-sound','zoom-out','zoom-in','home','overview'].includes(target.id))return;event.preventDefault();event.stopImmediatePropagation();toast('Ты ведёшь избранного: городские команды закрыты до возвращения.');},true);
 
 createPanelControls({onResize:()=>renderer.resize()});
 const modeBadge=document.createElement('span');modeBadge.className='game-mode-label';document.querySelector('.game3d-options,.panel-dock')?.append(modeBadge);
@@ -352,7 +354,7 @@ function buildBenefit(type){
 const buildSections=new Map();
 $('buildings').setAttribute('aria-label','Группы построек');
 for(const g of BUILDING_GROUPS){const section=document.createElement('details');section.className='building-accordion';section.dataset.buildGroup=g.id;section.open=g.id==='life';section.innerHTML=`<summary><span>${g.name}</span><small>${g.types.length}</small></summary><div class="accordion-buildings"></div>`;buildSections.set(g.id,section);$('buildings').append(section);}
-function showBuildGroup(id){const section=buildSections.get(id);if(section)section.open=true;}
+function showBuildGroup(id){const section=buildSections.get(id);if(section)section.open=true;urukUI?.selectBuildGroup(id);}
 for(const [i,[type,b]]of Object.entries(Object.entries(BUILDINGS))){
  const el=document.createElement('button');el.className='building-card';el.dataset.type=type;el.title=`Поставить: ${b.name}`;el.setAttribute('aria-pressed','false');
  el.innerHTML=`<span class="building-icon">${uiIcon(type)}</span><span class="build-copy"><strong>${b.name}</strong><span class="build-effect">${buildBenefit(type)}</span><span class="catalog-cost" data-cost="${type}">${costs(b)}</span></span><span class="build-hotkey">${Number(i)<9?Number(i)+1:''}</span>`;
@@ -369,6 +371,7 @@ function makeMiracleCard(id,m){
 }
 for(const [id,m]of Object.entries(MIRACLES))if(shouldShowMiracle(state,id))makeMiracleCard(id,m);
 function update(){
+ urukUI?.refresh(state);
  godhoodUI.refresh();modeBadge.textContent=gameModeLabel(state);
  const soundEnabled=!!cityAudio.enabled;$('toggle-sound').textContent=soundEnabled?'Звук включён':'Звук выключен';$('toggle-sound').setAttribute('aria-pressed',String(soundEnabled));
  for(const card of document.querySelectorAll('.building-card')){const reason=buildingKnowledgeReason(state,card.dataset.type);card.disabled=!!reason;card.classList.toggle('knowledge-locked',!!reason);card.title=reason||`Поставить: ${BUILDINGS[card.dataset.type].name}`;}
@@ -378,7 +381,7 @@ function update(){
  renderFoodWarnings();
  const r=state.resources,stats=workforceStats(state),marketPorters=state.citizens.filter(c=>c.tradeJob||c.saleJob).length,quarterPorters=state.citizens.filter(c=>c.districtJob).length,res=Object.fromEntries(Object.entries(RESOURCE_NAMES).map(([k,n])=>[k,['',n.toUpperCase()]]));
  const balance=seasonBalance(state);
- setHTML($('resources'),RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name} <small>≈ за сезон</small></span><div class="resource-group-items">${group.keys.map(k=>{const name=RESOURCE_NAMES[k].toUpperCase(),v=balance[k],delta=Math.abs(v.net)<.05?'0':`${v.net>0?'+':'−'}${Math.abs(v.net).toFixed(1).replace('.0','')}`,tip=`${name}: ${rounded(r[k])}. Прогноз на текущий сезон: поступления ≈${v.income.toFixed(1)}, расход ≈${v.outgo.toFixed(1)}, баланс ${delta}. Учитывает работников, путь до склада, местное сырьё, питание, посев и износ одежды. Торговля, стройки и чудеса не включены; фактические рейсы могут отличаться.`;return `<div class="resource" title="${tip}"><span class="resource-icon">${resourceIcon(k)}</span><div><span class="resource-value"><strong class="${MATERIALS.includes(k)&&r[k]>storage(state)?'overflow':''}">${Math.floor(r[k])}</strong><em class="season-delta ${v.net>.05?'surplus':v.net<-.05?'deficit':'balanced'}" aria-label="Прогноз ${label(k)}: ${delta} за сезон">${delta}</em></span><small>${k==='brick'?'СЫРЕЦ':k==='firedBrick'?'ОБОЖЖЁННЫЙ':name}${k==='food'?` · семена ${foodAmount(seedReserve(state))}`:''}</small></div></div>`;}).join('')}</div></section>`).join(''));
+ setHTML($('resources'),RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name} <small>≈ за сезон</small></span><div class="resource-group-items">${group.keys.map(k=>{const name=RESOURCE_NAMES[k].toUpperCase(),v=balance[k],delta=Math.abs(v.net)<.05?'0':`${v.net>0?'+':'−'}${Math.abs(v.net).toFixed(1).replace('.0','')}`,tip=`${name}: ${rounded(r[k])}. Прогноз на текущий сезон: поступления ≈${v.income.toFixed(1)}, расход ≈${v.outgo.toFixed(1)}, баланс ${delta}. Учитывает работников, путь до склада, местное сырьё, питание, посев и износ одежды. Торговля, стройки и чудеса не включены; фактические рейсы могут отличаться.`;return `<div class="resource" data-resource="${k}" title="${tip}"><span class="resource-icon">${resourceIcon(k)}</span><div><span class="resource-value"><strong class="${MATERIALS.includes(k)&&r[k]>storage(state)?'overflow':''}">${Math.floor(r[k])}</strong><em class="season-delta ${v.net>.05?'surplus':v.net<-.05?'deficit':'balanced'}" aria-label="Прогноз ${label(k)}: ${delta} за сезон">${delta}</em></span><small>${k==='brick'?'СЫРЕЦ':k==='firedBrick'?'ОБОЖЖЁННЫЙ':name}${k==='food'?` · семена ${foodAmount(seedReserve(state))}`:''}</small></div></div>`;}).join('')}</div></section>`).join(''));
  $('population').title=`Дети: ${state.citizens.filter(c=>c.age<16).length} · взрослые: ${state.citizens.filter(c=>c.age>=16&&c.age<55).length} · пожилые: ${state.citizens.filter(c=>c.age>=55).length}`;$('population').textContent=`${state.population} / ${state.capacity}`;$('happiness').textContent=`☀ ${Math.round(state.happiness)}%`;$('happiness').style.color=state.happiness<40?'#aa654a':'';
  const efficiency=workers(state);const funeralLabels={gathering:'Жители собираются',procession:'Процессия с факелами',collecting:'Возвращаются за умершими',farewell:'Прощание с умершими',receding:'Процессия отходит',jackals:'Шакалы уносят погребальные свёртки',returning:'Жители возвращаются домой'};$('mourning-notice').hidden=!state.funeral;if(state.funeral)$('mourning-notice').textContent=`${funeralLabels[state.funeral.stage]} · погибло ${state.funeral.deceased.length}. Календарь и хозяйство стоят до окончания церемонии.`;const ground=!state.buildings.some(b=>b.type==='granary'&&(!b.construction||b.construction.kind==='upgrade'));$('ground-storage-note').hidden=!ground;$('ground-storage-note').textContent=state.buildings.some(b=>b.starterHut)?'Запасы и припасы хранятся внутри домов':'Без амбара · запасы на земле у разгрузки';$('workers').textContent=`${stats.employed+stats.builders+(stats.carriers??0)+(stats.manualGatherers??0)+marketPorters+quarterPorters} / ${state.population}`;$('labor-meter').style.width=`${efficiency*100}%`;
  $('labor-note').textContent=state.funeral&&state.funeral.scope!=='family'?'Траурная процессия. Назначения и все грузы сохранены; работа продолжится после возвращения.':stats.disconnected?`Нет пути к ${stats.disconnected} рабочим зданиям. Нужен мост или склад на этом берегу.`:`Строители: ${stats.builders} · носильщики: ${stats.carriers??0} · площадки: ${stats.sites} · рынок: ${marketPorters} · склады: ${quarterPorters}. Собирают: ${stats.working} · несут груз: ${stats.carrying}. Ресурсы поступают только после доставки.`;
@@ -510,6 +513,7 @@ function frame(now){
  syncCeremonySpeed();ceremonyPresentation();if(!seasonJumping&&now-lastUI>350){update();lastUI=now;}
  renderer.inspected=inspected;renderer.focusCitizenId=inspectedPerson;cityAudio.tick(state,paused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
 }
+urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});
 update();requestAnimationFrame(frame);
 if(!loaded)chooseNewMode();else{toast(legacyRaw?'Город обновлён: дворы, ремёсла, обзор кварталов и фоторежим. Прежние запасы, семьи, грузы и оплаченные стройки сохранены.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}
 if(corrupt)setTimeout(()=>toast('Сохранение повреждено или несовместимо. Начата новая история.'),500);

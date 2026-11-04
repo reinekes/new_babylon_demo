@@ -1,0 +1,225 @@
+@import url('assets/ui/fonts.css');
+/* Night Uruk: static mineral textures, no per-frame texture work. */
+body.uruk-ui{--paper:#25231f;--ink:#f0e5ce;--muted:#baa98f;--line:#766048;--teal:#345574;--gold:#c3935b;--red:#db8d6a;--serif:'Lora',Georgia,serif;--uruk-stone:url('assets/ui/uruk-basalt.webp');--uruk-clay:url('assets/ui/uruk-clay.webp');--uruk-lapis:url('assets/ui/uruk-lapis.webp');--uruk-copper:#a9794e;--uruk-header:70px;--uruk-dock:80px;margin:0;height:100dvh;min-height:0;overflow:hidden;background:#25231f var(--uruk-stone) repeat;background-size:510px;font:14px/1.5 'Golos Text',Arial,sans-serif;color:var(--ink);color-scheme:dark}
+.uruk-ui :is(button,input,select,textarea){font-family:'Golos Text',Arial,sans-serif}
+.uruk-ui :is(h1,h2,h3,.brand,.god-level){font-family:var(--serif);font-weight:400}
+.uruk-ui button{cursor:pointer}
+.uruk-ui :focus-visible{outline:2px solid #e7ba79!important;outline-offset:3px}
+.uruk-ui button:disabled{cursor:not-allowed;opacity:.48}
+.uruk-ui .topbar{position:fixed;inset:0 0 auto;height:var(--uruk-header);padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:#25231f var(--uruk-stone);background-size:510px;border:0;border-bottom:1px solid var(--uruk-copper);z-index:30;color:var(--ink);gap:16px}
+.uruk-ui .brand{font:400 23px/1.2 var(--serif);letter-spacing:.075em;color:#f3e7d1;display:flex;align-items:center;gap:16px;white-space:nowrap;text-decoration:none}
+.uruk-ui .brandmark{width:43px;height:43px;flex:none;display:block}
+.uruk-ui .brandmark img{width:100%;height:100%;object-fit:cover;border:1px solid #986c40;box-shadow:0 2px 6px #0006}
+.uruk-ui .brand small,.uruk-ui .edition{display:none}
+.uruk-header-clock{display:flex;flex-direction:column;align-items:flex-end;min-width:165px;gap:1px}
+.uruk-ui .uruk-header-clock #day-cycle{position:static;border:0;padding:0;background:none;box-shadow:none;color:#f0e5ce;min-height:24px;text-align:right;display:flex;align-items:baseline;gap:8px;font-size:12px}
+.uruk-header-clock #day-cycle .clock-time{font-size:19px}
+.uruk-header-clock #date{font:10px/1.4 'Golos Text',sans-serif;letter-spacing:.025em;color:#bba88a;font-weight:400}
+.uruk-ui .resourcebar{position:fixed;top:0;left:370px;right:215px;height:var(--uruk-header);display:flex;align-items:center;padding:0 12px;gap:10px;z-index:31;background:none;border:0;color:var(--ink)}
+.uruk-ui .resourcebar .city-title,.uruk-ui .resourcebar .citizens,.uruk-ui .resource-group-label{display:none}
+.uruk-ui #resources,.uruk-ui .resource-frame,.uruk-ui .resource-group-items{display:contents!important}
+.uruk-ui .resource-frame{border:0!important;background:none!important;padding:0!important}
+.uruk-ui .resourcebar .resource{display:none;min-width:0;gap:7px;align-items:center;padding:0 13px;border-right:1px solid #8b694449;flex:1}
+.uruk-ui .resourcebar .resource:is([data-resource=food],[data-resource=clay],[data-resource=reed],[data-resource=wood],[data-resource=faith]){display:flex}
+.uruk-ui .resourcebar .resource-icon{display:flex;color:#c5a57a;flex:none}
+.uruk-ui .resourcebar .resource-icon svg{width:25px;height:25px}
+.uruk-ui .resourcebar .resource>div{display:flex;flex-direction:column-reverse;gap:0}
+.uruk-ui .resourcebar .resource strong{font:400 19px/1.2 var(--serif);color:#f4e8d0}
+.uruk-ui .resourcebar .resource small{font:400 9px/1.3 'Golos Text',sans-serif;letter-spacing:.02em;color:#bba98c;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uruk-ui .resourcebar .season-delta{display:none}
+.uruk-ui .resourcebar .resource-value{display:flex;align-items:baseline}
+.uruk-ui .uruk-resource-toggle{width:28px;min-height:38px;flex:none;border:0;background:none;padding:3px;color:#dcc8a4}
+.uruk-resource-toggle img{width:23px;height:23px;filter:invert(88%) sepia(20%) saturate(550%)}
+.uruk-ui.uruk-resources-open .resourcebar{top:calc(var(--uruk-header) + 14px);left:24px;right:auto;width:min(780px,calc(100vw - 48px));height:auto;max-height:calc(100dvh - 190px);overflow-y:auto;padding:24px 24px 32px;display:flex;flex-wrap:wrap;gap:20px 12px;background:#29251f var(--uruk-stone);border:1px solid var(--uruk-copper);box-shadow:0 12px 40px #0005;z-index:42}
+.uruk-ui.uruk-resources-open .resourcebar .resource{display:flex;flex:0 0 calc(25% - 12px);padding:0 7px;border:0;min-height:42px}
+.uruk-ui.uruk-resources-open .resourcebar .resource strong{font-size:22px}
+.uruk-ui.uruk-resources-open .resourcebar .resource small{font-size:10px}
+.uruk-ui.uruk-resources-open .resourcebar .season-delta{display:inline;font-size:10px;margin-left:7px;color:#c2b491}
+.uruk-ui.uruk-resources-open .resourcebar .citizens{display:flex;width:100%;border:0;padding:16px 0 0;border-top:1px solid #8b694466;justify-content:flex-start;font-size:13px}
+.uruk-ui.uruk-resources-open .uruk-resource-toggle{position:absolute;right:7px;top:3px}
+.uruk-ui .game-layout{position:fixed;inset:var(--uruk-header) 0 var(--uruk-dock);display:block!important;width:100%;height:auto!important;min-height:0;margin:0!important;padding:0;border:0}
+.uruk-ui .world{position:absolute;inset:0;display:block;width:100%;height:100%!important;min-height:0!important;border:0;border-radius:0;overflow:hidden;background:#4f503c}
+.uruk-ui #city{position:absolute;inset:0;width:100%!important;height:100%!important}
+.uruk-ui .world-top,.uruk-ui .map-corner,.uruk-ui .timebar,.uruk-ui #ground-storage-note,.uruk-ui .map-hint,.uruk-ui .world>.weather,.uruk-ui .ambient-controls{display:none!important}
+.uruk-ui .game3d-metrics{bottom:15px;left:20px;background:#25231fc9;color:#d9c7a7;font:9px 'Golos Text',sans-serif;padding:3px 7px;border-radius:0}
+.uruk-ui .map-buttons{right:24px;bottom:20px;gap:4px;display:flex;flex-direction:row}
+.uruk-ui .map-buttons button{width:34px;min-height:34px;font-size:18px;color:#e6d2ac;background:#25231fe8;border:1px solid #9d7b514a;border-radius:2px;box-shadow:none}
+.uruk-ui .uruk-god{position:absolute;right:24px;top:24px;z-index:5;display:flex;align-items:center;gap:12px;max-width:min(360px,65vw);padding:12px 18px;background:#25231ff2 var(--uruk-stone);background-size:510px;border:1px solid #b78c5355;border-radius:0;color:#f1e4cb;text-align:left;box-shadow:0 4px 15px #0002}
+.uruk-god>img{width:27px;height:27px;filter:invert(87%) sepia(30%) saturate(450%)}
+.uruk-god>span{display:flex;flex-direction:column;gap:3px}
+.uruk-god small{font-size:8px;letter-spacing:.13em;color:#bda78a}
+.uruk-god-name{font:18px/1.3 var(--serif)}
+.uruk-dock{position:fixed;inset:auto 0 0;height:var(--uruk-dock);display:flex;align-items:center;gap:8px;padding:13px 24px;background:#25231f var(--uruk-stone);background-size:510px;border-top:3px solid #c4a071;z-index:35;color:#ecdfc5}
+.uruk-dock>button{display:flex;justify-content:center;align-items:center;gap:12px;height:48px;min-width:130px;padding:8px 16px;border:1px solid transparent;border-radius:2px;background:transparent;color:inherit;font-size:15px;white-space:nowrap}
+.uruk-dock>button>img{width:26px;height:26px;filter:invert(88%) sepia(25%) saturate(350%)}
+.uruk-dock>button:hover{background-color:#ffffff09;border-color:#ad835643}
+.uruk-dock>button[aria-expanded=true]{background:#1f3c59 var(--uruk-lapis);background-size:320px;border-color:#6d8aa3;box-shadow:inset 0 0 0 1px #223e5e}
+.uruk-dock>button:not(:first-child){border-left-color:#8d653e66}
+.uruk-transport{margin-left:auto;padding-left:20px;border-left:1px solid #8d653e66}
+.uruk-ui .uruk-dock .time-controls{display:flex;align-items:center;gap:3px}
+.uruk-ui .uruk-dock .time-controls button{width:38px;height:40px;min-height:40px;background:transparent;border:1px solid transparent;color:#eee0c6;border-radius:2px;font-size:12px}
+.uruk-ui .uruk-dock .time-controls button.active{background:#1f3c59 var(--uruk-lapis);background-size:320px;border-color:#6d8aa3;color:#fff1d8}
+.uruk-ui .uruk-dock #pause{border-color:#92744e83;font-size:18px;margin-right:6px}
+.uruk-ui .uruk-dock #next-season{width:auto;min-width:130px;margin-left:16px;padding:0 13px;border-left:1px solid #8d653e66;font-size:0}
+.uruk-ui .uruk-dock #next-season::before{content:'Следующий сезон';font-size:12px}
+.uruk-ui .build-panel,.uruk-ui .miraclebar,.uruk-ui .story-panel,.uruk-menu{display:none!important;position:fixed;left:24px;bottom:calc(var(--uruk-dock) + 22px);width:350px;max-width:calc(100vw - 48px);height:auto!important;max-height:calc(100dvh - var(--uruk-header) - var(--uruk-dock) - 50px)!important;min-height:0!important;margin:0!important;padding:25px 20px 20px!important;overflow:auto;scrollbar-width:thin;scrollbar-color:#95734d transparent;z-index:25;border:1px solid #b3895966;border-radius:3px;background:#674733 var(--uruk-clay);background-size:510px;color:#f0dfc1;box-shadow:0 8px 25px #0004}
+.uruk-ui[data-uruk-panel=build] .build-panel,.uruk-ui[data-uruk-panel=miracles] .miraclebar,.uruk-ui[data-uruk-panel=story] .story-panel,.uruk-ui[data-uruk-panel=menu] .uruk-menu{display:block!important}
+.uruk-ui .build-panel .panel-heading{display:block;margin:0 0 16px;padding:0}
+.uruk-ui .build-panel .panel-heading .eyebrow{display:none}
+.uruk-ui .build-panel .panel-heading h2{font:25px/1.25 var(--serif);margin:0;color:#f4e5ca}
+.uruk-ui .build-panel>.section-label{font-size:9px;padding-bottom:14px;color:#ceb390;border:0}
+.uruk-ui .building-accordion{background:none;border:0;border-top:1px solid #d8af7650;border-radius:0;margin:0}
+.uruk-ui .building-accordion>summary,.uruk-ui .building-accordion[open]>summary{padding:12px 0;background:none;border:0;color:#e3c7a2;font:500 11px 'Golos Text',sans-serif}
+.uruk-ui .building-accordion>summary small{color:#d6bb95;font-size:10px}
+.uruk-ui .accordion-buildings{padding:0;gap:0}
+.uruk-ui .building-choice .building-card{min-height:68px;padding:12px 26px 12px 10px;border:0;border-top:1px solid #cba16e33;border-radius:1px;color:#f1dfc1;background:transparent;gap:14px}
+.uruk-ui .building-card strong{font:400 17px/1.2 var(--serif)!important;color:#ffedcf;margin:0 0 6px}
+.uruk-ui .building-card .building-icon{width:33px;height:33px;color:#e5c297}
+.uruk-ui .building-card .building-icon svg{width:32px;height:32px}
+.uruk-ui .building-card.selected,.uruk-ui .building-card:hover:not(:disabled){background:#244260 var(--uruk-lapis);background-size:320px}
+.uruk-ui .build-effect{color:#d3b998;font-size:10px!important;line-height:1.5}
+.uruk-ui .catalog-cost .cost-row,.uruk-ui .catalog-cost .cost-row em{color:#e8cfaa;font-size:10px!important}
+.uruk-ui .building-info{border:0;background:none;color:#ddbe93;font:13px var(--serif);top:11px;right:2px}
+.uruk-ui .building-info:hover{background:#24221f66;color:white}
+.uruk-ui .build-panel .labor{display:none}
+.uruk-ui .uruk-close{position:absolute;right:10px;top:10px;width:29px;min-height:29px;display:flex;align-items:center;justify-content:center;padding:5px;background:transparent;border:0;z-index:3;opacity:.7}
+.uruk-close img{width:19px;height:19px;filter:invert(88%) sepia(25%) saturate(350%)}
+.uruk-close:hover{opacity:1}
+.uruk-ui .uruk-menu{left:auto;right:24px;width:390px;background:#29251f var(--uruk-stone);background-size:510px}
+.uruk-drawer-heading>span{color:#bda17b;font-size:9px;letter-spacing:.12em}
+.uruk-drawer-heading h2{font:28px/1.3 var(--serif);margin:5px 0 22px}
+.uruk-ui .uruk-menu .management-nav,.uruk-ui .uruk-menu .header-actions{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;margin:0 0 20px;border-top:1px solid #95724a66}
+.uruk-ui .uruk-menu :is(.management-nav,.header-actions)>:is(button,a){display:flex;align-items:center;justify-content:flex-start;width:auto;min-height:42px;padding:10px;border:0;border-bottom:1px solid #95724a33;border-radius:0;background:transparent;color:#e8d8ba;font-size:12px;line-height:1.4;text-align:left;letter-spacing:0;text-decoration:none}
+.uruk-ui .uruk-menu :is(.management-nav,.header-actions)>:is(button,a):hover{background:#b88e5514;color:#fff1d8}
+.uruk-ui .uruk-menu #save-status{display:flex;align-items:center;min-height:40px;padding:10px;font-size:10px;color:#b6bd9a}
+.uruk-ui .uruk-menu .game3d-options{position:static;display:flex;flex-wrap:wrap;gap:5px;background:transparent;border:0;box-shadow:none;padding:0;font-size:10px;color:#d1b48c}
+.uruk-ui .uruk-menu .game3d-options :is(button,select,a){min-height:34px;background:#34312a;color:#e7d5b4;border:1px solid #80603f66;border-radius:2px;font-size:11px}
+.uruk-ui .panel-edge-controls{display:none}
+.uruk-ui .panel-options{background:#2c2822;color:#ead7b8;border-color:#957149;bottom:48px;top:auto;z-index:50}
+.uruk-ui .miraclebar{width:620px;background:#2c2822 var(--uruk-stone);background-size:510px;padding-top:40px!important}
+.uruk-ui .miraclebar #miracles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row;gap:8px}
+.uruk-ui .miraclebar .miracle-disclosure>.miracle-card{min-height:70px;padding:10px;background:transparent;border:1px solid #95724966;color:#efdfc0;gap:9px}
+.uruk-ui .miraclebar .miracle-card strong{font:13px/1.3 var(--serif);white-space:normal;color:#f0dfc1}
+.uruk-ui .miraclebar .miracle-card small{font-size:9px;color:#bfa583;white-space:normal}
+.uruk-ui .miraclebar .miracle-disclosure[open]>.miracle-card{background:#244260 var(--uruk-lapis);background-size:320px;box-shadow:none}
+.uruk-ui .miracle-explanation{position:fixed;left:24px;right:auto;bottom:calc(var(--uruk-dock) + 25px);width:min(560px,calc(100vw - 48px));max-width:none;max-height:calc(100dvh - 190px);padding:26px;background:#2d2821 var(--uruk-stone);background-size:510px;color:#efdfc1;border:1px solid #b18b56;border-radius:2px;z-index:45;font:13px/1.7 'Golos Text',sans-serif}
+.uruk-ui .miracle-explanation .miracle-facts{color:#d4b88c;border-color:#8e6f4655;font-size:11px}
+.uruk-ui .miracle-explanation .miracle-unavailable{color:#daa385}
+.uruk-ui .story-panel{left:auto;right:24px;width:360px;background:#2a2721 var(--uruk-stone);background-size:510px}
+.uruk-ui .god-card{background:transparent;border:0;padding:12px 0 22px;color:#f1dfc0}
+.uruk-ui .god-card h2{font-size:27px;color:#f4e3c4;line-height:1.3}
+.uruk-ui .god-sun{color:#bd935b}
+.uruk-ui .god-card :is(p,.god-rating,.god-level,.eyebrow){color:#c8b18b}
+.uruk-ui .news-list article,.uruk-ui .goal-box{background:transparent;border-color:#8b6a4366;color:#d9c29c}
+.uruk-ui .news-list h3{color:#edddbd;font-size:18px}
+.uruk-ui .news-list :is(p,time),.uruk-ui .subheading{color:#c0ad8c;font-size:11px;line-height:1.7}
+.uruk-ui .story-panel :is(.chronicle-heading h2,.goal-box){color:#e6d1ad}
+.uruk-ui :is(.primary,.miracle-cast,.inspire-button){background:#244260 var(--uruk-lapis);background-size:320px;border:1px solid #62819b;border-radius:2px;color:#fff0d5;font-size:13px;min-height:40px}
+.uruk-ui :is(.secondary,.pantheon-button,.management-button,.upgrade-button){background:#3b3329;border:1px solid #94714766;color:#e4cda6;border-radius:2px;min-height:36px}
+.uruk-ui :is(dialog,.tile-detail){background:#29261f var(--uruk-stone);background-size:510px;color:#edddbd;border:1px solid #a8804f;border-radius:3px;box-shadow:0 18px 60px #0007}
+.uruk-ui dialog{max-height:calc(100dvh - 64px);margin:auto;top:0;bottom:0}
+.uruk-ui dialog::backdrop{background:#0d0c0bb3;backdrop-filter:none}
+.uruk-ui .dialog-inner{padding:30px;background:transparent;color:#e9d7b5}
+.uruk-ui .dialog-inner :is(h2,h3){color:#f1dfbc}
+.uruk-ui .dialog-inner h2{font-size:30px}
+.uruk-ui .dialog-inner :is(p,small){color:#ccb794}
+.uruk-ui .dialog-inner :is(button,select,input){border-color:#886944;border-radius:2px}
+.uruk-ui :is(.dialog-close,.detail-close){color:#d1b58a;background:transparent}
+.uruk-ui :is(input,select,textarea){background:#353129;color:#f2dfbd;border:1px solid #816442;border-radius:2px;padding:8px;min-height:36px}
+.uruk-ui :is(.resident-row,.supply-row,.trade-row,.life-person,.city-tools-person,.city-tools-card,.save-card,.save-entry,.mode-card,.mode-choice,.building-production,.detail-stat,.stat,.relic-card){background:#302b23;color:#e6d1ac;border-color:#8a694349}
+.uruk-ui :is(.resident-link,.life-link,.city-tools-person-name){color:#e4bf89}
+.uruk-ui :is(.resident-link,.life-link):hover{color:#ffe8bf}
+.uruk-ui :is(.section-label,.control-label,.role-help,.profession-note){color:#c4ac87}
+.uruk-ui .tile-detail{left:24px;bottom:22px;max-height:calc(100% - 50px);padding:22px;font-size:13px}
+.uruk-ui .tile-detail :is(p,small){color:#ceb68f;line-height:1.6}
+.uruk-ui .tile-detail h3{color:#f1dfbd;font-size:25px}
+.uruk-ui .tile-detail .inspiration-controls{background:transparent}
+.uruk-ui .toast{background:#302a20;color:#f1ddbb;border:1px solid #a67d4a;border-radius:2px;bottom:calc(var(--uruk-dock) + 20px);font-size:13px;max-width:min(600px,calc(100vw - 40px))}
+.uruk-ui .food-warnings{top:24px;left:24px;max-width:340px;right:auto}
+.uruk-ui .food-warnings button{background:#34281dec;color:#ebd0a1;border:1px solid #a9844e66;border-radius:2px;font-size:11px}
+.uruk-ui .placement-tools{bottom:24px;left:24px;background:#302b22;color:#e4d0aa;border-color:#9d7b4c;border-radius:2px}
+.uruk-ui .placement-tools button{color:#f1dfbd;background:#493b2b;border-color:#9d7b4c}
+.uruk-ui .relic-hud,.uruk-ui .godhood-hud,.uruk-ui .ceremony-speed{background:#2b2821f5 var(--uruk-stone);background-size:510px;color:#eddab7;border-color:#9c794b;border-radius:2px}
+.uruk-ui .relic-hud :is(button,select),.uruk-ui .godhood-hud button{background:#3c3328;color:#f2dfbb;border-color:#99754a;border-radius:2px}
+.uruk-ui .relic-hud :is(small,p),.uruk-ui .godhood-hud p{color:#d8be96}
+.uruk-ui.photo-mode :is(.uruk-dock,.uruk-god,.uruk-menu,.uruk-header-clock){display:none!important}
+.uruk-ui.map-only :is(.uruk-dock,.uruk-god,.resourcebar,.topbar,[data-uruk-drawer]){display:none!important}
+.uruk-ui.map-only .game-layout{inset:0!important}
+.uruk-ui.map-only .panel-edge-controls{display:block}
+.uruk-ui.map-only .panel-edge{background:#29261f;color:#e9d6b4;border-color:#9b7b4d}
+@media(min-width:1650px){.uruk-ui .resourcebar{left:400px;right:250px;max-width:1050px;margin:auto}.uruk-dock{padding-left:36px;padding-right:36px;gap:18px}.uruk-dock>button{min-width:155px}.uruk-ui .resourcebar .resource>div{flex-direction:row;gap:9px;align-items:baseline}.uruk-ui .resourcebar .resource small{font-size:11px}.uruk-ui .resourcebar .resource strong{font-size:23px}}
+@media(max-width:1250px){.uruk-ui .brand{font-size:18px;gap:10px}.uruk-ui .brandmark{width:36px;height:36px}.uruk-ui .resourcebar{left:285px;right:185px;padding:0 3px;gap:1px}.uruk-ui .resourcebar .resource{padding:0 8px;gap:5px}.uruk-ui .resourcebar .resource-icon svg{width:21px;height:21px}.uruk-header-clock{min-width:145px}.uruk-dock{gap:3px;padding:12px 18px}.uruk-dock>button{min-width:105px;padding:8px 11px;gap:8px;font-size:14px}.uruk-dock>button>img{width:23px;height:23px}.uruk-transport{padding-left:12px}.uruk-ui .uruk-dock #next-season{min-width:104px;margin-left:6px;padding:0 7px}.uruk-ui .uruk-dock #next-season::before{font-size:10px}}
+@media(max-width:1000px){.uruk-ui{--uruk-header:110px;--uruk-dock:76px}.uruk-ui .topbar{height:60px;padding:0 18px}.uruk-ui .resourcebar{top:60px;left:0;right:0;height:50px;padding:0 18px;background:#29251f var(--uruk-stone);background-size:510px;border-bottom:1px solid #a8804f77}.uruk-ui .resourcebar .resource{flex:1;padding:0 12px}.uruk-ui .resourcebar .resource>div{flex-direction:row;align-items:baseline;gap:8px}.uruk-ui .resourcebar .resource small{font-size:10px}.uruk-ui .resourcebar .resource strong{font-size:20px}.uruk-dock>button{min-width:72px;flex:1;gap:5px;flex-direction:column;font-size:11px;padding:4px 8px;line-height:1.2}.uruk-dock>button>img{width:21px;height:21px}.uruk-transport{flex:none}.uruk-ui .uruk-dock #next-season{min-width:35px;width:35px;font-size:20px;padding:0}.uruk-ui .uruk-dock #next-season::before{display:none}.uruk-ui .uruk-dock .time-controls button{width:33px}.uruk-ui .uruk-god{top:16px;right:16px;padding:9px 12px}.uruk-god-name{font-size:16px}}
+@media(max-width:650px){.uruk-ui{--uruk-header:110px;--uruk-dock:118px}.uruk-ui .topbar{padding:0 12px;gap:8px}.uruk-ui .brand{font-size:14px;letter-spacing:.045em;gap:8px}.uruk-ui .brandmark{width:31px;height:31px}.uruk-header-clock{min-width:115px}.uruk-ui .uruk-header-clock #day-cycle{font-size:10px;max-width:145px;line-height:1.2;flex-wrap:wrap;gap:3px}.uruk-header-clock #date{font-size:8px}.uruk-ui .resourcebar{padding:0 9px;gap:0}.uruk-ui .resourcebar .resource{padding:0 5px;gap:3px}.uruk-ui .resourcebar .resource>div{flex-direction:column-reverse;align-items:flex-start;gap:0}.uruk-ui .resourcebar .resource-icon svg{width:18px;height:18px}.uruk-ui .resourcebar .resource strong{font-size:17px}.uruk-ui .resourcebar .resource small{font-size:7px;max-width:46px}.uruk-ui .uruk-resource-toggle{width:24px;padding:0}.uruk-ui .uruk-resource-toggle img{width:20px}.uruk-dock{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:46px 42px;gap:4px 0;padding:8px 8px 9px;padding-bottom:max(9px,env(safe-area-inset-bottom));height:var(--uruk-dock)}.uruk-dock>button{min-width:0;width:100%;height:44px;gap:3px;padding:3px;font-size:10px}.uruk-dock>button>img{width:20px;height:20px}.uruk-transport{grid-column:1/-1;margin:0;padding:4px 0 0;border:0;border-top:1px solid #92704555}.uruk-ui .uruk-dock .time-controls{justify-content:center;gap:9px}.uruk-ui .uruk-dock .time-controls button{height:33px;min-height:33px;width:43px}.uruk-ui .uruk-dock #next-season{font-size:0;width:auto;min-width:112px;margin-left:5px;border:0}.uruk-ui .uruk-dock #next-season::before{display:inline;font-size:10px}.uruk-ui :is(.build-panel,.miraclebar,.story-panel,.uruk-menu){left:10px!important;right:10px!important;bottom:calc(var(--uruk-dock) + 10px);width:auto;max-width:none;max-height:calc(100dvh - var(--uruk-header) - var(--uruk-dock) - 28px)!important;padding:23px 17px 17px!important}.uruk-ui .uruk-god{top:10px;right:10px;padding:8px 10px;max-width:70vw}.uruk-god small{font-size:6px;letter-spacing:.08em}.uruk-god-name{font-size:14px}.uruk-god>img{width:20px;height:20px}.uruk-ui .map-buttons{bottom:12px;right:10px;gap:3px}.uruk-ui .map-buttons button{width:31px;min-height:34px}.uruk-ui .game3d-metrics{bottom:53px;left:10px;font-size:7px}.uruk-ui .tile-detail{left:10px;bottom:10px;width:calc(100% - 20px);max-width:350px;max-height:calc(100% - 40px);padding:18px}.uruk-ui .food-warnings{top:75px;left:10px;right:10px;max-width:none}.uruk-ui .miraclebar #miracles{grid-template-columns:repeat(2,minmax(0,1fr))}.uruk-ui .miracle-explanation{bottom:calc(var(--uruk-dock) + 15px);left:10px;width:calc(100vw - 20px);max-height:calc(100dvh - var(--uruk-header) - var(--uruk-dock) - 30px);padding:24px 18px}.uruk-ui.uruk-resources-open .resourcebar{left:10px;right:10px;width:auto;padding:24px 14px}.uruk-ui.uruk-resources-open .resourcebar .resource{flex-basis:calc(33.33% - 10px)}.uruk-ui dialog{width:calc(100vw - 20px);max-width:none;max-height:calc(100dvh - 30px)}.uruk-ui .dialog-inner{padding:22px 17px}.uruk-ui .dialog-inner h2{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.uruk-ui *{scroll-behavior:auto!important;transition:none!important}}
+/* Existing dense resource rules use ID selectors and important grid displays. */
+.uruk-ui .resourcebar #resources .resource{display:none!important}
+.uruk-ui .resourcebar #resources .resource:is([data-resource=food],[data-resource=clay],[data-resource=reed],[data-resource=wood],[data-resource=faith]){display:flex!important}
+.uruk-ui .resourcebar #resources .season-delta{display:none!important}
+.uruk-ui .resourcebar #resources .resource .resource-value{display:flex!important}
+.uruk-ui .resourcebar #resources .resource strong{font:400 19px/1.2 var(--serif)!important;letter-spacing:0!important}
+.uruk-ui .resourcebar #resources .resource small{color:#bba98c!important;font:400 9px/1.3 'Golos Text',sans-serif!important;letter-spacing:.02em!important;white-space:nowrap!important;overflow:hidden;max-width:65px}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource{display:flex!important}
+.uruk-ui.uruk-resources-open .resourcebar #resources .season-delta{display:inline!important}
+.uruk-ui .build-panel{max-height:min(530px,calc(100dvh - var(--uruk-header) - var(--uruk-dock) - 50px))!important}
+.uruk-ui .building-card .building-icon{background:transparent!important;border:0!important;box-shadow:none!important}
+.uruk-ui .building-card .shortage small{color:#e8ad83}
+.uruk-ui .build-panel .section-label{padding-bottom:4px}
+@media(min-width:1251px){.uruk-dock>button{font:400 19px/1.2 var(--serif);min-width:145px;flex:1;max-width:180px}.uruk-dock>button>img{width:27px;height:27px}.uruk-ui .resourcebar .resource>div{flex-direction:column-reverse!important;align-items:flex-start!important;gap:0!important}}
+/* Moved controls must not retain the legacy mobile fixed positioning. */
+.uruk-ui .uruk-menu .header-actions :is(#toggle-sound,.district-link){position:static!important;inset:auto!important;transform:none!important;max-width:none}
+.uruk-ui .uruk-menu .panel-dock-2d{position:static;transform:none;background:transparent;border:0;padding:0}
+/* Existing dialogs share the material system, including inline production/save sections. */
+.uruk-ui dialog :where(p,span,small,strong,label,h2,h3,h4){color:inherit!important}
+.uruk-ui dialog :is(.save-current,.save-card,.save-entry,.city-tools-row,.city-tools-card,.city-tools-summary,.city-tools-person,.city-tools-people,.city-tools-inspiration,.resident-row,.mode-option,.mode-card,.mode-choice,.supply-card,.district-card,.relic-card,.life-summary,.encyclopedia-card,.test-tools-section){background:#332d24!important;color:#e5cfaa!important;border-color:#8e6d4266!important;box-shadow:none}
+.uruk-ui dialog :is(button,input,select,textarea,.save-import){background:#3b3227!important;color:#ead8b6!important;border:1px solid #846544!important;border-radius:2px!important;min-height:36px}
+.uruk-ui dialog :is(.primary,button[aria-selected=true],button[aria-pressed=true],.city-tools-tabs .active){background:#244260 var(--uruk-lapis)!important;background-size:320px!important;color:#fff0d1!important;border-color:#69879e!important}
+.uruk-ui dialog :is(.management-close,.dialog-close,.detail-close){background:transparent!important;border:0!important;color:#dfc89e!important}
+.uruk-ui dialog :is(.save-error,.danger,.is-warning,.warning-note){color:#e6ac86!important}
+.uruk-ui dialog .save-current{padding:20px;border-radius:2px}
+.uruk-ui dialog .save-heading{border-color:#80613d66}
+.uruk-ui dialog .city-tools-link{background:transparent!important;color:#edc78c!important;border:0!important;text-align:left}
+.uruk-ui dialog .city-tools-tag{background:#4e4735!important;color:#d9cbab!important;border-color:#99815966}
+@media(max-width:1000px){body.uruk-ui{--uruk-header:110px;--uruk-dock:76px}}
+@media(max-width:650px){body.uruk-ui{--uruk-header:110px;--uruk-dock:118px}.uruk-ui .uruk-dock .time-controls button{min-height:38px;height:38px}.uruk-ui .resourcebar #resources .resource strong{font-size:17px!important}.uruk-ui .resourcebar #resources .resource small{font-size:7px!important;max-width:43px}.uruk-ui .uruk-menu .header-actions :is(button,a){min-height:42px!important}.uruk-ui .resourcebar .resource-icon svg{width:17px!important;height:20px!important}}
+.uruk-ui .uruk-menu .management-nav{position:static!important;inset:auto!important;width:auto!important;max-height:none!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;filter:none!important;overflow:visible!important}
+.uruk-ui .uruk-menu .management-nav button,.uruk-ui .uruk-menu .header-actions :is(button,a){background:transparent!important;color:#ead7b6!important;border-color:#95724a33!important;box-shadow:none!important}
+.uruk-ui .uruk-menu .game3d-options{position:static!important;inset:auto!important;transform:none!important;width:100%;max-width:none;justify-content:flex-start;overflow:visible}
+.uruk-ui .uruk-menu .game3d-options .camera-controls{position:static!important;inset:auto!important;transform:none!important;display:flex;flex-wrap:wrap}
+.uruk-ui .uruk-menu .management-nav #test-resources{grid-column:auto;font-size:12px;border-style:solid}
+.uruk-ui.photo-mode :is(.topbar,.resourcebar,[data-uruk-drawer]){display:none!important}
+.uruk-ui.photo-mode .game-layout{inset:0!important}
+.uruk-ui .photo-toolbar{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;width:max-content;max-width:calc(100% - 28px);padding:15px 20px;background:#29251ff5 var(--uruk-stone);background-size:510px;color:#ebd7b2;border:1px solid #ac8552;font:12px/1.5 'Golos Text',sans-serif}
+.uruk-ui .photo-toolbar[hidden]{display:none}
+.uruk-ui .photo-toolbar>div{display:flex;flex-direction:column;margin-right:15px}
+.uruk-ui .photo-toolbar small{color:#bda482;font-size:10px}
+.uruk-ui .photo-toolbar button{min-height:38px;padding:8px 12px;background:#403529;color:#efdfc0;border:1px solid #8d6c42;border-radius:2px}
+.uruk-ui .photo-toolbar label{display:flex;align-items:center;gap:8px}
+.uruk-ui dialog :is(article,section){background-color:#332d24!important;border-color:#8e6d4266!important}
+.uruk-ui dialog .god-mode-grid article{background:#332d24!important;color:#e8d4ae;border-radius:2px;border-color:#8e6d4266}
+.uruk-ui dialog .city-tools :is(header,nav,.city-tools-filters,.city-tools-heading,.city-tools-content){background:transparent!important;color:#ead6b0;border-color:#89683f66}
+.uruk-ui dialog *{color:#e6d3b1!important}
+.uruk-ui dialog :is(h2,h3,h4){color:#f3e2c1!important}
+.uruk-ui dialog :is(.city-tools-count,.city-tools-building-level,.city-tools-clock){background:#514632!important;color:#f0dbb4!important;border-radius:2px}
+.uruk-ui dialog :is(.save-error,.danger,.is-warning,.warning-note){color:#e6ac86!important}
+.uruk-ui dialog :is(.city-tools-summary,.city-tools-content,.city-tools-heading){border-color:#89683f66!important}
+.uruk-ui .tile-detail :is(b,strong,small,span,label,li){color:#dfc9a3}
+.uruk-ui>.topbar>.header-actions{display:none}
+.uruk-ui .game3d-loading{background:#25231f var(--uruk-stone);background-size:510px;color:#edddbc}
+.uruk-ui .game3d-loading :is(span,small){color:#c1a77d}
+.uruk-ui [data-uruk-build-category]{display:block;width:100%;margin:12px 0 8px;min-height:38px;padding:8px 12px;background:#382d22;color:#e9d3b0;border:1px solid #b48a5955;font-size:12px}
+.uruk-ui .build-panel .building-accordion>summary{display:none}
+.uruk-ui .build-panel .building-accordion[hidden]{display:none!important}
+.uruk-ui .build-panel .building-accordion{border:0}
+.uruk-ui .building-card .ui-icon{color:#e1b986!important;stroke:currentColor}
+.uruk-ui .panel-options label[hidden]{display:none!important}
+body.uruk-ui:not(.map-only):not(.photo-mode) .topbar{display:flex!important}
+body.uruk-ui:not(.map-only):not(.photo-mode) .resourcebar{display:flex!important}
+.uruk-ui .build-effect{color:#e4cdaa}
+.uruk-ui .building-card .shortage small{color:#ffd0a3}
+.uruk-ui .resourcebar #resources .season-delta.surplus{color:#b5c895!important}
+.uruk-ui .resourcebar #resources .season-delta.deficit,.uruk-ui .resourcebar #resources .overflow{color:#ecb28b!important}
+.uruk-ui .resourcebar #resources .season-delta.balanced{color:#c6b28e!important}
+.uruk-ui.uruk-resources-open .resourcebar{max-height:calc(100dvh - var(--uruk-header) - var(--uruk-dock) - 28px)}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource strong{font-size:22px!important}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource small{font-size:10px!important;max-width:none;white-space:normal!important}
