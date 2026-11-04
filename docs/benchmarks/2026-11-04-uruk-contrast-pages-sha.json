@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-04T14:33:32.023116+00:00",
+  "commit": "da8a25b42d675eaa7aac073f6d34ca9a0dee8510",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "b4bc34fe56e5d9fbafedbc9573e5c991a09772972c98b9339cabb55b4f2fc547",
+      "actual": "b4bc34fe56e5d9fbafedbc9573e5c991a09772972c98b9339cabb55b4f2fc547",
+      "match": true
+    },
+    {
+      "path": "design-qa.md",
+      "status": 200,
+      "expected": "504a4ee92fdc13d990b9309331a103e2d0e2b9d0c20733a0a6b5d0dfd8bb37ff",
+      "actual": "504a4ee92fdc13d990b9309331a103e2d0e2b9d0c20733a0a6b5d0dfd8bb37ff",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-uruk-contrast.json",
+      "status": 200,
+      "expected": "7364ee2c87eabd7a5337e172de0845a343e00c434825326f31451ed53ee51079",
+      "actual": "7364ee2c87eabd7a5337e172de0845a343e00c434825326f31451ed53ee51079",
+      "match": true
+    },
+    {
+      "path": "docs/design/night-uruk-encyclopedia-contrast.webp",
+      "status": 200,
+      "expected": "e567b04594aaa30803f9eecc756a10b021aebdd2366e6d6d8245ff4bd97a63f7",
+      "actual": "e567b04594aaa30803f9eecc756a10b021aebdd2366e6d6d8245ff4bd97a63f7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8c9755f3547ca1a22f60e2f59cc75077ba29c1fc9ffb822728b407eaa5a53150",
+      "actual": "8c9755f3547ca1a22f60e2f59cc75077ba29c1fc9ffb822728b407eaa5a53150",
+      "match": true
+    },
+    {
+      "path": "uruk-ui.css",
+      "status": 200,
+      "expected": "8b66db9698c9390a428891b8480d18aa86901e27fd07a91adca3d7d5e0c1b860",
+      "actual": "8b66db9698c9390a428891b8480d18aa86901e27fd07a91adca3d7d5e0c1b860",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
