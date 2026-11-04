@@ -1,0 +1,331 @@
+{
+  "at": "2026-11-04T10:23:52.791044+00:00",
+  "commit": "4516fcbc07112a6845456f7b0a8db6aa5c6781f3",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9023d01c6c6012481d8dd77b1e401db1c016fabc06bb41d7a603708488c9054d",
+      "actual": "9023d01c6c6012481d8dd77b1e401db1c016fabc06bb41d7a603708488c9054d",
+      "match": true
+    },
+    {
+      "path": "README.md",
+      "status": 200,
+      "expected": "382de360008a159e66cd8db49e8be88c05f57bee1ef08c917191e5867086c047",
+      "actual": "382de360008a159e66cd8db49e8be88c05f57bee1ef08c917191e5867086c047",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "c8495919af46b42047d3648440f190e4a972660f9ed5b112373be0d0c5873d4d",
+      "actual": "c8495919af46b42047d3648440f190e4a972660f9ed5b112373be0d0c5873d4d",
+      "match": true
+    },
+    {
+      "path": "calendar.js",
+      "status": 200,
+      "expected": "78622e54e7ed325a1fa0236903f46872b8a9e124746e2f1f064623ee32cf5374",
+      "actual": "78622e54e7ed325a1fa0236903f46872b8a9e124746e2f1f064623ee32cf5374",
+      "match": true
+    },
+    {
+      "path": "calm-ui.css",
+      "status": 200,
+      "expected": "1edad8186fc5cc572dd516d6f8c50cf039fd908448d6ce727b9467b7bfe3b1cd",
+      "actual": "1edad8186fc5cc572dd516d6f8c50cf039fd908448d6ce727b9467b7bfe3b1cd",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "bd519df2a468ab24de90da6bae366c3806c16fa04de8f3e603c33e5913db9538",
+      "actual": "bd519df2a468ab24de90da6bae366c3806c16fa04de8f3e603c33e5913db9538",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "64407dddd36de84886df68d6376cedf7bd1e6628f088ddf4dbc61965dc434bff",
+      "actual": "64407dddd36de84886df68d6376cedf7bd1e6628f088ddf4dbc61965dc434bff",
+      "match": true
+    },
+    {
+      "path": "docs/GODHOOD_GAME_DESIGN_2026-10-20.md",
+      "status": 200,
+      "expected": "62115b97dfd1df221442c8200ae407ffaa95879b32d5eea580c7a994d1ac8368",
+      "actual": "62115b97dfd1df221442c8200ae407ffaa95879b32d5eea580c7a994d1ac8368",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "b3e5d4b490c8346151518b0c4e4fa2e8a05b801e4aa4e3d7cb3c022122c7ddee",
+      "actual": "b3e5d4b490c8346151518b0c4e4fa2e8a05b801e4aa4e3d7cb3c022122c7ddee",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md",
+      "status": 200,
+      "expected": "e7bde170952315b8ce8cd20af1b427ddf550b595776aebee2512a282053f4f25",
+      "actual": "e7bde170952315b8ce8cd20af1b427ddf550b595776aebee2512a282053f4f25",
+      "match": true
+    },
+    {
+      "path": "docs/SUMERIAN_CALENDAR_2026-11-04.md",
+      "status": 200,
+      "expected": "3390a3099d4c655fe0400a96b368394c3b92c537d8b5e3c91e66e4b22f4a0d05",
+      "actual": "3390a3099d4c655fe0400a96b368394c3b92c537d8b5e3c91e66e4b22f4a0d05",
+      "match": true
+    },
+    {
+      "path": "docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md",
+      "status": 200,
+      "expected": "9391b08a37b435711914e0e8ebc57b85098415ebb0262d58f7118a8e3f8027c5",
+      "actual": "9391b08a37b435711914e0e8ebc57b85098415ebb0262d58f7118a8e3f8027c5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-transition.json",
+      "status": 200,
+      "expected": "8555e4922cb30fda66c32efcba35422e44254b45f424bdd11bebd92e59eab632",
+      "actual": "8555e4922cb30fda66c32efcba35422e44254b45f424bdd11bebd92e59eab632",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-speed-check.json",
+      "status": 200,
+      "expected": "1e5e65f187509beda1911fc436901e4cc0a402199fd6222727c7739580ebff88",
+      "actual": "1e5e65f187509beda1911fc436901e4cc0a402199fd6222727c7739580ebff88",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-04-01.md",
+      "status": 200,
+      "expected": "21e76e778c8f507c214fcf17d949a9d1d4a1cc614765973ef273c29c68ecc51b",
+      "actual": "21e76e778c8f507c214fcf17d949a9d1d4a1cc614765973ef273c29c68ecc51b",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "ad39796e2f9cefe759158d8baad87b0f1788f0b2b316af3a347dc11d700acead",
+      "actual": "ad39796e2f9cefe759158d8baad87b0f1788f0b2b316af3a347dc11d700acead",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "26c6461eb974a9ce63e5797115c3d2103de6e6ffd691b84692554ef3bc0de768",
+      "actual": "26c6461eb974a9ce63e5797115c3d2103de6e6ffd691b84692554ef3bc0de768",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "312e43f228234be58dc47e2b08a96d9fa309105064e61fa0d70675f930405484",
+      "actual": "312e43f228234be58dc47e2b08a96d9fa309105064e61fa0d70675f930405484",
+      "match": true
+    },
+    {
+      "path": "season-jump.js",
+      "status": 200,
+      "expected": "5b040568ae56051492141904d82960b684e3c23eb35a8251c94ed960f249e029",
+      "actual": "5b040568ae56051492141904d82960b684e3c23eb35a8251c94ed960f249e029",
+      "match": true
+    },
+    {
+      "path": "tests/agriculture.test.js",
+      "status": 200,
+      "expected": "af621526454c4d8bca5b8364ed405c531929623ef4b387342a50a6e1bd87e3bf",
+      "actual": "af621526454c4d8bca5b8364ed405c531929623ef4b387342a50a6e1bd87e3bf",
+      "match": true
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "status": 200,
+      "expected": "33b74ac62bdd9e4ff1e08ff46df08b0feb34e4405fe03736121c842b8fd5eb37",
+      "actual": "33b74ac62bdd9e4ff1e08ff46df08b0feb34e4405fe03736121c842b8fd5eb37",
+      "match": true
+    },
+    {
+      "path": "tests/brick-integration.test.js",
+      "status": 200,
+      "expected": "8002c52aae815a938f4762a6706ccf6d32364c86b02371b1639562c16031369e",
+      "actual": "8002c52aae815a938f4762a6706ccf6d32364c86b02371b1639562c16031369e",
+      "match": true
+    },
+    {
+      "path": "tests/building-annual-chronology.test.js",
+      "status": 200,
+      "expected": "aa660c0736070226a429767b53415b7437e5d6aa068f5f8bacedbe21049c8ac7",
+      "actual": "aa660c0736070226a429767b53415b7437e5d6aa068f5f8bacedbe21049c8ac7",
+      "match": true
+    },
+    {
+      "path": "tests/building-inventory.test.js",
+      "status": 200,
+      "expected": "859a1cd24a0549e139d273dd4d2f4dbd69561a541dcb177581df26cdf455542c",
+      "actual": "859a1cd24a0549e139d273dd4d2f4dbd69561a541dcb177581df26cdf455542c",
+      "match": true
+    },
+    {
+      "path": "tests/calendar-presentation.test.js",
+      "status": 200,
+      "expected": "e20a3a8857f4bbca4331d23d545893b67dd9ff199c122da34da09075c5e32642",
+      "actual": "e20a3a8857f4bbca4331d23d545893b67dd9ff199c122da34da09075c5e32642",
+      "match": true
+    },
+    {
+      "path": "tests/calendar.test.js",
+      "status": 200,
+      "expected": "527d8c168a2c57980123a003aa19d70fa148be986f15e899bcf38d04d82849d4",
+      "actual": "527d8c168a2c57980123a003aa19d70fa148be986f15e899bcf38d04d82849d4",
+      "match": true
+    },
+    {
+      "path": "tests/citylife-integration.test.js",
+      "status": 200,
+      "expected": "105fef914bab04833b8d76e589a3a860481d2505a4b23deb88881d4824c7a697",
+      "actual": "105fef914bab04833b8d76e589a3a860481d2505a4b23deb88881d4824c7a697",
+      "match": true
+    },
+    {
+      "path": "tests/clothing.test.js",
+      "status": 200,
+      "expected": "d83ca078396edb4e0505406791f73b17833a7be35094e9883d318280bc209943",
+      "actual": "d83ca078396edb4e0505406791f73b17833a7be35094e9883d318280bc209943",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "expected": "d19fffb7371fdd7c6668f34e7b24df6b41d6beddb4209b3202ee53f08e69ee48",
+      "actual": "d19fffb7371fdd7c6668f34e7b24df6b41d6beddb4209b3202ee53f08e69ee48",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "e61a72c55ea3320769a16e93c439aa463fb9543404ef7980bd8d2f0303700d7d",
+      "actual": "e61a72c55ea3320769a16e93c439aa463fb9543404ef7980bd8d2f0303700d7d",
+      "match": true
+    },
+    {
+      "path": "tests/healer.test.js",
+      "status": 200,
+      "expected": "4748b71ef9741e5547550ce232e95c41f3eaeea79d061343fc9ace24b8a97270",
+      "actual": "4748b71ef9741e5547550ce232e95c41f3eaeea79d061343fc9ace24b8a97270",
+      "match": true
+    },
+    {
+      "path": "tests/households.test.js",
+      "status": 200,
+      "expected": "280a13c3141cd430f9e6a9cfdb5242bf1ce7a6d497f2a90c2d777019cd97959d",
+      "actual": "280a13c3141cd430f9e6a9cfdb5242bf1ce7a6d497f2a90c2d777019cd97959d",
+      "match": true
+    },
+    {
+      "path": "tests/inventory-integration.test.js",
+      "status": 200,
+      "expected": "c4fb14a486a01a2a2ac2a68f4effaecc7fbed9d6c5a90c4ef6644756724b2ad5",
+      "actual": "c4fb14a486a01a2a2ac2a68f4effaecc7fbed9d6c5a90c4ef6644756724b2ad5",
+      "match": true
+    },
+    {
+      "path": "tests/kiln-integration.test.js",
+      "status": 200,
+      "expected": "795dc7fba1ed4d349e62d612c0afcb956ee325272c4fe65b15e925bcbfcad7e3",
+      "actual": "795dc7fba1ed4d349e62d612c0afcb956ee325272c4fe65b15e925bcbfcad7e3",
+      "match": true
+    },
+    {
+      "path": "tests/life-analytics-integration.test.js",
+      "status": 200,
+      "expected": "58e0c1988f9e6746d71c26673c9068a30990f6d3075ca0ca45f014d9c6b639d6",
+      "actual": "58e0c1988f9e6746d71c26673c9068a30990f6d3075ca0ca45f014d9c6b639d6",
+      "match": true
+    },
+    {
+      "path": "tests/market-logistics.test.js",
+      "status": 200,
+      "expected": "0e05d4f8a5b149189285ad64719ad3dc22700ca1daedd54465ebe2a1c265b19b",
+      "actual": "0e05d4f8a5b149189285ad64719ad3dc22700ca1daedd54465ebe2a1c265b19b",
+      "match": true
+    },
+    {
+      "path": "tests/masonry-integration.test.js",
+      "status": 200,
+      "expected": "9e821fa67a9c7b3c80dd781c9d335a0348d6711f76960aec9e37803f0d9e7c95",
+      "actual": "9e821fa67a9c7b3c80dd781c9d335a0348d6711f76960aec9e37803f0d9e7c95",
+      "match": true
+    },
+    {
+      "path": "tests/medical-education.test.js",
+      "status": 200,
+      "expected": "6dfbc97337f8ba6673dd946795fec5333c9c98263fe82b3c7b649a9b85acf6ce",
+      "actual": "6dfbc97337f8ba6673dd946795fec5333c9c98263fe82b3c7b649a9b85acf6ce",
+      "match": true
+    },
+    {
+      "path": "tests/pests.test.js",
+      "status": 200,
+      "expected": "15be22015ebca28fe8774be2f3b8393c4703b91358dcb4274f804350da1d22a7",
+      "actual": "15be22015ebca28fe8774be2f3b8393c4703b91358dcb4274f804350da1d22a7",
+      "match": true
+    },
+    {
+      "path": "tests/season-jump.test.js",
+      "status": 200,
+      "expected": "ce1b3840de41416577d53d50def1982cd06530a597523f80f18e584ba8b6c51f",
+      "actual": "ce1b3840de41416577d53d50def1982cd06530a597523f80f18e584ba8b6c51f",
+      "match": true
+    },
+    {
+      "path": "tests/textile-migration.test.js",
+      "status": 200,
+      "expected": "fbba9a1629f21292d129691f9d583bbcd41baeaaf512f78e7ecede8cb9c2cf71",
+      "actual": "fbba9a1629f21292d129691f9d583bbcd41baeaaf512f78e7ecede8cb9c2cf71",
+      "match": true
+    },
+    {
+      "path": "tests/trading.test.js",
+      "status": 200,
+      "expected": "eb11a26230e852b59b8c3dd8bce84a4a6c2c858312a06dd1c65b22a8fbed6734",
+      "actual": "eb11a26230e852b59b8c3dd8bce84a4a6c2c858312a06dd1c65b22a8fbed6734",
+      "match": true
+    },
+    {
+      "path": "tests/ui-manual-gathering.test.js",
+      "status": 200,
+      "expected": "5ce76f8f0988f7c009c9f8d28d87bb9b5802f2fe6b6bef1a487419c9bacca11c",
+      "actual": "5ce76f8f0988f7c009c9f8d28d87bb9b5802f2fe6b6bef1a487419c9bacca11c",
+      "match": true
+    },
+    {
+      "path": "tests/wellbeing.test.js",
+      "status": 200,
+      "expected": "815fb2d250f117f1474d2d197697a47462088d989253e26d1283b0285d99a0d0",
+      "actual": "815fb2d250f117f1474d2d197697a47462088d989253e26d1283b0285d99a0d0",
+      "match": true
+    },
+    {
+      "path": "tests/working-city.test.js",
+      "status": 200,
+      "expected": "5d2c68941d2400f162278fd77f82aefd239c45636635980efcb8d3a2b6fcb6e1",
+      "actual": "5d2c68941d2400f162278fd77f82aefd239c45636635980efcb8d3a2b6fcb6e1",
+      "match": true
+    },
+    {
+      "path": "ui-calendar.js",
+      "status": 200,
+      "expected": "d96e3fb4c3280d3b0877ee545c08b62164cb553b0e76a1f7921e58c90ee13cca",
+      "actual": "d96e3fb4c3280d3b0877ee545c08b62164cb553b0e76a1f7921e58c90ee13cca",
+      "match": true
+    }
+  ],
+  "matched": 46,
+  "total": 46
+}
