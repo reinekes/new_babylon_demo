@@ -1,0 +1,177 @@
+{
+  "at": "2026-11-04T17:02:35.524108+00:00",
+  "commit": "3caee201c8c1c4fc57e9841a653c301d617b5260",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6969369d2497ea0c2f8f080e507016945ea273296c2a47220c130aedd61ea4b8",
+      "actual": "6969369d2497ea0c2f8f080e507016945ea273296c2a47220c130aedd61ea4b8",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "31e2831124fcc79957d0416c514c3b9195cfe7f9f21c633a9482486224465fc6",
+      "actual": "31e2831124fcc79957d0416c514c3b9195cfe7f9f21c633a9482486224465fc6",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "f1a26ec4f75a4d8a703884cf76a88fb05a00124ff3628b6b8998e16f0ca773b2",
+      "actual": "f1a26ec4f75a4d8a703884cf76a88fb05a00124ff3628b6b8998e16f0ca773b2",
+      "match": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "expected": "d56906338fc8418c0e2d76dcd5fdd56c75bd71199ebc63f02c2ca484afd5a29d",
+      "actual": "d56906338fc8418c0e2d76dcd5fdd56c75bd71199ebc63f02c2ca484afd5a29d",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_SEASON_STREET_CACHE_2026-11-04.md",
+      "status": 200,
+      "expected": "2f481d6a8536f84698bbd44beccf1a9b07f6c0226bc50e6092f3344541acbce4",
+      "actual": "2f481d6a8536f84698bbd44beccf1a9b07f6c0226bc50e6092f3344541acbce4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-scene-pages-sha.json",
+      "status": 200,
+      "expected": "f4eded27d72401b057f8f7cf0a9d920e4d18719f26ac3e4aa54da38a22e834eb",
+      "actual": "f4eded27d72401b057f8f7cf0a9d920e4d18719f26ac3e4aa54da38a22e834eb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-street-cache-overview.jpg",
+      "status": 200,
+      "expected": "6d176920c80a33a675d58b7d9d11424bb445cf996d844efbb40608055c1e2485",
+      "actual": "6d176920c80a33a675d58b7d9d11424bb445cf996d844efbb40608055c1e2485",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-street-cache.json",
+      "status": 200,
+      "expected": "43a50d7b8374be95c40526fcabccd36efa43939b4b2b683134037e20de42a065",
+      "actual": "43a50d7b8374be95c40526fcabccd36efa43939b4b2b683134037e20de42a065",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "894f7b9d9dfdbc891d5ac766a69187a340fadfff9525170d6a4e719159a2ab02",
+      "actual": "894f7b9d9dfdbc891d5ac766a69187a340fadfff9525170d6a4e719159a2ab02",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-04-09.md",
+      "status": 200,
+      "expected": "6f05219d6dd2bf4f461a64986ac611b02641b731dee96f596d89cdd145e30fa8",
+      "actual": "6f05219d6dd2bf4f461a64986ac611b02641b731dee96f596d89cdd145e30fa8",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-04-10.md",
+      "status": 200,
+      "expected": "324594b849fcf5edfdf1f5113a0156d460f6239d7de4ff6e837ed32e082dc300",
+      "actual": "324594b849fcf5edfdf1f5113a0156d460f6239d7de4ff6e837ed32e082dc300",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "ca18b8deb85d578dad938cbadad2eeeae2f2a9f9aa1d4b2c5abe0721f1609a84",
+      "actual": "ca18b8deb85d578dad938cbadad2eeeae2f2a9f9aa1d4b2c5abe0721f1609a84",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "0e4c498e3817ed87069dc07b54347cc10c4d23696586cb86aaf8cbbd814d3a77",
+      "actual": "0e4c498e3817ed87069dc07b54347cc10c4d23696586cb86aaf8cbbd814d3a77",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8ae8fd889e5469990ba03ed75eda3792d7b3d2b35a9cb29383ca226a7b8ee945",
+      "actual": "8ae8fd889e5469990ba03ed75eda3792d7b3d2b35a9cb29383ca226a7b8ee945",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "d93fa49e5a6d746f802c72ca611c13f51607ead6ec1e6e7700c8f68ebc50d548",
+      "actual": "d93fa49e5a6d746f802c72ca611c13f51607ead6ec1e6e7700c8f68ebc50d548",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "511684a5a450bb471f7e6144c339ae33e355a491078fd49c09287439f5b50b05",
+      "actual": "511684a5a450bb471f7e6144c339ae33e355a491078fd49c09287439f5b50b05",
+      "match": true
+    },
+    {
+      "path": "roadmap/overview.md",
+      "status": 200,
+      "expected": "391744af174aa818ed1d4ae3f5ba55bb6fc6b008950c11a413823e5b22e0f667",
+      "actual": "391744af174aa818ed1d4ae3f5ba55bb6fc6b008950c11a413823e5b22e0f667",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "c57adfa97bf0cc265eb479c8bc50a4ed77e207bce47fec5a07201ec825b2cf63",
+      "actual": "c57adfa97bf0cc265eb479c8bc50a4ed77e207bce47fec5a07201ec825b2cf63",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-model-index.md",
+      "status": 200,
+      "expected": "c09ac0a6950a3a75e880310664660131324f1f6026707957b46bce5c0ec9b794",
+      "actual": "c09ac0a6950a3a75e880310664660131324f1f6026707957b46bce5c0ec9b794",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-season-scene.md",
+      "status": 200,
+      "expected": "48c3d0018f0efb1308ab9aadeeec18f0406f66beebcb213e7e7517a45426c716",
+      "actual": "48c3d0018f0efb1308ab9aadeeec18f0406f66beebcb213e7e7517a45426c716",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-season-street-cache.md",
+      "status": 200,
+      "expected": "bbfbdd3a6802052628f705349ed6cf0e15e37b2f4566d10081ac377dd840c5ae",
+      "actual": "bbfbdd3a6802052628f705349ed6cf0e15e37b2f4566d10081ac377dd840c5ae",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "088d3ef3ec155088a690a6dc104f33cf3ef86355b04a5041f6503090339805d5",
+      "actual": "088d3ef3ec155088a690a6dc104f33cf3ef86355b04a5041f6503090339805d5",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "7e99c392d16f2512cf3bb6c291394ccbc3a9a240ec1cf059e78fa09a7d7fb71c",
+      "actual": "7e99c392d16f2512cf3bb6c291394ccbc3a9a240ec1cf059e78fa09a7d7fb71c",
+      "match": true
+    },
+    {
+      "path": "tests/terrain-network-cache.test.js",
+      "status": 200,
+      "expected": "7e204ed818953371c23a52b403d855d21aa8bb846ec5016523a52f46a70b1914",
+      "actual": "7e204ed818953371c23a52b403d855d21aa8bb846ec5016523a52f46a70b1914",
+      "match": true
+    }
+  ],
+  "matched": 24,
+  "total": 24
+}
