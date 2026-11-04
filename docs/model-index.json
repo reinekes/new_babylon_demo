@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "dc511a2ab70d470efbff44f9797cfba60e5297427e6808ab6f28ad0d3a863415"
+      "sha256": "442b81afd8ef7420f20346ebf4c55cd65c8f163fdee49b21b50788f5d9a17a7f"
     },
     {
       "file": "game3d/caravan.js",
@@ -73,7 +73,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "f120528d2de4322479419bc84721cafe48cf833044db84bbc007a042b3b2b739"
+      "sha256": "987ffbf2c8e2728fc06f47434f2aa56552782d083dd519ca1a7ab36611e442b1"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -115,7 +115,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 18,
+          "line": 19,
           "kind": "literal"
         }
       ]
@@ -1568,7 +1568,7 @@
         {
           "model": "sacred-ishtar-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 5,
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -1597,7 +1597,7 @@
         {
           "model": "sacred-shrine-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -1626,7 +1626,7 @@
         {
           "model": "sacred-ziggurat-1.glb",
           "file": "game3d/sacred-models.js",
-          "line": 7,
+          "line": 8,
           "kind": "literal"
         }
       ]
@@ -1655,7 +1655,7 @@
         {
           "model": "sacred-ziggurat-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]

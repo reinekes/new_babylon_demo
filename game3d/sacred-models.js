@@ -1,3 +1,4 @@
+import {isStrictSumer} from '../scenario-profiles.js';
 import {loadModel} from './asset-loading.js';
 import {footprintSize} from '../footprints.js';
 
@@ -16,7 +17,8 @@ export function sacredModelTransform(b){
 
 // Existing one-cell monuments retain their reserved area. A new
 // construction remains scaffolding; an upgrade displays the current tier.
-export function sacredModelKey(b){
+export function sacredModelKey(b,state){
+ if(isStrictSumer(state))return null;
  if(!b||b.construction?.kind==='new')return null;
  const level=Math.max(1,Math.min(3,b.level||1));
  if(b.type==='ishtarGate')return 'ishtarGate';
@@ -70,13 +72,31 @@ export function createIshtarGateFallback(B,scene,m,blue,b={type:'ishtarGate'}){
  return [...groups].map(([mat,parts])=>{const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='game-ishtar-procedural-'+mat.name;mesh.material=mat;mesh.scaling.setAll(scale);mesh.position.set(center,0,center);return mesh;});
 }
 
+// Southern Sumer game interpretation: raw-brick sacred courtyard entry,
+// rectangular timber lintel, no Neo-Babylonian glazed reliefs or crenellations.
+export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
+ const groups=new Map();
+ const box=(name,x,y,z,w,h,d,mat)=>{const mesh=B.MeshBuilder.CreateBox('sumer-gate-'+name,{width:w,height:h,depth:d},scene);mesh.position.set(x,y,z);mesh.material=mat;if(!groups.has(mat))groups.set(mat,[]);groups.get(mat).push(mesh);};
+ box('threshold',0,.05,0,5.2,.1,2.2,m.fired||m.raw);
+ for(const side of [-1,1]){
+  box('brick-pier',side*1.83,1.56,0,1.54,3.12,1.85,m.raw);
+  box('buttress',side*2.33,1.08,.2,.44,2.16,2.16,m.raw);
+  box('plaster-base',side*1.83,.22,.95,1.56,.32,.06,m.trim);
+ }
+ box('timber-lintel',0,2.53,0,2.55,.24,1.9,m.wood);
+ box('brick-header',0,2.89,0,2.55,.48,1.85,m.raw);
+ box('earth-cap',0,3.15,0,5.22,.12,1.98,m.soil);
+ const {scale,center}=sacredModelTransform(b);
+ return [...groups].map(([mat,parts])=>{const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='game-sumer-gate-'+mat.name;mesh.material=mat;mesh.scaling.setAll(scale);mesh.position.set(center,0,center);return mesh;});
+}
+
 // No sacred GLB is requested on startup or placement previews. Built monuments
 // opt in independently; their procedural silhouette remains while decoding or
 // offline. Loading changes view templates only, never simulation/save objects.
 export function createSacredModels(B,scene,{onError=error=>console.warn('Sacred model unavailable; retaining architecture.',error)}={}){
  const loaded=new Map(),pending=new Map(),failed=new Set();let disposed=false,blue=null;
- function request(b){
-  const key=sacredModelKey(b);
+ function request(b,state){
+  const key=sacredModelKey(b,state);
   if(!key||disposed||loaded.has(key)||failed.has(key))return pending.get(key)||null;
   if(pending.has(key))return pending.get(key);
   const promise=loadModel(B,scene,'assets/art-courtyard/models/',SACRED_MODELS[key].file,scene,undefined,'.glb').then(container=>{
@@ -86,8 +106,8 @@ export function createSacredModels(B,scene,{onError=error=>console.warn('Sacred 
   }).catch(error=>{failed.add(key);if(!disposed)onError(error);return null;}).finally(()=>pending.delete(key));
   pending.set(key,promise);return promise;
  }
- return {request,key:sacredModelKey,ready(b){return loaded.has(sacredModelKey(b));},sources(b){return loaded.get(sacredModelKey(b))?.sources||null;},
-  fallback(b,m){if(b.type!=='ishtarGate')return null;if(!blue){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;}return createIshtarGateFallback(B,scene,m,blue,b);},
+ return {request,key:sacredModelKey,ready(b,state){return loaded.has(sacredModelKey(b,state));},sources(b,state){return loaded.get(sacredModelKey(b,state))?.sources||null;},
+  fallback(b,m,state){if(b.type!=='ishtarGate')return null;if(isStrictSumer(state))return createSumerGate(B,scene,m,b);if(!blue){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;}return createIshtarGateFallback(B,scene,m,blue,b);},
   idle(){return Promise.all([...pending.values()]);},
   dispose(){if(disposed)return;disposed=true;for(const {container} of loaded.values())container.dispose();loaded.clear();failed.clear();blue?.dispose();}
  };

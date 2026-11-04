@@ -1,3 +1,4 @@
+import {isStrictSumer} from '../scenario-profiles.js';
 import {workstationBuilding} from './workstations.js';
 import {createRoofAccess} from './roof-access.js';
 import {cropSeed,fieldCropKind} from './crop-varieties.js';
@@ -22,7 +23,7 @@ const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgr
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b)}:${organicHouseVariant(b)}`:'',foundationSignature(b,state,shoreContext)].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}`:'',foundationSignature(b,state,shoreContext)].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -56,7 +57,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
- const visualSignature=(b,state,shoreContext)=>gameBuildingSignature(b,state,shoreContext)+(sacredModels.ready(b)?'|sacred-ready':'');
+ const visualSignature=(b,state,shoreContext)=>gameBuildingSignature(b,state,shoreContext)+(sacredModels.ready(b,state)?'|sacred-ready':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
  function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
  function highlight(keys=[]){
@@ -111,7 +112,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   if(b.construction?.kind==='new'){
    sources=createConstructionSite(B,scene,b,materialSet,state);for(const mesh of sources)mesh.parent=root;
   }else if(isHouse(b)){
-   sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade});for(const mesh of sources)mesh.parent=root;
+   sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade},state);for(const mesh of sources)mesh.parent=root;
   }else{
    if(b.type==='field'||b.type==='bridge'||b.type==='house'||b.type==='canal'){
     const adapted=cropAssets&&usesBarleyCards(b)?{...b,crop:{...b.crop,sown:0}}:b;
@@ -120,22 +121,22 @@ export async function createGameBuildings(B,scene,materials,options={}){
     base.root.dispose();
    }else if(b.type==='musicHouse'){
     for(const mesh of createMusicCourtyard(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
-   }else if(sacredModels.sources(b)){
+   }else if(sacredModels.sources(b,state)){
     const {center,scale}=sacredModelTransform(b);
-    for(const source of sacredModels.sources(b)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
-   }else for(const mesh of sacredModels.fallback(b,materialSet)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
+    for(const source of sacredModels.sources(b,state)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
+   }else for(const mesh of sacredModels.fallback(b,materialSet,state)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
 
   }
   // Supplied stepped sanctuaries have real stair flights; the former flat-roof
   // ladder would pass through their terraces at the obsolete roof height.
-  if(!sacredModels.sources(b))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
+  if(!sacredModels.sources(b,state))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>clipField(mesh,b,state));
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
    for(let index=0;index<4;index++){
     const renewed=true,doorCentre=tier(b)===3?-.75:tier(b)===2?.2:0;
-    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
+    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b,state)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
   for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}
@@ -192,7 +193,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
    // Landscape owns connected canal beds, wetness, banks and construction.
    // The legacy standalone side walls would span across those real channels.
    if(b.type==='canal')continue;
-   sacredModels.request(b);
+   sacredModels.request(b,state);
    const key=buildingKey(b),signature=visualSignature(b,state,shoreContext);seen.add(key);
    let record=active.get(key);
    if(record&&(record.signature!==signature||record.x!==b.x||record.y!==b.y)){remove(key);record=null;}

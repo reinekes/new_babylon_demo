@@ -1,10 +1,11 @@
+import {isStrictSumer} from '../scenario-profiles.js';
 import {organicHousePoint,organicHouseVariant} from './field-shore.js';
 
 // Starter beehives are an artistic opening, not a reconstruction of a typical
 // third-millennium Sumerian house. Levels II/III use mudbrick courtyard masses.
-export const houseVisualKind=b=>b.starterHut&&Number(b.level||1)===1?'hut':`courtyard-${Math.max(1,Math.min(3,b.level||1))}`;
-export function createHouseArchitecture(B,scene,b,m){
- const groups=new Map(),variant=organicHouseVariant(b),kind=houseVisualKind(b);let serial=0;
+export const houseVisualKind=(b,state)=>!isStrictSumer(state)&&b.starterHut&&Number(b.level||1)===1?'hut':`courtyard-${Math.max(1,Math.min(3,b.level||1))}`;
+export function createHouseArchitecture(B,scene,b,m,state){
+ const groups=new Map(),variant=organicHouseVariant(b),kind=houseVisualKind(b,state);let serial=0;
  const add=(mesh,mat,name)=>{mesh.material=mat||m.plaster;mesh.metadata={housePart:name};if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
  const block=(name,x,y,z,w,h,d,mat=m.plaster)=>{
   const r=Math.min(.075,w*.15,d*.15),ring=[[-w/2+r,-d/2],[w/2-r,-d/2],[w/2,-d/2+r],[w/2,d/2-r],[w/2-r,d/2],[-w/2+r,d/2],[-w/2,d/2-r],[-w/2,-d/2+r]],p=[],indices=[],uv=[];

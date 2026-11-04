@@ -1,13 +1,14 @@
+import {isStrictSumer} from '../scenario-profiles.js';
 import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
 import {createMusicCourtyard} from './music-courtyard.js';
-import {createIshtarGateFallback} from './sacred-models.js';
+import {createIshtarGateFallback,createSumerGate} from './sacred-models.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
 // not reconstructions. One merged mesh per shared material and building template.
 export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market','musicHouse','ishtarGate']);
-export function createArchitecture(B,scene,b,m){
+export function createArchitecture(B,scene,b,m,state){
  if(b.type==='musicHouse')return createMusicCourtyard(B,scene,b,m);
- if(b.type==='ishtarGate')return createIshtarGateFallback(B,scene,m,null,b);
+ if(b.type==='ishtarGate')return isStrictSumer(state)?createSumerGate(B,scene,m,b):createIshtarGateFallback(B,scene,m,null,b);
  const canopies=[],groups=new Map(),level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
  let serial=0;const add=(mesh,mat)=>{mesh.material=mat||wall;if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
  // Bevelled corners, a slightly bowed middle and a battered top: this breaks
@@ -59,7 +60,7 @@ export function createArchitecture(B,scene,b,m){
   if(large){
    // Three front flights meet the first stage, as at Ur. Higher flights start
    // on the preceding terrace; every tread has a solid riser down to that deck.
-   const stages=[{z:1.6,w:10.8,d:8.4,base:0,h:3.25},{z:1.15,w:7.6,d:5.7,base:3.25,h:2.45},{z:.65,w:4.9,d:3.6,base:5.7,h:1.8}];
+   const stages=[{z:1.6,w:10.8,d:8.4,base:0,h:3.25},{z:1.15,w:7.6,d:5.7,base:3.25,h:2.45},{z:.65,w:4.9,d:3.6,base:5.7,h:1.8}].slice(0,isStrictSumer(state)?level:3);
    for(const [j,a]of stages.entries()){
     block(3,a.base+a.h/2,a.z,a.w,a.h,a.d,m.fired);
     for(const sign of [-1,1])for(let k=0;k<8-j;k++)block(3-a.w/2+.35+k*(a.w-.7)/(7-j),a.base+a.h/2,a.z+sign*a.d/2,.21,a.h*.86,.12,m.raw);
@@ -72,10 +73,10 @@ export function createArchitecture(B,scene,b,m){
    flight(-2.15,6.02,2.05,6.02,0,3.25,.8,16);
    flight(8.15,6.02,3.95,6.02,0,3.25,.8,16);
    block(3,3.125,5.94,2.2,.25,.65,m.fired);
-   flight(3,5.8,3,4.0,3.25,2.45,1.45,13);
-   flight(3,4.0,3,2.45,5.7,1.8,1.15,11);
-   const before=new Set([...groups.values()].flat());room(3,.48,2.7,2.4,2.9);
-   for(const parts of groups.values())for(const mesh of parts)if(!before.has(mesh))mesh.position.y+=7.5;
+   if(stages.length>1)flight(3,5.8,3,4.0,3.25,2.45,1.45,13);
+   if(stages.length>2)flight(3,4.0,3,2.45,5.7,1.8,1.15,11);
+   const top=stages.at(-1),before=new Set([...groups.values()].flat());room(3,.48,2.7,2.4,2.9);
+   for(const parts of groups.values())for(const mesh of parts)if(!before.has(mesh))mesh.position.y+=top.base+top.h;
    break;
   }
 

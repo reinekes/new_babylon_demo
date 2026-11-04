@@ -1,3 +1,4 @@
+import {isStrictSumer} from '../scenario-profiles.js';
 import {buildingKey} from '../definitions.js';
 import {houseLightCount} from '../households.js';
 import {footprintSize} from '../footprints.js';
@@ -37,14 +38,14 @@ function createFestivalLamps(B,scene){
  }
  function update(state,active){
   if(!active){lampCount=0;buildingCount=0;signature='';for(const mesh of meshes)if(mesh.isEnabled())mesh.setEnabled(false);return;}
-  const buildings=litFestivalBuildings(state),sig=buildings.map(b=>[b.type,b.x,b.y,b.level||1,b.rotation||0,footprintSize(b),!!b.starterHut].join(':')).join('|');
+  const buildings=litFestivalBuildings(state),sig=(isStrictSumer(state)?'sumer:':'legacy:')+buildings.map(b=>[b.type,b.x,b.y,b.level||1,b.rotation||0,footprintSize(b),!!b.starterHut].join(':')).join('|');
   if(sig!==signature){
    signature=sig;const positions=[];buildingCount=buildings.length;
    for(const b of buildings){
     const size=footprintSize(b),center=(size-1)*3,edge=size*3-.18,angle=(b.rotation||0)*Math.PI/2,c=Math.cos(angle),s=Math.sin(angle);
     const at=(x,y,z,ground=false)=>{const X=b.x*6+center+c*(x-center)+s*(z-center),Z=b.y*6+center-s*(x-center)+c*(z-center);positions.push({x:X,y:y+(ground?Math.max(0,surfaceElevation(X/6,Z/6,state)):0),z:Z});};
     for(const [x,z]of [[-edge,-edge],[edge,-edge],[-edge,edge],[edge,edge],[-.85,edge],[.85,edge]])at(center+x,.14,center+z,true);
-    const roof=roofAccessLayout(b);if(roof)for(const dz of [-.37,.37])at(roof.x-roof.side*.22,roof.height+.19,roof.z+dz);
+    const roof=roofAccessLayout(b,state);if(roof)for(const dz of [-.37,.37])at(roof.x-roof.side*.22,roof.height+.19,roof.z+dz);
    }
    lampCount=positions.length;if(lampCount&&!meshes.length)create();
    const offsets=[0,.23,.19,-.065];
