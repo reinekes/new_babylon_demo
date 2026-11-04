@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGameLandscape, landscapePlan, landscapeSignature, resourcePlacementSites} from '../game3d/landscape.js';
+import {createGameLandscape, landscapePlan, landscapeSignature, resourcePlacementSites,landscapeFallbackTufts} from '../game3d/landscape.js';
 import {createGame} from '../engine.js';
 import {terrain} from '../world.js';
 
@@ -135,6 +135,18 @@ test('main landscape never creates deposit text labels or dynamic text textures'
 import {floodplainTufts,tuftGeometry,riverbankGeometry,rectangularSiteGeometry} from '../game3d/nature.js';
 import {lakeDistance} from '../game3d/lake-shore.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
+test('loaded grass and reeds skip the discarded procedural tuft plan entirely',()=>{
+ const unreadable=new Proxy({}, {get(){throw Error('fully replaced fallback must not inspect terrain');}});
+ assert.deepEqual(landscapeFallbackTufts(unreadable,unreadable,{grass:[{}],reed:[{}]}),[]);
+});
+test('missing plant species retain the exact former procedural fallback',()=>{
+ const s=createGame({start:'established',seed:137}),before=JSON.stringify(s),roads=landscapePlan(s).roads,all=floodplainTufts(s,roads);
+ assert.ok(all.some(p=>p.kind==='grass')&&all.some(p=>p.kind==='reed'));
+ assert.deepEqual(landscapeFallbackTufts(s,roads,{}),all);
+ assert.deepEqual(landscapeFallbackTufts(s,roads,{grass:[{}]}),all.filter(p=>p.kind==='reed'));
+ assert.deepEqual(landscapeFallbackTufts(s,roads,{reed:[{}]}),all.filter(p=>p.kind==='grass'));
+ assert.equal(JSON.stringify(s),before);
+});
 test('volumetric floodplain colonies preserve dry open ground, foundations and real roads',()=>{
  const s=createGame({start:'established'}),plan=landscapePlan(s),before=JSON.stringify(s),a=floodplainTufts(s,plan.roads);
  assert.deepEqual(a,floodplainTufts(s,plan.roads));assert.ok(a.length>250);assert.ok(a.length<4000);

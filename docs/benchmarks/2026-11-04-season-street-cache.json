@@ -1,0 +1,3707 @@
+{
+  "release": "season-street-cache-20261104-2",
+  "beforeRevision": "dcf14d5dfbc249f9dc9dc787c7ff863775924a4b",
+  "afterRevision": "Code commit recorded in release snapshot",
+  "device": "Apple M5",
+  "browser": "Codex in-app browser id2",
+  "viewport": [
+    1280,
+    720
+  ],
+  "dpr": 2,
+  "quality": "high",
+  "renderBuffer": [
+    1920,
+    855
+  ],
+  "fixture": "seed137, world64, 200 residents/129 buildings, stocked food2000, simTime35",
+  "method": "80-second full app, HUD/autosave, 4x, details ready and10-second settling, no heavy tests during measurement; external user/system load uncontrolled. Means are not a claim of statistically stable FPS improvement.",
+  "runs": {
+    "before": {
+      "close": {
+        "fixture": "seed137-200-residents-129-buildings-start35",
+        "wallSeconds": 80.02020000001788,
+        "frames": 3928,
+        "fps": 49.08760537963067,
+        "frameP95": 33.39999999999418,
+        "frameMax": 549.8999999999942,
+        "longTasksAvailable": true,
+        "longTasks": [
+          {
+            "at": 3.0999999940395355,
+            "ms": 58
+          },
+          {
+            "at": 9983.200000017881,
+            "ms": 132
+          },
+          {
+            "at": 10115.800000011921,
+            "ms": 538
+          },
+          {
+            "at": 10795.200000017881,
+            "ms": 65
+          },
+          {
+            "at": 10995.59999999404,
+            "ms": 93
+          },
+          {
+            "at": 20306,
+            "ms": 54
+          },
+          {
+            "at": 20360.70000001788,
+            "ms": 51
+          },
+          {
+            "at": 24773.30000001192,
+            "ms": 313
+          },
+          {
+            "at": 27948.09999999404,
+            "ms": 67
+          },
+          {
+            "at": 28134.5,
+            "ms": 51
+          },
+          {
+            "at": 45908.09999999404,
+            "ms": 59
+          }
+        ],
+        "stages": [
+          {
+            "tag": "renderer",
+            "ms": 39.80000001192093,
+            "simTime": 35.015100000000004,
+            "tick": 0
+          },
+          {
+            "tag": "actors",
+            "ms": 56.80000001192093,
+            "simTime": 45,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 42.099999994039536,
+            "simTime": 45,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 104.59999999403954,
+            "simTime": 45,
+            "tick": 1
+          },
+          {
+            "tag": "simulation",
+            "ms": 37.599999994039536,
+            "simTime": 45.11670000000001,
+            "tick": 1
+          },
+          {
+            "tag": "landscape",
+            "ms": 412.7000000178814,
+            "simTime": 45.11670000000001,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 60.599999994039536,
+            "simTime": 45.11670000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 496,
+            "simTime": 45.11670000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 45.36670000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 45.416800000000016,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 41.70000001788139,
+            "simTime": 45.483500000000014,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 61.900000005960464,
+            "simTime": 45.483500000000014,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.70000001788139,
+            "simTime": 45.56490000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 45.61680000000002,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 69.7999999821186,
+            "simTime": 45.65020000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 90.69999998807907,
+            "simTime": 45.65020000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42,
+            "simTime": 45.80010000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 45.84820000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 45.400000005960464,
+            "simTime": 55.0168000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 48.19999998807907,
+            "simTime": 55.0668000000004,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 297.5,
+            "simTime": 59.48350000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 309.90000000596046,
+            "simTime": 59.48350000000045,
+            "tick": 1
+          },
+          {
+            "tag": "simulation",
+            "ms": 38.39999997615814,
+            "simTime": 62.58480000000049,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 62.6682000000005,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 38.400000005960464,
+            "simTime": 62.78430000000049,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 47.400000005960464,
+            "simTime": 62.78430000000049,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 43.5,
+            "simTime": 80.5515000000017,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 56.5,
+            "simTime": 80.5515000000017,
+            "tick": 1
+          }
+        ],
+        "sceneStart": {
+          "meshes": 6682,
+          "skeletons": 42,
+          "quality": "high",
+          "cameraRadius": 41.6,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "sceneEnd": {
+          "meshes": 8324,
+          "skeletons": 180,
+          "quality": "high",
+          "cameraRadius": 41.6,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "validSave": true,
+        "simTime": 114.65150000000693,
+        "tick": 2,
+        "population": 216,
+        "buildings": 129,
+        "viewport": [
+          1280,
+          720
+        ],
+        "dpr": 2,
+        "saveStatus": "●  Сохранено"
+      },
+      "overview": {
+        "fixture": "seed137-200-residents-129-buildings-start35",
+        "wallSeconds": 80.07109999999403,
+        "frames": 2426,
+        "fps": 30.298072587989683,
+        "frameP95": 50,
+        "frameMax": 616.7000000000116,
+        "longTasksAvailable": true,
+        "longTasks": [
+          {
+            "at": 3.0999999940395355,
+            "ms": 84
+          },
+          {
+            "at": 390.7999999821186,
+            "ms": 50
+          },
+          {
+            "at": 9976.09999999404,
+            "ms": 629
+          },
+          {
+            "at": 10606.199999988079,
+            "ms": 171
+          },
+          {
+            "at": 10777.799999982119,
+            "ms": 89
+          },
+          {
+            "at": 10873.5,
+            "ms": 58
+          },
+          {
+            "at": 10946.40000000596,
+            "ms": 91
+          },
+          {
+            "at": 11039.699999988079,
+            "ms": 57
+          },
+          {
+            "at": 11202.299999982119,
+            "ms": 103
+          },
+          {
+            "at": 11306.40000000596,
+            "ms": 60
+          },
+          {
+            "at": 11366.59999999404,
+            "ms": 54
+          },
+          {
+            "at": 11421.199999988079,
+            "ms": 59
+          },
+          {
+            "at": 11578.5,
+            "ms": 50
+          },
+          {
+            "at": 11629.199999988079,
+            "ms": 51
+          },
+          {
+            "at": 20374.5,
+            "ms": 68
+          },
+          {
+            "at": 20443,
+            "ms": 68
+          },
+          {
+            "at": 23491.69999998808,
+            "ms": 50
+          },
+          {
+            "at": 24822.79999998212,
+            "ms": 402
+          },
+          {
+            "at": 25226.40000000596,
+            "ms": 75
+          },
+          {
+            "at": 28559.5,
+            "ms": 51
+          },
+          {
+            "at": 33591.09999999404,
+            "ms": 54
+          },
+          {
+            "at": 46076.40000000596,
+            "ms": 103
+          },
+          {
+            "at": 55511.79999998212,
+            "ms": 57
+          },
+          {
+            "at": 79705.29999998212,
+            "ms": 54
+          },
+          {
+            "at": 79836.90000000596,
+            "ms": 176
+          },
+          {
+            "at": 80013.5,
+            "ms": 50
+          }
+        ],
+        "stages": [
+          {
+            "tag": "scene.render",
+            "ms": 55.19999998807907,
+            "simTime": 35.016600000000004,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 67.39999997615814,
+            "simTime": 35.016600000000004,
+            "tick": 0
+          },
+          {
+            "tag": "scene.render",
+            "ms": 39,
+            "simTime": 35.40000000000001,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 47.79999998211861,
+            "simTime": 35.40000000000001,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.79999998211861,
+            "simTime": 35.46670000000001,
+            "tick": 0
+          },
+          {
+            "tag": "simulation",
+            "ms": 57.5,
+            "simTime": 45.000200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "landscape",
+            "ms": 430.2999999821186,
+            "simTime": 45.000200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 48.5,
+            "simTime": 45.000200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 82.30000001192093,
+            "simTime": 45.000200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 562.5999999940395,
+            "simTime": 45.000200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 111.89999997615814,
+            "simTime": 45.250200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 39.099999994039536,
+            "simTime": 45.250200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 155.2000000178814,
+            "simTime": 45.250200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 44.099999994039536,
+            "simTime": 45.43360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 79.7000000178814,
+            "simTime": 45.43360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 55.30000001192093,
+            "simTime": 45.516900000000305,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 62.30000001192093,
+            "simTime": 45.58360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 88.7000000178814,
+            "simTime": 45.58360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 51.900000005960464,
+            "simTime": 45.68350000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 47.29999998211861,
+            "simTime": 45.75030000000032,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 78.59999999403954,
+            "simTime": 45.800200000000316,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 101.2999999821186,
+            "simTime": 45.800200000000316,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 55,
+            "simTime": 45.950200000000315,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 51.70000001788139,
+            "simTime": 46.01680000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 48.5,
+            "simTime": 46.0669000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 46.69999998807907,
+            "simTime": 46.13350000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 46.099999994039536,
+            "simTime": 46.18360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 46.60000002384186,
+            "simTime": 46.23350000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 48.80000001192093,
+            "simTime": 46.28360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 45.900000005960464,
+            "simTime": 46.33350000000031,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 38.79999998211861,
+            "simTime": 55.033600000000334,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 59.5,
+            "simTime": 55.033600000000334,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 64.59999999403954,
+            "simTime": 55.10020000000034,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 40.599999994039536,
+            "simTime": 55.166900000000325,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.29999998211861,
+            "simTime": 55.21690000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.69999998807907,
+            "simTime": 55.25020000000034,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 55.30020000000034,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 55.333000000000325,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 55.36690000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 55.41690000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.20000001788139,
+            "simTime": 55.45030000000034,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 55.48350000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.30000001192093,
+            "simTime": 55.533500000000316,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 55.56690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.29999998211861,
+            "simTime": 55.61690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 55.650200000000325,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 55.683500000000315,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 55.73360000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 55.76690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 55.81690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 55.85020000000033,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.400000005960464,
+            "simTime": 55.88350000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 55.933600000000325,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.900000005960464,
+            "simTime": 55.966900000000315,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 56.01690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.79999998211861,
+            "simTime": 56.05020000000033,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 56.10020000000033,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.80000001192093,
+            "simTime": 56.13350000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 56.16690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 56.21690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 56.300300000000334,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.79999998211861,
+            "simTime": 56.333600000000324,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 56.366900000000314,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.099999994039536,
+            "simTime": 56.41690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 56.45020000000033,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.80000001192093,
+            "simTime": 56.500200000000326,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.19999998807907,
+            "simTime": 56.56690000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 56.61680000000033,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.80000001192093,
+            "simTime": 56.70020000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 56.733600000000315,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.099999994039536,
+            "simTime": 56.78350000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.10000002384186,
+            "simTime": 56.8169000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.19999998807907,
+            "simTime": 56.85020000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.20000001788139,
+            "simTime": 56.90020000000032,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.89999997615814,
+            "simTime": 56.93360000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.60000002384186,
+            "simTime": 56.98360000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.89999997615814,
+            "simTime": 57.0169000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.70000001788139,
+            "simTime": 57.066900000000295,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.70000001788139,
+            "simTime": 57.100200000000314,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.70000001788139,
+            "simTime": 57.15020000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 57.183600000000304,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 57.2336000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 57.266800000000316,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.70000001788139,
+            "simTime": 57.30030000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.20000001788139,
+            "simTime": 57.35030000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.900000005960464,
+            "simTime": 57.382300000000306,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.599999994039536,
+            "simTime": 57.4336000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.400000005960464,
+            "simTime": 57.46690000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 57.516900000000284,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.29999998211861,
+            "simTime": 57.5502000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.20000001788139,
+            "simTime": 57.58350000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 57.6336000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 57.66690000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.70000001788139,
+            "simTime": 57.750300000000315,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 57.783600000000305,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.89999997615814,
+            "simTime": 57.816900000000295,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 57.86690000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 57.90020000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 57.95020000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 57.9835000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.099999994039536,
+            "simTime": 58.01690000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 58.06690000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 58.10020000000031,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 36.29999998211861,
+            "simTime": 58.150200000000304,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 44.599999994039536,
+            "simTime": 58.150200000000304,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 58.20030000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 58.23350000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.099999994039536,
+            "simTime": 58.28350000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 58.3502000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.400000005960464,
+            "simTime": 58.40030000000031,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 58.46690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.70000001788139,
+            "simTime": 58.51690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 58.550200000000295,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 58.583500000000285,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.80000001192093,
+            "simTime": 58.63360000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 58.66690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.30000001192093,
+            "simTime": 58.71690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 58.7502000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 58.800200000000295,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 58.83360000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 58.86690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.30000001192093,
+            "simTime": 58.9168000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 58.95010000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.099999994039536,
+            "simTime": 59.0002000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.599999994039536,
+            "simTime": 59.06690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.10000002384186,
+            "simTime": 59.11690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.80000001192093,
+            "simTime": 59.1502000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.10000002384186,
+            "simTime": 59.18360000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 59.23360000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 59.26690000000028,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 59.3168000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.60000002384186,
+            "simTime": 59.35020000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.30000001192093,
+            "simTime": 59.40020000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 59.43350000000028,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 386.80000001192093,
+            "simTime": 59.46690000000027,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 400,
+            "simTime": 59.46690000000027,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 52.10000002384186,
+            "simTime": 59.71690000000027,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 62,
+            "simTime": 59.71690000000027,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.5,
+            "simTime": 59.78400000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.599999994039536,
+            "simTime": 59.834800000000264,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 43.30000001192093,
+            "simTime": 59.868100000000254,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 59.91810000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 59.951500000000244,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 60.00150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.80000001192093,
+            "simTime": 60.03480000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 60.08480000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 60.11810000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 60.168200000000255,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 60.23480000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.900000005960464,
+            "simTime": 60.28480000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 60.31820000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.30000001192093,
+            "simTime": 60.36810000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 40.5,
+            "simTime": 60.40150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.30000001192093,
+            "simTime": 60.45150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.400000005960464,
+            "simTime": 60.53480000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 60.56820000000025,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 38,
+            "simTime": 60.60150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 46.599999994039536,
+            "simTime": 60.60150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.900000005960464,
+            "simTime": 60.65150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 60.70150000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 60.73490000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 60.76810000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 60.818200000000246,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 60.851500000000236,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 60.93480000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.900000005960464,
+            "simTime": 60.968200000000245,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42,
+            "simTime": 61.01810000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.79999998211861,
+            "simTime": 61.068100000000236,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39,
+            "simTime": 61.10150000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.099999994039536,
+            "simTime": 61.151500000000226,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.89999997615814,
+            "simTime": 61.184800000000244,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 61.23480000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.900000005960464,
+            "simTime": 61.268200000000235,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 41.30000001192093,
+            "simTime": 61.31810000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 43.30000001192093,
+            "simTime": 61.368100000000226,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.5,
+            "simTime": 61.40150000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 41.30000001192093,
+            "simTime": 61.451500000000216,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.099999994039536,
+            "simTime": 61.50150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.400000005960464,
+            "simTime": 61.53480000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 61.58480000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.70000001788139,
+            "simTime": 61.61820000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.69999998807907,
+            "simTime": 61.668100000000216,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 61.70150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.20000001788139,
+            "simTime": 61.751500000000206,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 61.93480000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 62.01820000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 62.11810000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.79999998211861,
+            "simTime": 62.318200000000225,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 41.39999997615814,
+            "simTime": 62.50150000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 62.80150000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 62.918200000000226,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 62.951500000000216,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42.099999994039536,
+            "simTime": 63.00150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 44.5,
+            "simTime": 63.05150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.900000005960464,
+            "simTime": 63.10150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 63.134800000000226,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.900000005960464,
+            "simTime": 63.18480000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 63.30140000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 63.36810000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 63.45150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 63.534800000000224,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 63.68480000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 40.30000001192093,
+            "simTime": 63.90140000000023,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 35.900000005960464,
+            "simTime": 63.95150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 45.900000005960464,
+            "simTime": 63.95150000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 64.03490000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 64.23480000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 64.33490000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 64.41810000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 64.53480000000023,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 64.83480000000021,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 64.8681000000002,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.20000001788139,
+            "simTime": 64.9181000000002,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 65.01820000000019,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 65.10150000000017,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 65.15150000000017,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 65.40150000000015,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 65.70150000000014,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.19999998807907,
+            "simTime": 66.06810000000011,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 66.10150000000012,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 66.51820000000012,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 67.0515000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 67.13490000000013,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42,
+            "simTime": 67.9349000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.599999994039536,
+            "simTime": 67.9849000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 40.89999997615814,
+            "simTime": 68.03480000000009,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 43.20000001788139,
+            "simTime": 68.08490000000009,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 41.80000001192093,
+            "simTime": 68.13480000000008,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 68.25150000000008,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 68.2849000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 68.3349000000001,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 68.56810000000007,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.89999997615814,
+            "simTime": 68.75150000000006,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.30000001192093,
+            "simTime": 68.86820000000007,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 68.95070000000007,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 69.13480000000006,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 69.53480000000005,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 69.83480000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 70.83479999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 70.88479999999998,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.20000001788139,
+            "simTime": 72.03479999999995,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 72.71819999999994,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 75.30149999999985,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 75.33479999999986,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.39999997615814,
+            "simTime": 77.75149999999974,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 86.19999998807907,
+            "simTime": 80.5680999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 98.90000000596046,
+            "simTime": 80.5680999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.19999998807907,
+            "simTime": 80.6680999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 80.7180999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 80.8181999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42.400000005960464,
+            "simTime": 80.90149999999959,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 82.31809999999953,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.099999994039536,
+            "simTime": 83.2514999999995,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 83.46809999999951,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.39999997615814,
+            "simTime": 84.81819999999944,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.39999997615814,
+            "simTime": 85.03479999999942,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 86.61819999999939,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 87.55149999999935,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 89.03489999999933,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.19999998807907,
+            "simTime": 89.13479999999932,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 90.00149999999927,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 90.05149999999927,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 106.21819999999894,
+            "tick": 2
+          },
+          {
+            "tag": "scene.render",
+            "ms": 38.80000001192093,
+            "simTime": 114.18479999999882,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 43.5,
+            "simTime": 114.18479999999882,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.20000001788139,
+            "simTime": 114.2514999999988,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 114.28479999999881,
+            "tick": 2
+          },
+          {
+            "tag": "scene.render",
+            "ms": 167,
+            "simTime": 114.31819999999881,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 172.90000000596046,
+            "simTime": 114.31819999999881,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 42.89999997615814,
+            "simTime": 114.5014999999988,
+            "tick": 2
+          }
+        ],
+        "sceneStart": {
+          "meshes": 6682,
+          "skeletons": 42,
+          "quality": "high",
+          "cameraRadius": 739.10423044749,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "sceneEnd": {
+          "meshes": 8291,
+          "skeletons": 177,
+          "quality": "high",
+          "cameraRadius": 739.10423044749,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "validSave": true,
+        "simTime": 114.5014999999988,
+        "tick": 2,
+        "population": 216,
+        "buildings": 129,
+        "viewport": [
+          1280,
+          720
+        ],
+        "dpr": 2,
+        "saveStatus": "●  Сохранено"
+      }
+    },
+    "after": {
+      "close": {
+        "fixture": "seed137-200-residents-129-buildings-start35",
+        "wallSeconds": 80.02370000001788,
+        "frames": 3751,
+        "fps": 46.873613691933286,
+        "frameP95": 33.40000000000873,
+        "frameMax": 400,
+        "longTasksAvailable": true,
+        "longTasks": [
+          {
+            "at": 2.800000011920929,
+            "ms": 54
+          },
+          {
+            "at": 9984.800000011921,
+            "ms": 111
+          },
+          {
+            "at": 10096.200000017881,
+            "ms": 392
+          },
+          {
+            "at": 10488.90000000596,
+            "ms": 51
+          },
+          {
+            "at": 10640,
+            "ms": 67
+          },
+          {
+            "at": 10837.800000011921,
+            "ms": 95
+          },
+          {
+            "at": 10933.300000011921,
+            "ms": 51
+          },
+          {
+            "at": 20225.30000001192,
+            "ms": 50
+          },
+          {
+            "at": 24611.40000000596,
+            "ms": 307
+          },
+          {
+            "at": 45755,
+            "ms": 61
+          },
+          {
+            "at": 55361.90000000596,
+            "ms": 79
+          },
+          {
+            "at": 55505.10000002384,
+            "ms": 50
+          }
+        ],
+        "stages": [
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 35.0167,
+            "tick": 0
+          },
+          {
+            "tag": "actors",
+            "ms": 39,
+            "simTime": 45,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 42.19999998807907,
+            "simTime": 45,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 85.19999998807907,
+            "simTime": 45,
+            "tick": 1
+          },
+          {
+            "tag": "simulation",
+            "ms": 38.19999998807907,
+            "simTime": 45.10009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "landscape",
+            "ms": 266.39999997615814,
+            "simTime": 45.10009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 63.10000002384186,
+            "simTime": 45.10009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 350.80000001192093,
+            "simTime": 45.10009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.099999994039536,
+            "simTime": 45.35009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 45.4,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 45.4333,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 41.80000001192093,
+            "simTime": 45.483399999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 65.09999999403954,
+            "simTime": 45.483399999999996,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 40.5,
+            "simTime": 45.5667,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 45.616699999999994,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 72.09999999403954,
+            "simTime": 45.65009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 92.80000001192093,
+            "simTime": 45.65009999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 44.400000005960464,
+            "simTime": 45.78339999999999,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 45.85,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 45.883399999999995,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 45.9167,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 45.95,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 46.0334,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.400000005960464,
+            "simTime": 55.033400000000356,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 47.10000002384186,
+            "simTime": 55.08340000000035,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 291,
+            "simTime": 59.46670000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 305.09999999403954,
+            "simTime": 59.46670000000042,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 45.400000005960464,
+            "simTime": 80.55010000000131,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 58.60000002384186,
+            "simTime": 80.55010000000131,
+            "tick": 1
+          },
+          {
+            "tag": "simulation",
+            "ms": 48.39999997615814,
+            "simTime": 90.1501000000021,
+            "tick": 2
+          },
+          {
+            "tag": "renderer",
+            "ms": 41.80000001192093,
+            "simTime": 90.30010000000209,
+            "tick": 2
+          }
+        ],
+        "sceneStart": {
+          "meshes": 6682,
+          "skeletons": 42,
+          "quality": "high",
+          "cameraRadius": 41.6,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "sceneEnd": {
+          "meshes": 8262,
+          "skeletons": 174,
+          "quality": "high",
+          "cameraRadius": 41.6,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "validSave": true,
+        "simTime": 114.80020000000589,
+        "tick": 2,
+        "population": 216,
+        "buildings": 129,
+        "viewport": [
+          1280,
+          720
+        ],
+        "dpr": 2,
+        "saveStatus": "●  Сохранено"
+      },
+      "overview": {
+        "fixture": "seed137-200-residents-129-buildings-start35",
+        "wallSeconds": 80.0395,
+        "frames": 2494,
+        "fps": 31.159614940123316,
+        "frameP95": 50,
+        "frameMax": 433.3999999999942,
+        "longTasksAvailable": true,
+        "longTasks": [
+          {
+            "at": 3.4000000059604645,
+            "ms": 85
+          },
+          {
+            "at": 252.80000001192093,
+            "ms": 185
+          },
+          {
+            "at": 9973.800000011921,
+            "ms": 432
+          },
+          {
+            "at": 10407.199999988079,
+            "ms": 109
+          },
+          {
+            "at": 10516.699999988079,
+            "ms": 55
+          },
+          {
+            "at": 10577.90000000596,
+            "ms": 52
+          },
+          {
+            "at": 10645.90000000596,
+            "ms": 83
+          },
+          {
+            "at": 10729.90000000596,
+            "ms": 53
+          },
+          {
+            "at": 10789.199999988079,
+            "ms": 53
+          },
+          {
+            "at": 10889.300000011921,
+            "ms": 108
+          },
+          {
+            "at": 10998.40000000596,
+            "ms": 55
+          },
+          {
+            "at": 11053.90000000596,
+            "ms": 50
+          },
+          {
+            "at": 11153.800000011921,
+            "ms": 53
+          },
+          {
+            "at": 11207.09999999404,
+            "ms": 53
+          },
+          {
+            "at": 11358.59999999404,
+            "ms": 50
+          },
+          {
+            "at": 20206.40000000596,
+            "ms": 65
+          },
+          {
+            "at": 20271.80000001192,
+            "ms": 65
+          },
+          {
+            "at": 24620,
+            "ms": 409
+          },
+          {
+            "at": 25030.19999998808,
+            "ms": 62
+          },
+          {
+            "at": 45884.90000000596,
+            "ms": 109
+          },
+          {
+            "at": 55333.09999999404,
+            "ms": 54
+          }
+        ],
+        "stages": [
+          {
+            "tag": "scene.render",
+            "ms": 56.70000001788139,
+            "simTime": 35.016699999999986,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 67.80000001192093,
+            "simTime": 35.016699999999986,
+            "tick": 0
+          },
+          {
+            "tag": "scene.render",
+            "ms": 177.19999998807907,
+            "simTime": 35.2833,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 182.19999998807907,
+            "simTime": 35.2833,
+            "tick": 0
+          },
+          {
+            "tag": "scene.render",
+            "ms": 35.5,
+            "simTime": 35.50000000000001,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.599999994039536,
+            "simTime": 35.50000000000001,
+            "tick": 0
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.19999998807907,
+            "simTime": 35.582199999999986,
+            "tick": 0
+          },
+          {
+            "tag": "simulation",
+            "ms": 55.39999997615814,
+            "simTime": 45.000300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "landscape",
+            "ms": 263.5,
+            "simTime": 45.000300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 44.5,
+            "simTime": 45.000300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 59.79999998211861,
+            "simTime": 45.000300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 369.09999999403954,
+            "simTime": 45.000300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "actors",
+            "ms": 60.60000002384186,
+            "simTime": 45.250300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 97.09999999403954,
+            "simTime": 45.250300000000365,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 52.80000001192093,
+            "simTime": 45.350200000000356,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 49.5,
+            "simTime": 45.41700000000037,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 56.60000002384186,
+            "simTime": 45.466900000000365,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 81.10000002384186,
+            "simTime": 45.466900000000365,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 50.70000001788139,
+            "simTime": 45.566900000000366,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 48.29999998211861,
+            "simTime": 45.61690000000036,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 82.09999999403954,
+            "simTime": 45.68370000000035,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 103.5,
+            "simTime": 45.68370000000035,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 49.80000001192093,
+            "simTime": 45.83370000000035,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 48.400000005960464,
+            "simTime": 45.90030000000036,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 45.19999998807907,
+            "simTime": 45.950300000000354,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 47.900000005960464,
+            "simTime": 46.00030000000035,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 46.19999998807907,
+            "simTime": 46.05030000000035,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 47.099999994039536,
+            "simTime": 46.100300000000345,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 45.60000002384186,
+            "simTime": 46.15020000000034,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 48.20000001788139,
+            "simTime": 46.20030000000035,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 37.099999994039536,
+            "simTime": 55.050300000000455,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 57,
+            "simTime": 55.050300000000455,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 59.19999998807907,
+            "simTime": 55.117000000000466,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.599999994039536,
+            "simTime": 55.183600000000474,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 55.21700000000047,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 55.267000000000465,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.20000001788139,
+            "simTime": 55.300300000000455,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 55.383700000000445,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 55.41690000000046,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 55.46690000000046,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 55.50030000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 55.55030000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.20000001788139,
+            "simTime": 55.58370000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 55.65030000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.60000002384186,
+            "simTime": 55.700300000000446,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 55.783700000000444,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 55.85030000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 55.90030000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 55.93360000000047,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 56.01700000000046,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.39999997615814,
+            "simTime": 56.05030000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 56.100300000000445,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 56.21690000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 56.25030000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.599999994039536,
+            "simTime": 56.29890000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 56.33370000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.39999997615814,
+            "simTime": 56.36700000000046,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.20000001788139,
+            "simTime": 56.417000000000456,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.79999998211861,
+            "simTime": 56.450300000000446,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 56.48370000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 56.53360000000046,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 56.567000000000455,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 56.61690000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 56.65030000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 56.683700000000435,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 56.73370000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 56.80030000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.79999998211861,
+            "simTime": 56.85030000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 56.88370000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 56.93370000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 56.967000000000446,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.30000001192093,
+            "simTime": 57.000300000000436,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 57.05030000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 57.08370000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.80000001192093,
+            "simTime": 57.133700000000424,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.20000001788139,
+            "simTime": 57.16700000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36,
+            "simTime": 57.20030000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.69999998807907,
+            "simTime": 57.25030000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 57.28360000000045,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 57.31700000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.60000002384186,
+            "simTime": 57.36700000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 57.40030000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.29999998211861,
+            "simTime": 57.43370000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 57.48370000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 57.517000000000436,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.099999994039536,
+            "simTime": 57.60030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 57.683700000000414,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 57.71700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 57.83360000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 57.86690000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 57.90030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 57.95030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 58.01700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.39999997615814,
+            "simTime": 58.06700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 58.150400000000424,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 58.183700000000414,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 58.21700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 35.70000001788139,
+            "simTime": 58.29930000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 44.20000001788139,
+            "simTime": 58.29930000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 58.34910000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 58.38370000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 58.417000000000435,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 58.46700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.60000002384186,
+            "simTime": 58.50030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 58.55030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.69999998807907,
+            "simTime": 58.58360000000044,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.599999994039536,
+            "simTime": 58.70030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 58.73370000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 58.76700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.400000005960464,
+            "simTime": 58.81700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 58.850300000000416,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.10000002384186,
+            "simTime": 58.90030000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 58.93360000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.20000001788139,
+            "simTime": 58.96690000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.39999997615814,
+            "simTime": 59.01700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 59.05030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 59.10040000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 59.183700000000414,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 59.21700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 59.25030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 59.30030000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 59.33370000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.5,
+            "simTime": 59.383600000000435,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.099999994039536,
+            "simTime": 59.41700000000043,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 394.10000002384186,
+            "simTime": 59.467000000000425,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 406.7000000178814,
+            "simTime": 59.467000000000425,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 42.30000001192093,
+            "simTime": 59.717000000000425,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 49.80000001192093,
+            "simTime": 59.717000000000425,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 36.400000005960464,
+            "simTime": 59.78360000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 44.70000001788139,
+            "simTime": 59.78360000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.400000005960464,
+            "simTime": 59.83360000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42.099999994039536,
+            "simTime": 59.867000000000424,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.400000005960464,
+            "simTime": 60.00030000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 60.033600000000426,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 60.06700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 60.150300000000406,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.60000002384186,
+            "simTime": 60.200400000000414,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 60.23360000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 60.31700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 60.35040000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.29999998211861,
+            "simTime": 60.400300000000406,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 60.4337000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 60.51700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 41,
+            "simTime": 60.583700000000405,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 60.6337000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 60.71700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 60.86700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.20000001788139,
+            "simTime": 61.1337000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.5,
+            "simTime": 61.16700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.900000005960464,
+            "simTime": 61.35030000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.599999994039536,
+            "simTime": 61.55030000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 62.28370000000041,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 35.20000001788139,
+            "simTime": 62.367000000000424,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 42.60000002384186,
+            "simTime": 62.367000000000424,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 62.66700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 62.850300000000416,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.39999997615814,
+            "simTime": 62.93370000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.60000002384186,
+            "simTime": 62.967000000000425,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.70000001788139,
+            "simTime": 63.000300000000415,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 63.04960000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.5,
+            "simTime": 63.100300000000416,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37,
+            "simTime": 63.217000000000425,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 63.30030000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.400000005960464,
+            "simTime": 63.333700000000405,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.79999998211861,
+            "simTime": 63.40040000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.900000005960464,
+            "simTime": 63.45030000000041,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.79999998211861,
+            "simTime": 63.59960000000043,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.60000002384186,
+            "simTime": 63.71700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.19999998807907,
+            "simTime": 63.933600000000425,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 41.79999998211861,
+            "simTime": 63.96700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 35.599999994039536,
+            "simTime": 64.01700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 43.5,
+            "simTime": 64.01700000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.60000002384186,
+            "simTime": 64.1003000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.69999998807907,
+            "simTime": 64.1503000000004,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.70000001788139,
+            "simTime": 64.23360000000042,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.19999998807907,
+            "simTime": 64.63370000000037,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 64.83360000000039,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38.39999997615814,
+            "simTime": 64.95030000000037,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 64.98370000000037,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.099999994039536,
+            "simTime": 65.06700000000038,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.5,
+            "simTime": 65.18370000000036,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.30000001192093,
+            "simTime": 65.25040000000037,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 65.81700000000036,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.29999998211861,
+            "simTime": 66.11680000000034,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 66.8503000000003,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.20000001788139,
+            "simTime": 67.15040000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 67.85030000000029,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 39.400000005960464,
+            "simTime": 68.05030000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 68.10040000000026,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.099999994039536,
+            "simTime": 68.41710000000025,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.70000001788139,
+            "simTime": 68.83370000000022,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.79999998211861,
+            "simTime": 68.91550000000024,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 70.81700000000018,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 38,
+            "simTime": 70.85040000000018,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 71.45040000000016,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.80000001192093,
+            "simTime": 71.55030000000014,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.29999998211861,
+            "simTime": 74.81700000000004,
+            "tick": 1
+          },
+          {
+            "tag": "scene.render",
+            "ms": 93.7000000178814,
+            "simTime": 80.56669999999977,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 106.10000002384186,
+            "simTime": 80.56669999999977,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.20000001788139,
+            "simTime": 80.68369999999977,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 37.900000005960464,
+            "simTime": 81.01699999999977,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.80000001192093,
+            "simTime": 83.5336999999997,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 35.30000001192093,
+            "simTime": 84.85039999999965,
+            "tick": 1
+          },
+          {
+            "tag": "renderer",
+            "ms": 36.900000005960464,
+            "simTime": 87.53379999999953,
+            "tick": 1
+          }
+        ],
+        "sceneStart": {
+          "meshes": 6682,
+          "skeletons": 42,
+          "quality": "high",
+          "cameraRadius": 739.10423044749,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "sceneEnd": {
+          "meshes": 8262,
+          "skeletons": 174,
+          "quality": "high",
+          "cameraRadius": 739.10423044749,
+          "canvas": [
+            1920,
+            855
+          ]
+        },
+        "validSave": true,
+        "simTime": 114.7003999999992,
+        "tick": 2,
+        "population": 216,
+        "buildings": 129,
+        "viewport": [
+          1280,
+          720
+        ],
+        "dpr": 2,
+        "saveStatus": "●  Сохранено"
+      }
+    }
+  },
+  "fixedStepRegression": {
+    "beforeStateSHA256": "4da0ee83495fca9dbd33d3bf600baab1dc34affa76152cbeb00fe26339a2b323",
+    "afterStateSHA256": "4da0ee83495fca9dbd33d3bf600baab1dc34affa76152cbeb00fe26339a2b323",
+    "beforePresentations": [
+      "5de376435a9bd55a248f686a1b69493038a47f5abcb5de91524ee4dcd72ff4b4"
+    ],
+    "afterPresentations": [
+      "5de376435a9bd55a248f686a1b69493038a47f5abcb5de91524ee4dcd72ff4b4"
+    ],
+    "seasons": 3,
+    "saveRoundTripsValid": true
+  },
+  "terrainGeometrySHA256": "0e695afaa967727625673447c7278a2381c74deb38a3f9f1898db742dae5d1b0",
+  "diagnosticLandscapeCpuMs": {
+    "original": 394.8,
+    "cachedStreets": 298.8,
+    "cachedAndSkipReplacedTufts": 261.6,
+    "note": "Separate20-second instrumented transition; JS CPU, not FPS or GPU completion"
+  },
+  "verification": {
+    "nodeTests": 1403,
+    "consoleErrorsFinalOverview": []
+  },
+  "limitations": [
+    "Only current M5 measured; older M2 not retested.",
+    "400/433ms worst frames remain; P0 not closed.",
+    "Existing street-cache contract assumes immutable world dimensions/river/lakes during gameplay."
+  ]
+}

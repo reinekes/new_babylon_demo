@@ -1,0 +1,212 @@
+{
+  "at": "2026-11-04T16:45:43.103258+00:00",
+  "commit": "dcf14d5dfbc249f9dc9dc787c7ff863775924a4b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d820a83b58230f3aecfbbd6bd4ccc761f1d98cd65e8ffab71140044e13cbc8f5",
+      "actual": "d820a83b58230f3aecfbbd6bd4ccc761f1d98cd65e8ffab71140044e13cbc8f5",
+      "match": true
+    },
+    {
+      "path": "README.md",
+      "status": 200,
+      "expected": "ed365ee81b3ca0320d3f9feb0e4016e7de8d60cd4241fd17c92f9a6b53aa6a0d",
+      "actual": "ed365ee81b3ca0320d3f9feb0e4016e7de8d60cd4241fd17c92f9a6b53aa6a0d",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "f9f3da05f3d8bde48768a2cbaaa7f944744ba6b5b7b0e0931cb4d25a980292fa",
+      "actual": "f9f3da05f3d8bde48768a2cbaaa7f944744ba6b5b7b0e0931cb4d25a980292fa",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "14b29ab8314c35d90bd97b3e7a1845e213da19743378e9b2417c5d67f802ca79",
+      "actual": "14b29ab8314c35d90bd97b3e7a1845e213da19743378e9b2417c5d67f802ca79",
+      "match": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "expected": "d548ee4c0cae03dbeae062ecaa89ed19c0d4cbb62646386d878beb5baf724d57",
+      "actual": "d548ee4c0cae03dbeae062ecaa89ed19c0d4cbb62646386d878beb5baf724d57",
+      "match": true
+    },
+    {
+      "path": "docs/MODEL_INDEX.md",
+      "status": 200,
+      "expected": "4f1fbb2caddb896da23126248bc41d80d344735d949a2224969692e37b9c8350",
+      "actual": "4f1fbb2caddb896da23126248bc41d80d344735d949a2224969692e37b9c8350",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_SEASON_SCENE_2026-11-04.md",
+      "status": 200,
+      "expected": "18920ca28ff4ae26c4357b7506cd797e83461029f6740051402cc6a0063549f1",
+      "actual": "18920ca28ff4ae26c4357b7506cd797e83461029f6740051402cc6a0063549f1",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-scene-budget.json",
+      "status": 200,
+      "expected": "ae5fb23d68c3660602b868310c0b30e8c92e87fed5fe662220ac00906c696a84",
+      "actual": "ae5fb23d68c3660602b868310c0b30e8c92e87fed5fe662220ac00906c696a84",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-season-scene-overview.jpg",
+      "status": 200,
+      "expected": "e3fc72f9a20ad82cf0d5ea48360bfb350233aee7f52fc6ea273c6aff2f8650c3",
+      "actual": "e3fc72f9a20ad82cf0d5ea48360bfb350233aee7f52fc6ea273c6aff2f8650c3",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "57d4c6a6272ae3d4da986faea29be7dd11697797538454ee648faf94bc7e9e62",
+      "actual": "57d4c6a6272ae3d4da986faea29be7dd11697797538454ee648faf94bc7e9e62",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-04-08.md",
+      "status": 200,
+      "expected": "1b6c2bbae24a38337e328ea0be1436e1c330eaf82b414fea2792b50285bcd0fe",
+      "actual": "1b6c2bbae24a38337e328ea0be1436e1c330eaf82b414fea2792b50285bcd0fe",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "79feaab698dfeead6249ae6f949f13fae7f38990dfa1a1511e9824077757c148",
+      "actual": "79feaab698dfeead6249ae6f949f13fae7f38990dfa1a1511e9824077757c148",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "cc3625d1b9ab3a3fe6908a3c937453a849ecc7a4efd3467d79992a2780bb61b8",
+      "actual": "cc3625d1b9ab3a3fe6908a3c937453a849ecc7a4efd3467d79992a2780bb61b8",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "expected": "37a414be3c82fce3b69d4e7587a595d66e840239368d24905e87d8de5b57a205",
+      "actual": "37a414be3c82fce3b69d4e7587a595d66e840239368d24905e87d8de5b57a205",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "640866798847b0f3e7fd596be9a1cd17dcccc220ce91d734138c5b2ebae4b6c8",
+      "actual": "640866798847b0f3e7fd596be9a1cd17dcccc220ce91d734138c5b2ebae4b6c8",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "4a4c38d9a3e85f1350baf95cb314ac0963516f8f51985a926a40ec4480e136f7",
+      "actual": "4a4c38d9a3e85f1350baf95cb314ac0963516f8f51985a926a40ec4480e136f7",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "9a43f227ca3da1c5e9a6255ebef78abefd38024216106aab330f59c0469ac30d",
+      "actual": "9a43f227ca3da1c5e9a6255ebef78abefd38024216106aab330f59c0469ac30d",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "ad85772cd3dc4ce062c598f404e1eb14ad28d63b0edec7ad51d204b62db186db",
+      "actual": "ad85772cd3dc4ce062c598f404e1eb14ad28d63b0edec7ad51d204b62db186db",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f0d91055f2a3441f7bf37f5509a09a0d9f033b2bd737ecd5b9351861f92355d6",
+      "actual": "f0d91055f2a3441f7bf37f5509a09a0d9f033b2bd737ecd5b9351861f92355d6",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-model-index.md",
+      "status": 200,
+      "expected": "ca204047a517e6d3e070e87b4a6e18f1bf686fb7e8dbb6049e908eb356c51a3e",
+      "actual": "ca204047a517e6d3e070e87b4a6e18f1bf686fb7e8dbb6049e908eb356c51a3e",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-season-scene.md",
+      "status": 200,
+      "expected": "2368d99f1c5e01c9a5bb5e334fa3d472fbdf016ff9bf05fa542e90640f5d4c88",
+      "actual": "2368d99f1c5e01c9a5bb5e334fa3d472fbdf016ff9bf05fa542e90640f5d4c88",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9e20e66cc51dad29403a0c3b2e64fe562b7fe46353921659a5f1ae0813a79269",
+      "actual": "9e20e66cc51dad29403a0c3b2e64fe562b7fe46353921659a5f1ae0813a79269",
+      "match": true
+    },
+    {
+      "path": "roadmap/tests/app.test.mjs",
+      "status": 200,
+      "expected": "80c5f83306941c6ccd51a50fa67481bd9cccbfa45eb12f2f098bd0cf8780e179",
+      "actual": "80c5f83306941c6ccd51a50fa67481bd9cccbfa45eb12f2f098bd0cf8780e179",
+      "match": true
+    },
+    {
+      "path": "scripts/model-index.mjs",
+      "status": 200,
+      "expected": "9b1de041230141975d981d9ac605b45f9979102cd0ca290f81491b4094da8f52",
+      "actual": "9b1de041230141975d981d9ac605b45f9979102cd0ca290f81491b4094da8f52",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-season-browser-check.mjs",
+      "status": 200,
+      "expected": "172bad2a3dcf045d56d48a29ee04b800fdbddce51b42b48b066e5186238015d7",
+      "actual": "172bad2a3dcf045d56d48a29ee04b800fdbddce51b42b48b066e5186238015d7",
+      "match": true
+    },
+    {
+      "path": "tests/district3d-terrain.test.js",
+      "status": 200,
+      "expected": "694b627ad403f977f155ae6e52b24f4ad95e8d42992174c01857dea06da34544",
+      "actual": "694b627ad403f977f155ae6e52b24f4ad95e8d42992174c01857dea06da34544",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-actors.test.js",
+      "status": 200,
+      "expected": "ba9fe818a6f52bdaa46f772ee545ba4b8f589b77be36a05ffa011adc81d99343",
+      "actual": "ba9fe818a6f52bdaa46f772ee545ba4b8f589b77be36a05ffa011adc81d99343",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "cb8d54f8be3a6c524aeacdfb8dd23dd6b387303c8aa1fe825d4c3af693a2a736",
+      "actual": "cb8d54f8be3a6c524aeacdfb8dd23dd6b387303c8aa1fe825d4c3af693a2a736",
+      "match": true
+    },
+    {
+      "path": "tests/model-index.test.js",
+      "status": 200,
+      "expected": "c0fbbe47e95d9a872cc818c3a23d315210a08ca87a580b4b6887fbef23db0c2d",
+      "actual": "c0fbbe47e95d9a872cc818c3a23d315210a08ca87a580b4b6887fbef23db0c2d",
+      "match": true
+    }
+  ],
+  "matched": 29,
+  "total": 29
+}

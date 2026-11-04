@@ -1,6 +1,7 @@
 import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from '../game3d/atmosphere.js';
 import {worldWidth,worldHeight,river,riverAxis,riverLength,riverAcrossSize,worldFromRiver,signedRiverDistance,riverFlowVector} from '../world.js';
 import {generateStreets} from '../city-life.js';
+import {cachedStreetsFor} from '../workforce.js';
 import {RIVER_BANK_SECTION,riverRows,riverStepsPerTile,SCENERY_MARGIN} from './river-profile.js';
 
 export const TILE = 6;
@@ -27,7 +28,7 @@ export function surfaceElevation(x,y,s) {
   return nearBuilding?0:dune;
 }
 export function districtRoadEdges(s) {
-  return generateStreets([...(s?.buildings||[]),...(s?.roadAnchors||[])],s).edges;
+  return (cachedStreetsFor(s)||generateStreets([...(s?.buildings||[]),...(s?.roadAnchors||[])],s)).edges;
 }
 
 // Grass/obstacle masks only depend on roads within .24 tiles. Keep source order
