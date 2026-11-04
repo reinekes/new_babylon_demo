@@ -2,7 +2,7 @@
 date: 2026-11-04
 type: completion
 release: season-street-cache-20261104-2
-commit: pending
+commit: e32709256df385595ec752d535f2f53d5a329501
 publication: pending
 groups: performance; graphics
 completed: -
