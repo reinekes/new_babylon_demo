@@ -1,3 +1,4 @@
+import {preparedFisherInspiration,acceptFisherInspiration} from './miracle-discovery.js';
 import {discardFishingOutput} from './cat-fishing-ledger.js';
 import {godhoodInspirationReason,firstBuilderInspiration,acceptGodhoodInspiration} from './godhood.js';
 import {relicControlActive,relicCommandReason} from './relic-quest.js';
@@ -158,13 +159,13 @@ if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.
 }
 
 export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';const knowledge=godhoodInspirationReason(s,c,profession);if(knowledge)return knowledge;if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
-export function inspirationSuccessChance(s,c,profession){return c?(firstBuilderInspiration(s,c,profession)?1:inspirationChance(c,profession)):0;}
+export function inspirationSuccessChance(s,c,profession){return c?((firstBuilderInspiration(s,c,profession)||preparedFisherInspiration(s,c,profession))?1:inspirationChance(c,profession)):0;}
 export function inspireCitizen(s,id,profession){
  const reason=inspirationReason(s,id,profession);if(reason)return {ok:false,reason,message:reason};
  s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
  const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),success=s.rngState/4294967296<inspirationSuccessChance(s,subject,profession);
  registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);
- if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;acceptGodhoodInspiration(s,c,profession);if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
+ if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;acceptGodhoodInspiration(s,c,profession);acceptFisherInspiration(s,c,profession);if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
  recordInspirationOutcome(s,s.citizens.find(c=>c.id===id),success);
  const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};
 }

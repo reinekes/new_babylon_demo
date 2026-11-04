@@ -1,3 +1,4 @@
+import {preparedFisherInspiration} from './miracle-discovery.js';
 import {buildingKey} from './definitions.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
@@ -32,7 +33,7 @@ export function buildingKnowledgeReason(s,type,level=1){
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Пока никто не признал твоё присутствие';const need=['rain','bless','peace'].includes(id)?1:['inannaProtection','relicAwakening','earthMemory'].includes(id)?3:2;return godhoodView(s).builderLevel>=need?'':`Чудо откроется с мастером ${['','I','II','III'][need]} уровня`;}
-export function godhoodInspirationReason(s,c,profession){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Сначала помоги первому человеку заметить присутствие бога';if(!knowsPresence(s,c))return 'Этот человек ещё не признал присутствие бога: помоги ему увидеть дело общины';return '';}
+export function godhoodInspirationReason(s,c,profession){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Сначала помоги первому человеку заметить присутствие бога';if(!knowsPresence(s,c)&&!preparedFisherInspiration(s,c,profession))return 'Этот человек ещё не признал присутствие бога: помоги ему увидеть дело общины';return '';}
 export function firstBuilderInspiration(s,c,profession){return isAwakening(s)&&profession==='builder'&&s.godhood.stage==='recognized'&&!s.godhood.firstBuilderGift&&s.godhood.witnessId===c.id;}
 export function acceptGodhoodInspiration(s,c,profession){if(!s.godhood||!isAwakening(s))return;if(profession==='builder'){c.builderSkill??={level:1,projects:0};if(c.id===s.godhood.witnessId)s.godhood.firstBuilderGift=true;}}
 export function canLeadConstruction(s,c,b){return !isAwakening(s)||c&&c.age>=16&&c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=knowledgeTier(b.type,b.construction?.target||b.level||1);}
