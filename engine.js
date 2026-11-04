@@ -1,4 +1,4 @@
-import {initializeCatDiscovery,validateCatDiscovery} from './miracle-discovery.js';
+import {initializeCatDiscovery,validateCatDiscovery,miraclePrice} from './miracle-discovery.js';
 import {initializeCatFishing,validateCatFishing,usesCatDiscovery} from './cat-fishing-ledger.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {legacyScenario,validateScenario,isStrictSumer} from './scenario-profiles.js';
@@ -120,15 +120,17 @@ export function yieldSummary(s,b){
 export function miracle(s,id,target){
  if((s.miracleCelebration||['cat','fertility'].includes(id))&&miracleCelebrationReason(s))return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};const lock=miracleKnowledgeReason(s,id)||miracleLockReason(s,id);if(lock)return {ok:false,reason:lock};
- const m=MIRACLES[id];if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<m.cost)return {ok:false,reason:`Нужно ${m.cost} веры`};if(id==='cat'&&catReason(s))return {ok:false,reason:catReason(s)};if(id==='abundance'&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
+ const m=MIRACLES[id],price=miraclePrice(s,id);if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<price)return {ok:false,reason:`Нужно ${price} веры`};if(id==='cat'&&catReason(s))return {ok:false,reason:catReason(s)};if(id==='abundance'&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
  if(s.funeral&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
  if(['bless','healing'].includes(id)&&s.population>=s.capacity&&s.happiness>=100)return {ok:false,reason:'Город уже счастлив; для новых жителей нужны дома'};
  if(['cat','fertility'].includes(id)){const reason=miracleCelebrationTargetReason(s,id==='fertility'?target:null);if(reason)return {ok:false,reason};}
  if(id==='fertility'&&!startMiracleCelebration(s,id,{center:target}))return {ok:false,reason:'Нет безопасного места для церемонии'};
- s.resources.faith-=m.cost;s.cooldowns[id]=m.cooldown;s.miracleCount++;
+ if(id==='cat'&&!bringCat(s))return {ok:false,reason:'Нет безопасного двора для кошки'};
+ if(id==='cat'&&usesCatDiscovery(s)&&s.catDiscovery.trial==='ready'){s.catDiscovery.trial='spent';s.catDiscovery.usedAt=s.simTime;}
+ s.resources.faith-=price;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
  const oldName=s.name;registerMiracle(s,m.domain);
- if(id==='cat'){const first=!s.pests.cats.length;bringCat(s);log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
+ if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
  if(id==='rain'){if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
  if(id==='abundance')s.resources.food=Math.min(storage(s),s.resources.food+45);
  if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
