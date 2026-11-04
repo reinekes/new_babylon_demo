@@ -1,3 +1,4 @@
+import {createNewCity} from './new-game.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {createUrukInterface} from './ui-uruk.js';
 import {createMonthNotice} from './ui-calendar.js';
@@ -60,7 +61,7 @@ import {weatherAt} from './environment.js';
 import {setCitizenRole,assignGuard,assignWorkplace,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites} from './construction.js';
-import {createGame,BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,levelOf,outputMultiplier} from './definitions.js';
@@ -78,7 +79,7 @@ let inspectedDeposit=null,inspectedPerson=null,roadMode=false,householdTab='fami
 const desiredRoles=new Map();
 const entityAt=(x,y)=>state.buildings.find(b=>b.x===x&&b.y===y)||(state.roads||[]).find(b=>b.x===x&&b.y===y);
 const entityName=b=>b.type==='road'?'Участок дороги':buildingDefinition(state,b.type).name;
-let state=createGame(),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
+let state=createNewCity(),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
 try{const raw=localStorage.getItem(key);if(raw){const saved=decode(raw);if(saved){state=saved;loaded=true;if(JSON.parse(raw).version<22)legacyRaw=raw;}else corrupt=true;}}catch{storageOK=false;}
 const saveLibrary=createSaveLibrary();
 let savesUI=null,switchingCity=false,citySwitchRevision=0;
@@ -451,7 +452,7 @@ async function replaceCity(next,{fresh=false}={}){
 async function newGame(mode){
  if(switchingCity)return;
  const buttons=[...document.querySelectorAll('[data-new-mode]')];for(const button of buttons)button.disabled=true;
- try{let seed=globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??(Date.now()>>>0);if(seed===state.world?.seed)seed=(seed+1)>>>0;await replaceCity(createGame({mode,seed}),{fresh:true});}
+ try{let seed=globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??(Date.now()>>>0);if(seed===state.world?.seed)seed=(seed+1)>>>0;await replaceCity(createNewCity({mode,seed}),{fresh:true});}
  catch(error){toast(`Новая игра не начата: ${error.message}`);for(const button of buttons)button.disabled=false;}
 }
 function showSaves(){

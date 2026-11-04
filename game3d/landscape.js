@@ -91,6 +91,7 @@ export function groundStocks(s,net,topologySignature=landscapeSignature(s)){
 }
 
 export async function createGameLandscape(B,scene,initialState,materials,options={}){
+ let currentState=initialState;
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map();
  let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='';
  const color=(r,g,b)=>new B.Color3(r,g,b);
@@ -229,7 +230,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(const p of cargoLayout(stock,options)){const m=goods.sources.get(p.kind).createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=parent||null;m.position.set(origin.x+p.x,origin.y+p.y,origin.z+p.z);m.metadata={goods:{...p,supportY:origin.y+p.y}};add(m,collection);}
  }
  function updateStocks(s){const stocks=groundStocks(s,streetNetwork,signature),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:surfaceElevation(stocks.x,stocks.y,s),z:stocks.y*TILE});}
- const caravanView=options.deferOptional?createLazyFeature(()=>createTradeCaravan(B,scene,meshes,materials,goods,options),{required:(_s,c)=>!!c,onError:error=>console.warn('Caravan detail unavailable',error)}):await createTradeCaravan(B,scene,meshes,materials,goods,options);
+ const caravanView=options.deferOptional?createLazyFeature(()=>createTradeCaravan(B,scene,meshes,materials,goods,{...options,initialState:currentState}),{required:(_s,c)=>!!c,onError:error=>console.warn('Caravan detail unavailable',error)}):await createTradeCaravan(B,scene,meshes,materials,goods,{...options,initialState:currentState});
  const riverCraftView=createTradeRiverCraft(B,scene,meshes,materials,goods,options);
  function updateTrader(c,time){
   caravanView.update(currentState,c?.river?null:c,time);
@@ -255,6 +256,6 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(let i=meshes.length-1;i>=0;i--)if(meshes[i].isDisposed?.())meshes.splice(i,1);
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);
  }
- let night=0,currentState=initialState;update(initialState,initialState.simTime||0);
+ let night=0;update(initialState,initialState.simTime||0);
  return {get waterMaterial(){return waterView.material;},meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
 }

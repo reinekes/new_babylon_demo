@@ -29,7 +29,7 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  listen(resources,'click',()=>{const expanded=!body.classList.contains('uruk-resources-open');close();opener=resources;body.classList.toggle('uruk-resources-open',expanded);resources.setAttribute('aria-expanded',String(expanded));});
  listen(badge,'click',()=>open('story',badge));
  listen(d,'keydown',event=>{if(event.key==='Escape'&&!d.querySelector('dialog[open]'))close({restoreFocus:true});});
- listen(d.querySelector('#buildings'),'click',event=>{const card=event.target.closest('.building-card');if(card&&!card.disabled){close();$('city').focus();}});
+ listen(d.querySelector('#buildings'),'click',event=>{if(event.target.closest('.building-info')){close();$('tile-detail')?.querySelector('.detail-close')?.focus();return;}const card=event.target.closest('.building-card');if(card&&!card.disabled){close();$('city').focus();}});
  listen(menu,'click',event=>{if(event.target.closest('.management-nav button,.header-actions button,.header-actions a')){const dialog=d.querySelector('dialog[open]');if(dialog)dialogReturnTarget=opener;close({restoreFocus:!dialog});}});
  listen($('dialog'),'close',()=>{dialogReturnTarget?.focus();dialogReturnTarget=null;});
  refresh();return {open,close,refresh,selectBuildGroup,dispose(){for(const remove of listeners)remove();}};

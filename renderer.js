@@ -93,14 +93,16 @@ export class Renderer{
   c.fillStyle='#5d614632';c.beginPath();c.ellipse(-2*q,5*q,15*q,4*q,0,0,7);c.fill();
   for(const [x,offset]of [[-10,1],[0,-1]]){this.line([[x*q,-3*q],[(x+step*offset*2)*q,8*q]],'#8a7353',2*q);this.line([[(x+4)*q,-2*q],[(x+4-step*offset*2)*q,9*q]],'#a58b63',1.8*q);}
   c.fillStyle='#b59b71';c.beginPath();c.ellipse(-4*q,-5*q-bob,12*q,6*q,0,0,7);c.fill();
-  this.line([[5*q,-6*q-bob],[9*q,-20*q-bob],[16*q,-20*q-bob]],'#b59b71',5*q);
-  this.line([[12*q,-22*q-bob],[11*q,-26*q-bob]],'#92794f',1.4*q);
-  c.fillStyle='#655a40';c.beginPath();c.arc(16*q,-21*q-bob,.8*q,0,7);c.fill();
+  const donkey=isStrictSumer(this.state),head=donkey?11:20;
+  this.line([[5*q,-6*q-bob],[9*q,-head*q-bob],[16*q,-head*q-bob]],'#b59b71',donkey?4*q:5*q);
+  this.line([[12*q,-(head+2)*q-bob],[11*q,-(head+(donkey?9:6))*q-bob]],'#92794f',1.4*q);
+  if(donkey)this.line([[14*q,-(head+2)*q-bob],[15*q,-(head+9)*q-bob]],'#92794f',1.4*q);
+  c.fillStyle='#655a40';c.beginPath();c.arc(16*q,-(head+1)*q-bob,.8*q,0,7);c.fill();
   this.line([[-15*q,-6*q-bob],[-19*q,-3*q-bob]],'#8d7754',1.2*q);
   this.polygon([[-13*q,-9*q-bob],[2*q,-9*q-bob],[3*q,-1*q-bob],[-12*q,-1*q-bob]],'#ab705c');
   this.line([[-11*q,-8*q-bob],[1*q,-8*q-bob]],'#e4cea1',1.3*q);
   for(const [x,color]of [[-10,'#a4aa79'],[-3,'#d2b284']]){this.box(x*q,-9*q-bob,4*q,2*q,6*q,color,'#8d7953','#b8a074');this.line([[x*q,-14*q-bob],[x*q,-7*q-bob]],'#e7d6a6',.8*q);}
-  this.line([[17*q,-20*q-bob],[24*q,-3*q]],'#917e57',.7*q);
+  this.line([[17*q,-head*q-bob],[24*q,-3*q]],'#917e57',.7*q);
   c.restore();
   // The merchant and the animal share the same depth entry and simulation clock.
   const mx=p.x+facing*23*q,my=p.y+2*q;

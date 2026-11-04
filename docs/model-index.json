@@ -33,7 +33,7 @@
     },
     {
       "file": "game3d/caravan.js",
-      "sha256": "b6de8a584685f7e2cc8b096b08fb5a32acfa732f81750a6f058cadfb07f04dfa"
+      "sha256": "d4a0de69f92297dd6ffffc892f424cd7107ab5eacab29fa2591339f367fe44f3"
     },
     {
       "file": "game3d/crop-studio.js",
@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "ca18b8deb85d578dad938cbadad2eeeae2f2a9f9aa1d4b2c5abe0721f1609a84"
+      "sha256": "d4d69c9cf64b911bbd49930b0504afc508142483845dcc769a801d8c6ac7dd0a"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -69,7 +69,7 @@
     },
     {
       "file": "game3d/river-craft.js",
-      "sha256": "afd5876cb1c383e3f506330f60d74bd7c835beb8b78a7ccbc86c1ae5b53d11f1"
+      "sha256": "b581446b6f26ce33abef6ac08e2e3e8725cd4ad6f7b8413e588b0d7b2532b9e9"
     },
     {
       "file": "game3d/sacred-models.js",
@@ -192,8 +192,8 @@
     {
       "file": "ambient-donkey.glb",
       "status": "active",
-      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
-      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "purpose": "Декоративный осёл и вьючный караван строгой шумерской ветви с реальным stock; источник GLB общий.",
+      "classificationEvidence": "game3d/caravan.js|SUMER_CARAVAN_MODEL",
       "bytes": 4356268,
       "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
       "version": "dc6504da3ec7",
@@ -229,6 +229,12 @@
           "model": "ambient-donkey.glb",
           "file": "game3d/ambient-fauna.js",
           "line": 15,
+          "kind": "literal"
+        },
+        {
+          "model": "ambient-donkey.glb",
+          "file": "game3d/caravan.js",
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -302,7 +308,7 @@
     {
       "file": "caravan-camel.glb",
       "status": "active",
-      "purpose": "Наземный торговый караван с реальным stock; облик/верблюд художественно условны.",
+      "purpose": "Верблюд только прежней исторической ветви; в строгой ветви не запрашивается.",
       "classificationEvidence": "game3d/caravan.js|CARAVAN_MODELS",
       "bytes": 4713460,
       "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
@@ -327,7 +333,7 @@
         {
           "model": "caravan-camel.glb",
           "file": "game3d/caravan.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -335,7 +341,7 @@
     {
       "file": "caravan-merchant.glb",
       "status": "active",
-      "purpose": "Наземный торговый караван с реальным stock; облик/верблюд художественно условны.",
+      "purpose": "Купец только прежней ветви; адаптирован из средневекового источника. Строгая ветвь использует source-walk-male.",
       "classificationEvidence": "game3d/caravan.js|CARAVAN_MODELS",
       "bytes": 2044340,
       "sha256": "d27e2ab8720bda392d878484f7e9b1d575042fdc93db11428b5ad25883647d19",
@@ -359,7 +365,7 @@
         {
           "model": "caravan-merchant.glb",
           "file": "game3d/caravan.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -489,7 +495,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 132,
+          "line": 133,
           "kind": "literal"
         }
       ]
@@ -1518,7 +1524,7 @@
     {
       "file": "river-cargo-boat.glb",
       "status": "active",
-      "purpose": "Речной торговый визит и реальные партии груза; производная от современной реконструкции Viking boat.",
+      "purpose": "Речной визит только прежней ветви; производная от современной реконструкции Viking boat. Строгая лодка процедурная, эту GLB не запрашивает.",
       "classificationEvidence": "game3d/river-craft.js|RIVER_CRAFT_MODEL",
       "bytes": 947632,
       "sha256": "63a783f5a4af16bd733cf22155d2fb746d7b631c6890b05eaa2c88bfe6dcc9ec",
@@ -1539,7 +1545,7 @@
         {
           "model": "river-cargo-boat.glb",
           "file": "game3d/river-craft.js",
-          "line": 7,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -1547,7 +1553,7 @@
     {
       "file": "sacred-ishtar-gate.glb",
       "status": "active",
-      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "purpose": "Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.",
       "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
       "bytes": 742200,
       "sha256": "28a1d83f539191461acd9e1565ad2f8c11a590fa2c4d72c488a5bd8da654f3fa",
@@ -1576,7 +1582,7 @@
     {
       "file": "sacred-shrine-3.glb",
       "status": "active",
-      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "purpose": "Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.",
       "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
       "bytes": 808408,
       "sha256": "fe5378a54c4c42a45e2e3c08a130d3dd080219dc639b3527dc23e3e1290245b1",
@@ -1605,7 +1611,7 @@
     {
       "file": "sacred-ziggurat-1.glb",
       "status": "active",
-      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "purpose": "Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.",
       "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
       "bytes": 44496,
       "sha256": "c7896b1fc2901942327505bb595e536b50b7f4af804df5e846e78ee4908656fc",
@@ -1634,7 +1640,7 @@
     {
       "file": "sacred-ziggurat-3.glb",
       "status": "active",
-      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "purpose": "Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.",
       "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
       "bytes": 3424520,
       "sha256": "22b47280c8400788af91369b24eac2e8942ae040f55e5af9ae6aff6df992f7b2",
@@ -1859,6 +1865,12 @@
           "file": "game3d/actors.js",
           "line": 75,
           "kind": "reviewed-dynamic-expansion"
+        },
+        {
+          "model": "source-walk-male.glb",
+          "file": "game3d/caravan.js",
+          "line": 7,
+          "kind": "literal"
         }
       ]
     },

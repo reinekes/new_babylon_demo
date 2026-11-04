@@ -1,3 +1,5 @@
+import {isStrictSumer} from '../scenario-profiles.js';
+import {createSumerRiverHull} from './sumer-river-hull.js';
 import {loadModel} from './asset-loading.js';
 import {TILE} from '../district3d/terrain.js';
 import {bridgeSpanAt,riverLocal} from '../world.js';
@@ -23,7 +25,7 @@ export function riverCraftPose(s,c,time=0){
 // resolves, a rounded hull keeps the saved trade visible. Loading never writes
 // trade stock, sales, orders, port cargo or the simulation clock.
 export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={}){
- let asset=null,promise=null,disposed=false,root=null,copy=null,identity=null,detail=false,rig=null,furled=null,lastYaw=0,cargoSignature='';
+ let asset=null,promise=null,disposed=false,root=null,copy=null,identity=null,detail=false,rig=null,furled=null,lastYaw=0,cargoSignature='',bitumen=null;
  const parts=[],cargo=[],ownedMaterials=[];
  const register=m=>{m.isPickable=false;m.receiveShadows=true;meshes.push(m);parts.push(m);return m;};
  const forget=m=>{let i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);i=parts.indexOf(m);if(i>=0)parts.splice(i,1);m.dispose();};
@@ -33,8 +35,12 @@ export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={})
  function clear(){clearCargo();for(const m of parts.splice(0)){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}copy?.dispose?.();copy=null;root?.dispose();root=null;rig=null;furled=null;detail=false;}
  function material(name,hex){const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.95;m.metallic=0;ownedMaterials.push(m);return m;}
  const linen=material('river-craft-unbleached-furled-linen','#a18b60');
- function build(c){
+ function build(c,sumer){
   root=new B.TransformNode('actual-trade-caravan',scene);lastYaw=0;
+  if(sumer){
+   bitumen??=material('sumer-river-bitumen','#352b20');bitumen.backFaceCulling=false;bitumen.twoSidedLighting=true;
+   for(const mesh of createSumerRiverHull(B,scene,{...materials,bitumen})){mesh.parent=root;register(mesh);}detail=true;return;
+  }
   if(asset){copy=asset.instantiateModelsToScene(n=>'river-craft-'+n,false,{doNotInstantiate:true});for(const n of copy.rootNodes)n.parent=root;for(const m of root.getChildMeshes())register(m);rig=root.getDescendants().find(n=>n.name==='river-craft-RiverCraftLowerableRig')||null;detail=true;}
   else{
    const hull=B.MeshBuilder.CreateSphere('river-craft-loading-hull',{diameter:1,segments:12},scene);hull.parent=root;hull.position.y=-.05;hull.scaling.set(1.43,.5,6.1);hull.material=materials.wood;register(hull);
@@ -43,13 +49,13 @@ export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={})
   const spar=B.MeshBuilder.CreateCylinder('river-craft-lowered-mast',{height:3.6,diameter:.068,tessellation:6},scene);spar.rotation.x=Math.PI/2;spar.position.set(0,.24,-.1);spar.material=materials.wood;spar.parent=furled;register(spar);
   const cloth=B.MeshBuilder.CreateCylinder('river-craft-furled-sail',{height:1.15,diameter:.19,tessellation:12},scene);cloth.rotation.z=Math.PI/2;cloth.position.set(0,.23,-1.1);cloth.material=linen;cloth.parent=furled;register(cloth);
  }
- function update(s,c,time=s.simTime||0){if(disposed)return;const pose=riverCraftPose(s,c,time),key=pose?c.id||'current-river-visit':null;
-  if(key!==identity||(asset&&root&&!detail)){clear();identity=key;if(pose)build(c);}
-  if(!pose)return;if(!root)build(c);start();
+ function update(s,c,time=s.simTime||0){if(disposed)return;const sumer=isStrictSumer(s),pose=riverCraftPose(s,c,time),key=pose?(sumer?'sumer:':'legacy:')+(c.id||'current-river-visit'):null;
+  if(key!==identity||(!sumer&&asset&&root&&!detail)){clear();identity=key;if(pose)build(c,sumer);}
+  if(!pose)return;if(!root)build(c,sumer);if(!sumer)start();
   const sig=JSON.stringify(c.stock||{});if(sig!==cargoSignature){clearCargo();cargoSignature=sig;for(const p of riverCraftCargo(c.stock)){const source=goods.sources.get(p.kind);if(!source)continue;const m=source.createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(CARGO_SCALE);m.position.set(p.x,p.y,p.z);m.metadata={goods:{...p},riverCargo:true};cargo.push(register(m));}}
   if((c.route||[])[c.routeIndex||0]||!root.metadata)lastYaw=pose.yaw;
-  root.position.set(pose.x,pose.y,pose.z);root.rotation.set(0,lastYaw,pose.roll);if(rig)rig.setEnabled(!pose.lowered);furled.setEnabled(pose.lowered);
-  root.metadata={riverCraft:true,tradeId:c.id,detailLoaded:detail,loweredRig:pose.lowered,stockSignature:sig,draft:pose.draft,sourceArtisticAdaptation:'Gislinge 12th-century hull'};
+  root.position.set(pose.x,pose.y,pose.z);root.rotation.set(0,lastYaw,pose.roll);if(rig)rig.setEnabled(!pose.lowered);furled?.setEnabled(pose.lowered);
+  root.metadata={riverCraft:true,tradeId:c.id,detailLoaded:detail,loweredRig:pose.lowered,stockSignature:sig,draft:pose.draft,historicalProfile:sumer?'sumer-iii-v1':'legacy-v1',sourceArtisticAdaptation:sumer?'Ur-inspired bitumen/reed vessel; game interpretation':'Gislinge 12th-century hull'};
  }
  return {update,get ready(){return promise;},get root(){return root;},dispose(){if(disposed)return;disposed=true;clear();asset?.dispose();asset=null;for(const m of ownedMaterials)m.dispose();}};
 }

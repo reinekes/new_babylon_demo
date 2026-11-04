@@ -1,3 +1,4 @@
+import {isStrictSumer} from './scenario-profiles.js';
 import {riverPoint,riverLocal,riverFlowSign,signedRiverDistance,bridgeSpanAt} from './world.js';
 // Hand-drawn isometric forms use the same earth pigments as the rest of the city.
 export function drawHarbor(r,b,state){
@@ -44,10 +45,10 @@ export function drawTradeBoat(r,e){
  // Bundled timber on deck gives the heavy cargo a recognisable silhouette.
  for(let i=0;i<3;i++)r.line([[-16*q,(-5-i*1.4)*q],[-2*q,(-5-i*1.4)*q]],i%2?'#b8915b':'#9a774b',2*q);
  const folded=r.state?.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,r.state).y-along)<.65);
- if(!folded){r.line([[-1*q,-4*q],[-1*q,-37*q]],'#846b45',1.5*q);
+ if(!folded&&!isStrictSumer(r.state)){r.line([[-1*q,-4*q],[-1*q,-37*q]],'#846b45',1.5*q);
  r.polygon([[1*q,-36*q],[1*q,-17*q],[18*q,-21*q],[14*q,-34*q]],'#ead9b2');
  r.line([[1*q,-29*q],[15*q,-27*q]],'#c1a87a',.65*q);r.line([[1*q,-22*q],[17*q,-21*q]],'#c1a87a',.65*q);
- }else r.line([[-15*q,-7*q],[15*q,-7*q]],'#d2bd8d',3*q);
+ }else if(!isStrictSumer(r.state))r.line([[-15*q,-7*q],[15*q,-7*q]],'#d2bd8d',3*q);
  // Boatman with a pole; the local boat crew is not counted as city population.
  const stroke=r.reduce?0:Math.sin(t*2.5)*2;
  r.polygon([[-21*q,-15*q],[-17*q,-15*q],[-15*q,-6*q],[-22*q,-6*q]],'#748f84');

@@ -22,19 +22,21 @@ group('goat-authored-lod','optional','Авторская коза через API
 group('goat-authored goat','spare','Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.','assets/art-courtyard/ATTRIBUTION.md|## Goats');
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
 group('ambient-bull','active','Декоративный бык и коровы/телята молочного двора.','game3d/ambient-fauna.js|dairyHerd');
-group('ambient-dog ambient-donkey ambient-duck ambient-sheep-kenchoo imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
+group('ambient-dog ambient-duck ambient-sheep-kenchoo imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
 group('imported-goose imported-sky-birds','spare','Сохранённый импорт; ни одного имени в текущих runtime-путях загрузки.','assets/art-courtyard/ATTRIBUTION.md|Imported city fauna');
 group('sky-bird-single','optional','API декоративного полёта; main отключает includeSkyBirds. Небесные стаи main процедурные.','game3d/actors.js|includeSkyBirds:false');
 group('jackal','active','Шакалы похоронного обряда; художественная адаптация Wolf.','game3d/jackals.js|JACKAL_MODEL');
-group('caravan-merchant caravan-camel','active','Наземный торговый караван с реальным stock; облик/верблюд художественно условны.','game3d/caravan.js|CARAVAN_MODELS');
-group('river-cargo-boat','active','Речной торговый визит и реальные партии груза; производная от современной реконструкции Viking boat.','game3d/river-craft.js|RIVER_CRAFT_MODEL');
+group('caravan-merchant','active','Купец только прежней ветви; адаптирован из средневекового источника. Строгая ветвь использует source-walk-male.','game3d/caravan.js|CARAVAN_MODELS');
+group('caravan-camel','active','Верблюд только прежней исторической ветви; в строгой ветви не запрашивается.','game3d/caravan.js|CARAVAN_MODELS');
+group('ambient-donkey','active','Декоративный осёл и вьючный караван строгой шумерской ветви с реальным stock; источник GLB общий.','game3d/caravan.js|SUMER_CARAVAN_MODEL');
+group('river-cargo-boat','active','Речной визит только прежней ветви; производная от современной реконструкции Viking boat. Строгая лодка процедурная, эту GLB не запрашивает.','game3d/river-craft.js|RIVER_CRAFT_MODEL');
 group('adobe-courtyard','optional','Художественный двор courtyard.html; HOME_ASSET в buildings.js — неиспользуемая константа.','courtyard/app.js|model(\'adobe-courtyard\')');
 group('date-palm','fallback','Резерв основной valley-date-palm при ошибке; также художественный двор.','game3d/landscape.js|if(!palmSources.length)');
 group('valley-date-palm','active','Основные пальмы долины/лесозаготовок; также crop-studio.','game3d/valley-vegetation.js|palm:');
 group('valley-barley crop-emmer','active','Детали зрелых полей; при ошибке остаётся процедурный посев. Определение вида художественное.','game3d/field-crops.js|CROP_ASSET');
 group('valley-dry-grass-1 valley-dry-grass-2 valley-dry-grass-3 valley-reed-1 valley-reed-2 valley-reed-3 miracle-green-grass-1 miracle-green-grass-2 miracle-green-grass-3','active','Растительность обычной долины; зелёная трава также в чудесном саду.','game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS');
 group('miracle-birch-1 miracle-cactus-1 miracle-cactus-2 miracle-daisy-1 miracle-daisy-2 miracle-lilac-1 miracle-lilac-2 miracle-snowdrop-1 miracle-snowdrop-2','active','Только временный чудесный сад; фантазия, не обычная историческая флора.','game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS');
-group('sacred-ishtar-gate sacred-shrine-3 sacred-ziggurat-1 sacred-ziggurat-3','active','Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.','game3d/sacred-models.js|SACRED_MODELS');
+group('sacred-ishtar-gate sacred-shrine-3 sacred-ziggurat-1 sacred-ziggurat-3','active','Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.','game3d/sacred-models.js|SACRED_MODELS');
 group('festival-candle','active','Свеча Ночи огней; загрузка по потребности, процедурный резерв. Историческая условность.','game3d/festival-candles.js|festival-candle.glb');
 
 export function readGlb(bytes){

@@ -30,3 +30,9 @@ test('catalogue labels switch both ways without replacing buttons or losing focu
  card.focus();updateBuildingCardName(card,strict);assert.equal(card.querySelector('strong').textContent,'Врата Инанны');assert.match(info.getAttribute('aria-label'),/Инанны/);assert.equal(dom.window.document.activeElement,card);
  updateBuildingCardName(card,legacy);assert.equal(card.querySelector('strong').textContent,'Врата Иштар');assert.match(info.title,/Иштар/);
 });
+
+test('strict 2D transport drops the tall camel neck and boat sail while trade data stays untouched',async()=>{
+ const {Renderer}=await import('../renderer.js'),{drawTradeBoat}=await import('../waterfront-art.js'),s=createGame(),c={transport:'river',x:18,y:12,phase:'trading',route:[],stock:{food:50}},before=JSON.stringify([s,c]);
+ const capture=(strictBoat,boat)=>{const calls=[],ctx=new Proxy({},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)}),r=Object.create(Renderer.prototype);Object.assign(r,{ctx,state:{...s,scenario:strictBoat?strictScenario():legacyScenario()},s:1,reduce:true,point:()=>({x:0,y:0}),line:(...a)=>calls.push(['line',...a]),polygon:(...a)=>calls.push(['polygon',...a]),box(){}});if(boat)drawTradeBoat(r,c);else r.caravan({...c,transport:undefined});return calls;};
+ assert.match(JSON.stringify(capture(false,true)),/#ead9b2/);assert.doesNotMatch(JSON.stringify(capture(true,true)),/#ead9b2/);assert.notDeepEqual(capture(true,false),capture(false,false));assert.equal(JSON.stringify([s,c]),before);
+});
