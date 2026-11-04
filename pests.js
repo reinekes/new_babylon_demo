@@ -49,7 +49,7 @@ export function catReason(s){
  const routes=yards(s);return free.some(b=>routes.has(buildingKey(b)))?'':'У незащищённого хранилища нужен свободный сухой двор';
 }
 export function catTargetSite(s){syncPestSites(s);const routes=yards(s),site=s.pests.sites.filter(q=>routes.has(q.key)&&!s.pests.cats.some(c=>c.site===q.key)).sort((a,b)=>b.mice-a.mice)[0];return site?{key:site.key,...routes.get(site.key)[0]}:null;}
-export function bringCat(s){const target=catTargetSite(s),site=target&&s.pests.sites.find(q=>q.key===target.key);if(!site)return false;s.pests.cats.push({id:s.pests.nextCat++,site:site.key});const cat=s.pests.cats.at(-1),destination=pestActors(s).find(a=>a.id===`cat:${cat.id}`);startMiracleCelebration(s,'cat',{catId:cat.id,catDestination:destination});return true;}
+export function bringCat(s){const target=catTargetSite(s),site=target&&s.pests.sites.find(q=>q.key===target.key);if(!site)return false;s.pests.cats.push({id:s.pests.nextCat++,site:site.key});const cat=s.pests.cats.at(-1),destination=pestActors(s).find(a=>a.id===`cat:${cat.id}`);const started=startMiracleCelebration(s,'cat',{catId:cat.id,catDestination:destination});if(!started&&usesCatDiscovery(s)){s.pests.cats.pop();s.pests.nextCat--;return false;}return true;}
 const note=(s,title,text,kind)=>{s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);};
 export function advancePests(s,dt){
  syncPestSites(s);const routes=yards(s),activeGuards=new Set(s.citizens.filter(c=>c.guardPost&&c.work===c.guardPost&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id)).map(c=>c.guardPost));

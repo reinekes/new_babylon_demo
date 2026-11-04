@@ -19,7 +19,7 @@ export function createSeasonJump(s){
  const finishCelebrations=(force=false)=>{
   if(s.festival&&(force||s.festival.stage==='celebrating')){const kind=s.festival.occasion||'nightLights';if(skipFestival(s).ok)skipped.push(kind);}
   if(force&&s.firstBeerFeast?.status==='pending'){s.firstBeerFeast.status='skipped';skipped.push('firstBeer');}
-  if(s.miracleCelebration){skipped.push(s.miracleCelebration.kind);advanceMiracleCelebration(s,60);}
+  if(s.miracleCelebration){skipped.push(s.miracleCelebration.kind);advanceMiracleCelebration(s,s.miracleCelebration.duration);}
  };
  const snapshot=()=>({done:!!result,progress:Math.min(1,Math.max(0,(s.simTime-start)/DAY_SECONDS)),result});
  const fail=reason=>{result={ok:false,reason,skipped:[...new Set(skipped)]};return snapshot();};
