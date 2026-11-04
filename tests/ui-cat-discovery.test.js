@@ -28,3 +28,7 @@ test('miracle card updates every price and accessibility label between trial, pa
  s.catDiscovery.trial='spent';catalog.updateMiracleCard(details,s,'cat','Нужно 12 веры');assert.equal(details.querySelector('button').disabled,true);assert.match(details.querySelector('button').textContent,/12 веры/);assert.match(details.querySelector('.miracle-unavailable').textContent,/12 веры/);
  catalog.updateMiracleCard(details,createGame(),'cat','');assert.equal(details.querySelector('button').disabled,false);assert.equal(details.querySelector('.miracle-facts span').textContent,'12 веры');dom.window.close();
 });
+test('an existing fishery guides completion or delivery instead of asking for a duplicate hut',()=>{
+ const {s,c}=fixture(),b={type:'fishing',x:16,y:7,level:1,construction:{kind:'new'}};s.buildings.push(b);const {dom,root,controls}=domFor(s);let guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/Дострой/);assert.equal(guide.querySelector('[data-awakening-build="fishing"]'),null);
+ delete b.construction;controls.refresh();guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/хижина готова/i);assert.ok(guide.querySelector('[data-awakening-work]'));c.work='16,7';controls.refresh();guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/дождись.*приёмки/i);assert.equal(guide.querySelector('[data-awakening-build="fishing"]'),null);controls.dispose();dom.window.close();
+});

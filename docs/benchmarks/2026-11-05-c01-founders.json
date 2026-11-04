@@ -1,0 +1,26 @@
+{
+  "kind": "functional-simulation-acceptance",
+  "timeUnit": "simulation seconds; not CPU time, wall time or FPS",
+  "test": "tests/cat-founders.test.js",
+  "seed": 137,
+  "startFaith": 0,
+  "grants": 0,
+  "skippedEvents": [
+    "festival",
+    "riverGift",
+    "potterVisit",
+    "wellRepair"
+  ],
+  "signAt": 10.699999999999978,
+  "activeFishingAt": 134.09999999999593,
+  "threeCatchesAt": 245.0999999999885,
+  "deliveredFood": 20,
+  "earnedFaithAt": 595.1000000000619,
+  "openedAt": 655.1000000000752,
+  "initiator": 1,
+  "catsBefore": 0,
+  "cost": 0,
+  "catsAfter": 1,
+  "validSave": true,
+  "food": 142.25239999999403
+}

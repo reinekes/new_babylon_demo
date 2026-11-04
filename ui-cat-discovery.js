@@ -1,3 +1,4 @@
+import {isOperational,buildingKey} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
 import {inspirationReason,inspirationSuccessChance} from './management.js';
@@ -14,7 +15,10 @@ export function catDiscoveryHTML(s){
   if(s.godhood?.stage!=='recognized')return '';
   const people=s.citizens.filter(c=>c.age>=16),lessons=c=>s.catFishing?.lessons?.[c.id]||0;
   const c=people.find(c=>c.calling==='fisher'&&lessons(c)===3)||people.find(c=>c.id===s.catFishing?.candidateId)||[...people].sort((a,b)=>lessons(b)-lessons(a)||a.id-b.id).find(c=>lessons(c)>0);
-  if(!c)body='<p>Начни с рыбацкой хижины у воды. Рыбак должен добыть три собственных улова, а носильщики — доставить их на склад.</p><button data-awakening-build="fishing">Построить рыбацкую хижину</button>';
+  if(!c){
+   const fisheries=s.buildings.filter(b=>b.type==='fishing'),ready=fisheries.filter(isOperational),staffed=ready.some(b=>s.citizens.some(person=>person.work===buildingKey(b)||person.workplace===buildingKey(b)));
+   body=!fisheries.length?'<p>Начни с рыбацкой хижины у воды. Рыбак должен добыть три собственных улова, а носильщики — доставить их на склад.</p><button data-awakening-build="fishing">Построить рыбацкую хижину</button>':!ready.length?'<p>Дострой рыбацкую хижину: строителю нужны доставленные материалы и время. Затем рыбаки смогут добывать свои первые уловы.</p>':staffed?'<p>Рыбаки назначены к хижине. Дождись настоящего улова и его приёмки складом: рыба у хижины ещё не засчитана.</p>':'<p>Рыбацкая хижина готова. Проверь производственную работу жителей: нужны три собственных улова и их доставка на склад.</p><button data-awakening-work>Проверить работу хижины</button>';
+  }
   else if(lessons(c)<3)body=`<p>${residentLinkHTML(s,c)} · принято уловов ${lessons(c)} из 3. Важно дождаться доставки на склад: рыба у хижины ещё не засчитана.</p>`;
   else if(c.calling!=='fisher'){
    const reason=inspirationReason(s,c.id,'fisher'),guaranteed=preparedFisherInspiration(s,c,'fisher');

@@ -1,3 +1,4 @@
+import {fishingWaterTargets,validFishingWaterTarget} from './fishing-water.js';
 import {manualGatheringActivity} from './manual-gathering.js';
 import {naturalAnimalsFor} from './fauna.js';
 import {catPettingPairs} from './pests.js';
@@ -30,7 +31,7 @@ function newJob(s,c,b,origin){
   const prey=naturalAnimalsFor(s).filter(a=>a.kind==='gazelle'&&!reserved.has(a.id)&&!killed.has(a.id)&&distance(origin,a)<6).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const a of prey){const p=stance(s,c,a,.65);if(p){target={id:a.id,kind:a.kind,x:a.x,y:a.y};stand=p;break;}}
  }else if(b.type==='fishing'){
-  const fish=naturalAnimalsFor(s).filter(a=>a.kind==='fish'&&!reserved.has(a.id)&&distance(origin,a)<3).sort((a,b)=>distance(c,a)-distance(c,b));
+  const fish=[...naturalAnimalsFor(s),...fishingWaterTargets(s,origin)].filter(a=>a.kind==='fish'&&!reserved.has(a.id)&&distance(origin,a)<3).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const a of fish){
    // Walk to an actual dry bank, then cast a plain line into visible water.
    for(let d=.23;d<1.7&&!stand;d+=.09)for(let i=0;i<12;i++){const p=pointNear(s,a,d,i*Math.PI/6);if(clearGround(s,p)&&gatheringPathClear(s,c,p)&&g.jobs.every(j=>distance(j.stand,p)>.18)){stand=p;break;}}
@@ -88,6 +89,7 @@ export function validateGathering(s){
   if(!Number.isInteger(j.citizen)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work)||typeof j.work!=='string'||!s.buildings.some(b=>buildingKey(b)===j.work&&b.type===j.kind)||!GATHERING_TYPES.includes(j.kind)||!point(j.target)||typeof j.target.id!=='string'||!point(j.stand)||!point(j.origin)||!['approach','working','return'].includes(j.stage)||!finite(j.progress,0,1))return true;
   if(!clearGround(s,j.stand)||!gatheringPathClear(s,j.origin,j.stand))return true;
   if(kindFor[j.kind])return !g.features.some(f=>f.id===j.target.id&&f.kind===kindFor[j.kind]&&f.health>0&&f.x===j.target.x&&f.y===j.target.y);
+  if(j.kind==='fishing'&&j.target.id.startsWith('fish:water:'))return !validFishingWaterTarget(s,j.target,j.origin,j.stand);
   return natural.get(j.target.id)?.kind!==(j.kind==='hunting'?'gazelle':'fish')||j.target.kind!==(j.kind==='hunting'?'gazelle':'fish');
  });
 }
