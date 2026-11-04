@@ -136,7 +136,7 @@ def collect_data(root=ROOT):
     paths = sorted(set((repo / 'docs').rglob('*.md')) | {repo / n for n in ['GAME_DESIGN.md', 'GAME_SPEC.md', 'README.md', 'PERFORMANCE.md'] if (repo / n).exists()})
     documents = []
     for path in paths:
-        if 'screenshots' in path.parts:
+        if 'screenshots' in path.parts or 'superpowers' in path.parts:
             continue
         body = path.read_text(errors='replace')
         rel = str(path.relative_to(repo))
@@ -146,6 +146,15 @@ def collect_data(root=ROOT):
         documents.append({'path': rel, 'title': title[1] if title else path.stem, 'kind': kind,
                           'content': body, 'hash': hashlib.sha256(body.encode()).hexdigest()[:12],
                           'taskIds': [t['id'] for t in tasks if rel in t['sources']]})
+    # Keep references already published in the offline library, without weakening
+    # validate_tasks: required task source files must still exist in the checkout.
+    archive_path = root / 'document-archive.json'
+    if archive_path.exists():
+        existing = {d['path'] for d in documents}
+        for archived in json.loads(archive_path.read_text())['documents']:
+            if archived['path'] not in existing:
+                documents.append({**archived, 'taskIds': [t['id'] for t in tasks if archived['path'] in t['sources']]})
+        documents.sort(key=lambda d: d['path'])
     stamp = datetime.now(ZoneInfo('Europe/Samara')).isoformat(timespec='seconds')
     return {'schema': 1, 'asOf': re.search(r'^updated: (\d{4}-\d{2}-\d{2})$', plan, re.M)[1], 'builtAt': stamp, 'groups': GROUPS, 'statuses': STATUSES,
             'tasks': tasks, 'releases': releases, 'history': history, 'documents': documents,

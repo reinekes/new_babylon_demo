@@ -26,9 +26,9 @@ export function navigationSegmentClear(s,a,b,index=obstacleIndex(s)){
  for(let i=0;i<=steps;i++){const t=i/steps,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;if(!isDryPoint(s,x,y)&&!(crossing&&onBridge(s.buildings||[],x,y,s)))return false;}
  for(const box of localObstacles(index,a,b))if(intersectsBox(a,b,box))return false;return true;
 }
-function speedFor(s,a,b,roads){
+function speedFor(s,a,b,roads,bridges=s.buildings||[]){
  const road=roads.get(pairKey(a.key,b.key)),roadFactor=1+((road?.level||1)-1)*.2;
- const bridge=(s.buildings||[]).find(v=>v.type==='bridge'&&v.construction?.kind!=='new'&&Math.abs(riverLocal(a.x,a.y,s).along-bridgeSpanAt(v,s).y)<EPS&&Math.abs(riverLocal(b.x,b.y,s).along-riverLocal(a.x,a.y,s).along)<EPS&&onBridge([v],(a.x+b.x)/2,(a.y+b.y)/2,s));
+ const bridge=bridges.find(v=>v.type==='bridge'&&v.construction?.kind!=='new'&&Math.abs(riverLocal(a.x,a.y,s).along-bridgeSpanAt(v,s).y)<EPS&&Math.abs(riverLocal(b.x,b.y,s).along-riverLocal(a.x,a.y,s).along)<EPS&&onBridge([v],(a.x+b.x)/2,(a.y+b.y)/2,s));
  return roadFactor*(bridge?1+((bridge.level||1)-1)*.25:1);
 }
 function roadLookup(s){const roads=new Map();for(const r of s.roads||[]){if(!r.a||!r.b)continue;const a=r.a.key||pointKey(r.a.x,r.a.y),b=r.b.key||pointKey(r.b.x,r.b.y);roads.set(pairKey(a,b),r);roads.set(pairKey(b,a),r);}return roads;}
@@ -43,7 +43,7 @@ export function createWalkingNetwork(s,streets){
   if([...localObstacles(index,p)].some(r=>p.x>r.minX&&p.x<r.maxX&&p.y>r.minY&&p.y<r.maxY))continue;nodes.set(p.key,p);graph.set(p.key,new Set());
  }
  let maxSpeed=1;
- const connect=(a,b)=>{const speed=speedFor(s,a,b,roads),cost=Math.hypot(b.x-a.x,b.y-a.y)/speed;maxSpeed=Math.max(maxSpeed,speed);graph.get(a.key).add(b.key);graph.get(b.key).add(a.key);costs.set(pairKey(a.key,b.key),cost);costs.set(pairKey(b.key,a.key),cost);};
+ const connect=(a,b)=>{const speed=speedFor(s,a,b,roads,bridges),cost=Math.hypot(b.x-a.x,b.y-a.y)/speed;maxSpeed=Math.max(maxSpeed,speed);graph.get(a.key).add(b.key);graph.get(b.key).add(a.key);costs.set(pairKey(a.key,b.key),cost);costs.set(pairKey(b.key,a.key),cost);};
  for(const a of nodes.values())for(const [dx,dy]of [[1,0],[0,1]]){const b=nodes.get(pointKey(a.x+dx,a.y+dy));if(b&&navigationSegmentClear(s,a,b,index))connect(a,b);}
  for(const a of nodes.values())for(const [dx,dy]of [[1,1],[-1,1]]){
   const b=nodes.get(pointKey(a.x+dx,a.y+dy)),sideX=nodes.get(pointKey(a.x+dx,a.y)),sideY=nodes.get(pointKey(a.x,a.y+dy));if(!b||!sideX||!sideY)continue;

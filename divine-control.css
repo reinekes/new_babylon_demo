@@ -2,3 +2,5 @@
 @media(max-width:650px){.relic-hud{bottom:94px;max-height:49%;padding:11px;font-size:11px}.relic-hud-heading>b{font-size:17px}.relic-candidate-grid{grid-template-columns:minmax(0,1fr)}.relic-actions button{min-height:40px}}
 
 .tile-detail .relic-start button{position:static!important;inset:auto!important;font-size:11px!important}.relic-start h4{margin:4px 0 8px}
+
+.relic-hud-heading .resident-link{font:inherit;color:inherit;text-align:left;white-space:normal}

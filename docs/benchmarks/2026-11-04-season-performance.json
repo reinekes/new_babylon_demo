@@ -1,0 +1,202 @@
+{
+  "baselineCommit": "eb9023d",
+  "runtime": "Node.js on Apple M5",
+  "measurement": "CPU per simulation slice, not FPS",
+  "comparison": [
+    {
+      "mode": "jump",
+      "fixture": "world64-seed137-200-residents-129-buildings",
+      "note": "CPU only, not FPS; stocked fixture; automatic miracle presentations fast-forwarded in natural mode",
+      "steps": 721,
+      "cpuTotalMs": 8819.289417,
+      "stepCpuMs": {
+        "median": 10.948624999999993,
+        "p95": 17.260041999999885,
+        "max": 551.0431250000001
+      },
+      "boundaries": [
+        {
+          "tick": 1,
+          "simTime": 60,
+          "ms": 144.69450000000006,
+          "validSave": true
+        },
+        {
+          "tick": 2,
+          "simTime": 120,
+          "ms": 67.71137499999986,
+          "validSave": true
+        },
+        {
+          "tick": 3,
+          "simTime": 180,
+          "ms": 39.18479099999968,
+          "validSave": true
+        }
+      ],
+      "slowSteps": [
+        {
+          "step": 0,
+          "before": 0,
+          "after": 0.25,
+          "tick": 0,
+          "ms": 70.23875000000004,
+          "startMs": 273.379916,
+          "endMs": 343.6255
+        },
+        {
+          "step": 239,
+          "before": 59.75,
+          "after": 60,
+          "tick": 1,
+          "ms": 144.69450000000006,
+          "startMs": 3070.086541,
+          "endMs": 3214.785833
+        },
+        {
+          "step": 240,
+          "before": 60,
+          "after": 60.25,
+          "tick": 1,
+          "ms": 144.13933399999996,
+          "startMs": 3252.417791,
+          "endMs": 3396.562416
+        },
+        {
+          "step": 479,
+          "before": 119.75,
+          "after": 120,
+          "tick": 2,
+          "ms": 67.71137499999986,
+          "startMs": 5709.485291,
+          "endMs": 5777.197375
+        },
+        {
+          "step": 513,
+          "before": 128.25,
+          "after": 128.35,
+          "tick": 2,
+          "ms": 551.0431250000001,
+          "startMs": 6221.362708,
+          "endMs": 6772.748416
+        }
+      ],
+      "presentations": [
+        "5de376435a9bd55a248f686a1b69493038a47f5abcb5de91524ee4dcd72ff4b4"
+      ],
+      "population": 200,
+      "stateSHA256": "4da0ee83495fca9dbd33d3bf600baab1dc34affa76152cbeb00fe26339a2b323",
+      "variant": "before"
+    },
+    {
+      "mode": "jump",
+      "fixture": "world64-seed137-200-residents-129-buildings",
+      "note": "CPU only, not FPS; stocked fixture; automatic miracle presentations fast-forwarded in natural mode",
+      "steps": 721,
+      "cpuTotalMs": 8274.59825,
+      "stepCpuMs": {
+        "median": 11.123207999999977,
+        "p95": 18.225250000000187,
+        "max": 117.03662499999973
+      },
+      "boundaries": [
+        {
+          "tick": 1,
+          "simTime": 60,
+          "ms": 33.48250000000007,
+          "validSave": true
+        },
+        {
+          "tick": 2,
+          "simTime": 120,
+          "ms": 17.608832999999322,
+          "validSave": true
+        },
+        {
+          "tick": 3,
+          "simTime": 180,
+          "ms": 14.27416599999924,
+          "validSave": true
+        }
+      ],
+      "slowSteps": [
+        {
+          "step": 0,
+          "before": 0,
+          "after": 0.25,
+          "tick": 0,
+          "ms": 44.83008300000003,
+          "startMs": 255.147167,
+          "endMs": 299.98425
+        },
+        {
+          "step": 240,
+          "before": 60,
+          "after": 60.25,
+          "tick": 1,
+          "ms": 45.90716599999996,
+          "startMs": 3242.049834,
+          "endMs": 3287.965792
+        },
+        {
+          "step": 513,
+          "before": 128.25,
+          "after": 128.35,
+          "tick": 2,
+          "ms": 117.03662499999973,
+          "startMs": 6081.203834,
+          "endMs": 6198.574167
+        }
+      ],
+      "presentations": [
+        "5de376435a9bd55a248f686a1b69493038a47f5abcb5de91524ee4dcd72ff4b4"
+      ],
+      "population": 200,
+      "stateSHA256": "4da0ee83495fca9dbd33d3bf600baab1dc34affa76152cbeb00fe26339a2b323",
+      "variant": "after"
+    }
+  ],
+  "browser": {
+    "device": "Apple M5",
+    "quality": "high",
+    "viewport": [
+      1280,
+      720
+    ],
+    "dpr": 2,
+    "mode": "full app, close camera, 4x, HUD and autosave, isolated generated city",
+    "wallSeconds": 80.0092,
+    "frames": 3881,
+    "fps": 48.5069,
+    "frameP95Ms": 33.4,
+    "frameMaxMs": 2048.1,
+    "longTaskMaxMs": 2067,
+    "validSave": true,
+    "initialPopulation": 200,
+    "finalPopulation": 216,
+    "buildings": 129,
+    "initialSimTime": 35,
+    "finalSimTime": 112.9207,
+    "finalTick": 2,
+    "limitation": "Long full-app stalls remain; CPU slice gains do not demonstrate elimination of rendering/HUD stalls."
+  },
+  "diagnosticFollowUp": {
+    "fixture": "same city, full app, temporary instrumented copy, 20 seconds, warmed detailed scene",
+    "fps": 48.8983,
+    "frameP95Ms": 33.3,
+    "frameMaxMs": 2066.6,
+    "firstSeasonAtSimTime": 45.0167,
+    "stageCpuMs": {
+      "simulation": 51.8,
+      "landscape": 1025.3,
+      "actors": 938,
+      "sceneRender": 42.7,
+      "rendererTotal": 2007.6
+    },
+    "note": "Instrumented stage timings are diagnostic, not an uninstrumented before/after FPS comparison. Full 3D stall remains open."
+  },
+  "manualUI": {
+    "chosenResidentHUD": "Amal ID 0 opens Amal resident card while quest remains active",
+    "compactListFirstBuilder": "100% in recognized awakening, witness ID 0"
+  }
+}

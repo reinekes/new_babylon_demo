@@ -1,3 +1,4 @@
+import {cachedStreetsFor} from './workforce.js';
 import {recordCitizenDelivery} from './citizen-epithets.js';
 import {dairyNeeds} from './dairy.js';
 import {isArtisan,artisanNeeds} from './artisan.js';
@@ -16,12 +17,15 @@ const point=p=>({x:p.x,y:p.y});
 const key=p=>`${Math.round(p.x+.5)},${Math.round(p.y+.5)}`;
 const dryEdge=(s,a,b)=>[0,.25,.5,.75,1].every(t=>isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t));
 function navigation(s){
- const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
- let cache=caches.get(s);if(cache?.signature===signature&&cache.world===s.world)return cache;
- const network=generateStreets([...s.buildings,...s.roadAnchors||[]],s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),nodes=new Map(),graph=new Map();
- for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
- for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q))graph.get(k).push(qk);}
- cache={signature,world:s.world,network,ports,nodes,graph,banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
+ const geometry=s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|'),signature=geometry+'|anchors:'+(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
+ let cache=caches.get(s);const sameTerrain=cache&&cache.world===s.world&&cache.river===s.world?.river&&cache.lakes===s.world?.lakes&&cache.lakeCount===(s.world?.lakes?.length||0);if(cache?.signature===signature&&sameTerrain)return cache;
+ const reuse=cache?.geometry===geometry&&sameTerrain;
+ const network=cachedStreetsFor(s)||generateStreets([...s.buildings,...s.roadAnchors||[]],s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),nodes=reuse?cache.nodes:new Map(),graph=reuse?cache.graph:new Map();
+ if(!reuse){
+  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
+  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q))graph.get(k).push(qk);}
+ }
+ cache={signature,geometry,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
 }
 function path(nodes,graph,from,to){
  if(!nodes.has(from))return null;const prev=new Map([[from,null]]),queue=[from];

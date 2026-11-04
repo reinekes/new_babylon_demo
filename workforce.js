@@ -50,10 +50,20 @@ const hourAt=t=>((8+t*24/DAY_SECONDS)%24+24)%24;
 export const isWorkday=t=>hourAt(t)>=6&&hourAt(t)<19;
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 
+const geometrySignature=s=>s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:''}`).join('|')+`|roads:${roadTopologyRevision(s)}`;
+const anchorSignature=s=>(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:''}`).join('|');
+const sameWorld=(cache,s)=>cache&&cache.river===s.world?.river&&cache.lakes===s.world?.lakes&&cache.lakeCount===(s.world?.lakes?.length||0);
+// Pure cached view for water couriers; never creates roads or warms a new network.
+export function cachedStreetsFor(s){const cache=caches.get(s);return sameWorld(cache,s)&&cache.signature===geometrySignature(s)+'|anchors:'+anchorSignature(s)?cache.streets:null;}
 export function networkFor(s){
- const signature=[...s.buildings,...s.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:''}`).join('|')+`|roads:${roadTopologyRevision(s)}`;
+ const geometry=geometrySignature(s),signature=geometry+'|anchors:'+anchorSignature(s);
  let cache=caches.get(s);
- if(!cache||cache.signature!==signature||cache.river!==s.world?.river||cache.lakes!==s.world?.lakes||cache.lakeCount!==(s.world?.lakes?.length||0)){cache={signature,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network:createWalkingNetwork(s,generateStreets([...s.buildings,...s.roadAnchors||[]],s)),paths:new Map(),synced:null};caches.set(s,cache);}
+ if(!sameWorld(cache,s)||cache.signature!==signature){
+  const reuse=sameWorld(cache,s)&&cache.geometry===geometry,streets=generateStreets([...s.buildings,...s.roadAnchors||[]],s);
+  // Entry anchors change streets/ports, not land obstacles or walking costs.
+  const network=reuse?{...streets,nodes:cache.network.nodes,graph:cache.network.graph,components:cache.network.components,navigation:cache.network.navigation}:createWalkingNetwork(s,streets);
+  cache={signature,geometry,streets,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,paths:reuse?cache.paths:new Map(),synced:null};caches.set(s,cache);
+ }
  if(cache.roads!==s.roads||cache.roadCount!==s.roads?.length){ensureRoads(s,cache.network);cache.roads=s.roads;cache.roadCount=s.roads.length;}return cache.network;
 }
 // Internal callers reuse a validated access context within the same city network.

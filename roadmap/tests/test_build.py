@@ -40,6 +40,24 @@ class BuildTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 m.validate_tasks([{**base, **change}], [], Path('.'))
 
+    def test_reference_archive_preserves_library_but_never_satisfies_task_sources(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            root = repo / 'roadmap'
+            (root / 'reports').mkdir(parents=True)
+            (repo / 'docs' / 'superpowers').mkdir(parents=True)
+            (repo / 'docs' / 'superpowers' / 'private-plan.md').write_text('# Local draft')
+            for name in ['README.md', 'overview.md', 'historical-review.md']:
+                (root / name).write_text('')
+            (root / 'plan.md').write_text('updated: 2026-11-04\n')
+            archived = {'path': 'docs/missing.md', 'title': 'Archived', 'kind': 'reference', 'content': '# Archived', 'hash': 'old'}
+            (root / 'document-archive.json').write_text(json.dumps({'documents': [archived]}))
+            data = builder().collect_data(root)
+            self.assertEqual([d['path'] for d in data['documents']], ['docs/missing.md'])
+            (root / 'plan.md').write_text('updated: 2026-11-04\n\n## missing | Missing\ngroup: ux\nstatus: planned\npriority: P1\ndepends: -\nsources: docs/missing.md\n')
+            with self.assertRaises(ValueError):
+                builder().collect_data(root)
+
     def test_dependency_cycle_and_report_conflict_are_rejected(self):
         m = builder()
         base = {'title': 'Задача', 'group': 'performance', 'status': 'planned', 'priority': 'P1', 'sources': []}

@@ -29,7 +29,7 @@ function pathTo(start, target, neighbours) {
 // Streets use tile boundaries: a house can grow on a tile without erasing its road.
 // Each riverbank has its own network; roads never invent a crossing over water.
 export function generateStreets(buildings,s) {
-  const nodes = new Map(), land = new Map(), graph = new Map(), edges = [];
+  const nodes = new Map(), land = new Map(), graph = new Map(), edges = [], solids=buildings.filter(b=>footprintSize(b)>1);
   const bridgeNodes=new Set(),bridgeEdges=new Set();
   for(const b of buildings.filter(b=>b.type==='bridge'&&b.construction?.kind!=='new')){
     const span=bridgeSpanAt(b,s),from=span.left+.5,to=span.right+.5;
@@ -37,7 +37,7 @@ export function generateStreets(buildings,s) {
   }
   for (let y = 0; y <= worldHeight(s); y++) for (let x = 0; x <= worldWidth(s); x++) {
     const p = at(x, y);
-    if ((dry(p,s)||bridgeNodes.has(p.key))&&!buildings.some(b=>insideFootprint(b,p.x,p.y))) land.set(p.key, p);
+    if ((dry(p,s)||bridgeNodes.has(p.key))&&!solids.some(b=>insideFootprint(b,p.x,p.y))) land.set(p.key, p);
   }
   const neighbours = key => {
     const [x, y] = key.split(',').map(Number), result = [];

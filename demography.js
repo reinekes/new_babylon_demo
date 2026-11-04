@@ -1,6 +1,6 @@
 import {mournResidents} from './wellbeing.js';
 import {totalFood} from './households.js';
-import {networkFor,routeBetween} from './workforce.js';
+import {networkFor} from './workforce.js';
 import {buildingKey,capacityOf,citizenName} from './definitions.js';
 export const lifeStage=c=>c.age<16?'child':c.age<55?'adult':'elder';
 export const canWork=c=>c.age===undefined||c.age>=16;
@@ -24,12 +24,16 @@ export function advanceGenerations(s,recover=()=>{}){
  // Young adults can form a household in a newly available house.
  const singles=s.citizens.filter(c=>c.age>=16&&c.age<45&&c.partner===null);
  for(const a of singles){if(a.partner!==null)continue;const partner=singles.find(c=>c!==a&&c.partner===null&&c.sex!==a.sex&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
+ // Housing needs reachability, not a route. Topology is stable throughout this pass.
+ let housingNetwork,housingPorts;
  if(!s.funeral)for(const a of s.citizens.filter(c=>c.sex==='f'&&c.partner!==null)){
   const partner=living.get(a.partner);if(!partner)continue;
   const family=[a,partner,...s.citizens.filter(c=>c.age<16&&c.parents.includes(a.id))],current=homes.get(a.home)||[];
   if(a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
-  const net=networkFor(s),ports=new Map(net.ports.map(p=>[buildingKey(p.building),p.key]));
-  const house=s.buildings.find(b=>b.type==='house'&&routeBetween(s,ports.get(a.home),ports.get(buildingKey(b)))&&routeBetween(s,ports.get(partner.home),ports.get(buildingKey(b)))&&!(homes.get(buildingKey(b))||[]).length&&b.construction?.kind!=='new'&&buildingKey(b)!==a.home&&capacityOf(b)-(homes.get(buildingKey(b))||[]).length>=family.length);
+  if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
+  const component=housingNetwork.components.get(housingPorts.get(a.home));
+  if(component===undefined||component!==housingNetwork.components.get(housingPorts.get(partner.home)))continue;
+  const house=s.buildings.find(b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&b.construction?.kind!=='new'&&buildingKey(b)!==a.home&&capacityOf(b)>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component);
   if(!house||family.some(c=>s.citizens.some(p=>p.clothingTarget===c.id)||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
   const destination=buildingKey(house);for(const c of family){homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
   news(s,'Семья обрела дом',`${citizenName(a.id)} и ${citizenName(partner.id)} поселились в доме ${destination}.`);

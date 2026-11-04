@@ -5,8 +5,8 @@ import {BUILDINGS} from './definitions.js';
 import {displayName} from './citizen-epithets.js';
 import {citizenEpithetHTML} from './ui-citizen-epithets.js';
 import {setHTML} from './ui-render.js';
-import {ROLES,inspirationChance} from './education.js';
-import {inspirationReason} from './management.js';
+import {ROLES} from './education.js';
+import {inspirationReason,inspirationSuccessChance} from './management.js';
 import {uiIcon} from './ui-icons.js';
 import {resourceIcon} from './resource-icons.js';
 import {buildingInventoryHTML} from './ui-building-inventory.js';
@@ -28,7 +28,7 @@ function neighborhoodsHTML(model){
 }
 function optionsHTML(options,value){return options.map(([id,text])=>`<option value="${escape(id)}"${value===id?' selected':''}>${escape(text)}</option>`).join('');}
 function personControls(s,c,desired){
- const profession=selectedProfession(c,desired),inspiration=PROFESSION_IDS.includes(profession)&&profession!=='auto'?profession:'builder',reason=inspirationReason(s,c.id,inspiration),adult=(c.age??20)>=16,chance=Math.round(inspirationChance(c,inspiration)*100);
+ const profession=selectedProfession(c,desired),inspiration=PROFESSION_IDS.includes(profession)&&profession!=='auto'?profession:'builder',reason=inspirationReason(s,c.id,inspiration),adult=(c.age??20)>=16,chance=Math.round(inspirationSuccessChance(s,c,inspiration)*100);
  return `<div class="city-tools-person-controls"><label class="city-tools-field"><span>Профессия</span><select data-city-role="${c.id}" aria-label="Профессия: ${escape(displayName(s,c))}"${adult?'':' disabled'}>${optionsHTML(ROLES.map(id=>[id,PROFESSION_NAMES[id]]),c.pendingRole||c.role||'auto')}</select></label><div class="city-tools-inspiration"><label class="city-tools-field"><span>Вдохновение</span><select data-city-inspiration="${c.id}" aria-label="Вдохновение: ${escape(displayName(s,c))}">${optionsHTML(PROFESSION_IDS.filter(id=>id!=='auto').map(id=>[id,PROFESSION_NAMES[id]]),inspiration)}</select></label><button type="button" class="city-tools-inspire" data-city-inspire="${c.id}"${reason?' disabled':''} title="${escape(reason||`${chance}% успеха; 1 вера расходуется при любом исходе`)}">${resourceIcon('faith')}Вдохновить · 1 вера</button><small>Шанс ${chance}%${reason?` · ${escape(reason)}`:''}</small></div></div>${c.pendingRole?`<small class="city-tools-pending">${escape(PROFESSION_NAMES[c.pendingRole]||c.pendingRole)} — после доставки груза</small>`:''}${!adult?'<small class="city-tools-pending">Работа с 16 лет. Вдохновение сохранится до взросления.</small>':''}`;
 }
 export function sortedCityCitizens(s,filter={}){
