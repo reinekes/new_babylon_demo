@@ -1,0 +1,498 @@
+{
+  "date": "2026-11-04",
+  "commit": "b763a27",
+  "scope": "Local checkout; no gameplay code changes or publication",
+  "webgl": [
+    {
+      "at": "2026-11-04T09:10:30.224Z",
+      "rendererRelease": "city4x-screen-budget-20261103-1",
+      "shadowProxies": 40,
+      "camera": "near",
+      "cameraSetup": {
+        "radius": 41.6,
+        "target": [
+          53,
+          0,
+          55
+        ],
+        "alpha": 1.0471975511965976,
+        "beta": 0.96
+      },
+      "quality": "high",
+      "shadows": true,
+      "people": true,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 2,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "initial": {
+        "population": 200,
+        "buildings": 129,
+        "seed": 137
+      },
+      "end": {
+        "population": 200,
+        "buildings": 129
+      },
+      "seconds": 20.03230000000596,
+      "fps": 50.77,
+      "frameMs": {
+        "mean": 19.665,
+        "p50": 16.7,
+        "p95": 33.4,
+        "max": 51
+      },
+      "profile": {
+        "simulation": {
+          "mean": 2.407,
+          "p50": 2.2,
+          "p95": 3.6,
+          "max": 7.4
+        },
+        "buildings": {
+          "mean": 0.397,
+          "p50": 0.4,
+          "p95": 0.5,
+          "max": 7.8
+        },
+        "landscape": {
+          "mean": 1.034,
+          "p50": 1,
+          "p95": 1.2,
+          "max": 2.7
+        },
+        "actors": {
+          "mean": 2.334,
+          "p50": 2.2,
+          "p95": 2.9,
+          "max": 26.1
+        },
+        "light": {
+          "mean": 0.024,
+          "p50": 0,
+          "p95": 0.1,
+          "max": 0.2
+        },
+        "selection": {
+          "mean": 0.016,
+          "p50": 0,
+          "p95": 0.1,
+          "max": 0.2
+        },
+        "render": {
+          "mean": 12.106,
+          "p50": 12,
+          "p95": 13.6,
+          "max": 23.9
+        },
+        "engine-activeMeshesEvaluation": {
+          "mean": 4.023,
+          "p50": 4,
+          "p95": 4.6,
+          "max": 6.1
+        },
+        "engine-renderTargetsRender": {
+          "mean": 4.025,
+          "p50": 3.9,
+          "p95": 4.9,
+          "max": 9.8
+        },
+        "engine-animations": {
+          "mean": 2.331,
+          "p50": 2.3,
+          "p95": 2.9,
+          "max": 4.9
+        },
+        "engine-render": {
+          "mean": 1.684,
+          "p50": 1.6,
+          "p95": 2.1,
+          "max": 8
+        }
+      },
+      "scene": {
+        "meshBreakdown": [
+          [
+            "fish:lake",
+            1920
+          ],
+          [
+            "road",
+            618
+          ],
+          [
+            "date",
+            607
+          ],
+          [
+            "citizen",
+            440
+          ],
+          [
+            "submerged",
+            248
+          ],
+          [
+            "game",
+            237
+          ],
+          [
+            "valley",
+            153
+          ],
+          [
+            "wildlife",
+            116
+          ],
+          [
+            "weather",
+            90
+          ],
+          [
+            "deposit",
+            87
+          ],
+          [
+            "goat",
+            42
+          ],
+          [
+            "resource",
+            41
+          ]
+        ],
+        "candidates": 415,
+        "meshes": 7067,
+        "active": 415,
+        "drawCalls": 1088,
+        "indices": 10865388,
+        "queueErrors": []
+      }
+    },
+    {
+      "at": "2026-11-04T09:11:09.075Z",
+      "rendererRelease": "city4x-screen-budget-20261103-1",
+      "shadowProxies": 41,
+      "camera": "wide",
+      "cameraSetup": {
+        "radius": 739.10423044749,
+        "target": [
+          189,
+          0,
+          189
+        ],
+        "alpha": 3.8623075237773334,
+        "beta": 0.68
+      },
+      "quality": "high",
+      "shadows": true,
+      "people": true,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 2,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "initial": {
+        "population": 200,
+        "buildings": 129,
+        "seed": 137
+      },
+      "end": {
+        "population": 200,
+        "buildings": 129
+      },
+      "seconds": 20.006800000000002,
+      "fps": 39.34,
+      "frameMs": {
+        "mean": 25.413,
+        "p50": 32.5,
+        "p95": 33.4,
+        "max": 34.5
+      },
+      "profile": {
+        "simulation": {
+          "mean": 2.562,
+          "p50": 2.3,
+          "p95": 3.9,
+          "max": 6.8
+        },
+        "buildings": {
+          "mean": 0.39,
+          "p50": 0.4,
+          "p95": 0.5,
+          "max": 7.5
+        },
+        "landscape": {
+          "mean": 1.009,
+          "p50": 1,
+          "p95": 1.2,
+          "max": 2
+        },
+        "actors": {
+          "mean": 2.322,
+          "p50": 2.2,
+          "p95": 3,
+          "max": 4.6
+        },
+        "light": {
+          "mean": 0.024,
+          "p50": 0,
+          "p95": 0.1,
+          "max": 0.2
+        },
+        "selection": {
+          "mean": 0.014,
+          "p50": 0,
+          "p95": 0.1,
+          "max": 0.1
+        },
+        "render": {
+          "mean": 18.232,
+          "p50": 18.2,
+          "p95": 19.6,
+          "max": 21.7
+        },
+        "engine-activeMeshesEvaluation": {
+          "mean": 8.959,
+          "p50": 8.9,
+          "p95": 9.6,
+          "max": 10.5
+        },
+        "engine-renderTargetsRender": {
+          "mean": 3.183,
+          "p50": 3.2,
+          "p95": 3.8,
+          "max": 4.4
+        },
+        "engine-animations": {
+          "mean": 1.268,
+          "p50": 1.2,
+          "p95": 1.8,
+          "max": 2.4
+        },
+        "engine-render": {
+          "mean": 4.784,
+          "p50": 4.8,
+          "p95": 5.4,
+          "max": 6.3
+        }
+      },
+      "scene": {
+        "meshBreakdown": [
+          [
+            "fish:lake",
+            1920
+          ],
+          [
+            "road",
+            618
+          ],
+          [
+            "date",
+            607
+          ],
+          [
+            "citizen",
+            451
+          ],
+          [
+            "submerged",
+            248
+          ],
+          [
+            "game",
+            237
+          ],
+          [
+            "valley",
+            153
+          ],
+          [
+            "wildlife",
+            116
+          ],
+          [
+            "weather",
+            90
+          ],
+          [
+            "deposit",
+            87
+          ],
+          [
+            "goat",
+            42
+          ],
+          [
+            "resource",
+            41
+          ]
+        ],
+        "candidates": 3107,
+        "meshes": 7081,
+        "active": 3107,
+        "drawCalls": 1830,
+        "indices": 19499703,
+        "queueErrors": []
+      }
+    }
+  ],
+  "browserClock": {
+    "fixture": "Fresh mature-mode town, 12 residents, normal application with HUD and autosave",
+    "samples": [
+      {
+        "speed": 1,
+        "start": {
+          "wallMs": 1793783523653,
+          "simTime": 45.07
+        },
+        "end": {
+          "wallMs": 1793783556326,
+          "simTime": 53.42
+        },
+        "observedRate": 0.25556269702812723,
+        "expectedRate": 0.25
+      },
+      {
+        "speed": 2,
+        "start": {
+          "wallMs": 1793783568521,
+          "simTime": 59.28
+        },
+        "end": {
+          "wallMs": 1793783592518,
+          "simTime": 71.28
+        },
+        "observedRate": 0.5000625078134767,
+        "expectedRate": 0.5
+      },
+      {
+        "speed": 4,
+        "start": {
+          "wallMs": 1793783605797,
+          "simTime": 82.94
+        },
+        "end": {
+          "wallMs": 1793783636212,
+          "simTime": 115.02
+        },
+        "observedRate": 1.0547427256288016,
+        "expectedRate": 1.0
+      }
+    ],
+    "precision": "DOM metrics refresh every 2 seconds; observed wall-clock rates are approximate",
+    "pause": {
+      "startWallMs": 1793783652325,
+      "endWallMs": 1793783694813,
+      "startSimTime": 115.34,
+      "endSimTime": 115.34
+    },
+    "consoleErrors": []
+  },
+  "cpu": {
+    "historicalBenchmark": {
+      "fixture": "world64-seed137",
+      "width": 64,
+      "height": 64,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 6.365165999999988,
+      "simulation4x": {
+        "medianMs": 5.127707999999984,
+        "p95Ms": 11.570416999999907,
+        "maxMs": 247.48066600000038
+      },
+      "encode": {
+        "medianMs": 2.085374999999658,
+        "maxMs": 3.6030000000000655,
+        "bytes": 343039
+      },
+      "stateSHA256": "e5f4ba01c397c79516f8320570018ef6d1fe8a75f7251401100d9518f852d48d"
+    },
+    "repeat": {
+      "fixture": "world64-seed137",
+      "width": 64,
+      "height": 64,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 7.747208999999998,
+      "simulation4x": {
+        "medianMs": 6.195292000000336,
+        "p95Ms": 14.27820900000006,
+        "maxMs": 305.22362500000054
+      },
+      "encode": {
+        "medianMs": 2.313083000000006,
+        "maxMs": 3.939332999999351,
+        "bytes": 343039
+      },
+      "stateSHA256": "e5f4ba01c397c79516f8320570018ef6d1fe8a75f7251401100d9518f852d48d"
+    },
+    "current4x": {
+      "fixture": "world64-seed137",
+      "width": 64,
+      "height": 64,
+      "buildings": 129,
+      "population": 200,
+      "assignmentMs": 8.718416000000047,
+      "simulation4x": {
+        "medianMs": 5.949041000001671,
+        "p95Ms": 10.476584000000003,
+        "maxMs": 316.2675419999978
+      },
+      "encode": {
+        "medianMs": 2.355666999999812,
+        "maxMs": 3.3610420000004524,
+        "bytes": 341838
+      },
+      "stateSHA256": "adc092388b7578dd083548e14f1b17e901f0115f3aa4ed64d3e733f2e4f53c99"
+    },
+    "current4xSpikes": [
+      {
+        "step": 0,
+        "ms": 151.68454199999996,
+        "simTime": 0.016666666666666666,
+        "season": 0,
+        "ceremony": false
+      },
+      {
+        "step": 2401,
+        "ms": 40.43891600000279,
+        "simTime": 40.033333333332344,
+        "season": 0,
+        "ceremony": false
+      },
+      {
+        "step": 2699,
+        "ms": 316.2675419999978,
+        "simTime": 44.99999999999873,
+        "season": 1,
+        "ceremony": false
+      },
+      {
+        "step": 2700,
+        "ms": 261.44574999999895,
+        "simTime": 45.016666666665394,
+        "season": 1,
+        "ceremony": false
+      }
+    ],
+    "method": "Current 4x: 3600 calls to advanceTime(state,1/60), 60 simulation seconds. Historical benchmark: 900 calls with 4/60; this heavier historical step is not current UI 4x. No WebGL during CPU runs.",
+    "finding": "Two consecutive slow steps at spring-to-summer boundary, reproduced with current UI timestep; root cause within season processing and subsequent step has not been isolated. CPU duration is not FPS."
+  },
+  "checks": {
+    "targetedNodeTests": 13,
+    "passed": 13
+  },
+  "limits": [
+    "WebGL harness: 8 seconds warmup, 20 seconds measurement; its 28-second run does not reach the first 45-second season boundary.",
+    "WebGL fixture excludes normal HUD/audio/autosave. Normal-app clock checks use a small fresh town, not the 200-resident fixture.",
+    "Apple M5 and DPR2 differ from the archived Apple M2/DPR1 measurements; this is not a before/after comparison.",
+    "No optimization or gameplay fix was made."
+  ]
+}

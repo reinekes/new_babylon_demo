@@ -25,3 +25,16 @@
 .building-choice{position:relative;min-width:0}.building-choice>.building-card{width:100%;padding-right:23px;box-sizing:border-box;height:100%}.building-info{position:absolute;right:4px;top:4px;z-index:1;width:18px;height:18px;padding:0;border:1px solid #abb499;border-radius:50%;background:#f5f0df;color:#66785d;font:bold 11px Georgia,serif;cursor:pointer}.building-info:hover,.building-info:focus-visible{background:#dce5cd;border-color:#72886a;outline:2px solid #8a9c79;outline-offset:1px}.building-choice .build-hotkey{display:none}
 .placement-tools{position:absolute;left:12px;bottom:95px;z-index:16;display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f5f0e2ed;border:1px solid #9ba88d;border-radius:4px;color:#384e3d;font:11px Arial,sans-serif}.placement-tools[hidden]{display:none}.placement-tools button{padding:6px 9px;border:1px solid #a8b49a;border-radius:3px;background:#e5ebda;color:#344b37;cursor:pointer}.placement-tools button:disabled{opacity:.5;cursor:default}@media(max-width:700px){.placement-tools{bottom:120px;left:6px}}
 .photo-mode .placement-tools{display:none}
+
+/* Month changes and season travel share the existing city palette. */
+.ambient-controls #day-cycle{max-width:320px;white-space:pre-line;line-height:1.5;text-align:right}
+.calendar-notice{position:absolute;z-index:11;left:50%;top:24%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 36px);box-sizing:border-box;padding:16px 24px;border:1px solid #c7b88d88;border-radius:6px;background:#f5efdfed;color:#344b3c;box-shadow:0 8px 36px #26322222;font:22px/1.4 Georgia,serif;text-align:center;pointer-events:none}
+.calendar-notice[hidden],.season-transition[hidden]{display:none}
+.calendar-notice-enter{animation:calendar-month-arrival 3.2s ease both}
+@keyframes calendar-month-arrival{0%{opacity:0;transform:translate(-50%,8px)}15%,78%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-4px)}}
+.season-transition{position:absolute;inset:0;z-index:12;display:flex;align-items:center;justify-content:center;opacity:0;background:#ede5d5d9;backdrop-filter:blur(3px);color:#344b3c;font:24px/1.4 Georgia,serif;transition:opacity .24s ease;cursor:wait}
+.season-transition.visible{opacity:1}
+.season-jumping{cursor:wait}
+.season-jumping .topbar,.season-jumping .build-panel,.season-jumping .story-panel,.season-jumping .miraclebar{pointer-events:none}
+@media(max-width:700px){.ambient-controls{right:46px}.ambient-controls #day-cycle{max-width:250px;font-size:9px}.calendar-notice{font-size:18px;padding:12px 16px}}
+@media(prefers-reduced-motion:reduce){.season-transition{transition:none;backdrop-filter:none}.calendar-notice-enter{animation:none}}

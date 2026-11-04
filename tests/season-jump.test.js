@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,advanceTime,encode,decode} from '../engine.js';
-import {seasonJumpReason,advanceToNextSeason} from '../season-jump.js';
+import {seasonJumpReason,advanceToNextSeason,createSeasonJump} from '../season-jump.js';
 import {orderFestival,skipFestival,advanceFestival,validateFestival} from '../festival.js';
 import {startMiracleCelebration} from '../miracle-celebration.js';
 import {startFuneral} from '../funerals.js';
@@ -22,7 +22,7 @@ const clone=s=>decode(encode(s));
 
 test('the season button crosses one actual season from the middle of a month',()=>{
  const s=testingCity();advanceTime(s,17);
- const before=s.tick,targetTime=(before+1)*45;
+ const before=s.tick,targetTime=s.simTime+60;
  assert.equal(seasonJumpReason(s),'');
  const result=advanceToNextSeason(s);
  assert.equal(result.ok,true);assert.equal(s.tick,before+1);
@@ -35,7 +35,7 @@ test('an automatic cat scene starting inside a season jump does not consume the 
  const s=testingCity();s.pests.totalLoss=3;
  const result=advanceToNextSeason(s);
  assert.equal(result.ok,true);assert.ok(result.skipped.includes('cat'));
- assert.equal(s.tick,1);assert.equal(s.simTime,45);assert.equal(s.seasonElapsed,0);
+ assert.equal(s.tick,1);assert.equal(s.simTime,60);assert.equal(s.seasonElapsed,0);
  assert.equal(s.miracleCelebration,null);assert.equal(s.pests.cats.length,1);assert.ok(clone(s));
 });
 
@@ -132,4 +132,24 @@ test('pending decisions, funerals and relic possession cannot be silently discar
   s=>{s.relicQuest.phase='controlled';},
  ];
  for(const prepare of cases){const s=createGame({start:'established'});prepare(s);const before=JSON.stringify(s);assert.ok(seasonJumpReason(s));assert.equal(advanceToNextSeason(s).ok,false);assert.equal(JSON.stringify(s),before);}
+});
+
+for(const time of [0,17,35,44.999999])test(`season jump preserves the exact hour from simulation time ${time}`,()=>{
+ const s=testingCity();advanceTime(s,time);const before=s.simTime,tick=s.tick,ids=s.citizens.map(c=>c.id);
+ const result=advanceToNextSeason(s);assert.equal(result.ok,true);assert.equal(s.tick,tick+1);
+ assert.ok(Math.abs(s.simTime-before-60)<1e-5);assert.equal(s.seasonElapsed,0);
+ assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.ok(clone(s));
+ const after=s.simTime;advanceTime(s,1);assert.ok(Math.abs(s.simTime-after-1)<1e-6);assert.ok(clone(s));
+});
+test('a sliced transition can be saved midway and stops safely at a new decision',()=>{
+ const s=testingCity(),jump=createSeasonJump(s);const first=jump.step(.25);
+ assert.equal(first.done,false);assert.ok(first.progress>0&&first.progress<1);assert.ok(clone(s));
+ s.event={id:'caravan',title:'Гость',text:'Гость'};const raw=encode(s),end=jump.step(.25);
+ assert.equal(end.done,true);assert.equal(end.result.ok,false);assert.match(end.result.reason,/событи/);assert.equal(encode(s),raw);
+});
+test('a pre-calendar-offset save retains its hour, people and cargo when migrated',()=>{
+ const s=testingCity();advanceTime(s,17);s.version=28;const raw=JSON.parse(encode(s));delete raw.calendarOffset;
+ const restored=decode(JSON.stringify(raw));assert.ok(restored);assert.equal(restored.simTime,17);assert.equal(restored.seasonElapsed,17);
+ assert.deepEqual(restored.citizens,raw.citizens);assert.equal(advanceToNextSeason(restored).ok,true);assert.ok(clone(restored));
+ const invalid=JSON.parse(encode(restored));invalid.calendarOffset=-1;assert.equal(decode(JSON.stringify(invalid)),null);
 });

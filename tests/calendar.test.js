@@ -12,3 +12,17 @@ test('calm 1x advances one fourth of real time while 2x/4x remain proportional',
 test('calendar is derived without migrating identities, cargo, crops or saved elapsed time',()=>{
  const s=createGame({start:'established'});advanceTime(s,19);const raw=encode(s),copy=decode(raw);assert.ok(copy);const before=encode(copy);const c=calendarAt(copy);assert.equal(c.month,1);assert.equal(c.day,9);assert.equal(secondsToNextMonth(copy),11);assert.equal((monthTrackHTML(copy).match(/data-month=/g)||[]).length,12);assert.equal((monthTrackHTML(copy).match(/aria-current="date"/g)||[]).length,1);assert.equal(encode(copy),before);
 });
+
+test('Nippur month names identify the current month and label all twelve calendar positions',()=>{
+ const s=createGame({start:'established'}),names=[];
+ for(let month=0;month<12;month++){
+  s.season=Math.floor(month/3);s.seasonElapsed=(month%3)*15;
+  const c=calendarAt(s);assert.ok(c.monthName);names.push(c.monthName);
+  assert.ok(monthTrackHTML(s).includes(c.monthName));
+ }
+ assert.equal(new Set(names).size,12);assert.equal(names[0],'Бара-заг-гар');assert.equal(names[3],'Шу-нумун');assert.equal(names[6],'Ду-ку');
+});
+
+test('displayed clock tolerates simulation rounding at a minute boundary',async()=>{
+ const {clockText}=await import('../calendar.js');assert.equal(clockText(60-1e-11),'08:00');assert.equal(clockText(17.5),'15:00');assert.equal(clockText(40),'00:00');
+});

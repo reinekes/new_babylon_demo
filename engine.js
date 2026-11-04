@@ -47,7 +47,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=28;
+export const VERSION=29;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0,inannaProtection:0,earthMemory:0});
@@ -169,15 +169,16 @@ function settleSeason(s){
  if(!s.event&&!s.funeral&&!s.festival&&s.tick>=6&&s.season===2){const events=['riverGift','potterVisit','wellRepair','harvestThanks','storyteller'];s.event=createCityEvent(s,events[(s.year-2)%events.length]);}
  syncCitizens(s);snapshotLifeAnalytics(s);check(s);
 }
-export function advanceTime(s,seconds){
+export function advanceTime(s,seconds,{calendarRate=1}={}){
+ if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
   if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
-  const dt=Math.min(remaining,45-s.seasonElapsed),worked=advanceWorkers(s,dt,{stopForCeremony:true});syncSacredUnlocks(s);s.seasonElapsed+=worked;remaining-=worked;advanced+=worked;
-  if(s.seasonElapsed>=45-1e-7){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
+  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate),worked=advanceWorkers(s,dt,{stopForCeremony:true});syncSacredUnlocks(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
@@ -200,7 +201,7 @@ export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventor
 export function decode(raw){
  try{
   const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28;
-  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,VERSION].includes(s.version))return null;
+  if(!s||![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,VERSION].includes(s.version))return null;
   if(s.cooldowns&&typeof s.cooldowns==='object'){s.cooldowns.inannaProtection??=0;s.cooldowns.relicAwakening??=0;s.cooldowns.earthMemory??=0;}if(s.buffs&&typeof s.buffs==='object'){s.buffs.inannaProtection??=0;s.buffs.earthMemory??=0;}
   if(legacy){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
@@ -255,7 +256,7 @@ export function decode(raw){
   const integer=(v,min=0,max=1e6)=>Number.isInteger(v)&&v>=min&&v<=max;
   if(!integer(s.tick)||!integer(s.year,1)||s.year!==1+Math.floor(s.tick/4)||s.season!==s.tick%4||!integer(s.population)||!integer(s.capacity)||!finite(s.happiness,0,100))return null;
   for(const k of Object.keys(emptyResources()))if(!finite(s.resources?.[k])||!finite(s.delivered?.[k]))return null;
-  if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed))>.001||!integer(s.deliveries))return null;
+  if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||!finite(s.calendarOffset??0)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed+(s.calendarOffset||0)))>.001||!integer(s.deliveries))return null;
   if(!Array.isArray(s.buildings)||s.buildings.length>worldWidth(s)*worldHeight(s))return null;
   if(!oldInventory&&!validateTrade(s))return null;
   if(!validateWorld(s)||!Number.isInteger(s.rngState)||s.rngState<0||s.rngState>4294967295||!Array.isArray(s.roads)||s.roads.length>worldWidth(s)*worldHeight(s)*4)return null;

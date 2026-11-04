@@ -15,8 +15,9 @@ test('manual workers have a readable 2D work pose and count as busy in the city 
 test('live map click dispatch gives explicit people/buildings priority, then the exact deposit before nearby people',async()=>{
  const {readFileSync}=await import('node:fs'),vm=await import('node:vm');
  const source=readFileSync(new URL('../app.js',import.meta.url),'utf8'),body=source.split("const renderer=await createGameRenderer($('city'),tile=>{")[1].split('},{initialState:state});')[0],calls=[];
- const person={id:7,x:3,y:4},context={dialog:{open:false},photo:null,testMapUpgrade:false,relicControlActive:()=>false,selection:null,placementRotation:0,state:{citizens:[person]},buildingAt:()=>null,visibleCitizens:()=>[person],manualGatheringView:(_s,x,y)=>x===3&&y===4?view:null,depositDetail:(x,y)=>calls.push(['deposit',x,y]),personDetail:p=>calls.push(['person',p.id]),detail:type=>calls.push(['building',type]),toast:()=>{},terrain:()=> 'sand',$:()=>({hidden:false}),build:()=>({ok:false,reason:'blocked'})};
+ const person={id:7,x:3,y:4},context={seasonJumping:false,dialog:{open:false},photo:null,testMapUpgrade:false,relicControlActive:()=>false,selection:null,placementRotation:0,state:{citizens:[person]},buildingAt:()=>null,visibleCitizens:()=>[person],manualGatheringView:(_s,x,y)=>x===3&&y===4?view:null,depositDetail:(x,y)=>calls.push(['deposit',x,y]),personDetail:p=>calls.push(['person',p.id]),detail:type=>calls.push(['building',type]),toast:()=>{},terrain:()=> 'sand',$:()=>({hidden:false}),build:()=>({ok:false,reason:'blocked'})};
  const click=vm.runInNewContext(`tile=>{${body}}`,context);
+ context.seasonJumping=true;click({x:3,y:4,citizenId:7});assert.equal(calls.length,0,'season travel blocks even direct keyboard/canvas dispatch');context.seasonJumping=false;
  click({x:3,y:4});assert.deepEqual(calls.pop(),['deposit',3,4]);
  click({x:3,y:4,citizenId:7});assert.deepEqual(calls.pop(),['person',7]);
  context.buildingAt=()=>({x:3,y:4,type:'clay'});click({x:3,y:4});assert.deepEqual(calls.pop(),['building','clay']);
