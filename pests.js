@@ -1,3 +1,4 @@
+import {usesCatDiscovery} from './scenario-profiles.js';
 import {startMiracleCelebration,miracleCelebrationView,miracleCelebrationReason} from './miracle-celebration.js';
 import {storeStock,takeStock} from './inventory.js';
 import {buildingKey,isOperational} from './definitions.js';
@@ -61,7 +62,7 @@ export function advancePests(s,dt){
   }else if(!q.mice){q.hunt=0;q.guardTime=0;}
   if(q.loss-q.reported>=1){q.reported=q.loss;note(s,'Мыши портят запасы',`У хранилища ${q.key} потеряно ${q.loss.toFixed(1)} еды за всё время. Назначь сторожа: жители пока защищают запасы своими силами.`, 'bad');}
  }
- if(s.pests.nextCat===0&&s.pests.totalLoss>=3&&!miracleCelebrationReason(s)&&bringCat(s))note(s,'Неожиданный гость','После долгой борьбы с мышами бог послал к амбарам маленького охотника. Люди впервые увидели, как кошка ловит мышь.','good');
+ if(!usesCatDiscovery(s)&&s.pests.nextCat===0&&s.pests.totalLoss>=3&&!miracleCelebrationReason(s)&&bringCat(s))note(s,'Неожиданный гость','После долгой борьбы с мышами бог послал к амбарам маленького охотника. Люди впервые увидели, как кошка ловит мышь.','good');
 }
 export function pestActors(s){
  if(!s.pests)return [];const routes=yards(s),wander=roamingRoutes(s),result=[];

@@ -36,7 +36,7 @@ test('all archived legacy save versions enroll in legacy even if a profile is in
 
 test('current saves reject missing, future, malformed and unsupported rules',()=>{
  const s=createGame();
- for(const scenario of [undefined,null,[],{},'legacy-v1',{...legacyScenario(),version:2},{...legacyScenario(),history:'future'},{...legacyScenario(),miracles:'awakening-c01-v1'}]){
+ for(const scenario of [undefined,null,[],{},'legacy-v1',{...legacyScenario(),version:2},{...legacyScenario(),history:'future'},{...legacyScenario(),miracles:'future-c99-v1'}]){
   assert.equal(validateScenario(scenario),false);assert.equal(decode(JSON.stringify({...s,scenario})),null);
  }
  for(const version of [0,1.5,'29',31])assert.equal(decode(JSON.stringify({...s,version})),null);

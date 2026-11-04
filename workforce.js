@@ -1,3 +1,4 @@
+import {recordFishingCatch,moveFishingCargoToOutput,acceptFishingCargo,discardFishingCargo,reconcileCatFishing} from './cat-fishing-ledger.js';
 import {beginManualGathering,workManualGathering,manualGatheringStillAssigned,releaseManualGathering} from './manual-gathering.js';
 import {ceremonyActive} from './ceremony-time.js';
 import {advanceGodhood,godhoodCitizenView,canLeadConstruction} from './godhood.js';
@@ -215,13 +216,13 @@ export function syncCitizens(s){
    else if(c.phase!=='home'){if(c.site&&isWorkday(s.simTime))beginSiteTrip(s,c,ctx);else startTrip(s,c,c.home,'toHome',ctx);}
   }
  }
- s.citizens=citizens;advanceGathering(s);cache.synced=signature;
+ s.citizens=citizens;reconcileCatFishing(s);advanceGathering(s);cache.synced=signature;
 }
 
 function workshopIncoming(s,key,k){return (s.district?.jobs||[]).filter(q=>q.target===key&&q.resource===k).reduce((n,q)=>n+q.remaining+s.citizens.filter(c=>c.districtJob===q.id).reduce((a,c)=>a+(c.cargo?.[k]||0),0),0);}
 function harvest(s,c,ctx,via=null){
  const b=ctx.buildings.get(c.work);if(!b)return false;
- const produced=(goods,options)=>{if(!putProductionOutput(s,b,goods,options))return false;recordCitizenHarvest(s,c,goods);return true;};
+ const produced=(goods,options)=>{if(!putProductionOutput(s,b,goods,options))return false;recordCitizenHarvest(s,c,goods);if(b.type==='fishing')recordFishingCatch(s,b,c,goods.food||0,{inBuffer:true,before:(b.workshopStock.output.food||0)-(goods.food||0)});return true;};
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
  if(['sheepfold','weaver','tailor'].includes(b.type)){const kind=b.type==='sheepfold'?'wool':b.type==='weaver'?'cloth':'clothing',amount=b.type==='sheepfold'?gatherWool(s,b):b.type==='weaver'?weaveCloth(s,b):makeClothing(s,b);if(amount<=1e-8)return false;return produced({[kind]:amount});}
@@ -238,7 +239,7 @@ function harvest(s,c,ctx,via=null){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
   for(const [resource,amount]of Object.entries(c.cargo))recordBuildingProduction(s,b,resource,amount);
-  recordCitizenHarvest(s,c,c.cargo);startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
+  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing')recordFishingCatch(s,b,c,c.cargo.food||0);startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
  }const goods=c.cargo;c.cargo={};return produced(goods);}
  startTrip(s,c,c.store,'toStore',ctx,via);return true;
 }
@@ -246,6 +247,7 @@ function deposit(s,c){
  let delivered=0;const actual={};
  for(const [resource,amount]of Object.entries(c.cargo)){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
+  if(resource==='food')acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});
   if(!MATERIALS.includes(resource))s.resources[resource]=(s.resources[resource]||0)+accepted;if(!local)s.delivered[resource]=(s.delivered[resource]||0)+accepted;if(c.districtJob){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(q)q.delivered+=accepted;}c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];if(c.tradeJob){const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob);if(q){q.delivered=Math.min(q.amount,q.delivered+accepted);if(Math.abs(q.amount-q.delivered)<1e-7)q.delivered=q.amount;}}actual[resource]=accepted;delivered+=accepted;
  }
  if(delivered>0){recordCitizenDelivery(s,c,actual);s.deliveries++;s.lastDelivery={time:s.simTime,citizen:c.id,store:c.store,cargo:actual,...c.tradeJob?{source:'market'}:{}};}
@@ -254,7 +256,7 @@ function deposit(s,c){
 function arrival(s,c,ctx){
  c.route=[];c.routeIndex=0;
  if(c.phase==='toManualGathering'){c.phase='manualGathering';return;}
- if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo,{record:false})){c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
+ if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo,{record:false})){moveFishingCargoToOutput(s,b,c,c.cargo.food||0,(b.workshopStock.output.food||0)-(c.cargo.food||0),c.cargo.food||0);c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
  if(c.phase==='toClothesSupply'){
   const target=s.citizens.find(p=>p.id===c.clothingTarget&&p.home===c.home),amount=target&&target.clothing<=REPLACE_CLOTHING_AT&&storeStock(s,c.store,'clothing')>=1?takeStock(s,c.store,'clothing',1):0;
   if(amount===1){c.clothingLoad=1;startTrip(s,c,c.home,'toClothesHome',ctx);}else{delete c.clothingTarget;delete c.clothingLoad;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}return;
@@ -535,6 +537,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  // Callers must retain a stranded owner if neither a warehouse, a home nor an
  // operational yard is reachable. Never clear a load without an accepted unit.
  if(needsHolder&&!recovery)return false;
+ discardFishingCargo(s,c);
  const restore=(k,n)=>{if(!(n>0))return 0;const accepted=putRecoveryStock(s,recovery,k,n);if(accepted!==n)throw new Error('Recovery holder refused owned cargo');return accepted;};
  recoverFestivalCitizen(s,id);
  for(const [k,n]of Object.entries(c.buildCargo||{}))if(site){site.remaining[k]=(site.remaining[k]||0)+n;if(site.sources)(site.sources[c.store]??={})[k]=(site.sources[c.store]?.[k]||0)+n;}else restore(k,n);
