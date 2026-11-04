@@ -2,6 +2,7 @@
 date: 2026-11-04
 type: completion
 release: night-uruk-20261104-1
+commit: a9fa7e2122a847a520f3c118ddada52859c574cd
 publication: not_published
 groups: ux; graphics
 completed: -
