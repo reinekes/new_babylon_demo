@@ -1,0 +1,77 @@
+// Run from a checkout, then serve the output on an isolated test-only origin.
+// node scripts/prepare-sumer-trade-browser-check.mjs [output-directory]
+import {execFileSync} from 'node:child_process';
+import {readFile,writeFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
+execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
+const tag='sumer-trade-supplied-20261105-4';
+const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
+import {strictScenario} from './repo/scenario-profiles.js';
+import {housingOf,capacityOf,buildingKey} from './repo/definitions.js';
+import {stockStores,takeStock,syncInventory} from './repo/inventory.js';
+import {waterSummary,initializeWater} from './repo/water.js';
+import {syncCitizens} from './repo/workforce.js';
+import {isRiverBank} from './repo/river-trade.js';
+import {marketAccess,trade} from './repo/trading.js';
+export function serviceTrade(s,proof){
+ if(s.event){proof.skippedEvents.push(s.event.id);resolveEvent(s,'skip');}
+ const rite=s.funeral?'funeral':s.miracleCelebration?.kind||(s.festival?.stage==='celebrating'?'festival':null);if(rite&&!proof.ceremonies.includes(rite))proof.ceremonies.push(rite);
+ const c=s.trade.caravan;if(!c)return;
+ const transport=c.transport||'land',phase=c.id+':'+c.phase;
+ if(proof.phases.at(-1)?.phase!==phase)proof.phases.push({phase,transport,time:s.simTime,x:c.x,y:c.y});
+ if(c.phase==='trading'&&!proof.orders.some(q=>q.visit===c.id)){
+  const buy=trade(s,'stone','buy',2),sell=trade(s,'wood','sell',2);proof.orders.push({visit:c.id,transport,buy:buy.ok,sell:sell.ok,time:s.simTime});
+ }
+}
+export function createTradeFixture(transport='land'){
+ if(!['land','river'].includes(transport))throw Error('Invalid transport');
+ const s=createGame({start:'established',mode:'mature',seed:137,scenario:strictScenario()});
+ const tradingBuilding=transport==='river'?'granary':'market';
+ if(canBuild(s,tradingBuilding,10,9,true))throw Error('Trading district site changed');s.buildings.push({type:tradingBuilding,x:10,y:9,level:1});
+ const banks=[];for(let y=1;y<63;y++)for(let x=1;x<63;x++)if(isRiverBank(s,x,y)&&!s.buildings.some(b=>b.x===x&&b.y===y))banks.push({x,y,d:Math.hypot(x-9,y-8)});banks.sort((a,b)=>a.d-b.d||a.y-b.y||a.x-b.x);
+ const harbor=banks.find(p=>!canBuild(s,'harbor',p.x,p.y,true));if(!harbor)throw Error('No legal harbor');s.buildings.push({type:'harbor',x:harbor.x,y:harbor.y,level:1});
+ for(let y=2;y<62&&s.buildings.length<129;y+=5)for(let x=2;x<62&&s.buildings.length<129;x+=5)if(terrain(x,y,s)!=='water'&&!s.buildings.some(b=>b.x===x&&b.y===y))s.buildings.push({type:s.buildings.length%3?'house':terrain(x,y,s)==='fertile'?'field':'clay',x,y,level:1});
+ const houses=s.buildings.filter(b=>b.type==='house'),initialFood=2000+houses.reduce((n,b)=>n+capacityOf(b)*10,0);
+ s.population=200;s.capacity=housingOf(s);syncCitizens(s);s.resources.food=initialFood;syncInventory(s);initializeWater(s);
+ // A supplied benchmark, not a disconnected starvation/funeral benchmark.
+ // Transfer initial food from the real central stock, preserving its accounting.
+ const store=buildingKey(stockStores(s)[0]);let pantryFood=0;
+ for(const b of houses){const amount=takeStock(s,store,'food',capacityOf(b)*10);b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;pantryFood+=amount;b.water=waterSummary(s,b).capacity;b.waterDelivered=Math.max(b.waterDelivered||0,b.water);}
+ if(!marketAccess(s,null,'harbor')||transport==='land'&&!marketAccess(s,null,'market'))throw Error('Disconnected trade port');
+ if(!miracle(s,'cat').ok)throw Error('Cannot prepare the existing warehouse cat');advanceTime(s,s.miracleCelebration.duration);
+ const proof={transport,portSetup:transport==='river'?'harbor-without-land-market':'market-and-harbor',initialPopulation:200,buildings:129,seed:137,supply:{initialFood,pantryFood,centralFood:s.resources.food,waterFilledToCapacity:true},harbor:{x:harbor.x,y:harbor.y},phases:[],orders:[],skippedEvents:[],ceremonies:[]},target=35;
+ while(s.simTime<target-1e-7){advanceTime(s,Math.min(.25,target-s.simTime));serviceTrade(s,proof);}
+ if(!decode(encode(s))||s.buildings.length!==129||s.population<200)throw Error('Invalid warmed trade fixture');
+ proof.measurementStart={population:s.population,buildings:s.buildings.length,simTime:s.simTime,tick:s.tick};return {state:s,proof};
+}
+export function auditTradeFixture(state,proof){
+ const s=decode(encode(state)),p=structuredClone(proof),target=s.simTime+80;
+ for(let i=0;i<400&&s.simTime<target-1e-7;i++){advanceTime(s,Math.min(.25,target-s.simTime));serviceTrade(s,p);}
+ if(s.simTime<target-1e-6||s.population<200||p.ceremonies.length||!decode(encode(s)))throw Error('Supplied fixture must retain 200+ citizens without calendar-stopping ceremonies');
+ if(!p.orders.some(q=>q.transport===p.transport&&q.buy&&q.sell)||s.trade.deliveries.some(q=>q.delivered!==q.amount)||s.trade.sales.some(q=>q.loaded!==q.amount))throw Error('Real trade was not completed');
+ return {population:s.population,simTime:s.simTime,orders:p.orders,ceremonies:p.ceremonies};
+}
+`;
+await writeFile(join(output,'trade-fixture.mjs'),fixture);
+const helper=await import(pathToFileURL(join(output,'trade-fixture.mjs')).href+'?verify='+Date.now());
+for(const transport of ['land','river']){const {state,proof}=helper.createTradeFixture(transport);console.log(JSON.stringify({transport,valid:true,start:proof.measurementStart,harbor:proof.harbor,audit:helper.auditTradeFixture(state,proof)}));}
+let app=await readFile(join(output,'app-check.js'),'utf8');
+app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\n`+app;
+app=app.replace("function advanceTime(...args){return timed('simulation',()=>rawAdvanceTime(...args));}","function advanceTime(...args){const result=timed('simulation',()=>rawAdvanceTime(...args));if(tradeProof)serviceTrade(args[0],tradeProof);return result;}");
+app+=`\nlet tradeProof=null;export function attachTradeProof(p){tradeProof=p;}\nexport function tradeStateInfo(){return {population:state.population,buildings:state.buildings.length,simTime:state.simTime,tick:state.tick,proof:tradeProof,deliveries:state.trade.deliveries.map(q=>({id:q.id,resource:q.resource,amount:q.amount,delivered:q.delivered})),sales:state.trade.sales.map(q=>({id:q.id,resource:q.resource,amount:q.amount,loaded:q.loaded,cancelled:q.cancelled}))};}\n`;
+await writeFile(join(output,'app-check.js'),app);
+let check=await readFile(join(output,'check.js'),'utf8');const start=check.indexOf('const s=createGame('),end=check.indexOf("localStorage.setItem(");
+if(start<0||end<start)throw Error('Generic fixture changed');
+check=`import {createTradeFixture} from './trade-fixture.mjs?probe=${tag}';\n`+check.slice(0,start)+`const transport=new URLSearchParams(location.search).get('transport')||'land';const {state:s,proof}=createTradeFixture(transport);\n`+check.slice(end);
+check=check.replace('await app.profileLayers();','await app.profileLayers();app.attachTradeProof(proof);');
+check=check.replace("fixture:'seed137-200-residents-129-buildings-start35'","fixture:'sumer-supplied-real-trade-200-initial-129-v4',transport,trade:app.tradeStateInfo()");
+check=check.replace("out.textContent='Готово: 200 жителей / 129 зданий; интерфейс и автосохранение включены'","out.textContent='Готово: '+transport+' · 200 исходных жителей / 129 зданий; интерфейс, торговля и автосохранение включены'");
+check=check.replace('let last=start,active=true;', 'let last=start,active=true;const startViewport=[innerWidth,innerHeight];let visibilityChanges=0;const visibility=()=>visibilityChanges++;document.addEventListener("visibilitychange",visibility);');
+check=check.replace('active=false;observer?.disconnect();','active=false;observer?.disconnect();document.removeEventListener("visibilitychange",visibility);');
+check=check.replace('transport,trade:app.tradeStateInfo()', `transport,trade:app.tradeStateInfo(),startViewport,visibilityChanges,viewportChanged:startViewport[0]!==innerWidth||startViewport[1]!==innerHeight,selectedSpeed:document.querySelector('[data-speed][aria-pressed="true"]')?.dataset.speed`);
+await writeFile(join(output,'check.js'),check);
+check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);await writeFile(join(output,'check.js'),check);
+const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
+console.log(JSON.stringify({output,page:'perf.html?transport=land or river',seconds:80,tag,warning:'Isolated origin only; measure close and overview separately, no heavy tests during measurements'}));

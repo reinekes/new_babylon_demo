@@ -1,6 +1,6 @@
 import {createGame} from './engine.js';
-import {strictScenario} from './scenario-profiles.js';
+import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
 
 // UI creation only. Decoding or loading a previous town never goes through here.
-// Fisher discovery is enabled separately once its full quest contract is ready.
-export function createNewCity({mode,seed}={}){return createGame({mode,seed,scenario:strictScenario()});}
+// Only a newly chosen Awakening enrolls in the fisherman discovery story.
+export function createNewCity({mode,seed}={}){return createGame({mode,seed,scenario:{...strictScenario(),...(mode==='awakening'?{miracles:CAT_DISCOVERY_RULES}:{})}});}
