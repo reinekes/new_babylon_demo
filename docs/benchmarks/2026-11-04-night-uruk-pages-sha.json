@@ -1,0 +1,310 @@
+{
+  "at": "2026-11-04T13:59:14.531728+00:00",
+  "commit": "a9cf488b664bddf6bac90dfc45a2d710afad734c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "5563ba551c44e2065edde9ab391d8e3a32786f303849e81b3bc2669daa6c1b6c",
+      "actual": "5563ba551c44e2065edde9ab391d8e3a32786f303849e81b3bc2669daa6c1b6c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "2e978274410864803a61fd500001af656d70cdcb91540acf7d4baac445f19303",
+      "actual": "2e978274410864803a61fd500001af656d70cdcb91540acf7d4baac445f19303",
+      "match": true
+    },
+    {
+      "path": "assets/ui/README.md",
+      "status": 200,
+      "expected": "9d681613293b0a3798c37887ed59582516c8db798fdff65a2178a4d753fc207b",
+      "actual": "9d681613293b0a3798c37887ed59582516c8db798fdff65a2178a4d753fc207b",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts.css",
+      "status": 200,
+      "expected": "19abd93e72a867dc0140188385a47b6e7155139ca14bc7de4abe061185d22799",
+      "actual": "19abd93e72a867dc0140188385a47b6e7155139ca14bc7de4abe061185d22799",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts/GolosText-OFL.txt",
+      "status": 200,
+      "expected": "ff532f9e8789f09a9fdffc3c0954eedfb0a48be77b2e2eb90f5f82e4f347f50c",
+      "actual": "ff532f9e8789f09a9fdffc3c0954eedfb0a48be77b2e2eb90f5f82e4f347f50c",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts/Lora-OFL.txt",
+      "status": 200,
+      "expected": "1d9a970809ac804b582a6ce7f0ebc4e7fefcbfd7ff6299cad35ee656a21be716",
+      "actual": "1d9a970809ac804b582a6ce7f0ebc4e7fefcbfd7ff6299cad35ee656a21be716",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts/golos-cyrillic.woff2",
+      "status": 200,
+      "expected": "17d048ca05cb1218af3c0d6dcdf882989e6d1cc5dcb598ea50eaf54850ff7229",
+      "actual": "17d048ca05cb1218af3c0d6dcdf882989e6d1cc5dcb598ea50eaf54850ff7229",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts/golos-latin.woff2",
+      "status": 200,
+      "expected": "9a69d0aa4734c4022224c002a3d944a702e0204972a49d892789f5668b922c2a",
+      "actual": "9a69d0aa4734c4022224c002a3d944a702e0204972a49d892789f5668b922c2a",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts/lora-cyrillic.woff2",
+      "status": 200,
+      "expected": "c57d9ca3bd42e6bc093badc7744dd2059a78f66a3a4dc6ca40574480c870f553",
+      "actual": "c57d9ca3bd42e6bc093badc7744dd2059a78f66a3a4dc6ca40574480c870f553",
+      "match": true
+    },
+    {
+      "path": "assets/ui/fonts/lora-latin.woff2",
+      "status": 200,
+      "expected": "ddb8c66035104e233fc024669183aad3738b6daa16deee2ebb1241bd0f98ace1",
+      "actual": "ddb8c66035104e233fc024669183aad3738b6daa16deee2ebb1241bd0f98ace1",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/LICENSE",
+      "status": 200,
+      "expected": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2",
+      "actual": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/arrow-right.svg",
+      "status": 200,
+      "expected": "e45bc4a12592b8723110db42c6deffdf177e4fe7704cf50324963fa0a59b2d74",
+      "actual": "e45bc4a12592b8723110db42c6deffdf177e4fe7704cf50324963fa0a59b2d74",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/buildings.svg",
+      "status": 200,
+      "expected": "76f3325b87588fc6786953e8b964d5b7cae58983b3dc1399f7b7a672a6c1b553",
+      "actual": "76f3325b87588fc6786953e8b964d5b7cae58983b3dc1399f7b7a672a6c1b553",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/caret-down.svg",
+      "status": 200,
+      "expected": "53f0cf2d0b144ac3cb07e353e0cd0853ffb3ed432d741460ce288edfcb0924b1",
+      "actual": "53f0cf2d0b144ac3cb07e353e0cd0853ffb3ed432d741460ce288edfcb0924b1",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/diamond.svg",
+      "status": 200,
+      "expected": "7f9ebf5bb51a955c248da77b9b8a50226a7ecd81706b59e78233d7ad2a9d9d45",
+      "actual": "7f9ebf5bb51a955c248da77b9b8a50226a7ecd81706b59e78233d7ad2a9d9d45",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/dots-three.svg",
+      "status": 200,
+      "expected": "ca4e748007101155641ec3041cd129bb03a8030d0eed16e313b9dd75e6beac77",
+      "actual": "ca4e748007101155641ec3041cd129bb03a8030d0eed16e313b9dd75e6beac77",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/hammer.svg",
+      "status": 200,
+      "expected": "286bddc0b30f4b0b0864cf8ca871b07a9c0a16d1df1f743b2cbabb15b6d9140d",
+      "actual": "286bddc0b30f4b0b0864cf8ca871b07a9c0a16d1df1f743b2cbabb15b6d9140d",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/list.svg",
+      "status": 200,
+      "expected": "fb1851842c74b40a3f42ce3d6ae0e67ede556b624218e79c0f4ead7d9ceec51f",
+      "actual": "fb1851842c74b40a3f42ce3d6ae0e67ede556b624218e79c0f4ead7d9ceec51f",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/sun.svg",
+      "status": 200,
+      "expected": "8df1c7b747774f8b2c1fe353b1b785c74aac35bfa50f2ed7d8d9a85a4191b2ac",
+      "actual": "8df1c7b747774f8b2c1fe353b1b785c74aac35bfa50f2ed7d8d9a85a4191b2ac",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/users.svg",
+      "status": 200,
+      "expected": "b3385e4c6aa03f7e16d1b03887c2cdff9900f5a7edbd5ea5176055938ccfb908",
+      "actual": "b3385e4c6aa03f7e16d1b03887c2cdff9900f5a7edbd5ea5176055938ccfb908",
+      "match": true
+    },
+    {
+      "path": "assets/ui/icons/x.svg",
+      "status": 200,
+      "expected": "7397b15e1fa66eaf6ff9b59fe91d483cb5c3bcf75b2fe052097ab6f0593b513a",
+      "actual": "7397b15e1fa66eaf6ff9b59fe91d483cb5c3bcf75b2fe052097ab6f0593b513a",
+      "match": true
+    },
+    {
+      "path": "assets/ui/uruk-basalt.webp",
+      "status": 200,
+      "expected": "db69c7f3474ea9fbc7fdfd4ab7c796569cdbb2a37ef91751a580484893b692c1",
+      "actual": "db69c7f3474ea9fbc7fdfd4ab7c796569cdbb2a37ef91751a580484893b692c1",
+      "match": true
+    },
+    {
+      "path": "assets/ui/uruk-clay.webp",
+      "status": 200,
+      "expected": "648bf0b68eb118307b16ca6e2260db8f9f31ba403fb1e90359d7f4ad0075d152",
+      "actual": "648bf0b68eb118307b16ca6e2260db8f9f31ba403fb1e90359d7f4ad0075d152",
+      "match": true
+    },
+    {
+      "path": "assets/ui/uruk-lapis.webp",
+      "status": 200,
+      "expected": "74d660ca6cf7e42e4558db31e0b4d0f970e89da90a90a37b46f71e3a40211a74",
+      "actual": "74d660ca6cf7e42e4558db31e0b4d0f970e89da90a90a37b46f71e3a40211a74",
+      "match": true
+    },
+    {
+      "path": "assets/ui/uruk-seal.webp",
+      "status": 200,
+      "expected": "fb54a384256be4dd2ffab63a00a119379165a6abafcee9096b1fd1354131343b",
+      "actual": "fb54a384256be4dd2ffab63a00a119379165a6abafcee9096b1fd1354131343b",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "5c1741a5e5e995f38c04e110657c769bede3d9ce24c0bb08f9ec0ef0d4435118",
+      "actual": "5c1741a5e5e995f38c04e110657c769bede3d9ce24c0bb08f9ec0ef0d4435118",
+      "match": true
+    },
+    {
+      "path": "design-qa.md",
+      "status": 200,
+      "expected": "27ce49c562de87a42d7d979eb47daff874ea7f5af3ec337dc74a148d3814e82a",
+      "actual": "27ce49c562de87a42d7d979eb47daff874ea7f5af3ec337dc74a148d3814e82a",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "1d97492f13fe7e5eb6a8bf0f070b53259dbbf731b611b01e6fd47a824868f89b",
+      "actual": "1d97492f13fe7e5eb6a8bf0f070b53259dbbf731b611b01e6fd47a824868f89b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-04-night-uruk.json",
+      "status": 200,
+      "expected": "602571248239cb3a8f8f9a2478fce20bd23c11734b1ab86a96381280dfd02fd4",
+      "actual": "602571248239cb3a8f8f9a2478fce20bd23c11734b1ab86a96381280dfd02fd4",
+      "match": true
+    },
+    {
+      "path": "docs/design/night-uruk-desktop.webp",
+      "status": 200,
+      "expected": "a0493b372f54464f5c9c99732d0df35a1893c91597fcc897110f21127674ac6f",
+      "actual": "a0493b372f54464f5c9c99732d0df35a1893c91597fcc897110f21127674ac6f",
+      "match": true
+    },
+    {
+      "path": "docs/design/night-uruk-mobile-menu.webp",
+      "status": 200,
+      "expected": "26d0683b7fb015fda795dcb770f988ad8f0c824a3eadebcecba27576d11d6a8b",
+      "actual": "26d0683b7fb015fda795dcb770f988ad8f0c824a3eadebcecba27576d11d6a8b",
+      "match": true
+    },
+    {
+      "path": "docs/design/night-uruk-reference.webp",
+      "status": 200,
+      "expected": "3416cdfeb4cd1e4da67573a98ec262b859453b9e4d19cce73166012f7fd8f9a4",
+      "actual": "3416cdfeb4cd1e4da67573a98ec262b859453b9e4d19cce73166012f7fd8f9a4",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-04-05.md",
+      "status": 200,
+      "expected": "b692db83b091133d24b911b37c30712bdbb43d54102e342a46b54120e34baef4",
+      "actual": "b692db83b091133d24b911b37c30712bdbb43d54102e342a46b54120e34baef4",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "d9d8490b3bfe5ec3077d7f153fbbe841ea985d47694322698406959762e040a7",
+      "actual": "d9d8490b3bfe5ec3077d7f153fbbe841ea985d47694322698406959762e040a7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "511ee513513814c7be514cd084deca77b24464e9390fbffd41aad06fd315d06c",
+      "actual": "511ee513513814c7be514cd084deca77b24464e9390fbffd41aad06fd315d06c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "532a496d8fc3c90b86b5fa2c26e30d8beb66b6d122e65012c534f9554a3c6a6b",
+      "actual": "532a496d8fc3c90b86b5fa2c26e30d8beb66b6d122e65012c534f9554a3c6a6b",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "7c6d12c6f9709c9f69a59341027ca69d43ffc7391a5fdbc6f60178e89cd7c1c0",
+      "actual": "7c6d12c6f9709c9f69a59341027ca69d43ffc7391a5fdbc6f60178e89cd7c1c0",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-04-night-uruk.md",
+      "status": 200,
+      "expected": "1dcceff76451f8c11d03ef97b5ea81535bcb7396db17a76a746f5b05c55d530c",
+      "actual": "1dcceff76451f8c11d03ef97b5ea81535bcb7396db17a76a746f5b05c55d530c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "b44c78c544a7788b61ea973afea8dea3c3c23bd4e776f9454b4a3d803291a0b3",
+      "actual": "b44c78c544a7788b61ea973afea8dea3c3c23bd4e776f9454b4a3d803291a0b3",
+      "match": true
+    },
+    {
+      "path": "tests/fixtures/scene-performance.html",
+      "status": 200,
+      "expected": "7aa2596b1122e8afa5f1aff17f190cb4a3be371d822ea6e966468a8b0035172a",
+      "actual": "7aa2596b1122e8afa5f1aff17f190cb4a3be371d822ea6e966468a8b0035172a",
+      "match": true
+    },
+    {
+      "path": "tests/ui-uruk.test.js",
+      "status": 200,
+      "expected": "6741dc973a8e8c91eec533d9f4f5aed5c787b273b0495d7d3d516d58b8c9e9c2",
+      "actual": "6741dc973a8e8c91eec533d9f4f5aed5c787b273b0495d7d3d516d58b8c9e9c2",
+      "match": true
+    },
+    {
+      "path": "ui-uruk.js",
+      "status": 200,
+      "expected": "07dc8814a89bd60e4f139105355f96f2dfd2a5452a90e8f6d9122da83b76435e",
+      "actual": "07dc8814a89bd60e4f139105355f96f2dfd2a5452a90e8f6d9122da83b76435e",
+      "match": true
+    },
+    {
+      "path": "uruk-ui.css",
+      "status": 200,
+      "expected": "c8675aad8edbebc53cbf065985962944ff984d2f91f873768989ec6ff5a7774b",
+      "actual": "c8675aad8edbebc53cbf065985962944ff984d2f91f873768989ec6ff5a7774b",
+      "match": true
+    }
+  ],
+  "matched": 43,
+  "total": 43
+}
