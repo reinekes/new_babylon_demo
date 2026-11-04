@@ -30,6 +30,18 @@ export function districtRoadEdges(s) {
   return generateStreets([...(s?.buildings||[]),...(s?.roadAnchors||[])],s).edges;
 }
 
+// Grass/obstacle masks only depend on roads within .24 tiles. Keep source order
+// and the exact distance test; this index only rejects distant segments.
+export function indexNearbyRoads(edges){
+  const cells=new Map(),size=2,padding=.24;
+  for(const edge of edges){const [a,b]=edge;
+    for(let y=Math.floor((Math.min(a.y,b.y)-padding)/size);y<=Math.floor((Math.max(a.y,b.y)+padding)/size);y++)for(let x=Math.floor((Math.min(a.x,b.x)-padding)/size);x<=Math.floor((Math.max(a.x,b.x)+padding)/size);x++){
+      const key=`${x},${y}`;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(edge);
+    }
+  }
+  return (x,y)=>cells.get(`${Math.floor(x/size)},${Math.floor(y/size)}`)||[];
+}
+
 const unique=values=>[...new Set(values.map(x=>Math.round(x*1e9)/1e9))].sort((a,b)=>a-b);
 const sectionCache=new Map();
 function sectionCoordinates(s){
@@ -163,8 +175,8 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   }
   if(li.length){const lake=geometry('saved-lakes',lp,li,water);lake.setVerticesData(B.VertexBuffer.UVKind,lu);lake.receiveShadows=false;}
   const trunks=[],fronds=[],reeds=[],stones=[],scrub=[];
-  const initialRoads=districtRoadEdges(state);
-  const occupied=(x,y)=>state.buildings?.some(b=>Math.abs(b.x-x)<.7&&Math.abs(b.y-y)<.7)||initialRoads.some(([a,b])=>{
+  let initialRoads=districtRoadEdges(state),nearbyRoads=indexNearbyRoads(initialRoads);
+  const occupied=(x,y)=>state.buildings?.some(b=>Math.abs(b.x-x)<.7&&Math.abs(b.y-y)<.7)||nearbyRoads(x,y).some(([a,b])=>{
     const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy));
     return Math.hypot(x-a.x-dx*t,y-a.y-dy*t)<.22;
   });
@@ -183,7 +195,7 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
       const distance=Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0);
       alpha*=smooth(distance/.28);
     }
-    for(const [a,b] of initialRoads){
+    for(const [a,b] of nearbyRoads(x,y)){
       const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy));
       alpha*=smooth((Math.hypot(x-a.x-dx*t,y-a.y-dy*t)-.12)/.12);
     }
@@ -199,7 +211,17 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     const tri=grassGround.indices.slice(i,i+3);if(tri.every(k=>gc[k*4+3]===0))continue;
     gi.push(...tri);
   }
-  if(gi.length){const grass=geometry('soft-riparian-grass',gp,gi,grassMaterial,gc,[...ground.normals,...background.normals]);grass.hasVertexAlpha=true;grass.freezeWorldMatrix();}
+  let grassMesh=null;
+  if(gi.length){const grass=geometry('soft-riparian-grass',gp,gi,grassMaterial,gc,[...ground.normals,...background.normals]);grassMesh=grass;grass.hasVertexAlpha=true;grass.freezeWorldMatrix();}
+  function refreshRoadMask(s){
+    if(!grassMesh)return null;state=s;initialRoads=districtRoadEdges(s);nearbyRoads=indexNearbyRoads(initialRoads);
+    const colors=gc.slice(),indices=[];
+    for(let i=0;i<gp.length;i+=3)colors[i/3*4+3]=grassAlpha(gp[i]/TILE,gp[i+2]/TILE);
+    for(let i=0;i<grassGround.indices.length;i+=3){const tri=grassGround.indices.slice(i,i+3);if(!tri.every(k=>colors[k*4+3]===0))indices.push(...tri);}
+    grassMesh.setVerticesData(B.VertexBuffer.ColorKind,colors,true);grassMesh.setIndices(indices);
+    // Match the initial mesh's Float32 quantization before main-game tinting.
+    return {mesh:grassMesh,colors:grassMesh.getVerticesData(B.VertexBuffer.ColorKind).slice()};
+  }
   const palmMaterial=new B.PBRMaterial('living-date-palm-leaves',scene);ownedMaterials.push(palmMaterial);
   palmMaterial.albedoColor=C(.16,.25,.075);palmMaterial.roughness=.88;palmMaterial.metallic=0;
   const cylinder=(name,x,y,z,h,r1,r2,parts)=>{
@@ -296,5 +318,5 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     if(inds.length)roadMeshes.push(geometry('connected-earth-streets',pos,inds,roadMaterial));
   }
   updateRoads(state);
-  return {meshes,light(n){water.setFloat('night',n);},update(s,t){state=s;updateRoads(s);const direction=riverFlowVector(s);if(flowUniform.x!==direction.x||flowUniform.y!==direction.y){flowUniform.set(direction.x,direction.y);water.setVector2('riverFlow',flowUniform);}const time=Number.isFinite(t)?t:waterTime+.016;waterTime=time;water.setFloat('time',time);},dispose(){for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
+  return {meshes,refreshRoadMask,light(n){water.setFloat('night',n);},update(s,t){state=s;updateRoads(s);const direction=riverFlowVector(s);if(flowUniform.x!==direction.x||flowUniform.y!==direction.y){flowUniform.set(direction.x,direction.y);water.setVector2('riverFlow',flowUniform);}const time=Number.isFinite(t)?t:waterTime+.016;waterTime=time;water.setFloat('time',time);},dispose(){for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
 }

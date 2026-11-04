@@ -24,6 +24,14 @@ test('roads retain real endpoints, level and staged upgrade; unchanged state ret
  const signature=landscapeSignature(s);s.simTime+=1;assert.equal(landscapeSignature(s),signature);s.roads[0].level=3;assert.notEqual(landscapeSignature(s),signature);
  s.simTime-=1;s.roads[0].level=2;assert.equal(JSON.stringify(s),before);
 });
+test('resource extraction and seasonal replenishment do not invalidate landscape geometry',()=>{
+ const s=createGame({start:'established'}),signature=landscapeSignature(s),palms=landscapePlan(s).palms;
+ for(const d of s.world.deposits){d.amount=0;d.capacity=999;d.regeneration=12;}
+ assert.deepEqual(landscapePlan(s).palms,palms);
+ assert.equal(landscapeSignature(s),signature);
+ s.world.deposits[0].kind='stone';s.world.deposits[0].x+=1;
+ assert.notEqual(landscapeSignature(s),signature);
+});
 test('palms are deterministic dry cells clear of buildings; caravan follows its actual coordinates and stocks',()=>{
  const s=createGame({start:'established'}),before=JSON.stringify(s),a=landscapePlan(s),b=landscapePlan(s);assert.deepEqual(a.palms,b.palms);assert.ok(a.palms.length);
  for(const p of a.palms){assert.notEqual(terrain(Math.round(p.x),Math.round(p.y),s),'water');assert.ok(!s.buildings.some(b=>Math.abs(b.x-p.x)<.7&&Math.abs(b.y-p.y)<.7));}
@@ -88,7 +96,19 @@ test('real GLB palms share baked geometry; canals, road work and trade update a 
   s.rain=1;view.update(s,0);assert.ok(live.some(m=>m.name==='weather-rain'&&m.isEnabled()));s.rain=0;view.update(s,0);
   const count=scene.meshes.length;view.update(s,1);view.update(s,2);assert.equal(scene.meshes.length,count);assert.ok(live.includes(palm));assert.equal(JSON.stringify(s),before);
   s.trade.caravan.x=14;view.update(s,3);assert.equal(root.position.x,84);assert.equal(view.meshes,live);assert.equal(scene.meshes.length,count);
-  s.roads[0].level=3;view.update(s,4);assert.equal(street.isDisposed(),true);assert.ok(live.some(m=>m.name==='road-local-level-3'));assert.ok(live.includes(palm),'road upgrade does not recreate licensed palms');
+  const retained=live.filter(m=>m===street||m===palm||m===firstPatch||m.name.startsWith('valley-grass-')||m.name.startsWith('valley-reed-'));
+  for(const d of s.world.deposits)d.amount=(d.amount||0)+1;
+  view.update(s,3.5);
+  assert.ok(retained.every(m=>live.includes(m)&&!m.isDisposed()),'resource accounting retains existing road, palm, vegetation and geology meshes');
+  const ground=live.find(m=>m.name==='alluvial-valley'),cover=live.find(m=>m.name==='soft-riparian-grass'),originalCover=cover.getVerticesData('color').slice();
+  s.roadAnchors=[{type:'road',x:0,y:9}];view.update(s,3.6);
+  assert.ok(live.includes(ground)&&!ground.isDisposed(),'caravan entry reuses physical terrain and refreshes only its road mask');
+  assert.ok(live.find(m=>m.name==='road-local-level-2')===street,'a new caravan road does not rebuild unchanged road segments');
+  const fresh=await createGameLandscape(B,scene,s,materials);
+  try{assert.deepEqual(cover.getVerticesData('color'),fresh.meshes.find(m=>m.name==='soft-riparian-grass').getVerticesData('color'));assert.deepEqual(cover.getIndices(),fresh.meshes.find(m=>m.name==='soft-riparian-grass').getIndices());}finally{fresh.dispose();}
+  delete s.roadAnchors;view.update(s,3.7);assert.deepEqual(cover.getVerticesData('color'),originalCover,'departed caravan restores the same grass cover');
+  const upgradePalm=live.find(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);
+  s.roads[0].level=3;view.update(s,4);assert.equal(street.isDisposed(),true);assert.ok(live.some(m=>m.name==='road-local-level-3'));assert.ok(live.includes(upgradePalm),'road upgrade does not recreate licensed palms');
   s.trade.caravan=null;view.update(s,5);assert.equal(root.isDisposed(),true);assert.ok(!live.some(m=>m.name==='trade-reed-boat'));
   s.world.deposits.pop();view.update(s,6);assert.equal(firstPatch.isDisposed(),true);assert.equal(live.filter(m=>m.name.startsWith('resource-site-')).length,s.world.deposits.length);
   view.dispose();assert.equal(live.length,0);assert.equal(scene.meshes.length,0);

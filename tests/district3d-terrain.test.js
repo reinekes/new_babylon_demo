@@ -3,10 +3,21 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {river} from '../world.js';
-import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain} from '../district3d/terrain.js';
+import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain,indexNearbyRoads} from '../district3d/terrain.js';
 const context={console,setTimeout,clearTimeout,performance,window:{URL:globalThis.URL,addEventListener(){},removeEventListener(){}},navigator:{userAgent:"node"}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),context);
 const B=context.BABYLON;
+
+test('road spatial lookup retains every segment capable of cutting the grass mask',()=>{
+ const edges=Array.from({length:600},(_,i)=>[{x:i%30-5,y:Math.floor(i/30)-3},{x:i%30-4,y:Math.floor(i/30)-2.5}]);
+ edges.push([{x:-4,y:-4},{x:20,y:18}]);
+ const nearby=indexNearbyRoads(edges),distance=(x,y,[a,b])=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(x-a.x-dx*t,y-a.y-dy*t);};
+ for(let y=-4.25;y<20;y+=.25)for(let x=-5.25;x<26;x+=.25){
+  const all=edges.filter(e=>distance(x,y,e)<.24),local=nearby(x,y).filter(e=>distance(x,y,e)<.24);assert.deepEqual(local,all);
+ }
+ assert.ok(nearby(10,10).length<edges.length/10,'local masks do not scan the whole road network');
+ assert.deepEqual(nearby(200,200),[]);
+});
 
 test('3D river banks follow the original curved world river',()=>{
   for(let y=0;y<32;y+=.25){
@@ -55,4 +66,15 @@ test('terrain creates real meshes, preserves source state, and reuses static geo
   assert.equal(JSON.stringify(s),before);
   terrain.dispose();assert.equal(scene.meshes.length,0);
   scene.dispose();engine.dispose();
+});
+
+test('road mask refresh matches a fresh terrain and restores grass after an anchor disappears',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','grass','reed','stone'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ const s={buildings:[{type:'house',x:8,y:8},{type:'shrine',x:9,y:8}],roads:[],world:{lakes:[]}};
+ const view=createDistrictTerrain(B,scene,s,materials),grass=view.meshes.find(m=>m.name==='soft-riparian-grass'),original=grass.getVerticesData('color').slice(),indices=grass.getIndices().slice(),land=view.meshes.find(m=>m.name==='alluvial-valley');let fresh;
+ try{
+  s.roadAnchors=[{type:'road',x:12,y:8}];const before=JSON.stringify(s),mask=view.refreshRoadMask(s);fresh=createDistrictTerrain(B,scene,s,materials);const expected=fresh.meshes.find(m=>m.name==='soft-riparian-grass');
+  assert.equal(mask.mesh,grass);assert.ok(view.meshes.includes(land)&&!land.isDisposed());assert.deepEqual(grass.getVerticesData('color'),expected.getVerticesData('color'));assert.deepEqual(grass.getIndices(),expected.getIndices());assert.equal(JSON.stringify(s),before);
+  delete s.roadAnchors;view.refreshRoadMask(s);assert.deepEqual(grass.getVerticesData('color'),original);assert.deepEqual(grass.getIndices(),indices);
+ }finally{view.dispose();fresh?.dispose();scene.dispose();engine.dispose();}
 });

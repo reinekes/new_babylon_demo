@@ -58,7 +58,7 @@ test('portable HTML and real-plan ZIP roundtrip retain remaining dependencies an
   const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
   const dom=new JSDOM(fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),{url:'file:///portable/index.html',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.TextEncoder=TextEncoder;}});
   const api=dom.window.Roadmap,state=api.getData();
-  assert.equal(state.tasks.length,87);assert.equal(state.history.length,13);
+  assert.equal(state.tasks.length,86);assert.equal(state.history.length,13);
   assert.ok(state.releases.filter(x=>x.type==='release').length>=44);
   const transfer=api.createTransfer(state,['perf-city-4x'],{date:'2026-11-04',note:'Проверка передачи UTF-8: город и жители'});
   const folder=mkdtempSync(join(tmpdir(),'babylon-roadmap-'));
@@ -73,9 +73,9 @@ with zipfile.ZipFile(sys.argv[1]) as z:
  tasks=[m.task_from_record(r,'roadmap/plan.md') for r in m.parse_records(plan)]
  records=m.parse_records(report);assert len(records)==1
  done=m.split_field(records[0]['fields']['completed']);assert done==['perf-city-4x']
- assert len(tasks)==86 and 'город и жители' in report
+ assert len(tasks)==85 and 'город и жители' in report
  m.validate_tasks(tasks,done,pathlib.Path(sys.argv[2]).resolve().parent.parent)
- print('ZIP roundtrip PASS: 86 remaining, 1 archived, dependencies valid')`,path,resolve('roadmap/build.py')],{encoding:'utf8'});
+ print('ZIP roundtrip PASS: 85 remaining, 1 archived, dependencies valid')`,path,resolve('roadmap/build.py')],{encoding:'utf8'});
     assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/PASS/);
     assert.deepEqual(errors,[]);
   }finally{rmSync(folder,{recursive:true,force:true});dom.window.close();}

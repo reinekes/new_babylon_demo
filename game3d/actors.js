@@ -62,7 +62,7 @@ export function actorAnimation(c,distance=0){
 export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){return c.swimming?{height:WATER_HEIGHT-.48,pitch:1.12,stroke:reducedMotion?0:Math.sin(time*2.3),sway:reducedMotion?0:Math.sin(time*1.15)*.025}:null;}
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
-export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false}={}){
+export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false,warmHiddenResidents=false}={}){
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
  let disposed=false,poseTime=0,poseClock=0,bier=null,riteState=null,presentedState=null;
  const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
@@ -108,7 +108,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  function prune(root){for(const m of root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}}
  function box(name,parent,material,x,y,z,sx,sy,sz){const mesh=B.MeshBuilder.CreateBox(name,{width:sx,height:sy,depth:sz},scene);mesh.parent=parent;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=true;mesh.receiveShadows=true;meshes.push(mesh);return mesh;}
  function sphere(name,parent,material,x,y,z,sx,sy,sz){const mesh=B.MeshBuilder.CreateSphere(name,{diameter:1,segments:8},scene);mesh.scaling.set(sx,sy,sz);mesh.parent=parent;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=true;mesh.receiveShadows=true;meshes.push(mesh);return mesh;}
- function remove(a){if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();}prune(a.root);for(const g of a.groups?.values()||[])g.dispose();a.root.dispose();for(const s of a.skeletons||[])s.dispose();for(const m of a.materials||[])m.dispose();}
+ function remove(a){releaseSleepingRig(a);if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();}prune(a.root);for(const g of a.groups?.values()||[])g.dispose();a.root.dispose();for(const s of a.skeletons||[])s.dispose();for(const m of a.materials||[])m.dispose();}
  function instantiate(source,name,metadata){
   const copy=source.instantiateModelsToScene(n=>`${name}-${n}`,false,{doNotInstantiate:true});
   const root=new B.TransformNode(name,scene),model=new B.TransformNode(`${name}-model`,scene);model.parent=root;root.metadata=metadata;
@@ -517,6 +517,20 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(disposed)return;presentedState=null;
   if(state)update(state,0,{paused:true});
  }
+ function storeSleepingRig(a){
+  const rig={meshes:a.root.getChildMeshes(),transformNodes:[a.root,...a.root.getChildTransformNodes(false)],skeletons:[...a.skeletons],animationGroups:[...a.groups.values()],materials:[...a.materials]};
+  // Plain membership lists avoid AssetContainer's scene/context observers.
+  // These are already instantiated, actor-owned objects, not loader assets.
+  for(const [key,kind]of sleepingLists)for(const asset of rig[key])scene[`remove${kind}`](asset);
+  for(const mesh of rig.meshes){const i=meshes.indexOf(mesh);if(i>=0)meshes.splice(i,1);}a.sleepingRig=rig;
+ }
+ const sleepingLists=[['transformNodes','TransformNode'],['meshes','Mesh'],['skeletons','Skeleton'],['animationGroups','AnimationGroup'],['materials','Material']];
+ function releaseSleepingRig(a,restore=false){
+  const rig=a.sleepingRig;if(!rig)return;
+  if(restore){for(const [key,kind]of sleepingLists)for(const asset of rig[key])scene[`add${kind}`](asset);for(const mesh of rig.meshes)meshes.push(mesh);}
+  // Actor ownership/disposal remains with remove(a), including never-woken rigs.
+  a.sleepingRig=null;
+ }
  function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   const replacedState=presentedState!==state;presentedState=state;
@@ -536,7 +550,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // route sample, facing and gait phase when optional detail becomes ready.
    if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,eventContactActive:a.eventContactActive,ceremonyJoin:a.ceremonyJoin,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
-   a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;
+   releaseSleepingRig(a,true);a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;
    const interval=residentPoseInterval(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale,!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.id===focusId));
    a.root.simplifiedShadow=interval>0&&!c.swimming;const slot=residentPoseSlot(poseClock,interval,c.id);a.poseSample=slot===null||slot!==a.poseSlot||a.paused!==paused||!a.hasModelPose;a.poseSlot=slot;
    animate(a,c,state,dt,paused,speed,positions.get(c.id));
@@ -546,6 +560,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(manualIdle&&!a.manualIdle)g.pause();else if(!manualIdle&&a.manualIdle&&a.clip==='Idle_Loop')g.play(true);
    a.manualIdle=manualIdle;if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
   }
+  // Prepare at most one sleeping resident per frame. A dawn/season crowd can
+  // then reuse its rigs instead of cloning dozens of skeletons in one frame.
+  // Visible people always take priority and are never delayed by this warmup.
+  if(warmHiddenResidents){const c=(state.citizens||[]).find(c=>!seen.has(c.id)&&!people.has(c.id));if(c){
+   const anatomy=residentAnatomy(c.age),historical=historicalSource&&usesHistoricalMan(c),variant=historical?'historical-man':anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;
+   const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;
+   const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);a.root.setEnabled(false);storeSleepingRig(a);people.set(c.id,a);
+  }}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}

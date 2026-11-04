@@ -53,6 +53,32 @@ function mockContainer(scene,name){
  return container;
 }
 
+test('hidden resident rigs warm one per frame and are reused when a crowd leaves home',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async()=>mockContainer(scene,'resident');let view;
+ try{
+  scene.activeCamera=new B.FreeCamera('warmup-camera',new B.Vector3(0,5,-10),scene);
+  view=await createGameActors(B,scene,{}, {includeFauna:false,warmHiddenResidents:true});
+  const s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16);
+  s.citizens=Array.from({length:8},(_,i)=>({...base,id:1000+i,phase:'home',age:30,cargo:{},buildCargo:{}}));s.population=8;s.simTime=35;
+  assert.equal(actorViewCitizens(s).length,0);const before=JSON.stringify(s);
+  const disposeObservers=scene.onDisposeObservable.observers.length;
+  view.update(s,1/60);assert.equal(s.citizens.filter(c=>view.rootFor({citizenId:c.id})).length,1);
+  const sleeper=view.rootFor({citizenId:s.citizens[0].id});
+  assert.ok(sleeper.getChildMeshes().every(m=>!scene.meshes.includes(m)&&!view.meshes.includes(m)),'prepared sleepers stay outside scene and actor candidate lists');
+  for(let i=1;i<8;i++){view.update(s,1/60);scene.render();}
+  const roots=s.citizens.map(c=>view.rootFor({citizenId:c.id})),byId=new Map(s.citizens.map((c,i)=>[c.id,roots[i]]));assert.ok(roots.every(r=>r&&!r.isEnabled()));assert.equal(JSON.stringify(s),before);
+  s.citizens.shift();s.population--;
+  for(const c of s.citizens)c.phase='toStore';view.update(s,1/60);scene.render();
+  assert.ok(sleeper.isDisposed(),'a resident removed before first emergence releases its prepared rig');
+  assert.ok(roots[1].getChildMeshes().every(m=>scene.meshes.includes(m)&&view.meshes.includes(m)),'emerging residents join the scene without recloning');
+  const positions=residentViewPositions(s,actorViewCitizens(s));
+  for(const c of s.citizens){const root=byId.get(c.id);assert.equal(view.rootFor({citizenId:c.id}),root);assert.ok(root.isEnabled());assert.equal(root.position.x,positions.get(c.id).x*6);}
+  await new Promise(resolve=>setTimeout(resolve,0));
+  assert.equal(scene.onDisposeObservable.observers.length,disposeObservers,'woken or removed rigs retain no temporary container observers');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
+});
+
 test('GLB clones track exact simulation positions, pause, release vanished IDs, and keep live shadow list',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoader=B.SceneLoader.LoadAssetContainerAsync,loaded=[];
  B.SceneLoader.LoadAssetContainerAsync=async(path,file)=>{loaded.push(path+file);return mockContainer(scene,/^(resident|sumer-child|sumer-adolescent)/.test(file)?'resident':'sheep');};

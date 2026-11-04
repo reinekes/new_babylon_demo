@@ -1,0 +1,2200 @@
+{
+  "schemaVersion": 1,
+  "manifestRelease": "festival-candles-tests-20261028-1",
+  "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
+  "counts": {
+    "total": 66,
+    "active": 49,
+    "fallback": 9,
+    "optional": 4,
+    "spare": 4
+  },
+  "errors": [],
+  "runtimeInputs": [
+    {
+      "file": "courtyard/app.js",
+      "sha256": "8dce14f496b9123b4d553479bf102b8cc54daa6783bb19eef0694f6eaf0d958c"
+    },
+    {
+      "file": "game3d/actors.js",
+      "sha256": "79feaab698dfeead6249ae6f949f13fae7f38990dfa1a1511e9824077757c148"
+    },
+    {
+      "file": "game3d/ambient-fauna.js",
+      "sha256": "5f9733c412537ceba24568b1326ce6de3914ad67d989b9e60e251ff5a2c8fc1b"
+    },
+    {
+      "file": "game3d/asset-loading.js",
+      "sha256": "9d0b9c2c48e8535e5d09a8ba008d51c4262286ec8e39a67c337d5659ecbe1b91"
+    },
+    {
+      "file": "game3d/buildings.js",
+      "sha256": "dc511a2ab70d470efbff44f9797cfba60e5297427e6808ab6f28ad0d3a863415"
+    },
+    {
+      "file": "game3d/caravan.js",
+      "sha256": "b6de8a584685f7e2cc8b096b08fb5a32acfa732f81750a6f058cadfb07f04dfa"
+    },
+    {
+      "file": "game3d/crop-studio.js",
+      "sha256": "caf9ad862e6dcdd2b220cfb977868d2114cdce3dbe89605beec0cbdc9c889ca3"
+    },
+    {
+      "file": "game3d/festival-candles.js",
+      "sha256": "f65a301847cc20e41f263ab835f2a770600deff424d996f9a9d6d99700b486c2"
+    },
+    {
+      "file": "game3d/field-crops.js",
+      "sha256": "47978c851fa389afd0370a3f107afa1f78146a1f8377cc2c4bfe85627a29b656"
+    },
+    {
+      "file": "game3d/goats.js",
+      "sha256": "631a9c844e8bcf85c83ec3b8f8bb9c9dad0e86487243948b0900ce73f9d9cd0c"
+    },
+    {
+      "file": "game3d/imported-fauna.js",
+      "sha256": "2a0f26e47e32fb1ba3d682d3cebc115946814f88343c650798a91fa23a785af8"
+    },
+    {
+      "file": "game3d/jackals.js",
+      "sha256": "8d89234f938a2e716c170f931376f35cc55b533cc6db17f1cb0fa2a239fbd6d6"
+    },
+    {
+      "file": "game3d/landscape.js",
+      "sha256": "cc3625d1b9ab3a3fe6908a3c937453a849ecc7a4efd3467d79992a2780bb61b8"
+    },
+    {
+      "file": "game3d/miracle-garden.js",
+      "sha256": "bcba5c056c48c7a3c11dc31c7155e26d6fe0dc60ed9863c97eb49f3209fde56e"
+    },
+    {
+      "file": "game3d/river-craft.js",
+      "sha256": "afd5876cb1c383e3f506330f60d74bd7c835beb8b78a7ccbc86c1ae5b53d11f1"
+    },
+    {
+      "file": "game3d/sacred-models.js",
+      "sha256": "f120528d2de4322479419bc84721cafe48cf833044db84bbc007a042b3b2b739"
+    },
+    {
+      "file": "game3d/sky-flight.js",
+      "sha256": "9c7aeedd5c8984e67dd203d91b93066bdc23a16c09a6691b64ba87024fcc5463"
+    },
+    {
+      "file": "game3d/valley-vegetation.js",
+      "sha256": "c7ca5f6cbcb5065df7755e45af73d8195986e7930954be111d0dcd3356cc0040"
+    }
+  ],
+  "models": [
+    {
+      "file": "adobe-courtyard.glb",
+      "status": "optional",
+      "purpose": "Художественный двор courtyard.html; HOME_ASSET в buildings.js — неиспользуемая константа.",
+      "classificationEvidence": "courtyard/app.js|model('adobe-courtyard')",
+      "bytes": 4312216,
+      "sha256": "77e7cb06148b69c6d1f6e8cf9bdb075cb1542fe5efaf63ce28c54454c095eae0",
+      "version": "77e7cb06148b",
+      "triangles": 20500,
+      "meshes": 154,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon; photo materials Poly Haven",
+          "source": "scripts/art-courtyard/prepare_courtyard.py",
+          "license": "Project-authored geometry; explicit standalone asset license not recorded. Photo materials CC0.",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#lighting-and-architecture"
+        }
+      ],
+      "references": [
+        {
+          "model": "adobe-courtyard.glb",
+          "file": "courtyard/app.js",
+          "line": 59,
+          "kind": "dynamic-name"
+        },
+        {
+          "model": "adobe-courtyard.glb",
+          "file": "game3d/buildings.js",
+          "line": 18,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "ambient-bull.glb",
+      "status": "active",
+      "purpose": "Декоративный бык и коровы/телята молочного двора.",
+      "classificationEvidence": "game3d/ambient-fauna.js|dairyHerd",
+      "bytes": 5800664,
+      "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
+      "version": "5c28f930db52",
+      "triangles": 3610,
+      "meshes": 1,
+      "bones": 49,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Eat",
+        "SourceOriginal-Idle_01",
+        "SourceOriginal-Idle_02_Chew",
+        "SourceOriginal-Walk"
+      ],
+      "sources": [
+        {
+          "author": "Kapi777 (https://sketchfab.com/Kapi777)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/bullmotions-50982988cd354bfcb79f9820ba60a27b",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "ambient-bull.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 16,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "ambient-dog.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 2161184,
+      "sha256": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4",
+      "version": "50ad8270bc45",
+      "triangles": 11786,
+      "meshes": 1,
+      "bones": 39,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Take 001"
+      ],
+      "sources": [
+        {
+          "author": "MAXDESIGN-3D (https://sketchfab.com/MAXDESIGN)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/dog-animated-21b7336c58a442578ab88fc47233ef11",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "ambient-dog.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 13,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "ambient-donkey.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 4356268,
+      "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
+      "version": "dc6504da3ec7",
+      "triangles": 4386,
+      "meshes": 2,
+      "bones": 53,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Armature|call",
+        "SourceOriginal-Armature|front leg kick",
+        "SourceOriginal-Armature|grazing",
+        "SourceOriginal-Armature|idle",
+        "SourceOriginal-Armature|laydown",
+        "SourceOriginal-Armature|rear leg kick",
+        "SourceOriginal-Armature|run",
+        "SourceOriginal-Armature|sleep",
+        "SourceOriginal-Armature|trot",
+        "SourceOriginal-Armature|wake up",
+        "SourceOriginal-Armature|walk",
+        "SourceOriginal-Armature|wound"
+      ],
+      "sources": [
+        {
+          "author": "AnimalMesh 3D (https://sketchfab.com/AnimalMesh3D)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/animated-realistic-donkey-3d-animal-model-32ce1c2f276a4e27bb26b8bb99439bb7",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "ambient-donkey.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 15,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "ambient-duck.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 2740460,
+      "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
+      "version": "1e0c78ec30c2",
+      "triangles": 19315,
+      "meshes": 1,
+      "bones": 59,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Animation"
+      ],
+      "sources": [
+        {
+          "author": "icekic (https://sketchfab.com/icekic)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/duck-animation-4a95a539dab94eaf9314a93ddb743f4e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "ambient-duck.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 14,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "ambient-sheep-kenchoo.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 1777624,
+      "sha256": "4119278af230b7b25b1eea8742fec3ded4709c6845333285ff7b46bbc295f1a3",
+      "version": "4119278af230",
+      "triangles": 2290,
+      "meshes": 1,
+      "bones": 38,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Animation"
+      ],
+      "sources": [
+        {
+          "author": "kenchoo (https://sketchfab.com/kenchoo)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/sheep-08b05ae799d947f1a68c49b2d661eb53",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "ambient-sheep-kenchoo.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 17,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "caravan-camel.glb",
+      "status": "active",
+      "purpose": "Наземный торговый караван с реальным stock; облик/верблюд художественно условны.",
+      "classificationEvidence": "game3d/caravan.js|CARAVAN_MODELS",
+      "bytes": 4713460,
+      "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
+      "version": "8dd22d849992",
+      "triangles": 25914,
+      "meshes": 3,
+      "bones": 109,
+      "clips": [
+        "Idle",
+        "Idle2",
+        "Walk"
+      ],
+      "sources": [
+        {
+          "author": "eb78 (https://sketchfab.com/E.A.Cornell)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/camel-99af7daa5baf450ea7b809937937e6d5",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "caravan-camel.glb",
+          "file": "game3d/caravan.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "caravan-merchant.glb",
+      "status": "active",
+      "purpose": "Наземный торговый караван с реальным stock; облик/верблюд художественно условны.",
+      "classificationEvidence": "game3d/caravan.js|CARAVAN_MODELS",
+      "bytes": 2044340,
+      "sha256": "d27e2ab8720bda392d878484f7e9b1d575042fdc93db11428b5ad25883647d19",
+      "version": "d27e2ab8720b",
+      "triangles": 16854,
+      "meshes": 10,
+      "bones": 66,
+      "clips": [
+        "Idle",
+        "Walk"
+      ],
+      "sources": [
+        {
+          "author": "Dr Helmi Norman (https://sketchfab.com/helmi.norman)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/parameswara-chronicles-shaikh-abdul-aziz-ca665011d8a044edaa19d8c678436e7c",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "caravan-merchant.glb",
+          "file": "game3d/caravan.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "cat-sitting.glb",
+      "status": "active",
+      "purpose": "Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.",
+      "classificationEvidence": "game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS",
+      "bytes": 3289240,
+      "sha256": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3",
+      "version": "8c3cbc007f15",
+      "triangles": 7372,
+      "meshes": 3,
+      "bones": 63,
+      "clips": [
+        "Sit",
+        "Groom",
+        "SourceOriginal"
+      ],
+      "sources": [
+        {
+          "author": "Evil_Katz (https://sketchfab.com/Evil_Katz)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/an-animated-cat-aec25699660043a29595f9572149d1e8",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "cat-sitting.glb",
+          "file": "game3d/imported-fauna.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "cat-walk.glb",
+      "status": "active",
+      "purpose": "Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.",
+      "classificationEvidence": "game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS",
+      "bytes": 667472,
+      "sha256": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917",
+      "version": "eca672f2759a",
+      "triangles": 4575,
+      "meshes": 4,
+      "bones": 60,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal"
+      ],
+      "sources": [
+        {
+          "author": "LostBoyz2078 (https://sketchfab.com/LostModels2025)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/cat-walk-915680200c064815bba75e008ba9efb5",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "cat-walk.glb",
+          "file": "game3d/imported-fauna.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "crop-emmer.glb",
+      "status": "active",
+      "purpose": "Детали зрелых полей; при ошибке остаётся процедурный посев. Определение вида художественное.",
+      "classificationEvidence": "game3d/field-crops.js|CROP_ASSET",
+      "bytes": 631660,
+      "sha256": "0b09a7ff8d588d1730dc7f80f8df1885955943aa9c115434cbce4eed69e2a9c2",
+      "version": "0b09a7ff8d58",
+      "triangles": 720,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "ebmclachlan (https://sketchfab.com/ebmclachlan)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/yard-wheat-clump-b8bdffd307a64833b2acc986a87f3977",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "crop-emmer.glb",
+          "file": "game3d/field-crops.js",
+          "line": 9,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "date-palm.glb",
+      "status": "fallback",
+      "purpose": "Резерв основной valley-date-palm при ошибке; также художественный двор.",
+      "classificationEvidence": "game3d/landscape.js|if(!palmSources.length)",
+      "bytes": 2793460,
+      "sha256": "acf22f5fd38d6d734ad99c442095d63ee1f8af26133b1dd247a7884e85d0b9ea",
+      "version": "acf22f5fd38d",
+      "triangles": 42560,
+      "meshes": 4,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Innerscene; bark Poly Haven",
+          "source": "https://www.innerscene.com/tools/library/3d-parts/mature-date-palm-tree-af8bdc6f",
+          "license": "CC0-1.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#date-palm--cc0-10"
+        }
+      ],
+      "references": [
+        {
+          "model": "date-palm.glb",
+          "file": "courtyard/app.js",
+          "line": 59,
+          "kind": "dynamic-name"
+        },
+        {
+          "model": "date-palm.glb",
+          "file": "game3d/landscape.js",
+          "line": 127,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "festival-candle.glb",
+      "status": "active",
+      "purpose": "Свеча Ночи огней; загрузка по потребности, процедурный резерв. Историческая условность.",
+      "classificationEvidence": "game3d/festival-candles.js|festival-candle.glb",
+      "bytes": 24484,
+      "sha256": "a10d84770678d428175ca35078fa8a2ae1ba9493bed5b34cfb6d49d969bed93e",
+      "version": "a10d84770678",
+      "triangles": 422,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "al0sral0 (https://sketchfab.com/al0sral0)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/candle-light-d9d5ed5de83b4d899ab93f55bdc3d0bc",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "festival-candle.glb",
+          "file": "game3d/festival-candles.js",
+          "line": 18,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "gazelle-downloaded.glb",
+      "status": "active",
+      "purpose": "Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.",
+      "classificationEvidence": "game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS",
+      "bytes": 3731492,
+      "sha256": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922",
+      "version": "cb33e303498e",
+      "triangles": 8652,
+      "meshes": 1,
+      "bones": 31,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Rest",
+        "SourceOriginal"
+      ],
+      "sources": [
+        {
+          "author": "kenchoo (https://sketchfab.com/kenchoo)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/gazella-b2c70a0821ef4c6ca0c096e33bc97593",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "gazelle-downloaded.glb",
+          "file": "game3d/imported-fauna.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "goat-authored-lod.glb",
+      "status": "optional",
+      "purpose": "Авторская коза через API createGameGoats; main явно выбирает только downloaded.",
+      "classificationEvidence": "game3d/goats.js|authored:",
+      "bytes": 1649492,
+      "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+      "version": "c2d8562fa2e8",
+      "triangles": 32684,
+      "meshes": 1,
+      "bones": 18,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest"
+      ],
+      "sources": [
+        {
+          "author": "New Babylon",
+          "source": "scripts/art-courtyard/create_goat.py",
+          "license": "Project-authored; explicit standalone asset license not recorded.",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#goats--original-project-model-and-gerardoa400--cc-by-40"
+        }
+      ],
+      "references": [
+        {
+          "model": "goat-authored-lod.glb",
+          "file": "game3d/goats.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "goat-authored.glb",
+      "status": "spare",
+      "purpose": "Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.",
+      "classificationEvidence": "assets/art-courtyard/ATTRIBUTION.md|## Goats",
+      "bytes": 4000280,
+      "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+      "version": "af8de5e848bc",
+      "triangles": 83788,
+      "meshes": 1,
+      "bones": 18,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest"
+      ],
+      "sources": [
+        {
+          "author": "New Babylon",
+          "source": "scripts/art-courtyard/create_goat.py",
+          "license": "Project-authored; explicit standalone asset license not recorded.",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#goats--original-project-model-and-gerardoa400--cc-by-40"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "goat-downloaded.glb",
+      "status": "active",
+      "purpose": "Основная коза симуляции; исходный Idle, добавленная проектом ходьба.",
+      "classificationEvidence": "game3d/actors.js|variants:['downloaded']",
+      "bytes": 8930492,
+      "sha256": "873294979c9adc2cb9baa568c4dd7dd971f5ccc426d3ca3b7d9f4079d62cdbae",
+      "version": "873294979c9a",
+      "triangles": 41346,
+      "meshes": 5,
+      "bones": 34,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest",
+        "SourceRigAction"
+      ],
+      "sources": [
+        {
+          "author": "GerardoA400 (https://sketchfab.com/GerardoA400)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/goat-5d7431517b634f4e9e8c0f3729cd9c59",
+          "evidence": "asset.extras"
+        },
+        {
+          "author": "GerardoA400 (https://sketchfab.com/GerardoA400)",
+          "license": "CC-BY-4.0",
+          "source": "https://sketchfab.com/3d-models/goat-5d7431517b634f4e9e8c0f3729cd9c59",
+          "evidence": "asset.extras.new_babylon_adaptation"
+        }
+      ],
+      "references": [
+        {
+          "model": "goat-downloaded.glb",
+          "file": "game3d/goats.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "goat.glb",
+      "status": "spare",
+      "purpose": "Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.",
+      "classificationEvidence": "assets/art-courtyard/ATTRIBUTION.md|## Goats",
+      "bytes": 29877228,
+      "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+      "version": "27805596b278",
+      "triangles": 41346,
+      "meshes": 5,
+      "bones": 34,
+      "clips": [
+        "rigAction"
+      ],
+      "sources": [
+        {
+          "author": "GerardoA400 (https://sketchfab.com/GerardoA400)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/goat-5d7431517b634f4e9e8c0f3729cd9c59",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "historical-man.glb",
+      "status": "active",
+      "purpose": "Жрец/музыкант: дополнительный облик реального взрослого мужчины, загрузка по потребности.",
+      "classificationEvidence": "game3d/actors.js|requestHistoricalResident",
+      "bytes": 2157480,
+      "sha256": "77a56ff3693face64f95c20b5b7e4f384ad757103bae8ae3bdf45105e3a04f66",
+      "version": "77a56ff3693f",
+      "triangles": 35999,
+      "meshes": 1,
+      "bones": 34,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop",
+        "Source_Talking"
+      ],
+      "sources": [
+        {
+          "author": "ASYKIN (https://sketchfab.com/ASYKIN)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/talking-1-499aeb7a9c0941b295a3ae983cc06e11",
+          "evidence": "asset.extras"
+        },
+        {
+          "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+          "evidence": "asset.extras.native_resident.walk.source"
+        },
+        {
+          "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+          "sha256": "b98f7d15b68c0d3948989973451ca1f528fbb7a21f164c4ed0faadb9028d8e71",
+          "evidence": "assets/art-courtyard/historical-man-report.json#walk_source"
+        }
+      ],
+      "references": [
+        {
+          "model": "historical-man.glb",
+          "file": "game3d/actors.js",
+          "line": 86,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "human-native-adolescent.glb",
+      "status": "fallback",
+      "purpose": "Первый резерв соответствующего source-walk при ошибке загрузки.",
+      "classificationEvidence": "game3d/actors.js|return human('human-native-'",
+      "bytes": 395408,
+      "sha256": "25eeb9a345c151170b375a325eda7029b621b7d10266660fdfd57a7deca38a61",
+      "version": "25eeb9a345c1",
+      "triangles": 2240,
+      "meshes": 5,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "indigoat.makes (https://sketchfab.com/indigoat.makes)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/animated-low-poly-human-base-9919dad21c7e463c870c3ddc9769e7fe",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "human-native-adolescent.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "human-native-child.glb",
+      "status": "fallback",
+      "purpose": "Первый резерв соответствующего source-walk при ошибке загрузки.",
+      "classificationEvidence": "game3d/actors.js|return human('human-native-'",
+      "bytes": 395328,
+      "sha256": "424ffc52f765d1ba3c95740425a5618d96e2e375e75d831c0aa15090924081b1",
+      "version": "424ffc52f765",
+      "triangles": 2240,
+      "meshes": 5,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "indigoat.makes (https://sketchfab.com/indigoat.makes)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/animated-low-poly-human-base-9919dad21c7e463c870c3ddc9769e7fe",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "human-native-child.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "human-native-female.glb",
+      "status": "fallback",
+      "purpose": "Первый резерв соответствующего source-walk при ошибке загрузки.",
+      "classificationEvidence": "game3d/actors.js|return human('human-native-'",
+      "bytes": 406208,
+      "sha256": "04bc74c6cfc6b1ae92270394a7f4e6f3c3e197270685d78bce9624231acf41e5",
+      "version": "04bc74c6cfc6",
+      "triangles": 2318,
+      "meshes": 6,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "indigoat.makes (https://sketchfab.com/indigoat.makes)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/animated-low-poly-human-base-9919dad21c7e463c870c3ddc9769e7fe",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "human-native-female.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "human-native-male.glb",
+      "status": "fallback",
+      "purpose": "Первый резерв соответствующего source-walk при ошибке загрузки.",
+      "classificationEvidence": "game3d/actors.js|return human('human-native-'",
+      "bytes": 395448,
+      "sha256": "3b4129dc75724897c17754fa5964c780eb6bb952de0e1b5aead0d38606f89929",
+      "version": "3b4129dc7572",
+      "triangles": 2240,
+      "meshes": 5,
+      "bones": 41,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "indigoat.makes (https://sketchfab.com/indigoat.makes)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/animated-low-poly-human-base-9919dad21c7e463c870c3ddc9769e7fe",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "human-native-male.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "imported-boar.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 1951108,
+      "sha256": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89",
+      "version": "15710d8d8121",
+      "triangles": 13484,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "WildMesh 3D (https://sketchfab.com/WildMesh_3D)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ultimate-animal-pack-100-animals-50-off-c7be3f41fb3a4ed6be31d0bcd86a4684",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "imported-boar.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 11,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "imported-fox.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 1884684,
+      "sha256": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b",
+      "version": "f72eb437960d",
+      "triangles": 14192,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "WildMesh 3D (https://sketchfab.com/WildMesh_3D)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ultimate-animal-pack-100-animals-50-off-c7be3f41fb3a4ed6be31d0bcd86a4684",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "imported-fox.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 10,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "imported-goose.glb",
+      "status": "spare",
+      "purpose": "Сохранённый импорт; ни одного имени в текущих runtime-путях загрузки.",
+      "classificationEvidence": "assets/art-courtyard/ATTRIBUTION.md|Imported city fauna",
+      "bytes": 1310296,
+      "sha256": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f",
+      "version": "efa137a7461e",
+      "triangles": 10336,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "WildMesh 3D (https://sketchfab.com/WildMesh_3D)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ultimate-animal-pack-100-animals-50-off-c7be3f41fb3a4ed6be31d0bcd86a4684",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "imported-lioness.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 2322264,
+      "sha256": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e",
+      "version": "0a5491a85f5e",
+      "triangles": 16474,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "WildMesh 3D (https://sketchfab.com/WildMesh_3D)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ultimate-animal-pack-100-animals-50-off-c7be3f41fb3a4ed6be31d0bcd86a4684",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "imported-lioness.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 12,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "imported-orange-bird.glb",
+      "status": "active",
+      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "bytes": 570772,
+      "sha256": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d",
+      "version": "ead5b61ed9b5",
+      "triangles": 5062,
+      "meshes": 1,
+      "bones": 43,
+      "clips": [
+        "anim"
+      ],
+      "sources": [
+        {
+          "author": "Wen Yeh (https://sketchfab.com/wenyeh1110)",
+          "license": "CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)",
+          "source": "https://sketchfab.com/3d-models/bird-orange-0d31748606c2499fb652c0c1052b7cfa",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "imported-orange-bird.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 9,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "imported-sky-birds.glb",
+      "status": "spare",
+      "purpose": "Сохранённый импорт; ни одного имени в текущих runtime-путях загрузки.",
+      "classificationEvidence": "assets/art-courtyard/ATTRIBUTION.md|Imported city fauna",
+      "bytes": 195568,
+      "sha256": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04",
+      "version": "edd15834eabf",
+      "triangles": 810,
+      "meshes": 10,
+      "bones": 10,
+      "clips": [
+        "Scene"
+      ],
+      "sources": [
+        {
+          "author": "Zacxophone (https://sketchfab.com/Zacxophone)",
+          "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
+          "source": "https://sketchfab.com/3d-models/birds-3a9bb97be78944f9bffc23fb25c2154e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "jackal.glb",
+      "status": "active",
+      "purpose": "Шакалы похоронного обряда; художественная адаптация Wolf.",
+      "classificationEvidence": "game3d/jackals.js|JACKAL_MODEL",
+      "bytes": 1424196,
+      "sha256": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19",
+      "version": "1217179bfbcc",
+      "triangles": 7285,
+      "meshes": 1,
+      "bones": 46,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Pull",
+        "SourceTake001"
+      ],
+      "sources": [
+        {
+          "author": "OLEKSO (https://sketchfab.com/oleksabasarab)",
+          "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+          "source": "https://sketchfab.com/3d-models/wolf-e319f122c2474d3186b841b019fb0edd",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "jackal.glb",
+          "file": "game3d/jackals.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-birch-1.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 1782844,
+      "sha256": "9f56681314801d7eece638c1f5de2fba2d241e1f8294318497c603be164dbd72",
+      "version": "9f5668131480",
+      "triangles": 2819,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/five-birch-trees-pack-lowpoly-lods-08fe5117138e4fdaa7ca440ef1201e07",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-birch-1.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-cactus-1.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 471344,
+      "sha256": "9335455b95004935e61ba785e017af2735f6d858230dd10f26c2193cc3ef1425",
+      "version": "9335455b9500",
+      "triangles": 342,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/cactus-pack-18-var-game-ready-lod-realistic-297e91de8db54640aaa9489f982b088e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-cactus-1.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-cactus-2.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 466608,
+      "sha256": "ef509a7aa53269eda02a7381b6fe9aa92e286799d49c81063adb2098b185bd08",
+      "version": "ef509a7aa532",
+      "triangles": 246,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/cactus-pack-18-var-game-ready-lod-realistic-297e91de8db54640aaa9489f982b088e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-cactus-2.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-daisy-1.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 491816,
+      "sha256": "0d70be9d5a49362cf0f3ad59ee5140d08415ba27ce224cf138f8d3b726238d5f",
+      "version": "0d70be9d5a49",
+      "triangles": 738,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/daisy-models-pack-realistic-optimized-0748471f99f2416a8b66b522c293720f",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-daisy-1.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-daisy-2.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 488348,
+      "sha256": "102a31a3bfe728cd8c0ec25e2cd88f3b9b2e053afd6b4f4f3d28b7d4c761c6e0",
+      "version": "102a31a3bfe7",
+      "triangles": 704,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/daisy-models-pack-realistic-optimized-0748471f99f2416a8b66b522c293720f",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-daisy-2.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-green-grass-1.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 808096,
+      "sha256": "a398420a62ef60f99d407cf47938ab3c61b17d5f8988167c02763b70ea5c9a1c",
+      "version": "a398420a62ef",
+      "triangles": 12,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/grass-pack-of-9-vars-lowpoly-game-ready-0561204a1fa14c17939300ee1108948b",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-green-grass-1.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        },
+        {
+          "model": "miracle-green-grass-1.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-green-grass-2.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 808080,
+      "sha256": "f8c21a74aaf6321b6e0decfe6c480ad494a92e105b4a9a71d806cc3cb63020c7",
+      "version": "f8c21a74aaf6",
+      "triangles": 12,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/grass-pack-of-9-vars-lowpoly-game-ready-0561204a1fa14c17939300ee1108948b",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-green-grass-2.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        },
+        {
+          "model": "miracle-green-grass-2.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-green-grass-3.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 808736,
+      "sha256": "4b2d9b77801dc2db9dedf9b018b1bba9a1c2d527b73c10003d29a31ec43c84c6",
+      "version": "4b2d9b77801d",
+      "triangles": 18,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/grass-pack-of-9-vars-lowpoly-game-ready-0561204a1fa14c17939300ee1108948b",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-green-grass-3.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        },
+        {
+          "model": "miracle-green-grass-3.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-lilac-1.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 943984,
+      "sha256": "a7557142a6786545c1b51c16c6099792262b26dbff780a325fcc2b3fdef134be",
+      "version": "a7557142a678",
+      "triangles": 317,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/lilac-bush-pack-12-vars-lods-game-ready-10312697ec994fc99355cb94f1963a2e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-lilac-1.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-lilac-2.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 976476,
+      "sha256": "163ba076787ef1dab54780c2b980d0be07205fa24545d456f583a70035b22885",
+      "version": "163ba076787e",
+      "triangles": 748,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/lilac-bush-pack-12-vars-lods-game-ready-10312697ec994fc99355cb94f1963a2e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-lilac-2.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-snowdrop-1.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 575156,
+      "sha256": "bbce3f29355c4a41bb7ef769c4b74caebe79aef369d839cf9b8a8fefff2cfc3d",
+      "version": "bbce3f29355c",
+      "triangles": 609,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/snowdrop-pack-lowpoly-gameready-lod-14890248c9374b569a7bc0d497ccdbe0",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-snowdrop-1.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "miracle-snowdrop-2.glb",
+      "status": "active",
+      "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
+      "classificationEvidence": "game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS",
+      "bytes": 540300,
+      "sha256": "497b86d98ccab7c85056cb35ad85f262d59f74775ed6d786f2d2ece20db859fd",
+      "version": "497b86d98cca",
+      "triangles": 265,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "LOLIPOP (https://sketchfab.com/lolipop_1707)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/snowdrop-pack-lowpoly-gameready-lod-14890248c9374b569a7bc0d497ccdbe0",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "miracle-snowdrop-2.glb",
+          "file": "game3d/miracle-garden.js",
+          "line": 4,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "resident-lod.glb",
+      "status": "optional",
+      "purpose": "Только benchmark художественного двора; не основной городской LOD.",
+      "classificationEvidence": "courtyard/app.js|stress?model('resident-lod')",
+      "bytes": 325368,
+      "sha256": "c8c6c2dc43c0b1f525c8d62f12c3e9e38ce6eb178fecedcc30ddb87046822f9f",
+      "version": "c8c6c2dc43c0",
+      "triangles": 4147,
+      "meshes": 1,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Innerscene / MakeHuman-MPFB; Sam brisk walk",
+          "source": "https://www.innerscene.com/tools/library/3d-parts/human-base-mesh-with-editable-53-bone-rig-8e7c8ab1",
+          "license": "CC0-1.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#resident--cc0-10"
+        },
+        {
+          "author": "Innerscene — Sam brisk walk",
+          "source": "https://www.innerscene.com/tools/library/3d-parts/brisk-walk-sam-3d-person-animated-bed03fa4",
+          "license": "CC0-1.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#resident--cc0-10"
+        }
+      ],
+      "references": [
+        {
+          "model": "resident-lod.glb",
+          "file": "courtyard/app.js",
+          "line": 59,
+          "kind": "dynamic-name"
+        }
+      ]
+    },
+    {
+      "file": "resident.glb",
+      "status": "fallback",
+      "purpose": "Последний резерв взрослого мужчины; также художественный двор.",
+      "classificationEvidence": "game3d/actors.js|return human('resident')",
+      "bytes": 1524036,
+      "sha256": "a37c622a07b47384bfab4fff5d8c7258dc87879abaefb3037e53e65a132b8389",
+      "version": "a37c622a07b4",
+      "triangles": 22125,
+      "meshes": 7,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Innerscene / MakeHuman-MPFB; Sam brisk walk",
+          "source": "https://www.innerscene.com/tools/library/3d-parts/human-base-mesh-with-editable-53-bone-rig-8e7c8ab1",
+          "license": "CC0-1.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#resident--cc0-10"
+        },
+        {
+          "author": "Innerscene — Sam brisk walk",
+          "source": "https://www.innerscene.com/tools/library/3d-parts/brisk-walk-sam-3d-person-animated-bed03fa4",
+          "license": "CC0-1.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#resident--cc0-10"
+        }
+      ],
+      "references": [
+        {
+          "model": "resident.glb",
+          "file": "courtyard/app.js",
+          "line": 59,
+          "kind": "dynamic-name"
+        },
+        {
+          "model": "resident.glb",
+          "file": "game3d/actors.js",
+          "line": 55,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "river-cargo-boat.glb",
+      "status": "active",
+      "purpose": "Речной торговый визит и реальные партии груза; производная от современной реконструкции Viking boat.",
+      "classificationEvidence": "game3d/river-craft.js|RIVER_CRAFT_MODEL",
+      "bytes": 947632,
+      "sha256": "63a783f5a4af16bd733cf22155d2fb746d7b631c6890b05eaa2c88bfe6dcc9ec",
+      "version": "63a783f5a4af",
+      "triangles": 26935,
+      "meshes": 3,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Opus Poly (https://sketchfab.com/OpusPoly)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/gislinge-viking-boat-01098ad7973647a9b558f41d2ebc5193",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "river-cargo-boat.glb",
+          "file": "game3d/river-craft.js",
+          "line": 7,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "sacred-ishtar-gate.glb",
+      "status": "active",
+      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
+      "bytes": 742200,
+      "sha256": "28a1d83f539191461acd9e1565ad2f8c11a590fa2c4d72c488a5bd8da654f3fa",
+      "version": "28a1d83f5391",
+      "triangles": 2808,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "zporp (https://sketchfab.com/zporp)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ishtar-gate-babylon-cedaba88f4974431a27f3b30ad34f655",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "sacred-ishtar-gate.glb",
+          "file": "game3d/sacred-models.js",
+          "line": 5,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "sacred-shrine-3.glb",
+      "status": "active",
+      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
+      "bytes": 808408,
+      "sha256": "fe5378a54c4c42a45e2e3c08a130d3dd080219dc639b3527dc23e3e1290245b1",
+      "version": "fe5378a54c4c",
+      "triangles": 13400,
+      "meshes": 4,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "giulien (https://sketchfab.com/giulien)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ziggurat-1d5f43618e534766a2b2ebc91c09e154",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "sacred-shrine-3.glb",
+          "file": "game3d/sacred-models.js",
+          "line": 6,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "sacred-ziggurat-1.glb",
+      "status": "active",
+      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
+      "bytes": 44496,
+      "sha256": "c7896b1fc2901942327505bb595e536b50b7f4af804df5e846e78ee4908656fc",
+      "version": "c7896b1fc290",
+      "triangles": 560,
+      "meshes": 4,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "chaze (https://sketchfab.com/chaze)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ziggurat-d27eccd7e1b343da8d26441fbc3b0983",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "sacred-ziggurat-1.glb",
+          "file": "game3d/sacred-models.js",
+          "line": 7,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "sacred-ziggurat-3.glb",
+      "status": "active",
+      "purpose": "Загрузка по виду/уровню готового священного здания; поздние вавилонские образы условны.",
+      "classificationEvidence": "game3d/sacred-models.js|SACRED_MODELS",
+      "bytes": 3424520,
+      "sha256": "22b47280c8400788af91369b24eac2e8942ae040f55e5af9ae6aff6df992f7b2",
+      "version": "22b47280c840",
+      "triangles": 51463,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "haddly Anand Kumar S (https://sketchfab.com/hadleyanand)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/babylon-building-etemenanki-f4ca3d57822e4e73a4952a4fde7693f0",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "sacred-ziggurat-3.glb",
+          "file": "game3d/sacred-models.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "sheep.glb",
+      "status": "active",
+      "purpose": "Основное стадо овец симуляции; также художественный двор.",
+      "classificationEvidence": "game3d/actors.js|load('sheep')",
+      "bytes": 2024888,
+      "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
+      "version": "e370ab497359",
+      "triangles": 2940,
+      "meshes": 1,
+      "bones": 22,
+      "clips": [
+        "Graze",
+        "Idle",
+        "StartGraze",
+        "StartWalk",
+        "StopGraze",
+        "StopWalk",
+        "Walk"
+      ],
+      "sources": [
+        {
+          "author": "p0ss; texture basis titus tscharntke",
+          "source": "https://opengameart.org/content/sheep-rigged-textured-and-animated",
+          "license": "CC-BY-SA-3.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#sheep--cc-by-sa-30"
+        }
+      ],
+      "references": [
+        {
+          "model": "sheep.glb",
+          "file": "courtyard/app.js",
+          "line": 59,
+          "kind": "dynamic-name"
+        },
+        {
+          "model": "sheep.glb",
+          "file": "game3d/actors.js",
+          "line": 58,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "sky-bird-single.glb",
+      "status": "optional",
+      "purpose": "API декоративного полёта; main отключает includeSkyBirds. Небесные стаи main процедурные.",
+      "classificationEvidence": "game3d/actors.js|includeSkyBirds:false",
+      "bytes": 38304,
+      "sha256": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7",
+      "version": "964c4b58caf5",
+      "triangles": 162,
+      "meshes": 2,
+      "bones": 10,
+      "clips": [
+        "WingFlight"
+      ],
+      "sources": [
+        {
+          "author": "Zacxophone (https://sketchfab.com/Zacxophone)",
+          "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
+          "source": "https://sketchfab.com/3d-models/birds-3a9bb97be78944f9bffc23fb25c2154e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "sky-bird-single.glb",
+          "file": "game3d/sky-flight.js",
+          "line": 2,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "source-walk-adolescent.glb",
+      "status": "active",
+      "purpose": "Основной набор жителей; пол/возраст, родная ходьба.",
+      "classificationEvidence": "game3d/actors.js|sourceHuman",
+      "bytes": 505500,
+      "sha256": "e4bef22f87cd9cd5495d89a2484608fa60c72bfec4fdc3158145f90d3ffca8ee",
+      "version": "e4bef22f87cd",
+      "triangles": 7169,
+      "meshes": 8,
+      "bones": 79,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "source-walk-adolescent.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "source-walk-child.glb",
+      "status": "active",
+      "purpose": "Основной набор жителей; пол/возраст, родная ходьба.",
+      "classificationEvidence": "game3d/actors.js|sourceHuman",
+      "bytes": 505340,
+      "sha256": "15edccef3e0be906699414e20ceed609ebb95b91b725a6e88f4c75427068c666",
+      "version": "15edccef3e0b",
+      "triangles": 7169,
+      "meshes": 8,
+      "bones": 79,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "source-walk-child.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "source-walk-female.glb",
+      "status": "active",
+      "purpose": "Основной набор жителей; пол/возраст, родная ходьба.",
+      "classificationEvidence": "game3d/actors.js|sourceHuman",
+      "bytes": 716404,
+      "sha256": "aa326f1a562b1c5bea3d96488c5d03aa59953a4e0dbfffea3f57ba6d26be490a",
+      "version": "aa326f1a562b",
+      "triangles": 9884,
+      "meshes": 8,
+      "bones": 92,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "source-walk-female.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "source-walk-male.glb",
+      "status": "active",
+      "purpose": "Основной набор жителей; пол/возраст, родная ходьба.",
+      "classificationEvidence": "game3d/actors.js|sourceHuman",
+      "bytes": 505464,
+      "sha256": "3400d4b0792d0379427a269b60a7b885e33c3e77c73b77f32e9363688fa12acf",
+      "version": "3400d4b0792d",
+      "triangles": 7169,
+      "meshes": 8,
+      "bones": 79,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Iko Nia (https://sketchfab.com/iko.gazette)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/man-woman-walk-bbaa566445074509a32ef5059a9d0bc2",
+          "evidence": "asset.extras.native_resident.provenance"
+        }
+      ],
+      "references": [
+        {
+          "model": "source-walk-male.glb",
+          "file": "game3d/actors.js",
+          "line": 75,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "sumer-adolescent.glb",
+      "status": "fallback",
+      "purpose": "Следующий резерв мужчин/детей/подростков после native; у женщин этого резерва нет.",
+      "classificationEvidence": "game3d/actors.js|catch",
+      "bytes": 2887604,
+      "sha256": "f72963202f48d61b1640a85bfd2fd7eada1358cb0354a50313c2f19e76b419ab",
+      "version": "f72963202f48",
+      "triangles": 18046,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Trident.AI (https://sketchfab.com/Trident.AI)",
+          "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
+          "source": "https://sketchfab.com/3d-models/egyptian-people-b24eba1c3d56439a9dda74fc84065c37",
+          "evidence": "asset.extras.original"
+        }
+      ],
+      "references": [
+        {
+          "model": "sumer-adolescent.glb",
+          "file": "game3d/actors.js",
+          "line": 77,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "sumer-child.glb",
+      "status": "fallback",
+      "purpose": "Следующий резерв мужчин/детей/подростков после native; у женщин этого резерва нет.",
+      "classificationEvidence": "game3d/actors.js|catch",
+      "bytes": 2887448,
+      "sha256": "c21281130895d6899493270a0c16fd382a409a8676b6fa9d70f96215ca9adfa2",
+      "version": "c21281130895",
+      "triangles": 18046,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Trident.AI (https://sketchfab.com/Trident.AI)",
+          "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
+          "source": "https://sketchfab.com/3d-models/egyptian-people-b24eba1c3d56439a9dda74fc84065c37",
+          "evidence": "asset.extras.original"
+        }
+      ],
+      "references": [
+        {
+          "model": "sumer-child.glb",
+          "file": "game3d/actors.js",
+          "line": 77,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "sumer-people.glb",
+      "status": "fallback",
+      "purpose": "Следующий резерв мужчин/детей/подростков после native; у женщин этого резерва нет.",
+      "classificationEvidence": "game3d/actors.js|catch",
+      "bytes": 2451700,
+      "sha256": "ccf4d10d585968012b7ac9d436241794ea4a7ea953a28e2725808b88d7697a77",
+      "version": "ccf4d10d5859",
+      "triangles": 18046,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk_Loop",
+        "Idle_Loop"
+      ],
+      "sources": [
+        {
+          "author": "Trident.AI (https://sketchfab.com/Trident.AI)",
+          "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
+          "source": "https://sketchfab.com/3d-models/egyptian-people-b24eba1c3d56439a9dda74fc84065c37",
+          "evidence": "asset.extras.original"
+        }
+      ],
+      "references": [
+        {
+          "model": "sumer-people.glb",
+          "file": "game3d/actors.js",
+          "line": 76,
+          "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "valley-barley.glb",
+      "status": "active",
+      "purpose": "Детали зрелых полей; при ошибке остаётся процедурный посев. Определение вида художественное.",
+      "classificationEvidence": "game3d/field-crops.js|CROP_ASSET",
+      "bytes": 92432,
+      "sha256": "13292796c892ba54a1926c74db28288a93d884edb5b8aefbc7ca330c4c0a9b40",
+      "version": "13292796c892",
+      "triangles": 8,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "ljungman (https://sketchfab.com/ljungman)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/wheat-1e4643b88a1f4683a9765287ff2871cb",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-barley.glb",
+          "file": "game3d/field-crops.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-date-palm.glb",
+      "status": "active",
+      "purpose": "Основные пальмы долины/лесозаготовок; также crop-studio.",
+      "classificationEvidence": "game3d/valley-vegetation.js|palm:",
+      "bytes": 3167732,
+      "sha256": "7c190134e191f9637d1e684c9c05c94800c1cf8c8bff7a31a16c4537be58b8fb",
+      "version": "7c190134e191",
+      "triangles": 9941,
+      "meshes": 4,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "evolveduk (https://sketchfab.com/evolveduk)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/date-palm-11acf710e6c149daa8d6fb8cdc5d087f",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-date-palm.glb",
+          "file": "game3d/crop-studio.js",
+          "line": 24,
+          "kind": "literal"
+        },
+        {
+          "model": "valley-date-palm.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-dry-grass-1.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 463436,
+      "sha256": "0623698d3d8d1389984fdb2c897bee5191a6978f4efefc227c799586cf1bbd89",
+      "version": "0623698d3d8d",
+      "triangles": 20,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Pixel-bit (https://sketchfab.com/Pixel-bit)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/dry-grass-d1484537470441b999d37077aeb9b47a",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-dry-grass-1.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-dry-grass-2.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 462300,
+      "sha256": "d8df4a2baf7c38387a75ba90c4a443f5b8a783d3035bef32114bd25c5d45a45e",
+      "version": "d8df4a2baf7c",
+      "triangles": 8,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Pixel-bit (https://sketchfab.com/Pixel-bit)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/dry-grass-d1484537470441b999d37077aeb9b47a",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-dry-grass-2.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-dry-grass-3.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 463452,
+      "sha256": "7a463cc2cbb211a33be9405859677f3ac63313b81cc66bb647b99873c7c63852",
+      "version": "7a463cc2cbb2",
+      "triangles": 20,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Pixel-bit (https://sketchfab.com/Pixel-bit)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/dry-grass-d1484537470441b999d37077aeb9b47a",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-dry-grass-3.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-reed-1.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 1056420,
+      "sha256": "199d13f5cd2e9e084e3f5ed9c3848f637082219c3c1054bc934accaa9bf5e944",
+      "version": "199d13f5cd2e",
+      "triangles": 331,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Nicholas-3D (https://sketchfab.com/Nicholas01)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/reed-plants-pack-bc77ea5218e44f2dbc23b2a4aef0c898",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-reed-1.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-reed-2.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 1056616,
+      "sha256": "c1ec26132602e6f63a332e120da17e47a4cf07ec01bff4d6521f603ea4be608a",
+      "version": "c1ec26132602",
+      "triangles": 327,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Nicholas-3D (https://sketchfab.com/Nicholas01)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/reed-plants-pack-bc77ea5218e44f2dbc23b2a4aef0c898",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-reed-2.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "valley-reed-3.glb",
+      "status": "active",
+      "purpose": "Растительность обычной долины; зелёная трава также в чудесном саду.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 1055284,
+      "sha256": "8996a8e85234fbd82dc930a112aa36f283945768ef99b6c47f9ebaa736d2a452",
+      "version": "8996a8e85234",
+      "triangles": 296,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Nicholas-3D (https://sketchfab.com/Nicholas01)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/reed-plants-pack-bc77ea5218e44f2dbc23b2a4aef0c898",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "valley-reed-3.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 8,
+          "kind": "literal"
+        }
+      ]
+    }
+  ]
+}
