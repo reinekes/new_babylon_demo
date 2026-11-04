@@ -1,3 +1,4 @@
+import {buildingDefinition} from './building-presentation.js';
 import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,levelOf} from './definitions.js';
 import {stockStores,syncInventory,putStock} from './inventory.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
@@ -72,7 +73,7 @@ export function instantTestUpgrade(state,key){
  // A zero-cost explicit order uses the normal completion hooks. No reserved
  // materials, in-flight cargo or builders are fabricated by this test action.
  building.construction=createOrder({},levelOf(building)+1,'upgrade');building.construction.work=workRequired(building);finishConstruction(state);syncCitizens(state);syncSacredUnlocks(state);
- note(state,`Мгновенно улучшено: ${BUILDINGS[building.type].name}, уровень ${building.level}.`);return {ok:true,key,level:building.level};
+ note(state,`Мгновенно улучшено: ${buildingDefinition(state,building.type).name}, уровень ${building.level}.`);return {ok:true,key,level:building.level};
 }
 
 export function killTestCitizens(state,idsOrCount=5){

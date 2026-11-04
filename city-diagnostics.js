@@ -1,3 +1,4 @@
+import {buildingDefinition} from './building-presentation.js';
 import {PROFESSION_NAMES,professionRole,professionMatchesTask} from './professions.js';
 import {BUILDINGS,buildingKey,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
@@ -109,11 +110,11 @@ export function cityDiagnostics(s){
   const assigned=b.construction?[]:citizens.filter(c=>adult(c)&&(c.workplace===key||c.work===key&&!c.workplace)),fixed=assigned.filter(c=>c.workplace===key),capacity=['healer','musicHouse'].includes(b.type)?1:2,matching=assigned.filter(c=>professionMatchesTask(c,b.type)).length,count=assigned.length;
   const state=!count?'empty':count<capacity?'partial':matching>=count?'matched':'full';
   const staffing=b.construction?null:{count,capacity,matching,state,label:{empty:'Нет работников',partial:'Не все места заняты',full:'Все места заняты',matched:'Все места заняты по призванию'}[state]};
-  return {key,x:b.x,y:b.y,type:b.type,name:BUILDINGS[b.type]?.name||b.type,workers:workers.map(c=>c.id),assigned:assigned.map(c=>c.id),fixed:fixed.map(c=>c.id),staffing,inventory:buildingInventory(s,b),builders:workers.filter(c=>c.site===key&&c.siteDuty==='builder').map(c=>c.id),carriers:workers.filter(c=>c.site===key&&c.siteDuty==='carrier').map(c=>c.id),working:workers.filter(c=>['working','constructing'].includes(c.phase)).length,reason:why,status:(why.code==='construction'&&workers.some(c=>c.phase==='constructing')||['drying','firing','working','delivery','season','night'].includes(why.code))?'process':'attention'};
+  return {key,x:b.x,y:b.y,type:b.type,name:buildingDefinition(s,b.type)?.name||b.type,workers:workers.map(c=>c.id),assigned:assigned.map(c=>c.id),fixed:fixed.map(c=>c.id),staffing,inventory:buildingInventory(s,b),builders:workers.filter(c=>c.site===key&&c.siteDuty==='builder').map(c=>c.id),carriers:workers.filter(c=>c.site===key&&c.siteDuty==='carrier').map(c=>c.id),working:workers.filter(c=>['working','constructing'].includes(c.phase)).length,reason:why,status:(why.code==='construction'&&workers.some(c=>c.phase==='constructing')||['drying','firing','working','delivery','season','night'].includes(why.code))?'process':'attention'};
  });
  const neighborhoods=new Map();
  const groupFor=(id,label,focus)=>{if(!neighborhoods.has(id))neighborhoods.set(id,{key:id,label,focus,homeKeys:[],storeKeys:[],population:0,workers:0,cargo:0,food:0,homeFood:0,foodInTransit:0,water:0,waterInTransit:0,waterDemand:0,troubled:0,reasons:[]});return neighborhoods.get(id);};
- for(const st of stores){const key=buildingKey(st),n=groupFor(`store:${key}`,`${BUILDINGS[st.type]?.name||'Склад'} · ${st.x}, ${st.y}`,key);n.type=st.type;n.storeKeys.push(key);n.food+=food.get(key)||0;}
+ for(const st of stores){const key=buildingKey(st),n=groupFor(`store:${key}`,`${buildingDefinition(s,st.type)?.name||'Склад'} · ${st.x}, ${st.y}`,key);n.type=st.type;n.storeKeys.push(key);n.food+=food.get(key)||0;}
  for(const h of homes){const near=stores.filter(st=>same(h.key,buildingKey(st))).sort((a,b)=>Math.hypot(a.x-h.x,a.y-h.y)-Math.hypot(b.x-h.x,b.y-h.y))[0],component=components.get(h.key),n=near?neighborhoods.get(`store:${buildingKey(near)}`):groupFor(`isolated:${component??h.key}`,'Без местного склада',h.key);
   n.homeKeys.push(h.key);n.population+=h.population;n.workers+=h.workers;n.homeFood+=h.food;n.foodInTransit+=h.foodInTransit;n.water+=h.water;n.waterInTransit+=h.waterInTransit;n.waterDemand+=h.waterDemand;n.troubled+=Number(h.reasons.length>0);for(const r of h.reasons)if(!n.reasons.some(v=>v.code===r.code))n.reasons.push(r);
  }

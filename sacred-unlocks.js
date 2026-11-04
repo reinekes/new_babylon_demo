@@ -1,4 +1,5 @@
-import {BUILDINGS,MIRACLES,buildingKey,isOperational} from './definitions.js';
+import {buildingDefinition} from './building-presentation.js';
+import {MIRACLES,buildingKey,isOperational} from './definitions.js';
 import {affectResidents} from './wellbeing.js';
 import {worldWidth,worldHeight} from './world.js';
 
@@ -11,12 +12,12 @@ export function syncSacredUnlocks(s){
   if(!m.unlockBuilding||s.sacred.unlocks[id])continue;
   const source=(s.buildings||[]).find(b=>b.type===m.unlockBuilding&&isOperational(b));if(!source)continue;
   s.sacred.unlocks[id]={year:s.year,tick:s.tick,source:buildingKey(source)};changed=true;
-  s.news??=[];s.news.unshift({title:`Новое чудо: ${m.name}`,text:`${BUILDINGS[source.type].name} завершены. В панели чудес появился синий дар.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
+  s.news??=[];s.news.unshift({title:`Новое чудо: ${m.name}`,text:`${buildingDefinition(s,source.type).name} завершены. В панели чудес появился синий дар.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
  }
  return changed;
 }
 export function miracleLockReason(s,id){
- const m=MIRACLES[id];if(m?.unlockBuilding&&!s.sacred?.unlocks?.[id])return `Сначала заверши: ${BUILDINGS[m.unlockBuilding].name}`;
+ const m=MIRACLES[id];if(m?.unlockBuilding&&!s.sacred?.unlocks?.[id])return `Сначала заверши: ${buildingDefinition(s,m.unlockBuilding).name}`;
  if(m?.unlockQuest==='relic'&&s.relicQuest?.phase!=='completed')return 'Сначала найди артефакт и доставь его в храм';
  if(m?.unlockQuest==='land'&&s.landRelicQuest?.phase!=='completed')return 'Сначала найди Печать земли и доставь её в храм';
  return '';

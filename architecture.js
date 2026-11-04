@@ -1,5 +1,6 @@
+import {isStrictSumer} from './scenario-profiles.js';
 import {drawArtisan} from './artisan-art.js';
-import {drawCourtyardHouse,drawBuildingFinish} from './map-art.js';
+import {drawCourtyardHouse,drawBuildingFinish,drawSumerSacred} from './map-art.js';
 import {drawHarbor} from './waterfront-art.js';
 import {masonryBox} from './masonry-art.js';
 import {cropFor} from './agriculture.js';
@@ -10,6 +11,7 @@ import {seed} from './city-life.js';
 // All solid architecture is painted inside its depth-sorted scene entry.
 // Details and windows therefore occlude residents exactly like the main walls.
 export function drawBuilding(r, b, state, t) {
+  if(isStrictSumer(state)&&['shrine','ziggurat','ishtarGate'].includes(b.type)){drawSumerSacred(r,b,state);return;}
   if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
   if(['pottery','brewery'].includes(b.type)){drawArtisan(r,b,state,t);return;}
   if(b.type==='harbor'){drawHarbor(r,b,state);return;}

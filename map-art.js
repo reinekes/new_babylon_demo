@@ -86,3 +86,29 @@ export function drawBuildingFinish(r,b,state){
   for(const side of [-1,1]){vessel(a,side*24,7,.75);a.box(side*21,3,3,1.5,4,'#e5c89c','#b68a61','#ccaa7e');}
  }
 }
+
+// Raw-brick sacred silhouettes for strict towns. These are game interpretations;
+// the upper stages at Ur are reconstructed, not a surviving complete model.
+export function drawSumerSacred(r,b,state){
+ const a=brush(r,b),level=levelOf(b);a.c.save();
+ a.oval(4,7,30,9,'#625e4430');
+ if(b.type==='ishtarGate'){
+  a.box(0,0,29,14,2,EARTH.clay,EARTH.shade,EARTH.plaster);
+  // Two solid piers and a timber lintel leave the centre of the passage open.
+  for(const x of [-19,19]){a.box(x,-2,9,6,42,EARTH.plaster,EARTH.shade,EARTH.ivory);a.box(x,-2,10,7,4,EARTH.clay,EARTH.shade,EARTH.plaster);}
+  a.box(0,-31,11,6,4,'#9b7650','#5b3c27','#795237');
+  a.box(0,-35,28,6,9,EARTH.plaster,EARTH.shade,EARTH.ivory);
+  a.line([[-28,-44],[0,-30],[28,-44]],'#f0dfb7',1.3);
+ }else{
+  const big=b.type==='ziggurat',stages=big?level:1,step=big?14:5;
+  for(let i=0;i<stages;i++){const w=(big?29:26)-i*6;a.box(0,-i*step,w,w*.5,step,EARTH.clay,'#aa7858','#ca9b75');}
+  const h=stages*step,w=big?11:19,d=big?6:9;
+  a.box(0,-h,w,d,22,EARTH.plaster,EARTH.shade,EARTH.ivory);rooftop(a,0,-h-22,w+1,d+.5);
+  a.poly([[2,-h-12],[7,-h-14.5],[7,-h+1],[2,-h+3.5]],EARTH.dark);
+  a.line([[1,-h-13],[8,-h-16]],'#795237',2);
+  for(const x of [-w+2,-w+6])a.box(x,-h,1.1,.6,21,EARTH.ivory,EARTH.shade,EARTH.plaster);
+  if(big){a.poly([[-5,14],[5,9],[5,-h+1],[-5,-h+6]],EARTH.plaster);for(let y=0;y<h;y+=3)a.line([[-5,12-y],[5,7-y]],EARTH.shade,.8);}
+  else{vessel(a,-23,7,.6);vessel(a,23,7,.6);}
+ }
+ a.c.restore();
+}
