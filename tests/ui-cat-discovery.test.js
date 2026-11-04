@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {JSDOM} from 'jsdom';
+import {createGame} from '../engine.js';
+import {strictScenario,CAT_DISCOVERY_RULES} from '../scenario-profiles.js';
+import {awakeningHTML,createGodhoodControls} from '../ui-godhood.js';
+import * as catalog from '../ui-catalog.js';
+function fixture(){const s=createGame({mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}}),c=s.citizens.find(c=>c.age>=16);Object.assign(s.godhood,{stage:'recognized',witnessId:c.id,recognitionAt:0,believerIds:[c.id]});return {s,c};}
+function domFor(s,callbacks={}){const dom=new JSDOM('<main></main>'),root=dom.window.document.querySelector('main'),controls=createGodhoodControls({root,getState:()=>s,document:dom.window.document,...callbacks});return {dom,root,controls};}
+test('fisher guidance counts only the selected real learner and preserves the builder path without mutating the city',()=>{
+ const {s,c}=fixture();s.catFishing.candidateId=c.id;s.catFishing.completed=2;s.catFishing.lessons[c.id]=2;const before=JSON.stringify(s),{dom,root,controls}=domFor(s);
+ const guide=root.querySelector('.cat-discovery-guide');assert.ok(guide);assert.match(guide.textContent,/2 из 3/);assert.equal(guide.querySelector('[data-resident-id]').dataset.residentId,String(c.id));assert.ok(root.querySelector('[data-first-builder]'));assert.equal(JSON.stringify(s),before);controls.dispose();dom.window.close();
+});
+test('prepared fisher button uses the existing inspiration command once and disables it without faith',()=>{
+ const {s,c}=fixture();s.catFishing.lessons[c.id]=3;s.catFishing.candidateId=c.id;s.catFishing.completed=3;s.resources.faith=1;const calls=[],{dom,root,controls}=domFor(s,{onFisher:id=>calls.push(id)});
+ const b=root.querySelector('[data-cat-fisher]');assert.ok(b);assert.equal(b.disabled,false);assert.match(b.textContent,/1 вера/);b.click();assert.deepEqual(calls,[c.id]);s.resources.faith=0;controls.refresh();assert.equal(root.querySelector('[data-cat-fisher]').disabled,true);controls.dispose();dom.window.close();
+});
+test('offering, night and ready trial guide the player without requiring a surviving initiator',()=>{
+ const {s}=fixture();Object.assign(s.catDiscovery,{phase:'offering',initiatorId:999,trace:{x:8,y:9,site:'9,8'},offering:{kind:'water',amount:1,sources:{'8,8':1}}});const calls=[],{dom,root,controls}=domFor(s,{onCatFocus:()=>calls.push('focus'),onCat:()=>calls.push('cast')});
+ assert.match(root.querySelector('.cat-discovery-guide').textContent,/дождись ночи/i);root.querySelector('[data-cat-focus]').click();s.catDiscovery.phase='eyes';controls.refresh();assert.match(root.querySelector('.cat-discovery-guide').textContent,/рассвет/i);
+ s.catDiscovery.phase='opened';s.catDiscovery.trial='ready';controls.refresh();const cast=root.querySelector('[data-cat-cast]');assert.ok(cast);assert.match(cast.textContent,/0 веры/);cast.click();assert.deepEqual(calls,['focus','cast']);
+ s.catDiscovery.trial='spent';controls.refresh();assert.equal(root.querySelector('[data-cat-cast]'),null);assert.match(root.querySelector('.cat-discovery-guide').textContent,/12 веры/);controls.dispose();dom.window.close();
+});
+test('classic cities never display the C01 task',()=>{for(const s of [createGame({mode:'awakening'}),createGame({mode:'mature'})])assert.doesNotMatch(awakeningHTML(s),/cat-discovery-guide/);});
+test('miracle card updates every price and accessibility label between trial, paid and classic saves',()=>{
+ const {s}=fixture(),dom=new JSDOM('<details><small class="miracle-summary-status"></small><div class="miracle-facts"><span></span></div><p class="miracle-unavailable"></p><button class="miracle-cast"></button></details>'),details=dom.window.document.querySelector('details');
+ Object.assign(s.catDiscovery,{phase:'opened',trial:'ready'});const before=JSON.stringify(s);catalog.updateMiracleCard(details,s,'cat','');assert.equal(details.querySelector('button').textContent,'Призвать · 0 веры');assert.match(details.querySelector('button').getAttribute('aria-label'),/0 веры/);assert.equal(details.querySelector('.miracle-facts span').textContent,'0 веры · первый дар');assert.equal(JSON.stringify(s),before);
+ s.catDiscovery.trial='spent';catalog.updateMiracleCard(details,s,'cat','Нужно 12 веры');assert.equal(details.querySelector('button').disabled,true);assert.match(details.querySelector('button').textContent,/12 веры/);assert.match(details.querySelector('.miracle-unavailable').textContent,/12 веры/);
+ catalog.updateMiracleCard(details,createGame(),'cat','');assert.equal(details.querySelector('button').disabled,false);assert.equal(details.querySelector('.miracle-facts span').textContent,'12 веры');dom.window.close();
+});

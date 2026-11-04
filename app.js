@@ -1,3 +1,5 @@
+import {miraclePrice} from './miracle-discovery.js';
+import {miracleCelebrationReason} from './miracle-celebration.js';
 import {createNewCity} from './new-game.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {createUrukInterface} from './ui-uruk.js';
@@ -42,7 +44,7 @@ import {renderStaffing,selectedProfession,citizenProfessionName} from './ui-prof
 import {renderCityTools} from './ui-city-tools.js';
 import {waterSummary} from './water.js';
 import {RESOURCE_GROUPS,seasonBalance} from './season-balance.js';
-import {updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
+import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
 import {uiIcon} from './ui-icons.js';
 import {clothingStatus} from './clothing.js';
 import {stockStores,storeCapacity,storeStock} from './inventory.js';
@@ -120,7 +122,7 @@ document.addEventListener('click',event=>{if(!relicControlActive(state))return;c
 
 createPanelControls({onResize:()=>renderer.resize()});
 const modeBadge=document.createElement('span');modeBadge.className='game-mode-label';document.querySelector('.game3d-options,.panel-dock')?.append(modeBadge);
-const godhoodUI=createGodhoodControls({root:$('city').parentNode,getState:()=>state,onSign:()=>{const r=beginFirstSign(state);if(mutate(r,'Человек услышал зов и идёт к источнику')){paused=false;const c=state.citizens.find(c=>c.id===r.citizenId);if(c)renderer.focusOn(c.x,c.y);save();update();}},onInspire:id=>{const r=inspireCitizen(state,id,'builder');mutate(r,r.success?'Первый строитель вдохновлён. Заложи простой двор: после двух завершённых работ он достигнет II уровня.':'Вдохновение не удалось');},onFocus:()=>{const c=state.citizens.find(c=>c.id===state.godhood?.witnessId);if(c)renderer.focusOn(c.x,c.y);},onBuild:type=>{if(selection!==type)choose(type);},onWork:()=>showCityOverview('workshops'),onRelics:()=>showRelicIntro()});
+const godhoodUI=createGodhoodControls({root:$('city').parentNode,getState:()=>state,onSign:()=>{const r=beginFirstSign(state);if(mutate(r,'Человек услышал зов и идёт к источнику')){paused=false;const c=state.citizens.find(c=>c.id===r.citizenId);if(c)renderer.focusOn(c.x,c.y);save();update();}},onInspire:id=>{const r=inspireCitizen(state,id,'builder');mutate(r,r.success?'Первый строитель вдохновлён. Заложи простой двор: после двух завершённых работ он достигнет II уровня.':'Вдохновение не удалось');},onFocus:()=>{const c=state.citizens.find(c=>c.id===state.godhood?.witnessId);if(c)renderer.focusOn(c.x,c.y);},onBuild:type=>{if(selection!==type)choose(type);},onWork:()=>showCityOverview('workshops'),onRelics:()=>showRelicIntro(),onFisher:id=>{const r=inspireCitizen(state,id,'fisher');mutate(r,r.success?'Рыбак принял призвание. Дождись его подношения у хранилища.':'Вдохновение пока не принято · потрачена 1 вера');},onCat:()=>{const el=$('miracle-cat'),details=el?.closest('details');if(details){if(document.body.dataset.urukPanel!=='miracles')urukUI?.open('miracles');details.open=true;details.scrollIntoView({block:'nearest'});el.focus();}},onCatFocus:()=>{const p=state.catDiscovery?.trace;if(p)renderer.focusOn(p.x,p.y);}});
 const resident=value=>residentLinkHTML(state,value);
 bindResidentLinks(document,{getState:()=>state,onLiving:c=>{if(dialog.open)closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);},onArchived:id=>showLifeAnalytics(id)});
 function toast(text){setHTML($('toast'),residentTextHTML(state,text));$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3500);}
@@ -398,8 +400,8 @@ function update(){
  if(signature!==newsSignature){newsSignature=signature;const linkedText=residentTextRenderer(state);$('news').innerHTML=state.news.map(n=>`<article class="news-item ${['good','bad','miracle','year','build','info'].includes(n.kind)?n.kind:'info'}"><small>ГОД ${n.year} · ${SEASONS[n.season].toUpperCase()}</small><h3>${linkedText(n.title)}</h3><p>${linkedText(n.text.replace('Приведи кошку или назначь сторожа.','Назначь сторожа: жители пока защищают запасы своими силами.'))}</p></article>`).join('');}
  const g=goals(state);setHTML($('goals'),g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join(''));$('goal-number').textContent=`${g.filter(v=>v.done).length} / 5`;
  for(const [id,m]of Object.entries(MIRACLES)){
-  if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m);const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<m.cost?`Нужно ${m.cost} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'&&r.food>=storage(state)?'Амбары полны':'');
-  el.disabled=!!reason;el.title=`${m.name} · ${m.cost} веры. ${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);const details=el.closest('details');details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(state,id));details.querySelector('.miracle-summary-status').textContent=reason||`${m.cost} веры · ${DOMAIN_NAMES[m.domain]}`;const note=details.querySelector('.miracle-unavailable');note.hidden=!reason;note.textContent=reason;
+  if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'&&r.food>=storage(state)?'Амбары полны':'');
+  updateMiracleCard(el.closest('details'),state,id,reason);
  }
  $('season-countdown').textContent=`Месяц ${calendar.number} / 12 · день ${calendar.day}${ceremonyActive(state)?' · время церемонии':paused?' · пауза':''}`;
  $('pause').textContent=paused?'▶':'Ⅱ';$('pause').setAttribute('aria-label',paused?'Продолжить время':'Приостановить время');$('pause').classList.toggle('active',paused);$('next-season').disabled=seasonJumping||!!seasonJumpReason(state);$('next-season').title=seasonJumpReason(state)||(state.festival||state.miracleCelebration?'Закончить праздник и перейти к следующему сезону':'Перейти к следующему сезону');

@@ -1,3 +1,4 @@
+import {catDiscoveryHTML} from './ui-cat-discovery.js';
 import {godhoodView,gameMode,builderLevel,firstBuilderInspiration,knowsPresence} from './godhood.js';
 import {relicControlActive,RELIC_FAITH_COST} from './relic-quest.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
@@ -6,7 +7,8 @@ import {residentLinkHTML} from './ui-resident-links.js';
 export function modeChooserHTML({replace=false}={}){
  return `<span class="eyebrow">НОВАЯ ИСТОРИЯ · ЮЖНЫЙ ШУМЕР</span><h2>Каким богом ты придёшь?</h2><p>${replace?'Выбор заменит текущий город и его сохранение.':'Пять домов на берегу. Люди ещё не знают, кто рядом с ними.'}</p><div class="god-mode-grid"><article><span class="dialog-emblem">◌</span><h3>Пробуждение</h3><p>0 веры. Сначала подай знак одному человеку и дождись, пока он дойдёт до источника. Только признанная вера позволит вдохновлять.</p><small>Вдохновлённые строители учатся на завершённых работах: простые дворы → мастерские → великие храмы.</small><button class="primary" data-new-mode="awakening">Пробудиться · 0 веры</button></article><article><span class="dialog-emblem">✺</span><h3>Взрослый бог</h3><p>1000 веры и 250 престижа. Здания и профессии доступны с самого начала. Обычные способности открыты сразу. Синие дары — после постройки памятника или доставки реликвии в храм.</p><small>Жителям всё ещё нужны материалы, еда, вода и время. Производство и доставка продолжают работать.</small><button class="primary" data-new-mode="mature">Стать покровителем</button></article></div>${replace?'<button class="secondary" id="cancel-mode">Остаться в городе</button>':''}<p class="keyboard-note">Каждая новая игра создаёт другую долину 64 × 64: новое русло реки и озёра. Текущий город сохраняется в архиве; вернуться к нему можно в «Сохранениях».</p>`;
 }
-export function awakeningHTML(s){
+export function awakeningHTML(s){return awakeningBaseHTML(s)+catDiscoveryHTML(s);}
+function awakeningBaseHTML(s){
  const v=godhoodView(s);if(v.mode!=='awakening')return '';
  const c=s.citizens.find(c=>c.id===v.witnessId),link=c?residentLinkHTML(s,c):'',first=c&&firstBuilderInspiration(s,c,'builder');
  if(v.stage==='unseen')return `<span class="eyebrow">ПРОБУЖДЕНИЕ · ${Math.floor(s.resources.faith)} ВЕРЫ</span><h3>Пусть кто-то заметит тебя</h3><p>Позови свободного взрослого к источнику. Он должен сам дойти до воды.</p><button data-first-sign>Подать первый знак</button><small>Это действие не требует веры.</small>`;
@@ -29,9 +31,9 @@ function nextAwakeningStep(s,master){
 
 }
 export function gameModeLabel(s){return {awakening:'Пробуждение',mature:'Взрослый бог',legacy:'Прежняя история'}[gameMode(s)];}
-export function createGodhoodControls({root,getState,onSign,onInspire,onFocus,onBuild,onWork,onRelics,document=globalThis.document}={}){
+export function createGodhoodControls({root,getState,onSign,onInspire,onFocus,onBuild,onWork,onRelics,onFisher,onCat,onCatFocus,document=globalThis.document}={}){
  const hud=document.createElement('section');hud.className='godhood-hud';hud.setAttribute('aria-label','Пробуждение бога');root.append(hud);let collapsed=false,lastState;
- hud.addEventListener('click',e=>{const b=e.target.closest?.('button');if(!b||b.disabled)return;if(b.hasAttribute('data-first-sign'))onSign?.();if(b.hasAttribute('data-first-builder'))onInspire?.(Number(b.dataset.firstBuilder));if(b.hasAttribute('data-focus-witness'))onFocus?.();if(b.hasAttribute('data-awakening-build'))onBuild?.(b.dataset.awakeningBuild);if(b.hasAttribute('data-awakening-work'))onWork?.();if(b.hasAttribute('data-awakening-relics'))onRelics?.();if(b.hasAttribute('data-hide-awakening')){collapsed=true;refresh();}if(b.hasAttribute('data-show-awakening')){collapsed=false;refresh();}});
+ hud.addEventListener('click',e=>{const b=e.target.closest?.('button');if(!b||b.disabled)return;if(b.hasAttribute('data-cat-fisher'))onFisher?.(Number(b.dataset.catFisher));if(b.hasAttribute('data-cat-cast'))onCat?.();if(b.hasAttribute('data-cat-focus'))onCatFocus?.();if(b.hasAttribute('data-first-sign'))onSign?.();if(b.hasAttribute('data-first-builder'))onInspire?.(Number(b.dataset.firstBuilder));if(b.hasAttribute('data-focus-witness'))onFocus?.();if(b.hasAttribute('data-awakening-build'))onBuild?.(b.dataset.awakeningBuild);if(b.hasAttribute('data-awakening-work'))onWork?.();if(b.hasAttribute('data-awakening-relics'))onRelics?.();if(b.hasAttribute('data-hide-awakening')){collapsed=true;refresh();}if(b.hasAttribute('data-show-awakening')){collapsed=false;refresh();}});
  function refresh(){const s=getState();if(lastState!==s){lastState=s;collapsed=false;}hud.hidden=gameMode(s)!=='awakening'||relicControlActive(s);const html=collapsed?'<button data-show-awakening>◌ Путь пробуждения</button>':awakeningHTML(s);if(hud.innerHTML!==html)hud.innerHTML=html;}
  refresh();return {refresh,dispose:()=>hud.remove()};
 }

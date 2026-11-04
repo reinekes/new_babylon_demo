@@ -1,3 +1,6 @@
+import {miraclePrice} from './miracle-discovery.js';
+import {miracleKnowledgeReason} from './godhood.js';
+import {DOMAIN_NAMES} from './divinity.js';
 import {buildingDefinition} from './building-presentation.js';
 import {MIRACLES} from './definitions.js';
 import {sacredMiracleUnlocked} from './sacred-unlocks.js';
@@ -26,4 +29,15 @@ export function updateBuildingCardName(card,state){
  strong.textContent=def.name;
  const info=card.parentElement?.querySelector('.building-info');
  if(info){info.setAttribute('aria-label',`О здании: ${def.name}`);info.title=`Описание: ${def.name}`;}
+}
+
+// Reused cards must update every visible/accessible price when switching saves.
+export function updateMiracleCard(details,s,id,reason=''){
+ const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=id==='cat'&&price===0;
+ el.disabled=!!reason;el.textContent=`${id==='cat'?'Призвать':'Применить'} · ${price} веры`;
+ el.title=`${m.name} · ${price} веры. ${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
+ details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
+ details.querySelector('.miracle-facts span').textContent=`${price} веры${first?' · первый дар':''}`;
+ details.querySelector('.miracle-summary-status').textContent=reason||`${price} веры · ${first?'первый дар':DOMAIN_NAMES[m.domain]}`;
+ const note=details.querySelector('.miracle-unavailable');note.hidden=!reason;note.textContent=reason;
 }
