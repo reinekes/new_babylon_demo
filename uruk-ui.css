@@ -223,3 +223,20 @@ body.uruk-ui:not(.map-only):not(.photo-mode) .resourcebar{display:flex!important
 .uruk-ui.uruk-resources-open .resourcebar{max-height:calc(100dvh - var(--uruk-header) - var(--uruk-dock) - 28px)}
 .uruk-ui.uruk-resources-open .resourcebar #resources .resource strong{font-size:22px!important}
 .uruk-ui.uruk-resources-open .resourcebar #resources .resource small{font-size:10px!important;max-width:none;white-space:normal!important}
+/* Night Uruk contrast: old light-theme content surfaces need a paired dark fill. */
+body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-raised-surface:#493b29;--uruk-table-row:#3b3327}
+.uruk-ui :is(dialog,.tile-detail) :is(.encyclopedia-caution,.life-metric,.life-branch,.life-food-explanation,.life-chart-card,.building-inventory-item,.building-production-history .is-current,.artisan-stage,.artisan-legend span,.art-status-note,.festival-cost>span,.festival-stage,.event-costs>span,.dialog-inner .cost-list,.trade-wallet,.market-flow>span,.market-needed,.sale-flow>span,.wellbeing-readout span,.food-forecast,.food-shortage,.supply-alert,.production-readout .production-output,.test-tools-card,.test-tools-audio,.test-tools-lock,.festival-progress,.manual-gathering-status){background:var(--uruk-note-surface)!important;color:#ead7b4!important;border-color:#92724888!important;box-shadow:none}
+.uruk-ui .encyclopedia-lyrics{background:var(--uruk-quote-surface)!important;color:#f0dfbf!important;border-left-color:#c39a61;font-family:var(--serif);font-size:16px;line-height:1.8}
+.uruk-ui :is(.encyclopedia-tag,.song-encyclopedia code,.city-tools-category>h3>small){background:var(--uruk-raised-surface)!important;color:#f0dfbf!important;border-color:#a0804f88!important}
+.uruk-ui .encyclopedia-tag{font-size:11px;padding:4px 8px}
+.uruk-ui .encyclopedia-caution{font-size:12px;line-height:1.7}
+.uruk-ui .encyclopedia-caution>strong{font-size:12px}
+.uruk-ui :is(.encyclopedia-table-wrap caption,.encyclopedia-table-wrap th,.life-table th){background:var(--uruk-raised-surface)!important;color:#f0dfbf!important;border-color:#92724888!important}
+.uruk-ui .encyclopedia-table-wrap tbody tr:nth-child(even){background:var(--uruk-table-row)!important}
+.uruk-ui .encyclopedia-table-wrap :is(th,td){border-color:#92724866}
+.uruk-ui :is(dialog,.tile-detail) :is(input,textarea)::placeholder{color:#c3ae8c!important;opacity:1}
+.uruk-ui dialog .save-error{background:#482e27!important;color:#ffd9bd!important;border-color:#b6805b!important}
+.uruk-ui .city-tools-workshop[data-staffing=empty],.uruk-ui .city-tools-staffing-legend [data-staffing=empty]{background:#412d27!important;color:#f1d0b4!important}
+.uruk-ui .city-tools-workshop[data-staffing=partial],.uruk-ui .city-tools-staffing-legend [data-staffing=partial]{background:#493c27!important;color:#f3ddb3!important}
+.uruk-ui .city-tools-workshop[data-staffing=full],.uruk-ui .city-tools-staffing-legend [data-staffing=full]{background:#2c382a!important;color:#dae5c1!important}
+.uruk-ui .city-tools-workshop[data-staffing=matched],.uruk-ui .city-tools-staffing-legend [data-staffing=matched]{background:#29394a!important;color:#d5e2ee!important}

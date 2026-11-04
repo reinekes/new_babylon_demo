@@ -42,4 +42,14 @@ None blocking. Existing3D seasonal stalls and old-world geometry are outside thi
 
 200residents/129buildings,4×,1280×720/DPR1/high,20s: new24.78FPS/p9566.6ms vs old26.64FPS/p9551.9ms. New actual canvas1280×570 vs old825×401.5 (2.20×area). Both saves valid; this is not an optimization acceptance, and existing perf-city-4x remains open. See docs/benchmarks/2026-11-04-night-uruk.json.
 
+Previous pass marked passed; the user subsequently exposed an encyclopedia coverage gap.
+
+## User-reported contrast regression · 2026-11-04
+
+The previous pass missed encyclopedia aside/pre/span/caption/th backgrounds: light inherited text on old pale fills, ratios1.18–1.34. Fixed paired dark surfaces for notes, lyrics, badges, code and table stripes; same pattern corrected in resident chronicle, inventory, production and festival surfaces.
+
+Reproduced before, then checked all8articles/359target elements: min8.25:1, zero targets below4.5. Whole-dialog checks: encyclopedia93text nodes min7.08; city overview38/workshops120 min5.75; chronicle64 min8.76; festival12 min9.10. Mobile390×844:93text nodes min7.08, no page overflow. Computed CSS audit, not a whole-app WCAG certification. Proof: docs/benchmarks/2026-11-04-uruk-contrast.json; screenshot docs/design/night-uruk-encyclopedia-contrast.webp.
+
+17/17 targeted song-encyclopedia/interface tests PASS. CSS-only repair; song content and gameplay unchanged.
+
 final result: passed
