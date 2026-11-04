@@ -2,7 +2,7 @@
 date: 2026-11-04
 type: completion
 release: season-scene-budget-20261104-6
-commit: pending
+commit: 2a799877eb809f9e363c280eb537b93be1eb31ec
 publication: pending
 groups: performance; graphics
 completed: -
