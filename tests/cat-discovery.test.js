@@ -56,3 +56,9 @@ test('one offering can use real fractional surplus from several stores without s
  discovery.advanceCatDiscovery(s,.1);assert.equal(s.catDiscovery.phase,'offering');assert.equal(s.catDiscovery.offering.kind,'food');assert.ok(Math.abs(s.resources.food-(food-1))<1e-7);assert.equal(s.buildings.filter(b=>b.type==='house').reduce((n,b)=>n+b.water,0),water);
  assert.ok(Object.keys(s.catDiscovery.offering.sources).length>=2);assert.ok(Math.abs(Object.values(s.catDiscovery.offering.sources).reduce((a,b)=>a+b,0)-1)<1e-7);
 });
+test('discovery scenery is a read-only ground-bound trace with eyes only at night and no animal',()=>{
+ const {s}=ready();discovery.advanceCatDiscovery(s,.1);let before=encode(s),v=discovery.catDiscoveryView(s);assert.ok(v);assert.equal(v.bowl,'food');assert.equal(v.eyes,false);assert.deepEqual(v.tracks,[]);assert.equal(encode(s),before);
+ s.simTime=30;s.calendarOffset=30;discovery.advanceCatDiscovery(s,.1);v=discovery.catDiscoveryView(s);assert.equal(v.eyes,true);
+ s.simTime=55;s.calendarOffset=55;discovery.advanceCatDiscovery(s,.1);before=encode(s);v=discovery.catDiscoveryView(s);assert.equal(v.eyes,false);assert.ok(v.tracks.length>0);assert.equal(encode(s),before);assert.equal(s.pests.cats.length,0);
+ s.buildings.push({type:'house',x:Math.round(v.x),y:Math.round(v.y),level:1});assert.equal(discovery.catDiscoveryView(s),null);assert.equal(s.catDiscovery.trial,'ready');assert.equal(discovery.catDiscoveryView(createGame()),null);
+});

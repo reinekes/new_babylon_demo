@@ -1,3 +1,4 @@
+import {createCatDiscoveryScenery,catDiscoverySurfaceHeight} from './cat-discovery.js';
 import {createLazyFeature} from './asset-loading.js';
 import {createTradeCaravan} from './caravan.js';
 import {createTradeRiverCraft} from './river-craft.js';
@@ -96,6 +97,8 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='';
  const color=(r,g,b)=>new B.Color3(r,g,b);
  const material=(name,hex)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=1;m.metallic=0;ownedMaterials.push(m);return m;};
+ const catGroundHeights=new Map();
+ const catDiscovery=createCatDiscoveryScenery(B,scene,{tileSize:TILE,groundHeight:(x,y,s)=>{const key=`${x},${y}`;if(!catGroundHeights.has(key))catGroundHeights.set(key,catDiscoverySurfaceHeight(B,scene,x,y,(x,y)=>visualSurfaceElevation(x,y,s),TILE));return catGroundHeights.get(key);}});
  const waterView=createGameWater(B,scene,materials);
  const natureDetails=createNatureDetails(B,scene,materials,options);
  const valleyVegetation=await createValleyVegetation(B,scene,options);meshes.push(...valleyVegetation.meshes);
@@ -121,7 +124,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
    if(mask){terrainRoadSignature=roads;for(let i=3;i<mask.colors.length;i+=4)mask.colors[i]*=.43;mask.mesh.setVerticesData(B.VertexBuffer.ColorKind,mask.colors,true);const original=originalTerrain.get(mask.mesh);if(original)original.colors=mask.colors;return;}
    // A completely masked initial cover has no mesh; rebuild to restore it.
   }
-  terrainSignature=next;terrainRoadSignature=roads;
+  terrainSignature=next;terrainRoadSignature=roads;catGroundHeights.clear();
   if(base){for(const m of base.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}base.dispose();}
   base=createDistrictTerrain(B,scene,s,materials);
   for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes','valley-scrub','river-reed-beds'].includes(m.name)||palmSources.length&&['date-palm-trunks','date-palm-crowns'].includes(m.name))m.setEnabled(false);if(m.name==='soft-riparian-grass'){const c=m.getVerticesData(B.VertexBuffer.ColorKind);for(let i=3;i<c.length;i+=4)c[i]*=.43;m.setVerticesData(B.VertexBuffer.ColorKind,c,true);}meshes.push(m);}
@@ -183,7 +186,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   }
   stitchTerrainRim(B,base.meshes,s);
  }
- function rebuildGeometry(s,plan){
+ function rebuildGeometry(s,plan){catGroundHeights.clear();
   remove(staticMeshes);
   const worldKey=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.x,b.y])]),seenRoads=new Set();
   for(const r of plan.roads){if(shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)<.08)continue;const mat=r.level>=3?paving:r.level===2?gravel:earth;
@@ -252,10 +255,11 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(let i=0;i<palmInstances.length;i++){const m=palmInstances[i];if(!wind&&m.rotation.z===0)continue;m.unfreezeWorldMatrix();m.rotation.z=wind?Math.sin(time*1.7+Math.floor(i/palmSources.length))*.008:0;m.computeWorldMatrix(true);if(!wind)m.freezeWorldMatrix();}
  }
  function update(s,time=0,selection=null){if(disposed)return;currentState=s;rebuildBase(s);const next=landscapeSignature(s);if(next!==signature){signature=next;streetNetwork=cachedStreetsFor(s)||generateStreets([...(s.buildings||[]),...(s.roadAnchors||[])],s);const plan=landscapePlan(s);landscapePlanRoads=plan.roads;rebuildGeometry(s,plan);weatherSignature='';}base.light(night);base.update(s,time);for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes'].includes(m.name))m.setEnabled(false);if(!meshes.includes(m))meshes.push(m);} // Terrain's road owner can replace its hidden batch.
+  catDiscovery.update(s);for(const m of catDiscovery.meshes)if(!meshes.includes(m))meshes.push(m);
   waterView.update(s,time);waterView.light(night);for(const m of waterView.meshes)if(!meshes.includes(m))meshes.push(m);
   for(let i=meshes.length-1;i>=0;i--)if(meshes[i].isDisposed?.())meshes.splice(i,1);
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);
  }
  let night=0;update(initialState,initialState.simTime||0);
- return {get waterMaterial(){return waterView.material;},meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
+ return {get waterMaterial(){return waterView.material;},meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;catDiscovery.dispose();caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
 }

@@ -1,3 +1,5 @@
+import {catDiscoveryView} from './miracle-discovery.js';
+import {drawCatDiscoveryGround,drawCatOffering} from './map-cat-discovery.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {manualGatheringActivity} from './manual-gathering.js';
 import {miracleCelebrationView} from './miracle-celebration.js';
@@ -347,10 +349,12 @@ export class Renderer{
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
  this.streetsLayer();
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});
+ const catTrace=catDiscoveryView(s);if(catTrace)drawCatDiscoveryGround(this,catTrace);
  const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,s).y-riverLocal(vessel.x,vessel.y,s).along)<.65);
  if(underBridge&&this.inView(vessel.x,vessel.y,150))this.caravan(vessel);
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
  const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed})];
+ if(catTrace)entities.push({...catTrace,kind:'catOffering'});
  const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
  const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
@@ -363,6 +367,7 @@ export class Renderer{
   const p=this.point(e.x,e.y);
   if(e.kind==='bridgeRail')this.bridgeRail(e.across,e.end,e.along);
   else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawFestivalBuildingLights(this,e,s);}
+  else if(e.kind==='catOffering')drawCatOffering(this,e);
   else if(e.kind==='person')this.person(e);
   else if(e.kind==='miraclePlant')this.miraclePlant(e);
   else if(e.kind==='festivalCourt')drawFestivalCourt(this,s,e.view);

@@ -1,9 +1,10 @@
+import {footprintSize} from './footprints.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {catTargetSite} from './pests.js';
 import {foodAvailability,takeStock} from './inventory.js';
 import {buildingKey,isOperational,MIRACLES} from './definitions.js';
 import {hourOf,mealRation} from './wellbeing.js';
-import {worldWidth,worldHeight} from './world.js';
+import {worldWidth,worldHeight,isDryPoint} from './world.js';
 import {relicControlActive} from './relic-quest.js';
 
 // Historical caller identity survives death; eligibility can pass to a survivor.
@@ -53,3 +54,12 @@ export function validateCatDiscovery(s){
 }
 
 export function miraclePrice(s,id){return id==='cat'&&usesCatDiscovery(s)&&s.catDiscovery?.phase==='opened'&&s.catDiscovery.trial==='ready'?0:MIRACLES[id]?.cost;}
+
+// Presentation reads a saved deed; it never opens the gift or spawns an animal.
+export function catDiscoveryView(s){
+ const q=s.catDiscovery,p=q?.trace;if(!usesCatDiscovery(s)||!p||q.phase==='learning')return null;
+ const free=(x,y)=>isDryPoint(s,x,y)&&!s.buildings.some(b=>{const n=footprintSize(b);return x>b.x-.56&&x<b.x+n-.44&&y>b.y-.56&&y<b.y+n-.44;});
+ if(!free(p.x,p.y))return null;
+ const tracks=q.phase==='opened'?[[-.18,.15],[-.10,.10],[-.02,.04],[.06,-.01]].map(([dx,dy],i)=>({x:p.x+dx,y:p.y+dy,angle:-.7+(i%2)*.2})).filter(a=>free(a.x,a.y)):[];
+ return {x:p.x,y:p.y,bowl:q.offering.kind,eyes:q.phase==='eyes'&&(hourOf(s.simTime||0)>=20||hourOf(s.simTime||0)<6),tracks};
+}
