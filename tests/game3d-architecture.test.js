@@ -5,11 +5,22 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {createArchitecture,ARCHITECTURE_TYPES} from '../game3d/architecture.js';
 import {BUILDINGS} from '../definitions.js';
+import {strictScenario,legacyScenario} from '../scenario-profiles.js';
 const sandbox={console,setTimeout,clearTimeout,performance,self:{}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
 const B=sandbox.BABYLON;
 function setup(){const engine=new B.NullEngine(),scene=new B.Scene(engine),m=Object.fromEntries(['warm','raw','fired','shade','trim','plaster','brick','wood','linen','reed','terracotta','soil','grass','stone'].map(k=>[k,new B.PBRMaterial(k,scene)]));return{scene,m,dispose(){scene.dispose();engine.dispose();}};}
 function extent(meshes){const out={x0:Infinity,x1:-Infinity,z0:Infinity,z1:-Infinity,h:0};for(const mesh of meshes){mesh.computeWorldMatrix(true);const b=mesh.getBoundingInfo().boundingBox;out.x0=Math.min(out.x0,b.minimumWorld.x);out.x1=Math.max(out.x1,b.maximumWorld.x);out.z0=Math.min(out.z0,b.minimumWorld.z);out.z1=Math.max(out.z1,b.maximumWorld.z);out.h=Math.max(out.h,b.maximumWorld.y);}return out;}
+test('first Sumerian shrine has structural reed walls and roof, while masonry upgrades and legacy temples remain',()=>{
+ const t=setup();try{
+  for(const [scenario,level,reedHut]of [[strictScenario(),1,true],[strictScenario(),2,false],[strictScenario(),3,false],[legacyScenario(),1,false]]){
+   const b={type:'shrine',x:2,y:4,level},state={scenario},before=structuredClone(b),meshes=createArchitecture(B,t.scene,b,t.m,state),reeds=meshes.filter(m=>m.material===t.m.reed),bb=extent(meshes);
+   if(reedHut){assert.ok(reeds.length,'reeds form the shrine rather than merely neighbouring scenery');const r=extent(reeds);assert.ok(r.h>2&&r.h<3.1);assert.ok(r.x1-r.x0>3&&r.z1-r.z0>3);assert.ok(meshes.every(m=>m.material!==t.m.plaster),'no plaster masquerading as reeds');assert.ok(bb.h<3.1);}
+   else{assert.equal(reeds.length,0);assert.ok(bb.h>3.2,'existing masonry silhouette remains');}
+   assert.ok(bb.x0>=-2.9&&bb.x1<=2.9&&bb.z0>=-2.9&&bb.z1<=2.9);assert.deepEqual(b,before);for(const mesh of meshes)mesh.dispose();
+  }
+ }finally{t.dispose();}
+});
 test('every nonlandscape special building has its own bounded geometry, shared materials and no fallback workshop',()=>{
  const t=setup();try{const signatures=new Set();assert.deepEqual([...ARCHITECTURE_TYPES].sort(),Object.keys(BUILDINGS).filter(k=>!['house','field','bridge','canal'].includes(k)).sort());
  for(const type of ARCHITECTURE_TYPES){const b={type,x:2,y:4,level:1},before=structuredClone(b),meshes=createArchitecture(B,t.scene,b,t.m);assert.deepEqual(b,before);const moving=meshes.filter(m=>m.metadata?.potterWheel||m.metadata?.formingClay);assert.ok(meshes.length-moving.length<=10,`${type}: too many static material draws`);assert.ok(moving.length<=(type==='pottery'?2:0),'only the turntable and forming clay stay separate');const bb=extent(meshes),halfWidth=type==='ishtarGate'?3.91:2.9;assert.ok(bb.x0>=-halfWidth&&bb.x1<=halfWidth&&bb.z0>=-2.9&&bb.z1<=2.9,`${type}: ${JSON.stringify(bb)}`);if(type==='ishtarGate')assert.ok(Math.abs(bb.x1-bb.x0-7.8)<.03,'legacy gate is explicitly 7.8m wide');const hash=createHash('sha256');for(const mesh of meshes){hash.update(JSON.stringify(Array.from(mesh.getVerticesData(B.VertexBuffer.PositionKind))));assert.ok(mesh.getVerticesData(B.VertexBuffer.NormalKind).every(Number.isFinite));}const signature=hash.digest('hex');assert.ok(!signatures.has(signature),`${type} duplicates another silhouette`);signatures.add(signature);for(const mesh of meshes)mesh.dispose();}

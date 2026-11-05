@@ -1,4 +1,5 @@
 import {isStrictSumer} from '../scenario-profiles.js';
+import {isReedShrine} from '../building-presentation.js';
 import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
 import {createMusicCourtyard} from './music-courtyard.js';
@@ -49,12 +50,47 @@ export function createArchitecture(B,scene,b,m,state){
  const fence=(x,z,w,d)=>{for(const s of [-1,1]){for(let i=0;i<8;i++)cylinder(x-w/2+i*w/7,.52,z+s*d/2,.035,1.04);for(const h of [.25,.7])beam([x-w/2,h,z+s*d/2],[x+w/2,h,z+s*d/2],.035,m.reed);for(let i=0;i<6;i++)cylinder(x+s*w/2,.52,z-d/2+i*d/5,.035,1.04);for(const h of [.25,.7])beam([x+s*w/2,h,z-d/2],[x+s*w/2,h,z+d/2],.035,m.reed);}};
  const loom=(x,z)=>{for(const s of [-1,1])beam([x+s*.65,.08,z+.35],[x+s*.65,1.75,z-.12],.06);beam([x-.7,1.75,z-.12],[x+.7,1.75,z-.12],.06);for(let i=0;i<13;i++)beam([x-.6+i*.1,.23,z+.31],[x-.6+i*.1,1.7,z-.1],.01,m.linen);block(x,.82,z+.13,1.17,.72,.035,m.linen);};
  const ground=()=>block(0,.025,0,5.3,.05,5.3,m.soil);
+ const reedSanctuary=()=>{
+  ground();
+  const back=-2.18,front=1.58,center=(back+front)/2,depth=front-back;
+  const base=.18,eave=1.43;
+  const profile=[[-2.02,eave],[-1.82,1.87],[-1.36,2.30],[-.71,2.55],[0,2.63],[.71,2.55],[1.36,2.30],[1.82,1.87],[2.02,eave]];
+  const endMat=(x0,y0,x1,y1,bottom,z)=>{
+   const face=[x0,bottom,z,x1,bottom,z,x1,y1,z,x0,y0,z];
+   const positions=[...face,...face],indices=[0,1,2,0,2,3,4,6,5,4,7,6],normals=[];
+   const uv=[x0/2,bottom/2,x1/2,bottom/2,x1/2,y1/2,x0/2,y0/2];
+   B.VertexData.ComputeNormals(positions,indices,normals);
+   const data=new B.VertexData(),mesh=new B.Mesh(`reed-end-mat-${serial++}`,scene);
+   Object.assign(data,{positions,indices,normals,uvs:[...uv,...uv]});
+   data.applyToMesh(mesh);
+   add(mesh,m.reed);
+  };
+  block(0,base/2,center,4.18,base,depth+.08,m.raw);
+  for(const side of [-1,1]){
+   block(side*1.97,(base+eave)/2,center,.15,eave-base,depth,m.reed);
+   for(const y of [.42,1.12])beam([side*2.05,y,back],[side*2.05,y,front],.025,m.wood);
+   for(const z of [back,center,front])beam([side*2.04,base,z],[side*2.04,eave,z],.055,m.reed);
+  }
+  for(let i=1;i<profile.length;i++){
+   const [x0,y0]=profile[i-1],[x1,y1]=profile[i],x=(x0+x1)/2,y=(y0+y1)/2;
+   const roof=block(x,y,center,Math.hypot(x1-x0,y1-y0)+.065,.09,depth+.19,m.reed);
+   roof.rotation.z=Math.atan2(y1-y0,x1-x0);
+   for(const z of [back-.07,center,front+.07])beam([x0,y0+.052,z],[x1,y1+.052,z],.043,m.reed);
+   endMat(x0,y0,x1,y1,base,back);
+   endMat(x0,y0,x1,y1,Math.abs(x)<.71?1.85:base,front);
+  }
+  for(const x of [-.72,.72])beam([x,base,front+.1],[x,1.88,front+.1],.067,m.reed);
+  beam([-.78,1.85,front+.1],[.78,1.85,front+.1],.057,m.wood);
+  block(-1.29,.29,2.03,.92,.52,.46,m.raw);
+  jar(-1.29,2.03,.38,.55);
+  jar(1.31,2.02,.53);
+ };
  switch(b.type){
  case 'pottery':ground();room(-1.3,-1.45,2.2,1.8,2);cloth(-1.15,.65,2.4,1.6);cylinder(1.4,.65,-.7,.85,1.3,m.fired,.6);cylinder(1.4,1.4,-.7,.6,.3,m.terracotta,.34);block(1.4,.35,.14,.47,.58,.04,m.shade);bench(-1.2,.7);for(let i=0;i<5;i++)jar(-1.85+i*.34,.7,.37,.84);for(let i=0;i<7;i++)jar(-1.9+i*.61,1.9,.52+i%2*.18);break;
  case 'brewery':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);for(let i=0;i<6;i++)jar(-1.7+(i%3)*.95,.1+Math.floor(i/3)*1.35,1.05);basin(1.8,.45,.7,1.3);beam([1.6,.8,.1],[2,1.25,-.1]);break;
  case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);break;
  case 'depot':ground();room(-1.55,-.25,1.7,4.3,2.45);room(.6,-1.65,2.5,1.5,2.7);cloth(.9,.5,2.8,2.5,1.9,m.reed);stack(.3,.2,14);for(let i=0;i<4;i++)block(.2+i*.52,.32,1.8,.45,.6,.55,m.wood);jar(1.9,-1.5,.85,2.8);break;
- case 'shrine':ground();block(0,.25,0,5.2,.5,4.8,m.fired);room(0,-.8,3.5,2.8,3.3);for(const x of [-1.75,-1.05,1.05,1.75]){block(x,1.6,.8,.26,3.2,.43,m.raw);block(x,3.3,.8,.37,.15,.52,m.trim);}for(let i=0;i<4;i++)block(0,.08+i*.12,2.4-i*.26,1.6,.17,.55,m.fired);block(0,.72,1.45,1.1,.65,.55,m.stone);jar(-1.25,1.65,.6);jar(1.3,1.6,.65);break;
+ case 'shrine':if(isReedShrine(state,b)){reedSanctuary();break;}ground();block(0,.25,0,5.2,.5,4.8,m.fired);room(0,-.8,3.5,2.8,3.3);for(const x of [-1.75,-1.05,1.05,1.75]){block(x,1.6,.8,.26,3.2,.43,m.raw);block(x,3.3,.8,.37,.15,.52,m.trim);}for(let i=0;i<4;i++)block(0,.08+i*.12,2.4-i*.26,1.6,.17,.55,m.fired);block(0,.72,1.45,1.1,.65,.55,m.stone);jar(-1.25,1.65,.6);jar(1.3,1.6,.65);break;
  case 'ziggurat':{
   const large=b.footprint===2,s=large?2.04:1,ox=large?3:0,oz=large?3:0;
   if(large){

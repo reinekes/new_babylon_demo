@@ -7,6 +7,13 @@ import {createGame,yieldSummary} from '../engine.js';
 import {miracleLockReason} from '../sacred-unlocks.js';
 import {drawBuilding} from '../architecture.js';
 const strict={scenario:strictScenario()},legacy={scenario:legacyScenario()};
+test('first reed shrine explains its reconstructed ritual purpose without changing the shared economy',()=>{
+ const before=structuredClone(BUILDINGS.shrine),first=buildingPresentation(strict,{type:'shrine',level:1});
+ assert.match(first.name,/Тростников/);assert.match(first.desc,/приношен/);assert.match(first.desc,/реконструкц/);
+ const {name,desc,...actual}=first,{name:oldName,desc:oldDesc,...expected}=before;assert.deepEqual(actual,expected);
+ assert.equal(buildingPresentation(legacy,{type:'shrine',level:1}),BUILDINGS.shrine);
+ assert.doesNotMatch(buildingPresentation(strict,{type:'shrine',level:2}).name,/Тростников/);assert.deepEqual(BUILDINGS.shrine,before);
+});
 test('strict gate presentation changes only name/description and leaves legacy global definitions intact',()=>{
  const before=structuredClone(BUILDINGS),gate=buildingDefinition(strict,'ishtarGate');assert.equal(gate.name,'Врата Инанны');assert.doesNotMatch(gate.desc,/из будущего|VI века|синие врата/);
  const {name,desc,...actual}=gate,{name:oldName,desc:oldDesc,...expected}=BUILDINGS.ishtarGate;assert.deepEqual(actual,expected);

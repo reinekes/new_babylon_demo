@@ -2,6 +2,7 @@ import {seed} from './city-life.js';
 import {levelOf} from './definitions.js';
 import {houseLightCount} from './households.js';
 import {masonryBox} from './masonry-art.js';
+import {isReedShrine} from './building-presentation.js';
 
 // Local pigments: mineral blue-green is a textile accent, never glazed Babylonian walls.
 export const EARTH={ivory:'#f0dfb7',plaster:'#e4cda3',shade:'#a88b65',clay:'#c38765',dark:'#5b5947',teal:'#739b91',reed:'#c7b582',ink:'#7d694e'};
@@ -92,7 +93,26 @@ export function drawBuildingFinish(r,b,state){
 export function drawSumerSacred(r,b,state){
  const a=brush(r,b),level=levelOf(b);a.c.save();
  a.oval(4,7,30,9,'#625e4430');
- if(b.type==='ishtarGate'){
+ if(isReedShrine(state,b)){
+  a.box(0,0,25,12,2,'#c6a679','#957653','#b38f64');
+  const arch=[[-20,-9],[-18,-17],[-13,-23],[-6,-27],[0,-28],[6,-27],[13,-23],[18,-17],[20,-9]];
+  const offset=([x,y])=>[x-9,y-8];
+  a.poly([[-29,-8],[-29,-17],[-20,-9],[-20,4]],'#95764c');
+  for(let i=1;i<arch.length;i++){
+   const left=arch[i-1],right=arch[i];
+   a.poly([offset(left),offset(right),right,left],i%2?'#b89d6d':'#c5ac77');
+   a.line([offset(left),left],'#ead39d',.85);
+  }
+  a.poly([...arch,[20,4],[-20,4]],'#b69862');
+  for(const [x,y] of arch)a.line([[x,y],[x,4]],'#d3b87d',.85);
+  for(const y of [-6,0])a.line([[-20,y],[20,y]],'#8d7048',.8);
+  a.poly([[-6,4],[-6,-15],[6,-15],[6,4]],'#534530');
+  for(const x of [-6,6])a.line([[x,4],[x,-15]],'#dbbf82',1.5);
+  a.line([[-7,-15],[7,-15]],'#8d7048',1.8);
+  a.line(arch,'#ead39d',1.5);
+  a.box(-15,8,5,2.5,5,'#c6a679','#957653','#b38f64');
+  vessel(a,-15,4,.55);vessel(a,15,8,.7);
+ }else if(b.type==='ishtarGate'){
   a.box(0,0,29,14,2,EARTH.clay,EARTH.shade,EARTH.plaster);
   // Two solid piers and a timber lintel leave the centre of the passage open.
   for(const x of [-19,19]){a.box(x,-2,9,6,42,EARTH.plaster,EARTH.shade,EARTH.ivory);a.box(x,-2,10,7,4,EARTH.clay,EARTH.shade,EARTH.plaster);}
