@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-9';
+const tag='sumer-trade-supplied-20261105-10';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {housingOf,capacityOf,buildingKey} from './repo/definitions.js';
@@ -42,7 +42,7 @@ export function createTradeFixture(transport='land',history='strict'){
  for(const b of houses){const amount=takeStock(s,store,'food',capacityOf(b)*10);b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;pantryFood+=amount;b.water=waterSummary(s,b).capacity;b.waterDelivered=Math.max(b.waterDelivered||0,b.water);}
  if(!marketAccess(s,null,'harbor')||transport==='land'&&!marketAccess(s,null,'market'))throw Error('Disconnected trade port');
  if(!miracle(s,'cat').ok)throw Error('Cannot prepare the existing warehouse cat');advanceTime(s,s.miracleCelebration.duration);
- const proof={transport,history,portSetup:transport==='river'?'harbor-without-land-market':'market-and-harbor',initialPopulation:200,buildings:129,seed:137,supply:{initialFood,pantryFood,centralFood:s.resources.food,waterFilledToCapacity:true},harbor:{x:harbor.x,y:harbor.y},phases:[],orders:[],skippedEvents:[],ceremonies:[]},target=35;
+ const proof={transport,history,ecologyLegacy:s.ecology?.legacyFauna===true,portSetup:transport==='river'?'harbor-without-land-market':'market-and-harbor',initialPopulation:200,buildings:129,seed:137,supply:{initialFood,pantryFood,centralFood:s.resources.food,waterFilledToCapacity:true},harbor:{x:harbor.x,y:harbor.y},phases:[],orders:[],skippedEvents:[],ceremonies:[]},target=35;
  while(s.simTime<target-1e-7){advanceTime(s,Math.min(.25,target-s.simTime));serviceTrade(s,proof);}
  if(!decode(encode(s))||s.buildings.length!==129||s.population<200)throw Error('Invalid warmed trade fixture');
  proof.measurementStart={population:s.population,buildings:s.buildings.length,simTime:s.simTime,tick:s.tick};return {state:s,proof};
@@ -72,6 +72,21 @@ app=app.replace('if(ms>35)timings.push', 'const total=timingTotals[tag]??={count
 
 app=app.replace("function advanceTime(...args){return timed('simulation',()=>rawAdvanceTime(...args));}","function advanceTime(...args){const result=timed('simulation',()=>rawAdvanceTime(...args));if(tradeProof)serviceTrade(args[0],tradeProof);return result;}");
 app+=`\nlet tradeProof=null;export function attachTradeProof(p){tradeProof=p;}\nexport function tradeStateInfo(){return {population:state.population,buildings:state.buildings.length,simTime:state.simTime,tick:state.tick,proof:tradeProof,deliveries:state.trade.deliveries.map(q=>({id:q.id,resource:q.resource,amount:q.amount,delivered:q.delivered})),sales:state.trade.sales.map(q=>({id:q.id,resource:q.resource,amount:q.amount,loaded:q.loaded,cancelled:q.cancelled}))};}\n`;
+app+=`
+export function sceneInventory(){
+ const scene=renderer.scene;if(!scene)return null;const groupOf=new Map();
+ for(const [kind,layer]of [['architecture',renderer.buildings],['actors',renderer.actors],['landscape',renderer.landscape]])for(const mesh of layer?.meshes||[])groupOf.set(mesh,kind);
+ const live=scene.getActiveMeshes(),active=new Set(live.data.slice(0,live.length)),groups={},names=new Map();
+ for(const mesh of scene.meshes){
+  let kind=groupOf.get(mesh)||'other';if(kind==='actors')for(let node=mesh;node;node=node.parent){if(node.metadata?.citizenId!==undefined){kind='residents';break;}if(node.metadata?.animalKind||node.metadata?.animalId){kind='fauna';break;}}
+  const row=groups[kind]??={all:0,enabled:0,visible:0,active:0,activeVertices:0,activeSubMeshes:0,materials:new Set()};row.all++;
+  const enabled=mesh.isEnabled();if(enabled)row.enabled++;if(enabled&&mesh.isVisible&&mesh.visibility>0)row.visible++;
+  if(active.has(mesh)){row.active++;row.activeVertices+=mesh.getTotalVertices?.()||0;row.activeSubMeshes+=mesh.subMeshes?.length||0;if(mesh.material)row.materials.add(mesh.material);const name=(mesh.sourceMesh?.name||mesh.name).replace(/[0-9]+/g,'#');names.set(name,(names.get(name)||0)+1);}
+ }
+ return {groups:Object.fromEntries(Object.entries(groups).map(([kind,row])=>[kind,{...row,materials:row.materials.size}])),topActiveSources:[...names].sort((a,b)=>b[1]-a[1]).slice(0,30),engineDrawCallsCounterCurrent:renderer.engine?._drawCalls?.current??null};
+}
+`;
+app=app.replace('quality:renderer.quality,','quality:renderer.quality,inventory:sceneInventory(),');
 await writeFile(join(output,'app-check.js'),app);
 let check=await readFile(join(output,'check.js'),'utf8');const start=check.indexOf('const s=createGame('),end=check.indexOf("localStorage.setItem(");
 if(start<0||end<start)throw Error('Generic fixture changed');
