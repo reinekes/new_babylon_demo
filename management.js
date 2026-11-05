@@ -104,7 +104,7 @@ function foundingStockTransfer(s,b){
  }
  return plan;
 }
-function localDemolitionStock(b){const goods={...b.workshopStock?.output};if(b.dairy?.reed)goods.reed=(goods.reed||0)+b.dairy.reed;for(const [k,n]of Object.entries(b.workshopStock?.input||{}))goods[k]=(goods[k]||0)+n;for(const [k,n]of Object.entries(b.householdStock||{}))if(MATERIALS.includes(k))goods[k]=(goods[k]||0)+n;return goods;}
+function localDemolitionStock(b){const goods={...b.workshopStock?.output};if(b.dairy?.reed||b.flock?.reed)goods.reed=(goods.reed||0)+(b.dairy?.reed||0)+(b.flock?.reed||0);for(const [k,n]of Object.entries(b.workshopStock?.input||{}))goods[k]=(goods[k]||0)+n;for(const [k,n]of Object.entries(b.householdStock||{}))if(MATERIALS.includes(k))goods[k]=(goods[k]||0)+n;return goods;}
 function localRefundStore(s,b){const net=networkFor(s),p=net.ports.find(p=>p.building===b);return stockStores(s).find(a=>a!==b&&net.ports.some(port=>port.building===a&&p&&net.components.get(port.key)===net.components.get(p.key)));}
 export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.

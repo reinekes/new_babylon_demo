@@ -1,3 +1,4 @@
+import {startManagedDairy} from './dairy.js';
 import {startManagedFlock} from './textiles.js';
 import {buildingDefinition} from './building-presentation.js';
 import {recordBuilderCompletion} from './godhood.js';
@@ -23,6 +24,7 @@ export function finishConstruction(s){
    stampBuildingCompletion(s,b);
    if(b.type==='garden'&&isStrictSumer(s))b.orchardPlantedTick=s.tick;
    if(b.type==='sheepfold'&&isStrictSumer(s))startManagedFlock(b);
+   if(b.type==='cowshed'&&isStrictSumer(s))startManagedDairy(b);
   }
   recordBuilderCompletion(s,b);b.level=q.target;if(b.type==='road')markRoadTopologyChanged(s);if(q.legacyMasonry&&b.type!=='road')b.legacyMasonryLevel=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;
   s.news.unshift({title:q.kind==='upgrade'?`${(buildingDefinition(s,b.type)?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(buildingDefinition(s,b.type)?.name||'Дорога')}`,text:'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);

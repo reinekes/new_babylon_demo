@@ -11,11 +11,12 @@ export const flockRation=b=>Math.ceil(flockSize(b)/2);
 export function startManagedFlock(b){
  b.flock={fleece:4,adults:3,lambs:1,reed:0,shortage:0};
 }
-export function settleManagedFlocks(s){
+export function settleManagedFlocks(s,pasture=new Map()){
  for(const b of s.buildings){
   const f=b.flock;
   if(b.type!=='sheepfold'||!isOperational(b)||f?.adults===undefined)continue;
-  const ration=flockRation(b),eaten=Math.min(ration,f.reed);
+  f.pasture=pasture.get(b)||0;
+  const ration=Math.max(0,flockRation(b)-f.pasture),eaten=Math.min(ration,f.reed);
   f.reed-=eaten;
   if(eaten>=ration-1e-7){
    f.shortage=0;
@@ -48,7 +49,7 @@ export function validateTextiles(s){
   const {adults,lambs,reed,shortage}=b.flock;
   if(adults===undefined){if(Object.keys(b.flock).some(k=>k!=='fleece'))return false;}
   else if(!isStrictSumer(s)||!isOperational(b)||![adults,lambs].every(n=>Number.isSafeInteger(n)&&n>=0)||
-    adults+lambs>flockCapacity(b)||!finite(reed,Math.ceil(flockCapacity(b)/2))||![0,1].includes(shortage))return false;}else if(b.flock!==undefined)return false;if(b.type==='weaver'){if(!b.weaving||!finite(b.weaving.wool,9))return false;}else if(b.weaving!==undefined)return false;if(b.type==='tailor'){if(!b.tailoring||!finite(b.tailoring.cloth,6))return false;}else if(b.tailoring!==undefined)return false;}
+    adults+lambs>flockCapacity(b)||!finite(reed,Math.ceil(flockCapacity(b)/2))||![0,1].includes(shortage)||b.flock.pasture!==undefined&&![0,1].includes(b.flock.pasture))return false;}else if(b.flock!==undefined)return false;if(b.type==='weaver'){if(!b.weaving||!finite(b.weaving.wool,9))return false;}else if(b.weaving!==undefined)return false;if(b.type==='tailor'){if(!b.tailoring||!finite(b.tailoring.cloth,6))return false;}else if(b.tailoring!==undefined)return false;}
  for(const c of s.citizens||[]){if(c.craftSite===undefined){if(c.craftMaterial!==undefined||c.craftAmount!==undefined||c.craftWool!==undefined||c.craftCloth!==undefined||c.phase==='toCraftSupply')return false;continue;}const b=s.buildings.find(b=>buildingKey(b)===c.craftSite);
   if(['brickyard','kiln'].includes(b?.type)||isArtisan(b)){
    if(!isOperational(b)||c.work!==c.craftSite||!(isArtisan(b)?Object.keys(artisanRecipe(b)).filter(k=>k!=='water'):b.type==='kiln'?['brick','reed']:['clay','reed']).includes(c.craftMaterial)||!finite(c.craftAmount,isArtisan(b)?Math.min(3,artisanRecipe(b)[c.craftMaterial]||0):3)||c.craftCloth!==undefined||c.craftWool!==undefined||c.age<16||!['auto','production'].includes(c.role)||c.waterTrip||c.clothingTarget!==undefined||c.seedField||c.pantryTrip||c.districtJob||c.tradeJob||c.saleJob||c.clinic||c.school||c.site||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||!['toCraftSupply','toWork','blocked','toHome','home','resting'].includes(c.phase))return false;

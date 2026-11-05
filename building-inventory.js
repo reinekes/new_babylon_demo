@@ -1,5 +1,5 @@
 import {recordBuildingProduction} from './building-production-history.js';
-import {initializeDairy,dairyNeeds} from './dairy.js';
+import {initializeDairy,dairyNeeds,dairyInputCapacity} from './dairy.js';
 import {BUILDINGS,MATERIALS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {isArtisan,artisanRecipe,artisanNeeds,artisanOutput,collectArtisan} from './artisan.js';
 import {BRICK_RECIPE,brickNeeds,collectBricks} from './bricks.js';
@@ -14,7 +14,7 @@ export function inputRecipe(b){
  if(isArtisan(b))return artisanRecipe(b);
  if(b?.type==='brickyard')return BRICK_RECIPE;if(b?.type==='kiln')return KILN_RECIPE;
  if(b?.type==='weaver')return {wool:craftBatch(b)};if(b?.type==='tailor')return {cloth:craftBatch(b)};
- if(b?.type==='cowshed')return {reed:3,water:12};
+ if(b?.type==='cowshed')return dairyInputCapacity(b);
  if(b?.type==='sheepfold'&&b.flock?.adults!==undefined)return {reed:Math.ceil(flockCapacity(b)/2)};
  if(b?.type==='healer')return {food:4,reed:2};return {};
 }
@@ -58,6 +58,7 @@ export function buildingInputStock(b,k){return b?.type==='house'?k==='food'?n(b.
 export function buildingInputRoom(s,b,k){
  if(!isOperational(b))return 0;
  if(b.type==='house')return Math.max(0,homeStockCapacity(s,b,k)-buildingInputStock(b,k));
+ if(b.type==='cowshed'&&b.dairy?.shortage!==undefined&&k==='reed')return Math.max(0,dairyInputCapacity(b).reed-b.dairy.reed);
  if(b.type==='sheepfold'&&b.flock?.adults!==undefined&&k==='reed')return Math.max(0,inputRecipe(b).reed-b.flock.reed);
  return Math.max(0,inputNeeds(b)[k]||0);
 }

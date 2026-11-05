@@ -11,7 +11,7 @@ test('managed sheep consume one ration, mature and breed within pen capacity, an
  const s={buildings:[b],season:0};
  startManagedFlock(b);
  b.flock.reed=2;settleManagedFlocks(s);
- assert.deepEqual(b.flock,{adults:4,lambs:1,reed:0,shortage:0,fleece:4});
+ assert.deepEqual(b.flock,{adults:4,lambs:1,reed:0,shortage:0,fleece:4,pasture:0});
  assert.equal(flockSize(b),5);
  s.season=1;settleManagedFlocks(s);
  advanceTextiles(s,30);assert.equal(b.flock.fleece,4);
@@ -35,6 +35,7 @@ test('porters supply the managed fold, the calendar consumes feed and visuals re
  const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
  advanceSeason(s);
  assert.equal(s.buildings.find(b=>b.x===10&&b.y===9).flock.adults,4);
+ assert.equal(s.buildings.find(b=>b.x===10&&b.y===9).flock.pasture,1);
  assert.equal(visual().length,4);assert.equal(visual().some(a=>a.young),false);
  assert.deepEqual(Object.keys(s.buildings.find(b=>b.x===11&&b.y===9).flock),['fleece']);
  assert.ok(decode(encode(s)));
