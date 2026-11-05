@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-05T17:40:28.833980+00:00",
+  "commit": "721a7d561f129a3c05cfe7a518f9aff5fc4abcbb",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7fbce001500d01395556d04d1c95cf9e2d9eb946bfb9c1aae64c4df246269f32",
+      "actual": "7fbce001500d01395556d04d1c95cf9e2d9eb946bfb9c1aae64c4df246269f32",
+      "match": true
+    },
+    {
+      "path": "building-presentation.js",
+      "status": 200,
+      "expected": "1e533ce972546f3e8d48fd5604f900a8dccfacf1b7cfce18d63943d77079e945",
+      "actual": "1e533ce972546f3e8d48fd5604f900a8dccfacf1b7cfce18d63943d77079e945",
+      "match": true
+    },
+    {
+      "path": "game3d/architecture.js",
+      "status": 200,
+      "expected": "0e7e961bf96d0d5086ebb6928c3854ce5de317bb2d2f6c49524fa1b97da78e98",
+      "actual": "0e7e961bf96d0d5086ebb6928c3854ce5de317bb2d2f6c49524fa1b97da78e98",
+      "match": true
+    },
+    {
+      "path": "game3d/roof-access.js",
+      "status": 200,
+      "expected": "66881f7bd56feeb41cab9848fbee93382764939e30d9776a3c590894bab73f6c",
+      "actual": "66881f7bd56feeb41cab9848fbee93382764939e30d9776a3c590894bab73f6c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "05c5190073ca9e0306c3467a75ead45399be5fa57995e1929e238f34dc1c1453",
+      "actual": "05c5190073ca9e0306c3467a75ead45399be5fa57995e1929e238f34dc1c1453",
+      "match": true
+    },
+    {
+      "path": "map-art.js",
+      "status": 200,
+      "expected": "67a1a0ab53dd1ee2c189d0a6832b42ca3b9859c6a1f83080a3856a4bba55b69d",
+      "actual": "67a1a0ab53dd1ee2c189d0a6832b42ca3b9859c6a1f83080a3856a4bba55b69d",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-architecture.test.js",
+      "status": 200,
+      "expected": "6d6bb78aa58359bd820cd125f2a41a29db2f0968980183b5b65ea0d245826be8",
+      "actual": "6d6bb78aa58359bd820cd125f2a41a29db2f0968980183b5b65ea0d245826be8",
+      "match": true
+    },
+    {
+      "path": "tests/sumer-presentation.test.js",
+      "status": 200,
+      "expected": "2465422d1ca88188b9fc381a5f3abb38b2965fd54dc8f985fdc490df5f5da3ad",
+      "actual": "2465422d1ca88188b9fc381a5f3abb38b2965fd54dc8f985fdc490df5f5da3ad",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}

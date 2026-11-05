@@ -1345,29 +1345,6 @@ sources: professions.js; education.js; definitions.js
 ### Исторические источники
 - [Met: irrigation workers, Umma ca. 2042 BCE](https://www.metmuseum.org/art/collection/search/324586)
 
-## hist-reed-huts | Тростниковый дом выбранной эпохи
-group: history
-status: partial
-priority: P1
-depends: -
-sources: game3d/house-architecture.js; game3d/architecture.js
-
-### Описание
-Предложить лёгкий тростниковый дом по древнему тексту/изображению и выбрать назначение.
-
-### Что уже есть
-Есть reed-постройка, навесы/маты; starterHut — штукатуренная сырцовая оболочка, не отдельный тип тростникового жилища.
-
-### Следующий шаг
-Сверить живую сцену с указанными источниками и выбрать конкретный объём исправления. Современный mudhif — этнографическая аналогия, не точная доказанная копия шумерского дома; древние тростниковые сооружения подтверждены.
-
-### Готово когда
-Материал и конструкция читаются; подпись отделяет реконструкцию от современной аналогии.
-
-### Исторические источники
-- [Penn ORACC: Amar-Suena reed hut inscription](https://oracc.museum.upenn.edu/etcsri/Q000984/)
-- [ANU: Early Sumerian seals, reed boat depiction](https://openresearch-repository.anu.edu.au/items/9a0d1bc3-c09d-4997-9e3b-2c1ca09cd2f6)
-
 ## perf-city-4x | Довести полный обзор большого города на 4×
 group: performance
 status: partial
