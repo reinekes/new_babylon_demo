@@ -13,6 +13,7 @@ import {initializeSacredUnlocks,syncSacredUnlocks,validateSacredUnlocks,miracleL
 import {validateMusic} from './music.js';
 import {validateCitizenEpithets} from './citizen-epithets.js';
 import {stampBuildingCompletion,validateBuildingChronology} from './building-chronology.js';
+import {validateStockAccounts} from './scribes.js';
 import {initializeProductionAccounting,validateProductionHistory} from './building-production-history.js';
 import {validateDairy} from './dairy.js';
 import {initializeBuildingInventory,validateBuildingInventory} from './building-inventory.js';
@@ -39,7 +40,7 @@ import {initializeCrops,changeCropSeason,cropSummary,validateCrops} from './agri
 import {fieldWater,irrigationFor} from './irrigation.js';
 import {initializeClothing,validateClothing} from './clothing.js';
 import {ROLES,validateEducation,newMedicalSkill,advanceMedicalYear} from './education.js';
-import {PROFESSION_IDS,professionRole,canStaffBuilding} from './professions.js';
+import {PROFESSION_IDS,professionRole,canStaffBuilding,hasWorkplace} from './professions.js';
 import {initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
 import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
@@ -312,12 +313,12 @@ export function decode(raw){
    ids.add(c.id);if(c.saleJob!=null&&(!s.trade.sales.some(q=>q.id===c.saleJob&&q.market===c.saleMarket)||!['toSaleSupply','toSaleMarket','blocked','toHome','home'].includes(c.phase)))return null;
    if(c.tradeJob!=null&&(!s.trade.deliveries.some(q=>q.id===c.tradeJob&&q.market===c.tradeMarket)||!['toMarket','toStore','unloading','blocked','toHome','home','toRest','resting','toPantrySupply','toPantryHome'].includes(c.phase)))return null;
    if(c.role!==undefined&&!ROLES.includes(c.role)||c.pendingRole!==undefined&&!ROLES.includes(c.pendingRole)||c.siteDuty!=null&&!['carrier','builder'].includes(c.siteDuty))return null;
-   if(c.workplace!=null&&(typeof c.workplace!=='string'||!isComplete(buildings.get(c.workplace)||{construction:{kind:'new'}})||!buildings.has(c.workplace)||!['healer','depot','waterpoint'].includes(buildings.get(c.workplace).type)&&!Object.keys(BUILDINGS[buildings.get(c.workplace).type].output).length))return null;
+   if(c.workplace!=null&&(typeof c.workplace!=='string'||!isComplete(buildings.get(c.workplace)||{construction:{kind:'new'}})||!buildings.has(c.workplace)||!hasWorkplace(buildings.get(c.workplace).type)))return null;
    if(c.seedField!==undefined&&(typeof c.seedField!=='string'||buildings.get(c.seedField)?.type!=='field'||!isComplete(buildings.get(c.seedField))||c.work!==c.seedField||!finite(c.seedFood,0,6)||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||c.pantryTrip||c.saleJob||c.tradeJob||c.clinic||c.school||!['toStore','toWork','blocked','toHome','home','resting'].includes(c.phase)))return null;
    if(c.seedField===undefined&&c.seedFood!==undefined)return null;
    if(c.phase==='toWorkshop'&&(!c.work||!buildings.get(c.work)?.workshopStock||!Object.entries(c.cargo).some(([k,n])=>MATERIALS.includes(k)&&n>0)||c.districtJob||c.site||c.tradeJob||c.saleJob||c.pantryTrip||c.craftSite))return null;
    if(c.guardPost!=null&&(typeof c.guardPost!=='string'||!['shrine','granary','depot'].includes(buildings.get(c.guardPost)?.type)||!isComplete(buildings.get(c.guardPost))||c.workplace||c.age<16||!['auto','production'].includes(c.role)))return null;
-   if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||c.guardPost!==c.work&&!['healer','depot','waterpoint'].includes(buildings.get(c.work).type)&&!Object.keys(BUILDINGS[buildings.get(c.work).type].output).length))return null;
+   if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||c.guardPost!==c.work&&!hasWorkplace(buildings.get(c.work).type)))return null;
    if(c.store!==null&&!['shrine','granary','depot','house'].includes(buildings.get(c.store)?.type)&&buildings.get(c.store)?.recoveryOnly!==true&&!(c.districtJob&&s.district?.jobs.some(q=>q.id===c.districtJob&&(q.source===c.store||q.target===c.store))))return null;
    if(!Array.isArray(c.route)||c.route.length>worldWidth(s)*worldHeight(s)*2||c.route.some(p=>!point(p))||!integer(c.routeIndex,0,c.route.length)||!finite(c.workElapsed,0,60))return null;
    if(!c.cargo||typeof c.cargo!=='object'||Array.isArray(c.cargo)||Object.entries(c.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v,0,1e6)))return null;
@@ -349,7 +350,7 @@ export function decode(raw){
    if(q.work>0&&Object.keys(q.required).some(k=>q.delivered[k]<q.required[k]))return null;
   }
   const guardPosts=new Set();for(const c of s.citizens)if(c.guardPost){if(guardPosts.has(c.guardPost))return null;guardPosts.add(c.guardPost);}
-  const permanent=new Map();for(const c of s.citizens)if(c.workplace){const b=buildings.get(c.workplace);if(!canStaffBuilding(c,b))return null;const n=(permanent.get(c.workplace)||0)+1;if(n>(b.type==='healer'?1:2))return null;permanent.set(c.workplace,n);}
+  const permanent=new Map();for(const c of s.citizens)if(c.workplace){const b=buildings.get(c.workplace);if(!canStaffBuilding(c,b))return null;const n=(permanent.get(c.workplace)||0)+1;if(n>(['healer','granary'].includes(b.type)?1:2))return null;permanent.set(c.workplace,n);}
   if(s.lastDelivery!==null&&(!s.lastDelivery||!finite(s.lastDelivery.time,0,s.simTime)||!integer(s.lastDelivery.citizen)||typeof s.lastDelivery.store!=='string'||!s.lastDelivery.cargo||Object.entries(s.lastDelivery.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v))))return null;
   if(oldGenerations){initializeDemography(s);s.version=VERSION;}
   if(oldHouseholds)s.version=VERSION;
@@ -363,7 +364,7 @@ export function decode(raw){
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
-  if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
+  if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();

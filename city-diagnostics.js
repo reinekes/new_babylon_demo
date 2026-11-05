@@ -1,5 +1,5 @@
 import {buildingDefinition} from './building-presentation.js';
-import {PROFESSION_NAMES,professionRole,professionMatchesTask} from './professions.js';
+import {PROFESSION_NAMES,professionRole,professionMatchesTask,hasWorkplace,workplaceCapacity} from './professions.js';
 import {BUILDINGS,buildingKey,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {stockStores,storeCapacity} from './inventory.js';
@@ -55,7 +55,7 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
   if(s.season===1&&crop.sown>0&&!fieldWater(s,b).canal&&!(s.rain>0)&&!(crop.legacyYear===s.year&&fieldWater(s,b).natural))return reason('water','Нужен полив','Соедини наполненный канал с полем',key);
   if(!(crop.sheaves>0)&&!(s.season===0&&(crop.sown||0)<1)&&!(s.season===2&&crop.remaining>0))return reason('season','Сезонное ожидание',s.season===1?'Ячмень растёт; жатва осенью':'Сейчас нет посева, срезки или снопов для обмолота',key);
  }
- if(!workers.length)return reason('worker','Нет работника',b.type==='musicHouse'?'Нужен вдохновлённый музыкант, закреплённый за двором':b.type==='tailor'?'Нужен взрослый мастер одежды':b.type==='healer'?'Нужен обученный лекарь':b.type==='waterpoint'?'Нужен водонос':'Назначь взрослого или освободи рабочие руки',key);
+ if(!workers.length)return reason('worker','Нет работника',b.type==='granary'?'Вдохнови писца и закрепи его за амбаром':b.type==='musicHouse'?'Нужен вдохновлённый музыкант, закреплённый за двором':b.type==='tailor'?'Нужен взрослый мастер одежды':b.type==='healer'?'Нужен обученный лекарь':b.type==='waterpoint'?'Нужен водонос':'Назначь взрослого или освободи рабочие руки',key);
  if(workers.some(c=>c.phase==='blocked'))return reason('path','Маршрут заблокирован','Проверь дорогу и пункт назначения груза',key);
  if(artisan?.stage==='idle'){
   const missing=Object.entries(artisan.needs).filter(([k,n])=>k!=='water'&&n>1e-7);
@@ -102,12 +102,12 @@ export function cityDiagnostics(s){
   return h;
  });
  const hour=((8+amount(s.simTime)*24/DAY_SECONDS)%24+24)%24,isDay=hour>=6&&hour<19;
- const workshops=buildings.filter(b=>b.construction||b.type!=='house'&&(Object.keys(BUILDINGS[b.type]?.output||{}).length||['healer','waterpoint','depot','pottery','brewery'].includes(b.type))).map(b=>{
-  const key=buildingKey(b),workers=b.construction?(bySite.get(key)||[]):(byWork.get(key)||[]),connected=stores.filter(st=>same(key,buildingKey(st))),hasHomes=homes.some(h=>h.population&&same(key,h.key));
+ const workshops=buildings.filter(b=>b.construction||hasWorkplace(b.type)).map(b=>{
+  const key=buildingKey(b),workers=b.construction?(bySite.get(key)||[]):(byWork.get(key)||[]).filter(c=>b.type!=='granary'||c.calling==='scribe'&&c.workplace===key),connected=stores.filter(st=>same(key,buildingKey(st))),hasHomes=homes.some(h=>h.population&&same(key,h.key));
   const why=productionReason(s,b,workers,connected,hasHomes,isDay);
   // Assigned places remain occupied while their worker eats, fetches water or
   // completes a previous load. Never count a worker pinned to another building.
-  const assigned=b.construction?[]:citizens.filter(c=>adult(c)&&(c.workplace===key||c.work===key&&!c.workplace)),fixed=assigned.filter(c=>c.workplace===key),capacity=['healer','musicHouse'].includes(b.type)?1:2,matching=assigned.filter(c=>professionMatchesTask(c,b.type)).length,count=assigned.length;
+  const assigned=b.construction?[]:citizens.filter(c=>adult(c)&&(c.workplace===key||c.work===key&&!c.workplace&&b.type!=='granary')),fixed=assigned.filter(c=>c.workplace===key),capacity=workplaceCapacity(b.type),matching=assigned.filter(c=>professionMatchesTask(c,b.type)).length,count=assigned.length;
   const state=!count?'empty':count<capacity?'partial':matching>=count?'matched':'full';
   const staffing=b.construction?null:{count,capacity,matching,state,label:{empty:'Нет работников',partial:'Не все места заняты',full:'Все места заняты',matched:'Все места заняты по призванию'}[state]};
   return {key,x:b.x,y:b.y,type:b.type,name:buildingDefinition(s,b.type)?.name||b.type,workers:workers.map(c=>c.id),assigned:assigned.map(c=>c.id),fixed:fixed.map(c=>c.id),staffing,inventory:buildingInventory(s,b),builders:workers.filter(c=>c.site===key&&c.siteDuty==='builder').map(c=>c.id),carriers:workers.filter(c=>c.site===key&&c.siteDuty==='carrier').map(c=>c.id),working:workers.filter(c=>['working','constructing'].includes(c.phase)).length,reason:why,status:(why.code==='construction'&&workers.some(c=>c.phase==='constructing')||['drying','firing','working','delivery','season','night'].includes(why.code))?'process':'attention'};

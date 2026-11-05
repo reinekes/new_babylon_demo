@@ -249,6 +249,13 @@ export class Renderer{
    if(candle||(person.id||0)%4===0)this.lights.push({x,y:y-q,size:(candle?11:17)*q});
   }
   if(person.guarding){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-5*q],[p.x+(7+swing)*q,p.y-10*q]],'#92764f',1.4*q);for(let i=0;i<4;i++)this.line([[p.x+(6+swing)*q,p.y-10*q],[p.x+(6+i+swing)*q,p.y-14*q]],'#b5a36c',q);}
+  else if(person.calling==='scribe'&&person.role==='production'&&person.phase==='working'&&person.work&&person.work===person.workplace&&!person.carrying&&look.work==='granary'){
+   const stroke=this.reduce?0:Math.sin(playTime*3)*q;
+   this.line([[p.x-2*q,p.y-7*q],[p.x+3*q,p.y-5*q]],'#a3835e',1.3*q);
+   this.box(p.x+4*q,p.y-6*q,2.3*q,1.45*q,1.15*q,'#c88c64','#85583e','#ae714e');
+   this.line([[p.x+2*q,p.y-7*q],[p.x+(4.5*q+stroke),p.y-9.2*q]],'#a3835e',1.15*q);
+   this.line([[p.x+(4.5*q+stroke),p.y-9.2*q],[p.x+4*q,p.y-7*q]],'#704c31',.7*q);
+  }
   else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
   else if(look.craft&&person.phase==='working'){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-6*q],[p.x+(4+swing)*q,p.y-7*q]],'#a3835e',q);}
   else if(['working','manualGathering','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}

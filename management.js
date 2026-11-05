@@ -11,7 +11,7 @@ import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
 import {putStock,stockStores,storeCapacity,refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
-import {PROFESSION_IDS,professionRole,canStaffBuilding} from './professions.js';
+import {PROFESSION_IDS,professionRole,canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
@@ -174,9 +174,9 @@ export function cancelRoadRoute(s,group){if(!Number.isSafeInteger(group)||group<
 
 export function assignWorkplace(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c))return {ok:false,reason:'Нужен взрослый работник'};
- if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!Object.keys(BUILDINGS[b.type].output).length&&!['healer','depot','waterpoint'].includes(b.type))return {ok:false,reason:'Нужна готовая производственная постройка'};
+ if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!hasWorkplace(b.type))return {ok:false,reason:'Нужна готовая производственная постройка'};
   if(!canStaffBuilding(c,b))return {ok:false,reason:'Не подходит профессия: сначала вдохнови жителя'};
-  if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=(['healer','musicHouse'].includes(b.type)?1:2))return {ok:false,reason:'Все постоянные места заняты'};
+  if(s.citizens.filter(v=>v.id!==id&&v.workplace===key).length>=workplaceCapacity(b.type))return {ok:false,reason:'Все постоянные места заняты'};
   const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к работе'};
   c.workplace=key;delete c.guardPost;
  }else{delete c.workplace;delete c.guardPost;}

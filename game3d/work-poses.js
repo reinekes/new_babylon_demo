@@ -10,8 +10,9 @@ import {brickNeeds} from '../bricks.js';
 import {kilnNeeds} from '../kilns.js';
 import {craftBatch,craftResource,craftState} from '../textiles.js';
 import {musicWorking} from '../music.js';
+import {ACCOUNT_WORK_SECONDS} from '../scribes.js';
 
-export const WORK_POSES=new Set(['work','building','farming','gathering','pottery','weaving','brewing','brickmaking','logging','quarry','hunting','fishing','healing','music','relicSearch']);
+export const WORK_POSES=new Set(['work','building','farming','gathering','pottery','weaving','brewing','brickmaking','logging','quarry','hunting','fishing','healing','music','relicSearch','scribing']);
 export function workplaceIndex(s){return new Map([...(s.buildings||[]),...(s.roads||[])].map(b=>[buildingKey(b),b]));}
 // View-only contract: the same active/waiting gates as workforce, without cropFor
 // or any initializer (rendering must never migrate or mutate a saved city).
@@ -22,6 +23,9 @@ export function workplaceActivity(s,c,index){
  const b=index.get(c.phase==='constructing'?c.site:c.work);
  if(c.phase==='constructing'&&b?.construction&&c.siteDuty==='builder')return {kind:'building',stage:materialsReady(b.construction)?'working':'waiting',target:workstationBuilding(b,s),progress:b.construction.work/workRequired(b)};
  if(c.phase!=='working'||!b)return null;
+ if(b.type==='granary'&&isOperational(b)&&!c.guarding&&c.calling==='scribe'&&c.role==='production'&&c.workplace===c.work){
+  return {kind:'scribing',stage:'working',target:b,progress:(c.workElapsed||0)/ACCOUNT_WORK_SECONDS};
+ }
  if(b.type==='musicHouse')return {kind:'music',task:'lithophone',stage:musicWorking(s,b,c)?'working':'waiting',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/12};
  if(b.type==='healer'){
   const waiting={kind:'healing',stage:'waiting',target:b};
@@ -52,6 +56,7 @@ export function workplaceActivity(s,c,index){
 // hunting/fishing solves retain priority in actors.js. Distinct cycles read task time.
 export function workPose(kind,time,task){
  const cycle=Math.sin(time*2.7),lift=(cycle+1)*.5;
+ if(kind==='scribing')return {bend:.10,twist:0,right:[.10,1.11+lift*.05,.43],left:[-.14,1.02,.46],tool:'scribe-stylus'};
  if(task==='water-filling')return {bend:.5,twist:cycle*.025,right:[.12,.60+lift*.09,.43],left:[-.12,.65+lift*.09,.43],tool:'water-vessel'};
  if(kind==='relicSearch')return {bend:.50+lift*.08,twist:cycle*.025,right:[.13,.55+lift*.08,.60],left:[-.15,.66+lift*.06,.51],tool:null};
  if(kind==='healing')return {bend:.14+lift*.05,twist:cycle*.025,right:[.12,1.02+cycle*.055,.49],left:[-.14,1.04,.42+lift*.035],tool:null};

@@ -225,9 +225,19 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.toolKind=kind;a.tool.scaling.setAll(1);const grip=kind==='hunting'?a.hands.l:a.hands.r;if(grip){a.tool.parent=grip;a.tool.position.set(0,kind==='hoe'?0:.045,0);a.tool.rotationQuaternion=B.Quaternion.Identity();}prune(a.tool);for(const n of a.tool.getChildren())n.dispose();
   if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();a.fishingLine=null;}
   if(a.shotArrow){prune(a.shotArrow);a.shotArrow.dispose();a.shotArrow=null;}
+  if(a.scribeTablet){prune(a.scribeTablet);a.scribeTablet.dispose();a.scribeTablet=null;}
   a.tool.setEnabled(!!kind);if(!kind)return;
   // Every implement shares its grip origin with the GLB palm. No detached tools.
   if(kind==='water-vessel'){sphere('water-fill-vessel',a.tool,clay,0,-.08,0,.28,.28,.28);sphere('water-fill-mouth',a.tool,dark,0,.045,0,.15,.025,.15);return;}
+  if(kind==='scribe-stylus'){
+   box('scribe-reed-stylus',a.tool,reed,0,.065,0,.025,.22,.024);
+   a.scribeTablet=new B.TransformNode('scribe-tablet',scene);a.scribeTablet.parent=a.root;
+   box('scribe-clay-tablet',a.scribeTablet,clay,0,0,0,.29,.055,.22);
+   for(const x of [-.09,0,.09])for(const z of [-.063,0,.063]){
+    const mark=box('scribe-impression',a.scribeTablet,dark,x,.029,z,.038,.005,.011);mark.rotation.y=.38;
+   }
+   return;
+  }
   if(kind==='hunting'){
    const arc=[];for(let i=0;i<=10;i++){const t=i/10*Math.PI;arc.push(vec(Math.sin(t)*.20,Math.cos(t)*.48,0));}
    const bow=B.MeshBuilder.CreateTube('hunter-bow',{path:arc,radius:.017,tessellation:6},scene);bow.parent=a.tool;bow.material=wood;meshes.push(bow);
@@ -485,6 +495,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     if(a.workContact?.kind==='vat'){
      const target=a.workContact.target,stand=a.workContact.stand,dx=target.x-stand.x,dz=target.y-stand.y,d=Math.hypot(dx,dz);
      direction=vec((target.x+dx/d*.18/6)*6,surfaceElevation(target.x,target.y,a.state)+target.height-.38,(target.y+dz/d*.18/6)*6).subtract(a.hands.r.getAbsolutePosition());
+    }
+    if(a.toolKind==='scribe-stylus'&&a.scribeTablet){
+     const inverse=a.root.getWorldMatrix().clone().invert();
+     const palm=B.Vector3.TransformCoordinates(a.hands.l.getAbsolutePosition(),inverse);
+     a.scribeTablet.position.copyFrom(palm.add(vec(.105,.039,.025)));
+     a.scribeTablet.computeWorldMatrix(true);
+     const contact=a.scribeTablet.getAbsolutePosition().add(vec(0,.03,0));
+     direction=contact.subtract(a.hands.r.getAbsolutePosition());
     }
     const local=B.Vector3.TransformNormal(direction,a.tool.parent.getWorldMatrix().clone().invert()).normalize();
     a.tool.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,local,new B.Quaternion());a.tool.computeWorldMatrix(true);

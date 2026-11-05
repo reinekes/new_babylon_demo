@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createGame,advanceTime,encode,decode} from '../engine.js';
+import {inspireCitizen,assignWorkplace} from '../management.js';
+import {putStock} from '../inventory.js';
+import {stampBuildingCompletion} from '../building-chronology.js';
+import {workplaceActivity,workplaceIndex} from '../game3d/work-poses.js';
+
+test('a named scribe walks to the assigned granary and records its actual inventory',()=>{
+ const state=createGame({start:'established',mode:'mature',seed:137});
+ const granary={type:'granary',x:10,y:8,level:1},key='10,8',id=state.citizens[0].id;
+ state.buildings.push(granary);
+ stampBuildingCompletion(state,granary);
+ putStock(state,key,'food',17);putStock(state,key,'clay',11);
+ assert.ok(decode(encode(state)),'a prior save with no tablet still loads');
+ assert.equal(assignWorkplace(state,id,key).ok,false);
+ assert.equal(inspireCitizen(state,id,'scribe').success,true);
+ assert.equal(assignWorkplace(state,id,key).ok,true);
+ assert.equal(granary.stockAccount,undefined);
+ for(let i=0;i<44&&!granary.stockAccount;i++)advanceTime(state,.5);
+ const tablet=granary.stockAccount,c=state.citizens.find(c=>c.id===id);
+ assert.equal(tablet.author,id);
+ assert.equal(tablet.stock.clay,11);
+ assert.ok(Math.abs(tablet.stock.food-granary.stock.food)<.01);
+ assert.equal(workplaceActivity(state,c,workplaceIndex(state)).kind,'scribing');
+ putStock(state,key,'clay',7);
+ assert.equal(granary.stock.clay,18);
+ assert.equal(tablet.stock.clay,11);
+ assert.equal(encode(decode(encode(state))),encode(state));
+ const corrupt=structuredClone(state);
+ corrupt.buildings.find(b=>b.type==='granary').stockAccount.stock.food=-1;
+ assert.equal(decode(encode(corrupt)),null);
+});

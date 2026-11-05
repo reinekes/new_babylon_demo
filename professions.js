@@ -1,3 +1,4 @@
+import {BUILDINGS} from './definitions.js';
 // Specializations extend calling, never the saved workforce role or cargo schema.
 const entry=(name,role,buildings=[])=>Object.freeze({name,role,buildings:Object.freeze(buildings)});
 export const PROFESSIONS=Object.freeze({
@@ -13,13 +14,15 @@ export const PROFESSIONS=Object.freeze({
  musician:entry('Музыкант','production',['musicHouse']),
  fisher:entry('Рыбак','production',['fishing']),hunter:entry('Охотник','production',['hunting']),
  brickmaker:entry('Формовщик кирпича','production',['brickyard']),kilnworker:entry('Обжигальщик','production',['kiln']),
- priest:entry('Жрец','production',['shrine','ziggurat'])
+ priest:entry('Жрец','production',['shrine','ziggurat']),scribe:entry('Писец','production',['granary'])
 });
 export const PROFESSION_IDS=Object.freeze(Object.keys(PROFESSIONS));
 export const PROFESSION_NAMES=Object.freeze(Object.fromEntries(Object.entries(PROFESSIONS).map(([id,p])=>[id,p.name])));
 export const professionRole=id=>PROFESSIONS[id]?.role;
 const byBuilding=Object.freeze(Object.fromEntries(Object.entries(PROFESSIONS).flatMap(([id,p])=>p.buildings.map(type=>[type,id]))));
 export const professionForBuilding=type=>byBuilding[type]||null;
+export const workplaceCapacity=type=>['healer','musicHouse','granary'].includes(type)?1:2;
+export const hasWorkplace=type=>['healer','depot','waterpoint','granary'].includes(type)||Object.keys(BUILDINGS[type]?.output||{}).length>0;
 export function professionMatchesTask(c,task){
  const p=PROFESSIONS[c.calling];if(c.age<16||!p||c.calling==='auto'||c.role!==p.role)return false;
  if(p.buildings.length)return p.buildings.includes(task)||c.calling===task;
@@ -28,6 +31,7 @@ export function professionMatchesTask(c,task){
 }
 export function canStaffBuilding(c,b){
  if(c.age<16)return false;
+ if(b.type==='granary')return c.role==='production'&&c.calling==='scribe';
  if(b.type==='musicHouse')return c.role==='production'&&c.calling==='musician';
  if(b.type==='healer')return c.role==='healer'&&c.medicine?.level>0;
  if(b.type==='tailor')return c.role==='tailor';
