@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-05T18:28:27.553048+00:00",
+  "commit": "44ff6f291cd4eabd8afcea0a54f41cc64e5dae0a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "980bb4f537a71272968694449680325e105fa3ba661b41c5b6be06aa45c5d7cf",
+      "actual": "980bb4f537a71272968694449680325e105fa3ba661b41c5b6be06aa45c5d7cf",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "867ebadfee29c3858560876787550a640444862e8124e5ca990b397cbf33302f",
+      "actual": "867ebadfee29c3858560876787550a640444862e8124e5ca990b397cbf33302f",
+      "match": true
+    },
+    {
+      "path": "city-labor.js",
+      "status": 200,
+      "expected": "c053d2a037f00f0610f0c657afabc466db0bf3485fc170217f0ce04b8173f229",
+      "actual": "c053d2a037f00f0610f0c657afabc466db0bf3485fc170217f0ce04b8173f229",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "456ce298b333e9bed123002e95f2302a1cfa97836f2ec87859425c96e39832e3",
+      "actual": "456ce298b333e9bed123002e95f2302a1cfa97836f2ec87859425c96e39832e3",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "cac1aea8edb95d8b61b6621268019c62f9333e3a1e6938840e3075acc149554c",
+      "actual": "cac1aea8edb95d8b61b6621268019c62f9333e3a1e6938840e3075acc149554c",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "9d109cdce83b0eb83bbe8d460a86f2723dbe4041a28a43d2875f22dc9a282f92",
+      "actual": "9d109cdce83b0eb83bbe8d460a86f2723dbe4041a28a43d2875f22dc9a282f92",
+      "match": true
+    },
+    {
+      "path": "tests/city-labor.test.js",
+      "status": 200,
+      "expected": "1a78b81a56424c23a7d8b46881fc498c067860d23747cf9c664b86dc07fe9bb2",
+      "actual": "1a78b81a56424c23a7d8b46881fc498c067860d23747cf9c664b86dc07fe9bb2",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "c03f66818dc51275c25856a51ae356858009e90fc4f5f8d0bf5715935cecd419",
+      "actual": "c03f66818dc51275c25856a51ae356858009e90fc4f5f8d0bf5715935cecd419",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "3ed99c34b255470ec640cdcfc02cad8055d204e506b2620d9d391744bd685cc9",
+      "actual": "3ed99c34b255470ec640cdcfc02cad8055d204e506b2620d9d391744bd685cc9",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
