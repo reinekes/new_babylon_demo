@@ -1,0 +1,289 @@
+{
+  "at": "2026-11-05T15:11:35.071535+00:00",
+  "commit": "bd06cde7c0da882bd77680d64030a50c01f9a525",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "46991a6e69fa7bb6987e5c1438cf731fd728a92a1536ef40dc31d55641fd8dc3",
+      "actual": "46991a6e69fa7bb6987e5c1438cf731fd728a92a1536ef40dc31d55641fd8dc3",
+      "match": true
+    },
+    {
+      "path": "docs/SKY_ATMOSPHERE_2026-11-05.md",
+      "status": 200,
+      "expected": "38e74c2abc1be0f507ce1a3e3c8f0f30096bb1af354f65809232fad853482c81",
+      "actual": "38e74c2abc1be0f507ce1a3e3c8f0f30096bb1af354f65809232fad853482c81",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-fog-red.log",
+      "status": 200,
+      "expected": "a50579afbb119eae37f5016f136d429781b5ac75b5561caa548e35cd2feca5ae",
+      "actual": "a50579afbb119eae37f5016f136d429781b5ac75b5561caa548e35cd2feca5ae",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-137-0.jpg",
+      "status": 200,
+      "expected": "73f896afd238dff9e7c4a3dd73e79d0a0ffa7101c0b8255be68ccdd41d5ebcc5",
+      "actual": "73f896afd238dff9e7c4a3dd73e79d0a0ffa7101c0b8255be68ccdd41d5ebcc5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-137-12.jpg",
+      "status": 200,
+      "expected": "a40c4dbcdf01a129c213c869f8d62f0ea12b686a52a02261188c9642d54e3152",
+      "actual": "a40c4dbcdf01a129c213c869f8d62f0ea12b686a52a02261188c9642d54e3152",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-29-0.jpg",
+      "status": 200,
+      "expected": "275ff7753aa607b12572f24c27781555f689727e9e29846c3e6fbed41ebff7f0",
+      "actual": "275ff7753aa607b12572f24c27781555f689727e9e29846c3e6fbed41ebff7f0",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-29-12.jpg",
+      "status": 200,
+      "expected": "0b793c72dc75180b9948c6cef493f428b0f59b62a80854a5397e080a97b0b0b6",
+      "actual": "0b793c72dc75180b9948c6cef493f428b0f59b62a80854a5397e080a97b0b0b6",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-29-18.jpg",
+      "status": 200,
+      "expected": "636d97c478b5ffbc3029854c5234fb56612062e363729bae52e52262c6ea550f",
+      "actual": "636d97c478b5ffbc3029854c5234fb56612062e363729bae52e52262c6ea550f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-42-0.jpg",
+      "status": 200,
+      "expected": "98ea357a0d743601d75df05a7b6c2eb961dcf4f29246bb082de9811c5d3bc498",
+      "actual": "98ea357a0d743601d75df05a7b6c2eb961dcf4f29246bb082de9811c5d3bc498",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-42-12.jpg",
+      "status": 200,
+      "expected": "09f755bdf3623dc064ab865d7ab06446f0c2ad20091551b9a9ae665be970cb9a",
+      "actual": "09f755bdf3623dc064ab865d7ab06446f0c2ad20091551b9a9ae665be970cb9a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-browser.json",
+      "status": 200,
+      "expected": "869d1dbca61b773c346e3a7c2e9ca781d71692401d8621f4ee07fc690496beb3",
+      "actual": "869d1dbca61b773c346e3a7c2e9ca781d71692401d8621f4ee07fc690496beb3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bind-final-full.log",
+      "status": 200,
+      "expected": "ce4db4bacc2dc4b53aa538f33f9d0b0001cae1fd70750091d77acbca1c6dfb7e",
+      "actual": "ce4db4bacc2dc4b53aa538f33f9d0b0001cae1fd70750091d77acbca1c6dfb7e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bird-forward.jpg",
+      "status": 200,
+      "expected": "fef8235e404d72c85315d7647144063899e7eb024990513ce56c75b0515b1a3e",
+      "actual": "fef8235e404d72c85315d7647144063899e7eb024990513ce56c75b0515b1a3e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-bird-reverse.jpg",
+      "status": 200,
+      "expected": "d6c82e9b80fa82761d232b3ce1e9c1e01fba581895b38817d622ebb8332ce891",
+      "actual": "d6c82e9b80fa82761d232b3ce1e9c1e01fba581895b38817d622ebb8332ce891",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-137-0.jpg",
+      "status": 200,
+      "expected": "75462bfb8815966fed7781c6333e106daf18b07a3464c82e127519b3e6542056",
+      "actual": "75462bfb8815966fed7781c6333e106daf18b07a3464c82e127519b3e6542056",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-137-12.jpg",
+      "status": 200,
+      "expected": "a504ee621a627ebeab37f07a94aceaecec17d8ede2ec6cbf2f827f455b3f5f4a",
+      "actual": "a504ee621a627ebeab37f07a94aceaecec17d8ede2ec6cbf2f827f455b3f5f4a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-137-18.jpg",
+      "status": 200,
+      "expected": "8b437072237cc08fb1adb08ade8b6366c45d3e9e22d9c9e6ca2cf93b48bfef1e",
+      "actual": "8b437072237cc08fb1adb08ade8b6366c45d3e9e22d9c9e6ca2cf93b48bfef1e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-137-6.jpg",
+      "status": 200,
+      "expected": "0e9ac5c46a9cf5fdad54046dc7894e20267c98b37b966bc1d61014757d02bbb8",
+      "actual": "0e9ac5c46a9cf5fdad54046dc7894e20267c98b37b966bc1d61014757d02bbb8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-29-0.jpg",
+      "status": 200,
+      "expected": "5f66bf1d46b17ae5d005852f01c347e4ddd6d5023859afa3e6321f564051b848",
+      "actual": "5f66bf1d46b17ae5d005852f01c347e4ddd6d5023859afa3e6321f564051b848",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-29-12.jpg",
+      "status": 200,
+      "expected": "918525b2d26a3ec7fd3d1d33c72aa8fecda40318d5cf5c9016e293c6b9ac938a",
+      "actual": "918525b2d26a3ec7fd3d1d33c72aa8fecda40318d5cf5c9016e293c6b9ac938a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-29-18.jpg",
+      "status": 200,
+      "expected": "cd3977bcd32e18a250698a2bbb14387f56b7520f1efecd0d075b342c909b8e0c",
+      "actual": "cd3977bcd32e18a250698a2bbb14387f56b7520f1efecd0d075b342c909b8e0c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-29-6.jpg",
+      "status": 200,
+      "expected": "570a3892c41b92c6e0d2f0d40264e2b04600e87774ff816a4bc8ecd36c08787d",
+      "actual": "570a3892c41b92c6e0d2f0d40264e2b04600e87774ff816a4bc8ecd36c08787d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-42-0.jpg",
+      "status": 200,
+      "expected": "7e0c8c90693e41eafb44fda2568ecec7c05409d4d7dacb8e57b65d0a2b57eb5f",
+      "actual": "7e0c8c90693e41eafb44fda2568ecec7c05409d4d7dacb8e57b65d0a2b57eb5f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-42-12.jpg",
+      "status": 200,
+      "expected": "9e781ee284f3af1202f741dcfcc72675aa3fc2011286ccca437bd0398d67555a",
+      "actual": "9e781ee284f3af1202f741dcfcc72675aa3fc2011286ccca437bd0398d67555a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-42-18.jpg",
+      "status": 200,
+      "expected": "5f02fb0e27abdf723822335e7c10973f19ce6dbba65623a7c86c36c6a307f609",
+      "actual": "5f02fb0e27abdf723822335e7c10973f19ce6dbba65623a7c86c36c6a307f609",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-42-6.jpg",
+      "status": 200,
+      "expected": "1e3518e1d56a32e14521e5706567dec291be9ec4e68c51ee86384ee89860ce08",
+      "actual": "1e3518e1d56a32e14521e5706567dec291be9ec4e68c51ee86384ee89860ce08",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-final-browser.json",
+      "status": 200,
+      "expected": "931d5fc0b605a286b0668e9ccf68c14a7aa3eb5b3713bdb6dbcddead9af22e52",
+      "actual": "931d5fc0b605a286b0668e9ccf68c14a7aa3eb5b3713bdb6dbcddead9af22e52",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-migrations.log",
+      "status": 200,
+      "expected": "8098b27b0664e5f0971a8f5826f87e44d2c00f47ae949b290e7bc76f84d8bf26",
+      "actual": "8098b27b0664e5f0971a8f5826f87e44d2c00f47ae949b290e7bc76f84d8bf26",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sky-water-final-targeted.log",
+      "status": 200,
+      "expected": "69df065e30eb374675c09b062c2c6685379c4ac273a4b1aa7a0c92ce82598b1e",
+      "actual": "69df065e30eb374675c09b062c2c6685379c4ac273a4b1aa7a0c92ce82598b1e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-sunrise-red.log",
+      "status": 200,
+      "expected": "fbbee50f8fd1a58f7355516a6612f8de5e6d05ab23d611d1ba5cd48ef376db7e",
+      "actual": "fbbee50f8fd1a58f7355516a6612f8de5e6d05ab23d611d1ba5cd48ef376db7e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/babylon-water-bind-red.log",
+      "status": 200,
+      "expected": "5615dd140a5070d22631727ce12f92956f1d50e6655e1c25f35a531dde96ce3c",
+      "actual": "5615dd140a5070d22631727ce12f92956f1d50e6655e1c25f35a531dde96ce3c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sky-atmosphere/functional-4x.json",
+      "status": 200,
+      "expected": "a13c41cb100256353fcf1ebafdd2c7f8f6f12819e3761f97dc42edb50bc9385f",
+      "actual": "a13c41cb100256353fcf1ebafdd2c7f8f6f12819e3761f97dc42edb50bc9385f",
+      "match": true
+    },
+    {
+      "path": "game3d/atmosphere.js",
+      "status": 200,
+      "expected": "9742ef5070a8e147eccf2bfaf5e71299340a821ab4dec03947fb834e70fb56b1",
+      "actual": "9742ef5070a8e147eccf2bfaf5e71299340a821ab4dec03947fb834e70fb56b1",
+      "match": true
+    },
+    {
+      "path": "game3d/sky-horizon.js",
+      "status": 200,
+      "expected": "d59928a694092e3b9c4ed575eed4c09522eab9c530e02a9133c882fba2008e1f",
+      "actual": "d59928a694092e3b9c4ed575eed4c09522eab9c530e02a9133c882fba2008e1f",
+      "match": true
+    },
+    {
+      "path": "game3d/water.js",
+      "status": 200,
+      "expected": "46276ef41a6ceb8cd229bd900a2e1563a70262c000d1a14b8c64fc6e54c8dcb2",
+      "actual": "46276ef41a6ceb8cd229bd900a2e1563a70262c000d1a14b8c64fc6e54c8dcb2",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-water-rendering.test.js",
+      "status": 200,
+      "expected": "12b79dd5e0109af03718e97549ad3211415c78666b182aed178938379545bbba",
+      "actual": "12b79dd5e0109af03718e97549ad3211415c78666b182aed178938379545bbba",
+      "match": true
+    },
+    {
+      "path": "tests/sky-horizon.test.js",
+      "status": 200,
+      "expected": "057d5324cdca187ff0d61d58b4e6ac83f72cc67827951d762a556626100620fc",
+      "actual": "057d5324cdca187ff0d61d58b4e6ac83f72cc67827951d762a556626100620fc",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/README.md",
+      "status": 200,
+      "expected": "ff4650422c3127ccea3a6eb88d803626cfefcd8bb495f65d12b94dbff24c3239",
+      "actual": "ff4650422c3127ccea3a6eb88d803626cfefcd8bb495f65d12b94dbff24c3239",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/valley.html",
+      "status": 200,
+      "expected": "26bd1a082e4771deeefa56f6aff85f2b3dc7e725b89bbd69bb6e184158252573",
+      "actual": "26bd1a082e4771deeefa56f6aff85f2b3dc7e725b89bbd69bb6e184158252573",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/valley.js",
+      "status": 200,
+      "expected": "0d64274c3a57f34f5a85109382ac6df464aa881e8a8f52680c7d6ef290e85612",
+      "actual": "0d64274c3a57f34f5a85109382ac6df464aa881e8a8f52680c7d6ef290e85612",
+      "match": true
+    }
+  ],
+  "matched": 40,
+  "total": 40
+}
