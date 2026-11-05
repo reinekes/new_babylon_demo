@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-7';
+const tag='sumer-trade-supplied-20261105-9';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {housingOf,capacityOf,buildingKey} from './repo/definitions.js';
@@ -58,8 +58,14 @@ export function auditTradeFixture(state,proof){
 await writeFile(join(output,'trade-fixture.mjs'),fixture);
 const helper=await import(pathToFileURL(join(output,'trade-fixture.mjs')).href+'?verify='+Date.now());
 for(const transport of ['land','river']){const {state,proof}=helper.createTradeFixture(transport);console.log(JSON.stringify({transport,valid:true,start:proof.measurementStart,harbor:proof.harbor,audit:helper.auditTradeFixture(state,proof)}));}
+// A private A/B probe: Babylon retains its own exact frustum decision.
+const candidateSource=await readFile(join(source,'game3d/renderable-mesh-candidates.js'),'utf8'),preciseCheck='mesh.computeWorldMatrix?.();matrixReady=true;if(!mesh.isInFrustum(scene.frustumPlanes))continue;';
+if(!candidateSource.includes(preciseCheck))throw Error('Review candidate probe after source changes');
+await writeFile(join(output,'coarse-candidates.mjs'),candidateSource.replace(preciseCheck,''));
 let app=await readFile(join(output,'app-check.js'),'utf8');
-app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\n`+app;
+app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\nimport {createRenderableMeshCandidates as coarseCandidates} from './coarse-candidates.mjs?probe=${tag}';\n`+app;
+app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
+app=app.replace('meshes:renderer.scene?.meshes.length,','activeMeshes:renderer.scene?.getActiveMeshes?.().length,meshes:renderer.scene?.meshes.length,');
 app=app.replace("[renderer.scene,'render','scene.render']","[renderer.scene,'render','scene.render'],[renderer.scene,'getActiveMeshCandidates','scene.candidates'],[renderer.scene,'_evaluateActiveMeshes','scene.activeMeshes'],[renderer.scene,'animate','scene.animate'],[renderer.scene,'_renderForCamera','scene.camera']");
 app=app.replace('export const timings=[];', 'export const timings=[];export const timingTotals={};export function resetTimingTotals(){for(const key of Object.keys(timingTotals))delete timingTotals[key];timings.length=0;}');
 app=app.replace('if(ms>35)timings.push', 'const total=timingTotals[tag]??={count:0,ms:0,max:0};total.count++;total.ms+=ms;total.max=Math.max(total.max,ms);if(ms>35)timings.push');
@@ -77,7 +83,7 @@ check=check.replace('let last=start,active=true;', 'let last=start,active=true;c
 check=check.replace('active=false;observer?.disconnect();','active=false;observer?.disconnect();document.removeEventListener("visibilitychange",visibility);');
 check=check.replace('transport,history,trade:app.tradeStateInfo()', `transport,history,trade:app.tradeStateInfo(),startViewport,visibilityChanges,viewportChanged:startViewport[0]!==innerWidth||startViewport[1]!==innerHeight,selectedSpeed:document.querySelector('[data-speed][aria-pressed="true"]')?.dataset.speed`);
 check=check.replace('sceneStart=app.sceneInfo();','sceneStart=(app.resetTimingTotals(),app.sceneInfo());');
-check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,');
+check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",');
 await writeFile(join(output,'check.js'),check);
 check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);await writeFile(join(output,'check.js'),check);
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
