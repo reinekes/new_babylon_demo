@@ -41,6 +41,7 @@ function supplements(B,scene) {
   if(emission)m.emissiveColor=B.Color3.FromHexString(emission);return m;
  };
  mats={dark:make('interior','#51483b'),edge:make('adobe-edge','#ac9678'),straw:make('dry-straw','#aa9a66'),glow:make('occupied-lamp','#b59257','#ce9a4c'),leaf:make('olive-foliage','#777653'),silt:make('wet-silt','#88775e')};
+ mats.silt.albedoColor=mats.silt.albedoColor.toLinearSpace();
  // Four shared plaster finishes: variation without creating a material for every house.
  mats.plasters=['#fff0dc','#e6d3b4','#f5ddba','#d6c09e'].map((color,i)=>{
   const m=make(`plaster-finish-${i}`,color);m.albedoColor.scaleInPlace(2.1);return m;

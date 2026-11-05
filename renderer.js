@@ -22,6 +22,8 @@ import {generateStreets,sortScene,lightingAt} from './city-life.js';
 import {worldWidth,worldHeight,terrain,riverPoint,riverLocal,worldFromRiver,riverLength,riverFlowSign,signedRiverDistance,bridgeSpanAt,onBridge,depositAt,isShore,nearDeposit,isDryPoint} from './world.js';
 import {visibleCitizens,networkFor} from './workforce.js';
 import {drawBuilding} from './architecture.js';
+import {ploughTeams} from './plough-team.js';
+import {drawPloughTeam} from './plough-art.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
@@ -353,7 +355,11 @@ export class Renderer{
  const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,s).y-riverLocal(vessel.x,vessel.y,s).along)<.65);
  if(underBridge&&this.inView(vessel.x,vessel.y,150))this.caravan(vessel);
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
- const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed})];
+ const people=this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed}),teams=ploughTeams(s,people);
+ const drivers=new Map(teams.map(team=>[team.driverId,team]));
+ const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...people.map(c=>{
+  const team=drivers.get(c.id);return team?{...c,...team.driver,walking:true,step:team.progress*13,ploughDepth:team.fieldDepth+.002}:c;
+ }),...teams.map(team=>({...team,kind:'ploughTeam',ploughDepth:team.fieldDepth+.001}))];
  if(catTrace)entities.push({...catTrace,kind:'catOffering'});
  const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
@@ -369,6 +375,7 @@ export class Renderer{
   else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='catOffering')drawCatOffering(this,e);
   else if(e.kind==='person')this.person(e);
+  else if(e.kind==='ploughTeam')drawPloughTeam(this,e);
   else if(e.kind==='miraclePlant')this.miraclePlant(e);
   else if(e.kind==='festivalCourt')drawFestivalCourt(this,s,e.view);
   else if(e.kind==='caravan')this.caravan(e);

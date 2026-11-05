@@ -5,6 +5,7 @@ import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
 import {worldWidth,worldHeight} from '../world.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
+import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
  'orange-bird':{file:'imported-orange-bird.glb',count:3,stride:.14,pace:.18},
  fox:{file:'imported-fox.glb',count:1,stride:.23,pace:.24},
@@ -34,6 +35,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const entries=Object.entries(AMBIENT_MODELS);if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
  const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
+ const ploughs=assets.has('bull')?createPloughTeams(B,scene,assets.get('bull'),meshes):null;
  let disposed=false,clock=0,lastState=null;
  function register(a){a.owned=a.root.getChildMeshes();for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
  function imported(species,index,farm=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=farm?farm.id:`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
@@ -56,8 +58,9 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   Object.assign(a.root.metadata,{clip:name,gaitPhase:a.walkPhase});
  }
  function removeActor(a){farmMaterials.get(a.root)?.dispose();farmMaterials.delete(a.root);for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);}
- function update(state,dt=1/60,{paused=false,speed=1}={}){
+ function update(state,dt=1/60,{paused=false,speed=1,ploughPoses}={}){
   if(disposed)return;
+  ploughs?.update(state,ploughPoses);
   const stateChanged=state!==lastState;if(stateChanged){lastState=state;for(const a of actors){if(['sky-birds','original-sky'].includes(a.species)){a.skyPlaced=false;continue;}if(!a.farm){a.anchor=null;a.target=null;a.enabled=false;a.restUntil=clock;a.routeAttempt=0;}}}
   const farms=new Map(dairyHerd(state).map(f=>[f.id,f]));for(const a of [...actors]){if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
   for(const species of Object.keys(AMBIENT_MODELS)){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>a.species===species).length;i<desired;i++)imported(species,i);}
@@ -86,6 +89,6 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
 
   }
  }
- function dispose(){if(disposed)return;disposed=true;for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const a of assets.values())a.dispose();assets.clear();}
- return {update,dispose,roots:()=>actors.map(a=>a.root)};
+ function dispose(){if(disposed)return;disposed=true;ploughs?.dispose();for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const a of assets.values())a.dispose();assets.clear();}
+ return {update,dispose,hasPloughTeams:!!ploughs,roots:()=>actors.map(a=>a.root)};
 }

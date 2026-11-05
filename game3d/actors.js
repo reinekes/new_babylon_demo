@@ -27,6 +27,7 @@ import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses
 import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity,RESIDENT_STANCE} from './resident-motion.js';
 import {usesHistoricalMan} from './historical-resident.js';
 import {WATER_HEIGHT} from './water.js';
+import {ploughTeams,PLOUGH_HANDLE_HEIGHT} from '../plough-team.js';
 export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 
 // These helpers read state only. The renderer never advances workers or writes saves.
@@ -306,13 +307,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   cargo(a,c);
  }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
+  const plough=viewPosition.plough;
+  a.ploughPoseChanged=!!plough!==!!a.wasPloughing;
   a.workContact=viewPosition.contact||null;a.presentationCitizen=c;
   let dx=0,dz=0,distance=0;
   const offsetX=viewPosition.x-c.x,offsetY=viewPosition.y-c.y;
   const eventContact=!!c.eventContact;
   if(a.lastX!==null&&a.eventContactActive!==undefined&&eventContact!==a.eventContactActive)a.ceremonyJoin={path:null,index:0,target:null};
   a.eventContactActive=eventContact;
-  if(c.miracleContact||c.funeralContact||c.controlled){a.ceremonyJoin=null;a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}
+  if(plough||a.wasPloughing||c.miracleContact||c.funeralContact||c.controlled){a.ceremonyJoin=null;a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}
   else if(a.ceremonyJoin){const point=ceremonyJoinStep(a,state,networkFor(state),viewPosition,dt,paused,speed);a.viewOffsetX=point.x-c.x;a.viewOffsetY=point.y-c.y;}
   else if(a.viewOffsetX===undefined){a.viewOffsetX=offsetX;a.viewOffsetY=offsetY;}else if(!paused){
    const fixed=!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase),distance=Math.hypot(offsetX-a.viewOffsetX,offsetY-a.viewOffsetY);
@@ -326,7 +329,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
   a.root.position.set(shownX*6,swim?swim.height:onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(shownX,shownY,state),shownY*6);a.root.metadata.swimming=!!swim;
   if(a.details)a.details.setEnabled(!swim);
-  if(c.miracleContact||c.funeralContact||c.eventContact&&!a.ceremonyJoin){
+  if(plough){a.yaw=plough.yaw;a.root.rotation.y=plough.yaw;}
+  else if(c.miracleContact||c.funeralContact||c.eventContact&&!a.ceremonyJoin){
    // Both rail targets and the bearer share this ceremony orientation. Generic
    // path smoothing must not rotate them apart or snap the root when paused.
    if(!paused||a.yaw===null){a.yaw=(c.miracleContact||c.funeralContact||c.eventContact).yaw;a.root.rotation.y=a.yaw;}
@@ -337,12 +341,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   }
   a.lastX=shownX;a.lastY=shownY;
-  const decision=actorAnimation(c,['dairy','lithophone'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
+  const decision=plough?{clip:'Walk_Loop',pose:'idle'}:actorAnimation(c,['dairy','lithophone'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
-  if(!paused||!a.clip){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
+  if(!paused||!a.clip||a.ploughPoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
+  a.wasPloughing=!!plough;
+  a.plough=plough;
   a.paused=paused;
   if(a.playProps&&!paused){const playing=c.playing&&c.age<16;a.playProps.setEnabled(!!playing);a.playBoard.setEnabled(!!playing&&!c.walking);a.playAnimal.setEnabled(!!playing);}
-  if(a.tool&&(!paused||a.toolKind===null)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
+  if(a.tool&&plough)workerTool(a,null);
+  else if(a.tool&&(!paused||a.toolKind===null||a.ploughPoseChanged)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
    const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
   if(a.clip==='Walk_Loop'&&!paused&&distance<3){
@@ -373,12 +380,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const observer=scene.onAfterAnimationsObservable.add(()=>{
   for(const a of people.values()){
    if(!a.root.isEnabled()||a.poseSample===false)continue;
+   const plough=a.plough;
    if(a.manualIdle&&!a.paused){const g=a.groups.get(a.clip),fps=g.targetedAnimations[0]?.animation.framePerSecond||30,span=g.to-g.from;if(span>0)g.goToFrame(g.from+(a.time*fps)%span);}
    // Walking animatables are paused, avoiding a second clock-based evaluation.
    // Apply the distance sample once, before task IK and skeleton upload.
    if(!a.paused&&a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
-   if(a.paused&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
+   if(a.paused&&!a.ploughPoseChanged&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
    const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seated=milking||music,resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop'||a.wasDancing&&a.clip==='Idle_Loop';a.wasSwimming=swimming;a.wasDancing=a.pose==='dance';
@@ -431,6 +439,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    }else if(a.pose==='petting'){
     const target=a.c.activity?.target,pet=target?B.Vector3.TransformCoordinates(vec(target.x*6,surfaceElevation(target.x,target.y,a.state)+.58,target.y*6),a.root.computeWorldMatrix(true).clone().invert()):vec(.15,.44,.65);
     pet.z+=Math.sin(a.time*4)*.07;poseArm(a,'r',pet);poseArm(a,'l',vec(-.24,.79,.30));
+   }else if(plough){
+    const inverse=a.root.computeWorldMatrix(true).clone().invert();
+    const height=surfaceElevation(plough.x,plough.y,a.state)+PLOUGH_HANDLE_HEIGHT;
+    for(const side of ['l','r']){
+     const p=plough.handles[side],local=B.Vector3.TransformCoordinates(vec(p.x*6,height,p.y*6),inverse);
+     poseArm(a,side,local);
+    }
    }else if(work&&a.workContact){
     const hands=workstationHands(a.workContact,a.time),inverse=a.root.computeWorldMatrix(true).clone().invert();
     const local=p=>B.Vector3.TransformCoordinates(vec(p.x*6,surfaceElevation(p.x,p.y,a.state)+p.height,p.y*6),inverse);
@@ -446,7 +461,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
    musicianMallets(a,music?a.workContact:null);
-   if(!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&a.pose!=='petting'){
+   if(!plough&&!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&a.pose!=='petting'){
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
@@ -539,6 +554,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused){poseTime+=dt*speed;poseClock+=dt;}
   const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
+  const teams=ambient?.hasPloughTeams?ploughTeams(state,visible):[];
+  for(const team of teams)positions.set(team.driverId,{...team.driver,plough:team});
   // Match residentAppearance's first array.find, including falsy-ID fallback.
   // Rebuild each update: a building may keep its ID while changing its type.
   const buildingTypes=new Map();for(const b of state.buildings||[]){const key=b.id||`${b.x},${b.y}`;if(!buildingTypes.has(key))buildingTypes.set(key,b.type);}
@@ -552,8 +569,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
    releaseSleepingRig(a,true);a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;
    const interval=residentPoseInterval(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale,!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.id===focusId));
-   a.root.simplifiedShadow=interval>0&&!c.swimming;const slot=residentPoseSlot(poseClock,interval,c.id);a.poseSample=slot===null||slot!==a.poseSlot||a.paused!==paused||!a.hasModelPose;a.poseSlot=slot;
-   animate(a,c,state,dt,paused,speed,positions.get(c.id));
+   const position=positions.get(c.id);
+   a.root.simplifiedShadow=interval>0&&!c.swimming;const slot=residentPoseSlot(poseClock,interval,c.id);a.poseSample=slot===null||slot!==a.poseSlot||a.paused!==paused||!!position?.plough!==!!a.wasPloughing||!a.hasModelPose;a.poseSlot=slot;
+   animate(a,c,state,dt,paused,speed,position);
    // The root keeps following the real route each frame. Only small skeletal
    // gestures are sampled less often; near/inspected people stay full rate.
    const manualIdle=interval>0&&a.clip==='Idle_Loop',g=a.groups.get(a.clip);
@@ -572,7 +590,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}animate(a,c,state,dt,paused,speed);}
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
-  imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed});
+  imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed,ploughPoses:teams});
   const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
   wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
  }
