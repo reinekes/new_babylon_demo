@@ -1,3 +1,4 @@
+import {isVotiveTemple,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
 import {reedStatus,REED_CAPACITY} from './reed-stock.js';
 import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
@@ -166,9 +167,30 @@ function stockAccountControl(b){
 
 function guardControl(b){if(!isPestStore(b))return '';const key=buildingKey(b),guard=state.citizens.find(c=>c.guardPost===key);return `<section class="staffing-panel pest-panel"><h4>Защита запасов</h4><p>${pestReport(state,key)}</p>${guard?`<p>${resident(guard)} · сторож <button data-release-guard="${guard.id}">Освободить</button></p>`:`<label class="control-label">Назначить сторожа <select data-guard-building="${key}" aria-label="Сторож хранилища"><option value="">Выбрать взрослого</option>${state.citizens.filter(c=>canWork(c)&&['auto','production'].includes(c.role)).map(c=>`<option value="${c.id}">${displayName(state,c.id)}${c.workplace||c.guardPost?' · сменит работу':''}</option>`).join('')}</select></label>`}<small>Сторож занимает одного жителя, ест дома и отдыхает ночью. Сторож прогоняет мышей и уменьшает потери запасов. Потери относятся к запасам этого склада; дома и грузы защищены.</small></section>`;}
 
+function votivePanel(b){
+ if(!isStrictSumer(state)||!isVotiveTemple(b))return '';
+ const key=buildingKey(b),{reason,sources,donors}=votiveOptions(state,key);
+ const items=templeOfferings(state,key).map(v=>{
+  const job=state.district.jobs.find(q=>q.id===v.id);
+  const status=v.receivedTick!==null?'В храмовой кладовой':job.cancelled?'Отменено':job.remaining?'Зарезервирован':'Несут в храм';
+  return `<li>Сосуд №${v.id} · ${esc(v.donorName)} · склад ${esc(v.source)} · ${status}</li>`;
+ }).join('');
+ return `<section class="staffing-panel"><h4>Именные посвящения</h4>
+  ${items?`<ul>${items}</ul>`:'<p>В кладовой пока нет именных сосудов.</p>'}
+  ${reason?`<small>${esc(reason)}</small>`:`<form data-votive-temple="${key}">
+   <label>Даритель <select name="donor">${donors.map(c=>`<option value="${c.id}">${esc(displayName(state,c.id))}</option>`).join('')}</select></label>
+   <label>Склад сосуда <select name="source">${sources.map(store=>`<option value="${buildingKey(store)}">${esc(entityName(store))} · ${buildingKey(store)}</option>`).join('')}</select></label>
+   <button>Посвятить сосуд</button></form>`}</section>`;
+}
 function siteStatus(b){const q=b.construction,p=constructionProgress(b),people=state.citizens.filter(c=>c.site===buildingKey(b)),pair=builderTeachingPair(state,people.filter(c=>c.siteDuty==='builder'&&c.phase==='constructing'));return `<div class="site-progress"><span>${p.stage} · ${Math.floor(p.ratio*100)}%</span><progress max="1" value="${p.ratio}" aria-label="Готовность стройки"></progress></div><div class="material-table"><span>Материал</span><span>Нужно</span><span>Доставлено</span><span>В пути</span>${Object.entries(q.required).filter(([,v])=>v>0).map(([k,v])=>`<span class="material-name">${resourceIcon(k)}${label(k)}</span><span>${rounded(v)}</span><span>${rounded(q.delivered[k]||0)}</span><span>${rounded(people.reduce((n,c)=>n+(c.buildCargo?.[k]||0),0))}</span>`).join('')}</div><small class="site-workers">${people.length?people.map(c=>`${resident(c)} · ${c.siteDuty==='carrier'?'носильщик':'строитель'}`).join(' · '):'Ожидание: нет свободных работников или доступного пути.'}</small>${pair?`<p class="site-apprenticeship">${resident(pair.mentor)} обучает ${resident(pair.pupil)} · часть труда уходит на обучение.</p>`:''}`;}
 function mutate(result,message){if(!result.ok){toast(result.reason||'Действие недоступно');return false;}save();update();toast(message);return true;}
 function bindManagement(root){
+ const votive=root.querySelector('[data-votive-temple]');
+ if(votive)votive.onsubmit=e=>{e.preventDefault();const {source,donor}=votive.elements;
+  if(mutate(orderVotive(state,votive.dataset.votiveTemple,source.value,Number(donor.value)),'Сосуд зарезервирован. Носильщик отнесёт его в храм.')){
+   document.activeElement?.blur();updateDetail();
+  }
+ };
  bindFoodPlan(root);root.querySelectorAll('[data-open-food-plan]').forEach(el=>el.onclick=showSupply);
  root.querySelectorAll('[data-guard-building]').forEach(el=>el.onchange=()=>{if(el.value!=='')mutate(assignGuard(state,Number(el.value),el.dataset.guardBuilding),'Сторож назначен: сначала закончит текущую доставку');el.blur();updateDetail();});
  root.querySelectorAll('[data-release-guard]').forEach(el=>el.onclick=()=>{mutate(assignGuard(state,Number(el.dataset.releaseGuard),''),'Сторож освобождён');el.blur();updateDetail();});
@@ -269,7 +291,7 @@ function updateDetail(){
  const previewCompleted=q?.kind==='new'&&!(b.type==='garden'&&isStrictSumer(state));
  $('tile-detail').querySelector('strong').textContent=(previewCompleted?'После завершения: ':'')+yieldSummary(state,previewCompleted?{...b,construction:undefined}:b);
  $('building-controls').innerHTML=q?`<div id="inspector-site-live">${siteStatus(b)}</div>${priorityControl(b)}<button class="management-button danger" data-cancel="${b.x},${b.y}">${q.kind==='upgrade'?'Отменить улучшение':'Отменить строительство'}</button>`:`<p>${b.type==='house'?'':['market','harbor'].includes(b.type)?`Носильщиков у торговой площадки: ${state.citizens.filter(c=>(c.tradeMarket||c.saleMarket)===buildingKey(b)).length} / ${activeLaborKind(state)==='unload'?UNLOAD_PORTERS:2}.`:stockStores(state).some(store=>buildingKey(store)===buildingKey(b))?'':`Назначено работников: ${state.citizens.filter(c=>c.work===buildingKey(b)).length}.`}</p>${!['canal','levee'].includes(b.type)&&levelOf(b)<3?`<h4>Цена улучшения до ${levelOf(b)+1}</h4>${costs(cost,true,b.type!=='house')}<small>${levelOf(b)===1?'II уровень: сырцовая кладка':'III уровень: обожжённая кладка, новый сырец не нужен'}</small>`:''}<button class="upgrade-button" id="upgrade-building" ${reason?'disabled':''}>${['canal','levee'].includes(b.type)?'Один уровень':levelOf(b)>=3?'Максимальный уровень':`Улучшить до ${levelOf(b)+1}`}</button><small id="upgrade-reason">${esc(reason||'Материалы резервируются сразу.')}</small>`;
- if(!q||q.kind==='upgrade')$('building-controls').insertAdjacentHTML('afterbegin',guardControl(b)+staffingControl(b)+stockAccountControl(b));if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
+ if(!q||q.kind==='upgrade')$('building-controls').insertAdjacentHTML('afterbegin',votivePanel(b)+guardControl(b)+staffingControl(b)+stockAccountControl(b));if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
  if(!q||q.kind==='upgrade')$('building-controls').insertAdjacentHTML('afterbegin',productionReadout(state,b)+buildingProductionHistoryHTML(state,b)+buildingInventoryHTML(buildingInventory(state,b),{house:b.type==='house',production:!!Object.keys(BUILDINGS[b.type]?.output||{}).length}));
  if(b.type==='field'&&!q&&soilCareEnabled(state)){
   const key=buildingKey(b),water=fieldWater(state,b),year=fieldRestYear(state,b);
