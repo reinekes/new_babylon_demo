@@ -1,0 +1,156 @@
+{
+  "at": "2026-11-05T13:53:12.410705+00:00",
+  "commit": "bea5bf04bed4062404287d5a35f8f75201a35076",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9ddee29929a656f6b7383b99495ba8e6d98671b3966186f8512135f7656003a3",
+      "actual": "9ddee29929a656f6b7383b99495ba8e6d98671b3966186f8512135f7656003a3",
+      "match": true
+    },
+    {
+      "path": "artisan-art.js",
+      "status": 200,
+      "expected": "2f94530170bfcca9e17ce41134265698597833ef75d5c7af4891a3cb2e43e154",
+      "actual": "2f94530170bfcca9e17ce41134265698597833ef75d5c7af4891a3cb2e43e154",
+      "match": true
+    },
+    {
+      "path": "docs/POTTER_WHEEL_2026-11-05.md",
+      "status": 200,
+      "expected": "17e7bdeea72e19a2336a511f9a8fa1357870e25215e9cff9a0795a92f3834848",
+      "actual": "17e7bdeea72e19a2336a511f9a8fa1357870e25215e9cff9a0795a92f3834848",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/babylon-potter-drying.jpg",
+      "status": 200,
+      "expected": "c77703e4486e0f7542074648d4e9403a5b661743b2c8497ed2003e0974f3c84e",
+      "actual": "c77703e4486e0f7542074648d4e9403a5b661743b2c8497ed2003e0974f3c84e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/babylon-potter-forming.jpg",
+      "status": 200,
+      "expected": "3b1571d76d909bba3227f50b532bf3428b2a410d0af5234ebf2e4f59baff2693",
+      "actual": "3b1571d76d909bba3227f50b532bf3428b2a410d0af5234ebf2e4f59baff2693",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/babylon-potter-qa.json",
+      "status": 200,
+      "expected": "d453a307d5275b0197a92c87aa9c2a77438f7019f78d4f5b7e7923576b9df616",
+      "actual": "d453a307d5275b0197a92c87aa9c2a77438f7019f78d4f5b7e7923576b9df616",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/babylon-wheel-full-final.log",
+      "status": 200,
+      "expected": "38ffc6eb136e6741ca4d8fedb586398eef67ca5df1d51c83259c69359b73cad7",
+      "actual": "38ffc6eb136e6741ca4d8fedb586398eef67ca5df1d51c83259c69359b73cad7",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/babylon-wheel-hands-final.log",
+      "status": 200,
+      "expected": "53d41b396bd074391a1db352bc0064a9b800f0080f6bf35047046d4d37f5b380",
+      "actual": "53d41b396bd074391a1db352bc0064a9b800f0080f6bf35047046d4d37f5b380",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/babylon-wheel-migrations.log",
+      "status": 200,
+      "expected": "4769d94aaee123353c8b511602d699e0f1c56f1994075b120235e38f6d5eee04",
+      "actual": "4769d94aaee123353c8b511602d699e0f1c56f1994075b120235e38f6d5eee04",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-potter-wheel/cpu-4x.json",
+      "status": 200,
+      "expected": "621ce88d87ef0d426edb4f6a5d861cb4b27a2cef282096d8247f44a52af6344d",
+      "actual": "621ce88d87ef0d426edb4f6a5d861cb4b27a2cef282096d8247f44a52af6344d",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "d0cee0c54b318da5a5877aaed28247be7624ce3f9d631b35976eaf9a71e566d9",
+      "actual": "d0cee0c54b318da5a5877aaed28247be7624ce3f9d631b35976eaf9a71e566d9",
+      "match": true
+    },
+    {
+      "path": "game3d/architecture.js",
+      "status": 200,
+      "expected": "658970aa213dd28f96f1f87e552eab5100a47970f335fc54771a42c443c78087",
+      "actual": "658970aa213dd28f96f1f87e552eab5100a47970f335fc54771a42c443c78087",
+      "match": true
+    },
+    {
+      "path": "game3d/buildings.js",
+      "status": 200,
+      "expected": "8bddb3bee083358eeecd0fa51df02d86304c24ebc5b9feefe147b9e2b079f163",
+      "actual": "8bddb3bee083358eeecd0fa51df02d86304c24ebc5b9feefe147b9e2b079f163",
+      "match": true
+    },
+    {
+      "path": "game3d/workstations.js",
+      "status": 200,
+      "expected": "3b483e0fd38e4d8857d142c804ae4543fe1111d5926e26859c7696d3c967c5b1",
+      "actual": "3b483e0fd38e4d8857d142c804ae4543fe1111d5926e26859c7696d3c967c5b1",
+      "match": true
+    },
+    {
+      "path": "potter-wheel.js",
+      "status": 200,
+      "expected": "aa3b1842fff5387e5b71727f6cd0f71107174711dd7a6fb38d3285f64475e4fb",
+      "actual": "aa3b1842fff5387e5b71727f6cd0f71107174711dd7a6fb38d3285f64475e4fb",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-architecture.test.js",
+      "status": 200,
+      "expected": "4333202df3a719eca0f9ac153582c8f154bfd2a8a04d40855a0f18fca39a05bd",
+      "actual": "4333202df3a719eca0f9ac153582c8f154bfd2a8a04d40855a0f18fca39a05bd",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-buildings.test.js",
+      "status": 200,
+      "expected": "1ea66b5c55341f4aaced5681db961c450020dabb616cace10895c4ebbdf5dfbf",
+      "actual": "1ea66b5c55341f4aaced5681db961c450020dabb616cace10895c4ebbdf5dfbf",
+      "match": true
+    },
+    {
+      "path": "tests/workstations.test.js",
+      "status": 200,
+      "expected": "6ee7dd1364d0a414643b8faa24d8ca1f706b5ed8d328606d0ef8e9b0a348556c",
+      "actual": "6ee7dd1364d0a414643b8faa24d8ca1f706b5ed8d328606d0ef8e9b0a348556c",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/README.md",
+      "status": 200,
+      "expected": "b6b99a091c006194cbb186bfa2f872edc64ef7f5cb72f332b93a8e1b5418567e",
+      "actual": "b6b99a091c006194cbb186bfa2f872edc64ef7f5cb72f332b93a8e1b5418567e",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/pottery.html",
+      "status": 200,
+      "expected": "c3933d898db788e7cd4c4384af34b67953e0008da3f3e7be460c61ebedf2f50a",
+      "actual": "c3933d898db788e7cd4c4384af34b67953e0008da3f3e7be460c61ebedf2f50a",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/pottery.js",
+      "status": 200,
+      "expected": "f378dcafd54cfa8e5e364f3bb4b3b71cb6105cba05dcdf61d7a68f2237ee5b9e",
+      "actual": "f378dcafd54cfa8e5e364f3bb4b3b71cb6105cba05dcdf61d7a68f2237ee5b9e",
+      "match": true
+    }
+  ],
+  "matched": 21,
+  "total": 21
+}
