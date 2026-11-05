@@ -1,0 +1,226 @@
+{
+  "at": "2026-11-05T08:15:44.581861+00:00",
+  "commit": "8fde323d67444d8a39d3e16a9801fcfc80a3b449",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "136eca0c5c1a01b6c3b31c8441e11d64c2dc4c66f401dad489f56714b4fb787c",
+      "actual": "136eca0c5c1a01b6c3b31c8441e11d64c2dc4c66f401dad489f56714b4fb787c",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_BUILDING_GROUPS_REJECTED_2026-11-05.md",
+      "status": 200,
+      "expected": "fa13b7da8422baaabb0678b12ac7fda70087c58134987eaa18af6c56d7109ae5",
+      "actual": "fa13b7da8422baaabb0678b12ac7fda70087c58134987eaa18af6c56d7109ae5",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_COLD_LOADING_2026-11-05.md",
+      "status": 200,
+      "expected": "bcf68aff2e13d1c02fda9e2be6ccd0131f178c0bd152a6df79529e3b9776c944",
+      "actual": "bcf68aff2e13d1c02fda9e2be6ccd0131f178c0bd152a6df79529e3b9776c944",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-building-groups-rejected.json",
+      "status": 200,
+      "expected": "e27a3a426398d7c3884836a33c5896e4adb1ad8df58f9a43bc2996d166246c47",
+      "actual": "e27a3a426398d7c3884836a33c5896e4adb1ad8df58f9a43bc2996d166246c47",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-building-groups-rejected.patch",
+      "status": 200,
+      "expected": "52aab5a32f3d69b6315ef78fb21caec79c9a6c664ba3e5abcd85470422c1d9e3",
+      "actual": "52aab5a32f3d69b6315ef78fb21caec79c9a6c664ba3e5abcd85470422c1d9e3",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c6f5b81b3ebb86df5a07b3a50487d37fc7bf302a9d18858512a6ad70dd76bc7f",
+      "actual": "c6f5b81b3ebb86df5a07b3a50487d37fc7bf302a9d18858512a6ad70dd76bc7f",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "c1078731981b126328b4f59a8db44d211bfb47348d8813dc02218c0492c62c4d",
+      "actual": "c1078731981b126328b4f59a8db44d211bfb47348d8813dc02218c0492c62c4d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e9b4602fe82986efcacd3c953685dc1e0c81b62750946277dad1be957be84d0a",
+      "actual": "e9b4602fe82986efcacd3c953685dc1e0c81b62750946277dad1be957be84d0a",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-cold-loading-probe.md",
+      "status": 200,
+      "expected": "de220b019b4ef9c2b322b173c2986c039d2a09c3a6b7e0cc419e06d3e90ca82b",
+      "actual": "de220b019b4ef9c2b322b173c2986c039d2a09c3a6b7e0cc419e06d3e90ca82b",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "5e584810e123d8427d8feab9f677fb27cd4d72ba9405ce1385fa414153254483",
+      "actual": "5e584810e123d8427d8feab9f677fb27cd4d72ba9405ce1385fa414153254483",
+      "match": true
+    },
+    {
+      "path": "scripts/loading-probe-builder.mjs",
+      "status": 200,
+      "expected": "45cbe6a930afa79748aa59943b1a071fb39eb7a46ca71f3d3bc462d32336dc13",
+      "actual": "45cbe6a930afa79748aa59943b1a071fb39eb7a46ca71f3d3bc462d32336dc13",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-loading-browser-check.mjs",
+      "status": 200,
+      "expected": "d775e00b32922e5c2fc9e60cb481cbc9a99ef80b32f1a8b52921db070b8eab5e",
+      "actual": "d775e00b32922e5c2fc9e60cb481cbc9a99ef80b32f1a8b52921db070b8eab5e",
+      "match": true
+    },
+    {
+      "path": "tests/loading-probe.test.js",
+      "status": 200,
+      "expected": "1780b360bee900f4b37463fc3db3103b3f792f235b9035e517e781eee76f123e",
+      "actual": "1780b360bee900f4b37463fc3db3103b3f792f235b9035e517e781eee76f123e",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/README.md",
+      "status": 200,
+      "expected": "97a68f54937538822bdcb9538a65919e24b50f0a441ac3f16b21bc263cc00852",
+      "actual": "97a68f54937538822bdcb9538a65919e24b50f0a441ac3f16b21bc263cc00852",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/app.js",
+      "status": 200,
+      "expected": "a4834cf85b64f9a9893ce615e1c3f5731ff99eb700d35df2091d5f438cadf988",
+      "actual": "a4834cf85b64f9a9893ce615e1c3f5731ff99eb700d35df2091d5f438cadf988",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/collector.mjs",
+      "status": 200,
+      "expected": "871817b3923399cdf849d481aa8164e538949e4541f95be42ff161540389bc68",
+      "actual": "871817b3923399cdf849d481aa8164e538949e4541f95be42ff161540389bc68",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/assets--ui--fonts.css",
+      "status": 200,
+      "expected": "264710ae1cb060ee36e8da13ea34d0ad73b9853f88c6cb86fbf0ab27f6b3958c",
+      "actual": "264710ae1cb060ee36e8da13ea34d0ad73b9853f88c6cb86fbf0ab27f6b3958c",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/calm-ui.css",
+      "status": 200,
+      "expected": "1edad8186fc5cc572dd516d6f8c50cf039fd908448d6ce727b9467b7bfe3b1cd",
+      "actual": "1edad8186fc5cc572dd516d6f8c50cf039fd908448d6ce727b9467b7bfe3b1cd",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/city-tools.css",
+      "status": 200,
+      "expected": "31d8aa0cf57f11ca7da41c4d8920fde9667ec17e9c3a8e0c514112b91ed58ab0",
+      "actual": "31d8aa0cf57f11ca7da41c4d8920fde9667ec17e9c3a8e0c514112b91ed58ab0",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/divine-control.css",
+      "status": 200,
+      "expected": "9f7406e3133c478ef3c3c6e369c90ff24c995b14471bdc3f04e273d0dbcd04a4",
+      "actual": "9f7406e3133c478ef3c3c6e369c90ff24c995b14471bdc3f04e273d0dbcd04a4",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/encyclopedia.css",
+      "status": 200,
+      "expected": "e12fcdafe5ca22114f70998bec1cbf4b685b3ded14689c45f931ee5da9231ce7",
+      "actual": "e12fcdafe5ca22114f70998bec1cbf4b685b3ded14689c45f931ee5da9231ce7",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/game3d--style.css",
+      "status": 200,
+      "expected": "21c89178571fd94360eb5f02db91f5904fb92013fa21de3b86497b94e7da2091",
+      "actual": "21c89178571fd94360eb5f02db91f5904fb92013fa21de3b86497b94e7da2091",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/godhood.css",
+      "status": 200,
+      "expected": "7af8c27e38555e828c44831117611a9830e60d6c1ab74effa08018342f8866b8",
+      "actual": "7af8c27e38555e828c44831117611a9830e60d6c1ab74effa08018342f8866b8",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/life-analytics.css",
+      "status": 200,
+      "expected": "cae01af923ef6bff7562d2332f5d34f4ae9bb82eefe4845265888d5e5513ce36",
+      "actual": "cae01af923ef6bff7562d2332f5d34f4ae9bb82eefe4845265888d5e5513ce36",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/night-ui.css",
+      "status": 200,
+      "expected": "0f9cd79afcf372facda86ab0deefd3c38042cbed3c2096b84c4186e80efcbc5d",
+      "actual": "0f9cd79afcf372facda86ab0deefd3c38042cbed3c2096b84c4186e80efcbc5d",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/saves.css",
+      "status": 200,
+      "expected": "88aaeed003a1104ff97a92811efbb7b4fcf211c6ffec5f67596a93d3b34e6ab8",
+      "actual": "88aaeed003a1104ff97a92811efbb7b4fcf211c6ffec5f67596a93d3b34e6ab8",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/style.css",
+      "status": 200,
+      "expected": "f9143429275eee7a62944a78d810c61f573de17ed78aa6e84f8361681e9349ce",
+      "actual": "f9143429275eee7a62944a78d810c61f573de17ed78aa6e84f8361681e9349ce",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/uruk-ui.css",
+      "status": 200,
+      "expected": "5baa198a6a809554563c19e7d7508f8865a0bb577d776bde55494cd467a8391d",
+      "actual": "5baa198a6a809554563c19e7d7508f8865a0bb577d776bde55494cd467a8391d",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/css/view-controls.css",
+      "status": 200,
+      "expected": "8e2dc69b7b3dbf470331dad758b6d2cb254732efb7f2e5c2d532be421bde65bd",
+      "actual": "8e2dc69b7b3dbf470331dad758b6d2cb254732efb7f2e5c2d532be421bde65bd",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/index.html",
+      "status": 200,
+      "expected": "ec1f698ef5188f33c56ee48d55f356e2c91bdba22546882ea5d4aa7c5e926e4e",
+      "actual": "ec1f698ef5188f33c56ee48d55f356e2c91bdba22546882ea5d4aa7c5e926e4e",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/provenance.json",
+      "status": 200,
+      "expected": "ef3dc6a43ec1d682b363fb9e66fd0e3cfb3bd6a40fc0467409a3fa266f4541e4",
+      "actual": "ef3dc6a43ec1d682b363fb9e66fd0e3cfb3bd6a40fc0467409a3fa266f4541e4",
+      "match": true
+    }
+  ],
+  "matched": 31,
+  "total": 31
+}
