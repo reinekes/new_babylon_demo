@@ -6,9 +6,10 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-12';
+const tag='sumer-trade-supplied-20261105-14';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
+import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
 import {housingOf,capacityOf,buildingKey} from './repo/definitions.js';
 import {stockStores,takeStock,syncInventory} from './repo/inventory.js';
 import {waterSummary,initializeWater} from './repo/water.js';
@@ -25,10 +26,12 @@ export function serviceTrade(s,proof){
   const buy=trade(s,'stone','buy',2),sell=trade(s,'wood','sell',2);proof.orders.push({visit:c.id,transport,buy:buy.ok,sell:sell.ok,time:s.simTime});
  }
 }
-export function createTradeFixture(transport='land',history='strict'){
+export function createTradeFixture(transport='land',history='strict',ecologyMode='legacy'){
  if(!['land','river'].includes(transport))throw Error('Invalid transport');
  if(!['strict','legacy'].includes(history))throw Error('Invalid history');
+ if(!['legacy','modern','modern-grown'].includes(ecologyMode))throw Error('Invalid ecology');
  const s=createGame({start:'established',mode:'mature',seed:137,scenario:history==='strict'?strictScenario():legacyScenario()});
+ if(ecologyMode!=='legacy'){delete s.ecology;initializeEcology(s);if(ecologyMode==='modern-grown')for(const p of Object.values(s.ecology.populations))p.count=POPULATION_LIMIT;}
  const tradingBuilding=transport==='river'?'granary':'market';
  if(canBuild(s,tradingBuilding,10,9,true))throw Error('Trading district site changed');s.buildings.push({type:tradingBuilding,x:10,y:9,level:1});
  const banks=[];for(let y=1;y<63;y++)for(let x=1;x<63;x++)if(isRiverBank(s,x,y)&&!s.buildings.some(b=>b.x===x&&b.y===y))banks.push({x,y,d:Math.hypot(x-9,y-8)});banks.sort((a,b)=>a.d-b.d||a.y-b.y||a.x-b.x);
@@ -42,7 +45,7 @@ export function createTradeFixture(transport='land',history='strict'){
  for(const b of houses){const amount=takeStock(s,store,'food',capacityOf(b)*10);b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;pantryFood+=amount;b.water=waterSummary(s,b).capacity;b.waterDelivered=Math.max(b.waterDelivered||0,b.water);}
  if(!marketAccess(s,null,'harbor')||transport==='land'&&!marketAccess(s,null,'market'))throw Error('Disconnected trade port');
  if(!miracle(s,'cat').ok)throw Error('Cannot prepare the existing warehouse cat');advanceTime(s,s.miracleCelebration.duration);
- const proof={transport,history,ecologyLegacy:s.ecology?.legacyFauna===true,portSetup:transport==='river'?'harbor-without-land-market':'market-and-harbor',initialPopulation:200,buildings:129,seed:137,supply:{initialFood,pantryFood,centralFood:s.resources.food,waterFilledToCapacity:true},harbor:{x:harbor.x,y:harbor.y},phases:[],orders:[],skippedEvents:[],ceremonies:[]},target=35;
+ const proof={transport,history,ecologyMode,ecologyCounts:Object.fromEntries(Object.entries(s.ecology.populations).map(([kind,p])=>[kind,p.count])),ecologyLegacy:s.ecology?.legacyFauna===true,portSetup:transport==='river'?'harbor-without-land-market':'market-and-harbor',initialPopulation:200,buildings:129,seed:137,supply:{initialFood,pantryFood,centralFood:s.resources.food,waterFilledToCapacity:true},harbor:{x:harbor.x,y:harbor.y},phases:[],orders:[],skippedEvents:[],ceremonies:[]},target=35;
  while(s.simTime<target-1e-7){advanceTime(s,Math.min(.25,target-s.simTime));serviceTrade(s,proof);}
  if(!decode(encode(s))||s.buildings.length!==129||s.population<200)throw Error('Invalid warmed trade fixture');
  proof.measurementStart={population:s.population,buildings:s.buildings.length,simTime:s.simTime,tick:s.tick};return {state:s,proof};
@@ -57,7 +60,7 @@ export function auditTradeFixture(state,proof){
 `;
 await writeFile(join(output,'trade-fixture.mjs'),fixture);
 const helper=await import(pathToFileURL(join(output,'trade-fixture.mjs')).href+'?verify='+Date.now());
-for(const transport of ['land','river']){const {state,proof}=helper.createTradeFixture(transport);console.log(JSON.stringify({transport,valid:true,start:proof.measurementStart,harbor:proof.harbor,audit:helper.auditTradeFixture(state,proof)}));}
+for(const ecologyMode of ['legacy','modern','modern-grown'])for(const transport of ['land','river']){const {state,proof}=helper.createTradeFixture(transport,'strict',ecologyMode);console.log(JSON.stringify({transport,ecologyMode,valid:true,start:proof.measurementStart,harbor:proof.harbor,audit:helper.auditTradeFixture(state,proof)}));}
 // A private A/B probe: Babylon retains its own exact frustum decision.
 const candidateSource=await readFile(join(source,'game3d/renderable-mesh-candidates.js'),'utf8'),preciseCheck='mesh.computeWorldMatrix?.();matrixReady=true;if(!mesh.isInFrustum(scene.frustumPlanes))continue;';
 if(!candidateSource.includes(preciseCheck))throw Error('Review candidate probe after source changes');
@@ -65,6 +68,7 @@ await writeFile(join(output,'coarse-candidates.mjs'),candidateSource.replace(pre
 let app=await readFile(join(output,'app-check.js'),'utf8');
 app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\nimport {createRenderableMeshCandidates as coarseCandidates} from './coarse-candidates.mjs?probe=${tag}';\n`+app;
 app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
+app=app.replace('cameraRadius:renderer.camera?.radius,','cameraAlpha:renderer.camera?.alpha,cameraBeta:renderer.camera?.beta,cameraRadius:renderer.camera?.radius,');
 app=app.replace('meshes:renderer.scene?.meshes.length,','activeMeshes:renderer.scene?.getActiveMeshes?.().length,meshes:renderer.scene?.meshes.length,');
 app=app.replace("[renderer.scene,'render','scene.render']","[renderer.scene,'render','scene.render'],[renderer.scene,'getActiveMeshCandidates','scene.candidates'],[renderer.scene,'_evaluateActiveMeshes','scene.activeMeshes'],[renderer.scene,'animate','scene.animate'],[renderer.scene,'_renderForCamera','scene.camera']");
 app=app.replace('export const timings=[];', 'export const timings=[];export const timingTotals={};export function resetTimingTotals(){for(const key of Object.keys(timingTotals))delete timingTotals[key];timings.length=0;}');
@@ -90,7 +94,7 @@ app=app.replace('quality:renderer.quality,','quality:renderer.quality,inventory:
 await writeFile(join(output,'app-check.js'),app);
 let check=await readFile(join(output,'check.js'),'utf8');const start=check.indexOf('const s=createGame('),end=check.indexOf("localStorage.setItem(");
 if(start<0||end<start)throw Error('Generic fixture changed');
-check=`import {createTradeFixture} from './trade-fixture.mjs?probe=${tag}';\n`+check.slice(0,start)+`const transport=new URLSearchParams(location.search).get('transport')||'land';const history=new URLSearchParams(location.search).get('history')||'strict';const {state:s,proof}=createTradeFixture(transport,history);\n`+check.slice(end);
+check=`import {createTradeFixture} from './trade-fixture.mjs?probe=${tag}';\n`+check.slice(0,start)+`const transport=new URLSearchParams(location.search).get('transport')||'land';const history=new URLSearchParams(location.search).get('history')||'strict';const ecologyMode=new URLSearchParams(location.search).get('ecology')||'legacy';const {state:s,proof}=createTradeFixture(transport,history,ecologyMode);\n`+check.slice(end);
 check=check.replace('await app.profileLayers();','await app.profileLayers();app.attachTradeProof(proof);');
 check=check.replace("fixture:'seed137-200-residents-129-buildings-start35'","fixture:'sumer-supplied-real-trade-200-initial-129-v4',transport,history,trade:app.tradeStateInfo()");
 check=check.replace("out.textContent='Готово: 200 жителей / 129 зданий; интерфейс и автосохранение включены'","out.textContent='Готово: '+transport+' · 200 исходных жителей / 129 зданий; интерфейс, торговля и автосохранение включены'");
@@ -99,7 +103,7 @@ check=check.replace('active=false;observer?.disconnect();','active=false;observe
 check=check.replace('transport,history,trade:app.tradeStateInfo()', `transport,history,trade:app.tradeStateInfo(),startViewport,visibilityChanges,viewportChanged:startViewport[0]!==innerWidth||startViewport[1]!==innerHeight,selectedSpeed:document.querySelector('[data-speed][aria-pressed="true"]')?.dataset.speed`);
 check=check.replace('sceneStart=app.sceneInfo();','sceneStart=(app.resetTimingTotals(),app.sceneInfo());');
 check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),');
-check+=`\nconst roadToggle=document.createElement('button'),roadProof=document.createElement('pre');roadToggle.textContent='Переключить группировку дорог';roadToggle.id='toggle-road-groups';roadProof.id='road-group-proof';roadToggle.onclick=()=>{if(document.querySelector('#measure').disabled)return;app.setProbeRoadBatching(!app.roadBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.textContent=JSON.stringify({batching:app.roadBatchingMode(),scene:app.sceneInfo()},null,2);}));};const controls=document.querySelector('#measure').parentElement;controls.insertBefore(roadToggle,document.querySelector('#measurement'));controls.append(roadProof);roadProof.style.maxHeight='30px';roadProof.style.overflow='auto';\n`;
+check+=`\nconst roadToggle=document.createElement('button'),roadProof=document.createElement('pre');roadToggle.textContent='Переключить группировку дорог';roadToggle.id='toggle-road-groups';roadProof.id='road-group-proof';roadToggle.onclick=()=>{if(document.querySelector('#measurement').textContent.startsWith('Замер'))return;app.setProbeRoadBatching(!app.roadBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.textContent=JSON.stringify({batching:app.roadBatchingMode(),scene:app.sceneInfo()},null,2);}));};const controls=document.querySelector('#measure').parentElement;controls.insertBefore(roadToggle,document.querySelector('#measurement'));controls.append(roadProof);roadProof.style.maxHeight='30px';roadProof.style.overflow='auto';const fold=document.createElement('button');fold.textContent='Свернуть результаты';fold.onclick=()=>{out.hidden=!out.hidden;roadProof.hidden=out.hidden;fold.textContent=out.hidden?'Показать результаты':'Свернуть результаты';};controls.insertBefore(fold,out);\n`;
 await writeFile(join(output,'check.js'),check);
 check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);await writeFile(join(output,'check.js'),check);
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
