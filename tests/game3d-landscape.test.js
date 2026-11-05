@@ -269,3 +269,15 @@ test('missing imported palm files retain grounded procedural trunks and crowns, 
  B.SceneLoader.LoadAssetContainerAsync=async()=>{throw Error('optional asset offline');};
  try{const s=createGame({start:'established'}),before=JSON.stringify(s);view=await createGameLandscape(B,scene,s,materials);view.update(s,0);const parts=view.meshes.filter(m=>['date-palm-trunks','date-palm-crowns'].includes(m.name));assert.equal(parts.length,2);assert.ok(parts.every(m=>m.isEnabled()));assert.ok(!view.meshes.some(m=>m.metadata?.nativeDates));assert.equal(JSON.stringify(s),before);}finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });
+
+import {catDiscoverySurfaceHeight} from '../game3d/cat-discovery.js';
+test('landscape road batching preserves ground sampling, source caches and saved state across toggles',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>loadGeometry(scene,file.split('?')[0]);let view;
+ const s=createGame({start:'established'});s.buildings=[];s.trade.caravan=null;s.roads=[0,1,2,3].map(i=>({id:'batch-test-'+i,a:{x:2.5+i,y:4.5},b:{x:3.5+i,y:4.5},level:2}));const before=JSON.stringify(s);
+ try{view=await createGameLandscape(B,scene,s,materials);const groups=()=>view.meshes.filter(m=>m.metadata?.roadRenderGroup),sources=()=>view.meshes.filter(m=>m.metadata?.road?.a);assert.ok(groups().length>0);const source=sources()[0],geometry=source.geometry;assert.equal(source.isEnabled(),false);
+ const mergedHeight=catDiscoverySurfaceHeight(B,scene,3,4.5,()=>999);assert.ok(mergedHeight<999);
+ view.setRoadBatching(false);assert.equal(groups().length,0);assert.equal(source.isEnabled(),true);const directHeight=catDiscoverySurfaceHeight(B,scene,3,4.5,()=>999);assert.ok(Math.abs(mergedHeight-directHeight)<1e-5);
+ view.setRoadBatching(true);assert.ok(groups().length>0);assert.equal(source.geometry,geometry);assert.equal(source.isEnabled(),false);assert.equal(JSON.stringify(s),before);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
+});

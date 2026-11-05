@@ -1,0 +1,41 @@
+{
+  "home": {
+    "region": [
+      0,
+      75,
+      1280,
+      550
+    ],
+    "pixels": 608000,
+    "meanChannelDifference": 0.00043256578947368417,
+    "maximumChannelDifference": 4,
+    "changedPixels": 185,
+    "pixelsOver8": 0
+  },
+  "overview": {
+    "region": [
+      0,
+      75,
+      1280,
+      550
+    ],
+    "pixels": 608000,
+    "meanChannelDifference": 0.0005855263157894737,
+    "maximumChannelDifference": 8,
+    "changedPixels": 209,
+    "pixelsOver8": 0
+  },
+  "opposite-day": {
+    "region": [
+      0,
+      75,
+      1280,
+      550
+    ],
+    "pixels": 608000,
+    "meanChannelDifference": 0.0013684210526315789,
+    "maximumChannelDifference": 7,
+    "changedPixels": 438,
+    "pixelsOver8": 0
+  }
+}

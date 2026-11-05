@@ -1,3 +1,4 @@
+import {createRoadRenderGroups} from './road-render-groups.js';
 import {createCatDiscoveryScenery,catDiscoverySurfaceHeight} from './cat-discovery.js';
 import {createLazyFeature} from './asset-loading.js';
 import {createTradeCaravan} from './caravan.js';
@@ -95,6 +96,8 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  let currentState=initialState;
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map();
  let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='';
+ const roadRenderGroups=createRoadRenderGroups(B,scene,meshes);let batchRoads=options.batchRoads!==false;
+ const updateRoadGroups=()=>roadRenderGroups.update(batchRoads?[...roadBatches.values()].map(r=>r.road):[]);
  const color=(r,g,b)=>new B.Color3(r,g,b);
  const material=(name,hex)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=1;m.metallic=0;ownedMaterials.push(m);return m;};
  const catGroundHeights=new Map();
@@ -172,7 +175,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  function meshData(name,g,mat,collection=staticMeshes){if(!g.indices.length)return null;const m=new B.Mesh(name,scene),d=new B.VertexData();d.positions=g.positions;d.indices=g.indices;d.colors=g.colors;d.uvs=g.uvs||g.positions.filter((_,i)=>i%3!==1).map(v=>v/3);d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);
   if(d.normals.find((v,i)=>i%3===1&&Math.abs(v)>.01)<0){for(let i=0;i<d.indices.length;i+=3)[d.indices[i+1],d.indices[i+2]]=[d.indices[i+2],d.indices[i+1]];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);}d.applyToMesh(m);m.material=mat;m.useVertexColors=true;add(m,collection);return m;
  }
- function road(name,s,a,b,width,height,mat,level,collection){const g=wornRoadGeometry(s,a,b,width,height,level),m=meshData(name,g,mat,collection);if(!m)return;m.position.set(g.origin.x,0,g.origin.z);m.hasVertexAlpha=true;m.metadata={road:{a:{...a},b:{...b},level}};m.freezeWorldMatrix();}
+ function road(name,s,a,b,width,height,mat,level,collection){const g=wornRoadGeometry(s,a,b,width,height,level),m=meshData(name,g,mat,collection);if(!m)return;m.position.set(g.origin.x,0,g.origin.z);m.hasVertexAlpha=true;m.metadata={road:{a:{...a},b:{...b},level}};m.freezeWorldMatrix();return m;}
  const originalTerrain=new WeakMap();
  function carveChannels(s,arms){
   // This main-game copy alone cuts shallow depressions; the legacy terrain module
@@ -191,11 +194,12 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   const worldKey=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.x,b.y])]),seenRoads=new Set();
   for(const r of plan.roads){if(shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)<.08)continue;const mat=r.level>=3?paving:r.level===2?gravel:earth;
    seenRoads.add(r.id);const key=JSON.stringify([worldKey,r.a,r.b,r.level,r.target,r.progress]),previous=roadBatches.get(r.id);if(previous?.key===key)continue;if(previous)remove(previous.meshes);
-   const batch=[];roadBatches.set(r.id,{key,meshes:batch});
-   road(`road-${r.id}-level-${r.level}`,s,r.a,r.b,1.22,.038,mat,r.level,batch);
+   const batch=[],record={key,meshes:batch,road:{id:r.id,a:r.a,b:r.b,working:!!r.target}};roadBatches.set(r.id,record);
+   record.road.mesh=road(`road-${r.id}-level-${r.level}`,s,r.a,r.b,1.22,.038,mat,r.level,batch);
    if(r.target){const end={x:r.a.x+(r.b.x-r.a.x)*r.progress,y:r.a.y+(r.b.y-r.a.y)*r.progress};road(`road-upgrade-${r.id}`,s,r.a,end,.89,.063,r.target===3?paving:gravel,r.target,batch);for(const t of [.1,.9])box('road-work-materials',(r.a.x+(r.b.x-r.a.x)*t)*TILE,.21,(r.a.y+(r.b.y-r.a.y)*t)*TILE+.9,.45,.35,.5,work,batch);}
   }
   for(const [id,batch]of roadBatches)if(!seenRoads.has(id)){remove(batch.meshes);roadBatches.delete(id);}
+  updateRoadGroups();
   const channels=canalNetworkGeometry(s,plan.canals),arms=channels.arms;
   for(const [name,g,mat]of [['actual-canal-bank',channels.wetBed,wetMud],['actual-dry-canal-bank',channels.dryBed,bank],['actual-canal-water',channels.water,waterView.material]]){const m=meshData(name,g,mat);if(m){m.metadata={canalArms:arms,canalArm:arms[0]};m.receiveShadows=name!=='actual-canal-water';m.freezeWorldMatrix();}}
   for(const c of plan.canals)for(const [dx,dy]of c.arms.length?c.arms:[[1,0],[-1,0]]){const mid={x:c.x+dx*.5,y:c.y+dy*.5};if(plan.roads.some(r=>pointDistance(mid,r.a,r.b)<.09))for(const offset of [-.22,0,.22]){const center={x:mid.x+dx*offset/TILE,y:mid.y+dy*offset/TILE};strip('canal-road-crossing',{x:center.x-dy*.13,y:center.y+dx*.13},{x:center.x+dy*.13,y:center.y-dx*.13},.19,.18,materials.wood);}}
@@ -261,5 +265,5 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);
  }
  let night=0;update(initialState,initialState.simTime||0);
- return {get waterMaterial(){return waterView.material;},meshes,update,setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;catDiscovery.dispose();caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
+ return {get waterMaterial(){return waterView.material;},meshes,update,setRoadBatching(enabled){batchRoads=enabled!==false;updateRoadGroups();catGroundHeights.clear();},setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;roadRenderGroups.dispose();catDiscovery.dispose();caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
 }

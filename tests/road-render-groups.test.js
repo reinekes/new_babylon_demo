@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';import vm from 'node:vm';
+import {createRoadRenderGroups} from '../game3d/road-render-groups.js';
+const sandbox={console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.BABYLON;
+function fixture(){const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[],material=new B.StandardMaterial('earth',scene);const owner=createRoadRenderGroups(B,scene,meshes);return {engine,scene,meshes,material,owner,dispose(){owner.dispose();scene.dispose();engine.dispose();}};}
+function road(t,id,x,y,material=t.material){const mesh=new B.Mesh(id,t.scene),v=new B.VertexData();v.positions=[0,0,0,1,0,0,0,0,1];v.indices=[0,2,1];v.normals=[0,1,0,0,1,0,0,1,0];v.uvs=[0,0,1,0,0,1];v.colors=[1,0,0,0,0,1,0,1,0,0,1,.5];v.applyToMesh(mesh);mesh.material=material;mesh.position.set(x*6,.038,y*6);mesh.hasVertexAlpha=true;mesh.metadata={road:{a:{x,y},b:{x:x+1,y},level:1}};mesh.freezeWorldMatrix();return {id,mesh,a:{x,y},b:{x:x+1,y}};}
+test('completed road groups preserve world geometry, alpha, UV and shared material without changing sources',()=>{
+ const t=fixture();try{const a=road(t,'a',1,1),b=road(t,'b',2,1),before=a.mesh.getVerticesData('position').slice();t.owner.update([a,b]);assert.equal(t.meshes.length,1);const merged=t.meshes[0];assert.equal(merged.material,t.material);assert.equal(merged.isPickable,false);assert.equal(merged.hasVertexAlpha,true);assert.ok(merged.metadata.road);assert.equal(a.mesh.isEnabled(),false);assert.equal(b.mesh.isEnabled(),false);assert.deepEqual(a.mesh.getVerticesData('position'),before);
+ const positions=merged.getVerticesData('position');assert.equal(positions.length,18);assert.equal(positions[0],6);assert.ok(Math.abs(positions[1]-.038)<1e-6);assert.equal(positions[9],12);assert.deepEqual(Array.from(merged.getIndices()),[0,2,1,3,5,4]);assert.deepEqual(Array.from(merged.getVerticesData('normal')),[0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]);assert.deepEqual(Array.from(merged.getVerticesData('uv')),[...a.mesh.getVerticesData('uv'),...b.mesh.getVerticesData('uv')]);assert.deepEqual(Array.from(merged.getVerticesData('color')),[...a.mesh.getVerticesData('color'),...b.mesh.getVerticesData('color')]);assert.ok(merged.isWorldMatrixFrozen);
+ }finally{t.dispose();}
+});
+test('different regions/materials stay separate and a single or work segment remains its original mesh',()=>{
+ const t=fixture();try{const a=road(t,'a',1,1),b=road(t,'b',2,1),far=road(t,'far',16,1),work=road(t,'work',3,1);work.working=true;const other=new B.StandardMaterial('stone',t.scene),stone=road(t,'stone',4,1,other);t.owner.update([a,b,far,work,stone]);assert.equal(t.meshes.length,1);for(const e of [far,work,stone])assert.equal(e.mesh.isEnabled(),true);}finally{t.dispose();}
+});
+test('unchanged groups reuse geometry, unrelated regions survive upgrades, and removal restores originals',()=>{
+ const t=fixture();try{const a=road(t,'a',1,1),b=road(t,'b',2,1),c=road(t,'c',16,1),d=road(t,'d',17,1);t.owner.update([a,b,c,d]);const first=t.meshes[0],second=t.meshes[1];t.owner.update([a,b,c,d]);assert.equal(t.meshes[0],first);assert.equal(t.meshes[1],second);b.mesh.unfreezeWorldMatrix();b.mesh.position.x+=.5;b.mesh.freezeWorldMatrix();t.owner.update([a,b,c,d]);assert.ok(first.isDisposed());assert.ok(t.meshes.includes(second));t.owner.update([a,c,d]);assert.equal(a.mesh.isEnabled(),true);assert.equal(b.mesh.isEnabled(),true);assert.ok(t.meshes.includes(second));t.owner.dispose();assert.equal(t.meshes.length,0);assert.equal(c.mesh.isEnabled(),true);assert.ok(t.scene.materials.includes(t.material));}finally{t.dispose();}
+});
+test('failed merge leaves source roads enabled and disposal never disposes their material',()=>{
+ const t=fixture(),original=B.Mesh.MergeMeshes;try{B.Mesh.MergeMeshes=()=>null;const a=road(t,'a',1,1),b=road(t,'b',2,1);t.owner.update([a,b]);assert.equal(t.meshes.length,0);assert.equal(a.mesh.isEnabled(),true);assert.equal(b.mesh.isEnabled(),true);}finally{B.Mesh.MergeMeshes=original;t.dispose();}
+});
