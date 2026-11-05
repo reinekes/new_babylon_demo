@@ -1,0 +1,28 @@
+[
+  {
+    "camera": "overview",
+    "roi": [
+      0,
+      75,
+      1280,
+      375
+    ],
+    "pixels": 480000,
+    "max": 0,
+    "pixelsOver8": 0,
+    "meanMaxChannelDifference": 0.0
+  },
+  {
+    "camera": "close",
+    "roi": [
+      0,
+      75,
+      1280,
+      375
+    ],
+    "pixels": 480000,
+    "max": 0,
+    "pixelsOver8": 0,
+    "meanMaxChannelDifference": 0.0
+  }
+]
