@@ -1,0 +1,296 @@
+{
+  "at": "2026-11-05T11:56:12.603165+00:00",
+  "commit": "6bdf4a29c72f8fdc9803a3b51e9bab452be0f926",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "566e104d726d059d279b0b75d8cf848f583eb285b11cbf799f0035608718125c",
+      "actual": "566e104d726d059d279b0b75d8cf848f583eb285b11cbf799f0035608718125c",
+      "match": true
+    },
+    {
+      "path": "docs/HISTORY_ACCEPTANCE_2026-11-05.md",
+      "status": 200,
+      "expected": "a012b81413f9cbc8e0b8fbf61059e441672311017a64d3e88445336548434418",
+      "actual": "a012b81413f9cbc8e0b8fbf61059e441672311017a64d3e88445336548434418",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance-initial-pages-sha.json",
+      "status": 200,
+      "expected": "da92f0de17d306af80d3f129beb73f1e55e4d6db2bf1c78ad7ab06bb362626f4",
+      "actual": "da92f0de17d306af80d3f129beb73f1e55e4d6db2bf1c78ad7ab06bb362626f4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance.json",
+      "status": 200,
+      "expected": "03fe2e3c2274cd12ab788928f38499c4f6054194664e9a8f29b4274adfc9671a",
+      "actual": "03fe2e3c2274cd12ab788928f38499c4f6054194664e9a8f29b4274adfc9671a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/2d.jpg",
+      "status": 200,
+      "expected": "c0d26949d01337e207ea4dd80e292d43612311d02b184123237a6a74597809bc",
+      "actual": "c0d26949d01337e207ea4dd80e292d43612311d02b184123237a6a74597809bc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/all32-tests.txt",
+      "status": 200,
+      "expected": "d6d55d25202b7ec7c96bbdf247439e6a4768279bb6445d7b04a8263f4d69e8c4",
+      "actual": "d6d55d25202b7ec7c96bbdf247439e6a4768279bb6445d7b04a8263f4d69e8c4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/caravan-legacy.jpg",
+      "status": 200,
+      "expected": "7872158f92cf71c2568d031fdaf1c6131833417fb2557fb613efc6d69632302c",
+      "actual": "7872158f92cf71c2568d031fdaf1c6131833417fb2557fb613efc6d69632302c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/caravan-strict.jpg",
+      "status": 200,
+      "expected": "7823f7c5166beda5406003b6494561f25b2a70804dc8fe5314312f9486be66d7",
+      "actual": "7823f7c5166beda5406003b6494561f25b2a70804dc8fe5314312f9486be66d7",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/house-1-legacy.jpg",
+      "status": 200,
+      "expected": "6475c9bd895ac9c26465677ea01b6394a7b2cf2809ecafc46182b2a98949f666",
+      "actual": "6475c9bd895ac9c26465677ea01b6394a7b2cf2809ecafc46182b2a98949f666",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/house-1-strict.jpg",
+      "status": 200,
+      "expected": "744d695cb1d5f78e8f19911c30acc3f8c3290d90a7721204466c4dd97eec8247",
+      "actual": "744d695cb1d5f78e8f19911c30acc3f8c3290d90a7721204466c4dd97eec8247",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ishtarGate-1-legacy.jpg",
+      "status": 200,
+      "expected": "96f88c035119bf52d9804381e1e855b050e83dc6e8026e0c72ec4fb12e7af746",
+      "actual": "96f88c035119bf52d9804381e1e855b050e83dc6e8026e0c72ec4fb12e7af746",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ishtarGate-1-strict.jpg",
+      "status": 200,
+      "expected": "912398068145d478d9878a8c4472261623edba2aa0d90f1b2698663a167fb73e",
+      "actual": "912398068145d478d9878a8c4472261623edba2aa0d90f1b2698663a167fb73e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/loader-tests.txt",
+      "status": 200,
+      "expected": "dd2e2eec22396cdbf2eba2fa65a787062f2e0dafe161e13e6f52a0eb0b9ee860",
+      "actual": "dd2e2eec22396cdbf2eba2fa65a787062f2e0dafe161e13e6f52a0eb0b9ee860",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ordinary-1-legacy.jpg",
+      "status": 200,
+      "expected": "b26dcaa467ebd5943275381bf249935d87c9cc50e4bec2a99fb92bb00abd5716",
+      "actual": "b26dcaa467ebd5943275381bf249935d87c9cc50e4bec2a99fb92bb00abd5716",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ordinary-1-strict.jpg",
+      "status": 200,
+      "expected": "45961030dbf94ee03ce74aa6c86280243a7460d0ae8c1adad70a2eec00885e40",
+      "actual": "45961030dbf94ee03ce74aa6c86280243a7460d0ae8c1adad70a2eec00885e40",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ordinary-2-legacy.jpg",
+      "status": 200,
+      "expected": "d055f8301affbeadbb048fce1bbeeb128e093893469778b4ec5f187d46b13b74",
+      "actual": "d055f8301affbeadbb048fce1bbeeb128e093893469778b4ec5f187d46b13b74",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ordinary-2-strict.jpg",
+      "status": 200,
+      "expected": "b131f009f547436bf7bfc39c2d2eb082c92d6a0a87057ad3ef711068fe58012c",
+      "actual": "b131f009f547436bf7bfc39c2d2eb082c92d6a0a87057ad3ef711068fe58012c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ordinary-3-legacy.jpg",
+      "status": 200,
+      "expected": "299cc4f9534369edd778e7d233d036b2c532d486b15f9163df217531fb951075",
+      "actual": "299cc4f9534369edd778e7d233d036b2c532d486b15f9163df217531fb951075",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ordinary-3-strict.jpg",
+      "status": 200,
+      "expected": "7fd4c100957720b118603515773f9051388fb506c6797ab6e7eeaec9cdbefb4e",
+      "actual": "7fd4c100957720b118603515773f9051388fb506c6797ab6e7eeaec9cdbefb4e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/presentation-tests.txt",
+      "status": 200,
+      "expected": "a508346fac72d454b27c13cc08a587765bc813dde460ce1d6386da221361f30b",
+      "actual": "a508346fac72d454b27c13cc08a587765bc813dde460ce1d6386da221361f30b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/save-tests.txt",
+      "status": 200,
+      "expected": "1bedfc8597f89c99c74365b3704f5d64ca29815cadc095fb468b88b8b0c71c1d",
+      "actual": "1bedfc8597f89c99c74365b3704f5d64ca29815cadc095fb468b88b8b0c71c1d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/shrine-3-legacy.jpg",
+      "status": 200,
+      "expected": "3ad00ba4b7f4ae5c76f88b95e3811734a44c7b9a570de29cbeec0464d618f897",
+      "actual": "3ad00ba4b7f4ae5c76f88b95e3811734a44c7b9a570de29cbeec0464d618f897",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/shrine-3-strict.jpg",
+      "status": 200,
+      "expected": "170f0eb05f1733f1e33f6ce48e50435c3beb8e94f0b2b4810e9c84468441187b",
+      "actual": "170f0eb05f1733f1e33f6ce48e50435c3beb8e94f0b2b4810e9c84468441187b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-1-legacy.jpg",
+      "status": 200,
+      "expected": "6940733f039e82f09a172add1d42b6e618bf799aae8be6b7c8498b51193c6dbf",
+      "actual": "6940733f039e82f09a172add1d42b6e618bf799aae8be6b7c8498b51193c6dbf",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-1-strict.jpg",
+      "status": 200,
+      "expected": "152e2b4d344437fbf41d81291a9fa60e362efb8880f34622118043f7df1d0778",
+      "actual": "152e2b4d344437fbf41d81291a9fa60e362efb8880f34622118043f7df1d0778",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-2-legacy.jpg",
+      "status": 200,
+      "expected": "85ddaca04dfcf0b27f50506081393bfa1c49dd976c97acde5666ac4f6270f85b",
+      "actual": "85ddaca04dfcf0b27f50506081393bfa1c49dd976c97acde5666ac4f6270f85b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-2-strict.jpg",
+      "status": 200,
+      "expected": "785aba24d170b336d0e975d584256218621e3ce800f75214f084a3fb93f8d033",
+      "actual": "785aba24d170b336d0e975d584256218621e3ce800f75214f084a3fb93f8d033",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-3-legacy.jpg",
+      "status": 200,
+      "expected": "bbaabb3b98f79408e8a162ab270a1a7ee3c5f6d866a8b581df37bcd6d0af89a3",
+      "actual": "bbaabb3b98f79408e8a162ab270a1a7ee3c5f6d866a8b581df37bcd6d0af89a3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-3-strict.jpg",
+      "status": 200,
+      "expected": "eb75e2c6cee52ffa2d861e581251ffe79532fbdbf786de0b4e07a1bf1478511a",
+      "actual": "eb75e2c6cee52ffa2d861e581251ffe79532fbdbf786de0b4e07a1bf1478511a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-initial-public-failure.jpg",
+      "status": 200,
+      "expected": "da2eeb498f16b8e311702dc0ff63b9cc742b0616756758ef8eaea1ddf9e3e51c",
+      "actual": "da2eeb498f16b8e311702dc0ff63b9cc742b0616756758ef8eaea1ddf9e3e51c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-history-initial-public-failure.json",
+      "status": 200,
+      "expected": "684c77a1ba286968dde80866ff30710b8c54f03ee82909761dc92e342d15af20",
+      "actual": "684c77a1ba286968dde80866ff30710b8c54f03ee82909761dc92e342d15af20",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "61910738670ac66283f0ccea5ed2eeb0535aea4d4c119f24c7240a20088c27f0",
+      "actual": "61910738670ac66283f0ccea5ed2eeb0535aea4d4c119f24c7240a20088c27f0",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "7d91e93fbb6b8d66683453a3b1ad86ff08c4d648582cf7bb525badaa108d1597",
+      "actual": "7d91e93fbb6b8d66683453a3b1ad86ff08c4d648582cf7bb525badaa108d1597",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0995256203bfca03eda4d0bfef6fb791812091db0a7d53fe31bac4cb1f7c2971",
+      "actual": "0995256203bfca03eda4d0bfef6fb791812091db0a7d53fe31bac4cb1f7c2971",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-history-acceptance.md",
+      "status": 200,
+      "expected": "d91a5c8d23fcd7e064f3855fef70c30a0b8458f6170377c51a3e6e4e4a505843",
+      "actual": "d91a5c8d23fcd7e064f3855fef70c30a0b8458f6170377c51a3e6e4e4a505843",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "572f05f4d2fb6bba26554c943858ccdcd799c1c4b3da533de292054aec23379e",
+      "actual": "572f05f4d2fb6bba26554c943858ccdcd799c1c4b3da533de292054aec23379e",
+      "match": true
+    },
+    {
+      "path": "tests/vendor-loading.test.js",
+      "status": 200,
+      "expected": "aa883945b14bc00abd088d9021ea79fab06ebb1ea1783663162ad867e108b7e4",
+      "actual": "aa883945b14bc00abd088d9021ea79fab06ebb1ea1783663162ad867e108b7e4",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/2d.html",
+      "status": 200,
+      "expected": "9b96acd65ee8f67434775efb872b13ee626bdfcb85fecf4199513caa36c66dc1",
+      "actual": "9b96acd65ee8f67434775efb872b13ee626bdfcb85fecf4199513caa36c66dc1",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/README.md",
+      "status": 200,
+      "expected": "f4a0c766f55fa97fab534d126fc2e3f856a4ecc7b6c3f88b289189ed1fe579d2",
+      "actual": "f4a0c766f55fa97fab534d126fc2e3f856a4ecc7b6c3f88b289189ed1fe579d2",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/index.html",
+      "status": 200,
+      "expected": "0f317c8dd1001709fc936bc54fc558263b4276907f5e2cca687e057d685a1974",
+      "actual": "0f317c8dd1001709fc936bc54fc558263b4276907f5e2cca687e057d685a1974",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/transport.html",
+      "status": 200,
+      "expected": "42bcc6847119619861138c1bc2fe4e12c0d1395721b1e8249b149505b6d9b673",
+      "actual": "42bcc6847119619861138c1bc2fe4e12c0d1395721b1e8249b149505b6d9b673",
+      "match": true
+    }
+  ],
+  "matched": 41,
+  "total": 41
+}

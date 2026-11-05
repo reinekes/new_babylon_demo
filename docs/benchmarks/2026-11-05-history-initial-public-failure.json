@@ -14,6 +14,12 @@
   "regression": {
     "command": "node --test tests/vendor-loading.test.js",
     "red": "7 pass / 1 fail: historical pages used direct vendor script tags",
-    "green": "8 pass / 0 fail; hosted recheck pending"
+    "green": "8 pass / 0 fail",
+    "hostedRecheck": {
+      "commit": "6bdf4a29c72f8fdc9803a3b51e9bab452be0f926",
+      "workflow": 42022808815,
+      "result": "3 architecture / 2 caravan branches / 14 2D silhouettes; no console warnings/errors; 41/41 file SHA.",
+      "proof": "docs/benchmarks/2026-11-05-history-public-proof.json"
+    }
   }
 }

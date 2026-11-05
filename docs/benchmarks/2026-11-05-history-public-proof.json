@@ -1,0 +1,324 @@
+{
+  "architecture": [
+    {
+      "profile": "sumer-iii-v1",
+      "selected": "house",
+      "building": {
+        "type": "house",
+        "x": 0,
+        "y": 0,
+        "level": 1,
+        "starterHut": true
+      },
+      "name": "Первый дом",
+      "capacity": 4,
+      "pure": true,
+      "materials": [
+        "alluvial-earth",
+        "game-home-plaster-1-0",
+        "game-home-interior-shadow",
+        "worn-timber",
+        "reed-mat",
+        "game-plaster-trim",
+        "fired-pottery",
+        "game-door-shadow"
+      ],
+      "meshes": [
+        {
+          "name": "0,0-game-house-courtyard-1-alluvial-earth",
+          "material": "alluvial-earth",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-house-courtyard-1-game-home-plaster-1-0",
+          "material": "game-home-plaster-1-0",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-house-courtyard-1-game-home-interior-shadow",
+          "material": "game-home-interior-shadow",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-house-courtyard-1-worn-timber",
+          "material": "worn-timber",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-house-courtyard-1-reed-mat",
+          "material": "reed-mat",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-house-courtyard-1-game-plaster-trim",
+          "material": "game-plaster-trim",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-house-courtyard-1-fired-pottery",
+          "material": "fired-pottery",
+          "parts": null
+        },
+        {
+          "name": "0,0-roof-access-house",
+          "material": "worn-timber",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-home-lamp-0",
+          "material": "game-door-shadow",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-home-lamp-1",
+          "material": "game-door-shadow",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-home-lamp-2",
+          "material": "game-door-shadow",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-home-lamp-3",
+          "material": "game-door-shadow",
+          "parts": null
+        }
+      ]
+    },
+    {
+      "profile": "sumer-iii-v1",
+      "selected": "ishtarGate",
+      "building": {
+        "type": "ishtarGate",
+        "x": 0,
+        "y": 0,
+        "level": 1,
+        "footprint": 3
+      },
+      "name": "Врата Инанны",
+      "capacity": null,
+      "pure": true,
+      "materials": [
+        "game-fired-brick-facing",
+        "game-raw-brick-facing",
+        "game-plaster-trim",
+        "worn-timber",
+        "alluvial-earth"
+      ],
+      "meshes": [
+        {
+          "name": "0,0-game-sumer-gate-game-fired-brick-facing",
+          "material": "game-fired-brick-facing",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-sumer-gate-game-raw-brick-facing",
+          "material": "game-raw-brick-facing",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-sumer-gate-game-plaster-trim",
+          "material": "game-plaster-trim",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-sumer-gate-worn-timber",
+          "material": "worn-timber",
+          "parts": null
+        },
+        {
+          "name": "0,0-game-sumer-gate-alluvial-earth",
+          "material": "alluvial-earth",
+          "parts": null
+        }
+      ]
+    },
+    {
+      "profile": "legacy-v1",
+      "selected": "ishtarGate",
+      "building": {
+        "type": "ishtarGate",
+        "x": 0,
+        "y": 0,
+        "level": 1,
+        "footprint": 3
+      },
+      "name": "Врата Иштар",
+      "capacity": null,
+      "pure": true,
+      "materials": [
+        "uv-map"
+      ],
+      "meshes": [
+        {
+          "name": "0,0-game-Sacred-sacred-ishtar-gate-surface-0",
+          "material": "uv-map",
+          "parts": null
+        }
+      ]
+    }
+  ],
+  "transport": [
+    {
+      "profile": "sumer-iii-v1",
+      "transport": "land",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "food": 30,
+          "wood": 80,
+          "pottery": 40,
+          "reed": 50
+        }
+      },
+      "actors": [
+        {
+          "kind": "merchant",
+          "phase": 0,
+          "clip": "Walk",
+          "position": [
+            36,
+            0,
+            30
+          ],
+          "rotation": [
+            0,
+            1.5707963267948966,
+            0
+          ]
+        },
+        {
+          "kind": "donkey",
+          "phase": 0.31,
+          "clip": "Walk",
+          "position": [
+            32.2,
+            0,
+            30
+          ],
+          "rotation": [
+            0,
+            1.5707963267948966,
+            0
+          ]
+        },
+        {
+          "kind": "donkey",
+          "phase": 0.62,
+          "clip": "Walk",
+          "position": [
+            28.549999999999997,
+            0,
+            30
+          ],
+          "rotation": [
+            0,
+            1.5707963267948966,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "legacy-v1",
+      "transport": "land",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "food": 30,
+          "wood": 80,
+          "pottery": 40,
+          "reed": 50
+        }
+      },
+      "actors": [
+        {
+          "kind": "merchant",
+          "phase": 0,
+          "clip": "Walk",
+          "position": [
+            36,
+            0,
+            30
+          ],
+          "rotation": [
+            0,
+            1.5707963267948966,
+            0
+          ]
+        },
+        {
+          "kind": "camel",
+          "phase": 0.31,
+          "clip": "Walk",
+          "position": [
+            32.2,
+            0,
+            30
+          ],
+          "rotation": [
+            0,
+            1.5707963267948966,
+            0
+          ]
+        },
+        {
+          "kind": "camel",
+          "phase": 0.62,
+          "clip": "Walk",
+          "position": [
+            28.549999999999997,
+            0,
+            30
+          ],
+          "rotation": [
+            0,
+            1.5707963267948966,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "logs": [],
+  "twoD": "PASS: 14 силуэтов, обе ветви",
+  "commit": "6bdf4a29c72f8fdc9803a3b51e9bab452be0f926",
+  "workflow": 42022808815,
+  "release": "history-acceptance-20261105-1",
+  "scope": "Hosted smoke after isolated vendor-loader fix; no city saves used."
+}
