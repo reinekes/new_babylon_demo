@@ -1,3 +1,4 @@
+import {restReeds,advanceReedBeds} from './reed-stock.js';
 import {forestFor,restForest} from './forest-stock.js';
 import {restFishery} from './fishery-stock.js';
 import {fisheryOptions} from './labor-life.js';
@@ -224,6 +225,12 @@ export function adoptAutumnCrops(s){
  return {ok:true};
 }
 
+export function closeReedBed(state,x,y){
+ const reason=blocked(state);
+ if(reason)return {ok:false,reason};
+ return restReeds(state,x,y)?{ok:true}:{ok:false,reason:'Угодье осушено, уже отдыхает или запас полный'};
+}
+
 export function closeForestForRest(state,building){
  const reason=blocked(state);
  if(reason)return {ok:false,reason};
@@ -261,6 +268,7 @@ export function setCanalDrain(s,key,drain){
  if(!soilCareEnabled(s)||canal?.type!=='canal'||!isComplete(canal)||typeof drain!=='boolean')return {ok:false,reason:'Нужен готовый канал'};
  if(drain)canal.drain=true;
  else delete canal.drain;
+ advanceReedBeds(s);
  return {ok:true};
 }
 

@@ -1,3 +1,4 @@
+import {takeReeds,advanceReedBeds} from './reed-stock.js';
 import {forestFor,takeWood} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,takeClay,takeStone} from './mineral-stock.js';
 import {takeFish} from './fishery-stock.js';
@@ -300,12 +301,12 @@ function harvest(s,c,ctx,via=null){
   if(resource==='food')mult*=boost.fertility?1.6:1;
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
-  const amount=b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,b.x,b.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
+  const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,b.x,b.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,b.x,b.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
   if(amount<=1e-8)continue;
   c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
  if(b.type==='clay'&&clayRemaining(s,b.x,b.y)<=1e-8||b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)invalidateAssignments(s);
- if(['fishing','clay','quarry','logging'].includes(b.type)&&!hasCargo(c))return false;
+ if(['fishing','clay','quarry','logging','reed'].includes(b.type)&&!hasCargo(c))return false;
  if(isProductionStore(b)){if(via){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
@@ -609,7 +610,7 @@ export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
  let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);const finished=finishConstruction(s);advancePests(s,dt);advanceCatDiscovery(s,dt);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
- const advanced=elapsed>=seconds-1e-8?seconds:elapsed;s.simTime=start+advanced;return advanced;
+ const advanced=elapsed>=seconds-1e-8?seconds:elapsed;s.simTime=start+advanced;advanceReedBeds(s);return advanced;
 }
 // Clinic waiting places are view offsets only: identities, routes and saved
 // treatment coordinates remain the actual simulation state.

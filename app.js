@@ -1,3 +1,4 @@
+import {reedStatus,REED_CAPACITY} from './reed-stock.js';
 import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
 import {fisheryOptions} from './labor-life.js';
@@ -14,7 +15,7 @@ import {buildingDefinition,buildingPresentation} from './building-presentation.j
 import {createUrukInterface} from './ui-uruk.js';
 import {createMonthNotice} from './ui-calendar.js';
 import {manualGatheringView,orderManualGathering,cancelManualGathering} from './manual-gathering.js';
-import {manualGatheringHTML,bindManualGathering} from './ui-manual-gathering.js';
+import {manualGatheringHTML,bindManualGathering,reedBedHTML} from './ui-manual-gathering.js';
 import {createSaveLibrary} from './save-library.js';
 import {createSaveLibraryUI} from './ui-saves.js';
 import {runSeasonJump,seasonJumpReason} from './season-jump.js';
@@ -69,7 +70,7 @@ import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale} from './trading.js';
 import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,layRoad} from './roads.js';
 import {weatherAt} from './environment.js';
-import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
+import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites} from './construction.js';
 import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
@@ -242,7 +243,7 @@ function depositDetail(x,y){
  // Selecting another deposit or explicitly executing a command still refreshes.
  if(same&&!panel.hidden&&panel.contains(document.activeElement))return;
  panel.hidden=false;setHTML(panel,manualGatheringHTML(state,view));
- bindManualGathering(panel,{onOrder:()=>{panel.querySelector('[data-manual-order]')?.blur();mutate(orderManualGathering(state,x,y),'Поручение принято: свободные жители соберут сырьё и принесут в склад');},onCancel:()=>{panel.querySelector('[data-manual-cancel]')?.blur();mutate(cancelManualGathering(state,x,y),'Сбор остановлен. Уже собранный груз будет доставлен');},onClose:()=>{inspectedDeposit=null;panel.hidden=true;}});
+ bindManualGathering(panel,{onReedRest:()=>{panel.querySelector('[data-reed-rest]')?.blur();mutate(closeReedBed(state,x,y),'Сбор тростника закрыт на два дня');},onOrder:()=>{panel.querySelector('[data-manual-order]')?.blur();mutate(orderManualGathering(state,x,y),'Поручение принято: свободные жители соберут сырьё и принесут в склад');},onCancel:()=>{panel.querySelector('[data-manual-cancel]')?.blur();mutate(cancelManualGathering(state,x,y),'Сбор остановлен. Уже собранный груз будет доставлен');},onClose:()=>{inspectedDeposit=null;panel.hidden=true;}});
 }
 function detail(type,placement,b=null){
  inspectedPerson=null;inspectedDeposit=null;const def=buildingPresentation(state,b||{type,level:1});$('tile-detail').hidden=false;
@@ -278,6 +279,12 @@ function updateDetail(){
  if(['clay','quarry'].includes(b.type)&&isStrictSumer(state)){
   const stone=b.type==='quarry',remaining=stone?stoneRemaining(state,b.x,b.y):clayRemaining(state,b.x,b.y);
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${stone?STONE_CAPACITY:CLAY_CAPACITY}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
+ }
+ if(b.type==='reed'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
+  const controls=$('building-controls');
+  controls.insertAdjacentHTML('afterbegin',reedBedHTML(reedStatus(state,b.x,b.y),REED_CAPACITY));
+  const button=controls.querySelector('[data-reed-rest]');
+  if(button)button.onclick=()=>{button.blur();mutate(closeReedBed(state,b.x,b.y),'Сбор тростника закрыт на два дня');};
  }
  if(b.type==='logging'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
   const forest=forestFor(state,b.x,b.y),status=forest&&forestStock(state,forest);

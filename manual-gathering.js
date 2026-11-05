@@ -1,3 +1,4 @@
+import {reedStatus,takeReeds,REED_CAPACITY} from './reed-stock.js';
 import {CLAY_CAPACITY,STONE_CAPACITY,mineralRemaining,takeMineral} from './mineral-stock.js';
 import {depositAt,isDryPoint,worldWidth,worldHeight} from './world.js';
 import {buildingKey} from './definitions.js';
@@ -17,7 +18,7 @@ const accessFailures=new WeakMap();
 const daylight=s=>{const hour=((8+(s.simTime||0)*.4)%24+24)%24;return hour>=6&&hour<19;};
 const commandReason=s=>cityCommandReason(s)||(s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':'');
 function occupied(s,x,y){return s.buildings.some(b=>x>=b.x&&y>=b.y&&x<b.x+footprintSize(b)&&y<b.y+footprintSize(b));}
-function siteReason(s,x,y){if(!Number.isInteger(x)||!Number.isInteger(y)||!MANUAL_GATHERING[depositAt(s,x,y)])return 'Выбери залежь глины, тростника или камня';if(mineralRemaining(s,depositAt(s,x,y),x,y)<=1e-8)return 'Месторождение исчерпано';if(occupied(s,x,y))return 'На залежи уже есть здание или стройка';if(!isDryPoint(s,x,y))return 'Залежь недоступна с суши';return '';}
+function siteReason(s,x,y){if(!Number.isInteger(x)||!Number.isInteger(y)||!MANUAL_GATHERING[depositAt(s,x,y)])return 'Выбери залежь глины, тростника или камня';if(mineralRemaining(s,depositAt(s,x,y),x,y)<=1e-8)return 'Месторождение исчерпано';if(depositAt(s,x,y)==='reed'){const reed=reedStatus(s,x,y);if(reed.resting)return 'Тростниковое угодье отдыхает';if(reed.stock<=1e-8)return 'Тростниковое угодье исчерпано';}if(occupied(s,x,y))return 'На залежи уже есть здание или стройка';if(!isDryPoint(s,x,y))return 'Залежь недоступна с суши';return '';}
 export function orderManualGathering(s,x,y){
  const reason=commandReason(s)||siteReason(s,x,y);if(reason)return {ok:false,reason};
  s.manualGathering??={version:1,orders:[]};const key=keyOf(x,y),existing=orders(s).find(q=>q.key===key);
@@ -30,7 +31,8 @@ export function manualGatheringView(s,x,y){
  const key=keyOf(x,y),q=orders(s).find(q=>q.key===key),workers=s.citizens.filter(c=>c.manualGathering?.key===key).map(c=>({id:c.id,phase:c.phase,progress:c.manualGathering.progress/MANUAL_GATHERING[resource].workSeconds,carrying:(c.cargo?.[resource]||0)>0}));
  const reason=commandReason(s)||siteReason(s,x,y),active=!!q?.active,status=reason?'blocked':!active?'inactive':workers.some(c=>c.phase==='manualGathering')?'working':workers.some(c=>c.carrying)?'carrying':workers.length?'walking':'waiting';
  const statusReason=!active?'':!daylight(s)?'Ночью жители отдыхают; добыча продолжится утром':workers.length?'':accessFailures.get(s)?.get(key)||(!s.citizens.some(eligible)?'Нет свободных взрослых: занятые работой, стройкой и снабжением жители не отвлекаются':'Свободные жители готовятся выйти к залежи');
- return {key,resource,remaining:mineralRemaining(s,resource,x,y),capacity:resource==='stone'?STONE_CAPACITY:CLAY_CAPACITY,active,status,reason,cancelReason:commandReason(s),statusReason,workers,progress:Math.max(0,...workers.map(c=>c.progress)),...MANUAL_GATHERING[resource],maxWorkers:2};
+ const wetland=resource==='reed'?reedStatus(s,x,y):null;
+ return {key,resource,wetland,remaining:wetland?.stock??mineralRemaining(s,resource,x,y),capacity:resource==='reed'?REED_CAPACITY:resource==='stone'?STONE_CAPACITY:CLAY_CAPACITY,active,status,reason,cancelReason:commandReason(s),statusReason,workers,progress:Math.max(0,...workers.map(c=>c.progress)),...MANUAL_GATHERING[resource],maxWorkers:2};
 }
 export function manualGatheringOrder(s,c){return orders(s).find(q=>q.key===c.manualGathering?.key);}
 export function manualGatheringStillAssigned(s,c){
@@ -65,7 +67,7 @@ export function beginManualGathering(s,c,ctx,routeFor){
 export function workManualGathering(s,c,dt,rate=1){
  const q=manualGatheringOrder(s,c),job=c.manualGathering;if(!q||!job||c.phase!=='manualGathering'||Math.hypot(c.x-job.stand.x,c.y-job.stand.y)>1e-6||hasLoad(c))return false;
  const config=MANUAL_GATHERING[q.resource];job.progress=Math.min(config.workSeconds,job.progress+dt*Math.max(0,rate));if(job.progress<config.workSeconds-1e-7)return false;
- const amount=takeMineral(s,q.resource,q.x,q.y,config.batchSize);
+ const amount=q.resource==='reed'?takeReeds(s,q.x,q.y,config.batchSize):takeMineral(s,q.resource,q.x,q.y,config.batchSize);
  job.progress=0;
  if(amount<=1e-8)return false;
  c.cargo={[q.resource]:amount};return true;

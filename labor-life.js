@@ -1,3 +1,4 @@
+import {advanceReedBeds} from './reed-stock.js';
 import {forestOpen} from './forest-stock.js';
 import {stoneRemaining} from './mineral-stock.js';
 import {fisheryKey,fisheryStock} from './fishery-stock.js';
@@ -96,6 +97,7 @@ export function workGathering(s,c,b,dt,rate,origin){
  g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.kind==='fishing'?{...j.origin,fishery:fisheryKey(s,j.target)}:j.origin;
 }
 export function advanceGathering(s){
+ advanceReedBeds(s);
  const g=initializeGathering(s),active=new Set(s.buildings.filter(isOperational).filter(b=>GATHERING_TYPES.includes(b.type)).map(buildingKey));
  const signature=s.buildings.map(b=>`${b.type}:${b.x},${b.y}`).join('|');let paths=localLegs.get(s);if(paths?.signature!==signature){paths={signature,legs:new WeakMap()};localLegs.set(s,paths);}
  g.jobs=g.jobs.filter(j=>{if(!active.has(j.work)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work&&c.phase==='working'))return false;if(!paths.legs.has(j))paths.legs.set(j,clearGround(s,j.stand)&&gatheringPathClear(s,j.origin,j.stand));return paths.legs.get(j);});
