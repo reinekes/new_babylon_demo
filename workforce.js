@@ -1,3 +1,4 @@
+import {clayRemaining,takeClay} from './clay-stock.js';
 import {takeFish} from './fishery-stock.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {floodPhase,floodFootprint,floodProtectionRevision,floodedSegment,floodEscapeRoute} from './river-flood.js';
@@ -247,7 +248,7 @@ export function syncCitizens(s){
   }
  }
  const priority={waterpoint:-.5,pottery:1,brewery:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
- const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)).sort((a,b)=>priority[a.type]-priority[b.type]);
+ const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='clay'||clayRemaining(s,b.x,b.y)>1e-8)).sort((a,b)=>priority[a.type]-priority[b.type]);
  const slots=jobs.flatMap(b=>Array(workplaceCapacity(b.type)).fill(buildingKey(b))),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work&&!c.guardPost)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
  // A pinned worker completing an old delivery still owns their new workplace
@@ -298,11 +299,12 @@ function harvest(s,c,ctx,via=null){
   if(resource==='food')mult*=boost.fertility?1.6:1;
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
-  const amount=b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
+  const amount=b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
   if(amount<=1e-8)continue;
   c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
- if(b.type==='fishing'&&!hasCargo(c))return false;
+ if(b.type==='clay'&&clayRemaining(s,b.x,b.y)<=1e-8)invalidateAssignments(s);
+ if(['fishing','clay'].includes(b.type)&&!hasCargo(c))return false;
  if(isProductionStore(b)){if(via){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
