@@ -1,0 +1,737 @@
+{
+  "at": "2026-11-05T00:31:10.542319+00:00",
+  "commit": "3c9b802676ac95b2aaacc82e5a06669952de349b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ae72055069c371e513966b7f035cd8ea1734879b41943d130709ecdb6867d48b",
+      "actual": "ae72055069c371e513966b7f035cd8ea1734879b41943d130709ecdb6867d48b",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "68eb0d79530a1d3a42919dd0f4e46e4ed518a6371200de52e68e3f1edd36a958",
+      "actual": "68eb0d79530a1d3a42919dd0f4e46e4ed518a6371200de52e68e3f1edd36a958",
+      "match": true
+    },
+    {
+      "path": "architecture.js",
+      "status": 200,
+      "expected": "933bda83f47e10c814736222ee027364cfcc15d7b5f6beb69b802311efb324cc",
+      "actual": "933bda83f47e10c814736222ee027364cfcc15d7b5f6beb69b802311efb324cc",
+      "match": true
+    },
+    {
+      "path": "building-presentation.js",
+      "status": 200,
+      "expected": "fa0dd6ae07117a647f40270b5fcf0c4ba64260c930695a1e21ae7fd49bff3b12",
+      "actual": "fa0dd6ae07117a647f40270b5fcf0c4ba64260c930695a1e21ae7fd49bff3b12",
+      "match": true
+    },
+    {
+      "path": "cat-fishing-ledger.js",
+      "status": 200,
+      "expected": "6a887cd4e5e39ec520f6b837c3613a0b37b4207ee27ce682ee6bc52bc3027711",
+      "actual": "6a887cd4e5e39ec520f6b837c3613a0b37b4207ee27ce682ee6bc52bc3027711",
+      "match": true
+    },
+    {
+      "path": "city-diagnostics.js",
+      "status": 200,
+      "expected": "d53b38dec15647f62eb0a3785a5a8dd44bb5a960435dbe98f904ccf47c80d45a",
+      "actual": "d53b38dec15647f62eb0a3785a5a8dd44bb5a960435dbe98f904ccf47c80d45a",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "a1ed41337c7f4f4a7b1007e4e3c70bfbfec1a4ac2ae9d6a714429d03bfe1b689",
+      "actual": "a1ed41337c7f4f4a7b1007e4e3c70bfbfec1a4ac2ae9d6a714429d03bfe1b689",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "7c8637c7fd51c759397740f47224bc3625a7844e5f32d40ce8c575850d314fbf",
+      "actual": "7c8637c7fd51c759397740f47224bc3625a7844e5f32d40ce8c575850d314fbf",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "c6dc3dd7512d5cd26a4b87f9dd084f05a906e729b0994dd3fbd0b92d58b8e8e7",
+      "actual": "c6dc3dd7512d5cd26a4b87f9dd084f05a906e729b0994dd3fbd0b92d58b8e8e7",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "6e8a3d57887b6429b1baae22b3925192abdec8195527da5b4dfb24e4f2b25e8a",
+      "actual": "6e8a3d57887b6429b1baae22b3925192abdec8195527da5b4dfb24e4f2b25e8a",
+      "match": true
+    },
+    {
+      "path": "district3d/app.js",
+      "status": 200,
+      "expected": "4ff9d296a8ed5d1a0e5c4c7948cc7ac35b45e25fa9fe0a694be6fe658d8a801e",
+      "actual": "4ff9d296a8ed5d1a0e5c4c7948cc7ac35b45e25fa9fe0a694be6fe658d8a801e",
+      "match": true
+    },
+    {
+      "path": "docs/MODEL_INDEX.md",
+      "status": 200,
+      "expected": "eb39213785566fd37bfe46185a6afc2cd8366cc3281c6145a68c8338e779f686",
+      "actual": "eb39213785566fd37bfe46185a6afc2cd8366cc3281c6145a68c8338e779f686",
+      "match": true
+    },
+    {
+      "path": "docs/NEW_GAME_PROFILES_2026-11-04.md",
+      "status": 200,
+      "expected": "90496b4c7d29b9ccad8bd47ac8d7b4082dbc0583a67b0befade76e6f3dc8d8f9",
+      "actual": "90496b4c7d29b9ccad8bd47ac8d7b4082dbc0583a67b0befade76e6f3dc8d8f9",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_SUMER_REAL_TRADE_2026-11-05.md",
+      "status": 200,
+      "expected": "349cb4baa7a1b11359aa1ebaa6ac5dc032c2977b3994818143a52589457773a4",
+      "actual": "349cb4baa7a1b11359aa1ebaa6ac5dc032c2977b3994818143a52589457773a4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-c01-founders.json",
+      "status": 200,
+      "expected": "09c4d6d6a03a2ad072aa870c73e89ada5507a6ece4bc21b9d01886da422d140e",
+      "actual": "09c4d6d6a03a2ad072aa870c73e89ada5507a6ece4bc21b9d01886da422d140e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sumer-real-trade.json",
+      "status": 200,
+      "expected": "fa394b559e624371633106353f21b9e4b3a2e306a6036fd523a0fa0d022e0b91",
+      "actual": "fa394b559e624371633106353f21b9e4b3a2e306a6036fd523a0fa0d022e0b91",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sumer-trade-candidate-once.json",
+      "status": 200,
+      "expected": "09935d17d4a0305ad5b020b22f71fbaf6b397020a613cfb3252c2e9ef8959380",
+      "actual": "09935d17d4a0305ad5b020b22f71fbaf6b397020a613cfb3252c2e9ef8959380",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sumer-trade-layer-totals.json",
+      "status": 200,
+      "expected": "7180460f552c777014df908bdd29b51c2d0c9711e6554e74d6bcc72c12e360fb",
+      "actual": "7180460f552c777014df908bdd29b51c2d0c9711e6554e74d6bcc72c12e360fb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sumer-trade-legacy-control.json",
+      "status": 200,
+      "expected": "52a6eb8ff7951a1c15e1f481096921015377896bfd08e5f0f15b6cdb6b1d0711",
+      "actual": "52a6eb8ff7951a1c15e1f481096921015377896bfd08e5f0f15b6cdb6b1d0711",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-sumer-trade-scene-internals.json",
+      "status": 200,
+      "expected": "1488bf43da743363ae3778f8fdf738aea4a332b99140ff1de6a67d48ddd2e907",
+      "actual": "1488bf43da743363ae3778f8fdf738aea4a332b99140ff1de6a67d48ddd2e907",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "f2cd79d49dbd17b538f4b553763c199010031e137cddf258328587f6bfd7e179",
+      "actual": "f2cd79d49dbd17b538f4b553763c199010031e137cddf258328587f6bfd7e179",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "283301881e92e658aa9009e0b3f2fb3d665bc4b12bc274bfd0bf7734ca3599d0",
+      "actual": "283301881e92e658aa9009e0b3f2fb3d665bc4b12bc274bfd0bf7734ca3599d0",
+      "match": true
+    },
+    {
+      "path": "fishing-water.js",
+      "status": 200,
+      "expected": "3a1b63834565a482c43faf6e332373c0a337f10918d941bb089c5451577a7ba8",
+      "actual": "3a1b63834565a482c43faf6e332373c0a337f10918d941bb089c5451577a7ba8",
+      "match": true
+    },
+    {
+      "path": "game3d/architecture.js",
+      "status": 200,
+      "expected": "9ba3e344119730f7c332fad96c983eb4f5dd176740253b425f71b39c083e0eb1",
+      "actual": "9ba3e344119730f7c332fad96c983eb4f5dd176740253b425f71b39c083e0eb1",
+      "match": true
+    },
+    {
+      "path": "game3d/buildings.js",
+      "status": 200,
+      "expected": "442b81afd8ef7420f20346ebf4c55cd65c8f163fdee49b21b50788f5d9a17a7f",
+      "actual": "442b81afd8ef7420f20346ebf4c55cd65c8f163fdee49b21b50788f5d9a17a7f",
+      "match": true
+    },
+    {
+      "path": "game3d/caravan.js",
+      "status": 200,
+      "expected": "d4a0de69f92297dd6ffffc892f424cd7107ab5eacab29fa2591339f367fe44f3",
+      "actual": "d4a0de69f92297dd6ffffc892f424cd7107ab5eacab29fa2591339f367fe44f3",
+      "match": true
+    },
+    {
+      "path": "game3d/cat-discovery.js",
+      "status": 200,
+      "expected": "fa84ba5dca4c0af4f2d6313e73861bdb26c1f69b04088919af59bd22aaa72eda",
+      "actual": "fa84ba5dca4c0af4f2d6313e73861bdb26c1f69b04088919af59bd22aaa72eda",
+      "match": true
+    },
+    {
+      "path": "game3d/house-architecture.js",
+      "status": 200,
+      "expected": "93cfb62e1aceff52445169065b17fc5d36f61b28cc4051db1c8a5d8725a3e0af",
+      "actual": "93cfb62e1aceff52445169065b17fc5d36f61b28cc4051db1c8a5d8725a3e0af",
+      "match": true
+    },
+    {
+      "path": "game3d/house-lights.js",
+      "status": 200,
+      "expected": "a67aa4ac241c8bb0c8117e0df3698452ca4d5543aa22e9421380faf9e7807cec",
+      "actual": "a67aa4ac241c8bb0c8117e0df3698452ca4d5543aa22e9421380faf9e7807cec",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "9c0f16eef4eddc6efa2faf44a791753e13fcb85422433d5271682f4f4de07344",
+      "actual": "9c0f16eef4eddc6efa2faf44a791753e13fcb85422433d5271682f4f4de07344",
+      "match": true
+    },
+    {
+      "path": "game3d/renderable-mesh-candidates.js",
+      "status": 200,
+      "expected": "774039fcb140b814f8cc7f2d83e056ea53664474ae2055d7dc2aba736b0c724f",
+      "actual": "774039fcb140b814f8cc7f2d83e056ea53664474ae2055d7dc2aba736b0c724f",
+      "match": true
+    },
+    {
+      "path": "game3d/river-craft.js",
+      "status": 200,
+      "expected": "b581446b6f26ce33abef6ac08e2e3e8725cd4ad6f7b8413e588b0d7b2532b9e9",
+      "actual": "b581446b6f26ce33abef6ac08e2e3e8725cd4ad6f7b8413e588b0d7b2532b9e9",
+      "match": true
+    },
+    {
+      "path": "game3d/roof-access.js",
+      "status": 200,
+      "expected": "efafd4a72863f4b9ee2c9e879466c006a24e8dc6ba5de8b9f37a334e4ef4428d",
+      "actual": "efafd4a72863f4b9ee2c9e879466c006a24e8dc6ba5de8b9f37a334e4ef4428d",
+      "match": true
+    },
+    {
+      "path": "game3d/sacred-models.js",
+      "status": 200,
+      "expected": "987ffbf2c8e2728fc06f47434f2aa56552782d083dd519ca1a7ab36611e442b1",
+      "actual": "987ffbf2c8e2728fc06f47434f2aa56552782d083dd519ca1a7ab36611e442b1",
+      "match": true
+    },
+    {
+      "path": "game3d/sumer-river-hull.js",
+      "status": 200,
+      "expected": "2cb2b164b9236a16ef5bc57d7085324e2416076ab1f17db20c7d696a71c7beed",
+      "actual": "2cb2b164b9236a16ef5bc57d7085324e2416076ab1f17db20c7d696a71c7beed",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "bff654f553ce96fd96b7083960dfc50068a9fffaffeee4eecaf4aa3073b09cbd",
+      "actual": "bff654f553ce96fd96b7083960dfc50068a9fffaffeee4eecaf4aa3073b09cbd",
+      "match": true
+    },
+    {
+      "path": "godhood.css",
+      "status": 200,
+      "expected": "7af8c27e38555e828c44831117611a9830e60d6c1ab74effa08018342f8866b8",
+      "actual": "7af8c27e38555e828c44831117611a9830e60d6c1ab74effa08018342f8866b8",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "93a437124628162ba9bf1733f44416636b8465a124dea5378bf8cf9120e32591",
+      "actual": "93a437124628162ba9bf1733f44416636b8465a124dea5378bf8cf9120e32591",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "4d46caea05134e452a63252c08bcbadd9fa78f79815c4ac589cb2d840ccf3140",
+      "actual": "4d46caea05134e452a63252c08bcbadd9fa78f79815c4ac589cb2d840ccf3140",
+      "match": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "expected": "f01de47a41de7c501dacdba7dccae813877308708687ff5399ed65dfcf839ead",
+      "actual": "f01de47a41de7c501dacdba7dccae813877308708687ff5399ed65dfcf839ead",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "7827772fa09be6586d973708ba495c757dd111ee55dba356cc05af281e57c4e5",
+      "actual": "7827772fa09be6586d973708ba495c757dd111ee55dba356cc05af281e57c4e5",
+      "match": true
+    },
+    {
+      "path": "map-art.js",
+      "status": 200,
+      "expected": "026a97b7b9f35cf554f91fedcf69d24d33856c37b8098df13a6befc128d3d23e",
+      "actual": "026a97b7b9f35cf554f91fedcf69d24d33856c37b8098df13a6befc128d3d23e",
+      "match": true
+    },
+    {
+      "path": "map-cat-discovery.js",
+      "status": 200,
+      "expected": "e9482bf805fe73edbb02e1cff1aeef15de94be731860be141007c3390a1c0416",
+      "actual": "e9482bf805fe73edbb02e1cff1aeef15de94be731860be141007c3390a1c0416",
+      "match": true
+    },
+    {
+      "path": "miracle-celebration.js",
+      "status": 200,
+      "expected": "ab4386eb307b64c354a787f086687ab1c36ae1a3945103f8be6f83f2d770ac25",
+      "actual": "ab4386eb307b64c354a787f086687ab1c36ae1a3945103f8be6f83f2d770ac25",
+      "match": true
+    },
+    {
+      "path": "miracle-discovery.js",
+      "status": 200,
+      "expected": "c9e525a57161dd45796bc806d0260a2d31cd2bc107a8916b8533b3cef1b59c32",
+      "actual": "c9e525a57161dd45796bc806d0260a2d31cd2bc107a8916b8533b3cef1b59c32",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "4339b539c789803be97eb4db732025ca3ef38e99515197172dab6f54b0c93e4e",
+      "actual": "4339b539c789803be97eb4db732025ca3ef38e99515197172dab6f54b0c93e4e",
+      "match": true
+    },
+    {
+      "path": "pests.js",
+      "status": 200,
+      "expected": "97c2439950d3b7642719983625fc13d86027b3a31482bbc6b7df73e5978e889f",
+      "actual": "97c2439950d3b7642719983625fc13d86027b3a31482bbc6b7df73e5978e889f",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "9b9150774b0058adf4551d094df024a1b1ff3004b939c04baa712c5907e78b2d",
+      "actual": "9b9150774b0058adf4551d094df024a1b1ff3004b939c04baa712c5907e78b2d",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c68232d6a3bd5d854d30b42df99b7c28d8f2637b5c7c437bb4d94b0ee7f1ed90",
+      "actual": "c68232d6a3bd5d854d30b42df99b7c28d8f2637b5c7c437bb4d94b0ee7f1ed90",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "a3977f533c344a4cba3337fff6883a3dd1d7a12bd754618843e8a85c51c2b2d2",
+      "actual": "a3977f533c344a4cba3337fff6883a3dd1d7a12bd754618843e8a85c51c2b2d2",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d4876aa25f894f69d57634ea2290228638d75be7baa7cda98ca96385fa7187bd",
+      "actual": "d4876aa25f894f69d57634ea2290228638d75be7baa7cda98ca96385fa7187bd",
+      "match": true
+    },
+    {
+      "path": "sacred-unlocks.js",
+      "status": 200,
+      "expected": "f4df47f47ea75c47396e76d14f84b5e4764c3d55bc37c108e9f5a22068b9b1d7",
+      "actual": "f4df47f47ea75c47396e76d14f84b5e4764c3d55bc37c108e9f5a22068b9b1d7",
+      "match": true
+    },
+    {
+      "path": "scenario-profiles.js",
+      "status": 200,
+      "expected": "8ef499f919b2dbda367e99374800948c723d331f5b05cfe6e5a4dd1c06a96563",
+      "actual": "8ef499f919b2dbda367e99374800948c723d331f5b05cfe6e5a4dd1c06a96563",
+      "match": true
+    },
+    {
+      "path": "scripts/model-index.mjs",
+      "status": 200,
+      "expected": "147a36782f87b6364e685b897f22a6096b6f49b21d4d54bb7087e865ef1340a6",
+      "actual": "147a36782f87b6364e685b897f22a6096b6f49b21d4d54bb7087e865ef1340a6",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "0ff8183b075032f128db7bde2a2a280b76cf4ee8902a5693b8a2d712bd668e17",
+      "actual": "0ff8183b075032f128db7bde2a2a280b76cf4ee8902a5693b8a2d712bd668e17",
+      "match": true
+    },
+    {
+      "path": "season-jump.js",
+      "status": 200,
+      "expected": "258dcfcc3877c51314b5327978380e021bb6161e15008f7a1ae09f92dfac2536",
+      "actual": "258dcfcc3877c51314b5327978380e021bb6161e15008f7a1ae09f92dfac2536",
+      "match": true
+    },
+    {
+      "path": "test-tools.js",
+      "status": 200,
+      "expected": "e31ed409499074762931603007e453947c6e83ba324ad19c30f6612f1815791b",
+      "actual": "e31ed409499074762931603007e453947c6e83ba324ad19c30f6612f1815791b",
+      "match": true
+    },
+    {
+      "path": "tests/agriculture.test.js",
+      "status": 200,
+      "expected": "f0ab148dd586c9c7e17c1e9693157fcc009a83c3f1ae8f2fc0cc7c4350fa46a6",
+      "actual": "f0ab148dd586c9c7e17c1e9693157fcc009a83c3f1ae8f2fc0cc7c4350fa46a6",
+      "match": true
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "status": 200,
+      "expected": "70aa40aec1ac313380521a7d73a5b9b753da23eb98d15e1f777c4d4a3c0641a3",
+      "actual": "70aa40aec1ac313380521a7d73a5b9b753da23eb98d15e1f777c4d4a3c0641a3",
+      "match": true
+    },
+    {
+      "path": "tests/brick-integration.test.js",
+      "status": 200,
+      "expected": "16e711a0e0f9dc4df8106aaeb4d31be8604aa921c68cd9a7dc7d2b1ff2289569",
+      "actual": "16e711a0e0f9dc4df8106aaeb4d31be8604aa921c68cd9a7dc7d2b1ff2289569",
+      "match": true
+    },
+    {
+      "path": "tests/building-annual-chronology.test.js",
+      "status": 200,
+      "expected": "d6637ca77e0a99ab1624ba634d9453e7fa6ad038e3febfbe9523a2761badc22a",
+      "actual": "d6637ca77e0a99ab1624ba634d9453e7fa6ad038e3febfbe9523a2761badc22a",
+      "match": true
+    },
+    {
+      "path": "tests/building-cache.test.js",
+      "status": 200,
+      "expected": "ed94b244ef446d2beea6e07dfb874bb74d665212697cfeef4b0683df298a5e89",
+      "actual": "ed94b244ef446d2beea6e07dfb874bb74d665212697cfeef4b0683df298a5e89",
+      "match": true
+    },
+    {
+      "path": "tests/building-inventory.test.js",
+      "status": 200,
+      "expected": "2a057403bb12b8284e0161a3db1bab5fa729deef2cd1a3f89f8bec48528a188e",
+      "actual": "2a057403bb12b8284e0161a3db1bab5fa729deef2cd1a3f89f8bec48528a188e",
+      "match": true
+    },
+    {
+      "path": "tests/caravan.test.js",
+      "status": 200,
+      "expected": "421240ef42c9717bc1a675b8c402d66db0c8993990a63be65827c5e1fce8ad98",
+      "actual": "421240ef42c9717bc1a675b8c402d66db0c8993990a63be65827c5e1fce8ad98",
+      "match": true
+    },
+    {
+      "path": "tests/cat-calling.test.js",
+      "status": 200,
+      "expected": "828315c8658fa401c2c2f56df7d033bbf3aa97f8491a711e58c007057737e74a",
+      "actual": "828315c8658fa401c2c2f56df7d033bbf3aa97f8491a711e58c007057737e74a",
+      "match": true
+    },
+    {
+      "path": "tests/cat-discovery-scenery.test.js",
+      "status": 200,
+      "expected": "836f7d129519b7a68d1564925ba0ffaaba16933d51900efa41a8cbe698cfc753",
+      "actual": "836f7d129519b7a68d1564925ba0ffaaba16933d51900efa41a8cbe698cfc753",
+      "match": true
+    },
+    {
+      "path": "tests/cat-discovery.test.js",
+      "status": 200,
+      "expected": "6b929d2124062c68b14e4b938c050ab33b53c6092c14142ae89885a09b8f959a",
+      "actual": "6b929d2124062c68b14e4b938c050ab33b53c6092c14142ae89885a09b8f959a",
+      "match": true
+    },
+    {
+      "path": "tests/cat-fishing-integration.test.js",
+      "status": 200,
+      "expected": "7d03bc99e042e381966bcd463b9f9db0ebc803436ef0495fb2ba478383e5a56b",
+      "actual": "7d03bc99e042e381966bcd463b9f9db0ebc803436ef0495fb2ba478383e5a56b",
+      "match": true
+    },
+    {
+      "path": "tests/cat-fishing-ledger.test.js",
+      "status": 200,
+      "expected": "c12be70cb1c2420599847de31bac3acd7e2f3e52ba24fbeec9577843879bf67e",
+      "actual": "c12be70cb1c2420599847de31bac3acd7e2f3e52ba24fbeec9577843879bf67e",
+      "match": true
+    },
+    {
+      "path": "tests/cat-founders.test.js",
+      "status": 200,
+      "expected": "e91b57dad645f58b458f9e06a36bdaa8c5969ab1eb5543084dacc1a04f4644e1",
+      "actual": "e91b57dad645f58b458f9e06a36bdaa8c5969ab1eb5543084dacc1a04f4644e1",
+      "match": true
+    },
+    {
+      "path": "tests/cat-repeat.test.js",
+      "status": 200,
+      "expected": "4c6dee36857764a8bb3440ac538832ef16b4305d7a4e190dcab6b9ca538e4f43",
+      "actual": "4c6dee36857764a8bb3440ac538832ef16b4305d7a4e190dcab6b9ca538e4f43",
+      "match": true
+    },
+    {
+      "path": "tests/citylife-integration.test.js",
+      "status": 200,
+      "expected": "bbc5d159b7a5e63f6b03cc23fd9373f625f16907e85061462f6fdeb1aabe42b6",
+      "actual": "bbc5d159b7a5e63f6b03cc23fd9373f625f16907e85061462f6fdeb1aabe42b6",
+      "match": true
+    },
+    {
+      "path": "tests/clothing.test.js",
+      "status": 200,
+      "expected": "e95ca92c16c12d8856ee3a2fee2dd56d78fc09f842ae42ba43aee0321e91958e",
+      "actual": "e95ca92c16c12d8856ee3a2fee2dd56d78fc09f842ae42ba43aee0321e91958e",
+      "match": true
+    },
+    {
+      "path": "tests/fishing-water.test.js",
+      "status": 200,
+      "expected": "357d69ee1e179cc61fcdf58c62bd27e0e8706cd2fc1fc4ad8f0daf294be6fcf1",
+      "actual": "357d69ee1e179cc61fcdf58c62bd27e0e8706cd2fc1fc4ad8f0daf294be6fcf1",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "40cbc109d7f58d5639774afaaf58be6caafe5501de37d04d5dfc53198ffdcb9b",
+      "actual": "40cbc109d7f58d5639774afaaf58be6caafe5501de37d04d5dfc53198ffdcb9b",
+      "match": true
+    },
+    {
+      "path": "tests/healer.test.js",
+      "status": 200,
+      "expected": "df8e2ec7226e37ebadef1ee976bde2979863a1d69f7340c1c887384bb96b76e6",
+      "actual": "df8e2ec7226e37ebadef1ee976bde2979863a1d69f7340c1c887384bb96b76e6",
+      "match": true
+    },
+    {
+      "path": "tests/households.test.js",
+      "status": 200,
+      "expected": "3748ec90b027ab11982be1d3e397b1fedb0725e5f323fe8f842412c88fc0a68f",
+      "actual": "3748ec90b027ab11982be1d3e397b1fedb0725e5f323fe8f842412c88fc0a68f",
+      "match": true
+    },
+    {
+      "path": "tests/inventory-integration.test.js",
+      "status": 200,
+      "expected": "0f02d53ed5a74924273d97ea208db66acf4d1c576630ea1e9009b0e4a049c49d",
+      "actual": "0f02d53ed5a74924273d97ea208db66acf4d1c576630ea1e9009b0e4a049c49d",
+      "match": true
+    },
+    {
+      "path": "tests/kiln-integration.test.js",
+      "status": 200,
+      "expected": "9fbd1804ca311345123d1018df03fea1584004a4e86eb3551c71205edc32667a",
+      "actual": "9fbd1804ca311345123d1018df03fea1584004a4e86eb3551c71205edc32667a",
+      "match": true
+    },
+    {
+      "path": "tests/life-analytics-integration.test.js",
+      "status": 200,
+      "expected": "78c1adb17d92b3442c59ab2c60a2b06b719980cf08e82d26139b522143a5d138",
+      "actual": "78c1adb17d92b3442c59ab2c60a2b06b719980cf08e82d26139b522143a5d138",
+      "match": true
+    },
+    {
+      "path": "tests/market-logistics.test.js",
+      "status": 200,
+      "expected": "cfab369f6c18f8c3d1e0298064391edff9df5d9575fec5d523633701937cdfad",
+      "actual": "cfab369f6c18f8c3d1e0298064391edff9df5d9575fec5d523633701937cdfad",
+      "match": true
+    },
+    {
+      "path": "tests/masonry-integration.test.js",
+      "status": 200,
+      "expected": "4599a1cc2b993fe42c08c06c6f2b2a38fe1ab918a7f25b725cee6b7cb8a55b42",
+      "actual": "4599a1cc2b993fe42c08c06c6f2b2a38fe1ab918a7f25b725cee6b7cb8a55b42",
+      "match": true
+    },
+    {
+      "path": "tests/medical-education.test.js",
+      "status": 200,
+      "expected": "b2279f0b2b4066bd89ce67ffa1a8a784a2a50e196e89f66f59e7d883c069261d",
+      "actual": "b2279f0b2b4066bd89ce67ffa1a8a784a2a50e196e89f66f59e7d883c069261d",
+      "match": true
+    },
+    {
+      "path": "tests/new-game-profile.test.js",
+      "status": 200,
+      "expected": "83610d599bbb8414f21bb7a7261434ed0efb2d37dd3e8f2b89517086c47ca833",
+      "actual": "83610d599bbb8414f21bb7a7261434ed0efb2d37dd3e8f2b89517086c47ca833",
+      "match": true
+    },
+    {
+      "path": "tests/pests.test.js",
+      "status": 200,
+      "expected": "94c94ecce2fbdb5decf9d0febdb674cfa75841ee5131fbca45fed846616c0a64",
+      "actual": "94c94ecce2fbdb5decf9d0febdb674cfa75841ee5131fbca45fed846616c0a64",
+      "match": true
+    },
+    {
+      "path": "tests/renderable-mesh-candidates.test.js",
+      "status": 200,
+      "expected": "b3ab1213675aef6ba8ea9574d072d0a610dee6836efca528597805216cc73c1d",
+      "actual": "b3ab1213675aef6ba8ea9574d072d0a610dee6836efca528597805216cc73c1d",
+      "match": true
+    },
+    {
+      "path": "tests/river-craft-view.test.js",
+      "status": 200,
+      "expected": "5527260f56c821b78c42e189a4084d3dcf6e15127679cdfee1fe946d5d0462a1",
+      "actual": "5527260f56c821b78c42e189a4084d3dcf6e15127679cdfee1fe946d5d0462a1",
+      "match": true
+    },
+    {
+      "path": "tests/scenario-profiles.test.js",
+      "status": 200,
+      "expected": "b1e2ec76a1e7542cfa1f6f78879b6190ae8ec4bc7e65ab77bb2eecad368719e9",
+      "actual": "b1e2ec76a1e7542cfa1f6f78879b6190ae8ec4bc7e65ab77bb2eecad368719e9",
+      "match": true
+    },
+    {
+      "path": "tests/sumer-architecture.test.js",
+      "status": 200,
+      "expected": "3e6812a8d332536ec5984feb4e06a94d72a8f8a7caee1cc8ba03f8388d920559",
+      "actual": "3e6812a8d332536ec5984feb4e06a94d72a8f8a7caee1cc8ba03f8388d920559",
+      "match": true
+    },
+    {
+      "path": "tests/sumer-presentation.test.js",
+      "status": 200,
+      "expected": "5ae9a32739dce089016b164d514fbca9df26ec5643b1f4dc1be2ce44199a035b",
+      "actual": "5ae9a32739dce089016b164d514fbca9df26ec5643b1f4dc1be2ce44199a035b",
+      "match": true
+    },
+    {
+      "path": "tests/textile-migration.test.js",
+      "status": 200,
+      "expected": "0644531fc9559c4c85f3e5a623464cc4dfef58d108c3c439235e29af0e310f86",
+      "actual": "0644531fc9559c4c85f3e5a623464cc4dfef58d108c3c439235e29af0e310f86",
+      "match": true
+    },
+    {
+      "path": "tests/trading.test.js",
+      "status": 200,
+      "expected": "9b083ce37455479ae7244b8c4e7337841bcea1b5f8df43f8ca5416badee89b86",
+      "actual": "9b083ce37455479ae7244b8c4e7337841bcea1b5f8df43f8ca5416badee89b86",
+      "match": true
+    },
+    {
+      "path": "tests/ui-cat-discovery.test.js",
+      "status": 200,
+      "expected": "1ded58097affd0be60b7a7b50965dba16bb2183324e201c967bee408503e50fa",
+      "actual": "1ded58097affd0be60b7a7b50965dba16bb2183324e201c967bee408503e50fa",
+      "match": true
+    },
+    {
+      "path": "tests/ui-uruk.test.js",
+      "status": 200,
+      "expected": "4f7be04f982073c3c1c09dae70adbf6b1d16cd2ee780277cf9c48622ca28f2cb",
+      "actual": "4f7be04f982073c3c1c09dae70adbf6b1d16cd2ee780277cf9c48622ca28f2cb",
+      "match": true
+    },
+    {
+      "path": "tests/wellbeing.test.js",
+      "status": 200,
+      "expected": "694cc33b7471010ecf047b6657615be9891a4f6e9fc640b358d102f03c15bd31",
+      "actual": "694cc33b7471010ecf047b6657615be9891a4f6e9fc640b358d102f03c15bd31",
+      "match": true
+    },
+    {
+      "path": "tests/working-city.test.js",
+      "status": 200,
+      "expected": "f3ee5df77b6a94aaaa4ac4f066ad443c7ea217f85efa0e220b6f225c0fe845af",
+      "actual": "f3ee5df77b6a94aaaa4ac4f066ad443c7ea217f85efa0e220b6f225c0fe845af",
+      "match": true
+    },
+    {
+      "path": "ui-cat-discovery.js",
+      "status": 200,
+      "expected": "e345802b07dd6ecdfbf90cffe69696679008a3e727684802e2b0e2d5637dc055",
+      "actual": "e345802b07dd6ecdfbf90cffe69696679008a3e727684802e2b0e2d5637dc055",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "2ba431e12992abd5693c0bc4d30bf33d07d480e5e0cf1e7d9afc49623bd24531",
+      "actual": "2ba431e12992abd5693c0bc4d30bf33d07d480e5e0cf1e7d9afc49623bd24531",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "01e458817481bca1d551da257d0c3f9b9ecd4d03b9ff64029b0af6b8eafb748c",
+      "actual": "01e458817481bca1d551da257d0c3f9b9ecd4d03b9ff64029b0af6b8eafb748c",
+      "match": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "status": 200,
+      "expected": "66ff8c052a42169b5dc7aabbb66d3e47ae0a18bc67e041d9fd06b6c8a33c7b13",
+      "actual": "66ff8c052a42169b5dc7aabbb66d3e47ae0a18bc67e041d9fd06b6c8a33c7b13",
+      "match": true
+    },
+    {
+      "path": "ui-professions.js",
+      "status": 200,
+      "expected": "62969ef5703cd18260f9c774ff7d30b4ffd97471b7b936889bd7144baae4e1ee",
+      "actual": "62969ef5703cd18260f9c774ff7d30b4ffd97471b7b936889bd7144baae4e1ee",
+      "match": true
+    },
+    {
+      "path": "ui-uruk.js",
+      "status": 200,
+      "expected": "b5f299cd763b5965888662558429beed8cc22ec4c21e54c21c195b029eb298de",
+      "actual": "b5f299cd763b5965888662558429beed8cc22ec4c21e54c21c195b029eb298de",
+      "match": true
+    },
+    {
+      "path": "waterfront-art.js",
+      "status": 200,
+      "expected": "94e61cc325081d18aa38d58186adfb93ec0b47e19937643860f9151a45d42c44",
+      "actual": "94e61cc325081d18aa38d58186adfb93ec0b47e19937643860f9151a45d42c44",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "a5e7daadf7c36609fc3b81860823f4eaee7d89a85a4adc9513b52538187550a3",
+      "actual": "a5e7daadf7c36609fc3b81860823f4eaee7d89a85a4adc9513b52538187550a3",
+      "match": true
+    }
+  ],
+  "matched": 104,
+  "total": 104
+}
