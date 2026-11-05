@@ -9,7 +9,7 @@ export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','ha
 export function createArchitecture(B,scene,b,m,state){
  if(b.type==='musicHouse')return createMusicCourtyard(B,scene,b,m);
  if(b.type==='ishtarGate')return isStrictSumer(state)?createSumerGate(B,scene,m,b):createIshtarGateFallback(B,scene,m,null,b);
- const canopies=[],groups=new Map(),level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
+ const canopies=[],groups=new Map(),moving=[],level=Math.max(1,Math.min(3,b.level||1)),wall=level===3?m.fired:level===2?m.raw:m.plaster;
  let serial=0;const add=(mesh,mat)=>{mesh.material=mat||wall;if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
  // Bevelled corners, a slightly bowed middle and a battered top: this breaks
  // razor-sharp cube edges without random per-instance geometry or tiny bricks.
@@ -126,7 +126,15 @@ export function createArchitecture(B,scene,b,m,state){
   else if(kind==='kiln'){block(x,.4,z,.62,.8,.62,m.fired);block(x,h,z,.5,.035,.5,m.raw);block(x,h+.06,z,.38,.10,.32,m.raw);}
   else {
    block(x,h-.065,z,.65,.13,.65,m.wood);for(const dx of [-.24,.24])for(const dz of [-.24,.24])block(x+dx,(h-.13)/2,z+dz,.055,h-.13,.055,m.wood);
-   if(kind==='wheel'){cylinder(x,h+.018,z,.26,.035,m.stone);cylinder(x,h+.065,z,.12,.07,m.terracotta,.10);}
+   if(kind==='wheel'){
+    // A hand-driven turntable, without a modern treadle or motor. Support/table
+    // dimensions are a readable reconstruction, not an excavated complete rig.
+    cylinder(x,h+.025,z,.10,.05,m.stone);
+    const disc=B.MeshBuilder.CreateCylinder('potter-turntable',{height:.055,diameter:.64,tessellation:32},scene);
+    const mark=B.MeshBuilder.CreateBox('potter-turntable-incision',{width:.16,height:.003,depth:.012},scene);mark.position.set(.20,.029,0);
+    const wheel=B.Mesh.MergeMeshes([disc,mark],true,true);wheel.name='potter-turntable';wheel.position.set(x,h+.055,z);wheel.material=m.stone;wheel.metadata={potterWheel:true};moving.push(wheel);
+    const clay=B.MeshBuilder.CreateCylinder('potter-forming-clay',{height:.09,diameterBottom:.24,diameterTop:.20,tessellation:20},scene);clay.position.set(x,h+.125,z);clay.material=m.terracotta;clay.metadata={formingClay:true};moving.push(clay);
+   }
    else if(kind==='mould'){for(const dx of [-.20,.20])block(x+dx,h+.035,z,.035,.07,.4,m.wood);for(const dz of [-.20,.20])block(x,h+.035,z+dz,.4,.07,.035,m.wood);block(x,h+.025,z,.36,.05,.36,m.raw);}
    else if(kind==='fleece')block(x,h+.025,z,.48,.05,.45,m.linen);
    else if(kind==='reed')for(const dx of [-.16,-.08,0,.08,.16])beam([x+dx,h+.025,z-.23],[x+dx,h+.025,z+.23],.018,m.reed);
@@ -136,5 +144,5 @@ export function createArchitecture(B,scene,b,m,state){
   }
  }
  const meshes=[];for(const [material,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);if(mesh){mesh.name=`original-${b.type}-${material.name}`;mesh.material=material;meshes.push(mesh);}}
- return meshes;
+ return meshes.concat(moving);
 }

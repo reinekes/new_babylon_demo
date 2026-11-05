@@ -28,7 +28,7 @@ export function workstationFor(b,c,index=0){
  const layout=b.construction||b.type==='field'?[{kind:b.construction?'building':'farming',x:(b.workCorner?.[0]||1)*(b.construction?2.72:2.62),z:(b.workCorner?.[1]||1)*(b.construction?2.72:2.62),height:b.construction?.95:c.activity.task==='harvesting'?.65:.12,sx:b.workCorner?.[0]||1,sz:b.workCorner?.[1]||1}]:workstationLayout(b);if(!layout.length)return null;
  const stations=layout.map(a=>({...a,world:workstationWorldPoint(b,[a.x,a.height,a.z])})).sort((a,d)=>Math.hypot(a.world.x-c.x,a.world.y-c.y)-Math.hypot(d.world.x-c.x,d.world.y-c.y));
  if(b.type==='musicHouse'){const a=stations[0],stand=workstationWorldPoint(b,[a.x,0,a.z]),target=workstationWorldPoint(b,[a.x+a.sx*.325,.215,a.z+a.sz*.325]);return Math.hypot(stand.x-c.x,stand.y-c.y)>.3?null:{kind:a.kind,task:'lithophone',stand,target,axis:0,building:b,layout:a};}
- const a=stations[0],axis=index%2,stand=workstationWorldPoint(b,[a.x+(axis?a.sx*.48:0),0,a.z+(axis?0:a.sz*.48)]),rim=workstationWorldPoint(b,[a.x+(axis?a.sx*.20:0),a.height,a.z+(axis?0:a.sz*.20)]),target=['building','farming'].includes(a.kind)?a.world:rim;
+ const a=stations[0],axis=index%2,standOffset=a.kind==='wheel'?.46:.48,rimOffset=a.kind==='wheel'?.10:.20,rimHeight=a.height+(a.kind==='wheel'?.08:0),stand=workstationWorldPoint(b,[a.x+(axis?a.sx*standOffset:0),0,a.z+(axis?0:a.sz*standOffset)]),rim=workstationWorldPoint(b,[a.x+(axis?a.sx*rimOffset:0),rimHeight,a.z+(axis?0:a.sz*rimOffset)]),target=['building','farming'].includes(a.kind)?a.world:rim;
  if(Math.hypot(stand.x-c.x,stand.y-c.y)>.3)return null;
  return {kind:a.kind,task:c.activity.task,stand,target,axis,building:b};
 }

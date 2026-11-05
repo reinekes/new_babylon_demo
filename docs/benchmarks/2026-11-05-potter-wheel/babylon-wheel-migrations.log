@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: real observed inventory reconciliation roundoff is reported, not called byte-exact
+ok 1 - real observed inventory reconciliation roundoff is reported, not called byte-exact
+  ---
+  duration_ms: 0.789542
+  type: 'test'
+  ...
+# Subtest: cargo, personalities, harvest and aggregate resources require exact numbers even below inventory tolerance
+ok 2 - cargo, personalities, harvest and aggregate resources require exact numbers even below inventory tolerance
+  ---
+  duration_ms: 0.170792
+  type: 'test'
+  ...
+# Subtest: real inventory loss, missing fields and person replacement cannot pass the roundtrip checker
+ok 3 - real inventory loss, missing fields and person replacement cannot pass the roundtrip checker
+  ---
+  duration_ms: 0.157583
+  type: 'test'
+  ...
+# Subtest: key order does not alter saved meaning while exact unchanged state stays exact
+ok 4 - key order does not alter saved meaning while exact unchanged state stays exact
+  ---
+  duration_ms: 0.241292
+  type: 'test'
+  ...
+# Subtest: scenario axes are independent of spiritual mode and starting layout
+ok 5 - scenario axes are independent of spiritual mode and starting layout
+  ---
+  duration_ms: 202.704834
+  type: 'test'
+  ...
+# Subtest: v29 migration keeps classic rules for both modes and exact city data
+ok 6 - v29 migration keeps classic rules for both modes and exact city data
+  ---
+  duration_ms: 77.057292
+  type: 'test'
+  ...
+# Subtest: all archived legacy save versions enroll in legacy even if a profile is injected
+ok 7 - all archived legacy save versions enroll in legacy even if a profile is injected
+  ---
+  duration_ms: 534.125125
+  type: 'test'
+  ...
+# Subtest: current saves reject missing, future, malformed and unsupported rules
+ok 8 - current saves reject missing, future, malformed and unsupported rules
+  ---
+  duration_ms: 29.046417
+  type: 'test'
+  ...
+# Subtest: creation clones profile objects so caller mutation cannot change existing city
+ok 9 - creation clones profile objects so caller mutation cannot change existing city
+  ---
+  duration_ms: 26.944959
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 920.312458

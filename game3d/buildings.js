@@ -1,4 +1,5 @@
 import {isStrictSumer} from '../scenario-profiles.js';
+import {potterWheelView} from '../potter-wheel.js';
 import {workstationBuilding} from './workstations.js';
 import {createRoofAccess} from './roof-access.js';
 import {cropSeed,fieldCropKind} from './crop-varieties.js';
@@ -202,7 +203,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     placeRoot(root,b);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
      const mesh=source.metadata?.homeLamp?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(source.metadata?.homeLamp)mesh.receiveShadows=true;
-     mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
+     mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
     record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b)};active.set(key,record);meshes.push(...parts);
    }
@@ -222,6 +223,13 @@ export async function createGameBuildings(B,scene,materials,options={}){
    }
    const litWindows=Math.ceil(Math.min(1,(occupied.get(key)||0)/Math.max(1,capacityOf(b)))*4);
    for(const mesh of record.meshes)if(mesh.metadata.homeLamp)mesh.material=mesh.metadata.lampIndex<litWindows?warm:shade;
+   if(b.type==='pottery'){
+    const view=potterWheelView(b);
+    for(const mesh of record.meshes){
+     if(mesh.metadata.formingClay)mesh.isVisible=view.forming;
+     if(mesh.metadata.potterWheel&&mesh.rotation.y!==view.angle){mesh.unfreezeWorldMatrix();mesh.rotation.y=view.angle;mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}
+    }
+   }
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
   const fieldSites=new Set((state.buildings||[]).filter(b=>b.type==='field').map(b=>`${b.x},${b.y}`));

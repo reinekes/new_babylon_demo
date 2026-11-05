@@ -2,6 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {workstationLayout,workstationFor,workstationWorldPoint,workstationPose} from '../game3d/workstations.js';
 const types=['pottery','brewery','weaver','tailor','brickyard','kiln','clay','reed','garden','sheepfold'];
+test('potter palms touch the clay above the raised turntable, not the wooden tabletop',()=>{
+ const b={type:'pottery',x:6,y:10},c={x:6.5,y:10.5,activity:{stage:'working'}};
+ for(const axis of [0,1]){
+  const contact=workstationFor(b,c,axis),pose=workstationPose(contact,0);
+  assert.ok(Math.abs(pose.right[1]-1.075)<1e-8);
+  const centre=workstationWorldPoint(b,[1.94,0,1.94]);
+  assert.ok(Math.hypot(contact.target.x-centre.x,contact.target.y-centre.y)*6<.11);
+ }
+});
 test('real shared equipment supports two reachable nonoverlapping workers at all rotations',()=>{
  for(const type of types)for(let rotation=0;rotation<4;rotation++){
   const b={type,x:6,y:10,rotation,workCorner:[[1,1],[-1,1],[-1,-1],[1,-1]][rotation]},c={id:1,x:6.5,y:10.5,activity:{stage:'working',target:b}};

@@ -1,0 +1,100 @@
+TAP version 13
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# Subtest: every nonlandscape special building has its own bounded geometry, shared materials and no fallback workshop
+ok 1 - every nonlandscape special building has its own bounded geometry, shared materials and no fallback workshop
+  ---
+  duration_ms: 174.650292
+  type: 'test'
+  ...
+# Subtest: new gate fallback is 15.6m wide and centred inside its nine reserved cells; old gates remain 7.8m
+ok 2 - new gate fallback is 15.6m wide and centred inside its nine reserved cells; old gates remain 7.8m
+  ---
+  duration_ms: 4.052667
+  type: 'test'
+  ...
+# Subtest: new ziggurat occupies exactly its four reserved tiles and rises above the old monument without rewriting it
+ok 3 - new ziggurat occupies exactly its four reserved tiles and rises above the old monument without rewriting it
+  ---
+  duration_ms: 19.026
+  type: 'test'
+  ...
+# Subtest: handmade bevelled walls have outward side normals and upward roof normals
+ok 4 - handmade bevelled walls have outward side normals and upward roof normals
+  ---
+  duration_ms: 5.409625
+  type: 'test'
+  ...
+# Subtest: masonry face UVs preserve nonzero area on sides, bevels and caps
+ok 5 - masonry face UVs preserve nonzero area on sides, bevels and caps
+  ---
+  duration_ms: 30.4795
+  type: 'test'
+  ...
+# Subtest: grand ziggurat has supported ascending front and lateral flights joining successive terraces
+ok 6 - grand ziggurat has supported ascending front and lateral flights joining successive terraces
+  ---
+  duration_ms: 13.941208
+  type: 'test'
+  ...
+# BJS - [17:44:34]: Babylon.js v9.31.0 - Null engine
+# BJS - [17:44:35]: Skeleton "citizen-9901-Native source Mixamo skin": 79 bones stored as vertex uniforms use 320 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [17:44:35]: Skeleton "citizen-9902-Native source Mixamo skin": 79 bones stored as vertex uniforms use 320 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [17:44:37]: Skeleton "citizen-9901-Native source Mixamo skin": 92 bones stored as vertex uniforms use 372 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [17:44:37]: Skeleton "citizen-9902-Native source Mixamo skin": 92 bones stored as vertex uniforms use 372 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# Maximum actual palm/target error metres: 0.039681451114536914
+# Subtest: real GLB palms meet port-gallery surfaces under rotations and freeze on pause
+ok 7 - real GLB palms meet port-gallery surfaces under rotations and freeze on pause
+  ---
+  duration_ms: 5804.787875
+  type: 'test'
+  ...
+# Subtest: potter palms touch the clay above the raised turntable, not the wooden tabletop
+ok 8 - potter palms touch the clay above the raised turntable, not the wooden tabletop
+  ---
+  duration_ms: 0.506417
+  type: 'test'
+  ...
+# Subtest: real shared equipment supports two reachable nonoverlapping workers at all rotations
+ok 9 - real shared equipment supports two reachable nonoverlapping workers at all rotations
+  ---
+  duration_ms: 0.867125
+  type: 'test'
+  ...
+# Subtest: waiting never acquires working contacts and layout rotation follows Babylon +Y
+ok 10 - waiting never acquires working contacts and layout rotation follows Babylon +Y
+  ---
+  duration_ms: 0.248
+  type: 'test'
+  ...
+# Subtest: real road port chooses one gallery and stationary approach is dry, bounded and read only
+ok 11 - real road port chooses one gallery and stationary approach is dry, bounded and read only
+  ---
+  duration_ms: 77.65075
+  type: 'test'
+  ...
+# Subtest: every passive artisan/kiln/brick stage keeps equipment idle; active stages acquire contacts
+ok 12 - every passive artisan/kiln/brick stage keeps equipment idle; active stages acquire contacts
+  ---
+  duration_ms: 40.958959
+  type: 'test'
+  ...
+# Subtest: builder contact lies on the real construction corner scaffold, field contact remains at soil edge
+ok 13 - builder contact lies on the real construction corner scaffold, field contact remains at soil edge
+  ---
+  duration_ms: 0.092292
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6005.841667

@@ -41,6 +41,22 @@ async function setup(configure){
  return {layer,scene,materials,loads,dispose(){layer.dispose();scene.dispose();engine.dispose();}};
 }
 const house=(level=1,x=3,y=4,id='home')=>({id,type:'house',level,x,y});
+test('potter turntables follow actual forming labour independently and survive pause, reload and removal',async()=>{
+ const t=await setup();try{
+  const artisan={stage:'forming',elapsed:.2,ready:0,clay:0,reed:0,water:0,food:0,pottery:0,vesselUses:0};
+  const state={buildings:[{id:'pot-a',type:'pottery',x:4,y:4,level:1,rotation:1,artisan:{...artisan}},{id:'pot-b',type:'pottery',x:8,y:4,level:1,artisan:{...artisan,elapsed:.4}}],citizens:[],simTime:12};
+  const before=structuredClone(state);t.layer.sync(state);
+  const wheels=t.layer.meshes.filter(m=>m.metadata.potterWheel);assert.equal(wheels.length,2,'each workshop has its own turntable');
+  const [a,b]=wheels,initial=a.rotation.y;assert.notEqual(initial,b.rotation.y);
+  assert.deepEqual(state,before,'rendering never edits production or saved state');
+  const meshCount=t.scene.meshes.length;state.simTime+=20;t.layer.sync(state);assert.equal(a.rotation.y,initial,'elapsed work, not global clock, drives rotation');
+  state.buildings[0].artisan.elapsed=.3;t.layer.sync(state);assert.notEqual(a.rotation.y,initial);const angle=a.rotation.y;
+  for(let i=0;i<12;i++)t.layer.sync(state);assert.equal(a.rotation.y,angle,'unchanged/paused production stays still');assert.equal(t.scene.meshes.length,meshCount);
+  const saved=JSON.parse(JSON.stringify(state));t.layer.sync(saved);assert.equal(a.rotation.y,angle,'reload restores the same angle');
+  for(const stage of ['drying','firing','cooling','ready','idle']){saved.buildings[0].artisan={...artisan,stage,elapsed:0,ready:stage==='ready'?2:0};t.layer.sync(saved);const frozen=a.rotation.y;saved.simTime++;t.layer.sync(saved);assert.equal(a.rotation.y,frozen);assert.ok(!t.layer.meshes.find(m=>m.metadata.buildingKey==='pot-a'&&m.metadata.formingClay).isVisible);}
+  saved.buildings=[];t.layer.sync(saved);assert.ok(a.isDisposed());assert.equal(t.layer.meshes.length,0);
+ }finally{t.dispose();}
+});
 function bounds(meshes){let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,maxY=0;for(const m of meshes){m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;minX=Math.min(minX,b.minimumWorld.x);maxX=Math.max(maxX,b.maximumWorld.x);minZ=Math.min(minZ,b.minimumWorld.z);maxZ=Math.max(maxZ,b.maximumWorld.z);maxY=Math.max(maxY,b.maximumWorld.y);}return {minX,maxX,minZ,maxZ,maxY};}
 
 test('actual renewed houses stay centered in one tile, tiers differ and outward winding survives merge',async()=>{

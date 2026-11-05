@@ -1,4 +1,5 @@
 import {artisanSummary} from './artisan.js';
+import {potterWheelView} from './potter-wheel.js';
 import {levelOf} from './definitions.js';
 import {masonryBox} from './masonry-art.js';
 import {EARTH} from './map-art.js';
@@ -37,9 +38,11 @@ export function drawArtisan(r,b,s,t=0){
    const flicker=r.reduce?0:Math.sin(t*8)*1.2;poly([[-9,0],[-8,-5],[-6,-9-flicker],[-4,-3],[-4,2]],'#f4c478');r.lights.push({x:p.x-7*q,y:p.y-4*q,size:17*q});
    for(let k=0;k<2;k++){const lift=r.reduce?5+k*5:(t*2+k*7)%14;oval(-7+Math.sin(lift*.2),-29-lift,1.5+lift*.07,2+lift*.12,'#77695525');}
   }
-  // Hand forming rather than an unverified modern-looking wheel.
+  // Hand-driven turntable; its incision follows real forming labour in 2D too.
   box(15,4,7,3.5,3,'#debf93','#a58a62','#c7a87b');
-  if(v.stage==='forming'){oval(13,1,2.1,1.3,'#b49876');jar(18,2,.65,'#b49a7b');}
+  const wheel=potterWheelView(b);oval(15,.5,5,2.5,'#9d927e');oval(15,0,5,2.5,'#c9c0aa');
+  line([[15+Math.cos(wheel.angle)*2.5,Math.sin(wheel.angle)*1.25],[15+Math.cos(wheel.angle)*4.7,Math.sin(wheel.angle)*2.35]],'#716754',.65);
+  if(wheel.forming)jar(15,1,.65,'#b49a7b');
   if(v.stage==='drying')for(let k=0;k<2;k++)jar(11+k*8,6-k*2,.9,'#c5b08b');
   if(v.stage==='ready'&&v.ready>0)for(let k=0;k<Math.min(2,v.ready);k++)jar(12+k*9,9-k*1.7,1,'#bd7d57');
  }else{
