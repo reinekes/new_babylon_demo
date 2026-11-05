@@ -36,3 +36,12 @@ test('3D loading status exists before its first vendor request and script failur
  const f=fixture(),restore=globals(f.document,{search:''}),children=[],canvas={parentNode:{append(node){f.events.push('status');children.push(node);}}};t.mock.method(console,'error',()=>{});
  try{const pending=createGameRenderer(canvas,()=>{},{legacyFactory:()=>({mode:'2d'})});assert.equal(children[0].className,'game3d-loading');assert.deepEqual(f.events.slice(0,2),['status','script']);f.scripts[0].onerror();const renderer=await pending;assert.equal(renderer.mode,'2d');assert.equal(f.document.body.dataset.renderer,'2d');assert.equal(children[0].removed,true);assert.ok(children.some(node=>node.className==='game3d-fallback'));}finally{restore();}
 });
+
+test('historical acceptance pages await the same engine/plugin readiness as the main game',()=>{
+ for(const page of ['index','transport']){
+  const html=readFileSync(new URL(`../tools/history-check/${page}.html`,import.meta.url),'utf8');
+  assert.doesNotMatch(html,/<script\b[^>]*src=["']assets\/vendor\/babylon/i);
+  assert.match(html,/import\s*\{loadBabylonVendors\}\s*from\s*['"]\.\/game3d\/vendor-loading\.js['"]/);
+  assert.match(html,/const B=await loadBabylonVendors\(\)/);
+ }
+});

@@ -1,0 +1,19 @@
+{
+  "url": "https://reinekes.github.io/new_babylon_demo/tools/history-check/index.html?verify=history-acceptance-20261105-1",
+  "logs": [
+    {
+      "level": "error",
+      "message": "TypeError: Cannot read properties of undefined (reading 'ANIMATIONLOOPMODE_CYCLE')\n    at get _DefaultLoadingOptions (https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js:1:5092)\n    at new m (https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js:1:4990)\n    at _ (https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js:1:6338)\n    at https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js:1:6409\n    at https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js:1:173\n    at https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js:1:262",
+      "timestamp": "2026-11-05T11:31:08.424Z",
+      "url": "https://reinekes.github.io/new_babylon_demo/assets/vendor/babylonjs-loaders-9.31.0.min.js"
+    }
+  ],
+  "snapshot": "Browser tab: 49, Title: \"Приёмка исторической архитектуры · Новый Вавилон\", URL: \"https://reinekes.github.io/new_babylon_demo/tools/history-check/index.html?verify=history-acceptance-20261105-1\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea Приёмка исторической архитектуры · Новый Вавилон, URL: reinekes.github.io/new_babylon_demo/tools/history-check/index.html?verify=history-acceptance-20261105-1",
+  "commit": "3ede63079efdfa279f4a43ec2471122ae2f1bb59",
+  "result": "Initial hosted gallery did not finish, despite 35/35 file SHA and local success. Classic vendor plugin hit undefined Animation API; both vendor files separately match repository SHA. Underlying host execution-order cause not established. Fixture changed to await the same engine/plugin readiness loader as the normal app; production modules untouched.",
+  "regression": {
+    "command": "node --test tests/vendor-loading.test.js",
+    "red": "7 pass / 1 fail: historical pages used direct vendor script tags",
+    "green": "8 pass / 0 fail; hosted recheck pending"
+  }
+}

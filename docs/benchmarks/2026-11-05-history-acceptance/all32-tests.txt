@@ -1,0 +1,210 @@
+TAP version 13
+# Subtest: a caravan road anchor updates street ports without rebuilding unchanged walking geometry
+ok 1 - a caravan road anchor updates street ports without rebuilding unchanged walking geometry
+  ---
+  duration_ms: 169.581
+  type: 'test'
+  ...
+# Subtest: real building or road-cost changes still invalidate the walking geometry
+ok 2 - real building or road-cost changes still invalidate the walking geometry
+  ---
+  duration_ms: 163.379833
+  type: 'test'
+  ...
+# BJS - [15:52:56]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:52:56]: Skeleton "caravan-1-skeleton0": 109 bones stored as vertex uniforms use 440 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [15:52:56]: Skeleton "caravan-2-skeleton0": 109 bones stored as vertex uniforms use 440 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [15:52:56]: Babylon.js v9.31.0 - Null engine
+# Subtest: formation projects independent road positions without touching trade state
+ok 3 - formation projects independent road positions without touching trade state
+  ---
+  duration_ms: 0.643666
+  type: 'test'
+  ...
+# Subtest: derived GLBs retain attribution, source rig, clips and explicit limits
+ok 4 - derived GLBs retain attribution, source rig, clips and explicit limits
+  ---
+  duration_ms: 6.8605
+  type: 'test'
+  ...
+# Subtest: real skins parse, face route, distance gait pauses, trading idles, stock preserves actors and disposal
+ok 5 - real skins parse, face route, distance gait pauses, trading idles, stock preserves actors and disposal
+  ---
+  duration_ms: 275.753792
+  type: 'test'
+  ...
+# Subtest: strict caravan uses donkeys, preserves formation/trade, and switches profiles without stale animals
+ok 6 - strict caravan uses donkeys, preserves formation/trade, and switches profiles without stale animals
+  ---
+  duration_ms: 205.490083
+  type: 'test'
+  ...
+# Subtest: new Awakening selects C01 while mature towns retain classic miracles in strict Sumer
+ok 7 - new Awakening selects C01 while mature towns retain classic miracles in strict Sumer
+  ---
+  duration_ms: 605.338834
+  type: 'test'
+  ...
+# Subtest: new town creation never enrolls old cities or changes the low-level fixture default
+ok 8 - new town creation never enrolls old cities or changes the low-level fixture default
+  ---
+  duration_ms: 342.689584
+  type: 'test'
+  ...
+# Subtest: the mode chooser placeholder and an existing strict classic town do not silently enroll in C01
+ok 9 - the mode chooser placeholder and an existing strict classic town do not silently enroll in C01
+  ---
+  duration_ms: 473.259709
+  type: 'test'
+  ...
+# Subtest: scenario axes are independent of spiritual mode and starting layout
+ok 10 - scenario axes are independent of spiritual mode and starting layout
+  ---
+  duration_ms: 382.431083
+  type: 'test'
+  ...
+# Subtest: v29 migration keeps classic rules for both modes and exact city data
+ok 11 - v29 migration keeps classic rules for both modes and exact city data
+  ---
+  duration_ms: 107.944
+  type: 'test'
+  ...
+# Subtest: all archived legacy save versions enroll in legacy even if a profile is injected
+ok 12 - all archived legacy save versions enroll in legacy even if a profile is injected
+  ---
+  duration_ms: 582.391875
+  type: 'test'
+  ...
+# Subtest: current saves reject missing, future, malformed and unsupported rules
+ok 13 - current saves reject missing, future, malformed and unsupported rules
+  ---
+  duration_ms: 28.98225
+  type: 'test'
+  ...
+# Subtest: creation clones profile objects so caller mutation cannot change existing city
+ok 14 - creation clones profile objects so caller mutation cannot change existing city
+  ---
+  duration_ms: 27.558125
+  type: 'test'
+  ...
+# BJS - [15:52:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:52:56]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:52:56]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:52:56]: Babylon.js v9.31.0 - Null engine
+# Subtest: strict starter retains its economic flag but has flat room and matching roof access, including upgrade
+ok 15 - strict starter retains its economic flag but has flat room and matching roof access, including upgrade
+  ---
+  duration_ms: 104.84825
+  type: 'test'
+  ...
+# Subtest: strict temples never request late or unverified sacred assets, even after legacy use
+ok 16 - strict temples never request late or unverified sacred assets, even after legacy use
+  ---
+  duration_ms: 0.701333
+  type: 'test'
+  ...
+# Subtest: strict building templates cannot reuse same-coordinate legacy sources or preview
+ok 17 - strict building templates cannot reuse same-coordinate legacy sources or preview
+  ---
+  duration_ms: 69.96525
+  type: 'test'
+  ...
+# Subtest: strict gate has a real rectangular opening, earth pigments and timber lintel within reserved footprint
+ok 18 - strict gate has a real rectangular opening, earth pigments and timber lintel within reserved footprint
+  ---
+  duration_ms: 5.331458
+  type: 'test'
+  ...
+# Subtest: strict ziggurat grows through three brick stages while legacy procedural tier remains unchanged
+ok 19 - strict ziggurat grows through three brick stages while legacy procedural tier remains unchanged
+  ---
+  duration_ms: 45.520416
+  type: 'test'
+  ...
+# Subtest: strict gate presentation changes only name/description and leaves legacy global definitions intact
+ok 20 - strict gate presentation changes only name/description and leaves legacy global definitions intact
+  ---
+  duration_ms: 2.4635
+  type: 'test'
+  ...
+# Subtest: strict founding house description and summary match unchanged four-person economy
+ok 21 - strict founding house description and summary match unchanged four-person economy
+  ---
+  duration_ms: 165.210709
+  type: 'test'
+  ...
+# Subtest: strict 2D gate avoids glazed pigments and three ziggurat levels grow consistently
+ok 22 - strict 2D gate avoids glazed pigments and three ziggurat levels grow consistently
+  ---
+  duration_ms: 1.346875
+  type: 'test'
+  ...
+# Subtest: catalogue labels switch both ways without replacing buttons or losing focus
+ok 23 - catalogue labels switch both ways without replacing buttons or losing focus
+  ---
+  duration_ms: 258.440042
+  type: 'test'
+  ...
+# Subtest: strict 2D transport drops the tall camel neck and boat sail while trade data stays untouched
+ok 24 - strict 2D transport drops the tall camel neck and boat sail while trade data stays untouched
+  ---
+  duration_ms: 37.623334
+  type: 'test'
+  ...
+# Subtest: main HTML leaves 3D vendors to the mode-specific loader
+ok 25 - main HTML leaves 3D vendors to the mode-specific loader
+  ---
+  duration_ms: 0.545458
+  type: 'test'
+  ...
+# Subtest: concurrent callers load the engine once before the GLB plugins and reuse the result
+ok 26 - concurrent callers load the engine once before the GLB plugins and reuse the result
+  ---
+  duration_ms: 1.511334
+  type: 'test'
+  ...
+# Subtest: failed plugin script is removed and a later call retries without downloading the engine again
+ok 27 - failed plugin script is removed and a later call retries without downloading the engine again
+  ---
+  duration_ms: 3.857958
+  type: 'test'
+  ...
+# Subtest: an already available Babylon engine and GLB plugin append no script
+ok 28 - an already available Babylon engine and GLB plugin append no script
+  ---
+  duration_ms: 0.120375
+  type: 'test'
+  ...
+# Subtest: explicit 2D mode and injected Babylon fixtures never request a vendor
+ok 29 - explicit 2D mode and injected Babylon fixtures never request a vendor
+  ---
+  duration_ms: 0.193083
+  type: 'test'
+  ...
+# Subtest: a Node renderer fixture without a document retains its existing Canvas fallback
+ok 30 - a Node renderer fixture without a document retains its existing Canvas fallback
+  ---
+  duration_ms: 0.051959
+  type: 'test'
+  ...
+# Subtest: 3D loading status exists before its first vendor request and script failure returns a usable 2D renderer
+ok 31 - 3D loading status exists before its first vendor request and script failure returns a usable 2D renderer
+  ---
+  duration_ms: 0.658167
+  type: 'test'
+  ...
+# Subtest: historical acceptance pages await the same engine/plugin readiness as the main game
+ok 32 - historical acceptance pages await the same engine/plugin readiness as the main game
+  ---
+  duration_ms: 0.213459
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1485.24225

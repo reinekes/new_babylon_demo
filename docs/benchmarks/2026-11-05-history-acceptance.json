@@ -22,9 +22,11 @@
     "tests/scenario-profiles.test.js": "b1e2ec76a1e7542cfa1f6f78879b6190ae8ec4bc7e65ab77bb2eecad368719e9",
     "tests/new-game-profile.test.js": "83610d599bbb8414f21bb7a7261434ed0efb2d37dd3e8f2b89517086c47ca833",
     "tests/caravan.test.js": "421240ef42c9717bc1a675b8c402d66db0c8993990a63be65827c5e1fce8ad98",
+    "tests/vendor-loading.test.js": "aa883945b14bc00abd088d9021ea79fab06ebb1ea1783663162ad867e108b7e4",
+    "game3d/vendor-loading.js": "28a5fe12691ed4f5cd0e72ee3677e3e50fc66d67c6950d9674222ac27c338621",
     "tools/history-check/2d.html": "9b96acd65ee8f67434775efb872b13ee626bdfcb85fecf4199513caa36c66dc1",
-    "tools/history-check/index.html": "cf77b9effb0fa01fb000f7257f3718766e47990ceb050e353ff975d51b9602b0",
-    "tools/history-check/transport.html": "26d616a0e7397d2ad97839a416d5606ac86b23887c8e1128be5cbb07f91100ba"
+    "tools/history-check/index.html": "0f317c8dd1001709fc936bc54fc558263b4276907f5e2cca687e057d685a1974",
+    "tools/history-check/transport.html": "42bcc6847119619861138c1bc2fe4e12c0d1395721b1e8249b149505b6d9b673"
   },
   "architecture": {
     "cases": [
@@ -1297,12 +1299,12 @@
       {
         "profile": "sumer-iii-v1",
         "transport": "land",
-        "time": 22.350199999988085,
+        "time": 26.349999999999966,
         "moving": true,
         "pureUpdates": true,
         "caravan": {
           "id": "same-visit",
-          "x": 6.293339999999984,
+          "x": 6.152672000000482,
           "y": 5,
           "phase": "arriving",
           "route": [
@@ -1326,10 +1328,10 @@
         "actors": [
           {
             "kind": "merchant",
-            "phase": 0.6757753625213437,
+            "phase": 0.4231030122034085,
             "clip": "Walk",
             "position": [
-              37.760039999999904,
+              36.91603200000289,
               0,
               30
             ],
@@ -1341,10 +1343,10 @@
           },
           {
             "kind": "donkey",
-            "phase": 0.9613025640947543,
+            "phase": 0.3168102564194723,
             "clip": "Walk",
             "position": [
-              33.9600399999999,
+              33.116032000002896,
               0,
               30
             ],
@@ -1356,10 +1358,10 @@
           },
           {
             "kind": "donkey",
-            "phase": 0.27130256409479936,
+            "phase": 0.6268102564194918,
             "clip": "Walk",
             "position": [
-              30.310039999999905,
+              29.46603200000289,
               0,
               30
             ],
@@ -1374,12 +1376,12 @@
       {
         "profile": "sumer-iii-v1",
         "transport": "land",
-        "time": 22.783400000005965,
+        "time": 26.633400000005928,
         "moving": false,
         "pureUpdates": true,
         "caravan": {
           "id": "same-visit",
-          "x": 6.010064000000954,
+          "x": 6.16400800000072,
           "y": 5,
           "phase": "arriving",
           "route": [
@@ -1403,10 +1405,10 @@
         "actors": [
           {
             "kind": "merchant",
-            "phase": 0.8805429484834315,
+            "phase": 0.46622661610189575,
             "clip": "Walk",
             "position": [
-              36.060384000005726,
+              36.98404800000432,
               0,
               30
             ],
@@ -1418,10 +1420,10 @@
           },
           {
             "kind": "donkey",
-            "phase": 0.5854051282094658,
+            "phase": 0.3749435897540264,
             "clip": "Walk",
             "position": [
-              32.26038400000573,
+              33.184048000004324,
               0,
               30
             ],
@@ -1433,10 +1435,10 @@
           },
           {
             "kind": "donkey",
-            "phase": 0.8954051282095018,
+            "phase": 0.6849435897540458,
             "clip": "Walk",
             "position": [
-              28.61038400000572,
+              29.53404800000432,
               0,
               30
             ],
@@ -1451,12 +1453,12 @@
       {
         "profile": "sumer-iii-v1",
         "transport": "land",
-        "time": 22.783400000005965,
+        "time": 26.633400000005928,
         "moving": false,
         "pureUpdates": true,
         "caravan": {
           "id": "same-visit",
-          "x": 6.010064000000954,
+          "x": 6.16400800000072,
           "y": 5,
           "phase": "arriving",
           "route": [
@@ -1480,10 +1482,10 @@
         "actors": [
           {
             "kind": "merchant",
-            "phase": 0.8805429484834315,
+            "phase": 0.46622661610189575,
             "clip": "Walk",
             "position": [
-              36.060384000005726,
+              36.98404800000432,
               0,
               30
             ],
@@ -1495,10 +1497,10 @@
           },
           {
             "kind": "donkey",
-            "phase": 0.5854051282094658,
+            "phase": 0.3749435897540264,
             "clip": "Walk",
             "position": [
-              32.26038400000573,
+              33.184048000004324,
               0,
               30
             ],
@@ -1510,10 +1512,10 @@
           },
           {
             "kind": "donkey",
-            "phase": 0.8954051282095018,
+            "phase": 0.6849435897540458,
             "clip": "Walk",
             "position": [
-              28.61038400000572,
+              29.53404800000432,
               0,
               30
             ],
@@ -1528,12 +1530,12 @@
       {
         "profile": "legacy-v1",
         "transport": "land",
-        "time": 22.783400000005965,
+        "time": 26.633400000005928,
         "moving": false,
         "pureUpdates": true,
         "caravan": {
           "id": "same-visit",
-          "x": 6.010064000000954,
+          "x": 6.16400800000072,
           "y": 5,
           "phase": "arriving",
           "route": [
@@ -1560,7 +1562,7 @@
             "phase": 0,
             "clip": "Walk",
             "position": [
-              36.060384000005726,
+              36.98404800000432,
               0,
               30
             ],
@@ -1575,7 +1577,7 @@
             "phase": 0.31,
             "clip": "Walk",
             "position": [
-              32.26038400000573,
+              33.184048000004324,
               0,
               30
             ],
@@ -1590,7 +1592,7 @@
             "phase": 0.62,
             "clip": "Walk",
             "position": [
-              28.61038400000572,
+              29.53404800000432,
               0,
               30
             ],
@@ -1605,12 +1607,12 @@
       {
         "profile": "sumer-iii-v1",
         "transport": "land",
-        "time": 22.783400000005965,
+        "time": 26.633400000005928,
         "moving": false,
         "pureUpdates": true,
         "caravan": {
           "id": "same-visit",
-          "x": 6.010064000000954,
+          "x": 6.16400800000072,
           "y": 5,
           "phase": "arriving",
           "route": [
@@ -1637,7 +1639,7 @@
             "phase": 0,
             "clip": "Walk",
             "position": [
-              36.060384000005726,
+              36.98404800000432,
               0,
               30
             ],
@@ -1652,7 +1654,7 @@
             "phase": 0.31,
             "clip": "Walk",
             "position": [
-              32.26038400000573,
+              33.184048000004324,
               0,
               30
             ],
@@ -1667,7 +1669,7 @@
             "phase": 0.62,
             "clip": "Walk",
             "position": [
-              28.61038400000572,
+              29.53404800000432,
               0,
               30
             ],
