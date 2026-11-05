@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-6';
+const tag='sumer-trade-supplied-20261105-7';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {housingOf,capacityOf,buildingKey} from './repo/definitions.js';
@@ -60,6 +60,7 @@ const helper=await import(pathToFileURL(join(output,'trade-fixture.mjs')).href+'
 for(const transport of ['land','river']){const {state,proof}=helper.createTradeFixture(transport);console.log(JSON.stringify({transport,valid:true,start:proof.measurementStart,harbor:proof.harbor,audit:helper.auditTradeFixture(state,proof)}));}
 let app=await readFile(join(output,'app-check.js'),'utf8');
 app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\n`+app;
+app=app.replace("[renderer.scene,'render','scene.render']","[renderer.scene,'render','scene.render'],[renderer.scene,'getActiveMeshCandidates','scene.candidates'],[renderer.scene,'_evaluateActiveMeshes','scene.activeMeshes'],[renderer.scene,'animate','scene.animate'],[renderer.scene,'_renderForCamera','scene.camera']");
 app=app.replace('export const timings=[];', 'export const timings=[];export const timingTotals={};export function resetTimingTotals(){for(const key of Object.keys(timingTotals))delete timingTotals[key];timings.length=0;}');
 app=app.replace('if(ms>35)timings.push', 'const total=timingTotals[tag]??={count:0,ms:0,max:0};total.count++;total.ms+=ms;total.max=Math.max(total.max,ms);if(ms>35)timings.push');
 

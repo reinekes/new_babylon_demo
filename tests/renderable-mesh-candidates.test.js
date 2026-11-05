@@ -25,3 +25,8 @@ test('subpixel parts disappear only from rendering and return on zoom; visible s
  const eye={x:0,y:0,z:0},camera={layerMask:1,position:eye,fov:.8},part=(radius,z)=>mesh({getBoundingInfo:()=>({boundingSphere:{centerWorld:{x:0,y:0,z},radiusWorld:radius}})}),fine=part(.01,700),body=part(1,700),scene={meshes:[fine,body],activeCamera:camera,getEngine:()=>({getRenderHeight:()=>720})},read=createRenderableMeshCandidates(scene);
  assert.deepEqual(read().data,[body]);eye.z=695;assert.deepEqual(read().data,[fine,body]);assert.equal(scene.meshes.length,2);
 });
+test('frustum and screen-size checks share one world-matrix update per candidate',()=>{
+ let matrices=0;const part=mesh({computeWorldMatrix(){matrices++;},isInFrustum:()=>true,getBoundingInfo:()=>({boundingSphere:{centerWorld:{x:0,y:0,z:100},radiusWorld:1}})});
+ const scene={meshes:[part],activeCamera:{layerMask:1,position:{x:0,y:0,z:0},fov:.8},frustumPlanes:[{}],getEngine:()=>({getRenderHeight:()=>720})};
+ assert.deepEqual(createRenderableMeshCandidates(scene)().data,[part]);assert.equal(matrices,1);
+});
