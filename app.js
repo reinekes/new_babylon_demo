@@ -60,7 +60,7 @@ import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale} from './trading.js';
 import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,layRoad} from './roads.js';
 import {weatherAt} from './environment.js';
-import {setCitizenRole,assignGuard,assignWorkplace,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
+import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites} from './construction.js';
 import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
@@ -338,7 +338,7 @@ function showCityOverview(tab='districts'){
 }
 function refreshCityOverview(tab){
  const root=$('city-tools-root');if(modalKind!=='citytools'||!root||root.contains(document.activeElement)&&['SELECT','INPUT'].includes(document.activeElement.tagName))return;
- renderCityTools(root,state,{...(tab?{tab}:{}),audioStatus:cityAudio.status,mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const [x,y]=key.split(',').map(Number),b=buildingAt(state,x,y);if(!b)return;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
+ renderCityTools(root,state,{...(tab?{tab}:{}),audioStatus:cityAudio.status,mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const [x,y]=key.split(',').map(Number),b=buildingAt(state,x,y);if(!b)return;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
 }
 function handleTestAction(action,data){
  if(action==='cat-scene'||action==='earth-scene'){

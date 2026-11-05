@@ -1,3 +1,4 @@
+import {harvestCallActive,harvestDemand,harvestCandidates} from './city-labor.js';
 import {professionOptionsHTML} from './ui-professions.js';
 import {buildingDefinition} from './building-presentation.js';
 import {renderTestTools} from './ui-test-tools.js';
@@ -60,11 +61,21 @@ export const CITY_WORK_CATEGORIES=[
  {id:'services',name:'Снабжение и услуги',types:['waterpoint','depot','granary','market','healer','musicHouse','house','bridge','canal','harbor']},
  {id:'sacred',name:'Культ',types:['shrine','ziggurat','ishtarGate']}
 ];
+function harvestCallHTML(s){
+ const {fields,ripe,sheaves,slots,keys}=harvestDemand(s);
+ const active=harvestCallActive(s),spent=s.cityLabor?.year===s.year;
+ if(!fields.length&&!active&&!spent)return '';
+ const assigned=s.citizens.filter(c=>keys.has(c.workplace||c.work)).length;
+ const buildings=new Map(s.buildings.map(b=>[b.id||`${b.x},${b.y}`,b]));
+ const candidates=harvestCandidates(s.citizens,buildings).length;
+ const status=active?'Призыв действует':spent?'Призыв использован в этом году':'Призыв на жатву';
+ return `<article class="city-tools-row"><h3>${status}</h3><p>На полях ${number(ripe)} урожая и ${number(sheaves)} снопов. Занято ${assigned} из ${slots} мест. Возможных помощников ${candidates}, распределение зависит от дороги.</p><small>Приоритет действует до суток. Взятые грузы и назначения сохраняются. В каждой семье остаётся взрослый для снабжения, а водоносы и работники пищевых промыслов остаются на своих местах.</small><button type="button" data-city-harvest ${spent||!fields.length?'disabled':''}>Собрать руки на жатву</button></article>`;
+}
 function workshopsHTML(s,model,expanded){
  const buildings=new Map(s.buildings.map(b=>[b.id||`${b.x},${b.y}`,b])),groups=new Map();
  for(const w of model.workshops){if(!groups.has(w.type))groups.set(w.type,[]);groups.get(w.type).push(w);}
  const categories=CITY_WORK_CATEGORIES.map(c=>({...c,types:[...c.types]})),unknown=[...groups.keys()].filter(t=>!categories.some(c=>c.types.includes(t)));categories.find(c=>c.id==='services').types.push(...unknown);
- return `<p class="city-tools-note">Здания сгруппированы по делу; одинаковые рядом, новые первыми. Раскрой строку для назначения, запасов и выпуска.</p><div class="city-tools-staffing-legend"><span data-staffing="empty">Нет людей</span><span data-staffing="partial">Не хватает</span><span data-staffing="full">Места заняты</span><span data-staffing="matched">По призванию</span></div>${categories.map(c=>{const count=c.types.reduce((n,t)=>n+(groups.get(t)?.length||0),0);return `<section class="city-tools-category" data-city-work-category="${c.id}"><h3>${c.name} <small>${count}</small></h3><div class="city-tools-workshop-groups city-tools-card-grid">${c.types.filter(t=>groups.has(t)).map(type=>`<section class="city-tools-workshop-group" aria-label="${escape(buildingDefinition(s,type)?.name||type)}" data-city-building-group="${escape(type)}">${groups.get(type).sort((a,b)=>compareBuildingsNewest(buildings.get(a.key),buildings.get(b.key))).map(w=>workshopCard(s,w,buildings.get(w.key),expanded)).join('')}</section>`).join('')||empty('Пока нет зданий этой группы.')}</div></section>`;}).join('')}`;
+ return `${harvestCallHTML(s)}<p class="city-tools-note">Здания сгруппированы по делу; одинаковые рядом, новые первыми. Раскрой строку для назначения, запасов и выпуска.</p><div class="city-tools-staffing-legend"><span data-staffing="empty">Нет людей</span><span data-staffing="partial">Не хватает</span><span data-staffing="full">Места заняты</span><span data-staffing="matched">По призванию</span></div>${categories.map(c=>{const count=c.types.reduce((n,t)=>n+(groups.get(t)?.length||0),0);return `<section class="city-tools-category" data-city-work-category="${c.id}"><h3>${c.name} <small>${count}</small></h3><div class="city-tools-workshop-groups city-tools-card-grid">${c.types.filter(t=>groups.has(t)).map(type=>`<section class="city-tools-workshop-group" aria-label="${escape(buildingDefinition(s,type)?.name||type)}" data-city-building-group="${escape(type)}">${groups.get(type).sort((a,b)=>compareBuildingsNewest(buildings.get(a.key),buildings.get(b.key))).map(w=>workshopCard(s,w,buildings.get(w.key),expanded)).join('')}</section>`).join('')||empty('Пока нет зданий этой группы.')}</div></section>`;}).join('')}`;
 }
 function homesHTML(model,group){const keys=new Set(model.neighborhoods.find(n=>n.key===group)?.homeKeys||[]);return `<button type="button" class="city-tools-link" data-city-tab="districts">← Все кварталы</button><div class="city-tools-list city-tools-card-grid">${model.homes.filter(h=>keys.has(h.key)&&h.reasons.length).map(h=>`<article class="city-tools-row"><div class="city-tools-row-head"><div class="city-tools-building-name">${uiIcon('house')}${focus(h.key,`Дом · ${h.x}, ${h.y}`)}</div><button type="button" class="city-tools-link" data-city-home="${escape(h.key)}">Жители · ${h.population}</button></div><div class="city-tools-metrics"><span>Еда ${number(h.food)} / ${number(h.demand)} на ужин</span><span>Вода ${number(h.water)} / ${number(h.waterDemand)} в день</span></div><div class="city-tools-reasons">${h.reasons.map(r=>tag(r.label,true)).join('')}</div>${buildingInventoryHTML(h.inventory,{house:true})}</article>`).join('')||empty('Сейчас все семьи этого квартала обеспечены.')}</div>`;}
 
@@ -98,6 +109,7 @@ export function renderCityTools(root,s,options={}){
   root.addEventListener('click',event=>{
    const button=event.target.closest?.('button');if(!button||!root.contains(button))return;
    if(button.dataset.testAction!==undefined){const data={...ctl.testOptions};for(const k of ['event','resource','building','citizen','count']){const input=root.querySelector(`[data-test-${k}]`);if(input)data[k]=k==='count'?Number(input.value):input.value;}ctl.options.onTestAction?.(button.dataset.testAction,data);ctl.refresh();return;}
+   if(button.hasAttribute('data-city-harvest')){ctl.options.onHarvest?.();ctl.refresh();return;}
    if(button.dataset.cityFocus!==undefined){ctl.options.onFocus?.(button.dataset.cityFocus);return;}
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
    if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id));ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}
