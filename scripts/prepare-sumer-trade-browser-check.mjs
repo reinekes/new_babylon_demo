@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-15';
+const tag='sumer-trade-supplied-20261105-17';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -67,7 +67,8 @@ if(!candidateSource.includes(preciseCheck))throw Error('Review candidate probe a
 await writeFile(join(output,'coarse-candidates.mjs'),candidateSource.replace(preciseCheck,''));
 let app=await readFile(join(output,'app-check.js'),'utf8');
 app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\nimport {weatherAt as probeWeatherAt} from './repo/environment.js';\nimport {createRenderableMeshCandidates as coarseCandidates} from './coarse-candidates.mjs?probe=${tag}';\n`+app;
-app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");setProbePalmBatching(new URLSearchParams(location.search).get(\"palmBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
+app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();renderer.engine.setHardwareScalingLevel(1/1.5);renderer.resize();setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");setProbePalmBatching(new URLSearchParams(location.search).get(\"palmBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
+app=app.replace('quality:renderer.quality,','quality:renderer.quality,probeRenderPixelRatio:1.5,hardwareScalingLevel:renderer.engine.getHardwareScalingLevel(),');
 app=app.replace('cameraRadius:renderer.camera?.radius,','cameraAlpha:renderer.camera?.alpha,cameraBeta:renderer.camera?.beta,cameraRadius:renderer.camera?.radius,');
 app=app.replace('meshes:renderer.scene?.meshes.length,','activeMeshes:renderer.scene?.getActiveMeshes?.().length,meshes:renderer.scene?.meshes.length,');
 app=app.replace("[renderer.scene,'render','scene.render']","[renderer.scene,'render','scene.render'],[renderer.scene,'getActiveMeshCandidates','scene.candidates'],[renderer.scene,'_evaluateActiveMeshes','scene.activeMeshes'],[renderer.scene,'animate','scene.animate'],[renderer.scene,'_renderForCamera','scene.camera']");
@@ -103,10 +104,18 @@ check=check.replace('let last=start,active=true;', 'let last=start,active=true;c
 check=check.replace('active=false;observer?.disconnect();','active=false;observer?.disconnect();document.removeEventListener("visibilitychange",visibility);');
 check=check.replace('transport,history,trade:app.tradeStateInfo()', `transport,history,trade:app.tradeStateInfo(),startViewport,visibilityChanges,viewportChanged:startViewport[0]!==innerWidth||startViewport[1]!==innerHeight,selectedSpeed:document.querySelector('[data-speed][aria-pressed="true"]')?.dataset.speed`);
 check=check.replace('sceneStart=app.sceneInfo();','sceneStart=(app.resetTimingTotals(),app.sceneInfo());');
-check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),palmBatching:app.palmBatchingMode(),');
+check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,terrainCutCaching:!location.pathname.endsWith("/perf-uncached.html"),frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),palmBatching:app.palmBatchingMode(),');
 check+=`\nconst roadToggle=document.createElement('button'),roadProof=document.createElement('pre');roadToggle.textContent='Переключить группировку дорог';roadToggle.id='toggle-road-groups';roadProof.id='road-group-proof';roadToggle.onclick=()=>{if(document.querySelector('#measurement').textContent.startsWith('Замер'))return;app.setProbeRoadBatching(!app.roadBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.textContent=JSON.stringify({batching:app.roadBatchingMode(),scene:app.sceneInfo()},null,2);}));};const controls=document.querySelector('#measure').parentElement;controls.insertBefore(roadToggle,document.querySelector('#measurement'));controls.append(roadProof);roadProof.style.maxHeight='30px';roadProof.style.overflow='auto';const fold=document.createElement('button');fold.textContent='Свернуть результаты';fold.onclick=()=>{out.hidden=!out.hidden;roadProof.hidden=out.hidden;fold.textContent=out.hidden?'Показать результаты':'Свернуть результаты';};controls.insertBefore(fold,out);\n`;
 check+=`\nconst palmToggle=document.createElement('button');palmToggle.textContent='Переключить группировку пальм';palmToggle.id='toggle-palm-groups';palmToggle.onclick=()=>{if(out.textContent.startsWith('Замер'))return;app.setProbePalmBatching(!app.palmBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.hidden=false;roadProof.textContent=JSON.stringify({palmBatching:app.palmBatchingMode(),scene:app.sceneInfo()},null,2);}));};controls.insertBefore(palmToggle,out);\n`;
 await writeFile(join(output,'check.js'),check);
 check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);await writeFile(join(output,'check.js'),check);
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
+// Private matched baseline: keep all production behavior except terrain-cut reuse.
+const cutCacheCheck='if(previous?.key===cutKey&&previous.colors===original.colors)continue;',landscapeSource=await readFile(join(source,'game3d/landscape.js'),'utf8');
+if(!landscapeSource.includes(cutCacheCheck))throw Error('Review terrain-cut baseline after source changes');
+const baselineLandscape=landscapeSource.replace(cutCacheCheck,'if(false)continue;').replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
+await writeFile(join(output,'landscape-uncached.mjs'),baselineLandscape);
+const baselineHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-uncached.mjs?probe=${tag}"`);
+if(baselineHtml===html)throw Error('Missing landscape import-map entry for baseline');
+await writeFile(join(output,'perf-uncached.html'),baselineHtml);
 console.log(JSON.stringify({output,page:'perf.html?transport=land or river',seconds:80,tag,warning:'Isolated origin only; measure close and overview separately, no heavy tests during measurements'}));

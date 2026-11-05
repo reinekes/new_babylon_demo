@@ -294,3 +294,17 @@ test('real licensed palm parts retain their wind matrices and save through GPU/i
  view.setPalmBatching(false);assert.ok(parts.every(m=>m.isEnabled()));parts.forEach((m,i)=>compare(m.getWorldMatrix(),expected[i]));view.setPalmBatching(true);assert.ok(view.meshes.some(m=>m.metadata?.palmBatch));assert.equal(JSON.stringify(s),before);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
 });
+
+test('road edits retain channel-cut ground buffers; mask and canal edits remain exact',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),loader=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>loadGeometry(scene,file.split('?')[0]);let view,fresh;
+ const s=createGame({start:'established'});s.roads=[{id:'probe',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:1}];
+ s.buildings.push({type:'canal',x:3,y:3,level:1,construction:{kind:'new',target:1,required:{clay:4},delivered:{clay:4},remaining:{clay:0},work:0}});
+ try{view=await createGameLandscape(B,scene,s,materials);const ground=view.meshes.find(m=>m.name==='alluvial-valley'),grass=view.meshes.find(m=>m.name==='soft-riparian-grass'),writes=new Map([[ground,0],[grass,0]]);
+ for(const m of writes.keys()){const set=m.setVerticesData;m.setVerticesData=function(...args){writes.set(m,writes.get(m)+1);return set.apply(this,args);};}
+ s.roads[0].level=2;view.update(s,1);assert.equal(writes.get(ground),0,'a road level must not upload unchanged canal-cut ground');assert.equal(writes.get(grass),0,'a road level must not upload unchanged grass cuts');
+ s.roadAnchors=[...(s.roadAnchors||[]),{x:5,y:5}];view.update(s,2);assert.ok(view.meshes.includes(ground));assert.equal(writes.get(ground),0,'road mask must not invalidate ground cuts');assert.ok(writes.get(grass)>0,'road mask must update grass');
+ writes.set(ground,0);s.buildings.at(-1).construction.work=9;view.update(s,3);assert.ok(writes.get(ground)>0,'growing canal must update ground');
+ const before=JSON.stringify(s);fresh=await createGameLandscape(B,scene,s,materials);for(const name of ['alluvial-valley','soft-riparian-grass','distant-alluvial-plain'])for(const kind of [B.VertexBuffer.PositionKind,B.VertexBuffer.NormalKind,B.VertexBuffer.ColorKind])assert.deepEqual(Array.from(view.meshes.find(m=>m.name===name).getVerticesData(kind)),Array.from(fresh.meshes.find(m=>m.name===name).getVerticesData(kind)),`${name}/${kind} must match a fresh landscape`);assert.equal(JSON.stringify(s),before);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=loader;fresh?.dispose();view?.dispose();scene.dispose();engine.dispose();}
+});

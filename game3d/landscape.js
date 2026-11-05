@@ -179,18 +179,23 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(d.normals.find((v,i)=>i%3===1&&Math.abs(v)>.01)<0){for(let i=0;i<d.indices.length;i+=3)[d.indices[i+1],d.indices[i+2]]=[d.indices[i+2],d.indices[i+1]];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);}d.applyToMesh(m);m.material=mat;m.useVertexColors=true;add(m,collection);return m;
  }
  function road(name,s,a,b,width,height,mat,level,collection){const g=wornRoadGeometry(s,a,b,width,height,level),m=meshData(name,g,mat,collection);if(!m)return;m.position.set(g.origin.x,0,g.origin.z);m.hasVertexAlpha=true;m.metadata={road:{a:{...a},b:{...b},level}};m.freezeWorldMatrix();return m;}
- const originalTerrain=new WeakMap();
+ const originalTerrain=new WeakMap(),terrainCuts=new WeakMap();
  function carveChannels(s,arms){
+  const cutKey=JSON.stringify(arms.map(a=>[a.a.x,a.a.y,a.b.x,a.b.y,a.startHeight,a.endHeight]));let groundChanged=false;
   // This main-game copy alone cuts shallow depressions; the legacy terrain module
   // and the saved map/canal coordinates are never changed.
   for(const m of base.meshes){if(!['alluvial-valley','soft-riparian-grass'].includes(m.name))continue;let original=originalTerrain.get(m);if(!original){original={positions:m.getVerticesData(B.VertexBuffer.PositionKind).slice(),normals:m.getVerticesData(B.VertexBuffer.NormalKind).slice(),colors:m.getVerticesData(B.VertexBuffer.ColorKind)?.slice()};originalTerrain.set(m,original);}
+   // Base identity covers world/building footprints. A road-mask replacement
+   // changes the original colour array, but never the alluvial ground cut.
+   const previous=terrainCuts.get(m);if(previous?.key===cutKey&&previous.colors===original.colors)continue;
    const positions=original.positions.slice(),colors=original.colors?.slice(),contours=lakeContours(s);
    for(let i=0;i<positions.length;i+=3){const X=positions[i],Z=positions[i+2],p={x:X/TILE,y:Z/TILE};if(colors&&m.name==='soft-riparian-grass'&&!sceneryClear(s,p,.12))colors[i/3*4+3]=0;const lakeD=lakeDistance(p.x,p.y,s,contours);if(lakeD<.6){positions[i+1]=visualSurfaceElevation(p.x,p.y,s,contours)+(m.name==='soft-riparian-grass'?.025:0);if(colors&&m.name==='soft-riparian-grass')colors[i/3*4+3]*=clamp((lakeD-.09)/.26);else if(colors){const wet=1-clamp((lakeD+.02)/.4),fleck=Math.sin(X*3+Z)*.015,blend=clamp((.6-lakeD)/.2),offset=i/3*4;for(const [k,tone]of [.88-wet*.24+fleck,.80-wet*.21+fleck,.62-wet*.19+fleck].entries())colors[offset+k]=colors[offset+k]*(1-blend)+tone*blend;}}for(const arm of arms){const dx=arm.b.x-arm.a.x,dy=arm.b.y-arm.a.y,t=clamp(((p.x-arm.a.x)*dx+(p.y-arm.a.y)*dy)/(dx*dx+dy*dy||1)),dist=Math.hypot(p.x-arm.a.x-dx*t,p.y-arm.a.y-dy*t)*TILE,width=1.85;
      if(dist>width)continue;const h=arm.startHeight+(arm.endHeight-arm.startHeight)*t,cut=h-.2,inner=.85,weight=1-clamp((dist-inner)/(width-inner));positions[i+1]=Math.min(positions[i+1],original.positions[i+1]*(1-weight)+cut*weight);if(colors&&m.name==='soft-riparian-grass')colors[i/3*4+3]*=1-Math.min(1,weight*2);
     }}
    m.setVerticesData(B.VertexBuffer.PositionKind,positions,true);if(colors)m.setVerticesData(B.VertexBuffer.ColorKind,colors,true);m.setVerticesData(B.VertexBuffer.NormalKind,deformedTerrainNormals(B,original,positions,m.getIndices()),true);m.refreshBoundingInfo();
+   terrainCuts.set(m,{key:cutKey,colors:original.colors});if(m.name==='alluvial-valley')groundChanged=true;
   }
-  stitchTerrainRim(B,base.meshes,s);
+  if(groundChanged)stitchTerrainRim(B,base.meshes,s);
  }
  function rebuildGeometry(s,plan){catGroundHeights.clear();
   remove(staticMeshes);
