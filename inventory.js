@@ -65,10 +65,10 @@ export function foodAvailability(s){
 }
 export const foodAvailableAt=(s,key)=>foodAvailability(s).get(key)||0;
 
-export function reserveStock(s,cost){
- syncInventory(s);const entries=Object.entries(cost).filter(([k])=>MATERIALS.includes(k)),food=entries.some(([k])=>k==='food')?foodAvailability(s):null;
- if(entries.some(([k,n])=>!Number.isFinite(n)||n<0||n>(k==='food'?[...food.values()].reduce((a,b)=>a+b,0):s.resources[k])))return null;
- const sources={};for(const [k,n] of entries){let left=n;for(const b of stockStores(s)){const taken=Math.min(left,k==='food'?food.get(keyOf(b))||0:b.stock[k]);if(taken>0){(sources[keyOf(b)]??={})[k]=taken;b.stock[k]-=taken;s.resources[k]-=taken;left-=taken;}if(left<=0)break;}}return sources;
+export function reserveStock(s,cost,{eligibleStores}={}){
+ syncInventory(s);const stores=stockStores(s).filter(b=>!eligibleStores||eligibleStores.has(keyOf(b))),entries=Object.entries(cost).filter(([k])=>MATERIALS.includes(k)),food=entries.some(([k])=>k==='food')?foodAvailability(s):null;
+ if(entries.some(([k,n])=>!Number.isFinite(n)||n<0||n>stores.reduce((total,b)=>total+(k==='food'?food.get(keyOf(b))||0:b.stock[k]),0)))return null;
+ const sources={};for(const [k,n] of entries){let left=n;for(const b of stores){const taken=Math.min(left,k==='food'?food.get(keyOf(b))||0:b.stock[k]);if(taken>0){(sources[keyOf(b)]??={})[k]=taken;b.stock[k]-=taken;s.resources[k]-=taken;left-=taken;}if(left<=0)break;}}return sources;
 }
 export function takeReserved(s,sources,key,k,n){const source=sources?.[key];if(!source||!MATERIALS.includes(k))return 0;const taken=Math.min(amount(source[k]),amount(n));source[k]-=taken;return taken;}
 export function refundSources(s,sources){
