@@ -47,3 +47,33 @@ test('cancelling restores one uncollected vessel, while carrier recovery keeps t
  assert.equal(storeStock(s,source,'pottery'),0);
  assert.ok(decode(encode(s)));
 });
+
+test('an assigned priest records the donor at work and the temple kitchen commemorates only after serving',async()=>{
+ const {assignWorkplace}=await import('../management.js');
+ const {orderFestival,cancelFestival}=await import('../festival.js');
+ let {s,donor,source,temple}=fixture();
+ const priest=s.citizens.find(c=>c.age>=16&&c.id!==donor.id);
+ Object.assign(priest,{calling:'priest',role:'production'});
+ assert.ok(assignWorkplace(s,priest.id,temple).ok);
+ const {id}=orderVotive(s,temple,source,donor.id);
+ const item=()=>templeOfferings(s,temple).find(v=>v.id===id);
+ assert.equal(orderFestival(s,{dedicationId:id}).ok,false);
+ for(let i=0;i<140&&!item().memory;i++)advanceTime(s,.25);
+ assert.equal(item().memory.keeperId,priest.id);
+ assert.equal(item().feastTick,undefined);
+ s.resources.food=190;s.resources.beer=10;s.resources.prestige=100;
+ assert.equal(orderFestival(s,{dedicationId:id}).ok,true);
+ assert.equal(s.resources.beer,4);
+ assert.equal(item().feastTick,undefined);
+ assert.equal(cancelFestival(s).ok,true);
+ assert.equal(s.resources.beer,10);
+ assert.equal(orderFestival(s,{dedicationId:id}).ok,true);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ for(let i=0;i<450&&item().feastTick===undefined;i++){advanceTime(s,.25);if(s.event)s.event=null;}
+ assert.ok(Number.isInteger(item().feastTick));
+ assert.equal(item().receivedTick,0);
+ assert.equal(s.festival.delivered.beer,6);
+ assert.equal(s.news.filter(n=>n.title==='Дарителя вспомнили за храмовым угощением').length,1);
+ assert.ok(decode(encode(s)));
+ assert.equal(orderFestival(s,{dedicationId:id}).ok,false);
+});

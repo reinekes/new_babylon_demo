@@ -1,4 +1,4 @@
-import {receiveVotive} from './votive-offerings.js';
+import {receiveVotive,recordVotiveMemory} from './votive-offerings.js';
 import {advanceExternalGuest,externalGuestView} from './external-guest.js';
 import {orchardMaturity} from './orchard-layout.js';
 import {takeReeds,advanceReedBeds} from './reed-stock.js';
@@ -560,6 +560,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
   if(c.phase==='working'){
    const b=ctx.buildings.get(c.work);if(!b){startTrip(s,c,c.home,'toHome',ctx);continue;}
    if(c.guardPost===c.work||['depot','waterpoint'].includes(b.type))return;
+   if(c.calling==='priest')recordVotiveMemory(s,b,c);
    if(b.type==='canal'){
     if(needsCanalCleaning(b)&&clearCanalSilt(b,remaining*workRate(c,'canal')))invalidateAssignments(s);
     return;

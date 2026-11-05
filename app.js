@@ -1,4 +1,4 @@
-import {isVotiveTemple,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
+import {isVotiveTemple,isMemoryKeeper,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
 import {reedStatus,REED_CAPACITY} from './reed-stock.js';
 import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
@@ -170,12 +170,18 @@ function guardControl(b){if(!isPestStore(b))return '';const key=buildingKey(b),g
 function votivePanel(b){
  if(!isStrictSumer(state)||!isVotiveTemple(b))return '';
  const key=buildingKey(b),{reason,sources,donors}=votiveOptions(state,key);
+ const keeper=state.citizens.find(c=>isMemoryKeeper(c,key));
  const items=templeOfferings(state,key).map(v=>{
   const job=state.district.jobs.find(q=>q.id===v.id);
   const status=v.receivedTick!==null?'В храмовой кладовой':job.cancelled?'Отменено':job.remaining?'Зарезервирован':'Несут в храм';
-  return `<li>Сосуд №${v.id} · ${esc(v.donorName)} · склад ${esc(v.source)} · ${status}</li>`;
+  const memory=v.memory?`<small>Записал хранитель ${esc(v.memory.keeperName)}.</small>`:'';
+  const kitchen=v.feastTick!==undefined?' · Угощение состоялось':state.festival?.dedicationId===v.id?' · Угощение готовится':
+   v.memory?` <button type="button" data-dedication-feast="${v.id}">Заказать угощение</button>`:'';
+  return `<li>Сосуд №${v.id} · ${esc(v.donorName)} · склад ${esc(v.source)} · ${status} ${memory}${kitchen}</li>`;
  }).join('');
  return `<section class="staffing-panel"><h4>Именные посвящения</h4>
+  <p>Хранитель памяти · ${keeper?resident(keeper):'назначь вдохновлённого жреца на работу в этом храме'}.</p>
+  <p>Угощение требует 12 еды, 6 пива и 15 престижа. Посвящённый сосуд хранится в кладовой.</p>
   ${items?`<ul>${items}</ul>`:'<p>В кладовой пока нет именных сосудов.</p>'}
   ${reason?`<small>${esc(reason)}</small>`:`<form data-votive-temple="${key}">
    <label>Даритель <select name="donor">${donors.map(c=>`<option value="${c.id}">${esc(displayName(state,c.id))}</option>`).join('')}</select></label>
@@ -185,6 +191,10 @@ function votivePanel(b){
 function siteStatus(b){const q=b.construction,p=constructionProgress(b),people=state.citizens.filter(c=>c.site===buildingKey(b)),pair=builderTeachingPair(state,people.filter(c=>c.siteDuty==='builder'&&c.phase==='constructing'));return `<div class="site-progress"><span>${p.stage} · ${Math.floor(p.ratio*100)}%</span><progress max="1" value="${p.ratio}" aria-label="Готовность стройки"></progress></div><div class="material-table"><span>Материал</span><span>Нужно</span><span>Доставлено</span><span>В пути</span>${Object.entries(q.required).filter(([,v])=>v>0).map(([k,v])=>`<span class="material-name">${resourceIcon(k)}${label(k)}</span><span>${rounded(v)}</span><span>${rounded(q.delivered[k]||0)}</span><span>${rounded(people.reduce((n,c)=>n+(c.buildCargo?.[k]||0),0))}</span>`).join('')}</div><small class="site-workers">${people.length?people.map(c=>`${resident(c)} · ${c.siteDuty==='carrier'?'носильщик':'строитель'}`).join(' · '):'Ожидание: нет свободных работников или доступного пути.'}</small>${pair?`<p class="site-apprenticeship">${resident(pair.mentor)} обучает ${resident(pair.pupil)} · часть труда уходит на обучение.</p>`:''}`;}
 function mutate(result,message){if(!result.ok){toast(result.reason||'Действие недоступно');return false;}save();update();toast(message);return true;}
 function bindManagement(root){
+ for(const button of root.querySelectorAll('[data-dedication-feast]'))button.onclick=()=>{
+  const result=orderFestival(state,{dedicationId:Number(button.dataset.dedicationFeast)});
+  if(mutate(result,result.warning||'Храмовая кухня заказала угощение')){paused=false;save();showFestival();}
+ };
  const votive=root.querySelector('[data-votive-temple]');
  if(votive)votive.onsubmit=e=>{e.preventDefault();const {source,donor}=votive.elements;
   if(mutate(orderVotive(state,votive.dataset.votiveTemple,source.value,Number(donor.value)),'Сосуд зарезервирован. Носильщик отнесёт его в храм.')){
