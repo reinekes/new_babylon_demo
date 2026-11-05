@@ -1,3 +1,5 @@
+import {fisheryKey,fisheryStock} from './fishery-stock.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {fishingWaterTargets,validFishingWaterTarget} from './fishing-water.js';
 import {manualGatheringActivity} from './manual-gathering.js';
 import {naturalAnimalsFor} from './fauna.js';
@@ -21,6 +23,31 @@ function featureTargets(s,b,origin){
  }return features;
 }
 function stance(s,c,target,reach=.15){const d=distance(c,target)||1,p={x:target.x+(c.x-target.x)/d*reach,y:target.y+(c.y-target.y)/d*reach};return clearGround(s,p)&&gatheringPathClear(s,c,p)?p:null;}
+function fishAvailable(state,target){
+ if(!isStrictSumer(state))return true;
+ const stock=fisheryStock(state,fisheryKey(state,target));
+ return !stock.resting&&stock.stock>1e-8;
+}
+function nearbyFish(state,origin){
+ return [...naturalAnimalsFor(state),...fishingWaterTargets(state,origin)]
+  .filter(target=>target.kind==='fish'&&distance(origin,target)<3);
+}
+function fishingStand(state,from,target,jobs=[]){
+ for(let d=.23;d<1.7;d+=.09)for(let i=0;i<12;i++){
+  const p=pointNear(state,target,d,i*Math.PI/6);
+  if(clearGround(state,p)&&gatheringPathClear(state,from,p)&&jobs.every(j=>distance(j.stand,p)>.18))return p;
+ }
+ return null;
+}
+export function fisheryOptions(state,origin){
+ if(!origin||!isStrictSumer(state))return [];
+ const choices=new Map();
+ for(const target of nearbyFish(state,origin)){
+  const key=fisheryKey(state,target);
+  if(!choices.has(key)&&fishingStand(state,origin,target))choices.set(key,fisheryStock(state,key));
+ }
+ return [...choices].map(([key,status])=>({key,...status}));
+}
 function newJob(s,c,b,origin){
  const g=initializeGathering(s),reserved=new Set(g.jobs.filter(j=>j.citizen!==c.id).map(j=>j.target.id));let target=null,stand=null;
  if(kindFor[b.type]){
@@ -31,10 +58,10 @@ function newJob(s,c,b,origin){
   const prey=naturalAnimalsFor(s).filter(a=>a.kind==='gazelle'&&!reserved.has(a.id)&&!killed.has(a.id)&&distance(origin,a)<6).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const a of prey){const p=stance(s,c,a,.65);if(p){target={id:a.id,kind:a.kind,x:a.x,y:a.y};stand=p;break;}}
  }else if(b.type==='fishing'){
-  const fish=[...naturalAnimalsFor(s),...fishingWaterTargets(s,origin)].filter(a=>a.kind==='fish'&&!reserved.has(a.id)&&distance(origin,a)<3).sort((a,b)=>distance(c,a)-distance(c,b));
+  const fish=nearbyFish(s,origin).filter(a=>!reserved.has(a.id)).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const a of fish){
-   // Walk to an actual dry bank, then cast a plain line into visible water.
-   for(let d=.23;d<1.7&&!stand;d+=.09)for(let i=0;i<12;i++){const p=pointNear(s,a,d,i*Math.PI/6);if(clearGround(s,p)&&gatheringPathClear(s,c,p)&&g.jobs.every(j=>distance(j.stand,p)>.18)){stand=p;break;}}
+   if(!fishAvailable(s,a))continue;
+   stand=fishingStand(s,c,a,g.jobs);
    if(stand){target={id:a.id,kind:'fish',x:a.x,y:a.y};break;}
   }
  }
@@ -45,7 +72,7 @@ function move(c,to,dt,rate=1){const d=distance(c,to),step=Math.min(d,dt*.65*Math
 /** Actual local work trip. A load can only be collected once its target was worked. */
 export function workGathering(s,c,b,dt,rate,origin){
  const g=initializeGathering(s);let j=g.jobs.find(j=>j.citizen===c.id);
- if(j&&j.work!==c.work){g.jobs=g.jobs.filter(v=>v!==j);j=null;}
+ if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
  if(!j)j=newJob(s,c,b,origin||c);if(!j)return false;
  if(j.stage==='approach'){if(move(c,j.stand,dt,rate))j.stage='working';return false;}
  c.workElapsed=Math.min(BUILDINGS[b.type].workTime,c.workElapsed+dt*rate);j.progress=clamp(c.workElapsed/BUILDINGS[b.type].workTime);
@@ -59,7 +86,7 @@ export function workGathering(s,c,b,dt,rate,origin){
   f.health=Math.max(0,f.health-(b.type==='logging'?1:.2));if(f.health<1e-7){f.health=0;f.felledAt=s.simTime;f.recoverAt=s.simTime+(b.type==='logging'?120:180);}
  }
  // Collect at the target, then carry the actual load back over the same dry leg.
- g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.origin;
+ g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.kind==='fishing'?{...j.origin,fishery:fisheryKey(s,j.target)}:j.origin;
 }
 export function advanceGathering(s){
  const g=initializeGathering(s),active=new Set(s.buildings.filter(isOperational).filter(b=>GATHERING_TYPES.includes(b.type)).map(buildingKey));

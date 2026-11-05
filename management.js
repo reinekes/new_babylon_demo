@@ -1,3 +1,5 @@
+import {restFishery} from './fishery-stock.js';
+import {fisheryOptions} from './labor-life.js';
 import {enableAutumnCrops} from './agriculture.js';
 import {fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled} from './field-soil.js';
@@ -218,6 +220,15 @@ export function adoptAutumnCrops(s){
  if(!enableAutumnCrops(s))return {ok:false,reason:'Этот календарь уже включён или недоступен в выбранном сценарии'};
  invalidateAssignments(s);
  syncCitizens(s);
+ return {ok:true};
+}
+
+export function closeFishingGround(state,building,ground){
+ const reason=blocked(state);
+ if(reason)return {ok:false,reason};
+ if(building?.type!=='fishing'||!state.buildings.includes(building)||!isComplete(building))return {ok:false,reason:'Нужен готовый рыбацкий двор'};
+ const origin=networkFor(state).ports.find(p=>p.building===building);
+ if(!fisheryOptions(state,origin).some(option=>option.key===ground)||!restFishery(state,ground))return {ok:false,reason:'Участок недоступен, уже закрыт или запас полный'};
  return {ok:true};
 }
 

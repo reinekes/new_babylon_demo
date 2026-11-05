@@ -1,3 +1,4 @@
+import {fisheryOptions} from './labor-life.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
@@ -66,12 +67,12 @@ import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale} from './trading.js';
 import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,layRoad} from './roads.js';
 import {weatherAt} from './environment.js';
-import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
+import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites} from './construction.js';
 import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
-import {workforceStats,visibleCitizens,isWorkday} from './workforce.js';
+import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,levelOf,outputMultiplier} from './definitions.js';
 import {DIVINE_NAMES,DOMAIN_NAMES,MOURNING_NAMES} from './divinity.js';
 import {DAY_SECONDS,lightingAt} from './city-life.js';
@@ -271,6 +272,15 @@ function updateDetail(){
   const diagnosis=salt>25?'Соль снижает урожай':next>25?'После лета возможны потери урожая':'Поле пока даёт полный урожай';
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Почва</h4><p>Засоление ${salt}% · ${diagnosis}. ${water.drained?'Дренаж отводит воду.':'Для дренажа нужен соседний отвод, связанный с водоёмом.'}</p><button id="field-rest" type="button">${rest?'Отменить отдых':'Оставить поле под паром'} · год ${year}</button></section>`);
   $('field-rest').onclick=()=>{ $('field-rest').blur();mutate(setFieldRest(state,key,!rest),rest?'Отдых поля отменён':'Запланирован отдых поля'); };
+ }
+ if(b.type==='fishing'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
+  const origin=networkFor(state).ports.find(p=>p.building===b),grounds=fisheryOptions(state,origin);
+  const rows=grounds.map(g=>{
+   const label=g.key.startsWith('river:')?`Речной участок №${Number(g.key.slice(6))+1}`:`Озеро · ${g.key.slice(5)}`;
+   return `<p>${esc(label)} · запас ${rounded(g.stock)} / 48${g.resting?` · отдых ещё ${Math.ceil(g.seconds)} с`:''}</p><button type="button" data-fishery-rest="${esc(g.key)}" ${g.resting||g.stock>=48?'disabled':''}>Закрыть лов на сутки</button>`;
+  }).join('');
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Рыбные угодья</h4>${rows||'<p>Из двора нет подхода к воде.</p>'}<small>Запас общий для всех дворов у участка. За сутки отдыха восстановится до 18 ед. Другие участки остаются открыты.</small></section>`);
+  $('building-controls').querySelectorAll('[data-fishery-rest]').forEach(el=>el.onclick=()=>{el.blur();mutate(closeFishingGround(state,b,el.dataset.fisheryRest),'Лов закрыт на сутки');});
  }
  if(b.type==='canal'&&!q&&canalMaintenanceEnabled(state)){
   const worker=state.citizens.find(c=>c.work===buildingKey(b));

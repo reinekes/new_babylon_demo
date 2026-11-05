@@ -1,3 +1,4 @@
+import {takeFish} from './fishery-stock.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {floodPhase,floodFootprint,floodProtectionRevision,floodedSegment,floodEscapeRoute} from './river-flood.js';
 import {fieldResting} from './field-soil.js';
@@ -297,8 +298,11 @@ function harvest(s,c,ctx,via=null){
   if(resource==='food')mult*=boost.fertility?1.6:1;
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
-  c.cargo[resource]=base*mult;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,c.cargo[resource]);
+  const amount=b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
+  if(amount<=1e-8)continue;
+  c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
+ if(b.type==='fishing'&&!hasCargo(c))return false;
  if(isProductionStore(b)){if(via){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.

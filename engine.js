@@ -1,3 +1,4 @@
+import {validateFisheries} from './fishery-stock.js';
 import {AUTUMN_CROPS} from './crop-calendar.js';
 import {changeFloodSeason,validateRiverFlood} from './river-flood.js';
 import {validateFieldSoil} from './field-soil.js';
@@ -272,7 +273,7 @@ export function decode(raw){
    initializeArtisans(s);
   }
   if(oldBuildingInventory){initializeBuildingInventory(s);for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)for(const k of MATERIALS)r[k]??=0;const c=s.trade?.caravan;if(c&&MATERIALS.includes('milk')){c.stock.milk??=0;c.prices.milk??={buy:3,sell:1};}}
-  if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s))return null;
+  if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s)||!validateFisheries(s))return null;
   if(s.world&&!validateWorld(s))return null;
   if(oldEcology)initializeEcology(s,{legacy:true});
   if(!validateEcology(s))return null;
