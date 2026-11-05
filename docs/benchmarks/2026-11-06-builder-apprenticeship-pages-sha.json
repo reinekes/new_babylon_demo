@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-05T22:09:36.313805+00:00",
+  "commit": "cda375babe7f4c25ccde2ba35fd57d3ec0352746",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4bc7dbe2a002b1d6ae403368343666690e190fb33e1cef43671af3aba88b68e7",
+      "actual": "4bc7dbe2a002b1d6ae403368343666690e190fb33e1cef43671af3aba88b68e7",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "0c968e67d16af02e4fda2a0bcd307309d7eb3c25d9b3a5ea79f13c3901643f64",
+      "actual": "0c968e67d16af02e4fda2a0bcd307309d7eb3c25d9b3a5ea79f13c3901643f64",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "bbe26203f0ee6cc0512c85d194d4f68da22f0230fccbe7aba7a8ca23290bc2a4",
+      "actual": "bbe26203f0ee6cc0512c85d194d4f68da22f0230fccbe7aba7a8ca23290bc2a4",
+      "match": true
+    },
+    {
+      "path": "godhood.css",
+      "status": 200,
+      "expected": "b5dbb1bdeb68dbf0b76b8c9f93ed6ea96b056e92c04093877df858159ee79ceb",
+      "actual": "b5dbb1bdeb68dbf0b76b8c9f93ed6ea96b056e92c04093877df858159ee79ceb",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "9c9638a7bdaa7a353093754d9120a6e76987941edc838331c664fafc910fa86c",
+      "actual": "9c9638a7bdaa7a353093754d9120a6e76987941edc838331c664fafc910fa86c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "6ee0f6452bcb299a82000506f4651e182df0c58e7ea747d201b648507f0f49ce",
+      "actual": "6ee0f6452bcb299a82000506f4651e182df0c58e7ea747d201b648507f0f49ce",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "938e48ca2bb83c66527614f72f685eb9ac7581705c1e1aaf0d43d14032e4a574",
+      "actual": "938e48ca2bb83c66527614f72f685eb9ac7581705c1e1aaf0d43d14032e4a574",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0363b0637585abea8e24947300894a14b4674c4e1682fad8cfe20ad442878a8a",
+      "actual": "0363b0637585abea8e24947300894a14b4674c4e1682fad8cfe20ad442878a8a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "72b218b32f956bb577a54f36150c3f6ef603294017f755be2d74ec573bb8d969",
+      "actual": "72b218b32f956bb577a54f36150c3f6ef603294017f755be2d74ec573bb8d969",
+      "match": true
+    },
+    {
+      "path": "tests/builder-apprenticeship.test.js",
+      "status": 200,
+      "expected": "985ab3d0989ebdb366c8659d34ea630606e490b5e1d7eee2dc69030f0e7699a5",
+      "actual": "985ab3d0989ebdb366c8659d34ea630606e490b5e1d7eee2dc69030f0e7699a5",
+      "match": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "status": 200,
+      "expected": "f6ea1cb1a1d2d450365e6beb3baad7777a5d85fee3422889b05cd529c064fc5a",
+      "actual": "f6ea1cb1a1d2d450365e6beb3baad7777a5d85fee3422889b05cd529c064fc5a",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "c1f3e91aaf2ffe477692381d7add420a9668c80bc8020d0e6397058aee8a07b4",
+      "actual": "c1f3e91aaf2ffe477692381d7add420a9668c80bc8020d0e6397058aee8a07b4",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
