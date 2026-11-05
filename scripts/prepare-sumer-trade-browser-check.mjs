@@ -1,12 +1,13 @@
 // Run from a checkout, then serve the output on an isolated test-only origin.
 // node scripts/prepare-sumer-trade-browser-check.mjs [output-directory]
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {readFile,writeFile} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-18';
+const tag='sumer-trade-supplied-20261105-19';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -119,7 +120,14 @@ const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?
 // Private baseline is the last verified published landscape, including its old
 // scenery rebuild path; shared engine/state/assets remain the current candidate.
 const baselineCommit='1d936d6773daf2d8b2bc468329e4610c4a9f40b7';
-const baselineLandscape=execFileSync('git',['show',baselineCommit+':game3d/landscape.js'],{cwd:source,encoding:'utf8'}).replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
+const rewriteLandscape=code=>code.replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
+const baselineLandscapeSource=execFileSync('git',['show',baselineCommit+':game3d/landscape.js'],{cwd:source,encoding:'utf8'}),baselineLandscape=rewriteLandscape(baselineLandscapeSource),candidateLandscapeSource=await readFile(join(source,'game3d/landscape.js'),'utf8'),candidateLandscape=rewriteLandscape(candidateLandscapeSource),sha=code=>createHash('sha256').update(code).digest('hex');
+await writeFile(join(output,'landscape-candidate.mjs'),candidateLandscape);
+const candidateHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-candidate.mjs?probe=${tag}"`);
+if(candidateHtml===html)throw Error('Missing candidate landscape mapping');
+await writeFile(join(output,'perf.html'),candidateHtml);
+check=check.replace('terrainCutCaching:',`landscapeProductionSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineLandscapeSource)}':'${sha(candidateLandscapeSource)}',landscapeModuleSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineLandscape)}':'${sha(candidateLandscape)}',terrainCutCaching:`);
+await writeFile(join(output,'check.js'),check);
 await writeFile(join(output,'landscape-uncached.mjs'),baselineLandscape);
 const baselineHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-uncached.mjs?probe=${tag}"`);
 if(baselineHtml===html)throw Error('Missing landscape import-map entry for baseline');

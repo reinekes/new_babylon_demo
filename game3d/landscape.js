@@ -96,7 +96,7 @@ export function groundStocks(s,net,topologySignature=landscapeSignature(s)){
 export async function createGameLandscape(B,scene,initialState,materials,options={}){
  let currentState=initialState;
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map();
- let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='',staticScenerySignature='';
+ let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='',staticScenerySignature='',natureGeometrySignature='';
  const roadRenderGroups=createRoadRenderGroups(B,scene,meshes);let batchRoads=options.batchRoads!==false;
  const palmRenderGroups=createPalmRenderGroups(B,scene,meshes);let batchPalms=options.batchPalms!==false;
  const updatePalmGroups=()=>palmRenderGroups.sync(palmInstances,palmSources.length,batchPalms);
@@ -199,6 +199,9 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  }
  function rebuildGeometry(s,plan){catGroundHeights.clear();
   const worldKey=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.x,b.y])]),seenRoads=new Set();
+  // Natural placement follows occupied footprints and path endpoints, not work
+  // counters, paving level or resource quantities. Weather still advances below.
+  natureGeometrySignature=JSON.stringify([worldKey,s.buildings.map(b=>[b.type,b.footprint||1]),depositGeometry(s),plan.roads.map(r=>[r.a,r.b])]);
   for(const r of plan.roads){if(shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)<.08)continue;const mat=r.level>=3?paving:r.level===2?gravel:earth;
    seenRoads.add(r.id);const key=JSON.stringify([worldKey,r.a,r.b,r.level,r.target,r.progress]),previous=roadBatches.get(r.id);if(previous?.key===key)continue;if(previous)remove(previous.meshes);
    const batch=[],record={key,meshes:batch,road:{id:r.id,a:r.a,b:r.b,working:!!r.target}};roadBatches.set(r.id,record);
@@ -267,8 +270,8 @@ export async function createGameLandscape(B,scene,initialState,materials,options
    for(const m of base?.meshes||[])if(m.name==='soft-riparian-grass'&&m.material)m.material.albedoColor=grass.albedoColor.clone();
    meadow.albedoColor=dry?color(.57,.43,.21):summer?color(.48,.47,.25):rain?color(.32,.43,.19):color(.40,.48,.24);
   }
-  natureDetails.update(s,time,weather,landscapePlanRoads,signature);
-  if(valleyVegetation.update(s,landscapePlanRoads,signature)){const registered=new Set(meshes);for(const m of valleyVegetation.meshes)if(!registered.has(m))meshes.push(m);}
+  natureDetails.update(s,time,weather,landscapePlanRoads,natureGeometrySignature);
+  if(valleyVegetation.update(s,landscapePlanRoads,natureGeometrySignature)){const registered=new Set(meshes);for(const m of valleyVegetation.meshes)if(!registered.has(m))meshes.push(m);}
   for(const m of natureDetails.meshes)if(!meshes.includes(m))meshes.push(m);
   for(let i=0;i<drops.length;i++){const m=drops[i];m.setEnabled(rain);if(rain){const h=((i*.618+time*1.6)%1)*20;m.position.set(((i*53.71+time*3)% (worldWidth(s)*TILE)),20-h,((i*37.29)% (worldHeight(s)*TILE)));m.rotation.z=.16;}}
   // Wind moves only shared source foliage instances, with no allocation or save edits.
