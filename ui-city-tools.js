@@ -1,3 +1,4 @@
+import {floodPhase,floodFootprint,floodedRoads} from './river-flood.js';
 import {lowWaterForecast} from './irrigation.js';
 import {needsCanalCleaning} from './canal-maintenance.js';
 import {activeLaborKind,harvestCallActive,harvestDemand,harvestCandidates,unloadDemand,UNLOAD_PORTERS} from './city-labor.js';
@@ -60,7 +61,7 @@ export const CITY_WORK_CATEGORIES=[
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Сырьё',types:['clay','reed','logging','quarry','sheepfold']},
  {id:'production',name:'Производство',types:['pottery','brewery','kiln','brickyard','weaver','tailor']},
- {id:'services',name:'Снабжение и услуги',types:['waterpoint','depot','granary','market','healer','musicHouse','house','bridge','canal','harbor']},
+ {id:'services',name:'Снабжение и услуги',types:['waterpoint','depot','granary','market','healer','musicHouse','house','bridge','canal','levee','harbor']},
  {id:'sacred',name:'Культ',types:['shrine','ziggurat','ishtarGate']}
 ];
 function harvestCallHTML(s){
@@ -88,6 +89,17 @@ function repairCallHTML(s){
  const links=canals.filter(b=>b.silt>=.5||b.canalCleaning).slice(0,8).map(b=>focus(buildingKey(b),`Канал · ${b.x}, ${b.y} · ил ${Math.round(b.silt*100)}%`)).join('');
  return `<article class="city-tools-row"><h3>${active?'Приоритет расчистки действует':'Расчистка каналов'}</h3><p>Участков в очереди · ${jobs.length}</p>${links}<small>Наряды заказываются в карточках каналов. Призыв общий с жатвой и разгрузкой.</small><button type="button" data-city-repair ${spent||!jobs.length?'disabled':''}>Собрать людей на расчистку</button></article>`;
 }
+function floodHTML(s){
+ const phase=floodPhase(s);
+ if(!phase)return '';
+ const footprint=floodFootprint(s,s.riverFlood),roads=floodedRoads(s,footprint);
+ const withLevees=floodFootprint(s,s.riverFlood,{withDrainage:false}).size;
+ const exposed=floodFootprint(s,s.riverFlood,{withDrainage:false,withLevees:false}).size;
+ const relieved=withLevees-footprint.size,protectedCells=exposed-withLevees;
+ const evacuees=s.citizens.filter(c=>c.floodShelter),walking=evacuees.filter(c=>c.routeIndex<c.route.length).length;
+ const coordinates=roads.slice(0,8).map(r=>`(${r.a.x}, ${r.a.y}) → (${r.b.x}, ${r.b.y})`).join(' · ');
+ return `<article class="city-tools-row"><h3>${phase==='active'?'Река вышла из берегов':'Прогноз весеннего разлива'}</h3><p>Затронутых дорожных участков: ${roads.length}. Защищённые клетки: вал — ${protectedCells}, отвод — ${relieved}.</p><small>Для отвода нужна непрерывная цепочка чистых дренажных каналов с выходом в воду за пределами разлива.</small>${phase==='active'?`<p>Идут в укрытие: ${walking}. В укрытии: ${evacuees.length-walking}.</p>`: ''}${coordinates?`<small>${coordinates}</small>`:''}</article>`;
+}
 function lowWaterHTML(s){
  const forecast=lowWaterForecast(s);
  if(!forecast)return '';
@@ -99,7 +111,7 @@ function workshopsHTML(s,model,expanded){
  const buildings=new Map(s.buildings.map(b=>[b.id||`${b.x},${b.y}`,b])),groups=new Map();
  for(const w of model.workshops){if(!groups.has(w.type))groups.set(w.type,[]);groups.get(w.type).push(w);}
  const categories=CITY_WORK_CATEGORIES.map(c=>({...c,types:[...c.types]})),unknown=[...groups.keys()].filter(t=>!categories.some(c=>c.types.includes(t)));categories.find(c=>c.id==='services').types.push(...unknown);
- return `${lowWaterHTML(s)}${harvestCallHTML(s)}${unloadCallHTML(s)}${repairCallHTML(s)}<p class="city-tools-note">Здания сгруппированы по делу; одинаковые рядом, новые первыми. Раскрой строку для назначения, запасов и выпуска.</p><div class="city-tools-staffing-legend"><span data-staffing="empty">Нет людей</span><span data-staffing="partial">Не хватает</span><span data-staffing="full">Места заняты</span><span data-staffing="matched">По призванию</span></div>${categories.map(c=>{const count=c.types.reduce((n,t)=>n+(groups.get(t)?.length||0),0);return `<section class="city-tools-category" data-city-work-category="${c.id}"><h3>${c.name} <small>${count}</small></h3><div class="city-tools-workshop-groups city-tools-card-grid">${c.types.filter(t=>groups.has(t)).map(type=>`<section class="city-tools-workshop-group" aria-label="${escape(buildingDefinition(s,type)?.name||type)}" data-city-building-group="${escape(type)}">${groups.get(type).sort((a,b)=>compareBuildingsNewest(buildings.get(a.key),buildings.get(b.key))).map(w=>workshopCard(s,w,buildings.get(w.key),expanded)).join('')}</section>`).join('')||empty('Пока нет зданий этой группы.')}</div></section>`;}).join('')}`;
+ return `${floodHTML(s)}${lowWaterHTML(s)}${harvestCallHTML(s)}${unloadCallHTML(s)}${repairCallHTML(s)}<p class="city-tools-note">Здания сгруппированы по делу; одинаковые рядом, новые первыми. Раскрой строку для назначения, запасов и выпуска.</p><div class="city-tools-staffing-legend"><span data-staffing="empty">Нет людей</span><span data-staffing="partial">Не хватает</span><span data-staffing="full">Места заняты</span><span data-staffing="matched">По призванию</span></div>${categories.map(c=>{const count=c.types.reduce((n,t)=>n+(groups.get(t)?.length||0),0);return `<section class="city-tools-category" data-city-work-category="${c.id}"><h3>${c.name} <small>${count}</small></h3><div class="city-tools-workshop-groups city-tools-card-grid">${c.types.filter(t=>groups.has(t)).map(type=>`<section class="city-tools-workshop-group" aria-label="${escape(buildingDefinition(s,type)?.name||type)}" data-city-building-group="${escape(type)}">${groups.get(type).sort((a,b)=>compareBuildingsNewest(buildings.get(a.key),buildings.get(b.key))).map(w=>workshopCard(s,w,buildings.get(w.key),expanded)).join('')}</section>`).join('')||empty('Пока нет зданий этой группы.')}</div></section>`;}).join('')}`;
 }
 function homesHTML(model,group){const keys=new Set(model.neighborhoods.find(n=>n.key===group)?.homeKeys||[]);return `<button type="button" class="city-tools-link" data-city-tab="districts">← Все кварталы</button><div class="city-tools-list city-tools-card-grid">${model.homes.filter(h=>keys.has(h.key)&&h.reasons.length).map(h=>`<article class="city-tools-row"><div class="city-tools-row-head"><div class="city-tools-building-name">${uiIcon('house')}${focus(h.key,`Дом · ${h.x}, ${h.y}`)}</div><button type="button" class="city-tools-link" data-city-home="${escape(h.key)}">Жители · ${h.population}</button></div><div class="city-tools-metrics"><span>Еда ${number(h.food)} / ${number(h.demand)} на ужин</span><span>Вода ${number(h.water)} / ${number(h.waterDemand)} в день</span></div><div class="city-tools-reasons">${h.reasons.map(r=>tag(r.label,true)).join('')}</div>${buildingInventoryHTML(h.inventory,{house:true})}</article>`).join('')||empty('Сейчас все семьи этого квартала обеспечены.')}</div>`;}
 

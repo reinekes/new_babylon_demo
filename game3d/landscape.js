@@ -1,3 +1,4 @@
+import {floodMapView} from '../river-flood.js';
 import {createPalmRenderGroups} from './palm-render-groups.js';
 import {orchardPalms} from '../orchard-layout.js';
 import {isStrictSumer} from '../scenario-profiles.js';
@@ -295,9 +296,36 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   // Wind moves only shared source foliage instances, with no allocation or save edits.
   updatePalmWind(time,wind);
  }
+ const floodMeshes=[];
+ let previousFlood=null,floodMaterial=null;
+ function updateFlood(s){
+  const view=floodMapView(s);
+  if(view===previousFlood)return;
+  previousFlood=view;
+  remove(floodMeshes);
+  if(!view?.tiles.length)return;
+  floodMaterial??=material('floodplain-water-tint','#3c949d');
+  floodMaterial.backFaceCulling=false;
+  floodMaterial.transparencyMode=B.Material.MATERIAL_ALPHABLEND;
+  floodMaterial.alpha=view.phase==='active'?.6:.27;
+  const positions=[],indices=[],normals=[];
+  for(const {x,y} of view.tiles){
+   const first=positions.length/3;
+   for(const [dx,dy] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){
+    const px=x+dx,py=y+dy;
+    positions.push(px*TILE,visualSurfaceElevation(px,py,s)+.09,py*TILE);
+    normals.push(0,1,0);
+   }
+   indices.push(first,first+2,first+1,first,first+3,first+2);
+  }
+  const mesh=new B.Mesh('temporary-river-flood',scene),data=new B.VertexData();
+  Object.assign(data,{positions,indices,normals});data.applyToMesh(mesh);
+  mesh.material=floodMaterial;add(mesh,floodMeshes);mesh.freezeWorldMatrix();
+ }
  function update(s,time=0,selection=null){if(disposed)return;currentState=s;rebuildBase(s);const next=landscapeSignature(s);if(next!==signature){signature=next;streetNetwork=cachedStreetsFor(s)||generateStreets([...(s.buildings||[]),...(s.roadAnchors||[])],s);const plan=landscapePlan(s);landscapePlanRoads=plan.roads;rebuildGeometry(s,plan);weatherSignature='';}base.light(night);base.update(s,time);for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes'].includes(m.name))m.setEnabled(false);if(!meshes.includes(m))meshes.push(m);} // Terrain's road owner can replace its hidden batch.
   catDiscovery.update(s);for(const m of catDiscovery.meshes)if(!meshes.includes(m))meshes.push(m);
   waterView.update(s,time);waterView.light(night);for(const m of waterView.meshes)if(!meshes.includes(m))meshes.push(m);
+  updateFlood(s);
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);
   // Owners can replace batches during updateWeather; expose only live meshes.
   for(let i=meshes.length-1;i>=0;i--)if(meshes[i].isDisposed?.())meshes.splice(i,1);

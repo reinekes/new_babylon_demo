@@ -1,3 +1,5 @@
+import {floodPhase,floodFootprint,floodProtectionRevision,floodedSegment} from './river-flood.js';
+import {supplyHome} from './households.js';
 import {cachedStreetsFor} from './workforce.js';
 import {recordCitizenDelivery} from './citizen-epithets.js';
 import {dairyNeeds} from './dairy.js';
@@ -17,31 +19,33 @@ const point=p=>({x:p.x,y:p.y});
 const key=p=>`${Math.round(p.x+.5)},${Math.round(p.y+.5)}`;
 const dryEdge=(s,a,b)=>[0,.25,.5,.75,1].every(t=>isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t));
 function navigation(s){
- const geometry=s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|'),signature=geometry+'|anchors:'+(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
+ const flood=floodPhase(s)==='active'?s.riverFlood:null;
+ const geometry=(flood?`${flood.along},${flood.bank}:${floodProtectionRevision(s)}|`:'')+s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|'),signature=geometry+'|anchors:'+(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
  let cache=caches.get(s);const sameTerrain=cache&&cache.world===s.world&&cache.river===s.world?.river&&cache.lakes===s.world?.lakes&&cache.lakeCount===(s.world?.lakes?.length||0);if(cache?.signature===signature&&sameTerrain)return cache;
  const reuse=cache?.geometry===geometry&&sameTerrain;
  const network=cachedStreetsFor(s)||generateStreets([...s.buildings,...s.roadAnchors||[]],s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),nodes=reuse?cache.nodes:new Map(),graph=reuse?cache.graph:new Map();
+ const flooded=reuse?cache.flooded:flood?floodFootprint(s,flood):null;
  if(!reuse){
-  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
-  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q))graph.get(k).push(qk);}
+  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)&&(!flooded||!floodedSegment(flooded,p,p))){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
+  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q)&&(!flooded||!floodedSegment(flooded,p,q)))graph.get(k).push(qk);}
  }
- cache={signature,geometry,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
+ cache={signature,geometry,flooded,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
 }
-function path(nodes,graph,from,to){
+function path(nodes,graph,from,to,flooded=null){
  if(!nodes.has(from))return null;const prev=new Map([[from,null]]),queue=[from];
- for(let i=0;i<queue.length;i++){const k=queue[i];if(to(k,nodes.get(k))){const result=[];for(let at=k;at!==null;at=prev.get(at))result.push(point(nodes.get(at)));return result.reverse();}for(const next of graph.get(k)||[])if(!prev.has(next)){prev.set(next,k);queue.push(next);}}
+ for(let i=0;i<queue.length;i++){const k=queue[i];if(to(k,nodes.get(k))){const result=[];for(let at=k;at!==null;at=prev.get(at))result.push(point(nodes.get(at)));return result.reverse();}for(const next of graph.get(k)||[])if(!prev.has(next)&&(!flooded||!floodedSegment(flooded,nodes.get(k),nodes.get(next)))){prev.set(next,k);queue.push(next);}}
  return null;
 }
 function bankRoute(s,nav,origin){
  if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?path(nav.nodes,nav.graph,key(p),(_,q)=>Math.abs(signedRiverDistance(q.x,q.y,s))<2.25):null);}return nav.banks.get(origin);
 }
 function roadRoute(nav,from,to){
- const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key):null);}return nav.roads.get(id);
+ const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key,nav.flooded):null);}return nav.roads.get(id);
 }
 const targetStock=b=>b.type==='house'?b.water:(b.type==='cowshed'?b.dairy?.water:isArtisan(b)?b.artisan?.water:b.brickmaking?.water)||0;
-function targetCapacity(s,b){return b.type==='cowshed'?12:b.type==='house'?Math.max(2,s.citizens.filter(c=>c.home===buildingKey(b)).reduce((n,c)=>n+demand(c),0)*3):b.type==='brewery'?3:2;}
+function targetCapacity(s,b){return b.type==='cowshed'?12:b.type==='house'?Math.max(2,s.citizens.filter(c=>supplyHome(c)===buildingKey(b)).reduce((n,c)=>n+demand(c),0)*3):b.type==='brewery'?3:2;}
 export function waterSummary(s,b){
- const residents=s.citizens.filter(c=>c.home===buildingKey(b)),daily=residents.reduce((n,c)=>n+demand(c),0),trips=s.citizens.filter(c=>c.waterTrip?.target===buildingKey(b));
+ const residents=s.citizens.filter(c=>supplyHome(c)===buildingKey(b)),daily=residents.reduce((n,c)=>n+demand(c),0),trips=s.citizens.filter(c=>c.waterTrip?.target===buildingKey(b));
  return {stock:targetStock(b)||0,demand:daily,capacity:targetCapacity(s,b),delivered:b.waterDelivered||0,inTransit:trips.reduce((n,c)=>n+c.waterTrip.load,0),couriers:trips.length,thirsty:residents.filter(c=>(c.thirst||0)>30).length};
 }
 export function initializeWater(s){
@@ -86,10 +90,14 @@ function advanceTrip(s,c,dt,nav){
  for(let turn=0;turn<8&&budget>eps;turn++){
   if(t.phase==='fill'){
    const used=Math.min(budget,2-t.elapsed);t.elapsed+=used;budget-=used;if(t.elapsed<2-eps)return;
-   t.load=t.amount;const back=[...bankRoute(s,nav,t.origin)||[]].reverse();const delivery=t.origin!==t.target?roadRoute(nav,t.origin,t.target):[];
+   const origin=nav.ports.get(t.origin);
+   const back=nav.flooded?origin&&path(nav.nodes,nav.graph,key(c),k=>k===origin.key):[...bankRoute(s,nav,t.origin)||[]].reverse();
+   if(!back)return;
+   t.load=t.amount;const delivery=t.origin!==t.target?roadRoute(nav,t.origin,t.target):[];
    if(t.origin!==t.target&&!delivery)return;setRoute(t,[...back,...delivery||[]],'deliver',c);continue;
   }
   const next=t.route[t.index];
+  if(next&&nav.flooded&&floodedSegment(nav.flooded,c,next))return;
   if(next){const d=Math.hypot(next.x-c.x,next.y-c.y),speed=(t.station?1.35:1.05)*(s.buffs?.haste?1.5:1)*(t.station&&c.calling==='watercarrier'&&c.role==='watercarrier'?1.2:1),time=d/speed;if(time>budget){c.x+=(next.x-c.x)*budget/time;c.y+=(next.y-c.y)*budget/time;return;}c.x=next.x;c.y=next.y;t.index++;budget-=time;continue;}
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
@@ -104,14 +112,14 @@ function advanceTrip(s,c,dt,nav){
 export function advanceWater(s,dt){
  if(!Number.isFinite(dt)||dt<=0)return;initializeWater(s);
  const houses=new Map(s.buildings.filter(b=>b.type==='house').map(b=>[buildingKey(b),b]));
- for(const c of s.citizens){const b=houses.get(c.home),amount=demand(c)*dt/WATER_DAY,drunk=b?Math.min(b.water,amount):0;if(b)b.water=Math.max(0,b.water-drunk);const shortage=amount-drunk;c.thirst=Math.max(0,Math.min(100,c.thirst+(shortage>eps?dt*.8:-dt*3)));if(c.thirst>30){c.health=Math.max(0,c.health-dt*.025*(c.thirst/100));c.mood=Math.max(0,c.mood-dt*.04);}}
+ for(const c of s.citizens){const b=houses.get(supplyHome(c,{arrived:true})),amount=demand(c)*dt/WATER_DAY,drunk=b?Math.min(b.water,amount):0;if(b)b.water=Math.max(0,b.water-drunk);const shortage=amount-drunk;c.thirst=Math.max(0,Math.min(100,c.thirst+(shortage>eps?dt*.8:-dt*3)));if(c.thirst>30){c.health=Math.max(0,c.health-dt*.025*(c.thirst/100));c.mood=Math.max(0,c.mood-dt*.04);}}
  if(s.funeral&&s.funeral.scope!=='family')return;
  const nav=navigation(s),mourning=new Set(s.funeral?.actors.map(a=>a.id)||[]),day=((8+s.simTime*.4)%24+24)%24;
  for(const c of s.citizens)if(c.waterTrip&&!mourning.has(c.id))advanceTrip(s,c,dt,nav);
  if(day<6||day>=19)return changes.delete(s);
  // Build household demand once per step: never rescan every resident per courier.
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),daily=new Map(),adults=new Set(),assigned=new Set();
- for(const c of s.citizens){daily.set(c.home,(daily.get(c.home)||0)+demand(c));if(c.age>=16&&c.health>20)adults.add(c.home);if(c.waterTrip)assigned.add(c.waterTrip.target);}
+ for(const c of s.citizens){const home=supplyHome(c);daily.set(home,(daily.get(home)||0)+demand(c));if(c.age>=16&&c.health>20&&!c.floodShelter)adults.add(home);if(c.waterTrip)assigned.add(c.waterTrip.target);}
  const targets=s.buildings.filter(b=>isOperational(b)&&(b.type==='house'?(daily.get(buildingKey(b))||0)>0&&b.water<(daily.get(buildingKey(b))||0):b.type==='cowshed'?dairyNeeds(b).water>eps:isArtisan(b)?(artisanNeeds(b).water||0)>eps:b.type==='brickyard'&&b.brickmaking&&!b.brickmaking.wet&&!b.brickmaking.ready&&b.brickmaking.water<2-eps));
  const needy=new Set(targets.map(buildingKey)),orphans=targets.filter(b=>b.type==='house'&&!adults.has(buildingKey(b)));
  const wanted=b=>b&&needy.has(buildingKey(b))&&!assigned.has(buildingKey(b));

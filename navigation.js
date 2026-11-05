@@ -1,5 +1,6 @@
 import {worldWidth,worldHeight,isDryPoint,onBridge,bridgeSpanAt,riverLocal} from './world.js';
 import {footprintSize} from './footprints.js';
+import {floodedSegment} from './river-flood.js';
 
 const pointKey=(x,y)=>`${x+.5},${y+.5}`;
 const pairKey=(a,b)=>`${a}>${b}`;
@@ -36,24 +37,26 @@ export function navigationTravelCost(s,route){const roads=roadLookup(s);let n=0;
 
 // Streets still own only their actual built segments. Walking gets a separate
 // dry-land graph; diagonal shortcuts never manufacture free diagonal roads.
-export function createWalkingNetwork(s,streets){
+export function createWalkingNetwork(s,streets,flooded=null){
+ const isFlooded=(a,b)=>flooded&&floodedSegment(flooded,a,b);
+ const segmentClear=(a,b)=>!isFlooded(a,b)&&navigationSegmentClear(s,a,b,index);
  const nodes=new Map(),graph=new Map(),costs=new Map(),index=obstacleIndex(s),roads=roadLookup(s),bridges=(s.buildings||[]).filter(b=>b.type==='bridge'&&b.construction?.kind!=='new');
  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){
-  const p={x:x-.5,y:y-.5,key:`${x},${y}`};if(!isDryPoint(s,p.x,p.y)&&!onBridge(bridges,p.x,p.y,s))continue;
+  const p={x:x-.5,y:y-.5,key:`${x},${y}`};if(isFlooded(p,p)||!isDryPoint(s,p.x,p.y)&&!onBridge(bridges,p.x,p.y,s))continue;
   if([...localObstacles(index,p)].some(r=>p.x>r.minX&&p.x<r.maxX&&p.y>r.minY&&p.y<r.maxY))continue;nodes.set(p.key,p);graph.set(p.key,new Set());
  }
  let maxSpeed=1;
  const connect=(a,b)=>{const speed=speedFor(s,a,b,roads,bridges),cost=Math.hypot(b.x-a.x,b.y-a.y)/speed;maxSpeed=Math.max(maxSpeed,speed);graph.get(a.key).add(b.key);graph.get(b.key).add(a.key);costs.set(pairKey(a.key,b.key),cost);costs.set(pairKey(b.key,a.key),cost);};
- for(const a of nodes.values())for(const [dx,dy]of [[1,0],[0,1]]){const b=nodes.get(pointKey(a.x+dx,a.y+dy));if(b&&navigationSegmentClear(s,a,b,index))connect(a,b);}
+ for(const a of nodes.values())for(const [dx,dy]of [[1,0],[0,1]]){const b=nodes.get(pointKey(a.x+dx,a.y+dy));if(b&&segmentClear(a,b))connect(a,b);}
  for(const a of nodes.values())for(const [dx,dy]of [[1,1],[-1,1]]){
   const b=nodes.get(pointKey(a.x+dx,a.y+dy)),sideX=nodes.get(pointKey(a.x+dx,a.y)),sideY=nodes.get(pointKey(a.x,a.y+dy));if(!b||!sideX||!sideY)continue;
   // All four cardinal sides must be walkable. This prevents squeezing around a
   // wet/occupied corner even if the mathematical diagonal misses its centre.
   if(!graph.get(a.key).has(sideX.key)||!graph.get(a.key).has(sideY.key)||!graph.get(b.key).has(sideX.key)||!graph.get(b.key).has(sideY.key))continue;
-  if(navigationSegmentClear(s,a,b,index))connect(a,b);
+  if(segmentClear(a,b))connect(a,b);
  }
  const components=new Map();let component=0;for(const key of nodes.keys()){if(components.has(key))continue;const queue=[key];components.set(key,component);for(let i=0;i<queue.length;i++)for(const next of graph.get(queue[i]))if(!components.has(next)){components.set(next,component);queue.push(next);}component++;}
- return {...streets,nodes,graph,components,navigation:{costs,maxSpeed,obstacles:index}};
+ return {...streets,nodes,graph,components,navigation:{costs,maxSpeed,obstacles:index,flooded}};
 }
 class MinHeap{
  constructor(){this.items=[];this.order=0;}

@@ -1,5 +1,5 @@
 import {knowsPresence} from './godhood.js';
-import {ration} from './households.js';
+import {ration,supplyHome} from './households.js';
 import {professionMatchesTask} from './professions.js';
 const clamp=n=>Math.max(0,Math.min(100,n));
 export const hourOf=t=>((8+t*.4)%24+24)%24;
@@ -14,7 +14,15 @@ export function mournResidents(s,ids,natural=false){const dead=new Set(ids);for(
 export function advanceWellbeing(s,dt){
  const day=mealCycle(s.simTime),night=isDinnerTime(s.simTime),gardenJoy=!night&&s.citizens.some(c=>c.mealDay===day&&c.mealEvaluated<day)?s.buildings.filter(b=>b.type==='garden'&&b.construction?.kind!=='new').reduce((n,b)=>n+2+2*(b.level||1),0):0;
  if(night){
-  const families=new Map();for(const c of s.citizens){if(c.mealDay!==day){c.mealDay=day;c.mealEaten=0;c.familyMeal=false;}if(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||s.funeral?.actors.some(a=>a.id===c.id))continue;if(!families.has(c.home))families.set(c.home,[]);families.get(c.home).push(c);}
+  const families=new Map();
+  for(const c of s.citizens){
+   if(c.mealDay!==day){c.mealDay=day;c.mealEaten=0;c.familyMeal=false;}
+   if(s.funeral?.actors.some(a=>a.id===c.id))continue;
+   const home=supplyHome(c,{arrived:true});
+   if(!home||!c.floodShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+   if(!families.has(home))families.set(home,[]);
+   families.get(home).push(c);
+  }
   for(const b of s.buildings){const family=families.get(`${b.x},${b.y}`);if(b.type!=='house'||!family||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=family.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total);for(let i=0;i<family.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=family[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;}}
  }else for(const c of s.citizens){if(c.mealDay!==day||c.mealEvaluated>=day)continue;const quality=Math.min(1,c.mealEaten/mealRation(c)),fed=quality>=.95;c.lastMealQuality=quality;c.mealEvaluated=day;c.missedMeals=fed?0:c.missedMeals+1;c.hunger=clamp(fed?c.hunger-20:Math.max(c.hunger+20*(1-quality),(1-quality)*100));c.health=clamp(c.health+5*quality-28*(1-quality)-c.hunger*.04);c.mood=clamp(c.mood+(fed?3+(c.familyMeal?2:0)+Math.min(4,gardenJoy*.25):-12*(1-quality)));c.faith=clamp(c.faith+(fed?1:-8*(1-quality)));const prayer=knowsPresence(s,c)?c.faith/100*.15:0;s.resources.faith+=prayer;c.prayerTotal+=prayer;}
 }

@@ -39,6 +39,7 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
+  if(b.type==='levee'){box(0,0,37,23,5,'#b78a58','#805637','#986740');box(0,0,33,16,9,'#c69c6a','#916447','#a4774d');return;}
   if(b.type==='musicHouse') {
     poly([[0,-15],[29,0],[0,15],[-29,0]],'#b9a17d');
     for(const [a,z] of [[-24,0],[0,-12],[24,0],[0,12]])line([[a,z],[a,z-27]],'#705136',1.5);

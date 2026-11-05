@@ -29,6 +29,7 @@ const paths={
  market:'M3 9 6 4h12l3 5v3H3V9Zm2 3v9h14v-9M8 4l-1 8m9-8 1 8M9 21v-6h6v6',
  shrine:'M4 21V10h16v11M3 10l9-6 9 6M9 21v-7h6v7M12 1v3',
  ziggurat:'M2 21h20v-5h-4v-5h-4V5h-4v6H6v5H2v5ZM10 5V2h4v3M6 16h12',
+ levee:'M2 20h20L17 8H7L2 20Zm3-5h14',
  canal:'M3 3v18m18-18v18M7 3v18m10-18v18M9 8l3 3 3-3m-6 7 3 3 3-3',
  bridge:'M2 12h20M3 12V7m6 5V7m6 5V7m6 5V7M4 18c1-7 5-7 8 0 3-7 7-7 8 0M2 21h20',
  rain:'M4 11h15c5-7-7-13-9-6-5-2-9 3-6 6ZM6 15l-2 4m8-4-2 4m8-4-2 4',

@@ -375,3 +375,30 @@ test('an invisible saved gathering tree inside a garden cannot erase its living 
   s.buildings=[];view.update(s,0);assert.equal(points().size,0,'demolition removes the managed palms');
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
 });
+
+test('the flood map shows a single warning surface, strengthens it in spring and removes it after recession',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine);
+ const materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ const original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async()=>{throw Error('optional asset offline');};
+ let view;
+ try{
+  const s=createGame({start:'established',scenario:strictScenario()});
+  Object.assign(s,{year:3,season:3,riverFlood:{year:4,along:9,bank:-1}});
+  const before=JSON.stringify(s);
+  view=await createGameLandscape(B,scene,s,materials);
+  const find=()=>view.meshes.filter(m=>m.name==='temporary-river-flood');
+  assert.equal(find().length,1);
+  const [warning]=find(),alpha=warning.material.alpha;
+  assert.equal(warning.isPickable,false);
+  assert.equal(JSON.stringify(s),before);
+  Object.assign(s,{year:4,season:0});
+  view.update(s);
+  assert.equal(find().length,1);
+  assert.ok(warning.isDisposed());
+  assert.ok(find()[0].material.alpha>alpha);
+  s.season=1;
+  view.update(s);
+  assert.equal(find().length,0);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+});

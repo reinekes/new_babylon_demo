@@ -1,3 +1,4 @@
+import {floodMapView} from './river-flood.js';
 import {catDiscoveryView} from './miracle-discovery.js';
 import {drawCatDiscoveryGround,drawCatOffering} from './map-cat-discovery.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -357,6 +358,8 @@ export class Renderer{
  const irrigation=irrigationFor(s);
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
  this.streetsLayer();
+ const flood=floodMapView(s);
+ if(flood)for(const {x,y} of flood.tiles)if(this.inView(x,y,50))this.tile(x,y,flood.phase==='active'?'#4b9fa5a6':'#4b9fa54a','#28737d75');
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});
  const catTrace=catDiscoveryView(s);if(catTrace)drawCatDiscoveryGround(this,catTrace);
  const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,s).y-riverLocal(vessel.x,vessel.y,s).along)<.65);
