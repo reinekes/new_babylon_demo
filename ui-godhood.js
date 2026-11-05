@@ -1,5 +1,5 @@
 import {catDiscoveryHTML} from './ui-cat-discovery.js';
-import {godhoodView,gameMode,builderLevel,firstBuilderInspiration,knowsPresence} from './godhood.js';
+import {godhoodView,gameMode,builderLevel,builderExperience,firstBuilderInspiration,knowsPresence} from './godhood.js';
 import {relicControlActive,RELIC_FAITH_COST} from './relic-quest.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {canStaffBuilding} from './professions.js';
@@ -18,8 +18,8 @@ function awakeningBaseHTML(s){
 }
 function nextAwakeningStep(s,master){
  if(!master)return '<p>Нет действующего вдохновлённого строителя. Верни строителю работу «Строитель» в карточке жителя или вдохнови другого верящего взрослого.</p>';
- const level=builderLevel(master),projects=master.builderSkill?.projects||0;
- if(level<3)return `<p>До ${level===1?'II':'III'} уровня осталось завершённых проектов: ${Math.max(0,(level===1?2:5)-projects)}. ${level===1?'Строй простые дворы и дома.':'Теперь доступны мастерские; строй их и улучшай здания до II уровня.'} Помощники и соседи увидят результат и начнут верить.</p>`;
+ const level=builderLevel(master),experience=builderExperience(master.builderSkill);
+ if(level<3)return `<p>До ${level===1?'II':'III'} уровня осталось набрать опыта: ${Math.max(0,(level===1?2:5)-experience)} проекта. ${level===1?'Строй простые дворы и дома.':'Теперь доступны мастерские; строй их и улучшай здания до II уровня.'} Помощники и соседи увидят результат и начнут верить.</p>`;
  const mastery='<p>Высшее мастерство достигнуто: доступны храмы и строительство III уровня.</p>',temples=s.buildings.filter(b=>['shrine','ziggurat'].includes(b.type)),ready=temples.filter(b=>isOperational(b)&&!b.construction);
  if(!ready.length)return mastery+(temples.length?'<p>Дострой храм: нужны доставленные материалы и работа мастера. После завершения назначь туда работников для накопления веры и престижа.</p>':`<p>Построй святилище: ${BUILDINGS.shrine.clay} глины и ${BUILDINGS.shrine.reed} тростника. Затем назначь туда двух работников — храм будет приносить веру и престиж.</p><button data-awakening-build="shrine">Построить святилище</button>`);
  const quests=[s.relicQuest,s.landRelicQuest].filter(Boolean);

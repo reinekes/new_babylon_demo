@@ -2,3 +2,5 @@
 
 .godhood-hud{max-height:calc(100% - 145px);overflow:auto;overscroll-behavior:contain}.cat-discovery-guide{border-top:1px solid var(--line,#b8b28e);margin-top:12px;padding-top:12px}.cat-discovery-guide button{margin:3px 4px 0 0}.godhood-hud .cat-discovery-guide h3{font-size:17px}.uruk-ui .cat-discovery-guide{border-color:#806343}.uruk-ui .cat-discovery-guide small{color:#d8be96}
 @media(max-width:600px){.godhood-hud{max-height:calc(100% - 120px)}}
+
+.tile-detail:not([hidden]){z-index:13}

@@ -12,7 +12,7 @@ import {advanceCatDiscovery} from './miracle-discovery.js';
 import {recordFishingCatch,moveFishingCargoToOutput,acceptFishingCargo,discardFishingCargo,reconcileCatFishing} from './cat-fishing-ledger.js';
 import {beginManualGathering,workManualGathering,manualGatheringStillAssigned,releaseManualGathering} from './manual-gathering.js';
 import {ceremonyActive} from './ceremony-time.js';
-import {advanceGodhood,godhoodCitizenView,canLeadConstruction} from './godhood.js';
+import {advanceGodhood,godhoodCitizenView,canLeadConstruction,isAwakening,applyBuilderInstruction} from './godhood.js';
 import {advanceRelicQuest,relicCitizenView,recoverRelicCitizen} from './relic-quest.js';
 import {recordCitizenDelivery,recordCitizenHarvest,recordProfessionEpithet} from './citizen-epithets.js';
 import {recordBuildingProduction} from './building-production-history.js';
@@ -486,7 +486,7 @@ function advanceFloodShelter(s,c,dt,ctx){
  }
  return true;
 }
-function advanceCitizen(s,c,dt,ctx){
+function advanceCitizen(s,c,dt,ctx,constructionWork){
  reconcileManualGathering(s,c,ctx);
  if(c.phase==='festival'||advanceFloodShelter(s,c,dt,ctx))return;
  if(c.districtJob&&!hasCargo(c)&&['home','resting'].includes(c.phase)){const b=ctx.buildings.get(c.home),hungry=homeMealFood(b)+1e-7<houseDemand(s,ctx,c.home)*4/3;if(hungry||!isWorkday(s.simTime)){delete c.districtJob;c.store=closestStore(s,ctx,c.home);invalidateAssignments(s);}}
@@ -542,7 +542,14 @@ function advanceCitizen(s,c,dt,ctx){
   if(c.phase==='manualGathering'){if(workManualGathering(s,c,remaining,workRate(c,null))){recordCitizenHarvest(s,c,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
   if(c.phase==='waiting'||c.phase==='constructing'){
    const q=ctx.buildings.get(c.site)?.construction;if(!q){startTrip(s,c,c.home,'toHome',ctx);continue;}
-   if(materialsReady(q)&&c.siteDuty==='builder'){c.phase='constructing';q.work=Math.min(workRequired(ctx.buildings.get(c.site)),q.work+remaining*workRate(c,'builder'));}return;
+   if(materialsReady(q)&&c.siteDuty==='builder'){
+    const site=ctx.buildings.get(c.site),work=remaining*workRate(c,'builder');
+    c.phase='constructing';
+    if(constructionWork){
+     if(!constructionWork.has(site))constructionWork.set(site,[]);
+     constructionWork.get(site).push({c,work});
+    }else q.work=Math.min(workRequired(site),q.work+work);
+   }return;
   }
   if(c.phase==='studying'){
    c.medicine.study=Math.min(STUDY_SECONDS,c.medicine.study+remaining);
@@ -611,7 +618,11 @@ function prepareCare(s,ctx){
 export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);const finished=finishConstruction(s);advancePests(s,dt);advanceCatDiscovery(s,dt);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);const constructionWork=isAwakening(s)?new Map():null;for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx,constructionWork);
+ if(constructionWork)for(const [site,contributions] of constructionWork){
+  const q=site.construction;q.work+=applyBuilderInstruction(s,contributions,Math.max(0,workRequired(site)-q.work));
+ }
+ advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);const finished=finishConstruction(s);advancePests(s,dt);advanceCatDiscovery(s,dt);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
  const advanced=elapsed>=seconds-1e-8?seconds:elapsed;s.simTime=start+advanced;advanceReedBeds(s);return advanced;
 }
 // Clinic waiting places are view offsets only: identities, routes and saved

@@ -13,6 +13,28 @@ export const isAwakening=s=>gameMode(s)==='awakening';
 export const isMatureGod=s=>gameMode(s)==='mature';
 export const knowsPresence=(s,c)=>!isAwakening(s)||s.godhood.believerIds.includes(typeof c==='object'?c?.id:c);
 export const builderLevel=c=>c?.builderSkill?.level||1;
+export const PRACTICE_PER_PROJECT=8;
+export const builderExperience=skill=>(skill?.projects||0)+Math.floor(((skill?.practice||0)+1e-8)/PRACTICE_PER_PROJECT);
+const levelFor=skill=>builderExperience(skill)>=5?3:builderExperience(skill)>=2?2:1;
+export function builderTeachingPair(s,people){
+ if(!isAwakening(s))return null;
+ const builders=people.filter(c=>c.age>=16&&c.role==='builder'&&!c.pendingRole&&c.calling==='builder'&&knowsPresence(s,c));
+ if(builders.length!==2||builderLevel(builders[0])===builderLevel(builders[1]))return null;
+ const [mentor,pupil]=builders.sort((a,b)=>builderLevel(b)-builderLevel(a));
+ return {mentor,pupil};
+}
+export function applyBuilderInstruction(s,contributions,room=Infinity){
+ const total=contributions.reduce((n,{work})=>n+work,0);
+ const pair=contributions.length===2&&builderTeachingPair(s,contributions.map(({c})=>c));
+ if(!pair||room<=0)return Math.min(total,room);
+ const shared=Math.min(...contributions.map(({work})=>work));
+ const effective=total-shared*.5;
+ const skill=pair.pupil.builderSkill??={level:1,projects:0};
+ const ceiling=((builderLevel(pair.mentor)===3?5:2)-skill.projects)*PRACTICE_PER_PROJECT;
+ skill.practice=Math.min(ceiling,(skill.practice||0)+shared*Math.min(1,room/effective));
+ skill.level=levelFor(skill);
+ return Math.min(effective,room);
+}
 export const knowledgeTier=(type,level=1)=>Math.max(level,MONUMENTS.has(type)?3:BASIC.has(type)||type==='road'?1:2);
 export function initializeGodhood(s,{mode}={}){
  if(mode===undefined||s.godhood)return;
@@ -47,7 +69,7 @@ export function recordBuilderCompletion(s,b){
  const ports=networkFor(s).ports,onsite=c=>{const port=b.type==='road'?b.a:ports.find(p=>p.building.siteKey?`site:${p.building.siteKey}:${p.building.side}`===c.sitePort:buildingKey(p.building)===c.sitePort);if(port)return Math.hypot(c.x-port.x,c.y-port.y)<.05;const n=footprintSize(b),dx=Math.max(b.x-.5-c.x,0,c.x-(b.x+n-.5)),dy=Math.max(b.y-.5-c.y,0,c.y-(b.y+n-.5));return Math.hypot(dx,dy)<.05;};
  const workers=s.citizens.filter(c=>c.site===key&&c.siteDuty==='builder'&&c.phase==='constructing'&&onsite(c)&&canLeadConstruction(s,c,b));
  if(!workers.length)return false;g.completedProjects.push(stamp);
- for(const c of workers){c.builderSkill??={level:1,projects:0};c.builderSkill.projects++;c.builderSkill.level=c.builderSkill.projects>=5?3:c.builderSkill.projects>=2?2:1;}
+ for(const c of workers){c.builderSkill??={level:1,projects:0};c.builderSkill.projects++;c.builderSkill.level=levelFor(c.builderSkill);}
  for(const c of s.citizens.filter(c=>c.age>=16&&!g.believerIds.includes(c.id)&&(c.site===key||Math.hypot(c.x-b.x,c.y-b.y)<3)).slice(0,2)){g.believerIds.push(c.id);c.faith=Math.max(c.faith,55);s.resources.faith+=1;}
  return true;
 }
@@ -118,5 +140,5 @@ export function validateGodhood(s){
   if(g.stage==='sign'){const c=s.citizens.find(c=>c.id===g.witnessId);if(!point(g.signTarget)||!point(g.signOrigin)||!c||c.age<16||c.phase!=='awakening'||cargo(c)||!signPathValid(s,c,g))return false;}
  }
  if(s.citizens.some(c=>c.phase==='awakening'&&(g.mode!=='awakening'||g.stage!=='sign'||c.id!==g.witnessId)))return false;
- return s.citizens.every(c=>c.builderSkill===undefined||c.builderSkill&&typeof c.builderSkill==='object'&&!Array.isArray(c.builderSkill)&&Number.isInteger(c.builderSkill.projects)&&c.builderSkill.projects>=0&&c.builderSkill.projects<=10000&&c.builderSkill.level===(c.builderSkill.projects>=5?3:c.builderSkill.projects>=2?2:1));
+ return s.citizens.every(c=>c.builderSkill===undefined||c.builderSkill&&typeof c.builderSkill==='object'&&!Array.isArray(c.builderSkill)&&Number.isInteger(c.builderSkill.projects)&&c.builderSkill.projects>=0&&c.builderSkill.projects<=10000&&(c.builderSkill.practice===undefined||Number.isFinite(c.builderSkill.practice)&&c.builderSkill.practice>=0&&c.builderSkill.practice<=5*PRACTICE_PER_PROJECT)&&c.builderSkill.level===levelFor(c.builderSkill));
 }

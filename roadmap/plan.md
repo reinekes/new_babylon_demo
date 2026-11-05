@@ -274,7 +274,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## people-apprenticeship | Живой наставник и ученик
 group: people
-status: planned
+status: verify
 priority: P2
 depends: -
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -283,10 +283,10 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 Предложение постепенного ремесленного обучения с потерей текущего выпуска и преемственностью опыта.
 
 ### Что уже есть
-Курс врача и builderSkill I–III есть.
+В «Пробуждении» опытный строитель учит младшего на общей стройке; часть труда уходит на обучение, практика сохраняется отдельно от завершённых проектов.
 
 ### Следующий шаг
-Один строитель-наставник и один ученик.
+Подтвердить опубликованный выпуск и сохранить датированный снимок.
 
 ### Готово когда
 Прогресс связан с трудом обоих; смерть/смена роли не ломает сохранение.
