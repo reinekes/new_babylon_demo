@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-05T18:39:36.053269+00:00",
+  "commit": "7fa584a8374239f48c39789a4fd99ab37308cf22",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "082e8a9deaafb80b47117d5d7e9f08f57d4608adea087137d637f6cfd15690d2",
+      "actual": "082e8a9deaafb80b47117d5d7e9f08f57d4608adea087137d637f6cfd15690d2",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "607e4dc0e44c09005cb375b4c93b44140e352e880e29998982e6d348525bc017",
+      "actual": "607e4dc0e44c09005cb375b4c93b44140e352e880e29998982e6d348525bc017",
+      "match": true
+    },
+    {
+      "path": "city-labor.js",
+      "status": 200,
+      "expected": "8d015e6993d61c9bb376d0cc5917a23adffdc73f3581a441fdc55bd63551d2f4",
+      "actual": "8d015e6993d61c9bb376d0cc5917a23adffdc73f3581a441fdc55bd63551d2f4",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d9c187fa9df66370541a1a4aeec43f0aea7b890e5669fa34178165eba2891327",
+      "actual": "d9c187fa9df66370541a1a4aeec43f0aea7b890e5669fa34178165eba2891327",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "9036639f5b4e5cd2c8ba0563b75a6b30a0512173e3f636cd1015270c0a4189d3",
+      "actual": "9036639f5b4e5cd2c8ba0563b75a6b30a0512173e3f636cd1015270c0a4189d3",
+      "match": true
+    },
+    {
+      "path": "tests/city-labor.test.js",
+      "status": 200,
+      "expected": "f693417d978d8cef92681e4329d5a8a6fb33abc0a539a16643e376af88dd90bd",
+      "actual": "f693417d978d8cef92681e4329d5a8a6fb33abc0a539a16643e376af88dd90bd",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "fb8c402364d1c7f5d79be75061673f66e9522db4f82b73ae7f27275e77385df5",
+      "actual": "fb8c402364d1c7f5d79be75061673f66e9522db4f82b73ae7f27275e77385df5",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "8bc2f91aae31fcd5da687e4d0319b0e426075f49bf2e4dc4ff0874915771e9d1",
+      "actual": "8bc2f91aae31fcd5da687e4d0319b0e426075f49bf2e4dc4ff0874915771e9d1",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
