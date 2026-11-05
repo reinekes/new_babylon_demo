@@ -1,3 +1,4 @@
+import {forestFor,restForest} from './forest-stock.js';
 import {restFishery} from './fishery-stock.js';
 import {fisheryOptions} from './labor-life.js';
 import {enableAutumnCrops} from './agriculture.js';
@@ -221,6 +222,14 @@ export function adoptAutumnCrops(s){
  invalidateAssignments(s);
  syncCitizens(s);
  return {ok:true};
+}
+
+export function closeForestForRest(state,building){
+ const reason=blocked(state);
+ if(reason)return {ok:false,reason};
+ if(building?.type!=='logging'||!state.buildings.includes(building)||!isComplete(building))return {ok:false,reason:'Нужна готовая лесозаготовка'};
+ const forest=forestFor(state,building.x,building.y);
+ return forest&&restForest(state,forest)?{ok:true}:{ok:false,reason:'Роща недоступна, уже закрыта или запас полный'};
 }
 
 export function closeFishingGround(state,building,ground){

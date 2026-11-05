@@ -1,3 +1,4 @@
+import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
 import {fisheryOptions} from './labor-life.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -68,7 +69,7 @@ import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale} from './trading.js';
 import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,layRoad} from './roads.js';
 import {weatherAt} from './environment.js';
-import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
+import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites} from './construction.js';
 import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
@@ -277,6 +278,11 @@ function updateDetail(){
  if(['clay','quarry'].includes(b.type)&&isStrictSumer(state)){
   const stone=b.type==='quarry',remaining=stone?stoneRemaining(state,b.x,b.y):clayRemaining(state,b.x,b.y);
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${stone?STONE_CAPACITY:CLAY_CAPACITY}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
+ }
+ if(b.type==='logging'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
+  const forest=forestFor(state,b.x,b.y),status=forest&&forestStock(state,forest);
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Лесное угодье</h4>${status?`<p>Роща ${esc(forest)} · остаток ${rounded(status.stock)} / ${FOREST_CAPACITY}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><button type="button" id="forest-rest" ${status.resting||status.stock>=FOREST_CAPACITY?'disabled':''}>Закрыть рубку на три дня</button>`:'<p>У этого двора нет доступной рощи.</p>'}<small>Соседние дворы делят запас. После трёх игровых суток отдыха восстановится до ${FOREST_RECOVERY} ед. Древесину можно купить у торговцев.</small></section>`);
+  if($('forest-rest'))$('forest-rest').onclick=()=>{$('forest-rest').blur();mutate(closeForestForRest(state,b),'Рубка закрыта на три дня');};
  }
  if(b.type==='fishing'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
   const origin=networkFor(state).ports.find(p=>p.building===b),grounds=fisheryOptions(state,origin);
