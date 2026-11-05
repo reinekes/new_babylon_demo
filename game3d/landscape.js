@@ -24,6 +24,13 @@ import {sceneryClear,lakebankGeometry,floodplainTufts,tuftGeometry,riverbankGeom
 
 import {createValleyVegetation,loadValleyPlantSources,VALLEY_PLANT_ASSETS,vegetationBankDistance} from './valley-vegetation.js';
 
+// Keep each assignment: Float32 colors round after every original operation.
+export function applyTerrainAlphaClips(colors,clips){
+ for(const index of clips.zero)colors[index]=0;
+ for(let i=0;i<clips.indices.length;i++)colors[clips.indices[i]]*=clips.factors[i];
+ return colors;
+}
+
 const RESOURCE_SITES={clay:{label:'Глина',color:'#b88764'},reed:{label:'Тростник',color:'#82985c'},stone:{label:'Камень',color:'#a2a996'},forest:{label:'Дерево',color:'#6e8955'},wildlife:{label:'Дичь',color:'#ab9064'},dates:{label:'Финики',color:'#b79a4f'}};
 const RESOURCE_BUILDINGS={clay:'clay',reed:'reed',quarry:'stone',logging:'forest',hunting:'wildlife',garden:'dates'};
 export function resourcePlacementSites(s,selection){
@@ -188,12 +195,20 @@ export async function createGameLandscape(B,scene,initialState,materials,options
    // Base identity covers world/building footprints. A road-mask replacement
    // changes the original colour array, but never the alluvial ground cut.
    const previous=terrainCuts.get(m);if(previous?.key===cutKey&&previous.colors===original.colors)continue;
-   const positions=original.positions.slice(),colors=original.colors?.slice(),contours=lakeContours(s);
-   for(let i=0;i<positions.length;i+=3){const X=positions[i],Z=positions[i+2],p={x:X/TILE,y:Z/TILE};if(colors&&m.name==='soft-riparian-grass'&&!sceneryClear(s,p,.12))colors[i/3*4+3]=0;const lakeD=lakeDistance(p.x,p.y,s,contours);if(lakeD<.6){positions[i+1]=visualSurfaceElevation(p.x,p.y,s,contours)+(m.name==='soft-riparian-grass'?.025:0);if(colors&&m.name==='soft-riparian-grass')colors[i/3*4+3]*=clamp((lakeD-.09)/.26);else if(colors){const wet=1-clamp((lakeD+.02)/.4),fleck=Math.sin(X*3+Z)*.015,blend=clamp((.6-lakeD)/.2),offset=i/3*4;for(const [k,tone]of [.88-wet*.24+fleck,.80-wet*.21+fleck,.62-wet*.19+fleck].entries())colors[offset+k]=colors[offset+k]*(1-blend)+tone*blend;}}for(const arm of arms){const dx=arm.b.x-arm.a.x,dy=arm.b.y-arm.a.y,t=clamp(((p.x-arm.a.x)*dx+(p.y-arm.a.y)*dy)/(dx*dx+dy*dy||1)),dist=Math.hypot(p.x-arm.a.x-dx*t,p.y-arm.a.y-dy*t)*TILE,width=1.85;
-     if(dist>width)continue;const h=arm.startHeight+(arm.endHeight-arm.startHeight)*t,cut=h-.2,inner=.85,weight=1-clamp((dist-inner)/(width-inner));positions[i+1]=Math.min(positions[i+1],original.positions[i+1]*(1-weight)+cut*weight);if(colors&&m.name==='soft-riparian-grass')colors[i/3*4+3]*=1-Math.min(1,weight*2);
+   if(previous?.key===cutKey&&previous.alphaClips&&original.colors){
+    const colors=applyTerrainAlphaClips(original.colors.slice(),previous.alphaClips),indices=m.getIndices(),sameIndices=previous.indices.length===indices.length&&previous.indices.every((v,i)=>v===indices[i]);
+    m.setVerticesData(B.VertexBuffer.ColorKind,colors,true);
+    // Road masks can add/remove triangles without moving their vertices. Those
+    // triangles still affect the deformed normals around a lake/canal edge.
+    if(!sameIndices)m.setVerticesData(B.VertexBuffer.NormalKind,deformedTerrainNormals(B,original,previous.positions,indices),true);
+    terrainCuts.set(m,{...previous,colors:original.colors,indices});continue;
+   }
+   const positions=original.positions.slice(),colors=original.colors?.slice(),contours=lakeContours(s),alphaClips=colors&&m.name==='soft-riparian-grass'?{zero:[],indices:[],factors:[]}:null;
+   for(let i=0;i<positions.length;i+=3){const X=positions[i],Z=positions[i+2],p={x:X/TILE,y:Z/TILE};if(colors&&m.name==='soft-riparian-grass'&&!sceneryClear(s,p,.12)){colors[i/3*4+3]=0;alphaClips.zero.push(i/3*4+3);}const lakeD=lakeDistance(p.x,p.y,s,contours);if(lakeD<.6){positions[i+1]=visualSurfaceElevation(p.x,p.y,s,contours)+(m.name==='soft-riparian-grass'?.025:0);if(colors&&m.name==='soft-riparian-grass'){const factor=clamp((lakeD-.09)/.26);colors[i/3*4+3]*=factor;alphaClips.indices.push(i/3*4+3);alphaClips.factors.push(factor);}else if(colors){const wet=1-clamp((lakeD+.02)/.4),fleck=Math.sin(X*3+Z)*.015,blend=clamp((.6-lakeD)/.2),offset=i/3*4;for(const [k,tone]of [.88-wet*.24+fleck,.80-wet*.21+fleck,.62-wet*.19+fleck].entries())colors[offset+k]=colors[offset+k]*(1-blend)+tone*blend;}}for(const arm of arms){const dx=arm.b.x-arm.a.x,dy=arm.b.y-arm.a.y,t=clamp(((p.x-arm.a.x)*dx+(p.y-arm.a.y)*dy)/(dx*dx+dy*dy||1)),dist=Math.hypot(p.x-arm.a.x-dx*t,p.y-arm.a.y-dy*t)*TILE,width=1.85;
+     if(dist>width)continue;const h=arm.startHeight+(arm.endHeight-arm.startHeight)*t,cut=h-.2,inner=.85,weight=1-clamp((dist-inner)/(width-inner));positions[i+1]=Math.min(positions[i+1],original.positions[i+1]*(1-weight)+cut*weight);if(colors&&m.name==='soft-riparian-grass'){const factor=1-Math.min(1,weight*2);colors[i/3*4+3]*=factor;alphaClips.indices.push(i/3*4+3);alphaClips.factors.push(factor);}
     }}
    m.setVerticesData(B.VertexBuffer.PositionKind,positions,true);if(colors)m.setVerticesData(B.VertexBuffer.ColorKind,colors,true);m.setVerticesData(B.VertexBuffer.NormalKind,deformedTerrainNormals(B,original,positions,m.getIndices()),true);m.refreshBoundingInfo();
-   terrainCuts.set(m,{key:cutKey,colors:original.colors});if(m.name==='alluvial-valley')groundChanged=true;
+   terrainCuts.set(m,{key:cutKey,colors:original.colors,positions,indices:m.getIndices(),alphaClips:alphaClips&&{zero:new Uint32Array(alphaClips.zero),indices:new Uint32Array(alphaClips.indices),factors:new Float64Array(alphaClips.factors)}});if(m.name==='alluvial-valley')groundChanged=true;
   }
   if(groundChanged)stitchTerrainRim(B,base.meshes,s);
  }
