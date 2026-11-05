@@ -1,6 +1,6 @@
 {
-  "baselineCommit": "aa54ebb4b267e02530eb9cfaad213875ffc73d30",
-  "indexSHA256": "a49017011ad76ff48ff4acbdceff9503e206afad3614d64ebbc96b49783a6fd5",
+  "baselineCommit": "11cd5950350ec601eb7f3f2b733f340d172c5648",
+  "indexSHA256": "6a4993d915f0361253fb641a4a48377761138e577bc4e96c6a1b0fa6182934e8",
   "appSHA256": "68eb0d79530a1d3a42919dd0f4e46e4ed518a6371200de52e68e3f1edd36a958",
   "instrumentedAppSHA256": "a4834cf85b64f9a9893ce615e1c3f5731ff99eb700d35df2091d5f438cadf988",
   "fixture": "strict Southern Sumer / mature / seed137 / paused / in-memory autosave, panel preferences and disabled IndexedDB library",
