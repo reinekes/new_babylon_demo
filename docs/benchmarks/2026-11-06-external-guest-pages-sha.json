@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-05T22:33:53.907707+00:00",
+  "commit": "c49a877c46c6d645e1f2e5dc49681388631a5882",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9112297526a550eec08e54ac413fbe560b54aff3fbf6ba1fbeba358824aa640c",
+      "actual": "9112297526a550eec08e54ac413fbe560b54aff3fbf6ba1fbeba358824aa640c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "892be4481d13027eab2b80ebb2b5ca3f8c4b5ec20cbfd2d3e191f44f06ab4709",
+      "actual": "892be4481d13027eab2b80ebb2b5ca3f8c4b5ec20cbfd2d3e191f44f06ab4709",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "50ba6e2b35bf190cd49ddaeecb7d9c857b87cd47c453edb325e7a0b12e0686b9",
+      "actual": "50ba6e2b35bf190cd49ddaeecb7d9c857b87cd47c453edb325e7a0b12e0686b9",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "af2e5f5593165526a269bb913a26c1bc4ed96bdb205cab7e9c83d9d1a6231ff3",
+      "actual": "af2e5f5593165526a269bb913a26c1bc4ed96bdb205cab7e9c83d9d1a6231ff3",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "0382c977681f463765163570e56e3e52895733e9ead30061d3af65d2c3b7cb9f",
+      "actual": "0382c977681f463765163570e56e3e52895733e9ead30061d3af65d2c3b7cb9f",
+      "match": true
+    },
+    {
+      "path": "external-guest.js",
+      "status": 200,
+      "expected": "3f7a2df4cff4c122b4665d2ad207c2f0992ca17232f3ad0a4c8f398cefffa6b7",
+      "actual": "3f7a2df4cff4c122b4665d2ad207c2f0992ca17232f3ad0a4c8f398cefffa6b7",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "bf1c7b0fc4573853b0cf466b9f99cad9b1111f2ea56c0e0961082344d54c32ff",
+      "actual": "bf1c7b0fc4573853b0cf466b9f99cad9b1111f2ea56c0e0961082344d54c32ff",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "b699593b5ec7cd1cf5eca437e3fb29e9f7e64cd04c58165f89db68d8e086f0f5",
+      "actual": "b699593b5ec7cd1cf5eca437e3fb29e9f7e64cd04c58165f89db68d8e086f0f5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ab669fee09f930b3f1913d4c84990e27ef64b5d2318a7cd8a75ce65f8df8e2fa",
+      "actual": "ab669fee09f930b3f1913d4c84990e27ef64b5d2318a7cd8a75ce65f8df8e2fa",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "ec4d1ae3088ddad4e5b6777a21c526d5a04838046b5809675f3f6666324ad9e7",
+      "actual": "ec4d1ae3088ddad4e5b6777a21c526d5a04838046b5809675f3f6666324ad9e7",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "305e735f13c6a201bb7c263d80912364eca4bbea8315f9afd77600ef9c000437",
+      "actual": "305e735f13c6a201bb7c263d80912364eca4bbea8315f9afd77600ef9c000437",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "d2849ff4803a60ecadc9d77633516d163f9569319a65c4a078c51517f971dd87",
+      "actual": "d2849ff4803a60ecadc9d77633516d163f9569319a65c4a078c51517f971dd87",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "b33a167d6356b69d07525c6ddcdfe7215986f43aa8bf439debd0646c5d79cacd",
+      "actual": "b33a167d6356b69d07525c6ddcdfe7215986f43aa8bf439debd0646c5d79cacd",
+      "match": true
+    },
+    {
+      "path": "tests/external-guest.test.js",
+      "status": 200,
+      "expected": "2fbfcb6533299e1c714b9e1e933b8561e8f26a52fef8ad3dce48e897217d80e0",
+      "actual": "2fbfcb6533299e1c714b9e1e933b8561e8f26a52fef8ad3dce48e897217d80e0",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-actors.test.js",
+      "status": 200,
+      "expected": "e5ba1f59d3ad673254e756f9184293d0350d6589f155f2926d23b0592f0838f2",
+      "actual": "e5ba1f59d3ad673254e756f9184293d0350d6589f155f2926d23b0592f0838f2",
+      "match": true
+    },
+    {
+      "path": "tests/ui-manual-gathering.test.js",
+      "status": 200,
+      "expected": "da80e0651d858640ac89fc9639a01d9aa3c51bc2964f073900f314ac28dba0c4",
+      "actual": "da80e0651d858640ac89fc9639a01d9aa3c51bc2964f073900f314ac28dba0c4",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "c1370b93550fcbf6cd364c969e4f075ec0b504e991a9cbbb134ae9eb1e2cbc33",
+      "actual": "c1370b93550fcbf6cd364c969e4f075ec0b504e991a9cbbb134ae9eb1e2cbc33",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
