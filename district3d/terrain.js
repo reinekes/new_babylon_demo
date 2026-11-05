@@ -187,8 +187,9 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   grassMaterial.albedoColor=C(.79,.90,.56);grassMaterial.roughness=1;grassMaterial.metallic=0;
   grassMaterial.transparencyMode=B.Material.MATERIAL_ALPHABLEND;
   grassMaterial.alpha=.96;grassMaterial.forceDepthWrite=false;
-  const gp=[],gi=[],gc=[];
-  const grassAlpha=(x,y)=>{
+  const gp=[],gi=[],gc=[],staticGrassAlpha=[];
+  const grassStaticSignature=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,(s.buildings||[]).map(b=>[b.x,b.y])]);
+  const grassGroundAlpha=(x,y)=>{
     const d=shoreDistance(x,y,state);
     let alpha=smooth((d-.22)/.38)*(1-smooth((d-2.7)/1.3));
     for(const b of state.buildings||[]){
@@ -196,6 +197,9 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
       const distance=Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0);
       alpha*=smooth(distance/.28);
     }
+    return alpha;
+  };
+  const grassAlpha=(x,y,alpha)=>{
     for(const [a,b] of nearbyRoads(x,y)){
       const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy));
       alpha*=smooth((Math.hypot(x-a.x-dx*t,y-a.y-dy*t)-.12)/.12);
@@ -206,18 +210,25 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   for(let i=0;i<grassGround.positions.length;i+=3){
     const x=grassGround.positions[i]/TILE,y=grassGround.positions[i+2]/TILE,variation=.93+noise(x*.3,y*.3)*.07;
     gp.push(x*TILE,grassGround.positions[i+1]+.018,y*TILE);
-    gc.push(variation*.88,variation,variation*.79,grassAlpha(x,y));
+    const alpha=grassGroundAlpha(x,y),px=gp[gp.length-3]/TILE,py=gp[gp.length-1]/TILE;
+    // Refresh samples the stored positions. Retain its exact double-precision
+    // static factor even if the multiply/divide round trip shifts one ULP.
+    staticGrassAlpha.push(px===x&&py===y?alpha:grassGroundAlpha(px,py));
+    gc.push(variation*.88,variation,variation*.79,grassAlpha(x,y,alpha));
   }
   for(let i=0;i<grassGround.indices.length;i+=3){
     const tri=grassGround.indices.slice(i,i+3);if(tri.every(k=>gc[k*4+3]===0))continue;
     gi.push(...tri);
   }
+  let staticGrassSignature=grassStaticSignature(state);
   let grassMesh=null;
   if(gi.length){const grass=geometry('soft-riparian-grass',gp,gi,grassMaterial,gc,[...ground.normals,...background.normals]);grassMesh=grass;grass.hasVertexAlpha=true;grass.freezeWorldMatrix();}
   function refreshRoadMask(s){
     if(!grassMesh)return null;state=s;initialRoads=districtRoadEdges(s);nearbyRoads=indexNearbyRoads(initialRoads);
+    const nextStatic=grassStaticSignature(s);
+    if(nextStatic!==staticGrassSignature){for(let i=0;i<gp.length;i+=3)staticGrassAlpha[i/3]=grassGroundAlpha(gp[i]/TILE,gp[i+2]/TILE);staticGrassSignature=nextStatic;}
     const colors=gc.slice(),indices=[];
-    for(let i=0;i<gp.length;i+=3)colors[i/3*4+3]=grassAlpha(gp[i]/TILE,gp[i+2]/TILE);
+    for(let i=0;i<gp.length;i+=3)colors[i/3*4+3]=grassAlpha(gp[i]/TILE,gp[i+2]/TILE,staticGrassAlpha[i/3]);
     for(let i=0;i<grassGround.indices.length;i+=3){const tri=grassGround.indices.slice(i,i+3);if(!tri.every(k=>colors[k*4+3]===0))indices.push(...tri);}
     grassMesh.setVerticesData(B.VertexBuffer.ColorKind,colors,true);grassMesh.setIndices(indices);
     // Match the initial mesh's Float32 quantization before main-game tinting.

@@ -7,7 +7,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-21';
+const tag='sumer-trade-supplied-20261105-24';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -112,7 +112,7 @@ check=check.replace('let last=start,active=true;', 'let last=start,active=true;c
 check=check.replace('active=false;observer?.disconnect();','active=false;observer?.disconnect();document.removeEventListener("visibilitychange",visibility);');
 check=check.replace('transport,history,trade:app.tradeStateInfo()', `transport,history,trade:app.tradeStateInfo(),startViewport,visibilityChanges,viewportChanged:startViewport[0]!==innerWidth||startViewport[1]!==innerHeight,selectedSpeed:document.querySelector('[data-speed][aria-pressed="true"]')?.dataset.speed`);
 check=check.replace('sceneStart=app.sceneInfo();','sceneStart=(app.resetTimingTotals(),app.sceneInfo());');
-check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,terrainCutCaching:!location.pathname.endsWith("/perf-uncached.html"),staticSceneryCaching:!location.pathname.endsWith("/perf-uncached.html"),frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),palmBatching:app.palmBatchingMode(),');
+check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,terrainCutCaching:true,staticSceneryCaching:true,grassStaticAlphaCaching:!location.pathname.endsWith("/perf-uncached.html"),frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),palmBatching:app.palmBatchingMode(),');
 check+=`\nconst roadToggle=document.createElement('button'),roadProof=document.createElement('pre');roadToggle.textContent='Переключить группировку дорог';roadToggle.id='toggle-road-groups';roadProof.id='road-group-proof';roadToggle.onclick=()=>{if(document.querySelector('#measurement').textContent.startsWith('Замер'))return;app.setProbeRoadBatching(!app.roadBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.textContent=JSON.stringify({batching:app.roadBatchingMode(),scene:app.sceneInfo()},null,2);}));};const controls=document.querySelector('#measure').parentElement;controls.insertBefore(roadToggle,document.querySelector('#measurement'));controls.append(roadProof);roadProof.style.maxHeight='30px';roadProof.style.overflow='auto';const fold=document.createElement('button');fold.textContent='Свернуть результаты';fold.onclick=()=>{out.hidden=!out.hidden;roadProof.hidden=out.hidden;fold.textContent=out.hidden?'Показать результаты':'Свернуть результаты';};controls.insertBefore(fold,out);\n`;
 check+=`\nconst palmToggle=document.createElement('button');palmToggle.textContent='Переключить группировку пальм';palmToggle.id='toggle-palm-groups';palmToggle.onclick=()=>{if(out.textContent.startsWith('Замер'))return;app.setProbePalmBatching(!app.palmBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.hidden=false;roadProof.textContent=JSON.stringify({palmBatching:app.palmBatchingMode(),scene:app.sceneInfo()},null,2);}));};controls.insertBefore(palmToggle,out);\n`;
 await writeFile(join(output,'check.js'),check);
@@ -120,7 +120,7 @@ check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);a
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
 // Private baseline is the last verified published landscape, including its old
 // scenery rebuild path; shared engine/state/assets remain the current candidate.
-const baselineCommit='7362678e97d253649d8ccfebdce7d583c44d5b10';
+const baselineCommit='f9701e787cae0d43ac124a6cfc2878a8bc714ddd';
 const rewriteLandscape=code=>code.replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
 const baselineVegetationSource=execFileSync('git',['show',baselineCommit+':game3d/valley-vegetation.js'],{cwd:source,encoding:'utf8'}),candidateVegetationSource=await readFile(join(source,'game3d/valley-vegetation.js'),'utf8'),baselineVegetation=rewriteLandscape(baselineVegetationSource),candidateVegetation=rewriteLandscape(candidateVegetationSource);
 await writeFile(join(output,'valley-vegetation-baseline.mjs'),baselineVegetation);await writeFile(join(output,'valley-vegetation-candidate.mjs'),candidateVegetation);
@@ -136,4 +136,21 @@ await writeFile(join(output,'landscape-uncached.mjs'),baselineLandscape);
 const baselineHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-uncached.mjs?probe=${tag}"`);
 if(baselineHtml===html)throw Error('Missing landscape import-map entry for baseline');
 await writeFile(join(output,'perf-uncached.html'),baselineHtml);
+// Pin and time both terrain implementations; baseline must not import the
+// mutable candidate through a shared repo URL.
+const terrainSources={};
+for(const mode of ['baseline','candidate']){
+ const code=mode==='baseline'?execFileSync('git',['show',baselineCommit+':district3d/terrain.js'],{cwd:source,encoding:'utf8'}):await readFile(join(source,'district3d/terrain.js'),'utf8');
+ let rewritten=code.replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/district3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
+ if(!rewritten.includes('function refreshRoadMask(s){'))throw Error('Terrain mask probe anchor changed');
+ rewritten="export const terrainProbe=[];\n"+rewritten.replace('function refreshRoadMask(s){','function rawRefreshRoadMask(s){').replace("  const palmMaterial=new B.PBRMaterial",`  function refreshRoadMask(s){const start=performance.now();try{return rawRefreshRoadMask(s);}finally{terrainProbe.push({phase:'terrain.roadMask',ms:performance.now()-start,simTime:s.simTime,tick:s.tick,vertices:gp.length/3});}}\n  const palmMaterial=new B.PBRMaterial`);
+ await writeFile(join(output,'terrain-'+mode+'.mjs'),rewritten);terrainSources[mode]={productionSHA256:sha(code),moduleSHA256:sha(rewritten)};
+ const path=join(output,mode==='baseline'?'perf-uncached.html':'perf.html');let page=await readFile(path,'utf8');page=page.replace(/("\.\/district3d\/terrain\.js":)"[^"]+"/,`$1"../terrain-${mode}.mjs?probe=${tag}"`);if(!page.includes('terrain-'+mode+'.mjs?probe='))throw Error('Terrain mapping missing');await writeFile(path,page);
+}
+app="import {terrainProbe} from './repo/district3d/terrain.js';\n"+app;app=app.replace('quality:renderer.quality,','quality:renderer.quality,terrainPhases:terrainProbe,');
+app+=`\nexport async function grassGeometryProof(){const m=renderer.landscape.meshes.find(m=>m.name==='soft-riparian-grass');if(!m)return null;const values={position:m.getVerticesData('position'),normal:m.getVerticesData('normal'),color:m.getVerticesData('color'),index:m.getIndices()},out={};for(const [key,array]of Object.entries(values)){const data=key==='index'?new Uint32Array(array):new Float32Array(array),bytes=await crypto.subtle.digest('SHA-256',data);out[key]={length:data.length,sha256:[...new Uint8Array(bytes)].map(n=>n.toString(16).padStart(2,'0')).join('')};}return out;}\n`;
+await writeFile(join(output,'app-check.js'),app);
+check=check.replace('terrainCutCaching:',`terrainSources:${JSON.stringify(terrainSources)},terrainBaselineCommit:'${baselineCommit}',terrainCutCaching:`);
+check+=`\nconst grassProofButton=document.createElement('button');grassProofButton.id='grass-proof';grassProofButton.textContent='Проверить данные травы';grassProofButton.onclick=async()=>{roadProof.hidden=false;roadProof.textContent=JSON.stringify({grass:await app.grassGeometryProof(),scene:app.sceneInfo()},null,2);};controls.insertBefore(grassProofButton,out);\n`;
+await writeFile(join(output,'check.js'),check);
 console.log(JSON.stringify({output,page:'perf.html?transport=land or river',seconds:80,tag,warning:'Isolated origin only; measure close and overview separately, no heavy tests during measurements'}));

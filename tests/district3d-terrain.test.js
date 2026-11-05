@@ -78,3 +78,13 @@ test('road mask refresh matches a fresh terrain and restores grass after an anch
   delete s.roadAnchors;view.refreshRoadMask(s);assert.deepEqual(grass.getVerticesData('color'),original);assert.deepEqual(grass.getIndices(),indices);
  }finally{view.dispose();fresh?.dispose();scene.dispose();engine.dispose();}
 });
+
+test('road-only grass refresh reuses shore/building alpha rather than scanning every building per vertex',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','grass','reed','stone'].map(k=>[k,new B.PBRMaterial(k,scene)]));let reads=0;const b={type:'house',get x(){reads++;return 8;},y:8},s={buildings:[b,{type:'shrine',x:9,y:8}],roads:[],world:{lakes:[]}},view=createDistrictTerrain(B,scene,s,materials);
+ try{const grass=view.meshes.find(m=>m.name==='soft-riparian-grass');assert.ok(grass.getTotalVertices()>1000);reads=0;s.roadAnchors=[{type:'road',x:12,y:8}];view.refreshRoadMask(s);assert.ok(reads<500,`building x read ${reads} times for ${grass.getTotalVertices()} vertices`);}finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
+test('grass road-mask static alpha invalidates after building coordinates or lake shape change',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','grass','reed','stone'].map(k=>[k,new B.PBRMaterial(k,scene)])),s={buildings:[{type:'house',x:8,y:8},{type:'shrine',x:9,y:8}],roads:[],world:{lakes:[]}},view=createDistrictTerrain(B,scene,s,materials);let fresh;
+ try{for(const change of [()=>s.buildings[0].x=12,()=>s.world.lakes=[{cells:[{x:13,y:8}]}],()=>s.world.lakes=[]]){change();const before=JSON.stringify(s),mask=view.refreshRoadMask(s);fresh=createDistrictTerrain(B,scene,s,materials);const expected=fresh.meshes.find(m=>m.name==='soft-riparian-grass');assert.deepEqual(mask.mesh.getVerticesData('color'),expected.getVerticesData('color'));assert.deepEqual(mask.mesh.getIndices(),expected.getIndices());assert.equal(JSON.stringify(s),before);fresh.dispose();fresh=null;}}finally{view.dispose();fresh?.dispose();scene.dispose();engine.dispose();}
+});
