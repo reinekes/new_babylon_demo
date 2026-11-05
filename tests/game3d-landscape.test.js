@@ -80,7 +80,7 @@ test('real GLB palms share baked geometry; canals, road work and trade update a 
   view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,12);assert.equal(JSON.stringify(s),before);
   assert.ok(live.some(m=>m.name.startsWith('valley-grass-')&&m.thinInstanceCount>0));assert.ok(live.some(m=>m.name.startsWith('valley-reed-')&&m.thinInstanceCount>0));assert.ok(!live.some(m=>['volumetric-riparian-colonies','deposit-reed-bed'].includes(m.name)),'imported plants replace old grass ribbons and reed cylinders');
   for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets','living-river','saved-lakes'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
-  const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);assert.ok(palms.every(m=>m.isEnabled()));assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);
+  const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);const palmBatches=live.filter(m=>m.metadata?.palmBatch),rendered=new Map();for(const batch of palmBatches)for(const id of batch.metadata.palmBatch.parts)rendered.set(id,(rendered.get(id)||0)+1);assert.ok(palms.every(m=>(m.isEnabled()?1:0)+(rendered.get(m.uniqueId)||0)===1),'every original part is rendered exactly once, individually or in its GPU batch');assert.equal(palmBatches.reduce((n,m)=>n+m.thinInstanceCount,0),palms.filter(m=>!m.isEnabled()).length);assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);
   for(const m of palms){assert.equal(m.overrideMaterialSideOrientation??null,m.sourceMesh.metadata?.nativeDates?null:B.Material.CounterClockWiseSideOrientation);assert.ok(m.getWorldMatrix().determinant()>0);}
   const waters=live.filter(m=>m.name==='actual-canal-water');assert.ok(waters.length);assert.ok(waters.every(m=>m.metadata.canalArm.a.x===canalX&&m.metadata.canalArm.a.y===8));assert.ok(waters.some(m=>m.metadata.canalArm.mouth));assert.ok(waters.some(m=>m.getVerticesData(B.VertexBuffer.ColorKind).some((v,i)=>i%4===2&&v>.9)),'wet canals use a visible canal-water tint');
   for(const m of live.filter(m=>m.metadata?.canalArm&&m.name!=='actual-canal-water')){assert.equal(m.material.name,'game-wet-channel-mud');const c=m.material.albedoColor;assert.ok(c.r<.5&&c.g<.5&&c.b<.5,'wet mud remains darker than the bank');assert.equal(m.material.albedoTexture,materials.soil.albedoTexture||null,'wet banks share the available ground texture');}
@@ -279,5 +279,18 @@ test('landscape road batching preserves ground sampling, source caches and saved
  const mergedHeight=catDiscoverySurfaceHeight(B,scene,3,4.5,()=>999);assert.ok(mergedHeight<999);
  view.setRoadBatching(false);assert.equal(groups().length,0);assert.equal(source.isEnabled(),true);const directHeight=catDiscoverySurfaceHeight(B,scene,3,4.5,()=>999);assert.ok(Math.abs(mergedHeight-directHeight)<1e-5);
  view.setRoadBatching(true);assert.ok(groups().length>0);assert.equal(source.geometry,geometry);assert.equal(source.isEnabled(),false);assert.equal(JSON.stringify(s),before);
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
+});
+
+import {weatherAt} from '../environment.js';
+test('real licensed palm parts retain their wind matrices and save through GPU/individual toggles',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>loadGeometry(scene,file.split('?')[0]);let view;const s=createGame({start:'established'});
+ for(let time=0;time<1000;time++)if(weatherAt({...s,simTime:time}).type==='wind'){s.simTime=time;break;}assert.equal(weatherAt(s).type,'wind');const before=JSON.stringify(s);
+ try{view=await createGameLandscape(B,scene,s,materials);const parts=view.meshes.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh),count=new Set(parts.map(m=>m.sourceMesh)).size;assert.ok(count>1);
+ const expected=parts.map((m,i)=>B.Matrix.Compose(m.scaling,B.Quaternion.RotationYawPitchRoll(m.rotation.y,m.rotation.x,Math.sin(s.simTime*1.7+Math.floor(i/count))*.008),m.position));
+ const compare=(a,b)=>{for(let i=0;i<16;i++)assert.ok(Math.abs(a.m[i]-b.m[i])<1e-4);};
+ for(const batch of view.meshes.filter(m=>m.metadata?.palmBatch)){const matrices=batch.thinInstanceGetWorldMatrices();for(const [i,id]of batch.metadata.palmBatch.parts.entries())compare(matrices[i],expected[parts.findIndex(m=>m.uniqueId===id)]);}
+ view.setPalmBatching(false);assert.ok(parts.every(m=>m.isEnabled()));parts.forEach((m,i)=>compare(m.getWorldMatrix(),expected[i]));view.setPalmBatching(true);assert.ok(view.meshes.some(m=>m.metadata?.palmBatch));assert.equal(JSON.stringify(s),before);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
 });

@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-14';
+const tag='sumer-trade-supplied-20261105-15';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -66,8 +66,8 @@ const candidateSource=await readFile(join(source,'game3d/renderable-mesh-candida
 if(!candidateSource.includes(preciseCheck))throw Error('Review candidate probe after source changes');
 await writeFile(join(output,'coarse-candidates.mjs'),candidateSource.replace(preciseCheck,''));
 let app=await readFile(join(output,'app-check.js'),'utf8');
-app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\nimport {createRenderableMeshCandidates as coarseCandidates} from './coarse-candidates.mjs?probe=${tag}';\n`+app;
-app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
+app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\nimport {weatherAt as probeWeatherAt} from './repo/environment.js';\nimport {createRenderableMeshCandidates as coarseCandidates} from './coarse-candidates.mjs?probe=${tag}';\n`+app;
+app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");setProbePalmBatching(new URLSearchParams(location.search).get(\"palmBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
 app=app.replace('cameraRadius:renderer.camera?.radius,','cameraAlpha:renderer.camera?.alpha,cameraBeta:renderer.camera?.beta,cameraRadius:renderer.camera?.radius,');
 app=app.replace('meshes:renderer.scene?.meshes.length,','activeMeshes:renderer.scene?.getActiveMeshes?.().length,meshes:renderer.scene?.meshes.length,');
 app=app.replace("[renderer.scene,'render','scene.render']","[renderer.scene,'render','scene.render'],[renderer.scene,'getActiveMeshCandidates','scene.candidates'],[renderer.scene,'_evaluateActiveMeshes','scene.activeMeshes'],[renderer.scene,'animate','scene.animate'],[renderer.scene,'_renderForCamera','scene.camera']");
@@ -75,7 +75,7 @@ app=app.replace('export const timings=[];', 'export const timings=[];export cons
 app=app.replace('if(ms>35)timings.push', 'const total=timingTotals[tag]??={count:0,ms:0,max:0};total.count++;total.ms+=ms;total.max=Math.max(total.max,ms);if(ms>35)timings.push');
 
 app=app.replace("function advanceTime(...args){return timed('simulation',()=>rawAdvanceTime(...args));}","function advanceTime(...args){const result=timed('simulation',()=>rawAdvanceTime(...args));if(tradeProof)serviceTrade(args[0],tradeProof);return result;}");
-app+=`\nlet roadProbeBatching=true;export function setProbeRoadBatching(enabled){roadProbeBatching=enabled!==false;renderer.landscape?.setRoadBatching?.(roadProbeBatching);}export function roadBatchingMode(){return roadProbeBatching;}\nlet tradeProof=null;export function attachTradeProof(p){tradeProof=p;}\nexport function tradeStateInfo(){return {population:state.population,buildings:state.buildings.length,simTime:state.simTime,tick:state.tick,proof:tradeProof,deliveries:state.trade.deliveries.map(q=>({id:q.id,resource:q.resource,amount:q.amount,delivered:q.delivered})),sales:state.trade.sales.map(q=>({id:q.id,resource:q.resource,amount:q.amount,loaded:q.loaded,cancelled:q.cancelled}))};}\n`;
+app+=`\nlet palmProbeBatching=true;export function setProbePalmBatching(enabled){palmProbeBatching=enabled!==false;renderer.landscape?.setPalmBatching?.(palmProbeBatching);}export function palmBatchingMode(){return palmProbeBatching;}\nlet roadProbeBatching=true;export function setProbeRoadBatching(enabled){roadProbeBatching=enabled!==false;renderer.landscape?.setRoadBatching?.(roadProbeBatching);}export function roadBatchingMode(){return roadProbeBatching;}\nlet tradeProof=null;export function attachTradeProof(p){tradeProof=p;}\nexport function tradeStateInfo(){return {population:state.population,buildings:state.buildings.length,simTime:state.simTime,tick:state.tick,proof:tradeProof,deliveries:state.trade.deliveries.map(q=>({id:q.id,resource:q.resource,amount:q.amount,delivered:q.delivered})),sales:state.trade.sales.map(q=>({id:q.id,resource:q.resource,amount:q.amount,loaded:q.loaded,cancelled:q.cancelled}))};}\n`;
 app+=`
 export function sceneInventory(){
  const scene=renderer.scene;if(!scene)return null;const groupOf=new Map();
@@ -83,14 +83,15 @@ export function sceneInventory(){
  const live=scene.getActiveMeshes(),active=new Set(live.data.slice(0,live.length)),groups={},names=new Map();
  for(const mesh of scene.meshes){
   let kind=groupOf.get(mesh)||'other';if(kind==='actors')for(let node=mesh;node;node=node.parent){if(node.metadata?.citizenId!==undefined){kind='residents';break;}if(node.metadata?.animalKind||node.metadata?.animalId){kind='fauna';break;}}
-  const row=groups[kind]??={all:0,enabled:0,visible:0,active:0,activeVertices:0,activeSubMeshes:0,materials:new Set()};row.all++;
+  const row=groups[kind]??={all:0,enabled:0,visible:0,active:0,activeVertices:0,activeSubMeshes:0,activeThinInstances:0,materials:new Set()};row.all++;
   const enabled=mesh.isEnabled();if(enabled)row.enabled++;if(enabled&&mesh.isVisible&&mesh.visibility>0)row.visible++;
-  if(active.has(mesh)){row.active++;row.activeVertices+=mesh.getTotalVertices?.()||0;row.activeSubMeshes+=mesh.subMeshes?.length||0;if(mesh.material)row.materials.add(mesh.material);const name=(mesh.sourceMesh?.name||mesh.name).replace(/[0-9]+/g,'#');names.set(name,(names.get(name)||0)+1);}
+  if(active.has(mesh)){row.active++;row.activeThinInstances+=mesh.thinInstanceCount||0;row.activeVertices+=mesh.getTotalVertices?.()||0;row.activeSubMeshes+=mesh.subMeshes?.length||0;if(mesh.material)row.materials.add(mesh.material);const name=(mesh.sourceMesh?.name||mesh.name).replace(/[0-9]+/g,'#');names.set(name,(names.get(name)||0)+1);}
  }
  return {groups:Object.fromEntries(Object.entries(groups).map(([kind,row])=>[kind,{...row,materials:row.materials.size}])),topActiveSources:[...names].sort((a,b)=>b[1]-a[1]).slice(0,30),engineDrawCallsCounterCurrent:renderer.engine?._drawCalls?.current??null};
 }
 `;
-app=app.replace('quality:renderer.quality,','quality:renderer.quality,inventory:sceneInventory(),');
+app=app.replace('quality:renderer.quality,','quality:renderer.quality,palms:palmStateInfo(),inventory:sceneInventory(),');
+app+=`\nexport function palmStateInfo(){const parts=(renderer.landscape?.meshes||[]).filter(m=>m.sourceMesh&&m.name.startsWith('date-palm-')),batches=(renderer.landscape?.meshes||[]).filter(m=>m.metadata?.palmBatch);return {parts:parts.length,enabledIndividuals:parts.filter(m=>m.isEnabled()).length,groups:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGroupedParts:new Set(batches.flatMap(m=>m.metadata.palmBatch.parts)).size,weather:probeWeatherAt(state).type};}\n`;
 await writeFile(join(output,'app-check.js'),app);
 let check=await readFile(join(output,'check.js'),'utf8');const start=check.indexOf('const s=createGame('),end=check.indexOf("localStorage.setItem(");
 if(start<0||end<start)throw Error('Generic fixture changed');
@@ -102,8 +103,9 @@ check=check.replace('let last=start,active=true;', 'let last=start,active=true;c
 check=check.replace('active=false;observer?.disconnect();','active=false;observer?.disconnect();document.removeEventListener("visibilitychange",visibility);');
 check=check.replace('transport,history,trade:app.tradeStateInfo()', `transport,history,trade:app.tradeStateInfo(),startViewport,visibilityChanges,viewportChanged:startViewport[0]!==innerWidth||startViewport[1]!==innerHeight,selectedSpeed:document.querySelector('[data-speed][aria-pressed="true"]')?.dataset.speed`);
 check=check.replace('sceneStart=app.sceneInfo();','sceneStart=(app.resetTimingTotals(),app.sceneInfo());');
-check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),');
+check=check.replace('stages:app.timings,','stages:app.timings,timingTotals:app.timingTotals,frustumProbe:new URLSearchParams(location.search).get("frustum")||"precise",roadBatching:app.roadBatchingMode(),palmBatching:app.palmBatchingMode(),');
 check+=`\nconst roadToggle=document.createElement('button'),roadProof=document.createElement('pre');roadToggle.textContent='Переключить группировку дорог';roadToggle.id='toggle-road-groups';roadProof.id='road-group-proof';roadToggle.onclick=()=>{if(document.querySelector('#measurement').textContent.startsWith('Замер'))return;app.setProbeRoadBatching(!app.roadBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.textContent=JSON.stringify({batching:app.roadBatchingMode(),scene:app.sceneInfo()},null,2);}));};const controls=document.querySelector('#measure').parentElement;controls.insertBefore(roadToggle,document.querySelector('#measurement'));controls.append(roadProof);roadProof.style.maxHeight='30px';roadProof.style.overflow='auto';const fold=document.createElement('button');fold.textContent='Свернуть результаты';fold.onclick=()=>{out.hidden=!out.hidden;roadProof.hidden=out.hidden;fold.textContent=out.hidden?'Показать результаты':'Свернуть результаты';};controls.insertBefore(fold,out);\n`;
+check+=`\nconst palmToggle=document.createElement('button');palmToggle.textContent='Переключить группировку пальм';palmToggle.id='toggle-palm-groups';palmToggle.onclick=()=>{if(out.textContent.startsWith('Замер'))return;app.setProbePalmBatching(!app.palmBatchingMode());requestAnimationFrame(()=>requestAnimationFrame(()=>{roadProof.hidden=false;roadProof.textContent=JSON.stringify({palmBatching:app.palmBatchingMode(),scene:app.sceneInfo()},null,2);}));};controls.insertBefore(palmToggle,out);\n`;
 await writeFile(join(output,'check.js'),check);
 check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);await writeFile(join(output,'check.js'),check);
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
