@@ -1,0 +1,41 @@
+[
+  {
+    "view": "home",
+    "roi": [
+      0,
+      75,
+      1280,
+      375
+    ],
+    "pixels": 480000,
+    "maxChannelDifference": 1,
+    "pixelsOver8": 0,
+    "meanMaxChannelDifference": 0.00024375
+  },
+  {
+    "view": "day",
+    "roi": [
+      0,
+      75,
+      1280,
+      375
+    ],
+    "pixels": 480000,
+    "maxChannelDifference": 0,
+    "pixelsOver8": 0,
+    "meanMaxChannelDifference": 0.0
+  },
+  {
+    "view": "opposite",
+    "roi": [
+      0,
+      75,
+      1280,
+      375
+    ],
+    "pixels": 480000,
+    "maxChannelDifference": 0,
+    "pixelsOver8": 0,
+    "meanMaxChannelDifference": 0.0
+  }
+]
