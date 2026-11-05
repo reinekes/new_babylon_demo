@@ -1,0 +1,149 @@
+{
+  "at": "2026-11-05T20:42:13.644258+00:00",
+  "commit": "c288241526e35af53f96ed32c01ef182d30398f4",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4d3c09c3963ff84f2dc77e0eea07d873ddc4d954f812495e02957d94bc398946",
+      "actual": "4d3c09c3963ff84f2dc77e0eea07d873ddc4d954f812495e02957d94bc398946",
+      "match": true
+    },
+    {
+      "path": "agriculture.js",
+      "status": 200,
+      "expected": "6c1c2c5d9139774190bf4bee928533bfd5d4c4e66c4f9e7cb7fbbb71cab02efb",
+      "actual": "6c1c2c5d9139774190bf4bee928533bfd5d4c4e66c4f9e7cb7fbbb71cab02efb",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "4eac9d3945fdeca3135a9bb6af1bfae81d195aee6ded64b420b306ac5940201a",
+      "actual": "4eac9d3945fdeca3135a9bb6af1bfae81d195aee6ded64b420b306ac5940201a",
+      "match": true
+    },
+    {
+      "path": "architecture.js",
+      "status": 200,
+      "expected": "56640ca1d4d2d710ed3adc9ae2021a25358229169630f8107d54c8b65fe3e2a3",
+      "actual": "56640ca1d4d2d710ed3adc9ae2021a25358229169630f8107d54c8b65fe3e2a3",
+      "match": true
+    },
+    {
+      "path": "city-labor.js",
+      "status": 200,
+      "expected": "f6993b38e34997f60fdac0bdeb5c06422a1f8e2fe3fa104b5967dc6f5563f06a",
+      "actual": "f6993b38e34997f60fdac0bdeb5c06422a1f8e2fe3fa104b5967dc6f5563f06a",
+      "match": true
+    },
+    {
+      "path": "crop-calendar.js",
+      "status": 200,
+      "expected": "599859e0048777864033b1114f6ebccff64008086ea090bcb7e81692dad46fab",
+      "actual": "599859e0048777864033b1114f6ebccff64008086ea090bcb7e81692dad46fab",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "c17e2bb5e38705200ce5a43138d84ef984895150a7713697f2b22edff01cfbcf",
+      "actual": "c17e2bb5e38705200ce5a43138d84ef984895150a7713697f2b22edff01cfbcf",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "978636800b0a95da35b744bd3264f135dd2aa7295417039eb489c499889bb589",
+      "actual": "978636800b0a95da35b744bd3264f135dd2aa7295417039eb489c499889bb589",
+      "match": true
+    },
+    {
+      "path": "field-soil.js",
+      "status": 200,
+      "expected": "a3fae1d9d4950e81b473f9a92a7bd6714cecc2f73f450fe16425fa770c94d0db",
+      "actual": "a3fae1d9d4950e81b473f9a92a7bd6714cecc2f73f450fe16425fa770c94d0db",
+      "match": true
+    },
+    {
+      "path": "food-planning.js",
+      "status": 200,
+      "expected": "5a2024e7e0f9510394630cbcdb6b8c8c2697ebb29f77f0abdee4f3813b60ecbc",
+      "actual": "5a2024e7e0f9510394630cbcdb6b8c8c2697ebb29f77f0abdee4f3813b60ecbc",
+      "match": true
+    },
+    {
+      "path": "game3d/work-poses.js",
+      "status": 200,
+      "expected": "8a5cab6b14ab8fbf18fae54512835cc099c85387d2ed39a7f27a33ebb49909cc",
+      "actual": "8a5cab6b14ab8fbf18fae54512835cc099c85387d2ed39a7f27a33ebb49909cc",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8da388c75e413a32bff693de60d0e3651930b2575cb69b549f1584ef0c6f3685",
+      "actual": "8da388c75e413a32bff693de60d0e3651930b2575cb69b549f1584ef0c6f3685",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "b300093df08cfdc181f21a29d2243e84c02d1c5ecfb8d017727b384c98d05f62",
+      "actual": "b300093df08cfdc181f21a29d2243e84c02d1c5ecfb8d017727b384c98d05f62",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "5759e4a1dbf29a6a9b3f91b7ca2acb006bdf2b66e5ff37d85a431235239b366d",
+      "actual": "5759e4a1dbf29a6a9b3f91b7ca2acb006bdf2b66e5ff37d85a431235239b366d",
+      "match": true
+    },
+    {
+      "path": "plough-team.js",
+      "status": 200,
+      "expected": "4e2f1720646185d256b67a121df157eb05f8240b0ee96016f2560f253baf65eb",
+      "actual": "4e2f1720646185d256b67a121df157eb05f8240b0ee96016f2560f253baf65eb",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fe93590211d00f8ffbd0fcc31ebbace60d4579c617c73173804bbf9277eddf2a",
+      "actual": "fe93590211d00f8ffbd0fcc31ebbace60d4579c617c73173804bbf9277eddf2a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "8192b44751dbca5c01193e20626feeb34e6c5e86b0cf9ba7e44926dbf5e87faa",
+      "actual": "8192b44751dbca5c01193e20626feeb34e6c5e86b0cf9ba7e44926dbf5e87faa",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0ee715df1c538dc8dae04c1db50fd58c2d25889fb4534a35725c747746b00bde",
+      "actual": "0ee715df1c538dc8dae04c1db50fd58c2d25889fb4534a35725c747746b00bde",
+      "match": true
+    },
+    {
+      "path": "tests/crop-calendar.test.js",
+      "status": 200,
+      "expected": "5eee12e5ec9c3d789ae00fb1cd6a8252b4ea0bda00eb09aba7140b27db27ab0d",
+      "actual": "5eee12e5ec9c3d789ae00fb1cd6a8252b4ea0bda00eb09aba7140b27db27ab0d",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "5e7de0ae91fc3e91a6dc2485fbfb702e4d4b6225c81b103939e513338f8f530e",
+      "actual": "5e7de0ae91fc3e91a6dc2485fbfb702e4d4b6225c81b103939e513338f8f530e",
+      "match": true
+    }
+  ],
+  "matched": 20,
+  "total": 20
+}
