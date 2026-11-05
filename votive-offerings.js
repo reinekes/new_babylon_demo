@@ -46,6 +46,15 @@ export function receiveVotive(s,q,carrier,amount){
  return 1;
 }
 
+export function receiveForeignVotive(s,visitor){
+ if(visitor.offeringId!==null||!s.buildings.some(b=>buildingKey(b)===visitor.destination&&isVotiveTemple(b)))return null;
+ initializeDistricts(s);
+ const id=s.district.nextId++;
+ (s.votiveOfferings??=[]).push({id,donorId:null,donorName:visitor.name,source:visitor.market,temple:visitor.destination,
+  orderedTick:s.tick,receivedTick:s.tick,carrierId:null,visitorKind:'pilgrim'});
+ return id;
+}
+
 export const isMemoryKeeper=(c,temple)=>c.age>=16&&c.calling==='priest'&&c.role==='production'&&c.workplace===temple;
 export function recordVotiveMemory(s,b,c){
  if(!s.votiveOfferings?.length||!isVotiveTemple(b)||!isMemoryKeeper(c,buildingKey(b)))return;
@@ -71,19 +80,26 @@ export function validateVotiveOfferings(s){
  const items=s.votiveOfferings;
  const jobs=s.district.jobs.filter(q=>q.targetKind==='votive');
  if(items===undefined)return jobs.length===0;
- if(!isStrictSumer(s)||!Array.isArray(items)||items.length!==jobs.length)return false;
+ if(!isStrictSumer(s)||!Array.isArray(items)||items.length!==jobs.length+(s.externalVisits?.pilgrim?.outcome==='accepted'?1:0))return false;
  const byId=new Map(jobs.map(q=>[q.id,q])),seen=new Set();
  return items.every(v=>{
-  const q=v&&byId.get(v.id);
-  if(!q||seen.has(v.id)||!Number.isSafeInteger(v.donorId)||v.donorId<0||v.donorId>=s.demography.nextId||
+  const q=v&&byId.get(v.id),pilgrim=s.externalVisits?.pilgrim;
+  const foreign=v?.visitorKind==='pilgrim'&&pilgrim?.outcome==='accepted'&&pilgrim.offeringId===v.id;
+  if(foreign){
+   if(q||v.donorId!==null||v.carrierId!==null||v.donorName!==pilgrim.name||v.source!==pilgrim.market||v.temple!==pilgrim.destination||
+    !Number.isSafeInteger(v.id)||v.id<1||v.id>=s.district.nextId||!Number.isSafeInteger(v.receivedTick)||
+    v.receivedTick<0||v.receivedTick>s.tick||v.orderedTick!==v.receivedTick)return false;
+  }
+  if(!foreign&&(!q||v.visitorKind!==undefined||!Number.isSafeInteger(v.donorId)||v.donorId<0||v.donorId>=s.demography.nextId||
    typeof v.donorName!=='string'||!v.donorName||v.donorName.length>150||
    v.source!==q.source||v.temple!==q.target||!Number.isSafeInteger(v.orderedTick)||v.orderedTick<0||v.orderedTick>s.tick||
-   q.resource!=='pottery'||q.amount!==1||q.automatic||![q.remaining,q.delivered,q.cancelled].every(n=>n===0||n===1))return false;
-  if(q.delivered?(!Number.isSafeInteger(v.carrierId)||v.carrierId<0||v.carrierId>=s.demography.nextId):v.carrierId!==null)return false;
-  if(q.delivered?v.receivedTick===null||!Number.isSafeInteger(v.receivedTick)||v.receivedTick<v.orderedTick||v.receivedTick>s.tick:v.receivedTick!==null)return false;
+   q.resource!=='pottery'||q.amount!==1||q.automatic||![q.remaining,q.delivered,q.cancelled].every(n=>n===0||n===1)))return false;
+  if(seen.has(v.id))return false;
+  if(!foreign&&(q.delivered?(!Number.isSafeInteger(v.carrierId)||v.carrierId<0||v.carrierId>=s.demography.nextId):v.carrierId!==null))return false;
+  if(!foreign&&(q.delivered?v.receivedTick===null||!Number.isSafeInteger(v.receivedTick)||v.receivedTick<v.orderedTick||v.receivedTick>s.tick:v.receivedTick!==null))return false;
   if(v.memory!==undefined){
    const m=v.memory;
-   if(!q.delivered||!m||!Number.isSafeInteger(m.keeperId)||m.keeperId<0||m.keeperId>=s.demography.nextId||
+   if(!(foreign||q.delivered)||!m||!Number.isSafeInteger(m.keeperId)||m.keeperId<0||m.keeperId>=s.demography.nextId||
     typeof m.keeperName!=='string'||!m.keeperName||m.keeperName.length>150||
     !Number.isSafeInteger(m.tick)||m.tick<v.receivedTick||m.tick>s.tick)return false;
   }

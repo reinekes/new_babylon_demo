@@ -6,6 +6,7 @@ function referencedStores(s){
  const refs=new Set(),loadedJobs=new Set(),allocation=q=>{for(const map of [q?.sources,q?.allocations])for(const key of Object.keys(map||{}))refs.add(key);};
  for(const b of [...s.buildings||[],...s.roads||[]])if(b.construction)allocation(b.construction);
  allocation(s.festival);
+ for(const guest of [s.externalGuest,...Object.values(s.externalVisits||{})])for(const key of Object.keys(guest?.provisions||{}))refs.add(key);
  for(const q of s.trade?.sales||[])if(q.amount>q.loaded+q.cancelled)allocation(q);
  for(const c of s.citizens||[]){const loaded=Object.values(c.cargo||{}).some(n=>n>0);if(loaded&&c.districtJob!=null)loadedJobs.add(c.districtJob);if(c.clothingTarget!==undefined||c.craftSite||c.seedField||c.pantryTrip||loaded)refs.add(c.store);}
  for(const q of s.district?.jobs||[])if(q.remaining>0||loadedJobs.has(q.id)){refs.add(q.source);refs.add(q.target);}

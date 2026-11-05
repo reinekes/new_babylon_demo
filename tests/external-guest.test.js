@@ -67,3 +67,32 @@ test('the regular game loop advances the visit without adding a resident',async(
  assert.equal(pupil.builderSkill.practice,8);
  assert.deepEqual(s.citizens.map(c=>c.id),ids);
 });
+
+test('pilgrim and envoy carry distinct gifts, retain identity on reload and record their outcomes once',async()=>{
+ const {advanceTime}=await import('../engine.js');
+ const {inviteVisitor,visitorsView}=await import('../external-guest.js');
+ const {putStock}=await import('../inventory.js');
+ const {templeOfferings}=await import('../votive-offerings.js');
+ let {s}=fixture();
+ assert.equal(putStock(s,'9,8','cloth',1),1);
+ const food=s.resources.food;
+ assert.ok(inviteVisitor(s,'pilgrim').ok);
+ assert.ok(inviteVisitor(s,'envoy').ok);
+ assert.equal(s.resources.food,food-5);assert.equal(s.resources.cloth,0);
+ const [pilgrim,envoy]=visitorsView(s);assert.notEqual(pilgrim.id,envoy.id);assert.deepEqual(pilgrim.cargo,{pottery:1});
+ advanceTime(s,.5);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ let carried=false;
+ for(let i=0;i<120&&(s.externalVisits.envoy.phase!=='departed'||s.externalVisits.pilgrim.phase!=='departed');i++){
+  advanceTime(s,.25);carried||=visitorsView(s).some(p=>p.id===envoy.id&&p.cargo.cloth===1);
+ }
+ assert.equal(carried,true);
+ assert.equal(s.externalVisits.envoy.phase,'departed');assert.equal(s.externalVisits.pilgrim.phase,'departed');
+ assert.equal(s.resources.pottery,0);
+ assert.equal(templeOfferings(s,'9,8')[0].id,s.externalVisits.pilgrim.offeringId);
+ assert.equal(templeOfferings(s,'9,8')[0].donorName,pilgrim.name);
+ assert.equal(s.news.filter(n=>n.title==='Посланник увёз ответный дар').length,1);
+ assert.equal(s.news.filter(n=>n.title==='Паломник посвятил сосуд').length,1);
+ assert.ok(decode(encode(s)));
+ assert.equal(inviteVisitor(s,'pilgrim').ok,false);
+});
