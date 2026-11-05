@@ -4,7 +4,7 @@ import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
 import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {mealRation,mealCycle,isDinnerTime,hourOf} from './wellbeing.js';
-import {fieldWater} from './irrigation.js';
+import {fieldWater,lowWaterYear} from './irrigation.js';
 export const SEED_COST=4;
 export function initializeFoodPlan(s){s.foodPlan??={protectSeeds:true};for(const b of s.buildings||[])if(b.type==='field'&&b.crop){b.crop.seedStock??=0;b.crop.seedUsed??=b.crop.sown*SEED_COST;b.crop.sheaves??=0;b.crop.threshed??=0;}}
 export function seedTarget(s){
@@ -23,7 +23,7 @@ export function foodForecast(s,{includeCrops=true}={}){
  const daily=s.citizens.reduce((n,c)=>n+mealRation(c),0);let meals=0;for(let at=30+Math.floor((time-30)/60+1)*60;at<=harvestAt+1e-7;at+=60)meals++;
  const outstanding=isDinnerTime(time)?s.citizens.reduce((n,c)=>n+Math.max(0,mealRation(c)-(c.mealDay===mealCycle(time)?c.mealEaten:0)),0):0;
  const homes=s.buildings.reduce((n,b)=>n+homeMealFood(b),0),inTransit=s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(!c.saleJob?(c.cargo?.food||0)+(c.cargo?.milk||0)*.5:0),0),reserve=seedReserve(s),ready=availableFood(s)+(s.resources.milk||0)*.5+homes+inTransit+s.buildings.reduce((n,b)=>n+(b.workshopStock?.output?.food||0)+(b.workshopStock?.output?.milk||0)*.5,0);
- let unthreshed=0,standing=0,cropPotential=0,seedAtFields=0;for(const b of s.buildings){if(b.type!=='field'||!isOperational(b))continue;const c=b.crop||{},water=includeCrops?fieldWater(s,b):null;unthreshed+=c.sheaves||0;standing+=c.remaining||0;seedAtFields+=c.seedStock||0;
+ let unthreshed=0,standing=0,cropPotential=0,seedAtFields=0;for(const b of s.buildings){if(b.type!=='field'||!isOperational(b))continue;const c=b.crop||{},water=includeCrops?fieldWater(s,b,{lowRiver:s.season<2&&lowWaterYear(s)}):null;unthreshed+=c.sheaves||0;standing+=c.remaining||0;seedAtFields+=c.seedStock||0;
   if(includeCrops&&s.season<2){const wet=water.canal||s.rain>0||c.legacyYear===s.year&&water.natural,growth=s.season===0?(wet?1:0):Math.min(1,(c.growth||0)+(wet?(45-s.seasonElapsed)/45:0));cropPotential+=84*outputMultiplier(b)*nextSaltYieldFactor(s,b,water)*(c.sown||0)*growth*(s.buffs?.fertility?1.6:1);}
  }
  const sites=s.pests?.sites||[],rate=sites.length?.036:0,pestRisk=Math.min(s.resources.food,rate*secondsToHarvest),demand=daily*meals+outstanding;

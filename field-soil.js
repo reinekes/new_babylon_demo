@@ -1,6 +1,6 @@
 import {isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
-import {fieldWater} from './irrigation.js';
+import {fieldWater,lowWaterYear} from './irrigation.js';
 
 export const soilCareEnabled=isStrictSumer;
 export const fieldResting=(state,field,year=state.year)=>soilCareEnabled(state)&&field.soil?.restYear===year;
@@ -21,7 +21,7 @@ export function settleFieldSoil(state,previous){
  if(previous!==1||!soilCareEnabled(state))return;
  for(const field of state.buildings){
   if(field.type!=='field'||!isOperational(field))continue;
-  const salt=nextFieldSalt(state,field,fieldWater(state,field));
+  const salt=nextFieldSalt(state,field,fieldWater(state,field,{lowRiver:lowWaterYear(state)}));
   if(salt!==(field.soil?.salt||0))field.soil={...field.soil,salt};
  }
 }

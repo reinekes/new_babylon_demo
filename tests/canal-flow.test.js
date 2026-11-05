@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {allocateCanalWater} from '../canal-flow.js';
 import {createGame,advanceTime,build,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
-import {irrigationFor,fieldWater} from '../irrigation.js';
+import {irrigationFor,fieldWater,lowWaterForecast} from '../irrigation.js';
 import {callRepairWorkers,queueCanalCleaning} from '../management.js';
 import {stampBuildingCompletion} from '../building-chronology.js';
 
@@ -44,4 +44,26 @@ test('a repair crew walks to a blocked intake, restores the field and can resume
  assert.equal(section.canalCleaning,undefined);
  assert.equal(fieldWater(saved,field).canal,true);
  assert.ok(decode(encode(saved)));
+});
+
+test('summer low water reduces real field supply and an independent lake intake restores it',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const fields=[{type:'field',x:12,y:6,level:1},{type:'field',x:13,y:5,level:1}];
+ s.buildings.push({type:'canal',x:13,y:6,level:1},...fields);
+ s.year=2;
+ assert.equal(fields.filter(b=>fieldWater(s,b).canal).length,2);
+ const forecast=lowWaterForecast(s);
+ assert.equal(forecast.active,false);
+ assert.equal(forecast.fields.length,1);
+ s.season=1;
+ assert.equal(fields.filter(b=>fieldWater(s,b).canal).length,1);
+ assert.equal(irrigationFor(s).intakeLimits.get('13,6'),1);
+ assert.deepEqual(lowWaterForecast(s),{active:true,fields:forecast.fields});
+ s.world={...s.world,lakes:[{cells:[{x:12,y:4}]}]};
+ s.buildings.push({type:'canal',x:12,y:5,level:1});
+ assert.equal(fields.filter(b=>fieldWater(s,b).canal).length,2);
+ assert.deepEqual(lowWaterForecast(s).fields,[]);
+ s.season=2;
+ assert.equal(lowWaterForecast(s),null);
+ assert.equal(fields.filter(b=>fieldWater(s,b).canal).length,2);
 });

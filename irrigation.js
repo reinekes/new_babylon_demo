@@ -1,13 +1,16 @@
-import {terrain} from './world.js';
+import {terrain,signedRiverDistance} from './world.js';
 import {isOperational} from './definitions.js';
 import {allocateCanalWater} from './canal-flow.js';
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 export const CARDINAL=[[1,0],[0,1],[-1,0],[0,-1]];
 const cache=new WeakMap(),crossingCache=new WeakMap(),key=(x,y)=>`${x},${y}`;
 // Derived topology only: water is never a second stock saved alongside buildings.
-export function irrigationFor(s){
- const limited=canalMaintenanceEnabled(s),canals=s.buildings.filter(b=>b.type==='canal'),fields=new Set(s.buildings.filter(b=>b.type==='field'&&(!limited||isOperational(b))).map(b=>key(b.x,b.y))),lakes=(s.world?.lakes||[]).map(l=>l.cells.map(c=>key(c.x,c.y)).join(';')).join('|'),signature=canals.map(b=>`${b.x},${b.y}:${isOperational(b)?1:0}:${limited?canalShares(b):'-'}:${b.drain?1:0}`).join('|')+';'+[...fields].join('|')+';lakes:'+lakes+';river:'+JSON.stringify(s.world?.river);
- const old=cache.get(s);if(old?.signature===signature)return old;
+export const lowWaterYear=s=>canalMaintenanceEnabled(s)&&s.year%3===2;
+export const riverIsLow=s=>lowWaterYear(s)&&s.season===1;
+export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
+ const limited=canalMaintenanceEnabled(s),canals=s.buildings.filter(b=>b.type==='canal'),fields=new Set(s.buildings.filter(b=>b.type==='field'&&(!limited||isOperational(b))).map(b=>key(b.x,b.y))),lakes=(s.world?.lakes||[]).map(l=>l.cells.map(c=>key(c.x,c.y)).join(';')).join('|'),signature=canals.map(b=>`${b.x},${b.y}:${isOperational(b)?1:0}:${limited?canalShares(b):'-'}:${b.drain?1:0}`).join('|')+';'+[...fields].join('|')+';lakes:'+lakes+';river:'+JSON.stringify(s.world?.river)+';low:'+lowRiver;
+ let variants=cache.get(s);if(!variants){variants=new Map();cache.set(s,variants);}
+ const old=variants.get(lowRiver);if(old?.signature===signature)return old;
  const cells=new Map(canals.filter(isOperational).map(b=>[key(b.x,b.y),b])),wet=new Set(),arms=new Map();
  const waterAt=(x,y)=>terrain(x,y,s)==='water';
  for(const [id,b]of cells){
@@ -27,7 +30,12 @@ export function irrigationFor(s){
   }
  }
  for(const id of [...wet])if(cells.get(id).drain)wet.delete(id);
- const heads=[...wet],adjacent=new Map(),capacity=new Map();
+ const heads=[...wet],adjacent=new Map(),capacity=new Map(),intakeLimits=new Map();
+ if(limited&&lowRiver)for(const id of heads){
+  const b=cells.get(id);
+  const lake=CARDINAL.some(([dx,dy])=>(s.world?.lakes||[]).some(l=>l.cells.some(c=>c.x===b.x+dx&&c.y===b.y+dy&&Math.abs(signedRiverDistance(c.x,c.y,s))>=1.1)));
+  if(!lake)intakeLimits.set(id,1);
+ }
  for(const [id,b] of cells){
   adjacent.set(id,CARDINAL.map(([dx,dy])=>key(b.x+dx,b.y+dy)).filter(next=>cells.has(next)));
   if(limited)capacity.set(id,b.drain?0:canalShares(b));
@@ -46,17 +54,22 @@ export function irrigationFor(s){
    reachableFields.get(field).push(id);
   }
  }
- const flow=limited?allocateCanalWater({adjacent,heads,capacity,fields:new Map([...reachableFields].filter(([id])=>fields.has(id)))}):null;
+ const flow=limited?allocateCanalWater({adjacent,heads,capacity,intakeLimits,fields:new Map([...reachableFields].filter(([id])=>fields.has(id)))}):null;
  const irrigated=new Set(flow?flow.routes.keys():reachableFields.keys());
- const result={signature,cells,wet,arms,irrigated,reachableFields,flow,fields,heads,adjacent,drained,outlets};cache.set(s,result);return result;
+ const result={signature,cells,wet,arms,irrigated,reachableFields,flow,fields,heads,adjacent,drained,outlets,intakeLimits};variants.set(lowRiver,result);return result;
 }
-export function fieldWater(s,b){
- const network=irrigationFor(s),id=key(b.x,b.y),natural=terrain(b.x,b.y,s)==='fertile';
+export function fieldWater(s,b,options){
+ const network=irrigationFor(s,options),id=key(b.x,b.y),natural=terrain(b.x,b.y,s)==='fertile';
  let canal=network.irrigated.has(id);
  if(network.flow&&!network.fields.has(id)&&network.reachableFields.has(id)){
-  canal=allocateCanalWater({adjacent:network.adjacent,heads:network.heads,capacity:network.flow.residual,fields:new Map([[id,network.reachableFields.get(id)]])}).routes.has(id);
+  canal=allocateCanalWater({adjacent:network.adjacent,heads:network.heads,capacity:network.flow.residual,intakeLimits:network.flow.intakeRemaining,fields:new Map([[id,network.reachableFields.get(id)]])}).routes.has(id);
  }
  return {canal,natural,drained:network.drained.has(id),productive:canal||natural,label:canal?'Вода из канала · защита от засухи':network.flow&&network.reachableFields.has(id)?'Канал рядом, свободной доли воды нет':natural?'Приречная земля · естественная влага':'Нет воды · работа приостановлена'};
+}
+export function lowWaterForecast(s){
+ if(!lowWaterYear(s)||s.season>1)return null;
+ const normal=irrigationFor(s,{lowRiver:false}),low=irrigationFor(s,{lowRiver:true});
+ return {active:riverIsLow(s),fields:s.buildings.filter(b=>b.type==='field'&&normal.irrigated.has(key(b.x,b.y))&&!low.irrigated.has(key(b.x,b.y)))};
 }
 // Shallow channels leave road geometry intact; short built crossings span road edges.
 export function drawCanal(r,b,s,{progress=1,dry=false,crossings=false,network=irrigationFor(s)}={}){

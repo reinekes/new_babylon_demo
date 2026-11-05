@@ -40,7 +40,7 @@ import {initializeDistricts,validateDistricts} from './district-logistics.js';
 import {initializeFoodPlan,availableFood,validateFoodPlan} from './food-planning.js';
 import {initializePests,syncPestSites,validatePests,catReason,bringCat} from './pests.js';
 import {initializeCrops,changeCropSeason,cropSummary,validateCrops} from './agriculture.js';
-import {fieldWater,irrigationFor} from './irrigation.js';
+import {fieldWater,irrigationFor,lowWaterYear} from './irrigation.js';
 import {initializeClothing,validateClothing} from './clothing.js';
 import {ROLES,validateEducation,newMedicalSkill,advanceMedicalYear} from './education.js';
 import {PROFESSION_IDS,professionRole,canStaffBuilding,hasWorkplace} from './professions.js';
@@ -160,6 +160,7 @@ function settleSeason(s){
  syncLifeAnalytics(s);
  depositCanalSilt(s,irrigationFor(s));
  const previous=s.season;s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);advanceTrade(s);advanceMedicalYear(s);
+ if(lowWaterYear(s)&&s.season===0)log(s,'Летом ожидается маловодье','Проверь поля и запасные водозаборы в обзоре города, в разделе «Работа».','bad');
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);snapshotLifeAnalytics(s);check(s);return;}
  for(const k of Object.keys(s.cooldowns))s.cooldowns[k]=Math.max(0,s.cooldowns[k]-1);
  // Production is already in citizens' delivered cargo. Never credit it here.
