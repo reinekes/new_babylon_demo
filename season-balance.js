@@ -8,7 +8,7 @@ import {MATERIALS,BUILDINGS,buildingKey,isOperational,outputMultiplier} from './
 import {workRate,mealRation,beliefMultiplier} from './wellbeing.js';
 import {networkFor,routeBetween} from './workforce.js';
 import {stockStores,storeCapacity} from './inventory.js';
-import {craftBatch,craftResource,craftState,craftLoad,fleeceCapacity} from './textiles.js';
+import {craftBatch,craftResource,craftState,craftLoad,fleeceGrowth} from './textiles.js';
 export const RESOURCE_GROUPS=[
  {id:'basic',name:'Добыча',keys:['food','clay','reed','wood','stone','hides','wool']},
  {id:'processed',name:'Переработка',keys:['brick','firedBrick','cloth','clothing','pottery','beer','milk']},
@@ -32,7 +32,7 @@ export function seasonBalance(s){
   production.set(key,trips);
   if(isArtisan(b)||['kiln','brickyard','waterpoint','weaver','tailor','healer','depot','cowshed'].includes(b.type))continue;
   if(b.type==='field'){const crop=b.crop||{},batch=7*outputMultiplier(b);if(crop.sheaves>0||s.season===2){const harvest=s.season===2?crop.remaining||0:0;credit(id,'food',Math.min((crop.sheaves||0)+harvest,trips*batch*(harvest>0?.5:1)));}if(s.season===0)debit(id,'food',Math.min(stocks.get(id).food,Math.max(0,4-(crop.seedUsed||0))));continue;}
-  if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceCapacity(b)*seasonSeconds/180));continue;}
+  if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceGrowth(b)*seasonSeconds));continue;}
   for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=(s.buffs?.fertility?1.6:1)*(b.type==='garden'?orchardMaturity(s,b).yield:1);if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,trips*base*mult);}
  }
  for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='cowshed'||!b.dairy?.cows)continue;const id=component(key),d=b.dairy||{},feed=Math.max(0,stocks.get(id).reed+(byComponent.get(id)?.reed||0))+(d.reed||0),batches=Math.min(seasonSeconds*13/24*people.reduce((n,c)=>n+workRate(c,'cowshed'),0)*outputMultiplier(b)/8,feed,(d.water||0)/4);debit(id,'reed',Math.max(0,batches-(d.reed||0)));credit(id,'milk',batches*3);}

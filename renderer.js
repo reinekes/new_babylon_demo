@@ -178,7 +178,7 @@ export class Renderer{
   c.save();
   if(e.kind!=='bird'){c.fillStyle='#3f57452b';c.beginPath();c.ellipse(p.x,p.y+1.5*q,(e.kind==='mouse'?2.5:e.kind==='cat'?5:7)*q,1.8*q,0,0,7);c.fill();}
   if(e.kind==='sheep'){
-   c.translate(p.x,p.y);c.scale((e.heading||1)*.72,.72);if(!e.walking&&!this.reduce)c.translate(0,Math.sin(t*1.7+String(e.id).length)*.25*q);
+   c.translate(p.x,p.y);const size=e.young?.49:.72;c.scale((e.heading||1)*size,size);if(!e.walking&&!this.reduce)c.translate(0,Math.sin(t*1.7+String(e.id).length)*.25*q);
    for(const a of [-4,3])this.line([[a*q,-2*q],[(a+step*.7)*q,4*q]],'#786e54',1.3*q);
    c.fillStyle='#e6dcc0';for(const [a,z,r]of [[-5,-5,4],[0,-7,4.5],[5,-5,3.7],[-1,-3,5]]){c.beginPath();c.arc(a*q,z*q,r*q,0,7);c.fill();}
    this.line([[-7*q,-5*q],[-9*q,-3*q]],'#c6b995',1.7*q);const head=e.behavior==='grazing'||e.behavior==='drinking'?0:e.behavior==='looking'?-7+(e.headTurn||0):-5;c.fillStyle='#8d8060';c.beginPath();c.ellipse(7*q,head*q,2.8*q,2.4*q,.3,0,7);c.fill();this.line([[6*q,(head-1)*q],[4*q,(head-3)*q]],'#a99b77',1.7*q);c.fillStyle='#514f3c';c.fillRect(8*q,(head-.7)*q,.8*q,.8*q);c.restore();return;

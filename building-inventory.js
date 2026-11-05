@@ -4,7 +4,7 @@ import {BUILDINGS,MATERIALS,buildingKey,isOperational,outputMultiplier} from './
 import {isArtisan,artisanRecipe,artisanNeeds,artisanOutput,collectArtisan} from './artisan.js';
 import {BRICK_RECIPE,brickNeeds,collectBricks} from './bricks.js';
 import {KILN_RECIPE,kilnNeeds,collectFired} from './kilns.js';
-import {craftBatch} from './textiles.js';
+import {craftBatch,flockCapacity,flockRation} from './textiles.js';
 import {ration} from './households.js';
 const eps=1e-7,n=value=>Number.isFinite(value)?Math.max(0,value):0;
 const sum=(target,k,value)=>{if(value>0)target[k]=(target[k]||0)+value;};
@@ -15,11 +15,12 @@ export function inputRecipe(b){
  if(b?.type==='brickyard')return BRICK_RECIPE;if(b?.type==='kiln')return KILN_RECIPE;
  if(b?.type==='weaver')return {wool:craftBatch(b)};if(b?.type==='tailor')return {cloth:craftBatch(b)};
  if(b?.type==='cowshed')return {reed:3,water:12};
+ if(b?.type==='sheepfold'&&b.flock?.adults!==undefined)return {reed:Math.ceil(flockCapacity(b)/2)};
  if(b?.type==='healer')return {food:4,reed:2};return {};
 }
-export function inputBuffer(b){return isArtisan(b)?b.artisan:b?.type==='brickyard'?b.brickmaking:b?.type==='kiln'?b.firing:b?.type==='weaver'?b.weaving:b?.type==='tailor'?b.tailoring:b?.type==='healer'?b.workshopStock?.input:b?.type==='cowshed'?b.dairy:null;}
+export function inputBuffer(b){return isArtisan(b)?b.artisan:b?.type==='brickyard'?b.brickmaking:b?.type==='kiln'?b.firing:b?.type==='weaver'?b.weaving:b?.type==='tailor'?b.tailoring:b?.type==='healer'?b.workshopStock?.input:b?.type==='cowshed'?b.dairy:b?.type==='sheepfold'&&b.flock?.adults!==undefined?b.flock:null;}
 export function inputNeeds(b){
- if(b?.type==='cowshed')return dairyNeeds(b);if(isArtisan(b))return artisanNeeds(b);if(b?.type==='brickyard')return brickNeeds(b);if(b?.type==='kiln')return kilnNeeds(b);
+ if(b?.type==='cowshed')return dairyNeeds(b);if(b?.type==='sheepfold'&&b.flock?.adults!==undefined)return {reed:Math.max(0,flockRation(b)-b.flock.reed)};if(isArtisan(b))return artisanNeeds(b);if(b?.type==='brickyard')return brickNeeds(b);if(b?.type==='kiln')return kilnNeeds(b);
  return Object.fromEntries(Object.entries(inputRecipe(b)).map(([k,v])=>[k,Math.max(0,v-n(inputBuffer(b)?.[k]))]));
 }
 export function initializeBuildingInventory(s){
@@ -57,6 +58,7 @@ export function buildingInputStock(b,k){return b?.type==='house'?k==='food'?n(b.
 export function buildingInputRoom(s,b,k){
  if(!isOperational(b))return 0;
  if(b.type==='house')return Math.max(0,homeStockCapacity(s,b,k)-buildingInputStock(b,k));
+ if(b.type==='sheepfold'&&b.flock?.adults!==undefined&&k==='reed')return Math.max(0,inputRecipe(b).reed-b.flock.reed);
  return Math.max(0,inputNeeds(b)[k]||0);
 }
 export function putBuildingInput(s,b,k,amount){

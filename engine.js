@@ -1,3 +1,4 @@
+import {settleManagedFlocks} from './textiles.js';
 import {validateVotiveOfferings} from './votive-offerings.js';
 import {validateExternalGuest} from './external-guest.js';
 import {validateReedBeds} from './reed-stock.js';
@@ -177,7 +178,7 @@ function check(s){
 function settleSeason(s){
  syncLifeAnalytics(s);
  depositCanalSilt(s,irrigationFor(s));
- const previous=s.season;s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);advanceTrade(s);advanceMedicalYear(s);
+ const previous=s.season;s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);settleManagedFlocks(s);advanceTrade(s);advanceMedicalYear(s);
  const flood=changeFloodSeason(s);
  if(flood==='warning')log(s,'Весной ожидается разлив','Посмотри затронутые дороги в обзоре города, в разделе «Работа».','bad');
  if(flood==='active')log(s,'Река вышла из берегов','Жители ищут сухой путь в обход затопленных дорог.','bad');
