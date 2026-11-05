@@ -1,3 +1,4 @@
+import {validateExternalGuest} from './external-guest.js';
 import {validateReedBeds} from './reed-stock.js';
 import {validateForests} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,validateMineralPits} from './mineral-stock.js';
@@ -397,7 +398,7 @@ export function decode(raw){
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
   if(!validateLifeAnalytics(s))return null;
-  initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
+  initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}
 }

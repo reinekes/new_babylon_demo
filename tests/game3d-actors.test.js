@@ -103,6 +103,11 @@ test('GLB clones track exact simulation positions, pause, release vanished IDs, 
   c.cargo={};view.update(s,1/60);assert.equal(root.getChildMeshes().filter(m=>m.name.includes('cargo')).length,0);
   c.phase='home';view.update(s,1/60);assert.equal(root.isEnabled(),false);
   const oldMeshes=root.getChildMeshes();s.citizens=[];view.update(s,1/60);assert.ok(root.isDisposed());assert.ok(owned.material===null||owned.isDisposed());assert.ok(oldMeshes.every(m=>!live.includes(m)));assert.equal(view.meshes,live);
+  s.externalGuest={name:'Лу-Уту',phase:'arriving',x:c.x,y:c.y,route:['2,2','3,2'],routeIndex:1};
+  view.update(s,1/60);const guest=actorViewCitizens(s).find(p=>p.visitor),guestRoot=view.rootFor({citizenId:guest.id});
+  assert.ok(guestRoot&&!guestRoot.isDisposed());s.externalGuest.x+=.1;view.update(s,1/60);
+  assert.equal(view.rootFor({citizenId:guest.id}),guestRoot);
+  s.externalGuest.phase='departed';view.update(s,1/60);assert.ok(guestRoot.isDisposed());
   view.dispose();assert.equal(live.length,0);
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });

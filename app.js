@@ -68,6 +68,7 @@ import {household} from './households.js';
 import {lifeStage,canWork} from './demography.js';
 import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale,tradeContractOffer,acceptTradeContract,tradePartnerTrust} from './trading.js';
+import {externalGuestView,externalMasterOffer,inviteExternalMaster} from './external-guest.js';
 import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,layRoad} from './roads.js';
 import {weatherAt} from './environment.js';
 import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
@@ -109,13 +110,13 @@ const renderer=await createGameRenderer($('city'),tile=>{
  if(testMapUpgrade){const b=buildingAt(state,tile.x,tile.y);if(!b){toast('Выбери готовое здание для мгновенного улучшения');return;}const r=instantTestUpgrade(state,buildingKey(b));mutate(r,r.ok?`${buildingDefinition(state,b.type).name}: уровень ${b.level}`:'');return;}
  if(relicControlActive(state)){const b=buildingAt(state,tile.x,tile.y),q=relicQuestView(state);if(q.phase==='carrying'&&b&&['shrine','ziggurat'].includes(b.type))relicUI.deliver(buildingKey(b));else relicUI.move(tile);return;}
  if(selection){const result=build(state,selection,tile.x,tile.y,placementRotation);if(result.ok){toast(`${buildingDefinition(state,selection).name}: стройплощадка заложена`);save();update();checkDialogs();}else toast(result.reason);return;}
- if(tile.citizenId!==undefined){const person=state.citizens.find(c=>c.id===tile.citizenId);if(person){personDetail(person);return;}}
+ if(tile.citizenId!==undefined){if(externalGuestView(state)?.id===tile.citizenId){showTrade();return;}const person=state.citizens.find(c=>c.id===tile.citizenId);if(person){personDetail(person);return;}}
  if(tile.animalId){toast(({sheep:'Овца',goat:'Коза',gazelle:'Газель',bird:'Птица',jackal:'Шакал',cat:'Животное',mouse:'Мышь'})[tile.animalKind]||'Животное долины');return;}
  const b=buildingAt(state,tile.x,tile.y);
  if(b){inspected={x:b.x,y:b.y};detail(b.type,false,b);return;}
  if(manualGatheringView(state,tile.x,tile.y)){depositDetail(tile.x,tile.y);return;}
  const person=visibleCitizens(state).find(c=>Math.abs(c.x-tile.x)+Math.abs(c.y-tile.y)<1);
- if(person){personDetail(person);return;}
+ if(person){if(person.visitor)showTrade();else personDetail(person);return;}
  inspected=null;inspectedDeposit=null;$('tile-detail').hidden=true;
  toast(terrain(tile.x,tile.y,state)==='water'?'Вода: рыбачить можно с сухого берега. Мост строится только через реку.':terrain(tile.x,tile.y,state)==='fertile'?'Плодородная земля — здесь можно посадить ячмень.':'Сухая земля — подходит для домов, мастерских и храмов.');
 },{initialState:state});
@@ -368,16 +369,36 @@ function tradeContractHTML(){
  return `<section class="management-row"><h3>Договор с купцами</h3>${previous}${next}</section>`;
 }
 
+function externalGuestHTML(){
+ const g=state.externalGuest,offer=externalMasterOffer(state);
+ if(!g&&!offer)return '';
+ if(g){
+  const learner=state.citizens.find(c=>c.id===g.learner);
+  const phase={arriving:'Идёт к дому ученика',staying:g.fed?'Передаёт навык при встрече':'Ждёт ученика дома и воду',
+   returning:'Возвращается к торговому двору',departed:'Покинул город'}[g.phase];
+  const outcome=g.outcome==='taught'?'Ученик получил практику строителя.':g.outcome==='interrupted'?'Занятие не состоялось.':'';
+  return `<section class="management-row"><h3>Приглашённый мастер · ${esc(g.name)}</h3>
+   <p>${esc(g.partner)} · ${phase}. ${outcome}<br>Ученик: ${learner?resident(learner):'больше не живёт в городе'} · дом ${g.home}.
+   ${g.fed?'Паёк принят.':g.phase==='arriving'||g.phase==='staying'?'В резерве 3 еды, в доме нужно 2 воды.':''}</p></section>`;
+ }
+ return `<section class="management-row"><h3>Приглашённый мастер · ${esc(offer.name)}</h3>
+  <p>Мастер прибыл с купцами. Встретится с местным строителем I уровня у него дома. Для визита нужны ${offer.food} еды и ${offer.water} воды.
+  ${offer.learner!==undefined?`Ученик: ${resident(offer.learner)}.`:''}</p>
+  <button data-invite-external-master ${offer.reason?'disabled':''}>Пригласить мастера</button>${offer.reason?`<small> ${esc(offer.reason)}</small>`:''}</section>`;
+}
+
 function showTrade(){
  openDialog('trade',`<button class="management-close" id="close-trade" aria-label="Вернуться в город">×</button><span class="eyebrow">РЕЧНЫЕ И КАРАВАННЫЕ ПУТИ</span><h2>Торговля</h2><div id="trade-content"></div>`);$('close-trade').onclick=closeDialog;renderTrade();
 }
 function renderTrade(){
  if(modalKind!=='trade'||!$('trade-content'))return;
  const t=state.trade,c=t.caravan,hasMarket=state.buildings.some(b=>['market','harbor'].includes(b.type)&&(!b.construction||b.construction.kind==='upgrade'));
- $('trade-content').innerHTML=`<div class="trade-wallet"><span>Серебро города <b id="trade-silver">${t.silver}</b></span>${c?`<span>Кошелёк купцов <b>${c.silver}</b></span>`:''}</div><div class="market-status"><b>${esc(marketStatus(state)||'Торговля открыта · товары разгружены')}</b>${c?`<span>${c.transport==='river'?({arriving:'По реке к пристани',unloading:'Швартовка и разгрузка',trading:'Лодка у причала',departing:'Обратный рейс',blocked:'Ждёт снабжения',waitingMarket:'Ждёт пристани'})[c.phase]:caravanPhases[c.phase]||'Караван в пути'}</span>`:''}</div>${tradeContractHTML()}${deliveryOverview()}${!hasMarket?`<div class="market-needed"><p>Купцам нужен рынок или речная пристань с дорогой к складу и домам. Купленные товары жители отнесут с рынка на доступный склад.</p><button class="primary" id="place-market">Построить рынок</button></div>`:''}${!c?`<div class="trade-empty"><span>♧</span><h3>Купцы ещё в пути</h3><p>Следующий прибудет: год ${1+Math.floor(t.nextArrival/4)}, ${SEASONS[t.nextArrival%4].toLowerCase()}. При доступной пристани лодки чередуются с караванами. Без рынка купцы приходят только по реке. Пристани нужны склад, дом и дорога; при озере она не работает.</p></div>`:`<p class="trade-visit"><b>${esc(c.name)}</b> · отъезд: год ${1+Math.floor(c.departAt/4)}, ${SEASONS[c.departAt%4].toLowerCase()}<br>Цены — за единицу. Покупки ждут на торговом дворе: носильщики отнесут их на склад. Продажи резервируются; серебро поступает после доставки и погрузки. В окне торговли время на паузе.</p><div class="trade-list">${MATERIALS.map(k=>{const amount=tradeQuantities.get(k)||10;return `<article class="trade-row" data-trade-row="${k}"><div class="trade-resource">${resourceIcon(k)}<div><h3>${label(k)}</h3><small>У тебя: ${rounded(state.resources[k])} / ${storage(state)} · у купцов: ${c.stock[k]}</small></div></div><div class="trade-prices">Купить: ${c.prices[k].buy} · продать: ${c.prices[k].sell} серебра / ед.</div><div class="trade-actions"><label>Количество <input type="number" data-trade-quantity="${k}" aria-label="Количество: ${label(k)}" min="1" max="1000000" step="1" value="${amount}" inputmode="numeric"></label><button data-trade="buy" data-resource="${k}"></button><button data-trade="sell" data-resource="${k}"></button></div><small class="trade-reason" data-trade-reason="${k}"></small></article>`;}).join('')}</div><p class="trade-help">Запасы и серебро купцов ограничены. Лодки привозят втрое больше леса и камня. Вера и престиж не продаются. Покупка и обратная продажа обходятся в убыток.</p>`}`;
+ $('trade-content').innerHTML=`<div class="trade-wallet"><span>Серебро города <b id="trade-silver">${t.silver}</b></span>${c?`<span>Кошелёк купцов <b>${c.silver}</b></span>`:''}</div><div class="market-status"><b>${esc(marketStatus(state)||'Торговля открыта · товары разгружены')}</b>${c?`<span>${c.transport==='river'?({arriving:'По реке к пристани',unloading:'Швартовка и разгрузка',trading:'Лодка у причала',departing:'Обратный рейс',blocked:'Ждёт снабжения',waitingMarket:'Ждёт пристани'})[c.phase]:caravanPhases[c.phase]||'Караван в пути'}</span>`:''}</div>${tradeContractHTML()}${externalGuestHTML()}${deliveryOverview()}${!hasMarket?`<div class="market-needed"><p>Купцам нужен рынок или речная пристань с дорогой к складу и домам. Купленные товары жители отнесут с рынка на доступный склад.</p><button class="primary" id="place-market">Построить рынок</button></div>`:''}${!c?`<div class="trade-empty"><span>♧</span><h3>Купцы ещё в пути</h3><p>Следующий прибудет: год ${1+Math.floor(t.nextArrival/4)}, ${SEASONS[t.nextArrival%4].toLowerCase()}. При доступной пристани лодки чередуются с караванами. Без рынка купцы приходят только по реке. Пристани нужны склад, дом и дорога; при озере она не работает.</p></div>`:`<p class="trade-visit"><b>${esc(c.name)}</b> · отъезд: год ${1+Math.floor(c.departAt/4)}, ${SEASONS[c.departAt%4].toLowerCase()}<br>Цены — за единицу. Покупки ждут на торговом дворе: носильщики отнесут их на склад. Продажи резервируются; серебро поступает после доставки и погрузки. В окне торговли время на паузе.</p><div class="trade-list">${MATERIALS.map(k=>{const amount=tradeQuantities.get(k)||10;return `<article class="trade-row" data-trade-row="${k}"><div class="trade-resource">${resourceIcon(k)}<div><h3>${label(k)}</h3><small>У тебя: ${rounded(state.resources[k])} / ${storage(state)} · у купцов: ${c.stock[k]}</small></div></div><div class="trade-prices">Купить: ${c.prices[k].buy} · продать: ${c.prices[k].sell} серебра / ед.</div><div class="trade-actions"><label>Количество <input type="number" data-trade-quantity="${k}" aria-label="Количество: ${label(k)}" min="1" max="1000000" step="1" value="${amount}" inputmode="numeric"></label><button data-trade="buy" data-resource="${k}"></button><button data-trade="sell" data-resource="${k}"></button></div><small class="trade-reason" data-trade-reason="${k}"></small></article>`;}).join('')}</div><p class="trade-help">Запасы и серебро купцов ограничены. Лодки привозят втрое больше леса и камня. Вера и престиж не продаются. Покупка и обратная продажа обходятся в убыток.</p>`}`;
  bindSaleCancellations($('trade-content'));
  const sign=$('trade-content').querySelector('[data-accept-trade-contract]');
  if(sign)sign.onclick=()=>{if(mutate(acceptTradeContract(state),'Договор подписан. Ткань зарезервирована.'))renderTrade();};
+ const invite=$('trade-content').querySelector('[data-invite-external-master]');
+ if(invite)invite.onclick=()=>{if(mutate(inviteExternalMaster(state),'Мастер приглашён. Паёк зарезервирован.'))renderTrade();};
  if($('place-market'))$('place-market').onclick=()=>{closeDialog();choose('market');};
  if(!c)return;
  for(const input of $('trade-content').querySelectorAll('[data-trade-quantity]'))input.oninput=()=>{tradeQuantities.set(input.dataset.tradeQuantity,Number(input.value));updateTradeRow(input.dataset.tradeQuantity);};

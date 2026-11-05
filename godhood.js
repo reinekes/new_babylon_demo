@@ -23,16 +23,20 @@ export function builderTeachingPair(s,people){
  const [mentor,pupil]=builders.sort((a,b)=>builderLevel(b)-builderLevel(a));
  return {mentor,pupil};
 }
+export function addBuilderPractice(c,amount,maxLevel){
+ if(builderLevel(c)>=maxLevel)return;
+ const skill=c.builderSkill??={level:1,projects:0};
+ const ceiling=((maxLevel===3?5:2)-skill.projects)*PRACTICE_PER_PROJECT;
+ skill.practice=Math.min(ceiling,(skill.practice||0)+amount);
+ skill.level=levelFor(skill);
+}
 export function applyBuilderInstruction(s,contributions,room=Infinity){
  const total=contributions.reduce((n,{work})=>n+work,0);
  const pair=contributions.length===2&&builderTeachingPair(s,contributions.map(({c})=>c));
  if(!pair||room<=0)return Math.min(total,room);
  const shared=Math.min(...contributions.map(({work})=>work));
  const effective=total-shared*.5;
- const skill=pair.pupil.builderSkill??={level:1,projects:0};
- const ceiling=((builderLevel(pair.mentor)===3?5:2)-skill.projects)*PRACTICE_PER_PROJECT;
- skill.practice=Math.min(ceiling,(skill.practice||0)+shared*Math.min(1,room/effective));
- skill.level=levelFor(skill);
+ addBuilderPractice(pair.pupil,shared*Math.min(1,room/effective),builderLevel(pair.mentor));
  return Math.min(effective,room);
 }
 export const knowledgeTier=(type,level=1)=>Math.max(level,MONUMENTS.has(type)?3:BASIC.has(type)||type==='road'?1:2);
