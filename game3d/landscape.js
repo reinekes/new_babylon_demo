@@ -1,4 +1,6 @@
 import {createPalmRenderGroups} from './palm-render-groups.js';
+import {orchardPalms} from '../orchard-layout.js';
+import {isStrictSumer} from '../scenario-profiles.js';
 import {createRoadRenderGroups} from './road-render-groups.js';
 import {createCatDiscoveryScenery,catDiscoverySurfaceHeight} from './cat-discovery.js';
 import {createLazyFeature} from './asset-loading.js';
@@ -51,7 +53,7 @@ const pointDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((p.x-a.x)*dx+
 // Resource quantities change during work and at season boundaries; only kind and
 // coordinates affect these static meshes (resourceDisplayLayout uses the same data).
 const depositGeometry=s=>s.world?.deposits?.map(d=>[d.kind,d.x,d.y]);
-export function landscapeSignature(s){return JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,depositGeometry(s),s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b)]),s.roadAnchors,s.roads?.map(r=>[r.id,r.a,r.b,r.level,r.construction])]);}
+export function landscapeSignature(s){return JSON.stringify([isStrictSumer(s),worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,depositGeometry(s),s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b),b.type==='garden'?b.rotation||0:0]),s.roadAnchors,s.roads?.map(r=>[r.id,r.a,r.b,r.level,r.construction])]);}
 export function landscapeFallbackTufts(s,roads=[],sources={}){
  if(sources.grass?.length&&sources.reed?.length)return [];
  return floodplainTufts(s,roads).filter(p=>!sources[p.kind]?.length);
@@ -65,6 +67,7 @@ export function landscapePlan(s){
  const deposits=(s.world?.deposits||[]).filter(d=>RESOURCE_SITES[d.kind]&&terrain(d.x,d.y,s)!=='water').map(d=>({...d}));
  const palms=vegetationFor(s,{edges}).filter(p=>p.kind==='palm'&&shoreDistance(p.x,p.y,s)>.4&&sceneryClear(s,p,.2)&&roads.every(r=>pointDistance(p,r.a,r.b)>.4));
  for(const d of deposits)if(['forest','dates'].includes(d.kind))for(const [i,display]of resourceDisplayLayout(d).entries()){const p={id:`resource-${d.kind}-${d.x}-${d.y}-${i}`,x:display.x,y:display.y,resource:d.kind};if(vegetationBankDistance(p.x,p.y,s)>.22&&sceneryClear(s,p,.2)&&roads.every(r=>pointDistance(p,r.a,r.b)>.4))palms.push(p);}
+ for(const b of s.buildings||[])for(const p of orchardPalms(b,s))if(vegetationBankDistance(p.x,p.y,s)>.22&&sceneryClear({buildings:s.buildings.filter(other=>other!==b)},p,.08)&&roads.every(r=>pointDistance(p,r.a,r.b)>.22))palms.push(p);
  const c=s.trade?.caravan,caravan=c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{x:c.x,y:c.y,river:c.transport==='river',stock:{...c.stock},route:c.route||[],routeIndex:c.routeIndex||0}:null;
  return {roads,canals,palms,caravan,deposits};
 }
@@ -238,9 +241,9 @@ export async function createGameLandscape(B,scene,initialState,materials,options
    staticScenerySignature=nextScenery;
   }
   carveChannels(s,arms);
-  const visiblePalms=plan.palms.filter(p=>!(s.gathering?.features||[]).some(f=>f.kind==='tree'&&Math.hypot(f.x-p.x,f.y-p.y)<.85));
+  const visiblePalms=plan.palms.filter(p=>p.managed||!(s.gathering?.features||[]).some(f=>f.kind==='tree'&&Math.hypot(f.x-p.x,f.y-p.y)<.85));
   const nextPalms=JSON.stringify(visiblePalms.map(p=>[p.id,p.x,p.y]));
-  if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}updatePalmGroups();}
+  if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.managed?.62:p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}updatePalmGroups();}
  }
 
  let featureSignature='';

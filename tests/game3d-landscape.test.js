@@ -3,6 +3,21 @@ import assert from 'node:assert/strict';
 import {createGameLandscape, landscapePlan, landscapeSignature, resourcePlacementSites,landscapeFallbackTufts} from '../game3d/landscape.js';
 import {createGame} from '../engine.js';
 import {terrain} from '../world.js';
+import {strictScenario,legacyScenario} from '../scenario-profiles.js';
+
+test('managed Sumerian gardens have two palm rows while surrounding and legacy palms stay scattered',()=>{
+ const s=createGame({start:'established'});s.scenario=strictScenario();s.buildings=[];s.roads=[];
+ const wild=landscapePlan(s).palms.filter(p=>Math.hypot(p.x-6,p.y-10)>2),garden={type:'garden',x:6,y:10,level:1};s.buildings=[garden];
+ const before=JSON.stringify(s),palms=landscapePlan(s).palms,rows=palms.filter(p=>p.managed);
+ assert.equal(rows.length,4,'four living palms belong to the managed plot');
+ assert.equal(new Set(rows.map(p=>p.x)).size,2);assert.equal(new Set(rows.map(p=>p.y)).size,2);
+ assert.ok(rows.every(p=>Math.abs(p.x-6)<.4&&Math.abs(p.y-10)<.4));
+ assert.deepEqual(palms.filter(p=>!p.managed&&Math.hypot(p.x-6,p.y-10)>2),wild,'unrelated wild positions do not turn into a grid');
+ assert.equal(JSON.stringify(s),before);
+ garden.construction={kind:'new'};assert.equal(landscapePlan(s).palms.filter(p=>p.managed).length,0,'an unfinished garden is not a mature grove');
+ garden.construction={kind:'upgrade',target:2};assert.equal(landscapePlan(s).palms.filter(p=>p.managed).length,4,'upgrade retains existing trees');
+ delete garden.construction;s.scenario=legacyScenario();assert.equal(landscapePlan(s).palms.filter(p=>p.managed).length,0,'old cities retain their former layout');
+});
 
 test('landscape derives actual canal water, arms and construction without changing city state',()=>{
  const s=createGame({start:'established'});s.buildings=[];s.roads=[];
@@ -345,4 +360,18 @@ test('road color changes retain grass positions and match fresh channel cuts, in
  assert.ok(sameIndexCases>0&&changedIndexCases>0,'fixture must cover both unchanged and changed index topology');writes.length=0;s.buildings.at(-1).construction.work=9;view.update(s,2);assert.ok(writes.includes('position'),'changed canal height must invalidate cached positions/clips');
  fresh=await createGameLandscape(B,scene,s,materials);for(const kind of ['position','normal','color'])assert.deepEqual(Array.from(grass.getVerticesData(kind)),Array.from(fresh.meshes.find(m=>m.name==='soft-riparian-grass').getVerticesData(kind)),kind);
  }finally{B.SceneLoader.LoadAssetContainerAsync=loader;fresh?.dispose();view?.dispose();scene.dispose();engine.dispose();}
+});
+
+test('an invisible saved gathering tree inside a garden cannot erase its living orchard',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
+ try{
+  const s=createGame({start:'established'});s.scenario=strictScenario();s.buildings=[{type:'garden',x:6,y:10,level:1}];s.roads=[];s.gathering.features=[];
+  view=await createGameLandscape(B,scene,s,materials);
+  const points=()=>new Set(view.meshes.filter(m=>m.name.startsWith('date-palm-garden-6-10-')).map(m=>`${m.position.x},${m.position.z}`));
+  assert.equal(points().size,4);s.gathering.features.push({id:'tree:inside-garden',kind:'tree',x:6,y:10,health:1,felledAt:null,recoverAt:null});
+  const before=JSON.stringify(s);view.update(s,0);assert.equal(points().size,4,'the hidden gathering tree must not hide all garden palms');assert.equal(JSON.stringify(s),before);
+  const initial=points();s.buildings[0].rotation=1;s.buildings[0].construction={kind:'upgrade',target:2,required:{brick:10},delivered:{brick:0},work:0};view.update(s,0);assert.equal(points().size,4);assert.notDeepEqual(points(),initial,'rotation updates actual grove meshes');
+  s.buildings=[];view.update(s,0);assert.equal(points().size,0,'demolition removes the managed palms');
+ }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
 });

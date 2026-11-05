@@ -1,4 +1,5 @@
 import {isStrictSumer} from './scenario-profiles.js';
+import {orchardPalms} from './orchard-layout.js';
 import {drawArtisan} from './artisan-art.js';
 import {drawCourtyardHouse,drawBuildingFinish,drawSumerSacred} from './map-art.js';
 import {drawHarbor} from './waterfront-art.js';
@@ -268,7 +269,9 @@ export function drawBuilding(r, b, state, t) {
     r.tile(b.x,b.y,'#9eaf75');
     box(0,0,26,13,3,'#b8c08a','#9b9e69','#a9ad76');
     box(0,-2,11,5.5,2,'#9ec1af','#b3b78b','#bbc393');
-    r.palm(x-14*q,y-4*q,.85,t);r.palm(x+15*q,y-2*q,.95,t);r.palm(x-2*q,y+9*q,.72,t);
+    if(isStrictSumer(state))for(const p of orchardPalms(b,state).sort((a,d)=>a.x+a.y-d.x-d.y)){
+      const dx=p.x-b.x,dy=p.y-b.y;r.palm(x+(dx-dy)*30*q,y+(dx+dy)*15*q,.72,t);
+    }else{r.palm(x-14*q,y-4*q,.85,t);r.palm(x+15*q,y-2*q,.95,t);r.palm(x-2*q,y+9*q,.72,t);}
     for(let k=0;k<7;k++){c.fillStyle=k%2?'#c9b970':'#d9cda0';c.beginPath();c.arc(x+(-19+seed(k,2)*38)*q,y+(-6+seed(k,3)*16)*q,1.3*q,0,7);c.fill();}
     box(-13,8,7,3.5,4,'#d9c795','#b9a677','#c9b888');
   }

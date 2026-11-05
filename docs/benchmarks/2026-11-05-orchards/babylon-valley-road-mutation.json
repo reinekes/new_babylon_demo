@@ -1,0 +1,464 @@
+[
+  {
+    "frame": 1,
+    "seed": 137,
+    "view": "garden",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [
+      {
+        "path": "/roads/16",
+        "after": {
+          "type": "road",
+          "id": "road:11,11|11,12",
+          "x": 10.5,
+          "y": 11,
+          "a": {
+            "x": 10.5,
+            "y": 11.5,
+            "key": "11,12"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 10.5,
+            "key": "11,11"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/17",
+        "after": {
+          "type": "road",
+          "id": "road:11,10|11,11",
+          "x": 10.5,
+          "y": 10,
+          "a": {
+            "x": 10.5,
+            "y": 10.5,
+            "key": "11,11"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 9.5,
+            "key": "11,10"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/18",
+        "after": {
+          "type": "road",
+          "id": "road:11,10|11,9",
+          "x": 10.5,
+          "y": 9,
+          "a": {
+            "x": 10.5,
+            "y": 9.5,
+            "key": "11,10"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 8.5,
+            "key": "11,9"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/19",
+        "after": {
+          "type": "road",
+          "id": "road:11,8|11,9",
+          "x": 10.5,
+          "y": 8,
+          "a": {
+            "x": 10.5,
+            "y": 8.5,
+            "key": "11,9"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 7.5,
+            "key": "11,8"
+          },
+          "level": 1
+        }
+      }
+    ],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0.9,
+      "beta": 0.9,
+      "radius": 18,
+      "target": [
+        48,
+        1,
+        48
+      ],
+      "position": [
+        56.76462936401367,
+        12.188977241516113,
+        59.04481887817383
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 50
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 1955,
+    "seed": 42,
+    "view": "garden",
+    "hour": 12,
+    "rotation": 0,
+    "pure": false,
+    "mutations": [
+      {
+        "path": "/roads/16",
+        "after": {
+          "type": "road",
+          "id": "road:11,11|11,12",
+          "x": 10.5,
+          "y": 11,
+          "a": {
+            "x": 10.5,
+            "y": 11.5,
+            "key": "11,12"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 10.5,
+            "key": "11,11"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/17",
+        "after": {
+          "type": "road",
+          "id": "road:11,10|11,11",
+          "x": 10.5,
+          "y": 10,
+          "a": {
+            "x": 10.5,
+            "y": 10.5,
+            "key": "11,11"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 9.5,
+            "key": "11,10"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/18",
+        "after": {
+          "type": "road",
+          "id": "road:11,10|11,9",
+          "x": 10.5,
+          "y": 9,
+          "a": {
+            "x": 10.5,
+            "y": 9.5,
+            "key": "11,10"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 8.5,
+            "key": "11,9"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/19",
+        "after": {
+          "type": "road",
+          "id": "road:11,8|11,9",
+          "x": 10.5,
+          "y": 8,
+          "a": {
+            "x": 10.5,
+            "y": 8.5,
+            "key": "11,9"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 7.5,
+            "key": "11,8"
+          },
+          "level": 1
+        }
+      }
+    ],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0.9,
+      "beta": 0.9,
+      "radius": 18,
+      "target": [
+        36,
+        1,
+        60
+      ],
+      "position": [
+        44.76462936401367,
+        12.188977241516113,
+        71.04481506347656
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 91
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 1959,
+    "seed": 42,
+    "view": "garden",
+    "hour": 12,
+    "rotation": 0,
+    "pure": false,
+    "mutations": [
+      {
+        "path": "/roads/16",
+        "after": {
+          "type": "road",
+          "id": "road:11,11|11,12",
+          "x": 10.5,
+          "y": 11,
+          "a": {
+            "x": 10.5,
+            "y": 11.5,
+            "key": "11,12"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 10.5,
+            "key": "11,11"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/17",
+        "after": {
+          "type": "road",
+          "id": "road:11,10|11,11",
+          "x": 10.5,
+          "y": 10,
+          "a": {
+            "x": 10.5,
+            "y": 10.5,
+            "key": "11,11"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 9.5,
+            "key": "11,10"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/18",
+        "after": {
+          "type": "road",
+          "id": "road:11,10|11,9",
+          "x": 10.5,
+          "y": 9,
+          "a": {
+            "x": 10.5,
+            "y": 9.5,
+            "key": "11,10"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 8.5,
+            "key": "11,9"
+          },
+          "level": 1
+        }
+      },
+      {
+        "path": "/roads/19",
+        "after": {
+          "type": "road",
+          "id": "road:11,8|11,9",
+          "x": 10.5,
+          "y": 8,
+          "a": {
+            "x": 10.5,
+            "y": 8.5,
+            "key": "11,9"
+          },
+          "b": {
+            "x": 10.5,
+            "y": 7.5,
+            "key": "11,8"
+          },
+          "level": 1
+        }
+      }
+    ],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0.9,
+      "beta": 0.9,
+      "radius": 18,
+      "target": [
+        36,
+        1,
+        60
+      ],
+      "position": [
+        44.76462936401367,
+        12.188977241516113,
+        71.04481506347656
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 91
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  }
+]

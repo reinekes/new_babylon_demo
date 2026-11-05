@@ -1,0 +1,11 @@
+{
+  "fixture": "world64-seed137",
+  "width": 64,
+  "height": 64,
+  "buildings": 129,
+  "population": 200,
+  "stateSHA256": "5397d26c76636186cf6bbb2189d10ed55bd7cb778edfb02331e98198bac78d11",
+  "steps": 900,
+  "simulatedSeconds": 60,
+  "note": "Functional 4x smoke only. Concurrent full test suite; CPU timings excluded, no FPS measurement."
+}

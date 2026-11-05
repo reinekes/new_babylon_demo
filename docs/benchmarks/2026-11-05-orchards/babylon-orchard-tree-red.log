@@ -1,0 +1,33 @@
+TAP version 13
+# BJS - [18:11:06]: Babylon.js v9.31.0 - Null engine
+# Subtest: an invisible saved gathering tree inside a garden cannot erase its living orchard
+not ok 1 - an invisible saved gathering tree inside a garden cannot erase its living orchard
+  ---
+  duration_ms: 744.98275
+  type: 'test'
+  location: '/Users/back/.codex/worktrees/sumer-scenario-profiles/babylon/tests/game3d-landscape.test.js:365:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    the hidden gathering tree must not hide all garden palms
+
+    0 !== 4
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 4
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/back/.codex/worktrees/sumer-scenario-profiles/babylon/tests/game3d-landscape.test.js:373:58)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 931.037041

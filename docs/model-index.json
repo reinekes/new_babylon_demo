@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "bacf3a588b8e31fd866cc43f907dcda93b0448c23c19f4ac847c37704b9afdce"
+      "sha256": "e83f6627c0ed3f9d26891c8fae4640b5841013d39fe66107528ce2bd4047c4d0"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -495,7 +495,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 149,
+          "line": 152,
           "kind": "literal"
         }
       ]
