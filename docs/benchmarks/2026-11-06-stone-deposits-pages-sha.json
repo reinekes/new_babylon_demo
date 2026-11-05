@@ -1,0 +1,142 @@
+{
+  "at": "2026-11-05T21:14:23.786526+00:00",
+  "commit": "f2e7df2edef295b200b2ba7ea39c6fdfe72089a9",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "bd981900990f64f93dfc0beb658ebadef868737fd2bdbdbedd95bb7a3b828324",
+      "actual": "bd981900990f64f93dfc0beb658ebadef868737fd2bdbdbedd95bb7a3b828324",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "dfe1727ea08dc7fe8c160fff4a21f71f9cc3aa20e7b3cc60c034bc58b6916c97",
+      "actual": "dfe1727ea08dc7fe8c160fff4a21f71f9cc3aa20e7b3cc60c034bc58b6916c97",
+      "match": true
+    },
+    {
+      "path": "clay-stock.js",
+      "status": 200,
+      "expected": "57d0c8861b03a9d35adb84542109b01a95a486bd22bf582c6d7c4f59c0b7377b",
+      "actual": "57d0c8861b03a9d35adb84542109b01a95a486bd22bf582c6d7c4f59c0b7377b",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "efa78bdd9c2a33dfd96745c12dcb847e334e1ad78eb2909e14c6a4bb85f29ef6",
+      "actual": "efa78bdd9c2a33dfd96745c12dcb847e334e1ad78eb2909e14c6a4bb85f29ef6",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-clay-deposits-pages-sha.json",
+      "status": 200,
+      "expected": "7d24cffd5c39fd937375c475120464bb2cc8ae9ad5a03d920e7896bbcaa23312",
+      "actual": "7d24cffd5c39fd937375c475120464bb2cc8ae9ad5a03d920e7896bbcaa23312",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-04.md",
+      "status": 200,
+      "expected": "7995f6be46ca35901b5cac2e137b10298d907b1d9a84554b2967ac155ee2d240",
+      "actual": "7995f6be46ca35901b5cac2e137b10298d907b1d9a84554b2967ac155ee2d240",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "77f92cd1b47132dc82be57cc7575a27cc6d531079748c6149788f956d6f040d8",
+      "actual": "77f92cd1b47132dc82be57cc7575a27cc6d531079748c6149788f956d6f040d8",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f89301db0bbc2de21711efdc7822c872e5bf4a276d37e52e5bc8b0b5223015d9",
+      "actual": "f89301db0bbc2de21711efdc7822c872e5bf4a276d37e52e5bc8b0b5223015d9",
+      "match": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "expected": "77ae23ec8ab4715edd1bafaa19babb09d99e710878c9d54183241c1daa3cf060",
+      "actual": "77ae23ec8ab4715edd1bafaa19babb09d99e710878c9d54183241c1daa3cf060",
+      "match": true
+    },
+    {
+      "path": "manual-gathering.js",
+      "status": 200,
+      "expected": "3c83707a7139975b756dbfca1a449f1ff2ebbc63d752ddf22430ad2d76984e17",
+      "actual": "3c83707a7139975b756dbfca1a449f1ff2ebbc63d752ddf22430ad2d76984e17",
+      "match": true
+    },
+    {
+      "path": "mineral-stock.js",
+      "status": 200,
+      "expected": "f05e73cc1ad1a04379091092b95570fa31c7ad86e3746f9f03ee0433566e8222",
+      "actual": "f05e73cc1ad1a04379091092b95570fa31c7ad86e3746f9f03ee0433566e8222",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a451762032629398e7ed93c83fd75ce7987925e4c322e1d7e348b7bbced708ea",
+      "actual": "a451762032629398e7ed93c83fd75ce7987925e4c322e1d7e348b7bbced708ea",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "9a978b0441013a574e1a4fbea6ff205720e7ce3143d828f9059bbee1a4e5d4a4",
+      "actual": "9a978b0441013a574e1a4fbea6ff205720e7ce3143d828f9059bbee1a4e5d4a4",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "56d49924d126cc712843f2a23cbd0f1c4e19f7144c3a54e478a8ba8874e1a623",
+      "actual": "56d49924d126cc712843f2a23cbd0f1c4e19f7144c3a54e478a8ba8874e1a623",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-clay-deposits.md",
+      "status": 200,
+      "expected": "7dc7a116c9bff7fab9d1cbfcd83fd7cf474a327c11720dd00ff0049ec395cb57",
+      "actual": "7dc7a116c9bff7fab9d1cbfcd83fd7cf474a327c11720dd00ff0049ec395cb57",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "118969d91abb28718131022c36f2b914847bdc9977134870d06d9b6cab5f9814",
+      "actual": "118969d91abb28718131022c36f2b914847bdc9977134870d06d9b6cab5f9814",
+      "match": true
+    },
+    {
+      "path": "tests/stone-stock.test.js",
+      "status": 200,
+      "expected": "35481d70fe635dd5e5cbaed955d463c4c90654a3d98ced021ee53ea427d796fd",
+      "actual": "35481d70fe635dd5e5cbaed955d463c4c90654a3d98ced021ee53ea427d796fd",
+      "match": true
+    },
+    {
+      "path": "ui-manual-gathering.js",
+      "status": 200,
+      "expected": "3e3fa45ac4038955e4e9d6f32cbd0d5474bc5f3e9f16fb6fff0cd9c5b0d24b9c",
+      "actual": "3e3fa45ac4038955e4e9d6f32cbd0d5474bc5f3e9f16fb6fff0cd9c5b0d24b9c",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "54bdb54471a2f900682d993b6e81cb862f59605b7be2e5685e1bb70cc50a340d",
+      "actual": "54bdb54471a2f900682d993b6e81cb862f59605b7be2e5685e1bb70cc50a340d",
+      "match": true
+    }
+  ],
+  "matched": 19,
+  "total": 19
+}
