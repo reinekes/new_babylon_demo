@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-05T23:32:47.678604+00:00",
+  "commit": "6fcb5088277ac20d6e5e6e891d0cc87d0ef6ec6d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a2b5c68fb4b3186c52715465bc539a00c2b674dcbf014a92683cb8add4a1c82b",
+      "actual": "a2b5c68fb4b3186c52715465bc539a00c2b674dcbf014a92683cb8add4a1c82b",
+      "match": true
+    },
+    {
+      "path": "building-inventory.js",
+      "status": 200,
+      "expected": "62e29f96450884b0e41206adfc03d927461d906781faa5cfae5ff92c492467d0",
+      "actual": "62e29f96450884b0e41206adfc03d927461d906781faa5cfae5ff92c492467d0",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "d31937b0f74df6d164bb510624df9f6a736720633314ab303f231e79d0f1d495",
+      "actual": "d31937b0f74df6d164bb510624df9f6a736720633314ab303f231e79d0f1d495",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "7c459b32dfe822b4cb8b00646e69efd3cff80b5f091ab11d2016050ff22eeae2",
+      "actual": "7c459b32dfe822b4cb8b00646e69efd3cff80b5f091ab11d2016050ff22eeae2",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "26237dbf3db0cc6f436c3d42a7fe5b092185c61f71947d623b54ce4b7a49ae51",
+      "actual": "26237dbf3db0cc6f436c3d42a7fe5b092185c61f71947d623b54ce4b7a49ae51",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "baad217205590fe7bbe50eece1ef5798acbdff13da6021beda0dffb44a6fadd1",
+      "actual": "baad217205590fe7bbe50eece1ef5798acbdff13da6021beda0dffb44a6fadd1",
+      "match": true
+    },
+    {
+      "path": "fauna.js",
+      "status": 200,
+      "expected": "e3cc44d5bc4fce4a533ba0553a9b76353d336592105a6cbc516db9a2f6d8c6eb",
+      "actual": "e3cc44d5bc4fce4a533ba0553a9b76353d336592105a6cbc516db9a2f6d8c6eb",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "d6ddbacd801f611ca69d21871f37aa2647c627308be205d6b1da301594f8c4af",
+      "actual": "d6ddbacd801f611ca69d21871f37aa2647c627308be205d6b1da301594f8c4af",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "c0f7c894d7d1940313ebfb9f52668ca040aef2e78eaa581c08a48a07b9c84c26",
+      "actual": "c0f7c894d7d1940313ebfb9f52668ca040aef2e78eaa581c08a48a07b9c84c26",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "daacc827b43c3f47290f1df234872631a1b52d30450f495b8bed47f27a647cf4",
+      "actual": "daacc827b43c3f47290f1df234872631a1b52d30450f495b8bed47f27a647cf4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "26043d663219bd0ce74b34ec18af43b81c372cdb9b6df4ac823c966b0afe2bde",
+      "actual": "26043d663219bd0ce74b34ec18af43b81c372cdb9b6df4ac823c966b0afe2bde",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e15ba595b1dcc67e9288bc9109e3d37e443375d214a6557c453f6f54434fb363",
+      "actual": "e15ba595b1dcc67e9288bc9109e3d37e443375d214a6557c453f6f54434fb363",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "6297addb4d0bf31948164ff1a7970b0b4692d00742e70f831da43735ea2f55ae",
+      "actual": "6297addb4d0bf31948164ff1a7970b0b4692d00742e70f831da43735ea2f55ae",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "73a664753d001bd808e4e2b11ef12f2e58e43046cbf9a507f7cfb127c7d8dd56",
+      "actual": "73a664753d001bd808e4e2b11ef12f2e58e43046cbf9a507f7cfb127c7d8dd56",
+      "match": true
+    },
+    {
+      "path": "tests/managed-flocks.test.js",
+      "status": 200,
+      "expected": "e117812d010d6cb1b7b1b2f139a604988710b683fd94dfe6fcd19f88029d70ed",
+      "actual": "e117812d010d6cb1b7b1b2f139a604988710b683fd94dfe6fcd19f88029d70ed",
+      "match": true
+    },
+    {
+      "path": "textiles.js",
+      "status": 200,
+      "expected": "a9e297b8fa1800f3f50a3b8d9c4ef63041d088b6d184c768cbfe6777a002bb15",
+      "actual": "a9e297b8fa1800f3f50a3b8d9c4ef63041d088b6d184c768cbfe6777a002bb15",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "f8c41c1a67435ce902426284336a8e046d7d95a2bed76ec8626cd25c52919b2d",
+      "actual": "f8c41c1a67435ce902426284336a8e046d7d95a2bed76ec8626cd25c52919b2d",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
