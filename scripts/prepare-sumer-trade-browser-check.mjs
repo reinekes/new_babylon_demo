@@ -7,7 +7,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-20';
+const tag='sumer-trade-supplied-20261105-21';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -99,7 +99,7 @@ export function sceneInventory(){
 }
 `;
 app=app.replace('quality:renderer.quality,','quality:renderer.quality,vegetation:vegetationGPUInfo(),palms:palmStateInfo(),inventory:sceneInventory(),');
-app+=`\nexport function vegetationGPUInfo(){const all=renderer.landscape?.meshes||[],batches=all.filter(m=>m.metadata?.valleyBatch);return {batches:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGeometries:new Set(batches.map(m=>m.geometry)).size,wrongGPUBufferBindings:batches.filter(m=>[0,1,2,3].some(i=>m.getVertexBuffer('world'+i)?.getBuffer()!==m._thinInstanceDataStorage?.matrixBuffer?.getBuffer())).length,disposedRegistryMeshes:all.filter(m=>m.isDisposed()).length};}\n`;
+app+=`\nexport function vegetationGPUInfo(){const all=renderer.landscape?.meshes||[],batches=all.filter(m=>m.metadata?.valleyBatch);return {batches:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGeometries:new Set(batches.map(m=>m.geometry)).size,geometryPayloadUpperBoundBytes:batches.reduce((n,m)=>n+m.getVerticesDataKinds().filter(k=>!k.startsWith('world')).reduce((a,k)=>a+(m.getVerticesData(k)?.length||0)*4,0)+m.getIndices().length*4,0),matrixBytes:batches.reduce((n,m)=>n+m.thinInstanceCount*16*4,0),wrongGPUBufferBindings:batches.filter(m=>[0,1,2,3].some(i=>m.getVertexBuffer('world'+i)?.getBuffer()!==m._thinInstanceDataStorage?.matrixBuffer?.getBuffer())).length,disposedRegistryMeshes:all.filter(m=>m.isDisposed()).length};}\n`;
 app+=`\nexport function palmStateInfo(){const parts=(renderer.landscape?.meshes||[]).filter(m=>m.sourceMesh&&m.name.startsWith('date-palm-')),batches=(renderer.landscape?.meshes||[]).filter(m=>m.metadata?.palmBatch);return {parts:parts.length,enabledIndividuals:parts.filter(m=>m.isEnabled()).length,groups:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGroupedParts:new Set(batches.flatMap(m=>m.metadata.palmBatch.parts)).size,weather:probeWeatherAt(state).type};}\n`;
 await writeFile(join(output,'app-check.js'),app);
 let check=await readFile(join(output,'check.js'),'utf8');const start=check.indexOf('const s=createGame('),end=check.indexOf("localStorage.setItem(");

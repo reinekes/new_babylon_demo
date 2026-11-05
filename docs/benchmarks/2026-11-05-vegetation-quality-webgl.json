@@ -1,0 +1,443 @@
+{
+  "note": "Manual menu low/high smoke,not timed performance. Initial fixture ratio1.5 is overridden by menu;use observed hardwareScalingLevel and canvas. Renderer/state came from final candidate14231ac.",
+  "scenes": [
+    {
+      "activeMeshes": 1533,
+      "cameraAlpha": 3.8623075237773334,
+      "cameraBeta": 0.68,
+      "cameraRadius": 739.10423044749,
+      "canvas": [
+        1280,
+        570
+      ],
+      "hardwareScalingLevel": 1,
+      "inventory": {
+        "engineDrawCallsCounterCurrent": 35368104,
+        "groups": {
+          "actors": {
+            "active": 16,
+            "activeSubMeshes": 16,
+            "activeThinInstances": 0,
+            "activeVertices": 78774,
+            "all": 38,
+            "enabled": 38,
+            "materials": 8,
+            "visible": 38
+          },
+          "architecture": {
+            "active": 1083,
+            "activeSubMeshes": 1083,
+            "activeThinInstances": 0,
+            "activeVertices": 912446,
+            "all": 1482,
+            "enabled": 1482,
+            "materials": 18,
+            "visible": 1482
+          },
+          "fauna": {
+            "active": 100,
+            "activeSubMeshes": 100,
+            "activeThinInstances": 0,
+            "activeVertices": 275865,
+            "all": 2867,
+            "enabled": 2863,
+            "materials": 5,
+            "visible": 2863
+          },
+          "landscape": {
+            "active": 266,
+            "activeSubMeshes": 266,
+            "activeThinInstances": 1224,
+            "activeVertices": 171153,
+            "all": 1945,
+            "enabled": 547,
+            "materials": 40,
+            "visible": 547
+          },
+          "other": {
+            "active": 19,
+            "activeSubMeshes": 19,
+            "activeThinInstances": 0,
+            "activeVertices": 5813,
+            "all": 418,
+            "enabled": 411,
+            "materials": 6,
+            "visible": 35
+          },
+          "residents": {
+            "active": 49,
+            "activeSubMeshes": 49,
+            "activeThinInstances": 0,
+            "activeVertices": 65264,
+            "all": 1414,
+            "enabled": 246,
+            "materials": 43,
+            "visible": 245
+          }
+        },
+        "topActiveSources": [
+          [
+            "game-house-courtyard-#-alluvial-earth",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-home-plaster-#-#",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-home-interior-shadow",
+            84
+          ],
+          [
+            "game-house-courtyard-#-worn-timber",
+            84
+          ],
+          [
+            "game-house-courtyard-#-reed-mat",
+            84
+          ],
+          [
+            "roof-access-house",
+            84
+          ],
+          [
+            "game-household-garden",
+            84
+          ],
+          [
+            "game-house-courtyard-#-fired-pottery",
+            79
+          ],
+          [
+            "game-house-courtyard-#-game-plaster-trim",
+            73
+          ],
+          [
+            "wildlife-source-fish:torso",
+            70
+          ],
+          [
+            "road-region-#:#:#:#:#:true:#",
+            54
+          ],
+          [
+            "valley-reed-batch-#,#-#",
+            50
+          ],
+          [
+            "original-clay-alluvial-earth",
+            38
+          ],
+          [
+            "original-clay-game-raw-brick-facing",
+            38
+          ],
+          [
+            "original-clay-game-door-shadow",
+            38
+          ],
+          [
+            "original-clay-warm-clay-plaster",
+            38
+          ],
+          [
+            "original-clay-worn-timber",
+            38
+          ],
+          [
+            "original-clay-reed-mat",
+            38
+          ],
+          [
+            "original-clay-fired-pottery",
+            38
+          ],
+          [
+            "roof-access-clay",
+            38
+          ],
+          [
+            "resource-clay-source",
+            35
+          ],
+          [
+            "resource-stone-source",
+            28
+          ],
+          [
+            "valley-grass-batch-#,#-#",
+            22
+          ],
+          [
+            "citizen-#-Native civilian skin",
+            21
+          ],
+          [
+            "valley-greenGrass-batch-#,#-#",
+            20
+          ],
+          [
+            "citizen-#-Native draped wool skirt",
+            18
+          ],
+          [
+            "goat-goat-#-Object_#",
+            14
+          ],
+          [
+            "submerged-pebble-source-#",
+            13
+          ],
+          [
+            "fauna-gazelle-#-gazelle-Object_#",
+            12
+          ],
+          [
+            "game-house-courtyard-#-dry-river-grass",
+            8
+          ]
+        ]
+      },
+      "meshes": 8164,
+      "palms": {
+        "enabledIndividuals": 0,
+        "groups": 5,
+        "instances": 610,
+        "parts": 610,
+        "uniqueGroupedParts": 610,
+        "weather": "sunny"
+      },
+      "probeRenderPixelRatio": 1.5,
+      "quality": "low",
+      "skeletons": 160,
+      "vegetation": {
+        "batches": 92,
+        "disposedRegistryMeshes": 0,
+        "geometryPayloadUpperBoundBytes": 597792,
+        "instances": 614,
+        "matrixBytes": 39296,
+        "uniqueGeometries": 92,
+        "wrongGPUBufferBindings": 0
+      }
+    },
+    {
+      "activeMeshes": 1846,
+      "cameraAlpha": 3.8623075237773334,
+      "cameraBeta": 0.68,
+      "cameraRadius": 739.10423044749,
+      "canvas": [
+        1920,
+        855
+      ],
+      "hardwareScalingLevel": 0.6666666666666666,
+      "inventory": {
+        "engineDrawCallsCounterCurrent": 35850924,
+        "groups": {
+          "actors": {
+            "active": 20,
+            "activeSubMeshes": 20,
+            "activeThinInstances": 0,
+            "activeVertices": 106162,
+            "all": 38,
+            "enabled": 38,
+            "materials": 10,
+            "visible": 38
+          },
+          "architecture": {
+            "active": 1116,
+            "activeSubMeshes": 1116,
+            "activeThinInstances": 0,
+            "activeVertices": 958430,
+            "all": 1482,
+            "enabled": 1482,
+            "materials": 18,
+            "visible": 1482
+          },
+          "fauna": {
+            "active": 241,
+            "activeSubMeshes": 241,
+            "activeThinInstances": 0,
+            "activeVertices": 334161,
+            "all": 2867,
+            "enabled": 2863,
+            "materials": 7,
+            "visible": 2863
+          },
+          "landscape": {
+            "active": 343,
+            "activeSubMeshes": 343,
+            "activeThinInstances": 2084,
+            "activeVertices": 183426,
+            "all": 1967,
+            "enabled": 569,
+            "materials": 42,
+            "visible": 569
+          },
+          "other": {
+            "active": 38,
+            "activeSubMeshes": 38,
+            "activeThinInstances": 0,
+            "activeVertices": 6815,
+            "all": 436,
+            "enabled": 429,
+            "materials": 6,
+            "visible": 53
+          },
+          "residents": {
+            "active": 88,
+            "activeSubMeshes": 88,
+            "activeThinInstances": 0,
+            "activeVertices": 110869,
+            "all": 1414,
+            "enabled": 246,
+            "materials": 74,
+            "visible": 245
+          }
+        },
+        "topActiveSources": [
+          [
+            "wildlife-source-fish:torso",
+            116
+          ],
+          [
+            "wildlife-source-fish:belly",
+            94
+          ],
+          [
+            "game-house-courtyard-#-alluvial-earth",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-home-plaster-#-#",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-home-interior-shadow",
+            84
+          ],
+          [
+            "game-house-courtyard-#-worn-timber",
+            84
+          ],
+          [
+            "game-house-courtyard-#-reed-mat",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-plaster-trim",
+            84
+          ],
+          [
+            "game-house-courtyard-#-fired-pottery",
+            84
+          ],
+          [
+            "roof-access-house",
+            84
+          ],
+          [
+            "game-household-garden",
+            84
+          ],
+          [
+            "submerged-pebble-source-#",
+            63
+          ],
+          [
+            "road-region-#:#:#:#:#:true:#",
+            54
+          ],
+          [
+            "valley-reed-batch-#,#-#",
+            52
+          ],
+          [
+            "original-clay-alluvial-earth",
+            38
+          ],
+          [
+            "original-clay-game-raw-brick-facing",
+            38
+          ],
+          [
+            "original-clay-game-door-shadow",
+            38
+          ],
+          [
+            "original-clay-warm-clay-plaster",
+            38
+          ],
+          [
+            "original-clay-worn-timber",
+            38
+          ],
+          [
+            "original-clay-reed-mat",
+            38
+          ],
+          [
+            "original-clay-fired-pottery",
+            38
+          ],
+          [
+            "roof-access-clay",
+            38
+          ],
+          [
+            "resource-clay-source",
+            35
+          ],
+          [
+            "resource-stone-source",
+            28
+          ],
+          [
+            "valley-grass-batch-#,#-#",
+            28
+          ],
+          [
+            "valley-greenGrass-batch-#,#-#",
+            28
+          ],
+          [
+            "game-house-courtyard-#-dry-river-grass",
+            25
+          ],
+          [
+            "citizen-#-Native civilian skin",
+            21
+          ],
+          [
+            "citizen-#-Native upper cloth",
+            21
+          ],
+          [
+            "citizen-#-Native draped wool skirt",
+            21
+          ]
+        ]
+      },
+      "meshes": 8204,
+      "palms": {
+        "enabledIndividuals": 0,
+        "groups": 5,
+        "instances": 610,
+        "parts": 610,
+        "uniqueGroupedParts": 610,
+        "weather": "sunny"
+      },
+      "probeRenderPixelRatio": 1.5,
+      "quality": "high",
+      "skeletons": 160,
+      "vegetation": {
+        "batches": 108,
+        "disposedRegistryMeshes": 0,
+        "geometryPayloadUpperBoundBytes": 641028,
+        "instances": 1474,
+        "matrixBytes": 94336,
+        "uniqueGeometries": 108,
+        "wrongGPUBufferBindings": 0
+      }
+    }
+  ]
+}

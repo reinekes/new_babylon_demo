@@ -1,0 +1,29 @@
+{
+  "note": "NullEngine real-GLB geometry fixture;float/index payload upperbound,excludes textures/driver/CPU heap;not FPS or full VRAM. Actual browser high payload641028 and matrix94336 in acceptance close runs.",
+  "rows": [
+    {
+      "tier": "low",
+      "batches": 52,
+      "instances": 560,
+      "geometryPayloadUpperBoundBytes": 220368,
+      "matrixBytes": 35840
+    },
+    {
+      "tier": "high",
+      "batches": 54,
+      "instances": 1220,
+      "geometryPayloadUpperBoundBytes": 222648,
+      "matrixBytes": 78080
+    },
+    {
+      "tier": "low",
+      "batches": 52,
+      "instances": 560,
+      "geometryPayloadUpperBoundBytes": 220368,
+      "matrixBytes": 35840
+    }
+  ],
+  "fullNodeTests": 1490,
+  "fullNodeDurationMs": 1062179.49075,
+  "durationNote": "Several unrelated concurrent tests included common~920second delay;environment pause suspected,not proven. Not used for performance claims. Two changed tests rechecked wall1.11s/userCPU2.06s/sys.09s."
+}
