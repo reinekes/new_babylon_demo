@@ -1,0 +1,331 @@
+{
+  "at": "2026-11-05T12:50:56.918081+00:00",
+  "commit": "0bdc9d59b7311fa8d833ddbbb67bd79b29d6b71b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "daca0d1cc26325df00fcd7d208c7ea897e527a7f6fc2dc1ecc4d9076c478559c",
+      "actual": "daca0d1cc26325df00fcd7d208c7ea897e527a7f6fc2dc1ecc4d9076c478559c",
+      "match": true
+    },
+    {
+      "path": "docs/IRRIGATION_RIVER_ACCEPTANCE_2026-11-05.md",
+      "status": 200,
+      "expected": "1cd36111a676f4fe1c29df0db75b4d5c8efb75916780781d8b7986369a8b9841",
+      "actual": "1cd36111a676f4fe1c29df0db75b4d5c8efb75916780781d8b7986369a8b9841",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river.json",
+      "status": 200,
+      "expected": "7e323904818c031986d63bdcd7a611e87ca63e340ed3a4703da3f11a9194759e",
+      "actual": "7e323904818c031986d63bdcd7a611e87ca63e340ed3a4703da3f11a9194759e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-cargo.jpg",
+      "status": 200,
+      "expected": "58d35f589af0833d843c93a68a62ac93ee26a676843538838101d860a2666367",
+      "actual": "58d35f589af0833d843c93a68a62ac93ee26a676843538838101d860a2666367",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-chain-wet.jpg",
+      "status": 200,
+      "expected": "e39728752bb550190c327a4f65b67b32cfc0d86734013bab9403572caa3fedcb",
+      "actual": "e39728752bb550190c327a4f65b67b32cfc0d86734013bab9403572caa3fedcb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-final-reload.jpg",
+      "status": 200,
+      "expected": "b3cfa8417a9843478c2a77ead25cfd6224acc2f03aa8f7795c36e82cdd3c33f0",
+      "actual": "b3cfa8417a9843478c2a77ead25cfd6224acc2f03aa8f7795c36e82cdd3c33f0",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-growth.jpg",
+      "status": 200,
+      "expected": "20857ac195fb0925e08ef3cbcade8507f1dd1aa050c8b9acb3423eeeb88e6b84",
+      "actual": "20857ac195fb0925e08ef3cbcade8507f1dd1aa050c8b9acb3423eeeb88e6b84",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-harvest.jpg",
+      "status": 200,
+      "expected": "d64988c56a14d88809b7c09836434e7c0118115299274083d950412a2d2920c3",
+      "actual": "d64988c56a14d88809b7c09836434e7c0118115299274083d950412a2d2920c3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-initial-byte-check.json",
+      "status": 200,
+      "expected": "0efa2f646f4fead2849bb8541d563358e1220a4aaae61c7b87b38cb6c6826af4",
+      "actual": "0efa2f646f4fead2849bb8541d563358e1220a4aaae61c7b87b38cb6c6826af4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-reload.jpg",
+      "status": 200,
+      "expected": "5efbe0bce534298f3fc19c772b1f0a93913db9e4c2e44f7c922ab19c22d13c37",
+      "actual": "5efbe0bce534298f3fc19c772b1f0a93913db9e4c2e44f7c922ab19c22d13c37",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-source-wet.jpg",
+      "status": 200,
+      "expected": "cc89675a3565ea00e03f9a0ab2367df28aa6761d3c9d6c96ff151d86d3370459",
+      "actual": "cc89675a3565ea00e03f9a0ab2367df28aa6761d3c9d6c96ff151d86d3370459",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-sowing.jpg",
+      "status": 200,
+      "expected": "84595dad9037fb415153b88e820da843aa936746fef8d32862b082589e2794b2",
+      "actual": "84595dad9037fb415153b88e820da843aa936746fef8d32862b082589e2794b2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-thresh.jpg",
+      "status": 200,
+      "expected": "75aa8d0319b825a5393cc8199035e102f100066fe15564003b046c018978548e",
+      "actual": "75aa8d0319b825a5393cc8199035e102f100066fe15564003b046c018978548e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm-wet-field.jpg",
+      "status": 200,
+      "expected": "56005e0a2ed8e553bcd9e82859bc5df53f9db9e13de90a95c0f0672ea540b579",
+      "actual": "56005e0a2ed8e553bcd9e82859bc5df53f9db9e13de90a95c0f0672ea540b579",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/farm.json",
+      "status": 200,
+      "expected": "2fcc2ae70a96b698b26dc5445b6e27b94cfbb511ce7bcdec7ef2fb7e78ccae3e",
+      "actual": "2fcc2ae70a96b698b26dc5445b6e27b94cfbb511ce7bcdec7ef2fb7e78ccae3e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/migrations8.txt",
+      "status": 200,
+      "expected": "f6639f704c826d07a68b12e1ca04ca07d502a144dc7d16f3c93572ac40ef3390",
+      "actual": "f6639f704c826d07a68b12e1ca04ca07d502a144dc7d16f3c93572ac40ef3390",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/probe27-generator-used.mjs",
+      "status": 200,
+      "expected": "ddc223a7b8d999b1367bbd60d08bb68480284d9382bec3bf8d8f5d96fec82c6c",
+      "actual": "ddc223a7b8d999b1367bbd60d08bb68480284d9382bec3bf8d8f5d96fec82c6c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-gallery.json",
+      "status": 200,
+      "expected": "19451a34118eea181e2e91e2edaf530428cd2ed1afb1fde21b5d582c3b6f2527",
+      "actual": "19451a34118eea181e2e91e2edaf530428cd2ed1afb1fde21b5d582c3b6f2527",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-legacy-all.jpg",
+      "status": 200,
+      "expected": "4579093a05037a8f0734fe9a57d5109cddeca8de138d4ea4d0e68f0a9a34571b",
+      "actual": "4579093a05037a8f0734fe9a57d5109cddeca8de138d4ea4d0e68f0a9a34571b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-legacy-default.jpg",
+      "status": 200,
+      "expected": "eef5a05474763b2eb51eba473a68e6a22601f1e3274a9f67c9a67f443e417158",
+      "actual": "eef5a05474763b2eb51eba473a68e6a22601f1e3274a9f67c9a67f443e417158",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-legacy-empty.jpg",
+      "status": 200,
+      "expected": "ab09530bc84524d71db2f9f7caa4b737a4f3a8c751c6cecf584c2f3a3dd534ab",
+      "actual": "ab09530bc84524d71db2f9f7caa4b737a4f3a8c751c6cecf584c2f3a3dd534ab",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-legacy-stone.jpg",
+      "status": 200,
+      "expected": "0ef2141d95e1b172c567c43636bd326a09a2ba1ba0a443d8faf129c11b7c9918",
+      "actual": "0ef2141d95e1b172c567c43636bd326a09a2ba1ba0a443d8faf129c11b7c9918",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-real-4x.json",
+      "status": 200,
+      "expected": "ea721a9863b71fd0554e6180b1e4f67528fd9cc1bee3847457cad1803bf7cc91",
+      "actual": "ea721a9863b71fd0554e6180b1e4f67528fd9cc1bee3847457cad1803bf7cc91",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-real-view-collapsed.jpg",
+      "status": 200,
+      "expected": "aa26f2b0bf655d28d01c1de0120cd20a48f5a9237c3ad680d64b53b5bcbfde8a",
+      "actual": "aa26f2b0bf655d28d01c1de0120cd20a48f5a9237c3ad680d64b53b5bcbfde8a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-real-view.jpg",
+      "status": 200,
+      "expected": "94ef8e32e1ffbc88bbde0d692593d8760ffe7d6ed44b026430977de797b330df",
+      "actual": "94ef8e32e1ffbc88bbde0d692593d8760ffe7d6ed44b026430977de797b330df",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-real-view.json",
+      "status": 200,
+      "expected": "cdce08a2ed5f87e7a2dd02a4c6505788d99e9f2ad2d3714d277f6a02da6858ab",
+      "actual": "cdce08a2ed5f87e7a2dd02a4c6505788d99e9f2ad2d3714d277f6a02da6858ab",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-strict-all.jpg",
+      "status": 200,
+      "expected": "6f4e57c0da5ee02a969b8dfbbf227d9dd6a630fa1b370f669b9bfc706f534fb3",
+      "actual": "6f4e57c0da5ee02a969b8dfbbf227d9dd6a630fa1b370f669b9bfc706f534fb3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-strict-default.jpg",
+      "status": 200,
+      "expected": "2802db2b1562bb8399d1e307d1983c68aa450f266fe2d04615b78bc3312f3d18",
+      "actual": "2802db2b1562bb8399d1e307d1983c68aa450f266fe2d04615b78bc3312f3d18",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-strict-empty.jpg",
+      "status": 200,
+      "expected": "0048d66351d2a3b5852c340a86bdab6c7a90bf10bc7417464c30cca2a0d764fa",
+      "actual": "0048d66351d2a3b5852c340a86bdab6c7a90bf10bc7417464c30cca2a0d764fa",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/river-strict-stone.jpg",
+      "status": 200,
+      "expected": "2b615334e3274446187f8acb0a2f88f2be967d88a589cf614890d72f25a0b9d8",
+      "actual": "2b615334e3274446187f8acb0a2f88f2be967d88a589cf614890d72f25a0b9d8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/save-check-green.txt",
+      "status": 200,
+      "expected": "0eb9b1e51cfc34fdb5ed1dde4373bd618e4bc1464445867e888f041f726d9a6c",
+      "actual": "0eb9b1e51cfc34fdb5ed1dde4373bd618e4bc1464445867e888f041f726d9a6c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/save-check-red.txt",
+      "status": 200,
+      "expected": "929b6d037bf238ad062b0bc195945a9d5fc3b4e3400c46330f7583f410b3033f",
+      "actual": "929b6d037bf238ad062b0bc195945a9d5fc3b4e3400c46330f7583f410b3033f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/targets50.txt",
+      "status": 200,
+      "expected": "fa97c29bfa39ec91e6d7c8af05cbcbbe78722ec36c5365e74b46fdfef8e0fd3f",
+      "actual": "fa97c29bfa39ec91e6d7c8af05cbcbbe78722ec36c5365e74b46fdfef8e0fd3f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-irrigation-river/vendor8.txt",
+      "status": 200,
+      "expected": "5787bdfadef9f489da2071ef1c2a8925eeca94b7462cd6f3b0480a0a12669419",
+      "actual": "5787bdfadef9f489da2071ef1c2a8925eeca94b7462cd6f3b0480a0a12669419",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fc13d8654828bdc6884e862703a4920d0b4e53e11b10c11654758d52765f5724",
+      "actual": "fc13d8654828bdc6884e862703a4920d0b4e53e11b10c11654758d52765f5724",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "1f968179f857a691e51067dfbbae032e6d5fee68f921bf366ad4c4cc3909eff1",
+      "actual": "1f968179f857a691e51067dfbbae032e6d5fee68f921bf366ad4c4cc3909eff1",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "b45b4515bf26e68bdb9900da3c99cd62eccc8bf60d928d78ecda3d02ef116bc7",
+      "actual": "b45b4515bf26e68bdb9900da3c99cd62eccc8bf60d928d78ecda3d02ef116bc7",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-irrigation-river-acceptance.md",
+      "status": 200,
+      "expected": "84929d85be54ab59a17d6696e8a31e94f5f70cc2ec8f767161e7a7a27d94192c",
+      "actual": "84929d85be54ab59a17d6696e8a31e94f5f70cc2ec8f767161e7a7a27d94192c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "3fd845930f0d0118590805e53fb026cc7359f64cf46ee350501dffd1cd1e9ac7",
+      "actual": "3fd845930f0d0118590805e53fb026cc7359f64cf46ee350501dffd1cd1e9ac7",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "d6ffffed41a05a82261bf20bcf7f33ff755ba56e9ed54d9af1db2a3304bc0bb6",
+      "actual": "d6ffffed41a05a82261bf20bcf7f33ff755ba56e9ed54d9af1db2a3304bc0bb6",
+      "match": true
+    },
+    {
+      "path": "tests/history-save-check.test.js",
+      "status": 200,
+      "expected": "8dba882617c10ec64b45dfcd39ae3263dbf27e5242141a2498a02b78964574ac",
+      "actual": "8dba882617c10ec64b45dfcd39ae3263dbf27e5242141a2498a02b78964574ac",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/README.md",
+      "status": 200,
+      "expected": "b0b6248bce14d5b07f060b83d5c889966b3f10d2c8b7ad4d9d7516207a861e1d",
+      "actual": "b0b6248bce14d5b07f060b83d5c889966b3f10d2c8b7ad4d9d7516207a861e1d",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/farming.html",
+      "status": 200,
+      "expected": "402e9bdcaef08b8afb600e05cf9c72adad41887e769a5c25882f54778ee9e776",
+      "actual": "402e9bdcaef08b8afb600e05cf9c72adad41887e769a5c25882f54778ee9e776",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/farming.js",
+      "status": 200,
+      "expected": "503b6237ca0301876a208f6b54a2e39a42455bbe37303d34aedb901b3e4b9428",
+      "actual": "503b6237ca0301876a208f6b54a2e39a42455bbe37303d34aedb901b3e4b9428",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/save-check.js",
+      "status": 200,
+      "expected": "955bb5062121762d154fff8a1a6fc2f8883c7f1337f3993aae33aa8fd74f00c5",
+      "actual": "955bb5062121762d154fff8a1a6fc2f8883c7f1337f3993aae33aa8fd74f00c5",
+      "match": true
+    },
+    {
+      "path": "tools/history-check/transport.html",
+      "status": 200,
+      "expected": "2ad22a47dd2b89a683bf0c8f9360469b3220fe4f7556d379819cba5a66f28b65",
+      "actual": "2ad22a47dd2b89a683bf0c8f9360469b3220fe4f7556d379819cba5a66f28b65",
+      "match": true
+    }
+  ],
+  "matched": 46,
+  "total": 46
+}
