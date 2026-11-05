@@ -1,3 +1,4 @@
+import {depositCanalSilt,validateCanalMaintenance} from './canal-maintenance.js';
 import {validateCityLabor} from './city-labor.js';
 import {initializeCatDiscovery,validateCatDiscovery,miraclePrice} from './miracle-discovery.js';
 import {calendarRateFor,DAYS_PER_MONTH} from './calendar.js';
@@ -104,7 +105,7 @@ export function canUpgrade(s,b){if(s.miracleCelebration)return miracleCelebratio
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.type==='house')return `${b.starterHut&&level===1?buildingPresentation(s,b).name+' · только улучшение или снос · ':''}Жильё: ${capacityOf(b)} жителей`;
- if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки или озера · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки или озера':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив соседних клеток':'Сухое русло · соедини готовыми участками с рекой или озером';
+ if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки или озера · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки или озера':b.silt>=.95?'Русло перекрыто илом · закажи расчистку':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив по доступным долям':'Сухое русло · проверь источник и участки выше по течению';
  if(b.type==='pottery')return `4 глины + 2 воды + 2 тростника → 2 керамики · формовка ${(5/outputMultiplier(b)).toFixed(1)} с · труд ×${outputMultiplier(b)} · сушка 12 с · обжиг 12 с · остывание 6 с`;
  if(b.type==='brewery')return `4 еды + 3 воды → 3 напитка · ${(15/outputMultiplier(b)).toFixed(1)} с труда · труд ×${outputMultiplier(b)} · 1 сосуд на 4 партии · семенной резерв защищён`;
  if(b.type==='kiln')return `4 сырца + 3 тростника → 4 обожжённых · обжиг ${(20/outputMultiplier(b)).toFixed(1)} с + остывание ${(8/outputMultiplier(b)).toFixed(1)} с`;
@@ -156,6 +157,7 @@ function check(s){
 }
 function settleSeason(s){
  syncLifeAnalytics(s);
+ depositCanalSilt(s,irrigationFor(s));
  const previous=s.season;s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);advanceTrade(s);advanceMedicalYear(s);
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);snapshotLifeAnalytics(s);check(s);return;}
  for(const k of Object.keys(s.cooldowns))s.cooldowns[k]=Math.max(0,s.cooldowns[k]-1);
@@ -319,7 +321,7 @@ export function decode(raw){
    if(c.seedField===undefined&&c.seedFood!==undefined)return null;
    if(c.phase==='toWorkshop'&&(!c.work||!buildings.get(c.work)?.workshopStock||!Object.entries(c.cargo).some(([k,n])=>MATERIALS.includes(k)&&n>0)||c.districtJob||c.site||c.tradeJob||c.saleJob||c.pantryTrip||c.craftSite))return null;
    if(c.guardPost!=null&&(typeof c.guardPost!=='string'||!['shrine','granary','depot'].includes(buildings.get(c.guardPost)?.type)||!isComplete(buildings.get(c.guardPost))||c.workplace||c.age<16||!['auto','production'].includes(c.role)))return null;
-   if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||c.guardPost!==c.work&&!hasWorkplace(buildings.get(c.work).type)))return null;
+   if(c.work!==null&&(!buildings.has(c.work)||!isComplete(buildings.get(c.work))||c.guardPost!==c.work&&buildings.get(c.work).type!=='canal'&&!hasWorkplace(buildings.get(c.work).type)))return null;
    if(c.store!==null&&!['shrine','granary','depot','house'].includes(buildings.get(c.store)?.type)&&buildings.get(c.store)?.recoveryOnly!==true&&!(c.districtJob&&s.district?.jobs.some(q=>q.id===c.districtJob&&(q.source===c.store||q.target===c.store))))return null;
    if(!Array.isArray(c.route)||c.route.length>worldWidth(s)*worldHeight(s)*2||c.route.some(p=>!point(p))||!integer(c.routeIndex,0,c.route.length)||!finite(c.workElapsed,0,60))return null;
    if(!c.cargo||typeof c.cargo!=='object'||Array.isArray(c.cargo)||Object.entries(c.cargo).some(([k,v])=>!(k in emptyResources())||!finite(v,0,1e6)))return null;
@@ -365,7 +367,7 @@ export function decode(raw){
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
-  if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateCityLabor(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
+  if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateCityLabor(s)||!validateCanalMaintenance(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();

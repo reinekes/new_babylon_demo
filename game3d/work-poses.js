@@ -1,3 +1,4 @@
+import {needsCanalCleaning} from '../canal-maintenance.js';
 import {workstationBuilding} from './workstations.js';
 import {isWorkday,treatmentViewPosition} from '../workforce.js';
 import {qualifiedHealer} from '../education.js';
@@ -23,6 +24,7 @@ export function workplaceActivity(s,c,index){
  const b=index.get(c.phase==='constructing'?c.site:c.work);
  if(c.phase==='constructing'&&b?.construction&&c.siteDuty==='builder')return {kind:'building',stage:materialsReady(b.construction)?'working':'waiting',target:workstationBuilding(b,s),progress:b.construction.work/workRequired(b)};
  if(c.phase!=='working'||!b)return null;
+ if(needsCanalCleaning(b))return {kind:'farming',task:'canal-cleaning',stage:'working',target:b};
  if(b.type==='granary'&&isOperational(b)&&!c.guarding&&c.calling==='scribe'&&c.role==='production'&&c.workplace===c.work){
   return {kind:'scribing',stage:'working',target:b,progress:(c.workElapsed||0)/ACCOUNT_WORK_SECONDS};
  }

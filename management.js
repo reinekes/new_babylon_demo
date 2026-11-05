@@ -1,3 +1,4 @@
+import {canalMaintenanceEnabled,needsCanalCleaning} from './canal-maintenance.js';
 import {harvestDemand,unloadDemand} from './city-labor.js';
 import {preparedFisherInspiration,acceptFisherInspiration} from './miracle-discovery.js';
 import {discardFishingOutput} from './cat-fishing-ledger.js';
@@ -190,6 +191,22 @@ export function callHarvestWorkers(s){
 
 export function callUnloadWorkers(s){
  return callCityWorkers(s,'unload',state=>unloadDemand(state).orders.length,'Нет купленных товаров, ожидающих доставки');
+}
+
+export function queueCanalCleaning(s,key){
+ const reason=blocked(s);
+ if(reason)return {ok:false,reason};
+ const b=s.buildings.find(b=>buildingKey(b)===key);
+ if(!canalMaintenanceEnabled(s)||b?.type!=='canal'||!isComplete(b)||!(b.silt>0))return {ok:false,reason:'Нужен готовый заиленный канал'};
+ if(b.canalCleaning)return {ok:false,reason:'Расчистка уже заказана'};
+ b.canalCleaning=true;
+ invalidateAssignments(s);
+ syncCitizens(s);
+ return {ok:true};
+}
+
+export function callRepairWorkers(s){
+ return callCityWorkers(s,'repair',state=>state.buildings.some(needsCanalCleaning),'Сначала закажи расчистку заиленного канала');
 }
 
 export function assignWorkplace(s,id,key){

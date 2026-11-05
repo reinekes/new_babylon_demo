@@ -1,3 +1,4 @@
+import {needsCanalCleaning,clearCanalSilt} from './canal-maintenance.js';
 import {activeLaborKind,planLaborWork,laborCandidates,unloadDemand,UNLOAD_PORTERS} from './city-labor.js';
 import {advanceCatDiscovery} from './miracle-discovery.js';
 import {recordFishingCatch,moveFishingCargoToOutput,acceptFishingCargo,discardFishingCargo,reconcileCatFishing} from './cat-fishing-ledger.js';
@@ -122,7 +123,7 @@ function siteAccess(s,ctx,c,b){
 export function syncCitizens(s){
  if(s.funeral&&s.funeral.scope!=='family')return;
  initializeBricks(s);initializeArtisans(s);initializeBuildingInventory(s);syncInventory(s);initializeDistricts(s);syncPestSites(s);s.simTime??=s.tick*45;s.citizens??=[];s.deliveries??=0;s.delivered??={food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0};
- const ctx=context(s),cache=caches.get(s),laborKind=isWorkday(s.simTime)?activeLaborKind(s):null,signature=`${cache.signature}/${laborKind||''}/${s.population}/${Number(isWorkday(s.simTime))}/${s.season}:${s.buildings.filter(b=>b.type==='field').map(b=>Number(fieldActive(s,b))).join('')}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${s.district.jobs.map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}:${c.workplace||''}:${c.guardPost||''}`).join(',')}`;
+ const ctx=context(s),cache=caches.get(s),laborKind=isWorkday(s.simTime)?activeLaborKind(s):null,signature=`${cache.signature}/${laborKind||''}/${s.population}/${Number(isWorkday(s.simTime))}/${s.season}:${s.buildings.filter(b=>b.type==='field').map(b=>Number(fieldActive(s,b))).join('')}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}:${b.canalCleaning?1:0}`).join(',')}/${s.district.jobs.map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}:${c.workplace||''}:${c.guardPost||''}`).join(',')}`;
  for(const c of s.citizens)reconcileManualGathering(s,c,ctx);
  if(cache.synced===signature)return;
  // Population is a count; stable IDs are never reused after a death.
@@ -158,10 +159,20 @@ export function syncCitizens(s){
  for(const c of citizens)if((waterBusy(c)||c.clothingTarget!==undefined||c.craftSite||c.districtJob||c.seedField||c.pantryTrip||hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
   locked.add(c.id);if(c.site){c.siteDuty??='carrier';assignments.set(c.id,{site:c.site,sitePort:c.sitePort,store:c.store,siteDuty:c.siteDuty});}
  }
- const labor=laborKind?planLaborWork(s,laborKind,citizens,ctx.buildings,{locked,reserved,access:(c,key)=>{
+ const laborAccess=(c,key)=>{
   const home=ctx.ports.get(c.home),port=ctx.ports.get(key);
   return home&&port&&routeBetween(s,home.key,port.key,ctx)?closestStore(s,ctx,key):null;
- }}):new Map();
+ };
+ const labor=laborKind?planLaborWork(s,laborKind,citizens,ctx.buildings,{locked,reserved,access:laborAccess}):new Map();
+ // Keep an existing cleaner on the same physical order through night
+ // and the end of the call. Ordinary work rules still send them home.
+ const staffedCanals=new Set(citizens.filter(c=>locked.has(c.id)&&needsCanalCleaning(ctx.buildings.get(c.work))).map(c=>c.work));
+ for(const assignment of labor.values())if(needsCanalCleaning(ctx.buildings.get(assignment.work)))staffedCanals.add(assignment.work);
+ for(const c of citizens){
+  if(!['auto','production'].includes(c.role)||locked.has(c.id)||reserved.has(c.id)||labor.has(c.id)||staffedCanals.has(c.work)||!needsCanalCleaning(ctx.buildings.get(c.work)))continue;
+  const store=laborAccess(c,c.work);
+  if(store){labor.set(c.id,{work:c.work,store});staffedCanals.add(c.work);}
+ }
  for(const id of labor.keys())reserved.add(id);
  const tradeAssignments=new Map();
  if(laborKind==='unload'){
@@ -218,6 +229,15 @@ export function syncCitizens(s){
   for(const c of porterTargets.get(q.target)){if(n>=2)break;const pinned=c.workplace===q.target&&ctx.buildings.get(q.target)?.type==='depot';if(c.phase==='working'&&!pinned&&(c.role!=='auto'||c.workplace)||districtAssignments.has(c.id)||reserved.has(c.id)&&!pinned||!['auto','carrier'].includes(c.role)&&!pinned)continue;const home=ctx.ports.get(c.home),source=ctx.ports.get(q.source);if(!home||!source||!routeBetween(s,home.key,source.key,ctx))continue;
    if(c.phase==='home'){if(!houseSupply.has(c.home)){const house=ctx.buildings.get(c.home);houseSupply.set(c.home,!!(house&&homeMealFood(house)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food')));}if(houseSupply.get(c.home))continue;}
    districtAssignments.set(c.id,{districtJob:q.id,store:q.source,target:q.target,source:q.source});n++;routeAssigned.set(pair,n);
+  }
+ }
+ if(isWorkday(s.simTime)&&laborKind!=='repair'){
+  const candidates=s.buildings.some(needsCanalCleaning)?laborCandidates(citizens,ctx.buildings):[];
+  for(const b of s.buildings.filter(needsCanalCleaning)){
+   const key=buildingKey(b);
+   if(citizens.some(c=>c.work===key&&locked.has(c.id)))continue;
+   const worker=candidates.find(c=>!locked.has(c.id)&&!reserved.has(c.id)&&!assignments.has(c.id)&&!tradeAssignments.has(c.id)&&!districtAssignments.has(c.id)&&laborAccess(c,key));
+   if(worker){labor.set(worker.id,{work:key,store:laborAccess(worker,key)});reserved.add(worker.id);}
   }
  }
  const priority={waterpoint:-.5,pottery:1,brewery:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
@@ -472,6 +492,10 @@ function advanceCitizen(s,c,dt,ctx){
   if(c.phase==='working'){
    const b=ctx.buildings.get(c.work);if(!b){startTrip(s,c,c.home,'toHome',ctx);continue;}
    if(c.guardPost===c.work||['depot','waterpoint'].includes(b.type))return;
+   if(b.type==='canal'){
+    if(needsCanalCleaning(b)&&clearCanalSilt(b,remaining*workRate(c,'canal')))invalidateAssignments(s);
+    return;
+   }
    if(b.type==='granary'){if(c.calling==='scribe'&&c.role==='production'&&c.workplace===c.work)workOnAccount(s,b,c,remaining*workRate(c,'granary'));return;}
    if(b.type==='musicHouse'){workMusic(s,b,c,remaining*workRate(c,'musicHouse'));return;}
    if(b.type==='cowshed'){if(outputRoom(b,'milk')<3-1e-7)return;const amount=workDairy(b,remaining*workRate(c,'cowshed')*outputMultiplier(b));if(amount){putProductionOutput(s,b,{milk:amount});recordCitizenHarvest(s,c,{milk:amount});}return;}

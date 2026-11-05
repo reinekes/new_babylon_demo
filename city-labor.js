@@ -1,5 +1,6 @@
 import {DAY_SECONDS} from './city-life.js';
 import {buildingKey,isOperational} from './definitions.js';
+import {needsCanalCleaning} from './canal-maintenance.js';
 
 const foodWork=new Set(['field','fishing','hunting','garden','cowshed']);
 export const isSupplyWorker=(citizen,building)=>citizen.role==='watercarrier'||foodWork.has(building?.type);
@@ -13,13 +14,13 @@ export function harvestCallActive(state){
 export function activeLaborKind(state){
  const policy=state.cityLabor;
  if(!policy||policy.year!==state.year||state.simTime>=policy.started+DAY_SECONDS)return null;
- if(policy.kind==='unload')return 'unload';
+ if(policy.kind==='unload'||policy.kind==='repair')return policy.kind;
  return policy.kind==='harvest'&&state.season===2?'harvest':null;
 }
 
 export function validateCityLabor(state){
  const policy=state.cityLabor;
- return policy===undefined||(['harvest','unload'].includes(policy?.kind)
+ return policy===undefined||(['harvest','unload','repair'].includes(policy?.kind)
   &&Number.isSafeInteger(policy.year)&&policy.year>=1&&policy.year<=state.year
   &&Number.isFinite(policy.started)&&policy.started>=0&&policy.started<=state.simTime);
 }
@@ -55,13 +56,13 @@ export function harvestDemand(state){
 
 export function planLaborWork(state,kind,citizens,buildings,{locked,reserved,access}){
  const assignments=new Map(),counts=new Map();
- const keys=kind==='harvest'?harvestDemand(state).keys:new Set();
+ const keys=kind==='harvest'?harvestDemand(state).keys:kind==='repair'?new Set(state.buildings.filter(needsCanalCleaning).map(buildingKey)):new Set();
  const mark=(key)=>counts.set(key,(counts.get(key)||0)+1);
  for(const c of citizens){
   if(c.workplace)mark(c.workplace);
   if(locked.has(c.id)&&c.work&&c.work!==c.workplace&&!c.guardPost){mark(c.work);continue;}
   if(c.workplace)continue;
-  if(!c.work||!isSupplyWorker(c,buildings.get(c.work)))continue;
+  if(!c.work||!isSupplyWorker(c,buildings.get(c.work))&&!(['auto','production'].includes(c.role)&&needsCanalCleaning(buildings.get(c.work))))continue;
   if(locked.has(c.id))continue;
   if(reserved.has(c.id))continue;
   const store=access(c,c.work);
@@ -70,7 +71,7 @@ export function planLaborWork(state,kind,citizens,buildings,{locked,reserved,acc
  for(const c of keys.size?laborCandidates(citizens,buildings):[]){
   if(locked.has(c.id)||reserved.has(c.id)||assignments.has(c.id))continue;
   for(const key of keys){
-   if((counts.get(key)||0)>=2)continue;
+   if((counts.get(key)||0)>=(kind==='repair'?1:2))continue;
    const store=access(c,key);
    if(!store)continue;
    assignments.set(c.id,{work:key,store});mark(key);break;
