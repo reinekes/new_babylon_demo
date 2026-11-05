@@ -1,3 +1,4 @@
+import {stoneRemaining} from './mineral-stock.js';
 import {fisheryKey,fisheryStock} from './fishery-stock.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {fishingWaterTargets,validFishingWaterTarget} from './fishing-water.js';
@@ -71,6 +72,7 @@ function newJob(s,c,b,origin){
 function move(c,to,dt,rate=1){const d=distance(c,to),step=Math.min(d,dt*.65*Math.max(.5,rate));if(d>1e-8){c.x+=(to.x-c.x)*step/d;c.y+=(to.y-c.y)*step/d;}return d-step<1e-6;}
 /** Actual local work trip. A load can only be collected once its target was worked. */
 export function workGathering(s,c,b,dt,rate,origin){
+ if(b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)return false;
  const g=initializeGathering(s);let j=g.jobs.find(j=>j.citizen===c.id);
  if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
  if(!j)j=newJob(s,c,b,origin||c);if(!j)return false;

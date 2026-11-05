@@ -1,4 +1,4 @@
-import {clayRemaining,CLAY_CAPACITY} from './clay-stock.js';
+import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
 import {fisheryOptions} from './labor-life.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
@@ -274,9 +274,9 @@ function updateDetail(){
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Почва</h4><p>Засоление ${salt}% · ${diagnosis}. ${water.drained?'Дренаж отводит воду.':'Для дренажа нужен соседний отвод, связанный с водоёмом.'}</p><button id="field-rest" type="button">${rest?'Отменить отдых':'Оставить поле под паром'} · год ${year}</button></section>`);
   $('field-rest').onclick=()=>{ $('field-rest').blur();mutate(setFieldRest(state,key,!rest),rest?'Отдых поля отменён':'Запланирован отдых поля'); };
  }
- if(b.type==='clay'&&isStrictSumer(state)){
-  const remaining=clayRemaining(state,b.x,b.y);
-  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Залежь глины</h4><p>Остаток ${rounded(remaining)} / ${CLAY_CAPACITY}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Глину также можно купить у прибывших торговцев.</small></section>`);
+ if(['clay','quarry'].includes(b.type)&&isStrictSumer(state)){
+  const stone=b.type==='quarry',remaining=stone?stoneRemaining(state,b.x,b.y):clayRemaining(state,b.x,b.y);
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${stone?STONE_CAPACITY:CLAY_CAPACITY}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
  }
  if(b.type==='fishing'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
   const origin=networkFor(state).ports.find(p=>p.building===b),grounds=fisheryOptions(state,origin);

@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createGame,advanceTime,encode,decode} from '../engine.js';
+import {strictScenario} from '../scenario-profiles.js';
+import {stoneRemaining,takeStone} from '../mineral-stock.js';
+import {orderManualGathering,workManualGathering} from '../manual-gathering.js';
+import {stampBuildingCompletion} from '../building-chronology.js';
+import {syncCitizens} from '../workforce.js';
+
+test('manual collection and the quarry share a finite deposit without losing the last basket',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const pit=s.world.deposits.find(d=>d.kind==='stone'&&d.x<12);
+ const full=stoneRemaining(s,pit.x,pit.y);
+ takeStone(s,pit.x,pit.y,full-1.5);
+ assert.ok(orderManualGathering(s,pit.x,pit.y).ok);
+ const worker={x:pit.x-.5,y:pit.y-.5,phase:'manualGathering',cargo:{},manualGathering:{key:`${pit.x},${pit.y}`,stand:{x:pit.x-.5,y:pit.y-.5},progress:27}};
+ assert.ok(workManualGathering(s,worker,1));
+ assert.deepEqual(worker.cargo,{stone:1});
+ assert.equal(stoneRemaining(s,pit.x,pit.y),.5);
+ const quarry={type:'quarry',x:pit.x,y:pit.y,level:1};
+ s.buildings.push(quarry);stampBuildingCompletion(s,quarry);syncCitizens(s);
+ for(let i=0;i<800&&stoneRemaining(s,pit.x,pit.y)>0;i++)advanceTime(s,.1);
+ assert.equal(stoneRemaining(s,pit.x,pit.y),0);
+ assert.equal(s.citizens.reduce((sum,c)=>sum+(c.cargo.stone||0),0)+(quarry.workshopStock?.output?.stone||0)+s.resources.stone,.5);
+ const raw=encode(s),saved=decode(raw);
+ assert.ok(saved);
+ assert.equal(encode(saved),raw);
+ assert.equal(stoneRemaining(saved,pit.x,pit.y),0);
+ assert.equal(takeStone(saved,pit.x,pit.y,2),0);
+});

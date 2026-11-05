@@ -1,4 +1,4 @@
-import {clayRemaining,validateClayPits} from './clay-stock.js';
+import {clayRemaining,stoneRemaining,validateMineralPits} from './mineral-stock.js';
 import {validateFisheries} from './fishery-stock.js';
 import {AUTUMN_CROPS} from './crop-calendar.js';
 import {changeFloodSeason,validateRiverFlood} from './river-flood.js';
@@ -89,6 +89,7 @@ export function canBuild(s,type,x,y,placementOnly=false,rotation=0){
   if(s.buildings.some(b=>b.type==='bridge'&&riverLocal(b.x,b.y,s).along===riverLocal(x,y,s).along))return 'На этом участке уже есть мост';
  }else if(terrain(x,y,s)==='water')return 'На воде можно построить мост';
  if(type==='levee'&&(!isStrictSumer(s)||Math.abs(signedRiverDistance(x,y,s))>=3.5))return 'Береговой вал строится на суше у реки в Южном Шумере';
+ if(type==='quarry'&&stoneRemaining(s,x,y)<=1e-8&&nearDeposit(s,'stone',x,y))return 'Месторождение камня исчерпано';
  if(type==='clay'&&clayRemaining(s,x,y)<=1e-8&&nearDeposit(s,'clay',x,y))return 'Залежь глины исчерпана';
  if(type==='harbor'&&!isRiverBank(s,x,y))return 'Пристани нужен сухой берег главной реки, не озеро';
  if(type==='field'&&!fieldWater(s,{x,y}).productive)return 'Полю нужна приречная земля или готовый канал с водой рядом';
@@ -276,7 +277,7 @@ export function decode(raw){
   }
   if(oldBuildingInventory){initializeBuildingInventory(s);for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)for(const k of MATERIALS)r[k]??=0;const c=s.trade?.caravan;if(c&&MATERIALS.includes('milk')){c.stock.milk??=0;c.prices.milk??={buy:3,sell:1};}}
   if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s)||!validateFisheries(s))return null;
-  if(s.world&&!validateWorld(s)||!validateClayPits(s))return null;
+  if(s.world&&!validateWorld(s)||!validateMineralPits(s,'clay')||!validateMineralPits(s,'stone'))return null;
   if(oldEcology)initializeEcology(s,{legacy:true});
   if(!validateEcology(s))return null;
   initializeWorld(s);ensureResourceSites(s);
