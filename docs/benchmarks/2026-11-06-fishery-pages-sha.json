@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-05T20:55:01.398203+00:00",
+  "commit": "93036dde90fb234e3ca5409ce4c40f5f22104d9a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "17aef9847ee71e7c1d6d8c1426b29bff28ab3dc6efc8880a506de3dcb7e2f2a0",
+      "actual": "17aef9847ee71e7c1d6d8c1426b29bff28ab3dc6efc8880a506de3dcb7e2f2a0",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "e3eae49723199286b9fcc6e777f13864d71448523ce78a3492024a3477f5e917",
+      "actual": "e3eae49723199286b9fcc6e777f13864d71448523ce78a3492024a3477f5e917",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "6fc07dd63b36e3bb67507fd566cf761661a6e4ddfc64ef1cf51ff6a636d15d39",
+      "actual": "6fc07dd63b36e3bb67507fd566cf761661a6e4ddfc64ef1cf51ff6a636d15d39",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "1f7571479525172d984cd618360d3d2272ff6061a450a0e5d2dcff773d7085b0",
+      "actual": "1f7571479525172d984cd618360d3d2272ff6061a450a0e5d2dcff773d7085b0",
+      "match": true
+    },
+    {
+      "path": "fishery-stock.js",
+      "status": 200,
+      "expected": "b7c75250be36e91ba44ebecc148ecc95f9d17d68a2909d5e8c8c96252f123396",
+      "actual": "b7c75250be36e91ba44ebecc148ecc95f9d17d68a2909d5e8c8c96252f123396",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a39aa242520dd06405ac262eae20236a2b4a61f786b0d4ec78f187868df1914f",
+      "actual": "a39aa242520dd06405ac262eae20236a2b4a61f786b0d4ec78f187868df1914f",
+      "match": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "expected": "a59582175b42bb1e57d1cd1aa4c2bf714cf44af9876030766c519461e51c8fd1",
+      "actual": "a59582175b42bb1e57d1cd1aa4c2bf714cf44af9876030766c519461e51c8fd1",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "7f4b58e19e9c153a81fb1d1ef06d57c46a87afb42b2eced3bdcbb1c83c814109",
+      "actual": "7f4b58e19e9c153a81fb1d1ef06d57c46a87afb42b2eced3bdcbb1c83c814109",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "75b2db4cc540568bccac6697995fc1c61c1614a3255b3dac8f496dfb6bc08bb6",
+      "actual": "75b2db4cc540568bccac6697995fc1c61c1614a3255b3dac8f496dfb6bc08bb6",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1ed99e14ba976e9d5ca2316b1490bc6fd187fc862627bb1adac4e2755a4722fb",
+      "actual": "1ed99e14ba976e9d5ca2316b1490bc6fd187fc862627bb1adac4e2755a4722fb",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "97a516312831d23a9eb2373e0ca7805cf0872e520a1f36de1fb7541acd878558",
+      "actual": "97a516312831d23a9eb2373e0ca7805cf0872e520a1f36de1fb7541acd878558",
+      "match": true
+    },
+    {
+      "path": "tests/cat-fishing-integration.test.js",
+      "status": 200,
+      "expected": "e80fde5553ee52ae5de986ac3eed2b010cd7630fb5eff2b3d022324d6397e953",
+      "actual": "e80fde5553ee52ae5de986ac3eed2b010cd7630fb5eff2b3d022324d6397e953",
+      "match": true
+    },
+    {
+      "path": "tests/fishery-stock.test.js",
+      "status": 200,
+      "expected": "68be2e3970a5c9e9c38168fe17997861eac089a1e02d963a437953ef93ce82df",
+      "actual": "68be2e3970a5c9e9c38168fe17997861eac089a1e02d963a437953ef93ce82df",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "854adb708e487a7b240e5fe303dd5944092e8880499b1590e9f25a25e1dcc304",
+      "actual": "854adb708e487a7b240e5fe303dd5944092e8880499b1590e9f25a25e1dcc304",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
