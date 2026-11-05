@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-05T18:12:51.259147+00:00",
+  "commit": "6c4ecd90c8db3912d57a2a8047a18d9ee1b0de68",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "8e157b0dbdc1a1dfa34b7e8be9d33895ad4f84b1789ffeb95d1bb3af87d097c2",
+      "actual": "8e157b0dbdc1a1dfa34b7e8be9d33895ad4f84b1789ffeb95d1bb3af87d097c2",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "1102ad5fc2cf9ee27ca51b3d15af8251abcc8c03a414004566bc64f898657232",
+      "actual": "1102ad5fc2cf9ee27ca51b3d15af8251abcc8c03a414004566bc64f898657232",
+      "match": true
+    },
+    {
+      "path": "city-diagnostics.js",
+      "status": 200,
+      "expected": "fdcac66ef203c7afceac171d97d1abafb805642530507018b1beba18190b4cf7",
+      "actual": "fdcac66ef203c7afceac171d97d1abafb805642530507018b1beba18190b4cf7",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "4834603f49dde5ba7458fbde70b7e59fd292d4390e8b8de636d98c6f2bd8629e",
+      "actual": "4834603f49dde5ba7458fbde70b7e59fd292d4390e8b8de636d98c6f2bd8629e",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "dd4c57775683ff24419d3b36835ca4ed8ea6f88d9798a46902eb6d62471e75db",
+      "actual": "dd4c57775683ff24419d3b36835ca4ed8ea6f88d9798a46902eb6d62471e75db",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "4d526278a27a7d37777730a262170d38584a9358b372b9bf90a3460ffbd180cd",
+      "actual": "4d526278a27a7d37777730a262170d38584a9358b372b9bf90a3460ffbd180cd",
+      "match": true
+    },
+    {
+      "path": "game3d/work-poses.js",
+      "status": 200,
+      "expected": "e92ac239564a7b66cc00c2ad6405cdb962812465bf82ca5a44fd9a572581a62d",
+      "actual": "e92ac239564a7b66cc00c2ad6405cdb962812465bf82ca5a44fd9a572581a62d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8d70223955e6f21f641430c0ba782e1853a49e069ccf1b9352e8ca2e62ce681c",
+      "actual": "8d70223955e6f21f641430c0ba782e1853a49e069ccf1b9352e8ca2e62ce681c",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "6936cc5987cefc3d1d65cfb08982894740f7b3216222997659a55ca7116bffd1",
+      "actual": "6936cc5987cefc3d1d65cfb08982894740f7b3216222997659a55ca7116bffd1",
+      "match": true
+    },
+    {
+      "path": "professions.js",
+      "status": 200,
+      "expected": "de2e1e551985f32a5c6c29f9e1294640ba0731c1317d85411221aa47d0ddf94c",
+      "actual": "de2e1e551985f32a5c6c29f9e1294640ba0731c1317d85411221aa47d0ddf94c",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "93dea935477a803356a0832c676bc58f9b417642732299f7771d89957b5d78e2",
+      "actual": "93dea935477a803356a0832c676bc58f9b417642732299f7771d89957b5d78e2",
+      "match": true
+    },
+    {
+      "path": "scribes.js",
+      "status": 200,
+      "expected": "d7689cadc15f43a97a9fecee7ae2ca0916983fe673c2fb65c05c39f7f017b384",
+      "actual": "d7689cadc15f43a97a9fecee7ae2ca0916983fe673c2fb65c05c39f7f017b384",
+      "match": true
+    },
+    {
+      "path": "tests/scribes.test.js",
+      "status": 200,
+      "expected": "726c26aa2c12a6f61c74b91c0854f648436eefa20121bf7f712a1c9c84cce4e8",
+      "actual": "726c26aa2c12a6f61c74b91c0854f648436eefa20121bf7f712a1c9c84cce4e8",
+      "match": true
+    },
+    {
+      "path": "ui-professions.js",
+      "status": 200,
+      "expected": "1622ca9e48df540e38295c27f8913e1e0d16375fe21b04bed4e85de1b9187ed4",
+      "actual": "1622ca9e48df540e38295c27f8913e1e0d16375fe21b04bed4e85de1b9187ed4",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "0b948b60f96b10221a189f721991e7fa04816252b8ea8420ba3998ce3eba9b1b",
+      "actual": "0b948b60f96b10221a189f721991e7fa04816252b8ea8420ba3998ce3eba9b1b",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}

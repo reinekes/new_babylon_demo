@@ -1301,28 +1301,6 @@ sources: definitions.js; game3d/architecture.js
 ### Исторические источники
 - [AJA: archaeological survey of Ur suburbs](https://www.journals.uchicago.edu/doi/10.1086/725907)
 
-## hist-scribes | Писец с табличкой и его назначение
-group: history
-status: partial
-priority: P1
-depends: -
-sources: professions.js; education.js; definitions.js
-
-### Описание
-Предложить писца с табличкой для склада/храма, отдельно решить роль в экономике.
-
-### Что уже есть
-Есть образование и храмовые занятия; отдельной профессии scribe в professions.js не найдено.
-
-### Следующий шаг
-Сверить живую сцену с указанными источниками и выбрать конкретный объём исправления. Таблички хозяйственного учёта и орошения — прямая основа; массовая грамотность жителей была бы условностью.
-
-### Готово когда
-Есть распознаваемая табличка и работа; новая профессия не заявлена без реализации.
-
-### Исторические источники
-- [Met: irrigation workers, Umma ca. 2042 BCE](https://www.metmuseum.org/art/collection/search/324586)
-
 ## perf-city-4x | Довести полный обзор большого города на 4×
 group: performance
 status: partial
