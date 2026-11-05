@@ -21,6 +21,7 @@ import {initializeRelicQuest,validateRelicQuest,relicControlActive,relicCommandR
 import {initializeSacredUnlocks,syncSacredUnlocks,validateSacredUnlocks,miracleLockReason,applySacredMiracle} from './sacred-unlocks.js';
 import {validateMusic} from './music.js';
 import {validateCitizenEpithets} from './citizen-epithets.js';
+import {orchardMaturity,validateOrchards} from './orchard-layout.js';
 import {stampBuildingCompletion,validateBuildingChronology} from './building-chronology.js';
 import {validateStockAccounts} from './scribes.js';
 import {initializeProductionAccounting,validateProductionHistory} from './building-production-history.js';
@@ -115,6 +116,11 @@ export function canUpgrade(s,b){if(s.miracleCelebration)return miracleCelebratio
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function yieldSummary(s,b){
  const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.type==='house')return `${b.starterHut&&level===1?buildingPresentation(s,b).name+' · только улучшение или снос · ':''}Жильё: ${capacityOf(b)} жителей`;
+ if(b.type==='garden'&&isStrictSumer(s)&&(!Number.isInteger(b.x)||b.construction?.kind==='new'))return 'После посадки: первый урожай через 4 смены сезона, полный через 12';
+ if(b.type==='garden'&&b.orchardPlantedTick!==undefined){
+  const stage=orchardMaturity(s,b),food=(def.output.food*outputMultiplier(b)*stage.yield).toLocaleString('ru-RU',{maximumFractionDigits:2});
+  return `${stage.label} · ${food} еды за рейс · 2 рабочих места · +${2+2*level} довольства`;
+ }
  if(b.type==='levee')return 'Земляной вал · замкни разрывы вдоль берега';
  if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки или озера · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки или озера':b.silt>=.95?'Русло перекрыто илом · закажи расчистку':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив по доступным долям':'Сухое русло · проверь источник и участки выше по течению';
  if(b.type==='pottery')return `4 глины + 2 воды + 2 тростника → 2 керамики · формовка ${(5/outputMultiplier(b)).toFixed(1)} с · труд ×${outputMultiplier(b)} · сушка 12 с · обжиг 12 с · остывание 6 с`;
@@ -385,7 +391,7 @@ export function decode(raw){
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
-  if(!validateBuildingChronology(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateCityLabor(s)||!validateCanalMaintenance(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
+  if(!validateBuildingChronology(s)||!validateOrchards(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateCityLabor(s)||!validateCanalMaintenance(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();

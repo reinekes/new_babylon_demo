@@ -372,6 +372,11 @@ test('an invisible saved gathering tree inside a garden cannot erase its living 
   assert.equal(points().size,4);s.gathering.features.push({id:'tree:inside-garden',kind:'tree',x:6,y:10,health:1,felledAt:null,recoverAt:null});
   const before=JSON.stringify(s);view.update(s,0);assert.equal(points().size,4,'the hidden gathering tree must not hide all garden palms');assert.equal(JSON.stringify(s),before);
   const initial=points();s.buildings[0].rotation=1;s.buildings[0].construction={kind:'upgrade',target:2,required:{brick:10},delivered:{brick:0},work:0};view.update(s,0);assert.equal(points().size,4);assert.notDeepEqual(points(),initial,'rotation updates actual grove meshes');
+  const palmScale=()=>view.meshes.find(m=>m.name.startsWith('date-palm-garden-6-10-')).scaling.x;
+  const mature=palmScale();s.buildings[0].orchardPlantedTick=s.tick;view.update(s,0);
+  assert.equal(palmScale(),mature*.35);
+  s.tick+=4;view.update(s,0);assert.equal(palmScale(),mature*.58);
+  s.tick+=8;view.update(s,0);assert.equal(palmScale(),mature);
   s.buildings=[];view.update(s,0);assert.equal(points().size,0,'demolition removes the managed palms');
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}
 });

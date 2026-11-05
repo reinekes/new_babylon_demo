@@ -1,3 +1,4 @@
+import {orchardMaturity} from './orchard-layout.js';
 import {takeReeds,advanceReedBeds} from './reed-stock.js';
 import {forestFor,takeWood} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,takeClay,takeStone} from './mineral-stock.js';
@@ -250,7 +251,7 @@ export function syncCitizens(s){
   }
  }
  const priority={waterpoint:-.5,pottery:1,brewery:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
- const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='clay'||clayRemaining(s,b.x,b.y)>1e-8)&&(b.type!=='quarry'||stoneRemaining(s,b.x,b.y)>1e-8)).sort((a,b)=>priority[a.type]-priority[b.type]);
+ const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='garden'||orchardMaturity(s,b).yield>0)&&(b.type!=='clay'||clayRemaining(s,b.x,b.y)>1e-8)&&(b.type!=='quarry'||stoneRemaining(s,b.x,b.y)>1e-8)).sort((a,b)=>priority[a.type]-priority[b.type]);
  const slots=jobs.flatMap(b=>Array(workplaceCapacity(b.type)).fill(buildingKey(b))),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work&&!c.guardPost)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
  // A pinned worker completing an old delivery still owns their new workplace
@@ -298,7 +299,7 @@ function harvest(s,c,ctx,via=null){
  const def=BUILDINGS[b.type],boost=s.buffs||{};c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
-  if(resource==='food')mult*=boost.fertility?1.6:1;
+  if(resource==='food')mult*=(boost.fertility?1.6:1)*(b.type==='garden'?orchardMaturity(s,b).yield:1);
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,b.x,b.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,b.x,b.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
@@ -306,7 +307,7 @@ function harvest(s,c,ctx,via=null){
   c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
  if(b.type==='clay'&&clayRemaining(s,b.x,b.y)<=1e-8||b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)invalidateAssignments(s);
- if(['fishing','clay','quarry','logging','reed'].includes(b.type)&&!hasCargo(c))return false;
+ if(['fishing','clay','quarry','logging','reed','garden'].includes(b.type)&&!hasCargo(c))return false;
  if(isProductionStore(b)){if(via){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
@@ -557,7 +558,8 @@ function advanceCitizen(s,c,dt,ctx){
    if(b.type==='granary'){if(c.calling==='scribe'&&c.role==='production'&&c.workplace===c.work)workOnAccount(s,b,c,remaining*workRate(c,'granary'));return;}
    if(b.type==='musicHouse'){workMusic(s,b,c,remaining*workRate(c,'musicHouse'));return;}
    if(b.type==='cowshed'){if(outputRoom(b,'milk')<3-1e-7)return;const amount=workDairy(b,remaining*workRate(c,'cowshed')*outputMultiplier(b));if(amount){putProductionOutput(s,b,{milk:amount});recordCitizenHarvest(s,c,{milk:amount});}return;}
-   if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*outputMultiplier(b)*(k==='food'&&s.buffs?.fertility?1.6:['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1)))return;
+   if(b.type==='garden'&&orchardMaturity(s,b).yield===0)return;
+   if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*outputMultiplier(b)*(b.type==='garden'?orchardMaturity(s,b).yield:1)*(k==='food'&&s.buffs?.fertility?1.6:['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1)))return;
    if(isArtisan(b)){
     const v=b.artisan;
     if(v.stage==='ready'){collectReadyOutputs(s);return;}

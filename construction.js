@@ -3,6 +3,7 @@ import {recordBuilderCompletion} from './godhood.js';
 import {housingOf,MATERIALS} from './definitions.js';
 import {stampBuildingCompletion} from './building-chronology.js';
 import {initializeProductionAccounting} from './building-production-history.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {markRoadTopologyChanged} from './road-revisions.js';
 export const isComplete=b=>!b.construction||b.construction.kind==='upgrade';
 export const constructionEntities=s=>[...s.buildings,...s.roads||[]];
@@ -17,7 +18,10 @@ export function constructionProgress(b){
 export function finishConstruction(s){
  let changed=false;
  for(const b of constructionEntities(s)){const q=b.construction;if(!q||!materialsReady(q)||q.work<workRequired(b)-1e-8)continue;
-  if(q.kind==='new'&&b.type!=='road')stampBuildingCompletion(s,b);
+  if(q.kind==='new'&&b.type!=='road'){
+   stampBuildingCompletion(s,b);
+   if(b.type==='garden'&&isStrictSumer(s))b.orchardPlantedTick=s.tick;
+  }
   recordBuilderCompletion(s,b);b.level=q.target;if(b.type==='road')markRoadTopologyChanged(s);if(q.legacyMasonry&&b.type!=='road')b.legacyMasonryLevel=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;
   s.news.unshift({title:q.kind==='upgrade'?`${(buildingDefinition(s,b.type)?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(buildingDefinition(s,b.type)?.name||'Дорога')}`,text:'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
   // Workforce synchronization sees the old site and routes builders home.
