@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-05T21:28:42.497054+00:00",
+  "commit": "ecfaf164b84814eddfc8c4c987764a23732d198a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "1781c0d913ae8f43e2489304940b72a4ecbda49f54559c8bb1230ca4ed1a30fa",
+      "actual": "1781c0d913ae8f43e2489304940b72a4ecbda49f54559c8bb1230ca4ed1a30fa",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "9a67c36d5db9d0ab24fd5a45fb780ca2c7433367074929d0e895beb31da938cc",
+      "actual": "9a67c36d5db9d0ab24fd5a45fb780ca2c7433367074929d0e895beb31da938cc",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "b0b09256641e5e2daa6eef984d2bf97c297ab8ff9e28522165d7576f334fc680",
+      "actual": "b0b09256641e5e2daa6eef984d2bf97c297ab8ff9e28522165d7576f334fc680",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "32c1b0a8812bd344d57ffa3cfc71f989923012016a817f216f4ff7fa2ed05ef1",
+      "actual": "32c1b0a8812bd344d57ffa3cfc71f989923012016a817f216f4ff7fa2ed05ef1",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9d854a874dd7f82ddee58d40c526c28b9ce453568d8191f6139b8e4ac14cc59f",
+      "actual": "9d854a874dd7f82ddee58d40c526c28b9ce453568d8191f6139b8e4ac14cc59f",
+      "match": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "expected": "36f5b411d2e1685cc0745dc0062747c4b3f4d17253de3d06a563ad95d6805870",
+      "actual": "36f5b411d2e1685cc0745dc0062747c4b3f4d17253de3d06a563ad95d6805870",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "5ce88a6bb9a848f4e1d1f5ec610eec39e27e171d1bbc2557b68945ced0fb9851",
+      "actual": "5ce88a6bb9a848f4e1d1f5ec610eec39e27e171d1bbc2557b68945ced0fb9851",
+      "match": true
+    },
+    {
+      "path": "manual-gathering.js",
+      "status": 200,
+      "expected": "520a58ba217ddcc67cabc083704666eb3d01cba6bdc01d2a240ce7af70dbded0",
+      "actual": "520a58ba217ddcc67cabc083704666eb3d01cba6bdc01d2a240ce7af70dbded0",
+      "match": true
+    },
+    {
+      "path": "reed-stock.js",
+      "status": 200,
+      "expected": "587fa599d73124327363f1baf727e6ab1c9c5c111ca29a91cf1c89fdcfd48c05",
+      "actual": "587fa599d73124327363f1baf727e6ab1c9c5c111ca29a91cf1c89fdcfd48c05",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "4544d9ae29018d2c7008b05e4299e11ee8dfbcd0a169c5e54b5ca816420caebf",
+      "actual": "4544d9ae29018d2c7008b05e4299e11ee8dfbcd0a169c5e54b5ca816420caebf",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "4874cd0abcc77361475ab0d5180094a7bef930621e42839f00b4d09d4b62b364",
+      "actual": "4874cd0abcc77361475ab0d5180094a7bef930621e42839f00b4d09d4b62b364",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "7236ab4f5e10c42d00a363c2ed7525da1ae32baa593f3941c4ecdb9fa7f8604e",
+      "actual": "7236ab4f5e10c42d00a363c2ed7525da1ae32baa593f3941c4ecdb9fa7f8604e",
+      "match": true
+    },
+    {
+      "path": "tests/reed-stock.test.js",
+      "status": 200,
+      "expected": "f335eeedc259cf5cc0448d694a76d2a3ef78cb1c9f8c9c747fb9cacb1bd6b63d",
+      "actual": "f335eeedc259cf5cc0448d694a76d2a3ef78cb1c9f8c9c747fb9cacb1bd6b63d",
+      "match": true
+    },
+    {
+      "path": "ui-manual-gathering.js",
+      "status": 200,
+      "expected": "c6cd3e1a22f3d247cfc379c8a8c768422876edc2a5aae3c105fb425ca17bbef7",
+      "actual": "c6cd3e1a22f3d247cfc379c8a8c768422876edc2a5aae3c105fb425ca17bbef7",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "6b22a62f2b5cffa4edb37155268639a2d0dd6e7b969f93d678d7672f93923cb5",
+      "actual": "6b22a62f2b5cffa4edb37155268639a2d0dd6e7b969f93d678d7672f93923cb5",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
