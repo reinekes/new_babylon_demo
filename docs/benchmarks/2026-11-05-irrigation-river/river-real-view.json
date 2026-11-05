@@ -1,0 +1,716 @@
+{
+  "proof": {
+    "river": {
+      "caravan": {
+        "id": "caravan:1",
+        "name": "Лодка купцов Лагаша",
+        "arrived": 1,
+        "departAt": 3,
+        "stock": {
+          "food": 38,
+          "clay": 55,
+          "reed": 26,
+          "wood": 131,
+          "stone": 178,
+          "hides": 31,
+          "wool": 48,
+          "cloth": 65,
+          "clothing": 36,
+          "brick": 53,
+          "firedBrick": 70,
+          "pottery": 41,
+          "beer": 58,
+          "milk": 29
+        },
+        "prices": {
+          "food": {
+            "buy": 6,
+            "sell": 4
+          },
+          "clay": {
+            "buy": 8,
+            "sell": 6
+          },
+          "reed": {
+            "buy": 5,
+            "sell": 3
+          },
+          "wood": {
+            "buy": 8,
+            "sell": 6
+          },
+          "stone": {
+            "buy": 11,
+            "sell": 9
+          },
+          "hides": {
+            "buy": 8,
+            "sell": 6
+          },
+          "wool": {
+            "buy": 7,
+            "sell": 5
+          },
+          "cloth": {
+            "buy": 26,
+            "sell": 24
+          },
+          "clothing": {
+            "buy": 54,
+            "sell": 52
+          },
+          "brick": {
+            "buy": 11,
+            "sell": 9
+          },
+          "firedBrick": {
+            "buy": 20,
+            "sell": 18
+          },
+          "pottery": {
+            "buy": 16,
+            "sell": 14
+          },
+          "beer": {
+            "buy": 11,
+            "sell": 9
+          },
+          "milk": {
+            "buy": 5,
+            "sell": 3
+          }
+        },
+        "silver": 670,
+        "phase": "trading",
+        "x": 16.010181452369892,
+        "y": 8,
+        "route": [
+          {
+            "x": 17.696568345012963,
+            "y": -0.5,
+            "key": "18.196568345012963,0"
+          },
+          {
+            "x": 17.674082289791855,
+            "y": 0,
+            "key": "18.174082289791855,0.5"
+          },
+          {
+            "x": 17.643290218240566,
+            "y": 0.5,
+            "key": "18.143290218240566,1"
+          },
+          {
+            "x": 17.603438998810955,
+            "y": 1,
+            "key": "18.103438998810955,1.5"
+          },
+          {
+            "x": 17.553904968858273,
+            "y": 1.5,
+            "key": "18.053904968858273,2"
+          },
+          {
+            "x": 17.494202847722196,
+            "y": 2,
+            "key": "17.994202847722196,2.5"
+          },
+          {
+            "x": 17.423992672120246,
+            "y": 2.5,
+            "key": "17.923992672120246,3"
+          },
+          {
+            "x": 17.3430846547365,
+            "y": 3,
+            "key": "17.8430846547365,3.5"
+          },
+          {
+            "x": 17.25144189656892,
+            "y": 3.5,
+            "key": "17.75144189656892,4"
+          },
+          {
+            "x": 17.14918091427182,
+            "y": 4,
+            "key": "17.64918091427182,4.5"
+          },
+          {
+            "x": 17.036569974956926,
+            "y": 4.5,
+            "key": "17.536569974956926,5"
+          },
+          {
+            "x": 16.914025262251226,
+            "y": 5,
+            "key": "17.414025262251226,5.5"
+          },
+          {
+            "x": 16.78210492840448,
+            "y": 5.5,
+            "key": "17.28210492840448,6"
+          },
+          {
+            "x": 16.641501117450677,
+            "y": 6,
+            "key": "17.141501117450677,6.5"
+          },
+          {
+            "x": 16.49303007342462,
+            "y": 6.5,
+            "key": "16.99303007342462,7"
+          },
+          {
+            "x": 16.33762047500202,
+            "y": 7,
+            "key": "16.83762047500202,7.5"
+          },
+          {
+            "x": 16.176300163278842,
+            "y": 7.5,
+            "key": "16.676300163278842,8"
+          },
+          {
+            "x": 16.010181452369892,
+            "y": 8,
+            "key": "16.510181452369892,8.5"
+          }
+        ],
+        "routeIndex": 18,
+        "entry": "river",
+        "market": "14,8",
+        "unloadTime": 4,
+        "transport": "river"
+      },
+      "rootMetadata": {
+        "riverCraft": true,
+        "tradeId": "caravan:1",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"food\":38,\"clay\":55,\"reed\":26,\"wood\":131,\"stone\":178,\"hides\":31,\"wool\":48,\"cloth\":65,\"clothing\":36,\"brick\":53,\"firedBrick\":70,\"pottery\":41,\"beer\":58,\"milk\":29}",
+        "draft": 0.29,
+        "historicalProfile": "sumer-iii-v1",
+        "sourceArtisticAdaptation": "Ur-inspired bitumen/reed vessel; game interpretation"
+      },
+      "rootPosition": [
+        96.06108871421935,
+        -0.17487499120177394,
+        48
+      ],
+      "expectedKinds": [
+        "beer",
+        "brick",
+        "clay",
+        "cloth",
+        "clothing",
+        "firedBrick",
+        "food",
+        "hides",
+        "milk",
+        "pottery",
+        "reed",
+        "stone",
+        "wood",
+        "wool"
+      ],
+      "actualKinds": [
+        "beer",
+        "brick",
+        "clay",
+        "cloth",
+        "clothing",
+        "firedBrick",
+        "food",
+        "hides",
+        "milk",
+        "pottery",
+        "reed",
+        "stone",
+        "wood",
+        "wool"
+      ],
+      "cargo": [
+        {
+          "name": "cargo-food",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "food",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": -1.188,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            -1.188
+          ]
+        },
+        {
+          "name": "cargo-wood",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "wood",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": -1.188,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            -1.188
+          ]
+        },
+        {
+          "name": "cargo-clay",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "clay",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": -0.7919999999999999,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            -0.7919999999999999
+          ]
+        },
+        {
+          "name": "cargo-stone",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "stone",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": -0.7919999999999999,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            -0.7919999999999999
+          ]
+        },
+        {
+          "name": "cargo-reed",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "reed",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": -0.39599999999999996,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            -0.39599999999999996
+          ]
+        },
+        {
+          "name": "cargo-pottery",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "pottery",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": -0.39599999999999996,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            -0.39599999999999996
+          ]
+        },
+        {
+          "name": "cargo-wool",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "wool",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": 0,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            0
+          ]
+        },
+        {
+          "name": "cargo-cloth",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "cloth",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": 0,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            0
+          ]
+        },
+        {
+          "name": "cargo-beer",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "beer",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": 0.3960000000000001,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            0.3960000000000001
+          ]
+        },
+        {
+          "name": "cargo-hides",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "hides",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": 0.3960000000000001,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            0.3960000000000001
+          ]
+        },
+        {
+          "name": "cargo-clothing",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "clothing",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": 0.7920000000000001,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            0.7920000000000001
+          ]
+        },
+        {
+          "name": "cargo-brick",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "brick",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": 0.7920000000000001,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            0.7920000000000001
+          ]
+        },
+        {
+          "name": "cargo-firedBrick",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "firedBrick",
+            "x": -0.23399999999999999,
+            "y": 0.2,
+            "z": 1.188,
+            "layer": 0
+          },
+          "position": [
+            -0.23399999999999999,
+            0.2,
+            1.188
+          ]
+        },
+        {
+          "name": "cargo-milk",
+          "enabled": true,
+          "visible": true,
+          "goods": {
+            "kind": "milk",
+            "x": 0.23399999999999999,
+            "y": 0.2,
+            "z": 1.188,
+            "layer": 0
+          },
+          "position": [
+            0.23399999999999999,
+            0.2,
+            1.188
+          ]
+        }
+      ]
+    },
+    "scene": {
+      "activeMeshes": 1827,
+      "meshes": 8306,
+      "skeletons": 169,
+      "quality": "high",
+      "probeHeap": {
+        "usedJSHeapSize": 1000218714,
+        "totalJSHeapSize": 1123996782,
+        "jsHeapSizeLimit": 4395630592
+      },
+      "terrainPhases": [],
+      "landscapePhases": [
+        {
+          "phase": "landscape.carveChannels",
+          "ms": 44.69999998807907,
+          "simTime": 35,
+          "tick": 0,
+          "colorChanged": true,
+          "positionChanged": true,
+          "normalChanged": true
+        }
+      ],
+      "grassBuffers": {
+        "position": 1,
+        "normal": 2,
+        "color": 3
+      },
+      "vegetation": {
+        "batches": 108,
+        "instances": 1474,
+        "uniqueGeometries": 108,
+        "geometryPayloadUpperBoundBytes": 641028,
+        "matrixBytes": 94336,
+        "wrongGPUBufferBindings": 0,
+        "disposedRegistryMeshes": 0
+      },
+      "palms": {
+        "parts": 610,
+        "enabledIndividuals": 0,
+        "groups": 5,
+        "instances": 610,
+        "uniqueGroupedParts": 610,
+        "weather": "sunny"
+      },
+      "inventory": {
+        "groups": {
+          "other": {
+            "all": 439,
+            "enabled": 432,
+            "visible": 53,
+            "active": 38,
+            "activeVertices": 6815,
+            "activeSubMeshes": 38,
+            "activeThinInstances": 0,
+            "materials": 6
+          },
+          "architecture": {
+            "all": 1485,
+            "enabled": 1485,
+            "visible": 1485,
+            "active": 1119,
+            "activeVertices": 957776,
+            "activeSubMeshes": 1119,
+            "activeThinInstances": 0,
+            "materials": 18
+          },
+          "landscape": {
+            "all": 1929,
+            "enabled": 533,
+            "visible": 533,
+            "active": 333,
+            "activeVertices": 171931,
+            "activeSubMeshes": 333,
+            "activeThinInstances": 2084,
+            "materials": 35
+          },
+          "residents": {
+            "all": 1548,
+            "enabled": 236,
+            "visible": 235,
+            "active": 79,
+            "activeVertices": 101522,
+            "activeSubMeshes": 79,
+            "activeThinInstances": 0,
+            "materials": 69
+          },
+          "fauna": {
+            "all": 2867,
+            "enabled": 2863,
+            "visible": 2863,
+            "active": 238,
+            "activeVertices": 332856,
+            "activeSubMeshes": 238,
+            "activeThinInstances": 0,
+            "materials": 7
+          },
+          "actors": {
+            "all": 38,
+            "enabled": 38,
+            "visible": 38,
+            "active": 20,
+            "activeVertices": 106162,
+            "activeSubMeshes": 20,
+            "activeThinInstances": 0,
+            "materials": 10
+          }
+        },
+        "topActiveSources": [
+          [
+            "wildlife-source-fish:torso",
+            116
+          ],
+          [
+            "wildlife-source-fish:belly",
+            91
+          ],
+          [
+            "game-house-courtyard-#-alluvial-earth",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-home-plaster-#-#",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-home-interior-shadow",
+            84
+          ],
+          [
+            "game-house-courtyard-#-worn-timber",
+            84
+          ],
+          [
+            "game-house-courtyard-#-reed-mat",
+            84
+          ],
+          [
+            "game-house-courtyard-#-game-plaster-trim",
+            84
+          ],
+          [
+            "game-house-courtyard-#-fired-pottery",
+            84
+          ],
+          [
+            "roof-access-house",
+            84
+          ],
+          [
+            "game-household-garden",
+            84
+          ],
+          [
+            "submerged-pebble-source-#",
+            63
+          ],
+          [
+            "road-region-#:#:#:#:#:true:#",
+            54
+          ],
+          [
+            "valley-reed-batch-#,#-#",
+            52
+          ],
+          [
+            "original-clay-alluvial-earth",
+            38
+          ],
+          [
+            "original-clay-game-raw-brick-facing",
+            38
+          ],
+          [
+            "original-clay-game-door-shadow",
+            38
+          ],
+          [
+            "original-clay-warm-clay-plaster",
+            38
+          ],
+          [
+            "original-clay-worn-timber",
+            38
+          ],
+          [
+            "original-clay-reed-mat",
+            38
+          ],
+          [
+            "original-clay-fired-pottery",
+            38
+          ],
+          [
+            "roof-access-clay",
+            38
+          ],
+          [
+            "resource-clay-source",
+            35
+          ],
+          [
+            "resource-stone-source",
+            28
+          ],
+          [
+            "valley-grass-batch-#,#-#",
+            28
+          ],
+          [
+            "valley-greenGrass-batch-#,#-#",
+            28
+          ],
+          [
+            "game-house-courtyard-#-dry-river-grass",
+            25
+          ],
+          [
+            "valley-bird-wing-source",
+            20
+          ],
+          [
+            "citizen-#-Native civilian skin",
+            20
+          ],
+          [
+            "citizen-#-Native draped wool skirt",
+            20
+          ]
+        ],
+        "engineDrawCallsCounterCurrent": 15001362
+      },
+      "probeRenderPixelRatio": 1.5,
+      "hardwareScalingLevel": 0.6666666666666666,
+      "cameraAlpha": 0.7,
+      "cameraBeta": 1.05,
+      "cameraRadius": 13,
+      "canvas": [
+        1920,
+        855
+      ]
+    }
+  },
+  "logs": []
+}

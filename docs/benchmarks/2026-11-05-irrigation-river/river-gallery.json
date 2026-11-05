@@ -1,0 +1,1173 @@
+{
+  "cases": [
+    {
+      "preset": "default",
+      "profile": "sumer-iii-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "food": 30,
+          "wood": 80,
+          "pottery": 40,
+          "reed": 50
+        }
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"food\":30,\"wood\":80,\"pottery\":40,\"reed\":50}",
+        "draft": 0.29,
+        "historicalProfile": "sumer-iii-v1",
+        "sourceArtisticAdaptation": "Ur-inspired bitumen/reed vessel; game interpretation"
+      },
+      "cargo": {
+        "stock": {
+          "food": 30,
+          "wood": 80,
+          "pottery": 40,
+          "reed": 50
+        },
+        "kinds": [
+          "food",
+          "wood",
+          "reed",
+          "pottery"
+        ],
+        "meshes": [
+          {
+            "name": "cargo-food",
+            "goods": {
+              "kind": "food",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.198
+            ]
+          },
+          {
+            "name": "cargo-wood",
+            "goods": {
+              "kind": "wood",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.198
+            ]
+          },
+          {
+            "name": "cargo-reed",
+            "goods": {
+              "kind": "reed",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.198
+            ]
+          },
+          {
+            "name": "cargo-pottery",
+            "goods": {
+              "kind": "pottery",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.198
+            ]
+          }
+        ],
+        "stockSignature": "{\"food\":30,\"wood\":80,\"pottery\":40,\"reed\":50}"
+      }
+    },
+    {
+      "preset": "all",
+      "profile": "sumer-iii-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "food": 50,
+          "wood": 50,
+          "clay": 50,
+          "stone": 50,
+          "reed": 50,
+          "pottery": 50,
+          "wool": 50,
+          "cloth": 50,
+          "beer": 50,
+          "hides": 50,
+          "clothing": 50,
+          "brick": 50,
+          "firedBrick": 50,
+          "water": 50,
+          "milk": 50
+        }
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"food\":50,\"wood\":50,\"clay\":50,\"stone\":50,\"reed\":50,\"pottery\":50,\"wool\":50,\"cloth\":50,\"beer\":50,\"hides\":50,\"clothing\":50,\"brick\":50,\"firedBrick\":50,\"water\":50,\"milk\":50}",
+        "draft": 0.29,
+        "historicalProfile": "sumer-iii-v1",
+        "sourceArtisticAdaptation": "Ur-inspired bitumen/reed vessel; game interpretation"
+      },
+      "cargo": {
+        "stock": {
+          "food": 50,
+          "wood": 50,
+          "clay": 50,
+          "stone": 50,
+          "reed": 50,
+          "pottery": 50,
+          "wool": 50,
+          "cloth": 50,
+          "beer": 50,
+          "hides": 50,
+          "clothing": 50,
+          "brick": 50,
+          "firedBrick": 50,
+          "water": 50,
+          "milk": 50
+        },
+        "kinds": [
+          "food",
+          "wood",
+          "clay",
+          "stone",
+          "reed",
+          "pottery",
+          "wool",
+          "cloth",
+          "beer",
+          "hides",
+          "clothing",
+          "brick",
+          "firedBrick",
+          "water",
+          "milk"
+        ],
+        "meshes": [
+          {
+            "name": "cargo-food",
+            "goods": {
+              "kind": "food",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -1.386,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -1.386
+            ]
+          },
+          {
+            "name": "cargo-wood",
+            "goods": {
+              "kind": "wood",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -1.386,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -1.386
+            ]
+          },
+          {
+            "name": "cargo-clay",
+            "goods": {
+              "kind": "clay",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-stone",
+            "goods": {
+              "kind": "stone",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-reed",
+            "goods": {
+              "kind": "reed",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.594,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.594
+            ]
+          },
+          {
+            "name": "cargo-pottery",
+            "goods": {
+              "kind": "pottery",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.594,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.594
+            ]
+          },
+          {
+            "name": "cargo-wool",
+            "goods": {
+              "kind": "wool",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-cloth",
+            "goods": {
+              "kind": "cloth",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-beer",
+            "goods": {
+              "kind": "beer",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-hides",
+            "goods": {
+              "kind": "hides",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-clothing",
+            "goods": {
+              "kind": "clothing",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.5940000000000001,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.5940000000000001
+            ]
+          },
+          {
+            "name": "cargo-brick",
+            "goods": {
+              "kind": "brick",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.5940000000000001,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.5940000000000001
+            ]
+          },
+          {
+            "name": "cargo-firedBrick",
+            "goods": {
+              "kind": "firedBrick",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-water",
+            "goods": {
+              "kind": "water",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-milk",
+            "goods": {
+              "kind": "milk",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 1.386,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              1.386
+            ]
+          }
+        ],
+        "stockSignature": "{\"food\":50,\"wood\":50,\"clay\":50,\"stone\":50,\"reed\":50,\"pottery\":50,\"wool\":50,\"cloth\":50,\"beer\":50,\"hides\":50,\"clothing\":50,\"brick\":50,\"firedBrick\":50,\"water\":50,\"milk\":50}"
+      }
+    },
+    {
+      "preset": "empty",
+      "profile": "sumer-iii-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {}
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{}",
+        "draft": 0.29,
+        "historicalProfile": "sumer-iii-v1",
+        "sourceArtisticAdaptation": "Ur-inspired bitumen/reed vessel; game interpretation"
+      },
+      "cargo": {
+        "stock": {},
+        "kinds": [],
+        "meshes": [],
+        "stockSignature": "{}"
+      }
+    },
+    {
+      "preset": "stone",
+      "profile": "sumer-iii-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "stone": 3
+        }
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"stone\":3}",
+        "draft": 0.29,
+        "historicalProfile": "sumer-iii-v1",
+        "sourceArtisticAdaptation": "Ur-inspired bitumen/reed vessel; game interpretation"
+      },
+      "cargo": {
+        "stock": {
+          "stone": 3
+        },
+        "kinds": [
+          "stone"
+        ],
+        "meshes": [
+          {
+            "name": "cargo-stone",
+            "goods": {
+              "kind": "stone",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0
+            ]
+          }
+        ],
+        "stockSignature": "{\"stone\":3}"
+      }
+    },
+    {
+      "preset": "default",
+      "profile": "legacy-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "food": 30,
+          "wood": 80,
+          "pottery": 40,
+          "reed": 50
+        }
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"food\":30,\"wood\":80,\"pottery\":40,\"reed\":50}",
+        "draft": 0.29,
+        "historicalProfile": "legacy-v1",
+        "sourceArtisticAdaptation": "Gislinge 12th-century hull"
+      },
+      "cargo": {
+        "stock": {
+          "food": 30,
+          "wood": 80,
+          "pottery": 40,
+          "reed": 50
+        },
+        "kinds": [
+          "food",
+          "wood",
+          "reed",
+          "pottery"
+        ],
+        "meshes": [
+          {
+            "name": "cargo-food",
+            "goods": {
+              "kind": "food",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.198
+            ]
+          },
+          {
+            "name": "cargo-wood",
+            "goods": {
+              "kind": "wood",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.198
+            ]
+          },
+          {
+            "name": "cargo-reed",
+            "goods": {
+              "kind": "reed",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.198
+            ]
+          },
+          {
+            "name": "cargo-pottery",
+            "goods": {
+              "kind": "pottery",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.198,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.198
+            ]
+          }
+        ],
+        "stockSignature": "{\"food\":30,\"wood\":80,\"pottery\":40,\"reed\":50}"
+      }
+    },
+    {
+      "preset": "all",
+      "profile": "legacy-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "food": 50,
+          "wood": 50,
+          "clay": 50,
+          "stone": 50,
+          "reed": 50,
+          "pottery": 50,
+          "wool": 50,
+          "cloth": 50,
+          "beer": 50,
+          "hides": 50,
+          "clothing": 50,
+          "brick": 50,
+          "firedBrick": 50,
+          "water": 50,
+          "milk": 50
+        }
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"food\":50,\"wood\":50,\"clay\":50,\"stone\":50,\"reed\":50,\"pottery\":50,\"wool\":50,\"cloth\":50,\"beer\":50,\"hides\":50,\"clothing\":50,\"brick\":50,\"firedBrick\":50,\"water\":50,\"milk\":50}",
+        "draft": 0.29,
+        "historicalProfile": "legacy-v1",
+        "sourceArtisticAdaptation": "Gislinge 12th-century hull"
+      },
+      "cargo": {
+        "stock": {
+          "food": 50,
+          "wood": 50,
+          "clay": 50,
+          "stone": 50,
+          "reed": 50,
+          "pottery": 50,
+          "wool": 50,
+          "cloth": 50,
+          "beer": 50,
+          "hides": 50,
+          "clothing": 50,
+          "brick": 50,
+          "firedBrick": 50,
+          "water": 50,
+          "milk": 50
+        },
+        "kinds": [
+          "food",
+          "wood",
+          "clay",
+          "stone",
+          "reed",
+          "pottery",
+          "wool",
+          "cloth",
+          "beer",
+          "hides",
+          "clothing",
+          "brick",
+          "firedBrick",
+          "water",
+          "milk"
+        ],
+        "meshes": [
+          {
+            "name": "cargo-food",
+            "goods": {
+              "kind": "food",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -1.386,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -1.386
+            ]
+          },
+          {
+            "name": "cargo-wood",
+            "goods": {
+              "kind": "wood",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -1.386,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -1.386
+            ]
+          },
+          {
+            "name": "cargo-clay",
+            "goods": {
+              "kind": "clay",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-stone",
+            "goods": {
+              "kind": "stone",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-reed",
+            "goods": {
+              "kind": "reed",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.594,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.594
+            ]
+          },
+          {
+            "name": "cargo-pottery",
+            "goods": {
+              "kind": "pottery",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.594,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.594
+            ]
+          },
+          {
+            "name": "cargo-wool",
+            "goods": {
+              "kind": "wool",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": -0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              -0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-cloth",
+            "goods": {
+              "kind": "cloth",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": -0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              -0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-beer",
+            "goods": {
+              "kind": "beer",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-hides",
+            "goods": {
+              "kind": "hides",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.19800000000000004,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.19800000000000004
+            ]
+          },
+          {
+            "name": "cargo-clothing",
+            "goods": {
+              "kind": "clothing",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.5940000000000001,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.5940000000000001
+            ]
+          },
+          {
+            "name": "cargo-brick",
+            "goods": {
+              "kind": "brick",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.5940000000000001,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.5940000000000001
+            ]
+          },
+          {
+            "name": "cargo-firedBrick",
+            "goods": {
+              "kind": "firedBrick",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-water",
+            "goods": {
+              "kind": "water",
+              "x": 0.23399999999999999,
+              "y": 0.2,
+              "z": 0.9899999999999999,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              0.23399999999999999,
+              0.2,
+              0.9899999999999999
+            ]
+          },
+          {
+            "name": "cargo-milk",
+            "goods": {
+              "kind": "milk",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 1.386,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              1.386
+            ]
+          }
+        ],
+        "stockSignature": "{\"food\":50,\"wood\":50,\"clay\":50,\"stone\":50,\"reed\":50,\"pottery\":50,\"wool\":50,\"cloth\":50,\"beer\":50,\"hides\":50,\"clothing\":50,\"brick\":50,\"firedBrick\":50,\"water\":50,\"milk\":50}"
+      }
+    },
+    {
+      "preset": "empty",
+      "profile": "legacy-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {}
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{}",
+        "draft": 0.29,
+        "historicalProfile": "legacy-v1",
+        "sourceArtisticAdaptation": "Gislinge 12th-century hull"
+      },
+      "cargo": {
+        "stock": {},
+        "kinds": [],
+        "meshes": [],
+        "stockSignature": "{}"
+      }
+    },
+    {
+      "preset": "stone",
+      "profile": "legacy-v1",
+      "transport": "river",
+      "time": 0,
+      "moving": false,
+      "pureUpdates": true,
+      "caravan": {
+        "id": "same-visit",
+        "x": 6,
+        "y": 5,
+        "phase": "arriving",
+        "route": [
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "routeIndex": 1,
+        "stock": {
+          "stone": 3
+        }
+      },
+      "actors": [],
+      "boat": {
+        "riverCraft": true,
+        "tradeId": "same-visit",
+        "detailLoaded": true,
+        "loweredRig": false,
+        "stockSignature": "{\"stone\":3}",
+        "draft": 0.29,
+        "historicalProfile": "legacy-v1",
+        "sourceArtisticAdaptation": "Gislinge 12th-century hull"
+      },
+      "cargo": {
+        "stock": {
+          "stone": 3
+        },
+        "kinds": [
+          "stone"
+        ],
+        "meshes": [
+          {
+            "name": "cargo-stone",
+            "goods": {
+              "kind": "stone",
+              "x": -0.23399999999999999,
+              "y": 0.2,
+              "z": 0,
+              "layer": 0
+            },
+            "enabled": true,
+            "visible": true,
+            "position": [
+              -0.23399999999999999,
+              0.2,
+              0
+            ]
+          }
+        ],
+        "stockSignature": "{\"stone\":3}"
+      }
+    }
+  ],
+  "logs": []
+}

@@ -1,0 +1,321 @@
+TAP version 13
+# Subtest: barley needs actual spring labour; summer grows only seeded area with canal water
+ok 1 - barley needs actual spring labour; summer grows only seeded area with canal water
+  ---
+  duration_ms: 117.569083
+  type: 'test'
+  ...
+# Subtest: harvest is finite, goes into worker cargo only in autumn, and uncollected barley spoils
+ok 2 - harvest is finite, goes into worker cargo only in autumn, and uncollected barley spoils
+  ---
+  duration_ms: 84.005166
+  type: 'test'
+  ...
+# Subtest: workers can be pinned to a building; children cannot; pin survives saving and construction competition
+ok 3 - workers can be pinned to a building; children cannot; pin survives saving and construction competition
+  ---
+  duration_ms: 89.745875
+  type: 'test'
+  ...
+# Subtest: legacy migration retains people, carried goods and pantry; crop state survives deterministic reload
+ok 4 - legacy migration retains people, carried goods and pantry; crop state survives deterministic reload
+  ---
+  duration_ms: 70.50675
+  type: 'test'
+  ...
+# Subtest: cats and mice inhabit storage yards, move and rest without entering water or buildings
+ok 5 - cats and mice inhabit storage yards, move and rest without entering water or buildings
+  ---
+  duration_ms: 90.171917
+  type: 'test'
+  ...
+# Subtest: actual residents sow, harvest once and deliver finite autumn crop to storage
+ok 6 - actual residents sow, harvest once and deliver finite autumn crop to storage
+  ---
+  duration_ms: 261.30775
+  type: 'test'
+  ...
+# Subtest: an empty workforce never seeds a field; unharvested crop spoils on winter boundary
+ok 7 - an empty workforce never seeds a field; unharvested crop spoils on winter boundary
+  ---
+  duration_ms: 99.965041
+  type: 'test'
+  ...
+# Subtest: pins wait for carried cargo, survive clinic trips and cannot exceed building capacity
+ok 8 - pins wait for carried cargo, survive clinic trips and cannot exceed building capacity
+  ---
+  duration_ms: 87.411875
+  type: 'test'
+  ...
+# Subtest: actual v11 autumn city retains in-flight loads and home food, grants transitional harvest only once
+ok 9 - actual v11 autumn city retains in-flight loads and home food, grants transitional harvest only once
+  ---
+  duration_ms: 99.905208
+  type: 'test'
+  ...
+# Subtest: automatic sowers move to other jobs immediately even when advancing a long time step
+ok 10 - automatic sowers move to other jobs immediately even when advancing a long time step
+  ---
+  duration_ms: 55.548208
+  type: 'test'
+  ...
+# Subtest: canal geometry reuses one derived result across unrelated construction and invalidates actual inputs
+ok 11 - canal geometry reuses one derived result across unrelated construction and invalidates actual inputs
+  ---
+  duration_ms: 188.193459
+  type: 'test'
+  ...
+# Subtest: lake inlet enters the actual organic water contour at the same level
+ok 12 - lake inlet enters the actual organic water contour at the same level
+  ---
+  duration_ms: 61.837834
+  type: 'test'
+  ...
+# Subtest: L/T junction is one closed continuous water footprint without arm caps or holes
+ok 13 - L/T junction is one closed continuous water footprint without arm caps or holes
+  ---
+  duration_ms: 64.834833
+  type: 'test'
+  ...
+# Subtest: unfinished disconnection has no water and decorative banks open at mouths only
+ok 14 - unfinished disconnection has no water and decorative banks open at mouths only
+  ---
+  duration_ms: 41.9975
+  type: 'test'
+  ...
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# Subtest: actual barley GLB batches 64 grounded clumps with shared atlas, alpha cutouts and reflected winding
+ok 15 - actual barley GLB batches 64 grounded clumps with shared atlas, alpha cutouts and reflected winding
+  ---
+  duration_ms: 31.104625
+  type: 'test'
+  ...
+# Subtest: whole rotated barley clumps avoid real river and rounded saved-lake shore, including triangle interiors
+ok 16 - whole rotated barley clumps avoid real river and rounded saved-lake shore, including triangle interiors
+  ---
+  duration_ms: 42.750292
+  type: 'test'
+  ...
+# Subtest: crop state alone controls empty fields, early sprouts, standing harvest loss and construction
+ok 17 - crop state alone controls empty fields, early sprouts, standing harvest loss and construction
+  ---
+  duration_ms: 6.552792
+  type: 'test'
+  ...
+# Subtest: adapter loads barley once, removes only old standing stalks and rebuilds on crop stages rather than workers or frames
+ok 18 - adapter loads barley once, removes only old standing stalks and rebuilds on crop stages rather than workers or frames
+  ---
+  duration_ms: 24.395125
+  type: 'test'
+  ...
+# Subtest: optional barley load failure keeps the existing standing crop and empty field behavior intact
+ok 19 - optional barley load failure keeps the existing standing crop and empty field behavior intact
+  ---
+  duration_ms: 49.455125
+  type: 'test'
+  ...
+# Subtest: seven crop species build single material batches with real wheat geometry and unchanged harvest state
+ok 20 - seven crop species build single material batches with real wheat geometry and unchanged harvest state
+  ---
+  duration_ms: 80.996084
+  type: 'test'
+  ...
+# Subtest: household gardens batch ten plants and preserve old simulation data
+ok 21 - household gardens batch ten plants and preserve old simulation data
+  ---
+  duration_ms: 10.141042
+  type: 'test'
+  ...
+# Subtest: house gardens preserve shared courtyard templates and rebuild only their own rotated or moved beds
+ok 22 - house gardens preserve shared courtyard templates and rebuild only their own rotated or moved beds
+  ---
+  duration_ms: 46.102
+  type: 'test'
+  ...
+# Subtest: starting field keeps its dry middle and over half the plot instead of three narrow rows
+ok 23 - starting field keeps its dry middle and over half the plot instead of three narrow rows
+  ---
+  duration_ms: 398.428875
+  type: 'test'
+  ...
+# Subtest: every quarter turn clips in world space while retaining local vertices and crop heights
+ok 24 - every quarter turn clips in world space while retaining local vertices and crop heights
+  ---
+  duration_ms: 112.871875
+  type: 'test'
+  ...
+# Subtest: organic lakes share their rendered contour; inland fields retain exact geometry and indices
+ok 25 - organic lakes share their rendered contour; inland fields retain exact geometry and indices
+  ---
+  duration_ms: 278.458
+  type: 'test'
+  ...
+# Subtest: river clipping profile exactly follows the current water mesh rows
+ok 26 - river clipping profile exactly follows the current water mesh rows
+  ---
+  duration_ms: 5.741625
+  type: 'test'
+  ...
+# Subtest: adaptive shore triangles share matching GPU vertices while preserving their area and dry interiors
+ok 27 - adaptive shore triangles share matching GPU vertices while preserving their area and dry interiors
+  ---
+  duration_ms: 26.16525
+  type: 'test'
+  ...
+# Subtest: real observed inventory reconciliation roundoff is reported, not called byte-exact
+ok 28 - real observed inventory reconciliation roundoff is reported, not called byte-exact
+  ---
+  duration_ms: 3.057042
+  type: 'test'
+  ...
+# Subtest: cargo, personalities, harvest and aggregate resources require exact numbers even below inventory tolerance
+ok 29 - cargo, personalities, harvest and aggregate resources require exact numbers even below inventory tolerance
+  ---
+  duration_ms: 0.457042
+  type: 'test'
+  ...
+# Subtest: real inventory loss, missing fields and person replacement cannot pass the roundtrip checker
+ok 30 - real inventory loss, missing fields and person replacement cannot pass the roundtrip checker
+  ---
+  duration_ms: 0.554459
+  type: 'test'
+  ...
+# Subtest: key order does not alter saved meaning while exact unchanged state stays exact
+ok 31 - key order does not alter saved meaning while exact unchanged state stays exact
+  ---
+  duration_ms: 0.412416
+  type: 'test'
+  ...
+# Subtest: only completed cardinal chains from the river carry water; cache invalidates on breaks
+ok 32 - only completed cardinal chains from the river carry water; cache invalidates on breaks
+  ---
+  duration_ms: 102.549166
+  type: 'test'
+  ...
+# Subtest: dryland fields require a wet adjacent canal; natural fields survive and dry fields remain saveable
+ok 33 - dryland fields require a wet adjacent canal; natural fields survive and dry fields remain saveable
+  ---
+  duration_ms: 127.357166
+  type: 'test'
+  ...
+# Subtest: workers actually deliver materials and finish canals before water arrives, preserving saves
+ok 34 - workers actually deliver materials and finish canals before water arrives, preserving saves
+  ---
+  duration_ms: 148.144416
+  type: 'test'
+  ...
+# Subtest: old cities preserve residents and cargo; canals without cardinal contact with a source stay dry
+ok 35 - old cities preserve residents and cargo; canals without cardinal contact with a source stay dry
+  ---
+  duration_ms: 52.534834
+  type: 'test'
+  ...
+# Subtest: summer dryland crops stop growing and resume when the river connection returns
+ok 36 - summer dryland crops stop growing and resume when the river connection returns
+  ---
+  duration_ms: 36.470375
+  type: 'test'
+  ...
+# Subtest: canal cancellation refunds reserved and carried goods; demolition cuts downstream water
+ok 37 - canal cancellation refunds reserved and carried goods; demolition cuts downstream water
+  ---
+  duration_ms: 138.882375
+  type: 'test'
+  ...
+# Subtest: field inlet is drawn to the canal without letting a field carry water farther
+ok 38 - field inlet is drawn to the canal without letting a field carry water farther
+  ---
+  duration_ms: 41.47325
+  type: 'test'
+  ...
+# Subtest: canals render below residents with finite coordinates and cross existing roads
+ok 39 - canals render below residents with finite coordinates and cross existing roads
+  ---
+  duration_ms: 76.560792
+  type: 'test'
+  ...
+# Subtest: a road crossing receives a three-plank deck above the finished canal
+ok 40 - a road crossing receives a three-plank deck above the finished canal
+  ---
+  duration_ms: 43.157084
+  type: 'test'
+  ...
+# Subtest: a completed turning canal carries lake water to a desert field without making the field a conduit
+ok 41 - a completed turning canal carries lake water to a desert field without making the field a conduit
+  ---
+  duration_ms: 90.657416
+  type: 'test'
+  ...
+# Subtest: new construction interrupts lake water and a restored complete link resumes crop growth
+ok 42 - new construction interrupts lake water and a restored complete link resumes crop growth
+  ---
+  duration_ms: 34.464375
+  type: 'test'
+  ...
+# Subtest: lake membership changes invalidate derived irrigation without changing saved state or the river
+ok 43 - lake membership changes invalidate derived irrigation without changing saved state or the river
+  ---
+  duration_ms: 59.006583
+  type: 'test'
+  ...
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# BJS - [16:25:55]: Babylon.js v9.31.0 - Null engine
+# Subtest: continuous banks use a common cross-section so no land triangles break through the river
+ok 44 - continuous banks use a common cross-section so no land triangles break through the river
+  ---
+  duration_ms: 156.92575
+  type: 'test'
+  ...
+# Subtest: outside terrain shares every playable rim vertex and stays below the continued river
+ok 45 - outside terrain shares every playable rim vertex and stays below the continued river
+  ---
+  duration_ms: 31.670042
+  type: 'test'
+  ...
+# Subtest: boat pose follows live trade coordinates, lowers the full rig at bridges and preserves stock
+ok 46 - boat pose follows live trade coordinates, lowers the full rig at bridges and preserves stock
+  ---
+  duration_ms: 0.942334
+  type: 'test'
+  ...
+# Subtest: adapted boat is compact and credited, with independently lowerable rig and no external files
+ok 47 - adapted boat is compact and credited, with independently lowerable rig and no external files
+  ---
+  duration_ms: 2.834709
+  type: 'test'
+  ...
+# Subtest: real imported hull has a dry tapered plank deck while retaining the keel and source original
+ok 48 - real imported hull has a dry tapered plank deck while retaining the keel and source original
+  ---
+  duration_ms: 45.11875
+  type: 'test'
+  ...
+# Subtest: real boat detail loads once after the first visit; stock updates keep hull, pause and save stable
+ok 49 - real boat detail loads once after the first visit; stock updates keep hull, pause and save stable
+  ---
+  duration_ms: 86.27275
+  type: 'test'
+  ...
+# Subtest: strict river vessel has a dry cargo floor and never requests the late hull; profile switches stay read-only
+ok 50 - strict river vessel has a dry cargo floor and never requests the late hull; profile switches stay read-only
+  ---
+  duration_ms: 31.065292
+  type: 'test'
+  ...
+1..50
+# tests 50
+# suites 0
+# pass 50
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1149.245209

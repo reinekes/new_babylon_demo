@@ -7,7 +7,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-26';
+const tag='sumer-trade-supplied-20261105-28';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -118,9 +118,9 @@ check+=`\nconst palmToggle=document.createElement('button');palmToggle.textConte
 await writeFile(join(output,'check.js'),check);
 check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);await writeFile(join(output,'check.js'),check);
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
-// Private baseline is the last verified published landscape, including its old
-// scenery rebuild path; shared engine/state/assets remain the current candidate.
-const baselineCommit='9b7107ee2787a5bab0d7df24f3e7c6559f14f8be';
+// Private baseline pins the last verified published landscape. The legacy
+// perf-uncached filename does not imply its published caches are disabled.
+const baselineCommit='a69be485ece6847c018d46ce96288ae6b8aeb181';
 const rewriteLandscape=code=>code.replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
 const baselineVegetationSource=execFileSync('git',['show',baselineCommit+':game3d/valley-vegetation.js'],{cwd:source,encoding:'utf8'}),candidateVegetationSource=await readFile(join(source,'game3d/valley-vegetation.js'),'utf8'),baselineVegetation=rewriteLandscape(baselineVegetationSource),candidateVegetation=rewriteLandscape(candidateVegetationSource);
 await writeFile(join(output,'valley-vegetation-baseline.mjs'),baselineVegetation);await writeFile(join(output,'valley-vegetation-candidate.mjs'),candidateVegetation);
@@ -130,6 +130,8 @@ const instrumentLandscape=code=>{
 };
 const baselineLandscapeSource=execFileSync('git',['show',baselineCommit+':game3d/landscape.js'],{cwd:source,encoding:'utf8'}),candidateLandscapeSource=await readFile(join(source,'game3d/landscape.js'),'utf8'),baselineLandscape=instrumentLandscape(rewriteLandscape(baselineLandscapeSource).replace('./repo/game3d/valley-vegetation.js','./valley-vegetation-baseline.mjs?probe='+tag)),candidateLandscape=instrumentLandscape(rewriteLandscape(candidateLandscapeSource).replace('./repo/game3d/valley-vegetation.js','./valley-vegetation-candidate.mjs?probe='+tag)),sha=code=>createHash('sha256').update(code).digest('hex');
 if(!baselineLandscape.includes('valley-vegetation-baseline.mjs?probe=')||!candidateLandscape.includes('valley-vegetation-candidate.mjs?probe='))throw Error('Vegetation baseline/candidate mapping did not apply');
+// Report actual source capability; the baseline may already contain this cache.
+check=check.replace('grassColorClipCaching:!location.pathname.endsWith("/perf-uncached.html")',`grassColorClipCaching:location.pathname.endsWith('/perf-uncached.html')?${baselineLandscapeSource.includes('applyTerrainAlphaClips')}:${candidateLandscapeSource.includes('applyTerrainAlphaClips')}`);
 await writeFile(join(output,'landscape-candidate.mjs'),candidateLandscape);
 const candidateHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-candidate.mjs?probe=${tag}"`);
 if(candidateHtml===html)throw Error('Missing candidate landscape mapping');
@@ -154,7 +156,10 @@ for(const mode of ['baseline','candidate']){
 app="import {terrainProbe} from './repo/district3d/terrain.js';\nimport {landscapeProbe} from './repo/game3d/landscape.js';\n"+app;app=app.replace('quality:renderer.quality,','quality:renderer.quality,probeHeap:typeof performance.memory==="object"?{usedJSHeapSize:performance.memory.usedJSHeapSize,totalJSHeapSize:performance.memory.totalJSHeapSize,jsHeapSizeLimit:performance.memory.jsHeapSizeLimit}:null,terrainPhases:[...terrainProbe],landscapePhases:[...landscapeProbe],grassBuffers:grassBufferInfo(),');
 app+=`\nexport async function grassGeometryProof(){const m=renderer.landscape.meshes.find(m=>m.name==='soft-riparian-grass');if(!m)return null;const values={position:m.getVerticesData('position'),normal:m.getVerticesData('normal'),color:m.getVerticesData('color'),index:m.getIndices()},out={};for(const [key,array]of Object.entries(values)){const data=key==='index'?new Uint32Array(array):new Float32Array(array),bytes=await crypto.subtle.digest('SHA-256',data);out[key]={length:data.length,sha256:[...new Uint8Array(bytes)].map(n=>n.toString(16).padStart(2,'0')).join('')};}return out;}\n`;
 app+=`\nconst grassBufferIds=new WeakMap();let grassBufferSequence=0;export function grassBufferInfo(){const m=renderer.landscape.meshes.find(m=>m.name==='soft-riparian-grass');return Object.fromEntries(['position','normal','color'].map(kind=>{const buffer=m?.getVertexBuffer(kind)?.getBuffer();if(!buffer)return [kind,null];if(!grassBufferIds.has(buffer))grassBufferIds.set(buffer,++grassBufferSequence);return [kind,grassBufferIds.get(buffer)];}));}\n`;
+app+=`\nexport function riverCargoViewInfo(){const c=state.trade?.caravan,root=renderer.scene?.transformNodes.find(n=>n.metadata?.riverCraft),cargo=(renderer.scene?.meshes||[]).filter(m=>m.metadata?.riverCargo);return {caravan:c?structuredClone(c):null,rootMetadata:root?.metadata||null,rootPosition:root?.position.asArray(),expectedKinds:Object.keys(c?.stock||{}).filter(k=>Number.isFinite(c.stock[k])&&c.stock[k]>0).sort(),actualKinds:cargo.map(m=>m.metadata.goods.kind).sort(),cargo:cargo.map(m=>({name:m.name,enabled:m.isEnabled(),visible:m.isVisible,goods:m.metadata.goods,position:m.position.asArray()}))};}\nexport function focusRiverCraft(){const c=state.trade?.caravan;if(!c||c.transport!=='river')return false;renderer.focusOn(c.x,c.y);renderer.camera.radius=13;renderer.camera.alpha=.7;renderer.camera.beta=1.05;return true;}\n`;
+app=app.replace('proof:tradeProof,deliveries:','proof:tradeProof,riverView:riverCargoViewInfo(),deliveries:');
 await writeFile(join(output,'app-check.js'),app);
+check+=`\nconst riverProofButton=document.createElement('button');riverProofButton.id='river-cargo-proof';riverProofButton.textContent='Показать настоящую лодку и груз';riverProofButton.onclick=()=>{if(out.textContent.startsWith('Замер'))return;app.focusRiverCraft();roadProof.hidden=false;roadProof.textContent=JSON.stringify({river:app.riverCargoViewInfo(),scene:app.sceneInfo()},null,2);};document.querySelector('#measurement').before(riverProofButton);\n`;
 check=check.replace('terrainCutCaching:',`terrainSources:${JSON.stringify(terrainSources)},terrainBaselineCommit:'${baselineCommit}',terrainCutCaching:`);
 check+=`\nconst grassProofButton=document.createElement('button');grassProofButton.id='grass-proof';grassProofButton.textContent='Проверить данные травы';grassProofButton.onclick=async()=>{roadProof.hidden=false;roadProof.textContent=JSON.stringify({grass:await app.grassGeometryProof(),scene:app.sceneInfo()},null,2);};controls.insertBefore(grassProofButton,out);\n`;
 check=`const navigationKey='babylon-perf-navigation-v1';function navigationTrail(){try{return JSON.parse(sessionStorage.getItem(navigationKey)||'[]');}catch{return [];}}function recordNavigation(type,event){const trail=navigationTrail();trail.push({type,persisted:event.persisted,path:location.pathname+location.search,at:Date.now(),heap:typeof performance.memory==='object'?performance.memory.usedJSHeapSize:null});try{sessionStorage.setItem(navigationKey,JSON.stringify(trail.slice(-12)));}catch{}const out=document.querySelector('#navigation-profile');if(out)out.textContent=JSON.stringify({trail:navigationTrail(),visibility:document.visibilityState,hidden:document.hidden});}addEventListener('pagehide',e=>recordNavigation('pagehide',e));addEventListener('pageshow',e=>recordNavigation('pageshow',e));\n`+check;
