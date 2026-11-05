@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-05T21:19:55.480973+00:00",
+  "commit": "346b856d96c9e284cc5d8130ba6cd3018341a7ae",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "41a1758124d9f34c8c951b97a350a2c3ac82c79fb35f5578e2c1943999a26516",
+      "actual": "41a1758124d9f34c8c951b97a350a2c3ac82c79fb35f5578e2c1943999a26516",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "0849c10da6eebb69f8b352779d42005f7dd7cf990c0d9d1cec8e0c3295ad0590",
+      "actual": "0849c10da6eebb69f8b352779d42005f7dd7cf990c0d9d1cec8e0c3295ad0590",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a1d98e1ba9edbe6bdc649a5aaa9a25b5bf758c83ff2ec908c50067c89c310869",
+      "actual": "a1d98e1ba9edbe6bdc649a5aaa9a25b5bf758c83ff2ec908c50067c89c310869",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-stone-deposits-pages-sha.json",
+      "status": 200,
+      "expected": "fb0329fceb1a9fd5602355b705f0a652d5e6c38aeabbd5d1e82704f013891ee7",
+      "actual": "fb0329fceb1a9fd5602355b705f0a652d5e6c38aeabbd5d1e82704f013891ee7",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-05.md",
+      "status": 200,
+      "expected": "e5e55207cf83949f94c5cff919c41e6f926aa08628db61c9c99bdc340873c3f2",
+      "actual": "e5e55207cf83949f94c5cff919c41e6f926aa08628db61c9c99bdc340873c3f2",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "50a4c018dc88f3dcfd6a3829ad6217d5a2bd438ac8592865619a6fd77a12c971",
+      "actual": "50a4c018dc88f3dcfd6a3829ad6217d5a2bd438ac8592865619a6fd77a12c971",
+      "match": true
+    },
+    {
+      "path": "forest-stock.js",
+      "status": 200,
+      "expected": "35b8fcef3b5be2172fdf843ece0703e6134e4bc0f112c3a80161505986401aca",
+      "actual": "35b8fcef3b5be2172fdf843ece0703e6134e4bc0f112c3a80161505986401aca",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "537c51eb65e6fb0c21a2b83dd6015d9aa24aee39abdb9c729906449822ba0d31",
+      "actual": "537c51eb65e6fb0c21a2b83dd6015d9aa24aee39abdb9c729906449822ba0d31",
+      "match": true
+    },
+    {
+      "path": "labor-life.js",
+      "status": 200,
+      "expected": "872a1d1df523b4e6f63e9e9f673cae9e5774440abbe36bfdb380b92aaad48756",
+      "actual": "872a1d1df523b4e6f63e9e9f673cae9e5774440abbe36bfdb380b92aaad48756",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "3dbee931e029c0a39ed85b25f459b9d35aeef51cb3b942bb526ef7ef790ddc6f",
+      "actual": "3dbee931e029c0a39ed85b25f459b9d35aeef51cb3b942bb526ef7ef790ddc6f",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ec247bb709c04b1e5897ee680f246e528ab296d07626997a63e32eb913c63768",
+      "actual": "ec247bb709c04b1e5897ee680f246e528ab296d07626997a63e32eb913c63768",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "d4ae44610f8f215784f79ac26e789e4a83168c3e57a75c4daf5c8452820dc374",
+      "actual": "d4ae44610f8f215784f79ac26e789e4a83168c3e57a75c4daf5c8452820dc374",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "c4763325120d9279679582491cc57e39208e982a0fe5b0b257bbb961b0c03561",
+      "actual": "c4763325120d9279679582491cc57e39208e982a0fe5b0b257bbb961b0c03561",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-stone-deposits.md",
+      "status": 200,
+      "expected": "c3d8a37da11153fb82bbb8874d22e1fe5e9d8fa12f8b5202662cffc0bbbfd08b",
+      "actual": "c3d8a37da11153fb82bbb8874d22e1fe5e9d8fa12f8b5202662cffc0bbbfd08b",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "c84cc94be539f4daf0c8e8ae8cc2481736fbeb341ad791f719b870c72ae6f6c6",
+      "actual": "c84cc94be539f4daf0c8e8ae8cc2481736fbeb341ad791f719b870c72ae6f6c6",
+      "match": true
+    },
+    {
+      "path": "tests/forest-stock.test.js",
+      "status": 200,
+      "expected": "d3fb6d46293ea2a7f2d9d1e525fe43240167e185f4d2ca812082a1b2e4bc839e",
+      "actual": "d3fb6d46293ea2a7f2d9d1e525fe43240167e185f4d2ca812082a1b2e4bc839e",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "14bacb56b0d8eee5f18230c3c3b220839ff7ac5672d0c019c8ec2bbd6ff91cc5",
+      "actual": "14bacb56b0d8eee5f18230c3c3b220839ff7ac5672d0c019c8ec2bbd6ff91cc5",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
