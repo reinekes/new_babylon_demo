@@ -54,11 +54,19 @@ export function triggerTestMiracleScene(state,kind){
 export function grantTestResources(state,key='all'){
  const reason=testToolsReason(state);if(reason)return denied(reason);
  if(key!=='all'&&!Object.hasOwn(RESOURCE_NAMES,key))return denied('Неизвестный ресурс');
- const store=stockStores(state)[0];if(!store)return {ok:false,reason:'Нет места для тестовых запасов'};
+ const stores=stockStores(state),store=stores[0];if(!store)return {ok:false,reason:'Нет места для тестовых запасов'};
  syncInventory(state);const added={};
  for(const resource of key==='all'?Object.keys(RESOURCE_NAMES):[key]){
   const amount=Math.min(1000,Math.max(0,1e9-state.resources[resource]));
-  if(MATERIALS.includes(resource))added[resource]=putStock(state,buildingKey(store),resource,amount,{overflow:true});
+  if(resource==='food'){
+   // A debug grant should provision real stores on both banks. Households
+   // still need a route and must physically carry the food home.
+   let remaining=amount;added.food=0;
+   for(let i=0;i<stores.length&&remaining>0;i++){
+    const share=Math.min(remaining,Math.ceil(remaining/(stores.length-i))),accepted=putStock(state,buildingKey(stores[i]),'food',share,{overflow:true});
+    remaining-=accepted;added.food+=accepted;
+   }
+  }else if(MATERIALS.includes(resource))added[resource]=putStock(state,buildingKey(store),resource,amount,{overflow:true});
   else{state.resources[resource]+=amount;added[resource]=amount;}
  }
  return {ok:true,added};

@@ -18,3 +18,10 @@ test('city overview displays specialized professions and filters them while keep
  assert.deepEqual(filterCitizens(s,{role:'potter'}).map(p=>p.id),[c.id]);assert.ok(filterCitizens(s,{role:'production'}).includes(c));
  const html=cityToolsHTML(s,{tab:'citizens',filter:{role:'potter'}});assert.match(html,/Гончар/);assert.match(html,/Найдено: 1/);assert.match(html,new RegExp(`data-city-citizen="${c.id}"`));
 });
+test('the building card can prepare an adult for its recommended speciality',async()=>{
+ const {renderStaffing}=await import('../ui-professions.js'),{createGame}=await import('../engine.js');
+ const s=createGame({start:'established'}),b={type:'pottery',x:8,y:10,level:1},c=s.citizens.find(p=>p.age>=16);
+ const before=JSON.stringify(s),html=renderStaffing(s,b,{citizenId:c.id});
+ assert.match(html,/data-staff-person="8,10"/);assert.match(html,/<optgroup label="Для этой постройки">\s*<option value="potter" selected>/);
+ assert.match(html,/data-staff-inspire="8,10"/);assert.match(html,/data-staff-assign="8,10"/);assert.equal(JSON.stringify(s),before);
+});

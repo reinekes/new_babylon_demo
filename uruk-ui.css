@@ -240,3 +240,23 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 .uruk-ui .city-tools-workshop[data-staffing=partial],.uruk-ui .city-tools-staffing-legend [data-staffing=partial]{background:#493c27!important;color:#f3ddb3!important}
 .uruk-ui .city-tools-workshop[data-staffing=full],.uruk-ui .city-tools-staffing-legend [data-staffing=full]{background:#2c382a!important;color:#dae5c1!important}
 .uruk-ui .city-tools-workshop[data-staffing=matched],.uruk-ui .city-tools-staffing-legend [data-staffing=matched]{background:#29394a!important;color:#d5e2ee!important}
+
+/* The live count and calendar keep their original nodes and update together. */
+.uruk-header-identity{min-width:0;display:flex;flex-direction:column;gap:0}
+.uruk-header-population.citizens{position:static;display:flex;align-items:center;gap:6px;padding:0 0 0 4px;border:0;color:var(--ink);line-height:1;white-space:nowrap}
+.uruk-header-population .resource-icon{color:#d4aa71;font-size:15px}
+.uruk-header-population strong{font:600 17px/1.1 'Golos Text',sans-serif;color:#fff0ce;font-variant-numeric:tabular-nums}
+.uruk-header-population small{display:inline;margin-left:4px;color:#d6c2a4;font-size:9px;letter-spacing:.06em}
+.uruk-header-population .divider{height:10px;margin:0 2px}
+.uruk-header-population #happiness{font-size:10px;color:#d6c2a4}
+.uruk-header-clock .season-track{display:flex;gap:3px;margin-top:3px;width:100%;max-width:175px}
+.uruk-header-clock .calendar-month{gap:2px}
+.uruk-header-clock .calendar-month b{color:#d8c4a3}
+.uruk-header-clock .calendar-month.current b{color:#fff2cb}
+.uruk-header-clock .calendar-month.current i::after{background:#fff2cb}
+@media(max-width:650px){.uruk-header-population strong{font-size:13px}.uruk-header-population small{font-size:8px}.uruk-header-population .resource-icon,.uruk-header-population .divider,.uruk-header-population #happiness{display:none}.uruk-header-clock .season-track{gap:2px;max-width:145px;margin-top:1px}.uruk-header-clock .calendar-month b{font-size:6px}.uruk-header-clock .calendar-month:nth-child(3n){margin-right:2px}}
+.staff-preparation{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.staff-preparation summary{cursor:pointer;font-weight:600}
+.staff-preparation button{margin:6px 6px 4px 0}
+.person-work-link{color:inherit;font-weight:600;text-underline-offset:3px}
+.uruk-ui .person-work-link{color:#f3cd91}

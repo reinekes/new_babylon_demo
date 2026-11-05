@@ -1,3 +1,4 @@
+import {calendarRateFor} from './calendar.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
 import {isOperational,outputMultiplier} from './definitions.js';
@@ -13,7 +14,7 @@ export const seedReserve=s=>s.foodPlan?.protectSeeds===false?0:Math.min(s.resour
 export const availableFood=s=>Math.max(0,s.resources.food-seedReserve(s));
 export function setSeedProtection(s,value){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};if(typeof value!=='boolean')return {ok:false,reason:'Неверное правило'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши событие'};initializeFoodPlan(s);s.foodPlan.protectSeeds=value;s.news.unshift({title:value?'Семена защищены':'Семенной резерв открыт',text:value?'Часть складской еды снова сохраняется для посева.':'Семена разрешено съесть или продать. Следующему посеву может не хватить зерна.',kind:value?'good':'bad',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);return {ok:true};}
 export function foodForecast(s,{includeCrops=true}={}){
- const time=s.simTime||0;let harvestAt=Math.floor(time/180)*180+90;if(harvestAt<=time+1e-7)harvestAt+=180;const secondsToHarvest=harvestAt-time;
+ const time=s.simTime||0;let harvestAt=Math.floor(time/180)*180+90;if(harvestAt<=time+1e-7)harvestAt+=180;if(calendarRateFor(s)!==1)harvestAt=time+((s.season<2?2-s.season:6-s.season)*45-s.seasonElapsed)/calendarRateFor(s);const secondsToHarvest=harvestAt-time;
  const daily=s.citizens.reduce((n,c)=>n+mealRation(c),0);let meals=0;for(let at=30+Math.floor((time-30)/60+1)*60;at<=harvestAt+1e-7;at+=60)meals++;
  const outstanding=isDinnerTime(time)?s.citizens.reduce((n,c)=>n+Math.max(0,mealRation(c)-(c.mealDay===mealCycle(time)?c.mealEaten:0)),0):0;
  const homes=s.buildings.reduce((n,b)=>n+homeMealFood(b),0),inTransit=s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(!c.saleJob?(c.cargo?.food||0)+(c.cargo?.milk||0)*.5:0),0),reserve=seedReserve(s),ready=availableFood(s)+(s.resources.milk||0)*.5+homes+inTransit+s.buildings.reduce((n,b)=>n+(b.workshopStock?.output?.food||0)+(b.workshopStock?.output?.milk||0)*.5,0);

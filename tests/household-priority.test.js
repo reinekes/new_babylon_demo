@@ -37,6 +37,17 @@ function childrenCity(isolated=false){
  for(const b of s.buildings.filter(b=>b.type==='house')){b.water=100;b.waterDelivered=100;b.pantry=b.x===8?10:0;b.pantryDelivered=b.pantry;}
  invalidateAssignments(s);syncCitizens(s);return {s,adult,child,target:child.home};
 }
+test('test food reaches real stores on both banks and an isolated adult carries it home',async()=>{
+ const {grantTestResources}=await import('../test-tools.js'),{s,child,target}=childrenCity(true);
+ const store={type:'granary',x:23,y:8,level:1};s.buildings.push(store);
+ Object.assign(child,{age:20,phase:'home',role:'builder',x:22.5,y:8.5,work:null,site:null});invalidateAssignments(s);syncCitizens(s);
+ const before=s.resources.food,home=s.buildings.find(b=>`${b.x},${b.y}`===target);
+ assert.deepEqual(grantTestResources(s,'food'),{ok:true,added:{food:1000}});
+ assert.equal(s.resources.food,before+1000);assert.ok(store.stock?.food>0,'food must reach the actual local warehouse');
+ assert.equal(home.pantry,0,'grant does not teleport food into the house');let carried=false;
+ for(let i=0;i<650;i++){s.event=null;advanceTime(s,.1);carried ||= child.store==='23,8'&&child.pantryFood>0;}
+ assert.ok(carried,'the adult physically carries groceries from their bank');assert.ok(home.pantryDelivered>0);assert.equal(child.missedMeals,0);assert.ok(decode(encode(s)));
+});
 test('an adult physically buys and delivers food to a child-only neighboring home, then returns to their own home',async()=>{
  const {household}=await import('../households.js');const {s,adult,child,target}=childrenCity();const b=s.buildings.find(b=>`${b.x},${b.y}`===target);let carried=false,returned=false;
  for(let i=0;i<650;i++){s.event=null;advanceTime(s,.1);if(adult.pantryTarget===target&&adult.pantryFood>0){carried=true;assert.equal(household(s,b).inTransit,adult.pantryFood);assert.equal(household(s,s.buildings[0]).inTransit,0);}if(carried&&!adult.pantryTrip&&adult.phase==='home')returned=true;if(i%20===0)assert.ok(decode(encode(s)),`neighbor save ${i}`);}

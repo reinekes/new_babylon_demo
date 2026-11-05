@@ -1,4 +1,5 @@
 import {initializeCatDiscovery,validateCatDiscovery,miraclePrice} from './miracle-discovery.js';
+import {calendarRateFor,DAYS_PER_MONTH} from './calendar.js';
 import {initializeCatFishing,validateCatFishing,usesCatDiscovery} from './cat-fishing-ledger.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {legacyScenario,validateScenario,isStrictSumer} from './scenario-profiles.js';
@@ -176,7 +177,7 @@ function settleSeason(s){
  if(!s.event&&!s.funeral&&!s.festival&&s.tick>=6&&s.season===2){const events=['riverGift','potterVisit','wellRepair','harvestThanks','storyteller'];s.event=createCityEvent(s,events[(s.year-2)%events.length]);}
  syncCitizens(s);snapshotLifeAnalytics(s);check(s);
 }
-export function advanceTime(s,seconds,{calendarRate=1}={}){
+export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
@@ -184,12 +185,12 @@ export function advanceTime(s,seconds,{calendarRate=1}={}){
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
   if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
-  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate),worked=advanceWorkers(s,dt,{stopForCeremony:true});syncSacredUnlocks(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
   if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
-export function advanceSeason(s){return advanceTime(s,45-s.seasonElapsed)>0;}
+export function advanceSeason(s){return advanceTime(s,(45-s.seasonElapsed)/calendarRateFor(s))>0;}
 export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
  if(s.miracleCelebration)return {ok:false,reason:miracleCelebrationReason(s)};
@@ -266,7 +267,8 @@ export function decode(raw){
   const integer=(v,min=0,max=1e6)=>Number.isInteger(v)&&v>=min&&v<=max;
   if(!integer(s.tick)||!integer(s.year,1)||s.year!==1+Math.floor(s.tick/4)||s.season!==s.tick%4||!integer(s.population)||!integer(s.capacity)||!finite(s.happiness,0,100))return null;
   for(const k of Object.keys(emptyResources()))if(!finite(s.resources?.[k])||!finite(s.delivered?.[k]))return null;
-  if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||!finite(s.calendarOffset??0)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed+(s.calendarOffset||0)))>.001||!integer(s.deliveries))return null;
+ if(s.calendarDaysPerMonth!==undefined&&s.calendarDaysPerMonth!==DAYS_PER_MONTH)return null;
+ if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||!finite(s.calendarOffset??0)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed+(s.calendarOffset||0)))>.001||!integer(s.deliveries))return null;
   if(!Array.isArray(s.buildings)||s.buildings.length>worldWidth(s)*worldHeight(s))return null;
   if(!oldInventory&&!validateTrade(s))return null;
   if(!validateWorld(s)||!Number.isInteger(s.rngState)||s.rngState<0||s.rngState>4294967295||!Array.isArray(s.roads)||s.roads.length>worldWidth(s)*worldHeight(s)*4)return null;
