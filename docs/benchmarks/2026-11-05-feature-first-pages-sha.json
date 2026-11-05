@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-05T13:26:20.927230+00:00",
+  "commit": "c8e85e46849eea89582ed6da4d0f0a0d5cd15927",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "acce0a5a23072a941acd111701befc69d7c0a738dbf74e539c64b5161b43aace",
+      "actual": "acce0a5a23072a941acd111701befc69d7c0a738dbf74e539c64b5161b43aace",
+      "match": true
+    },
+    {
+      "path": "docs/ASSET_NEEDS_2026-11-05.md",
+      "status": 200,
+      "expected": "4073314b1c63c9bee3eaa6d79f77c5f6b751bd5573ff908e4984ae684f61f13c",
+      "actual": "4073314b1c63c9bee3eaa6d79f77c5f6b751bd5573ff908e4984ae684f61f13c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "e13f584188c8077175e7993356244b4bb80827bbf9fb6e746608d31890b4a98c",
+      "actual": "e13f584188c8077175e7993356244b4bb80827bbf9fb6e746608d31890b4a98c",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "9304834253e61d92638d48f319149dc78366d2de831cdf908679ed9d2a0e7648",
+      "actual": "9304834253e61d92638d48f319149dc78366d2de831cdf908679ed9d2a0e7648",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "fde77eb95a60d38e65477e54c981616d4833880d6005e1c4328eefe8349dc875",
+      "actual": "fde77eb95a60d38e65477e54c981616d4833880d6005e1c4328eefe8349dc875",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-feature-first-order.md",
+      "status": 200,
+      "expected": "88c2f25b6134873ab0af956bd71667f06d59027ea907a74e1464eb7c6a8124f3",
+      "actual": "88c2f25b6134873ab0af956bd71667f06d59027ea907a74e1464eb7c6a8124f3",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4a106acd09fa91b65df78092641a0b0670f260491084777481ef78ac8fc04401",
+      "actual": "4a106acd09fa91b65df78092641a0b0670f260491084777481ef78ac8fc04401",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
