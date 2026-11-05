@@ -1,6 +1,6 @@
 {
   "date": "2026-11-05",
-  "status": "verified-candidate-not-yet-published",
+  "status": "published-and-verified",
   "baselineCommit": "9b7107ee2787a5bab0d7df24f3e7c6559f14f8be",
   "baselineLandscapeSHA256": "21b01902acce5dceb896d0ae9e9ecdb21601cb1043733bd55b00b1d4e07694d7",
   "candidateLandscapeSHA256": "bacf3a588b8e31fd866cc43f907dcda93b0448c23c19f4ac847c37704b9afdce",
@@ -41029,7 +41029,8 @@
     "JS-heap numbers are browser estimates, not RSS/VRAM, and do not prove a leak.",
     "Initial phase arrays are copied in probe26; phase0/sceneStart cannot include later appended events.",
     "Normals are still recomputed where road-mask index contents change; only unchanged position buffer retained.",
-    "Other long frames persist; P0/fullroadmap remain open."
+    "Other long frames persist; P0/fullroadmap remain open.",
+    "Preliminary probe25 did not record initial visibility; visible/hidden:false was observed only after the failed run. Only primary probe26 records both start/end visibility."
   ],
   "preliminaryProbeModules": {
     "baseline": {
@@ -41050,6 +41051,10 @@
     "nodeRoadmapTests": 4,
     "loadingSnapshotTests": 5,
     "review": "no actionable P1/P2",
-    "publication": "pending"
+    "publication": {
+      "candidateCommit": "ec83337183c2196ecc7dc1cdaa12664e5ce44ceb",
+      "pagesRun": 42015353157,
+      "changedFilesSHA256": "19/19 matched at candidate publication"
+    }
   }
 }

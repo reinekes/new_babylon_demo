@@ -3,7 +3,7 @@ date: 2026-11-05
 type: progress
 release: grass-color-refresh-20261105-1
 commit: 9a45596b49c348ba117266736a3d83b731c1d2b2
-publication: pending
+publication: recorded
 groups: performance
 completed: -
 source: docs/PERF_GRASS_COLOR_REFRESH_2026-11-05.md
@@ -15,4 +15,4 @@ source: docs/PERF_GRASS_COLOR_REFRESH_2026-11-05.md
 28целевых PASS/ревью безP1P2.4отдельныхвкладки80с4×/200→229/129зданий/торговля/дорога/save/0GPUошибок/две4SHAравны. CPUсреза41.9/41.7→0.9/0.9мс,FPS41.49→41.15/53.71→53.42безподтверждённогоприроста;1499Node/66models/6Python/4roadmapNode/5loadingtargets PASS,итоговое ревью безP1P2. Предварительные41.45→36.31→контроль4.43FPS сохранены;причинапровала не установлена/BFCacheнеподтверждён/P0 открыт.
 
 ### Публикация
-Ожидает финальных проверок.84задачи открыты.
+Код9a45596/кандидатec83337 опубликованы;Pages42015353157 build/deploy/report success,19/19SHA256. Снимок docs/versions/2026-11-05-08.md.84задачи/P0 открыты.

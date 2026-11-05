@@ -1,0 +1,142 @@
+{
+  "at": "2026-11-05T11:02:57.696945+00:00",
+  "commit": "ec83337183c2196ecc7dc1cdaa12664e5ce44ceb",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3c15a4506d8635f539345413659c8dc0fd045ab149483fa0f41b09f7b4a1bed2",
+      "actual": "3c15a4506d8635f539345413659c8dc0fd045ab149483fa0f41b09f7b4a1bed2",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "ac061d6afb98fcff10f15906e5839196008f250e2dd67d88d44f1c5361385922",
+      "actual": "ac061d6afb98fcff10f15906e5839196008f250e2dd67d88d44f1c5361385922",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "132875040d7e73b9ccca4420717684398cb30120e3b4bd9c78afa09931aab95e",
+      "actual": "132875040d7e73b9ccca4420717684398cb30120e3b4bd9c78afa09931aab95e",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_GRASS_COLOR_REFRESH_2026-11-05.md",
+      "status": 200,
+      "expected": "e9a67847802d3e6f73bf721dda00d83f1a8bb9f3c9b54ffb5a04b4fc2f9cff0e",
+      "actual": "e9a67847802d3e6f73bf721dda00d83f1a8bb9f3c9b54ffb5a04b4fc2f9cff0e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-grass-color-refresh-close.jpg",
+      "status": 200,
+      "expected": "a86257d4e0afcdf19cfc870a3b83eb2506d9baed1d2ffaa4a5c8472293b86522",
+      "actual": "a86257d4e0afcdf19cfc870a3b83eb2506d9baed1d2ffaa4a5c8472293b86522",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-grass-color-refresh.json",
+      "status": 200,
+      "expected": "a893b92230ee90c184514a08eb5497650786d3a33d49b4f592f81d2b4c53c9f3",
+      "actual": "a893b92230ee90c184514a08eb5497650786d3a33d49b4f592f81d2b4c53c9f3",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "8ad6fb03c54780150f5c32050aed7c097e42213e31f2dc3ca67c43b607f1d15b",
+      "actual": "8ad6fb03c54780150f5c32050aed7c097e42213e31f2dc3ca67c43b607f1d15b",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "bacf3a588b8e31fd866cc43f907dcda93b0448c23c19f4ac847c37704b9afdce",
+      "actual": "bacf3a588b8e31fd866cc43f907dcda93b0448c23c19f4ac847c37704b9afdce",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "1623e74cd0dd050a88a574047e9bb8da1e525f0384f524b3633b26b2d56acacf",
+      "actual": "1623e74cd0dd050a88a574047e9bb8da1e525f0384f524b3633b26b2d56acacf",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3f025852c92233eb81cc4c9a0955769970c5f451b27e33d1efb551e875cb84af",
+      "actual": "3f025852c92233eb81cc4c9a0955769970c5f451b27e33d1efb551e875cb84af",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "9d3625deb5d2f722bb53ba44a2b7a27fcf78007ecf10a3610adbf40c2c83421d",
+      "actual": "9d3625deb5d2f722bb53ba44a2b7a27fcf78007ecf10a3610adbf40c2c83421d",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "f65d122123729110b861b529737dbf2f29682ed6de5b1bff9395ab2d7a75f9ca",
+      "actual": "f65d122123729110b861b529737dbf2f29682ed6de5b1bff9395ab2d7a75f9ca",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "cd71db3a8c5e9c9b2991267586cda98350899f180e871017a77d4a05937e894b",
+      "actual": "cd71db3a8c5e9c9b2991267586cda98350899f180e871017a77d4a05937e894b",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-grass-color-refresh.md",
+      "status": 200,
+      "expected": "1b4e54c4368242278557ba8bf42237508fad0065d99471c19a7b60d09ed9d01b",
+      "actual": "1b4e54c4368242278557ba8bf42237508fad0065d99471c19a7b60d09ed9d01b",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "bc273d6b8265cc6c9b06adad20598c688c03de2288a79ade651bba43401d8935",
+      "actual": "bc273d6b8265cc6c9b06adad20598c688c03de2288a79ade651bba43401d8935",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "5ddd945c084bd27f0448d0961c6fe247903e44085c1c565ab98a76a7ea6811ee",
+      "actual": "5ddd945c084bd27f0448d0961c6fe247903e44085c1c565ab98a76a7ea6811ee",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "b8869359508f10989715263ae6bb4097e3098ee5c9ad48112b7d6a719bf1621f",
+      "actual": "b8869359508f10989715263ae6bb4097e3098ee5c9ad48112b7d6a719bf1621f",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/index.html",
+      "status": 200,
+      "expected": "29d5bcab75f083e067b1739fbd6ef4d8982f2d2fa7ef116ba98c508cd4f5b1e5",
+      "actual": "29d5bcab75f083e067b1739fbd6ef4d8982f2d2fa7ef116ba98c508cd4f5b1e5",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/provenance.json",
+      "status": 200,
+      "expected": "cd73c37e18a3d4fc77c23debbfe446a0183ff026e432ef881bd5dff2677e3d58",
+      "actual": "cd73c37e18a3d4fc77c23debbfe446a0183ff026e432ef881bd5dff2677e3d58",
+      "match": true
+    }
+  ],
+  "matched": 19,
+  "total": 19
+}
