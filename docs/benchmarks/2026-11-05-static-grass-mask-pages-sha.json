@@ -1,0 +1,135 @@
+{
+  "at": "2026-11-05T09:18:19.523284+00:00",
+  "commit": "9a4e9d376ae98c5323a7bfd623535559b945699b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "fd6cf8597229df4d2050e18def901fef908bd9fc3d57af97d3a615c14df569b1",
+      "actual": "fd6cf8597229df4d2050e18def901fef908bd9fc3d57af97d3a615c14df569b1",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "74ce846260706372df641b76add45345447a39e65a786738f0576e8d820fe7f6",
+      "actual": "74ce846260706372df641b76add45345447a39e65a786738f0576e8d820fe7f6",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "68bd5657ec860edc03e358b4c4ac891577eec17e65f2dc70798e140e124bc3c0",
+      "actual": "68bd5657ec860edc03e358b4c4ac891577eec17e65f2dc70798e140e124bc3c0",
+      "match": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "expected": "404b302886621f7c17a874b386ec45dcf325fbaa4f2e5adc0643e76a255edd7b",
+      "actual": "404b302886621f7c17a874b386ec45dcf325fbaa4f2e5adc0643e76a255edd7b",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_STATIC_GRASS_MASK_2026-11-05.md",
+      "status": 200,
+      "expected": "37df040e3220650f4e1a6b06d207fb7bb384fc7f2cf7efd2929aa1fe448bc00c",
+      "actual": "37df040e3220650f4e1a6b06d207fb7bb384fc7f2cf7efd2929aa1fe448bc00c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-static-grass-mask-close.jpg",
+      "status": 200,
+      "expected": "e1f103a406e922ef2de069141cc22024058fe1dddfb8e9f8ab22c0583cc1edb5",
+      "actual": "e1f103a406e922ef2de069141cc22024058fe1dddfb8e9f8ab22c0583cc1edb5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-static-grass-mask.json",
+      "status": 200,
+      "expected": "558ac7e8bf1b32094356494797b1f75c637c5d497631ac8763f27e1bc366b615",
+      "actual": "558ac7e8bf1b32094356494797b1f75c637c5d497631ac8763f27e1bc366b615",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "7c1c2997793c83030afefcf66b4631e16b7d8f556ae2c78f125246a89881e776",
+      "actual": "7c1c2997793c83030afefcf66b4631e16b7d8f556ae2c78f125246a89881e776",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "6a4993d915f0361253fb641a4a48377761138e577bc4e96c6a1b0fa6182934e8",
+      "actual": "6a4993d915f0361253fb641a4a48377761138e577bc4e96c6a1b0fa6182934e8",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c85a05fe3c82fb7a15621826641d4200622cece068803f9f8eb015eae08e86a6",
+      "actual": "c85a05fe3c82fb7a15621826641d4200622cece068803f9f8eb015eae08e86a6",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "d14690bbb7bda00aac4b10e0e39f787596def0a6d0a2d331dcb51b65bc6d85b3",
+      "actual": "d14690bbb7bda00aac4b10e0e39f787596def0a6d0a2d331dcb51b65bc6d85b3",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "8d7e41930782534295a05febb349ecee8e33fad775d9c37a74eb7c912ac6ebbf",
+      "actual": "8d7e41930782534295a05febb349ecee8e33fad775d9c37a74eb7c912ac6ebbf",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-static-grass-mask.md",
+      "status": 200,
+      "expected": "eccf85a362db6e241dc6d21f20db195778c8215670f09db064ef7b7af3b912ec",
+      "actual": "eccf85a362db6e241dc6d21f20db195778c8215670f09db064ef7b7af3b912ec",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d315d03ddc3c898fbd2c45c48db67e8804979da1870f3797ae4cd9b0f8868779",
+      "actual": "d315d03ddc3c898fbd2c45c48db67e8804979da1870f3797ae4cd9b0f8868779",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "80c12968d69c181284888389e961706352f4a640a80a689b20c8737a73df00ca",
+      "actual": "80c12968d69c181284888389e961706352f4a640a80a689b20c8737a73df00ca",
+      "match": true
+    },
+    {
+      "path": "tests/district3d-terrain.test.js",
+      "status": 200,
+      "expected": "564bf1c58ffac134080cc523c53d44072749b90e860abd7bf9901508c5a4e322",
+      "actual": "564bf1c58ffac134080cc523c53d44072749b90e860abd7bf9901508c5a4e322",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/index.html",
+      "status": 200,
+      "expected": "a7f775b30bc84e7c8c6599c62dc92284783ddc8ebd55faa3e64feefa15f10774",
+      "actual": "a7f775b30bc84e7c8c6599c62dc92284783ddc8ebd55faa3e64feefa15f10774",
+      "match": true
+    },
+    {
+      "path": "tools/loading-check/provenance.json",
+      "status": 200,
+      "expected": "3bc97bb42833dd4231efd7d15617e58db1a7acdb20287e6ab01ecb2562eabaec",
+      "actual": "3bc97bb42833dd4231efd7d15617e58db1a7acdb20287e6ab01ecb2562eabaec",
+      "match": true
+    }
+  ],
+  "matched": 18,
+  "total": 18
+}
