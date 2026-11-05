@@ -1,4 +1,4 @@
-import {harvestCallActive,planHarvestAssignments} from './city-labor.js';
+import {activeLaborKind,planLaborWork,laborCandidates,unloadDemand,UNLOAD_PORTERS} from './city-labor.js';
 import {advanceCatDiscovery} from './miracle-discovery.js';
 import {recordFishingCatch,moveFishingCargoToOutput,acceptFishingCargo,discardFishingCargo,reconcileCatFishing} from './cat-fishing-ledger.js';
 import {beginManualGathering,workManualGathering,manualGatheringStillAssigned,releaseManualGathering} from './manual-gathering.js';
@@ -35,7 +35,7 @@ import {advanceFuneral} from './funerals.js';
 import {advanceTradeLogistics,loadSaleCargo} from './trading.js';
 import {ensureRoads,roadSpeed,roadTopologyRevision} from './roads.js';
 import {isComplete,materialsReady,finishConstruction,orderedSites,constructionEntities,workRequired} from './construction.js';
-import {BUILDINGS,buildingKey,capacityOf,outputMultiplier,storageOf,isOperational,MATERIALS,citizenName} from './definitions.js';
+import {BUILDINGS,buildingKey,capacityOf,levelOf,outputMultiplier,storageOf,isOperational,MATERIALS,citizenName} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {onBridge,isDryPoint} from './world.js';
 import {createWalkingNetwork,shortestWalkingPath,nearestWalkingNode} from './navigation.js';
@@ -122,7 +122,7 @@ function siteAccess(s,ctx,c,b){
 export function syncCitizens(s){
  if(s.funeral&&s.funeral.scope!=='family')return;
  initializeBricks(s);initializeArtisans(s);initializeBuildingInventory(s);syncInventory(s);initializeDistricts(s);syncPestSites(s);s.simTime??=s.tick*45;s.citizens??=[];s.deliveries??=0;s.delivered??={food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0};
- const ctx=context(s),cache=caches.get(s),harvestCall=harvestCallActive(s)&&isWorkday(s.simTime),signature=`${cache.signature}/${Number(harvestCall)}/${s.population}/${Number(isWorkday(s.simTime))}/${s.season}:${s.buildings.filter(b=>b.type==='field').map(b=>Number(fieldActive(s,b))).join('')}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${s.district.jobs.map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}:${c.workplace||''}:${c.guardPost||''}`).join(',')}`;
+ const ctx=context(s),cache=caches.get(s),laborKind=isWorkday(s.simTime)?activeLaborKind(s):null,signature=`${cache.signature}/${laborKind||''}/${s.population}/${Number(isWorkday(s.simTime))}/${s.season}:${s.buildings.filter(b=>b.type==='field').map(b=>Number(fieldActive(s,b))).join('')}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}`).join(',')}/${s.district.jobs.map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}:${c.workplace||''}:${c.guardPost||''}`).join(',')}`;
  for(const c of s.citizens)reconcileManualGathering(s,c,ctx);
  if(cache.synced===signature)return;
  // Population is a count; stable IDs are never reused after a death.
@@ -158,11 +158,39 @@ export function syncCitizens(s){
  for(const c of citizens)if((waterBusy(c)||c.clothingTarget!==undefined||c.craftSite||c.districtJob||c.seedField||c.pantryTrip||hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
   locked.add(c.id);if(c.site){c.siteDuty??='carrier';assignments.set(c.id,{site:c.site,sitePort:c.sitePort,store:c.store,siteDuty:c.siteDuty});}
  }
- const labor=harvestCall?planHarvestAssignments(s,citizens,ctx.buildings,{locked,reserved,access:(c,key)=>{
+ const labor=laborKind?planLaborWork(s,laborKind,citizens,ctx.buildings,{locked,reserved,access:(c,key)=>{
   const home=ctx.ports.get(c.home),port=ctx.ports.get(key);
   return home&&port&&routeBetween(s,home.key,port.key,ctx)?closestStore(s,ctx,key):null;
  }}):new Map();
  for(const id of labor.keys())reserved.add(id);
+ const tradeAssignments=new Map();
+ if(laborKind==='unload'){
+  const candidates=laborCandidates(citizens,ctx.buildings,['auto','carrier'],true);
+  const occupied=new Map();
+  for(const c of citizens)if(locked.has(c.id)&&(c.tradeMarket||c.saleMarket)){
+   const key=c.tradeMarket||c.saleMarket;
+   occupied.set(key,(occupied.get(key)||0)+1);
+  }
+  for(const order of unloadDemand(s).orders){
+   const port=ctx.ports.get(order.market);
+   const store=port&&closestStore(s,ctx,order.market);
+   if(!store)continue;
+   let count=occupied.get(order.market)||0;
+   const limit=Math.min(UNLOAD_PORTERS,count+Math.ceil(order.remaining/(4+2*levelOf(port.building))));
+   const ordered=[...candidates].sort((a,b)=>Number(b.tradeJob===order.id)-Number(a.tradeJob===order.id));
+   for(const c of ordered){
+    if(count>=limit)break;
+    if(reserved.has(c.id)||locked.has(c.id))continue;
+    const home=ctx.ports.get(c.home);
+    if(!home||!routeBetween(s,home.key,port.key,ctx))continue;
+    tradeAssignments.set(c.id,{tradeJob:order.id,tradeMarket:order.market,store});
+    reserved.add(c.id);
+    count++;
+   }
+   occupied.set(order.market,count);
+  }
+ }
+
  for(const b of orderedSites(s)){
   const key=buildingKey(b),q=b.construction;
   for(const duty of ['carrier','builder']){
@@ -179,9 +207,8 @@ export function syncCitizens(s){
    }
   }
  }
- const tradeAssignments=new Map();
  const jobsQueue=[...(s.trade?.deliveries||[]).map(q=>({q,sale:false})),...(s.trade?.sales||[]).map(q=>({q,sale:true}))].sort((a,b)=>a.q.id-b.q.id);
- for(const {q,sale} of jobsQueue){if(q.remaining<=0)continue;if(sale&&s.trade.caravan?.id!==q.caravanId)continue;const market=ctx.ports.get(q.market),store=sale&&q.sources?closestStock(s,ctx,q.market,q.resource,{sources:q.sources}):closestStore(s,ctx,q.market);if(!market||!store)continue;
+ for(const {q,sale} of jobsQueue){if(q.remaining<=0)continue;if(!sale&&laborKind==='unload')continue;if(sale&&s.trade.caravan?.id!==q.caravanId)continue;const market=ctx.ports.get(q.market),store=sale&&q.sources?closestStock(s,ctx,q.market,q.resource,{sources:q.sources}):closestStore(s,ctx,q.market);if(!market||!store)continue;
   let assigned=citizens.filter(c=>locked.has(c.id)&&(c.tradeMarket||c.saleMarket)===q.market).length+[...tradeAssignments.values()].filter(a=>(a.tradeMarket||a.saleMarket)===q.market).length;
   for(const c of [...citizens].sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id)){if(assigned>=2)break;if(reserved.has(c.id)||locked.has(c.id)||assignments.has(c.id)||tradeAssignments.has(c.id)||!['auto','carrier'].includes(c.role)||!routeBetween(s,ctx.ports.get(c.home)?.key,market.key,ctx))continue;const home=ctx.buildings.get(c.home);if(c.phase==='home'&&home&&homeMealFood(home)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food'))continue;tradeAssignments.set(c.id,{...sale?{saleJob:q.id,saleMarket:q.market}:{tradeJob:q.id,tradeMarket:q.market},store});assigned++;}
  }
@@ -498,7 +525,7 @@ function prepareCare(s,ctx){
 export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- let elapsed=0,harvest=harvestCallActive(s)&&isWorkday(s.simTime);for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeHarvest=harvestCallActive(s)&&isWorkday(s.simTime);if(activeHarvest!==harvest){harvest=activeHarvest;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);const finished=finishConstruction(s);advancePests(s,dt);advanceCatDiscovery(s,dt);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
+ let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);for(const c of s.citizens)if(!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx);advanceWellbeing(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);const finished=finishConstruction(s);advancePests(s,dt);advanceCatDiscovery(s,dt);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
  const advanced=elapsed>=seconds-1e-8?seconds:elapsed;s.simTime=start+advanced;return advanced;
 }
 // Clinic waiting places are view offsets only: identities, routes and saved

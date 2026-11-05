@@ -1,4 +1,4 @@
-import {harvestDemand} from './city-labor.js';
+import {harvestDemand,unloadDemand} from './city-labor.js';
 import {preparedFisherInspiration,acceptFisherInspiration} from './miracle-discovery.js';
 import {discardFishingOutput} from './cat-fishing-ledger.js';
 import {godhoodInspirationReason,firstBuilderInspiration,acceptGodhoodInspiration} from './godhood.js';
@@ -173,15 +173,23 @@ export function inspireCitizen(s,id,profession){
 
 export function cancelRoadRoute(s,group){if(!Number.isSafeInteger(group)||group<0)return {ok:false,reason:'Неизвестный дорожный маршрут'};const reason=blocked(s);if(reason)return {ok:false,reason};const roads=(s.roads||[]).filter(r=>r.construction?.routeOrder===group);if(!roads.length)return {ok:false,reason:'У маршрута нет незавершённых работ'};for(const r of roads)refundOrder(s,r);rerouteCitizens(s);note(s,'Маршрут отменён','Незавершённые дорожные работы отменены, их материалы возвращены. Готовые участки сохранены.');return {ok:true,count:roads.length};}
 
-export function callHarvestWorkers(s){
+function callCityWorkers(s,kind,hasWork,emptyReason){
  const reason=blocked(s);
  if(reason)return {ok:false,reason};
- if(s.cityLabor?.year===s.year)return {ok:false,reason:'Призыв на жатву уже использован в этом году'};
- if(!harvestDemand(s).fields.length)return {ok:false,reason:'Нет полей, готовых к жатве или обмолоту'};
- s.cityLabor={kind:'harvest',year:s.year,started:s.simTime};
+ if(s.cityLabor?.year===s.year)return {ok:false,reason:'Городской призыв уже использован в этом году'};
+ if(!hasWork(s))return {ok:false,reason:emptyReason};
+ s.cityLabor={kind,year:s.year,started:s.simTime};
  invalidateAssignments(s);
  syncCitizens(s);
  return {ok:true};
+}
+
+export function callHarvestWorkers(s){
+ return callCityWorkers(s,'harvest',state=>harvestDemand(state).fields.length,'Нет полей, готовых к жатве или обмолоту');
+}
+
+export function callUnloadWorkers(s){
+ return callCityWorkers(s,'unload',state=>unloadDemand(state).orders.length,'Нет купленных товаров, ожидающих доставки');
 }
 
 export function assignWorkplace(s,id,key){
