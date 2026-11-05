@@ -1,0 +1,9 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><base href="../../"><title>Sumer 2D comparison</title><style>body{margin:0;background:#241f19;color:#eee0be;font:15px system-ui}h1,p{margin:12px 24px}canvas{width:100%;display:block}</style><h1>2D · прежняя и строгая ветви</h1><p>Слева — прежние города. Справа — Южный Шумер. Сохранения не используются.</p><canvas width="1280" height="1500"></canvas><output id="status">Проверка</output><script type="module">
+import {Renderer} from './renderer.js';import {drawBuilding} from './architecture.js';import {strictScenario,legacyScenario} from './scenario-profiles.js';import {buildingPresentation} from './building-presentation.js';
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),cases=[{type:'ishtarGate',level:1},{type:'shrine',level:3},{type:'ziggurat',level:1},{type:'ziggurat',level:2},{type:'ziggurat',level:3},{type:'house',level:1,starterHut:true},{type:'house',level:1}];
+ctx.fillStyle='#d4c6a7';ctx.fillRect(0,0,1280,1500);
+for(const [i,b]of cases.entries())for(const [j,scenario]of [legacyScenario(),strictScenario()].entries()){
+ const col=i%3,row=Math.floor(i/3),x=col*420+105+j*200,y=row*490+260,state={scenario,citizens:[]},r=Object.create(Renderer.prototype);Object.assign(r,{ctx,s:2,lighting:{night:0},lights:[],point:()=>({x,y})});drawBuilding(r,{...b,x:0,y:0},state,0);ctx.fillStyle='#332a20';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText(buildingPresentation(state,b).name,x,row*490+420);ctx.font='13px system-ui';ctx.fillText(j?'Южный Шумер':'Прежняя',x,row*490+444);ctx.fillText('уровень '+b.level+(b.type==='house'?(b.starterHut?' · стартовый':' · обычный'):''),x,row*490+466);
+}
+document.querySelector('#status').textContent='PASS: 14 силуэтов, обе ветви';
+</script></html>

@@ -1,0 +1,2461 @@
+{
+  "date": "2026-11-05",
+  "productionCommit": "11cf86c1ad99389c108ff2154a2f6d2378110940",
+  "release": "history-acceptance-20261105-1",
+  "scope": "Acceptance of already published profile; no production code change. Fresh isolated presentation and migration checks; existing published four big-city 4x runs retained by reference. Not an FPS acceptance.",
+  "sourceSHA256": {
+    "game3d/house-architecture.js": "93cfb62e1aceff52445169065b17fc5d36f61b28cc4051db1c8a5d8725a3e0af",
+    "game3d/architecture.js": "9ba3e344119730f7c332fad96c983eb4f5dd176740253b425f71b39c083e0eb1",
+    "game3d/buildings.js": "442b81afd8ef7420f20346ebf4c55cd65c8f163fdee49b21b50788f5d9a17a7f",
+    "game3d/caravan.js": "d4a0de69f92297dd6ffffc892f424cd7107ab5eacab29fa2591339f367fe44f3",
+    "game3d/sacred-models.js": "987ffbf2c8e2728fc06f47434f2aa56552782d083dd519ca1a7ab36611e442b1",
+    "map-art.js": "026a97b7b9f35cf554f91fedcf69d24d33856c37b8098df13a6befc128d3d23e",
+    "architecture.js": "933bda83f47e10c814736222ee027364cfcc15d7b5f6beb69b802311efb324cc",
+    "renderer.js": "9b9150774b0058adf4551d094df024a1b1ff3004b939c04baa712c5907e78b2d",
+    "building-presentation.js": "fa0dd6ae07117a647f40270b5fcf0c4ba64260c930695a1e21ae7fd49bff3b12",
+    "scenario-profiles.js": "8ef499f919b2dbda367e99374800948c723d331f5b05cfe6e5a4dd1c06a96563",
+    "new-game.js": "4339b539c789803be97eb4db732025ca3ef38e99515197172dab6f54b0c93e4e",
+    "starter-settlement.js": "dc33b4a4c6e4955ff773ceb66b7e9afb36ddb743e73f28ad3019a3c576cec772",
+    "definitions.js": "163fdb310dab3e2976197b296f6430567e7b869245d010143bd755052f219d17",
+    "tests/sumer-architecture.test.js": "3e6812a8d332536ec5984feb4e06a94d72a8f8a7caee1cc8ba03f8388d920559",
+    "tests/sumer-presentation.test.js": "5ae9a32739dce089016b164d514fbca9df26ec5643b1f4dc1be2ce44199a035b",
+    "tests/scenario-profiles.test.js": "b1e2ec76a1e7542cfa1f6f78879b6190ae8ec4bc7e65ab77bb2eecad368719e9",
+    "tests/new-game-profile.test.js": "83610d599bbb8414f21bb7a7261434ed0efb2d37dd3e8f2b89517086c47ca833",
+    "tests/caravan.test.js": "421240ef42c9717bc1a675b8c402d66db0c8993990a63be65827c5e1fce8ad98",
+    "tools/history-check/2d.html": "9b96acd65ee8f67434775efb872b13ee626bdfcb85fecf4199513caa36c66dc1",
+    "tools/history-check/index.html": "cf77b9effb0fa01fb000f7257f3718766e47990ceb050e353ff975d51b9602b0",
+    "tools/history-check/transport.html": "26d616a0e7397d2ad97839a416d5606ac86b23887c8e1128be5cbb07f91100ba"
+  },
+  "architecture": {
+    "cases": [
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "house",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 1,
+          "starterHut": true
+        },
+        "name": "Первый дом",
+        "capacity": 4,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-1-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-1-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-home-plaster-1-0",
+            "material": "game-home-plaster-1-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ordinary",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 1
+        },
+        "name": "Дом",
+        "capacity": 8,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-1-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-1-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-home-plaster-1-0",
+            "material": "game-home-plaster-1-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ordinary",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 2
+        },
+        "name": "Дом",
+        "capacity": 12,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-2-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "dry-river-grass",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-2-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-game-home-plaster-2-0",
+            "material": "game-home-plaster-2-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-dry-river-grass",
+            "material": "dry-river-grass",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ordinary",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 3
+        },
+        "name": "Дом",
+        "capacity": 16,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-3-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "dry-river-grass",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-3-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-game-home-plaster-3-0",
+            "material": "game-home-plaster-3-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-dry-river-grass",
+            "material": "dry-river-grass",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "shrine",
+        "building": {
+          "type": "shrine",
+          "x": 0,
+          "y": 0,
+          "level": 3
+        },
+        "name": "Святилище",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-fired-brick-facing",
+          "game-door-shadow",
+          "worn-timber",
+          "game-occupied-home",
+          "game-raw-brick-facing",
+          "game-plaster-trim",
+          "bank-stone",
+          "fired-pottery"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-original-shrine-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-game-fired-brick-facing",
+            "material": "game-fired-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-game-door-shadow",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-game-occupied-home",
+            "material": "game-occupied-home",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-game-raw-brick-facing",
+            "material": "game-raw-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-bank-stone",
+            "material": "bank-stone",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-shrine-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-shrine",
+            "material": "worn-timber",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ziggurat",
+        "building": {
+          "type": "ziggurat",
+          "x": 0,
+          "y": 0,
+          "level": 1,
+          "footprint": 2
+        },
+        "name": "Великий зиккурат",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "game-fired-brick-facing",
+          "game-raw-brick-facing",
+          "warm-clay-plaster",
+          "game-door-shadow",
+          "worn-timber",
+          "game-occupied-home",
+          "alluvial-earth"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-original-ziggurat-game-fired-brick-facing",
+            "material": "game-fired-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-raw-brick-facing",
+            "material": "game-raw-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-warm-clay-plaster",
+            "material": "warm-clay-plaster",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-door-shadow",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-occupied-home",
+            "material": "game-occupied-home",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ziggurat",
+        "building": {
+          "type": "ziggurat",
+          "x": 0,
+          "y": 0,
+          "level": 2,
+          "footprint": 2
+        },
+        "name": "Великий зиккурат",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "game-fired-brick-facing",
+          "game-raw-brick-facing",
+          "game-door-shadow",
+          "worn-timber",
+          "game-occupied-home",
+          "alluvial-earth"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-original-ziggurat-game-fired-brick-facing",
+            "material": "game-fired-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-raw-brick-facing",
+            "material": "game-raw-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-door-shadow",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-occupied-home",
+            "material": "game-occupied-home",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ziggurat",
+        "building": {
+          "type": "ziggurat",
+          "x": 0,
+          "y": 0,
+          "level": 3,
+          "footprint": 2
+        },
+        "name": "Великий зиккурат",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "game-fired-brick-facing",
+          "game-raw-brick-facing",
+          "game-door-shadow",
+          "worn-timber",
+          "game-occupied-home",
+          "alluvial-earth"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-original-ziggurat-game-fired-brick-facing",
+            "material": "game-fired-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-raw-brick-facing",
+            "material": "game-raw-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-door-shadow",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-occupied-home",
+            "material": "game-occupied-home",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "selected": "ishtarGate",
+        "building": {
+          "type": "ishtarGate",
+          "x": 0,
+          "y": 0,
+          "level": 1,
+          "footprint": 3
+        },
+        "name": "Врата Инанны",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "game-fired-brick-facing",
+          "game-raw-brick-facing",
+          "game-plaster-trim",
+          "worn-timber",
+          "alluvial-earth"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-sumer-gate-game-fired-brick-facing",
+            "material": "game-fired-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-sumer-gate-game-raw-brick-facing",
+            "material": "game-raw-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-sumer-gate-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-sumer-gate-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-sumer-gate-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "house",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 1,
+          "starterHut": true
+        },
+        "name": "Дом-улей",
+        "capacity": 4,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-1-0",
+          "game-home-interior-shadow",
+          "game-plaster-trim",
+          "worn-timber",
+          "reed-mat",
+          "fired-pottery",
+          "dry-river-grass",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-hut-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-game-home-plaster-1-0",
+            "material": "game-home-plaster-1-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-hut-dry-river-grass",
+            "material": "dry-river-grass",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ordinary",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 1
+        },
+        "name": "Дом",
+        "capacity": 8,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-1-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-1-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-home-plaster-1-0",
+            "material": "game-home-plaster-1-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-1-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ordinary",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 2
+        },
+        "name": "Дом",
+        "capacity": 12,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-2-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "dry-river-grass",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-2-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-game-home-plaster-2-0",
+            "material": "game-home-plaster-2-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-2-dry-river-grass",
+            "material": "dry-river-grass",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ordinary",
+        "building": {
+          "type": "house",
+          "x": 0,
+          "y": 0,
+          "level": 3
+        },
+        "name": "Дом",
+        "capacity": 16,
+        "pure": true,
+        "materials": [
+          "alluvial-earth",
+          "game-home-plaster-3-0",
+          "game-home-interior-shadow",
+          "worn-timber",
+          "reed-mat",
+          "game-plaster-trim",
+          "fired-pottery",
+          "dry-river-grass",
+          "game-door-shadow"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-house-courtyard-3-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-game-home-plaster-3-0",
+            "material": "game-home-plaster-3-0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-game-home-interior-shadow",
+            "material": "game-home-interior-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-reed-mat",
+            "material": "reed-mat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-game-plaster-trim",
+            "material": "game-plaster-trim",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-fired-pottery",
+            "material": "fired-pottery",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-house-courtyard-3-dry-river-grass",
+            "material": "dry-river-grass",
+            "parts": null
+          },
+          {
+            "name": "0,0-roof-access-house",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-0",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-1",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-2",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-home-lamp-3",
+            "material": "game-door-shadow",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "shrine",
+        "building": {
+          "type": "shrine",
+          "x": 0,
+          "y": 0,
+          "level": 3
+        },
+        "name": "Святилище",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "mattoni_ziggurat",
+          "Oro_Ziggurat",
+          "Blu_ziggurat",
+          "material"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-Sacred-sacred-shrine-3-surface-0",
+            "material": "mattoni_ziggurat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-Sacred-sacred-shrine-3-surface-1",
+            "material": "Oro_Ziggurat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-Sacred-sacred-shrine-3-surface-2",
+            "material": "Blu_ziggurat",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-Sacred-sacred-shrine-3-surface-3",
+            "material": "material",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ziggurat",
+        "building": {
+          "type": "ziggurat",
+          "x": 0,
+          "y": 0,
+          "level": 1,
+          "footprint": 2
+        },
+        "name": "Великий зиккурат",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "material_1",
+          "material_0",
+          "material_2",
+          "material_3"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-Sacred-sacred-ziggurat-1-surface-1",
+            "material": "material_1",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-Sacred-sacred-ziggurat-1-surface-0",
+            "material": "material_0",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-Sacred-sacred-ziggurat-1-surface-2",
+            "material": "material_2",
+            "parts": null
+          },
+          {
+            "name": "0,0-game-Sacred-sacred-ziggurat-1-surface-3",
+            "material": "material_3",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ziggurat",
+        "building": {
+          "type": "ziggurat",
+          "x": 0,
+          "y": 0,
+          "level": 2,
+          "footprint": 2
+        },
+        "name": "Великий зиккурат",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "game-fired-brick-facing",
+          "game-raw-brick-facing",
+          "game-door-shadow",
+          "worn-timber",
+          "game-occupied-home",
+          "alluvial-earth"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-original-ziggurat-game-fired-brick-facing",
+            "material": "game-fired-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-raw-brick-facing",
+            "material": "game-raw-brick-facing",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-door-shadow",
+            "material": "game-door-shadow",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-worn-timber",
+            "material": "worn-timber",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-game-occupied-home",
+            "material": "game-occupied-home",
+            "parts": null
+          },
+          {
+            "name": "0,0-original-ziggurat-alluvial-earth",
+            "material": "alluvial-earth",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ziggurat",
+        "building": {
+          "type": "ziggurat",
+          "x": 0,
+          "y": 0,
+          "level": 3,
+          "footprint": 2
+        },
+        "name": "Великий зиккурат",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "lambert4"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-Sacred-sacred-ziggurat-3-surface-0",
+            "material": "lambert4",
+            "parts": null
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "selected": "ishtarGate",
+        "building": {
+          "type": "ishtarGate",
+          "x": 0,
+          "y": 0,
+          "level": 1,
+          "footprint": 3
+        },
+        "name": "Врата Иштар",
+        "capacity": null,
+        "pure": true,
+        "materials": [
+          "uv-map"
+        ],
+        "meshes": [
+          {
+            "name": "0,0-game-Sacred-sacred-ishtar-gate-surface-0",
+            "material": "uv-map",
+            "parts": null
+          }
+        ]
+      }
+    ],
+    "logs": []
+  },
+  "transport": {
+    "cases": [
+      {
+        "profile": "sumer-iii-v1",
+        "transport": "land",
+        "time": 0,
+        "moving": false,
+        "pureUpdates": true,
+        "caravan": {
+          "id": "same-visit",
+          "x": 6,
+          "y": 5,
+          "phase": "arriving",
+          "route": [
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 7,
+              "y": 5
+            }
+          ],
+          "routeIndex": 1,
+          "stock": {
+            "food": 30,
+            "wood": 80,
+            "pottery": 40,
+            "reed": 50
+          }
+        },
+        "actors": [
+          {
+            "kind": "merchant",
+            "phase": 0,
+            "clip": "Walk",
+            "position": [
+              36,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.31,
+            "clip": "Walk",
+            "position": [
+              32.2,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.62,
+            "clip": "Walk",
+            "position": [
+              28.549999999999997,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "transport": "land",
+        "time": 22.350199999988085,
+        "moving": true,
+        "pureUpdates": true,
+        "caravan": {
+          "id": "same-visit",
+          "x": 6.293339999999984,
+          "y": 5,
+          "phase": "arriving",
+          "route": [
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 7,
+              "y": 5
+            }
+          ],
+          "routeIndex": 1,
+          "stock": {
+            "food": 30,
+            "wood": 80,
+            "pottery": 40,
+            "reed": 50
+          }
+        },
+        "actors": [
+          {
+            "kind": "merchant",
+            "phase": 0.6757753625213437,
+            "clip": "Walk",
+            "position": [
+              37.760039999999904,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.9613025640947543,
+            "clip": "Walk",
+            "position": [
+              33.9600399999999,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.27130256409479936,
+            "clip": "Walk",
+            "position": [
+              30.310039999999905,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "transport": "land",
+        "time": 22.783400000005965,
+        "moving": false,
+        "pureUpdates": true,
+        "caravan": {
+          "id": "same-visit",
+          "x": 6.010064000000954,
+          "y": 5,
+          "phase": "arriving",
+          "route": [
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 7,
+              "y": 5
+            }
+          ],
+          "routeIndex": 1,
+          "stock": {
+            "food": 30,
+            "wood": 80,
+            "pottery": 40,
+            "reed": 50
+          }
+        },
+        "actors": [
+          {
+            "kind": "merchant",
+            "phase": 0.8805429484834315,
+            "clip": "Walk",
+            "position": [
+              36.060384000005726,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.5854051282094658,
+            "clip": "Walk",
+            "position": [
+              32.26038400000573,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.8954051282095018,
+            "clip": "Walk",
+            "position": [
+              28.61038400000572,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "transport": "land",
+        "time": 22.783400000005965,
+        "moving": false,
+        "pureUpdates": true,
+        "caravan": {
+          "id": "same-visit",
+          "x": 6.010064000000954,
+          "y": 5,
+          "phase": "arriving",
+          "route": [
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 7,
+              "y": 5
+            }
+          ],
+          "routeIndex": 1,
+          "stock": {
+            "food": 30,
+            "wood": 80,
+            "pottery": 40,
+            "reed": 50
+          }
+        },
+        "actors": [
+          {
+            "kind": "merchant",
+            "phase": 0.8805429484834315,
+            "clip": "Walk",
+            "position": [
+              36.060384000005726,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.5854051282094658,
+            "clip": "Walk",
+            "position": [
+              32.26038400000573,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.8954051282095018,
+            "clip": "Walk",
+            "position": [
+              28.61038400000572,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "profile": "legacy-v1",
+        "transport": "land",
+        "time": 22.783400000005965,
+        "moving": false,
+        "pureUpdates": true,
+        "caravan": {
+          "id": "same-visit",
+          "x": 6.010064000000954,
+          "y": 5,
+          "phase": "arriving",
+          "route": [
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 7,
+              "y": 5
+            }
+          ],
+          "routeIndex": 1,
+          "stock": {
+            "food": 30,
+            "wood": 80,
+            "pottery": 40,
+            "reed": 50
+          }
+        },
+        "actors": [
+          {
+            "kind": "merchant",
+            "phase": 0,
+            "clip": "Walk",
+            "position": [
+              36.060384000005726,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "camel",
+            "phase": 0.31,
+            "clip": "Walk",
+            "position": [
+              32.26038400000573,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "camel",
+            "phase": 0.62,
+            "clip": "Walk",
+            "position": [
+              28.61038400000572,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "profile": "sumer-iii-v1",
+        "transport": "land",
+        "time": 22.783400000005965,
+        "moving": false,
+        "pureUpdates": true,
+        "caravan": {
+          "id": "same-visit",
+          "x": 6.010064000000954,
+          "y": 5,
+          "phase": "arriving",
+          "route": [
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 7,
+              "y": 5
+            }
+          ],
+          "routeIndex": 1,
+          "stock": {
+            "food": 30,
+            "wood": 80,
+            "pottery": 40,
+            "reed": 50
+          }
+        },
+        "actors": [
+          {
+            "kind": "merchant",
+            "phase": 0,
+            "clip": "Walk",
+            "position": [
+              36.060384000005726,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.31,
+            "clip": "Walk",
+            "position": [
+              32.26038400000573,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          },
+          {
+            "kind": "donkey",
+            "phase": 0.62,
+            "clip": "Walk",
+            "position": [
+              28.61038400000572,
+              0,
+              30
+            ],
+            "rotation": [
+              0,
+              1.5707963267948966,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "pauseIdentical": true,
+    "logs": []
+  },
+  "publishedTradeSource": "docs/benchmarks/2026-11-05-grass-color-refresh.json",
+  "publishedTradeSourceSHA256": "725a43e74e6033ba647b6450c2346ea5dea56814714ebe623c0bfb47021e83bd",
+  "publishedTradeCases": {
+    "off-overview": {
+      "selectedSpeed": "4",
+      "population": 229,
+      "buildings": 129,
+      "validSave": true,
+      "wallSeconds": 80.043,
+      "simTime": 114.79960000000236,
+      "trade": {
+        "population": 229,
+        "buildings": 129,
+        "simTime": 114.79960000000236,
+        "tick": 2,
+        "proof": {
+          "transport": "land",
+          "history": "strict",
+          "ecologyMode": "legacy",
+          "ecologyCounts": {
+            "goat": 7,
+            "gazelle": 12,
+            "jackal": 4,
+            "fish": 36,
+            "orange-bird": 2,
+            "goose": 2,
+            "fox": 2,
+            "boar": 2,
+            "lioness": 2,
+            "dog": 2,
+            "duck": 2,
+            "donkey": 2,
+            "bull": 2,
+            "sheep-kenchoo": 2,
+            "sky-birds": 2
+          },
+          "ecologyLegacy": true,
+          "portSetup": "market-and-harbor",
+          "initialPopulation": 200,
+          "buildings": 129,
+          "seed": 137,
+          "supply": {
+            "initialFood": 8720,
+            "pantryFood": 6720,
+            "centralFood": 2000,
+            "waterFilledToCapacity": true
+          },
+          "harbor": {
+            "x": 14,
+            "y": 8
+          },
+          "phases": [
+            {
+              "phase": "caravan:1:arriving",
+              "transport": "land",
+              "time": 45.01720000000059,
+              "x": 0.5189200000006482,
+              "y": 10.5
+            },
+            {
+              "phase": "caravan:1:unloading",
+              "transport": "land",
+              "time": 54.49950000000076,
+              "x": 10.5,
+              "y": 9.5
+            },
+            {
+              "phase": "caravan:1:trading",
+              "transport": "land",
+              "time": 58.51720000000083,
+              "x": 10.5,
+              "y": 9.5
+            }
+          ],
+          "orders": [
+            {
+              "visit": "caravan:1",
+              "transport": "land",
+              "buy": true,
+              "sell": true,
+              "time": 58.51720000000083
+            }
+          ],
+          "skippedEvents": [],
+          "ceremonies": [],
+          "roadWork": {
+            "id": "road:10,9|9,9",
+            "fromLevel": 1,
+            "startedAt": 35,
+            "a": {
+              "x": 8.5,
+              "y": 8.5,
+              "key": "9,9"
+            },
+            "b": {
+              "x": 9.5,
+              "y": 8.5,
+              "key": "10,9"
+            },
+            "cost": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "maxWork": 11.939954666666681,
+            "workers": [
+              {
+                "id": 196,
+                "home": "12,17",
+                "role": "carrier",
+                "x": 9.5,
+                "y": 11.487397794615363
+              },
+              {
+                "id": 80,
+                "home": "12,7",
+                "role": "carrier",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 81,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 82,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              }
+            ],
+            "delivered": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "completedAt": 66.51620000000081
+          },
+          "measurementStart": {
+            "population": 200,
+            "buildings": 129,
+            "simTime": 35,
+            "tick": 0
+          }
+        },
+        "deliveries": [
+          {
+            "id": 1,
+            "resource": "stone",
+            "amount": 2,
+            "delivered": 2
+          }
+        ],
+        "sales": [
+          {
+            "id": 2,
+            "resource": "wood",
+            "amount": 2,
+            "loaded": 2,
+            "cancelled": 0
+          }
+        ]
+      }
+    },
+    "on-overview": {
+      "selectedSpeed": "4",
+      "population": 229,
+      "buildings": 129,
+      "validSave": true,
+      "wallSeconds": 80.04159999999403,
+      "simTime": 114.8344000000039,
+      "trade": {
+        "population": 229,
+        "buildings": 129,
+        "simTime": 114.8344000000039,
+        "tick": 2,
+        "proof": {
+          "transport": "land",
+          "history": "strict",
+          "ecologyMode": "legacy",
+          "ecologyCounts": {
+            "goat": 7,
+            "gazelle": 12,
+            "jackal": 4,
+            "fish": 36,
+            "orange-bird": 2,
+            "goose": 2,
+            "fox": 2,
+            "boar": 2,
+            "lioness": 2,
+            "dog": 2,
+            "duck": 2,
+            "donkey": 2,
+            "bull": 2,
+            "sheep-kenchoo": 2,
+            "sky-birds": 2
+          },
+          "ecologyLegacy": true,
+          "portSetup": "market-and-harbor",
+          "initialPopulation": 200,
+          "buildings": 129,
+          "seed": 137,
+          "supply": {
+            "initialFood": 8720,
+            "pantryFood": 6720,
+            "centralFood": 2000,
+            "waterFilledToCapacity": true
+          },
+          "harbor": {
+            "x": 14,
+            "y": 8
+          },
+          "phases": [
+            {
+              "phase": "caravan:1:arriving",
+              "transport": "land",
+              "time": 45.002000000000564,
+              "x": 0.502200000000622,
+              "y": 10.5
+            },
+            {
+              "phase": "caravan:1:unloading",
+              "transport": "land",
+              "time": 54.48540000000061,
+              "x": 10.5,
+              "y": 9.5
+            },
+            {
+              "phase": "caravan:1:trading",
+              "transport": "land",
+              "time": 58.50200000000066,
+              "x": 10.5,
+              "y": 9.5
+            }
+          ],
+          "orders": [
+            {
+              "visit": "caravan:1",
+              "transport": "land",
+              "buy": true,
+              "sell": true,
+              "time": 58.50200000000066
+            }
+          ],
+          "skippedEvents": [],
+          "ceremonies": [],
+          "roadWork": {
+            "id": "road:10,9|9,9",
+            "fromLevel": 1,
+            "startedAt": 35,
+            "a": {
+              "x": 8.5,
+              "y": 8.5,
+              "key": "9,9"
+            },
+            "b": {
+              "x": 9.5,
+              "y": 8.5,
+              "key": "10,9"
+            },
+            "cost": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "maxWork": 11.902666666666697,
+            "workers": [
+              {
+                "id": 196,
+                "home": "12,17",
+                "role": "carrier",
+                "x": 9.5,
+                "y": 11.487397794615363
+              },
+              {
+                "id": 80,
+                "home": "12,7",
+                "role": "carrier",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 81,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 82,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              }
+            ],
+            "delivered": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "completedAt": 66.50200000000062
+          },
+          "measurementStart": {
+            "population": 200,
+            "buildings": 129,
+            "simTime": 35,
+            "tick": 0
+          }
+        },
+        "deliveries": [
+          {
+            "id": 1,
+            "resource": "stone",
+            "amount": 2,
+            "delivered": 2
+          }
+        ],
+        "sales": [
+          {
+            "id": 2,
+            "resource": "wood",
+            "amount": 2,
+            "loaded": 2,
+            "cancelled": 0
+          }
+        ]
+      }
+    },
+    "off-close": {
+      "selectedSpeed": "4",
+      "population": 229,
+      "buildings": 129,
+      "validSave": true,
+      "wallSeconds": 80.02059999999403,
+      "simTime": 114.883500000006,
+      "trade": {
+        "population": 229,
+        "buildings": 129,
+        "simTime": 114.883500000006,
+        "tick": 2,
+        "proof": {
+          "transport": "land",
+          "history": "strict",
+          "ecologyMode": "legacy",
+          "ecologyCounts": {
+            "goat": 7,
+            "gazelle": 12,
+            "jackal": 4,
+            "fish": 36,
+            "orange-bird": 2,
+            "goose": 2,
+            "fox": 2,
+            "boar": 2,
+            "lioness": 2,
+            "dog": 2,
+            "duck": 2,
+            "donkey": 2,
+            "bull": 2,
+            "sheep-kenchoo": 2,
+            "sky-birds": 2
+          },
+          "ecologyLegacy": true,
+          "portSetup": "market-and-harbor",
+          "initialPopulation": 200,
+          "buildings": 129,
+          "seed": 137,
+          "supply": {
+            "initialFood": 8720,
+            "pantryFood": 6720,
+            "centralFood": 2000,
+            "waterFilledToCapacity": true
+          },
+          "harbor": {
+            "x": 14,
+            "y": 8
+          },
+          "phases": [
+            {
+              "phase": "caravan:1:arriving",
+              "transport": "land",
+              "time": 45.000100000000614,
+              "x": 0.500110000000675,
+              "y": 10.5
+            },
+            {
+              "phase": "caravan:1:unloading",
+              "transport": "land",
+              "time": 54.483500000001015,
+              "x": 10.5,
+              "y": 9.5
+            },
+            {
+              "phase": "caravan:1:trading",
+              "transport": "land",
+              "time": 58.50020000000116,
+              "x": 10.5,
+              "y": 9.5
+            }
+          ],
+          "orders": [
+            {
+              "visit": "caravan:1",
+              "transport": "land",
+              "buy": true,
+              "sell": true,
+              "time": 58.50020000000116
+            }
+          ],
+          "skippedEvents": [],
+          "ceremonies": [],
+          "roadWork": {
+            "id": "road:10,9|9,9",
+            "fromLevel": 1,
+            "startedAt": 35,
+            "a": {
+              "x": 8.5,
+              "y": 8.5,
+              "key": "9,9"
+            },
+            "b": {
+              "x": 9.5,
+              "y": 8.5,
+              "key": "10,9"
+            },
+            "cost": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "maxWork": 11.90477333333336,
+            "workers": [
+              {
+                "id": 196,
+                "home": "12,17",
+                "role": "carrier",
+                "x": 9.5,
+                "y": 11.487397794615363
+              },
+              {
+                "id": 80,
+                "home": "12,7",
+                "role": "carrier",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 81,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 82,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              }
+            ],
+            "delivered": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "completedAt": 66.50010000000111
+          },
+          "measurementStart": {
+            "population": 200,
+            "buildings": 129,
+            "simTime": 35,
+            "tick": 0
+          }
+        },
+        "deliveries": [
+          {
+            "id": 1,
+            "resource": "stone",
+            "amount": 2,
+            "delivered": 2
+          }
+        ],
+        "sales": [
+          {
+            "id": 2,
+            "resource": "wood",
+            "amount": 2,
+            "loaded": 2,
+            "cancelled": 0
+          }
+        ]
+      }
+    },
+    "on-close": {
+      "selectedSpeed": "4",
+      "population": 229,
+      "buildings": 129,
+      "validSave": true,
+      "wallSeconds": 80.01890000000596,
+      "simTime": 114.92970000000693,
+      "trade": {
+        "population": 229,
+        "buildings": 129,
+        "simTime": 114.92970000000693,
+        "tick": 2,
+        "proof": {
+          "transport": "land",
+          "history": "strict",
+          "ecologyMode": "legacy",
+          "ecologyCounts": {
+            "goat": 7,
+            "gazelle": 12,
+            "jackal": 4,
+            "fish": 36,
+            "orange-bird": 2,
+            "goose": 2,
+            "fox": 2,
+            "boar": 2,
+            "lioness": 2,
+            "dog": 2,
+            "duck": 2,
+            "donkey": 2,
+            "bull": 2,
+            "sheep-kenchoo": 2,
+            "sky-birds": 2
+          },
+          "ecologyLegacy": true,
+          "portSetup": "market-and-harbor",
+          "initialPopulation": 200,
+          "buildings": 129,
+          "seed": 137,
+          "supply": {
+            "initialFood": 8720,
+            "pantryFood": 6720,
+            "centralFood": 2000,
+            "waterFilledToCapacity": true
+          },
+          "harbor": {
+            "x": 14,
+            "y": 8
+          },
+          "phases": [
+            {
+              "phase": "caravan:1:arriving",
+              "transport": "land",
+              "time": 45.01470000000054,
+              "x": 0.5161700000005932,
+              "y": 10.5
+            },
+            {
+              "phase": "caravan:1:unloading",
+              "transport": "land",
+              "time": 54.48140000000088,
+              "x": 10.5,
+              "y": 9.5
+            },
+            {
+              "phase": "caravan:1:trading",
+              "transport": "land",
+              "time": 58.49810000000095,
+              "x": 10.5,
+              "y": 9.5
+            }
+          ],
+          "orders": [
+            {
+              "visit": "caravan:1",
+              "transport": "land",
+              "buy": true,
+              "sell": true,
+              "time": 58.49810000000095
+            }
+          ],
+          "skippedEvents": [],
+          "ceremonies": [],
+          "roadWork": {
+            "id": "road:10,9|9,9",
+            "fromLevel": 1,
+            "startedAt": 35,
+            "a": {
+              "x": 8.5,
+              "y": 8.5,
+              "key": "9,9"
+            },
+            "b": {
+              "x": 9.5,
+              "y": 8.5,
+              "key": "10,9"
+            },
+            "cost": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "maxWork": 11.972608000000022,
+            "workers": [
+              {
+                "id": 196,
+                "home": "12,17",
+                "role": "carrier",
+                "x": 9.5,
+                "y": 11.487397794615363
+              },
+              {
+                "id": 80,
+                "home": "12,7",
+                "role": "carrier",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 81,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              },
+              {
+                "id": 82,
+                "home": "12,7",
+                "role": "builder",
+                "x": 12.5,
+                "y": 7.5
+              }
+            ],
+            "delivered": {
+              "food": 0,
+              "clay": 3,
+              "reed": 1,
+              "wood": 0,
+              "stone": 0,
+              "hides": 0,
+              "wool": 0,
+              "cloth": 0,
+              "clothing": 0,
+              "brick": 0,
+              "firedBrick": 0,
+              "pottery": 0,
+              "beer": 0,
+              "milk": 0
+            },
+            "completedAt": 66.51480000000086
+          },
+          "measurementStart": {
+            "population": 200,
+            "buildings": 129,
+            "simTime": 35,
+            "tick": 0
+          }
+        },
+        "deliveries": [
+          {
+            "id": 1,
+            "resource": "stone",
+            "amount": 2,
+            "delivered": 2
+          }
+        ],
+        "sales": [
+          {
+            "id": 2,
+            "resource": "wood",
+            "amount": 2,
+            "loaded": 2,
+            "cancelled": 0
+          }
+        ]
+      }
+    }
+  },
+  "screenshots": [
+    "docs/benchmarks/2026-11-05-history-acceptance/2d.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/caravan-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/caravan-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/house-1-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/house-1-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ishtarGate-1-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ishtarGate-1-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ordinary-1-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ordinary-1-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ordinary-2-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ordinary-2-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ordinary-3-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ordinary-3-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/shrine-3-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/shrine-3-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-1-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-1-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-2-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-2-strict.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-3-legacy.jpg",
+    "docs/benchmarks/2026-11-05-history-acceptance/ziggurat-3-strict.jpg"
+  ]
+}

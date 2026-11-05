@@ -1,0 +1,114 @@
+TAP version 13
+# Subtest: a caravan road anchor updates street ports without rebuilding unchanged walking geometry
+ok 1 - a caravan road anchor updates street ports without rebuilding unchanged walking geometry
+  ---
+  duration_ms: 114.908584
+  type: 'test'
+  ...
+# Subtest: real building or road-cost changes still invalidate the walking geometry
+ok 2 - real building or road-cost changes still invalidate the walking geometry
+  ---
+  duration_ms: 115.570917
+  type: 'test'
+  ...
+# BJS - [15:17:48]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:17:49]: Skeleton "caravan-1-skeleton0": 109 bones stored as vertex uniforms use 440 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [15:17:49]: Skeleton "caravan-2-skeleton0": 109 bones stored as vertex uniforms use 440 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# BJS - [15:17:49]: Babylon.js v9.31.0 - Null engine
+# Subtest: formation projects independent road positions without touching trade state
+ok 3 - formation projects independent road positions without touching trade state
+  ---
+  duration_ms: 1.281708
+  type: 'test'
+  ...
+# Subtest: derived GLBs retain attribution, source rig, clips and explicit limits
+ok 4 - derived GLBs retain attribution, source rig, clips and explicit limits
+  ---
+  duration_ms: 5.609291
+  type: 'test'
+  ...
+# Subtest: real skins parse, face route, distance gait pauses, trading idles, stock preserves actors and disposal
+ok 5 - real skins parse, face route, distance gait pauses, trading idles, stock preserves actors and disposal
+  ---
+  duration_ms: 202.038334
+  type: 'test'
+  ...
+# Subtest: strict caravan uses donkeys, preserves formation/trade, and switches profiles without stale animals
+ok 6 - strict caravan uses donkeys, preserves formation/trade, and switches profiles without stale animals
+  ---
+  duration_ms: 174.2645
+  type: 'test'
+  ...
+# BJS - [15:17:48]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:17:48]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:17:48]: Babylon.js v9.31.0 - Null engine
+# BJS - [15:17:48]: Babylon.js v9.31.0 - Null engine
+# Subtest: strict starter retains its economic flag but has flat room and matching roof access, including upgrade
+ok 7 - strict starter retains its economic flag but has flat room and matching roof access, including upgrade
+  ---
+  duration_ms: 64.265916
+  type: 'test'
+  ...
+# Subtest: strict temples never request late or unverified sacred assets, even after legacy use
+ok 8 - strict temples never request late or unverified sacred assets, even after legacy use
+  ---
+  duration_ms: 0.4055
+  type: 'test'
+  ...
+# Subtest: strict building templates cannot reuse same-coordinate legacy sources or preview
+ok 9 - strict building templates cannot reuse same-coordinate legacy sources or preview
+  ---
+  duration_ms: 45.421541
+  type: 'test'
+  ...
+# Subtest: strict gate has a real rectangular opening, earth pigments and timber lintel within reserved footprint
+ok 10 - strict gate has a real rectangular opening, earth pigments and timber lintel within reserved footprint
+  ---
+  duration_ms: 4.302708
+  type: 'test'
+  ...
+# Subtest: strict ziggurat grows through three brick stages while legacy procedural tier remains unchanged
+ok 11 - strict ziggurat grows through three brick stages while legacy procedural tier remains unchanged
+  ---
+  duration_ms: 40.009417
+  type: 'test'
+  ...
+# Subtest: strict gate presentation changes only name/description and leaves legacy global definitions intact
+ok 12 - strict gate presentation changes only name/description and leaves legacy global definitions intact
+  ---
+  duration_ms: 1.094208
+  type: 'test'
+  ...
+# Subtest: strict founding house description and summary match unchanged four-person economy
+ok 13 - strict founding house description and summary match unchanged four-person economy
+  ---
+  duration_ms: 116.01
+  type: 'test'
+  ...
+# Subtest: strict 2D gate avoids glazed pigments and three ziggurat levels grow consistently
+ok 14 - strict 2D gate avoids glazed pigments and three ziggurat levels grow consistently
+  ---
+  duration_ms: 1.179667
+  type: 'test'
+  ...
+# Subtest: catalogue labels switch both ways without replacing buttons or losing focus
+ok 15 - catalogue labels switch both ways without replacing buttons or losing focus
+  ---
+  duration_ms: 235.873375
+  type: 'test'
+  ...
+# Subtest: strict 2D transport drops the tall camel neck and boat sail while trade data stays untouched
+ok 16 - strict 2D transport drops the tall camel neck and boat sail while trade data stays untouched
+  ---
+  duration_ms: 37.372833
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 608.614625
