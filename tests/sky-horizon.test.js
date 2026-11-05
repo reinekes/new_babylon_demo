@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import {DAY_SECONDS} from '../city-life.js';
 import {GameRenderer3D} from '../game3d/renderer.js';
 import {alluvialSceneryGeometry} from '../district3d/terrain.js';
+import {bindAtmosphere} from '../game3d/atmosphere.js';
 
 const file=new URL('../game3d/sky-horizon.js',import.meta.url);
 const load=async()=>{assert.ok(existsSync(file),'visible celestial sky and horizon extension must exist');return import(file.href);};
@@ -12,6 +13,36 @@ const seconds=hour=>(hour-8)*DAY_SECONDS/24;
 const sandbox={console,setTimeout,clearTimeout,performance,self:{}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.BABYLON;
 const state=size=>({simTime:10,buildings:[],citizens:[],...(size===64?{world:{width:64,height:64,generationVersion:2,seed:32,river:{axis:'x',flowSign:-1,offset:30,slope:.04,amplitude:1,frequency:.12,phase:1},lakes:[]}}:{})});
+
+test('directional light fades through sunrise and sunset without a sun/moon intensity jump',async()=>{
+ const {celestialAt}=await load();
+ for(const hour of [6,18]){
+  const before=celestialAt(seconds(hour-.00001)),at=celestialAt(seconds(hour)),after=celestialAt(seconds(hour+.00001));
+  assert.ok(Math.abs(before.light.intensity-after.light.intensity)<1e-6,`light jumps at hour${hour}`);
+  assert.ok(at.light.intensity<1e-8,'opposed artistic sun/moon are both at the horizon, direct light is dark');
+ }
+ assert.ok(celestialAt(seconds(12)).light.intensity>3,'daytime direct light remains bright');
+ assert.ok(celestialAt(seconds(0)).light.intensity>.2,'high moon still illuminates night');
+});
+
+test('custom water fog receives exactly the linear fog colour bound by real Babylon PBR',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine);try{
+  scene.fogMode=B.Scene.FOGMODE_EXP2;scene.fogColor=B.Color3.FromHexString('#252f42');
+  let expected;B.MaterialHelper.BindFogParameters(scene,null,{setFloat4(){},setColor3(name,c){if(name==='vFogColor')expected={r:c.r,g:c.g,b:c.b};}},true);
+  const material=new B.ShaderMaterial('qa-water',scene,{vertex:'unused',fragment:'unused'},{uniforms:[]});bindAtmosphere(scene,material);
+  const actual=material._colors3.valleyFogColor;assert.ok(expected);for(const k of ['r','g','b'])assert.ok(Math.abs(actual[k]-expected[k])<1e-10,`${k}: custom fog ${actual[k]} vs PBR ${expected[k]}`);
+  assert.equal(scene.fogColor.toHexString(),'#252F42','binding cannot change the scene colour');
+ }finally{scene.dispose();engine.dispose();}
+});
+
+test('the sky horizon meets the same linear nighttime fog as the PBR ground',async()=>{
+ const {createSkyHorizon}=await load(),engine=new B.NullEngine(),scene=new B.Scene(engine);let sky;try{
+  scene.fogMode=B.Scene.FOGMODE_EXP2;scene.fogColor=B.Color3.FromHexString('#252f42');const camera=new B.ArcRotateCamera('qa',0,1.48,65,new B.Vector3(120,0,120),scene);
+  let expected;B.MaterialHelper.BindFogParameters(scene,null,{setFloat4(){},setColor3(name,c){if(name==='vFogColor')expected={r:c.r,g:c.g,b:c.b};}},true);
+  sky=createSkyHorizon(B,scene);sky.update(state(40),camera,'night');const actual=sky.dome.material._vectors3.horizonColor;
+  for(const [axis,k]of [['x','r'],['y','g'],['z','b']])assert.ok(Math.abs(actual[axis]-expected[k])<1e-10,`${axis}: horizon differs from PBR fog`);
+ }finally{sky?.dispose();scene.dispose();engine.dispose();}
+});
 
 test('sun rises east, crosses above the city and sets west; moon travels at night',async()=>{
  const {celestialAt}=await load(),dawn=celestialAt(seconds(6)),noon=celestialAt(seconds(12)),dusk=celestialAt(seconds(18)),midnight=celestialAt(seconds(0));

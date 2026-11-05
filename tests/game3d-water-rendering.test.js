@@ -10,6 +10,20 @@ const sandbox={module:{exports:{}},console,setTimeout,clearTimeout,performance,s
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);
 const B=sandbox.BABYLON;
 
+test('water binding uploads current camera and sun to the active effect in the same draw',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),view=createGameWater(B,scene,{});
+ try{
+  const camera=new B.FreeCamera('qa',new B.Vector3(1,2,3),scene);scene.activeCamera=camera;const sun=new B.DirectionalLight('city-sun',new B.Vector3(-1,-1,0),scene),uploads={};
+  // The active GPU effect is the external boundary. onBind runs after the
+  // ShaderMaterial cache was uploaded, so writing only to that cache is late.
+  view.material.getEffect=()=>({setVector3(name,v){uploads[name]=Array.from(v.asArray());},setColor3(){},setFloat(){}});
+  camera.getViewMatrix(true);view.material.onBindObservable.notifyObservers(null);
+  assert.deepEqual(uploads.cameraPosition,[1,2,3],'first draw uses its current camera');assert.deepEqual(uploads.sunLightDirection,[-1,-1,0]);
+  camera.position.set(10,20,30);camera.getViewMatrix(true);sun.direction.set(0,-1,1);view.material.onBindObservable.notifyObservers(null);
+  assert.deepEqual(uploads.cameraPosition,[10,20,30],'changing the view never borrows the preceding camera');assert.deepEqual(uploads.sunLightDirection,[0,-1,1]);
+ }finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
 test('water adds only transparent surface ribbons over the existing terrain, with no intersecting duplicate bed',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),s=createGame({start:'established'}),view=createGameWater(B,scene,{});
  try{

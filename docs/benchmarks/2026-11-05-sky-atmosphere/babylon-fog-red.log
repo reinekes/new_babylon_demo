@@ -1,0 +1,50 @@
+TAP version 13
+# BJS - [18:30:10]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:30:10]: Babylon.js v9.31.0 - Null engine
+# Subtest: custom water fog receives exactly the linear fog colour bound by real Babylon PBR
+not ok 1 - custom water fog receives exactly the linear fog colour bound by real Babylon PBR
+  ---
+  duration_ms: 3.153667
+  type: 'test'
+  location: '/Users/back/.codex/worktrees/sumer-scenario-profiles/babylon/tests/sky-horizon.test.js:17:1'
+  failureType: 'testCodeFailure'
+  error: 'r: custom fog 0.1450980392156863 vs PBR 0.014310519374884064'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/back/.codex/worktrees/sumer-scenario-profiles/babylon/tests/sky-horizon.test.js:22:105)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: the sky horizon meets the same linear nighttime fog as the PBR ground
+not ok 2 - the sky horizon meets the same linear nighttime fog as the PBR ground
+  ---
+  duration_ms: 15.844208
+  type: 'test'
+  location: '/Users/back/.codex/worktrees/sumer-scenario-profiles/babylon/tests/sky-horizon.test.js:27:1'
+  failureType: 'testCodeFailure'
+  error: 'x: horizon differs from PBR fog'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/back/.codex/worktrees/sumer-scenario-profiles/babylon/tests/sky-horizon.test.js:32:63)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 190.9745

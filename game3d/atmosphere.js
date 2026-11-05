@@ -16,9 +16,12 @@ export function atmosphereDefines(scene){
  const ip=scene.imageProcessingConfiguration;
  return ['#define EXPOSURE','#define CONTRAST',`#define TONEMAPPING ${ip.toneMappingEnabled?ip.toneMappingType+1:0}`];
 }
+// PBR binds scene.fogColor in linear space before image processing. Custom
+// shaders must do the same; raw sRGB creates a bright sky/water seam at night.
+export function linearFogColor(scene){return scene.fogColor.toLinearSpace(scene.getEngine().useExactSrgbConversions);}
 export function bindAtmosphere(scene,material){
  const ip=scene.imageProcessingConfiguration;
- material.setColor3('valleyFogColor',scene.fogColor);
+ material.setColor3('valleyFogColor',linearFogColor(scene));
  material.setFloat('valleyFogDensity',scene.fogMode===2?scene.fogDensity:0);
  material.setFloat('exposureLinear',ip.exposure);
  material.setFloat('contrast',ip.contrast);

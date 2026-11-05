@@ -1,0 +1,154 @@
+TAP version 13
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:04]: Babylon.js v9.31.0 - Null engine
+# Subtest: water binding uploads current camera and sun to the active effect in the same draw
+ok 1 - water binding uploads current camera and sun to the active effect in the same draw
+  ---
+  duration_ms: 7.11325
+  type: 'test'
+  ...
+# Subtest: water adds only transparent surface ribbons over the existing terrain, with no intersecting duplicate bed
+ok 2 - water adds only transparent surface ribbons over the existing terrain, with no intersecting duplicate bed
+  ---
+  duration_ms: 204.149792
+  type: 'test'
+  ...
+# Subtest: the whole swimming fish, including animated dorsal fins, stays below the water surface
+ok 3 - the whole swimming fish, including animated dorsal fins, stays below the water surface
+  ---
+  duration_ms: 114.035417
+  type: 'test'
+  ...
+# Subtest: switching saved river courses replaces water geometry even when lake cells are identical
+ok 4 - switching saved river courses replaces water geometry even when lake cells are identical
+  ---
+  duration_ms: 444.583458
+  type: 'test'
+  ...
+# Subtest: both water layers move ripples in the saved river direction and reuse the uniform across frames
+ok 5 - both water layers move ripples in the saved river direction and reuse the uniform across frames
+  ---
+  duration_ms: 2484.064708
+  type: 'test'
+  ...
+# Subtest: transparent surface depth follows canonical river bed and saved lake boundary
+ok 6 - transparent surface depth follows canonical river bed and saved lake boundary
+  ---
+  duration_ms: 18.774542
+  type: 'test'
+  ...
+# Subtest: wet inlet continues from real canal through the bank into river water and stays continuous in height
+ok 7 - wet inlet continues from real canal through the bank into river water and stays continuous in height
+  ---
+  duration_ms: 0.228583
+  type: 'test'
+  ...
+# Subtest: worn path preserves endpoints and junctions with nonuniform width, shallow bends and fading fringes
+ok 8 - worn path preserves endpoints and junctions with nonuniform width, shallow bends and fading fringes
+  ---
+  duration_ms: 0.694583
+  type: 'test'
+  ...
+# Subtest: canal banks taper below the water surface at the river and pebbles form irregular groups
+ok 9 - canal banks taper below the water surface at the river and pebbles form irregular groups
+  ---
+  duration_ms: 1.043333
+  type: 'test'
+  ...
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Skeleton "skeleton0": 10 bones stored as vertex uniforms use 44 of ~0 usable uniform vectors on a device reporting 16. This can exceed the GPU vertex-uniform limit and make the mesh silently fail to render. Set skeleton.useTextureToStoreBoneMatrices = true to store bone matrices in a texture.
+# Subtest: sky bird beak follows actual elliptical tangent on every quadrant and both directions
+ok 10 - sky bird beak follows actual elliptical tangent on every quadrant and both directions
+  ---
+  duration_ms: 1.269791
+  type: 'test'
+  ...
+# Subtest: single source bird keeps wing rig, strips internal translation and records measured beak direction
+ok 11 - single source bird keeps wing rig, strips internal translation and records measured beak direction
+  ---
+  duration_ms: 0.66775
+  type: 'test'
+  ...
+# Subtest: flight poses are deterministic and pause is represented by an unchanged simulation clock
+ok 12 - flight poses are deterministic and pause is represented by an unchanged simulation clock
+  ---
+  duration_ms: 0.57175
+  type: 'test'
+  ...
+# Subtest: actual imported bird skin has its narrow beak forward throughout original wing animation and full ellipse
+ok 13 - actual imported bird skin has its narrow beak forward throughout original wing animation and full ellipse
+  ---
+  duration_ms: 203.49825
+  type: 'test'
+  ...
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:03]: Babylon.js v9.31.0 - Null engine
+# BJS - [18:56:12]: Babylon.js v9.31.0 - Null engine
+# Subtest: directional light fades through sunrise and sunset without a sun/moon intensity jump
+ok 14 - directional light fades through sunrise and sunset without a sun/moon intensity jump
+  ---
+  duration_ms: 0.724208
+  type: 'test'
+  ...
+# Subtest: custom water fog receives exactly the linear fog colour bound by real Babylon PBR
+ok 15 - custom water fog receives exactly the linear fog colour bound by real Babylon PBR
+  ---
+  duration_ms: 3.591041
+  type: 'test'
+  ...
+# Subtest: the sky horizon meets the same linear nighttime fog as the PBR ground
+ok 16 - the sky horizon meets the same linear nighttime fog as the PBR ground
+  ---
+  duration_ms: 20.370459
+  type: 'test'
+  ...
+# Subtest: sun rises east, crosses above the city and sets west; moon travels at night
+ok 17 - sun rises east, crosses above the city and sets west; moon travels at night
+  ---
+  duration_ms: 0.66
+  type: 'test'
+  ...
+# Subtest: real Babylon sky follows camera, keeps a bounded mesh/light budget, and disposes cleanly
+ok 18 - real Babylon sky follows camera, keeps a bounded mesh/light budget, and disposes cleanly
+  ---
+  duration_ms: 36.972125
+  type: 'test'
+  ...
+# Subtest: outer landscape extension starts at the actual scenery rim and continues well beyond every permitted view
+ok 19 - outer landscape extension starts at the actual scenery rim and continues well beyond every permitted view
+  ---
+  duration_ms: 27.96825
+  type: 'test'
+  ...
+# Subtest: renderer directional light follows the visible sun and moon with fixed image processing
+ok 20 - renderer directional light follows the visible sun and moon with fixed image processing
+  ---
+  duration_ms: 2.244667
+  type: 'test'
+  ...
+# Subtest: every far-ground triangle keeps one winding for legacy and both river axes
+ok 21 - every far-ground triangle keeps one winding for legacy and both river axes
+  ---
+  duration_ms: 9173.947916
+  type: 'test'
+  ...
+# Subtest: far river joins the detailed cross-section with identical depth and shares the live material across upgrades
+ok 22 - far river joins the detailed cross-section with identical depth and shares the live material across upgrades
+  ---
+  duration_ms: 421.268542
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9908.813708

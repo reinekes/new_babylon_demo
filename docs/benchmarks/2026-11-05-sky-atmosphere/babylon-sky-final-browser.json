@@ -1,0 +1,1787 @@
+[
+  {
+    "frame": 1,
+    "seed": 137,
+    "view": "garden",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0.9,
+      "beta": 0.9,
+      "radius": 18,
+      "target": [
+        48,
+        1,
+        48
+      ],
+      "position": [
+        56.76462936401367,
+        12.188977241516113,
+        59.04481887817383
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 50
+    },
+    "fogUniforms": {
+      "sky": [
+        0.5795466117825252,
+        0.5295232224172772,
+        0.3837746464879752
+      ],
+      "scene": [
+        0.7803921568627451,
+        0.7490196078431373,
+        0.6470588235294118
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 2142,
+    "seed": 137,
+    "view": "horizon",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        91.1945636102385
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        91.19456481933594
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 503
+    },
+    "fogUniforms": {
+      "sky": [
+        0.5795466117825252,
+        0.5295232224172772,
+        0.3837746464879752
+      ],
+      "scene": [
+        0.7803921568627451,
+        0.7490196078431373,
+        0.6470588235294118
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 2143,
+    "seed": 137,
+    "view": "horizon",
+    "hour": 0,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        91.1945636102385
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        91.19456481933594
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 493
+    },
+    "fogUniforms": {
+      "sky": [
+        0.01431051937488407,
+        0.02422294206753424,
+        0.051122050056493396
+      ],
+      "scene": [
+        0.14509803921568631,
+        0.1843137254901961,
+        0.25882352941176473
+      ]
+    },
+    "light": {
+      "body": "moon",
+      "direction": {
+        "x": 6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 0.256
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 2161,
+    "seed": 137,
+    "view": "horizon",
+    "hour": 6,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        91.1945636102385
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        91.19456481933594
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 503
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325155,
+        0.07700818540441177,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035521,
+        0.3118030826349657,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": 0
+      },
+      "intensity": 0
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 2176,
+    "seed": 137,
+    "view": "horizon",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        91.1945636102385
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        91.19456481933594
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 503
+    },
+    "fogUniforms": {
+      "sky": [
+        0.5795466117825252,
+        0.5295232224172772,
+        0.3837746464879752
+      ],
+      "scene": [
+        0.7803921568627451,
+        0.7490196078431373,
+        0.6470588235294118
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 2187,
+    "seed": 137,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-8-8-0",
+        "x": 7.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-1",
+        "x": 8.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-2",
+        "x": 7.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-8-8-3",
+        "x": 8.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 107,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        91.1945636102385
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        91.19456481933594
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 503
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6890,
+    "seed": 42,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        278.90362548828125
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 355
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6891,
+    "seed": 42,
+    "view": "horizon",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        278.90362548828125
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 355
+    },
+    "fogUniforms": {
+      "sky": [
+        0.5795466117825252,
+        0.5295232224172772,
+        0.3837746464879752
+      ],
+      "scene": [
+        0.7803921568627451,
+        0.7490196078431373,
+        0.6470588235294118
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6892,
+    "seed": 42,
+    "view": "bank-a",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0.3,
+      "beta": 1.42,
+      "radius": 65,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        234.19219970703125,
+        10.764657974243164,
+        297.89447021484375
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 461
+    },
+    "fogUniforms": {
+      "sky": [
+        0.5795466117825252,
+        0.5295232224172772,
+        0.3837746464879752
+      ],
+      "scene": [
+        0.7803921568627451,
+        0.7490196078431373,
+        0.6470588235294118
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6900,
+    "seed": 42,
+    "view": "bank-a",
+    "hour": 0,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0.3,
+      "beta": 1.42,
+      "radius": 65,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        234.19219970703125,
+        10.764657974243164,
+        297.89447021484375
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 439
+    },
+    "fogUniforms": {
+      "sky": [
+        0.01431051937488407,
+        0.02422294206753424,
+        0.051122050056493396
+      ],
+      "scene": [
+        0.14509803921568631,
+        0.1843137254901961,
+        0.25882352941176473
+      ]
+    },
+    "light": {
+      "body": "moon",
+      "direction": {
+        "x": 6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 0.256
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6901,
+    "seed": 42,
+    "view": "bank-b",
+    "hour": 0,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 3.441592653589793,
+      "beta": 1.42,
+      "radius": 65,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        111.40782165527344,
+        10.764657020568848,
+        259.9128112792969
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 200
+    },
+    "fogUniforms": {
+      "sky": [
+        0.01431051937488407,
+        0.02422294206753424,
+        0.051122050056493396
+      ],
+      "scene": [
+        0.14509803921568631,
+        0.1843137254901961,
+        0.25882352941176473
+      ]
+    },
+    "light": {
+      "body": "moon",
+      "direction": {
+        "x": 6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 0.256
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6910,
+    "seed": 42,
+    "view": "bank-b",
+    "hour": 6,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 3.441592653589793,
+      "beta": 1.42,
+      "radius": 65,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        111.40782165527344,
+        10.764657020568848,
+        259.9128112792969
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 200
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325155,
+        0.07700818540441177,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035521,
+        0.3118030826349657,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": 0
+      },
+      "intensity": 0
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6911,
+    "seed": 42,
+    "view": "horizon",
+    "hour": 6,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        278.90362548828125
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 355
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325155,
+        0.07700818540441177,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035521,
+        0.3118030826349657,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": 0
+      },
+      "intensity": 0
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6922,
+    "seed": 42,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        278.90362548828125
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 355
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 6923,
+    "seed": 42,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-10-0",
+        "x": 5.74,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-1",
+        "x": 6.26,
+        "y": 9.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-2",
+        "x": 5.74,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-10-3",
+        "x": 6.26,
+        "y": 10.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 121,
+    "camera": {
+      "alpha": 0,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        172.8,
+        1,
+        278.9036262103775
+      ],
+      "position": [
+        287.3263244628906,
+        11.427237510681152,
+        278.90362548828125
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 355
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 9690,
+    "seed": 29,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-8-0",
+        "x": 5.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-1",
+        "x": 6.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-2",
+        "x": 5.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-3",
+        "x": 6.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 115,
+    "camera": {
+      "alpha": 1.5707963267948966,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        141.07588088150482,
+        1,
+        172.8
+      ],
+      "position": [
+        141.0758819580078,
+        11.427237510681152,
+        287.3263244628906
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 464
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 9691,
+    "seed": 29,
+    "view": "horizon",
+    "hour": 0,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-8-0",
+        "x": 5.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-1",
+        "x": 6.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-2",
+        "x": 5.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-3",
+        "x": 6.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 115,
+    "camera": {
+      "alpha": 1.5707963267948966,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        141.07588088150482,
+        1,
+        172.8
+      ],
+      "position": [
+        141.0758819580078,
+        11.427237510681152,
+        287.3263244628906
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 454
+    },
+    "fogUniforms": {
+      "sky": [
+        0.01431051937488407,
+        0.02422294206753424,
+        0.051122050056493396
+      ],
+      "scene": [
+        0.14509803921568631,
+        0.1843137254901961,
+        0.25882352941176473
+      ]
+    },
+    "light": {
+      "body": "moon",
+      "direction": {
+        "x": 6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 0.256
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 9695,
+    "seed": 29,
+    "view": "horizon",
+    "hour": 6,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-8-0",
+        "x": 5.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-1",
+        "x": 6.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-2",
+        "x": 5.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-3",
+        "x": 6.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 115,
+    "camera": {
+      "alpha": 1.5707963267948966,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        141.07588088150482,
+        1,
+        172.8
+      ],
+      "position": [
+        141.0758819580078,
+        11.427237510681152,
+        287.3263244628906
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 464
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325155,
+        0.07700818540441177,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035521,
+        0.3118030826349657,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": 0
+      },
+      "intensity": 0
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 9710,
+    "seed": 29,
+    "view": "horizon",
+    "hour": 12,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-8-0",
+        "x": 5.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-1",
+        "x": 6.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-2",
+        "x": 5.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-3",
+        "x": 6.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 115,
+    "camera": {
+      "alpha": 1.5707963267948966,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        141.07588088150482,
+        1,
+        172.8
+      ],
+      "position": [
+        141.0758819580078,
+        11.427237510681152,
+        287.3263244628906
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 464
+    },
+    "fogUniforms": {
+      "sky": [
+        0.5795466117825252,
+        0.5295232224172772,
+        0.3837746464879752
+      ],
+      "scene": [
+        0.7803921568627451,
+        0.7490196078431373,
+        0.6470588235294118
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": -6.123233995736766e-17,
+        "y": -0.8,
+        "z": -0.6
+      },
+      "intensity": 3.2600000000000002
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 9722,
+    "seed": 29,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-8-0",
+        "x": 5.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-1",
+        "x": 6.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-2",
+        "x": 5.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-3",
+        "x": 6.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 115,
+    "camera": {
+      "alpha": 1.5707963267948966,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        141.07588088150482,
+        1,
+        172.8
+      ],
+      "position": [
+        141.0758819580078,
+        11.427237510681152,
+        287.3263244628906
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 464
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  },
+  {
+    "frame": 9728,
+    "seed": 29,
+    "view": "horizon",
+    "hour": 18,
+    "rotation": 0,
+    "pure": true,
+    "mutations": [],
+    "managed": [
+      {
+        "id": "garden-6-8-0",
+        "x": 5.74,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-1",
+        "x": 6.26,
+        "y": 7.82,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-2",
+        "x": 5.74,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      },
+      {
+        "id": "garden-6-8-3",
+        "x": 6.26,
+        "y": 8.18,
+        "managed": true,
+        "resource": "dates"
+      }
+    ],
+    "wild": 115,
+    "camera": {
+      "alpha": 1.5707963267948966,
+      "beta": 1.48,
+      "radius": 115,
+      "target": [
+        141.07588088150482,
+        1,
+        172.8
+      ],
+      "position": [
+        141.0758819580078,
+        11.427237510681152,
+        287.3263244628906
+      ],
+      "renderSize": [
+        1920,
+        930
+      ],
+      "activeMeshes": 464
+    },
+    "fogUniforms": {
+      "sky": [
+        0.06492303900325161,
+        0.07700818540441182,
+        0.09711161796883253
+      ],
+      "scene": [
+        0.2885235660035522,
+        0.31180308263496576,
+        0.34647246244879387
+      ]
+    },
+    "light": {
+      "body": "sun",
+      "direction": {
+        "x": 0.999388062160532,
+        "y": -0.034978582175618625,
+        "z": -7.343384348585829e-17
+      },
+      "intensity": 1.5646287735344482e-30
+    },
+    "sky": {
+      "triangles": 4192
+    },
+    "renderer": "3d"
+  }
+]

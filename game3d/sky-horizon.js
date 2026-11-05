@@ -1,4 +1,4 @@
-import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from './atmosphere.js';
+import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere,linearFogColor} from './atmosphere.js';
 import {lightingAt} from '../city-life.js';
 import {worldWidth,worldHeight,riverLength,riverAcrossSize,river,riverLocal,worldFromRiver} from '../world.js';
 import {surfaceElevation,shoreDistance,alluvialNormal,TILE} from '../district3d/terrain.js';
@@ -15,7 +15,11 @@ export function celestialAt(seconds=0,mode='auto'){
  const forced={day:10,sunset:28,night:37.5},clock=lightingAt(mode==='auto'?seconds:forced[mode]??seconds),theta=(clock.hour-6)/12*Math.PI;
  const sun=normalize(Math.cos(theta),Math.sin(theta)*.8,Math.sin(theta)*.6),moon={x:-sun.x,y:-sun.y,z:-sun.z};
  const body=sun.y>=0?'sun':'moon',source=body==='sun'?sun:moon,direction=normalize(-source.x,-Math.max(.035,source.y),-source.z);
- return {...clock,sun,moon,light:{body,direction,intensity:body==='sun'?(1-clock.night)*3.2+.06:.32*Math.max(.18,moon.y)}};
+ // The opposed artistic bodies exchange the directional light at the horizon.
+ // Fade its energy to zero first, so the direction change cannot flip shadows
+ // with a discontinuous flash; the existing twilight fill remains continuous.
+ const horizonFade=smooth(Math.max(0,source.y)/.12);
+ return {...clock,sun,moon,light:{body,direction,intensity:(body==='sun'?(1-clock.night)*3.2+.06:.32*Math.max(.18,moon.y))*horizonFade}};
 }
 
 function sample(x,y,s){
@@ -70,6 +74,6 @@ export function createSkyHorizon(B,scene,{soil}={}){
  return {meshes,dome,get stats(){return stats;},update(s,camera,mode='auto',waterMaterial=null){
   if(disposed)return;const key=JSON.stringify([worldWidth(s),worldHeight(s),s?.world?.river||null]);if(key!==worldKey){for(const m of [ground,water])if(m){meshes.splice(meshes.indexOf(m),1);m.dispose();}const g=horizonGeometry(s);ground=geometry('horizon-dunes',g,landMat);water=geometry('horizon-river',g.water,waterMat);stats={triangles:(g.indices.length+g.water.indices.length)/3};worldKey=key;}
   if(waterMaterial)water.material=waterMaterial;bindAtmosphere(scene,skyMat);camera.getViewMatrix?.(true);const c=celestialAt(s?.simTime||0,mode),position=camera.globalPosition||camera.position||camera.target;dome.position.copyFrom(position);dome.scaling.setAll(Math.max(100,(camera.maxZ||20000)*.90));
-  sunVector.set(c.sun.x,c.sun.y,c.sun.z);moonVector.set(c.moon.x,c.moon.y,c.moon.z);skyMat.setVector3('sunDirection',sunVector);skyMat.setVector3('moonDirection',moonVector);skyMat.setFloat('night',c.night);skyMat.setFloat('warm',c.warm);const fog=scene.fogColor||B.Color3.FromHexString('#c7bfa5');vector.set(fog.r,fog.g,fog.b);skyMat.setVector3('horizonColor',vector);
+  sunVector.set(c.sun.x,c.sun.y,c.sun.z);moonVector.set(c.moon.x,c.moon.y,c.moon.z);skyMat.setVector3('sunDirection',sunVector);skyMat.setVector3('moonDirection',moonVector);skyMat.setFloat('night',c.night);skyMat.setFloat('warm',c.warm);const fog=linearFogColor(scene);vector.set(fog.r,fog.g,fog.b);skyMat.setVector3('horizonColor',vector);
  },dispose(){if(disposed)return;disposed=true;for(const m of meshes)m.dispose();for(const m of owned)m.dispose(false,false);meshes.length=0;}};
 }
