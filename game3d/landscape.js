@@ -96,7 +96,7 @@ export function groundStocks(s,net,topologySignature=landscapeSignature(s)){
 export async function createGameLandscape(B,scene,initialState,materials,options={}){
  let currentState=initialState;
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map();
- let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='';
+ let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='',staticScenerySignature='';
  const roadRenderGroups=createRoadRenderGroups(B,scene,meshes);let batchRoads=options.batchRoads!==false;
  const palmRenderGroups=createPalmRenderGroups(B,scene,meshes);let batchPalms=options.batchPalms!==false;
  const updatePalmGroups=()=>palmRenderGroups.sync(palmInstances,palmSources.length,batchPalms);
@@ -198,7 +198,6 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(groundChanged)stitchTerrainRim(B,base.meshes,s);
  }
  function rebuildGeometry(s,plan){catGroundHeights.clear();
-  remove(staticMeshes);
   const worldKey=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.x,b.y])]),seenRoads=new Set();
   for(const r of plan.roads){if(shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)<.08)continue;const mat=r.level>=3?paving:r.level===2?gravel:earth;
    seenRoads.add(r.id);const key=JSON.stringify([worldKey,r.a,r.b,r.level,r.target,r.progress]),previous=roadBatches.get(r.id);if(previous?.key===key)continue;if(previous)remove(previous.meshes);
@@ -209,12 +208,18 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(const [id,batch]of roadBatches)if(!seenRoads.has(id)){remove(batch.meshes);roadBatches.delete(id);}
   updateRoadGroups();
   const channels=canalNetworkGeometry(s,plan.canals),arms=channels.arms;
+  // Road work changes paving only. Static scenery uses footprints/endpoints,
+  // while canal progress remains part of its exact geometry dependency key.
+  const nextScenery=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1]),plan.canals,plan.roads.map(r=>[r.a,r.b])]);
+  if(nextScenery!==staticScenerySignature){remove(staticMeshes);
   for(const [name,g,mat]of [['actual-canal-bank',channels.wetBed,wetMud],['actual-dry-canal-bank',channels.dryBed,bank],['actual-canal-water',channels.water,waterView.material]]){const m=meshData(name,g,mat);if(m){m.metadata={canalArms:arms,canalArm:arms[0]};m.receiveShadows=name!=='actual-canal-water';m.freezeWorldMatrix();}}
   for(const c of plan.canals)for(const [dx,dy]of c.arms.length?c.arms:[[1,0],[-1,0]]){const mid={x:c.x+dx*.5,y:c.y+dy*.5};if(plan.roads.some(r=>pointDistance(mid,r.a,r.b)<.09))for(const offset of [-.22,0,.22]){const center={x:mid.x+dx*offset/TILE,y:mid.y+dy*offset/TILE};strip('canal-road-crossing',{x:center.x-dy*.13,y:center.y+dx*.13},{x:center.x+dy*.13,y:center.y-dx*.13},.19,.18,materials.wood);}}
-  carveChannels(s,arms);
   const tufts=landscapeFallbackTufts(s,plan.roads,valleyVegetation.sources),grass=meshData('volumetric-riparian-colonies',tuftGeometry(s,tufts),meadow);if(grass){grass.metadata={natureTufts:tufts};grass.freezeWorldMatrix();}
   const margin=meshData('irregular-physical-riverbanks',openCanalMouths(riverbankGeometry(s),arms),shore);if(margin){margin.hasVertexAlpha=true;margin.freezeWorldMatrix();}
   const lakeMargin=meshData('organic-lake-soft-banks',openCanalMouths(lakebankGeometry(s),arms),shore);if(lakeMargin){lakeMargin.hasVertexAlpha=true;lakeMargin.freezeWorldMatrix();}
+   staticScenerySignature=nextScenery;
+  }
+  carveChannels(s,arms);
   const visiblePalms=plan.palms.filter(p=>!(s.gathering?.features||[]).some(f=>f.kind==='tree'&&Math.hypot(f.x-p.x,f.y-p.y)<.85));
   const nextPalms=JSON.stringify(visiblePalms.map(p=>[p.id,p.x,p.y]));
   if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}updatePalmGroups();}

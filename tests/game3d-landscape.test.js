@@ -308,3 +308,15 @@ test('road edits retain channel-cut ground buffers; mask and canal edits remain 
  const before=JSON.stringify(s);fresh=await createGameLandscape(B,scene,s,materials);for(const name of ['alluvial-valley','soft-riparian-grass','distant-alluvial-plain'])for(const kind of [B.VertexBuffer.PositionKind,B.VertexBuffer.NormalKind,B.VertexBuffer.ColorKind])assert.deepEqual(Array.from(view.meshes.find(m=>m.name===name).getVerticesData(kind)),Array.from(fresh.meshes.find(m=>m.name===name).getVerticesData(kind)),`${name}/${kind} must match a fresh landscape`);assert.equal(JSON.stringify(s),before);
  }finally{B.SceneLoader.LoadAssetContainerAsync=loader;fresh?.dispose();view?.dispose();scene.dispose();engine.dispose();}
 });
+
+test('road work retains static banks and fallback tufts; topology edits match fresh geometry',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)])),loader=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async()=>{throw Error('test optional-art fallback');};let view,fresh;const s=createGame({start:'established'});
+ s.roads=[{id:'probe',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:1,construction:{kind:'upgrade',target:2,required:{clay:3,reed:1},delivered:{clay:3,reed:1},remaining:{clay:0,reed:0},work:0}}];s.buildings.push({type:'canal',x:3,y:3,level:1});
+ try{view=await createGameLandscape(B,scene,s,materials);const names=['actual-dry-canal-bank','volumetric-riparian-colonies','irregular-physical-riverbanks','organic-lake-soft-banks'],old=names.map(name=>view.meshes.find(m=>m.name===name));assert.ok(old.every(Boolean));
+ s.roads[0].construction.work=9;view.update(s,1);assert.ok(old.every(m=>view.meshes.includes(m)&&!m.isDisposed()),'work changes must retain static ground scenery');
+ s.roads[0].level=2;delete s.roads[0].construction;view.update(s,2);assert.ok(old.every(m=>view.meshes.includes(m)&&!m.isDisposed()),'completed paving must retain banks and tufts');
+ s.roads[0].b={x:4.5,y:4.5};view.update(s,3);assert.ok(old.every(m=>m.isDisposed()),'changed road footprint must invalidate its scenery mask');
+ const before=JSON.stringify(s);fresh=await createGameLandscape(B,scene,s,materials);for(const name of names)for(const kind of [B.VertexBuffer.PositionKind,B.VertexBuffer.NormalKind,B.VertexBuffer.ColorKind,B.VertexBuffer.UVKind])assert.deepEqual(Array.from(view.meshes.find(m=>m.name===name).getVerticesData(kind)),Array.from(fresh.meshes.find(m=>m.name===name).getVerticesData(kind)),`${name}/${kind} must match fresh topology`);assert.equal(JSON.stringify(s),before);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=loader;fresh?.dispose();view?.dispose();scene.dispose();engine.dispose();}
+});
