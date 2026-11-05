@@ -1,0 +1,226 @@
+{
+  "at": "2026-11-05T01:47:42.975736+00:00",
+  "commit": "29902960fd46c24677d4fad537e4c9bf217b6dc7",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d7c09906d7e1fd717c4ded0e9df40ffaecc48e1a9a3bd552eaeb9c731704b110",
+      "actual": "d7c09906d7e1fd717c4ded0e9df40ffaecc48e1a9a3bd552eaeb9c731704b110",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "878abe339306f0406969f7c77a8bc462d860e5054a2aa43bed785fda31b8814c",
+      "actual": "878abe339306f0406969f7c77a8bc462d860e5054a2aa43bed785fda31b8814c",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "c07dc0a77076ae447972c6150996d5b8e8d6c69debd24bc3a0a0bab7155b941b",
+      "actual": "c07dc0a77076ae447972c6150996d5b8e8d6c69debd24bc3a0a0bab7155b941b",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_FROZEN_BOUNDS_EXPERIMENT_2026-11-05.md",
+      "status": 200,
+      "expected": "d7cf76173ba04e88479c51df406b54a670dfe1e6a1c43c5d1860eef14c3c6ca5",
+      "actual": "d7cf76173ba04e88479c51df406b54a670dfe1e6a1c43c5d1860eef14c3c6ca5",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_FRUSTUM_PAIRED_PROBE_2026-11-05.md",
+      "status": 200,
+      "expected": "e1a4851f404968307ba8da42624731ce4d587def779eba4d2d4eb7d3ff5abce1",
+      "actual": "e1a4851f404968307ba8da42624731ce4d587def779eba4d2d4eb7d3ff5abce1",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_ROAD_RENDER_GROUPS_2026-11-05.md",
+      "status": 200,
+      "expected": "c75f2891e43aa67fdbdc492e1713ee8345c79195c9b7e045f95d87b376df988f",
+      "actual": "c75f2891e43aa67fdbdc492e1713ee8345c79195c9b7e045f95d87b376df988f",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_SCENE_MESH_INVENTORY_2026-11-05.md",
+      "status": 200,
+      "expected": "8fbfb8fdd2fba27b476b867f61f356df4c2f1f96645fe66386d45001ebfbac97",
+      "actual": "8fbfb8fdd2fba27b476b867f61f356df4c2f1f96645fe66386d45001ebfbac97",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-frozen-bounds-rejected.json",
+      "status": 200,
+      "expected": "9f8185ab7e3b05c0dc1bcce67bc2653fe91581300a779b14063bab74c5410964",
+      "actual": "9f8185ab7e3b05c0dc1bcce67bc2653fe91581300a779b14063bab74c5410964",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-frustum-paired-probe.json",
+      "status": 200,
+      "expected": "0cba50d0f3773cbef8faff5fc893d9fe6193714dbb31a0f0fc41e0cb335dcaa0",
+      "actual": "0cba50d0f3773cbef8faff5fc893d9fe6193714dbb31a0f0fc41e0cb335dcaa0",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-acceptance.json",
+      "status": 200,
+      "expected": "0774448b3bc9ea258c6ea77bbaac3d123b638136234ab27289ec1f46002d2b28",
+      "actual": "0774448b3bc9ea258c6ea77bbaac3d123b638136234ab27289ec1f46002d2b28",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-home-off.jpg",
+      "status": 200,
+      "expected": "6bc8040de3882a727b79158cb17bbc6c61a4ad9a2071f64740e0a692fb3bf1aa",
+      "actual": "6bc8040de3882a727b79158cb17bbc6c61a4ad9a2071f64740e0a692fb3bf1aa",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-home-on.jpg",
+      "status": 200,
+      "expected": "dac3acfd2bd845323cf11a9eeda5abda975c3b629be1cd362cd79adfa5498136",
+      "actual": "dac3acfd2bd845323cf11a9eeda5abda975c3b629be1cd362cd79adfa5498136",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-image-diff.json",
+      "status": 200,
+      "expected": "b780ed35919b3c2aa2f75631712f1568c643d9128c14f570fea45992f7c1c479",
+      "actual": "b780ed35919b3c2aa2f75631712f1568c643d9128c14f570fea45992f7c1c479",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-opposite-day-off.jpg",
+      "status": 200,
+      "expected": "a088183c7477d8fdc879e760050c088f78d22691a8ab0faba6bbbd03a6a3ce57",
+      "actual": "a088183c7477d8fdc879e760050c088f78d22691a8ab0faba6bbbd03a6a3ce57",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-opposite-day-on.jpg",
+      "status": 200,
+      "expected": "ae86a5030f21df5965d0a40fc91f30c31028e0fefb7408c7d3fdd066ab4ed806",
+      "actual": "ae86a5030f21df5965d0a40fc91f30c31028e0fefb7408c7d3fdd066ab4ed806",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-overview-first.json",
+      "status": 200,
+      "expected": "91f41cbc17b2708ccbc8fb947ab7ae19d4a0eba3c4358d619f21dd9f444de4cc",
+      "actual": "91f41cbc17b2708ccbc8fb947ab7ae19d4a0eba3c4358d619f21dd9f444de4cc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-overview-off.jpg",
+      "status": 200,
+      "expected": "ebdc412662b1b630346b5844678aea0ac775d38fecfdc4ef2e02066890c01326",
+      "actual": "ebdc412662b1b630346b5844678aea0ac775d38fecfdc4ef2e02066890c01326",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-overview-on.jpg",
+      "status": 200,
+      "expected": "f12398b2b098bc5b37f8d4df7c707122da75edcc9c4affdb179ba98a32654ea5",
+      "actual": "f12398b2b098bc5b37f8d4df7c707122da75edcc9c4affdb179ba98a32654ea5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-road-groups-real-upgrade.jpg",
+      "status": 200,
+      "expected": "470189e20476864a111790ac152df898a8d1f758e61ac10f4b2dfdee612118e6",
+      "actual": "470189e20476864a111790ac152df898a8d1f758e61ac10f4b2dfdee612118e6",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scene-mesh-inventory.json",
+      "status": 200,
+      "expected": "3536b470bea04435301c1358ccd370f0f88485009cf6b4736c3c6cbe88d61472",
+      "actual": "3536b470bea04435301c1358ccd370f0f88485009cf6b4736c3c6cbe88d61472",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "06872afbc213b5d35382651ff466a8a49c6717982a929d943c9e1dab4752f143",
+      "actual": "06872afbc213b5d35382651ff466a8a49c6717982a929d943c9e1dab4752f143",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "98302a2a1b5b9de92c28d9264a3abc3cc53736f9d36a070d2d1b5983bd195212",
+      "actual": "98302a2a1b5b9de92c28d9264a3abc3cc53736f9d36a070d2d1b5983bd195212",
+      "match": true
+    },
+    {
+      "path": "game3d/road-render-groups.js",
+      "status": 200,
+      "expected": "5d5359e3878a5218204b2114bab24a3072bc5fe3be80db021fd8ce75ee8a1c85",
+      "actual": "5d5359e3878a5218204b2114bab24a3072bc5fe3be80db021fd8ce75ee8a1c85",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "5e209a23867492a154c2a5c7fac901f39ff4994aa3e109160d6f25026ae931f5",
+      "actual": "5e209a23867492a154c2a5c7fac901f39ff4994aa3e109160d6f25026ae931f5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9abdb8949c99f8ecc5e68035874671c44774edf14a32f821eebbb881c3c09956",
+      "actual": "9abdb8949c99f8ecc5e68035874671c44774edf14a32f821eebbb881c3c09956",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ca94e1769161cb60d3ca8f6b3a379e5ae4607abde5ab16d8cd1914b0ce7e9499",
+      "actual": "ca94e1769161cb60d3ca8f6b3a379e5ae4607abde5ab16d8cd1914b0ce7e9499",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "9d5aa31ffce1b1a0c42c8ed92d5af6cb2dfd2325c11b4771530b9c29ef88d900",
+      "actual": "9d5aa31ffce1b1a0c42c8ed92d5af6cb2dfd2325c11b4771530b9c29ef88d900",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4d6d0b9ddd8f9eff2d15bc4198ac6f64edd8a9f70113d7669ff74e3847019c76",
+      "actual": "4d6d0b9ddd8f9eff2d15bc4198ac6f64edd8a9f70113d7669ff74e3847019c76",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "1d7e0b2e2c63c3712cddbcb1c5d35b1c61289370c6fa4f46bb2dbdcb1cccba66",
+      "actual": "1d7e0b2e2c63c3712cddbcb1c5d35b1c61289370c6fa4f46bb2dbdcb1cccba66",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "c50f019ce793f79b9e89ffda65a7c576582aa3ad76baf12e5af55265d0e26041",
+      "actual": "c50f019ce793f79b9e89ffda65a7c576582aa3ad76baf12e5af55265d0e26041",
+      "match": true
+    },
+    {
+      "path": "tests/road-render-groups.test.js",
+      "status": 200,
+      "expected": "b2371c23adedbe5d8f78d2d6b6c182e0ee8796d04d7c5d662ed87a7a8c79567c",
+      "actual": "b2371c23adedbe5d8f78d2d6b6c182e0ee8796d04d7c5d662ed87a7a8c79567c",
+      "match": true
+    }
+  ],
+  "matched": 31,
+  "total": 31
+}
