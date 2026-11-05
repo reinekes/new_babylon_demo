@@ -1,0 +1,283 @@
+diff --git a/game3d/buildings.js b/game3d/buildings.js
+index 2991801..7c99836 100644
+--- a/game3d/buildings.js
++++ b/game3d/buildings.js
+@@ -1,3 +1,4 @@
++import {createBuildingRenderGroups} from './building-render-groups.js';
+ import {isStrictSumer} from '../scenario-profiles.js';
+ import {workstationBuilding} from './workstations.js';
+ import {createRoofAccess} from './roof-access.js';
+@@ -55,6 +56,7 @@ export function mergeCourtyardAsset(B,container){
+ export async function createGameBuildings(B,scene,materials,options={}){
+  let cropAssets=options.deferAssets?null:await loadFieldCrops(B,scene),cropPromise=null;
+  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
++ const renderGroups=createBuildingRenderGroups(B,scene,meshes,{strategy:options.buildingGroupStrategy||'thin'});let buildingBatching=options.buildingBatching===true,batchDirty=true;
+  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
+  const sacredModels=createSacredModels(B,scene);
+  const visualSignature=(b,state,shoreContext)=>gameBuildingSignature(b,state,shoreContext)+(sacredModels.ready(b,state)?'|sacred-ready':'');
+@@ -63,7 +65,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
+  function highlight(keys=[]){
+   const sig=keys.map(key=>key+':'+active.get(key)?.signature).join('|');if(sig===highlightSignature)return;clearHighlights();highlightSignature=sig;
+   for(const key of keys){const record=active.get(key);if(!record)continue;
+-   for(const original of record.meshes){if(original.metadata?.homeLamp)continue;const source=original.sourceMesh||original,mesh=source.clone('nearby-building-highlight',original.parent,true);mesh.position.copyFrom(original.position);mesh.position.y+=.006;mesh.rotation.copyFrom(original.rotation);mesh.scaling.copyFrom(original.scaling);mesh.isVisible=true;mesh.isPickable=false;mesh.material=highlightMaterial;mesh.metadata={highlight:true};mesh.receiveShadows=false;highlighted.push(mesh);}
++   for(const original of record.meshes){if(original.metadata?.homeLamp)continue;const source=original.sourceMesh||original,mesh=source.clone('nearby-building-highlight',original.parent,true);mesh.position.copyFrom(original.position);mesh.position.y+=.006;mesh.rotation.copyFrom(original.rotation);mesh.scaling.copyFrom(original.scaling);mesh.isVisible=true;mesh.isPickable=false;mesh.material=highlightMaterial;mesh.metadata={highlight:true};mesh.receiveShadows=false;mesh.setEnabled(true);highlighted.push(mesh);}
+    const n=record.root.metadata.type==='ziggurat'?2:1,c=(n-1)*3,r=n*3-.12,points=[];
+    for(const x of [-1,1])for(const z of [-1,1])points.push([new B.Vector3(c+x*(r-.8),.16,c+z*r),new B.Vector3(c+x*r,.16,c+z*r),new B.Vector3(c+x*r,.16,c+z*(r-.8))]);
+    const line=B.MeshBuilder.CreateLineSystem('nearby-building-corners',{lines:points},scene);line.parent=record.root;line.color=B.Color3.FromHexString('#ffe099');line.isPickable=false;highlighted.push(line);
+@@ -144,7 +146,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
+   t={root,sources,users:1};templates.set(key,t);return t;
+  }
+  function release(key){const t=templates.get(key);if(t&&!--t.users){t.root.dispose();templates.delete(key);}}
+- function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}record.root.dispose();release(record.signature);active.delete(key);}
++ function remove(key){const record=active.get(key);if(!record)return;batchDirty=true;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}record.root.dispose();release(record.signature);active.delete(key);}
+  function placeRoot(root,b){
+   const angle=rotationOf(b)*Math.PI/2,offset=(footprintSize(b)-1)*3,c=Math.cos(angle),s=Math.sin(angle);
+   root.rotation.y=angle;root.position.set(b.x*6+offset-(c+s)*offset,0,b.y*6+offset-(-s+c)*offset);
+@@ -204,9 +206,10 @@ export async function createGameBuildings(B,scene,materials,options={}){
+      const mesh=source.metadata?.homeLamp?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(source.metadata?.homeLamp)mesh.receiveShadows=true;
+      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
+     }
+-    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b)};active.set(key,record);meshes.push(...parts);
++    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b),working:!!b.construction};batchDirty=true;active.set(key,record);meshes.push(...parts);
+    }
+-   if(record.rotation!==rotationOf(b)){
++   if(record.working!==!!b.construction){record.working=!!b.construction;batchDirty=true;}
++   if(record.rotation!==rotationOf(b)){batchDirty=true;
+     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,b);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(b);
+    }
+    // The courtyard architecture keeps its three shared templates. A tiny garden
+@@ -214,7 +217,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
+    // duplicates the entire high-detail house or fragments preview caches.
+    if(cropAssets&&isHouse(b)){
+     const gardenSignature=`${cropSeed(b)%5}:${b.x},${b.y}:${rotationOf(b)}:${shoreContext.signature}`;
+-    if(record.gardenSignature!==gardenSignature){
++    if(record.gardenSignature!==gardenSignature){batchDirty=true;
+      for(const mesh of record.gardenMeshes||[]){const a=record.meshes.indexOf(mesh),c=meshes.indexOf(mesh);if(a>=0)record.meshes.splice(a,1);if(c>=0)meshes.splice(c,1);mesh.dispose();}
+      record.gardenMeshes=cropAssets.createGarden(b,state);record.gardenSignature=gardenSignature;
+      for(const mesh of record.gardenMeshes){mesh.parent=record.root;mesh.isVisible=true;mesh.isPickable=true;mesh.receiveShadows=true;mesh.metadata={...mesh.metadata,...record.root.metadata};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();record.meshes.push(mesh);meshes.push(mesh);}
+@@ -226,7 +229,10 @@ export async function createGameBuildings(B,scene,materials,options={}){
+   for(const key of active.keys())if(!seen.has(key))remove(key);
+   const fieldSites=new Set((state.buildings||[]).filter(b=>b.type==='field').map(b=>`${b.x},${b.y}`));
+   for(const [key,entry]of fieldBeds)if(!fieldSites.has(`${entry.x},${entry.y}`)&&!(previewRecord?.x===entry.x&&previewRecord?.y===entry.y)){entry.owner.dispose();fieldBeds.delete(key);}
++  updateRenderGroups();
+  }
++ function updateRenderGroups(){if(!batchDirty)return;renderGroups.update(buildingBatching?[...active.values()].flatMap(r=>r.meshes.map(mesh=>({mesh,x:r.x,y:r.y,working:r.working}))):[]);batchDirty=false;}
++ function setBuildingBatching(enabled){if(disposed)return;buildingBatching=enabled!==false;batchDirty=true;updateRenderGroups();}
+  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
+- return {sync,meshes,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
++ return {sync,meshes,setBuildingBatching,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;renderGroups.dispose();clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ }
+diff --git a/game3d/renderer.js b/game3d/renderer.js
+index 031ff8b..0d8fbca 100644
+--- a/game3d/renderer.js
++++ b/game3d/renderer.js
+@@ -1,3 +1,4 @@
++import {buildingGroupEntity} from './building-render-groups.js';
+ import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js';
+ import {pickResourceDeposit} from './deposit-picking.js';
+ import {miracleCelebrationView} from '../miracle-celebration.js';
+@@ -28,7 +29,7 @@ export const GAME3D_RELEASE='city4x-screen-budget-20261103-1';
+ // Keep atmospheric visibility comparable when viewing an enlarged valley.
+ export const valleyFogDensity=radius=>.0018*Math.min(1,240/Math.max(1,radius));
+ export function worldCell(point,state){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<worldWidth(state)&&y<worldHeight(state)?{x,y}:null;}
+-export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
++export function pickedEntity(mesh,faceId,thinInstanceIndex){for(let n=mesh;n;n=n.parent){if(n.metadata?.buildingRenderGroup)return buildingGroupEntity(n.metadata.buildingRenderGroup,faceId,thinInstanceIndex);if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;}return null;}
+ export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
+ export function previewFor(state,type,cell,rotation=0){if(!type||!cell)return null;const reason=canBuild(state,type,cell.x,cell.y,false,rotation);return {...cell,allowed:!reason,reason};}
+ export async function createGameRenderer(canvas,onSelect,options={}){
+@@ -98,7 +99,7 @@ export class GameRenderer3D{
+  pick(clientX,clientY,entity=false){
+   if(!this.state)return null;const rect=this.canvas.getBoundingClientRect(),x=clientX-rect.left,y=clientY-rect.top;if(x<0||y<0||x>rect.width||y>rect.height)return null;
+   const B=this.B,ray=this.scene.createPickingRay(x,y,B.Matrix.Identity(),this.camera);
+-  if(entity&&!this.selection&&!this.roadMode){const hit=this.scene.pickWithRay(ray,m=>m.isPickable&&m.isEnabled()&&!!pickedEntity(m));if(hit?.hit){if(!this.roadDrawMode){const deposit=pickResourceDeposit(this.state,ray,{maxDistance:Number.isFinite(hit.distance)?hit.distance:0});if(deposit)return deposit;}const meta=pickedEntity(hit.pickedMesh);if(meta?.tile)return {...meta.tile};if(meta?.citizenId!==undefined){const c=this.state.citizens.find(v=>v.id===meta.citizenId);if(c)return {...worldCell({x:c.x*6,z:c.y*6},this.state),citizenId:c.id};}if(meta?.animalId)return {...worldCell(hit.pickedPoint,this.state),animalId:meta.animalId,animalKind:meta.animalKind};}}
++  if(entity&&!this.selection&&!this.roadMode){const hit=this.scene.pickWithRay(ray,m=>m.isPickable&&m.isEnabled()&&!!pickedEntity(m));if(hit?.hit){if(!this.roadDrawMode){const deposit=pickResourceDeposit(this.state,ray,{maxDistance:Number.isFinite(hit.distance)?hit.distance:0});if(deposit)return deposit;}const meta=pickedEntity(hit.pickedMesh,hit.faceId,hit.thinInstanceIndex);if(meta?.tile)return {...meta.tile};if(meta?.citizenId!==undefined){const c=this.state.citizens.find(v=>v.id===meta.citizenId);if(c)return {...worldCell({x:c.x*6,z:c.y*6},this.state),citizenId:c.id};}if(meta?.animalId)return {...worldCell(hit.pickedPoint,this.state),animalId:meta.animalId,animalKind:meta.animalKind};}}
+   if(entity&&!this.selection&&!this.roadMode&&!this.roadDrawMode){const deposit=pickResourceDeposit(this.state,ray);if(deposit)return deposit;}
+   const d=ray.intersectsPlane(new B.Plane(0,1,0,0));return d!==null&&d>=0?worldCell(ray.origin.add(ray.direction.scale(d)),this.state):null;
+  }
+diff --git a/scripts/prepare-sumer-trade-browser-check.mjs b/scripts/prepare-sumer-trade-browser-check.mjs
+index 9bcda90..af48240 100644
+--- a/scripts/prepare-sumer-trade-browser-check.mjs
++++ b/scripts/prepare-sumer-trade-browser-check.mjs
+@@ -7,7 +7,7 @@ import {resolve,join} from 'node:path';
+ import {fileURLToPath,pathToFileURL} from 'node:url';
+ const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
+ execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
+-const tag='sumer-trade-supplied-20261105-21';
++const tag='sumer-trade-supplied-20261105-23';
+ const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
+ import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
+ import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
+@@ -74,7 +74,7 @@ if(!candidateSource.includes(preciseCheck))throw Error('Review candidate probe a
+ await writeFile(join(output,'coarse-candidates.mjs'),candidateSource.replace(preciseCheck,''));
+ let app=await readFile(join(output,'app-check.js'),'utf8');
+ app=`import {serviceTrade} from './trade-fixture.mjs?probe=${tag}';\nimport {weatherAt as probeWeatherAt} from './repo/environment.js';\nimport {createRenderableMeshCandidates as coarseCandidates} from './coarse-candidates.mjs?probe=${tag}';\n`+app;
+-app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();renderer.engine.setHardwareScalingLevel(1/1.5);renderer.resize();setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");setProbePalmBatching(new URLSearchParams(location.search).get(\"palmBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
++app=app.replace('await renderer.detailQueue?.idle();','await renderer.detailQueue?.idle();renderer.engine.setHardwareScalingLevel(1/1.5);renderer.resize();renderer.buildings?.setBuildingBatching?.(new URLSearchParams(location.search).get(\"buildingBatch\")!==\"off\");setProbeRoadBatching(new URLSearchParams(location.search).get(\"roadBatch\")!==\"off\");setProbePalmBatching(new URLSearchParams(location.search).get(\"palmBatch\")!==\"off\");if(new URLSearchParams(location.search).get("frustum")==="coarse")renderer.scene.getActiveMeshCandidates=coarseCandidates(renderer.scene);');
+ app=app.replace('quality:renderer.quality,','quality:renderer.quality,probeRenderPixelRatio:1.5,hardwareScalingLevel:renderer.engine.getHardwareScalingLevel(),');
+ app=app.replace('cameraRadius:renderer.camera?.radius,','cameraAlpha:renderer.camera?.alpha,cameraBeta:renderer.camera?.beta,cameraRadius:renderer.camera?.radius,');
+ app=app.replace('meshes:renderer.scene?.meshes.length,','activeMeshes:renderer.scene?.getActiveMeshes?.().length,meshes:renderer.scene?.meshes.length,');
+@@ -98,7 +98,8 @@ export function sceneInventory(){
+  return {groups:Object.fromEntries(Object.entries(groups).map(([kind,row])=>[kind,{...row,materials:row.materials.size}])),topActiveSources:[...names].sort((a,b)=>b[1]-a[1]).slice(0,30),engineDrawCallsCounterCurrent:renderer.engine?._drawCalls?.current??null};
+ }
+ `;
+-app=app.replace('quality:renderer.quality,','quality:renderer.quality,vegetation:vegetationGPUInfo(),palms:palmStateInfo(),inventory:sceneInventory(),');
++app=app.replace('quality:renderer.quality,','quality:renderer.quality,architecture:buildingGroupInfo(),vegetation:vegetationGPUInfo(),palms:palmStateInfo(),inventory:sceneInventory(),');
++app+=`\nexport function buildingGroupInfo(){const all=renderer.buildings?.meshes||[],groups=all.filter(m=>m.metadata?.buildingRenderGroup);return {groups:groups.length,groupedParts:groups.reduce((n,m)=>n+(m.metadata.buildingRenderGroup.entities||m.metadata.buildingRenderGroup.faces).length,0),enabledParts:all.filter(m=>m.isEnabled()).length,totalParts:all.length,thinGroups:groups.filter(m=>m.thinInstanceCount).length,wrongGPUBufferBindings:groups.filter(m=>m.thinInstanceCount&&[0,1,2,3].some(i=>m.getVertexBuffer('world'+i)?.getBuffer()!==m._thinInstanceDataStorage?.matrixBuffer?.getBuffer())).length,geometryPayloadBytes:groups.reduce((n,m)=>n+m.getVerticesDataKinds().filter(k=>!k.startsWith('world')).reduce((a,k)=>a+(m.getVerticesData(k)?.length||0)*4,0)+m.getIndices().length*4,0),matrixBytes:groups.reduce((n,m)=>n+(m.thinInstanceCount||0)*16*4,0),vertices:groups.reduce((n,m)=>n+m.getTotalVertices(),0),indices:groups.reduce((n,m)=>n+m.getTotalIndices(),0),disposedRegistryMeshes:all.filter(m=>m.isDisposed()).length};}\n`;
+ app+=`\nexport function vegetationGPUInfo(){const all=renderer.landscape?.meshes||[],batches=all.filter(m=>m.metadata?.valleyBatch);return {batches:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGeometries:new Set(batches.map(m=>m.geometry)).size,geometryPayloadUpperBoundBytes:batches.reduce((n,m)=>n+m.getVerticesDataKinds().filter(k=>!k.startsWith('world')).reduce((a,k)=>a+(m.getVerticesData(k)?.length||0)*4,0)+m.getIndices().length*4,0),matrixBytes:batches.reduce((n,m)=>n+m.thinInstanceCount*16*4,0),wrongGPUBufferBindings:batches.filter(m=>[0,1,2,3].some(i=>m.getVertexBuffer('world'+i)?.getBuffer()!==m._thinInstanceDataStorage?.matrixBuffer?.getBuffer())).length,disposedRegistryMeshes:all.filter(m=>m.isDisposed()).length};}\n`;
+ app+=`\nexport function palmStateInfo(){const parts=(renderer.landscape?.meshes||[]).filter(m=>m.sourceMesh&&m.name.startsWith('date-palm-')),batches=(renderer.landscape?.meshes||[]).filter(m=>m.metadata?.palmBatch);return {parts:parts.length,enabledIndividuals:parts.filter(m=>m.isEnabled()).length,groups:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGroupedParts:new Set(batches.flatMap(m=>m.metadata.palmBatch.parts)).size,weather:probeWeatherAt(state).type};}\n`;
+ await writeFile(join(output,'app-check.js'),app);
+@@ -120,7 +121,7 @@ check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);a
+ const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
+ // Private baseline is the last verified published landscape, including its old
+ // scenery rebuild path; shared engine/state/assets remain the current candidate.
+-const baselineCommit='7362678e97d253649d8ccfebdce7d583c44d5b10';
++const baselineCommit='aa54ebb4b267e02530eb9cfaad213875ffc73d30';
+ const rewriteLandscape=code=>code.replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
+ const baselineVegetationSource=execFileSync('git',['show',baselineCommit+':game3d/valley-vegetation.js'],{cwd:source,encoding:'utf8'}),candidateVegetationSource=await readFile(join(source,'game3d/valley-vegetation.js'),'utf8'),baselineVegetation=rewriteLandscape(baselineVegetationSource),candidateVegetation=rewriteLandscape(candidateVegetationSource);
+ await writeFile(join(output,'valley-vegetation-baseline.mjs'),baselineVegetation);await writeFile(join(output,'valley-vegetation-candidate.mjs'),candidateVegetation);
+@@ -136,4 +137,14 @@ await writeFile(join(output,'landscape-uncached.mjs'),baselineLandscape);
+ const baselineHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-uncached.mjs?probe=${tag}"`);
+ if(baselineHtml===html)throw Error('Missing landscape import-map entry for baseline');
+ await writeFile(join(output,'perf-uncached.html'),baselineHtml);
++const architectureSources={};
++for(const mode of ['baseline','candidate']){
++ for(const module of ['buildings','renderer',...(mode==='candidate'?['building-render-groups']:[])]){
++  const path='game3d/'+module+'.js',code=mode==='baseline'?execFileSync('git',['show',baselineCommit+':'+path],{cwd:source,encoding:'utf8'}):await readFile(join(source,path),'utf8');
++  const rewritten=rewriteLandscape(code).replace(/import\(['"]\.\/([^'"]+)['"]\)/g,"import('./repo/game3d/$1')");
++  await writeFile(join(output,module+'-'+mode+'.mjs'),rewritten);architectureSources[mode+'-'+module]={productionSHA256:sha(code),moduleSHA256:sha(rewritten)};
++ }
++ const path=join(output,mode==='baseline'?'perf-uncached.html':'perf.html');let page=await readFile(path,'utf8');page=page.replace(/(<script type="importmap">)(.*?)(<\/script>)/s,(_all,start,json,end)=>{const map=JSON.parse(json);for(const module of ['buildings','renderer',...(mode==='candidate'?['building-render-groups']:[])])map.imports['./game3d/'+module+'.js']='../'+module+'-'+mode+'.mjs?probe='+tag;return start+JSON.stringify(map)+end;});await writeFile(path,page);
++}
++check=check.replace('terrainCutCaching:',`architectureSources:${JSON.stringify(architectureSources)},architectureBaselineCommit:'${baselineCommit}',terrainCutCaching:`);await writeFile(join(output,'check.js'),check);
+ console.log(JSON.stringify({output,page:'perf.html?transport=land or river',seconds:80,tag,warning:'Isolated origin only; measure close and overview separately, no heavy tests during measurements'}));
+diff --git a/tests/game3d-buildings.test.js b/tests/game3d-buildings.test.js
+index f364821..7ccba09 100644
+--- a/tests/game3d-buildings.test.js
++++ b/tests/game3d-buildings.test.js
+@@ -32,12 +32,12 @@ function loadGeometry(scene){
+   }
+  }container.removeAllFromScene();return container;
+ }
+-async function setup(configure){
++async function setup(configure,options={}){
+  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['plaster','brick','wood','linen','reed','terracotta','soil','grass','stone'].map(name=>[name,new B.PBRMaterial(name,scene)]));
+  configure?.(B,scene,materials);
+  const previous=B.SceneLoader.LoadAssetContainerAsync;let loads=0;
+  B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>{loads++;assert.equal(file,'assets/art-courtyard/models/adobe-courtyard.glb');return loadGeometry(scene);};
+- const layer=await createGameBuildings(B,scene,materials);B.SceneLoader.LoadAssetContainerAsync=previous;
++ const layer=await createGameBuildings(B,scene,materials,options);B.SceneLoader.LoadAssetContainerAsync=previous;
+  return {layer,scene,materials,loads,dispose(){layer.dispose();scene.dispose();engine.dispose();}};
+ }
+ const house=(level=1,x=3,y=4,id='home')=>({id,type:'house',level,x,y});
+@@ -240,3 +240,17 @@ test('starter hut templates remain through upgrade, then become ordinary II geom
+   b.level=2;delete b.construction;t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-courtyard-2')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.equal(gameBuildingSignature(b),gameBuildingSignature({...b,starterHut:undefined}));
+  }finally{t.dispose();}
+ });
++
++for(const strategy of ['merge','thin'])test('optional '+strategy+' static groups retain lamps, highlights, exact entity metadata and reversible instance ownership',async()=>{
++ const t=await setup(undefined,{buildingBatching:true,buildingGroupStrategy:strategy});try{
++  const state={buildings:[house(1,3,4,'a'),house(1,4,4,'b')],citizens:[{home:'a'}]},before=JSON.stringify(state);
++  t.layer.sync(state);const groups=()=>t.layer.meshes.filter(m=>m.metadata?.buildingRenderGroup);assert.ok(groups().length>0);const first=groups()[0];
++  assert.ok(t.layer.meshes.some(m=>m.metadata?.homeLamp&&m.isEnabled()));assert.ok(t.layer.meshes.some(m=>!m.metadata?.homeLamp&&!m.metadata?.buildingRenderGroup&&!m.isEnabled()));
++  t.layer.sync(state);assert.ok(groups().includes(first));assert.equal(JSON.stringify(state),before);
++  t.layer.highlight(['a']);const highlights=t.scene.meshes.filter(m=>m.metadata?.highlight);assert.ok(highlights.length>0);assert.ok(highlights.every(m=>m.isEnabled()&&m.isVisible));
++  t.layer.setBuildingBatching(false);assert.equal(groups().length,0);assert.ok(t.layer.meshes.every(m=>m.isEnabled()));
++  t.layer.setBuildingBatching(true);assert.ok(groups().length>0);state.buildings[1].rotation=1;t.layer.sync(state);assert.ok(groups().length>0);
++  state.buildings.splice(1,1);t.layer.sync(state);for(const m of groups())for(const entity of m.metadata.buildingRenderGroup.entities||m.metadata.buildingRenderGroup.faces.map(f=>f.entity))assert.equal(entity.buildingKey,'a');
++  state.buildings.length=0;t.layer.sync(state);assert.equal(t.layer.meshes.length,0);
++ }finally{t.dispose();}
++});
+diff --git a/game3d/building-render-groups.js b/game3d/building-render-groups.js
+new file mode 100644
+index 0000000..39f77e6
+--- /dev/null
++++ b/game3d/building-render-groups.js
+@@ -0,0 +1,58 @@
++// Presentation only. Call update after replacing geometry or recomputing frozen
++// world matrices; owners retain the original instances for highlights/fallback.
++export function createBuildingRenderGroups(B,scene,meshes,{regionSize=8,strategy='merge'}={}){
++ const groups=new Map(),originals=new Map();let disposed=false;
++ const restore=()=>{for(const [mesh,enabled]of originals)if(!mesh.isDisposed())mesh.setEnabled(enabled);};
++ const release=group=>{const i=meshes.indexOf(group.mesh);if(i>=0)meshes.splice(i,1);group.mesh.dispose(false,false);};
++ function eligible(entry){
++  const m=entry.mesh,s=m.sourceMesh||m;
++  if(entry.working||m.metadata?.homeLamp||!m.isEnabled()||!m.isVisible||m.visibility!==1||!m.isPickable||!m.material||s.skeleton||s.morphTargetManager||s.billboardMode||s.thinInstanceCount||s.animations?.length||m.animations?.length||s.material?.subMaterials||m.material.needAlphaBlendingForMesh?.(m)||m.material.needAlphaTestingForMesh?.(m)||m.material.alpha!==1)return false;
++  const w=m.getWorldMatrix(),a=w.m,scale=[Math.hypot(a[0],a[1],a[2]),Math.hypot(a[4],a[5],a[6]),Math.hypot(a[8],a[9],a[10])];
++  // Reflections need winding changes; nonuniform/sheared transforms need normal
++  // inverse-transposes. Leave both on Babylon's original instance path.
++  return w.determinant()>0&&scale[0]>0&&scale.every(v=>Math.abs(v-scale[0])<1e-5)&&Math.abs(a[0]*a[4]+a[1]*a[5]+a[2]*a[6])<1e-5&&Math.abs(a[0]*a[8]+a[1]*a[9]+a[2]*a[10])<1e-5&&Math.abs(a[4]*a[8]+a[5]*a[9]+a[6]*a[10])<1e-5;
++ }
++ function update(entries){
++  if(disposed)return;restore();const wanted=new Map(),seen=new Set();
++  for(const entry of entries){
++   const m=entry.mesh;if(!m||m.isDisposed()||seen.has(m))continue;seen.add(m);
++   if(!originals.has(m))originals.set(m,m.isEnabled());if(!eligible(entry))continue;
++   const s=m.sourceMesh||m,key=[strategy==='thin'?'thin':Math.floor(entry.x/regionSize),strategy==='thin'?s.geometry?.uniqueId:Math.floor(entry.y/regionSize),m.material.uniqueId,m.layerMask,m.renderingGroupId,m.receiveShadows,s.overrideMaterialSideOrientation,s.hasVertexAlpha,s.useVertexColors,s.getVerticesDataKinds().sort().join(',')].join(':');
++   if(!wanted.has(key))wanted.set(key,[]);wanted.get(key).push(entry);
++  }
++  for(const m of originals.keys())if(!seen.has(m)||m.isDisposed())originals.delete(m);
++  const retained=new Set();
++  for(const [key,parts]of wanted){
++   if(parts.length<2)continue;const signature=parts.map(({mesh:m})=>[m.uniqueId,m.getWorldMatrix().updateFlag,(m.sourceMesh||m).geometry?.uniqueId].join(',')).join('|');let group=groups.get(key);
++   if(group?.signature!==signature){
++    if(group){release(group);groups.delete(key);}let merged=null;const proxies=[];
++    try{
++     // MergeMeshes rejects InstancedMesh. Disposable regular meshes share each
++     // source Geometry, bake its instance's exact world matrix, then relinquish
++     // only their own references. No source/material/texture is disposed.
++     if(strategy==='thin'){
++      const source=parts[0].mesh.sourceMesh||parts[0].mesh;merged=source.clone('building-thin-group',null,true);merged.parent=null;merged.makeGeometryUnique();merged.freezeWorldMatrix(B.Matrix.Identity());const matrix=new Float32Array(parts.length*16);parts.forEach(({mesh},i)=>mesh.getWorldMatrix().copyToArray(matrix,i*16));merged.thinInstanceSetBuffer('matrix',matrix,16,true);merged.thinInstanceEnablePicking=true;merged.thinInstanceRefreshBoundingInfo(true);
++     }else{
++     for(const {mesh:m}of parts){const p=(m.sourceMesh||m).clone('building-merge-proxy',null,true);proxies.push(p);p.parent=null;p.material=m.material;p.freezeWorldMatrix(m.getWorldMatrix().clone());}
++     merged=B.Mesh.MergeMeshes(proxies,false,true,null,false,false);
++     }
++    }catch{if(merged){merged.dispose(false,false);merged=null;}}finally{for(const p of proxies)p.dispose(false,false);}
++    if(!merged)continue;
++    const first=parts[0].mesh,s=first.sourceMesh||first;merged.name=`building-region-${key}`;merged.material=first.material;merged.isVisible=true;merged.isPickable=true;merged.checkCollisions=false;merged.receiveShadows=first.receiveShadows;merged.layerMask=first.layerMask;merged.renderingGroupId=first.renderingGroupId;merged.overrideMaterialSideOrientation=s.overrideMaterialSideOrientation;merged.hasVertexAlpha=s.hasVertexAlpha;merged.useVertexColors=s.useVertexColors;
++    let end=0;const faces=parts.map(({mesh:m})=>({end:end+=m.getTotalIndices()/3,entity:m.metadata}));merged.metadata={buildingRenderGroup:strategy==='thin'?{entities:parts.map(({mesh})=>mesh.metadata)}:{faces}};merged.computeWorldMatrix(true);merged.freezeWorldMatrix();group={mesh:merged,signature};groups.set(key,group);meshes.push(merged);
++   }
++   retained.add(key);for(const {mesh}of parts)mesh.setEnabled(false);
++  }
++  for(const [key,group]of groups)if(!retained.has(key)){release(group);groups.delete(key);}
++ }
++ function dispose(){if(disposed)return;disposed=true;restore();for(const group of groups.values())release(group);groups.clear();originals.clear();}
++ return {update,dispose};
++}
++
++// Babylon reports a global triangle faceId for the merged single submesh.
++export function buildingGroupEntity(group,faceId,thinInstanceIndex){
++ if(faceId===undefined)return group;
++ if(group.entities)return Number.isInteger(thinInstanceIndex)&&thinInstanceIndex>=0&&thinInstanceIndex<group.entities.length?group.entities[thinInstanceIndex]:null;
++ const faces=group.faces;if(!Number.isInteger(faceId)||faceId<0||faceId>=faces.at(-1)?.end)return null;
++ let lo=0,hi=faces.length-1;while(lo<hi){const mid=(lo+hi)>>1;if(faceId<faces[mid].end)hi=mid;else lo=mid+1;}return faces[lo].entity;
++}
+diff --git a/tests/building-render-groups.test.js b/tests/building-render-groups.test.js
+new file mode 100644
+index 0000000..61f5e36
+--- /dev/null
++++ b/tests/building-render-groups.test.js
+@@ -0,0 +1,24 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {readFileSync} from 'node:fs';import vm from 'node:vm';
++import {createBuildingRenderGroups} from '../game3d/building-render-groups.js';
++import {pickedEntity} from '../game3d/renderer.js';
++const sandbox={console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.BABYLON;
++function fixture(){const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[],material=new B.StandardMaterial('brick',scene),owner=createBuildingRenderGroups(B,scene,meshes);return {engine,scene,meshes,material,owner,dispose(){owner.dispose();scene.dispose();engine.dispose();}};}
++function buildings(t){const source=B.MeshBuilder.CreateBox('source',{width:2,height:1,depth:2},t.scene);source.material=t.material;source.receiveShadows=true;source.isVisible=false;const entries=[1,2].map((x,i)=>{const mesh=source.createInstance('house-'+i);mesh.position.set(x*6,1,6);mesh.rotation.y=i*Math.PI/2;mesh.isVisible=true;mesh.isPickable=true;mesh.metadata={tile:{x,y:1},buildingKey:'house-'+i,type:'house'};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();return {mesh,x,y:1};});return {source,entries};}
++function groups(t){return t.meshes.filter(m=>m.metadata?.buildingRenderGroup);}
++test('static instance groups preserve world vertices and exact roof selection for each building',()=>{const t=fixture();try{const {source,entries}=buildings(t),original=Array.from(source.getVerticesData('position')),world=entries.flatMap(({mesh})=>{const p=mesh.getVerticesData('position'),out=[];for(let i=0;i<p.length;i+=3)out.push(...B.Vector3.TransformCoordinates(B.Vector3.FromArray(p,i),mesh.getWorldMatrix()).asArray());return out;});t.owner.update(entries);assert.equal(groups(t).length,1);const group=groups(t)[0];assert.equal(group.material,t.material);assert.equal(group.getTotalIndices(),72);const positions=group.getVerticesData('position');world.forEach((v,i)=>assert.ok(Math.abs(v-positions[i])<1e-6));assert.deepEqual(Array.from(source.getVerticesData('position')),original);assert.ok(entries.every(e=>!e.mesh.isEnabled()));assert.ok(group.receiveShadows);assert.ok(group.isPickable);assert.ok(pickedEntity(group));for(const entry of entries){const hit=t.scene.pickWithRay(new B.Ray(new B.Vector3(entry.x*6,10,6),new B.Vector3(0,-1,0)),m=>m.isEnabled()&&m.isPickable&&!!pickedEntity(m));assert.ok(hit.hit);assert.equal(hit.pickedMesh,group);assert.deepEqual(pickedEntity(group,hit.faceId),entry.mesh.metadata);}assert.equal(pickedEntity(group,-1),null);assert.equal(pickedEntity(group,24),null);}finally{t.dispose();}});
++test('groups reuse immutable geometry, rebuild after rotation, restore removed instances and keep shared sources alive',()=>{const t=fixture();try{const {source,entries}=buildings(t);t.owner.update(entries);const first=groups(t)[0];assert.ok(first);t.owner.update(entries);assert.equal(groups(t)[0],first);entries[1].mesh.unfreezeWorldMatrix();entries[1].mesh.rotation.y+=.3;entries[1].mesh.computeWorldMatrix(true);entries[1].mesh.freezeWorldMatrix();t.owner.update(entries);assert.ok(first.isDisposed());const next=groups(t)[0];assert.ok(next);t.owner.update(entries.slice(0,1));assert.equal(groups(t).length,0);assert.ok(entries.every(e=>e.mesh.isEnabled()));t.owner.update(entries);t.owner.dispose();assert.equal(groups(t).length,0);assert.ok(entries.every(e=>e.mesh.isEnabled()));assert.ok(!source.isDisposed());assert.equal(source.getTotalVertices(),24);assert.ok(t.scene.materials.includes(t.material));assert.equal(t.scene.meshes.filter(m=>m.name.startsWith('building-merge-proxy')).length,0);}finally{t.dispose();}});
++test('dynamic, transparent, reflected, nonuniform, incompatible and different-region parts stay separate',()=>{const t=fixture();try{const {entries}=buildings(t),extra=[];const add=configure=>{const mesh=B.MeshBuilder.CreateBox('excluded',{},t.scene);mesh.material=t.material;mesh.position.set(18,1,6);mesh.metadata={tile:{x:3,y:1}};configure(mesh);mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();extra.push({mesh,x:3,y:1});return mesh;};add(m=>m.metadata.homeLamp=true);const working=add(()=>{});extra.at(-1).working=true;add(m=>m.visibility=.5);add(m=>m.scaling.x=-1);add(m=>m.scaling.x=2);add(m=>{m.material=t.material.clone('alpha');m.material.alpha=.5;});add(m=>m.billboardMode=B.Mesh.BILLBOARDMODE_ALL);add(m=>m.isPickable=false);add(m=>m.setEnabled(false));const far=add(()=>{});extra.at(-1).x=20;const before=extra.map(e=>e.mesh.isEnabled());t.owner.update([...entries,...extra]);assert.equal(groups(t).length,1);extra.forEach((e,i)=>assert.equal(e.mesh.isEnabled(),before[i],e.mesh.name));assert.equal(far.isEnabled(),true);assert.equal(working.isEnabled(),true);}finally{t.dispose();}});
++test('failed instance merge preserves originals without leaking temporary geometry or shared materials',()=>{const t=fixture(),merge=B.Mesh.MergeMeshes;try{const {entries,source}=buildings(t),count=t.scene.meshes.length;B.Mesh.MergeMeshes=()=>{throw Error('GPU allocation unavailable');};t.owner.update(entries);assert.equal(groups(t).length,0);assert.ok(entries.every(e=>e.mesh.isEnabled()));assert.equal(t.scene.meshes.length,count);assert.ok(!source.isDisposed());assert.ok(t.scene.materials.includes(t.material));}finally{B.Mesh.MergeMeshes=merge;t.dispose();}});
++
++test('merged world normals, UVs, colors and triangle winding exactly follow both source instances',()=>{const t=fixture();try{
++ const {source,entries}=buildings(t);const count=source.getTotalVertices(),colors=Array.from({length:count*4},(_,i)=>i%4===3?1:(i%9)/8);source.setVerticesData('color',colors);source.hasVertexAlpha=true;
++ const expectedNormals=entries.flatMap(({mesh})=>{const values=source.getVerticesData('normal'),out=[];for(let i=0;i<values.length;i+=3)out.push(...B.Vector3.TransformNormal(B.Vector3.FromArray(values,i),mesh.getWorldMatrix()).normalize().asArray());return out;});
++ const indices=Array.from(source.getIndices()),uvs=Array.from(source.getVerticesData('uv'));t.owner.update(entries);const merged=groups(t)[0];assert.ok(merged);const normals=merged.getVerticesData('normal');expectedNormals.forEach((v,i)=>assert.ok(Math.abs(v-normals[i])<1e-6));assert.deepEqual(Array.from(merged.getVerticesData('uv')),[...uvs,...uvs]);assert.deepEqual(Array.from(merged.getVerticesData('color')),[...colors,...colors]);assert.deepEqual(Array.from(merged.getIndices()),[...indices,...indices.map(i=>i+count)]);assert.equal(merged.hasVertexAlpha,true);
++ }finally{t.dispose();}});
++test('thin architecture groups share immutable geometry safely and pick each instance by its real index',()=>{const t=fixture();try{
++ t.owner.dispose();t.owner=createBuildingRenderGroups(B,t.scene,t.meshes,{strategy:'thin'});const {source,entries}=buildings(t),original=Array.from(source.getVerticesData('position'));t.owner.update(entries);const group=groups(t)[0];assert.ok(group);assert.equal(group.thinInstanceCount,2);assert.equal(group.getTotalVertices(),24);assert.notEqual(group.geometry,source.geometry);assert.deepEqual(Array.from(group.getVerticesData('position')),original);assert.ok(group.thinInstanceEnablePicking);
++ for(const e of entries){const hit=t.scene.pickWithRay(new B.Ray(new B.Vector3(e.x*6,10,6),new B.Vector3(0,-1,0)),m=>m.isEnabled()&&m.isPickable&&!!pickedEntity(m));assert.ok(hit.hit);assert.equal(hit.pickedMesh,group);assert.deepEqual(pickedEntity(group,hit.faceId,hit.thinInstanceIndex),e.mesh.metadata);}assert.equal(pickedEntity(group,0,-1),null);assert.equal(pickedEntity(group,0,2),null);assert.equal(pickedEntity(group,0),null);
++ for(let i=0;i<4;i++)assert.equal(group.getVertexBuffer('world'+i).getBuffer(),group._thinInstanceDataStorage.matrixBuffer.getBuffer());assert.equal(source.thinInstanceCount,0);t.owner.dispose();assert.ok(!source.isDisposed());assert.ok(entries.every(e=>e.mesh.isEnabled()));
++ }finally{t.dispose();}});

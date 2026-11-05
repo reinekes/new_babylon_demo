@@ -1,0 +1,16 @@
+import {createHash} from 'node:crypto';
+export function probeURL(value,base,run){const url=new URL(value,base),origin=new URL(base).origin;if(url.origin!==origin||!['http:','https:'].includes(url.protocol))return value;url.searchParams.set('loading-probe',run);return url.href;}
+export const memoryStorageSource=`const probeValues=new Map();const localStorage={getItem:key=>probeValues.get(String(key))??null,setItem:(key,value)=>probeValues.set(String(key),String(value)),removeItem:key=>probeValues.delete(String(key))};`;
+export function instrumentApp(source){
+ for(const anchor of ["const saveLibrary=createSaveLibrary();","createPanelControls({onResize:","key='new-babylon-v1'",'update();requestAnimationFrame(frame);'])if(!source.includes(anchor))throw Error('Loading probe app anchor changed: '+anchor);
+ const relocated=source.replaceAll("from './","from '../../").replaceAll("import('./","import('../../").replaceAll("new URL('./","new URL('../../").replace('const saveLibrary=createSaveLibrary();','const saveLibrary=createSaveLibrary({indexedDB:null});').replace('createPanelControls({onResize:','createPanelControls({storage:localStorage,onResize:');
+ return memoryStorageSource+"\nlocalStorage.setItem('new-babylon-v1',encode(createNewCity({mode:'mature',seed:137})));\n"+relocated+`\nexport const loadingProbe={appReady:performance.now(),firstFrame:null,detailsReady:null,mode:renderer.mode};const probeDraw=renderer.draw.bind(renderer);renderer.draw=(...args)=>{const result=probeDraw(...args);loadingProbe.firstFrame??=performance.now();return result;};Promise.resolve(renderer.detailsReady).then(()=>loadingProbe.detailsReady=performance.now());export function loadingProbeState(){return {...loadingProbe,cameraRadius:renderer.camera?.radius,quality:renderer.quality,canvas:[renderer.engine?.getRenderWidth(),renderer.engine?.getRenderHeight()],population:state.population,buildings:state.buildings.length,persistentStorage:false,paused};}\n`;
+}
+export const sourceSHA=source=>createHash('sha256').update(source).digest('hex');
+export function summarizeResources(entries){
+ const totals=list=>({requests:list.length,transferBytes:list.reduce((n,e)=>n+(e.transferSize||0),0),encodedBodyBytes:list.reduce((n,e)=>n+(e.encodedBodySize||0),0),decodedBodyBytes:list.reduce((n,e)=>n+(e.decodedBodySize||0),0),networkBodyRequests:list.filter(e=>e.transferSize>300&&e.encodedBodySize>0).length});
+ const all=totals(entries),glb=totals(entries.filter(e=>new URL(e.name).pathname.endsWith('.glb')));return {...all,zeroTransferRequests:entries.filter(e=>!e.transferSize).length,glb:{requests:glb.requests,networkBodyRequests:glb.networkBodyRequests,transferBytes:glb.transferBytes,encodedBodyBytes:glb.encodedBodyBytes,decodedBodyBytes:glb.decodedBodyBytes}};
+}
+export function rewriteProbeCSS(source,path,release){
+ const origin='https://loading.invalid/',base=new URL(path,origin);return source.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/g,(whole,_quote,value)=>{if(value.startsWith('#')||value.startsWith('data:')||value.startsWith('blob:'))return whole;const url=new URL(value,base);if(url.origin!==new URL(origin).origin)return whole;url.searchParams.set('loading-probe',release);const path=url.pathname.slice(1),target=path.endsWith('.css')?'./'+path.replaceAll('/','--'):'../../../'+path;return 'url('+JSON.stringify(target+url.search+url.hash)+')';});
+}

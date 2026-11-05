@@ -1,0 +1,77 @@
+{
+  "baselineCommit": "aa54ebb4b267e02530eb9cfaad213875ffc73d30",
+  "indexSHA256": "a49017011ad76ff48ff4acbdceff9503e206afad3614d64ebbc96b49783a6fd5",
+  "appSHA256": "68eb0d79530a1d3a42919dd0f4e46e4ed518a6371200de52e68e3f1edd36a958",
+  "instrumentedAppSHA256": "a4834cf85b64f9a9893ce615e1c3f5731ff99eb700d35df2091d5f438cadf988",
+  "fixture": "strict Southern Sumer / mature / seed137 / paused / in-memory autosave, panel preferences and disabled IndexedDB library",
+  "cssRelease": "cold-loading-probe-20261105-1",
+  "cssCopies": {
+    "style.css": "style.css",
+    "life-analytics.css": "life-analytics.css",
+    "city-tools.css": "city-tools.css",
+    "night-ui.css": "night-ui.css",
+    "game3d/style.css": "game3d--style.css",
+    "calm-ui.css": "calm-ui.css",
+    "view-controls.css": "view-controls.css",
+    "divine-control.css": "divine-control.css",
+    "godhood.css": "godhood.css",
+    "encyclopedia.css": "encyclopedia.css",
+    "saves.css": "saves.css",
+    "uruk-ui.css": "uruk-ui.css",
+    "assets/ui/fonts.css": "assets--ui--fonts.css"
+  },
+  "cssSources": {
+    "style.css": {
+      "sourceSHA256": "f9143429275eee7a62944a78d810c61f573de17ed78aa6e84f8361681e9349ce",
+      "probeSHA256": "f9143429275eee7a62944a78d810c61f573de17ed78aa6e84f8361681e9349ce"
+    },
+    "life-analytics.css": {
+      "sourceSHA256": "cae01af923ef6bff7562d2332f5d34f4ae9bb82eefe4845265888d5e5513ce36",
+      "probeSHA256": "cae01af923ef6bff7562d2332f5d34f4ae9bb82eefe4845265888d5e5513ce36"
+    },
+    "city-tools.css": {
+      "sourceSHA256": "31d8aa0cf57f11ca7da41c4d8920fde9667ec17e9c3a8e0c514112b91ed58ab0",
+      "probeSHA256": "31d8aa0cf57f11ca7da41c4d8920fde9667ec17e9c3a8e0c514112b91ed58ab0"
+    },
+    "night-ui.css": {
+      "sourceSHA256": "0f9cd79afcf372facda86ab0deefd3c38042cbed3c2096b84c4186e80efcbc5d",
+      "probeSHA256": "0f9cd79afcf372facda86ab0deefd3c38042cbed3c2096b84c4186e80efcbc5d"
+    },
+    "game3d/style.css": {
+      "sourceSHA256": "21c89178571fd94360eb5f02db91f5904fb92013fa21de3b86497b94e7da2091",
+      "probeSHA256": "21c89178571fd94360eb5f02db91f5904fb92013fa21de3b86497b94e7da2091"
+    },
+    "calm-ui.css": {
+      "sourceSHA256": "1edad8186fc5cc572dd516d6f8c50cf039fd908448d6ce727b9467b7bfe3b1cd",
+      "probeSHA256": "1edad8186fc5cc572dd516d6f8c50cf039fd908448d6ce727b9467b7bfe3b1cd"
+    },
+    "view-controls.css": {
+      "sourceSHA256": "8e2dc69b7b3dbf470331dad758b6d2cb254732efb7f2e5c2d532be421bde65bd",
+      "probeSHA256": "8e2dc69b7b3dbf470331dad758b6d2cb254732efb7f2e5c2d532be421bde65bd"
+    },
+    "divine-control.css": {
+      "sourceSHA256": "9f7406e3133c478ef3c3c6e369c90ff24c995b14471bdc3f04e273d0dbcd04a4",
+      "probeSHA256": "9f7406e3133c478ef3c3c6e369c90ff24c995b14471bdc3f04e273d0dbcd04a4"
+    },
+    "godhood.css": {
+      "sourceSHA256": "7af8c27e38555e828c44831117611a9830e60d6c1ab74effa08018342f8866b8",
+      "probeSHA256": "7af8c27e38555e828c44831117611a9830e60d6c1ab74effa08018342f8866b8"
+    },
+    "encyclopedia.css": {
+      "sourceSHA256": "e12fcdafe5ca22114f70998bec1cbf4b685b3ded14689c45f931ee5da9231ce7",
+      "probeSHA256": "e12fcdafe5ca22114f70998bec1cbf4b685b3ded14689c45f931ee5da9231ce7"
+    },
+    "saves.css": {
+      "sourceSHA256": "88aaeed003a1104ff97a92811efbb7b4fcf211c6ffec5f67596a93d3b34e6ab8",
+      "probeSHA256": "88aaeed003a1104ff97a92811efbb7b4fcf211c6ffec5f67596a93d3b34e6ab8"
+    },
+    "uruk-ui.css": {
+      "sourceSHA256": "8b66db9698c9390a428891b8480d18aa86901e27fd07a91adca3d7d5e0c1b860",
+      "probeSHA256": "5baa198a6a809554563c19e7d7508f8865a0bb577d776bde55494cd467a8391d"
+    },
+    "assets/ui/fonts.css": {
+      "sourceSHA256": "19abd93e72a867dc0140188385a47b6e7155139ca14bc7de4abe061185d22799",
+      "probeSHA256": "264710ae1cb060ee36e8da13ea34d0ad73b9853f88c6cb86fbf0ab27f6b3958c"
+    }
+  }
+}
