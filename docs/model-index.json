@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "f8c45fc64ed1d852f4edc6e85c968b863c37315e250ecef32e692ce948deba4b"
+      "sha256": "21b01902acce5dceb896d0ae9e9ecdb21601cb1043733bd55b00b1d4e07694d7"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -81,7 +81,7 @@
     },
     {
       "file": "game3d/valley-vegetation.js",
-      "sha256": "c7ca5f6cbcb5065df7755e45af73d8195986e7930954be111d0dcd3356cc0040"
+      "sha256": "6865799c55d5812be4c25312a54005ee20408d239b06a39942feb2f0b09be8da"
     }
   ],
   "models": [

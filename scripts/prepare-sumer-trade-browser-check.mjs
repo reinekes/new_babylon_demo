@@ -7,7 +7,7 @@ import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const source=fileURLToPath(new URL('../',import.meta.url)),output=resolve(process.argv[2]||'/tmp/babylon-sumer-trade-check');
 execFileSync(process.execPath,[join(source,'scripts/prepare-season-browser-check.mjs'),source,output],{stdio:'inherit'});
-const tag='sumer-trade-supplied-20261105-19';
+const tag='sumer-trade-supplied-20261105-20';
 const fixture=`import {createGame,advanceTime,canBuild,miracle,resolveEvent,encode,decode,terrain} from './repo/engine.js';
 import {strictScenario,legacyScenario} from './repo/scenario-profiles.js';
 import {initializeEcology,POPULATION_LIMIT} from './repo/ecology.js';
@@ -98,7 +98,8 @@ export function sceneInventory(){
  return {groups:Object.fromEntries(Object.entries(groups).map(([kind,row])=>[kind,{...row,materials:row.materials.size}])),topActiveSources:[...names].sort((a,b)=>b[1]-a[1]).slice(0,30),engineDrawCallsCounterCurrent:renderer.engine?._drawCalls?.current??null};
 }
 `;
-app=app.replace('quality:renderer.quality,','quality:renderer.quality,palms:palmStateInfo(),inventory:sceneInventory(),');
+app=app.replace('quality:renderer.quality,','quality:renderer.quality,vegetation:vegetationGPUInfo(),palms:palmStateInfo(),inventory:sceneInventory(),');
+app+=`\nexport function vegetationGPUInfo(){const all=renderer.landscape?.meshes||[],batches=all.filter(m=>m.metadata?.valleyBatch);return {batches:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGeometries:new Set(batches.map(m=>m.geometry)).size,wrongGPUBufferBindings:batches.filter(m=>[0,1,2,3].some(i=>m.getVertexBuffer('world'+i)?.getBuffer()!==m._thinInstanceDataStorage?.matrixBuffer?.getBuffer())).length,disposedRegistryMeshes:all.filter(m=>m.isDisposed()).length};}\n`;
 app+=`\nexport function palmStateInfo(){const parts=(renderer.landscape?.meshes||[]).filter(m=>m.sourceMesh&&m.name.startsWith('date-palm-')),batches=(renderer.landscape?.meshes||[]).filter(m=>m.metadata?.palmBatch);return {parts:parts.length,enabledIndividuals:parts.filter(m=>m.isEnabled()).length,groups:batches.length,instances:batches.reduce((n,m)=>n+m.thinInstanceCount,0),uniqueGroupedParts:new Set(batches.flatMap(m=>m.metadata.palmBatch.parts)).size,weather:probeWeatherAt(state).type};}\n`;
 await writeFile(join(output,'app-check.js'),app);
 let check=await readFile(join(output,'check.js'),'utf8');const start=check.indexOf('const s=createGame('),end=check.indexOf("localStorage.setItem(");
@@ -119,14 +120,17 @@ check=check.replace(/app-check.js\?probe=[^'"\s]+/g,'app-check.js?probe='+tag);a
 const html=(await readFile(join(output,'perf.html'),'utf8')).replace(/check.js\?probe=[^'"\s]+/g,'check.js?probe='+tag);await writeFile(join(output,'perf.html'),html);
 // Private baseline is the last verified published landscape, including its old
 // scenery rebuild path; shared engine/state/assets remain the current candidate.
-const baselineCommit='1d936d6773daf2d8b2bc468329e4610c4a9f40b7';
+const baselineCommit='7362678e97d253649d8ccfebdce7d583c44d5b10';
 const rewriteLandscape=code=>code.replace(/from ['"]\.\/([^'"]+)['"]/g,"from './repo/game3d/$1'").replace(/from ['"]\.\.\/([^'"]+)['"]/g,"from './repo/$1'");
-const baselineLandscapeSource=execFileSync('git',['show',baselineCommit+':game3d/landscape.js'],{cwd:source,encoding:'utf8'}),baselineLandscape=rewriteLandscape(baselineLandscapeSource),candidateLandscapeSource=await readFile(join(source,'game3d/landscape.js'),'utf8'),candidateLandscape=rewriteLandscape(candidateLandscapeSource),sha=code=>createHash('sha256').update(code).digest('hex');
+const baselineVegetationSource=execFileSync('git',['show',baselineCommit+':game3d/valley-vegetation.js'],{cwd:source,encoding:'utf8'}),candidateVegetationSource=await readFile(join(source,'game3d/valley-vegetation.js'),'utf8'),baselineVegetation=rewriteLandscape(baselineVegetationSource),candidateVegetation=rewriteLandscape(candidateVegetationSource);
+await writeFile(join(output,'valley-vegetation-baseline.mjs'),baselineVegetation);await writeFile(join(output,'valley-vegetation-candidate.mjs'),candidateVegetation);
+const baselineLandscapeSource=execFileSync('git',['show',baselineCommit+':game3d/landscape.js'],{cwd:source,encoding:'utf8'}),candidateLandscapeSource=await readFile(join(source,'game3d/landscape.js'),'utf8'),baselineLandscape=rewriteLandscape(baselineLandscapeSource).replace('./repo/game3d/valley-vegetation.js','./valley-vegetation-baseline.mjs?probe='+tag),candidateLandscape=rewriteLandscape(candidateLandscapeSource).replace('./repo/game3d/valley-vegetation.js','./valley-vegetation-candidate.mjs?probe='+tag),sha=code=>createHash('sha256').update(code).digest('hex');
+if(!baselineLandscape.includes('valley-vegetation-baseline.mjs?probe=')||!candidateLandscape.includes('valley-vegetation-candidate.mjs?probe='))throw Error('Vegetation baseline/candidate mapping did not apply');
 await writeFile(join(output,'landscape-candidate.mjs'),candidateLandscape);
 const candidateHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-candidate.mjs?probe=${tag}"`);
 if(candidateHtml===html)throw Error('Missing candidate landscape mapping');
 await writeFile(join(output,'perf.html'),candidateHtml);
-check=check.replace('terrainCutCaching:',`landscapeProductionSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineLandscapeSource)}':'${sha(candidateLandscapeSource)}',landscapeModuleSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineLandscape)}':'${sha(candidateLandscape)}',terrainCutCaching:`);
+check=check.replace('terrainCutCaching:',`vegetationProductionSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineVegetationSource)}':'${sha(candidateVegetationSource)}',vegetationModuleSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineVegetation)}':'${sha(candidateVegetation)}',landscapeProductionSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineLandscapeSource)}':'${sha(candidateLandscapeSource)}',landscapeModuleSHA256:location.pathname.endsWith('/perf-uncached.html')?'${sha(baselineLandscape)}':'${sha(candidateLandscape)}',terrainCutCaching:`);
 await writeFile(join(output,'check.js'),check);
 await writeFile(join(output,'landscape-uncached.mjs'),baselineLandscape);
 const baselineHtml=html.replace(/("\.\/game3d\/landscape\.js":)"[^"]+"/,`$1"../landscape-uncached.mjs?probe=${tag}"`);

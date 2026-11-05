@@ -86,6 +86,9 @@ export async function createValleyVegetation(B,scene,{tier='balanced',assets=VAL
     const m=src.clone(`valley-${kind}-batch-${cell}-${src.uniqueId}`);m.setEnabled(true);m.isVisible=true;m.position.setAll(0);m.rotation.setAll(0);m.rotationQuaternion=null;m.scaling.setAll(1);
     const matrices=new Float32Array(points.length*16);
     for(const [i,p]of points.entries())B.Matrix.Compose(new B.Vector3(p.scale,p.scale,p.scale),B.Quaternion.RotationYawPitchRoll(p.angle,0,0),new B.Vector3(p.x*TILE,visualSurfaceElevation(p.x,p.y,s),p.y*TILE)).copyToArray(matrices,i*16);
+    // Thin-instance world attributes live on geometry, so regions need their
+    // own geometry bindings even though they retain the same plant/material.
+    m.makeGeometryUnique();
     m.thinInstanceSetBuffer('matrix',matrices,16,true);m.thinInstanceRefreshBoundingInfo();m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.isPickable=false;m.receiveShadows=true;m.metadata={valleyBatch:{kind,cell,points}};m.freezeWorldMatrix();meshes.push(m);batches.push(m);
    }
   }}
