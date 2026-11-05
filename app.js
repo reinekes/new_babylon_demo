@@ -1,3 +1,5 @@
+import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
+import {irrigationFor,fieldWater} from './irrigation.js';
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {miraclePrice} from './miracle-discovery.js';
@@ -62,7 +64,7 @@ import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale} from './trading.js';
 import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,layRoad} from './roads.js';
 import {weatherAt} from './environment.js';
-import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
+import {setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites} from './construction.js';
 import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary} from './engine.js';
@@ -254,10 +256,20 @@ function updateDetail(){
  $('building-controls').innerHTML=q?`<div id="inspector-site-live">${siteStatus(b)}</div>${priorityControl(b)}<button class="management-button danger" data-cancel="${b.x},${b.y}">${q.kind==='upgrade'?'Отменить улучшение':'Отменить строительство'}</button>`:`<p>${b.type==='house'?'':['market','harbor'].includes(b.type)?`Носильщиков у торговой площадки: ${state.citizens.filter(c=>(c.tradeMarket||c.saleMarket)===buildingKey(b)).length} / ${activeLaborKind(state)==='unload'?UNLOAD_PORTERS:2}.`:stockStores(state).some(store=>buildingKey(store)===buildingKey(b))?'':`Назначено работников: ${state.citizens.filter(c=>c.work===buildingKey(b)).length}.`}</p>${b.type!=='canal'&&levelOf(b)<3?`<h4>Цена улучшения до ${levelOf(b)+1}</h4>${costs(cost,true,b.type!=='house')}<small>${levelOf(b)===1?'II уровень: сырцовая кладка':'III уровень: обожжённая кладка, новый сырец не нужен'}</small>`:''}<button class="upgrade-button" id="upgrade-building" ${reason?'disabled':''}>${b.type==='canal'?'Один уровень':levelOf(b)>=3?'Максимальный уровень':`Улучшить до ${levelOf(b)+1}`}</button><small id="upgrade-reason">${esc(reason||'Материалы резервируются сразу.')}</small>`;
  if(!q||q.kind==='upgrade')$('building-controls').insertAdjacentHTML('afterbegin',guardControl(b)+staffingControl(b)+stockAccountControl(b));if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
  if(!q||q.kind==='upgrade')$('building-controls').insertAdjacentHTML('afterbegin',productionReadout(state,b)+buildingProductionHistoryHTML(state,b)+buildingInventoryHTML(buildingInventory(state,b),{house:b.type==='house',production:!!Object.keys(BUILDINGS[b.type]?.output||{}).length}));
+ if(b.type==='field'&&!q&&soilCareEnabled(state)){
+  const key=buildingKey(b),water=fieldWater(state,b),year=state.season===0&&(b.crop?.sown||0)===0?state.year:state.year+1;
+  const rest=b.soil?.restYear===year,salt=Math.round((b.soil?.salt||0)*100),next=Math.round(nextFieldSalt(state,b,water)*100);
+  const diagnosis=salt>25?'Соль снижает урожай':next>25?'После лета возможны потери урожая':'Поле пока даёт полный урожай';
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Почва</h4><p>Засоление ${salt}% · ${diagnosis}. ${water.drained?'Дренаж отводит воду.':'Для дренажа нужен соседний отвод, связанный с водоёмом.'}</p><button id="field-rest" type="button">${rest?'Отменить отдых':'Оставить поле под паром'} · год ${year}</button></section>`);
+  $('field-rest').onclick=()=>{ $('field-rest').blur();mutate(setFieldRest(state,key,!rest),rest?'Отдых поля отменён':'Запланирован отдых поля'); };
+ }
  if(b.type==='canal'&&!q&&canalMaintenanceEnabled(state)){
   const worker=state.citizens.find(c=>c.work===buildingKey(b));
   const silt=Math.round((b.silt||0)*100);
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Состояние русла</h4><p>Ил ${silt}% · пропускная способность ${canalShares(b)} из 3 долей</p>${b.canalCleaning?`<small>${worker?`Работник · ${resident(worker)}`:'Наряд ждёт свободного взрослого и доступной дороги'}</small>`:`<button id="clean-canal" type="button" ${silt?'':'disabled'}>Заказать расчистку</button>`}</section>`);
+  const outlet=irrigationFor(state).outlets.has(buildingKey(b));
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><p>${b.drain?(outlet?'Дренаж соединён с водоёмом':'Дренаж ждёт выхода к водоёму'):'Канал подаёт воду полям. Отвод дренажа работает отдельно.'}</p><button id="canal-drain" type="button">${b.drain?'Вернуть канал к поливу':'Использовать как дренаж'}</button></section>`);
+  $('canal-drain').onclick=()=>{ $('canal-drain').blur();mutate(setCanalDrain(state,buildingKey(b),!b.drain),b.drain?'Канал возвращён к поливу':'Участок отведён под дренаж'); };
   const clean=$('clean-canal');
   if(clean)clean.onclick=()=>{clean.blur();mutate(queueCanalCleaning(state,buildingKey(b)),'Назначена расчистка канала');};
  }

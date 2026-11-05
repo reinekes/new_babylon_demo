@@ -1,14 +1,19 @@
+import {fieldResting,nextSaltYieldFactor} from './field-soil.js';
 import {calendarRateFor} from './calendar.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
-import {isOperational,outputMultiplier} from './definitions.js';
+import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {mealRation,mealCycle,isDinnerTime,hourOf} from './wellbeing.js';
 import {fieldWater} from './irrigation.js';
 export const SEED_COST=4;
 export function initializeFoodPlan(s){s.foodPlan??={protectSeeds:true};for(const b of s.buildings||[])if(b.type==='field'&&b.crop){b.crop.seedStock??=0;b.crop.seedUsed??=b.crop.sown*SEED_COST;b.crop.sheaves??=0;b.crop.threshed??=0;}}
 export function seedTarget(s){
- let target=0;for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,SEED_COST-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*SEED_COST:0));
- return Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0));
+ let target=0;const resting=new Set();
+ for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b)){
+  if(fieldResting(s,b,s.year+(s.season===0?0:1)))resting.add(buildingKey(b));
+  else target+=Math.max(0,SEED_COST-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*SEED_COST:0));
+ }
+ return Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(resting.has(c.seedField)?0:c.seedFood||0),0));
 }
 export const seedReserve=s=>s.foodPlan?.protectSeeds===false?0:Math.min(s.resources.food,seedTarget(s));
 export const availableFood=s=>Math.max(0,s.resources.food-seedReserve(s));
@@ -19,7 +24,7 @@ export function foodForecast(s,{includeCrops=true}={}){
  const outstanding=isDinnerTime(time)?s.citizens.reduce((n,c)=>n+Math.max(0,mealRation(c)-(c.mealDay===mealCycle(time)?c.mealEaten:0)),0):0;
  const homes=s.buildings.reduce((n,b)=>n+homeMealFood(b),0),inTransit=s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(!c.saleJob?(c.cargo?.food||0)+(c.cargo?.milk||0)*.5:0),0),reserve=seedReserve(s),ready=availableFood(s)+(s.resources.milk||0)*.5+homes+inTransit+s.buildings.reduce((n,b)=>n+(b.workshopStock?.output?.food||0)+(b.workshopStock?.output?.milk||0)*.5,0);
  let unthreshed=0,standing=0,cropPotential=0,seedAtFields=0;for(const b of s.buildings){if(b.type!=='field'||!isOperational(b))continue;const c=b.crop||{},water=includeCrops?fieldWater(s,b):null;unthreshed+=c.sheaves||0;standing+=c.remaining||0;seedAtFields+=c.seedStock||0;
-  if(includeCrops&&s.season<2){const wet=water.canal||s.rain>0||c.legacyYear===s.year&&water.natural,growth=s.season===0?(wet?1:0):Math.min(1,(c.growth||0)+(wet?(45-s.seasonElapsed)/45:0));cropPotential+=84*outputMultiplier(b)*(c.sown||0)*growth*(s.buffs?.fertility?1.6:1);}
+  if(includeCrops&&s.season<2){const wet=water.canal||s.rain>0||c.legacyYear===s.year&&water.natural,growth=s.season===0?(wet?1:0):Math.min(1,(c.growth||0)+(wet?(45-s.seasonElapsed)/45:0));cropPotential+=84*outputMultiplier(b)*nextSaltYieldFactor(s,b,water)*(c.sown||0)*growth*(s.buffs?.fertility?1.6:1);}
  }
  const sites=s.pests?.sites||[],rate=sites.length?.036:0,pestRisk=Math.min(s.resources.food,rate*secondsToHarvest),demand=daily*meals+outstanding;
  return {ready,reserve,target:seedTarget(s),homes,inTransit,seedAtFields,unthreshed,standing,cropPotential,secondsToHarvest,meals,demand,pestRisk,balance:ready-demand-pestRisk,protected:s.foodPlan?.protectSeeds!==false};

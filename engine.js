@@ -1,3 +1,4 @@
+import {validateFieldSoil} from './field-soil.js';
 import {depositCanalSilt,validateCanalMaintenance} from './canal-maintenance.js';
 import {validateCityLabor} from './city-labor.js';
 import {initializeCatDiscovery,validateCatDiscovery,miraclePrice} from './miracle-discovery.js';
@@ -363,7 +364,7 @@ export function decode(raw){
   if(!validateManualGathering(s))return null;
   if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateWellbeing(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
-  if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
+  if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFieldSoil(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}

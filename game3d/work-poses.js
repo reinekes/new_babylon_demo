@@ -1,3 +1,4 @@
+import {fieldResting} from '../field-soil.js';
 import {needsCanalCleaning} from '../canal-maintenance.js';
 import {workstationBuilding} from './workstations.js';
 import {isWorkday,treatmentViewPosition} from '../workforce.js';
@@ -44,7 +45,7 @@ export function workplaceActivity(s,c,index){
  let kind='gathering',task=b.type,active=true;
  if(b.type==='field'){
   const crop=b.crop||{};kind='farming';task=crop.sheaves>1e-8?'threshing':s.season===2?'harvesting':'sowing';
-  active=crop.sheaves>1e-8||s.season===0&&crop.sown<1-1e-8&&crop.seedStock>1e-8||s.season===2&&crop.remaining>1e-8;
+  active=crop.sheaves>1e-8||s.season===0&&!fieldResting(s,b)&&crop.sown<1-1e-8&&crop.seedStock>1e-8||s.season===2&&crop.remaining>1e-8;
  }else if(['pottery','brewery'].includes(b.type)){
   kind=b.type==='pottery'?'pottery':'brewing';task=b.artisan?.stage;
   active=['forming','brewing'].includes(task)||task==='idle'&&!Object.values(artisanNeeds(b)).some(n=>n>1e-8);

@@ -1,3 +1,4 @@
+import {soilCareEnabled} from './field-soil.js';
 import {canalMaintenanceEnabled,needsCanalCleaning} from './canal-maintenance.js';
 import {harvestDemand,unloadDemand} from './city-labor.js';
 import {preparedFisherInspiration,acceptFisherInspiration} from './miracle-discovery.js';
@@ -207,6 +208,29 @@ export function queueCanalCleaning(s,key){
 
 export function callRepairWorkers(s){
  return callCityWorkers(s,'repair',state=>state.buildings.some(needsCanalCleaning),'Сначала закажи расчистку заиленного канала');
+}
+
+export function setFieldRest(s,key,rest){
+ const reason=blocked(s);
+ if(reason)return {ok:false,reason};
+ const field=s.buildings.find(b=>buildingKey(b)===key);
+ if(!soilCareEnabled(s)||field?.type!=='field'||!isComplete(field)||typeof rest!=='boolean')return {ok:false,reason:'Нужно готовое поле'};
+ const year=s.season===0&&(field.crop?.sown||0)===0?s.year:s.year+1;
+ if(rest)field.soil={...field.soil,salt:field.soil?.salt||0,restYear:year};
+ else if(field.soil?.restYear===year)delete field.soil.restYear;
+ invalidateAssignments(s);
+ syncCitizens(s);
+ return {ok:true,year};
+}
+
+export function setCanalDrain(s,key,drain){
+ const reason=blocked(s);
+ if(reason)return {ok:false,reason};
+ const canal=s.buildings.find(b=>buildingKey(b)===key);
+ if(!soilCareEnabled(s)||canal?.type!=='canal'||!isComplete(canal)||typeof drain!=='boolean')return {ok:false,reason:'Нужен готовый канал'};
+ if(drain)canal.drain=true;
+ else delete canal.drain;
+ return {ok:true};
 }
 
 export function assignWorkplace(s,id,key){

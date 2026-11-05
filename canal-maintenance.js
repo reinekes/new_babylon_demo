@@ -7,7 +7,7 @@ export const needsCanalCleaning=b=>b?.type==='canal'&&isOperational(b)&&b.canalC
 
 export function depositCanalSilt(state,wet){
  if(!canalMaintenanceEnabled(state))return;
- for(const [key,canal] of wet.cells)if(wet.wet.has(key)){
+ for(const [key,canal] of wet.cells)if(wet.wet.has(key)||wet.outlets?.has(key)){
   canal.silt=Math.min(1,((canal.silt||0)*100+12)/100);
  }
 }
@@ -22,6 +22,7 @@ export function clearCanalSilt(canal,work){
 
 export function validateCanalMaintenance(state){
  return state.buildings.every(b=>{
+  if(b.drain!==undefined&&(!canalMaintenanceEnabled(state)||b.type!=='canal'||!isOperational(b)||b.drain!==true))return false;
   if(b.silt===undefined&&b.canalCleaning===undefined)return true;
   return canalMaintenanceEnabled(state)&&b.type==='canal'&&isOperational(b)
    &&Number.isFinite(b.silt)&&b.silt>=0&&b.silt<=1
