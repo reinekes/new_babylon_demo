@@ -1,0 +1,184 @@
+{
+  "at": "2026-11-05T04:54:45.175633+00:00",
+  "commit": "ff1466610be3afa9ad5d5e2b828cf3b6728914ed",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "bc52a1143714966fca2fd1fd846f8187cbf1393ca8f4dcf675b283dab1a58a2a",
+      "actual": "bc52a1143714966fca2fd1fd846f8187cbf1393ca8f4dcf675b283dab1a58a2a",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "ff4c4ed3ee9f33e561b7aaddab6607d5aa52b48464f7f9a0f8b8561cdede72d2",
+      "actual": "ff4c4ed3ee9f33e561b7aaddab6607d5aa52b48464f7f9a0f8b8561cdede72d2",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "8e7e6a5383f8f330a0f36efc648a3cb3c50014780a8808460a1d6cfd9db65303",
+      "actual": "8e7e6a5383f8f330a0f36efc648a3cb3c50014780a8808460a1d6cfd9db65303",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_TERRAIN_CUT_CACHE_2026-11-05.md",
+      "status": 200,
+      "expected": "39591523d4d8526edbe234d30b1699b1ac8ceda79dc7f149d2bdc2d53095066c",
+      "actual": "39591523d4d8526edbe234d30b1699b1ac8ceda79dc7f149d2bdc2d53095066c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scenery-off-close.jpg",
+      "status": 200,
+      "expected": "b670cb9eb81b7ee8397d1355f13d8ecff4e833b2275d69cb39bfa1e94629ae44",
+      "actual": "b670cb9eb81b7ee8397d1355f13d8ecff4e833b2275d69cb39bfa1e94629ae44",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scenery-off-overview.jpg",
+      "status": 200,
+      "expected": "8440e149c3b9d52aedfe53e0ab642d5bc654f94b003f44fefb10fc8d80e83132",
+      "actual": "8440e149c3b9d52aedfe53e0ab642d5bc654f94b003f44fefb10fc8d80e83132",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scenery-on-close.jpg",
+      "status": 200,
+      "expected": "371eb336e8998633c5b50177a3e26fcdebf5f9ee50018dd069d3dc64a880dc8b",
+      "actual": "371eb336e8998633c5b50177a3e26fcdebf5f9ee50018dd069d3dc64a880dc8b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scenery-on-overview.jpg",
+      "status": 200,
+      "expected": "fc744a308964d98eba6c144f3adcac79ec7ab66551b54f09b927ac3330c772b2",
+      "actual": "fc744a308964d98eba6c144f3adcac79ec7ab66551b54f09b927ac3330c772b2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scenery-reuse-acceptance.json",
+      "status": 200,
+      "expected": "b622f8397fde95f1a7ff611f55659e16f2935032abf9a58717fa0d1da95ff1a1",
+      "actual": "b622f8397fde95f1a7ff611f55659e16f2935032abf9a58717fa0d1da95ff1a1",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-scenery-reuse-image-diff.json",
+      "status": 200,
+      "expected": "2fc7265bc7014cb23a1cd72b44c1702c935d0439d58d49537808a58222d773d8",
+      "actual": "2fc7265bc7014cb23a1cd72b44c1702c935d0439d58d49537808a58222d773d8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-static-scenery-cpu.json",
+      "status": 200,
+      "expected": "2f92c3558909f49b12210dd011603f2c3b8a340540759060e6ae9d188c8835ed",
+      "actual": "2f92c3558909f49b12210dd011603f2c3b8a340540759060e6ae9d188c8835ed",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-terrain-cut-cpu.json",
+      "status": 200,
+      "expected": "c98f7f4e4070d4c650f9e24dad5533f4ecac0e2be66fc2189bab7d039e355b63",
+      "actual": "c98f7f4e4070d4c650f9e24dad5533f4ecac0e2be66fc2189bab7d039e355b63",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-terrain-cut-diagnostic-runs.json",
+      "status": 200,
+      "expected": "5da2d5f3c28aa52772c4640bfd0dcc8ac408d102b47d4aaac35cfa7251994b68",
+      "actual": "5da2d5f3c28aa52772c4640bfd0dcc8ac408d102b47d4aaac35cfa7251994b68",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-terrain-cut-image-diff.json",
+      "status": 200,
+      "expected": "df8937730df369df67edc7eb82fd973837cf2adf4c0d32c733b1a763b551194c",
+      "actual": "df8937730df369df67edc7eb82fd973837cf2adf4c0d32c733b1a763b551194c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-terrain-cut-only-matched.json",
+      "status": 200,
+      "expected": "fc1fe81ad53d9f4277e125471bd07f139565805be779c405ac607563fa086c09",
+      "actual": "fc1fe81ad53d9f4277e125471bd07f139565805be779c405ac607563fa086c09",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "fff099a022f670f059ead4c1d56b69089c557a3f861f710ea8c9054bbf489db0",
+      "actual": "fff099a022f670f059ead4c1d56b69089c557a3f861f710ea8c9054bbf489db0",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "f8c45fc64ed1d852f4edc6e85c968b863c37315e250ecef32e692ce948deba4b",
+      "actual": "f8c45fc64ed1d852f4edc6e85c968b863c37315e250ecef32e692ce948deba4b",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "d463fe0c1e35094e13b9163f81bd50e6e179adbfcf349ff79c0d8026f6b238a2",
+      "actual": "d463fe0c1e35094e13b9163f81bd50e6e179adbfcf349ff79c0d8026f6b238a2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e6c779420ce422a782d1fd7424734913073de304ab88420c64af2ffb2269bdc6",
+      "actual": "e6c779420ce422a782d1fd7424734913073de304ab88420c64af2ffb2269bdc6",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "77abe12041fbdfbaf9c9b0ba1be619803b86c2e3526f9abf223bd2922018dc56",
+      "actual": "77abe12041fbdfbaf9c9b0ba1be619803b86c2e3526f9abf223bd2922018dc56",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "d2d14ed09c83e0827ca49f652b8080ff994e2c43cb78c3521b033963b82c5edb",
+      "actual": "d2d14ed09c83e0827ca49f652b8080ff994e2c43cb78c3521b033963b82c5edb",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-scenery-reuse.md",
+      "status": 200,
+      "expected": "0160696dc1315da8d4c3371dbd3f737604218b65d006f63a6dec08958a95bd57",
+      "actual": "0160696dc1315da8d4c3371dbd3f737604218b65d006f63a6dec08958a95bd57",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "fd59c5196b97ad0ed3844f16feba4d38feacc14575cd4261c1a63ba8fc630ddc",
+      "actual": "fd59c5196b97ad0ed3844f16feba4d38feacc14575cd4261c1a63ba8fc630ddc",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "63363de9fc0181d5866a6eb281e570bab0f345bbc0aef61533ef05224259e782",
+      "actual": "63363de9fc0181d5866a6eb281e570bab0f345bbc0aef61533ef05224259e782",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "9e5129d2b2142e284a3d5dd49e782e031eb160c26877b3cc3d3ba7f89f89e784",
+      "actual": "9e5129d2b2142e284a3d5dd49e782e031eb160c26877b3cc3d3ba7f89f89e784",
+      "match": true
+    }
+  ],
+  "matched": 25,
+  "total": 25
+}

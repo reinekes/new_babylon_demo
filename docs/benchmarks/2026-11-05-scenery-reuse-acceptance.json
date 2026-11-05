@@ -1,5 +1,5 @@
 {
-  "status": "candidate; not yet published",
+  "status": "published and SHA256 verified",
   "release": "terrain-cut-cache-20261105-1",
   "device": "Apple M5",
   "commits": {
@@ -12511,5 +12511,7 @@
       "dpr": 2,
       "saveStatus": "●  Сохранено"
     }
-  }
+  },
+  "candidateCommit": "ff1466610be3afa9ad5d5e2b828cf3b6728914ed",
+  "pagesRun": 41970507875
 }
