@@ -1,3 +1,4 @@
+import {AUTUMN_CROPS,fieldCalendar} from './crop-calendar.js';
 import {DAY_SECONDS} from './city-life.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {needsCanalCleaning} from './canal-maintenance.js';
@@ -15,7 +16,7 @@ export function activeLaborKind(state){
  const policy=state.cityLabor;
  if(!policy||policy.year!==state.year||state.simTime>=policy.started+DAY_SECONDS)return null;
  if(policy.kind==='unload'||policy.kind==='repair')return policy.kind;
- return policy.kind==='harvest'&&state.season===2?'harvest':null;
+ return policy.kind==='harvest'&&(state.cropCalendar===AUTUMN_CROPS?state.buildings.some(b=>b.type==='field'&&fieldCalendar(state,b).harvest===state.season):state.season===2)?'harvest':null;
 }
 
 export function validateCityLabor(state){
@@ -48,7 +49,7 @@ export function laborCandidates(citizens,buildings,roles=['auto','production'],k
 export const harvestCandidates=laborCandidates;
 
 export function harvestDemand(state){
- const fields=state.season===2?state.buildings.filter(harvestNeedsHands):[];
+ const fields=state.buildings.filter(b=>harvestNeedsHands(b)&&fieldCalendar(state,b).harvest===state.season);
  const ripe=fields.reduce((sum,b)=>sum+(b.crop?.remaining||0),0);
  const sheaves=fields.reduce((sum,b)=>sum+(b.crop?.sheaves||0),0);
  return {fields,ripe,sheaves,slots:fields.length*2,keys:new Set(fields.map(buildingKey))};

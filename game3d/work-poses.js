@@ -1,3 +1,4 @@
+import {fieldCalendar} from '../crop-calendar.js';
 import {fieldResting} from '../field-soil.js';
 import {needsCanalCleaning} from '../canal-maintenance.js';
 import {workstationBuilding} from './workstations.js';
@@ -44,8 +45,8 @@ export function workplaceActivity(s,c,index){
  if(!isOperational(b)||c.guarding||['depot','waterpoint','healer','logging','quarry','hunting','fishing'].includes(b.type))return {kind:'gathering',task:b.type,stage:'waiting',target:b};
  let kind='gathering',task=b.type,active=true;
  if(b.type==='field'){
-  const crop=b.crop||{};kind='farming';task=crop.sheaves>1e-8?'threshing':s.season===2?'harvesting':'sowing';
-  active=crop.sheaves>1e-8||s.season===0&&!fieldResting(s,b)&&crop.sown<1-1e-8&&crop.seedStock>1e-8||s.season===2&&crop.remaining>1e-8;
+  const crop=b.crop||{},{sow,harvest}=fieldCalendar(s,b);kind='farming';task=crop.sheaves>1e-8?'threshing':s.season===harvest?'harvesting':'sowing';
+  active=crop.sheaves>1e-8||s.season===sow&&!fieldResting(s,b)&&crop.sown<1-1e-8&&crop.seedStock>1e-8||s.season===harvest&&crop.remaining>1e-8;
  }else if(['pottery','brewery'].includes(b.type)){
   kind=b.type==='pottery'?'pottery':'brewing';task=b.artisan?.stage;
   active=['forming','brewing'].includes(task)||task==='idle'&&!Object.values(artisanNeeds(b)).some(n=>n>1e-8);

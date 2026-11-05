@@ -1,3 +1,4 @@
+import {AUTUMN_CROPS} from './crop-calendar.js';
 import {changeFloodSeason,validateRiverFlood} from './river-flood.js';
 import {validateFieldSoil} from './field-soil.js';
 import {depositCanalSilt,validateCanalMaintenance} from './canal-maintenance.js';
@@ -373,6 +374,7 @@ export function decode(raw){
   if(!validateManualGathering(s))return null;
   if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateWellbeing(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
+  if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;

@@ -1,3 +1,4 @@
+import {fieldCalendar} from './crop-calendar.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {orchardPalms} from './orchard-layout.js';
 import {drawArtisan} from './artisan-art.js';
@@ -159,15 +160,15 @@ export function drawBuilding(r, b, state, t) {
   }
 
   if(b.type==='field') {
-    const crop=cropFor(state,b),water=fieldWater(state,b),dry=state.season===1&&!water.canal&&!state.rain&&!(crop.legacyYear===state.year&&water.natural);
-    const density=state.season===0?crop.sown:state.season===1?crop.sown:state.season===2?(crop.total?crop.sown*crop.remaining/crop.total:0):0,height=state.season===0?2:state.season===1?2+crop.growth*5:7;
+    const crop=cropFor(state,b),{sow,grow,harvest}=fieldCalendar(state,b),water=fieldWater(state,b),dry=state.season===grow&&!water.canal&&!state.rain&&!(crop.legacyYear===state.year&&water.natural);
+    const density=state.season===sow||state.season===grow?crop.sown:state.season===harvest?(crop.total?crop.sown*crop.remaining/crop.total:0):0,height=state.season===sow?2:state.season===grow?2+crop.growth*5:7;
     r.tile(b.x,b.y,state.season===3||density===0?'#b69b6d':dry?'#ac935b':'#94a86a');
     for(let k=0;k<7;k++){
       const yy=-.39+k*.13;
       r.line([r.point(b.x-.42,b.y+yy),r.point(b.x+.42,b.y+yy)],dry?'#897447':'#688352',2*q);
       for(let j=0;j<7*density;j++){
         const a=r.point(b.x-.38+j*.12,b.y+yy),sway=r.reduce?0:Math.sin(t*1.5+k+j)*q;
-        r.line([[a.x,a.y],[a.x+sway,a.y-height*q]],dry?'#c9b276':state.season===2?'#dfc77f':'#c1c87b',1.3*q);
+        r.line([[a.x,a.y],[a.x+sway,a.y-height*q]],dry?'#c9b276':state.season===harvest?'#dfc77f':'#c1c87b',1.3*q);
         r.line([[a.x+sway,a.y-height*q],[a.x-2*q+sway,a.y-(height-2)*q]],'#d5ce87',.8*q);
       }
     }

@@ -1,3 +1,4 @@
+import {fieldCalendar} from './crop-calendar.js';
 import {fieldResting} from './field-soil.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -14,10 +15,10 @@ export const PLOUGH_HANDLE_HEIGHT=.94;
 export const PLOUGH_HANDLE_SPREAD=.18;
 
 export function ploughTeams(state,people){
- if(!isStrictSumer(state)||state.season!==0||!isWorkday(state.simTime)||state.funeral||state.festival?.phase==='feast')return [];
+ if(!isStrictSumer(state)||!isWorkday(state.simTime)||state.funeral||state.festival?.phase==='feast')return [];
  const fields=new Map();
  for(const b of state.buildings){
-  if(b.type==='field'&&isOperational(b)&&!fieldResting(state,b)&&b.crop?.sown<1-1e-8&&b.crop.seedStock>1e-8&&!(b.crop.sheaves>1e-8))fields.set(buildingKey(b),b);
+  if(b.type==='field'&&state.season===fieldCalendar(state,b).sow&&isOperational(b)&&!fieldResting(state,b)&&b.crop?.sown<1-1e-8&&b.crop.seedStock>1e-8&&!(b.crop.sheaves>1e-8))fields.set(buildingKey(b),b);
  }
  if(!fields.size)return [];
  const drivers=new Map();
