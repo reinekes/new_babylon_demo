@@ -1,5 +1,5 @@
 {
-  "status": "candidate; not published",
+  "status": "published and SHA256 verified",
   "device": "Apple M5",
   "note": "Real browser frame intervals, 80 wall seconds at speed4, high, HUD/autosave; spatial48m rejected; global=5source/material groups; all road batching on. No statistical replication.",
   "runs": {
@@ -26555,5 +26555,9 @@
       "dpr": 2,
       "saveStatus": "●  Сохранено"
     }
-  }
+  },
+  "release": "palm-render-groups-20261105-1",
+  "runtimeCommit": "b529d70216b8ae8bffe608bc58eaaaef3802b85e",
+  "candidateCommit": "4e6fa5d817f2ebd0a1e3f864233cf6b4d59247db",
+  "pagesRun": 41959909071
 }

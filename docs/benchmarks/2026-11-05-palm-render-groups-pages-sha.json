@@ -1,0 +1,177 @@
+{
+  "at": "2026-11-05T03:11:40.886190+00:00",
+  "commit": "4e6fa5d817f2ebd0a1e3f864233cf6b4d59247db",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "2620589247a5ed9b79564a8c62fe829463782c606bb28b7cbe0936b43aa304a2",
+      "actual": "2620589247a5ed9b79564a8c62fe829463782c606bb28b7cbe0936b43aa304a2",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "b01b54b658d7b7ab61208eec4f52b8312d8e5a6013ca9707eec6f061f1d54a6c",
+      "actual": "b01b54b658d7b7ab61208eec4f52b8312d8e5a6013ca9707eec6f061f1d54a6c",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "3d176d69ceccf49aff880c57df9b1b18b9d349e1b363b083f49bf9ee26b5bf54",
+      "actual": "3d176d69ceccf49aff880c57df9b1b18b9d349e1b363b083f49bf9ee26b5bf54",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_PALM_RENDER_GROUPS_2026-11-05.md",
+      "status": 200,
+      "expected": "8d0df12c9e511a12a3057aa02ac5201f598791d396ec49e1c6439da06bd9e938",
+      "actual": "8d0df12c9e511a12a3057aa02ac5201f598791d396ec49e1c6439da06bd9e938",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-day-off.jpg",
+      "status": 200,
+      "expected": "672f1618ad55e1f692007efa45390d0478b725e6d1f09077f3e4408629cb904f",
+      "actual": "672f1618ad55e1f692007efa45390d0478b725e6d1f09077f3e4408629cb904f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-day-on.jpg",
+      "status": 200,
+      "expected": "428ec98eaf8545fc5441ae885c6c6bce8931c884d1da7be6e0629a76fecdd063",
+      "actual": "428ec98eaf8545fc5441ae885c6c6bce8931c884d1da7be6e0629a76fecdd063",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-groups-acceptance.json",
+      "status": 200,
+      "expected": "81f890c9f3da9c43e43c0d41b15ac11c2b6ee95ff7d8d96a5d0e7d351e0af994",
+      "actual": "81f890c9f3da9c43e43c0d41b15ac11c2b6ee95ff7d8d96a5d0e7d351e0af994",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-groups-image-diff.json",
+      "status": 200,
+      "expected": "9530ab060bcc3ce0f8b26dc49a61b5bf618e6bbb491c29fe6b6239fcf07f1267",
+      "actual": "9530ab060bcc3ce0f8b26dc49a61b5bf618e6bbb491c29fe6b6239fcf07f1267",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-home-off.jpg",
+      "status": 200,
+      "expected": "832269c02fc57cee5387f23456b9c296aae77dc1d46426fb175a3408ae68c11e",
+      "actual": "832269c02fc57cee5387f23456b9c296aae77dc1d46426fb175a3408ae68c11e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-home-on.jpg",
+      "status": 200,
+      "expected": "dc96b0e5790e9f4a5202349a1c1d592bdc53073662fab2a45d0b2e6ae04b68d5",
+      "actual": "dc96b0e5790e9f4a5202349a1c1d592bdc53073662fab2a45d0b2e6ae04b68d5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-opposite-off.jpg",
+      "status": 200,
+      "expected": "37e1b5b173d3114fba93c34e82cfa1927a453f83228fe7830aa0ee773899aed7",
+      "actual": "37e1b5b173d3114fba93c34e82cfa1927a453f83228fe7830aa0ee773899aed7",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-palm-opposite-on.jpg",
+      "status": 200,
+      "expected": "982940e64cfc61839c5e2c3aee9ee298741347f6de66d164620095829433b1a6",
+      "actual": "982940e64cfc61839c5e2c3aee9ee298741347f6de66d164620095829433b1a6",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "cfa558d63d163bfeb66db0887db050901fac8887bb13f79de0134291d4e99956",
+      "actual": "cfa558d63d163bfeb66db0887db050901fac8887bb13f79de0134291d4e99956",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "765678e0cb15d3bcc8369f7865509d86bb17f1c1dde0589fe250b69f0fb375aa",
+      "actual": "765678e0cb15d3bcc8369f7865509d86bb17f1c1dde0589fe250b69f0fb375aa",
+      "match": true
+    },
+    {
+      "path": "game3d/palm-render-groups.js",
+      "status": 200,
+      "expected": "9b0f2322ffa53aca5fb95236b934325fd1a1ea0065cba51860a701c52cbdfb60",
+      "actual": "9b0f2322ffa53aca5fb95236b934325fd1a1ea0065cba51860a701c52cbdfb60",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "558ea34b31e889237c43895f8f30ee92996ba2951cf7903c909de96db856e489",
+      "actual": "558ea34b31e889237c43895f8f30ee92996ba2951cf7903c909de96db856e489",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3f3a62ba6e10f1135d048583f56193c5a4e6c6b4b36e36842c4b225982380b95",
+      "actual": "3f3a62ba6e10f1135d048583f56193c5a4e6c6b4b36e36842c4b225982380b95",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f5ebc534e0a0f4c731a0776a9dc1df1cf87b209fdeff0cea19dcc9432c3f862c",
+      "actual": "f5ebc534e0a0f4c731a0776a9dc1df1cf87b209fdeff0cea19dcc9432c3f862c",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "ac49edf59d6db1c973a00917728a8cf9049c181949e9368af5b4799afab65051",
+      "actual": "ac49edf59d6db1c973a00917728a8cf9049c181949e9368af5b4799afab65051",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-palm-render-groups.md",
+      "status": 200,
+      "expected": "900e589ac96452c4108155b8d975994d8daa255d54ce0700bd7d91cfabba1269",
+      "actual": "900e589ac96452c4108155b8d975994d8daa255d54ce0700bd7d91cfabba1269",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0ab53f4389dab9623f2cb0c5f7ab2693c5045a00cbed3b287c44e088a11d22a0",
+      "actual": "0ab53f4389dab9623f2cb0c5f7ab2693c5045a00cbed3b287c44e088a11d22a0",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "b96dc2c5447c58992a319a7441c374e07590d9f98a0965ecf162a90649542609",
+      "actual": "b96dc2c5447c58992a319a7441c374e07590d9f98a0965ecf162a90649542609",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "7fc648116ae2fc67f9cc53f61f557a01df50b9844461ef8ca5034b492e3b4787",
+      "actual": "7fc648116ae2fc67f9cc53f61f557a01df50b9844461ef8ca5034b492e3b4787",
+      "match": true
+    },
+    {
+      "path": "tests/palm-render-groups.test.js",
+      "status": 200,
+      "expected": "53589ecd59ee0ce20f9a283c7b0937614f9671b2e08c40e2a8f28b636fb15760",
+      "actual": "53589ecd59ee0ce20f9a283c7b0937614f9671b2e08c40e2a8f28b636fb15760",
+      "match": true
+    }
+  ],
+  "matched": 24,
+  "total": 24
+}
