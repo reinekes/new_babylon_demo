@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-05T22:21:30.655050+00:00",
+  "commit": "91bed964ec9eb9355a8f984989ab0703923ebf3a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d973bff28c5e776c2d57fa38cc47ca8ba7d03982a0061cdf072accaa08d78da4",
+      "actual": "d973bff28c5e776c2d57fa38cc47ca8ba7d03982a0061cdf072accaa08d78da4",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "024909d72c3a286a12fe406651fa573e5c1a21cd8552122ed4aa966eddac2ff6",
+      "actual": "024909d72c3a286a12fe406651fa573e5c1a21cd8552122ed4aa966eddac2ff6",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "ae595a05957421622e5c598bddc5d583063a466aa4bb4f9ba79576787dfd5336",
+      "actual": "ae595a05957421622e5c598bddc5d583063a466aa4bb4f9ba79576787dfd5336",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d005c096788a557c9c80d8ffc5f1f829d03db64d6b18ad6e9337b61a7e5dd420",
+      "actual": "d005c096788a557c9c80d8ffc5f1f829d03db64d6b18ad6e9337b61a7e5dd420",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "9703c8d555e928e844057bbe7cab0c5f67dd2c5a6dd78c938c0cc4b33fca5490",
+      "actual": "9703c8d555e928e844057bbe7cab0c5f67dd2c5a6dd78c938c0cc4b33fca5490",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "afd84360f87d50df6c9be8c7fe78269cc46dcae4f4739e4755404a6f2ebe1d9a",
+      "actual": "afd84360f87d50df6c9be8c7fe78269cc46dcae4f4739e4755404a6f2ebe1d9a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f3d0024f4599cce8b71096d68b54b5b7afc823417d9bcf177d9d2df73de0e9ed",
+      "actual": "f3d0024f4599cce8b71096d68b54b5b7afc823417d9bcf177d9d2df73de0e9ed",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "21d8838b0cca46f099d721ab2abc8127a3106f88e8853b77cdaabd2c198443ef",
+      "actual": "21d8838b0cca46f099d721ab2abc8127a3106f88e8853b77cdaabd2c198443ef",
+      "match": true
+    },
+    {
+      "path": "tests/external-contracts.test.js",
+      "status": 200,
+      "expected": "7f4e1439bb74978b373d3cbe3e263082f1fd9442ea756d757e8a5a0d86fc2662",
+      "actual": "7f4e1439bb74978b373d3cbe3e263082f1fd9442ea756d757e8a5a0d86fc2662",
+      "match": true
+    },
+    {
+      "path": "trading.js",
+      "status": 200,
+      "expected": "258292364d027849991074d028daa5497df813fb90110752baa17f9a6dbd4d71",
+      "actual": "258292364d027849991074d028daa5497df813fb90110752baa17f9a6dbd4d71",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
