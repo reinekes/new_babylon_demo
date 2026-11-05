@@ -1,0 +1,121 @@
+{
+  "at": "2026-11-05T17:29:30.707464+00:00",
+  "commit": "9accae5056ff383188bca6a89a049fea01db6059",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d8b566679991217d4326ba31e540f12c922e8e141cdb19e81f46fec7f8d57e67",
+      "actual": "d8b566679991217d4326ba31e540f12c922e8e141cdb19e81f46fec7f8d57e67",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "1b41583655dff971a705140543526fcb85f4ebd25c68f039519d754bf3b702db",
+      "actual": "1b41583655dff971a705140543526fcb85f4ebd25c68f039519d754bf3b702db",
+      "match": true
+    },
+    {
+      "path": "calendar.js",
+      "status": 200,
+      "expected": "09da60c247bf0568ab22edf548aca22495ed03ccb99b4f302b6863c0bef27478",
+      "actual": "09da60c247bf0568ab22edf548aca22495ed03ccb99b4f302b6863c0bef27478",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "5a2af7c79cbeede84e9ca2fd399faf67cfb979957bc9ace49d6363a0cbf290b7",
+      "actual": "5a2af7c79cbeede84e9ca2fd399faf67cfb979957bc9ace49d6363a0cbf290b7",
+      "match": true
+    },
+    {
+      "path": "food-planning.js",
+      "status": 200,
+      "expected": "7f35ee1b65dec4118b6cc4ae6fb00ebb1db541ecb2130c2bc6d9dd85b65b9707",
+      "actual": "7f35ee1b65dec4118b6cc4ae6fb00ebb1db541ecb2130c2bc6d9dd85b65b9707",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1cb3766c930b11980195a2ed16f5c6b9606a8511c455d3f0e6bda365987e489f",
+      "actual": "1cb3766c930b11980195a2ed16f5c6b9606a8511c455d3f0e6bda365987e489f",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "549487b81340464cca769c1481ab8f6dc33124c585b208f1e380706ecb32908c",
+      "actual": "549487b81340464cca769c1481ab8f6dc33124c585b208f1e380706ecb32908c",
+      "match": true
+    },
+    {
+      "path": "test-tools.js",
+      "status": 200,
+      "expected": "128b67b52830018acb46cd4fc1bbcdced7a166110b6ef17bee6e1d17862f1b7e",
+      "actual": "128b67b52830018acb46cd4fc1bbcdced7a166110b6ef17bee6e1d17862f1b7e",
+      "match": true
+    },
+    {
+      "path": "tests/calendar.test.js",
+      "status": 200,
+      "expected": "59955778a3a747e578757ee59b4a1b266815a8bffaed1579020a611c7d55ba79",
+      "actual": "59955778a3a747e578757ee59b4a1b266815a8bffaed1579020a611c7d55ba79",
+      "match": true
+    },
+    {
+      "path": "tests/household-priority.test.js",
+      "status": 200,
+      "expected": "506a7c8e52a16a8ab4cb2b8c930af4ee0106217e1f1e35f843504c3165e05d24",
+      "actual": "506a7c8e52a16a8ab4cb2b8c930af4ee0106217e1f1e35f843504c3165e05d24",
+      "match": true
+    },
+    {
+      "path": "tests/ui-professions.test.js",
+      "status": 200,
+      "expected": "dc762d9057f1dafd59d170bdba9d7fb1cb93085d7e972f93edab43089bd208b1",
+      "actual": "dc762d9057f1dafd59d170bdba9d7fb1cb93085d7e972f93edab43089bd208b1",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "8a6731b833e711589a8e3cd2f2ef35fbd99e2241ab8936ec81bcc054a4de3244",
+      "actual": "8a6731b833e711589a8e3cd2f2ef35fbd99e2241ab8936ec81bcc054a4de3244",
+      "match": true
+    },
+    {
+      "path": "ui-professions.js",
+      "status": 200,
+      "expected": "c7b188e294c9d180fb908575c034d386f840784d5ddb3df459e232fa3d0054eb",
+      "actual": "c7b188e294c9d180fb908575c034d386f840784d5ddb3df459e232fa3d0054eb",
+      "match": true
+    },
+    {
+      "path": "ui-uruk.js",
+      "status": 200,
+      "expected": "5e9bc643a36e8fe80b61578ffb33896512f9acafa0bec40ccf386596b116927f",
+      "actual": "5e9bc643a36e8fe80b61578ffb33896512f9acafa0bec40ccf386596b116927f",
+      "match": true
+    },
+    {
+      "path": "uruk-ui.css",
+      "status": 200,
+      "expected": "55823e647d1345bc8ac8e1c0bf51eab15113f631538d55960c631cc0b485eaa0",
+      "actual": "55823e647d1345bc8ac8e1c0bf51eab15113f631538d55960c631cc0b485eaa0",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "f185ad8e36a2e0d774355ea7b8c14a22d3fe19cb22918a4ef6863bf812f8803e",
+      "actual": "f185ad8e36a2e0d774355ea7b8c14a22d3fe19cb22918a4ef6863bf812f8803e",
+      "match": true
+    }
+  ],
+  "matched": 16,
+  "total": 16
+}
