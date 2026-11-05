@@ -1,5 +1,5 @@
 {
-  "status": "candidate; not published",
+  "status": "published and SHA256 verified",
   "release": "vegetation-gpu-bindings-20261105-1",
   "commits": {
     "off": "7362678e97d253649d8ccfebdce7d583c44d5b10",
@@ -13940,5 +13940,7 @@
       "dpr": 2,
       "saveStatus": "●  Сохранено"
     }
-  }
+  },
+  "candidateCommit": "ed28a6e9ea5a1845e1ee1439730f994e2bfcb7d4",
+  "pagesRun": 41978026857
 }

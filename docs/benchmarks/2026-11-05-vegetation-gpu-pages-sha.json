@@ -1,0 +1,198 @@
+{
+  "at": "2026-11-05T06:07:29.682363+00:00",
+  "commit": "ed28a6e9ea5a1845e1ee1439730f994e2bfcb7d4",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7fee45c025b8c56643d988caea7e995d8df5b2d436696c34430fd7bb8aa685d9",
+      "actual": "7fee45c025b8c56643d988caea7e995d8df5b2d436696c34430fd7bb8aa685d9",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "956e6227ce6a422879513b044024795f36df9f5321c5dd1cf9dc37d0a459ffa3",
+      "actual": "956e6227ce6a422879513b044024795f36df9f5321c5dd1cf9dc37d0a459ffa3",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "1d70fc8ec070324a917a06d907a6ebd97c83a3ebd39ba8cbd4a1fd6063aab8af",
+      "actual": "1d70fc8ec070324a917a06d907a6ebd97c83a3ebd39ba8cbd4a1fd6063aab8af",
+      "match": true
+    },
+    {
+      "path": "docs/VEGETATION_GPU_BINDINGS_2026-11-05.md",
+      "status": 200,
+      "expected": "47d8e5a24b5d4fa320b6bee7a59d33e22d23762a76488602691c05127d6b1534",
+      "actual": "47d8e5a24b5d4fa320b6bee7a59d33e22d23762a76488602691c05127d6b1534",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-geometry-payload.json",
+      "status": 200,
+      "expected": "cfc051f8729066fae885cf597a0550f19573db913d87ab30f256176552ba1189",
+      "actual": "cfc051f8729066fae885cf597a0550f19573db913d87ab30f256176552ba1189",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-gpu-acceptance.json",
+      "status": 200,
+      "expected": "cf8d5cbc3d6f64e2dc511e2dfed282c52a87e0e7a1e1e6de4c68f5d78e939931",
+      "actual": "cf8d5cbc3d6f64e2dc511e2dfed282c52a87e0e7a1e1e6de4c68f5d78e939931",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-off-close.jpg",
+      "status": 200,
+      "expected": "46a9837860da72db149c31bb64ab36b646d5cdbec8d5c0aa6ad5f97ae633f2ce",
+      "actual": "46a9837860da72db149c31bb64ab36b646d5cdbec8d5c0aa6ad5f97ae633f2ce",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-off-day.jpg",
+      "status": 200,
+      "expected": "34adf03fd60a2058ca97d84cdacb57a93b8bc38ece1b3c75fe72aef2d611c85f",
+      "actual": "34adf03fd60a2058ca97d84cdacb57a93b8bc38ece1b3c75fe72aef2d611c85f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-off-overview.jpg",
+      "status": 200,
+      "expected": "5dad1cd032d37181ba8df25812c1868118f1bbd23a22d8bf39bacc6e045611ca",
+      "actual": "5dad1cd032d37181ba8df25812c1868118f1bbd23a22d8bf39bacc6e045611ca",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-off-valley-day.jpg",
+      "status": 200,
+      "expected": "04317ca717071d81c1803234fac0ab6a338c37784bf7d00181d0c0ff44dacc11",
+      "actual": "04317ca717071d81c1803234fac0ab6a338c37784bf7d00181d0c0ff44dacc11",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-on-close.jpg",
+      "status": 200,
+      "expected": "c3a4a12b81ecfab8c2f50c714d6fac009e59cefdb880d75786b3747ed32dbdd2",
+      "actual": "c3a4a12b81ecfab8c2f50c714d6fac009e59cefdb880d75786b3747ed32dbdd2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-on-day.jpg",
+      "status": 200,
+      "expected": "64cd1cd5c75838e75ab124c72a109b84fe2b628fc2676a01b03755f7d1727112",
+      "actual": "64cd1cd5c75838e75ab124c72a109b84fe2b628fc2676a01b03755f7d1727112",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-on-overview.jpg",
+      "status": 200,
+      "expected": "0f18e74da065660fa4f5bb95e044aa475c68b38c1cdb13a74d3c552a5dbfe200",
+      "actual": "0f18e74da065660fa4f5bb95e044aa475c68b38c1cdb13a74d3c552a5dbfe200",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-on-valley-day.jpg",
+      "status": 200,
+      "expected": "4b1ed7c812482a064bd22824088d703ee1277f4a0870faaf365e9c5471357b12",
+      "actual": "4b1ed7c812482a064bd22824088d703ee1277f4a0870faaf365e9c5471357b12",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-05-vegetation-quality-webgl.json",
+      "status": 200,
+      "expected": "cbb2de94ee6bbc8c5c1f572387e2effe4db151bb882456ae39f046b192543c72",
+      "actual": "cbb2de94ee6bbc8c5c1f572387e2effe4db151bb882456ae39f046b192543c72",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "e3ca86ba0f404772bd3ce15969e48a6a4024ddbaf5f2200ed1f51580189d710b",
+      "actual": "e3ca86ba0f404772bd3ce15969e48a6a4024ddbaf5f2200ed1f51580189d710b",
+      "match": true
+    },
+    {
+      "path": "game3d/landscape.js",
+      "status": 200,
+      "expected": "21b01902acce5dceb896d0ae9e9ecdb21601cb1043733bd55b00b1d4e07694d7",
+      "actual": "21b01902acce5dceb896d0ae9e9ecdb21601cb1043733bd55b00b1d4e07694d7",
+      "match": true
+    },
+    {
+      "path": "game3d/valley-vegetation.js",
+      "status": 200,
+      "expected": "6865799c55d5812be4c25312a54005ee20408d239b06a39942feb2f0b09be8da",
+      "actual": "6865799c55d5812be4c25312a54005ee20408d239b06a39942feb2f0b09be8da",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "e231c7c7c38cc5afbd221b32f3e10fe520ed998d7b614f7872f4579ec958f033",
+      "actual": "e231c7c7c38cc5afbd221b32f3e10fe520ed998d7b614f7872f4579ec958f033",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a49017011ad76ff48ff4acbdceff9503e206afad3614d64ebbc96b49783a6fd5",
+      "actual": "a49017011ad76ff48ff4acbdceff9503e206afad3614d64ebbc96b49783a6fd5",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "8febecb88032a4beb0d2eb4cddaac469fbe35dbf8aa33ab32fd3ac7b240f1973",
+      "actual": "8febecb88032a4beb0d2eb4cddaac469fbe35dbf8aa33ab32fd3ac7b240f1973",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "18b9fcc4746d3e2a88880b0f83641e48380439533b7d339ced5b58d2da0b00d2",
+      "actual": "18b9fcc4746d3e2a88880b0f83641e48380439533b7d339ced5b58d2da0b00d2",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-05-vegetation-gpu-bindings.md",
+      "status": 200,
+      "expected": "fa1f4138baa54c778f83b44138897fe78eaee08b0f71da476aab3647865a412e",
+      "actual": "fa1f4138baa54c778f83b44138897fe78eaee08b0f71da476aab3647865a412e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "40432a40725bd8b1fbe20c060d0ab7738cdfbd05951c7e03687418035ec5608c",
+      "actual": "40432a40725bd8b1fbe20c060d0ab7738cdfbd05951c7e03687418035ec5608c",
+      "match": true
+    },
+    {
+      "path": "scripts/prepare-sumer-trade-browser-check.mjs",
+      "status": 200,
+      "expected": "75e318f0b697db5b2a75d66292645668ef2ac15511894745acf05f2efe648b59",
+      "actual": "75e318f0b697db5b2a75d66292645668ef2ac15511894745acf05f2efe648b59",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-landscape.test.js",
+      "status": 200,
+      "expected": "175a3484fe33025cd741948bbead548d2a2943e6ec53be245955784fa33b076f",
+      "actual": "175a3484fe33025cd741948bbead548d2a2943e6ec53be245955784fa33b076f",
+      "match": true
+    },
+    {
+      "path": "tests/valley-vegetation.test.js",
+      "status": 200,
+      "expected": "cbc85ecd18f6514d9313d26084b7958363daa78e46891bb26a9d95ab071ba48b",
+      "actual": "cbc85ecd18f6514d9313d26084b7958363daa78e46891bb26a9d95ab071ba48b",
+      "match": true
+    }
+  ],
+  "matched": 27,
+  "total": 27
+}
