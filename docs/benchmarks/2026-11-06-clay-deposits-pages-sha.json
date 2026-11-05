@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-05T21:04:07.331769+00:00",
+  "commit": "c77b566153f35d39e500a905520187cae5a7cb07",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "1ae9c5d58df9ee9ae8ba82717bb3aa05b970cf0fd85ab35c5aa1b786988c34a9",
+      "actual": "1ae9c5d58df9ee9ae8ba82717bb3aa05b970cf0fd85ab35c5aa1b786988c34a9",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "2ced249a126f9772c171c15c02792cc5039899a6cf935c74eb54baa910b9eaaa",
+      "actual": "2ced249a126f9772c171c15c02792cc5039899a6cf935c74eb54baa910b9eaaa",
+      "match": true
+    },
+    {
+      "path": "clay-stock.js",
+      "status": 200,
+      "expected": "8e4d7f59b727ca392baf30bf0e252d32a50e455c7040df07b1d884831cf16be5",
+      "actual": "8e4d7f59b727ca392baf30bf0e252d32a50e455c7040df07b1d884831cf16be5",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "cf19a6d186e6e9092d32c67e8341724f659624b27eea2e8cb3068b2eb1563016",
+      "actual": "cf19a6d186e6e9092d32c67e8341724f659624b27eea2e8cb3068b2eb1563016",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "c9af4de72c5da337fbb45ece156453d0cfeb25915d64ed0ddfd69e6590041be3",
+      "actual": "c9af4de72c5da337fbb45ece156453d0cfeb25915d64ed0ddfd69e6590041be3",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "72bc998732da760e6dd4527e3b0369642ff0247cb354639326466a424981ba3a",
+      "actual": "72bc998732da760e6dd4527e3b0369642ff0247cb354639326466a424981ba3a",
+      "match": true
+    },
+    {
+      "path": "manual-gathering.js",
+      "status": 200,
+      "expected": "4a57bdbf7b2de2ea1c411aea07c2314e6d2c6dd169c2c4cdfd42a48a10725401",
+      "actual": "4a57bdbf7b2de2ea1c411aea07c2314e6d2c6dd169c2c4cdfd42a48a10725401",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "aa533a7167bc38551f341aeec49da03776d36297608b11b9e588d0991d68541d",
+      "actual": "aa533a7167bc38551f341aeec49da03776d36297608b11b9e588d0991d68541d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "c15be85f50b1eeebe382c3a9d407aa148db486ddc4f38e20b10c99258b66ee5f",
+      "actual": "c15be85f50b1eeebe382c3a9d407aa148db486ddc4f38e20b10c99258b66ee5f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8669973b9947d436e9a38f0995c1935e923a3b58575048534dc50680ed6a54cf",
+      "actual": "8669973b9947d436e9a38f0995c1935e923a3b58575048534dc50680ed6a54cf",
+      "match": true
+    },
+    {
+      "path": "tests/clay-stock.test.js",
+      "status": 200,
+      "expected": "bf2265b7258d8c61e077f62af6ca7226b6be8b33bc44f1eaf0ace63d420c34c1",
+      "actual": "bf2265b7258d8c61e077f62af6ca7226b6be8b33bc44f1eaf0ace63d420c34c1",
+      "match": true
+    },
+    {
+      "path": "ui-manual-gathering.js",
+      "status": 200,
+      "expected": "c6b2260ca2622459ea3ab1ba5dc4d8bf3bf5a074419a4cfe59fc75851fea072d",
+      "actual": "c6b2260ca2622459ea3ab1ba5dc4d8bf3bf5a074419a4cfe59fc75851fea072d",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "683329e8e21b96a0e6abf0e2f595bfcfe3656171d98679e26d5acea09bbe080e",
+      "actual": "683329e8e21b96a0e6abf0e2f595bfcfe3656171d98679e26d5acea09bbe080e",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
