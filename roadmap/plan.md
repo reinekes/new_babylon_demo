@@ -1301,28 +1301,6 @@ sources: definitions.js; game3d/architecture.js
 ### Исторические источники
 - [AJA: archaeological survey of Ur suburbs](https://www.journals.uchicago.edu/doi/10.1086/725907)
 
-## hist-bulls | Рабочие волы и сцена вспашки
-group: history
-status: partial
-priority: P1
-depends: -
-sources: game3d/ambient-fauna.js; game3d/dairy-herd.js; game3d/architecture.js
-
-### Описание
-Для поля рассмотреть волов и плуг как отдельную механику/сцену.
-
-### Что уже есть
-Есть ambient-bull.glb и декоративный bull; молочное стадо cowshed отдельно. Пахотной упряжки не найдено.
-
-### Следующий шаг
-Сверить живую сцену с указанными источниками и выбрать конкретный объём исправления. Бык, корова и кастрированный рабочий вол — разные функции; наличие коров не доказывает упряжку.
-
-### Готово когда
-Бык окружения, коровы и рабочая упряжка различимы; экономика не считает их одним объектом.
-
-### Исторические источники
-- [Chicago ISAC: cattle and dairy archaeology](https://isac.uchicago.edu/sites/default/files/uploads/shared/docs/saoc62.pdf)
-
 ## hist-scribes | Писец с табличкой и его назначение
 group: history
 status: partial

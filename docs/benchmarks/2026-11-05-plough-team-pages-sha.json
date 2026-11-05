@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-05T17:58:14.933727+00:00",
+  "commit": "dffe2d625b5ed7c31584390cbbc50a985276a1c8",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7ff6bf9faad10a192a0156485bd0b1f3bb4f2b780f22b8d20a9a8e5189895063",
+      "actual": "7ff6bf9faad10a192a0156485bd0b1f3bb4f2b780f22b8d20a9a8e5189895063",
+      "match": true
+    },
+    {
+      "path": "city-life.js",
+      "status": 200,
+      "expected": "c323ee639488a74f942d6eec67b76c077474060b4f7c253c8632a8b2c767f112",
+      "actual": "c323ee639488a74f942d6eec67b76c077474060b4f7c253c8632a8b2c767f112",
+      "match": true
+    },
+    {
+      "path": "district3d/buildings.js",
+      "status": 200,
+      "expected": "718a6a88b0ae7614bb1938f2792a0d504737fa5b4054bf9bf0362b65034d6b99",
+      "actual": "718a6a88b0ae7614bb1938f2792a0d504737fa5b4054bf9bf0362b65034d6b99",
+      "match": true
+    },
+    {
+      "path": "docs/MODEL_INDEX.md",
+      "status": 200,
+      "expected": "e8bdcf7a59ed50116890460507a89a3f9d45f28732fde9e44fc8f8b032c65c1b",
+      "actual": "e8bdcf7a59ed50116890460507a89a3f9d45f28732fde9e44fc8f8b032c65c1b",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "bcfb858a8b3779c403651245219fd98bef134a2b6f35b38b566d8e75a9fa5a11",
+      "actual": "bcfb858a8b3779c403651245219fd98bef134a2b6f35b38b566d8e75a9fa5a11",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "2cf29d8ab542501defe1b0c17bed7e403cf450f3ff91a3245119a2c6686138a3",
+      "actual": "2cf29d8ab542501defe1b0c17bed7e403cf450f3ff91a3245119a2c6686138a3",
+      "match": true
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "status": 200,
+      "expected": "e8e2256be5ccc1debadb864035af475cfa3c21e3c624a240dfb4741e87d60827",
+      "actual": "e8e2256be5ccc1debadb864035af475cfa3c21e3c624a240dfb4741e87d60827",
+      "match": true
+    },
+    {
+      "path": "game3d/plough-teams.js",
+      "status": 200,
+      "expected": "7017da15aad94537dca4a5ef048e6c888f1aa6c69822f1603c7942d96f00997b",
+      "actual": "7017da15aad94537dca4a5ef048e6c888f1aa6c69822f1603c7942d96f00997b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8a90e4f67fde650a0619d80ed68a86eac193f5ec2117d435bee177313253054d",
+      "actual": "8a90e4f67fde650a0619d80ed68a86eac193f5ec2117d435bee177313253054d",
+      "match": true
+    },
+    {
+      "path": "plough-art.js",
+      "status": 200,
+      "expected": "eddadfccb3852c1e95ba25c23ecd9b5d9407ae2edb67e1feb006b11b91a4d4e2",
+      "actual": "eddadfccb3852c1e95ba25c23ecd9b5d9407ae2edb67e1feb006b11b91a4d4e2",
+      "match": true
+    },
+    {
+      "path": "plough-team.js",
+      "status": 200,
+      "expected": "d56c4f35a8d1a845106e49bb39e363c91b5078152f0be6ef1ea434f31151ba2c",
+      "actual": "d56c4f35a8d1a845106e49bb39e363c91b5078152f0be6ef1ea434f31151ba2c",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "3a2fe1db4a65149416ac2ad18d21dbfd9a440547edaee8efd1f58dbb6ef04971",
+      "actual": "3a2fe1db4a65149416ac2ad18d21dbfd9a440547edaee8efd1f58dbb6ef04971",
+      "match": true
+    },
+    {
+      "path": "scripts/model-index.mjs",
+      "status": 200,
+      "expected": "b3015427c9af80ea43ae148b2ffe6a123632fa6bc2524425c31892d43925322e",
+      "actual": "b3015427c9af80ea43ae148b2ffe6a123632fa6bc2524425c31892d43925322e",
+      "match": true
+    },
+    {
+      "path": "tests/plough-team.test.js",
+      "status": 200,
+      "expected": "a8ed643c73e10ca7a620116b523655581c563791a2e4178153fcf33dd0fd2bea",
+      "actual": "a8ed643c73e10ca7a620116b523655581c563791a2e4178153fcf33dd0fd2bea",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
