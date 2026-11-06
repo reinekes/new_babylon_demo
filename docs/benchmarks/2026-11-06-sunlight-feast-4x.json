@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "startingPopulation": 265,
+  "citizens": 279,
+  "participants": 24,
+  "priest": 0,
+  "byteEqualReload": true,
+  "samples": 772,
+  "medianMs": 2.492584000000079,
+  "p95Ms": 8.228291000000013
+}

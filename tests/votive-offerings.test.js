@@ -96,3 +96,16 @@ test('sunlight counts only accepted vessels from different donor households',asy
  assert.equal(encode(s),raw);
  assert.equal(sunlightDedications(s).length,2);
 });
+
+test('Sunlight records real work after an inspired priest is assigned',async()=>{
+ const {assignWorkplace}=await import('../management.js');
+ const {s,donor,temple}=fixture(true);
+ Object.assign(donor,{calling:'priest',role:'production'});
+ assert.ok(assignWorkplace(s,donor.id,temple).ok);
+ assert.equal(s.sunlightService,undefined);
+ for(let i=0;i<500&&!s.sunlightService;i++){s.event=null;advanceTime(s,.25);}
+ assert.equal(s.sunlightService?.priest,donor.id);
+ assert.equal(s.sunlightService.temple,temple);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+});

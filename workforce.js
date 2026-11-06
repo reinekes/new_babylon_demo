@@ -1,3 +1,4 @@
+import {recordSunlightService} from './sunlight-gathering.js';
 import {recordAbundanceHome} from './abundance-discovery.js';
 import {giftInputFood,moveGiftFood,takeGiftFood} from './abundance-origin.js';
 import {recordWindDelivery} from './wind-delivery.js';
@@ -338,6 +339,7 @@ function harvest(s,c,ctx,via=null){
   if(amount<=1e-8)continue;
   c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
+ if(c.cargo.faith>0&&c.calling==='priest')recordSunlightService(s,b,c);
  if(b.type==='clay'&&clayRemaining(s,b.x,b.y)<=1e-8||b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)invalidateAssignments(s);
  if(['fishing','clay','quarry','logging','reed','garden'].includes(b.type)&&!hasCargo(c))return false;
  if(isProductionStore(b)){if(via){

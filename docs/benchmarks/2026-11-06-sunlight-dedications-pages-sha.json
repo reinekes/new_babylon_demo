@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T13:47:20.853816+00:00",
+  "commit": "a0730a5",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f825bf6834c604be2a9fdb4b960428d06ec44be8b1a3e6ff0847097d4a9d36e5",
+      "actual": "f825bf6834c604be2a9fdb4b960428d06ec44be8b1a3e6ff0847097d4a9d36e5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-abundance-scenes-pages-sha.json",
+      "status": 200,
+      "expected": "0f26e5149d9c70a9c19924e9322213721846b202ec059d2fa7c6ba79a54e87cc",
+      "actual": "0f26e5149d9c70a9c19924e9322213721846b202ec059d2fa7c6ba79a54e87cc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-dedications-4x.json",
+      "status": 200,
+      "expected": "c78a985ed5062ae55569387a9c9956fcb660ac5582471392e80bd250a06c4d48",
+      "actual": "c78a985ed5062ae55569387a9c9956fcb660ac5582471392e80bd250a06c4d48",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-82.md",
+      "status": 200,
+      "expected": "fa57f11d2d9e38b2db8555c7a865300c0f893463d23c2ec1c09b816fbb247dc7",
+      "actual": "fa57f11d2d9e38b2db8555c7a865300c0f893463d23c2ec1c09b816fbb247dc7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "cf516e7b4264a8cbd499aa938d20043c333971d22061bc154c6a3b5ee83a2db4",
+      "actual": "cf516e7b4264a8cbd499aa938d20043c333971d22061bc154c6a3b5ee83a2db4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "e82caa55732371dac4a16fec4f6bcbf349bb87f7185960668aaaefd59c58d520",
+      "actual": "e82caa55732371dac4a16fec4f6bcbf349bb87f7185960668aaaefd59c58d520",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "ee509576e18e5d623c845b718c51c19b7035b489820ff4a371955be3d5ea05a4",
+      "actual": "ee509576e18e5d623c845b718c51c19b7035b489820ff4a371955be3d5ea05a4",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0a07df3085e20b8170e5278d7dfc04b2cbe991d4aae2a4c4c8682b7db737291f",
+      "actual": "0a07df3085e20b8170e5278d7dfc04b2cbe991d4aae2a4c4c8682b7db737291f",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-abundance-scenes.md",
+      "status": 200,
+      "expected": "9ba498368084a0a7bd0a17a1e86599fcb8313f55a27da42faf06f2e3a0eec456",
+      "actual": "9ba498368084a0a7bd0a17a1e86599fcb8313f55a27da42faf06f2e3a0eec456",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "6f8cf3c32c64fdef516b3cca806110ba4c5860a80a8de84fb779d04a41fa5ab9",
+      "actual": "6f8cf3c32c64fdef516b3cca806110ba4c5860a80a8de84fb779d04a41fa5ab9",
+      "match": true
+    },
+    {
+      "path": "tests/votive-offerings.test.js",
+      "status": 200,
+      "expected": "a4b970a8d9d902a0f4e9c9e92f003a89cee29f6692ca313f6b5286c77994f931",
+      "actual": "a4b970a8d9d902a0f4e9c9e92f003a89cee29f6692ca313f6b5286c77994f931",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "02237b925f8cdc52654e11224ce1d425cacbb4d4d7b6b0aeb6579668cbffdca8",
+      "actual": "02237b925f8cdc52654e11224ce1d425cacbb4d4d7b6b0aeb6579668cbffdca8",
+      "match": true
+    },
+    {
+      "path": "votive-offerings.js",
+      "status": 200,
+      "expected": "a93e6d680b4049b9bc23f31c2bdc802089e30d59c3979b6c44d6e79d066fbebb",
+      "actual": "a93e6d680b4049b9bc23f31c2bdc802089e30d59c3979b6c44d6e79d066fbebb",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}

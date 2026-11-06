@@ -1,3 +1,4 @@
+import {strictScenario,CAT_DISCOVERY_RULES} from '../scenario-profiles.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,decode} from '../engine.js';
@@ -5,7 +6,7 @@ import {syncInventory,validateInventory} from '../inventory.js';
 import {networkFor,advanceWorkers,recoverCitizenCargo} from '../workforce.js';
 import {setCitizenRole,canDemolish} from '../management.js';
 import {festivalReason,orderFestival,cancelFestival,advanceFestival,validateFestival,festivalView} from '../festival.js';
-const city=()=>{const s=createGame({start:'established'});s.resources.prestige=100;s.resources.beer=20;s.resources.food=100;syncInventory(s);for(const c of s.citizens){c.age=25;c.role='carrier';c.work=null;c.phase='home';c.cargo={};c.buildCargo={};delete c.pantryTrip;delete c.waterTrip;}return s;};
+const city=(awakening=false)=>{const s=createGame({start:'established',...awakening?{mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}}:{}});s.resources.prestige=100;s.resources.beer=20;s.resources.food=100;syncInventory(s);for(const c of s.citizens){c.age=25;c.role='carrier';c.work=null;c.phase='home';c.cargo={};c.buildCargo={};delete c.pantryTrip;delete c.waterTrip;}return s;};
 function step(s,dt=1){for(let t=0;t<dt;t+=.1){advanceFestival(s,.1);s.simTime+=.1;}}
 function saved(s){s.tick=Math.floor(s.simTime/45);s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);s.seasonElapsed=s.simTime-s.tick*45;return decode(JSON.stringify(s));}
 test('festival protects seeds and a complete meal reserve, books exact sources and fully refunds once',()=>{const s=city(),before=structuredClone(s.resources);assert.equal(festivalReason(s),'');assert.equal(orderFestival(s).ok,true);assert.equal(s.resources.food,before.food-12);assert.equal(s.resources.beer,before.beer-6);assert.equal(s.resources.prestige,before.prestige-15);assert.ok(validateFestival(s));assert.ok(cancelFestival(s).ok);assert.equal(s.resources.food,before.food);assert.equal(s.resources.beer,before.beer);assert.equal(s.resources.prestige,before.prestige);assert.equal(cancelFestival(s).ok,false);s.resources.food=15;s.foodPlan.protectSeeds=false;syncInventory(s);assert.match(festivalReason(s),/резерв|семен/);});
@@ -44,4 +45,31 @@ test('saved festival invitations show the current physical order instead of obso
  assert.match(restored.event.text,/15 престижа, 12 еды и 6 пива/);
  assert.match(restored.event.text,/доставят угощение/);assert.doesNotMatch(restored.event.text,/превратятся/);
  assert.deepEqual(restored.resources,resources);assert.deepEqual(restored.citizens.map(c=>c.id),ids);assert.equal(restored.festival,null);
+});
+
+
+test('only a naturally completed supplied feast records the first Sunlight gathering',()=>{
+ const setup=()=>{
+  const s=city(true);
+  assert.ok(orderFestival(s).ok);
+  for(let i=0;i<200&&s.festival.stage==='supplying';i++)step(s,.2);
+  assert.equal(s.festival.stage,'waiting');
+  s.simTime=32.5;
+  for(const c of s.citizens){c.phase='home';c.mealEaten=.8;}
+  for(let i=0;i<80&&s.festival.stage!=='celebrating';i++)step(s,.1);
+  assert.equal(s.festival.stage,'celebrating');
+  return s;
+ };
+ const cancelled=setup();
+ assert.ok(cancelFestival(cancelled).ok);
+ assert.equal(cancelled.sunlightFeast,undefined);
+ const s=setup();
+ assert.equal(s.sunlightFeast,undefined);
+ advanceFestival(s,90);
+ assert.equal(s.festival,null);
+ assert.equal(s.sunlightFeast.temple,'9,8');
+ assert.ok(s.sunlightFeast.guests>0);
+ const loaded=saved(s);
+ assert.ok(loaded);
+ assert.deepEqual(loaded.sunlightFeast,s.sunlightFeast);
 });

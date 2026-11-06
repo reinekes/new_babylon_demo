@@ -1,3 +1,4 @@
+import {validateSunlightFeast,validateSunlightService} from './sunlight-gathering.js';
 import {validateAbundanceDiscovery} from './abundance-discovery.js';
 import {validateAbundanceOrigin} from './abundance-origin.js';
 import {ABUNDANCE_LIMIT,receiveAbundance,validateAbundanceGift} from './abundance-gift.js';
@@ -497,7 +498,7 @@ export function decode(raw){
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateMonumentChapter(s)||!validateCrops(s)||!validateRainDiscovery(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
-  initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
+  initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateSunlightFeast(s)||!validateSunlightService(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
   if(!validateBuildingChronology(s)||!validateOrchards(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateCityLabor(s)||!validateCanalMaintenance(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateVotiveOfferings(s)||!validateTrade(s))return null;

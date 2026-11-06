@@ -1,3 +1,4 @@
+import {recordSunlightFeast} from './sunlight-gathering.js';
 import {dedicationFeastReason,rememberDedicationFeast,votiveOrder} from './votive-offerings.js';
 import {relicCommandReason} from './city-command-lock.js';
 // A festival is an order with local reservations and citizen-owned trips, never a flat exchange.
@@ -104,8 +105,9 @@ export function cancelFestival(s){const lock=relicCommandReason(s);return lock?{
 // A deliberate calendar jump closes this one occasion, including its pending
 // local deliveries. Ordinary cancellation may retry the first-cup celebration.
 export function skipFestival(s){const lock=relicCommandReason(s);return lock?{ok:false,reason:lock}:finishFestival(s,{immediate:true,skipped:true});}
-function finishFestival(s,{immediate=false,skipped=false}={}){
+function finishFestival(s,{immediate=false,skipped=false,completed=false}={}){
  const q=s.festival;if(!q)return {ok:false,reason:'Нет заказанного праздника'};
+ if(completed)recordSunlightFeast(s,q);
  if(!q.consumed){refundFestival(s,q);s.resources.prestige+=costFor(q).prestige;}
  if(skipped&&firstBeer(q)&&!q.consumed)s.firstBeerFeast.status='skipped';
  for(const a of q.actors)release(s,a,{immediate});s.festival=null;invalidateAssignments(s);return {ok:true,refunded:!q.consumed};
@@ -130,7 +132,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
  // clock; old saves without it continue from their original simulation stamp.
  if(q.stage==='celebrating')q.elapsed=elapsedFestival(s,q)+dt;
  // Close the gathering window before moving or rewarding any late guests.
- if(q.stage==='celebrating'&&(q.elapsed>=FESTIVAL_SECONDS||!gathering())){finishFestival(s);return;}
+ if(q.stage==='celebrating'&&(q.elapsed>=FESTIVAL_SECONDS||!gathering())){finishFestival(s,{completed:true});return;}
  if(q.stage==='waiting'&&!gathering()){for(const a of q.actors)release(s,a);q.actors=[];return;}
  if(q.stage==='waiting'){const limit=guestLimit(s,q),guests=q.actors.filter(a=>a.kind==='guest');for(const a of guests.slice(limit)){release(s,a);q.actors=q.actors.filter(v=>v!==a);}}
  if(q.stage==='supplying'){
@@ -160,7 +162,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
   }
  }
  if(q.stage==='supplying'&&keys.every(k=>Math.abs(q.delivered[k]-cost[k])<1e-7)&&!q.actors.length)q.stage='waiting';
- if(q.stage==='celebrating'&&(elapsedFestival(s,q)>=FESTIVAL_SECONDS||!gathering()))finishFestival(s);
+ if(q.stage==='celebrating'&&(elapsedFestival(s,q)>=FESTIVAL_SECONDS||!gathering()))finishFestival(s,{completed:true});
 }
 function festivalProgress(s,q,{paused=false}={}){
  const status=(code,text)=>({code,text});
