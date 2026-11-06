@@ -255,7 +255,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## miracle-c02 | C02 · Небесный дождь
 group: godhood
-status: planned
+status: partial
 priority: P2
 depends: reliability-causal-facts; god-discovery-contract
 sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md; definitions.js; engine.js
@@ -264,10 +264,10 @@ sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKEN
 Предложение нового открытия и постановки, пока не реализованное дерево. Полный человеческий цикл поля с обеспечением водой, капля/земля/тень облака; явно назвать общегородской эффект.
 
 ### Что уже есть
-Снятие засухи и полив уже работают.
+Снятие засухи и полив уже работают. Подготовлен сохраняемый факт первой жатвы вдохновлённым земледельцем после полного цикла с канальной водой.
 
 ### Следующий шаг
-Описать минимальный этап и подтвердить его отдельным ограниченным планом.
+Связать факт с открытием, пробным и платным применением. Затем проверить сцену и ясную подпись общегородского эффекта.
 
 ### Готово когда
 Чудо не подменяет семена, труд и человеческий урожай.

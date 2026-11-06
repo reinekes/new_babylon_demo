@@ -305,7 +305,7 @@ function harvest(s,c,ctx,via=null){
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}if(kilnNeedsRepair(b))repairKiln(b);else startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
  if(['sheepfold','weaver','tailor'].includes(b.type)){const kind=b.type==='sheepfold'?'wool':b.type==='weaver'?'cloth':'clothing',amount=b.type==='sheepfold'?gatherWool(s,b):b.type==='weaver'?weaveCloth(s,b):makeClothing(s,b);if(amount<=1e-8)return false;return produced({[kind]:amount});}
- if(b.type==='field'){const food=workField(s,b,BUILDINGS.field.workTime);if(food>0){produced({food});if(!fieldActive(s,b))invalidateAssignments(s);}else c.workElapsed=0;return food>0;}
+ if(b.type==='field'){const food=workField(s,b,BUILDINGS.field.workTime,c);if(food>0){produced({food});if(!fieldActive(s,b))invalidateAssignments(s);}else c.workElapsed=0;return food>0;}
  const def=BUILDINGS[b.type],boost=s.buffs||{};c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
