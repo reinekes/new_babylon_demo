@@ -274,7 +274,7 @@ sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKEN
 
 ## miracle-c07 | C07 · Руки творца
 group: godhood
-status: planned
+status: partial
 priority: P2
 depends: reliability-causal-facts; god-discovery-contract
 sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md; definitions.js; engine.js
@@ -283,10 +283,10 @@ sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKEN
 Предложение нового открытия и постановки, пока не реализованное дерево. Тридцать глины, двадцать тростника и два реально использованных проекта; ручной сбор засчитывать честно. Отдельно определить бонус ручной добычи.
 
 ### Что уже есть
-Бонус глины/тростника и ручная добыча уже есть.
+Бонус и ручная добыча работают. Счётчики 30 глины и 20 тростника учитывают только принятую местную добычу и видны в обзоре.
 
 ### Следующий шаг
-Описать минимальный этап и подтвердить его отдельным ограниченным планом.
+Подтвердить вдохновение добытчиков и две полезные постройки, затем связать условия с открытием и постановкой.
 
 ### Готово когда
 Снос и повтор на одной клетке не фармят полезные проекты.
