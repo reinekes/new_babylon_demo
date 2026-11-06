@@ -1,3 +1,4 @@
+import {richCatchTarget,startRichCatch,expireRichCatch,validateRichCatch} from './rich-catch.js';
 import {validateFishProvenance} from './fish-provenance.js';
 import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
 import {validatePeaceDiscovery} from './peace-discovery.js';
@@ -84,11 +85,12 @@ export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
 export const VERSION=30;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
+const emptyCooldowns=()=>Object.fromEntries(Object.keys(MIRACLES).filter(k=>k!=='richCatch').map(k=>[k,0]));
 const emptyBuffs=()=>({fertility:0,inspiration:0,haste:0,sunlight:0,inannaProtection:0,earthMemory:0});
 export function log(s,title,text='',kind='info'){const last=s.news[0];if(last&&last.title===title&&last.tick===s.tick)return;s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 export function createGame({start='beehives',mode,seed,generationVersion=2,scenario=legacyScenario()}={}){
  if(!validateScenario(scenario)||usesCatDiscovery({scenario})&&mode!=='awakening')throw Error('Invalid scenario profile');
- const s={version:VERSION,scenario:{...scenario},year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:100,clay:90,reed:45,wood:20,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
+ const s={version:VERSION,scenario:{...scenario},year:1,season:0,tick:0,seasonElapsed:0,simTime:0,population:12,capacity:16,happiness:75,rngState:117,roads:[],funeral:null,deaths:0,resources:{...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:100,clay:90,reed:45,wood:20,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:25,prestige:10},buildings:[{type:'house',x:8,y:8,level:1},{type:'house',x:9,y:9,level:1},{type:'field',x:12,y:8,level:1},{type:'clay',x:7,y:7,level:1},{type:'shrine',x:9,y:8,level:1}],cooldowns:emptyCooldowns(),buffs:emptyBuffs(),divinity:createDivinity(),citizens:[],deliveries:0,delivered:emptyResources(),lastDelivery:null,drought:0,rain:0,droughtSeen:false,memories:[],news:[],event:null,won:false,lost:false,continued:false,hungry:0,miracleCount:0,name:'Безымянный дух',achievements:[]};
  if(start!=='established'){s.buildings=starterHomes(s.resources);s.capacity=housingOf(s);}
  if(seed!==undefined)initializeGeneratedWorld(s,seed,{version:generationVersion});
  for(const b of s.buildings)stampBuildingCompletion(s,b);initializeProductionAccounting(s);
@@ -195,6 +197,8 @@ export function miracle(s,id,target){
  if(s.funeral&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
  if(['bless','healing'].includes(id)&&s.population>=s.capacity&&s.happiness>=100)return {ok:false,reason:'Город уже счастлив; для новых жителей нужны дома'};
  if(['cat','fertility'].includes(id)){const reason=miracleCelebrationTargetReason(s,id==='fertility'?target:null);if(reason)return {ok:false,reason};}
+ const fishingYard=id==='richCatch'?richCatchTarget(s,target):null;
+ if(id==='richCatch'&&!fishingYard)return {ok:false,reason:'Выбери действующий рыбацкий двор на карте'};
  if(id==='fertility'&&!startMiracleCelebration(s,id,{center:target}))return {ok:false,reason:'Нет безопасного места для церемонии'};
  if(id==='cat'&&!bringCat(s))return {ok:false,reason:'Нет безопасного двора для кошки'};
  if(id==='cat'&&usesCatDiscovery(s)&&s.catDiscovery.trial==='ready'){s.catDiscovery.trial='spent';s.catDiscovery.usedAt=s.simTime;}
@@ -203,6 +207,7 @@ export function miracle(s,id,target){
  const oldName=s.name;registerMiracle(s,m.domain);
  if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
  if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
+ if(fishingYard)startRichCatch(s,fishingYard);
  if(id==='abundance')s.resources.food=Math.min(storage(s),s.resources.food+45);
  if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
@@ -228,7 +233,7 @@ function check(s){
 function settleSeason(s){
  syncLifeAnalytics(s);
  depositCanalSilt(s,irrigationFor(s));
- const previous=s.season,pasture=pastureCredits(s,previous);s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);settleManagedFlocks(s,pasture);settleManagedDairy(s,pasture);advanceTrade(s);advanceMedicalYear(s);
+ const previous=s.season,pasture=pastureCredits(s,previous);s.tick++;expireRichCatch(s);s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);settleManagedFlocks(s,pasture);settleManagedDairy(s,pasture);advanceTrade(s);advanceMedicalYear(s);
  const flood=changeFloodSeason(s);
  if(flood==='warning')log(s,'Весной ожидается разлив','Проверь дороги и запасы под угрозой в обзоре города, в разделе «Работа».','bad');
  if(flood==='active'){
@@ -330,7 +335,7 @@ export function decode(raw){
    s.version=VERSION;s.simTime=s.tick*45;s.seasonElapsed=0;s.citizens=[];s.deliveries=0;s.delivered=emptyResources();s.lastDelivery=null;s.buffs=emptyBuffs();s.divinity=createDivinity();
    if(s.memories?.includes('rain'))s.divinity.domains.water=1;
    if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);
-   s.cooldowns={...Object.fromEntries(Object.keys(MIRACLES).map(k=>[k,0])),...s.cooldowns};
+   s.cooldowns={...emptyCooldowns(),...s.cooldowns};
    if(Array.isArray(s.buildings))s.buildings=s.buildings.map(b=>({...b,level:1}));
   }
   if(old){
@@ -398,7 +403,7 @@ export function decode(raw){
   }
   if(s.roadAnchors!==undefined&&(!Array.isArray(s.roadAnchors)||s.roadAnchors.length>worldWidth(s)*worldHeight(s)||s.roadAnchors.some(b=>terrain(b.x,b.y,s)==='void'||!['road'].includes(b.type))))return null;
   if(s.buildings.filter(b=>b.type==='ziggurat').length>1||Object.entries(BUILDINGS).some(([type,def])=>def.unique&&s.buildings.filter(b=>b.type===type).length>1)||s.capacity!==housingOf(s)||s.population>s.capacity)return null;
-  for(const [k,m]of Object.entries(MIRACLES))if(!integer(s.cooldowns?.[k],0,m.cooldown))return null;
+  for(const [k,m]of Object.entries(MIRACLES))if(!(k==='richCatch'&&s.cooldowns?.[k]===undefined)&&!integer(s.cooldowns?.[k],0,m.cooldown))return null;
   for(const k of Object.keys(emptyBuffs()))if(!integer(s.buffs?.[k],0,3))return null;
   for(const k of ['drought','rain','hungry','miracleCount'])if(!integer(s[k]))return null;
   for(const k of ['droughtSeen','won','lost','continued'])if(typeof s[k]!=='boolean')return null;
@@ -490,7 +495,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s))return null;
+  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}

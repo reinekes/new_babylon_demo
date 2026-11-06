@@ -1,3 +1,4 @@
+import {foodYieldMultiplier,richCatchBonus} from './rich-catch.js';
 import {sickleBlunt} from './agriculture.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {kilnNeedsRepair,KILN_RECIPE,FIRING_SECONDS,COOLING_SECONDS} from './kilns.js';
@@ -46,7 +47,7 @@ export function seasonBalance(s){
    continue;
   }
   if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceGrowth(b)*seasonSeconds));continue;}
-  for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=(s.buffs?.fertility?1.6:1)*(b.type==='garden'?orchardMaturity(s,b).yield:1);if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,trips*base*mult);}
+  for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=foodYieldMultiplier(s,b,{includeRichCatch:false})*(b.type==='garden'?orchardMaturity(s,b).yield:1);if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,base*mult*(trips+(k==='food'?richCatchBonus(s,b,trips):0)));}
  }
  for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='cowshed'||!b.dairy?.cows)continue;const id=component(key),d=b.dairy,ration=dairyRation(b),buffer=Math.max(0,d.reed-ration),feed=Math.max(0,stocks.get(id).reed+(byComponent.get(id)?.reed||0)-Math.max(0,ration-d.reed))+buffer,batches=Math.min(seasonSeconds*13/24*people.reduce((n,c)=>n+workRate(c,'cowshed'),0)*outputMultiplier(b)*dairyRate(b)/8,feed,Math.max(0,d.water-ration)/4);debit(id,'reed',Math.max(0,batches-buffer));credit(id,'milk',batches*3);}
  // Finish each link before budgeting the next; never borrow from another bank.

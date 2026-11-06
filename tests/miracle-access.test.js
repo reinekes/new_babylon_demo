@@ -2,6 +2,7 @@ import {advanceMiracleCelebration} from '../miracle-celebration.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,miracle,encode,decode} from '../engine.js';
+import {createNewCity} from '../new-game.js';
 import {MIRACLES} from '../definitions.js';
 import {miracleKnowledgeReason} from '../godhood.js';
 import {miracleLockReason,sacredMiracleUnlocked,syncSacredUnlocks} from '../sacred-unlocks.js';
@@ -42,6 +43,7 @@ test('mature Ishtar protection requires a completed gate and keeps its earned un
 
 test('ordinary miracles stay visible before a first cat, after summoning and during cooldown',()=>{
  assert.equal(typeof catalogue.shouldShowMiracle,'function');
+ assert.equal(catalogue.shouldShowMiracle(createNewCity({mode:'awakening'}),'richCatch'),true);
  const s=createGame({start:'established'});
  assert.equal(s.pests.nextCat,0);
  assert.equal(catalogue.shouldShowMiracle(s,'cat'),true);
@@ -59,9 +61,10 @@ test('ordinary miracles stay visible before a first cat, after summoning and dur
 
 test('the catalogue reveals each blue gift only after its own earned unlock',()=>{
  assert.equal(typeof catalogue.shouldShowMiracle,'function');
+ assert.equal(catalogue.shouldShowMiracle(createNewCity({mode:'awakening'}),'richCatch'),true);
  for(const mode of ['mature','awakening']){
   const s=createGame({mode});
-  for(const [id,m]of Object.entries(MIRACLES))assert.equal(catalogue.shouldShowMiracle(s,id),!(m.unlockBuilding||m.unlockQuest),`${mode}:${id}`);
+  for(const [id,m]of Object.entries(MIRACLES))assert.equal(catalogue.shouldShowMiracle(s,id),!(m.unlockBuilding||m.unlockQuest||id==='richCatch'),`${mode}:${id}`);
   s.relicQuest.phase='completed';
   assert.equal(catalogue.shouldShowMiracle(s,'relicAwakening'),true);
   assert.equal(catalogue.shouldShowMiracle(s,'earthMemory'),false);

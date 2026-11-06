@@ -1,3 +1,4 @@
+import {foodYieldMultiplier,useRichCatch} from './rich-catch.js';
 import {appendFish,takeFish as takeFishEvidence,recordHomeFish,recordInspiredCatch} from './fish-provenance.js';
 import {acceptFieldGrain,recordFieldGrain} from './field-grain.js';
 import {recordNeighborFoodFact} from './causal-facts.js';
@@ -309,6 +310,7 @@ function harvest(s,c,ctx,via=null){
   recordFishingCatch(s,b,c,amount,{inBuffer:true,before});
   if(s.richCatchEvidence)appendFish(b,'fishOutput',[amount],before);
   recordInspiredCatch(s,b,c,amount);
+  useRichCatch(s,b,amount);
  }return true;};
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}if(kilnNeedsRepair(b))repairKiln(b);else startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
@@ -325,7 +327,7 @@ function harvest(s,c,ctx,via=null){
  const def=BUILDINGS[b.type],boost=s.buffs||{};c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
-  if(resource==='food')mult*=(boost.fertility?1.6:1)*(b.type==='garden'?orchardMaturity(s,b).yield:1);
+  if(resource==='food')mult*=foodYieldMultiplier(s,b)*(b.type==='garden'?orchardMaturity(s,b).yield:1);
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,b.x,b.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,b.x,b.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
@@ -338,7 +340,7 @@ function harvest(s,c,ctx,via=null){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
   for(const [resource,amount]of Object.entries(c.cargo))recordBuildingProduction(s,b,resource,amount);
-  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing'){recordFishingCatch(s,b,c,c.cargo.food||0);if(s.richCatchEvidence){
+  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing'){recordFishingCatch(s,b,c,c.cargo.food||0);useRichCatch(s,b,c.cargo.food||0);if(s.richCatchEvidence){
    appendFish(c,'fishCargo',[c.cargo.food||0],0);
    if(c.calling==='fisher'&&c.fishCargo)c.inspiredFishReturn=c.work;
   }}startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
@@ -678,7 +680,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
    if(b.type==='musicHouse'){workMusic(s,b,c,remaining*workRate(c,'musicHouse'));return;}
    if(b.type==='cowshed'){if(outputRoom(b,'milk')<3-1e-7)return;const amount=workDairy(b,remaining*workRate(c,'cowshed')*outputMultiplier(b));if(amount){putProductionOutput(s,b,{milk:amount});recordCitizenHarvest(s,c,{milk:amount});}return;}
    if(b.type==='garden'&&orchardMaturity(s,b).yield===0)return;
-   if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*outputMultiplier(b)*(b.type==='garden'?orchardMaturity(s,b).yield:1)*(k==='food'&&s.buffs?.fertility?1.6:['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1)))return;
+   if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*outputMultiplier(b)*(b.type==='garden'?orchardMaturity(s,b).yield:1)*(k==='food'?foodYieldMultiplier(s,b):['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1)))return;
    if(isArtisan(b)){
     const v=b.artisan;
     if(v.stage==='ready'){collectReadyOutputs(s);return;}

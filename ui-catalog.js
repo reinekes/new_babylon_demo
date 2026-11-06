@@ -8,6 +8,7 @@ import {sacredMiracleUnlocked} from './sacred-unlocks.js';
 // Ordinary powers remain in the catalogue while unavailable. Only earned blue
 // gifts appear after their building or relic has actually unlocked them.
 export function shouldShowMiracle(s,id){
+ if(id==='richCatch')return !!s.richCatchEvidence;
  const m=MIRACLES[id];return !!m&&(!(m.unlockBuilding||m.unlockQuest)||sacredMiracleUnlocked(s,id));
 }
 
@@ -34,8 +35,10 @@ export function updateBuildingCardName(card,state){
 // Reused cards must update every visible/accessible price when switching saves.
 export function updateMiracleCard(details,s,id,reason=''){
  const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=price===0;
+ const desc=id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':m.desc;
+ const description=details.querySelector('.miracle-description');if(description)description.textContent=desc;
  el.disabled=!!reason;el.textContent=`${id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
- el.title=`${m.name} · ${price} веры. ${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
+ el.title=`${m.name} · ${price} веры. ${desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
  details.querySelector('.miracle-facts span').textContent=`${price} веры${first?' · первый дар':''}`;
  details.querySelector('.miracle-summary-status').textContent=reason||`${price} веры · ${first?'первый дар':DOMAIN_NAMES[m.domain]}`;

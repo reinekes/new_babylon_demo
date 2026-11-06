@@ -36,6 +36,7 @@ const paths={
  abundance:'M3 12h18c-1 11-17 11-18 0ZM7 8l1-5m4 5V2m5 6-1-5',
  bless:'M12 2v4m0 12v4M2 12h4m12 0h4M5 5l3 3m8 8 3 3M5 19l3-3m8-8 3-3M8 12l3 3 5-6',
  fertility:'M12 21V9M12 15C1 16 1 6 4 4c5 0 8 4 8 11Zm0-4c0-7 5-8 9-8 1 6-1 10-9 10',
+ richCatch:'M2 12c6-8 12-8 17 0-5 8-11 8-17 0Zm17 0 3-4v8l-3-4M7 11h.1',
  inspiration:'m4 21 9-11m-4-5 4-3 8 8-3 4-9-9Zm-5 5 6 6m-8 7 3 1 2-3',
  haste:'M2 7h14c7 0 6-8 1-5M2 12h19M2 17h14c7 0 6 8 1 5',
  revelation:'M4 4h16v16H4V4Zm8 3 4 5-4 5-4-5 4-5Zm-5 5h10',

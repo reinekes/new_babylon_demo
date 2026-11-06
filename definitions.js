@@ -43,6 +43,7 @@ export const MIRACLES={
  abundance:{name:'Изобилие',cost:25,cooldown:2,icon:'✧',domain:'harvest',desc:'+45 еды прямо в амбары.'},
  bless:{name:'Благословение',cost:20,cooldown:3,icon:'☀',domain:'life',desc:'+15 довольства; до трёх новых жителей.'},
  fertility:{name:'Дыхание земли',cost:35,cooldown:3,icon:'❧',domain:'harvest',desc:'Сбор еды и фиников ×1,6 на три сезона. На последней указанной точке карты на минуту расцветает волшебный сад: цветы, зелень и необычные деревья; это магия, а не местная флора.'},
+ richCatch:{name:'Богатый улов',cost:18,cooldown:2,icon:'≈',domain:'harvest',desc:'Выбери рыбацкий двор на карте. До шести успешных уловов дадут на 50% больше рыбы до смены сезона.'},
  inspiration:{name:'Руки творца',cost:30,cooldown:3,icon:'⚒',domain:'craft',desc:'Глина и тростник ×1,75 на три сезона.'},
  haste:{name:'Попутный ветер',cost:40,cooldown:3,icon:'➶',domain:'craft',desc:'Скорость работников ×1,5 на три сезона.'},
  revelation:{name:'Откровение',cost:35,cooldown:3,icon:'◉',domain:'knowledge',desc:'+20 веры и +12 престижа.'},
