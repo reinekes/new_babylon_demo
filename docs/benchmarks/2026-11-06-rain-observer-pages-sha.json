@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T08:56:55.992247+00:00",
+  "commit": "51d970c93e2bcab77143b714203283e9f3dd6f19",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "afe69044f18648c4ddfdc843fd63544813514bb5c9325ee3dadfde4c8fe3a7ae",
+      "actual": "afe69044f18648c4ddfdc843fd63544813514bb5c9325ee3dadfde4c8fe3a7ae",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "b28a7549caa6a3d81505417eaca13b0dc09339b18d78e74b96c1f94e71333db9",
+      "actual": "b28a7549caa6a3d81505417eaca13b0dc09339b18d78e74b96c1f94e71333db9",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a91507abdbe0ed1d733f27a1272fa2c1f44b2127ae7190b21b86c0207cca514c",
+      "actual": "a91507abdbe0ed1d733f27a1272fa2c1f44b2127ae7190b21b86c0207cca514c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-rain-scenes-pages-sha.json",
+      "status": 200,
+      "expected": "b92c1996b6f16d26dddf3ef1a8ccea952be7dfca7547dca18dff8b2c0bf50abd",
+      "actual": "b92c1996b6f16d26dddf3ef1a8ccea952be7dfca7547dca18dff8b2c0bf50abd",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "6bc5fda56ea2b81e45eb7eafc0f62492608a51058e23ff8945c430cecb603318",
+      "actual": "6bc5fda56ea2b81e45eb7eafc0f62492608a51058e23ff8945c430cecb603318",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-55.md",
+      "status": 200,
+      "expected": "7732b173d2fadf9f7e38a62f864b08ace3adaa1eb5643084c4ce0a4d483b5b9a",
+      "actual": "7732b173d2fadf9f7e38a62f864b08ace3adaa1eb5643084c4ce0a4d483b5b9a",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "841485bd9fdce30fb1f7f955f8b9b8d8e060ac08afeac216d294e6216530a865",
+      "actual": "841485bd9fdce30fb1f7f955f8b9b8d8e060ac08afeac216d294e6216530a865",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "expected": "417ad01bbe86b0de3794f49ac39b34abcc159509bb5ccfbedee7bf5a34440a74",
+      "actual": "417ad01bbe86b0de3794f49ac39b34abcc159509bb5ccfbedee7bf5a34440a74",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f53d1185a049e9bb37272af22b54ccee95354a816df07949d725a9b60590a474",
+      "actual": "f53d1185a049e9bb37272af22b54ccee95354a816df07949d725a9b60590a474",
+      "match": true
+    },
+    {
+      "path": "rain-presentation.js",
+      "status": 200,
+      "expected": "5163d871f76f1666e88329c420fc93a2990c575e0a4910ac4fc935524d44237f",
+      "actual": "5163d871f76f1666e88329c420fc93a2990c575e0a4910ac4fc935524d44237f",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "af3ce9ee12be2a3c99d2d8b61715227bb3938681ce9ecf6ae68d4f8fda6376c9",
+      "actual": "af3ce9ee12be2a3c99d2d8b61715227bb3938681ce9ecf6ae68d4f8fda6376c9",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ccdd7f5b99a287de5d8cfa5b02e9d260802a49f58febc75d584ab36ea232554c",
+      "actual": "ccdd7f5b99a287de5d8cfa5b02e9d260802a49f58febc75d584ab36ea232554c",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "c176da32d6ed0564715156229bfd40671c9d5468118271cb19624b7b4d8c2053",
+      "actual": "c176da32d6ed0564715156229bfd40671c9d5468118271cb19624b7b4d8c2053",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "ec80356a307ccf09c89f05d0eaf81fb2700bbaeec6b9e5c7295003c2c5baef33",
+      "actual": "ec80356a307ccf09c89f05d0eaf81fb2700bbaeec6b9e5c7295003c2c5baef33",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-rain-scenes.md",
+      "status": 200,
+      "expected": "f64bf1f8958c42e6269d23312fb919d01ef8debac6abdecd312a0d463efe71c9",
+      "actual": "f64bf1f8958c42e6269d23312fb919d01ef8debac6abdecd312a0d463efe71c9",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "7be6f376baabb3aff943880a11cade5768c8c4141580902d7818894f78530996",
+      "actual": "7be6f376baabb3aff943880a11cade5768c8c4141580902d7818894f78530996",
+      "match": true
+    },
+    {
+      "path": "tests/rain-presentation.test.js",
+      "status": 200,
+      "expected": "a034fde8c7aa7a64a9f604d404463f48d76f0e847ae7f33abfb9a09f1ea0e423",
+      "actual": "a034fde8c7aa7a64a9f604d404463f48d76f0e847ae7f33abfb9a09f1ea0e423",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
