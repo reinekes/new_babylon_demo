@@ -33,8 +33,8 @@ export function updateBuildingCardName(card,state){
 
 // Reused cards must update every visible/accessible price when switching saves.
 export function updateMiracleCard(details,s,id,reason=''){
- const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=id==='cat'&&price===0;
- el.disabled=!!reason;el.textContent=`${id==='cat'?'Призвать':'Применить'} · ${price} веры`;
+ const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=price===0;
+ el.disabled=!!reason;el.textContent=`${id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
  el.title=`${m.name} · ${price} веры. ${m.desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
  details.querySelector('.miracle-facts span').textContent=`${price} веры${first?' · первый дар':''}`;

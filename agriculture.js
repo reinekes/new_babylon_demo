@@ -36,6 +36,10 @@ export function workField(s,b,seconds,worker){
  c.remaining=Math.max(0,c.remaining-amount);c.harvested+=amount;c.sheaves+=amount;
  if(amount>0&&usesCatDiscovery(s)&&!s.irrigatedHarvest&&c.legacyYear===undefined&&c.sown===1&&c.growth>=1-1e-8&&c.canalGrowth>0&&worker?.calling==='farmer'&&worker.age>=16){
   s.irrigatedHarvest={field:buildingKey(b),farmerId:worker.id,time:s.simTime};
+  if(s.rainDiscovery){
+   s.news.unshift({title:'Одна капля · Небесный дождь',text:'Земледелец собрал ячмень с поля, которое жители поливали из канала. Открыт бесплатный первый призыв дождя.',kind:'good',year:s.year,season:s.season,tick:s.tick});
+   s.news=s.news.slice(0,80);
+  }
  }
  return 0;
 }
@@ -77,7 +81,7 @@ export function changeCropSeason(s,previous){
 export function cropSummary(s,b){
  const c=cropFor(s,b),calendar=fieldCalendar(s,b);
  if(s.season===calendar.sow)return fieldResting(s,b)?'Поле отдыхает до следующего посева':`Посев ${Math.round(c.sown*100)}% · семена на поле ${c.seedStock.toFixed(1)} · использовано ${c.seedUsed.toFixed(1)}/4`;
- if(s.season===calendar.grow)return `Засеяно ${Math.round(c.sown*100)}% · рост ${Math.round(c.growth*100)}% · ${fieldWater(s,b).canal||s.rain>0?'вода есть':c.legacyYear===s.year&&fieldWater(s,b).natural?'переходный полив старого поля':'нужен наполненный канал'}`;
+ if(s.season===calendar.grow)return `Засеяно ${Math.round(c.sown*100)}% · рост ${Math.round(c.growth*100)}% · ${s.rain>0?`благодатный дождь · ${s.rain} сез.`:fieldWater(s,b).canal?'вода есть':c.legacyYear===s.year&&fieldWater(s,b).natural?'переходный полив старого поля':'нужен наполненный канал'}`;
  if(s.season===calendar.harvest)return `В поле ${c.remaining.toFixed(1)} · снопы на току ${c.sheaves.toFixed(1)} · обмолочено ${c.threshed.toFixed(1)} еды`;
  return `Обмолот: ${c.sheaves.toFixed(1)} снопов · испортилось в поле ${c.spoiled.toFixed(1)}`;
 }

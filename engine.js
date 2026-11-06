@@ -1,3 +1,4 @@
+import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
 import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
@@ -197,7 +198,7 @@ export function miracle(s,id,target){
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
  const oldName=s.name;registerMiracle(s,m.domain);
  if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
- if(id==='rain'){if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
+ if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
  if(id==='abundance')s.resources.food=Math.min(storage(s),s.resources.food+45);
  if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
@@ -474,7 +475,7 @@ export function decode(raw){
   if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateCommonMeals(s)||!validateFamilyCare(s)||!validateWellbeing(s)||!validateEveningGames(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
-  if(oldFoodPlan)initializeFoodPlan(s);if(!validateMonumentChapter(s)||!validateCrops(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
+  if(oldFoodPlan)initializeFoodPlan(s);if(!validateMonumentChapter(s)||!validateCrops(s)||!validateRainDiscovery(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}
