@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 289,
+  "controlledMissingService": true,
+  "adviceStaleAfterReassignment": true,
+  "byteEqualReload": true,
+  "byteEqualOutsideAdvice": true,
+  "samples": 180,
+  "medianCpuMs": 3.6453339999998207,
+  "p95CpuMs": 10.489583000000039
+}

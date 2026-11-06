@@ -1,3 +1,4 @@
+import {REVELATION_BRANCHES,revelationAdviceQuote} from './revelation-advice.js';
 import {createSunlightPresentation} from './sunlight-presentation.js';
 import {createAbundancePresentation} from './abundance-presentation.js';
 import {giftAmount} from './abundance-origin.js';
@@ -809,12 +810,20 @@ for(const [i,[type]]of Object.entries(Object.entries(BUILDINGS))){
 function makeMiracleCard(id,m){
  const details=document.createElement('details');details.className='miracle-disclosure'+(m.unlockBuilding||m.unlockQuest?' is-sacred':'');details.dataset.miracle=id;
  details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
- details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;});
+ details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation')update();});
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
  const el=details.querySelector('.miracle-cast');
- el.onclick=()=>{const result=miracle(state,id,lastMiracleTarget);if(result.ok){details.open=false;windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ if(id==='revelation'){
+  const choice=document.createElement('label');
+  choice.dataset.revelationBranch='';
+  choice.innerHTML=`Ветвь <select aria-label="Ветвь Откровения"><option value="">Выбрать…</option>${Object.entries(REVELATION_BRANCHES).map(([key,branch])=>`<option value="${key}">${branch.label}</option>`).join('')}<option value="prestige">Только +12 престижа</option></select>`;
+  el.before(choice);
+  choice.querySelector('select').onchange=()=>update();
+ }
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:lastMiracleTarget);if(result.ok){details.open=false;windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
+ else if(id==='revelation'&&state.revelationEvidence){if(branch!=='prestige')showCityOverview();}
  else if(id==='sunlight'&&state.sunlightChapter){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();sunlightPresentation.cast(state);}
  else if(id==='abundance'&&state.abundanceGift){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();abundancePresentation.cast(state);}
  else if(id==='haste'&&state.windDelivery){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();windPresentation.cast(state,lastMiracleTarget);}
@@ -848,7 +857,10 @@ function update(){
  const g=goals(state);setHTML($('goals'),g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join(''));$('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'&&!richCatchTarget(state,lastMiracleTarget)?'Выбери действующий рыбацкий двор на карте':'');
-  updateMiracleCard(el.closest('details'),state,id,reason,gift);
+  const card=el.closest('details'),branch=card.querySelector('[data-revelation-branch]');
+  if(branch)branch.hidden=!state.revelationEvidence;
+  const advice=branch&&!branch.hidden&&card.open&&!reason?revelationAdviceQuote(state,branch.querySelector('select').value):null;
+  updateMiracleCard(card,state,id,reason||advice?.reason,gift);
  }
  $('season-countdown').textContent=`Месяц ${calendar.number} / 12 · день ${calendar.day}${ceremonyActive(state)?' · время церемонии':paused?' · пауза':''}`;
  $('pause').textContent=paused?'▶':'Ⅱ';$('pause').setAttribute('aria-label',paused?'Продолжить время':'Приостановить время');$('pause').classList.toggle('active',paused);$('next-season').disabled=seasonJumping||!!seasonJumpReason(state);$('next-season').title=seasonJumpReason(state)||(state.festival||state.miracleCelebration?'Закончить праздник и перейти к следующему сезону':'Перейти к следующему сезону');

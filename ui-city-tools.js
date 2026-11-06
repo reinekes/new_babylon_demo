@@ -1,3 +1,4 @@
+import {revelationAdviceView} from './revelation-advice.js';
 import {revelationEvidenceView} from './revelation-evidence.js';
 import {sunlightDedications} from './votive-offerings.js';
 import {abundanceReserveReady,ABUNDANCE_HOMES} from './abundance-discovery.js';
@@ -172,11 +173,18 @@ function richCatchProgressHTML(s){
  return `<section class="management-row" data-rich-catch-progress><h3>История «Богатый улов»</h3><p>${details}</p></section>`;
 }
 
+function revelationAdviceHTML(s){
+ const view=revelationAdviceView(s);
+ if(!view)return '';
+ const {person,place,label,action,stale}=view;
+ return `<p><b>${label}</b> · ${stale?'Совет устарел: работа или условия изменились.':`${escape(displayName(s,person))} · ${escape(buildingDefinition(s,place.type).name)} (${place.x}, ${place.y}). ${action}`}</p>${stale?'':`<button type="button" data-city-citizen="${person.id}">К жителю</button> <button type="button" data-city-focus="${buildingKey(place)}">К месту</button>`}`;
+}
+
 function revelationEvidenceHTML(s){
  const view=revelationEvidenceView(s);
  if(!view)return '';
  const labels={family:'Помощь семье',building:'Завершённая стройка',food:'Урожай или улов'};
- return `<section class="management-row" data-revelation-evidence><h3>Свидетельства для «Откровения» · ${view.count} из 3</h3><ul>${view.entries.map(({kind,recorded})=>`<li>${labels[kind]} · ${recorded?'есть свидетельство':'ожидается'}</li>`).join('')}</ul>${view.opening?'<p>Хранитель связал рассказы. Дар открыт.</p>':view.count===3?'<p>Три истории собраны. Ожидается взрослый хранитель рассказов.</p>':''}</section>`;
+ return `<section class="management-row" data-revelation-evidence><h3>Свидетельства для «Откровения» · ${view.count} из 3</h3><ul>${view.entries.map(({kind,recorded})=>`<li>${labels[kind]} · ${recorded?'есть свидетельство':'ожидается'}</li>`).join('')}</ul>${view.opening?'<p>Хранитель связал рассказы. Дар открыт.</p>':view.count===3?'<p>Три истории собраны. Ожидается взрослый хранитель рассказов.</p>':''}${revelationAdviceHTML(s)}</section>`;
 }
 
 function sunlightDedicationsHTML(s){

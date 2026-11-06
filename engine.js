@@ -1,3 +1,4 @@
+import {revelationAdviceQuote} from './revelation-advice.js';
 import {validateRevelationEvidence} from './revelation-evidence.js';
 import {validateSunlightFeast,validateSunlightService} from './sunlight-gathering.js';
 import {validateAbundanceDiscovery} from './abundance-discovery.js';
@@ -213,6 +214,11 @@ export function miracle(s,id,target){
   const gift=receiveAbundance(s,target);
   if(!gift.ok)return gift;
  }
+ if(id==='revelation'&&s.revelationEvidence){
+  const advice=revelationAdviceQuote(s,target?.branch);
+  if(!advice.ok)return advice;
+  if(advice.note)s.revelationEvidence.advice=advice.note;
+ }
  s.resources.faith-=price;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
  const oldName=s.name;registerMiracle(s,m.domain);
@@ -223,11 +229,11 @@ export function miracle(s,id,target){
  if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
  if(id==='sunlight'){affectResidents(s,{mood:7});s.happiness=Math.min(100,s.happiness+10);}
- if(id==='revelation'){s.resources.faith+=20;s.resources.prestige+=12;}
+ if(id==='revelation'){if(!s.revelationEvidence)s.resources.faith+=20;s.resources.prestige+=12;}
  if(id==='stars')s.resources.prestige+=18;
  if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'){s.resources.clay+=60;s.resources.reed+=40;}
- applySacredMiracle(s,id);log(s,m.name,m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
+ applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }
 function check(s){
  s.capacity=housingOf(s);

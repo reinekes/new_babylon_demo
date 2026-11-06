@@ -1,3 +1,4 @@
+import {validateRevelationAdvice} from './revelation-advice.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {worldHeight,worldWidth} from './world.js';
 
@@ -43,6 +44,7 @@ export function validateRevelationEvidence(s){
  const time=n=>Number.isFinite(n)&&n>=0&&n<=s.simTime;
  return Object.entries(evidence).every(([kind,fact])=>{
   if(kind==='version')return true;
+  if(kind==='advice')return validateRevelationAdvice(s,fact);
   if(!fact||!citizenId(fact.citizenId)||!time(fact.time))return false;
   if(kind==='opening')return Object.keys(fact).length===2&&hasAllStories(evidence)&&
    kinds.every(kind=>evidence[kind].time<=fact.time);
