@@ -40,6 +40,20 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
+  if(b.type==='cityWall'){
+    masonryBox(r,x,y,r.tw/2,r.th/2,21*q,'mud',q);
+    c.restore();return;
+  }
+  if(b.type==='cityGate'){
+    const turned=(b.rotation||0)%2;
+    const pillar=side=>r.point(b.x+.5+(turned?side*.62:0),b.y+.5+(turned?0:side*.62));
+    const pillars=[pillar(-1),pillar(1)].sort((a,z)=>a.y-z.y);
+    const [back,front]=pillars;
+    masonryBox(r,back.x,back.y,25*q,13*q,36*q,'mud',q);
+    r.line([[back.x,back.y-29*q],[front.x,front.y-29*q]],'#6d4e35',7*q);
+    masonryBox(r,front.x,front.y,25*q,13*q,36*q,'mud',q);
+    c.restore();return;
+  }
   if(b.type==='levee'){box(0,0,37,23,5,'#b78a58','#805637','#986740');box(0,0,33,16,9,'#c69c6a','#916447','#a4774d');return;}
   if(b.type==='musicHouse') {
     poly([[0,-15],[29,0],[0,15],[-29,0]],'#b9a17d');

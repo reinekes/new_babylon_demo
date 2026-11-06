@@ -1,3 +1,4 @@
+import {fortificationAccess} from './navigation.js';
 import {insideFootprint,footprintSize} from './footprints.js';
 import {worldWidth, worldHeight, bridgeSpanAt, worldFromRiver, isDryPoint} from './world.js';
 
@@ -29,7 +30,7 @@ function pathTo(start, target, neighbours) {
 // Streets use tile boundaries: a house can grow on a tile without erasing its road.
 // Each riverbank has its own network; roads never invent a crossing over water.
 export function generateStreets(buildings,s) {
-  const nodes = new Map(), land = new Map(), graph = new Map(), edges = [], solids=buildings.filter(b=>footprintSize(b)>1);
+  const nodes = new Map(), land = new Map(), graph = new Map(), edges = [], solids=buildings.filter(b=>b.type!=='cityGate'&&footprintSize(b)>1),forts=fortificationAccess(buildings);
   const bridgeNodes=new Set(),bridgeEdges=new Set();
   for(const b of buildings.filter(b=>b.type==='bridge'&&b.construction?.kind!=='new')){
     const span=bridgeSpanAt(b,s),from=span.left+.5,to=span.right+.5;
@@ -37,24 +38,29 @@ export function generateStreets(buildings,s) {
   }
   for (let y = 0; y <= worldHeight(s); y++) for (let x = 0; x <= worldWidth(s); x++) {
     const p = at(x, y);
-    if ((dry(p,s)||bridgeNodes.has(p.key))&&!solids.some(b=>insideFootprint(b,p.x,p.y))) land.set(p.key, p);
+    if ((dry(p,s)||bridgeNodes.has(p.key))&&!solids.some(b=>insideFootprint(b,p.x,p.y))&&(!forts||forts.pointClear(p))) land.set(p.key, p);
   }
   const neighbours = key => {
     const [x, y] = key.split(',').map(Number), result = [];
     for (const [dx, dy] of [[1,0],[0,1],[-1,0],[0,-1]]) {
       const p = land.get(keyOf(x + dx, y + dy)), a = land.get(key);
-      if (p && (bridgeEdges.has(`${key}|${p.key}`)||[.25,.5,.75].every(t => dry({x:a.x+(p.x-a.x)*t,y:a.y+(p.y-a.y)*t},s)))) result.push(p.key);
+      if (p && (!forts||forts.segmentClear(a,p)) && (bridgeEdges.has(`${key}|${p.key}`)||[.25,.5,.75].every(t => dry({x:a.x+(p.x-a.x)*t,y:a.y+(p.y-a.y)*t},s)))) result.push(p.key);
     }
     return result;
   };
   // Both bridge banks get approaches, even while the crossing is closed.
   const approaches=buildings.filter(b=>b.type==='bridge').flatMap(b=>{const span=bridgeSpanAt(b,s);return [span.left,span.right].map((x,i)=>({type:'approach',...worldFromRiver(x-.5,span.y-.5,s),siteKey:`${b.x},${b.y}`,side:i}));});
-  const roadBuildings=[...buildings.filter(b=>b.type!=='bridge'),...approaches];
+  const gateApproaches=b=>{const {x,y}=b;return (b.rotation||0)%2?[[x+1,y+3],[x+1,y-1]]:[[x+3,y+1],[x-1,y+1]];};
+  const gateSites=buildings.filter(b=>b.type==='cityGate'&&b.construction?.kind==='new').flatMap(b=>
+    gateApproaches(b).map((corner,side)=>({type:'approach',x:b.x,y:b.y,corner,side,siteKey:`${b.x},${b.y}`}))
+  );
+  const roadBuildings=[...buildings.filter(b=>b.type!=='bridge'),...approaches,...gateSites];
   const ports = [];
   const root=roadBuildings.find(b=>b.type==='shrine')||roadBuildings[0];
   const ordered=root?[root,...roadBuildings.filter(b=>b!==root)]:[];
   for (const b of ordered) {
-    const n=footprintSize(b),corners = [[b.x+n,b.y+n],[b.x,b.y+n],[b.x+n,b.y],[b.x,b.y]];
+    const n=footprintSize(b),corners=b.corner?[b.corner]:[[b.x+n,b.y+n],[b.x,b.y+n],[b.x+n,b.y],[b.x,b.y]];
+    if(b.type==='cityGate')corners.unshift(...gateApproaches(b));
     const port = corners.map(([x,y]) => land.get(keyOf(x,y))).find(Boolean);
     if (!port) continue;
     ports.push({...port, building:b});
@@ -85,7 +91,7 @@ export function generateStreets(buildings,s) {
   for(const road of s?.roads||[]){
     const resolve=v=>typeof v==='string'?land.get(v):v?.key?land.get(v.key):v&&land.get(keyOf(v.x+.5,v.y+.5));
     const a=resolve(road.a),b=resolve(road.b);
-    if(!a||!b||Math.abs(a.x-b.x)+Math.abs(a.y-b.y)!==1||![0,.25,.5,.75,1].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},s)))continue;
+    if(!a||!b||forts&&!forts.segmentClear(a,b)||Math.abs(a.x-b.x)+Math.abs(a.y-b.y)!==1||![0,.25,.5,.75,1].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},s)))continue;
     for(const p of [a,b]){nodes.set(p.key,p);if(!graph.has(p.key))graph.set(p.key,new Set());}
     if(!graph.get(a.key).has(b.key))edges.push([a,b]);graph.get(a.key).add(b.key);graph.get(b.key).add(a.key);
   }

@@ -1,6 +1,6 @@
-import {usesCatDiscovery} from './scenario-profiles.js';
+import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
-import {buildingKey} from './definitions.js';
+import {buildingKey,isCityFortification} from './definitions.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
 import {isDryPoint,worldWidth,worldHeight} from './world.js';
@@ -54,6 +54,10 @@ export function godhoodView(s){
 }
 
 export function buildingKnowledgeReason(s,type,level=1){
+ if(isCityFortification(type)){
+  if(!isStrictSumer(s))return 'Городские стены доступны в Южном Шумере';
+  if(s.population<48)return 'Городские стены открываются при 48 жителях';
+ }
  if(!isAwakening(s))return '';
  const g=s.godhood;if(g.stage!=='recognized')return 'Сначала заяви о присутствии: нужен первый свидетель';
  const required=knowledgeTier(type,level),master=s.citizens.some(c=>c.age>=16&&c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=required);

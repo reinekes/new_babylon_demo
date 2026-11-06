@@ -1,3 +1,4 @@
+import {fortificationAccess} from './navigation.js';
 import {buildingKnowledgeReason} from './godhood.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {markRoadTopologyChanged} from './road-revisions.js';
@@ -25,8 +26,10 @@ export function planRoadRoute(s,fromId,toId,target=2){
  const knowledge=buildingKnowledgeReason(s,'road',target);if(knowledge)return empty(knowledge);
  const roads=ensureRoads(s),lookup=new Map(roads.map(r=>[r.id,r])),from=lookup.get(fromId),to=lookup.get(toId);
  if(!from||!to)return empty('Выбери начало и конец существующей дороги');
+ const forts=fortificationAccess(s.buildings),available=r=>!forts||forts.pointClear(r.a)&&forts.pointClear(r.b)&&forts.segmentClear(r.a,r.b);
+ if(!available(from)||!available(to))return empty('Стена перекрыла один из дорожных участков');
  const net=generateStreets([...s.buildings,...s.roadAnchors||[]],s),graph=new Map([...net.graph].map(([k,v])=>[k,new Set(v)]));
- for(const r of roads){for(const [a,b]of [[r.a,r.b],[r.b,r.a]]){if(!graph.has(a.key))graph.set(a.key,new Set());graph.get(a.key).add(b.key);}}
+ for(const r of roads){if(!available(r))continue;for(const [a,b]of [[r.a,r.b],[r.b,r.a]]){if(!graph.has(a.key))graph.set(a.key,new Set());graph.get(a.key).add(b.key);}}
  const queue=[from.a.key,from.b.key],prev=new Map(queue.map(k=>[k,null])),goals=new Set([to.a.key,to.b.key]);let end=null;
  for(let i=0;i<queue.length;i++){const p=queue[i];if(goals.has(p)){end=p;break;}for(const next of graph.get(p)||[])if(!prev.has(next)){prev.set(next,p);queue.push(next);}}
  if(end===null)return empty('Нет связного пути между участками: проверь мост');
@@ -46,11 +49,12 @@ export function planNewRoad(s,from,to){
  if(s.event||s.lost||s.funeral)return empty(s.funeral?'Жители провожают умерших':'Сначала заверши текущее событие');
  const node=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)?{x:p.x+.5,y:p.y+.5,key:`${p.x+1},${p.y+1}`}:null,a=node(from),b=node(to);
  if(!a||!b)return empty('Выбери начало и конец дороги');
- const blocked=p=>s.buildings.some(v=>insideFootprint(v,p.x,p.y));
+ const forts=fortificationAccess(s.buildings);
+ const blocked=p=>forts&&!forts.pointClear(p)||s.buildings.some(v=>v.type!=='cityGate'&&insideFootprint(v,p.x,p.y));
  const dry=p=>isDryPoint(s,p.x,p.y)&&!blocked(p),allowed=p=>dry(p)||onBridge(s.buildings,p.x,p.y,s);
  if(!allowed(a)||!allowed(b))return empty('Начало и конец должны быть на сухой улице');
  const prev=new Map([[a.key,null]]),points=new Map([[a.key,a]]),queue=[a];
- for(let i=0;i<queue.length&&!prev.has(b.key);i++){const p=queue[i];for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1]]){const q={x:p.x+dx,y:p.y+dy,key:`${p.x+dx+.5},${p.y+dy+.5}`};if(prev.has(q.key)||!allowed(q)||![.25,.5,.75].every(t=>allowed({x:p.x+dx*t,y:p.y+dy*t})))continue;prev.set(q.key,p.key);points.set(q.key,q);queue.push(q);}}
+ for(let i=0;i<queue.length&&!prev.has(b.key);i++){const p=queue[i];for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1]]){const q={x:p.x+dx,y:p.y+dy,key:`${p.x+dx+.5},${p.y+dy+.5}`};if(prev.has(q.key)||!allowed(q)||forts&&!forts.segmentClear(p,q)||![.25,.5,.75].every(t=>allowed({x:p.x+dx*t,y:p.y+dy*t})))continue;prev.set(q.key,p.key);points.set(q.key,q);queue.push(q);}}
  if(!prev.has(b.key))return empty('Нет сухого пути: построй мост или выбери свой берег');
  const path=[];for(let k=b.key;k!==null;k=prev.get(k))path.push(points.get(k));path.reverse();
  const existing=new Set((s.roads||[]).map(r=>r.id)),roads=[];

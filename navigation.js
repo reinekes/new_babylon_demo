@@ -1,3 +1,4 @@
+import {isCityFortification} from './definitions.js';
 import {worldWidth,worldHeight,isDryPoint,onBridge,bridgeSpanAt,riverLocal} from './world.js';
 import {footprintSize} from './footprints.js';
 import {floodedSegment} from './river-flood.js';
@@ -16,13 +17,59 @@ function intersectsBox(a,b,r){
  }
  return hi>EPS&&lo<1-EPS;
 }
-function obstacleIndex(s){
- const cells=new Map();for(const b of s.buildings||[]){if(['road','bridge'].includes(b.type))continue;const bounds=solidBounds(b);
-  for(let y=Math.floor(bounds.minY);y<=Math.ceil(bounds.maxY);y++)for(let x=Math.floor(bounds.minX);x<=Math.ceil(bounds.maxX);x++){const key=`${x},${y}`;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(bounds);}
- }return cells;
+function fortificationBounds(buildings){
+ const occupied=new Set();
+ for(const b of buildings){
+  if(isCityFortification(b.type)){
+   const size=b.type==='cityGate'?2:1;
+   for(let y=0;y<size;y++)for(let x=0;x<size;x++)occupied.add(`${b.x+x},${b.y+y}`);
+  }
+ }
+ const edge=(x,y)=>occupied.has(`${x},${y}`)? .50001 : .47;
+ return b=>{
+  const {x,y}=b;
+  if(b.type==='cityWall'){
+   // Join only adjacent fortifications. An open end still leaves a usable breach.
+   return [{minX:x-edge(x-1,y),maxX:x+edge(x+1,y),minY:y-edge(x,y-1),maxY:y+edge(x,y+1)}];
+  }
+  if(b.type!=='cityGate')return [solidBounds(b)];
+  const outer={minX:x-.50001,maxX:x+1.50001,minY:y-.50001,maxY:y+1.50001};
+  if(b.construction?.kind==='new')return [outer];
+  // The centre of the 2 × 2 gate aligns with a walking node. Side chambers
+  // cover both rows of corner nodes so a turned gate cannot be crossed sideways.
+  return (b.rotation||0)%2
+   ?[{...outer,maxX:x+.28},{...outer,minX:x+.72}]
+   :[{...outer,maxY:y+.28},{...outer,minY:y+.72}];
+ };
+}
+function obstacleIndex(buildings){
+ const cells=new Map(),boundsFor=fortificationBounds(buildings);
+ for(const b of buildings){
+  if(b.type==='road'||b.type==='bridge')continue;
+  for(const bounds of boundsFor(b)){
+   for(let y=Math.floor(bounds.minY);y<=Math.ceil(bounds.maxY);y++){
+    for(let x=Math.floor(bounds.minX);x<=Math.ceil(bounds.maxX);x++){
+     const key=`${x},${y}`;
+     if(!cells.has(key))cells.set(key,[]);
+     cells.get(key).push(bounds);
+    }
+   }
+  }
+ }
+ return cells;
 }
 function localObstacles(index,a,b=a){const found=new Set();for(let y=Math.floor(Math.min(a.y,b.y));y<=Math.ceil(Math.max(a.y,b.y));y++)for(let x=Math.floor(Math.min(a.x,b.x));x<=Math.ceil(Math.max(a.x,b.x));x++)for(const box of index.get(`${x},${y}`)||[])found.add(box);return found;}
-export function navigationSegmentClear(s,a,b,index=obstacleIndex(s)){
+const insideObstacle=(index,p)=>[...localObstacles(index,p)].some(r=>p.x>r.minX&&p.x<r.maxX&&p.y>r.minY&&p.y<r.maxY);
+export function fortificationAccess(buildings){
+ const forts=buildings.filter(b=>isCityFortification(b.type));
+ if(!forts.length)return null;
+ const index=obstacleIndex(forts);
+ return {
+  pointClear:p=>!insideObstacle(index,p),
+  segmentClear:(a,b)=>![...localObstacles(index,a,b)].some(box=>intersectsBox(a,b,box)),
+ };
+}
+export function navigationSegmentClear(s,a,b,index=obstacleIndex(s.buildings||[])){
  const length=Math.hypot(b.x-a.x,b.y-a.y),steps=Math.max(4,Math.ceil(length/.1)),crossing=Math.abs(riverLocal(a.x,a.y,s).along-riverLocal(b.x,b.y,s).along)<EPS;
  for(let i=0;i<=steps;i++){const t=i/steps,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;if(!isDryPoint(s,x,y)&&!(crossing&&onBridge(s.buildings||[],x,y,s)))return false;}
  for(const box of localObstacles(index,a,b))if(intersectsBox(a,b,box))return false;return true;
@@ -40,10 +87,10 @@ export function navigationTravelCost(s,route){const roads=roadLookup(s);let n=0;
 export function createWalkingNetwork(s,streets,flooded=null){
  const isFlooded=(a,b)=>flooded&&floodedSegment(flooded,a,b);
  const segmentClear=(a,b)=>!isFlooded(a,b)&&navigationSegmentClear(s,a,b,index);
- const nodes=new Map(),graph=new Map(),costs=new Map(),index=obstacleIndex(s),roads=roadLookup(s),bridges=(s.buildings||[]).filter(b=>b.type==='bridge'&&b.construction?.kind!=='new');
+ const nodes=new Map(),graph=new Map(),costs=new Map(),index=obstacleIndex(s.buildings||[]),roads=roadLookup(s),bridges=(s.buildings||[]).filter(b=>b.type==='bridge'&&b.construction?.kind!=='new');
  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){
   const p={x:x-.5,y:y-.5,key:`${x},${y}`};if(isFlooded(p,p)||!isDryPoint(s,p.x,p.y)&&!onBridge(bridges,p.x,p.y,s))continue;
-  if([...localObstacles(index,p)].some(r=>p.x>r.minX&&p.x<r.maxX&&p.y>r.minY&&p.y<r.maxY))continue;nodes.set(p.key,p);graph.set(p.key,new Set());
+  if(insideObstacle(index,p))continue;nodes.set(p.key,p);graph.set(p.key,new Set());
  }
  let maxSpeed=1;
  const connect=(a,b)=>{const speed=speedFor(s,a,b,roads,bridges),cost=Math.hypot(b.x-a.x,b.y-a.y)/speed;maxSpeed=Math.max(maxSpeed,speed);graph.get(a.key).add(b.key);graph.get(b.key).add(a.key);costs.set(pairKey(a.key,b.key),cost);costs.set(pairKey(b.key,a.key),cost);};
@@ -56,7 +103,7 @@ export function createWalkingNetwork(s,streets,flooded=null){
   if(segmentClear(a,b))connect(a,b);
  }
  const components=new Map();let component=0;for(const key of nodes.keys()){if(components.has(key))continue;const queue=[key];components.set(key,component);for(let i=0;i<queue.length;i++)for(const next of graph.get(queue[i]))if(!components.has(next)){components.set(next,component);queue.push(next);}component++;}
- return {...streets,nodes,graph,components,navigation:{costs,maxSpeed,obstacles:index,flooded}};
+ return {...streets,nodes,graph,components,navigation:{costs,maxSpeed,obstacles:index,flooded,fortifications:fortificationAccess(s.buildings||[])}};
 }
 class MinHeap{
  constructor(){this.items=[];this.order=0;}
@@ -72,9 +119,9 @@ export function shortestWalkingPath(network,from,to){
   for(const next of network.graph.get(current.key)||[]){const a=network.nodes.get(current.key),b=network.nodes.get(next),cost=current.cost+(network.navigation?.costs.get(pairKey(current.key,next))??Math.hypot(b.x-a.x,b.y-a.y));if(cost>=(costs.get(next)??Infinity)-EPS)continue;costs.set(next,cost);previous.set(next,current.key);open.push(next,cost+heuristic(next),cost);}
  }return null;
 }
-export function nearestWalkingNode(network,p){
+export function nearestWalkingNode(network,p,accept=null){
  let best=null,distance=Infinity;
- const test=q=>{if(!q)return;const d=Math.hypot(p.x-q.x,p.y-q.y);if(d<distance-EPS){best=q;distance=d;}};
+ const test=q=>{if(!q||accept&&!accept(q))return;const d=Math.hypot(p.x-q.x,p.y-q.y);if(d<distance-EPS){best=q;distance=d;}};
  const x=Math.round(p.x+.5),y=Math.round(p.y+.5);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)test(network.nodes.get(`${x+dx},${y+dy}`));
  if(best)return best;for(const q of network.nodes.values())test(q);return best;
 }

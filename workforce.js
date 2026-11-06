@@ -70,7 +70,7 @@ export const isWorkday=t=>hourAt(t)>=6&&hourAt(t)<19;
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 
 const floodGeometry=s=>floodPhase(s)==='active'?`${s.riverFlood.along},${s.riverFlood.bank}:${floodProtectionRevision(s)}`:'';
-const geometrySignature=s=>s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:''}`).join('|')+`|roads:${roadTopologyRevision(s)}|flood:${floodGeometry(s)}`;
+const geometrySignature=s=>s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:b.type==='cityGate'?b.rotation||0:''}`).join('|')+`|roads:${roadTopologyRevision(s)}|flood:${floodGeometry(s)}`;
 const anchorSignature=s=>(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}:${b.type==='bridge'?b.level||1:''}`).join('|');
 const sameWorld=(cache,s)=>cache&&cache.river===s.world?.river&&cache.lakes===s.world?.lakes&&cache.lakeCount===(s.world?.lakes?.length||0);
 // Pure cached view for water couriers; never creates roads or warms a new network.
@@ -122,15 +122,16 @@ function receivingStore(s,ctx,origin,cargo){for(const [k,n]of Object.entries(car
 function localRecoveryStore(s,c){syncInventory(s);const ctx=context(s);let nearest=null,d=Infinity;for(const p of ctx.network.nodes.values()){const n=distance(c,p);if(n<d){d=n;nearest=p;}}const select=buildings=>{let best=null,length=Infinity;for(const b of buildings){const p=ctx.ports.get(buildingKey(b)),route=p&&nearest&&routeBetween(s,nearest.key,p.key,ctx);if(route&&route.length<length){best=buildingKey(b);length=route.length;}}return best;};return select(stockStores(s))||select(s.buildings.filter(b=>b.type==='house'&&isOperational(b)))||select(s.buildings.filter(isOperational));}
 function startTrip(s,c,targetKey,phase,ctx,via=null){
  const target=ctx.ports.get(targetKey);if(!target){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
- const origin=nearestWalkingNode(ctx.network,via||c);
+ const forts=ctx.network.navigation.fortifications;
+ const origin=nearestWalkingNode(ctx.network,via||c,forts&&(p=>forts.segmentClear(via||c,p)));
  const route=origin&&routeBetween(s,origin.key,target.key,ctx);
  const flooded=ctx.network.navigation.flooded;
- if(!route||flooded&&(via&&floodedSegment(flooded,c,via)||floodedSegment(flooded,via||c,origin))){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
+ if(!route||forts&&via&&!forts.segmentClear(c,via)||flooded&&(via&&floodedSegment(flooded,c,via)||floodedSegment(flooded,via||c,origin))){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
  c.route=[{x:c.x,y:c.y},...(via?[{x:via.x,y:via.y}]:[]),...route.map(p=>({x:p.x,y:p.y}))];c.routeIndex=1;c.phase=phase;
 }
 function siteAccess(s,ctx,c,b){
  const home=ctx.ports.get(c.home);if(!home)return null;
- const key=buildingKey(b),targets=b.type==='bridge'?[`site:${key}:0`,`site:${key}:1`]:[key];
+ const key=buildingKey(b),targets=b.type==='bridge'||b.type==='cityGate'?[`site:${key}:0`,`site:${key}:1`]:[key];
  for(const target of targets){const p=ctx.ports.get(target);if(!p||!routeBetween(s,home.key,p.key,ctx))continue;
   const store=b.construction?.sources&&Object.values(b.construction.remaining).some(n=>n>0)?closestStock(s,ctx,target,'clay',{sources:b.construction.sources}):closestStore(s,ctx,target);if(store)return {site:key,sitePort:target,store};
  }
@@ -644,7 +645,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
   const next=c.route[c.routeIndex];
   if(!next){arrival(s,c,ctx);if(c.phase==='home'||c.phase==='resting')return;continue;}
   const flooded=ctx.network.navigation.flooded;
-  if(flooded&&floodedSegment(flooded,c,next)){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
+  if(flooded&&floodedSegment(flooded,c,next)||ctx.network.navigation.fortifications&&!ctx.network.navigation.fortifications.segmentClear(c,next)){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
   const dist=distance(c,next);
   let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?ctx.buildings.get(c.work)?.type:null);
   if(onBridge(s.buildings,c.x,c.y,s)){
