@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "initialBeds": 719,
+  "samples": 120,
+  "medianHousingCpuMs": 0.11737499999981083,
+  "p95HousingCpuMs": 0.6295829999999114,
+  "unchangedSimulation": true,
+  "byteEqualReload": true
+}

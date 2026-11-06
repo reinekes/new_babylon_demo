@@ -1,4 +1,4 @@
-import {arrivalHospitalityView} from './arrival-hospitality.js';
+import {arrivalHospitalityView,arrivalHousing} from './arrival-hospitality.js';
 import {shapingProjectView} from './shaping-projects.js';
 import {revelationAdviceView} from './revelation-advice.js';
 import {revelationEvidenceView} from './revelation-evidence.js';
@@ -222,7 +222,8 @@ function shapingBatchesHTML(s){
 function arrivalHospitalityHTML(s){
  const view=arrivalHospitalityView(s);
  if(!view)return '';
- return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p></section>`;
+ const beds=arrivalHousing(s).reduce((total,row)=>total+row.beds,0);
+ return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p></section>`;
 }
 
 function shapingProjectsHTML(s){

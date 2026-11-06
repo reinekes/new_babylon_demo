@@ -39,3 +39,15 @@ test('only a served and arrived evacuee from the opposite bank records a hosting
  assert.equal(arrivalHospitalityView(s).shelters,1);
  assert.equal(arrivalHospitalityView(s).qualified,false);
 });
+
+test('arrival housing counts permanent residents and temporary evacuees, excluding closed houses',async()=>{
+ const {arrivalHousing}=await import('../arrival-hospitality.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ s.buildings=[
+  {type:'house',x:6,y:7,level:1,starterHut:true},
+  {type:'house',x:8,y:7,level:1,starterHut:true},
+  {type:'house',x:10,y:7,level:1,construction:{kind:'new'}}
+ ];
+ s.citizens=[{home:'6,7',floodShelter:'8,7'},{home:'8,7'},{home:'8,7'}];
+ assert.deepEqual(arrivalHousing(s),[{home:'6,7',beds:3},{home:'8,7',beds:1}]);
+});

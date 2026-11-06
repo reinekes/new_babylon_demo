@@ -1,5 +1,6 @@
 import {usesCatDiscovery} from './scenario-profiles.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {buildingKey,capacityOf,isOperational} from './definitions.js';
+import {floodMapView} from './river-flood.js';
 import {signedRiverDistance,worldHeight,worldWidth} from './world.js';
 
 const kinds=['artisan','envoy','pilgrim'];
@@ -38,6 +39,22 @@ export function arrivalHospitalityView(s){
  if(!journal)return null;
  const visits=journal.receipts.length,shelters=journal.shelters?.length||0;
  return {visits,shelters,needed,qualified:visits>=needed||shelters>=needed};
+}
+
+export function arrivalHousing(s){
+ const flood=floodMapView(s);
+ const flooded=new Set(flood?.phase==='active'?flood.tiles.map(buildingKey):[]);
+ const vacancies=new Map();
+ for(const b of s.buildings){
+  const beds=capacityOf(b),home=buildingKey(b);
+  if(beds&&!flooded.has(home))vacancies.set(home,beds);
+ }
+ for(const c of s.citizens){
+  if(vacancies.has(c.home))vacancies.set(c.home,vacancies.get(c.home)-1);
+  if(c.floodShelter!==c.home&&vacancies.has(c.floodShelter))
+   vacancies.set(c.floodShelter,vacancies.get(c.floodShelter)-1);
+ }
+ return [...vacancies].filter(([,beds])=>beds>0).map(([home,beds])=>({home,beds}));
 }
 
 export function validateArrivalHospitality(s){
