@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T19:35:35.788994+00:00",
+  "commit": "3e27b6e66ef5ab06c31a2b19d37edb1223bc00dd",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "001e722a333e1ff4cfea66adf6d2588cd55eab424756c3b4e4ef0fdf0b25efde",
+      "actual": "001e722a333e1ff4cfea66adf6d2588cd55eab424756c3b4e4ef0fdf0b25efde",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-revelation-opening-4x.json",
+      "status": 200,
+      "expected": "711f20a76553fc83d6280532e50a80e32bf49977e9a576444088eacccece1f12",
+      "actual": "711f20a76553fc83d6280532e50a80e32bf49977e9a576444088eacccece1f12",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "d6dcf0ed00c541a10f242f9078b6144615c236a08a9b1e8a4359b5b7beda392c",
+      "actual": "d6dcf0ed00c541a10f242f9078b6144615c236a08a9b1e8a4359b5b7beda392c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e6306b322a4e52f4abef31c60e96adeb0fb6eec190eddb64426f0bb1305bc2b2",
+      "actual": "e6306b322a4e52f4abef31c60e96adeb0fb6eec190eddb64426f0bb1305bc2b2",
+      "match": true
+    },
+    {
+      "path": "revelation-evidence.js",
+      "status": 200,
+      "expected": "0ee9f50539de6e642c117924b8d638f486bbe2b8658b045319b370695adf816d",
+      "actual": "0ee9f50539de6e642c117924b8d638f486bbe2b8658b045319b370695adf816d",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "66db9b4dc7e3aff66668434c73a211f10f4ec9fe6db12df3cab7745c09280b5e",
+      "actual": "66db9b4dc7e3aff66668434c73a211f10f4ec9fe6db12df3cab7745c09280b5e",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "b17012b96a8a6d9cef56b55df74219173542de25394a5eb5b9b7c5e70da035c4",
+      "actual": "b17012b96a8a6d9cef56b55df74219173542de25394a5eb5b9b7c5e70da035c4",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "052b22675bc0df6c4c285fd28a63d90440cc0ae5008ba35144621c135006adcc",
+      "actual": "052b22675bc0df6c4c285fd28a63d90440cc0ae5008ba35144621c135006adcc",
+      "match": true
+    },
+    {
+      "path": "tests/revelation-evidence.test.js",
+      "status": 200,
+      "expected": "1e862604ecb0a5c272bd3ea22579d68a8f35b15c76747509e508358681fa9a8f",
+      "actual": "1e862604ecb0a5c272bd3ea22579d68a8f35b15c76747509e508358681fa9a8f",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "6e2273662667d4c8940ea5bd5c786385e5980348ad7c08ec371473b9f1a418ca",
+      "actual": "6e2273662667d4c8940ea5bd5c786385e5980348ad7c08ec371473b9f1a418ca",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
