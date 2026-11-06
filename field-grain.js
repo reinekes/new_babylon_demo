@@ -3,8 +3,9 @@ import {usesCatDiscovery} from './scenario-profiles.js';
 
 const EPS=1e-8;
 const LIMIT=32;
+const REQUIRED_FIELDS=3;
 
-export const newEarthDiscovery=()=>({version:1,nextFieldId:1,receipts:[]});
+export const newEarthDiscovery=()=>({version:1,nextFieldId:1,receipts:[],qualifiedAt:null});
 
 export function recordFieldGrain(s,field,farmer,amount,prefix){
  const q=s.earthDiscovery;
@@ -51,12 +52,30 @@ export function acceptFieldGrain(s,courier,n,qualifies){
  if(q.receipts.length>LIMIT)q.receipts.shift();
 }
 
+export function fieldGrainView(s){
+ const q=s.earthDiscovery;
+ if(!q)return null;
+ if(q.qualifiedAt!=null)return {qualified:true,fields:REQUIRED_FIELDS,required:REQUIRED_FIELDS,inspired:true};
+ const live=new Set(s.buildings.filter(b=>b.type==='field'&&b.grainFieldId&&isOperational(b)).map(b=>b.grainFieldId));
+ const receipts=q.receipts.filter(r=>live.has(r.fieldId));
+ return {qualified:false,fields:Math.min(receipts.length,REQUIRED_FIELDS),required:REQUIRED_FIELDS,inspired:receipts.some(r=>r.inspired)};
+}
+
+export function advanceFieldGrain(s){
+ const q=s.earthDiscovery;
+ if(!q||q.qualifiedAt!=null||q.receipts.length<REQUIRED_FIELDS||!q.receipts.some(r=>r.inspired))return false;
+ const progress=fieldGrainView(s);
+ if(progress.fields<REQUIRED_FIELDS||!progress.inspired)return false;
+ q.qualifiedAt=s.simTime;
+ return true;
+}
+
 export function validateFieldGrain(s){
  const q=s.earthDiscovery,fields=s.buildings.filter(b=>b.grainFieldId!==undefined||b.grainEvidence!==undefined);
  const carrying=s.citizens.filter(c=>c.fieldGrain!==undefined);
  if(q===undefined)return fields.length===0&&carrying.length===0;
  const integer=(v,min,max=Infinity)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
- if(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==3||
+ if(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==(q.qualifiedAt===undefined?3:4)||
   !integer(q.nextFieldId,1)||!Array.isArray(q.receipts)||q.receipts.length>LIMIT)return false;
  const fieldId=v=>integer(v,1,q.nextFieldId-1),farmerId=v=>integer(v,0,s.demography.nextId-1);
  const live=new Map();
@@ -83,5 +102,5 @@ export function validateFieldGrain(s){
    !Number.isFinite(row.time)||row.time<previousTime||row.time>s.simTime)return false;
   keys.add(row.field);ids.add(row.fieldId);previousTime=row.time;
  }
- return true;
+ return q.qualifiedAt==null||Number.isFinite(q.qualifiedAt)&&q.qualifiedAt>=0&&q.qualifiedAt<=s.simTime&&q.receipts.length>=REQUIRED_FIELDS;
 }

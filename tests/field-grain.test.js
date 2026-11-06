@@ -49,3 +49,46 @@ test('rebuilding on the same tile replaces its evidence and cannot add another f
  assert.equal(s.earthDiscovery.receipts.length,1);
  assert.equal(s.earthDiscovery.receipts[0].fieldId,replacement.grainFieldId);
 });
+
+test('the milestone needs three currently operational fields and an inspired grain receipt',async()=>{
+ const {advanceFieldGrain,fieldGrainView}=await import('../field-grain.js');
+ const {decode,encode}=await import('../engine.js');
+ const {cityToolsHTML}=await import('../ui-city-tools.js');
+ const {stampBuildingCompletion}=await import('../building-chronology.js');
+ const {initializeBuildingInventory}=await import('../building-inventory.js');
+ const {initializeCrops}=await import('../agriculture.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=createNewCity({mode:'awakening',seed:137}),[farmer,courier]=s.citizens;
+ const sites=[[9,7],[10,7],[11,7]].map(([x,y])=>({type:'field',x,y,level:1}));
+ for(const site of sites){s.buildings.push(site);stampBuildingCompletion(s,site);}
+ initializeBuildingInventory(s);initializeCrops(s);syncCitizens(s);
+ function deliver(field){
+  recordFieldGrain(s,field,farmer,2,0);
+  pickupFieldGrain(field,courier,2,2);
+  acceptFieldGrain(s,courier,2,true);
+ }
+ for(const field of sites)deliver(field);
+ assert.equal(advanceFieldGrain(s),false);
+ assert.equal(fieldGrainView(s).fields,3);
+ farmer.calling='farmer';
+ deliver(sites[0]);
+ const missing=s.buildings.pop();
+ assert.equal(fieldGrainView(s).fields,2);
+ assert.equal(advanceFieldGrain(s),false);
+ const replacement={...missing};delete replacement.grainFieldId;
+ s.buildings.push(replacement);
+ assert.match(cityToolsHTML(s),/Поля со складской приёмкой · 2 из 3/);
+ deliver(replacement);
+ assert.equal(advanceFieldGrain(s),true);
+ assert.equal(advanceFieldGrain(s),false);
+ assert.equal(s.earthDiscovery.qualifiedAt,0);
+ const raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),raw);
+ assert.match(cityToolsHTML(loaded),/Условия выполнены/);
+ delete loaded.earthDiscovery.qualifiedAt;
+ const prior=encode(loaded),old=decode(prior);
+ assert.ok(old);
+ assert.equal(encode(old),prior);
+ assert.equal(advanceFieldGrain(old),true);
+});
