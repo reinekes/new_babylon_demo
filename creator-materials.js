@@ -1,8 +1,9 @@
-import {BUILDINGS} from './definitions.js';
+import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 
 const REQUIRED={clay:30,reed:20};
-const EPS=1e-8;
+const EPS=1e-8, REQUIRED_PROJECTS=2;
+const PROFESSIONS=['clayworker','reedcutter'];
 export const newCreatorMaterials=()=>({version:1,clay:0,reed:0});
 
 export function markCreatorCargo(s,c,resource,amount,stocked=false){
@@ -48,14 +49,46 @@ export function recordCreatorConstruction(b,q){
  b.creatorBuilt=materials;
 }
 
+export function recordCreatorUse(s,b){
+ const q=s.creatorMaterials;
+ if(!q||!b?.creatorBuilt||!isOperational(b)||q.projects?.length>=REQUIRED_PROJECTS)return;
+ const key=buildingKey(b);
+ const projects=q.projects??=[];
+ if(!projects.includes(key))projects.push(key);
+}
+
+export function advanceCreatorEvidence(s){
+ const q=s.creatorMaterials;
+ if(!q)return;
+ // A city updated after inspiration can still prove its current professions.
+ if(q.inspired?.length!==PROFESSIONS.length){
+  for(const profession of PROFESSIONS)if(!q.inspired?.includes(profession)&&s.citizens.some(c=>c.calling===profession))recordCreatorInspiration(s,profession);
+ }
+ if(q.projects?.length>=REQUIRED_PROJECTS)return;
+ const homes=s.buildings.filter(b=>b.type==='house'&&b.creatorBuilt&&!q.projects?.includes(buildingKey(b)));
+ if(!homes.length)return;
+ const occupied=new Set(s.citizens.map(c=>c.home));
+ for(const b of homes)if(occupied.has(buildingKey(b)))recordCreatorUse(s,b);
+}
+
+export function recordCreatorInspiration(s,profession){
+ const q=s.creatorMaterials;
+ if(!q||!PROFESSIONS.includes(profession))return;
+ const inspired=q.inspired??=[];
+ if(!inspired.includes(profession))inspired.push(profession);
+}
+
 export function creatorMaterialsView(s){
  const q=s.creatorMaterials;
- return q?{clay:q.clay,reed:q.reed,required:REQUIRED}:null;
+ return q?{clay:q.clay,reed:q.reed,required:REQUIRED,projects:q.projects?.length||0,projectsRequired:REQUIRED_PROJECTS,inspired:q.inspired?.length||0,inspiredRequired:PROFESSIONS.length}:null;
 }
 
 export function validateCreatorMaterials(s){
  const q=s.creatorMaterials;
- if(q!==undefined&&(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==3||
+ const unique=(value,max,test)=>Array.isArray(value)&&value.length>0&&value.length<=max&&new Set(value).size===value.length&&value.every(test);
+ if(q!==undefined&&(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==3+Number(q.projects!==undefined)+Number(q.inspired!==undefined)||
+  q.projects!==undefined&&!unique(q.projects,REQUIRED_PROJECTS,key=>typeof key==='string'&&/^\d+,\d+$/.test(key))||
+  q.inspired!==undefined&&!unique(q.inspired,PROFESSIONS.length,p=>PROFESSIONS.includes(p))||
   Object.entries(REQUIRED).some(([resource,max])=>!Number.isFinite(q[resource])||q[resource]<0||q[resource]>max)))return false;
  const matches=(marks,physical)=>!!q&&marks&&typeof marks==='object'&&!Array.isArray(marks)&&
   Object.keys(marks).length>0&&Object.entries(marks).every(([resource,n])=>Object.hasOwn(REQUIRED,resource)&&

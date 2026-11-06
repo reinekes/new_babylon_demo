@@ -1,3 +1,4 @@
+import {recordCreatorInspiration} from './creator-materials.js';
 import {richCatchKnowledgeReason} from './rich-catch.js';
 import {CITY_STAGE_POPULATION,monumentChapterReason} from './monument-chapter.js';
 import {dispatchNeighborWater,neighborWaterRoute} from './water.js';
@@ -74,7 +75,7 @@ export function miracleKnowledgeReason(s,id){
  if(id==='cat'&&usesCatDiscovery(s))return s.catDiscovery?.phase==='opened'?'':'Дар кошки откроется через историю рыбака';if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Пока никто не признал твоё присутствие';const need=['rain','bless','peace'].includes(id)?1:['inannaProtection','relicAwakening','earthMemory'].includes(id)?3:2;return godhoodView(s).builderLevel>=need?'':`Чудо откроется с мастером ${['','I','II','III'][need]} уровня`;}
 export function godhoodInspirationReason(s,c,profession){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Сначала помоги первому человеку заметить присутствие бога';if(!knowsPresence(s,c)&&!preparedFisherInspiration(s,c,profession))return 'Этот человек ещё не признал присутствие бога: помоги ему увидеть дело общины';return '';}
 export function firstBuilderInspiration(s,c,profession){return isAwakening(s)&&profession==='builder'&&s.godhood.stage==='recognized'&&!s.godhood.firstBuilderGift&&s.godhood.witnessId===c.id;}
-export function acceptGodhoodInspiration(s,c,profession){if(!s.godhood||!isAwakening(s))return;if(profession==='builder'){c.builderSkill??={level:1,projects:0};if(c.id===s.godhood.witnessId)s.godhood.firstBuilderGift=true;}}
+export function acceptGodhoodInspiration(s,c,profession){if(!s.godhood||!isAwakening(s))return;recordCreatorInspiration(s,profession);if(profession==='builder'){c.builderSkill??={level:1,projects:0};if(c.id===s.godhood.witnessId)s.godhood.firstBuilderGift=true;}}
 export function canLeadConstruction(s,c,b){return !isAwakening(s)||c&&c.age>=16&&(b.type==='house'&&b.householdInitiative&&b.construction?.kind==='new'||c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=knowledgeTier(b.type,b.construction?.kind==='repair'?1:b.construction?.target||b.level||1));}
 export function recordBuilderCompletion(s,b){
  if(!isAwakening(s)||b.householdInitiative&&b.construction?.kind==='new')return false;

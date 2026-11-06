@@ -1,4 +1,4 @@
-import {validateCreatorMaterials} from './creator-materials.js';
+import {validateCreatorMaterials,advanceCreatorEvidence} from './creator-materials.js';
 import {richCatchTarget,startRichCatch,expireRichCatch,validateRichCatch} from './rich-catch.js';
 import {validateFishProvenance} from './fish-provenance.js';
 import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
@@ -222,6 +222,7 @@ export function miracle(s,id,target){
 function check(s){
  s.capacity=housingOf(s);
  if(s.population<=0){s.population=0;s.lost=true;s.event=null;syncCitizens(s);return;}
+ advanceCreatorEvidence(s);
  if(advanceFieldGrain(s))log(s,'Три поля дали зерно','Склад принял урожай с трёх действующих полей. Открылось чудо «Дыхание земли».','good');
  if(advanceBlessingDiscovery(s))log(s,'Соседи поддержали друг друга','Три двора обеспечены едой и водой, две доставки помощи подтверждены. Условия истории «Благословение» выполнены.','good');
  if(advanceMonumentChapter(s))log(s,'Поздняя глава · Великий зиккурат','Город вступил в эпоху монументального строительства. Следующая цель — возвести Великий зиккурат.','good');

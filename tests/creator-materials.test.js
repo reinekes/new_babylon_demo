@@ -7,7 +7,8 @@ import {syncCitizens,invalidateAssignments} from '../workforce.js';
 import {cancelConstruction,inspireCitizen} from '../management.js';
 import {orderManualGathering} from '../manual-gathering.js';
 import {reserveStock,refundSources,takeStock} from '../inventory.js';
-import {newCreatorMaterials,markCreatorCargo,acceptCreatorCargo,creatorMaterialsView,addCreatorStock} from '../creator-materials.js';
+import {recordBuildingProduction} from '../building-production-history.js';
+import {recordCreatorUse,advanceCreatorEvidence,recordCreatorInspiration,newCreatorMaterials,markCreatorCargo,acceptCreatorCargo,creatorMaterialsView,addCreatorStock} from '../creator-materials.js';
 
 test('only tagged locally gathered cargo is credited, once and up to the threshold',()=>{
  const s={creatorMaterials:newCreatorMaterials()},c={cargo:{clay:12}};
@@ -111,4 +112,29 @@ test('a real building order survives loading, cancels without losing provenance 
  assert.equal(yard().construction,undefined);
  assert.deepEqual(yard().creatorBuilt,allocated['9,8']);
  assert.equal(encode(decode(encode(s))),encode(s));
+});
+
+test('real use of two different plots and both inspirations survive replacement and loading',()=>{
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.creatorMaterials=newCreatorMaterials();
+ const home=s.buildings.find(b=>b.type==='house'),pit=s.buildings.find(b=>b.type==='clay');
+ home.creatorBuilt={clay:1};pit.creatorBuilt={reed:1};
+ assert.equal(creatorMaterialsView(s).projects,0);
+ advanceCreatorEvidence(s);
+ assert.equal(creatorMaterialsView(s).projects,1);
+ recordCreatorUse(s,{...home});
+ assert.equal(creatorMaterialsView(s).projects,1);
+ recordBuildingProduction(s,pit,'clay',1);
+ assert.equal(creatorMaterialsView(s).projects,2);
+ recordCreatorInspiration(s,'clayworker');
+ recordCreatorInspiration(s,'clayworker');
+ assert.equal(creatorMaterialsView(s).inspired,1);
+ s.citizens[0].calling='reedcutter';
+ advanceCreatorEvidence(s);
+ assert.equal(creatorMaterialsView(s).inspired,2);
+ const raw=encode(s),saved=decode(raw);
+ assert.ok(saved);
+ assert.equal(encode(saved),raw);
+ assert.equal(creatorMaterialsView(saved).projects,2);
+ assert.equal(creatorMaterialsView(saved).inspired,2);
 });

@@ -1,3 +1,4 @@
+import {recordCreatorUse} from './creator-materials.js';
 import {recordNeighborWaterFact} from './causal-facts.js';
 import {confirmProjectWater} from './human-projects.js';
 import {cancelFirstWaterHelp,confirmFirstWaterHelp} from './godhood.js';
@@ -150,7 +151,8 @@ function advanceTrip(s,c,dt,nav){
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
    const amount=Math.min(t.load,Math.max(0,targetCapacity(s,b)-targetStock(b)));
-   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;recordCitizenDelivery(s,c,{water:amount});t.load-=amount;recordNeighborWaterFact(s,c,b,t,amount);confirmFirstWaterHelp(s,c,b,amount);confirmProjectWater(s,c,t.station,b,amount);
+   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;
+   if(amount>0&&t.station&&s.creatorMaterials)recordCreatorUse(s,s.buildings.find(site=>site.type==='waterpoint'&&buildingKey(site)===t.station));recordCitizenDelivery(s,c,{water:amount});t.load-=amount;recordNeighborWaterFact(s,c,b,t,amount);confirmFirstWaterHelp(s,c,b,amount);confirmProjectWater(s,c,t.station,b,amount);
    if(t.origin!==t.target){const back=roadRoute(nav,t.target,t.origin);if(!back)return;setRoute(t,back,'return',c);}else finish(s,c);
    if(!c.waterTrip)return;continue;
   }

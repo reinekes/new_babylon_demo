@@ -1,3 +1,4 @@
+import {recordCreatorUse} from './creator-materials.js';
 import {BUILDINGS,MATERIALS} from './definitions.js';
 
 const resources=key=>MATERIALS.includes(key)||['faith','prestige'].includes(key);
@@ -12,6 +13,7 @@ const validRow=row=>validDate(row)&&validResources(row.resources);
  * Transfers, imports, stock snapshots and rendered projections never call this. */
 export function recordBuildingProduction(s,b,resource,amount){
  if(!b||!validDate(s)||!resources(resource)||!Number.isFinite(amount)||amount<=0)return false;
+ recordCreatorUse(s,b);
  recordAnnualProduction(s,b,resource,amount);
  const now=stamp(s),previous=(Array.isArray(b.productionHistory)?b.productionHistory:[]).filter(row=>validRow(row)&&stamp(row)<=now),first=previous.length?Math.min(...previous.map(stamp)):now,start=Math.max(0,now-2,first),bySeason=new Map(previous.map(row=>[stamp(row),row.resources])),rows=[];
  for(let index=start;index<=now;index++)rows.push({...date(index),resources:{...bySeason.get(index)}});
