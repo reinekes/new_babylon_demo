@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-06T09:25:27.731472+00:00",
+  "commit": "7e611f54c971e712dee93f2c8f2e2e8e02cf7d33",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "df688db786520b2441f46697eea627fc07e4b90dd802eec61575f94162a3bbc7",
+      "actual": "df688db786520b2441f46697eea627fc07e4b90dd802eec61575f94162a3bbc7",
+      "match": true
+    },
+    {
+      "path": "blessing-discovery.js",
+      "status": 200,
+      "expected": "bb7694f6ab690197baf5457b58e45a681811f39999c1cab95d5c0b86d1ee384c",
+      "actual": "bb7694f6ab690197baf5457b58e45a681811f39999c1cab95d5c0b86d1ee384c",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "e7a9b81608af49895d4a265e1b975662f5b80e7f89f960873640d680c508d5b9",
+      "actual": "e7a9b81608af49895d4a265e1b975662f5b80e7f89f960873640d680c508d5b9",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "2252988b85e2cfa69afc20d17d5304c55f5739d20ed40533883604a938cdd747",
+      "actual": "2252988b85e2cfa69afc20d17d5304c55f5739d20ed40533883604a938cdd747",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "217005cc13c1aa027bb96a2ada515425041cdbaf695b6f96edd3db21eb66f397",
+      "actual": "217005cc13c1aa027bb96a2ada515425041cdbaf695b6f96edd3db21eb66f397",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3d7854a48eb80a9813a38c1a986f74f1e89e90b916c354291fa1d9f27a93a0eb",
+      "actual": "3d7854a48eb80a9813a38c1a986f74f1e89e90b916c354291fa1d9f27a93a0eb",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "b0c8b43af46f337e0c62a9d2d4c6b7e9be74258d1918cd7e88fd3153cf5f3898",
+      "actual": "b0c8b43af46f337e0c62a9d2d4c6b7e9be74258d1918cd7e88fd3153cf5f3898",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "705a6ac2805e5a34ba64662ff2971043304da2c71ad2afdce35d532c2312ff7d",
+      "actual": "705a6ac2805e5a34ba64662ff2971043304da2c71ad2afdce35d532c2312ff7d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1adcd783638c7464ee76ac6a842098ace8a53915b01625878430a4b4714e15a3",
+      "actual": "1adcd783638c7464ee76ac6a842098ace8a53915b01625878430a4b4714e15a3",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "f6a6018f2b5367decc349befbe22efae43e287c0bf204797c1a036d745c8f2f4",
+      "actual": "f6a6018f2b5367decc349befbe22efae43e287c0bf204797c1a036d745c8f2f4",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-discovery.test.js",
+      "status": 200,
+      "expected": "eb5b5664bd5b7dca7d9f77983de955ef9dce63d18712149a34c862e477a5908c",
+      "actual": "eb5b5664bd5b7dca7d9f77983de955ef9dce63d18712149a34c862e477a5908c",
+      "match": true
+    },
+    {
+      "path": "tests/household-priority.test.js",
+      "status": 200,
+      "expected": "033a0520debf1b1b5e44da587a82f402ba349fa3ee0db19bc30dc6ae917e47f5",
+      "actual": "033a0520debf1b1b5e44da587a82f402ba349fa3ee0db19bc30dc6ae917e47f5",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "a6f39a75d3d89dcfa1002788d02679e483be5f2823fc480232c847a06cfee6fd",
+      "actual": "a6f39a75d3d89dcfa1002788d02679e483be5f2823fc480232c847a06cfee6fd",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "18e8a7b56451ff82615fadb92a948677509eabcfc604cba46d48c332fe8f2f1c",
+      "actual": "18e8a7b56451ff82615fadb92a948677509eabcfc604cba46d48c332fe8f2f1c",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "b625984abde82624eee4c5ceb91f9f19a7a5687e9d3670ead29b84b3254cd6d5",
+      "actual": "b625984abde82624eee4c5ceb91f9f19a7a5687e9d3670ead29b84b3254cd6d5",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
