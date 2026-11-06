@@ -1,3 +1,4 @@
+import {DAY_SECONDS} from './city-life.js';
 import {buildingKey} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 
@@ -5,8 +6,11 @@ const LIMIT=32;
 const keyPattern=/^\d+,\d+$/;
 const id=n=>Number.isSafeInteger(n)&&n>0;
 
+const waterLedger=s=>s.causalFacts??={version:1,nextEntityId:1,water:[]};
+const aidKey=({originId,homeId,time})=>`${Math.min(originId,homeId)}:${Math.max(originId,homeId)}:${Math.floor(time/DAY_SECONDS)}`;
+
 export function bindWaterProject(s,station,home){
- const ledger=s.causalFacts??={version:1,nextEntityId:1,water:[]};
+ const ledger=waterLedger(s);
  station.waterEntityId=ledger.nextEntityId++;
  home.waterEntityId??=ledger.nextEntityId++;
  station.humanWaterProject.homeId=home.waterEntityId;
@@ -20,10 +24,27 @@ export function recordProjectWaterFact(s,station,home,delivery){
  if(ledger.water.length>LIMIT)ledger.water.shift();
 }
 
+export function recordNeighborWaterFact(s,c,home,trip,amount){
+ if(!isStrictSumer(s)||!(amount>1e-8)||home.type!=='house'||trip.station!==null||trip.neighborRecorded||
+  trip.origin!==c.home||trip.origin===trip.target||!s.citizens.some(p=>p.home===trip.target))return;
+ const origin=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===trip.origin);
+ if(!origin)return;
+ const ledger=waterLedger(s),facts=ledger.neighborWater??=[];
+ origin.waterEntityId??=ledger.nextEntityId++;
+ home.waterEntityId??=ledger.nextEntityId++;
+ const fact={originId:origin.waterEntityId,homeId:home.waterEntityId,origin:trip.origin,home:trip.target,
+  courierId:c.id,time:s.simTime,amount};
+ trip.neighborRecorded=true;
+ if(facts.some(row=>aidKey(row)===aidKey(fact)))return;
+ facts.push(fact);
+ if(facts.length>LIMIT)facts.shift();
+}
+
 export function validateCausalFacts(s){
  const ledger=s.causalFacts,live=new Map();
  if(ledger===undefined)return s.buildings.every(b=>b.waterEntityId===undefined&&b.humanWaterProject?.homeId===undefined);
- if(!isStrictSumer(s)||!ledger||ledger.version!==1||!id(ledger.nextEntityId)||!Array.isArray(ledger.water)||ledger.water.length>LIMIT)return false;
+ if(!isStrictSumer(s)||!ledger||ledger.version!==1||!id(ledger.nextEntityId)||!Array.isArray(ledger.water)||ledger.water.length>LIMIT||
+  ledger.neighborWater!==undefined&&(!Array.isArray(ledger.neighborWater)||ledger.neighborWater.length>LIMIT))return false;
  const entity=n=>id(n)&&n<ledger.nextEntityId;
  for(const b of s.buildings){
   const uid=b.waterEntityId,p=b.humanWaterProject;
@@ -56,6 +77,17 @@ export function validateCausalFacts(s){
   if(p&&(p.homeId!==fact.homeId||p.home!==fact.home||p.organizerId!==fact.organizerId||p.requesterId!==fact.requesterId||
    p.delivery?.courierId!==fact.courierId||p.delivery?.time!==fact.time||p.delivery?.amount!==fact.amount))return false;
   seen.add(fact.stationId);previousTime=fact.time;
+ }
+ let previousAidTime=0;
+ const aidedPairs=new Set();
+ for(const fact of ledger.neighborWater||[]){
+  if(!fact||Object.keys(fact).length!==7||!entity(fact.originId)||!entity(fact.homeId)||fact.originId===fact.homeId||
+   typeof fact.origin!=='string'||!keyPattern.test(fact.origin)||typeof fact.home!=='string'||!keyPattern.test(fact.home)||fact.origin===fact.home||
+   !entityMatches(fact.originId,'house',fact.origin)||!entityMatches(fact.homeId,'house',fact.home)||!citizen(fact.courierId)||
+   !Number.isFinite(fact.time)||fact.time<previousAidTime||fact.time>s.simTime||!Number.isFinite(fact.amount)||fact.amount<=0||fact.amount>12)return false;
+  const key=aidKey(fact);
+  if(aidedPairs.has(key))return false;
+  aidedPairs.add(key);previousAidTime=fact.time;
  }
  return true;
 }

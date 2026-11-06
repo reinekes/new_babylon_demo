@@ -1,3 +1,4 @@
+import {recordNeighborWaterFact} from './causal-facts.js';
 import {confirmProjectWater} from './human-projects.js';
 import {cancelFirstWaterHelp,confirmFirstWaterHelp} from './godhood.js';
 import {fortificationAccess} from './navigation.js';
@@ -94,6 +95,7 @@ export function resumeWaterAtHome(s,c){
  const destination=t.load>eps?t.target:t.origin,roads=roadRoute(nav,c.home,destination);
  if(!roads){recoverWater(s,c);return false;}
  if(t.load>eps)setRoute(t,roads,'deliver',c);
+ else if(t.neighborRecorded)setRoute(t,roads,'return',c);
  else{const source=bankRoute(s,nav,t.origin);if(!source){recoverWater(s,c);return false;}setRoute(t,[...roads,...source],'source',c);}
  return true;
 }
@@ -148,7 +150,7 @@ function advanceTrip(s,c,dt,nav){
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
    const amount=Math.min(t.load,Math.max(0,targetCapacity(s,b)-targetStock(b)));
-   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;recordCitizenDelivery(s,c,{water:amount});t.load-=amount;confirmFirstWaterHelp(s,c,b,amount);confirmProjectWater(s,c,t.station,b,amount);
+   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;recordCitizenDelivery(s,c,{water:amount});t.load-=amount;recordNeighborWaterFact(s,c,b,t,amount);confirmFirstWaterHelp(s,c,b,amount);confirmProjectWater(s,c,t.station,b,amount);
    if(t.origin!==t.target){const back=roadRoute(nav,t.target,t.origin);if(!back)return;setRoute(t,back,'return',c);}else finish(s,c);
    if(!c.waterTrip)return;continue;
   }
@@ -188,6 +190,6 @@ export function validateWater(s){
  const finite=(v,max=1e9)=>Number.isFinite(v)&&v>=0&&v<=max;
  if(!s.buildings.every(b=>b.type==='house'?finite(b.water)&&finite(b.waterDelivered):b.water===undefined))return false;
  return s.citizens.every(c=>{if(!finite(c.thirst,100)||c.phase==='waterTrip'&&!c.waterTrip)return false;const t=c.waterTrip;if(!t)return true;
-  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<worldWidth(s)*worldHeight(s)*4&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
+  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&(t.neighborRecorded===undefined||t.neighborRecorded===true&&t.station===null&&t.origin!==t.target&&['deliver','return'].includes(t.phase))&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<worldWidth(s)*worldHeight(s)*4&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
  });
 }

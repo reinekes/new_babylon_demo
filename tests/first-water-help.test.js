@@ -22,6 +22,7 @@ test('a chosen resident delivers real water before first recognition, through a 
   if(!loaded&&s.citizens.find(c=>c.id===choice.helperId).waterTrip?.load>0){
    assert.equal(s.resources.faith,0);
    assert.equal(home().waterDelivered,delivered);
+   assert.equal(s.causalFacts?.neighborWater,undefined);
    const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
    loaded=true;
   }
@@ -31,6 +32,13 @@ test('a chosen resident delivers real water before first recognition, through a 
  assert.equal(s.godhood.witnessId,choice.helperId);
  assert.equal(s.resources.faith,1);
  assert.ok(home().waterDelivered>delivered);
+ const [aid]=s.causalFacts.neighborWater;
+ const helper=s.citizens.find(c=>c.id===choice.helperId);
+ assert.equal(aid.courierId,helper.id);
+ assert.equal(aid.origin,helper.home);
+ assert.equal(aid.home,choice.home);
+ assert.ok(aid.amount>0);
+ assert.equal(s.causalFacts.neighborWater.length,1);
  assert.equal(s.godhood.firstWaterHelp.recipientId,choice.recipientId);
  const saved=decode(encode(s));assert.ok(saved);
  const witness=personalMemory(saved,choice.helperId),recipient=personalMemory(saved,choice.recipientId);
@@ -62,6 +70,7 @@ test('a canceled trip gives no recognition and restores the original choice',()=
  recoverWater(s,c);
  assert.equal(s.godhood.stage,'unseen');
  assert.equal(s.godhood.firstWaterHelp,undefined);
+ assert.equal(s.causalFacts?.neighborWater,undefined);
  assert.equal(s.resources.faith,0);
  assert.ok(decode(encode(s)));
  assert.ok(beginFirstSign(s).ok);

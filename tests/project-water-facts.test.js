@@ -1,9 +1,10 @@
+import {advanceTrade} from '../trading.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {buildingKey} from '../definitions.js';
-import {bindWaterProject} from '../causal-facts.js';
+import {bindWaterProject,recordNeighborWaterFact} from '../causal-facts.js';
 import {confirmProjectWater} from '../human-projects.js';
 
 test('delivery evidence survives demolition and distinguishes a replacement on the same tile',()=>{
@@ -48,4 +49,47 @@ test('a replaced recipient dwelling cannot receive evidence intended for its pre
  assert.equal(station.humanWaterProject.delivery,undefined);
  assert.deepEqual(s.causalFacts.water,[]);
  assert.ok(decode(encode(s)));
+});
+
+test('neighbor deliveries deduplicate a trip and both directions of a pair for one day',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [origin,home]=s.buildings.filter(b=>b.type==='house');
+ const first=s.citizens.find(c=>c.home===buildingKey(origin)),second=s.citizens.find(c=>c.home===buildingKey(home));
+ const route=(courier,target)=>({station:null,origin:courier.home,target:buildingKey(target)});
+ const trip=route(first,home);
+ recordNeighborWaterFact(s,first,home,trip,0);
+ assert.equal(s.causalFacts,undefined);
+ recordNeighborWaterFact(s,first,home,trip,3);
+ recordNeighborWaterFact(s,second,origin,route(second,origin),2);
+ assert.equal(s.causalFacts.neighborWater.length,1);
+ s.simTime=60;s.seasonElapsed=15;s.tick=1;s.season=1;
+ advanceTrade(s);
+ recordNeighborWaterFact(s,first,home,trip,1);
+ assert.equal(s.causalFacts.neighborWater.length,1);
+ recordNeighborWaterFact(s,first,home,route(first,home),2);
+ assert.equal(s.causalFacts.neighborWater.length,2);
+ const saved=decode(encode(s));
+ assert.ok(saved);
+ assert.deepEqual(saved.causalFacts,s.causalFacts);
+ saved.causalFacts.neighborWater.push({...saved.causalFacts.neighborWater.at(-1)});
+ assert.equal(decode(encode(saved)),null);
+});
+
+test('rebuilding a recipient on the same cell keeps the old fact distinct',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [origin,home]=s.buildings.filter(b=>b.type==='house');
+ const helper=s.citizens.find(c=>c.home===buildingKey(origin));
+ const trip=()=>({station:null,origin:helper.home,target:buildingKey(home)});
+ recordNeighborWaterFact(s,helper,home,trip(),2);
+ const replacement={...home};
+ delete replacement.waterEntityId;
+ s.buildings[s.buildings.indexOf(home)]=replacement;
+ recordNeighborWaterFact(s,helper,replacement,trip(),2);
+ const [a,b]=s.causalFacts.neighborWater;
+ assert.equal(a.home,b.home);
+ assert.notEqual(a.homeId,b.homeId);
+ assert.equal(a.originId,b.originId);
+ const saved=decode(encode(s));
+ assert.ok(saved);
+ assert.deepEqual(saved.causalFacts,s.causalFacts);
 });
