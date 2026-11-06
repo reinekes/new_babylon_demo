@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-06T09:58:50.176382+00:00",
+  "commit": "81e8ea1dd1e92a6edbfaa0725d225730704c376c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "789bff3eb272292815bb92113b92269b5794d1a390b38539de930907dbac61bf",
+      "actual": "789bff3eb272292815bb92113b92269b5794d1a390b38539de930907dbac61bf",
+      "match": true
+    },
+    {
+      "path": "agriculture.js",
+      "status": 200,
+      "expected": "828019fe7e9860f3c67f6e692dc3b27b430456308f12d82f552c0c47c45e9c43",
+      "actual": "828019fe7e9860f3c67f6e692dc3b27b430456308f12d82f552c0c47c45e9c43",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "5efb4bcb683056ce081e5702d2daaca5504d99d9f21783e63d46baa213a3fecf",
+      "actual": "5efb4bcb683056ce081e5702d2daaca5504d99d9f21783e63d46baa213a3fecf",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a5efca68a0efb5eefe2d24312106c77e44d96588e255d35b4b34adc5a3e9eb2c",
+      "actual": "a5efca68a0efb5eefe2d24312106c77e44d96588e255d35b4b34adc5a3e9eb2c",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "addcb92fdabba4de20122897cc75966a5f19e348282f4026a0555aafdefd2fcf",
+      "actual": "addcb92fdabba4de20122897cc75966a5f19e348282f4026a0555aafdefd2fcf",
+      "match": true
+    },
+    {
+      "path": "field-grain.js",
+      "status": 200,
+      "expected": "04203547014028a9c647a6266ba8bb97c593e0876ad910344e5aa3e8606e51c6",
+      "actual": "04203547014028a9c647a6266ba8bb97c593e0876ad910344e5aa3e8606e51c6",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3f01f7d3b6605caa8e531a1f7e596e568a1cc47799539f1673b8cdaf8da30a4b",
+      "actual": "3f01f7d3b6605caa8e531a1f7e596e568a1cc47799539f1673b8cdaf8da30a4b",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "5ddb9462ceec607b7d4958761ca2c56cd21e1c834b9d12a68f6d5d5a8f22a168",
+      "actual": "5ddb9462ceec607b7d4958761ca2c56cd21e1c834b9d12a68f6d5d5a8f22a168",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f062e7c7c70db09be7e41ab00d4c1aca36c0887fbc5b2de4e1977e818b0d4e83",
+      "actual": "f062e7c7c70db09be7e41ab00d4c1aca36c0887fbc5b2de4e1977e818b0d4e83",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "26c7865224f0c9dcfb8d0233946607d12713c03e00c1b253b53b7324f0999f37",
+      "actual": "26c7865224f0c9dcfb8d0233946607d12713c03e00c1b253b53b7324f0999f37",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a36bdd1c15253de1af6a3776df59cd5859adc093375eda64de468499bcb5dcfa",
+      "actual": "a36bdd1c15253de1af6a3776df59cd5859adc093375eda64de468499bcb5dcfa",
+      "match": true
+    },
+    {
+      "path": "tests/field-grain.test.js",
+      "status": 200,
+      "expected": "2574c6ab4504e6987e15b93aa9b3ea2ed3076babafb917b5b9130eb0b2f5fdae",
+      "actual": "2574c6ab4504e6987e15b93aa9b3ea2ed3076babafb917b5b9130eb0b2f5fdae",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "7f3001ffae7171b03eedd2b5bedf1025c00b3825207911942ade383818158b62",
+      "actual": "7f3001ffae7171b03eedd2b5bedf1025c00b3825207911942ade383818158b62",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "c66b2b04f1ed3ab412dee70f9aa5a54489c62aca77017f5ab5bccb829680bc94",
+      "actual": "c66b2b04f1ed3ab412dee70f9aa5a54489c62aca77017f5ab5bccb829680bc94",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
