@@ -1,0 +1,149 @@
+{
+  "at": "2026-11-06T02:38:59.824895+00:00",
+  "commit": "d55218602ff7ca0476ade2b6cb943757d6140b97",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f9d6a2827b5fdd9a6e861dd664a93ca8113c452e68f34eb67a14692d81b31d02",
+      "actual": "f9d6a2827b5fdd9a6e861dd664a93ca8113c452e68f34eb67a14692d81b31d02",
+      "match": true
+    },
+    {
+      "path": "architecture.js",
+      "status": 200,
+      "expected": "adf1b8a9d8e0246e2a14b11b8aae6a1cc8cba8a5b19325df42dbcfc28824749b",
+      "actual": "adf1b8a9d8e0246e2a14b11b8aae6a1cc8cba8a5b19325df42dbcfc28824749b",
+      "match": true
+    },
+    {
+      "path": "city-life.js",
+      "status": 200,
+      "expected": "bf00f2396f2aeaa0adcdab5babfb0fc32c963a64e86f48f89f1315324240d704",
+      "actual": "bf00f2396f2aeaa0adcdab5babfb0fc32c963a64e86f48f89f1315324240d704",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "916190bad5f90014d5c23d7b44dfa86e5127bb0f0ceb69c39c46f7ca9098f91f",
+      "actual": "916190bad5f90014d5c23d7b44dfa86e5127bb0f0ceb69c39c46f7ca9098f91f",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a9791aee148c931b9aca400f0a11d30ed9b74d6367fb433ec5ffb262634462c8",
+      "actual": "a9791aee148c931b9aca400f0a11d30ed9b74d6367fb433ec5ffb262634462c8",
+      "match": true
+    },
+    {
+      "path": "district3d/buildings.js",
+      "status": 200,
+      "expected": "04937b073271556e625cc03251bbfaa4fc4f38c15cda7bc957fcf531769ebe65",
+      "actual": "04937b073271556e625cc03251bbfaa4fc4f38c15cda7bc957fcf531769ebe65",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "6aa96f014ee244fe74e3740e416c3693dafed24565080862ebc19b2554a1a11e",
+      "actual": "6aa96f014ee244fe74e3740e416c3693dafed24565080862ebc19b2554a1a11e",
+      "match": true
+    },
+    {
+      "path": "footprints.js",
+      "status": 200,
+      "expected": "091d8c5659c4750cb8464b0362f18445d4831de44b776b18fb5287b53b6a840e",
+      "actual": "091d8c5659c4750cb8464b0362f18445d4831de44b776b18fb5287b53b6a840e",
+      "match": true
+    },
+    {
+      "path": "game3d/architecture.js",
+      "status": 200,
+      "expected": "a5447490d6e5c94417bf55156b449708ffe0b9d0f993bfe7994e7703f35c8f18",
+      "actual": "a5447490d6e5c94417bf55156b449708ffe0b9d0f993bfe7994e7703f35c8f18",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "b55635debc733e82b798c3427850e9667a4b9c51e39d77adaf7ad46bf661f607",
+      "actual": "b55635debc733e82b798c3427850e9667a4b9c51e39d77adaf7ad46bf661f607",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f37a708355a4b6464fea830dced6b0147561b9e4a98bd3195057f5a7a3441f79",
+      "actual": "f37a708355a4b6464fea830dced6b0147561b9e4a98bd3195057f5a7a3441f79",
+      "match": true
+    },
+    {
+      "path": "navigation.js",
+      "status": 200,
+      "expected": "f02291a8913492aee35b071bfe7830715f032a64c6dfb5f76b4522a7820c10de",
+      "actual": "f02291a8913492aee35b071bfe7830715f032a64c6dfb5f76b4522a7820c10de",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "d348a2f62b784743a0135b6ede717907efa9df8e26ea6209f5127aafd4190f6a",
+      "actual": "d348a2f62b784743a0135b6ede717907efa9df8e26ea6209f5127aafd4190f6a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0902e76301995e2c643f1ea115bd1cda6ee77b4e664551eda6db3f77828ac71c",
+      "actual": "0902e76301995e2c643f1ea115bd1cda6ee77b4e664551eda6db3f77828ac71c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "57e1b9f5f93223225f2a0180ac15334ab9c3eda34f673720bef9d42c9c11716b",
+      "actual": "57e1b9f5f93223225f2a0180ac15334ab9c3eda34f673720bef9d42c9c11716b",
+      "match": true
+    },
+    {
+      "path": "roads.js",
+      "status": 200,
+      "expected": "26711af6f5704d12ed8f076bd6062e6d3a0ed0f58ca103ef71c6359cad629c4d",
+      "actual": "26711af6f5704d12ed8f076bd6062e6d3a0ed0f58ca103ef71c6359cad629c4d",
+      "match": true
+    },
+    {
+      "path": "tests/city-wall-construction.test.js",
+      "status": 200,
+      "expected": "6066d9ab59bbc190263b5adde66a1b1322ae6fc6547c426ee9642bb646fd3084",
+      "actual": "6066d9ab59bbc190263b5adde66a1b1322ae6fc6547c426ee9642bb646fd3084",
+      "match": true
+    },
+    {
+      "path": "tests/city-wall-navigation.test.js",
+      "status": 200,
+      "expected": "4ef5708e13f75591669f1d5a46d9de4dfe36b671e95dd174e3d00d642ab9275d",
+      "actual": "4ef5708e13f75591669f1d5a46d9de4dfe36b671e95dd174e3d00d642ab9275d",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "f3e5066cbd0319191fc0a84ae737b2c408ab5fdac6775a255c177136216271dd",
+      "actual": "f3e5066cbd0319191fc0a84ae737b2c408ab5fdac6775a255c177136216271dd",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "7a70fde4f3091732f710b95a259226da6cf6af023d0e724ee5645211bb5f6454",
+      "actual": "7a70fde4f3091732f710b95a259226da6cf6af023d0e724ee5645211bb5f6454",
+      "match": true
+    }
+  ],
+  "matched": 20,
+  "total": 20
+}
