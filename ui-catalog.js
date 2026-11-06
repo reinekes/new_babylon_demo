@@ -1,3 +1,4 @@
+import {ABUNDANCE_LIMIT} from './abundance-gift.js';
 import {miraclePrice} from './miracle-discovery.js';
 import {miracleKnowledgeReason} from './godhood.js';
 import {DOMAIN_NAMES} from './divinity.js';
@@ -33,10 +34,17 @@ export function updateBuildingCardName(card,state){
 }
 
 // Reused cards must update every visible/accessible price when switching saves.
-export function updateMiracleCard(details,s,id,reason=''){
+export function updateMiracleCard(details,s,id,reason='',gift=null){
  const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=price===0;
- const desc=id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':m.desc;
+ const desc=id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
  const description=details.querySelector('.miracle-description');if(description)description.textContent=desc;
+ const preview=details.querySelector('.abundance-quote');
+ if(preview){
+  const show=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:2});
+  preview.hidden=!gift?.store;
+  const text=gift?.store?`${buildingDefinition(s,gift.store.type).name} · ${gift.store.x}, ${gift.store.y}. Свободно: ${show(gift.room)}. Получишь ${show(gift.amount)} из ${ABUNDANCE_LIMIT} еды.`:'';
+  if(preview.textContent!==text)preview.textContent=text;
+ }
  el.disabled=!!reason;el.textContent=`${id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
  el.title=`${m.name} · ${price} веры. ${desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));

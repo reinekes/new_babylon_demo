@@ -1,3 +1,4 @@
+import {newAbundanceGift} from './abundance-gift.js';
 import {newWindDelivery} from './wind-delivery.js';
 import {newCreatorMaterials} from './creator-materials.js';
 import {newRichCatchEvidence} from './fish-provenance.js';
@@ -23,6 +24,7 @@ export function createNewCity({mode,seed}={}){
   state.richCatchEvidence=newRichCatchEvidence();
   state.creatorMaterials=newCreatorMaterials();
   state.windDelivery=newWindDelivery();
+  state.abundanceGift=newAbundanceGift();
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
