@@ -76,5 +76,8 @@ export function createCityAudio(onMessage,options={}){
   if(outgoing&&!outgoing.playing)outgoing=null;
  }
  const onVisibility=()=>{if(doc?.hidden)silence();};doc?.addEventListener?.('visibilitychange',onVisibility);
- return {toggle,tick,cueRain(phase){if(enabled&&!previewing&&!doc?.hidden)return work.cueRain(phase);},cueEarth(phase){if(enabled&&!previewing&&!doc?.hidden)return work.cueEarth(phase);},setPreviewing(value){previewing=!!value;if(previewing)silence();},get enabled(){return enabled;},get status(){return {enabled,theme:current?.id||null,lithophone:!!lithophone,playing:[...cache.values()].filter(v=>v.playing).map(v=>v.id),cached:cache.size};},dispose(){if(disposed)return;silence();work.dispose();disposed=true;enabled=false;doc?.removeEventListener?.('visibilitychange',onVisibility);for(const v of cache.values()){v.element.removeAttribute?.('src');v.element.load?.();}cache.clear();}};
+ return {toggle,tick,cueRain(phase){if(enabled&&!previewing&&!doc?.hidden)return work.cueRain(phase);},cueEarth(phase){if(enabled&&!previewing&&!doc?.hidden)return work.cueEarth(phase);},cueCatch(phase){
+  if(!enabled||previewing||doc?.hidden)return;
+  return phase==='unload'||phase==='reflection'?work.cueEarth(phase==='unload'?'sheaf':'bow'):work.cueRain(phase==='ripple'?'drop':'rain');
+ },setPreviewing(value){previewing=!!value;if(previewing)silence();},get enabled(){return enabled;},get status(){return {enabled,theme:current?.id||null,lithophone:!!lithophone,playing:[...cache.values()].filter(v=>v.playing).map(v=>v.id),cached:cache.size};},dispose(){if(disposed)return;silence();work.dispose();disposed=true;enabled=false;doc?.removeEventListener?.('visibilitychange',onVisibility);for(const v of cache.values()){v.element.removeAttribute?.('src');v.element.load?.();}cache.clear();}};
 }

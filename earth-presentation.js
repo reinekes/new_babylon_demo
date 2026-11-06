@@ -87,6 +87,7 @@ export function createEarthPresentation(root,{focus,cue}={}){
      title.textContent='Дыхание земли';panel.dataset.kind='cast';
     }
    }
+   if(active?.kind==='cast'&&(q?.kind!=='fertility'||q.elapsed>=12))skip();
    if(!visible){
     panel.hidden=true;stopCue?.();stopCue=null;
     return;

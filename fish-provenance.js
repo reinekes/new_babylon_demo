@@ -48,7 +48,7 @@ export function recordInspiredCatch(s,site,fisher,amount,{inspired=fisher.callin
  const q=s.richCatchEvidence;
  if(!q||q.fisher!==undefined||!inspired||amount<=EPS||site?.type!=='fishing'||fisher.work!==buildingKey(site))return;
  fisher.richCatches=Math.min(REQUIRED_CATCHES,(fisher.richCatches||0)+1);
- if(fisher.richCatches===REQUIRED_CATCHES)q.fisher=fisher.id;
+ if(fisher.richCatches===REQUIRED_CATCHES){q.fisher=fisher.id;q.site=buildingKey(site);}
 }
 
 export function richCatchView(s){
@@ -69,9 +69,10 @@ export function recordHomeFish(s,home,parts){
 
 export function validateFishProvenance(s){
  const q=s.richCatchEvidence;
- if(q!==undefined&&(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==(q.fisher===undefined?2:3)||
+ if(q!==undefined&&(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==2+Number(q.fisher!==undefined)+Number(q.site!==undefined)||
   !Array.isArray(q.homes)||q.homes.length>REQUIRED_HOMES||new Set(q.homes).size!==q.homes.length||
   !q.homes.every(key=>typeof key==='string'&&/^\d+,\d+$/.test(key))||
+  q.site!==undefined&&(q.fisher===undefined||typeof q.site!=='string'||!/^\d+,\d+$/.test(q.site))||
   q.fisher!==undefined&&(!Number.isSafeInteger(q.fisher)||q.fisher<0||
    q.fisher>=s.demography.nextId)))return false;
  function valid(parts,physical){

@@ -1,0 +1,22 @@
+.catch-scene[hidden]{display:none}
+.catch-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.catch-scene-card{background:linear-gradient(120deg,#202b28,#142d36);border-color:#7d9787}
+.catch-scene-card svg{fill:none;stroke:#abccc5;stroke-width:1.7}
+.catch-scene-basket{stroke:#d1a66f;transform-origin:center;transform-box:fill-box}
+.catch-scene-net{stroke:#d0d9bd}
+.catch-scene-ring,.catch-scene-school{opacity:0}
+.catch-scene-school{fill:#a1bba0;stroke:#ced4ad;transform-origin:center;transform-box:fill-box}
+.catch-scene[data-phase="unload"] .catch-scene-basket{animation:catch-basket 1.4s ease-out both}
+.catch-scene[data-phase="reflection"] .catch-scene-net,.catch-scene[data-phase="still"] .catch-scene-net{animation:catch-reflect 1.4s ease both;transform-origin:50% 51%;transform-box:view-box}
+.catch-scene[data-phase="reflection"] .catch-scene-school,.catch-scene[data-phase="school"] .catch-scene-school{animation:catch-school 3s ease-in-out both}
+.catch-scene[data-phase="ripple"] .catch-scene-ring,.catch-scene[data-phase="reflection"] .catch-scene-ring{animation:catch-ripple 2s ease-out both;transform-origin:center;transform-box:fill-box}
+.catch-scene-water{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at 50% 50%,#b4e3dc20,transparent 50%);transition:opacity 1s}
+.catch-scene[data-phase="reflection"] .catch-scene-water,.catch-scene[data-phase="school"] .catch-scene-water{opacity:1}
+.catch-scene[data-phase="ripple"] .catch-scene-water{opacity:1;background:radial-gradient(ellipse at 50% 54%,transparent 11%,#a3e1df59 12%,transparent 14%);animation:catch-upstream 2s ease-out both}
+.catch-scene[data-phase="silt"] .catch-scene-water{opacity:.8;background:radial-gradient(ellipse at 50% 53%,#685d3e36,transparent 62%)}
+@keyframes catch-basket{0%{transform:translateY(3px) rotate(-4deg)}40%{transform:translateY(-3px) rotate(3deg)}100%{transform:none}}
+@keyframes catch-reflect{from{opacity:1;transform:none}to{opacity:.64;transform:translateY(8px) scaleY(-.75)}}
+@keyframes catch-school{0%{opacity:0;transform:translate(-6px,5px)}40%{opacity:1;transform:none}100%{opacity:0;transform:translate(16px,-5px) scaleX(-.85)}}
+@keyframes catch-ripple{0%{opacity:.8;transform:scale(.45)}100%{opacity:0;transform:scale(1.3)}}
+@keyframes catch-upstream{0%{transform:translateY(11%) scale(.7)}100%{transform:translateY(-12%) scale(1.3);opacity:0}}
+@media(prefers-reduced-motion:reduce){.catch-scene *{animation:none!important;transition:none!important}.catch-scene[data-phase="reflection"] .catch-scene-net{opacity:.64;transform:translateY(8px) scaleY(-.75)}.catch-scene[data-phase="reflection"] .catch-scene-school,.catch-scene[data-phase="school"] .catch-scene-school,.catch-scene[data-phase="ripple"] .catch-scene-ring{opacity:1}}
