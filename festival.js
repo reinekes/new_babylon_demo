@@ -57,7 +57,7 @@ function refundFestival(s,q){
   if(b&&amount>0){const output=b.workshopStock.output,room=Math.max(0,24*(b.level||1)-(output.beer||0)),accepted=Math.min(room,amount);output.beer=(output.beer||0)+accepted;if(accepted<amount)putRecoveryStock(s,key,'beer',amount-accepted);}
   else if(amount>0)refundSources(s,{[key]:{beer:amount}});
  }
- refundSources(s,regular);
+ refundSources(s,regular,undefined,q.giftReserve);
 }
 
 function port(s,key){return networkFor(s).ports.find(p=>!p.building.siteKey&&buildingKey(p.building)===key);}
@@ -93,7 +93,9 @@ export function orderFestival(s,{dedicationId}={}){
  const reason=festivalReason(s,{dedicationId});if(reason)return {ok:false,reason};const temple=templeFor(s,votiveOrder(s,dedicationId)?.temple),sources=festivalSources(s,buildingKey(temple));if(!sources)return {ok:false,reason:'Не хватает доступных незарезервированных запасов'};
  // Attach references before withdrawing: reconciliation must retain even an emptied household source.
  s.festival={occasion:'nightLights',temple:buildingKey(temple),stage:'supplying',sources,allocations:structuredClone(sources),delivered:{food:0,beer:0},actors:[],rewarded:[],consumed:false,started:null,elapsed:0,ordered:s.simTime,...dedicationId!==undefined?{dedicationId}:{}};
- for(const [key,materials]of Object.entries(sources))for(const [material,n]of Object.entries(materials))takeStock(s,key,material,n);
+ const giftReserve={};
+ for(const [key,materials]of Object.entries(sources))for(const [material,n]of Object.entries(materials))takeStock(s,key,material,n,{giftTo:giftReserve,giftKey:key});
+ if(Object.keys(giftReserve).length)s.festival.giftReserve=giftReserve;
  s.resources.prestige-=15;invalidateAssignments(s);
  return {ok:true,warning:festivalSummary(s).warning};
 }
@@ -153,7 +155,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
    }
   }else{
    if(!gatheringAt(s.simTime+(ceremony?0:dt))){release(s,a);q.actors=q.actors.filter(v=>v!==a);continue;}
-   a.stage='dancing';if(!q.consumed){q.consumed=true;q.stage='celebrating';q.started=s.simTime;q.elapsed=0;if(firstBeer(q))s.firstBeerFeast.status='done';if(q.dedicationId!==undefined)rememberDedicationFeast(s,q.dedicationId);}
+   a.stage='dancing';if(!q.consumed){q.consumed=true;delete q.giftReserve;q.stage='celebrating';q.started=s.simTime;q.elapsed=0;if(firstBeer(q))s.firstBeerFeast.status='done';if(q.dedicationId!==undefined)rememberDedicationFeast(s,q.dedicationId);}
    if(!q.rewarded.includes(c.id)){affectResidents(s,{mood:8,faith:4},[c.id]);q.rewarded.push(c.id);}
   }
  }
@@ -205,7 +207,7 @@ export function validateFirstBeerFeast(s){
 export function validateFestival(s){
  if(!validateFirstBeerFeast(s))return false;const q=s.festival;if(q===null||q===undefined)return !s.citizens?.some(c=>c.phase==='festival');const cost=costFor(q);
  const exact=(o,list)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length===list.length&&list.every(k=>k in o),finite=(n,max=1e9)=>Number.isFinite(n)&&n>=0&&n<=max,id=n=>Number.isSafeInteger(n)&&n>=0;
- const required=['temple','stage','sources','allocations','delivered','actors','rewarded','consumed','started','ordered'];if(!q||typeof q!=='object'||Array.isArray(q)||!required.every(k=>k in q)||Object.keys(q).some(k=>!required.includes(k)&&!['occasion','sourceKinds','elapsed','dedicationId'].includes(k))||q.elapsed!==undefined&&(!finite(q.elapsed,FESTIVAL_SECONDS)||!q.consumed&&q.elapsed!==0)||q.occasion!==undefined&&!['firstBeer','nightLights'].includes(q.occasion)||q.sourceKinds!==undefined&&(!firstBeer(q)||!exact(q.sourceKinds,[q.temple])||q.sourceKinds[q.temple]!=='output'))return false;
+ const required=['temple','stage','sources','allocations','delivered','actors','rewarded','consumed','started','ordered'];if(!q||typeof q!=='object'||Array.isArray(q)||!required.every(k=>k in q)||Object.keys(q).some(k=>!required.includes(k)&&!['occasion','sourceKinds','elapsed','dedicationId','giftReserve'].includes(k))||q.elapsed!==undefined&&(!finite(q.elapsed,FESTIVAL_SECONDS)||!q.consumed&&q.elapsed!==0)||q.occasion!==undefined&&!['firstBeer','nightLights'].includes(q.occasion)||q.sourceKinds!==undefined&&(!firstBeer(q)||!exact(q.sourceKinds,[q.temple])||q.sourceKinds[q.temple]!=='output'))return false;
  if(!s.buildings.some(b=>buildingKey(b)===q.temple&&readyVenue(b,q))||!['supplying','waiting','celebrating'].includes(q.stage)||!exact(q.delivered,keys)||!keys.every(k=>finite(q.delivered[k],cost[k]))||!finite(q.ordered,s.simTime)||typeof q.consumed!=='boolean'||(q.consumed?(q.stage!=='celebrating'||!finite(q.started,s.simTime)||q.started<q.ordered):(q.started!==null||q.stage==='celebrating'))||!Array.isArray(q.actors)||q.actors.length>24||!Array.isArray(q.rewarded)||q.rewarded.length>24||new Set(q.rewarded).size!==q.rewarded.length||!q.rewarded.every(id)||(!q.consumed&&q.rewarded.length))return false;
  if(q.dedicationId!==undefined){
   const item=votiveOrder(s,q.dedicationId);

@@ -452,14 +452,14 @@ function arrival(s,c,ctx){
   delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;if(target!==c.home)startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);else c.phase=hasCargo(c)?'resting':'home';return;
  }
  if(c.phase==='toSaleSupply'){
-  const q=s.trade?.sales?.find(q=>q.id===c.saleJob),market=ctx.buildings.get(c.saleMarket);if(q&&market&&isWorkday(s.simTime)){const amount=q.sources?takeReserved(s,q.sources,c.store,q.resource,Math.min(q.remaining,4+2*(market.level||1))):Math.min(q.remaining,4+2*(market.level||1));q.remaining-=amount;c.cargo={[q.resource]:amount};if(amount>0){startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);return;}}
+  const q=s.trade?.sales?.find(q=>q.id===c.saleJob),market=ctx.buildings.get(c.saleMarket);if(q&&market&&isWorkday(s.simTime)){const food=q.sources?.[c.store]?.food;const amount=q.sources?takeReserved(s,q.sources,c.store,q.resource,Math.min(q.remaining,4+2*(market.level||1))):Math.min(q.remaining,4+2*(market.level||1));if(q.giftReserve?.[c.store]){moveGiftFood(q.giftReserve,c.store,c,'giftCargo',amount,food,0);if(!Object.keys(q.giftReserve).length)delete q.giftReserve;}q.remaining-=amount;c.cargo={[q.resource]:amount};if(amount>0){startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);return;}}
   c.saleJob=null;c.saleMarket=null;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);return;
  }
  if(c.phase==='toSaleMarket'){
   if(!loadSaleCargo(s,c)){c.phase='blocked';return;}startTrip(s,c,c.home,'toHome',ctx);return;
  }
  if(c.phase==='toMarket'){
-  const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob),market=ctx.buildings.get(c.tradeMarket);if(q&&market&&isWorkday(s.simTime)){const amount=Math.min(q.remaining,4+2*(market.level||1));q.remaining-=amount;c.cargo={[q.resource]:amount};if(amount>0){startTrip(s,c,c.store,'toStore',ctx);return;}}
+  const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob),market=ctx.buildings.get(c.tradeMarket);if(q&&market&&isWorkday(s.simTime)){const amount=Math.min(q.remaining,4+2*(market.level||1));moveGiftFood(q,'giftFood',c,'giftCargo',amount,q.remaining,0);q.remaining-=amount;c.cargo={[q.resource]:amount};if(amount>0){startTrip(s,c,c.store,'toStore',ctx);return;}}
   c.tradeJob=null;c.tradeMarket=null;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);return;
  }
  if(c.phase==='toSupply'){
@@ -831,8 +831,8 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  for(const [k,n]of Object.entries(c.buildCargo||{}))if(site){site.remaining[k]=(site.remaining[k]||0)+n;if(site.sources)(site.sources[c.store]??={})[k]=(site.sources[c.store]?.[k]||0)+n;}else restore(k,n);
  if(c.waterTrip)recoverWater(s,c);
  for(const [k,n]of Object.entries(c.cargo||{})){
-  if(purchase&&k===purchase.resource)purchase.remaining+=n;
-  else if(sale&&k===sale.resource){sale.remaining+=n;if(sale.sources)(sale.sources[c.store]??={})[k]=(sale.sources[c.store]?.[k]||0)+n;}
+  if(purchase&&k===purchase.resource){moveGiftFood(c,'giftCargo',purchase,'giftFood',n,n,purchase.remaining);purchase.remaining+=n;}
+  else if(sale&&k===sale.resource){sale.remaining+=n;if(sale.sources){const row=sale.sources[c.store]??={};if(k==='food'&&c.giftCargo)moveGiftFood(c,'giftCargo',sale.giftReserve??={},c.store,n,n,row.food||0);row[k]=(row[k]||0)+n;}}
   else if(district?.targetKind==='votive'&&k===district.resource)district.remaining+=n;
   else if(MATERIALS.includes(k)){const accepted=restore(k,n,k==='food'?'fishCargo':null);if(c.creatorCargo?.resource===k)addCreatorStock(s.buildings.find(b=>buildingKey(b)===recovery),k,Math.min(accepted,c.creatorCargo.amount));if(district)district.cancelled+=accepted;}
   else s.resources[k]=(s.resources[k]||0)+n;

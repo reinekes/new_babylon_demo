@@ -1,0 +1,10 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 265,
+  "restoredMarkedFood": 12,
+  "byteEqualCargo": true,
+  "samples": 68,
+  "medianMs": 2.161167000000006,
+  "p95Ms": 8.540582999999998
+}

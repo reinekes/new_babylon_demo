@@ -44,11 +44,12 @@ export function inviteExternalMaster(s){
  if(!path)return {ok:false,reason:'Нет пути до дома ученика'};
  const component=network.components.get(market.key);
  const eligibleStores=new Set(network.ports.filter(p=>network.components.get(p.key)===component).map(p=>buildingKey(p.building)));
- const provisions=reserveStock(s,{food:FOOD},{eligibleStores});
+ const giftReserve={};
+ const provisions=reserveStock(s,{food:FOOD},{eligibleStores,giftReserve});
  if(!provisions)return {ok:false,reason:'Нужно 3 еды без семенного резерва на доступных складах'};
  s.externalGuest={name:NAME,partner:offer.partner,learner:offer.learner,home:offer.home,market:offer.market,
   x:market.x,y:market.y,phase:'arriving',route:path.map(p=>p.key),routeIndex:1,
-  deadline:s.simTime+VISIT_SECONDS,progress:0,provisions,fed:false,outcome:null};
+  deadline:s.simTime+VISIT_SECONDS,progress:0,provisions,...Object.keys(giftReserve).length?{giftReserve}:{},fed:false,outcome:null};
  return {ok:true};
 }
 
@@ -77,8 +78,8 @@ function walkGuest(s,g,network,target,dt){
 }
 
 function finishLesson(s,g,outcome){
- if(rationTotal(g)>0)refundSources(s,g.provisions);
- g.provisions={};g.phase='returning';g.outcome=outcome;g.route=[];g.routeIndex=0;
+ if(rationTotal(g)>0)refundSources(s,g.provisions,undefined,g.giftReserve);
+ g.provisions={};delete g.giftReserve;g.phase='returning';g.outcome=outcome;g.route=[];g.routeIndex=0;
 }
 export function advanceExternalGuest(s,dt,network){
  for(const [kind,visitor] of Object.entries(s.externalVisits||{}))advanceVisitor(s,kind,visitor,dt,network);
@@ -103,7 +104,7 @@ export function advanceExternalGuest(s,dt,network){
  if(!['home','resting'].includes(pupil.phase)||distance(pupil,home)>1.15)return;
  if(!g.fed){
   if(home.building.water<WATER)return;
-  home.building.water-=WATER;g.provisions={};g.fed=true;
+  home.building.water-=WATER;g.provisions={};delete g.giftReserve;g.fed=true;
  }
  g.progress=Math.min(LESSON,g.progress+dt);
  if(g.progress>=LESSON-1e-8){
@@ -187,16 +188,17 @@ export function inviteVisitor(s,kind){
  if(!path)return {ok:false,reason:'Нет дороги для гостя'};
  const component=network.components.get(market.key);
  const stores=new Set(network.ports.filter(p=>network.components.get(p.key)===component).map(p=>buildingKey(p.building)));
- const provisions=reserveStock(s,{food:offer.food},{eligibleStores:stores});
+ const giftReserve={};
+ const provisions=reserveStock(s,{food:offer.food},{eligibleStores:stores,giftReserve});
  if(!provisions)return {ok:false,reason:'Недостаточно еды без семенного резерва на доступном берегу'};
  if(kind==='envoy'){
   const gift=reserveStock(s,{cloth:1},{eligibleStores:new Set([offer.destination])});
-  if(!gift){refundSources(s,provisions);return {ok:false,reason:'Ответная ткань уже занята'};}
+  if(!gift){refundSources(s,provisions,undefined,giftReserve);return {ok:false,reason:'Ответная ткань уже занята'};}
   (provisions[offer.destination]??={}).cloth=1;
  }
  (s.externalVisits??={})[kind]={name:offer.name,partner:offer.partner,market:offer.market,destination:offer.destination,
   x:market.x,y:market.y,phase:'arriving',route:path.map(p=>p.key),routeIndex:1,
-  deadline:s.simTime+VISIT_SECONDS,provisions,outcome:null,offeringId:null};
+  deadline:s.simTime+VISIT_SECONDS,provisions,...Object.keys(giftReserve).length?{giftReserve}:{},outcome:null,offeringId:null};
  return {ok:true};
 }
 
@@ -208,7 +210,7 @@ function advanceVisitor(s,kind,g,dt,network){
  if(!active(g))return;
  if(g.phase==='arriving'){
   if(s.simTime>=g.deadline){
-   refundSources(s,g.provisions);g.provisions={};g.outcome='interrupted';
+   refundSources(s,g.provisions,undefined,g.giftReserve);g.provisions={};delete g.giftReserve;g.outcome='interrupted';
   }else{
    if(!walkGuest(s,g,network,portAt(network,g.destination),dt))return;
    if(kind==='pilgrim'){
@@ -216,7 +218,7 @@ function advanceVisitor(s,kind,g,dt,network){
     if(g.offeringId===null)return;
     visitorNews(s,'Паломник посвятил сосуд',`${g.name} · сосуд №${g.offeringId} принят в храм ${g.destination}.`);
    }
-   g.provisions={};g.outcome='accepted';
+   g.provisions={};delete g.giftReserve;g.outcome='accepted';
   }
   g.phase='returning';g.route=[];g.routeIndex=0;
   return;

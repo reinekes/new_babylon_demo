@@ -124,3 +124,58 @@ test('marked grain delivered to a brewery returns to storage when the brewery is
  assert.equal(restored.buildings.find(b=>b.type==='shrine').giftStock.at(-1),3);
  assert.ok(decode(encode(restored)));
 });
+
+test('cancelling a feast after reload refunds the same marked grain',async()=>{
+ const {orderFestival,cancelFestival}=await import('../festival.js');
+ const {takeStock,syncInventory}=await import('../inventory.js');
+ let {s}=fixture();
+ const shrine=s.buildings.find(b=>b.type==='shrine'),key='9,8';
+ takeStock(s,key,'food',shrine.stock.food);
+ assert.ok(miracle(s,'abundance',shrine).ok);
+ s.resources.prestige=100;s.resources.beer=20;syncInventory(s);
+ assert.ok(orderFestival(s).ok);
+ assert.deepEqual(s.festival.giftReserve[key],[12]);
+ const raw=encode(s);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ assert.ok(cancelFestival(s).ok);
+ assert.equal(s.resources.food,45);
+ assert.deepEqual(s.buildings.find(b=>b.type==='shrine').giftStock,[45]);
+ assert.equal(cancelFestival(s).ok,false);
+});
+
+test('a sale cancellation and a later buyback preserve gift origin',async()=>{
+ const {advanceTime}=await import('../engine.js');
+ const {advanceTrade,trade,cancelSale}=await import('../trading.js');
+ const {takeStock}=await import('../inventory.js');
+ let {s}=fixture();
+ s.buildings.push({type:'market',x:11,y:9,level:1});
+ s.simTime=45;s.tick=1;s.season=1;
+ advanceTrade(s);
+ Object.assign(s.trade.caravan,{phase:'trading',market:'11,9'});
+ s.trade.caravan.stock.food=0;
+ const shrine=s.buildings.find(b=>b.type==='shrine');
+ takeStock(s,'9,8','food',shrine.stock.food);
+ assert.ok(miracle(s,'abundance',shrine).ok);
+ const order=()=>{const result=trade(s,'food','sell',6);assert.ok(result.ok,result.reason);return s.trade.sales.at(-1);};
+ const cancelled=order();
+ assert.deepEqual(cancelled.giftReserve['9,8'],[6]);
+ const raw=encode(s);
+ s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ assert.ok(cancelSale(s,cancelled.id).ok);
+ assert.deepEqual(s.buildings.find(b=>b.type==='shrine').giftStock,[45]);
+ const sale=order();
+ const step=()=>{s.event=null;advanceTime(s,.2);};
+ for(let i=0;i<1000&&sale.loaded<6;i++)step();
+ assert.equal(sale.loaded,6);
+ assert.deepEqual(s.trade.caravan.giftFood,[6]);
+ const bought=trade(s,'food','buy',3);
+ assert.ok(bought.ok,bought.reason);
+ const delivery=s.trade.deliveries.at(-1);
+ assert.deepEqual(delivery.giftFood,[3]);
+ for(let i=0;i<1000&&delivery.delivered<3;i++)step();
+ assert.equal(delivery.delivered,3);
+ assert.equal(delivery.giftFood,undefined);
+ assert.equal(encode(decode(encode(s))),encode(s));
+});
