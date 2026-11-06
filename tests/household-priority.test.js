@@ -86,3 +86,23 @@ test('a hungry home worker rests with their work cargo, eats pantry food, and la
  assert.ok(ate);assert.ok(c.hunger<100);assert.equal(c.cargo.wood,2);assert.equal(c.phase,'resting');assert.ok(b.pantry<.01);
  for(let i=0;i<300;i++){s.event=null;advanceTime(s,.1);}assert.equal(c.cargo.wood||0,0);assert.ok(Math.abs(s.resources.wood-wood)<1e-7);assert.ok(decode(encode(s)));
 });
+
+test('neighbor food is recorded only when the receiving household accepts the carried food',()=>{
+ let {s,adult,child}=childrenCity();
+ const helperId=adult.id,target=child.home;
+ s.scenario={version:1,history:'sumer-iii-v1',miracles:'classic-v1'};
+ for(let i=0;i<300&&!(adult.pantryFood>0);i++)advanceTime(s,.1);
+ assert.ok(adult.pantryFood>0);
+ assert.equal(s.causalFacts?.neighborFood,undefined);
+ s=decode(encode(s));
+ assert.ok(s);
+ for(let i=0;i<400&&!s.causalFacts?.neighborFood?.length;i++)advanceTime(s,.1);
+ const [fact]=s.causalFacts?.neighborFood||[];
+ assert.ok(fact);
+ assert.equal(fact.courierId,helperId);
+ assert.equal(fact.home,target);
+ assert.ok(fact.amount>0);
+ const saved=decode(encode(s));
+ assert.ok(saved);
+ assert.deepEqual(saved.causalFacts,s.causalFacts);
+});

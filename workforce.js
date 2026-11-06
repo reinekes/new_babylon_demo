@@ -1,3 +1,4 @@
+import {recordNeighborFoodFact} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {availableEveningPlayer,peacefulGame} from './household-games.js';
 import {recordVowDelivery} from './supply-vow.js';
@@ -396,7 +397,7 @@ function arrival(s,c,ctx){
   if(amount>1e-8){takeStock(s,c.store,'food',amount);c.pantryFood=amount;startTrip(s,c,target,'toPantryHome',ctx);}else{delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);}return;
  }
  if(c.phase==='toPantryHome'){
-  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);}else putStock(s,c.store,'food',amount,{overflow:true});
+  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);}else putStock(s,c.store,'food',amount,{overflow:true});
   delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;if(target!==c.home)startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);else c.phase=hasCargo(c)?'resting':'home';return;
  }
  if(c.phase==='toSaleSupply'){

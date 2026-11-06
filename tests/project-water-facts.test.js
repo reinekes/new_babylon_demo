@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createGame,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {buildingKey} from '../definitions.js';
-import {bindWaterProject,recordNeighborWaterFact} from '../causal-facts.js';
+import {bindWaterProject,recordNeighborFoodFact,recordNeighborWaterFact} from '../causal-facts.js';
 import {confirmProjectWater} from '../human-projects.js';
 
 test('delivery evidence survives demolition and distinguishes a replacement on the same tile',()=>{
@@ -92,4 +92,20 @@ test('rebuilding a recipient on the same cell keeps the old fact distinct',()=>{
  const saved=decode(encode(s));
  assert.ok(saved);
  assert.deepEqual(saved.causalFacts,s.causalFacts);
+});
+
+test('food and water for the same pair on the same day are one aid event',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [origin,home]=s.buildings.filter(b=>b.type==='house');
+ const helper=s.citizens.find(c=>c.home===buildingKey(origin));
+ helper.pantryTarget=buildingKey(home);
+ recordNeighborFoodFact(s,helper,home,2);
+ recordNeighborWaterFact(s,helper,home,{station:null,origin:helper.home,target:buildingKey(home)},3);
+ delete helper.pantryTarget;
+ assert.equal(s.causalFacts.neighborFood.length,1);
+ assert.equal(s.causalFacts.neighborWater,undefined);
+ const saved=decode(encode(s));
+ assert.ok(saved);
+ saved.causalFacts.neighborWater=[{...saved.causalFacts.neighborFood[0]}];
+ assert.equal(decode(encode(saved)),null);
 });
