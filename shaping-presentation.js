@@ -42,6 +42,7 @@ export function createShapingPresentation(root,{project,focus,cue}={}){
   for(const [id,mark] of marks)if(!keep.has(id)){mark.remove();marks.delete(id);}
  }
  return {
+  get active(){return !!active;},
   reset(s){skip();seen=s.shapingModel?.completedAt!==undefined;pending=false;drawPiles({},false);},
   cast(batch){if(batch)start('cast',batch);},
   tick(s,dt,{allowOpening=true,visible=true,pilesVisible=visible}={}){

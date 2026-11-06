@@ -212,7 +212,8 @@ export function validateArrivalHospitality(s){
  if(!validArrivalGroup(s))return false;
  const journal=s.arrivalHospitality;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.welcomes!==undefined)||journal.version!==1||
+ if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.welcomes!==undefined)+Number(journal.sceneSeen!==undefined)||journal.version!==1||
+  (journal.sceneSeen!==undefined&&journal.sceneSeen!==true)||
   !Array.isArray(journal.receipts)||journal.receipts.length>kinds.length)return false;
  const seen=new Set();
  let previous=0;

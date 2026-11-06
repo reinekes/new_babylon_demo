@@ -1,0 +1,16 @@
+.arrival-scene-card { background: linear-gradient(135deg,#32271e,#181d20); }
+.arrival-scene-card svg { fill: none; stroke: #d3a46f; stroke-width: 1.8; }
+.arrival-scene-card .arrival-smoke,
+.arrival-scene-card .arrival-traveler,
+.arrival-scene-card .arrival-light { opacity: 0; transition: opacity .6s ease; }
+.arrival-scene-card .arrival-road { stroke: #987456; stroke-dasharray: 3 4; }
+.arrival-scene[data-kind="opening"]:not([data-phase="0"]) .arrival-smoke,
+.arrival-scene[data-kind="opening"][data-phase="3"] .arrival-light,
+.arrival-scene[data-kind="cast"]:not([data-phase="0"]) .arrival-traveler { opacity: 1; }
+.arrival-scene-card .arrival-light { fill: #f6c689; }
+.arrival-mark[hidden] { display: none; }
+.arrival-mark { position: absolute; left: 0; top: 0; width: 24px; z-index: 4; pointer-events: none; }
+.arrival-mark svg { display: block; fill: #bf8452; stroke: #4b3025; stroke-width: 1.5; }
+@media (prefers-reduced-motion: reduce) {
+ .arrival-scene-card svg * { transition: none; }
+}
