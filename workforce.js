@@ -1,3 +1,4 @@
+import {markCreatorCargo,acceptCreatorCargo} from './creator-materials.js';
 import {foodYieldMultiplier,useRichCatch} from './rich-catch.js';
 import {appendFish,takeFish as takeFishEvidence,recordHomeFish,recordInspiredCatch} from './fish-provenance.js';
 import {acceptFieldGrain,recordFieldGrain} from './field-grain.js';
@@ -353,6 +354,7 @@ function deposit(s,c,ctx){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='votive'||destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?destination.targetKind==='votive'?receiveVotive(s,destination,c,amount):logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
   if(local&&destination.targetKind==='input'&&(resource==='food'||resource==='milk'))recordVowDelivery(s,site,c,accepted);
   if(!local&&accepted>0&&MATERIALS.includes(resource))stored[resource]=accepted;
+  if(c.creatorCargo)acceptCreatorCargo(s,c,resource,accepted);
   if(resource==='food'){acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);
    if(c.fishCargo){
     const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
@@ -651,7 +653,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
  }
  let remaining=dt;
  for(let transition=0;transition<12&&remaining>1e-8;transition++){
-  if(c.phase==='manualGathering'){if(workManualGathering(s,c,remaining,workRate(c,null))){recordCitizenHarvest(s,c,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
+  if(c.phase==='manualGathering'){if(workManualGathering(s,c,remaining,workRate(c,null))){recordCitizenHarvest(s,c,c.cargo);const resource=Object.keys(c.cargo)[0];markCreatorCargo(s,c,resource,c.cargo[resource]);startTrip(s,c,c.store,'toStore',ctx);}return;}
   if(c.phase==='waiting'||c.phase==='constructing'){
    const q=ctx.buildings.get(c.site)?.construction;if(!q){startTrip(s,c,c.home,'toHome',ctx);continue;}
    if(materialsReady(q)&&c.siteDuty==='builder'){
@@ -818,7 +820,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  if(c.clothingLoad)restore('clothing',c.clothingLoad);
  if(c.seedFood)restore('food',c.seedFood);
  if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
- delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;
+ delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;delete c.creatorCargo;
  delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;
