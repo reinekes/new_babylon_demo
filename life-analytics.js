@@ -12,6 +12,15 @@ const tick=s=>s.tick||0;
 const epithetRecord=c=>({...c.epithet?{epithet:{...c.epithet}}:{},...c.epithetHistory?{epithetHistory:c.epithetHistory.map(row=>({...row}))}:{}});
 const identity=(c,s)=>({id:c.id,name:citizenName(c.id),age:c.age??null,sex:c.sex??null,parents:[...(c.parents||[])],partner:c.partner??null,generation:c.generation||1,home:c.home||null,firstSeenTick:tick(s),bornTick:null,diedTick:null,cause:null,...epithetRecord(c)});
 
+export function personalMemory(s,id){
+ const help=s.godhood?.firstWaterHelp;
+ if(!help||!Number.isFinite(help.deliveredAt))return null;
+ const role=id===help.helperId?'helper':id===help.recipientId?'recipient':null;
+ if(!role)return null;
+ const {helperId,recipientId,home,amount,deliveredAt}=help;
+ return {fact:{cause:'neighbor-water',helperId,recipientId,home,amount,deliveredAt},role,interpretation:help.interpretations?.[role]??null};
+}
+
 /** Explicit simulation hooks only. Views below never initialise/mutate state.
  * Missing old-save ancestors stay unknown: an ID is not evidence of a life. */
 export function initializeLifeAnalytics(s){

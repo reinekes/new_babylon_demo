@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {advanceTime,decode,encode} from '../engine.js';
 import {createNewCity} from '../new-game.js';
 import {beginFirstSign,beginFirstWaterHelp,firstWaterHelpChoices} from '../godhood.js';
+import {personalMemory} from '../life-analytics.js';
+import {lifeAnalyticsHTML} from '../ui-life-analytics.js';
 import {recoverWater} from '../water.js';
 import {buildingKey} from '../definitions.js';
 
@@ -30,7 +32,20 @@ test('a chosen resident delivers real water before first recognition, through a 
  assert.equal(s.resources.faith,1);
  assert.ok(home().waterDelivered>delivered);
  assert.equal(s.godhood.firstWaterHelp.recipientId,choice.recipientId);
- assert.ok(decode(encode(s)));
+ const saved=decode(encode(s));assert.ok(saved);
+ const witness=personalMemory(saved,choice.helperId),recipient=personalMemory(saved,choice.recipientId);
+ assert.deepEqual(witness.fact,recipient.fact);
+ assert.equal(witness.interpretation,'sign');
+ assert.equal(recipient.interpretation,'neighbor');
+ assert.match(lifeAnalyticsHTML(saved,{tab:'family',selectedId:choice.helperId}),/увидел знак/);
+ assert.match(lifeAnalyticsHTML(saved,{tab:'family',selectedId:choice.recipientId}),/запомнил помощь соседа/);
+ const legacy=structuredClone(saved);delete legacy.godhood.firstWaterHelp.interpretations;
+ const legacyRaw=encode(legacy),loadedLegacy=decode(legacyRaw);
+ assert.equal(encode(loadedLegacy),legacyRaw);
+ assert.equal(personalMemory(loadedLegacy,choice.recipientId).interpretation,null);
+ assert.deepEqual(personalMemory(loadedLegacy,choice.recipientId).fact,witness.fact);
+ const corrupt=structuredClone(saved);corrupt.godhood.firstWaterHelp.interpretations.recipient='invented';
+ assert.equal(decode(encode(corrupt)),null);
  assert.equal(beginFirstWaterHelp(s,choice.helperId,choice.recipientId).ok,false);
 });
 

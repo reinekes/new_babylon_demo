@@ -27,7 +27,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## god-personal-memory | Личная память и разные толкования
 group: godhood
-status: planned
+status: partial
 priority: P2
 depends: -
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -39,7 +39,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 believerIds, биографии и эпитеты есть.
 
 ### Следующий шаг
-Описать компактный контракт факта и личной интерпретации.
+Подтвердить выпуск общего факта первой доставки и двух личных толкований в биографиях.
 
 ### Готово когда
 Память устойчива при загрузке и не подменяется общим счётчиком.

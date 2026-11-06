@@ -152,6 +152,7 @@ export function confirmFirstWaterHelp(s,c,b,amount){
  if(g?.stage!=='help'||help.helperId!==c.id||help.home!==buildingKey(b)||amount<=1e-7)return;
  if(!s.citizens.some(p=>p.id===help.recipientId&&p.home===help.home&&!p.floodShelter))return;
  help.amount=amount;help.deliveredAt=s.simTime;
+ help.interpretations={helper:'sign',recipient:'neighbor'};
  recognizeWitness(s,c,'помог соседям и доставил воду');
 }
 function recognizeWitness(s,c,action){
@@ -200,8 +201,10 @@ export function validateGodhood(s){
  if(help!==undefined){
   if(!isStrictSumer(s)||g.mode!=='awakening'||!help||!id(help.helperId)||!id(help.recipientId)||help.helperId===help.recipientId||typeof help.home!=='string'||!/^\d+,\d+$/.test(help.home))return false;
   if(g.stage==='help'){
-   if(!s.citizens.some(c=>c.id===help.helperId&&c.waterTrip?.target===help.home)||g.witnessId!==help.helperId||g.signTarget!==null||g.signOrigin!==null||help.amount!==undefined||help.deliveredAt!==undefined)return false;
+   if(!s.citizens.some(c=>c.id===help.helperId&&c.waterTrip?.target===help.home)||g.witnessId!==help.helperId||g.signTarget!==null||g.signOrigin!==null||help.amount!==undefined||help.deliveredAt!==undefined||help.interpretations!==undefined)return false;
   }else if(!Number.isFinite(help.amount)||help.amount<=0||help.amount>6||!Number.isFinite(help.deliveredAt)||help.deliveredAt<0||help.deliveredAt>s.simTime||g.recognitionAt===null||help.deliveredAt<g.recognitionAt)return false;
+  const views=help.interpretations;
+  if(views!==undefined&&(!views||views.helper!=='sign'||views.recipient!=='neighbor'||Object.keys(views).length!==2))return false;
  }else if(g.stage==='help')return false;
  if(g.mode==='mature'&&(g.stage!=='recognized'||g.witnessId!==null||g.signTarget!==null||g.signOrigin!==null||g.recognitionAt!==null||g.believerIds.length||g.firstBuilderGift||g.completedProjects.length))return false;
  if(g.mode==='awakening'){
