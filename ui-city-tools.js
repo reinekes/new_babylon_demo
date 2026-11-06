@@ -1,3 +1,4 @@
+import {richCatchMapReason} from './rich-catch.js';
 import {richCatchView} from './fish-provenance.js';
 import {fieldGrainView} from './field-grain.js';
 import {peaceDiscoveryView} from './peace-discovery.js';
@@ -161,8 +162,8 @@ function richCatchProgressHTML(s){
  const progress=richCatchView(s);
  if(!progress)return '';
  const {catches,homes,requiredCatches,requiredHomes,qualified}=progress;
- const details=qualified?'Условия выполнены.':
-  `Уловы одного вдохновлённого рыбака · ${catches} из ${requiredCatches} · Жилые дворы с доставленной рыбой · ${homes} из ${requiredHomes}.`;
+ const details=richCatchMapReason(s)||(qualified?'Условия выполнены.':
+  `Уловы одного вдохновлённого рыбака · ${catches} из ${requiredCatches} · Жилые дворы с доставленной рыбой · ${homes} из ${requiredHomes}.`);
  return `<section class="management-row" data-rich-catch-progress><h3>История «Богатый улов»</h3><p>${details}</p></section>`;
 }
 
