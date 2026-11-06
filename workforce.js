@@ -1,4 +1,4 @@
-import {advanceArrivalGroup} from './arrival-hospitality.js';
+import {advanceArrivalGroup,createArrivalFamily} from './arrival-hospitality.js';
 import {deliverShapingLoad,returnShapingLoad} from './shaping-batch.js';
 import {advanceShapingModel} from './shaping-model.js';
 import {recordSunlightService} from './sunlight-gathering.js';
@@ -788,9 +788,8 @@ export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
    }
    house.water+=water;
    delete s.arrivalGroup;
-   const first=s.demography.nextId;
-   for(let i=0;i<count;i++)s.citizens.push({id:first+i,home});
-   s.demography.nextId+=count;s.population=s.citizens.length;
+   s.citizens.push(...createArrivalFamily(s,home,count));
+   s.population=s.citizens.length;
    syncCitizens(s);ctx=context(s);
    s.news.unshift({title:'Прибыли новые жители',text:`Поселились в доме ${home} · ${count} чел.`,kind:'good',year:s.year,season:s.season,tick:s.tick});
    s.news=s.news.slice(0,80);

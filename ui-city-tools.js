@@ -223,7 +223,10 @@ function arrivalHospitalityHTML(s){
  const view=arrivalHospitalityView(s);
  if(!view)return '';
  const beds=arrivalHousing(s).reduce((total,row)=>total+row.beds,0);
- return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p></section>`;
+ const welcome=s.arrivalHospitality.welcomes?.at(-1);
+ const house=welcome&&s.buildings.find(b=>b.type==='house'&&buildingKey(b)===welcome.home);
+ const latest=house?`<p>${focus(welcome.home,`Последнее заселение · ${welcome.members.length} чел.`)}</p>`:'';
+ return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p>${latest}</section>`;
 }
 
 function shapingProjectsHTML(s){

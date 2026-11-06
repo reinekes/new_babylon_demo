@@ -154,3 +154,28 @@ test('the Call charges only for the displayed group and requires blessing and ho
  assert.equal(s.resources.faith,55);
  assert.equal(s.population,population);
 });
+
+test('an arriving family keeps its parents, home welcome and independent belief after reload',async()=>{
+ const {reserveArrival}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {advanceTime}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:1}),house=s.buildings.find(b=>b.type==='house');
+ for(const b of s.buildings)if(b.type==='house')b.water=0;
+ house.level=3;house.water=12;
+ const first=s.demography.nextId;
+ assert.ok(reserveArrival(s,networkFor(s)));
+ assert.equal(s.arrivalGroup.count,6);
+ for(let i=0;i<400&&s.arrivalGroup;i++){s.event=null;advanceTime(s,.25);}
+ const loaded=decode(encode(s));
+ assert.ok(loaded);
+ const family=loaded.citizens.filter(c=>c.id>=first);
+ assert.equal(family.length,6);
+ assert.equal(family[0].partner,first+1);
+ assert.equal(family[1].partner,first);
+ for(const child of family.slice(2)){
+  assert.ok(child.age<16);
+  assert.deepEqual(child.parents,[first,first+1]);
+ }
+ assert.ok(family.every(c=>!loaded.godhood.believerIds.includes(c.id)));
+ assert.deepEqual(loaded.arrivalHospitality.welcomes[0].members,family.map(c=>c.id));
+});

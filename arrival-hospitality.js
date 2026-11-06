@@ -137,6 +137,24 @@ export function reserveArrival(s,network,expected){
 
 export const reservedArrivalBeds=(s,home)=>s.arrivalGroup?.home===home?s.arrivalGroup.count:0;
 
+export function createArrivalFamily(s,home,count){
+ const first=s.demography.nextId;
+ const host=s.citizens.find(c=>c.home===home&&!c.floodShelter&&c.age>=16)?.id??null;
+ const family=Array.from({length:count},(_,i)=>({
+  id:first+i,home,age:i===0?30:i===1?28:i+3,sex:i%2?'f':'m',
+  parents:i<2?[]:[first,first+1],partner:i<2&&count>1?first+1-i:null,generation:i<2?1:2,faith:20
+ }));
+ s.demography.nextId+=count;
+ const welcomes=s.arrivalHospitality.welcomes??=[];
+ welcomes.push({home,host,members:family.map(c=>c.id),at:s.simTime});
+ if(welcomes.length>80)welcomes.shift();
+ return family;
+}
+
+export function lastArrivalWelcome(s,home){
+ return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home)||null;
+}
+
 export function advanceArrivalGroup(s,dt,network){
  const g=s.arrivalGroup;
  if(!g)return false;
@@ -194,7 +212,7 @@ export function validateArrivalHospitality(s){
  if(!validArrivalGroup(s))return false;
  const journal=s.arrivalHospitality;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)||journal.version!==1||
+ if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.welcomes!==undefined)||journal.version!==1||
   !Array.isArray(journal.receipts)||journal.receipts.length>kinds.length)return false;
  const seen=new Set();
  let previous=0;
@@ -203,6 +221,18 @@ export function validateArrivalHospitality(s){
    !Number.isFinite(row.at)||row.at<previous||row.at>s.simTime)return false;
   if(!cell(s,row.place))return false;
   previous=row.at;seen.add(row.kind);
+ }
+ const welcomes=journal.welcomes;
+ if(welcomes!==undefined){
+  if(!Array.isArray(welcomes)||!welcomes.length||welcomes.length>80)return false;
+  let lastTime=0,lastId=-1;
+  for(const row of welcomes){
+   if(!row||Object.keys(row).length!==4||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
+    !Array.isArray(row.members)||!row.members.length||row.members.length>6||
+    !row.members.every((id,i)=>Number.isSafeInteger(id)&&id>lastId&&id<s.demography.nextId&&(!i||id===row.members[i-1]+1))||
+    row.host!==null&&(!Number.isSafeInteger(row.host)||row.host<0||row.host>=row.members[0]))return false;
+   lastTime=row.at;lastId=row.members.at(-1);
+  }
  }
  const shelters=journal.shelters;
  if(shelters===undefined)return true;
