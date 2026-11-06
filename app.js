@@ -1,3 +1,4 @@
+import {setCommonMeals} from './common-meal.js';
 import {isVotiveTemple,isMemoryKeeper,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
 import {reedStatus,REED_CAPACITY} from './reed-stock.js';
 import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
@@ -268,11 +269,20 @@ const storeMinimumDraft=new Map(),transferDraft={source:'',target:'',resource:'f
 function storePolicy(b){
  const key=buildingKey(b);
  const jars=isStrictSumer(state)&&['granary','depot'].includes(b.type)?storageJarCover(b):null;
+ const mealDepot=isStrictSumer(state)&&b.type==='depot'?state.buildings.find(v=>buildingKey(v)===key):null;
+ const eating=mealDepot?state.citizens.filter(c=>c.phase==='commonMeal'&&c.commonMealTarget===key).length:0;
+ const meals=mealDepot?`<label><input type="checkbox" data-common-meals="${esc(key)}" ${mealDepot.commonMeals?'checked':''}> Общая трапеза</label><small>С 11:00 до 16:00 работники из дальних домов приходят за порцией еды из запаса сверх минимума.${eating?` Сейчас за трапезой: ${eating}.`:''}</small>`:'';
  const minimum=(resource,label)=>`<label>${label} <input type="number" min="0" max="${storeCapacity(b)}" step="1" data-store-min="${esc(key)}" data-store-resource="${resource}" value="${storeMinimumDraft.get(`${key}:${resource}`)??storeMinimum(b,resource)}"></label><button data-save-store="${esc(key)}" data-store-resource="${resource}">Задать минимум</button>`;
  const jarInfo=jars?`${minimum('pottery','Минимум тары')}<small>Тара от разлива: защищено ${foodAmount(jars.covered)} ед. еды. Один местный сосуд вмещает до ${JAR_FOOD_CAPACITY} ед.</small>`:'';
- return `<div class="store-policy">${minimum('food','Минимум еды')}<label><input type="checkbox" data-store-export="${esc(key)}" ${b.noExport?'':'checked'}> Отправлять в другие склады сверх минимума</label><small>Минимум защищён от межскладских перевозок. Домашние ужины расходуют местную еду.</small>${jarInfo}</div>`;
+ return `<div class="store-policy">${minimum('food','Минимум еды')}<label><input type="checkbox" data-store-export="${esc(key)}" ${b.noExport?'':'checked'}> Отправлять в другие склады сверх минимума</label><small>Минимум защищён от межскладских перевозок. Домашние ужины расходуют местную еду.</small>${jarInfo}${meals}</div>`;
 }
 function bindStorePolicy(root){
+ root.querySelectorAll('[data-common-meals]').forEach(el=>el.onchange=()=>{
+  const enabled=el.checked;
+  if(!mutate(setCommonMeals(state,el.dataset.commonMeals,enabled),enabled?'Общая трапеза открыта':'Общая трапеза закрыта'))el.checked=!enabled;
+  el.blur();
+ });
+
  root.querySelectorAll('[data-store-min]').forEach(el=>el.oninput=()=>storeMinimumDraft.set(`${el.dataset.storeMin}:${el.dataset.storeResource}`,el.value));
  root.querySelectorAll('[data-save-store]').forEach(el=>el.onclick=()=>{
   const {saveStore:key,storeResource:resource}=el.dataset;

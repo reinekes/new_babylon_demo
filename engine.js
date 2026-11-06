@@ -1,3 +1,4 @@
+import {validateCommonMeals} from './common-meal.js';
 import {validateFamilyCare} from './family-care.js';
 import {pastureCredits} from './pasture.js';
 import {settleManagedFlocks} from './textiles.js';
@@ -363,7 +364,7 @@ export function decode(raw){
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,worldWidth(s)-.5)&&finite(p.y,-.5,worldHeight(s)-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['toManualGathering','manualGathering','home','toWork','toWorkshop','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying','toDistrictSupply','toDistrictStore','waterTrip','toCraftSupply','toClothesSupply','toClothesHome','festival','relic','relicGuest','awakening'].includes(c.phase))return null;
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['toManualGathering','manualGathering','toCommonMeal','commonMeal','home','toWork','toWorkshop','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying','toDistrictSupply','toDistrictStore','waterTrip','toCraftSupply','toClothesSupply','toClothesHome','festival','relic','relicGuest','awakening'].includes(c.phase))return null;
    if(c.floodShelter!==undefined&&(typeof c.floodShelter!=='string'||!/^\d+,\d+$/.test(c.floodShelter)||c.phase!=='blocked'||!isStrictSumer(s)))return null;
    if(c.recovering!==undefined&&typeof c.recovering!=='boolean')return null;
    if(c.clinic!=null&&(buildings.get(c.clinic)?.type!=='healer'||!isComplete(buildings.get(c.clinic))||!['toHealer','treatment','blocked'].includes(c.phase)||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||c.pantryTrip||c.tradeJob||c.saleJob))return null;
@@ -420,7 +421,7 @@ export function decode(raw){
   if(oldCalling)for(const c of s.citizens){const role=c.pendingRole||c.role;if(role&&role!=='auto')c.calling??=role;}
   if(oldEducation)for(const c of s.citizens)if(buildings.get(c.work)?.type==='healer'){c.role='healer';if(!c.pendingRole)c.calling='healer';c.medicine=newMedicalSkill(s.year,1);}
   if(!validateManualGathering(s))return null;
-  if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateFamilyCare(s)||!validateWellbeing(s))return null;
+  if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateCommonMeals(s)||!validateFamilyCare(s)||!validateWellbeing(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});

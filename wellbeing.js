@@ -1,6 +1,7 @@
 import {knowsPresence} from './godhood.js';
 import {ration,supplyHome} from './households.js';
 import {professionMatchesTask} from './professions.js';
+export const COMMON_PORTION=.4;
 const clamp=n=>Math.max(0,Math.min(100,n));
 export const hourOf=t=>((8+t*.4)%24+24)%24;
 export const mealCycle=t=>Math.floor((t-30+1e-7)/60);
@@ -16,7 +17,7 @@ export function advanceWellbeing(s,dt){
  if(night){
   const families=new Map();
   for(const c of s.citizens){
-   if(c.mealDay!==day){c.mealDay=day;c.mealEaten=0;c.familyMeal=false;}
+   if(c.mealDay!==day){c.mealDay=day;c.mealEaten=c.commonMealDay===day?COMMON_PORTION:0;c.familyMeal=false;}
    if(s.funeral?.actors.some(a=>a.id===c.id))continue;
    const home=supplyHome(c,{arrived:true});
    if(!home||!c.floodShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
