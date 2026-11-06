@@ -1,0 +1,156 @@
+{
+  "at": "2026-11-06T22:23:14.033423+00:00",
+  "commit": "1565b5b080727ef0eddf90b8d2d9df2c3db4e683",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "121d017f38440e4c03b4ea8a18cf979f91347999bfdc7834a29608f5b9a3118e",
+      "actual": "121d017f38440e4c03b4ea8a18cf979f91347999bfdc7834a29608f5b9a3118e",
+      "match": true
+    },
+    {
+      "path": "abundance-origin.js",
+      "status": 200,
+      "expected": "417da2c46eda26f13124786bd96159cbdecbf18a58883da035437b46fa7fc115",
+      "actual": "417da2c46eda26f13124786bd96159cbdecbf18a58883da035437b46fa7fc115",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "515652a66d19eebeecad24e183a52c3d17934cafeb6e453e15a6e65ea3bdedcf",
+      "actual": "515652a66d19eebeecad24e183a52c3d17934cafeb6e453e15a6e65ea3bdedcf",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "d0b67a7452fb892920060950a155105df8fcef13dfefb579fe1b127838be45bd",
+      "actual": "d0b67a7452fb892920060950a155105df8fcef13dfefb579fe1b127838be45bd",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "6f6845b6d644048b1bc23671dda29a8772f0aefaccab63359c05885ad4408d10",
+      "actual": "6f6845b6d644048b1bc23671dda29a8772f0aefaccab63359c05885ad4408d10",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-call-4x.json",
+      "status": 200,
+      "expected": "6dbb3cd50bc7558871f36e111770bdad80ccd01bd9b1b7c830ee66af8b70a8e1",
+      "actual": "6dbb3cd50bc7558871f36e111770bdad80ccd01bd9b1b7c830ee66af8b70a8e1",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-offer-4x.json",
+      "status": 200,
+      "expected": "f2826e28d1326007433896705685ea62181e771217cb33a8d51221962a91d633",
+      "actual": "f2826e28d1326007433896705685ea62181e771217cb33a8d51221962a91d633",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-reserve-4x.json",
+      "status": 200,
+      "expected": "b33bb7a6c69507ab4a1bf284dc2c5bf481e8077279066017217e6410befb508a",
+      "actual": "b33bb7a6c69507ab4a1bf284dc2c5bf481e8077279066017217e6410befb508a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-route-4x.json",
+      "status": 200,
+      "expected": "74858b5189bceedd9846b660290c4026d932f34628e7e8cf84b79d74d590f944",
+      "actual": "74858b5189bceedd9846b660290c4026d932f34628e7e8cf84b79d74d590f944",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-walk-4x.json",
+      "status": 200,
+      "expected": "1904b16557c290cdd1ae4a7a1b2dd3c7d0ecae2e2b690fd172751816cb805fc1",
+      "actual": "1904b16557c290cdd1ae4a7a1b2dd3c7d0ecae2e2b690fd172751816cb805fc1",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "caa455cb0497cef22de7879d2546568916acb257302470ad188d09501c0101e5",
+      "actual": "caa455cb0497cef22de7879d2546568916acb257302470ad188d09501c0101e5",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "f76c49179a1c851618b7a5d0e3ce3fc3e3273947cd3bb9184f7c0318b551925f",
+      "actual": "f76c49179a1c851618b7a5d0e3ce3fc3e3273947cd3bb9184f7c0318b551925f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "7584438eb13c0cf6cc5fb6a5b37e9e3ee2595fe8c0e9eccbf491009420278002",
+      "actual": "7584438eb13c0cf6cc5fb6a5b37e9e3ee2595fe8c0e9eccbf491009420278002",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "13a99624dc32387b7d9e392fe25b44cff9ef5d3e270d519ca6061a6ca0645f6f",
+      "actual": "13a99624dc32387b7d9e392fe25b44cff9ef5d3e270d519ca6061a6ca0645f6f",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "fdae3618dfb3eb71796ef63c220e14cc8408acf5708c476585ebd9d87c71e9b9",
+      "actual": "fdae3618dfb3eb71796ef63c220e14cc8408acf5708c476585ebd9d87c71e9b9",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "1ba8998f7b2473bcb8559ecb503c7c10248d3768e3e1bcaf9832ce220909039c",
+      "actual": "1ba8998f7b2473bcb8559ecb503c7c10248d3768e3e1bcaf9832ce220909039c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "61698b86e7f4ea2feb90588ec5ce0694dbe5d56ae297018783e309a95da4a49d",
+      "actual": "61698b86e7f4ea2feb90588ec5ce0694dbe5d56ae297018783e309a95da4a49d",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "dce4ca3f328b3ad67a5ac8315ac4578bd3b9f199505b1818e8a40562ed73880d",
+      "actual": "dce4ca3f328b3ad67a5ac8315ac4578bd3b9f199505b1818e8a40562ed73880d",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "8fbcd7b7d0740fa9dc04519aadf498ce50e05d71a2fcbceb35827e354b9a18a6",
+      "actual": "8fbcd7b7d0740fa9dc04519aadf498ce50e05d71a2fcbceb35827e354b9a18a6",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "cc4c5d9ab5637613352a99f5d46a09e3224f1904e6b30f7a3e89f6b0d59b90be",
+      "actual": "cc4c5d9ab5637613352a99f5d46a09e3224f1904e6b30f7a3e89f6b0d59b90be",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "69b8648d64198412974f521a6552ff89d4903449ddf5fa8defd39d1ae53b8ad0",
+      "actual": "69b8648d64198412974f521a6552ff89d4903449ddf5fa8defd39d1ae53b8ad0",
+      "match": true
+    }
+  ],
+  "matched": 21,
+  "total": 21
+}
