@@ -25,25 +25,6 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 ### Готово когда
 Пользователь принял вид либо составлен ограниченный список правок.
 
-## god-personal-memory | Личная память и разные толкования
-group: godhood
-status: partial
-priority: P2
-depends: -
-sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
-
-### Описание
-Предложение: хранить причину, свидетеля и получателя, допускать разные толкования одного события.
-
-### Что уже есть
-believerIds, биографии и эпитеты есть.
-
-### Следующий шаг
-Подтвердить выпуск общего факта первой доставки и двух личных толкований в биографиях.
-
-### Готово когда
-Память устойчива при загрузке и не подменяется общим счётчиком.
-
 ## people-memory-transmission | Передача истории между поколениями
 group: people
 status: planned
