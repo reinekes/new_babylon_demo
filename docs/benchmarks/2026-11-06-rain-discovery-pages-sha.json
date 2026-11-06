@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-06T08:31:23.887529+00:00",
+  "commit": "13f21c4d25346b6849488d1cfddeb1ea9522820d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "49aca5156ee047d99b5914441011694f6f6a6ef9d5dd1784200182af35affa96",
+      "actual": "49aca5156ee047d99b5914441011694f6f6a6ef9d5dd1784200182af35affa96",
+      "match": true
+    },
+    {
+      "path": "agriculture.js",
+      "status": 200,
+      "expected": "0237f823b27019460d73f94cbf543f792c2e7e439a0a96104a12ce9384966d5e",
+      "actual": "0237f823b27019460d73f94cbf543f792c2e7e439a0a96104a12ce9384966d5e",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "1833e89c2ed6861cb16fe6f393349a08433dd0a776d0265de64a87c6ea44bfeb",
+      "actual": "1833e89c2ed6861cb16fe6f393349a08433dd0a776d0265de64a87c6ea44bfeb",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "7e5da8336dcec1f4ce9f1bf3094e87b1d8ec2a50d35ad6405aa8c51ab7da157f",
+      "actual": "7e5da8336dcec1f4ce9f1bf3094e87b1d8ec2a50d35ad6405aa8c51ab7da157f",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "afcb622fdb4dcad27d3b4c526111600f97d503f01a43df1e2b6efb69439ce9b8",
+      "actual": "afcb622fdb4dcad27d3b4c526111600f97d503f01a43df1e2b6efb69439ce9b8",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "661bc1f9ead2f8909446f024f2bcf447925bb2edfc5cdd801935157b0f70ddb1",
+      "actual": "661bc1f9ead2f8909446f024f2bcf447925bb2edfc5cdd801935157b0f70ddb1",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ca5303bfc75a079d3cb04a5d11551ff83e343672e3734c6856d98d69fd098a4b",
+      "actual": "ca5303bfc75a079d3cb04a5d11551ff83e343672e3734c6856d98d69fd098a4b",
+      "match": true
+    },
+    {
+      "path": "miracle-discovery.js",
+      "status": 200,
+      "expected": "6de0804ba0072518731c19c60080c61bbc16a160ad560d9f6f36516cdceb4cab",
+      "actual": "6de0804ba0072518731c19c60080c61bbc16a160ad560d9f6f36516cdceb4cab",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "3b0209bc2feef001cf511132a5c774570a362ebb6077f68208d4a083b277f9b4",
+      "actual": "3b0209bc2feef001cf511132a5c774570a362ebb6077f68208d4a083b277f9b4",
+      "match": true
+    },
+    {
+      "path": "rain-discovery.js",
+      "status": 200,
+      "expected": "ab22e3b7f2acf5a6cbd2a3ceca96add76589d5588fb51f624df7e18a4bc136c4",
+      "actual": "ab22e3b7f2acf5a6cbd2a3ceca96add76589d5588fb51f624df7e18a4bc136c4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "12faa76a38f67237fc4e0bcf2e5b890bc628ad2fca0ea1588a0d97f267aba8be",
+      "actual": "12faa76a38f67237fc4e0bcf2e5b890bc628ad2fca0ea1588a0d97f267aba8be",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "c8cfbb103c7999524d6ca5f4c98d43946b7e4192e627594973d8c60a83c0f332",
+      "actual": "c8cfbb103c7999524d6ca5f4c98d43946b7e4192e627594973d8c60a83c0f332",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "7a895771a4155ce2b93f7c33821dd4ee6ef0e0a3740df33151bd30a9945d8e8c",
+      "actual": "7a895771a4155ce2b93f7c33821dd4ee6ef0e0a3740df33151bd30a9945d8e8c",
+      "match": true
+    },
+    {
+      "path": "tests/irrigated-harvest.test.js",
+      "status": 200,
+      "expected": "81c9034bc86827a065a3dc524b00b3e28830998ca990e3a546c4886e65cfadd8",
+      "actual": "81c9034bc86827a065a3dc524b00b3e28830998ca990e3a546c4886e65cfadd8",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "9f1e12ffcebba70fa3fe9910df1103503d33ba0e8a800bbd285c1e5b4b2a7d63",
+      "actual": "9f1e12ffcebba70fa3fe9910df1103503d33ba0e8a800bbd285c1e5b4b2a7d63",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
