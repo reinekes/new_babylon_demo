@@ -1,3 +1,4 @@
+import {recordRevelationApprenticeship} from './revelation-evidence.js';
 import {recordCreatorConstruction} from './creator-materials.js';
 import {SICKLE_EDGE} from './agriculture.js';
 import {startManagedDairy} from './dairy.js';
@@ -38,6 +39,7 @@ export function finishConstruction(s){
   if(q.kind==='repair'){
    if(b.type==='harbor')delete b.boatWear;else delete b.floodDamage;
   }
+  recordRevelationApprenticeship(s,b);
   recordBuilderCompletion(s,b);b.level=q.target;if(b.type==='road')markRoadTopologyChanged(s);if(q.legacyMasonry&&b.type!=='road')b.legacyMasonryLevel=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;
   s.news.unshift({title:q.kind==='boat'?'Готова перегрузочная лодка':q.kind==='repair'?`Отремонтировано: ${buildingDefinition(s,b.type)?.name||'Дорога'}`:q.kind==='upgrade'?`${(buildingDefinition(s,b.type)?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(buildingDefinition(s,b.type)?.name||'Дорога')}`,text:'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
   // Workforce synchronization sees the old site and routes builders home.

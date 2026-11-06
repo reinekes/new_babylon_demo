@@ -1,5 +1,5 @@
 import {revelationAdviceQuote} from './revelation-advice.js';
-import {validateRevelationEvidence} from './revelation-evidence.js';
+import {validateRevelationEvidence,validateRevelationTraining} from './revelation-evidence.js';
 import {validateSunlightFeast,validateSunlightService} from './sunlight-gathering.js';
 import {validateAbundanceDiscovery} from './abundance-discovery.js';
 import {validateAbundanceOrigin} from './abundance-origin.js';
@@ -471,6 +471,7 @@ export function decode(raw){
    if(b.boatWear!==undefined&&(b.boatWear!==true||!isStrictSumer(s)||b.type!=='harbor'||!isComplete(b)))return null;
    if(b.floodDamage!==undefined&&(b.floodDamage!==true||!isStrictSumer(s)||!['road','house'].includes(b.type)||!isComplete(b)))return null;
    const q=b.construction;if(!q)continue;
+   if(!validateRevelationTraining(s,b))return null;
    if(q.kind==='boat'&&(!isStrictSumer(s)||b.type!=='harbor'||b.boatTender))return null;
    if(['repair','boat'].includes(q.kind)&&(q.kind==='repair'&&!(b.floodDamage||b.boatWear)||['routeOrder','legacyMasonry','legacyFiring','legacyBricks','legacyPrice'].some(k=>q[k]!==undefined)))return null;
    if(!['new','upgrade','repair','boat'].includes(q.kind)||!integer(q.target,1,3)||q.target!==(q.kind==='new'?1:q.kind==='upgrade'?b.level+1:b.level)||q.kind==='new'&&b.level!==1||!finite(q.work,0,workRequired(b)))return null;

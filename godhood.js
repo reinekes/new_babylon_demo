@@ -1,4 +1,4 @@
-import {advanceRevelationEvidence,recordRevelationFact,revelationKnowledgeReason} from './revelation-evidence.js';
+import {advanceRevelationEvidence,recordRevelationFact,recordRevelationTraining,revelationKnowledgeReason} from './revelation-evidence.js';
 import {sunlightKnowledgeReason} from './sunlight-gathering.js';
 import {abundanceKnowledgeReason} from './abundance-discovery.js';
 import {windKnowledgeReason} from './wind-delivery.js';
@@ -38,13 +38,15 @@ export function addBuilderPractice(c,amount,maxLevel){
  skill.practice=Math.min(ceiling,(skill.practice||0)+amount);
  skill.level=levelFor(skill);
 }
-export function applyBuilderInstruction(s,contributions,room=Infinity){
+export function applyBuilderInstruction(s,contributions,room=Infinity,site=null){
  const total=contributions.reduce((n,{work})=>n+work,0);
  const pair=contributions.length===2&&builderTeachingPair(s,contributions.map(({c})=>c));
  if(!pair||room<=0)return Math.min(total,room);
  const shared=Math.min(...contributions.map(({work})=>work));
  const effective=total-shared*.5;
- addBuilderPractice(pair.pupil,shared*Math.min(1,room/effective),builderLevel(pair.mentor));
+ const practice=shared*Math.min(1,room/effective);
+ recordRevelationTraining(s,site,pair,practice);
+ addBuilderPractice(pair.pupil,practice,builderLevel(pair.mentor));
  return Math.min(effective,room);
 }
 export const knowledgeTier=(type,level=1)=>Math.max(level,MONUMENTS.has(type)?3:BASIC.has(type)||type==='road'?1:2);

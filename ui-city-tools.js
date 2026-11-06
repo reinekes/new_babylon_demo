@@ -184,7 +184,11 @@ function revelationEvidenceHTML(s){
  const view=revelationEvidenceView(s);
  if(!view)return '';
  const labels={family:'Помощь семье',building:'Завершённая стройка',food:'Урожай или улов'};
- return `<section class="management-row" data-revelation-evidence><h3>Свидетельства для «Откровения» · ${view.count} из 3</h3><ul>${view.entries.map(({kind,recorded})=>`<li>${labels[kind]} · ${recorded?'есть свидетельство':'ожидается'}</li>`).join('')}</ul>${view.opening?'<p>Хранитель связал рассказы. Дар открыт.</p>':view.count===3?'<p>Три истории собраны. Ожидается взрослый хранитель рассказов.</p>':''}${revelationAdviceHTML(s)}</section>`;
+ const training=view.apprenticeship;
+ const name=id=>escape(displayName(s,id)||`житель №${id+1}`);
+ const accounts=training?`<h4>Три рассказа об одной стройке · ${training.x}, ${training.y}</h4><ul><li>Мастер ${name(training.citizenId)} рассказал, чему учил.</li><li>Ученик ${name(training.pupils[0])} рассказал о своей работе рядом с мастером.</li><li>Ученик ${name(training.pupils[1])} сохранил собственный рассказ о той же стройке.</li></ul>`:'<p>Другой путь · мастер работает с двумя разными учениками по очереди на одной стройке.</p>';
+
+ return `<section class="management-row" data-revelation-evidence><h3>Свидетельства для «Откровения» · ${view.count} из 3</h3><ul>${view.entries.map(({kind,recorded})=>`<li>${labels[kind]} · ${recorded?'есть свидетельство':'ожидается'}</li>`).join('')}</ul>${view.opening?'<p>Хранитель связал рассказы. Дар открыт.</p>':(view.count===3||training)?'<p>Три истории собраны. Ожидается взрослый хранитель рассказов.</p>':''}${accounts}${revelationAdviceHTML(s)}</section>`;
 }
 
 function sunlightDedicationsHTML(s){
