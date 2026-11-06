@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-06T22:33:47.538817+00:00",
+  "commit": "0377688691e3558e7f91a7af80c2e31ffd594b1e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c44e4eb9878ef0db13bb190b55f2fe50ebf6d41c33b6e7b1fff04226437886f2",
+      "actual": "c44e4eb9878ef0db13bb190b55f2fe50ebf6d41c33b6e7b1fff04226437886f2",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "094ddf8971208c7f1453ea3fe4f6e89013e109af57e48c88b9189b26c8ef5649",
+      "actual": "094ddf8971208c7f1453ea3fe4f6e89013e109af57e48c88b9189b26c8ef5649",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "c344afa2f09bc93dc23b9ec3445a116a36ab6d4c213a5bb61bff331bac40af0e",
+      "actual": "c344afa2f09bc93dc23b9ec3445a116a36ab6d4c213a5bb61bff331bac40af0e",
+      "match": true
+    },
+    {
+      "path": "arrival-presentation.css",
+      "status": 200,
+      "expected": "e4223cf72b9e2db4046161de95ac802d66754927a0d8e320e33233bd1f6a924f",
+      "actual": "e4223cf72b9e2db4046161de95ac802d66754927a0d8e320e33233bd1f6a924f",
+      "match": true
+    },
+    {
+      "path": "arrival-presentation.js",
+      "status": 200,
+      "expected": "c23d94e9ec50f15f61d96cc32bf8d100592f5ebd407f4d5c0053fa232ae80836",
+      "actual": "c23d94e9ec50f15f61d96cc32bf8d100592f5ebd407f4d5c0053fa232ae80836",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-scenes-4x.json",
+      "status": 200,
+      "expected": "5a91e8271dc6220de689c12f034fb5cf6cbab20141dc14bfc5b3b839b7a9668b",
+      "actual": "5a91e8271dc6220de689c12f034fb5cf6cbab20141dc14bfc5b3b839b7a9668b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "fba7cf854bd24c300e31ea7f000837a69449cb84f3b8690282c50f080dde61d7",
+      "actual": "fba7cf854bd24c300e31ea7f000837a69449cb84f3b8690282c50f080dde61d7",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "bdb70387342122f5abab421eb34feac72c823becdab7c699d7669f969fb3d1bc",
+      "actual": "bdb70387342122f5abab421eb34feac72c823becdab7c699d7669f969fb3d1bc",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "58909f6e5384204c2e99e5af989dd98a2a353522a4527f13a73e6341d0ae480c",
+      "actual": "58909f6e5384204c2e99e5af989dd98a2a353522a4527f13a73e6341d0ae480c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a5b8c867e5cbba72daf148392cc4d8ef6c854b04184fffdffc52d972a0a25f0f",
+      "actual": "a5b8c867e5cbba72daf148392cc4d8ef6c854b04184fffdffc52d972a0a25f0f",
+      "match": true
+    },
+    {
+      "path": "shaping-presentation.js",
+      "status": 200,
+      "expected": "9de0ec2e16f1c8cffda69143f5eb40155360b30ccbd135a07c5b869c471ce71c",
+      "actual": "9de0ec2e16f1c8cffda69143f5eb40155360b30ccbd135a07c5b869c471ce71c",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-presentation.test.js",
+      "status": 200,
+      "expected": "d2c08763da80254401465494474a0a5a2066d2f5607ca94895e50757bf2a6c52",
+      "actual": "d2c08763da80254401465494474a0a5a2066d2f5607ca94895e50757bf2a6c52",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
