@@ -25,7 +25,7 @@ import {workDairy} from './dairy.js';
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
 import {GATHERING_TYPES,workGathering,advanceGathering} from './labor-life.js';
 import {initializeArtisans,isArtisan,artisanNeeds,artisanOutput,workArtisan,advanceArtisans,collectArtisan} from './artisan.js';
-import {advanceKilns,kilnNeeds,startFiring,collectFired,KILN_RECIPE} from './kilns.js';
+import {advanceKilns,kilnNeeds,startFiring,collectFired,kilnNeedsRepair,repairKiln} from './kilns.js';
 import {initializeBricks,advanceBricks,brickNeeds,formBricks,collectBricks,BRICK_RECIPE} from './bricks.js';
 import {initializeWater,advanceWater,waterBusy,recoverWater,resumeWaterAtHome} from './water.js';
 import {initializeTextiles,advanceTextiles,gatherWool,weaveCloth,weavingBatch,makeClothing,craftResource,craftState,craftLoad,craftBatch} from './textiles.js';
@@ -294,7 +294,7 @@ function workshopIncoming(s,key,k){return (s.district?.jobs||[]).filter(q=>q.tar
 function harvest(s,c,ctx,via=null){
  const b=ctx.buildings.get(c.work);if(!b)return false;
  const produced=(goods,options)=>{if(!putProductionOutput(s,b,goods,options))return false;recordCitizenHarvest(s,c,goods);if(b.type==='fishing')recordFishingCatch(s,b,c,goods.food||0,{inBuffer:true,before:(b.workshopStock.output.food||0)-(goods.food||0)});return true;};
- if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}startFiring(b);return false;}
+ if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}if(kilnNeedsRepair(b))repairKiln(b);else startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
  if(['sheepfold','weaver','tailor'].includes(b.type)){const kind=b.type==='sheepfold'?'wool':b.type==='weaver'?'cloth':'clothing',amount=b.type==='sheepfold'?gatherWool(s,b):b.type==='weaver'?weaveCloth(s,b):makeClothing(s,b);if(amount<=1e-8)return false;return produced({[kind]:amount});}
  if(b.type==='field'){const food=workField(s,b,BUILDINGS.field.workTime);if(food>0){produced({food});if(!fieldActive(s,b))invalidateAssignments(s);}else c.workElapsed=0;return food>0;}
@@ -340,7 +340,7 @@ function arrival(s,c,ctx){
   const target=s.citizens.find(p=>p.id===c.clothingTarget&&p.home===c.home);if(target&&c.clothingLoad===1)equipClothing(target);else if(c.clothingLoad)putStock(s,c.store,'clothing',c.clothingLoad,{overflow:true});delete c.clothingTarget;delete c.clothingLoad;invalidateAssignments(s);c.phase='home';return;
  }
  if(c.phase==='toCraftSupply'){
-  const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||craftResource(b),buffer=craftState(b),incoming=s.citizens.filter(p=>p.id!==c.id&&p.craftSite===c.craftSite&&(!c.craftMaterial||p.craftMaterial===k)).reduce((n,p)=>n+craftLoad(p),0)+workshopIncoming(s,c.craftSite,k),need=isArtisan(b)?Math.max(0,(artisanNeeds(b)[k]||0)-incoming):buffer?Math.max(0,(['brickyard','kiln'].includes(b.type)?(b.type==='kiln'?KILN_RECIPE:BRICK_RECIPE)[k]:craftBatch(b))-buffer[k]-incoming):0,amount=takeStock(s,c.store,k,Math.min(3,need,k==='food'?foodAvailableAt(s,c.store):Infinity));
+  const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||craftResource(b),buffer=craftState(b),incoming=s.citizens.filter(p=>p.id!==c.id&&p.craftSite===c.craftSite&&(!c.craftMaterial||p.craftMaterial===k)).reduce((n,p)=>n+craftLoad(p),0)+workshopIncoming(s,c.craftSite,k),need=b?.type==='kiln'?Math.max(0,(kilnNeeds(b)[k]||0)-incoming):isArtisan(b)?Math.max(0,(artisanNeeds(b)[k]||0)-incoming):buffer?Math.max(0,(b.type==='brickyard'?BRICK_RECIPE[k]:craftBatch(b))-buffer[k]-incoming):0,amount=takeStock(s,c.store,k,Math.min(3,need,k==='food'?foodAvailableAt(s,c.store):Infinity));
   if(amount>1e-8){if(['brickyard','kiln'].includes(b.type)||isArtisan(b))c.craftAmount=amount;else if(b.type==='tailor')c.craftCloth=amount;else c.craftWool=amount;startTrip(s,c,c.craftSite,'toWork',ctx);}else{delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}return;
  }
  if(c.craftSite&&c.phase==='toWork'){const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||(c.craftCloth!==undefined?'cloth':'wool');if(craftState(b))craftState(b)[k]+=craftLoad(c);else putStock(s,c.store,k,craftLoad(c),{overflow:true});delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;invalidateAssignments(s);}

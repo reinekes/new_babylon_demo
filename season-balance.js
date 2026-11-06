@@ -1,3 +1,4 @@
+import {kilnNeedsRepair,KILN_RECIPE,FIRING_SECONDS,COOLING_SECONDS} from './kilns.js';
 import {dairyRate,dairyRation} from './dairy.js';
 import {calendarRateFor} from './calendar.js';
 import {knowsPresence} from './godhood.js';
@@ -40,7 +41,24 @@ export function seasonBalance(s){
  // Finish each link before budgeting the next; never borrow from another bank.
  for(const type of ['weaver','tailor'])for(const [key]of groups){const b=buildings.get(key);if(b.type!==type)continue;const id=component(key),input=craftResource(b),output=type==='weaver'?'cloth':'clothing',ratio=type==='weaver'?3:2,buffer=craftState(b)?.[input]||0,incoming=s.citizens.filter(c=>c.craftSite===key).reduce((n,c)=>n+craftLoad(c),0),available=Math.max(0,stocks.get(id)[input]+(byComponent.get(id)?.[input]||0)),amount=Math.min((production.get(key)||0)*outputMultiplier(b),(available+buffer+incoming)/ratio),taken=Math.max(0,amount*ratio-buffer-incoming);debit(id,input,taken);credit(id,output,amount);}
  for(const [key] of groups){const b=buildings.get(key);if(b.type!=='brickyard')continue;const id=component(key),v=b.brickmaking||{},amounts={clay:4,reed:1},buffers={clay:v.clay||0,reed:v.reed||0};for(const c of s.citizens)if(c.craftSite===key&&c.craftMaterial)buffers[c.craftMaterial]+=c.craftAmount||0;const dryRate=s.rain>0?0:weatherAt(s).type==='rain'?0:weatherAt(s).type==='cloudy'?.6:weatherAt(s).type==='wind'?.85:1;const dryingCapacity=Math.max(0,seasonSeconds*dryRate-(v.wet?30-(v.drying||0):0))/30;const batches=Math.min((production.get(key)||0),dryingCapacity,...Object.entries(amounts).map(([k,n])=>(Math.max(0,stocks.get(id)[k]+(byComponent.get(id)?.[k]||0))+buffers[k])/n),(v.water||0)/2);for(const [k,n]of Object.entries(amounts))debit(id,k,Math.max(0,batches*n-buffers[k]));credit(id,'brick',(v.ready||0)+(v.wet&&seasonSeconds*dryRate>=30-(v.drying||0)?v.wet:0)+batches*4);}
- for(const [key]of groups){const b=buildings.get(key);if(b.type!=='kiln')continue;const id=component(key),v=b.firing||{},buffers={brick:v.brick||0,reed:v.reed||0};for(const c of s.citizens)if(c.craftSite===key&&c.craftMaterial)buffers[c.craftMaterial]+=c.craftAmount||0;const remaining=v.hot?(28-(v.time||0))/outputMultiplier(b):0,batches=Math.min(production.get(key)||0,Math.max(0,seasonSeconds-remaining)/(28/outputMultiplier(b)+5),...Object.entries({brick:4,reed:3}).map(([k,n])=>(Math.max(0,stocks.get(id)[k]+(byComponent.get(id)?.[k]||0))+buffers[k])/n));for(const [k,n]of Object.entries({brick:4,reed:3}))debit(id,k,Math.max(0,batches*n-buffers[k]));credit(id,'firedBrick',(v.ready||0)+(v.hot&&remaining<=seasonSeconds?v.hot:0)+batches*4);}
+ for(const [key]of groups){
+  const b=buildings.get(key);if(b.type!=='kiln')continue;
+  const id=component(key),v=b.firing||{},buffers={brick:v.brick||0,reed:v.reed||0};
+  for(const c of s.citizens)if(c.craftSite===key&&c.craftMaterial)buffers[c.craftMaterial]+=c.craftAmount||0;
+  const available=k=>Math.max(0,stocks.get(id)[k]+(byComponent.get(id)?.[k]||0));
+  const heatTime=FIRING_SECONDS+COOLING_SECONDS,remaining=v.hot?(heatTime-(v.time||0))/outputMultiplier(b):0;
+  credit(id,'firedBrick',(v.ready||0)+(v.hot&&remaining<=seasonSeconds?v.hot:0));
+  const workTime=BUILDINGS.kiln.workTime;
+  const repair=kilnNeedsRepair(b);
+  if(repair){
+   const fromStore=Math.max(0,1-buffers.brick);
+   if(available('brick')<fromStore||!(production.get(key)>0))continue;
+   debit(id,'brick',fromStore);buffers.brick=Math.max(0,buffers.brick-1);
+  }
+  const batches=Math.min(Math.max(0,(production.get(key)||0)-(repair?1:0)),Math.max(0,seasonSeconds-remaining-(repair?workTime:0))/(heatTime/outputMultiplier(b)+workTime),...Object.entries(KILN_RECIPE).map(([k,n])=>(available(k)+buffers[k])/n));
+  for(const [k,n]of Object.entries(KILN_RECIPE))debit(id,k,Math.max(0,batches*n-buffers[k]));
+  credit(id,'firedBrick',batches*4);
+ }
  // Artisan batches use only water already at the workshop; this conservative
  // estimate never invents future water trips or borrows protected seed grain.
  const protectedByComponent=new Map();let reserve=seedReserve(s);

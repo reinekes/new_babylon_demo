@@ -24,6 +24,7 @@ export function finishConstruction(s){
    stampBuildingCompletion(s,b);
    if(b.type==='garden'&&isStrictSumer(s))b.orchardPlantedTick=s.tick;
    if(b.type==='sheepfold'&&isStrictSumer(s))startManagedFlock(b);
+   if(b.type==='kiln'&&isStrictSumer(s))b.kilnWear=0;
    if(b.type==='cowshed'&&isStrictSumer(s))startManagedDairy(b);
   }
   recordBuilderCompletion(s,b);b.level=q.target;if(b.type==='road')markRoadTopologyChanged(s);if(q.legacyMasonry&&b.type!=='road')b.legacyMasonryLevel=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;

@@ -11,3 +11,49 @@ test('interrupted ingredient delivery returns its original material exactly once
 test('v18 resources, workers and paid recipes survive; old monuments cannot refund unpaid fired brick',async()=>{const {readFileSync}=await import('node:fs');const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v18-kiln.json',import.meta.url))),s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,30);for(const [k,v]of Object.entries(old.resources))assert.equal(s.resources[k],v);assert.deepEqual(s.citizens,old.citizens);for(let i=0;i<old.buildings.length;i++)if(old.buildings[i].construction){assert.deepEqual(s.buildings[i].construction.required,old.buildings[i].construction.required);assert.equal(s.buildings[i].construction.legacyFiring,true);}assert.equal(s.resources.firedBrick,0);assert.equal(demolitionRefund({type:'ziggurat',level:1,legacyFiringLevel:1}).firedBrick,undefined);assert.equal(demolitionRefund({type:'ziggurat',level:1}).firedBrick,20);assert.ok(decode(encode(s)));});
 
 test('finishing an already paid v18 upgrade never creates a fired-brick demolition refund',async()=>{const{readFileSync}=await import('node:fs');const{finishConstruction,workRequired}=await import('../construction.js');const s=decode(readFileSync(new URL('./fixtures/legacy-v18-kiln.json',import.meta.url),'utf8')),b=s.buildings[0];assert.equal(b.construction.target,3);b.construction.delivered={...b.construction.required};b.construction.remaining=Object.fromEntries(Object.keys(b.construction.required).map(k=>[k,0]));b.construction.work=workRequired(b);finishConstruction(s);assert.equal(b.legacyFiringLevel,3);assert.equal(demolitionRefund(b).firedBrick,undefined);});
+
+test('strict kiln repair consumes delivered raw brick and waits for a worker across a save',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {finishConstruction,workRequired}=await import('../construction.js');
+ const {KILN_WEAR_LIMIT,startFiring}=await import('../kilns.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ putStock(s,'9,8','brick',30);
+ assert.ok(build(s,'kiln',10,9).ok);
+ const b=s.buildings.at(-1),order=b.construction;
+ order.delivered={...order.required};order.remaining=Object.fromEntries(Object.keys(order.required).map(k=>[k,0]));order.sources={};order.work=workRequired(b);
+ assert.ok(finishConstruction(s));
+ assert.equal(b.kilnWear,0);
+ b.kilnWear=KILN_WEAR_LIMIT;
+ Object.assign(b.firing,{brick:4,reed:3});
+ assert.equal(startFiring(b),0);
+ Object.assign(b.firing,{brick:0,reed:0});
+ for(const c of s.citizens)if(c.age>=16)setCitizenRole(s,c.id,'carrier');
+ advanceTime(s,2);
+ assert.equal(b.kilnWear,KILN_WEAR_LIMIT);
+ assert.ok(setCitizenRole(s,0,'auto').ok);
+
+ assert.ok(assignWorkplace(s,0,'10,9').ok);
+ const initialBrick=s.resources.brick;
+ let repaired=false,loaded=false,restored=s;
+ for(let i=0;i<1100&&!repaired;i++){
+  restored.event=null;
+  advanceTime(restored,.1);
+  const kiln=restored.buildings.at(-1);
+  if(!loaded&&restored.citizens.some(c=>incoming(restored,c,'brick')>0)){
+   const raw=encode(restored);
+   restored=decode(raw);
+   assert.ok(restored);
+   assert.equal(encode(restored),raw);
+   loaded=true;
+  }
+  repaired=kiln.kilnWear===0;
+ }
+ assert.ok(loaded&&repaired);
+ assert.equal(restored.buildings.at(-1).firing.hot,0);
+ assert.equal(restored.resources.brick,initialBrick-1);
+ for(let i=0;i<1800&&restored.buildings.at(-1).kilnWear===0;i++){
+  restored.event=null;
+  advanceTime(restored,.1);
+ }
+ assert.equal(restored.buildings.at(-1).kilnWear,1);
+});
