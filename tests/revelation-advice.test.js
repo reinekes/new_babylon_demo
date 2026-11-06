@@ -40,3 +40,39 @@ test('only an explicit prestige choice can spend faith without a recommendation'
  assert.equal(s.resources.faith,0);
  assert.equal(revelationAdviceView(s),null);
 });
+
+test('wind advice needs a qualifying workshop load still in transit',async()=>{
+ const {revelationAdviceQuote}=await import('../revelation-advice.js');
+ const s=createNewCity({mode:'awakening',seed:1}),person=s.citizens[0],place=s.buildings[0],key=`${place.x},${place.y}`;
+ Object.assign(person,{calling:'carrier',phase:'toDistrictStore',store:key,districtJob:1,windCargo:5,cargo:{reed:5}});
+ s.district.jobs.push({id:1,target:key,resource:'reed'});
+ assert.equal(revelationAdviceQuote(s,'haste').note?.citizenId,person.id);
+ s.windDelivery={version:1,amount:60,destinations:[key,'1,1']};
+ assert.equal(revelationAdviceQuote(s,'haste').ok,false);
+ person.windRoute='road';
+ assert.equal(revelationAdviceQuote(s,'haste').ok,true);
+ person.windCargo=0;
+ assert.equal(revelationAdviceQuote(s,'haste').ok,false);
+});
+
+test('fishing and farming advice requires actual local eligibility and does not change the city',async()=>{
+ const {revelationAdviceQuote}=await import('../revelation-advice.js');
+ const s=createNewCity({mode:'awakening',seed:1}),c=s.citizens[0];
+ const fishing={type:'fishing',x:12,y:9,level:1},field={type:'field',x:13,y:9,level:1,grainFieldId:1},home=s.buildings[0];
+ s.buildings.push(fishing,field);
+ s.godhood.stage='recognized';
+ s.catFishing={lessons:{[c.id]:3}};
+ Object.assign(c,{work:'12,9',role:'production'});
+ assert.equal(revelationAdviceQuote(s,'cat').note?.citizenId,c.id);
+ c.calling='fisher';
+ assert.equal(revelationAdviceQuote(s,'cat').ok,false);
+ assert.equal(revelationAdviceQuote(s,'richCatch').note?.x,12);
+ s.richCatchEvidence.fisher=c.id;
+ assert.equal(revelationAdviceQuote(s,'richCatch').ok,false);
+ Object.assign(c,{phase:'toStore',store:`${home.x},${home.y}`,fieldGrain:{fieldId:1,amount:3},cargo:{food:3}});
+ const before=JSON.stringify(s);
+ assert.equal(revelationAdviceQuote(s,'fertility').note?.x,home.x);
+ assert.equal(JSON.stringify(s),before);
+ s.earthDiscovery.receipts.push({fieldId:1,inspired:true});
+ assert.equal(revelationAdviceQuote(s,'fertility').ok,false);
+});

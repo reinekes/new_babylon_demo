@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 265,
+  "controlledRevelationOpening": true,
+  "workshopDeliveryCompleted": true,
+  "adviceStaleAfterDelivery": true,
+  "byteEqualReload": true,
+  "byteEqualOutsideAdvice": true,
+  "samples": 180,
+  "medianCpuMs": 2.4727920000000267,
+  "p95CpuMs": 7.4284160000001975
+}
