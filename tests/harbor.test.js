@@ -55,19 +55,21 @@ test('river wear slows the next unloading until physical boat service finishes',
 
 test('low water fixes cargo size per visit and sends shallow-berth traders overland when possible',async()=>{
  const {strictScenario}=await import('../scenario-profiles.js');
- const fixture=(level,market=false)=>{
+ const fixture=(level,market=false,tender=false)=>{
   const s=createGame({start:'established',scenario:strictScenario()});
-  s.buildings.push({type:'harbor',x:11,y:9,level});
+  s.buildings.push({type:'harbor',x:11,y:9,level,...tender?{boatTender:true}:{}});
   if(market)s.buildings.push({type:'market',x:10,y:9,level:1});
   s.tick=5;s.year=2;s.season=1;s.simTime=225;s.trade.visits=1;s.trade.nextArrival=5;
   for(const b of s.buildings)if(b.crop)b.crop.year=s.year;
   syncCitizens(s);advanceTrade(s);return s;
  };
- const light=fixture(1),deep=fixture(2),full=fixture(3),land=fixture(1,true);
+ const light=fixture(1),deep=fixture(2),full=fixture(3),land=fixture(1,true),tender=fixture(1,true,true);
  assert.equal(light.trade.caravan.riverCapacity,1);
  assert.equal(deep.trade.caravan.riverCapacity,2);
  assert.equal(full.trade.caravan.riverCapacity,3);
  assert.equal(land.trade.caravan.transport,undefined);
+ assert.equal(tender.trade.caravan.transport,'river');
+ assert.equal(tender.trade.caravan.riverCapacity,2);
  assert.equal(light.trade.caravan.stock.wood,land.trade.caravan.stock.wood);
  assert.equal(deep.trade.caravan.stock.wood,light.trade.caravan.stock.wood*2);
  assert.equal(full.trade.caravan.stock.stone,light.trade.caravan.stock.stone*3);
@@ -81,4 +83,28 @@ test('low water fixes cargo size per visit and sends shallow-berth traders overl
  advanceTradeLogistics(light,.1);
  assert.deepEqual(light.trade.caravan.stock,before);
  assert.equal(light.trade.deliveries[0].remaining,2);
+});
+
+test('a locally built tender helps the next shallow-water visit without changing an active load',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {buildHarborTender}=await import('../engine.js');
+ const {harborCargoMultiplier}=await import('../river-trade.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const harbor={type:'harbor',x:11,y:9,level:1};
+ s.buildings.push(harbor);syncCitizens(s);
+ const before=s.resources.wood;
+ assert.ok(buildHarborTender(s,harbor).ok);
+ assert.equal(s.resources.wood,before-8);
+ assert.equal(harbor.construction.delivered.wood,0);
+ assert.equal(harbor.boatTender,undefined);
+ const raw=encode(s),restored=decode(raw);assert.ok(restored);assert.equal(encode(restored),raw);
+ const b=restored.buildings.find(b=>b.type==='harbor');
+ for(let i=0;i<1500&&b.construction;i++){restored.event=null;advanceTime(restored,.25);}
+ assert.equal(b.boatTender,true);
+ assert.equal(b.construction,undefined);
+ assert.equal(buildHarborTender(restored,b).ok,false);
+ const shallow={...restored,year:2,season:1};
+ assert.equal(harborCargoMultiplier(shallow,b),2);
+ assert.equal(harborCargoMultiplier(shallow,{...b,boatTender:undefined}),1);
+ const snapshot=encode(restored);assert.equal(encode(decode(snapshot)),snapshot);
 });

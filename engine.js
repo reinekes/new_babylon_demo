@@ -69,7 +69,7 @@ import {initializeDemography,advanceGenerations,validateDemography} from './demo
 import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
 import {marketAccess,initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {roadUpgradeCost,roadKey} from './roads.js';
-import {createOrder,isComplete,nextOrder,constructionEntities,workRequired,floodRepairCost,boatRepairCost} from './construction.js';
+import {createOrder,isComplete,nextOrder,constructionEntities,workRequired,floodRepairCost,boatRepairCost,boatTenderCost} from './construction.js';
 import {WIDTH,HEIGHT,worldWidth,worldHeight,bridgeSpanAt,riverLocal,signedRiverDistance,terrain,river,bridgeSpan,initializeWorld,initializeGeneratedWorld,nearDeposit,isShore,validateWorld,isDryPoint,ensureResourceSites} from './world.js';
 import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf,citizenName,isCityFortification} from './definitions.js';
 import {networkFor,syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
@@ -132,22 +132,29 @@ export function canUpgrade(s,b){if(s.miracleCelebration)return miracleCelebratio
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function repairFloodDamage(s,b){
  if(!isStrictSumer(s)||!b?.floodDamage||!['house','road'].includes(b.type)||!constructionEntities(s).includes(b))return {ok:false,reason:'Выбери повреждённый дом или дорогу'};
- return orderRepair(s,b,floodRepairCost(b));
+ return orderSiteWork(s,b,'repair',floodRepairCost(b));
 }
 export function repairHarborBoat(s,b){
  if(!isStrictSumer(s)||b?.type!=='harbor'||!b.boatWear||!s.buildings.includes(b))return {ok:false,reason:'Выбери пристань, где требуется обслуживание'};
+ return orderHarborWork(s,b,'repair',boatRepairCost);
+}
+export function buildHarborTender(s,b){
+ if(!isStrictSumer(s)||b?.type!=='harbor'||!isComplete(b)||b.boatTender||!s.buildings.includes(b))return {ok:false,reason:'Нужна готовая пристань без перегрузочной лодки'};
+ return orderHarborWork(s,b,'boat',boatTenderCost);
+}
+function orderHarborWork(s,b,kind,cost){
  const preview={...s,roads:[...s.roads]},access=marketAccess(preview,buildingKey(b),'harbor');
  if(!access)return {ok:false,reason:'Нужен проходимый путь от пристани к складу и жилому двору'};
  const network=networkFor(preview),group=network.components.get(access.p.key);
  const stores=new Set(network.ports.filter(p=>network.components.get(p.key)===group).map(p=>buildingKey(p.building)));
- return orderRepair(s,b,boatRepairCost,stores);
+ return orderSiteWork(s,b,kind,cost,stores);
 }
-function orderRepair(s,b,cost,eligibleStores){
+function orderSiteWork(s,b,kind,cost,eligibleStores){
  if(s.miracleCelebration||relicControlActive(s)||s.event||s.lost||s.funeral&&s.funeral.scope!=='family')return {ok:false,reason:'Сначала заверши текущее событие'};
  if(b.construction)return {ok:false,reason:'Работы уже идут'};
  const sources=reserveStock(s,cost,{eligibleStores});
  if(!sources)return {ok:false,reason:'Не хватает материалов'};
- b.construction={...createOrder(cost,b.level,'repair'),sources,allocations:structuredClone(sources),order:nextOrder(s)};
+ b.construction={...createOrder(cost,b.level,kind),sources,allocations:structuredClone(sources),order:nextOrder(s)};
  syncCitizens(s);
  return {ok:true};
 }
@@ -416,14 +423,16 @@ export function decode(raw){
 
   }
   for(const b of constructionEntities(s)){
+   if(b.boatTender!==undefined&&(b.boatTender!==true||!isStrictSumer(s)||b.type!=='harbor'||!isComplete(b)))return null;
    if(b.boatWear!==undefined&&(b.boatWear!==true||!isStrictSumer(s)||b.type!=='harbor'||!isComplete(b)))return null;
    if(b.floodDamage!==undefined&&(b.floodDamage!==true||!isStrictSumer(s)||!['road','house'].includes(b.type)||!isComplete(b)))return null;
    const q=b.construction;if(!q)continue;
-   if(q.kind==='repair'&&(!(b.floodDamage||b.boatWear)||['routeOrder','legacyMasonry','legacyFiring','legacyBricks','legacyPrice'].some(k=>q[k]!==undefined)))return null;
-   if(!['new','upgrade','repair'].includes(q.kind)||!integer(q.target,1,3)||q.target!==(q.kind==='new'?1:q.kind==='repair'?b.level:b.level+1)||q.kind==='new'&&b.level!==1||!finite(q.work,0,workRequired(b)))return null;
+   if(q.kind==='boat'&&(!isStrictSumer(s)||b.type!=='harbor'||b.boatTender))return null;
+   if(['repair','boat'].includes(q.kind)&&(q.kind==='repair'&&!(b.floodDamage||b.boatWear)||['routeOrder','legacyMasonry','legacyFiring','legacyBricks','legacyPrice'].some(k=>q[k]!==undefined)))return null;
+   if(!['new','upgrade','repair','boat'].includes(q.kind)||!integer(q.target,1,3)||q.target!==(q.kind==='new'?1:q.kind==='upgrade'?b.level+1:b.level)||q.kind==='new'&&b.level!==1||!finite(q.work,0,workRequired(b)))return null;
    if(q.routeOrder!==undefined&&(b.type!=='road'||!integer(q.routeOrder,0,1e9)))return null;
    if(q.priority!==undefined&&!integer(q.priority,0,2)||q.order!==undefined&&!integer(q.order,0,1e9))return null;
-   const cost=q.kind==='repair'?(b.type==='harbor'?boatRepairCost:floodRepairCost(b)):b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:q.legacyMasonry?legacyUpgradeCost(b):upgradeCost(b);
+   const cost=q.kind==='boat'?boatTenderCost:q.kind==='repair'?(b.type==='harbor'?boatRepairCost:floodRepairCost(b)):b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:q.legacyMasonry?legacyUpgradeCost(b):upgradeCost(b);
    if(!q.required||!q.remaining||!q.delivered||[q.required,q.remaining,q.delivered].some(v=>Object.keys(v).some(k=>!MATERIALS.includes(k))))return null;
    if([q.remaining,q.delivered].some(v=>Object.keys(v).length!==Object.keys(q.required).length||Object.keys(v).some(k=>!(k in q.required))))return null;
    const expected=q.legacyPrice?{clay:cost.clay||0,reed:cost.reed||0}:{...cost,...q.legacyBricks?{brick:0}:{},...q.legacyFiring?{firedBrick:0}:{}};
