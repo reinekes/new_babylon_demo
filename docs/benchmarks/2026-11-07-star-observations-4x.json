@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledPrerequisites": true,
+  "nights": [
+    11,
+    12,
+    13
+  ],
+  "samples": 880,
+  "medianStepCpuMs": 7.403124999998909,
+  "p95StepCpuMs": 28.789374999999836,
+  "byteEqualReload": false,
+  "maxStockRoundoff": 1.1368683772161603e-13
+}

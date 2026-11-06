@@ -1,3 +1,4 @@
+import {advanceStarObservations} from './star-observations.js';
 import {peaceKnowledgeReason} from './peace-discovery.js';
 import {arrivalKnowledgeReason} from './arrival-hospitality.js';
 import {shapingModelReason} from './shaping-model.js';
@@ -205,7 +206,7 @@ export function advanceGodhood(s,dt){
    !s.citizens.some(c=>c.id===help.recipientId&&c.home===help.home&&!c.floodShelter))cancelFirstWaterHelp(s,help.helperId);
   return;
  }
- if(g.stage==='recognized'){advanceRevelationEvidence(s);return;}
+ if(g.stage==='recognized'){advanceRevelationEvidence(s);advanceStarObservations(s);return;}
  if(g.stage!=='sign')return;
  const c=s.citizens.find(c=>c.id===g.witnessId);
  if(!c||c.phase!=='awakening'||s.funeral||cargo(c)||!signPathValid(s,c,g)){loseSign(s,c);return;}

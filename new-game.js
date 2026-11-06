@@ -1,3 +1,4 @@
+import {newStarObservations} from './star-observations.js';
 import {newArrivalHospitality} from './arrival-hospitality.js';
 import {newShapingProjects} from './shaping-projects.js';
 import {newRevelationEvidence} from './revelation-evidence.js';
@@ -34,6 +35,7 @@ export function createNewCity({mode,seed}={}){
   state.abundanceDiscovery=newAbundanceDiscovery();
   state.sunlightChapter=1;
   state.revelationEvidence=newRevelationEvidence();
+  state.starObservations=newStarObservations();
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
