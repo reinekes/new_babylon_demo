@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {appendFish,takeFish,recordHomeFish,newRichCatchEvidence} from '../fish-provenance.js';
+import {appendFish,takeFish,recordHomeFish,newRichCatchEvidence,recordInspiredCatch,richCatchView} from '../fish-provenance.js';
 
 test('untagged food ahead of and between catches remains untagged after a split',()=>{
  const store={};
@@ -41,10 +41,10 @@ test('actual catches reach two occupied houses after a warehouse haul and a save
  shore.sort((a,b)=>Math.hypot(a.x-9,a.y-8)-Math.hypot(b.x-9,b.y-8));
  const b={type:'fishing',...shore[0],level:1};
  s.buildings.push(b);
- Object.assign(s.citizens.find(c=>c.age>=16),{role:'production',workplace:`${b.x},${b.y}`});
+ Object.assign(s.citizens.find(c=>c.age>=16),{role:'production',calling:'fisher',workplace:`${b.x},${b.y}`});
  invalidateAssignments(s);syncCitizens(s);
  let warehouse=false,reloaded=false;
- for(let i=0;i<12000&&s.richCatchEvidence.homes.length<2;i++){
+ for(let i=0;i<18000&&!richCatchView(s).qualified;i++){
   advanceTime(s,.1);
   warehouse ||= s.buildings.some(b=>b.fishStock);
   if(!reloaded&&warehouse&&s.citizens.some(c=>c.fishPantry||c.fishCargo)){
@@ -61,9 +61,29 @@ test('actual catches reach two occupied houses after a warehouse haul and a save
  }
  assert.ok(warehouse);
  assert.ok(reloaded);
+ assert.ok(richCatchView(s).qualified);
  assert.equal(s.richCatchEvidence.homes.length,2,JSON.stringify({time:s.simTime,pop:s.population,stores:s.buildings.filter(b=>b.fishStock).map(b=>[b.type,b.stock.food,b.fishStock]),houses:s.buildings.filter(b=>b.type==='house').map(b=>[b.x,b.y,b.pantry]),jobs:s.district.jobs.slice(-4)}));
  assert.equal(encode(decode(encode(s))),encode(s));
  const old=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
  delete old.richCatchEvidence;
  assert.equal(encode(decode(encode(old))),encode(old));
+});
+
+test('ten catches must come from one inspired fisher and two homes must receive fish',()=>{
+ const s={richCatchEvidence:newRichCatchEvidence(),citizens:[{id:1,home:'1,2'},{id:2,home:'2,2'}]};
+ const [a,b]=s.citizens;
+ const fishery={type:'fishing',x:3,y:2};
+ a.work=b.work='3,2';
+ for(let i=0;i<10;i++)recordInspiredCatch(s,fishery,a,1);
+ assert.equal(richCatchView(s).catches,0);
+ a.calling=b.calling='fisher';
+ for(let i=0;i<5;i++)for(const c of [a,b])recordInspiredCatch(s,fishery,c,1);
+ assert.equal(richCatchView(s).catches,5);
+ for(let i=0;i<5;i++)recordInspiredCatch(s,fishery,a,1);
+ assert.equal(richCatchView(s).qualified,false);
+ assert.equal(richCatchView(s).catches,10);
+ recordHomeFish(s,{type:'house',x:a.id,y:2},[1]);
+ s.citizens.shift();
+ recordHomeFish(s,{type:'house',x:b.id,y:2},[1]);
+ assert.equal(richCatchView(s).qualified,true);
 });

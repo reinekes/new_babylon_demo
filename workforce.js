@@ -1,4 +1,4 @@
-import {appendFish,takeFish as takeFishEvidence,recordHomeFish} from './fish-provenance.js';
+import {appendFish,takeFish as takeFishEvidence,recordHomeFish,recordInspiredCatch} from './fish-provenance.js';
 import {acceptFieldGrain,recordFieldGrain} from './field-grain.js';
 import {recordNeighborFoodFact} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -308,6 +308,7 @@ function harvest(s,c,ctx,via=null){
   const amount=goods.food||0,before=(b.workshopStock.output.food||0)-amount;
   recordFishingCatch(s,b,c,amount,{inBuffer:true,before});
   if(s.richCatchEvidence)appendFish(b,'fishOutput',[amount],before);
+  recordInspiredCatch(s,b,c,amount);
  }return true;};
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}if(kilnNeedsRepair(b))repairKiln(b);else startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
@@ -337,7 +338,10 @@ function harvest(s,c,ctx,via=null){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
   for(const [resource,amount]of Object.entries(c.cargo))recordBuildingProduction(s,b,resource,amount);
-  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing'){recordFishingCatch(s,b,c,c.cargo.food||0);if(s.richCatchEvidence)appendFish(c,'fishCargo',[c.cargo.food||0],0);}startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
+  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing'){recordFishingCatch(s,b,c,c.cargo.food||0);if(s.richCatchEvidence){
+   appendFish(c,'fishCargo',[c.cargo.food||0],0);
+   if(c.calling==='fisher'&&c.fishCargo)c.inspiredFishReturn=c.work;
+  }}startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
  }const goods=c.cargo;c.cargo={};return produced(goods);}
  startTrip(s,c,c.store,'toStore',ctx,via);return true;
 }
@@ -352,6 +356,7 @@ function deposit(s,c,ctx){
     const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
     if(!local)appendFish(store,'fishStock',parts,(store?.stock?.food||0)-accepted);
     else if(destination.targetKind==='input')recordHomeFish(s,site,parts);
+    if(!c.fishCargo)delete c.inspiredFishReturn;
    }
   }
   if(!MATERIALS.includes(resource))s.resources[resource]=(s.resources[resource]||0)+accepted;if(!local)s.delivered[resource]=(s.delivered[resource]||0)+accepted;if(c.districtJob){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(q)q.delivered+=accepted;}c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];if(c.tradeJob){const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob);if(q){q.delivered=Math.min(q.amount,q.delivered+accepted);if(Math.abs(q.amount-q.delivered)<1e-7)q.delivered=q.amount;}}actual[resource]=accepted;delivered+=accepted;
@@ -394,6 +399,8 @@ function arrival(s,c,ctx){
  if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo,{record:false})){moveFishingCargoToOutput(s,b,c,c.cargo.food||0,(b.workshopStock.output.food||0)-(c.cargo.food||0),c.cargo.food||0);if(c.fishCargo){
   const amount=c.cargo.food||0;
   appendFish(b,'fishOutput',takeFishEvidence(c,'fishCargo',amount,amount),b.workshopStock.output.food-amount);
+  recordInspiredCatch(s,b,c,amount,{inspired:c.inspiredFishReturn===buildingKey(b)});
+  delete c.inspiredFishReturn;
  }c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
  if(c.phase==='toClothesSupply'){
   const target=s.citizens.find(p=>p.id===c.clothingTarget&&p.home===c.home),amount=target&&target.clothing<=REPLACE_CLOTHING_AT&&storeStock(s,c.store,'clothing')>=1?takeStock(s,c.store,'clothing',1):0;
@@ -809,7 +816,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  if(c.clothingLoad)restore('clothing',c.clothingLoad);
  if(c.seedFood)restore('food',c.seedFood);
  if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
- delete c.fishCargo;delete c.fishPantry;
+ delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;
  delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;
