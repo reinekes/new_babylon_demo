@@ -158,7 +158,8 @@ export function syncCitizens(s){
  s.citizens=citizens;initializeDemography(s);initializeWellbeing(s);initializeClothing(s);initializeWater(s);const livingIds=new Set(citizens.map(c=>c.id));for(const c of citizens)if(c.partner!==null&&!livingIds.has(c.partner))c.partner=null;
  for(const c of citizens)if(c.clothingTarget!==undefined&&!citizens.some(p=>p.id===c.clothingTarget&&p.home===c.home))recoverCitizenCargo(s,c.id);
  for(const c of citizens)if(c.rehousing&&!['relic','relicGuest','awakening'].includes(c.phase)){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
- for(const c of citizens){const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
+ // District orders retain their endpoints even while a flood closes the route.
+ for(const c of citizens){if(c.districtJob)continue;const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
  for(const c of citizens)if(c.school&&(!['shrine','ziggurat'].includes(ctx.buildings.get(c.school)?.type)||!isComplete(ctx.buildings.get(c.school))||c.role!=='healer'||medicalLevel(c)>0)){delete c.school;startTrip(s,c,c.home,'toHome',ctx);}
  for(const c of citizens)if(c.workplace&&(!ctx.buildings.has(c.workplace)||!isComplete(ctx.buildings.get(c.workplace))||!canStaffBuilding(c,ctx.buildings.get(c.workplace))))delete c.workplace;
  for(const c of citizens)if(c.guardPost&&(!isPestStore(ctx.buildings.get(c.guardPost))||!['auto','production'].includes(c.role)))delete c.guardPost;

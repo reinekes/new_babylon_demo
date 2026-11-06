@@ -1,4 +1,4 @@
-import {floodPhase,floodFootprint,floodedRoads,floodStorageRisk} from './river-flood.js';
+import {floodPhase,floodFootprint,floodedRoads,floodStorageRisk,JAR_FOOD_CAPACITY} from './river-flood.js';
 import {lowWaterForecast} from './irrigation.js';
 import {needsCanalCleaning} from './canal-maintenance.js';
 import {activeLaborKind,harvestCallActive,harvestDemand,harvestCandidates,unloadDemand,UNLOAD_PORTERS} from './city-labor.js';
@@ -98,7 +98,7 @@ function floodHTML(s){
  const relieved=withLevees-footprint.size,protectedCells=exposed-withLevees;
  const evacuees=s.citizens.filter(c=>c.floodShelter),walking=evacuees.filter(c=>c.routeIndex<c.route.length).length;
  const storage=phase==='warning'?floodStorageRisk(s,footprint):[];
- const storageWarning=storage.length?`<p>При разливе отсыреет четверть оставшейся здесь еды. Закажи вывоз в разделе «Склады и перевозки» или защити берег.</p><ul>${storage.map(({building,key,loss})=>`<li>${focus(key,`${buildingDefinition(s,building.type).name} · ${building.x}, ${building.y}`)} · Под угрозой ${number(loss)} ед. еды</li>`).join('')}</ul>`:'';
+ const storageWarning=storage.length?`<p>При разливе отсыреет четверть еды без тары. Один местный сосуд укроет до ${JAR_FOOD_CAPACITY} ед. еды и треснет после разлива. В разделе «Склады и перевозки» можно подвезти сосуды или вывезти еду.</p><ul>${storage.map(({building,key,loss,jars,covered})=>`<li>${focus(key,`${buildingDefinition(s,building.type).name} · ${building.x}, ${building.y}`)} · Под угрозой ${number(loss)} ед. еды${jars?` · В таре ${number(covered)} ед. · Сосудов под списание: ${jars}`:''}</li>`).join('')}</ul>`:'';
  const coordinates=roads.slice(0,8).map(r=>`(${r.a.x}, ${r.a.y}) → (${r.b.x}, ${r.b.y})`).join(' · ');
  return `<article class="city-tools-row"><h3>${phase==='active'?'Река вышла из берегов':'Прогноз весеннего разлива'}</h3><p>Затронутых дорожных участков: ${roads.length}. Защищённые клетки: вал — ${protectedCells}, отвод — ${relieved}.</p><small>Для отвода нужна непрерывная цепочка чистых дренажных каналов с выходом в воду за пределами разлива.</small>${phase==='active'?`<p>Идут в укрытие: ${walking}. В укрытии: ${evacuees.length-walking}.</p>`: ''}${storageWarning}${coordinates?`<small>${coordinates}</small>`:''}</article>`;
 }

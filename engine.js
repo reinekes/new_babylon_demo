@@ -186,8 +186,13 @@ function settleSeason(s){
   log(s,'Река вышла из берегов','Жители ищут сухой путь в обход затопленных дорог.','bad');
   syncInventory(s);
   const exposed=floodStorageRisk(s,floodFootprint(s,s.riverFlood));
-  const loss=exposed.reduce((sum,{key,loss})=>sum+takeStock(s,key,'food',loss),0);
-  if(loss>0)log(s,'Разлив испортил запасы',`Сырость испортила ${Number(loss.toFixed(2))} ед. еды на складах (${exposed.length}).`,'bad');
+  let foodLost=0,jarsLost=0;
+  for(const {key,loss,jars} of exposed){
+   if(loss>0)foodLost+=takeStock(s,key,'food',loss);
+   if(jars>0)jarsLost+=takeStock(s,key,'pottery',jars);
+  }
+  if(foodLost>0)log(s,'Разлив испортил запасы',`Сырость испортила ${Number(foodLost.toFixed(2))} ед. еды.`,'bad');
+  if(jarsLost>0)log(s,'Разлив повредил тару',`Сосуды сохранили припасы. Треснувших сосудов списано: ${jarsLost}.`,'bad');
  }
  if(flood==='ended')log(s,'Вода отступила','Проходы у берега снова открыты.','good');
  if(lowWaterYear(s)&&s.season===0)log(s,'Летом ожидается маловодье','Проверь поля и запасные водозаборы в обзоре города, в разделе «Работа».','bad');
