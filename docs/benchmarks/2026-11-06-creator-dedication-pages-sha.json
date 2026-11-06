@@ -1,0 +1,135 @@
+{
+  "at": "2026-11-06T12:18:21.185437+00:00",
+  "commit": "29e7b985d65929233375e4405852e56f5f2c033e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "162718756eccf8b6cdfd089167b3bcc2632284e6f79a21e18c2a1c1b8c9e1eec",
+      "actual": "162718756eccf8b6cdfd089167b3bcc2632284e6f79a21e18c2a1c1b8c9e1eec",
+      "match": true
+    },
+    {
+      "path": "bricks.js",
+      "status": 200,
+      "expected": "2b7dd0e66565b35ca4df0b41154d2c581d3817dfff231c9d80560735166d62c4",
+      "actual": "2b7dd0e66565b35ca4df0b41154d2c581d3817dfff231c9d80560735166d62c4",
+      "match": true
+    },
+    {
+      "path": "creator-materials.js",
+      "status": 200,
+      "expected": "470c1180d87cb7749518352d9fea9a6523428574d5b33e7b82a3a53a7c031cd0",
+      "actual": "470c1180d87cb7749518352d9fea9a6523428574d5b33e7b82a3a53a7c031cd0",
+      "match": true
+    },
+    {
+      "path": "creator-presentation.js",
+      "status": 200,
+      "expected": "44f5ef8a12e5248117e1deb4dbccaf0aa3eb1d04532a8af20d875042c7e37c32",
+      "actual": "44f5ef8a12e5248117e1deb4dbccaf0aa3eb1d04532a8af20d875042c7e37c32",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-creator-dedication-4x.json",
+      "status": 200,
+      "expected": "c560a6fa6d8ab04d926428d0bbabedad85084620fe0ebfb4c3a47a8a84057db8",
+      "actual": "c560a6fa6d8ab04d926428d0bbabedad85084620fe0ebfb4c3a47a8a84057db8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-creator-scenes-pages-sha.json",
+      "status": 200,
+      "expected": "1c1547a35bfbb5658c13a9533d91e18cf9b73ad6581006e9305f0551d39ddc25",
+      "actual": "1c1547a35bfbb5658c13a9533d91e18cf9b73ad6581006e9305f0551d39ddc25",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-72.md",
+      "status": 200,
+      "expected": "6f8a229fa246c194e3b6c5793882f4fc52041dcb6e8c711156365c71c7cc68d2",
+      "actual": "6f8a229fa246c194e3b6c5793882f4fc52041dcb6e8c711156365c71c7cc68d2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "962f6276674641d69aa669602e4b0b3522ad763808c1a2eda9ec2867e6fa56e1",
+      "actual": "962f6276674641d69aa669602e4b0b3522ad763808c1a2eda9ec2867e6fa56e1",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "68f63221c3513c9696a9db2765e0c97c4b245b9f29aaf7fb0397ac5b72bcf7de",
+      "actual": "68f63221c3513c9696a9db2765e0c97c4b245b9f29aaf7fb0397ac5b72bcf7de",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "5c2c138624341a3d9f872e8e19904fd4f7d35a17df4e2da5eea545fb05068e3a",
+      "actual": "5c2c138624341a3d9f872e8e19904fd4f7d35a17df4e2da5eea545fb05068e3a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "94d8ee9f13d78325b8ffe529648e2c64b29de4b11ea77f36712e70867c952c79",
+      "actual": "94d8ee9f13d78325b8ffe529648e2c64b29de4b11ea77f36712e70867c952c79",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-creator-scenes.md",
+      "status": 200,
+      "expected": "5b88504e378b8a7f8daafd5cdd07fdbdf349bd44940ece735f9ea279c7242f82",
+      "actual": "5b88504e378b8a7f8daafd5cdd07fdbdf349bd44940ece735f9ea279c7242f82",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "7278c50208097e43a2ff34fd86b3822e8c283804809c1e3990a30025ff0839e1",
+      "actual": "7278c50208097e43a2ff34fd86b3822e8c283804809c1e3990a30025ff0839e1",
+      "match": true
+    },
+    {
+      "path": "tests/brick-integration.test.js",
+      "status": 200,
+      "expected": "8f49e261caaf0e60b4a829d2952e7006d70f0894f2df023bb7d8ce1fe58062b6",
+      "actual": "8f49e261caaf0e60b4a829d2952e7006d70f0894f2df023bb7d8ce1fe58062b6",
+      "match": true
+    },
+    {
+      "path": "tests/bricks.test.js",
+      "status": 200,
+      "expected": "f8bb4b425f69fe68044782824691409d2e4bc15e52a238f28792be1cbee2e989",
+      "actual": "f8bb4b425f69fe68044782824691409d2e4bc15e52a238f28792be1cbee2e989",
+      "match": true
+    },
+    {
+      "path": "tests/rich-catch.test.js",
+      "status": 200,
+      "expected": "88aba9fef859fbc8258fb19d65b7a555edaf0397d7e02cced8744cf2f2e48820",
+      "actual": "88aba9fef859fbc8258fb19d65b7a555edaf0397d7e02cced8744cf2f2e48820",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "98da413e3821d8ec132a6030b44ac19fa925c926447b6a83bf94505a1d0157a4",
+      "actual": "98da413e3821d8ec132a6030b44ac19fa925c926447b6a83bf94505a1d0157a4",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "9b011393112cd7a29cb1076e15d3ec4d009561568f7e3c851f5576af78ea7241",
+      "actual": "9b011393112cd7a29cb1076e15d3ec4d009561568f7e3c851f5576af78ea7241",
+      "match": true
+    }
+  ],
+  "matched": 18,
+  "total": 18
+}
