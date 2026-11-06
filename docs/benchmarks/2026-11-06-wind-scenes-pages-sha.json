@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-06T12:50:02.697625+00:00",
+  "commit": "47b20cbf27faa1f18cfe5736e71f09235bf3e899",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4d190cfbdaf9e2c6244a4145adb87edb0a1201120aea1784d59a49c128b3e8a4",
+      "actual": "4d190cfbdaf9e2c6244a4145adb87edb0a1201120aea1784d59a49c128b3e8a4",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "a1812f0eb9668e13ac7b5a9cf90d47a09fa224c38e1eee5a504ced1197500234",
+      "actual": "a1812f0eb9668e13ac7b5a9cf90d47a09fa224c38e1eee5a504ced1197500234",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-wind-route-pages-sha.json",
+      "status": 200,
+      "expected": "8c14cfc779f3615103f3e960e161f10045712f2b56d0108aab3d540aee48498d",
+      "actual": "8c14cfc779f3615103f3e960e161f10045712f2b56d0108aab3d540aee48498d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-wind-scenes-4x.json",
+      "status": 200,
+      "expected": "cc2a7028707f9ab8ae539c016d1e38e11ffc0089fd4f5442885d9b23e91f9eda",
+      "actual": "cc2a7028707f9ab8ae539c016d1e38e11ffc0089fd4f5442885d9b23e91f9eda",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-75.md",
+      "status": 200,
+      "expected": "96c3374d2817c30a5765340e4a9abbad06bc4bf76fbf7cd0edf3d9aaa720277e",
+      "actual": "96c3374d2817c30a5765340e4a9abbad06bc4bf76fbf7cd0edf3d9aaa720277e",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "expected": "f8ca8c13536ea91ab61779926184039c1134ce993e922e9a61fa18131baef86c",
+      "actual": "f8ca8c13536ea91ab61779926184039c1134ce993e922e9a61fa18131baef86c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "61a2ad0fd22c83d038c10c729d755da5514446ec5213345dd3ac2b9ff982619e",
+      "actual": "61a2ad0fd22c83d038c10c729d755da5514446ec5213345dd3ac2b9ff982619e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ff48fcf3e45ff21b3f40bd69faf4d87da43f398c9214f0c3daadd3af91dd5487",
+      "actual": "ff48fcf3e45ff21b3f40bd69faf4d87da43f398c9214f0c3daadd3af91dd5487",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "fb5618cdee02c72963b23a50adba962ed0ba093debbd80e0e9334b75ddf1c7b1",
+      "actual": "fb5618cdee02c72963b23a50adba962ed0ba093debbd80e0e9334b75ddf1c7b1",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-wind-route.md",
+      "status": 200,
+      "expected": "04604805d9c2d9835caf8f602e3332b6120ff5441df0fe65c1488406f1823506",
+      "actual": "04604805d9c2d9835caf8f602e3332b6120ff5441df0fe65c1488406f1823506",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a33aa627d3f4bb0b547877f4bb52955e8ea4e938e1b35bbffc44d3e1c2a1d3e3",
+      "actual": "a33aa627d3f4bb0b547877f4bb52955e8ea4e938e1b35bbffc44d3e1c2a1d3e3",
+      "match": true
+    },
+    {
+      "path": "tests/wind-presentation.test.js",
+      "status": 200,
+      "expected": "adf5f4934c86c392398f87e48ef03a9072f35c17b11f1841cd739902397a8f58",
+      "actual": "adf5f4934c86c392398f87e48ef03a9072f35c17b11f1841cd739902397a8f58",
+      "match": true
+    },
+    {
+      "path": "wind-presentation.css",
+      "status": 200,
+      "expected": "19cb448571e0e85bd29440f4fa05b7e639821c32e5adefe011780375b593cf9e",
+      "actual": "19cb448571e0e85bd29440f4fa05b7e639821c32e5adefe011780375b593cf9e",
+      "match": true
+    },
+    {
+      "path": "wind-presentation.js",
+      "status": 200,
+      "expected": "6d9944b915c7f9ec37469fd1aeec077bce3da4bce8cdd99c61d498ec78777174",
+      "actual": "6d9944b915c7f9ec37469fd1aeec077bce3da4bce8cdd99c61d498ec78777174",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
