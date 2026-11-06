@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T21:55:38.831476+00:00",
+  "commit": "4ba63d276752f77f5c8e2b67b54845943691a5a5",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ff95cddee6db4221e2d4a63ac4b66b4b44dc83cf3447cd204d26ca124d9afd12",
+      "actual": "ff95cddee6db4221e2d4a63ac4b66b4b44dc83cf3447cd204d26ca124d9afd12",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "b4bebe7ce63dd39cf886bf27bbd4ca1aa153300a1268f876be5166aa91ff2079",
+      "actual": "b4bebe7ce63dd39cf886bf27bbd4ca1aa153300a1268f876be5166aa91ff2079",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-shelter-4x.json",
+      "status": 200,
+      "expected": "80c1cbf926159f80e523e4b2b05c7868f45ed7409027f3a76862e96ceeeac9b4",
+      "actual": "80c1cbf926159f80e523e4b2b05c7868f45ed7409027f3a76862e96ceeeac9b4",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1b392c97e3cc9057e2f48c168935b331ba56be2756b1e46df7b7b737c3884d6b",
+      "actual": "1b392c97e3cc9057e2f48c168935b331ba56be2756b1e46df7b7b737c3884d6b",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "65685d679b3f4be9e4d6cfa4781cf80f159130c018310791a980eb9588b6a180",
+      "actual": "65685d679b3f4be9e4d6cfa4781cf80f159130c018310791a980eb9588b6a180",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "d2237f08635f4a9eb382b277bedc92afa9c67626bc4eeed9dce15698581a1f75",
+      "actual": "d2237f08635f4a9eb382b277bedc92afa9c67626bc4eeed9dce15698581a1f75",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "c8433c5050cf91d5bbcd3882221328c944ca26dddeaaba8dd06746d244e0346e",
+      "actual": "c8433c5050cf91d5bbcd3882221328c944ca26dddeaaba8dd06746d244e0346e",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "8fdcbd058fbcafdebe60cf6b7a0139f10eda9b37f8dcc76235dcb6db55c43ffe",
+      "actual": "8fdcbd058fbcafdebe60cf6b7a0139f10eda9b37f8dcc76235dcb6db55c43ffe",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "b726a26f6b640bc8e12f12481830cbd28e007ff1d3088d8e73ec88913e8b15d9",
+      "actual": "b726a26f6b640bc8e12f12481830cbd28e007ff1d3088d8e73ec88913e8b15d9",
+      "match": true
+    },
+    {
+      "path": "wellbeing.js",
+      "status": 200,
+      "expected": "23cf6762a18f6ba3c0fe641b3aa8e75ac21ed90e1044cf453747686496027460",
+      "actual": "23cf6762a18f6ba3c0fe641b3aa8e75ac21ed90e1044cf453747686496027460",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
