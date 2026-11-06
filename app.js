@@ -1,3 +1,4 @@
+import {approveWaterProject,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
 import {setCommonMeals} from './common-meal.js';
@@ -104,6 +105,7 @@ let savesUI=null,switchingCity=false,citySwitchRevision=0;
 let encyclopediaUI=null,encyclopediaRequest=0;
 let seasonJumping=false;
 let urukUI=null;
+let waterProjectDraft=null;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
 const ceremonySpeed=createCeremonySpeedControl();
 function setSpeed(value){speed=value;for(const button of document.querySelectorAll('[data-speed]')){const active=Number(button.dataset.speed)===speed;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}}
@@ -114,6 +116,7 @@ const renderer=await createGameRenderer($('city'),tile=>{
  lastMiracleTarget={x:tile.x,y:tile.y};
  if(testMapUpgrade){const b=buildingAt(state,tile.x,tile.y);if(!b){toast('Выбери готовое здание для мгновенного улучшения');return;}const r=instantTestUpgrade(state,buildingKey(b));mutate(r,r.ok?`${buildingDefinition(state,b.type).name}: уровень ${b.level}`:'');return;}
  if(relicControlActive(state)){const b=buildingAt(state,tile.x,tile.y),q=relicQuestView(state);if(q.phase==='carrying'&&b&&['shrine','ziggurat'].includes(b.type))relicUI.deliver(buildingKey(b));else relicUI.move(tile);return;}
+ if(selection==='waterpoint'&&waterProjectDraft){confirmWaterProjectPlacement(tile);return;}
  if(selection){const result=build(state,selection,tile.x,tile.y,placementRotation);if(result.ok){toast(`${buildingDefinition(state,selection).name}: стройплощадка заложена`);save();update();checkDialogs();}else toast(result.reason);return;}
  if(tile.citizenId!==undefined){if(externalGuestView(state)?.id===tile.citizenId||state.externalVisits&&visitorsView(state).some(g=>g.id===tile.citizenId)){showTrade();return;}const person=state.citizens.find(c=>c.id===tile.citizenId);if(person){personDetail(person);return;}}
  if(tile.animalId){toast(({sheep:'Овца',goat:'Коза',gazelle:'Газель',bird:'Птица',jackal:'Шакал',cat:'Животное',mouse:'Мышь'})[tile.animalKind]||'Животное долины');return;}
@@ -451,6 +454,32 @@ function medicalMemoryHTML(p){
  if(!p)return '';
  return [p.medicalRecovery?`Вышел из тяжёлого состояния после лечения у ${resident(p.medicalRecovery.id)}`:'',p.medicalAid?`Помог выйти из тяжёлого состояния: ${resident(p.medicalAid.id)}`:''].filter(Boolean).map(line=>`<small>${line}</small>`).join('');
 }
+function confirmWaterProjectPlacement({x,y}){
+ const {organizerId,requesterId}=waterProjectDraft,offer=waterProjectProposal(state,organizerId,requesterId,x,y);
+ if(!offer.ok){toast(offer.reason);return;}
+ const organizer=state.citizens.find(c=>c.id===organizerId);
+ openDialog('water-project',`<h2>Водозабор для двора</h2><p>${esc(organizer.name)} возглавит стройку на участке ${x}, ${y}. Материалы зарезервируют на доступных складах. После стройки назначь водоноса.</p>${costs(offer.cost,false)}<button id="approve-water-project">Начать стройку</button> <button id="cancel-water-project">Выбрать другое место</button>`);
+ $('cancel-water-project').onclick=closeDialog;
+ $('approve-water-project').onclick=()=>{
+  const result=approveWaterProject(state,organizerId,requesterId,x,y);
+  closeDialog();
+  if(!result.ok){toast(result.reason);return;}
+  choose('waterpoint');save();update();toast('Жители начали проект водозабора');checkDialogs();
+ };
+}
+function waterProjectHousehold(b,h,w){
+ if(!isStrictSumer(state))return '';
+ const projects=state.buildings.filter(site=>site.humanWaterProject?.home===buildingKey(b));
+ const status=projects.map(site=>{
+  const p=site.humanWaterProject,organizer=state.citizens.find(c=>c.id===p.organizerId);
+  return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?'Идёт строительство':'Построен · ожидается первая доставка'}</p>`;
+ }).join('');
+ if(!h.residents.length||w.stock>=w.demand||projects.some(site=>!site.humanWaterProject.delivery))return status;
+ if(state.buildings.some(site=>site.humanWaterProject&&site.construction?.kind==='new'))return status+'<p>Другой двор уже строит водозабор.</p>';
+ const organizers=state.citizens.filter(c=>!waterProjectOrganizerReason(state,c));
+ if(!organizers.length)return status+'<p>Для водозабора нужен свободный взрослый строитель с запасом воды дома.</p>';
+ return status+`<label>Организатор водозабора <select data-water-organizer>${organizers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label> <button data-water-project>Выбрать место</button>`;
+}
 function renderHousehold(b){const panel=$('household-panel');if(!panel)return;const h=household(state,b),diagnostic=householdTab==='food'?supplyOverview(state).houses.find(h=>h.key===buildingKey(b)):null,adult=h.residents.filter(c=>c.age>=16);
  const row=c=>`<article class="house-person"><b>${resident(c)}</b><span>${rounded(c.age)} лет · ${c.age<16?'ребёнок':c.age>=55?'пожилой':'взрослый'}${['home','resting'].includes(c.phase)&&(c.diningUntil||0)>state.simTime?' · ужинает':''}</span><small>Голод ${Math.round(c.hunger||0)}% · здоровье ${Math.round(c.health??100)}% · настроение ${Math.round(c.mood??75)}% · вера ${Math.round(c.faith??60)}%</small><small>${c.parents?.length?`Родители: ${c.parents.map(id=>`${resident(id)}${state.citizens.some(p=>p.id===id)?'':state.lifeAnalytics?.people.some(p=>p.id===id&&p.diedTick!==null)?' †':' · запись не сохранилась'}`).join(', ')}`:c.partner!==null?`Супруг(а): ${resident(c.partner)}`:'Основатель / переселенец'}</small></article>`;
  const memorials=householdTab==='family'?familyMemorialsAt(state,b):[];
@@ -458,9 +487,24 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
  const care=b.familyCare,helper=care&&h.residents.find(c=>c.id===care.helper),patient=care&&h.residents.find(c=>c.id===care.target);
  const careText=isStrictSumer(state)?`<section class="house-food"><b>Семейный уход</b>${helper&&patient&&care.day===Math.floor(state.simTime/60)?`<p>${resident(helper)} → ${resident(patient)} · ${care.done?'помощь оказана':'помощь начата'}</p>`:''}<small>С 18:00 до ужина родственники помогают дома больному, пожилому или малышу. На уход нужно 0,25 воды и запас еды на ужин.</small></section>`:'';
  const w=waterSummary(state,b);
- const content=householdTab==='water'?`<div class="house-food"><b>Вода дома: ${foodAmount(w.stock)} / ${foodAmount(w.capacity)}</b><p>В пути: ${foodAmount(w.inTransit)} · принесено: ${foodAmount(w.delivered)}<br>Потребность за день: ${foodAmount(w.demand)} · страдают от жажды: ${w.thirsty}</p><small>Водонос снабжает квартал; при задержке взрослые сами идут к доступному берегу. Вода не заменяет полив полей.</small></div>`:householdTab==='family'?`<p class="house-occupancy">Живут ${h.residents.length} / ${h.capacity} · свободно ${h.free}</p><p class="house-gathering">Дома ${h.atHome} / ${h.residents.length}${h.dining?` · ужинают ${h.dining}`:''}${h.hungry?` · недоедают ${h.hungry}`:''}<br>Семейный ужин с 20:00, после возвращения домой.</p>${careText}${memoryText}${h.residents.length?`${adult.length?`<h4>Взрослые и родители · ${adult.length}</h4>${adult.map(row).join('')}`:''}${h.children.length?`<h4>Дети · ${h.children.length}</h4>${h.children.map(row).join('')}`:''}`:'<p>Дом пока пуст. Здесь может поселиться новая семья.</p>'}`:`<div class="house-food"><p>${esc(diagnostic?.reason||'')}</p><b>${rounded(h.food)} еды в доме</b><p>Принесено со склада за всё время: ${rounded(h.delivered)}<br>Несут домой: ${rounded(h.inTransit)}<br>Нужно на ужин: ${rounded(h.demand*4/3)}${h.demand?` · запас на ${rounded(h.food/(h.demand*4/3))} ужина`:''}<br>${isDinnerTime(state.simTime)?'Этот':'Прошлый'} ужин: съедено ${rounded(h.residents.reduce((n,c)=>n+(c.mealEaten||0),0))}<br>Дома ${h.atHome} / ${h.residents.length} · недоедают ${h.hungry}</p><small>В 20:00 семья ест только домашние продукты. Еду со склада нужно принести: запас на складе не заменяет ужин. Дети получают половину взрослой порции. Вверху показаны общие запасы, без еды в домах.</small></div>`;
+ const content=householdTab==='water'?`<div class="house-food"><b>Вода дома: ${foodAmount(w.stock)} / ${foodAmount(w.capacity)}</b><p>В пути: ${foodAmount(w.inTransit)} · принесено: ${foodAmount(w.delivered)}<br>Потребность за день: ${foodAmount(w.demand)} · страдают от жажды: ${w.thirsty}</p><small>Водонос снабжает квартал; при задержке взрослые сами идут к доступному берегу. Вода не заменяет полив полей.</small>${waterProjectHousehold(b,h,w)}</div>`:householdTab==='family'?`<p class="house-occupancy">Живут ${h.residents.length} / ${h.capacity} · свободно ${h.free}</p><p class="house-gathering">Дома ${h.atHome} / ${h.residents.length}${h.dining?` · ужинают ${h.dining}`:''}${h.hungry?` · недоедают ${h.hungry}`:''}<br>Семейный ужин с 20:00, после возвращения домой.</p>${careText}${memoryText}${h.residents.length?`${adult.length?`<h4>Взрослые и родители · ${adult.length}</h4>${adult.map(row).join('')}`:''}${h.children.length?`<h4>Дети · ${h.children.length}</h4>${h.children.map(row).join('')}`:''}`:'<p>Дом пока пуст. Здесь может поселиться новая семья.</p>'}`:`<div class="house-food"><p>${esc(diagnostic?.reason||'')}</p><b>${rounded(h.food)} еды в доме</b><p>Принесено со склада за всё время: ${rounded(h.delivered)}<br>Несут домой: ${rounded(h.inTransit)}<br>Нужно на ужин: ${rounded(h.demand*4/3)}${h.demand?` · запас на ${rounded(h.food/(h.demand*4/3))} ужина`:''}<br>${isDinnerTime(state.simTime)?'Этот':'Прошлый'} ужин: съедено ${rounded(h.residents.reduce((n,c)=>n+(c.mealEaten||0),0))}<br>Дома ${h.atHome} / ${h.residents.length} · недоедают ${h.hungry}</p><small>В 20:00 семья ест только домашние продукты. Еду со склада нужно принести: запас на складе не заменяет ужин. Дети получают половину взрослой порции. Вверху показаны общие запасы, без еды в домах.</small></div>`;
+ const selectedOrganizer=panel.querySelector('[data-water-organizer]')?.value;
  if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}</div>`)){
- panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{householdTab=el.dataset.houseTab;renderHousehold(b);});}
+ panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{householdTab=el.dataset.houseTab;renderHousehold(b);});
+ const organizer=panel.querySelector('[data-water-organizer]');
+ if(organizer){
+  if([...organizer.options].some(option=>option.value===selectedOrganizer))organizer.value=selectedOrganizer;
+  panel.querySelector('[data-water-project]').onclick=()=>{
+   const requester=h.residents.find(c=>!c.floodShelter);
+   if(!requester){toast('Нужен житель этого двора');return;}
+   if(selection==='waterpoint')choose('waterpoint');
+   choose('waterpoint');
+   if(selection!=='waterpoint')return;
+   waterProjectDraft={requesterId:requester.id,organizerId:Number(organizer.value)};
+   $('map-hint').textContent='Водозабор для двора · выбери место у воды · Escape — отмена';
+  };
+ }
+ }
 }
 function personDetail(c){
  inspectedDeposit=null;
@@ -607,6 +651,7 @@ function renderManagement(){
 function updatePlacementControls(){const active=!!selection;$('placement-tools').hidden=!active;$('rotate-building').disabled=!active||renderer.mode!=='3d'||!canRotateBuilding(selection);$('rotate-building').title=renderer.mode==='3d'?'Повернуть здание · R / Shift+R':'Поворот здания доступен в 3D';$('placement-angle').textContent=`${placementRotation*90}°`;renderer.placementRotation=placementRotation;}
 function rotatePlacement(direction=1){if(!selection||renderer.mode!=='3d')return;placementRotation=nextRotation(selection,placementRotation,direction);updatePlacementControls();}
 function choose(type){
+ waterProjectDraft=null;
  inspectedDeposit=null;
  if(relicControlActive(state)){toast('Сначала верни реликвию в храм');return;}
  testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');
@@ -706,7 +751,7 @@ function pantheon(){
  openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p><div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
 }
 function resetCityPresentation(){
- lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
+ waterProjectDraft=null;lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
 }
 async function archiveCurrentCity(){
  if(!loaded)return;
@@ -766,7 +811,7 @@ async function jumpSeason(){
 $('next-season').setAttribute('aria-label','Следующий сезон');$('next-season').onclick=jumpSeason;
 $('day-cycle').onclick=()=>{const clock=lightingAt(state.simTime),target=isWorkday(state.simTime)?20.25:6,seconds=((target-clock.hour+24)%24)*DAY_SECONDS/24+.05;advanceTime(state,seconds);renderer.lightMode='auto';save();update();checkDialogs();};
 $('zoom-in').onclick=()=>renderer.zoomBy?renderer.zoomBy(.2):renderer.zoom=Math.min(3,renderer.zoom+.2);$('zoom-out').onclick=()=>renderer.zoomBy?renderer.zoomBy(-.2):renderer.zoom=Math.max(.3,renderer.zoom-.2);$('home').onclick=()=>renderer.home();$('overview').onclick=()=>renderer.overview();
-dialog.addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='mode'&&dialog.dataset.replace==='true'){closeDialog();return;}if(['help','reset','pantheon','construction','residents','confirmation','trade','citytools','festival','life','relicIntro','encyclopedia','saves'].includes(modalKind)){closeDialog();checkDialogs();}});
+dialog.addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='mode'&&dialog.dataset.replace==='true'){closeDialog();return;}if(['help','reset','pantheon','construction','residents','confirmation','water-project','trade','citytools','festival','life','relicIntro','encyclopedia','saves'].includes(modalKind)){closeDialog();checkDialogs();}});
 document.addEventListener('keydown',e=>{if(seasonJumping){e.preventDefault();return;}if(relicControlActive(state)){if(e.code==='Space'&&!['INPUT','SELECT','BUTTON'].includes(e.target.tagName)){e.preventDefault();paused=!paused;save();update();}return;}if(photo.active||dialog.open||['INPUT','TEXTAREA','SELECT','SUMMARY'].includes(e.target.tagName))return;if(e.code==='KeyR'&&selection){e.preventDefault();rotatePlacement(e.shiftKey?-1:1);return;}if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(testMapUpgrade){testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');toast('Тестовое улучшение закончено');return;}if(roadMode){clearRoadRoute();$('tile-detail').hidden=true;roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
 let shownEvent=null,shownFeast=null,shownMiracle=null,lastBeerStatus=state.firstBeerFeast?.status;
