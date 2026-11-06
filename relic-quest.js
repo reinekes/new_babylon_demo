@@ -18,7 +18,7 @@ const ACTIVE=['controlled','searching','rejoicing','carrying','celebrating','ret
 const sum=o=>Object.values(o||{}).some(v=>v>1e-8),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const point=(p,s)=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.y>=-.5&&p.x<=worldWidth(s)-.5&&p.y<=worldHeight(s)-.5;
 const readyTemple=b=>['shrine','ziggurat'].includes(b.type)&&isOperational(b)&&!b.construction;
-const busy=c=>!!c.site||!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||!!c.pantryTrip||!!c.clinic||!!c.school||!!c.districtJob||!!c.saleJob||!!c.tradeJob||!!c.pendingRole||!!c.workplace||!!c.guardPost||sum(c.cargo)||sum(c.buildCargo)||c.pantryFood>0;
+const busy=c=>!!c.memorialMove||!!c.site||!!c.waterTrip||c.clothingTarget!==undefined||!!c.craftSite||!!c.seedField||!!c.pantryTrip||!!c.clinic||!!c.school||!!c.districtJob||!!c.saleJob||!!c.tradeJob||!!c.pendingRole||!!c.workplace||!!c.guardPost||sum(c.cargo)||sum(c.buildCargo)||c.pantryFood>0;
 const eligible=c=>c&&c.age>=16&&c.age<55&&c.health>=60&&!c.recovering&&!busy(c)&&['home','resting','blocked'].includes(c.phase);
 const eligibleGuest=c=>c&&c.age>=16&&c.health>=60&&!c.recovering&&!busy(c)&&['home','resting','blocked','working'].includes(c.phase);
 const entries=s=>Object.entries(CONFIG).map(([id,config])=>({id,config,q:s[config.stateKey]}));

@@ -1,3 +1,4 @@
+import {prepareMemorialMove} from './life-analytics.js';
 import {mournResidents} from './wellbeing.js';
 import {totalFood} from './households.js';
 import {networkFor} from './workforce.js';
@@ -34,8 +35,11 @@ export function advanceGenerations(s,recover=()=>{}){
   const component=housingNetwork.components.get(housingPorts.get(a.home));
   if(component===undefined||component!==housingNetwork.components.get(housingPorts.get(partner.home)))continue;
   const house=s.buildings.find(b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&b.construction?.kind!=='new'&&buildingKey(b)!==a.home&&capacityOf(b)>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component);
-  if(!house||family.some(c=>s.citizens.some(p=>p.clothingTarget===c.id)||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
-  const destination=buildingKey(house);for(const c of family){homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
+  if(!house||family.some(c=>s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+  const destination=buildingKey(house);for(const c of family){
+   const source=housingNetwork.ports.find(p=>p.key===housingPorts.get(c.home));
+   if(source&&Math.hypot(c.x-source.x,c.y-source.y)<.05)prepareMemorialMove(s,c,house);
+   homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
   news(s,'Семья обрела дом',`${citizenName(a.id)} и ${citizenName(partner.id)} поселились в доме ${destination}.`);
  }
  const newborns=[];

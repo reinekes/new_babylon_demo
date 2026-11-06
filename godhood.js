@@ -7,7 +7,7 @@ import {isDryPoint,worldWidth,worldHeight} from './world.js';
 import {footprintSize} from './footprints.js';
 const BASIC=new Set(['house','clay','reed','field','garden','fishing','hunting','waterpoint','bridge','canal','brickyard','granary','sheepfold']);
 const MONUMENTS=new Set(['shrine','ziggurat','ishtarGate','harbor']);
-const cargo=c=>Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0);
+const cargo=c=>!!c.memorialMove||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0);
 export const gameMode=s=>s.godhood?.mode||'legacy';
 export const isAwakening=s=>gameMode(s)==='awakening';
 export const isMatureGod=s=>gameMode(s)==='mature';

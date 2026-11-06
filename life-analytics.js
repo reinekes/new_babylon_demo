@@ -45,11 +45,33 @@ export function familyMemorialsAt(s,home){
  });
 }
 
+export function prepareMemorialMove(s,c,destination){
+ if(!isStrictSumer(s)||c.phase!=='home'||c.age<16||c.memorialMove||c.commonMealTarget||c.clinic||c.school||c.floodShelter||c.districtJob||c.saleJob||c.tradeJob||c.waterTrip||c.pantryTrip||c.craftSite||c.seedField||c.clothingTarget!==undefined||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return false;
+ const origin=s.buildings.find(b=>buildingKey(b)===c.home),target=buildingKey(destination);
+ if(!origin||target===c.home||destination.type!=='house'||!isOperational(destination))return false;
+ const record=familyMemorialsAt(s,origin).find(p=>(p.partner===c.id||p.parents.includes(c.id)||c.parents?.includes(p.id))&&!s.citizens.some(other=>other.memorialMove?.id===p.id));
+ if(!record)return false;
+ c.memorialMove={id:record.id,source:c.home,target};
+ return true;
+}
+
+export function finishMemorialMove(s,c){
+ const move=c.memorialMove;
+ if(!move)return;
+ const destination=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===move.target);
+ const record=s.lifeAnalytics?.people.find(p=>p.id===move.id);
+ if(destination&&c.home===move.target&&record?.memorial?.home===move.source){
+  record.memorial.home=move.target;
+  record.memorial.built=destination.built?{...destination.built}:null;
+ }
+ delete c.memorialMove;
+}
+
 function validateMemorial(s,p){
  const m=p.memorial;
  if(m===undefined)return true;
  return isStrictSumer(s)&&p.diedTick!==null&&p.cause!=='unknown'&&m&&typeof m.home==='string'&&/^\d+,\d+$/.test(m.home)&&
-  (m.built===null||m.built&&integer(m.built.year)&&m.built.year>=1&&integer(m.built.season)&&m.built.season<4&&finite(m.built.elapsed,0,45)&&integer(m.built.order)&&(m.built.year-1)*4+m.built.season<=p.diedTick)&&
+  (m.built===null||m.built&&integer(m.built.year)&&m.built.year>=1&&integer(m.built.season)&&m.built.season<4&&finite(m.built.elapsed,0,45)&&integer(m.built.order)&&(m.built.year-1)*4+m.built.season<=tick(s))&&
   Array.isArray(m.skills)&&m.skills.length<=2&&new Set(m.skills.map(v=>v?.kind)).size===m.skills.length&&m.skills.every(v=>v&&['builder','healer'].includes(v.kind)&&integer(v.level)&&v.level>=1&&v.level<=(v.kind==='healer'?5:3));
 }
 
@@ -70,6 +92,12 @@ export function validateLifeAnalytics(s){
  const ids=new Map(),living=new Set((s.citizens||[]).map(c=>c.id));
  for(const p of a.people){if(!p||!integer(p.id)||(integer(s.demography?.nextId)&&p.id>=s.demography.nextId)||ids.has(p.id)||typeof p.name!=='string'||p.name.length>160||!(p.age===null||finite(p.age,0,100))||![null,'m','f'].includes(p.sex)||!Array.isArray(p.parents)||![0,2].includes(p.parents.length)||new Set(p.parents).size!==p.parents.length||p.parents.some(id=>!integer(id)||id>=p.id)||!(p.partner===null||integer(p.partner)&&p.partner!==p.id)||!integer(p.generation)||p.generation<1||!(p.home===null||typeof p.home==='string'&&/^\d+,\d+$/.test(p.home))||!integer(p.firstSeenTick)||p.firstSeenTick<a.startedTick||p.firstSeenTick>tick(s)||!(p.bornTick===null||integer(p.bornTick)&&p.bornTick>=a.startedTick&&p.bornTick<=p.firstSeenTick)||!(p.diedTick===null||integer(p.diedTick)&&p.diedTick>=p.firstSeenTick&&p.diedTick<=tick(s))||!(p.diedTick===null?p.cause===null:Object.hasOwn(LIFE_CAUSE_NAMES,p.cause))||living.has(p.id)!==(p.diedTick===null)||!validateMemorial(s,p))return false;ids.set(p.id,p);}
  if([...living].some(id=>!ids.has(id)))return false;
+ const carried=new Set();
+ for(const c of s.citizens||[]){
+  const m=c.memorialMove;if(m===undefined)continue;
+  if(!m||!isStrictSumer(s)||c.age<16||!integer(m.id)||carried.has(m.id)||ids.get(m.id)?.memorial?.home!==m.source||m.target!==c.home||m.target===m.source||!['toHome','blocked'].includes(c.phase))return false;
+  carried.add(m.id);
+ }
  let previous=-1,previousRow=null;for(const h of a.history){if(!h||!integer(h.tick)||h.tick<a.startedTick||h.tick>tick(s)||h.tick<=previous||!['population','children','adults','elders','births','deaths'].every(k=>integer(h[k]))||h.children+h.adults+h.elders!==h.population||!h.causes||!Object.keys(LIFE_CAUSE_NAMES).every(k=>integer(h.causes[k]))||Object.values(h.causes).reduce((a,b)=>a+b,0)!==h.deaths||!['health','mood','hunger','thirst','faith'].every(k=>h[k]===null||finite(h[k],0,100)))return false;if(previousRow&&(h.births<previousRow.births||h.deaths<previousRow.deaths||Object.keys(LIFE_CAUSE_NAMES).some(k=>h.causes[k]<previousRow.causes[k])))return false;previous=h.tick;previousRow=h;}
  return true;
 }
