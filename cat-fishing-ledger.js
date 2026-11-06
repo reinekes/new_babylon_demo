@@ -1,3 +1,4 @@
+import {recordRevelationFact} from './revelation-evidence.js';
 import {buildingKey} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 export {usesCatDiscovery} from './scenario-profiles.js';
@@ -40,6 +41,7 @@ function finish(q,s){const complete=q.pending.filter(r=>r.accepted>=r.total-eps)
 // building.id, which still controls existing work/appearance identities.
 export function recordFishingCatch(s,b,c,n,{inBuffer=false,before=0}={}){
  if(!usesCatDiscovery(s)||b?.type!=='fishing'||!s.buildings.includes(b)||c?.age<16||c?.work!==buildingKey(b)||!amount(n))return null;
+ recordRevelationFact(s,'food',c,b);
  initializeCatFishing(s);const q=s.catFishing;
  reconcileCatFishing(s);
  if(q.pending.length>=3||(q.lessons[c.id]||0)+q.pending.filter(r=>r.producerId===c.id).length>=3)return null;

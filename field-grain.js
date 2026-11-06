@@ -1,3 +1,4 @@
+import {recordRevelationFact} from './revelation-evidence.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 
@@ -10,6 +11,7 @@ export const newEarthDiscovery=()=>({version:1,nextFieldId:1,receipts:[],qualifi
 export function recordFieldGrain(s,field,farmer,amount,prefix){
  const q=s.earthDiscovery;
  if(!q||field.grainEvidence||amount<=EPS)return;
+ recordRevelationFact(s,'food',farmer,field);
  const previous=q.receipts.find(r=>r.fieldId===field.grainFieldId);
  const inspired=farmer.calling==='farmer';
  if(previous&&(!inspired||previous.inspired))return;

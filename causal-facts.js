@@ -1,3 +1,4 @@
+import {recordRevelationFact} from './revelation-evidence.js';
 import {DAY_SECONDS} from './city-life.js';
 import {buildingKey} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -52,6 +53,7 @@ function recordNeighborAid(s,c,home,amount,kind){
    facts.shift();
   }
   facts.push(fact);
+  recordRevelationFact(s,'family',c,home);
  }
  return true;
 }

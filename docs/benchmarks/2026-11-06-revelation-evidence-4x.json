@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 289,
+  "recorded": [
+    "family"
+  ],
+  "byteEqualReload": true,
+  "byteEqualOutsideEvidence": true,
+  "samples": 320,
+  "medianCpuMs": 4.619125000000167,
+  "p95CpuMs": 15.25762500000019
+}

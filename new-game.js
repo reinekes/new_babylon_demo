@@ -1,3 +1,4 @@
+import {newRevelationEvidence} from './revelation-evidence.js';
 import {newAbundanceDiscovery} from './abundance-discovery.js';
 import {newAbundanceGift} from './abundance-gift.js';
 import {newWindDelivery} from './wind-delivery.js';
@@ -28,6 +29,7 @@ export function createNewCity({mode,seed}={}){
   state.abundanceGift=newAbundanceGift();
   state.abundanceDiscovery=newAbundanceDiscovery();
   state.sunlightChapter=1;
+  state.revelationEvidence=newRevelationEvidence();
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
