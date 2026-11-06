@@ -271,10 +271,13 @@ function storePolicy(b){
  const jars=isStrictSumer(state)&&['granary','depot'].includes(b.type)?storageJarCover(b):null;
  const mealDepot=isStrictSumer(state)&&b.type==='depot'?state.buildings.find(v=>buildingKey(v)===key):null;
  const eating=mealDepot?state.citizens.filter(c=>c.phase==='commonMeal'&&c.commonMealTarget===key).length:0;
+ const talk=mealDepot?.mealTalk,dispute=mealDepot?.mealDispute;
+ const mealTalk=talk?`<small>За столом: ${talk.people.map(id=>resident(id)).join(' и ')}${talk.topic?` · Обсудили «${esc(talk.topic)}»`:''}${talk.outcome==='disputed'?' · Поспорили о нехватке еды':talk.outcome==='reconciled'?' · Помирились':''}.</small>`:'';
+ const mealDispute=dispute?.status==='open'?`<small>Спор о нехватке еды: ${dispute.people.map(id=>resident(id)).join(' и ')}. Они смогут помириться за следующей общей трапезой после сытого ужина.</small>`:'';
  const meals=mealDepot?`<label><input type="checkbox" data-common-meals="${esc(key)}" ${mealDepot.commonMeals?'checked':''}> Общая трапеза</label><small>С 11:00 до 16:00 работники из дальних домов приходят за порцией еды из запаса сверх минимума.${eating?` Сейчас за трапезой: ${eating}.`:''}</small>`:'';
  const minimum=(resource,label)=>`<label>${label} <input type="number" min="0" max="${storeCapacity(b)}" step="1" data-store-min="${esc(key)}" data-store-resource="${resource}" value="${storeMinimumDraft.get(`${key}:${resource}`)??storeMinimum(b,resource)}"></label><button data-save-store="${esc(key)}" data-store-resource="${resource}">Задать минимум</button>`;
  const jarInfo=jars?`${minimum('pottery','Минимум тары')}<small>Тара от разлива: защищено ${foodAmount(jars.covered)} ед. еды. Один местный сосуд вмещает до ${JAR_FOOD_CAPACITY} ед.</small>`:'';
- return `<div class="store-policy">${minimum('food','Минимум еды')}<label><input type="checkbox" data-store-export="${esc(key)}" ${b.noExport?'':'checked'}> Отправлять в другие склады сверх минимума</label><small>Минимум защищён от межскладских перевозок. Домашние ужины расходуют местную еду.</small>${jarInfo}${meals}</div>`;
+ return `<div class="store-policy">${minimum('food','Минимум еды')}<label><input type="checkbox" data-store-export="${esc(key)}" ${b.noExport?'':'checked'}> Отправлять в другие склады сверх минимума</label><small>Минимум защищён от межскладских перевозок. Домашние ужины расходуют местную еду.</small>${jarInfo}${meals}${mealTalk}${mealDispute}</div>`;
 }
 function bindStorePolicy(root){
  root.querySelectorAll('[data-common-meals]').forEach(el=>el.onchange=()=>{

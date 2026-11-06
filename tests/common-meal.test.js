@@ -65,3 +65,30 @@ test('workers walk to delivered food and reload on the way to the depot',async()
  advanceTime(restored,1.2,{calendarRate:1});
  assert.equal(restored.citizens.find(c=>c.id===id).commonMealTarget,undefined);
 });
+
+test('diners discuss city news and can resolve their own food dispute at a later meal',async()=>{
+ const {serveCommonMeal}=await import('../common-meal.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const a=s.citizens[0],b=s.citizens.find(c=>c.age>=16&&c.home!==a.home);
+ const depot={type:'depot',x:11,y:8,level:1,commonMeals:true};
+ s.buildings.push(depot);putStock(s,'11,8','food',20);
+ Object.assign(s,{simTime:12,seasonElapsed:12});
+ s.news.unshift({title:'Голод в семьях',text:'Не хватило еды.',tick:0,year:1,season:0,kind:'bad'});
+ a.missedMeals=1;
+ assert.ok(serveCommonMeal(s,a,depot));
+ Object.assign(a,{phase:'commonMeal',commonMealTarget:'11,8',commonMealUntil:13});
+ assert.ok(serveCommonMeal(s,b,depot));
+ assert.equal(depot.mealTalk.topic,'Голод в семьях');
+ assert.equal(depot.mealDispute.status,'open');
+ const raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),raw);
+ const d=loaded.buildings.at(-1),first=loaded.citizens.find(c=>c.id===a.id),second=loaded.citizens.find(c=>c.id===b.id);
+ loaded.simTime=72;
+ first.missedMeals=0;
+ assert.ok(serveCommonMeal(loaded,first,d));
+ first.commonMealUntil=73;
+ assert.ok(serveCommonMeal(loaded,second,d));
+ assert.equal(d.mealDispute.status,'resolved');
+ assert.equal(d.mealTalk.outcome,'reconciled');
+});
