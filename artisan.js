@@ -1,3 +1,4 @@
+import {takeGiftFood} from './abundance-origin.js';
 import {noteFirstBeer} from './festival.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
@@ -37,7 +38,7 @@ export function workArtisan(b,seconds,s=null){
   // tolerance as the needs check while keeping the consumed buffers canonical.
   const consume=(k,n)=>{v[k]=Math.max(0,v[k]-n);};
   if(b.type==='pottery'){consume('clay',4);consume('reed',2);consume('water',2);v.stage='forming';}
-  else{consume('food',4);consume('water',3);if(!v.vesselUses){consume('pottery',1);v.vesselUses=4;}v.vesselUses--;v.stage='brewing';}
+  else{if(b.giftInput)takeGiftFood(b,'giftInput',4,v.food);consume('food',4);consume('water',3);if(!v.vesselUses){consume('pottery',1);v.vesselUses=4;}v.vesselUses--;v.stage='brewing';}
  }
  if(!['forming','brewing'].includes(v.stage))return;
  v.elapsed=Math.min(durations[v.stage],v.elapsed+seconds*outputMultiplier(b));

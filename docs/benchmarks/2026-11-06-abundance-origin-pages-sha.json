@@ -1,0 +1,121 @@
+{
+  "at": "2026-11-06T13:09:22.922549+00:00",
+  "commit": "53f434a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "901ce74ba0e5422309bed96fd8f4b286829ef56ecae26f5aaa2fcb6d2d0d2064",
+      "actual": "901ce74ba0e5422309bed96fd8f4b286829ef56ecae26f5aaa2fcb6d2d0d2064",
+      "match": true
+    },
+    {
+      "path": "abundance-gift.js",
+      "status": 200,
+      "expected": "a407d29a7b7e51b0512232c03b024168f3b09a9c71602a25350aabdc004f4dc0",
+      "actual": "a407d29a7b7e51b0512232c03b024168f3b09a9c71602a25350aabdc004f4dc0",
+      "match": true
+    },
+    {
+      "path": "abundance-origin.js",
+      "status": 200,
+      "expected": "cdf059d501ab604f9ab955cf215ba2851fee51fa35c57614c6162873c12c0eb9",
+      "actual": "cdf059d501ab604f9ab955cf215ba2851fee51fa35c57614c6162873c12c0eb9",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "f0a4b8b38b9aa8b5eed00c3bf4e9157db06985e4c84a12ab893c12d6d741815e",
+      "actual": "f0a4b8b38b9aa8b5eed00c3bf4e9157db06985e4c84a12ab893c12d6d741815e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-abundance-origin-4x.json",
+      "status": 200,
+      "expected": "0ddc59278bea6efda8e082ce16fc6d7b1b09caa1048721bda46f4a70c82734d9",
+      "actual": "0ddc59278bea6efda8e082ce16fc6d7b1b09caa1048721bda46f4a70c82734d9",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "1b6281339c96772f6e91e9ee28c9738e0e25e6d93bd79d49ded5372d99def937",
+      "actual": "1b6281339c96772f6e91e9ee28c9738e0e25e6d93bd79d49ded5372d99def937",
+      "match": true
+    },
+    {
+      "path": "fish-provenance.js",
+      "status": 200,
+      "expected": "36967059b56610e567f352058804d61dca0dd8c0dcac5d220ba1cf6c1cbd57f7",
+      "actual": "36967059b56610e567f352058804d61dca0dd8c0dcac5d220ba1cf6c1cbd57f7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "bc56ecef3bb65463811935dd65be1f095b13c5b14d07ac86280aa854dc04b718",
+      "actual": "bc56ecef3bb65463811935dd65be1f095b13c5b14d07ac86280aa854dc04b718",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "a97d961b94479e70d1e24d53563e6032ad72100f15f969b985626d24b5a0ba80",
+      "actual": "a97d961b94479e70d1e24d53563e6032ad72100f15f969b985626d24b5a0ba80",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "9d3a8acf9742bb9b761ac295b299cc5496e2ccb4f1f3f5785882d6a4f65b563b",
+      "actual": "9d3a8acf9742bb9b761ac295b299cc5496e2ccb4f1f3f5785882d6a4f65b563b",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f704f672f2aeef141eae3c1b8033c44927d9e156f3957d8f17ba26bde9b03f62",
+      "actual": "f704f672f2aeef141eae3c1b8033c44927d9e156f3957d8f17ba26bde9b03f62",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "ed6ecbdaceed50e72152d405c2ea6da79e6552cc29aab16b1748fafed2ad25a7",
+      "actual": "ed6ecbdaceed50e72152d405c2ea6da79e6552cc29aab16b1748fafed2ad25a7",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8ecab8c162a94c9614007cb2cba3182d26960de19c007483547f5d1b3d364e58",
+      "actual": "8ecab8c162a94c9614007cb2cba3182d26960de19c007483547f5d1b3d364e58",
+      "match": true
+    },
+    {
+      "path": "tests/abundance-gift.test.js",
+      "status": 200,
+      "expected": "9c8ca4dd67638f8cf733f6d331def4f79fda81eade3643d8a3dab4b24cdc9169",
+      "actual": "9c8ca4dd67638f8cf733f6d331def4f79fda81eade3643d8a3dab4b24cdc9169",
+      "match": true
+    },
+    {
+      "path": "wellbeing.js",
+      "status": 200,
+      "expected": "b7235a9a8d334786a81482e79080eecffd2b657eb25596cc1918c3fefeb676b8",
+      "actual": "b7235a9a8d334786a81482e79080eecffd2b657eb25596cc1918c3fefeb676b8",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "c5776ef9c391471caa2955501f47c202e29521504ee714b5139ab19cbe440568",
+      "actual": "c5776ef9c391471caa2955501f47c202e29521504ee714b5139ab19cbe440568",
+      "match": true
+    }
+  ],
+  "matched": 16,
+  "total": 16
+}

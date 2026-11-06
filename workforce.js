@@ -1,4 +1,4 @@
-import {moveGiftFood} from './abundance-origin.js';
+import {giftInputFood,moveGiftFood,takeGiftFood} from './abundance-origin.js';
 import {recordWindDelivery} from './wind-delivery.js';
 import {markCreatorCargo,acceptCreatorCargo,addCreatorStock,recordCreatorUse} from './creator-materials.js';
 import {foodYieldMultiplier,useRichCatch} from './rich-catch.js';
@@ -361,8 +361,8 @@ function deposit(s,c,ctx){
   if(resource==='food'){
    if(c.giftCargo){
     const receiver=local?site:ctx.buildings.get(c.store),home=local&&site.type==='house';
-    const holder=home||!local?receiver:null,remaining=(home?receiver.pantry:receiver?.stock?.food)||0;
-    moveGiftFood(c,'giftCargo',holder,home?'giftHome':'giftStock',accepted,amount,remaining-accepted);
+    const remaining=home?receiver.pantry:local?giftInputFood(receiver):receiver?.stock?.food||0;
+    moveGiftFood(c,'giftCargo',receiver,home?'giftHome':local?'giftInput':'giftStock',accepted,amount,remaining-accepted);
    }
    acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);
    if(c.fishCargo){
@@ -423,14 +423,14 @@ function arrival(s,c,ctx){
   const target=s.citizens.find(p=>p.id===c.clothingTarget&&p.home===c.home);if(target&&c.clothingLoad===1)equipClothing(target);else if(c.clothingLoad)putStock(s,c.store,'clothing',c.clothingLoad,{overflow:true});delete c.clothingTarget;delete c.clothingLoad;invalidateAssignments(s);c.phase='home';return;
  }
  if(c.phase==='toCraftSupply'){
-  const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||craftResource(b),buffer=craftState(b),incoming=s.citizens.filter(p=>p.id!==c.id&&p.craftSite===c.craftSite&&(!c.craftMaterial||p.craftMaterial===k)).reduce((n,p)=>n+craftLoad(p),0)+workshopIncoming(s,c.craftSite,k),need=b?.type==='kiln'?Math.max(0,(kilnNeeds(b)[k]||0)-incoming):isArtisan(b)?Math.max(0,(artisanNeeds(b)[k]||0)-incoming):buffer?Math.max(0,(b.type==='brickyard'?BRICK_RECIPE[k]:craftBatch(b))-buffer[k]-incoming):0,amount=takeStock(s,c.store,k,Math.min(3,need,k==='food'?foodAvailableAt(s,c.store):Infinity));
+  const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||craftResource(b),buffer=craftState(b),incoming=s.citizens.filter(p=>p.id!==c.id&&p.craftSite===c.craftSite&&(!c.craftMaterial||p.craftMaterial===k)).reduce((n,p)=>n+craftLoad(p),0)+workshopIncoming(s,c.craftSite,k),need=b?.type==='kiln'?Math.max(0,(kilnNeeds(b)[k]||0)-incoming):isArtisan(b)?Math.max(0,(artisanNeeds(b)[k]||0)-incoming):buffer?Math.max(0,(b.type==='brickyard'?BRICK_RECIPE[k]:craftBatch(b))-buffer[k]-incoming):0,amount=takeStock(s,c.store,k,Math.min(3,need,k==='food'?foodAvailableAt(s,c.store):Infinity),{giftTo:c,giftKey:'giftCraft'});
   if(amount>1e-8){if(['brickyard','kiln'].includes(b.type)||isArtisan(b))c.craftAmount=amount;else if(b.type==='tailor')c.craftCloth=amount;else c.craftWool=amount;startTrip(s,c,c.craftSite,'toWork',ctx);}else{delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}return;
  }
- if(c.craftSite&&c.phase==='toWork'){const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||(c.craftCloth!==undefined?'cloth':'wool');if(craftState(b))craftState(b)[k]+=craftLoad(c);else putStock(s,c.store,k,craftLoad(c),{overflow:true});delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;invalidateAssignments(s);}
+ if(c.craftSite&&c.phase==='toWork'){const b=ctx.buildings.get(c.craftSite),k=c.craftMaterial||(c.craftCloth!==undefined?'cloth':'wool');const buffer=craftState(b),load=craftLoad(c);if(buffer){moveGiftFood(c,'giftCraft',b,'giftInput',load,load,buffer[k]);buffer[k]+=load;}else putStock(s,c.store,k,load,{overflow:true,gift:c.giftCraft});delete c.giftCraft;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;invalidateAssignments(s);}
  if(c.phase==='toDistrictSupply'){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(isWorkday(s.simTime)&&q&&districtPickup(s,c)>0){startTrip(s,c,q.target,'toDistrictStore',ctx);return;}delete c.districtJob;c.store=closestStore(s,ctx,c.home);invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);return;}
  if(c.phase==='toDistrictStore'){if(!deposit(s,c,ctx)){c.phase='unloading';return;}delete c.districtJob;c.store=closestStore(s,ctx,c.home);invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);return;}
- if(c.seedField&&c.phase==='toStore'){const b=ctx.buildings.get(c.seedField),crop=b?.type==='field'?cropFor(s,b):null;const incoming=s.citizens.filter(p=>p.id!==c.id&&p.seedField===c.seedField).reduce((n,p)=>n+(p.seedFood||0),0),need=crop?Math.max(0,SEED_COST-crop.seedUsed-crop.seedStock-incoming):0,stock=storeStock(s,c.store,'food'),amount=Math.min(6,need,stock);if(amount>1e-8){takeStock(s,c.store,'food',amount);c.seedFood=amount;startTrip(s,c,c.seedField,'toWork',ctx);}else{delete c.seedField;delete c.seedFood;startTrip(s,c,c.home,'toHome',ctx);}return;}
- if(c.seedField&&c.phase==='toWork'){const b=ctx.buildings.get(c.seedField);if(b?.type==='field')cropFor(s,b).seedStock+=c.seedFood||0;else putStock(s,c.store,'food',c.seedFood||0,{overflow:true});delete c.seedField;delete c.seedFood;invalidateAssignments(s);}
+ if(c.seedField&&c.phase==='toStore'){const b=ctx.buildings.get(c.seedField),crop=b?.type==='field'?cropFor(s,b):null;const incoming=s.citizens.filter(p=>p.id!==c.id&&p.seedField===c.seedField).reduce((n,p)=>n+(p.seedFood||0),0),need=crop?Math.max(0,SEED_COST-crop.seedUsed-crop.seedStock-incoming):0,stock=storeStock(s,c.store,'food'),amount=Math.min(6,need,stock);if(amount>1e-8){c.seedFood=takeStock(s,c.store,'food',amount,{giftTo:c,giftKey:'giftSeed'});startTrip(s,c,c.seedField,'toWork',ctx);}else{delete c.seedField;delete c.seedFood;startTrip(s,c,c.home,'toHome',ctx);}return;}
+ if(c.seedField&&c.phase==='toWork'){const b=ctx.buildings.get(c.seedField);const amount=c.seedFood||0;if(b?.type==='field'){const crop=cropFor(s,b);moveGiftFood(c,'giftSeed',b,'giftSeedStock',amount,amount,crop.seedStock);crop.seedStock+=amount;}else putStock(s,c.store,'food',amount,{overflow:true,gift:c.giftSeed});delete c.giftSeed;delete c.seedField;delete c.seedFood;invalidateAssignments(s);}
  if(c.phase==='toHome'){finishMemorialMove(s,c);c.phase='home';if(s.district?.jobs.some(q=>q.remaining>1e-7))invalidateAssignments(s);return;}
  if(c.phase==='toSchool'){c.phase='studying';return;}
  if(c.phase==='toHealer'){c.phase='treatment';return;}
@@ -713,7 +713,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
     let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'healer')*healingSpeed(c);const cost=healingCost(c);
     for(const patient of patients){const amount=Math.max(0,Math.min(budget/patients.length,(patient.careGoal||85)-patient.health,(b.workshopStock.input.food||0)/(.04*cost),(b.workshopStock.input.reed||0)/(.02*cost)));const before=patient.health;patient.health+=amount;
      if(amount>0)c.medicine.practice+=amount;
-     if(before<60&&patient.health>=60)recordMedicalRecovery(s,c,patient);b.workshopStock.input.food=Math.max(0,b.workshopStock.input.food-amount*.04*cost);b.workshopStock.input.reed=Math.max(0,b.workshopStock.input.reed-amount*.02*cost);}return;
+     if(before<60&&patient.health>=60)recordMedicalRecovery(s,c,patient);if(b.giftInput)takeGiftFood(b,'giftInput',amount*.04*cost,b.workshopStock.input.food);b.workshopStock.input.food=Math.max(0,b.workshopStock.input.food-amount*.04*cost);b.workshopStock.input.reed=Math.max(0,b.workshopStock.input.reed-amount*.02*cost);}return;
    }
    const rate=workRate(c,b.type);
    if(GATHERING_TYPES.includes(b.type)){
@@ -817,10 +817,10 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  if(needsHolder&&!recovery)return false;
  discardFishingCargo(s,c);delete c.fieldGrain;
  const ctxRecoveryStore=()=>s.buildings.find(b=>buildingKey(b)===recovery);
- const restore=(k,n,fishKey)=>{if(!(n>0))return 0;const accepted=putRecoveryStock(s,recovery,k,n);if(accepted!==n)throw new Error('Recovery holder refused owned cargo');
-  if(k==='food'&&fishKey){
+ const restore=(k,n,fishKey,giftKey=fishKey==='fishCargo'?'giftCargo':fishKey==='fishPantry'?'giftPantry':null)=>{if(!(n>0))return 0;const accepted=putRecoveryStock(s,recovery,k,n);if(accepted!==n)throw new Error('Recovery holder refused owned cargo');
+  if(k==='food'&&giftKey&&c[giftKey]){
    const holder=ctxRecoveryStore();
-   moveGiftFood(c,fishKey==='fishCargo'?'giftCargo':'giftPantry',holder,'giftStock',n,n,holder.stock.food-n);
+   moveGiftFood(c,giftKey,holder,'giftStock',n,n,holder.stock.food-n);
   }
   if(fishKey&&c[fishKey]){
    const holder=s.buildings.find(b=>buildingKey(b)===recovery);
@@ -838,11 +838,13 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
   else s.resources[k]=(s.resources[k]||0)+n;
  }
  c.cargo={};c.buildCargo={};
- if(craftLoad(c))restore(c.craftMaterial||(c.craftCloth!==undefined?'cloth':'wool'),craftLoad(c));
+ if(craftLoad(c))restore(c.craftMaterial||(c.craftCloth!==undefined?'cloth':'wool'),craftLoad(c),null,'giftCraft');
+ delete c.giftCraft;
  const hadManual=!!c.manualGathering;releaseManualGathering(c);
  const hadCraft=!!c.craftSite||c.clothingTarget!==undefined;
  if(c.clothingLoad)restore('clothing',c.clothingLoad);
- if(c.seedFood)restore('food',c.seedFood);
+ if(c.seedFood)restore('food',c.seedFood,null,'giftSeed');
+ delete c.giftSeed;
  if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
  delete c.fishCargo;delete c.fishPantry;delete c.giftCargo;delete c.giftPantry;delete c.inspiredFishReturn;delete c.creatorCargo;delete c.windCargo;delete c.windRoute;
  delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;

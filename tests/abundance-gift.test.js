@@ -96,3 +96,31 @@ test('an actual district transfer carries marked gift food across a reload',asyn
  assert.equal(s.buildings.find(b=>b.type==='shrine').giftStock.at(-1),6);
  assert.equal(encode(decode(encode(s))),encode(s));
 });
+
+test('marked grain delivered to a brewery returns to storage when the brewery is demolished',async()=>{
+ const {advanceTime}=await import('../engine.js');
+ const {requestTransfer}=await import('../district-logistics.js');
+ const {invalidateAssignments,syncCitizens}=await import('../workforce.js');
+ const {initializeArtisans}=await import('../artisan.js');
+ const {demolish}=await import('../management.js');
+ const {s,b}=fixture();
+ assert.ok(miracle(s,'abundance',b).ok);
+ const brewery={type:'brewery',x:11,y:9,level:1};
+ s.buildings.push(brewery);
+ initializeArtisans(s);
+ for(const c of s.citizens.filter(c=>c.age>=16))c.role='carrier';
+ invalidateAssignments(s);syncCitizens(s);
+ const order=requestTransfer(s,'10,9','11,9','food',3,{targetKind:'input'});
+ assert.ok(order.ok,order.reason);
+ const job=s.district.jobs.find(q=>q.id===order.id);
+ for(let i=0;i<1000&&!job.delivered;i++){s.event=null;advanceTime(s,.2);}
+ assert.equal(job.delivered,3);
+ assert.deepEqual(brewery.giftInput,[3]);
+ const raw=encode(s),restored=decode(raw);
+ assert.ok(restored);
+ assert.equal(encode(restored),raw);
+ const result=demolish(restored,11,9);
+ assert.ok(result.ok,result.reason);
+ assert.equal(restored.buildings.find(b=>b.type==='shrine').giftStock.at(-1),3);
+ assert.ok(decode(encode(restored)));
+});
