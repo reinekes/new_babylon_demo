@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-06T01:27:54.394377+00:00",
+  "commit": "a8ff1ab0fd0148af1eab763b900ee7e325a2a574",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "14fa7dce366d68621a24713a87f512ae893a9da8c454039dbfb941b2baa41633",
+      "actual": "14fa7dce366d68621a24713a87f512ae893a9da8c454039dbfb941b2baa41633",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "86dba2093b2741f8668d95f45a3ecda9617aa5469c00c8a0a5260ce737101c62",
+      "actual": "86dba2093b2741f8668d95f45a3ecda9617aa5469c00c8a0a5260ce737101c62",
+      "match": true
+    },
+    {
+      "path": "common-meal.js",
+      "status": 200,
+      "expected": "1b3da8237e8336950852e4ed7d53b13f5e24bd44e3d3b4f188a83d6ec5148552",
+      "actual": "1b3da8237e8336950852e4ed7d53b13f5e24bd44e3d3b4f188a83d6ec5148552",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "11810609a2668054d618fc99fb12f6df89858f43823a77fc278e990cd6a24117",
+      "actual": "11810609a2668054d618fc99fb12f6df89858f43823a77fc278e990cd6a24117",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "94ae1d87973ff0a41e4b4d879156b0f11b9c6464ebba6e854239e8b936be674c",
+      "actual": "94ae1d87973ff0a41e4b4d879156b0f11b9c6464ebba6e854239e8b936be674c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "63a3ad3d05d3a04e84f4b027fa7e594b421f99afcb587275d237a167055aa7b1",
+      "actual": "63a3ad3d05d3a04e84f4b027fa7e594b421f99afcb587275d237a167055aa7b1",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "93d829aac634dfd1c5f61576b3c4abe2f614d36a15a026d01d6e28f972237db1",
+      "actual": "93d829aac634dfd1c5f61576b3c4abe2f614d36a15a026d01d6e28f972237db1",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "cc1edd3146ab8c43eb52fdbfdcae9da60f06172bbdd9dfa9b870f7791e625668",
+      "actual": "cc1edd3146ab8c43eb52fdbfdcae9da60f06172bbdd9dfa9b870f7791e625668",
+      "match": true
+    },
+    {
+      "path": "tests/common-meal.test.js",
+      "status": 200,
+      "expected": "f6eb3f08c39baa787d048eade2796f815d7b66b9f1665b338fd4d76dac586c89",
+      "actual": "f6eb3f08c39baa787d048eade2796f815d7b66b9f1665b338fd4d76dac586c89",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
