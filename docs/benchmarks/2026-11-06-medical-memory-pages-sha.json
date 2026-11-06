@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T02:10:35.402069+00:00",
+  "commit": "30c681870aef85f68de998494d9b436ca49df490",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c49d6ce368b5a968f3d4bfc88d6376e6d1bbf37ad0c8d10003c1549f91d6efc6",
+      "actual": "c49d6ce368b5a968f3d4bfc88d6376e6d1bbf37ad0c8d10003c1549f91d6efc6",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "8cd805a11c8d83f117ee0f9a7fa43cc4b21e4a27f58ebce46f20c93d0ae5a73d",
+      "actual": "8cd805a11c8d83f117ee0f9a7fa43cc4b21e4a27f58ebce46f20c93d0ae5a73d",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "99f2f8d02173e06800a64487f170f3cf440830e80f43c98af3561cea75323153",
+      "actual": "99f2f8d02173e06800a64487f170f3cf440830e80f43c98af3561cea75323153",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9b85dd5bbf6ed5d818231fb3d8a174821a008a0a2d0d730440160ce2a4122219",
+      "actual": "9b85dd5bbf6ed5d818231fb3d8a174821a008a0a2d0d730440160ce2a4122219",
+      "match": true
+    },
+    {
+      "path": "life-analytics.js",
+      "status": 200,
+      "expected": "6d757eef480c3f02da61d777ba329e55cb863980be84814605646d92fbbaf4e6",
+      "actual": "6d757eef480c3f02da61d777ba329e55cb863980be84814605646d92fbbaf4e6",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "db3740a624511f1a050b33f3a2a2e970ffcb2d6729464cea188fac9446aba778",
+      "actual": "db3740a624511f1a050b33f3a2a2e970ffcb2d6729464cea188fac9446aba778",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "4f79be53a1e745efee8fc3eec46af458eaa3dae1b9d99bb3fd0b7f9e27baf041",
+      "actual": "4f79be53a1e745efee8fc3eec46af458eaa3dae1b9d99bb3fd0b7f9e27baf041",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "80f2998d8cc421ef9c8b70a68e5b35e80cf1766583aa76d0a29b40a29411824e",
+      "actual": "80f2998d8cc421ef9c8b70a68e5b35e80cf1766583aa76d0a29b40a29411824e",
+      "match": true
+    },
+    {
+      "path": "tests/healer.test.js",
+      "status": 200,
+      "expected": "0db3ee24a67b34de9d476cec96f696063c6937743491aebc3500e1f7536bbdb5",
+      "actual": "0db3ee24a67b34de9d476cec96f696063c6937743491aebc3500e1f7536bbdb5",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "0b45182f9c0ca9d90f74a669b0160d463ef818ec109bcaae956f3f82af560e77",
+      "actual": "0b45182f9c0ca9d90f74a669b0160d463ef818ec109bcaae956f3f82af560e77",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}

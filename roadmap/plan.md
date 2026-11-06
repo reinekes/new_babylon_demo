@@ -257,7 +257,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 group: people
 status: partial
 priority: P2
-depends: -
+depends: god-vows
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
 
 ### Описание
@@ -267,7 +267,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 Именная память дома создаётся из подтверждённой смерти и связывает биографию с домом и подтверждённым мастерством.
 
 ### Следующий шаг
-Подтвердить выпуск памяти о выздоровлении. Связь с обетом требует механики god-vows.
+Связать память с подтверждённым исходом обета после реализации god-vows.
 
 ### Готово когда
 Сохраняется реальная личность/история, прошлое старому городу не сочиняется.
