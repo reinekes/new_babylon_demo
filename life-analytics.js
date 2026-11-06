@@ -1,4 +1,5 @@
-import {citizenName,BUILDINGS} from './definitions.js';
+import {isStrictSumer} from './scenario-profiles.js';
+import {citizenName,BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {mealRation,workRate} from './wellbeing.js';
 import {displayName,syncCitizenEpithets} from './citizen-epithets.js';
 import {PROFESSION_NAMES,professionRole} from './professions.js';
@@ -25,11 +26,38 @@ export function syncLifeAnalytics(s){
  return a;
 }
 export function recordLifeBirth(s,c){const a=initializeLifeAnalytics(s);let p=a.people.find(p=>p.id===c.id);if(!p){p=identity(c,s);a.people.push(p);}if(p.diedTick===null)p.bornTick??=tick(s);return p;}
+function recordFamilyMemorial(s,c,p){
+ if(!isStrictSumer(s)||p.cause==='unknown')return;
+ const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===c.home);
+ if(!home)return;
+ const skills=[];
+ if(c.builderSkill?.projects>0)skills.push({kind:'builder',level:c.builderSkill.level});
+ if(c.medicine?.practice>0)skills.push({kind:'healer',level:c.medicine.level});
+ p.memorial={home:buildingKey(home),built:home.built?{...home.built}:null,skills};
+}
+
+export function familyMemorialsAt(s,home){
+ if(home.type!=='house')return [];
+ const built=home.built??null;
+ return (s.lifeAnalytics?.people||[]).filter(p=>{
+  const m=p.memorial;
+  return m?.home===buildingKey(home)&&(built===null?m.built===null:m.built&&['year','season','elapsed','order'].every(k=>built[k]===m.built[k]));
+ });
+}
+
+function validateMemorial(s,p){
+ const m=p.memorial;
+ if(m===undefined)return true;
+ return isStrictSumer(s)&&p.diedTick!==null&&p.cause!=='unknown'&&m&&typeof m.home==='string'&&/^\d+,\d+$/.test(m.home)&&
+  (m.built===null||m.built&&integer(m.built.year)&&m.built.year>=1&&integer(m.built.season)&&m.built.season<4&&finite(m.built.elapsed,0,45)&&integer(m.built.order)&&(m.built.year-1)*4+m.built.season<=p.diedTick)&&
+  Array.isArray(m.skills)&&m.skills.length<=2&&new Set(m.skills.map(v=>v?.kind)).size===m.skills.length&&m.skills.every(v=>v&&['builder','healer'].includes(v.kind)&&integer(v.level)&&v.level>=1&&v.level<=(v.kind==='healer'?5:3));
+}
+
 export function recordLifeDeath(s,c,cause='unknown'){
  const a=initializeLifeAnalytics(s);let p=a.people.find(p=>p.id===c.id);if(!p){p=identity(c,s);a.people.push(p);}if(p.diedTick!==null)return p;
  // Call before deletion, while age, home and kinship are still available.
  if(c.age!==undefined)p.age=c.age;if(c.parents)p.parents=[...c.parents];if(c.partner!==undefined)p.partner=c.partner;
- Object.assign(p,epithetRecord(c));p.diedTick=tick(s);p.cause=Object.hasOwn(LIFE_CAUSE_NAMES,cause)?cause:'unknown';return p;
+ Object.assign(p,epithetRecord(c));p.diedTick=tick(s);p.cause=Object.hasOwn(LIFE_CAUSE_NAMES,cause)?cause:'unknown';p.home=c.home||p.home;recordFamilyMemorial(s,c,p);return p;
 }
 export function snapshotLifeAnalytics(s){
  syncCitizenEpithets(s);
@@ -40,7 +68,7 @@ export function snapshotLifeAnalytics(s){
 export function validateLifeAnalytics(s){
  const a=s.lifeAnalytics;if(!a||a.version!==1||!integer(a.startedTick)||a.startedTick>tick(s)||!a.baseline||!integer(a.baseline.births)||!integer(a.baseline.deaths)||!Array.isArray(a.people)||a.people.length>100000||!Array.isArray(a.history)||a.history.length>LIFE_HISTORY_LIMIT)return false;
  const ids=new Map(),living=new Set((s.citizens||[]).map(c=>c.id));
- for(const p of a.people){if(!p||!integer(p.id)||(integer(s.demography?.nextId)&&p.id>=s.demography.nextId)||ids.has(p.id)||typeof p.name!=='string'||p.name.length>160||!(p.age===null||finite(p.age,0,100))||![null,'m','f'].includes(p.sex)||!Array.isArray(p.parents)||![0,2].includes(p.parents.length)||new Set(p.parents).size!==p.parents.length||p.parents.some(id=>!integer(id)||id>=p.id)||!(p.partner===null||integer(p.partner)&&p.partner!==p.id)||!integer(p.generation)||p.generation<1||!(p.home===null||typeof p.home==='string'&&/^\d+,\d+$/.test(p.home))||!integer(p.firstSeenTick)||p.firstSeenTick<a.startedTick||p.firstSeenTick>tick(s)||!(p.bornTick===null||integer(p.bornTick)&&p.bornTick>=a.startedTick&&p.bornTick<=p.firstSeenTick)||!(p.diedTick===null||integer(p.diedTick)&&p.diedTick>=p.firstSeenTick&&p.diedTick<=tick(s))||!(p.diedTick===null?p.cause===null:Object.hasOwn(LIFE_CAUSE_NAMES,p.cause))||living.has(p.id)!==(p.diedTick===null))return false;ids.set(p.id,p);}
+ for(const p of a.people){if(!p||!integer(p.id)||(integer(s.demography?.nextId)&&p.id>=s.demography.nextId)||ids.has(p.id)||typeof p.name!=='string'||p.name.length>160||!(p.age===null||finite(p.age,0,100))||![null,'m','f'].includes(p.sex)||!Array.isArray(p.parents)||![0,2].includes(p.parents.length)||new Set(p.parents).size!==p.parents.length||p.parents.some(id=>!integer(id)||id>=p.id)||!(p.partner===null||integer(p.partner)&&p.partner!==p.id)||!integer(p.generation)||p.generation<1||!(p.home===null||typeof p.home==='string'&&/^\d+,\d+$/.test(p.home))||!integer(p.firstSeenTick)||p.firstSeenTick<a.startedTick||p.firstSeenTick>tick(s)||!(p.bornTick===null||integer(p.bornTick)&&p.bornTick>=a.startedTick&&p.bornTick<=p.firstSeenTick)||!(p.diedTick===null||integer(p.diedTick)&&p.diedTick>=p.firstSeenTick&&p.diedTick<=tick(s))||!(p.diedTick===null?p.cause===null:Object.hasOwn(LIFE_CAUSE_NAMES,p.cause))||living.has(p.id)!==(p.diedTick===null)||!validateMemorial(s,p))return false;ids.set(p.id,p);}
  if([...living].some(id=>!ids.has(id)))return false;
  let previous=-1,previousRow=null;for(const h of a.history){if(!h||!integer(h.tick)||h.tick<a.startedTick||h.tick>tick(s)||h.tick<=previous||!['population','children','adults','elders','births','deaths'].every(k=>integer(h[k]))||h.children+h.adults+h.elders!==h.population||!h.causes||!Object.keys(LIFE_CAUSE_NAMES).every(k=>integer(h.causes[k]))||Object.values(h.causes).reduce((a,b)=>a+b,0)!==h.deaths||!['health','mood','hunger','thirst','faith'].every(k=>h[k]===null||finite(h[k],0,100)))return false;if(previousRow&&(h.births<previousRow.births||h.deaths<previousRow.deaths||Object.keys(LIFE_CAUSE_NAMES).some(k=>h.causes[k]<previousRow.causes[k])))return false;previous=h.tick;previousRow=h;}
  return true;
