@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T00:31:00.276141+00:00",
+  "commit": "ad862019efe223d464564e721c9411415ea4c9d5",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f6668009767fa0b819865bb7d48fb0bb6ff5450a561798a816fa937c825fcfd8",
+      "actual": "f6668009767fa0b819865bb7d48fb0bb6ff5450a561798a816fa937c825fcfd8",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "d85bc20443b37037cdc582553a2d361bfd03233c197c76a6ab8f9a663d03e3fb",
+      "actual": "d85bc20443b37037cdc582553a2d361bfd03233c197c76a6ab8f9a663d03e3fb",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "ec5dbf76d0a7836c140b4807232d8d0bd011c07f181dfc223c1e079ca9f27e4f",
+      "actual": "ec5dbf76d0a7836c140b4807232d8d0bd011c07f181dfc223c1e079ca9f27e4f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "730f9a9159fc0e21dcefad09bdfa519567bae9241412c1853a7ac0f288279818",
+      "actual": "730f9a9159fc0e21dcefad09bdfa519567bae9241412c1853a7ac0f288279818",
+      "match": true
+    },
+    {
+      "path": "kilns.js",
+      "status": 200,
+      "expected": "cd4ea0e13e3ff7f7f371bb6a5ffd3d5bd3869f9f02438f4e2c3fa8f207f5e695",
+      "actual": "cd4ea0e13e3ff7f7f371bb6a5ffd3d5bd3869f9f02438f4e2c3fa8f207f5e695",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a70b0a266d1017a846eeddce062b3089613869848a948dd78685bcc179bedf7b",
+      "actual": "a70b0a266d1017a846eeddce062b3089613869848a948dd78685bcc179bedf7b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "496631e332136022c977c1de53d0f4379c8253887a98cf0a237f141becc17c6d",
+      "actual": "496631e332136022c977c1de53d0f4379c8253887a98cf0a237f141becc17c6d",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "e4efa28636d4cca6acee49745c742da0ddf436a4e9edeaf1f2aa918b92b47935",
+      "actual": "e4efa28636d4cca6acee49745c742da0ddf436a4e9edeaf1f2aa918b92b47935",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "f402a3362656188c80b3a62e0ca7374e38d9ecd27860b77ba31aee7808159566",
+      "actual": "f402a3362656188c80b3a62e0ca7374e38d9ecd27860b77ba31aee7808159566",
+      "match": true
+    },
+    {
+      "path": "tests/kiln-integration.test.js",
+      "status": 200,
+      "expected": "231b370e7bd57b98423c73892e23e0d975f9d39bc2549995850a810d176bb58e",
+      "actual": "231b370e7bd57b98423c73892e23e0d975f9d39bc2549995850a810d176bb58e",
+      "match": true
+    },
+    {
+      "path": "tests/kilns.test.js",
+      "status": 200,
+      "expected": "815adbae6943d47f12a6dc686d8b85bdf896f35ddb994748c0db5c846c521a95",
+      "actual": "815adbae6943d47f12a6dc686d8b85bdf896f35ddb994748c0db5c846c521a95",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "cdbbad5fc1304eea89a19466c7f5e12e946ecc0b3955732d47cbde1d1f59538f",
+      "actual": "cdbbad5fc1304eea89a19466c7f5e12e946ecc0b3955732d47cbde1d1f59538f",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "52893e2bb7731ebdc475358be66dd4ef83f50be6bf4105b9d42dc43bb87bf624",
+      "actual": "52893e2bb7731ebdc475358be66dd4ef83f50be6bf4105b9d42dc43bb87bf624",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
