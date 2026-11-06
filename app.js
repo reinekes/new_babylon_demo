@@ -1,3 +1,4 @@
+import {PEACE_LIMIT,PEACE_MOOD,PEACE_RADIUS,peaceQuote} from './peace-discovery.js';
 import {createArrivalPresentation} from './arrival-presentation.js';
 import {arrivalKnowledgeReason,arrivalOffer,arrivalRoute,lastArrivalWelcome} from './arrival-hospitality.js';
 import {createShapingPresentation} from './shaping-presentation.js';
@@ -841,8 +842,8 @@ for(const [i,[type]]of Object.entries(Object.entries(BUILDINGS))){
 }
 function makeMiracleCard(id,m){
  const details=document.createElement('details');details.className='miracle-disclosure'+(m.unlockBuilding||m.unlockQuest?' is-sacred':'');details.dataset.miracle=id;
- details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
- details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing')update();});
+ details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
+ details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing'||id==='peace')update();});
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
  const el=details.querySelector('.miracle-cast');
@@ -853,7 +854,7 @@ function makeMiracleCard(id,m){
   el.before(choice);
   choice.querySelector('select').onchange=()=>update();
  }
- el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:lastMiracleTarget);if(result.ok){details.open=false;arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
  else if(id==='healing'&&state.arrivalGroup){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();arrivalPresentation.cast(state.arrivalGroup);}
  else if(id==='shaping'&&state.shapingProjects){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();shapingPresentation.cast(state.shapingBatches?.rows.at(-1));}
@@ -898,7 +899,16 @@ function update(){
    shapingBatchQuote(state,lastMiracleTarget,{connected:(from,to)=>connectedStores(state,from,to)}):null;
   const arrival=id==='healing'&&state.arrivalHospitality&&card.open&&!reason&&!state.arrivalGroup?arrivalOffer(state,networkFor(state)):null;
   const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?`Группа уже в пути · ${state.arrivalGroup.count} чел.`:card.open&&!reason&&!arrival?'Нужны сухой путь, свободный дом, еда и вода':''):'';
-  updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason||arrivalReason,gift,arrival);
+  const peace=id==='peace'&&state.peaceDiscovery&&card.open&&!reason?peaceQuote(state,lastMiracleTarget):null;
+  updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason||arrivalReason||peace?.reason,gift,arrival);
+  const peacePreview=card.querySelector('[data-peace-quote]');
+  if(peacePreview){
+   const ids=peace?.ids||[];
+   peacePreview.hidden=!ids.length;
+   el.dataset.peaceIds=JSON.stringify(ids);
+   const text=ids.length?`Радиус ${PEACE_RADIUS} клеток · ${ids.length} из ${PEACE_LIMIT} чел. · +${PEACE_MOOD} настроения. ${ids.map(id=>displayName(state,id)).join(', ')}.`:'';
+   if(peacePreview.textContent!==text)peacePreview.textContent=text;
+  }
  }
  $('season-countdown').textContent=`Месяц ${calendar.number} / 12 · день ${calendar.day}${ceremonyActive(state)?' · время церемонии':paused?' · пауза':''}`;
  $('pause').textContent=paused?'▶':'Ⅱ';$('pause').setAttribute('aria-label',paused?'Продолжить время':'Приостановить время');$('pause').classList.toggle('active',paused);$('next-season').disabled=seasonJumping||!!seasonJumpReason(state);$('next-season').title=seasonJumpReason(state)||(state.festival||state.miracleCelebration?'Закончить праздник и перейти к следующему сезону':'Перейти к следующему сезону');

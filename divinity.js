@@ -9,7 +9,7 @@ export const DIVINE_NAMES={
 };
 export const DOMAIN_NAMES={water:'Воды',harvest:'Урожай',life:'Жизнь',craft:'Ремесло',knowledge:'Мудрость',sun:'Свет'};
 export function createDivinity(){return {domains:Object.fromEntries(Object.keys(DIVINE_NAMES).map(k=>[k,0])),names:[],rating:0,inspirationAttempts:0,inspirationSuccesses:0};}
-export function registerMiracle(s,domain){affectResidents(s,{faith:4,mood:3});
+export function registerMiracle(s,domain,{ids,mood=3}={}){affectResidents(s,{faith:4,mood},ids);
  s.divinity ||= createDivinity();s.divinity.domains[domain]++;s.divinity.rating=(s.divinity.rating||0)+2;refreshDivineName(s);
 }
 export function registerInspiration(s,success){

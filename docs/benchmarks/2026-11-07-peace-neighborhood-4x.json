@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "recipients": 12,
+  "controlledCareEvidence": true,
+  "castCpuMs": 34.312208999999996,
+  "samples": 120,
+  "medianStepCpuMs": 2.649249999999995,
+  "p95StepCpuMs": 11.884625000000028,
+  "byteEqualReload": false,
+  "maxStockRoundoff": 1.1368683772161603e-13
+}

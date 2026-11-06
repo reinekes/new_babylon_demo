@@ -1,3 +1,4 @@
+import {peaceKnowledgeReason} from './peace-discovery.js';
 import {arrivalKnowledgeReason} from './arrival-hospitality.js';
 import {shapingModelReason} from './shaping-model.js';
 import {recordShapingProject} from './shaping-projects.js';
@@ -78,6 +79,7 @@ export function buildingKnowledgeReason(s,type,level=1){
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){
+ if(id==='peace'&&s.peaceDiscovery)return peaceKnowledgeReason(s);
  if(id==='healing'&&s.arrivalHospitality)return arrivalKnowledgeReason(s);
  if(id==='shaping'&&s.shapingProjects)return shapingModelReason(s);
  if(id==='revelation'&&s.revelationEvidence)return revelationKnowledgeReason(s);

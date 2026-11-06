@@ -14,7 +14,7 @@ import {validateCreatorMaterials,advanceCreatorEvidence} from './creator-materia
 import {richCatchTarget,startRichCatch,expireRichCatch,validateRichCatch} from './rich-catch.js';
 import {validateFishProvenance} from './fish-provenance.js';
 import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
-import {validatePeaceDiscovery} from './peace-discovery.js';
+import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js';
 import {advanceBlessingDiscovery,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
@@ -219,6 +219,10 @@ export function miracle(s,id,target){
   const gift=receiveAbundance(s,target);
   if(!gift.ok)return gift;
  }
+ const peace=id==='peace'&&s.peaceDiscovery?peaceQuote(s,target):null;
+ if(peace?.reason)return {ok:false,reason:peace.reason};
+ if(peace&&target.ids!==undefined&&(!Array.isArray(target.ids)||target.ids.length!==peace.ids.length||
+  target.ids.some((id,i)=>id!==peace.ids[i])))return {ok:false,reason:'Список жителей изменился. Проверь квартал перед применением'};
  if(id==='healing'&&s.arrivalHospitality){
   if(s.arrivalGroup)return {ok:false,reason:'Группа уже в пути'};
   if(!reserveArrival(s,networkFor(s),target))return {ok:false,reason:'Условия приёма изменились. Проверь жильё, путь и провизию'};
@@ -235,7 +239,7 @@ export function miracle(s,id,target){
  }
  s.resources.faith-=price;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
- const oldName=s.name;registerMiracle(s,m.domain);
+ const oldName=s.name;registerMiracle(s,m.domain,peace?{ids:peace.ids,mood:PEACE_MOOD}:undefined);
  if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
  if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
  if(fishingYard)startRichCatch(s,fishingYard);
@@ -245,9 +249,10 @@ export function miracle(s,id,target){
  if(id==='sunlight'){affectResidents(s,{mood:7});s.happiness=Math.min(100,s.happiness+10);}
  if(id==='revelation'){if(!s.revelationEvidence)s.resources.faith+=20;s.resources.prestige+=12;}
  if(id==='stars')s.resources.prestige+=18;
- if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
+ if(peace)s.peaceDiscovery.lastCast={x:target.x,y:target.y,at:s.simTime,ids:peace.ids};
+ else if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
- applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
+ applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }
 function check(s){
  s.capacity=housingOf(s);

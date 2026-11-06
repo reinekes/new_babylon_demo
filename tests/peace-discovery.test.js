@@ -49,3 +49,33 @@ test('a calm meal needs two diners who ate, and each day counts once',()=>{
  saved.peaceDiscovery.meals[1].day=0;
  assert.equal(decode(encode(saved)),null);
 });
+
+test('Peace applies only to the quoted neighborhood after real care, preserving health and cargo',async()=>{
+ const {miracle}=await import('../engine.js');
+ const {peaceQuote,recordCompletedCare}=await import('../peace-discovery.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ s.godhood.stage='recognized';s.resources.faith=100;
+ const home=s.buildings.find(b=>b.type==='house');
+ const target={x:home.x,y:home.y};
+ assert.match(miracle(s,'peace',target).reason,/уход|трапез/);
+ const helper=s.citizens[0];
+ for(const resident of s.citizens.slice(1,4))recordCompletedCare(s,helper,resident);
+ assert.equal(miracle(s,'peace').ok,false);
+ const quote=peaceQuote(s,target);
+ assert.ok(quote.ids.length>0&&quote.ids.length<=12);
+ const mood=s.citizens.map(c=>[c.id,c.mood,c.health,c.hunger,structuredClone(c.cargo)]);
+ const happiness=s.happiness;
+ assert.equal(miracle(s,'peace',{...target,ids:[]}).ok,false);
+ assert.equal(s.resources.faith,100);
+ assert.equal(miracle(s,'peace',{...target,ids:quote.ids}).ok,true);
+ assert.equal(s.resources.faith,70);
+ assert.equal(s.happiness,happiness);
+ for(const [id,oldMood,health,hunger,cargo] of mood){
+  const c=s.citizens.find(c=>c.id===id);
+  assert.equal(c.mood,quote.ids.includes(id)?Math.min(100,oldMood+25):oldMood);
+  assert.equal(c.health,health);
+  assert.equal(c.hunger,hunger);
+  assert.deepEqual(c.cargo,cargo);
+ }
+ assert.deepEqual(s.peaceDiscovery.lastCast.ids,quote.ids);
+});
