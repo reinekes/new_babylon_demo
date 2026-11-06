@@ -1,0 +1,121 @@
+{
+  "at": "2026-11-06T22:53:11.740582+00:00",
+  "commit": "3f147d87d8b3e6dbf8e63d971d7dad06184d4830",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c7d88083883306835b39e3023defbb2f65b4aa8ef94ba405aadee94f0576c229",
+      "actual": "c7d88083883306835b39e3023defbb2f65b4aa8ef94ba405aadee94f0576c229",
+      "match": true
+    },
+    {
+      "path": "actor-art.js",
+      "status": 200,
+      "expected": "c184ae07e6d664e627222dd0b3d5d21d1a773882e608f007068dbc22efa5863c",
+      "actual": "c184ae07e6d664e627222dd0b3d5d21d1a773882e608f007068dbc22efa5863c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "dc20b97b33649bfee4d0c765fef6ba198d2ccb9d2f3d1dbe76c8f389991822d5",
+      "actual": "dc20b97b33649bfee4d0c765fef6ba198d2ccb9d2f3d1dbe76c8f389991822d5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-peace-keepsake-4x.json",
+      "status": 200,
+      "expected": "da43a6154f62a5c5b1dc107552df619fb0a91abf122d46e5834782dd61505214",
+      "actual": "da43a6154f62a5c5b1dc107552df619fb0a91abf122d46e5834782dd61505214",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "d061edcb75e54db71eef05beeec07f9a5a824fdfe129f23ac06266d408503cc4",
+      "actual": "d061edcb75e54db71eef05beeec07f9a5a824fdfe129f23ac06266d408503cc4",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "94117cb22165719bbc777f01fcef920196b907817ac7a87db77b0d5e79c6c8ee",
+      "actual": "94117cb22165719bbc777f01fcef920196b907817ac7a87db77b0d5e79c6c8ee",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "9faba5efc7ebcb851abd4080612bdddef51a41e91c35888990fb14e33913721f",
+      "actual": "9faba5efc7ebcb851abd4080612bdddef51a41e91c35888990fb14e33913721f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9bc6c14a9fa1f0741f103f2452f4502efb614b1125e8c9c05f69a6cd69036d31",
+      "actual": "9bc6c14a9fa1f0741f103f2452f4502efb614b1125e8c9c05f69a6cd69036d31",
+      "match": true
+    },
+    {
+      "path": "peace-discovery.js",
+      "status": 200,
+      "expected": "07493db4a7a5b574275d5148a879aad462218327e78c8e8388b126cdc8b5f79f",
+      "actual": "07493db4a7a5b574275d5148a879aad462218327e78c8e8388b126cdc8b5f79f",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "32f4c6b335c23b2b5a563d449dee24e60220f07da9d70ca7980df39ada99c8c2",
+      "actual": "32f4c6b335c23b2b5a563d449dee24e60220f07da9d70ca7980df39ada99c8c2",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "e7e76169aa44bd2357fcebebc9dec4e704880277dd1c62ece1a2b91338058ee9",
+      "actual": "e7e76169aa44bd2357fcebebc9dec4e704880277dd1c62ece1a2b91338058ee9",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e6f44ed3c46713d976e2aec6a6d0740622812a6fccf7beabaef4dcf864330ae5",
+      "actual": "e6f44ed3c46713d976e2aec6a6d0740622812a6fccf7beabaef4dcf864330ae5",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "50838ec057bff8bf6197797786cb2491aafcac34c966bbc532236820c7151e38",
+      "actual": "50838ec057bff8bf6197797786cb2491aafcac34c966bbc532236820c7151e38",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-actors.test.js",
+      "status": 200,
+      "expected": "7aa448380b26a98f045b08a0ba6069f25b07936c72ee4550cc2c7bc71e9c4d6f",
+      "actual": "7aa448380b26a98f045b08a0ba6069f25b07936c72ee4550cc2c7bc71e9c4d6f",
+      "match": true
+    },
+    {
+      "path": "tests/peace-presentation.test.js",
+      "status": 200,
+      "expected": "0b9e2c974bd69998e79eddebda37f76caad37be45b12df7ce37d7ce97dfdec3c",
+      "actual": "0b9e2c974bd69998e79eddebda37f76caad37be45b12df7ce37d7ce97dfdec3c",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "b8e498389d5a1e0a06f91141c5a43a09a8da683a7ec620550e627e0e26402fd8",
+      "actual": "b8e498389d5a1e0a06f91141c5a43a09a8da683a7ec620550e627e0e26402fd8",
+      "match": true
+    }
+  ],
+  "matched": 16,
+  "total": 16
+}
