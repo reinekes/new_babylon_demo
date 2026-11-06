@@ -1,3 +1,4 @@
+import {showRainObserver} from '../rain-presentation.js';
 import {createActorShadowFilter} from './shadow-casters.js';
 import {residentPoseInterval,residentPoseSlot} from './resident-pose-schedule.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
@@ -396,7 +397,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // Apply the distance sample once, before task IK and skeleton upload.
    if(!a.paused&&a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
-   if(a.paused&&!a.ploughPoseChanged&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
+   if(a.paused&&!a.ploughPoseChanged&&!a.rainChanged&&!a.rainReaction&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
    const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seated=milking||music,resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop'||a.wasDancing&&a.clip==='Idle_Loop';a.wasSwimming=swimming;a.wasDancing=a.pose==='dance';
@@ -427,6 +428,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     // Per-person nonuniform stature changes effective segment lengths after a
     // solve; iterate the actual GLB chain until both palms settle on the rails.
     for(let solve=0;solve<4;solve++){poseArm(a,'l',local(a.c.funeralContact.hands.left));poseArm(a,'r',local(a.c.funeralContact.hands.right));}
+   }else if(a.rainReaction){
+    const covered=a.rainReaction==='cover',spread=covered?.12:.41,height=covered?1.42:1.06;
+    poseArm(a,'l',vec(-spread,height,.36));poseArm(a,'r',vec(spread,height,.36));
    }else if(a.c.mourningTorch||a.c.festivalTorch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
    }else if(swimming){
     const stroke=residentSwimmingPresentation(a.c,a.time,{reducedMotion}).stroke;
@@ -471,7 +475,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
    musicianMallets(a,music?a.workContact:null);
-   if(!plough&&!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&a.pose!=='petting'){
+   if(!a.rainReaction&&!plough&&!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&a.pose!=='petting'){
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
@@ -564,14 +568,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Actor ownership/disposal remains with remove(a), including never-woken rigs.
   a.sleepingRig=null;
  }
- function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null}={}){
+ function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null,rainReaction=null}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   const replacedState=presentedState!==state;presentedState=state;
   if(replacedState)for(const a of people.values())resetResidentPresentation(a);
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused){poseTime+=dt*speed;poseClock+=dt;}
-  const frame=actorViewFrame(state),visible=frame.citizens,positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
+  const frame=actorViewFrame(state),visible=showRainObserver(frame.citizens,state,rainReaction),positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   const teams=ambient?.hasPloughTeams?ploughTeams(state,visible):[];
   for(const team of teams)positions.set(team.driverId,{...team.driver,plough:team});
   // Match residentAppearance's first array.find, including falsy-ID fallback.
@@ -587,8 +591,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
    releaseSleepingRig(a,true);a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;
    const interval=residentPoseInterval(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale,!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.id===focusId));
+   const reaction=rainReaction?.id===c.id?rainReaction.phase:null;
+   a.rainChanged=a.rainReaction!==reaction;
+   a.rainReaction=reaction;
    const position=positions.get(c.id);
-   a.root.simplifiedShadow=interval>0&&!c.swimming;const slot=residentPoseSlot(poseClock,interval,c.id);a.poseSample=slot===null||slot!==a.poseSlot||a.paused!==paused||!!position?.plough!==!!a.wasPloughing||!a.hasModelPose;a.poseSlot=slot;
+   a.root.simplifiedShadow=interval>0&&!c.swimming;const slot=residentPoseSlot(poseClock,interval,c.id);a.poseSample=a.rainChanged||!!reaction||slot===null||slot!==a.poseSlot||a.paused!==paused||!!position?.plough!==!!a.wasPloughing||!a.hasModelPose;a.poseSlot=slot;
    animate(a,c,state,dt,paused,speed,position);
    // The root keeps following the real route each frame. Only small skeletal
    // gestures are sampled less often; near/inspected people stay full rate.

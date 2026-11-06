@@ -1,3 +1,4 @@
+import {showRainObserver} from './rain-presentation.js';
 import {floodMapView} from './river-flood.js';
 import {catDiscoveryView} from './miracle-discovery.js';
 import {drawCatDiscoveryGround,drawCatOffering} from './map-cat-discovery.js';
@@ -226,6 +227,7 @@ export class Renderer{
   if(weight('wind')&&!this.reduce){c.save();c.globalAlpha=weight('wind')*.5;for(let k=0;k<16;k++){const x=(hash(k,63)*w+t*27)%w,y=hash(k,28)*h;this.line([[x,y],[x+5,y-2]],'#b0ad76',1);}c.restore();}
  }
  person(person) {
+  const rain=this.rainReaction?.id===person.id?this.rainReaction.phase:null;
   const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.onBridge?5:0);
   const playTime=person.miracleContact?this.state?.miracleCelebration?.elapsed||0:(this.state?.simTime||0)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
   const dance=person.celebrating&&!this.reduce?Math.sin(playTime*4+(Number(person.id)||0))*.7:0;p.y-=Math.abs(dance)*q;
@@ -236,13 +238,19 @@ export class Renderer{
   this.line([[p.x-1.1*q,p.y-3*q],[p.x+stride*q,p.y]],'#665841',1.25*q);
   this.line([[p.x+1.1*q,p.y-3*q],[p.x-stride*q,p.y]],'#665841',1.25*q);
   const look=residentAppearance(person,this.professionByWork||[]),pose=residentPose(person,manualGatheringActivity(this.state,person)?.task||look.work,playTime,this.reduce);drawResidentClothes(this,p,q,look);
-  if(!['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind)){
+  if(rain){
+   const raised=rain==='cover';
+   this.line([[p.x-2*q,p.y-7*q],[p.x-4*q,p.y-(raised?9:6)*q],[p.x-(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);
+   this.line([[p.x+2*q,p.y-7*q],[p.x+4*q,p.y-(raised?9:6)*q],[p.x+(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);
+  }
+  if(!rain&&!['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind)){
    this.line([[p.x-2*q,p.y-7*q],[p.x-3*q,p.y-(4+stride*.4)*q]],'#a3835e',1.2*q);
    this.line([[p.x+2*q,p.y-7*q],[p.x+3*q,p.y-(4-stride*.4)*q]],'#a3835e',1.2*q);
   }
   c.fillStyle='#a68259';c.beginPath();c.arc(p.x,p.y-10.5*q,1.9*q,0,7);c.fill();
   c.fillStyle='#d2ad7c';c.beginPath();c.arc(p.x+.6*q,p.y-10.7*q,.8*q,0,7);c.fill();
   this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.age>=55?'#deddd3':person.id%2?'#eee0b7':'#5c5140',1.7*q);
+  if(rain==='laugh')this.line([[p.x-.8*q,p.y-9.9*q],[p.x,p.y-9.55*q],[p.x+.8*q,p.y-9.9*q]],'#684737',.45*q);
   if(person.mourningTorch||person.festivalTorch){const candle=person.festivalTorch,x=p.x+5*q,y=p.y-(candle?10:12)*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q*(candle?.25:1);
    this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q]],'#936746',1.4*q);
    this.line([[x,p.y-8*q],[x,y]],candle?'#ead8b4':'#936746',(candle?2.4:1.4)*q);
@@ -328,7 +336,7 @@ export class Renderer{
  ceremonyCitizens(s,dt,{paused=false,speed=1}={}){
   if(this.presentedCeremonyState!==s){this.presentedCeremonyState=s;this.ceremonyPositions=new Map();}
   const records=this.ceremonyPositions,seen=new Set();let network;
-  const miracle=miracleCelebrationView(s),overrides=new Map(miracle?.participants.map(p=>[p.id,p])||[]),source=miracle?s.citizens:visibleCitizens(s);
+  const miracle=miracleCelebrationView(s),overrides=new Map(miracle?.participants.map(p=>[p.id,p])||[]),source=miracle?s.citizens:showRainObserver(visibleCitizens(s),s,this.rainReaction);
   const people=source.map(original=>{
    const participant=overrides.get(original.id),person=participant?{...original,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,eventContact:null,festivalContact:null,miracleContact:participant}:original;
    seen.add(person.id);const contact=person.eventContact||person.festivalContact,target={x:contact?.x??person.x,y:contact?.y??person.y},eventContact=!!person.eventContact;
@@ -344,7 +352,7 @@ export class Renderer{
   for(const id of records.keys())if(!seen.has(id))records.delete(id);
   return people;
  }
- draw(s,selection,time=performance.now(),{paused=false,speed=1}={}){this.state=s;this.layout();
+ draw(s,selection,time=performance.now(),{paused=false,speed=1,rainReaction=null}={}){this.state=s;this.rainReaction=rainReaction;this.layout();
  const dt=this.visualLast===null?0:Math.min(.1,Math.max(0,(time-this.visualLast)/1000));speed=Math.max(0,Number.isFinite(speed)?speed:1);
  if(this.visualLast!==null&&!(typeof document!=='undefined'&&document.hidden))this.ambient+=Math.min(.25,Math.max(0,(time-this.visualLast)/1000));
  this.visualLast=time;

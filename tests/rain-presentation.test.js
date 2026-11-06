@@ -50,3 +50,23 @@ test('cast focuses the selected field and skip leaves weather, faith and cooldow
  scene.skip();
  assert.equal(JSON.stringify(s),before);
 });
+
+test('only a free adult near the selected field reacts, then loses the pose if assigned a delivery',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const scene=createRainPresentation(window.document.querySelector('main'));
+ const citizen=(id,x,extra={})=>({id,x,y:8.5,age:24,phase:'resting',...extra});
+ const busy=citizen(1,10.6,{cargo:{food:2}}),child=citizen(2,10.8,{age:12}),free=citizen(3,11);
+ const s={buildings:[{type:'field',x:12,y:8}],citizens:[busy,child,free]};
+ const before=JSON.stringify(s);
+ scene.cast(s,{x:12,y:8},0);
+ scene.tick(s,3100);
+ assert.deepEqual(scene.reaction,{id:3,phase:'cover'});
+ scene.tick(s,5200);
+ assert.deepEqual(scene.reaction,{id:3,phase:'laugh'});
+ assert.equal(JSON.stringify(s),before);
+ free.phase='toStore';
+ scene.tick(s,5400);
+ assert.equal(scene.reaction,null);
+ scene.skip();
+ assert.equal(scene.reaction,null);
+});

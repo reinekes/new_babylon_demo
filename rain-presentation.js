@@ -1,3 +1,5 @@
+import {isDryPoint} from './world.js';
+import {footprintCells} from './footprints.js';
 const stages={
  opening:[[0,'waiting'],[6,'drop'],[10,'shadow'],[17,'rain'],[24,null]],
  cast:[[0,'shadow'],[3,'rain'],[10,null]]
@@ -21,6 +23,22 @@ function fieldTarget(state,selection){
  return field?{x:field.x,y:field.y}:null;
 }
 
+function freeObserver(state,c,target){
+ if(!target||!(c.age>=16)||!['home','resting','blocked'].includes(c.phase)||
+  c.waterTrip||c.pantryTrip||c.districtJob||c.tradeJob||c.saleJob||c.site||c.work&&c.phase==='blocked'||
+  c.clinic||c.commonMealTarget||c.eveningGame||c.floodShelter||c.memorialMove||c.manualGathering||
+  c.clothingTarget!==undefined||c.craftSite||c.seedField||
+  Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||
+  Math.hypot(c.x-target.x,c.y-target.y)>2.6||!isDryPoint(state,c.x,c.y))return false;
+ return !state.buildings.some(b=>!['canal','field'].includes(b.type)&&footprintCells(b).some(p=>Math.abs(p.x-c.x)<.55&&Math.abs(p.y-c.y)<.55));
+}
+
+export function showRainObserver(people,state,reaction){
+ if(!reaction||people.some(c=>c.id===reaction.id))return people;
+ const citizen=state.citizens.find(c=>c.id===reaction.id);
+ return citizen?[...people,{...citizen,kind:'person',walking:false,carrying:false}]:people;
+}
+
 export function createRainPresentation(root,{focus,cue}={}){
  const panel=root.ownerDocument.createElement('section');
  panel.className='rain-scene';
@@ -40,24 +58,33 @@ export function createRainPresentation(root,{focus,cue}={}){
  </div>`;
  root.append(panel);
  const title=panel.querySelector('h2'),caption=panel.querySelector('p');
- let seen=null,active=null,stopCue=null;
+ let seen=null,active=null,stopCue=null,reaction=null;
  function skip(){
-  stopCue?.();stopCue=null;active=null;panel.hidden=true;
+  stopCue?.();stopCue=null;active=null;reaction=null;panel.hidden=true;
  }
  panel.querySelector('button').addEventListener('click',skip);
  function start(kind,state,selection,now){
   skip();
-  active={kind,startedAt:now,phase:null};
+  const target=fieldTarget(state,selection);
+  active={kind,startedAt:now,phase:null,target,observerId:null};
   panel.dataset.kind=kind;
   title.textContent=kind==='opening'?'Одна капля':'Небесный дождь';
   panel.hidden=false;
-  const target=fieldTarget(state,selection);
   if(target)focus?.(target);
  }
- function paint(now){
+ function paint(state,now){
   if(!active)return;
   const phase=rainSceneFrame(active.kind,(now-active.startedAt)/1000);
   if(!phase){skip();return;}
+  if(phase==='rain'&&active.phase!=='rain'){
+   const observer=(state.citizens||[]).find(c=>freeObserver(state,c,active.target));
+   active.observerId=observer?.id??null;
+  }
+  if(active.observerId!==null){
+   const observer=(state.citizens||[]).find(c=>c.id===active.observerId);
+   if(!observer||state.funeral||state.miracleCelebration||!freeObserver(state,observer,active.target))active.observerId=null;
+  }
+  reaction=active.observerId===null?null:{id:active.observerId,phase:(now-active.startedAt)/1000<(active.kind==='opening'?19:5)?'cover':'laugh'};
   if(active.phase===phase)return;
   active.phase=phase;panel.dataset.phase=phase;
   caption.textContent=active.kind==='opening'&&phase==='rain'?'Дар открыт · первый призыв бесплатный.':captions[phase];
@@ -71,12 +98,13 @@ export function createRainPresentation(root,{focus,cue}={}){
    if(allowOpening&&!active&&state.rainDiscovery&&state.irrigatedHarvest&&state.irrigatedHarvest!==seen){
     seen=state.irrigatedHarvest;start('opening',state,null,now);
    }
-   paint(now);
+   paint(state,now);
   },
   cast(state,target,now){
    seen=state.irrigatedHarvest??null;
-   start('cast',state,target,now);paint(now);
+   start('cast',state,target,now);paint(state,now);
   },
+  get reaction(){return reaction;},
   skip
  };
 }
