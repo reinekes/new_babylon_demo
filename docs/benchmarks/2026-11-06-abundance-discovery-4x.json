@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 265,
+  "homes": [
+    "8,8",
+    "9,9",
+    "9,5"
+  ],
+  "byteEqualReload": true,
+  "gift": 27.006075000000088,
+  "samples": 46,
+  "medianMs": 3.5722080000000176,
+  "p95Ms": 12.342457999999993
+}

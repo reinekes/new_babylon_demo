@@ -2,10 +2,14 @@ import {appendFish,takeFish} from './fish-provenance.js';
 
 export const addGiftFood=(holder,key,parts,before)=>appendFish(holder,key,parts,before,Infinity);
 export const takeGiftFood=takeFish;
+export const giftAmount=parts=>parts?.reduce((n,part)=>n+Math.max(0,part),0)||0;
 export const giftInputFood=b=>b?.artisan?.food??b?.workshopStock?.input?.food??0;
 
 export function moveGiftFood(from,fromKey,to,toKey,amount,before,targetBefore){
- if(from[fromKey])addGiftFood(to,toKey,takeGiftFood(from,fromKey,amount,before),targetBefore);
+ if(!from[fromKey])return 0;
+ const parts=takeGiftFood(from,fromKey,amount,before);
+ addGiftFood(to,toKey,parts,targetBefore);
+ return giftAmount(parts);
 }
 
 export function validateAbundanceOrigin(s){

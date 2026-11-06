@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createNewCity} from '../new-game.js';
+import {miracle,encode,decode} from '../engine.js';
+import {housingOf} from '../definitions.js';
+import {syncCitizens,invalidateAssignments} from '../workforce.js';
+import {recordAbundanceHome,abundanceKnowledgeReason} from '../abundance-discovery.js';
+
+test('three different occupied homes, ordinary food and a qualified final delivery open Abundance',()=>{
+ const s=createNewCity({mode:'awakening'}),source=s.buildings.find(b=>b.stock);
+ s.resources.faith=100;
+ const homes=s.buildings.filter(b=>b.type==='house');
+ const third={type:'house',x:11,y:9,level:1};
+ s.buildings.push(third);
+ s.citizens[0].home='11,9';
+ s.capacity=housingOf(s);invalidateAssignments(s);syncCitizens(s);
+ const [first,second]=homes,carrier={calling:'carrier'};
+ recordAbundanceHome(s,first,carrier,source,4,4);
+ assert.equal(s.abundanceDiscovery.homes.length,0);
+ s.foodPlan.protectSeeds=false;
+ recordAbundanceHome(s,first,carrier,source,4,0);
+ assert.equal(s.abundanceDiscovery.homes.length,0);
+ s.foodPlan.protectSeeds=true;
+ recordAbundanceHome(s,first,carrier,source,4,0);
+ recordAbundanceHome(s,first,carrier,source,4,0);
+ recordAbundanceHome(s,second,carrier,source,4,1);
+ recordAbundanceHome(s,third,{calling:'auto'},source,4,0);
+ assert.equal(s.abundanceDiscovery.homes.length,2);
+ assert.equal(miracle(s,'abundance').ok,false);
+ assert.equal(s.resources.faith,100);
+ recordAbundanceHome(s,third,carrier,source,4,0);
+ assert.equal(abundanceKnowledgeReason(s),'');
+ assert.equal(s.abundanceDiscovery.homes.length,3);
+ const raw=encode(s);
+ assert.ok(decode(raw));
+ assert.equal(encode(decode(raw)),raw);
+});

@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T13:26:16.611366+00:00",
+  "commit": "526e79e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9f257b520dffe2093407bb5881503a824f568637afc25e714bc2ab62121f2bfb",
+      "actual": "9f257b520dffe2093407bb5881503a824f568637afc25e714bc2ab62121f2bfb",
+      "match": true
+    },
+    {
+      "path": "abundance-origin.js",
+      "status": 200,
+      "expected": "bc605d7f31d2b110ee9ffddd0c4607bd74a0f2ee2f8c18728dff9984b14a13e0",
+      "actual": "bc605d7f31d2b110ee9ffddd0c4607bd74a0f2ee2f8c18728dff9984b14a13e0",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-abundance-inputs-pages-sha.json",
+      "status": 200,
+      "expected": "18d3dbc6ecca767f2298f3893de25eeb9eddeabbcbc97dae332f93704a74d9b8",
+      "actual": "18d3dbc6ecca767f2298f3893de25eeb9eddeabbcbc97dae332f93704a74d9b8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-abundance-reserves-4x.json",
+      "status": 200,
+      "expected": "7d29d1b668b4fa388d7ac85fd11b07f83386dabe1730e0dc263b9457d4158c33",
+      "actual": "7d29d1b668b4fa388d7ac85fd11b07f83386dabe1730e0dc263b9457d4158c33",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-79.md",
+      "status": 200,
+      "expected": "227a53ea340d0df96f93586a7bcedb5d8c4a33c275dc3d9f60e31279abb399eb",
+      "actual": "227a53ea340d0df96f93586a7bcedb5d8c4a33c275dc3d9f60e31279abb399eb",
+      "match": true
+    },
+    {
+      "path": "external-guest.js",
+      "status": 200,
+      "expected": "48764216161a3fe6170394cea74bbf1568123c9b41ddd426884d89fc00769461",
+      "actual": "48764216161a3fe6170394cea74bbf1568123c9b41ddd426884d89fc00769461",
+      "match": true
+    },
+    {
+      "path": "festival.js",
+      "status": 200,
+      "expected": "e9b2e5c33e2f1e27919bd03f80fc51bf125a06e58a6953487f87d21a62971b69",
+      "actual": "e9b2e5c33e2f1e27919bd03f80fc51bf125a06e58a6953487f87d21a62971b69",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "5132dddd5c2e10f5d48ea637a21365681e12f32b254248ec8f0cc1882ff5aff5",
+      "actual": "5132dddd5c2e10f5d48ea637a21365681e12f32b254248ec8f0cc1882ff5aff5",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "5915217542faae8920d7772337653056e05878302b9894b4950a0f859ade4f9a",
+      "actual": "5915217542faae8920d7772337653056e05878302b9894b4950a0f859ade4f9a",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3eb4943ebf1005143746c9f4190dc88d5c712d0ecc78f74bb0ccabbcf32f56bf",
+      "actual": "3eb4943ebf1005143746c9f4190dc88d5c712d0ecc78f74bb0ccabbcf32f56bf",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "e7780fd6c72f1cfb974895fb8e9dd73293402dcdc9ad093940dd26db1a8c1119",
+      "actual": "e7780fd6c72f1cfb974895fb8e9dd73293402dcdc9ad093940dd26db1a8c1119",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "dc588596db2cd5c402144596729579baf6f07e638a91e31899c336af83f01aab",
+      "actual": "dc588596db2cd5c402144596729579baf6f07e638a91e31899c336af83f01aab",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-abundance-inputs.md",
+      "status": 200,
+      "expected": "ba4702e2bb11066a95159173f409d92f1e983ce3e9455e59426c923402159380",
+      "actual": "ba4702e2bb11066a95159173f409d92f1e983ce3e9455e59426c923402159380",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "2b6df53bb6fe7e95a4b16d0525452222093b10aa44857890238d5ac90a3b1934",
+      "actual": "2b6df53bb6fe7e95a4b16d0525452222093b10aa44857890238d5ac90a3b1934",
+      "match": true
+    },
+    {
+      "path": "tests/abundance-gift.test.js",
+      "status": 200,
+      "expected": "d8958fea7b2bc4f6be920c640defafae402002fdec6adf419d053d2ea95d5161",
+      "actual": "d8958fea7b2bc4f6be920c640defafae402002fdec6adf419d053d2ea95d5161",
+      "match": true
+    },
+    {
+      "path": "trading.js",
+      "status": 200,
+      "expected": "bbc2e133c81425094cabb5462b04a55c689d874a298c5d96045c67bb334ac46f",
+      "actual": "bbc2e133c81425094cabb5462b04a55c689d874a298c5d96045c67bb334ac46f",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "56e650f6a5f6d50e3647c1df376ff9cd10ee0eeb0dcfe40885495f3fa70957c4",
+      "actual": "56e650f6a5f6d50e3647c1df376ff9cd10ee0eeb0dcfe40885495f3fa70957c4",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
