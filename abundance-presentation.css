@@ -1,0 +1,18 @@
+.abundance-scene[hidden]{display:none}
+.abundance-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.abundance-scene-card{background:linear-gradient(112deg,#453322,#2e3020);border-color:#bf9b62}
+.abundance-basket{fill:#6e4a2e;stroke:#dbb374;stroke-width:1.4}
+.abundance-fill,.abundance-grains,.abundance-single{opacity:0;fill:#e6ba6b;stroke:#fbdb94;stroke-width:1}
+.abundance-scene[data-phase="fill"] .abundance-fill{animation:abundance-fill 4s ease-out both}
+.abundance-scene:is([data-phase="accepted"],[data-phase="grain"]) .abundance-fill{opacity:1}
+.abundance-scene:is([data-phase="grains"],[data-phase="fill"]) .abundance-grains{animation:abundance-grains 2s ease-in both}
+.abundance-scene[data-phase="grain"] .abundance-single{animation:abundance-roll 1.3s ease-in both}
+@keyframes abundance-fill{0%{opacity:0;transform:translateY(8px) scaleY(.8)}100%{opacity:1;transform:none}}
+@keyframes abundance-grains{0%{opacity:0;transform:translateY(-12px)}45%{opacity:1}100%{opacity:.9;transform:translateY(7px)}}
+@keyframes abundance-roll{0%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0;transform:translate(14px,34px) rotate(15deg)}}
+@media(prefers-reduced-motion:reduce){
+ .abundance-scene-card path{animation:none!important}
+ .abundance-scene:is([data-phase="fill"],[data-phase="grains"]) :is(.abundance-fill,.abundance-grains){opacity:.8}
+}
+.abundance-store-mark{display:flex;align-items:center;gap:.4rem}
+.abundance-store-mark svg{width:1rem;height:1rem}
