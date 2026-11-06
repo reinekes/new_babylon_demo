@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-06T11:56:19.110986+00:00",
+  "commit": "2d5e3486f8780a034cd15e37736ec80010d9746f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6f820cb37350ab983e9bfcc78eb01f47924923c1fcebf5ef7c47dcea2ce3df1f",
+      "actual": "6f820cb37350ab983e9bfcc78eb01f47924923c1fcebf5ef7c47dcea2ce3df1f",
+      "match": true
+    },
+    {
+      "path": "creator-materials.js",
+      "status": 200,
+      "expected": "286f1634a614521629a63b84e5a33e660e1e7208343bda0a49e14121a3d73f6a",
+      "actual": "286f1634a614521629a63b84e5a33e660e1e7208343bda0a49e14121a3d73f6a",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "fe2c8a0f64e6db92d9ab15b81ca9890c53f4b40cc67a18a16de9a2f4d9dfba76",
+      "actual": "fe2c8a0f64e6db92d9ab15b81ca9890c53f4b40cc67a18a16de9a2f4d9dfba76",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "2fe6f46eab829e293cf496454d81591fb70475621666048c68240f3a6d8594fa",
+      "actual": "2fe6f46eab829e293cf496454d81591fb70475621666048c68240f3a6d8594fa",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "7afb02ae73e392916d0c1dd8367d2954cbcdfe82e41879a1dc6002a3713e5510",
+      "actual": "7afb02ae73e392916d0c1dd8367d2954cbcdfe82e41879a1dc6002a3713e5510",
+      "match": true
+    },
+    {
+      "path": "tests/creator-materials.test.js",
+      "status": 200,
+      "expected": "c79218ada9101a357ea2f034da36b222a1ea97087d69c50b7d75862759d51748",
+      "actual": "c79218ada9101a357ea2f034da36b222a1ea97087d69c50b7d75862759d51748",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "85d60ab97ed605047a32659450134025373d53e9f187f3a54e71bf95bfdf5da0",
+      "actual": "85d60ab97ed605047a32659450134025373d53e9f187f3a54e71bf95bfdf5da0",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "8c755e7fe44801329b98e6d077cf29c34fd9a20b97ea9e34f914a930cbf48bf2",
+      "actual": "8c755e7fe44801329b98e6d077cf29c34fd9a20b97ea9e34f914a930cbf48bf2",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
