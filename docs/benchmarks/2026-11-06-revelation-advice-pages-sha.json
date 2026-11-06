@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-06T19:43:33.631955+00:00",
+  "commit": "c78f6551a42755af5e8530577949b50d58ccdd36",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "28defa18769da14e5d573bb3c62b0c6bd80b9de2375aabbfad4214b9469ff91a",
+      "actual": "28defa18769da14e5d573bb3c62b0c6bd80b9de2375aabbfad4214b9469ff91a",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "ecd24fe57f1579cee8fab3b5f0436d97d1f9c7deafe96dc05689c1deeb76d6ce",
+      "actual": "ecd24fe57f1579cee8fab3b5f0436d97d1f9c7deafe96dc05689c1deeb76d6ce",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-revelation-advice-4x.json",
+      "status": 200,
+      "expected": "efc326dbd0045677c7953ba8999d40f18045c39d400bccf17010f25ec316504a",
+      "actual": "efc326dbd0045677c7953ba8999d40f18045c39d400bccf17010f25ec316504a",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "3de1b42bb43249d322ee60dace963c66e059989ba8235db8bcbf7eb3e02ed442",
+      "actual": "3de1b42bb43249d322ee60dace963c66e059989ba8235db8bcbf7eb3e02ed442",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0d10aac5bed635de2ffc39a08d9eb47daae5a50c91647b0410ffbf34e61f5ceb",
+      "actual": "0d10aac5bed635de2ffc39a08d9eb47daae5a50c91647b0410ffbf34e61f5ceb",
+      "match": true
+    },
+    {
+      "path": "miracle-discovery.js",
+      "status": 200,
+      "expected": "13c0647aa86bb811b3a078fcea9a0ed66c68a4ab0be96daa7a61caff6d5a9d92",
+      "actual": "13c0647aa86bb811b3a078fcea9a0ed66c68a4ab0be96daa7a61caff6d5a9d92",
+      "match": true
+    },
+    {
+      "path": "revelation-advice.js",
+      "status": 200,
+      "expected": "a8caa6e22c405c74dfeb69ce03b2f4361703b465f7deee1c0b088b80c0f3c035",
+      "actual": "a8caa6e22c405c74dfeb69ce03b2f4361703b465f7deee1c0b088b80c0f3c035",
+      "match": true
+    },
+    {
+      "path": "revelation-evidence.js",
+      "status": 200,
+      "expected": "a394833674db3584157c3b6a4f50eceb88acf291040f1e2a2ae9e0d5911c0b7a",
+      "actual": "a394833674db3584157c3b6a4f50eceb88acf291040f1e2a2ae9e0d5911c0b7a",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fc17ef9a02a2818276c7fd09e2afbe90a25422d8994251e7c88323469487273c",
+      "actual": "fc17ef9a02a2818276c7fd09e2afbe90a25422d8994251e7c88323469487273c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0f3ccb105078bd2b39afa2ec709841497443981a0c1f49e3554da8399a0f3348",
+      "actual": "0f3ccb105078bd2b39afa2ec709841497443981a0c1f49e3554da8399a0f3348",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "f6331beb1b9e64a3432ec67afe77cea84b8c0b143a311d11f3cc24ba039ed9bd",
+      "actual": "f6331beb1b9e64a3432ec67afe77cea84b8c0b143a311d11f3cc24ba039ed9bd",
+      "match": true
+    },
+    {
+      "path": "tests/revelation-advice.test.js",
+      "status": 200,
+      "expected": "63166b693aef7affd4f7d4c198fb8b9d3bfc3a78f2d033305ad7f82837d20477",
+      "actual": "63166b693aef7affd4f7d4c198fb8b9d3bfc3a78f2d033305ad7f82837d20477",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "a67c47620a8bd7c5e551ea17aa166940bad304db93259b49b52da1ea4367f1c1",
+      "actual": "a67c47620a8bd7c5e551ea17aa166940bad304db93259b49b52da1ea4367f1c1",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "56d9233573f3822fd67262140b7e523861835f222affb827f1806a12d2e3d681",
+      "actual": "56d9233573f3822fd67262140b7e523861835f222affb827f1806a12d2e3d681",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
