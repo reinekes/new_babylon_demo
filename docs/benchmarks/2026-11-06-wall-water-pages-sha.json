@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-06T03:19:03.011428+00:00",
+  "commit": "0493125877fea93babaf47787185723f71e08707",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "fed669d124c4d28109f71499c49c57498fa4b6b51d5fc8ff0ea68002ab168c6e",
+      "actual": "fed669d124c4d28109f71499c49c57498fa4b6b51d5fc8ff0ea68002ab168c6e",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "2e3d179d45fa95f759a2606234612d5de1b8e1b0c76350072a669b1a7487af9b",
+      "actual": "2e3d179d45fa95f759a2606234612d5de1b8e1b0c76350072a669b1a7487af9b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "40c4f28a04318f76f79847f609c0645520270c1b9493e66e66475ee0d4f1fd84",
+      "actual": "40c4f28a04318f76f79847f609c0645520270c1b9493e66e66475ee0d4f1fd84",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "41cd33ae046854b0cf15d96b7b64cf9f087159f24afc2af32fa43c03e40dde27",
+      "actual": "41cd33ae046854b0cf15d96b7b64cf9f087159f24afc2af32fa43c03e40dde27",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e3e34df5de6f60fa15169455827f43b42b69d1950d161a02c5238d536d40ce42",
+      "actual": "e3e34df5de6f60fa15169455827f43b42b69d1950d161a02c5238d536d40ce42",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "bad2a25744200b7f668a722b9837a9888786433960b1ec299cab6f26109dfef9",
+      "actual": "bad2a25744200b7f668a722b9837a9888786433960b1ec299cab6f26109dfef9",
+      "match": true
+    },
+    {
+      "path": "tests/water.test.js",
+      "status": 200,
+      "expected": "538675de0e23852afd2fd06e7f5912d68e9c6d00073358503ad158fa659f520d",
+      "actual": "538675de0e23852afd2fd06e7f5912d68e9c6d00073358503ad158fa659f520d",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "20547e2b1e5b1d9928b54b92e82986ec7ad1718b29d876081acd79f247530727",
+      "actual": "20547e2b1e5b1d9928b54b92e82986ec7ad1718b29d876081acd79f247530727",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
