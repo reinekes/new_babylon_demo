@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T22:44:42.776915+00:00",
+  "commit": "20c110aa2eafe86143e64d76b6695db8fd5c403a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "cc32555b401dba9d008cf3180c4ebe7580c0b93bc37b23132bacfa67224bb007",
+      "actual": "cc32555b401dba9d008cf3180c4ebe7580c0b93bc37b23132bacfa67224bb007",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "388877a74d72150e7726e3694a053ae1abcc55e94119e132586be458e396f2cc",
+      "actual": "388877a74d72150e7726e3694a053ae1abcc55e94119e132586be458e396f2cc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-peace-scenes-4x.json",
+      "status": 200,
+      "expected": "789a4a7b31fbcc0f41d008257e42c61eaf7aab79df74a8aa5314796bb6a0ed2f",
+      "actual": "789a4a7b31fbcc0f41d008257e42c61eaf7aab79df74a8aa5314796bb6a0ed2f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "82bac0d380332eba40730f0876a18a329ac762711f524c38c0f1df7ec47c58f0",
+      "actual": "82bac0d380332eba40730f0876a18a329ac762711f524c38c0f1df7ec47c58f0",
+      "match": true
+    },
+    {
+      "path": "peace-discovery.js",
+      "status": 200,
+      "expected": "4f129ee17ac87b607af23038377e0ea9c81890fc3d3c6ae535ce202349204e51",
+      "actual": "4f129ee17ac87b607af23038377e0ea9c81890fc3d3c6ae535ce202349204e51",
+      "match": true
+    },
+    {
+      "path": "peace-presentation.css",
+      "status": 200,
+      "expected": "f4056ba9169db3c173c8ae74d8b9c2491895f2615b2fb9cf046042438667481c",
+      "actual": "f4056ba9169db3c173c8ae74d8b9c2491895f2615b2fb9cf046042438667481c",
+      "match": true
+    },
+    {
+      "path": "peace-presentation.js",
+      "status": 200,
+      "expected": "8428e345a0604da0ee92508af89968e0cacd43982101220ce1a0a2e89950a30c",
+      "actual": "8428e345a0604da0ee92508af89968e0cacd43982101220ce1a0a2e89950a30c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "7ddfe85f486e3b0f4401ccd5b237dcf2878ec1d9a215d28dad875f1eb0317b3b",
+      "actual": "7ddfe85f486e3b0f4401ccd5b237dcf2878ec1d9a215d28dad875f1eb0317b3b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "fe9d6546c0e92e5a8d6fc5df43ef175a82a35f57c85ba8487d37e0f143b08891",
+      "actual": "fe9d6546c0e92e5a8d6fc5df43ef175a82a35f57c85ba8487d37e0f143b08891",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "bae6cef50a608fe66fd48226fe40cf1ec8af9da6d3e5bf7cc8af8580c7377372",
+      "actual": "bae6cef50a608fe66fd48226fe40cf1ec8af9da6d3e5bf7cc8af8580c7377372",
+      "match": true
+    },
+    {
+      "path": "tests/peace-presentation.test.js",
+      "status": 200,
+      "expected": "5dddd54cd2385924ade6bba5320fc83625397c1c6577a06d29b5f1169ee845c0",
+      "actual": "5dddd54cd2385924ade6bba5320fc83625397c1c6577a06d29b5f1169ee845c0",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
