@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,advanceTime,encode,decode} from '../engine.js';
-import {strictScenario} from '../scenario-profiles.js';
+import {strictScenario,CAT_DISCOVERY_RULES} from '../scenario-profiles.js';
 import {putStock,storeStock} from '../inventory.js';
 import {orderVotive,templeOfferings} from '../votive-offerings.js';
 import {cancelTransfer} from '../district-logistics.js';
 import {recoverCitizenCargo} from '../workforce.js';
 
-function fixture(){
- const s=createGame({start:'established',scenario:strictScenario()});
+function fixture(awakening=false){
+ const s=createGame({start:'established',...awakening?{mode:'awakening'}:{},scenario:{...strictScenario(),...awakening?{miracles:CAT_DISCOVERY_RULES}:{}}});
  s.buildings.push({type:'granary',x:10,y:9,level:1});
  assert.equal(putStock(s,'10,9','pottery',1),1);
  for(const b of s.buildings)if(b.type==='house')Object.assign(b,{pantry:30,pantryDelivered:30});
@@ -76,4 +76,23 @@ test('an assigned priest records the donor at work and the temple kitchen commem
  assert.equal(s.news.filter(n=>n.title==='Дарителя вспомнили за храмовым угощением').length,1);
  assert.ok(decode(encode(s)));
  assert.equal(orderFestival(s,{dedicationId:id}).ok,false);
+});
+
+
+test('sunlight counts only accepted vessels from different donor households',async()=>{
+ const {sunlightDedications}=await import('../votive-offerings.js');
+ let {s,donor,source,temple}=fixture(true);
+ putStock(s,source,'pottery',2);
+ const neighbor=s.citizens.find(c=>c.age>=16&&c.home===donor.home&&c.id!==donor.id);
+ const other=s.citizens.find(c=>c.age>=16&&c.home!==donor.home);
+ for(const c of [donor,neighbor,other])assert.ok(orderVotive(s,temple,source,c.id).ok);
+ assert.deepEqual(sunlightDedications(s),[]);
+ for(let i=0;i<500&&s.votiveOfferings.some(v=>v.receivedTick===null);i++){s.event=null;advanceTime(s,.25);}
+ assert.ok(s.votiveOfferings.every(v=>v.receivedTick!==null));
+ assert.equal(sunlightDedications(s).length,2);
+ assert.equal(s.votiveOfferings[0].donorHome,donor.home);
+ const raw=encode(s);s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ assert.equal(sunlightDedications(s).length,2);
 });

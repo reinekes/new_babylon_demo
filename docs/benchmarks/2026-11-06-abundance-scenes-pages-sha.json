@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T13:42:06.549104+00:00",
+  "commit": "561ce50",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6fdae43bfb8c622f43154e297e67b64f5539b1b28ee09f65fcd5e70a3e2ed876",
+      "actual": "6fdae43bfb8c622f43154e297e67b64f5539b1b28ee09f65fcd5e70a3e2ed876",
+      "match": true
+    },
+    {
+      "path": "abundance-presentation.css",
+      "status": 200,
+      "expected": "9d86ffc73f298f3d49af593bb4e5423b08af4654c33f819968401232d64a78cb",
+      "actual": "9d86ffc73f298f3d49af593bb4e5423b08af4654c33f819968401232d64a78cb",
+      "match": true
+    },
+    {
+      "path": "abundance-presentation.js",
+      "status": 200,
+      "expected": "d075cbc3c4235cb01a4774c0672cc90eb55eecc1f0f28543e834aefffc80da0a",
+      "actual": "d075cbc3c4235cb01a4774c0672cc90eb55eecc1f0f28543e834aefffc80da0a",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "4ec1206bb1222decab8a00ab74ad38c941afed1ed487b408b43f38ea37ba0278",
+      "actual": "4ec1206bb1222decab8a00ab74ad38c941afed1ed487b408b43f38ea37ba0278",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-abundance-discovery-pages-sha.json",
+      "status": 200,
+      "expected": "f4fe5c6763e0b94e2a4f48f059c6b6bdd300dec6f2fd23b4920b8ec454f3ec7f",
+      "actual": "f4fe5c6763e0b94e2a4f48f059c6b6bdd300dec6f2fd23b4920b8ec454f3ec7f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-abundance-scenes-4x.json",
+      "status": 200,
+      "expected": "ddfd49f3ebed32ee5c7206a4884ad557baa1da854ab40b6c882d631b408fde59",
+      "actual": "ddfd49f3ebed32ee5c7206a4884ad557baa1da854ab40b6c882d631b408fde59",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-81.md",
+      "status": 200,
+      "expected": "8ed7455c70477506553fb545e98f197efccaeb6c00e5c945b399909a0da524db",
+      "actual": "8ed7455c70477506553fb545e98f197efccaeb6c00e5c945b399909a0da524db",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "be1c0750752e8f2f72263ec1d074cc9a9de7e54f762dc9672570e30c17d334c5",
+      "actual": "be1c0750752e8f2f72263ec1d074cc9a9de7e54f762dc9672570e30c17d334c5",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a2054e6fa91c9192ddc375d29258081446dbe1e41fc3a0484939115eb1a61065",
+      "actual": "a2054e6fa91c9192ddc375d29258081446dbe1e41fc3a0484939115eb1a61065",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "a6c9f8c884b2795a39541da260779c05af8b24ca61f72132ba7b9b6a9147e850",
+      "actual": "a6c9f8c884b2795a39541da260779c05af8b24ca61f72132ba7b9b6a9147e850",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-abundance-discovery.md",
+      "status": 200,
+      "expected": "2bf30d05a88d0f10f4d20ccbfde65ad16806555e2f59916789697a69aa144b9a",
+      "actual": "2bf30d05a88d0f10f4d20ccbfde65ad16806555e2f59916789697a69aa144b9a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "65a4a0de8f32388ea196958273844cf62ca4af8fe1d779f1cb87e777a94a507b",
+      "actual": "65a4a0de8f32388ea196958273844cf62ca4af8fe1d779f1cb87e777a94a507b",
+      "match": true
+    },
+    {
+      "path": "tests/abundance-presentation.test.js",
+      "status": 200,
+      "expected": "39167f739cad252fc4a1cf3a0501a362770f830206554b12576af4b6d0320669",
+      "actual": "39167f739cad252fc4a1cf3a0501a362770f830206554b12576af4b6d0320669",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}

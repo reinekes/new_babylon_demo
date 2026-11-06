@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 265,
+  "acceptedVessels": 4,
+  "households": 3,
+  "byteEqualReload": true,
+  "samples": 455,
+  "medianMs": 2.6667089999998552,
+  "p95Ms": 8.310500000000047
+}

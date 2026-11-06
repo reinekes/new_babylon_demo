@@ -1,5 +1,6 @@
+import {worldHeight,worldWidth} from './world.js';
 import {buildingKey,isOperational} from './definitions.js';
-import {isStrictSumer} from './scenario-profiles.js';
+import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {reserveStock,stockStores} from './inventory.js';
 import {connectedStores,initializeDistricts,exportable,createDistrictPass} from './district-logistics.js';
@@ -8,6 +9,15 @@ import {displayName} from './citizen-epithets.js';
 
 export const isVotiveTemple=b=>['shrine','ziggurat'].includes(b?.type)&&isOperational(b);
 export const templeOfferings=(s,key)=>(s.votiveOfferings||[]).filter(q=>q.temple===key);
+export function sunlightDedications(s){
+ const homes=new Set(),donors=new Set(),received=[];
+ for(const item of s.votiveOfferings||[]){
+  if(!item.donorHome||item.receivedTick===null||homes.has(item.donorHome)||donors.has(item.donorId))continue;
+  homes.add(item.donorHome);donors.add(item.donorId);received.push(item);
+  if(received.length===3)break;
+ }
+ return received;
+}
 export function votiveOrder(s,id){if(id===undefined)return;return s.votiveOfferings?.find(v=>v.id===id);}
 
 export function votiveOptions(s,temple){
@@ -31,7 +41,7 @@ export function orderVotive(s,temple,source,donorId){
  initializeDistricts(s);
  const id=s.district.nextId++,q={id,source,target:temple,resource:'pottery',amount:1,remaining:1,delivered:0,cancelled:0,automatic:false,targetKind:'votive'};
  s.district.jobs.push(q);
- (s.votiveOfferings??=[]).push({id,donorId,donorName:displayName(s,donor),source,temple,orderedTick:s.tick,receivedTick:null,carrierId:null});
+ (s.votiveOfferings??=[]).push({id,donorId,donorName:displayName(s,donor),...usesCatDiscovery(s)?{donorHome:donor.home}:{},source,temple,orderedTick:s.tick,receivedTick:null,carrierId:null});
  invalidateAssignments(s);
  return {ok:true,id};
 }
@@ -85,6 +95,10 @@ export function validateVotiveOfferings(s){
  return items.every(v=>{
   const q=v&&byId.get(v.id),pilgrim=s.externalVisits?.pilgrim;
   const foreign=v?.visitorKind==='pilgrim'&&pilgrim?.outcome==='accepted'&&pilgrim.offeringId===v.id;
+  if(v?.donorHome!==undefined){
+   const cell=typeof v.donorHome==='string'&&/^(\d+),(\d+)$/.exec(v.donorHome);
+   if(foreign||!usesCatDiscovery(s)||!cell||Number(cell[1])>=worldWidth(s)||Number(cell[2])>=worldHeight(s))return false;
+  }
   if(foreign){
    if(q||v.donorId!==null||v.carrierId!==null||v.donorName!==pilgrim.name||v.source!==pilgrim.market||v.temple!==pilgrim.destination||
     !Number.isSafeInteger(v.id)||v.id<1||v.id>=s.district.nextId||!Number.isSafeInteger(v.receivedTick)||
