@@ -294,8 +294,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   }
   const skin=['#855234','#a26a43','#b98155','#c69365','#70462f'][identity.skin],hair=c.age>=55?['#8c8372','#b0a693','#756b5d'][identity.beard%3]:['#241d18','#3d2a1c','#543724','#1d1b19'][identity.hair];
   for(const m of a.skin)m.albedoColor=B.Color3.FromHexString(skin).toLinearSpace();for(const m of a.hair)m.albedoColor=B.Color3.FromHexString(hair).toLinearSpace();
-  // Earth/wool shades distinguish individuals; worn/ragged and mourning still communicate state.
-  const palette=['#e0cda4','#9d7855','#b69b78','#c7baa1','#8f9272','#aa795d','#d7d0bb'];
+  // Keep neighbouring ochre values apart against the dry ground.
+  const palette=['#e0cda4','#77523d','#c8af8a','#c7baa1','#76856b','#995f50','#d7d0bb'];
   const color=c.phase==='mourning'?'#c7c9ae':look.wear==='new'&&!look.craft?palette[identity.cloth]:look.robe;
   const clothTint=B.Color3.FromHexString(color);
   for(const m of a.cloth){m.albedoColor=(a.upperCloth.has(m)?B.Color3.Lerp(clothTint,B.Color3.FromHexString('#eee0c0'),.46):clothTint).toLinearSpace();m.roughness=look.wear==='new'?.88:look.wear==='worn'?.96:1;}
