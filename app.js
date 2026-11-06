@@ -1,3 +1,4 @@
+import {createShapingPresentation} from './shaping-presentation.js';
 import {shapingBatchQuote} from './shaping-batch.js';
 import {createRevelationPresentation} from './revelation-presentation.js';
 import {REVELATION_BRANCHES,revelationAdviceQuote} from './revelation-advice.js';
@@ -193,6 +194,15 @@ const revelationPresentation=createRevelationPresentation($('city').parentNode,{
  onAdvice:()=>{if(!dialog.open&&!photo.active&&!relicControlActive(state))showCityOverview();}
 });
 revelationPresentation.reset(state);
+const shapingPresentation=createShapingPresentation($('city').parentNode,{
+ focus:point=>renderer.focusOn(point.x,point.y),
+ project:point=>{
+  const p=renderer.ctx?renderer.point(point.x,point.y,0):renderer.projectWindPoint?.(point);
+  return p&&p.x>=0&&p.x<=renderer.w&&p.y>=0&&p.y<=renderer.h?p:null;
+ },
+ cue:(_kind,phase)=>cityAudio.cueEarth(['bow','breath','sheaf','bow'][phase])
+});
+shapingPresentation.reset(state);
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
@@ -830,8 +840,9 @@ function makeMiracleCard(id,m){
   el.before(choice);
   choice.querySelector('select').onchange=()=>update();
  }
- el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:lastMiracleTarget);if(result.ok){details.open=false;windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:lastMiracleTarget);if(result.ok){details.open=false;windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
+ else if(id==='shaping'&&state.shapingProjects){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();shapingPresentation.cast(state.shapingBatches?.rows.at(-1));}
  else if(id==='revelation'&&state.revelationEvidence){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();revelationPresentation.cast(state,branch==='prestige'?null:state.revelationEvidence.advice);}
  else if(id==='sunlight'&&state.sunlightChapter){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();sunlightPresentation.cast(state);}
  else if(id==='abundance'&&state.abundanceGift){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();abundancePresentation.cast(state);}
@@ -916,6 +927,7 @@ function resetCityPresentation(){
  abundancePresentation.reset(state);
  sunlightPresentation.reset(state);
  revelationPresentation.reset(state);
+ shapingPresentation.reset(state);
  waterProjectDraft=null;lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
 }
 async function archiveCurrentCity(){
@@ -1014,6 +1026,8 @@ function frame(now){
  sunlightPresentation.tick(state,dt,{allowOpening:openingAllowed&&sunlightVisible,visible:sunlightVisible,glowVisible:!document.hidden&&!seasonJumping});
  const revelationVisible=sunlightVisible&&!sunlightPresentation.active;
  revelationPresentation.tick(state,dt,{allowOpening:openingAllowed&&revelationVisible,visible:revelationVisible});
+ const shapingVisible=revelationVisible&&!revelationPresentation.active;
+ shapingPresentation.tick(state,dt,{allowOpening:openingAllowed&&shapingVisible,visible:shapingVisible,pilesVisible:!document.hidden&&!seasonJumping});
  requestAnimationFrame(frame);
 }
 urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});

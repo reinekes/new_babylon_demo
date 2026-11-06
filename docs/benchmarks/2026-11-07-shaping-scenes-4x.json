@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 133,
+  "citizens": 289,
+  "controlledModelPrerequisites": true,
+  "groundMarkerSeen": true,
+  "inTransit": true,
+  "grounded": true,
+  "delivered": {
+    "clay": 60,
+    "reed": 40
+  },
+  "byteEqualReload": true,
+  "samples": 885,
+  "medianCpuMs": 3.6794169999998303,
+  "p95CpuMs": 9.728417000000036
+}

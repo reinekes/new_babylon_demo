@@ -1,0 +1,25 @@
+.shaping-scene[hidden]{display:none}
+.shaping-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.shaping-scene-card{background:linear-gradient(115deg,#513528,#28281d);border-color:#c49a66}
+.shaping-art{position:relative;flex:none}
+.shaping-art svg:not(:first-child){position:absolute;inset:0}
+.shaping-clay{fill:#a46246;stroke:#e2a877;stroke-width:1.5}
+.shaping-reeds{fill:none;stroke:#e5c47e;stroke-width:2}
+.shaping-model{fill:#a46246;stroke:#edb985;stroke-width:2;transform-origin:center 80%;transition:transform 2s ease}
+.shaping-hand{fill:none;stroke:#ffcd98;stroke-width:2;opacity:0}
+.shaping-scene[data-kind="opening"] .shaping-art svg:first-child,.shaping-scene[data-kind="cast"] .shaping-model{visibility:hidden}
+.shaping-scene[data-kind="opening"][data-phase="1"] .shaping-model{transform:scaleY(.45)}
+.shaping-scene[data-kind="cast"][data-phase="0"] .shaping-clay{opacity:.35;transform:translateY(-9px)}
+.shaping-scene[data-kind="cast"]:is([data-phase="0"],[data-phase="1"]) .shaping-reeds{opacity:0}
+.shaping-scene[data-phase="3"] .shaping-hand{opacity:1}
+.shaping-grain{display:none;fill:#efbf89;stroke:none}
+.shaping-scene[data-kind="opening"][data-phase="3"] .shaping-grain{display:block;animation:shaping-grain-rise 2.8s ease-out both}
+@keyframes shaping-grain-rise{to{transform:translateY(-23px)}}
+.shaping-art :is(.shaping-clay,.shaping-reeds,.shaping-hand){transition:opacity .9s ease,transform 1.6s ease}
+.shaping-pile{position:absolute;top:0;left:0;z-index:2;pointer-events:none;text-align:center;white-space:nowrap;color:#ffe6ba}
+.shaping-pile svg{display:block;width:2.5rem;margin:auto}
+.shaping-pile .shaping-clay{transform:scale(var(--clay));transform-origin:45% 85%}
+.shaping-pile .shaping-reeds{transform:scale(var(--reed));transform-origin:75% 85%}
+.shaping-pile span{background:#2e2119e8;border:1px solid #926b46;border-radius:.2rem;padding:.08rem .28rem;font-size:.68rem}
+.shaping-pile[data-grounded="true"] span{border-color:#deb67e}
+@media(prefers-reduced-motion:reduce){.shaping-art *{transition:none!important;animation:none!important}}

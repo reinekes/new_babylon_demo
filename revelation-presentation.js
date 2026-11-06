@@ -97,6 +97,7 @@ export function createRevelationPresentation(root,{focus,cue,onAdvice}={}){
    if(!active&&pending&&allowOpening){start(s,'opening');pending=false;}
    if(active){paint(s);if(active)active.seconds+=dt/1000;}
   },
+  get active(){return !!active;},
   skip:clear
  };
 }
