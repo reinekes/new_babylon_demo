@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledPantries": true,
+  "kinds": [
+    "food"
+  ],
+  "castCpuMs": 41.514875,
+  "samples": 120,
+  "medianStepCpuMs": 9.221082999999908,
+  "p95StepCpuMs": 18.416082999999958,
+  "medianPresentationCpuMs": 0.016833000000019638,
+  "journalEqualReload": true,
+  "resolvedFoodHidden": true,
+  "skipPreservedForecast": true
+}

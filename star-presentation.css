@@ -1,0 +1,11 @@
+.star-scene-card { background: linear-gradient(135deg,#29263c,#141b31); }
+.star-scene-card svg { fill: #a27555; stroke: #d7b68e; stroke-width: 1.6; }
+.star-scene-card .star-water { fill: #222d4c; }
+.star-scene-card .star-reflections { fill: #f1dbac; stroke: none; }
+.star-scene-card .star-lines { fill: none; stroke: #9aadc9; stroke-dasharray: 2 4; opacity: 0; transition: opacity .7s ease; }
+.star-scene[data-kind="opening"][data-phase="3"] .star-lines,
+.star-scene[data-kind="cast"]:not([data-phase="0"]) .star-lines { opacity: 1; }
+.star-mark { position: absolute; top: 0; left: 0; z-index: 4; pointer-events: none; color: #fae4b7; background: #232b43; border: 1px solid #ba9b69; border-radius: 50%; width: 22px; height: 22px; display: grid; place-items: center; }
+.star-mark[data-kind="water"] { color: #a9d7dc; }
+.star-mark[data-kind="construction"] { color: #e6a67a; }
+@media (prefers-reduced-motion: reduce) { .star-scene-card .star-lines { transition: none; } }

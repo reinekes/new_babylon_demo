@@ -1,3 +1,6 @@
+import {createStarPresentation} from './star-presentation.js';
+import {starKnowledgeReason} from './star-observations.js';
+import {starForecastView} from './star-forecast.js';
 import {createPeacePresentation} from './peace-presentation.js';
 import {PEACE_LIMIT,PEACE_MOOD,PEACE_RADIUS,peaceKnowledgeReason,peaceQuote} from './peace-discovery.js';
 import {createArrivalPresentation} from './arrival-presentation.js';
@@ -224,6 +227,16 @@ const peacePresentation=createPeacePresentation($('city').parentNode,{
   return p&&p.x>=0&&p.x<=renderer.w&&p.y>=0&&p.y<=renderer.h?p:null;
  },
  cue:(_kind,phase)=>cityAudio.cueEarth(['breath','bow','breath'][phase])
+});
+const starPresentation=createStarPresentation($('city').parentNode,{
+ ready:s=>!!s.starObservations&&!starKnowledgeReason(s),
+ onOpening:s=>{s.starObservations.sceneSeen=true;save();},
+ forecasts:starForecastView,
+ project:row=>{
+  const p=renderer.ctx?renderer.point(row.x,row.y,0):renderer.projectWindPoint?.(row);
+  return p&&p.x>=0&&p.x<=renderer.w&&p.y>=0&&p.y<=renderer.h?p:null;
+ },
+ cue:(_kind,phase)=>cityAudio.cueEarth(['breath','sheaf','bow','breath'][phase])
 });
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
@@ -864,8 +877,9 @@ function makeMiracleCard(id,m){
   el.before(choice);
   choice.querySelector('select').onchange=()=>update();
  }
- el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
+ else if(id==='stars'&&state.starObservations){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();starPresentation.cast();}
  else if(id==='peace'&&state.peaceDiscovery){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();peacePresentation.cast();}
  else if(id==='healing'&&state.arrivalGroup){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();arrivalPresentation.cast(state.arrivalGroup);}
  else if(id==='shaping'&&state.shapingProjects){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();shapingPresentation.cast(state.shapingBatches?.rows.at(-1));}
@@ -967,6 +981,7 @@ function resetCityPresentation(){
  shapingPresentation.reset(state);
  arrivalPresentation.reset();
  peacePresentation.reset();
+ starPresentation.reset();
  waterProjectDraft=null;lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
 }
 async function archiveCurrentCity(){
@@ -1071,6 +1086,8 @@ function frame(now){
  arrivalPresentation.tick(state,dt,{allowOpening:openingAllowed&&arrivalVisible,visible:arrivalVisible,markVisible:!document.hidden&&!seasonJumping});
  const peaceVisible=arrivalVisible&&!arrivalPresentation.active;
  peacePresentation.tick(state,dt,{allowOpening:openingAllowed&&peaceVisible,visible:peaceVisible,marksVisible:!document.hidden&&!seasonJumping});
+ const starVisible=peaceVisible&&!peacePresentation.active;
+ starPresentation.tick(state,dt,{allowOpening:openingAllowed&&starVisible,visible:starVisible,marksVisible:!document.hidden&&!seasonJumping});
  requestAnimationFrame(frame);
 }
 urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});

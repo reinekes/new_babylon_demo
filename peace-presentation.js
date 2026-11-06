@@ -38,6 +38,7 @@ export function createPeacePresentation(root,{ready,onOpening,project,cue}={}){
   for(const [id,mark] of marks)if(!keep.has(id)){mark.remove();marks.delete(id);}
  }
  return {
+  get active(){return !!active;},
   skip,cast(){start('cast');},
   reset(){skip();seen=false;drawRelief({},false);},
   tick(s,dt,{visible=true,allowOpening=true,marksVisible=visible}={}){

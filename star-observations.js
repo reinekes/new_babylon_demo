@@ -46,7 +46,8 @@ const validLocation=(s,p)=>Number.isInteger(p.x)&&p.x>=0&&p.x<worldWidth(s)&&
 export function validateStarObservations(s){
  const journal=s.starObservations;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||journal.version!==1||Object.keys(journal).length!==2+Number(journal.harvest!==undefined)+Number(journal.forecast!==undefined)||
+ if(!usesCatDiscovery(s)||!journal||journal.version!==1||Object.keys(journal).length!==2+Number(journal.harvest!==undefined)+Number(journal.forecast!==undefined)+Number(journal.sceneSeen!==undefined)||
+  (journal.sceneSeen!==undefined&&journal.sceneSeen!==true)||
   !Array.isArray(journal.nights)||journal.nights.length>STAR_NIGHTS_REQUIRED)return false;
  if(journal.forecast!==undefined&&(!journal.harvest||journal.nights.length!==STAR_NIGHTS_REQUIRED||!validateStarForecast(s,journal.forecast)))return false;
  const harvest=journal.harvest;
