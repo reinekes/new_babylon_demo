@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T10:53:05.507121+00:00",
+  "commit": "3a2cb12f62c338dcced8e3fafab9c2e527b3c331",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c48ccd3c02dd1cc296ce0d23dae2f32d43ecf1312c0a8dbfb9d21e52ef1bcbee",
+      "actual": "c48ccd3c02dd1cc296ce0d23dae2f32d43ecf1312c0a8dbfb9d21e52ef1bcbee",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "45fe47b883bff277c3b4243d2970807e83e93e5b0cb12d52a986979439b703af",
+      "actual": "45fe47b883bff277c3b4243d2970807e83e93e5b0cb12d52a986979439b703af",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "expected": "f6ad0d86275266369d76d892ccedceb49f198f4d1f328a85b0b146b3496258f6",
+      "actual": "f6ad0d86275266369d76d892ccedceb49f198f4d1f328a85b0b146b3496258f6",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "652b5a4388aeef79c0ab23e7a6d515ba81d132b37de45adf0d1097d60ac1b0ef",
+      "actual": "652b5a4388aeef79c0ab23e7a6d515ba81d132b37de45adf0d1097d60ac1b0ef",
+      "match": true
+    },
+    {
+      "path": "earth-presentation.css",
+      "status": 200,
+      "expected": "ee7b6c672af00539fa679c9b04ce97ecfc8a683cb37588e2089ec3f24d74811b",
+      "actual": "ee7b6c672af00539fa679c9b04ce97ecfc8a683cb37588e2089ec3f24d74811b",
+      "match": true
+    },
+    {
+      "path": "earth-presentation.js",
+      "status": 200,
+      "expected": "ae033c2542bf3ecb3ecfeb7cbc6b986c0c8b366893a2ebe99c7e724b9893f1b5",
+      "actual": "ae033c2542bf3ecb3ecfeb7cbc6b986c0c8b366893a2ebe99c7e724b9893f1b5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0d800467216efbdb59d8b85c92e3788fcb9c6a94e296fb654dcf65849f279d3f",
+      "actual": "0d800467216efbdb59d8b85c92e3788fcb9c6a94e296fb654dcf65849f279d3f",
+      "match": true
+    },
+    {
+      "path": "rain-presentation.js",
+      "status": 200,
+      "expected": "b506d2ee1e6a89fdd20eeca8426f955a0dfc0c1f5ffddea50f7237776ea8a750",
+      "actual": "b506d2ee1e6a89fdd20eeca8426f955a0dfc0c1f5ffddea50f7237776ea8a750",
+      "match": true
+    },
+    {
+      "path": "tests/earth-presentation.test.js",
+      "status": 200,
+      "expected": "6a0e4110bbeaea2a1aaa91610b5010695c06c90e89f48f612989200c59108628",
+      "actual": "6a0e4110bbeaea2a1aaa91610b5010695c06c90e89f48f612989200c59108628",
+      "match": true
+    },
+    {
+      "path": "work-audio.js",
+      "status": 200,
+      "expected": "bdffb50c7b6622a83278307cd95586ed06712cd05f58533894f0affff55cd1c9",
+      "actual": "bdffb50c7b6622a83278307cd95586ed06712cd05f58533894f0affff55cd1c9",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
