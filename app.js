@@ -1,3 +1,4 @@
+import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative} from './household-initiative.js';
 import {approveWaterProject,cityWaterRequest,householdWaterRequest,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,VOW_FAILURE_TEXT} from './supply-vow.js';
@@ -163,13 +164,21 @@ function workplaceControl(c){if(!canWork(c))return '';return `<label class="cont
 const staffingDrafts=new WeakMap();
 function staffDraft(key){let drafts=staffingDrafts.get(state);if(!drafts){drafts=new Map();staffingDrafts.set(state,drafts);}if(!drafts.has(key))drafts.set(key,{});return drafts.get(key);}
 function staffingControl(b){return renderStaffing(state,b,staffDraft(buildingKey(b)));}
+function sealedContractHTML(q){
+ const seal=q.seal;
+ if(!seal)return '';
+ const sale=state.trade.sales.find(order=>order.id===q.saleId);
+ const delivery=state.trade.deliveries.find(order=>order.id===q.deliveryId);
+ return `<p data-trade-seal><b>Печать · договор № ${q.visit}</b> · ${esc(q.partner)}<br>Ткань у купцов ${foodAmount(sale.loaded)} · ${delivery?`принято городом ${foodAmount(delivery.delivered)} · ${label(delivery.resource)}`:'поставки городу не было'}<br>${resident(seal.author)} · амбар ${esc(seal.archive)} · день ${Math.floor(seal.writtenAt/60)+1}, ${clockText(seal.writtenAt)}</p>`;
+}
 function stockAccountControl(b){
  if(b.type!=='granary')return '';
  const account=b.stockAccount,archive=b.receiptArchive;
  const amounts=account&&Object.entries(account.stock).filter(([,amount])=>amount>0).map(([resource,amount])=>`${label(resource)} · ${rounded(amount)}`).join(' · ');
  const snapshot=account?`<h4>Последняя табличка учёта</h4><p>${amounts||'Склад был пуст'}</p><small>${esc(displayName(state,account.author))} · год ${account.year} · ${MONTH_NAMES[account.month]} · день ${account.day} · ${clockText(account.simTime)}. Остаток на момент записи.</small>`:'<h4>Табличка учёта</h4><small>Закрепи писца в амбаре. Он запишет остатки, когда обработает ожидающие доставки.</small>';
  const receipts=archive?`<details data-granary-receipts><summary>Квитанции амбара · ${archive.tablets.length} записей</summary><p>Ожидают записи: ${archive.pending.length}. Одна квитанция или сверка архива занимает 12 секунд работы писца.</p>${archive.reading?`<p>${resident(archive.reading.author)} сверил табличку № ${archive.reading.tablet} предыдущего писца.</p>`:''}<ol>${[...archive.tablets].reverse().map(t=>`<li>№ ${t.id} · ${esc(cargoAmount(t.cargo))}<br>Доставил ${resident(t.carrier)} · день ${Math.floor(t.arrivedAt/60)+1}, ${clockText(t.arrivedAt)}<br>Записал ${resident(t.author)} · день ${Math.floor(t.writtenAt/60)+1}, ${clockText(t.writtenAt)}</li>`).join('')}</ol></details>`:'';
- return `<section class="staffing-panel">${snapshot}${receipts}</section>`;
+ const seals=(state.tradeContracts||[]).filter(q=>q.seal?.archive===buildingKey(b)).slice(-8).reverse().map(sealedContractHTML).join('');
+ return `<section class="staffing-panel">${snapshot}${receipts}${seals?'<h4>Печати договоров по этому адресу</h4>'+seals:''}</section>`;
 }
 
 function guardControl(b){if(!isPestStore(b))return '';const key=buildingKey(b),guard=state.citizens.find(c=>c.guardPost===key);return `<section class="staffing-panel pest-panel"><h4>Защита запасов</h4><p>${pestReport(state,key)}</p>${guard?`<p>${resident(guard)} · сторож <button data-release-guard="${guard.id}">Освободить</button></p>`:`<label class="control-label">Назначить сторожа <select data-guard-building="${key}" aria-label="Сторож хранилища"><option value="">Выбрать взрослого</option>${state.citizens.filter(c=>canWork(c)&&['auto','production'].includes(c.role)).map(c=>`<option value="${c.id}">${displayName(state,c.id)}${c.workplace||c.guardPost?' · сменит работу':''}</option>`).join('')}</select></label>`}<small>Сторож занимает одного жителя, ест дома и отдыхает ночью. Сторож прогоняет мышей и уменьшает потери запасов. Потери относятся к запасам этого склада; дома и грузы защищены.</small></section>`;}
@@ -581,7 +590,7 @@ function tradeContractHTML(){
  const next=offer&&(!last||last.visit!==state.trade.visits)?`<p>${esc(offer.partner)} · доверие ${offer.trust} · 4 ткани за ${offer.wood} дерева до срока (${deadline(offer.deadline)}).
   При срыве купцы отдадут 2 камня за каждую принятую ткань, оставшуюся на складе ткань освободят.</p>
   <button data-accept-trade-contract ${offer.reason?'disabled':''}>Подписать договор</button>${offer.reason?`<small> ${esc(offer.reason)}</small>`:''}`:'';
- return `<section class="management-row"><h3>Договор с купцами</h3>${previous}${next}</section>`;
+ return `<section class="management-row"><h3>Договор с купцами</h3>${previous}${last?.seal?sealedContractHTML(last):tradeSealReady(state,last)?'<small>Обмен завершён. Писец при амбаре может поставить печать.</small>':''}${next}</section>`;
 }
 
 function externalGuestHTML(){

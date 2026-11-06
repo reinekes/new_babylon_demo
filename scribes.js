@@ -1,4 +1,4 @@
-import {MATERIALS,isOperational} from './definitions.js';
+import {MATERIALS,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {calendarAt} from './calendar.js';
 
@@ -51,12 +51,35 @@ function validArchive(state,building){
   (a.reading===undefined||a.reading&&citizen(a.reading.author)&&a.tablets.some(r=>r.id===a.reading.tablet&&r.author!==a.reading.author));
 }
 
+export function tradeSealReady(state,contract){
+ if(!contract||!['fulfilled','breached'].includes(contract.status)||contract.deliveryId===null)return false;
+ if(contract.deliveryId===0)return contract.status==='breached';
+ const delivery=state.trade.deliveries.find(d=>d.id===contract.deliveryId);
+ return !!delivery&&delivery.delivered===delivery.amount;
+}
+
+function sealTradeContract(state,building,scribe){
+ if(!isStrictSumer(state)||building.type!=='granary'||!isOperational(building))return false;
+ const contract=state.tradeContracts?.find(q=>!q.seal&&tradeSealReady(state,q));
+ if(!contract)return false;
+ contract.seal={author:scribe.id,archive:buildingKey(building),writtenAt:state.simTime};
+ return true;
+}
+
+export function validateTradeSeal(state,contract){
+ const seal=contract.seal;
+ if(seal===undefined)return true;
+ return !!seal&&Object.keys(seal).length===3&&Number.isSafeInteger(seal.author)&&seal.author>=0&&seal.author<state.demography.nextId&&
+  typeof seal.archive==='string'&&/^\d+,\d+$/.test(seal.archive)&&Number.isFinite(seal.writtenAt)&&seal.writtenAt>=0&&seal.writtenAt<=state.simTime&&
+  tradeSealReady(state,contract);
+}
+
 // One dated tablet per granary. It records stock without moving it.
 export function workOnAccount(state,building,scribe,seconds){
  scribe.workElapsed+=seconds;
  if(scribe.workElapsed<ACCOUNT_WORK_SECONDS)return;
  scribe.workElapsed%=ACCOUNT_WORK_SECONDS;
- if(workOnReceipt(state,building,scribe))return;
+ if(sealTradeContract(state,building,scribe)||workOnReceipt(state,building,scribe))return;
  const date=calendarAt(state);
  building.stockAccount={
   author:scribe.id,

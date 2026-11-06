@@ -4,6 +4,7 @@ import {createGame,encode,decode,advanceTime} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {advanceTrade,acceptTradeContract,trade,tradeContractOffer,loadSaleCargo,tradePartnerTrust} from '../trading.js';
 import {takeReserved} from '../inventory.js';
+import {workOnAccount,ACCOUNT_WORK_SECONDS} from '../scribes.js';
 
 function fixture(){
  const s=createGame({start:'established',scenario:strictScenario()});
@@ -47,6 +48,14 @@ test('late trade releases the unpicked cloth and converts loaded cloth to a smal
  assert.equal(s.trade.deliveries.at(-1).resource,'stone');
  assert.equal(s.trade.deliveries.at(-1).remaining,4);
  assert.equal(tradePartnerTrust(s,offer.partner),-1);
+ const granary={type:'granary',x:10,y:8,level:1},scribe=s.citizens[1];
+ workOnAccount(s,granary,scribe,ACCOUNT_WORK_SECONDS);
+ assert.equal(s.tradeContracts[0].seal,undefined);
+ const payment=s.trade.deliveries.at(-1);
+ for(let i=0;i<150&&payment.delivered<4;i++){s.event=null;advanceTime(s,.5);}
+ assert.equal(payment.delivered,4);
+ workOnAccount(s,granary,scribe,ACCOUNT_WORK_SECONDS);
+ assert.equal(s.tradeContracts[0].seal.author,scribe.id);
  assert.ok(decode(encode(s)));
 });
 
@@ -91,4 +100,27 @@ test('the same partner offers better terms on a later visit after successful del
  Object.assign(s.trade.caravan,{phase:'trading',market:'10,9'});
  assert.equal(s.trade.caravan.name,partner);
  assert.equal(tradeContractOffer(s).wood,16);
+});
+
+test('a scribe seals the physical exchange once and the seal survives loading',()=>{
+ const s=fixture(),granary={type:'granary',x:10,y:8,level:1},scribe=s.citizens[1];
+ s.buildings.push(granary);
+ assert.ok(acceptTradeContract(s).ok);
+ handOver(s,4);
+ const contract=s.tradeContracts[0];
+ workOnAccount(s,granary,scribe,ACCOUNT_WORK_SECONDS);
+ assert.equal(contract.seal,undefined);
+ const delivery=s.trade.deliveries.at(-1);
+ for(let i=0;i<150&&delivery.delivered<12;i++){s.event=null;advanceTime(s,.5);}
+ assert.equal(delivery.delivered,12);
+ const before={...s.resources};
+ workOnAccount(s,granary,scribe,ACCOUNT_WORK_SECONDS);
+ assert.deepEqual(contract.seal,{author:scribe.id,archive:'10,8',writtenAt:s.simTime});
+ workOnAccount(s,granary,s.citizens[2],ACCOUNT_WORK_SECONDS);
+ assert.equal(contract.seal.author,scribe.id);
+ assert.deepEqual(s.resources,before);
+ const copy=decode(encode(s));assert.ok(copy);
+ assert.deepEqual(copy.tradeContracts[0].seal,contract.seal);
+ contract.seal.writtenAt=s.simTime+1;
+ assert.equal(decode(encode(s)),null);
 });

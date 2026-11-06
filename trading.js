@@ -1,3 +1,4 @@
+import {validateTradeSeal} from './scribes.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {isTradePort,riverEntry,riverExit,routeBoat,moveBoat,validBoatPoint} from './river-trade.js';
@@ -91,7 +92,9 @@ function validateTradeContracts(s){
  if(!isStrictSumer(s)||!Array.isArray(s.tradeContracts)||!Array.isArray(s.trade?.sales)||!Array.isArray(s.trade?.deliveries))return false;
  const trust=new Map(),deliveryIds=new Set();let previous=0;
  for(const q of s.tradeContracts){
-  if(!keys(q,['visit','partner','deadline','wood','saleId','status','deliveryId'])||
+  const fields=['visit','partner','deadline','wood','saleId','status','deliveryId'];
+  if(q?.seal!==undefined)fields.push('seal');
+  if(!keys(q,fields)||!validateTradeSeal(s,q)||
    !safe(q.visit)||q.visit<=previous||q.visit>s.trade.visits||typeof q.partner!=='string'||!q.partner||q.partner.length>100||
    !safe(q.deadline)||q.deadline%4!==3||q.deadline>s.tick+2||q.wood!==offeredWood(trust.get(q.partner)||0)||
    !['active','fulfilled','breached'].includes(q.status))return false;
