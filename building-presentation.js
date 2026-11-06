@@ -12,5 +12,6 @@ export function buildingPresentation(state,b){
  if(isReedShrine(state,b))return reedShrine;
  const def=buildingDefinition(state,b?.type);
  if(b?.type!=='house'||!b.starterHut||levelOf(b)!==1)return def;
+ if(b.householdInitiative)return {...def,name:'Малый двор',desc:'Сырцовый дом для четырёх жителей. Семья предложила построить его, чтобы жить отдельно.'};
  return {...def,name:isStrictSumer(state)?'Первый дом':'Дом-улей',desc:isStrictSumer(state)?'Стартовый сырцовый дом с плоской земляной крышей для четырёх жителей. Припасы хранятся внутри. Можно снести или улучшить в обычный дом II уровня.':'Стартовый сырцовый дом-улей для четырёх жителей. Припасы хранятся внутри. Можно снести или улучшить в обычный дом II уровня; построить новый улей нельзя.'};
 }

@@ -1,3 +1,4 @@
+import {validateHouseholdInitiatives} from './household-initiative.js';
 import {validateHumanProjects} from './human-projects.js';
 import {fortificationAccess} from './navigation.js';
 import {advanceSupplyVow,validateSupplyVows} from './supply-vow.js';
@@ -89,10 +90,10 @@ export const count=(s,type)=>s.buildings.filter(b=>b.type===type&&isComplete(b))
 export const storage=storageOf;
 export function workers(s){const needed=s.buildings.filter(b=>isComplete(b)&&Object.keys(BUILDINGS[b.type].output).length).reduce((n,b)=>n+(b.type==='musicHouse'?1:2),0);return needed?Math.min(1,workforceStats(s).employed/needed):1;}
 export function buildingAt(s,x,y){return s.buildings.find(b=>occupiesCell(b,x,y))||s.buildings.find(b=>{if(b.type!=='bridge')return false;const p=riverLocal(x,y,s),span=bridgeSpanAt(b,s);return p.along===span.y-.5&&terrain(x,y,s)==='water'&&p.across>=span.left&&p.across<=span.right;});}
-export function canBuild(s,type,x,y,placementOnly=false,rotation=0){
+export function canBuild(s,type,x,y,placementOnly=false,rotation=0,{householdInitiative=false}={}){
  if(!placementOnly&&s.miracleCelebration)return miracleCelebrationReason(s);
  if(!placementOnly&&relicControlActive(s))return relicCommandReason(s);
- const knowledge=buildingKnowledgeReason(s,type);if(knowledge)return knowledge;
+ const knowledge=type==='house'&&householdInitiative&&isStrictSumer(s)?'':buildingKnowledgeReason(s,type);if(knowledge)return knowledge;
  if(BUILDINGS[type]?.unique&&s.buildings.some(b=>b.type===type))return 'Эта уникальная постройка уже заложена';
  if(!validRotation(type,rotation))return 'Недопустимый поворот здания';
  const b=buildingDefinition(s,type);if(!b)return 'Неизвестная постройка';if(!placementOnly&&s.lost)return 'Поселение покинуто';if(!placementOnly&&s.event)return 'Сначала реши судьбу события';if(terrain(x,y,s)==='void')return 'За пределами долины';if(buildingAt(s,x,y))return 'Эта клетка уже занята';
@@ -123,7 +124,7 @@ export function canBuild(s,type,x,y,placementOnly=false,rotation=0){
  return '';
 }
 export const canPlace=(s,type,x,y,rotation=0)=>canBuild(s,type,x,y,true,rotation);
-export function build(s,type,x,y,rotation=0,{eligibleStores,humanWaterProject}={}){const reason=canBuild(s,type,x,y,false,rotation);if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type],{eligibleStores});if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,rotation,...humanWaterProject?{humanWaterProject}:{},...(newFootprint(type)>1?{footprint:newFootprint(type)}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${buildingDefinition(s,type).name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
+export function build(s,type,x,y,rotation=0,{eligibleStores,humanWaterProject,householdInitiative}={}){const reason=canBuild(s,type,x,y,false,rotation,{householdInitiative});if(reason)return {ok:false,reason};const sources=reserveStock(s,BUILDINGS[type],{eligibleStores});if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,rotation,...humanWaterProject?{humanWaterProject}:{},...householdInitiative?{starterHut:true,householdInitiative}:{},...(newFootprint(type)>1?{footprint:newFootprint(type)}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${buildingDefinition(s,type).name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 
 export function canUpgrade(s,b){if(s.miracleCelebration)return miracleCelebrationReason(s);if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(isCityFortification(b.type)||['canal','levee'].includes(b.type))return 'У сооружения один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
@@ -443,7 +444,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s))return null;
+  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}

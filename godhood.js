@@ -68,9 +68,9 @@ export function miracleKnowledgeReason(s,id){if(id==='cat'&&usesCatDiscovery(s))
 export function godhoodInspirationReason(s,c,profession){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Сначала помоги первому человеку заметить присутствие бога';if(!knowsPresence(s,c)&&!preparedFisherInspiration(s,c,profession))return 'Этот человек ещё не признал присутствие бога: помоги ему увидеть дело общины';return '';}
 export function firstBuilderInspiration(s,c,profession){return isAwakening(s)&&profession==='builder'&&s.godhood.stage==='recognized'&&!s.godhood.firstBuilderGift&&s.godhood.witnessId===c.id;}
 export function acceptGodhoodInspiration(s,c,profession){if(!s.godhood||!isAwakening(s))return;if(profession==='builder'){c.builderSkill??={level:1,projects:0};if(c.id===s.godhood.witnessId)s.godhood.firstBuilderGift=true;}}
-export function canLeadConstruction(s,c,b){return !isAwakening(s)||c&&c.age>=16&&c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=knowledgeTier(b.type,b.construction?.kind==='repair'?1:b.construction?.target||b.level||1);}
+export function canLeadConstruction(s,c,b){return !isAwakening(s)||c&&c.age>=16&&(b.type==='house'&&b.householdInitiative&&b.construction?.kind==='new'||c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=knowledgeTier(b.type,b.construction?.kind==='repair'?1:b.construction?.target||b.level||1));}
 export function recordBuilderCompletion(s,b){
- if(!isAwakening(s))return false;
+ if(!isAwakening(s)||b.householdInitiative&&b.construction?.kind==='new')return false;
  const q=b.construction;if(!q||!['new','upgrade'].includes(q.kind)||!Number.isFinite(q.work)||![1,2,3].includes(q.target)||q.work+1e-8<(b.type==='road'?6:12)*q.target||Object.entries(q.required||{}).some(([k,n])=>(q.delivered?.[k]||0)<n))return false;
  const g=s.godhood,key=buildingKey(b),stamp=`${key}:${q.target}`;
  if(g.completedProjects.includes(stamp))return false;
