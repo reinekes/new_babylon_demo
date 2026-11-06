@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode,advanceTime} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
-import {advanceTrade,acceptTradeContract,trade,tradeContractOffer,loadSaleCargo,tradePartnerTrust} from '../trading.js';
+import {advanceTrade,advanceTradeLogistics,acceptTradeContract,trade,tradeContractOffer,loadSaleCargo,tradePartnerTrust} from '../trading.js';
 import {takeReserved} from '../inventory.js';
 import {workOnAccount,ACCOUNT_WORK_SECONDS} from '../scribes.js';
 
@@ -123,4 +123,30 @@ test('a scribe seals the physical exchange once and the seal survives loading',(
  assert.deepEqual(copy.tradeContracts[0].seal,contract.seal);
  contract.seal.writtenAt=s.simTime+1;
  assert.equal(decode(encode(s)),null);
+});
+
+test('only fodder carried to the land market unlocks the donkey packs, once',async()=>{
+ const {feedDonkeyCaravan}=await import('../trading.js');
+ let s=fixture();
+ const c=s.trade.caravan,wood=c.stock.wood,stone=c.stock.stone,food=c.stock.food,silver=s.trade.silver;
+ const order=feedDonkeyCaravan(s);
+ assert.ok(order.ok,order.reason);
+ assert.equal(c.stock.wood,wood);
+ const unfed=fixture();unfed.resources.food=4;
+ assert.equal(feedDonkeyCaravan(unfed).ok,false);
+ const late=fixture(),stock=late.resources.food;
+ assert.ok(feedDonkeyCaravan(late).ok);
+ late.tick=3;late.season=3;late.simTime=135;advanceTradeLogistics(late,.1);
+ assert.equal(late.resources.food,stock);
+ assert.equal(late.trade.sales.find(q=>q.fodder).cancelled,4);
+ assert.equal(feedDonkeyCaravan(s).ok,false);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ const q=s.trade.sales.find(q=>q.fodder);
+ for(let i=0;i<240&&q.loaded<4;i++){s.event=null;advanceTime(s,.25);}
+ assert.equal(q.loaded,4);
+ assert.equal(s.trade.caravan.stock.wood,wood+8);
+ assert.equal(s.trade.caravan.stock.stone,stone+4);
+ assert.equal(s.trade.caravan.stock.food,food);
+ assert.equal(s.trade.silver,silver);
+ const done=encode(s);assert.equal(encode(decode(done)),done);
 });

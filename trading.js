@@ -3,12 +3,13 @@ import {validateTradeSeal} from './scribes.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {harborCargoMultiplier,isTradePort,riverEntry,riverExit,routeBoat,moveBoat,validBoatPoint} from './river-trade.js';
-import {reserveStock,refundSources,stockStores} from './inventory.js';
+import {reserveStock,refundSources,stockStores,foodAvailability} from './inventory.js';
 import {availableFood} from './food-planning.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {worldWidth,worldHeight,isDryPoint,onBridge,signedRiverDistance,riverLocal,worldFromRiver,riverAcrossSize,riverLength} from './world.js';
 import {MATERIALS,RESOURCE_NAMES,storageOf} from './definitions.js';
+const DONKEY_RATION=4,PACK_STOCK={wood:8,stone:4};
 const safe=n=>Number.isSafeInteger(n)&&n>=0&&n<=1e9;
 const nextVisit=t=>1+4*(Math.floor((t-1)/4)+1);
 const keys=(o,list)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length===list.length&&list.every(k=>k in o);
@@ -30,7 +31,7 @@ export function advanceTrade(s){
   if(isStrictSumer(s))c.riverCapacity=capacity;
   for(const k of ['wood','stone'])c.stock[k]*=capacity;
   c.silver*=capacity;
- }
+ }else if(isStrictSumer(s))c.packReserve=true;
  news(s,`${c.name} у города`,c.transport==='river'?'Грузовая лодка идёт по реке к пристани.':
   riverVisit&&low&&capacity===1?'У мелкой пристани недостаточно глубины для полной партии. Купцы идут к рынку по суше.':'Караван ищет готовый рынок и дорогу к нему.');
  return t;
@@ -48,6 +49,36 @@ function nextTradeOrder(t){
  const id=Math.max(t.nextDelivery,t.nextSale);t.nextDelivery=id+1;t.nextSale=id+1;return id;
 }
 
+export function donkeyFodderOffer(s){
+ const c=s.trade?.caravan;
+ if(!isStrictSumer(s)||!c||c.transport==='river'||c.packReserve===undefined)return null;
+ const order=s.trade.sales.find(q=>q.fodder&&q.caravanId===c.id);
+ const reason=relicCommandReason(s)||(s.lost?'Поселение покинуто':s.event?'Сначала заверши событие':
+  s.tick>=c.departAt?'Срок приёма завершён':order?'Корм на этот визит уже заказан':marketStatus(s)||
+  (availableFood(s)<DONKEY_RATION?'Не хватает свободного зерна сверх семенного резерва':''));
+ return {order,reason,ration:DONKEY_RATION,wood:PACK_STOCK.wood,stone:PACK_STOCK.stone};
+}
+
+function connectedTradeStores(s,market){
+ const net=networkFor(s),port=net.ports.find(p=>buildingKey(p.building)===market);
+ const component=net.components.get(port?.key);
+ return new Set(net.ports.filter(p=>component!==undefined&&net.components.get(p.key)===component).map(p=>buildingKey(p.building)));
+}
+
+export function feedDonkeyCaravan(s){
+ const offer=donkeyFodderOffer(s);
+ if(!offer||offer.reason)return {ok:false,reason:offer?.reason||'Корм для этого каравана недоступен'};
+ const t=s.trade,c=t.caravan,stores=connectedTradeStores(s,c.market),food=foodAvailability(s);
+ const source=[...stores].find(key=>(food.get(key)||0)>=DONKEY_RATION);
+ if(!source)return {ok:false,reason:'Нужен связанный с рынком склад с четырьмя единицами свободного зерна'};
+ const sources=reserveStock(s,{food:DONKEY_RATION},{eligibleStores:new Set([source])});
+ if(!sources)return {ok:false,reason:'Не хватает свободного зерна'};
+ t.sales.push({sources,allocations:structuredClone(sources),id:nextTradeOrder(t),market:c.market,caravanId:c.id,
+  resource:'food',amount:DONKEY_RATION,remaining:DONKEY_RATION,loaded:0,cancelled:0,unitPrice:0,fodder:true});
+ invalidateAssignments(s);
+ return {ok:true};
+}
+
 export function tradeContractOffer(s){
  const c=s.trade?.caravan;
  if(!isStrictSumer(s)||!c)return null;
@@ -62,9 +93,7 @@ export function tradeContractOffer(s){
 export function acceptTradeContract(s){
  const offer=tradeContractOffer(s);
  if(!offer||offer.reason)return {ok:false,reason:offer?.reason||'Договор пока недоступен'};
- const net=networkFor(s),port=net.ports.find(p=>buildingKey(p.building)===s.trade.caravan.market);
- const component=net.components.get(port?.key);
- const eligibleStores=new Set(net.ports.filter(p=>component!==undefined&&net.components.get(p.key)===component).map(p=>buildingKey(p.building)));
+ const eligibleStores=connectedTradeStores(s,s.trade.caravan.market);
  const sources=reserveStock(s,{cloth:offer.cloth},{eligibleStores});
  if(!sources)return {ok:false,reason:'Не хватает ткани на складах, связанных с торговым двором'};
  const t=s.trade,c=t.caravan,saleId=nextTradeOrder(t);
@@ -142,8 +171,23 @@ function validateTradeContracts(s){
 export function trade(s,resource,side,amount){const reason=tradeReason(s,resource,side,amount);if(reason)return {ok:false,reason};const t=s.trade,c=t.caravan,total=c.prices[resource][side]*amount;const orderId=nextTradeOrder(t);if(side==='buy'){t.deliveries.push({id:orderId,market:c.market,resource,amount,remaining:amount,delivered:0});c.stock[resource]-=amount;t.silver-=total;c.silver+=total;}else{const sources=reserveStock(s,{[resource]:amount});if(!sources)return {ok:false,reason:'В городе недостаточно товара'};c.silver-=total;t.sales.push({sources,allocations:structuredClone(sources),id:orderId,market:c.market,caravanId:c.id,resource,amount,remaining:amount,loaded:0,cancelled:0,unitPrice:c.prices[resource].sell});}invalidateAssignments(s);news(s,side==='buy'?'Товар куплен':'Продажа принята',`${RESOURCE_NAMES[resource]}: ${amount} · ${total} серебра${side==='sell'?' после погрузки':''}`);return {ok:true,resource,side,amount,total};}
 export function cancelSale(s,id){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши событие'};const q=s.trade?.sales?.find(q=>q.id===id),c=s.trade?.caravan;if(contractForSale(s,id))return {ok:false,reason:'Резерв договора освободится в срок расчёта'};if(!q||q.remaining<=0||c?.id!==q.caravanId)return {ok:false,reason:'Нет неотправленных товаров для отмены'};const amount=q.remaining;refundSources(s,q.sources);q.sources={};c.silver+=amount*q.unitPrice;q.cancelled+=amount;q.remaining=0;invalidateAssignments(s);return {ok:true,amount};}
 export function salesSummary(s){const q=s.trade?.sales||[];return {queued:q.reduce((n,q)=>n+q.remaining,0),inTransit:q.reduce((n,q)=>n+q.amount-q.remaining-q.loaded-q.cancelled,0),loaded:q.reduce((n,q)=>n+q.loaded,0),pendingSilver:q.reduce((n,q)=>n+(q.amount-q.loaded-q.cancelled)*q.unitPrice,0)};}
-export function loadSaleCargo(s,c){const q=s.trade?.sales?.find(q=>q.id===c.saleJob),caravan=s.trade?.caravan;if(!q||caravan?.id!==q.caravanId||caravan.market!==q.market||caravan.phase!=='trading')return false;const amount=c.cargo[q.resource]||0;if(!amount)return false;caravan.stock[q.resource]+=amount;q.loaded+=amount;if(Math.abs(q.amount-q.cancelled-q.loaded)<1e-7)q.loaded=q.amount-q.cancelled;s.trade.silver+=amount*q.unitPrice;c.cargo={};c.saleJob=null;c.saleMarket=null;settleTradeContract(s);invalidateAssignments(s);return true;}
-export function validateTrade(s){const t=s.trade;if(!validateTradeContracts(s)||!keys(t,['silver','visits','nextArrival','caravan','deliveries','nextDelivery','sales','nextSale'])||!safe(t.silver)||!safe(t.visits)||!safe(t.nextArrival)||t.nextArrival<=s.tick||t.nextArrival%4!==1||t.nextArrival>s.tick+4)return false;if(!Array.isArray(t.deliveries)||!safe(t.nextDelivery)||t.nextDelivery<1)return false;const ids=new Set();for(const q of t.deliveries){if(!keys(q,['id','market','resource','amount','remaining','delivered'])||!safe(q.id)||q.id<1||q.id>=t.nextDelivery||ids.has(q.id)||!MATERIALS.includes(q.resource)||typeof q.market!=='string'||q.delivered<q.amount&&!s.buildings.some(b=>buildingKey(b)===q.market&&isTradePort(b)&&isOperational(b))||!safe(q.amount)||q.amount<1||!Number.isFinite(q.remaining)||q.remaining<0||q.remaining>q.amount||!Number.isFinite(q.delivered)||q.delivered<0||q.remaining+q.delivered>q.amount+1e-7)return false;ids.add(q.id);const carried=(s.citizens||[]).filter(c=>c.tradeJob===q.id).reduce((n,c)=>n+(c.cargo[q.resource]||0),0);if(Math.abs(q.amount-q.remaining-q.delivered-carried)>1e-7)return false;}if(!Array.isArray(t.sales)||!safe(t.nextSale)||t.nextSale<1)return false;const saleIds=new Set();for(const q of t.sales){if(!keys(q,['id','market','caravanId','resource','amount','remaining','loaded','cancelled','unitPrice','sources','allocations'])||!safe(q.id)||q.id<1||q.id>=t.nextSale||saleIds.has(q.id)||typeof q.market!=='string'||typeof q.caravanId!=='string'||!MATERIALS.includes(q.resource)||!safe(q.amount)||q.amount<1||!safe(q.remaining)||!safe(q.loaded)||!safe(q.cancelled)||!safe(q.unitPrice)||(q.unitPrice===0)!==!!contractForSale(s,q.id)||q.remaining+q.loaded+q.cancelled>q.amount)return false;if(!saleSources(s,q.sources,q.resource,q.remaining,q.loaded+q.cancelled===q.amount)||!saleSources(s,q.allocations,q.resource,q.amount,q.loaded+q.cancelled===q.amount))return false;saleIds.add(q.id);const carried=(s.citizens||[]).filter(c=>c.saleJob===q.id).reduce((n,c)=>n+(c.cargo[q.resource]||0),0);if(Math.abs(q.amount-q.remaining-q.loaded-q.cancelled-carried)>1e-7)return false;if(q.loaded+q.cancelled<q.amount&&(!t.caravan||t.caravan.id!==q.caravanId||t.caravan.market!==q.market||q.unitPrice>0&&q.unitPrice!==t.caravan.prices[q.resource].sell||!s.buildings.some(b=>buildingKey(b)===q.market&&isTradePort(b)&&isOperational(b))))return false;}const c=t.caravan;if(c===null)return true;if(!(c.transport===undefined||c.transport==='river')||!keys(c.transport?Object.fromEntries(Object.entries(c).filter(([k])=>k!=='transport'&&k!=='riverCapacity')):c,['id','name','arrived','departAt','stock','prices','silver','phase','x','y','route','routeIndex','entry','market','unloadTime'])||c.id!==`caravan:${t.visits}`||!t.visits||typeof c.name!=='string'||!c.name||c.name.length>100||!safe(c.arrived)||c.arrived%4!==1||c.departAt!==c.arrived+2||c.arrived>s.tick||!safe(c.silver)||!keys(c.stock,MATERIALS)||!keys(c.prices,MATERIALS))return false;const point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5;
+export function loadSaleCargo(s,c){const q=s.trade?.sales?.find(q=>q.id===c.saleJob),caravan=s.trade?.caravan;if(!q||caravan?.id!==q.caravanId||caravan.market!==q.market||caravan.phase!=='trading')return false;const amount=c.cargo[q.resource]||0;if(!amount)return false;if(!q.fodder)caravan.stock[q.resource]+=amount;q.loaded+=amount;if(Math.abs(q.amount-q.cancelled-q.loaded)<1e-7)q.loaded=q.amount-q.cancelled;if(q.fodder&&q.loaded===DONKEY_RATION&&caravan.packReserve){
+ for(const [resource,n] of Object.entries(PACK_STOCK))caravan.stock[resource]+=n;
+ caravan.packReserve=false;
+ news(s,'Вьючные ослы получили корм','Купцы открыли запас дерева и камня.');
+ }
+ s.trade.silver+=amount*q.unitPrice;c.cargo={};c.saleJob=null;c.saleMarket=null;settleTradeContract(s);invalidateAssignments(s);return true;}
+export function validateTrade(s){const t=s.trade;if(!validateTradeContracts(s)||!keys(t,['silver','visits','nextArrival','caravan','deliveries','nextDelivery','sales','nextSale'])||!safe(t.silver)||!safe(t.visits)||!safe(t.nextArrival)||t.nextArrival<=s.tick||t.nextArrival%4!==1||t.nextArrival>s.tick+4)return false;if(!Array.isArray(t.deliveries)||!safe(t.nextDelivery)||t.nextDelivery<1)return false;const ids=new Set();for(const q of t.deliveries){if(!keys(q,['id','market','resource','amount','remaining','delivered'])||!safe(q.id)||q.id<1||q.id>=t.nextDelivery||ids.has(q.id)||!MATERIALS.includes(q.resource)||typeof q.market!=='string'||q.delivered<q.amount&&!s.buildings.some(b=>buildingKey(b)===q.market&&isTradePort(b)&&isOperational(b))||!safe(q.amount)||q.amount<1||!Number.isFinite(q.remaining)||q.remaining<0||q.remaining>q.amount||!Number.isFinite(q.delivered)||q.delivered<0||q.remaining+q.delivered>q.amount+1e-7)return false;ids.add(q.id);const carried=(s.citizens||[]).filter(c=>c.tradeJob===q.id).reduce((n,c)=>n+(c.cargo[q.resource]||0),0);if(Math.abs(q.amount-q.remaining-q.delivered-carried)>1e-7)return false;}if(!Array.isArray(t.sales)||!safe(t.nextSale)||t.nextSale<1)return false;const saleIds=new Set(),fodderVisits=new Set();for(const q of t.sales){
+ const fields=['id','market','caravanId','resource','amount','remaining','loaded','cancelled','unitPrice','sources','allocations'];
+ if(q?.fodder!==undefined)fields.push('fodder');
+ if(!keys(q,fields)||!safe(q.id)||q.id<1||q.id>=t.nextSale||saleIds.has(q.id)||typeof q.market!=='string'||typeof q.caravanId!=='string'||!MATERIALS.includes(q.resource)||!safe(q.amount)||q.amount<1||!safe(q.remaining)||!safe(q.loaded)||!safe(q.cancelled)||!safe(q.unitPrice)||(q.unitPrice===0)!==!!(q.fodder||contractForSale(s,q.id))||q.remaining+q.loaded+q.cancelled>q.amount)return false;if(q.fodder!==undefined){
+ if(q.fodder!==true||!isStrictSumer(s)||q.resource!=='food'||q.amount!==DONKEY_RATION||fodderVisits.has(q.caravanId)||
+  !/^caravan:[1-9]\d*$/.test(q.caravanId)||Number(q.caravanId.split(':')[1])>t.visits||
+  (t.caravan?.id===q.caravanId&&(t.caravan.transport==='river'||t.caravan.packReserve!==(q.loaded<DONKEY_RATION))))return false;
+ fodderVisits.add(q.caravanId);
+ }if(!saleSources(s,q.sources,q.resource,q.remaining,q.loaded+q.cancelled===q.amount)||!saleSources(s,q.allocations,q.resource,q.amount,q.loaded+q.cancelled===q.amount))return false;saleIds.add(q.id);const carried=(s.citizens||[]).filter(c=>c.saleJob===q.id).reduce((n,c)=>n+(c.cargo[q.resource]||0),0);if(Math.abs(q.amount-q.remaining-q.loaded-q.cancelled-carried)>1e-7)return false;if(q.loaded+q.cancelled<q.amount&&(!t.caravan||t.caravan.id!==q.caravanId||t.caravan.market!==q.market||q.unitPrice>0&&q.unitPrice!==t.caravan.prices[q.resource].sell||!s.buildings.some(b=>buildingKey(b)===q.market&&isTradePort(b)&&isOperational(b))))return false;}const c=t.caravan;if(c===null)return true;if(!(c.transport===undefined||c.transport==='river')||!keys(Object.fromEntries(Object.entries(c).filter(([k])=>!['transport','riverCapacity','packReserve'].includes(k))),['id','name','arrived','departAt','stock','prices','silver','phase','x','y','route','routeIndex','entry','market','unloadTime'])||c.id!==`caravan:${t.visits}`||!t.visits||typeof c.name!=='string'||!c.name||c.name.length>100||!safe(c.arrived)||c.arrived%4!==1||c.departAt!==c.arrived+2||c.arrived>s.tick||!safe(c.silver)||!keys(c.stock,MATERIALS)||!keys(c.prices,MATERIALS))return false;const point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5;
+ if(c.packReserve!==undefined&&(!isStrictSumer(s)||c.transport!==undefined||typeof c.packReserve!=='boolean'||
+  !c.packReserve&&!t.sales.some(q=>q.fodder&&q.caravanId===c.id&&q.loaded===DONKEY_RATION)))return false;
  if(c.riverCapacity!==undefined&&(c.transport!=='river'||!isStrictSumer(s)||![1,2,3].includes(c.riverCapacity)||
   c.riverCapacity<3&&Math.floor(c.arrived/4)%3!==1))return false;
  if(c.transport==='river'&&(c.route.some(p=>!validBoatPoint(p,s))||c.x!==null&&!validBoatPoint(c,s)||!s.buildings.some(b=>b.type==='harbor'&&buildingKey(b)===c.market)))return false;
@@ -155,7 +199,15 @@ export function marketStatus(s){const c=s.trade?.caravan;if(!c)return 'Кара�
 export function marketAccess(s,key,type,minCargo=1){const net=networkFor(s);for(const market of s.buildings.filter(b=>isTradePort(b)&&(!type||b.type===type)&&isOperational(b)&&(b.type!=='harbor'||harborCargoMultiplier(s,b)>=minCargo)&&(!key||buildingKey(b)===key))){const p=net.ports.find(p=>p.building===market);if(!p)continue;const component=net.components.get(p.key),store=net.ports.find(p=>['shrine','granary','depot'].includes(p.building.type)&&isOperational(p.building)&&net.components.get(p.key)===component),home=net.ports.find(p=>p.building.type==='house'&&isOperational(p.building)&&net.components.get(p.key)===component&&s.citizens.some(c=>c.home===buildingKey(p.building)));if(store&&home)return {market,p,store,home};}return null;}
 export function logisticsSummary(s){const q=s.trade?.deliveries||[],c=s.trade?.caravan;return {market:c?.market||null,phase:c?.phase||'absent',queued:q.reduce((n,q)=>n+q.remaining,0),inTransit:q.reduce((n,q)=>n+q.amount-q.remaining-q.delivered,0),delivered:q.reduce((n,q)=>n+q.delivered,0),reason:marketStatus(s)};}
 function routeCaravan(s,c,target,phase){const net=networkFor(s);let origin=null,d=Infinity;for(const p of net.nodes.values()){const n=Math.abs(p.x-c.x)+Math.abs(p.y-c.y);if(n<d){d=n;origin=p;}}const route=origin&&routeBetween(s,origin.key,target);if(!route){c.phase='blocked';c.route=[];c.routeIndex=0;return false;}c.route=route.map(p=>({x:p.x,y:p.y,key:p.key}));c.routeIndex=0;c.phase=phase;return true;}
-export function advanceTradeLogistics(s,dt){const c=s.trade?.caravan;if(!c)return;settleTradeContract(s);if(c.transport==='river'){advanceRiverLogistics(s,c,dt);return;}const pending=(s.trade.sales||[]).some(q=>q.caravanId===c.id&&q.loaded+q.cancelled<q.amount),departing=s.tick>=c.departAt&&!pending;
+function expireDonkeyFodder(s,c){
+ if(s.tick<c.departAt)return;
+ const q=s.trade.sales.find(q=>q.fodder&&q.caravanId===c.id&&q.remaining>0);
+ if(!q)return;
+ refundSources(s,q.sources);q.sources={};q.cancelled+=q.remaining;q.remaining=0;
+ invalidateAssignments(s);
+}
+
+export function advanceTradeLogistics(s,dt){const c=s.trade?.caravan;if(!c)return;settleTradeContract(s);if(c.transport==='river'){advanceRiverLogistics(s,c,dt);return;}expireDonkeyFodder(s,c);const pending=(s.trade.sales||[]).some(q=>q.caravanId===c.id&&q.loaded+q.cancelled<q.amount),departing=s.tick>=c.departAt&&!pending;
  if(c.x===null){const access=marketAccess(s,null,'market'),ref=access?.p||networkFor(s).ports.find(p=>p.building.type==='shrine')||networkFor(s).ports[0];if(!ref)return;const left=signedRiverDistance(ref.x,ref.y,s)<0,across=left?0:riverAcrossSize(s)-1;let along=Math.round(riverLocal(ref.x,ref.y,s).along),entryPoint;while(along<riverLength(s)){entryPoint=worldFromRiver(across,along,s);if(isDryPoint(s,entryPoint.x+.5,entryPoint.y+.5))break;along++;}if(along>=riverLength(s))return;const {x,y}=entryPoint;s.roadAnchors??=[];if(!s.roadAnchors.some(a=>a.x===x&&a.y===y))s.roadAnchors.push({type:'road',x,y});const net=networkFor(s),entry=net.ports.find(p=>p.building.type==='road'&&p.building.x===x&&p.building.y===y);if(!entry)return;c.entry=entry.key;c.x=entry.x;c.y=entry.y;}
  if(c.phase==='waitingMarket'&&!departing){const access=marketAccess(s,null,'market');if(!access)return;c.market=buildingKey(access.market);routeCaravan(s,c,access.p.key,'arriving');}
  if(departing&&c.phase!=='departing')routeCaravan(s,c,c.entry,'departing');
