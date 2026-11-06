@@ -1,3 +1,4 @@
+import {newMonumentChapter} from './monument-chapter.js';
 import {enableAutumnCrops} from './agriculture.js';
 import {createGame} from './engine.js';
 import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
@@ -7,6 +8,7 @@ import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
 export function createNewCity({mode,seed}={}){
  const state=createGame({mode,seed,scenario:{...strictScenario(),...(mode==='awakening'?{miracles:CAT_DISCOVERY_RULES}:{})}});
  state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
+ state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
  return state;
 }

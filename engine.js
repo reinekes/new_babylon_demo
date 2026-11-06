@@ -1,3 +1,4 @@
+import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
 import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
 import {advanceAutonomousHousing,autonomousHousingBoundary,validateHouseholdInitiatives} from './household-initiative.js';
@@ -210,6 +211,7 @@ export function miracle(s,id,target){
 function check(s){
  s.capacity=housingOf(s);
  if(s.population<=0){s.population=0;s.lost=true;s.event=null;syncCitizens(s);return;}
+ if(advanceMonumentChapter(s))log(s,'Поздняя глава · Великий зиккурат','Город вступил в эпоху монументального строительства. Следующая цель — возвести Великий зиккурат.','good');
  const unnamed=s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized',hasMiracles=unnamed||s.deaths>0||s.relicQuest?.phase==='completed'||s.landRelicQuest?.phase==='completed'||Object.values(s.divinity.domains).some(v=>v>0);
  if(s.population>=24&&!s.achievements.includes('population')){s.achievements.push('population');log(s,'Поселение стало городом','Двадцать четыре человека называют это место домом.','good');}
  if(s.resources.food>=150&&!s.achievements.includes('food')){s.achievements.push('food');if(!hasMiracles){s.name='Наполняющий амбары';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}log(s,'Полные амбары','Запас еды достиг 150. Город встречает будущее с надеждой.','good');}
@@ -295,7 +297,19 @@ export function resolveEvent(s,choice){
  }
  log(s,s.event.title,choice==='accept'?'Город принял твоё решение.':'Город сохранил запасы и продолжил свой путь.',choice==='accept'?'good':'info');s.event=null;syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }
-export function goals(s){return [{label:'Построить новое поле',done:count(s,'field')>=2},{label:'Поселить 24 жителя',done:s.achievements.includes('population')},{label:'Спасти поля от засухи',done:s.memories.includes('rain')},{label:'Набрать 50 престижа',done:s.resources.prestige>=50},{label:'Возвести зиккурат и встретить 10-й год с 30 жителями',done:s.won}];}
+export function goals(s){
+ const list=[
+  {label:'Построить новое поле',done:count(s,'field')>=2},
+  {label:'Поселить 24 жителя',done:s.achievements.includes('population')},
+  {label:'Спасти поля от засухи',done:s.memories.includes('rain')},
+  {label:'Набрать 50 престижа',done:s.resources.prestige>=50}
+ ];
+ if(s.monumentChapter){
+  list.push({label:monumentChapterReason(s)||'Открыта поздняя глава · Великий зиккурат',done:s.monumentChapter.openedAt!==null});
+ }
+ list.push({label:'Возвести зиккурат и встретить 10-й год с 30 жителями',done:s.won});
+ return list;
+}
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);if(Array.isArray(s?.citizens)&&Array.isArray(s.lifeAnalytics?.people))syncLifeAnalytics(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
@@ -460,7 +474,7 @@ export function decode(raw){
   if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateCommonMeals(s)||!validateFamilyCare(s)||!validateWellbeing(s)||!validateEveningGames(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
-  if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
+  if(oldFoodPlan)initializeFoodPlan(s);if(!validateMonumentChapter(s)||!validateCrops(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateMiracleCelebration(s))return null;
   if(!validatePests(s)||!validateTextiles(s)||!validateClothing(s)||!validateArtisans(s)||!validateKilns(s)||!validateBricks(s)||!validateWater(s))return null;
   if(oldInventory){syncInventory(s);initializeDistricts(s);const central=stockStores(s)[0];if(!central)return null;const key=buildingKey(central);for(const b of constructionEntities(s)){const q=b.construction;if(q){q.sources={[key]:{...q.remaining}};q.allocations={[key]:{...q.required}};}}for(const q of s.trade.sales){q.sources={[key]:{[q.resource]:q.remaining}};q.allocations={[key]:{[q.resource]:q.amount}};}}

@@ -1,3 +1,4 @@
+import {CITY_STAGE_POPULATION,monumentChapterReason} from './monument-chapter.js';
 import {dispatchNeighborWater,neighborWaterRoute} from './water.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
@@ -55,9 +56,10 @@ export function godhoodView(s){
 }
 
 export function buildingKnowledgeReason(s,type,level=1){
+ if(type==='ziggurat'&&level===1){const reason=monumentChapterReason(s);if(reason)return reason;}
  if(isCityFortification(type)){
   if(!isStrictSumer(s))return 'Городские стены доступны в Южном Шумере';
-  if(s.population<48)return 'Городские стены открываются при 48 жителях';
+  if(s.population<CITY_STAGE_POPULATION)return `Городские стены открываются при ${CITY_STAGE_POPULATION} жителях`;
  }
  if(!isAwakening(s))return '';
  const g=s.godhood;if(g.stage!=='recognized')return 'Сначала заяви о присутствии: нужен первый свидетель';
