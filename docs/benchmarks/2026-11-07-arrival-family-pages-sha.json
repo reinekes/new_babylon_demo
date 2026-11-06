@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T22:28:19.600944+00:00",
+  "commit": "d70437062bde08083c2c4aa239363e54e73b75ae",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "21cabc1fb20f90adf558be0cb22058e603a3edb84b37af874c60f8d3f61890bb",
+      "actual": "21cabc1fb20f90adf558be0cb22058e603a3edb84b37af874c60f8d3f61890bb",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "9b63c9c39451a6f2e2a56a57ed07b6cebd444ec9b14c8bce237af8b53e8eb1ce",
+      "actual": "9b63c9c39451a6f2e2a56a57ed07b6cebd444ec9b14c8bce237af8b53e8eb1ce",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "7b2d217dc6104fb8c62d09b7b3a7f7120bab7f2c2635f17ef440a1625d535362",
+      "actual": "7b2d217dc6104fb8c62d09b7b3a7f7120bab7f2c2635f17ef440a1625d535362",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-family-4x.json",
+      "status": 200,
+      "expected": "27f657cfeb847bc6cc51ee5744d708064e259930a323a8658f38a8112f98aa04",
+      "actual": "27f657cfeb847bc6cc51ee5744d708064e259930a323a8658f38a8112f98aa04",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "fb9332850e53e62e23ffb1f3b5c716bc78b3bb21fb4fde6bf6afaf0b4fb1810c",
+      "actual": "fb9332850e53e62e23ffb1f3b5c716bc78b3bb21fb4fde6bf6afaf0b4fb1810c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "06751bb5a923f75095e0a6b8c8c1480ae9ca973e16c50c61789ada6d37ddceac",
+      "actual": "06751bb5a923f75095e0a6b8c8c1480ae9ca973e16c50c61789ada6d37ddceac",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e878e4ca2bb08e1349e7dc547754de4936169ab572f2cb11a69d126af2a733de",
+      "actual": "e878e4ca2bb08e1349e7dc547754de4936169ab572f2cb11a69d126af2a733de",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "c94962a58fbc81722930cd32a0ed3a91bfdf86ca716029cf8b0dfb907a3c4c85",
+      "actual": "c94962a58fbc81722930cd32a0ed3a91bfdf86ca716029cf8b0dfb907a3c4c85",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "8ad9733e4be00c71a9a683737f17fe08ae9b063963c66bf75405d1d6accc2098",
+      "actual": "8ad9733e4be00c71a9a683737f17fe08ae9b063963c66bf75405d1d6accc2098",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "85f1c151479ad4f899d61292f31af369e094cdc3b44930ff5913be1f6b95c4cd",
+      "actual": "85f1c151479ad4f899d61292f31af369e094cdc3b44930ff5913be1f6b95c4cd",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "f03b2b9d998a25a09d375d8ce6354b7b201256fa49e0cac209f51b8f968ba8cf",
+      "actual": "f03b2b9d998a25a09d375d8ce6354b7b201256fa49e0cac209f51b8f968ba8cf",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
