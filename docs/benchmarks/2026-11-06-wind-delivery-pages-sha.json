@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T12:29:39.615243+00:00",
+  "commit": "fd4ffc406999886acb35d28fe79aa6fe32974f78",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "83ef8f8e8a6d77bef7c9d4a7d6f52951aa9d4cf50cd8f029034bed7cede651cf",
+      "actual": "83ef8f8e8a6d77bef7c9d4a7d6f52951aa9d4cf50cd8f029034bed7cede651cf",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "6261ac06f647afaf2f177bce805243beea9c5a84e0abcdf8a894d113605adf98",
+      "actual": "6261ac06f647afaf2f177bce805243beea9c5a84e0abcdf8a894d113605adf98",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "0fa60424981c05a128a35da0fd1b9cd283fd1b75e3dc5a658f79ba4a14bb2467",
+      "actual": "0fa60424981c05a128a35da0fd1b9cd283fd1b75e3dc5a658f79ba4a14bb2467",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-wind-delivery-4x.json",
+      "status": 200,
+      "expected": "7f676494fc83a6ae6d387a2e02e656289191f4b54aab4600d42cf9886c47e217",
+      "actual": "7f676494fc83a6ae6d387a2e02e656289191f4b54aab4600d42cf9886c47e217",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "73808e3493e04c02a916f68bcbfd0a65eab5bf6d07379fc8fd6a9a39e1114339",
+      "actual": "73808e3493e04c02a916f68bcbfd0a65eab5bf6d07379fc8fd6a9a39e1114339",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8f0352eda432c4f36ad3d525550d3e67c3af489d28a8eed45044d3c7e8114b72",
+      "actual": "8f0352eda432c4f36ad3d525550d3e67c3af489d28a8eed45044d3c7e8114b72",
+      "match": true
+    },
+    {
+      "path": "manual-gathering.js",
+      "status": 200,
+      "expected": "dca3a30a58d53054aa49cf19aa4e7debce9475fc524d2c1e3fc1e719d5acbd28",
+      "actual": "dca3a30a58d53054aa49cf19aa4e7debce9475fc524d2c1e3fc1e719d5acbd28",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "b1e8f70d3776c1be7500ff2670a9fc467081d5606858cdf08e2985529f4e9b6f",
+      "actual": "b1e8f70d3776c1be7500ff2670a9fc467081d5606858cdf08e2985529f4e9b6f",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "b2c0265d7d98c52fcc800a544ee8b23bac5de632077b0ac12876a8ac400bc0ff",
+      "actual": "b2c0265d7d98c52fcc800a544ee8b23bac5de632077b0ac12876a8ac400bc0ff",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "4fbb85d7c45b72fd6a94310304f664cfbe7c1983c42c27941256154ca8571531",
+      "actual": "4fbb85d7c45b72fd6a94310304f664cfbe7c1983c42c27941256154ca8571531",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "ed2e2dbef81b47a92ce24c34a118782ea41b7348d47382b986304101e9ecc294",
+      "actual": "ed2e2dbef81b47a92ce24c34a118782ea41b7348d47382b986304101e9ecc294",
+      "match": true
+    },
+    {
+      "path": "tests/manual-gathering.test.js",
+      "status": 200,
+      "expected": "0df09e354c74d72db2b669a9f3873d33f3b66447e37c81d2d1e76f5913ae5190",
+      "actual": "0df09e354c74d72db2b669a9f3873d33f3b66447e37c81d2d1e76f5913ae5190",
+      "match": true
+    },
+    {
+      "path": "tests/wind-delivery.test.js",
+      "status": 200,
+      "expected": "8280b281247112f9a19099c4b936a0f42db960b31c886bf511815e779c2fb9b4",
+      "actual": "8280b281247112f9a19099c4b936a0f42db960b31c886bf511815e779c2fb9b4",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "c952f031b0f1705f2354be42fcd8586d9b3d9d8e2763eb669cef43346382a36d",
+      "actual": "c952f031b0f1705f2354be42fcd8586d9b3d9d8e2763eb669cef43346382a36d",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "fbcfca6336a587ceb39590d23d27c2f0a86a49a10d196effd752abc441f905c3",
+      "actual": "fbcfca6336a587ceb39590d23d27c2f0a86a49a10d196effd752abc441f905c3",
+      "match": true
+    },
+    {
+      "path": "wind-delivery.js",
+      "status": 200,
+      "expected": "9b1210d1f0305c3a29d3d11210285cf05ff28911985fabb6d5e9cae36747eda9",
+      "actual": "9b1210d1f0305c3a29d3d11210285cf05ff28911985fabb6d5e9cae36747eda9",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "319f104ce3d6bc94e70c6e0fd4d397e4e0d26cda4c107d7df0557d678736d046",
+      "actual": "319f104ce3d6bc94e70c6e0fd4d397e4e0d26cda4c107d7df0557d678736d046",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
