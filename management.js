@@ -1,3 +1,4 @@
+import {isStrictSumer} from './scenario-profiles.js';
 import {protectsGuestBuilding} from './external-guest.js';
 import {restReeds,advanceReedBeds} from './reed-stock.js';
 import {forestFor,restForest} from './forest-stock.js';
@@ -10,7 +11,7 @@ import {canalMaintenanceEnabled,needsCanalCleaning} from './canal-maintenance.js
 import {harvestDemand,unloadDemand} from './city-labor.js';
 import {preparedFisherInspiration,acceptFisherInspiration} from './miracle-discovery.js';
 import {discardFishingOutput} from './cat-fishing-ledger.js';
-import {godhoodInspirationReason,firstBuilderInspiration,acceptGodhoodInspiration} from './godhood.js';
+import {godhoodInspirationReason,firstBuilderInspiration,acceptGodhoodInspiration,isAwakening} from './godhood.js';
 import {relicControlActive,relicCommandReason} from './relic-quest.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {recoverFestivalCitizen} from './festival.js';
@@ -168,12 +169,28 @@ if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.
  syncInventory(s);note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
-export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';const knowledge=godhoodInspirationReason(s,c,profession);if(knowledge)return knowledge;if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
-export function inspirationSuccessChance(s,c,profession){return c?((firstBuilderInspiration(s,c,profession)||preparedFisherInspiration(s,c,profession))?1:inspirationChance(c,profession)):0;}
+export function builderConsent(s,c,profession){
+ if(profession!=='builder'||!isStrictSumer(s)||!isAwakening(s)||firstBuilderInspiration(s,c,profession))return null;
+ if(!canWork(c))return 'Сможет принять работу строителя с 16 лет';
+ if(c.clinic||c.health<60)return 'Сначала нужно восстановить здоровье';
+ if(c.hunger>=30)return 'Сначала нужна еда: житель голоден';
+ if(c.waterTrip||c.pantryTrip||c.memorialMove||c.districtJob||c.saleJob||c.tradeJob||c.craftSite||c.seedField||c.clothingTarget!==undefined||
+  Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return 'Сначала нужно завершить текущую доставку';
+ return '';
+}
+export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';const knowledge=godhoodInspirationReason(s,c,profession);if(knowledge)return knowledge;const consent=builderConsent(s,c,profession);if(consent)return consent;if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
+export function inspirationSuccessChance(s,c,profession){
+ if(!c)return 0;
+ const consent=builderConsent(s,c,profession);
+ if(consent!==null)return consent?0:1;
+ return firstBuilderInspiration(s,c,profession)||preparedFisherInspiration(s,c,profession)?1:inspirationChance(c,profession);
+}
 export function inspireCitizen(s,id,profession){
  const reason=inspirationReason(s,id,profession);if(reason)return {ok:false,reason,message:reason};
- s.resources.faith-=1;s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
- const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),success=s.rngState/4294967296<inspirationSuccessChance(s,subject,profession);
+ const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),consent=builderConsent(s,subject,profession);
+ s.resources.faith-=1;
+ if(consent===null)s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
+ const success=consent===''||s.rngState/4294967296<inspirationSuccessChance(s,subject,profession);
  registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);
  if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;acceptGodhoodInspiration(s,c,profession);acceptFisherInspiration(s,c,profession);if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
  recordInspirationOutcome(s,s.citizens.find(c=>c.id===id),success);

@@ -65,7 +65,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## god-human-consent | Согласие, сомнение и отказ
 group: godhood
-status: planned
+status: partial
 priority: P2
 depends: -
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -77,7 +77,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 Вдохновение сейчас RNG, кроме первого строителя.
 
 ### Следующий шаг
-Спроектировать одну потребность с устойчивым отказом и изменением обстоятельств.
+Проверить и опубликовать устойчивое согласие дополнительного строителя в Южном Шумере.
 
 ### Готово когда
 Повторный клик не фармит исход; причины понятны.
