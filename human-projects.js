@@ -1,3 +1,4 @@
+import {bindWaterProject,recordProjectWaterFact} from './causal-facts.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
@@ -45,15 +46,19 @@ export function approveWaterProject(s,organizerId,requesterId,x,y){
  const offer=waterProjectProposal(s,organizerId,requesterId,x,y);
  if(!offer.ok)return offer;
  const result=build(s,projectType,x,y,0,{eligibleStores:offer.eligibleStores,humanWaterProject:offer.project});
- return result.ok?{ok:true,key:offer.key}:result;
+ if(!result.ok)return result;
+ const station=s.buildings.find(b=>buildingKey(b)===offer.key),home=s.buildings.find(b=>buildingKey(b)===offer.project.home);
+ bindWaterProject(s,station,home);
+ return {ok:true,key:offer.key};
 }
 
 export function confirmProjectWater(s,c,station,home,amount){
  if(!station||amount<=1e-7)return;
  const b=s.buildings.find(b=>b.type===projectType&&buildingKey(b)===station&&isOperational(b));
  const p=b?.humanWaterProject;
- if(!p||p.delivery||p.home!==buildingKey(home)||!s.citizens.some(r=>r.id===p.requesterId&&r.home===p.home))return;
+ if(!p||p.delivery||p.home!==buildingKey(home)||p.homeId!==undefined&&p.homeId!==home.waterEntityId||!s.citizens.some(r=>r.id===p.requesterId&&r.home===p.home))return;
  p.delivery={courierId:c.id,time:s.simTime,amount};
+ recordProjectWaterFact(s,b,home,p.delivery);
 }
 export function validateHumanProjects(s){
  const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId;

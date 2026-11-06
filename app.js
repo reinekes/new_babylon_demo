@@ -470,8 +470,14 @@ function confirmWaterProjectPlacement({x,y}){
 }
 function waterProjectHousehold(b,h,w){
  if(!isStrictSumer(state))return '';
- const projects=state.buildings.filter(site=>site.humanWaterProject?.home===buildingKey(b));
- const status=projects.map(site=>{
+ const projects=state.buildings.filter(site=>{
+  const p=site.humanWaterProject;
+  return p?.home===buildingKey(b)&&(p.homeId===undefined||p.homeId===b.waterEntityId);
+ });
+ const activeIds=new Set(projects.map(site=>site.waterEntityId));
+ const archive=(state.causalFacts?.water||[]).filter(f=>f.homeId===b.waterEntityId&&!activeIds.has(f.stationId)).reverse().map(f=>
+  `<p data-water-delivery-memory><b>Первая доставка из прежнего водозабора · ${esc(f.station)}</b><br>${resident(f.courierId)} · ${foodAmount(f.amount)} воды</p>`).join('');
+ const status=archive+projects.map(site=>{
   const p=site.humanWaterProject,organizer=state.citizens.find(c=>c.id===p.organizerId);
   return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?'Идёт строительство':'Построен · ожидается первая доставка'}</p>`;
  }).join('');

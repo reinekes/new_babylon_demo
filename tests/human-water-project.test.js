@@ -49,6 +49,7 @@ test('a dry household and a ready organizer can approve exactly one real waterpo
  assert.ok(delivery);
  assert.equal(delivery.courierId,courier.id);
  assert.ok(delivery.amount>0);
+ assert.deepEqual(s.causalFacts.water.map(f=>[f.stationId,f.homeId,f.courierId,f.amount]),[[project.waterEntityId,project.humanWaterProject.homeId,courier.id,delivery.amount]]);
  const restored=decode(encode(s));assert.ok(restored);
  assert.deepEqual(restored.buildings.find(b=>buildingKey(b)===result.key).humanWaterProject.delivery,delivery);
 });

@@ -1,0 +1,51 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createGame,encode,decode} from '../engine.js';
+import {strictScenario} from '../scenario-profiles.js';
+import {buildingKey} from '../definitions.js';
+import {bindWaterProject} from '../causal-facts.js';
+import {confirmProjectWater} from '../human-projects.js';
+
+test('delivery evidence survives demolition and distinguishes a replacement on the same tile',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const home=s.buildings.find(b=>b.type==='house'),key=buildingKey(home);
+ const requester=s.citizens.find(c=>c.home===key),courier=s.citizens.find(c=>c.home!==key);
+ const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:key,startedAt:0}};
+ s.buildings.push(station);
+ bindWaterProject(s,station,home);
+ confirmProjectWater(s,courier,buildingKey(station),home,3);
+ confirmProjectWater(s,courier,buildingKey(station),home,3);
+ assert.equal(s.causalFacts.water.length,1);
+ const [first]=s.causalFacts.water;
+ assert.equal(first.amount,3);
+ s.buildings.pop();
+ assert.deepEqual(decode(encode(s)).causalFacts.water,[first]);
+ const replacement={...station,humanWaterProject:{...station.humanWaterProject}};
+ delete replacement.waterEntityId;
+ delete replacement.humanWaterProject.delivery;
+ s.buildings.push(replacement);
+ bindWaterProject(s,replacement,home);
+ confirmProjectWater(s,courier,buildingKey(replacement),home,2);
+ const [,second]=s.causalFacts.water;
+ assert.notEqual(second.stationId,first.stationId);
+ assert.equal(second.homeId,first.homeId);
+ assert.deepEqual(decode(encode(s)).causalFacts,s.causalFacts);
+ s.causalFacts.water.push({...second});
+ assert.equal(decode(encode(s)),null);
+});
+
+test('a replaced recipient dwelling cannot receive evidence intended for its predecessor',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const home=s.buildings.find(b=>b.type==='house'),key=buildingKey(home);
+ const requester=s.citizens.find(c=>c.home===key),courier=s.citizens.find(c=>c.home!==key);
+ const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:key,startedAt:0}};
+ s.buildings.push(station);
+ bindWaterProject(s,station,home);
+ const replacement={...home};
+ delete replacement.waterEntityId;
+ s.buildings[s.buildings.indexOf(home)]=replacement;
+ confirmProjectWater(s,courier,buildingKey(station),replacement,3);
+ assert.equal(station.humanWaterProject.delivery,undefined);
+ assert.deepEqual(s.causalFacts.water,[]);
+ assert.ok(decode(encode(s)));
+});
