@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T03:28:26.496163+00:00",
+  "commit": "d7950f512799fe52a85ba9f4aef68e7364c06b09",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "774342ed7f816f0002fd3a59dba235e4ac2a0f3a0bfdfc52e9cb06083a74fc3a",
+      "actual": "774342ed7f816f0002fd3a59dba235e4ac2a0f3a0bfdfc52e9cb06083a74fc3a",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "bf6f6f1db938bfdbc847f5b748d8cd91a3e64be9f71b7b1f6bf75681983b01a4",
+      "actual": "bf6f6f1db938bfdbc847f5b748d8cd91a3e64be9f71b7b1f6bf75681983b01a4",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "f450277346f7aed0284af456e50dfc188d3387dc887abfd9090720240c9fd785",
+      "actual": "f450277346f7aed0284af456e50dfc188d3387dc887abfd9090720240c9fd785",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "eeba978325eb8322c08207c9cc66c324e7e9f91a492e773a81a7ce68653aa3db",
+      "actual": "eeba978325eb8322c08207c9cc66c324e7e9f91a492e773a81a7ce68653aa3db",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9c1df967ab6ab2468d87720bcda8e8c41f500d212d91d83a956bb49eb4a6cb86",
+      "actual": "9c1df967ab6ab2468d87720bcda8e8c41f500d212d91d83a956bb49eb4a6cb86",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3fb7c16d8063ab413c01269c2dcf481f5167a9d89da52148e5e1ba633712b9ab",
+      "actual": "3fb7c16d8063ab413c01269c2dcf481f5167a9d89da52148e5e1ba633712b9ab",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "de006f6697407315542c4d974e2f078d3cd39c8cf8bc7734f70f0ae1a6dd93f9",
+      "actual": "de006f6697407315542c4d974e2f078d3cd39c8cf8bc7734f70f0ae1a6dd93f9",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8a20ca1051f9445e08dbcfdc417957ca7cfea27b968b87f0cb1b9eca34dcda27",
+      "actual": "8a20ca1051f9445e08dbcfdc417957ca7cfea27b968b87f0cb1b9eca34dcda27",
+      "match": true
+    },
+    {
+      "path": "tests/first-water-help.test.js",
+      "status": 200,
+      "expected": "abe39735264757b76414f7a8dc98b379b768c82680569d7469bd8987723c6b45",
+      "actual": "abe39735264757b76414f7a8dc98b379b768c82680569d7469bd8987723c6b45",
+      "match": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "status": 200,
+      "expected": "9821a54294d6cda75205c31c79e56f2bba06a08d1194d455197b90fbc1c84a80",
+      "actual": "9821a54294d6cda75205c31c79e56f2bba06a08d1194d455197b90fbc1c84a80",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "6ec2860237f442f0a599fe5b71531203619681da6b87c4c7f3c1f7da42f2c19c",
+      "actual": "6ec2860237f442f0a599fe5b71531203619681da6b87c4c7f3c1f7da42f2c19c",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
