@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-06T01:01:04.374705+00:00",
+  "commit": "4fea9b1652de2579dece6623c165961c7b0ef267",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6b65c01f8638f406bd2dcd53447c3018249e1ec36835202d9a426a51404fc776",
+      "actual": "6b65c01f8638f406bd2dcd53447c3018249e1ec36835202d9a426a51404fc776",
+      "match": true
+    },
+    {
+      "path": "agriculture.js",
+      "status": 200,
+      "expected": "dc5f12ac7c61685903bc0181499cd49ccdf42dc4422c7408c78dc7816b8d7d71",
+      "actual": "dc5f12ac7c61685903bc0181499cd49ccdf42dc4422c7408c78dc7816b8d7d71",
+      "match": true
+    },
+    {
+      "path": "building-inventory.js",
+      "status": 200,
+      "expected": "1f4c4a69680d704ef4840dc50ed2c86a931117f28a8b055721ed34a4e99699f8",
+      "actual": "1f4c4a69680d704ef4840dc50ed2c86a931117f28a8b055721ed34a4e99699f8",
+      "match": true
+    },
+    {
+      "path": "city-diagnostics.js",
+      "status": 200,
+      "expected": "6534d5b869b9bb7b4b3e6a07aef41c17a4eb6bcb8cc3c73864a11eee4d3a42b7",
+      "actual": "6534d5b869b9bb7b4b3e6a07aef41c17a4eb6bcb8cc3c73864a11eee4d3a42b7",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "9216355062a4fbd5f8ea6b60ac729fd65a54e520ab1346e4a8283d62f1f4d97f",
+      "actual": "9216355062a4fbd5f8ea6b60ac729fd65a54e520ab1346e4a8283d62f1f4d97f",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "d7303c4fb0ed0a8067f9d57e0e44358748ccbb822dd2ffe553bd42a965bc1a84",
+      "actual": "d7303c4fb0ed0a8067f9d57e0e44358748ccbb822dd2ffe553bd42a965bc1a84",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "06255d577f6e2419b9dc466178e64281ca06ccd2e3731d9f163459d3b46da7e1",
+      "actual": "06255d577f6e2419b9dc466178e64281ca06ccd2e3731d9f163459d3b46da7e1",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "c1383b03b0b9eec4f3b2a1bfa36cae7487e10cb12685195e3f707371cc2a5ee2",
+      "actual": "c1383b03b0b9eec4f3b2a1bfa36cae7487e10cb12685195e3f707371cc2a5ee2",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "9ec5b290f7ae0156995ff2881aa4e903162d6c6a7ac5fdec1024721c4c58cf8c",
+      "actual": "9ec5b290f7ae0156995ff2881aa4e903162d6c6a7ac5fdec1024721c4c58cf8c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1848588393e7284f6c27adbcb6b35e55eda7fdd7c0d2dbf4460213e4eba16168",
+      "actual": "1848588393e7284f6c27adbcb6b35e55eda7fdd7c0d2dbf4460213e4eba16168",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "ce3d0c9a6c6e5145dfb6776ea52d9d27a4cf94c6371cde4d673e47a3e3d3b441",
+      "actual": "ce3d0c9a6c6e5145dfb6776ea52d9d27a4cf94c6371cde4d673e47a3e3d3b441",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "91976e31b96ce45e26992d59fafd9566a33db178add4bd864390c98484e2f2de",
+      "actual": "91976e31b96ce45e26992d59fafd9566a33db178add4bd864390c98484e2f2de",
+      "match": true
+    },
+    {
+      "path": "tests/agriculture.test.js",
+      "status": 200,
+      "expected": "a91dc4a989e484e9170da088247497194d3720cd0ff42f5b3d2d25974058dac2",
+      "actual": "a91dc4a989e484e9170da088247497194d3720cd0ff42f5b3d2d25974058dac2",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "dcf1a6d784c4e6aff22ad602b6e4d83d0ac5a5505e879309edbef32d480d6779",
+      "actual": "dcf1a6d784c4e6aff22ad602b6e4d83d0ac5a5505e879309edbef32d480d6779",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "557507482bb48280bcdeb9b6b97a0b943566aa981579e474792b5e4611500acd",
+      "actual": "557507482bb48280bcdeb9b6b97a0b943566aa981579e474792b5e4611500acd",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
