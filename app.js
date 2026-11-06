@@ -165,13 +165,12 @@ function staffDraft(key){let drafts=staffingDrafts.get(state);if(!drafts){drafts
 function staffingControl(b){return renderStaffing(state,b,staffDraft(buildingKey(b)));}
 function stockAccountControl(b){
  if(b.type!=='granary')return '';
- const account=b.stockAccount;
- if(!account)return '<section class="staffing-panel"><h4>Табличка учёта</h4><small>Вдохнови и закрепи писца. Он запишет запасы, когда доберётся до амбара и закончит подсчёт.</small></section>';
- const amounts=Object.entries(account.stock).filter(([,amount])=>amount>0).map(([resource,amount])=>`${label(resource)} · ${rounded(amount)}`).join(' · ');
- return `<section class="staffing-panel"><h4>Последняя табличка учёта</h4><p>${amounts||'Склад был пуст'}</p><small>${esc(displayName(state,account.author))} · год ${account.year} · ${MONTH_NAMES[account.month]} · день ${account.day} · ${clockText(account.simTime)}. Остаток на момент записи.</small></section>`;
+ const account=b.stockAccount,archive=b.receiptArchive;
+ const amounts=account&&Object.entries(account.stock).filter(([,amount])=>amount>0).map(([resource,amount])=>`${label(resource)} · ${rounded(amount)}`).join(' · ');
+ const snapshot=account?`<h4>Последняя табличка учёта</h4><p>${amounts||'Склад был пуст'}</p><small>${esc(displayName(state,account.author))} · год ${account.year} · ${MONTH_NAMES[account.month]} · день ${account.day} · ${clockText(account.simTime)}. Остаток на момент записи.</small>`:'<h4>Табличка учёта</h4><small>Закрепи писца в амбаре. Он запишет остатки, когда обработает ожидающие доставки.</small>';
+ const receipts=archive?`<details data-granary-receipts><summary>Квитанции амбара · ${archive.tablets.length} записей</summary><p>Ожидают записи: ${archive.pending.length}. Одна квитанция или сверка архива занимает 12 секунд работы писца.</p>${archive.reading?`<p>${resident(archive.reading.author)} сверил табличку № ${archive.reading.tablet} предыдущего писца.</p>`:''}<ol>${[...archive.tablets].reverse().map(t=>`<li>№ ${t.id} · ${esc(cargoAmount(t.cargo))}<br>Доставил ${resident(t.carrier)} · день ${Math.floor(t.arrivedAt/60)+1}, ${clockText(t.arrivedAt)}<br>Записал ${resident(t.author)} · день ${Math.floor(t.writtenAt/60)+1}, ${clockText(t.writtenAt)}</li>`).join('')}</ol></details>`:'';
+ return `<section class="staffing-panel">${snapshot}${receipts}</section>`;
 }
-
-
 
 function guardControl(b){if(!isPestStore(b))return '';const key=buildingKey(b),guard=state.citizens.find(c=>c.guardPost===key);return `<section class="staffing-panel pest-panel"><h4>Защита запасов</h4><p>${pestReport(state,key)}</p>${guard?`<p>${resident(guard)} · сторож <button data-release-guard="${guard.id}">Освободить</button></p>`:`<label class="control-label">Назначить сторожа <select data-guard-building="${key}" aria-label="Сторож хранилища"><option value="">Выбрать взрослого</option>${state.citizens.filter(c=>canWork(c)&&['auto','production'].includes(c.role)).map(c=>`<option value="${c.id}">${displayName(state,c.id)}${c.workplace||c.guardPost?' · сменит работу':''}</option>`).join('')}</select></label>`}<small>Сторож занимает одного жителя, ест дома и отдыхает ночью. Сторож прогоняет мышей и уменьшает потери запасов. Потери относятся к запасам этого склада; дома и грузы защищены.</small></section>`;}
 
@@ -389,12 +388,15 @@ function updateDetail(){
  if(b.construction&&$('inspector-site-live'))setHTML($('inspector-site-live'),siteStatus(b));
  if($('building-controls').contains(document.activeElement)&&(b.construction||document.activeElement.closest('.staff-preparation')||['SELECT','INPUT'].includes(document.activeElement.tagName)))return;
  if(b.type==='house')renderHousehold(b);
+ const receiptsOpen=$('building-controls').querySelector('[data-granary-receipts]')?.open;
  const q=b.construction,reason=canUpgrade(state,b),cost=upgradeCost(b),demolitionReason=canDemolish(state,b);
  $('tile-detail').querySelector('.eyebrow').textContent=q?(q.kind==='repair'?'РЕМОНТ':q.kind==='upgrade'?`УЛУЧШЕНИЕ ДО ${q.target}`:'СТРОЙПЛОЩАДКА'):b.type==='canal'?'ОРОСИТЕЛЬНЫЙ КАНАЛ':`УРОВЕНЬ ${levelOf(b)} / 3`;
  const previewCompleted=q?.kind==='new'&&!(b.type==='garden'&&isStrictSumer(state));
  $('tile-detail').querySelector('strong').textContent=(previewCompleted?'После завершения: ':'')+yieldSummary(state,previewCompleted?{...b,construction:undefined}:b);
  $('building-controls').innerHTML=q?`<div id="inspector-site-live">${siteStatus(b)}</div>${priorityControl(b)}<button class="management-button danger" data-cancel="${b.x},${b.y}">${q.kind==='repair'?'Отменить ремонт':q.kind==='upgrade'?'Отменить улучшение':'Отменить строительство'}</button>`:`<p>${b.type==='house'?'':['market','harbor'].includes(b.type)?`Носильщиков у торговой площадки: ${state.citizens.filter(c=>(c.tradeMarket||c.saleMarket)===buildingKey(b)).length} / ${activeLaborKind(state)==='unload'?UNLOAD_PORTERS:2}.`:stockStores(state).some(store=>buildingKey(store)===buildingKey(b))?'':`Назначено работников: ${state.citizens.filter(c=>c.work===buildingKey(b)).length}.`}</p>${!['canal','levee'].includes(b.type)&&levelOf(b)<3?`<h4>Цена улучшения до ${levelOf(b)+1}</h4>${costs(cost,true,b.type!=='house')}<small>${levelOf(b)===1?'II уровень: сырцовая кладка':'III уровень: обожжённая кладка, новый сырец не нужен'}</small>`:''}<button class="upgrade-button" id="upgrade-building" ${reason?'disabled':''}>${['canal','levee'].includes(b.type)?'Один уровень':levelOf(b)>=3?'Максимальный уровень':`Улучшить до ${levelOf(b)+1}`}</button><small id="upgrade-reason">${esc(reason||'Материалы резервируются сразу.')}</small>`;
- if(!q||q.kind!=='new')$('building-controls').insertAdjacentHTML('afterbegin',votivePanel(b)+guardControl(b)+staffingControl(b)+stockAccountControl(b));if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
+ if(!q||q.kind!=='new')$('building-controls').insertAdjacentHTML('afterbegin',votivePanel(b)+guardControl(b)+staffingControl(b)+stockAccountControl(b));
+ if(receiptsOpen){const receipts=$('building-controls').querySelector('[data-granary-receipts]');if(receipts)receipts.open=true;}
+ if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
  if(!q||q.kind!=='new')$('building-controls').insertAdjacentHTML('afterbegin',productionReadout(state,b)+buildingProductionHistoryHTML(state,b)+buildingInventoryHTML(buildingInventory(state,b),{house:b.type==='house',production:!!Object.keys(BUILDINGS[b.type]?.output||{}).length}));
  if(b.type==='field'&&!q&&soilCareEnabled(state)){
   const key=buildingKey(b),water=fieldWater(state,b),year=fieldRestYear(state,b);
