@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T22:39:48.450028+00:00",
+  "commit": "bfb0e642524e48f83d69bd8a20df4193383196fe",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d7af81171424b84a965def4e35c795e5257622e2a6e5983e268e0b0032172fcc",
+      "actual": "d7af81171424b84a965def4e35c795e5257622e2a6e5983e268e0b0032172fcc",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "b9755b1c2f883a3ef65efaaa0cfd24517c02753be95de76cb2cf03d5d9eed84b",
+      "actual": "b9755b1c2f883a3ef65efaaa0cfd24517c02753be95de76cb2cf03d5d9eed84b",
+      "match": true
+    },
+    {
+      "path": "divinity.js",
+      "status": 200,
+      "expected": "546cf7b99f691ec1454af2dc9cf8d451b2ab1302457f2563f67448840b40cdd9",
+      "actual": "546cf7b99f691ec1454af2dc9cf8d451b2ab1302457f2563f67448840b40cdd9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-peace-neighborhood-4x.json",
+      "status": 200,
+      "expected": "d012f99410d743f52ff34dd04341048dcda7659b24208c61c3256a949ce135d2",
+      "actual": "d012f99410d743f52ff34dd04341048dcda7659b24208c61c3256a949ce135d2",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "4e7e03e6e801e2b99d1e78effc6271407058581ba433f5738b4ff7c796e2c700",
+      "actual": "4e7e03e6e801e2b99d1e78effc6271407058581ba433f5738b4ff7c796e2c700",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "ac558876f4ef99b44180d50003305a3b68ab1c52c725264393ef7fbbb3796da9",
+      "actual": "ac558876f4ef99b44180d50003305a3b68ab1c52c725264393ef7fbbb3796da9",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "6734b20a3d68bd332d16c70fb7539ce59891b9c48beb99623de249762c2f8c6f",
+      "actual": "6734b20a3d68bd332d16c70fb7539ce59891b9c48beb99623de249762c2f8c6f",
+      "match": true
+    },
+    {
+      "path": "peace-discovery.js",
+      "status": 200,
+      "expected": "076294bc9196adb20ea806aa072ed2067503e0b2e066ae1affcbe86a45ffbfd4",
+      "actual": "076294bc9196adb20ea806aa072ed2067503e0b2e066ae1affcbe86a45ffbfd4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "0b2ade9604812ccd3d8c947d90e36c748ee64647e7130eb76e13073cb5ea17f1",
+      "actual": "0b2ade9604812ccd3d8c947d90e36c748ee64647e7130eb76e13073cb5ea17f1",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "5167d1149c1ad4037d844650de071f7fadbbeca63893b082a415728f824f87f9",
+      "actual": "5167d1149c1ad4037d844650de071f7fadbbeca63893b082a415728f824f87f9",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "de79b48c85630bf3ac9cc478e10222b8eb5aedfdfe70594d4160573068dbec55",
+      "actual": "de79b48c85630bf3ac9cc478e10222b8eb5aedfdfe70594d4160573068dbec55",
+      "match": true
+    },
+    {
+      "path": "tests/peace-discovery.test.js",
+      "status": 200,
+      "expected": "6911e75d732bb3f892606d251bc772eb54e8b02cbb5ac32982098cc9cce763f0",
+      "actual": "6911e75d732bb3f892606d251bc772eb54e8b02cbb5ac32982098cc9cce763f0",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "c507b60059b246e0a3e6843f8fb5a6ea774244519264028cb2de822684fbaa85",
+      "actual": "c507b60059b246e0a3e6843f8fb5a6ea774244519264028cb2de822684fbaa85",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
