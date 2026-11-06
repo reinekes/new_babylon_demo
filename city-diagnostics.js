@@ -1,3 +1,5 @@
+import {sickleBlunt} from './agriculture.js';
+import {fieldCalendar} from './crop-calendar.js';
 import {buildingDefinition} from './building-presentation.js';
 import {PROFESSION_NAMES,professionRole,professionMatchesTask,hasWorkplace,workplaceCapacity} from './professions.js';
 import {BUILDINGS,buildingKey,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
@@ -51,9 +53,10 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
  if(!isDay)return reason('night','Ночной отдых','Рабочий день с 06:00 до 19:00',key);
  if(!connected.length||!hasHomes)return reason('path','Нет пути','Нужна общая дорожная сеть с населённым домом и складом',key);
  if(b.type==='field'){
-  const crop=b.crop||{};
-  if(s.season===1&&crop.sown>0&&!fieldWater(s,b).canal&&!(s.rain>0)&&!(crop.legacyYear===s.year&&fieldWater(s,b).natural))return reason('water','Нужен полив','Соедини наполненный канал с полем',key);
-  if(!(crop.sheaves>0)&&!(s.season===0&&(crop.sown||0)<1)&&!(s.season===2&&crop.remaining>0))return reason('season','Сезонное ожидание',s.season===1?'Ячмень растёт; жатва осенью':'Сейчас нет посева, срезки или снопов для обмолота',key);
+  const crop=b.crop||{},calendar=fieldCalendar(s,b);
+  if(s.season===calendar.grow&&crop.sown>0&&!fieldWater(s,b).canal&&!(s.rain>0)&&!(crop.legacyYear===s.year&&fieldWater(s,b).natural))return reason('water','Нужен полив','Соедини наполненный канал с полем',key);
+  if(s.season===calendar.harvest&&crop.remaining>0&&sickleBlunt(b))return reason('input','Серп затупился',b.sickle.pottery>=1-1e-8?'Керамика доставлена. Земледелец готовит замену.':'Срезка вдвое меньше. Носильщики могут доставить одну керамику.',key);
+  if(!(crop.sheaves>0)&&!(s.season===calendar.sow&&(crop.sown||0)<1)&&!(s.season===calendar.harvest&&crop.remaining>0))return reason('season','Сезонное ожидание',s.season===calendar.grow?'Ячмень растёт':'Сейчас нет посева, срезки или снопов для обмолота',key);
  }
  if(!workers.length)return reason('worker','Нет работника',b.type==='granary'?'Вдохнови писца и закрепи его за амбаром':b.type==='musicHouse'?'Нужен вдохновлённый музыкант, закреплённый за двором':b.type==='tailor'?'Нужен взрослый мастер одежды':b.type==='healer'?'Нужен обученный лекарь':b.type==='waterpoint'?'Нужен водонос':'Назначь взрослого или освободи рабочие руки',key);
  if(workers.some(c=>c.phase==='blocked'))return reason('path','Маршрут заблокирован','Проверь дорогу и пункт назначения груза',key);

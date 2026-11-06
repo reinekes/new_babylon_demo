@@ -1,3 +1,4 @@
+import {sickleBlunt} from './agriculture.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {initializeDairy,dairyNeeds,dairyInputCapacity} from './dairy.js';
 import {BUILDINGS,MATERIALS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
@@ -12,14 +13,16 @@ export const isProductionStore=b=>Object.keys(BUILDINGS[b?.type]?.output||{}).so
 export const isBuildingStore=b=>b?.type==='house'||b?.type==='healer'||isProductionStore(b);
 export function inputRecipe(b){
  if(isArtisan(b))return artisanRecipe(b);
+ if(b?.type==='field'&&b.sickle)return {pottery:1};
  if(b?.type==='brickyard')return BRICK_RECIPE;if(b?.type==='kiln')return KILN_RECIPE;
  if(b?.type==='weaver')return {wool:craftBatch(b)};if(b?.type==='tailor')return {cloth:craftBatch(b)};
  if(b?.type==='cowshed')return dairyInputCapacity(b);
  if(b?.type==='sheepfold'&&b.flock?.adults!==undefined)return {reed:Math.ceil(flockCapacity(b)/2)};
  if(b?.type==='healer')return {food:4,reed:2};return {};
 }
-export function inputBuffer(b){return isArtisan(b)?b.artisan:b?.type==='brickyard'?b.brickmaking:b?.type==='kiln'?b.firing:b?.type==='weaver'?b.weaving:b?.type==='tailor'?b.tailoring:b?.type==='healer'?b.workshopStock?.input:b?.type==='cowshed'?b.dairy:b?.type==='sheepfold'&&b.flock?.adults!==undefined?b.flock:null;}
+export function inputBuffer(b){return b?.type==='field'?b.sickle:isArtisan(b)?b.artisan:b?.type==='brickyard'?b.brickmaking:b?.type==='kiln'?b.firing:b?.type==='weaver'?b.weaving:b?.type==='tailor'?b.tailoring:b?.type==='healer'?b.workshopStock?.input:b?.type==='cowshed'?b.dairy:b?.type==='sheepfold'&&b.flock?.adults!==undefined?b.flock:null;}
 export function inputNeeds(b){
+ if(b?.type==='field'&&b.sickle)return {pottery:sickleBlunt(b)?Math.max(0,1-b.sickle.pottery):0};
  if(b?.type==='cowshed')return dairyNeeds(b);if(b?.type==='sheepfold'&&b.flock?.adults!==undefined)return {reed:Math.max(0,flockRation(b)-b.flock.reed)};if(isArtisan(b))return artisanNeeds(b);if(b?.type==='brickyard')return brickNeeds(b);if(b?.type==='kiln')return kilnNeeds(b);
  return Object.fromEntries(Object.entries(inputRecipe(b)).map(([k,v])=>[k,Math.max(0,v-n(inputBuffer(b)?.[k]))]));
 }

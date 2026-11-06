@@ -1,3 +1,5 @@
+import {sickleBlunt} from './agriculture.js';
+import {fieldCalendar} from './crop-calendar.js';
 import {kilnNeedsRepair,KILN_RECIPE,FIRING_SECONDS,COOLING_SECONDS} from './kilns.js';
 import {dairyRate,dairyRation} from './dairy.js';
 import {calendarRateFor} from './calendar.js';
@@ -33,7 +35,16 @@ export function seasonBalance(s){
   for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,b.type))),inputTravel=isArtisan(b)?travel*4:['weaver','tailor','kiln'].includes(b.type)?travel*(b.type==='kiln'?3:Math.ceil(craftBatch(b)/3)):0;trips+=seasonSeconds*13/24/((def.workTime||4)/(rate*(isArtisan(b)?outputMultiplier(b):1))+travel+inputTravel);}
   production.set(key,trips);
   if(isArtisan(b)||['kiln','brickyard','waterpoint','weaver','tailor','healer','depot','cowshed'].includes(b.type))continue;
-  if(b.type==='field'){const crop=b.crop||{},batch=7*outputMultiplier(b);if(crop.sheaves>0||s.season===2){const harvest=s.season===2?crop.remaining||0:0;credit(id,'food',Math.min((crop.sheaves||0)+harvest,trips*batch*(harvest>0?.5:1)));}if(s.season===0)debit(id,'food',Math.min(stocks.get(id).food,Math.max(0,4-(crop.seedUsed||0))));continue;}
+  if(b.type==='field'){
+   const crop=b.crop||{},calendar=fieldCalendar(s,b),batch=7*outputMultiplier(b);
+   const harvest=s.season===calendar.harvest?crop.remaining||0:0;
+   const cuttingBatch=sickleBlunt(b)&&b.sickle.pottery<1-1e-8?batch/2:batch;
+   const onFloor=Math.min(crop.sheaves||0,trips*batch);
+   const future=Math.min(harvest,Math.max(0,trips-onFloor/batch)*cuttingBatch/2);
+   credit(id,'food',onFloor+future);
+   if(s.season===calendar.sow)debit(id,'food',Math.min(stocks.get(id).food,Math.max(0,4-(crop.seedUsed||0))));
+   continue;
+  }
   if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceGrowth(b)*seasonSeconds));continue;}
   for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=(s.buffs?.fertility?1.6:1)*(b.type==='garden'?orchardMaturity(s,b).yield:1);if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,trips*base*mult);}
  }

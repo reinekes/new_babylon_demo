@@ -57,3 +57,65 @@ test('actual v11 autumn city retains in-flight loads and home food, grants trans
 test('automatic sowers move to other jobs immediately even when advancing a long time step',()=>{
  const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','field'].includes(b.type));for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;}syncCitizens(s);advanceTime(s,20);assert.equal(field(s).crop.sown,1);assert.ok(s.citizens.every(c=>c.work!=='12,8'));
 });
+
+test('managed sickles wear only when cutting, and delivered ceramic stock restores them',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {finishConstruction,workRequired}=await import('../construction.js');
+ const {putBuildingInput}=await import('../building-inventory.js');
+ const {build}=await import('../engine.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ assert.ok(build(s,'field',12,7).ok);
+ const b=s.buildings.at(-1),q=b.construction;
+ q.delivered={...q.required};q.remaining=Object.fromEntries(Object.keys(q.required).map(k=>[k,0]));q.sources={};q.work=workRequired(b);
+ assert.ok(finishConstruction(s));
+ assert.equal(b.sickle.edge,42);
+ const crop=cropFor(s,b);
+ s.season=2;Object.assign(crop,{remaining:84,total:84});
+ for(let i=0;i<6;i++){workField(s,b,4);assert.equal(workField(s,b,4),7);}
+ assert.equal(b.sickle.edge,0);
+ workField(s,b,4);
+ assert.equal(workField(s,b,4),3.5);
+ assert.equal(putBuildingInput(s,b,'pottery',2),1);
+ const remaining=crop.remaining;
+ workField(s,b,4);
+ assert.equal(crop.remaining,remaining);
+ assert.equal(b.sickle.edge,42);
+ assert.equal(b.sickle.pottery,0);
+ workField(s,b,4);
+ assert.equal(crop.remaining,remaining-7);
+ assert.equal(b.sickle.edge,35);
+});
+
+test('field replacement arrives as district cargo and the load survives saving',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {enableAutumnCrops}=await import('../agriculture.js');
+ const {initializeBuildingInventory}=await import('../building-inventory.js');
+ const {putStock,validateInventory}=await import('../inventory.js');
+ let s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ assert.ok(enableAutumnCrops(s));
+ assert.equal(s.season,0);
+ const b=field(s),key=`${b.x},${b.y}`;
+ b.sickle={edge:0,pottery:0};
+ Object.assign(b.crop,{remaining:84,total:84,harvested:0,spoiled:0,sheaves:0,threshed:0});
+ for(const h of s.buildings.filter(b=>b.type==='house'))h.householdStock.pottery=2;
+ initializeBuildingInventory(s);
+ putStock(s,'9,8','pottery',1);
+ assert.ok(assignWorkplace(s,0,key).ok);
+ let carried=false,replaced=false;
+ for(let i=0;i<700&&!replaced;i++){
+  s.event=null;
+  advanceTime(s,.1);
+  if(!carried&&s.citizens.some(c=>c.cargo.pottery===1&&s.district.jobs.some(q=>q.id===c.districtJob&&q.target===key))){
+   const raw=encode(s);
+   s=decode(raw);
+   assert.ok(s);
+   assert.equal(encode(s),raw);
+   carried=true;
+  }
+  replaced=field(s).sickle.edge>0;
+ }
+ assert.ok(carried&&replaced);
+ assert.equal(field(s).sickle.pottery,0);
+ assert.equal(s.resources.pottery,0);
+ assert.ok(validateInventory(s));
+});
