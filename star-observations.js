@@ -1,3 +1,4 @@
+import {validateStarForecast} from './star-forecast.js';
 import {DAY_SECONDS} from './city-life.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
@@ -45,8 +46,9 @@ const validLocation=(s,p)=>Number.isInteger(p.x)&&p.x>=0&&p.x<worldWidth(s)&&
 export function validateStarObservations(s){
  const journal=s.starObservations;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||journal.version!==1||Object.keys(journal).length!==2+Number(journal.harvest!==undefined)||
+ if(!usesCatDiscovery(s)||!journal||journal.version!==1||Object.keys(journal).length!==2+Number(journal.harvest!==undefined)+Number(journal.forecast!==undefined)||
   !Array.isArray(journal.nights)||journal.nights.length>STAR_NIGHTS_REQUIRED)return false;
+ if(journal.forecast!==undefined&&(!journal.harvest||journal.nights.length!==STAR_NIGHTS_REQUIRED||!validateStarForecast(s,journal.forecast)))return false;
  const harvest=journal.harvest;
  if(harvest!==undefined&&(!harvest||Object.keys(harvest).length!==4||!validLocation(s,harvest)||
   !Number.isSafeInteger(harvest.tick)||harvest.tick<1||harvest.tick>s.tick||![0,2].includes(harvest.tick%4)||

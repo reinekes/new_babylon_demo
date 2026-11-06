@@ -1,3 +1,4 @@
+import {recordStarForecast} from './star-forecast.js';
 import {validateStarObservations} from './star-observations.js';
 import {reserveArrival,validateArrivalHospitality} from './arrival-hospitality.js';
 import {connectedStores} from './district-logistics.js';
@@ -249,7 +250,7 @@ export function miracle(s,id,target){
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
  if(id==='sunlight'){affectResidents(s,{mood:7});s.happiness=Math.min(100,s.happiness+10);}
  if(id==='revelation'){if(!s.revelationEvidence)s.resources.faith+=20;s.resources.prestige+=12;}
- if(id==='stars')s.resources.prestige+=18;
+ if(id==='stars'){s.resources.prestige+=18;if(s.starObservations)recordStarForecast(s);}
  if(peace){
   s.peaceDiscovery.lastCast={x:target.x,y:target.y,at:s.simTime,ids:peace.ids};
   const keepsakes=s.peaceDiscovery.keepsakes??=[];
