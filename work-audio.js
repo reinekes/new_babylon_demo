@@ -1,28 +1,59 @@
-const radius=2.5;
+import {buildingKey,isOperational} from './definitions.js';
 
-export function waterWorkSource(state,listener){
+const sounds={
+ water:{radius:2.5,volume:.14,duration:.65},
+ reeds:{radius:2.5,volume:.075,duration:2.8},
+ pottery:{radius:2.5,volume:.13,duration:1.6},
+ market:{radius:2.8,volume:.13,duration:2.2}
+};
+
+export function workSoundSource(state,listener){
  if(!listener||![listener.x,listener.y].every(Number.isFinite))return null;
  const proximity=listener.proximity??1;
  if(!Number.isFinite(proximity)||proximity<=0)return null;
- let nearest=null,best=radius**2;
- for(const c of state.citizens||[]){
-  if(c.waterTrip?.phase!=='fill')continue;
-  const distance=(c.x-listener.x)**2+(c.y-listener.y)**2;
-  if(distance<best){nearest=c;best=distance;}
+ let source=null;
+ function consider(kind,token,position,id){
+  const {radius,volume}=sounds[kind],distance=(position.x-listener.x)**2+(position.y-listener.y)**2;
+  if(!(distance<radius**2))return;
+  const gain=volume*Math.min(1,proximity)*(1-Math.sqrt(distance)/radius)**2;
+  if(!source||gain>source.gain)source={kind,token,id,gain};
  }
- if(!nearest)return null;
- return {id:nearest.id,trip:nearest.waterTrip,gain:.14*Math.min(1,proximity)*(1-Math.sqrt(best)/radius)**2};
+ const workshops=[];
+ for(const b of state.buildings||[]){
+  if(b.type==='pottery'&&b.artisan?.stage==='forming'&&isOperational(b)&&Math.abs(b.x-listener.x)<4&&Math.abs(b.y-listener.y)<4)workshops.push(b);
+ }
+ for(const c of state.citizens||[]){
+  if(c.waterTrip?.phase==='fill')consider('water',c.waterTrip,c,c.id);
+  if(c.phase!=='working'||!c.work)continue;
+  const shop=workshops.find(b=>buildingKey(b)===c.work);
+  if(shop&&Math.hypot(c.x-shop.x,c.y-shop.y)<=1.5)consider('pottery',shop,c,c.id);
+ }
+ const caravan=state.trade?.caravan;
+ if(caravan?.phase==='unloading'||caravan?.phase==='trading'){
+  const market=(state.buildings||[]).find(b=>['market','harbor'].includes(b.type)&&buildingKey(b)===caravan.market&&isOperational(b));
+  if(market)consider('market',caravan,market,caravan.id);
+ }
+ for(const reed of state.world?.deposits||[])if(reed.kind==='reed')consider('reeds',reed,reed);
+ return source;
 }
 
-function splashBuffer(context){
- const frames=Math.ceil(context.sampleRate*.65),buffer=context.createBuffer(1,frames,context.sampleRate),samples=buffer.getChannelData(0);
+function workBuffer(context,kind){
+ const frames=Math.ceil(context.sampleRate*sounds[kind].duration),buffer=context.createBuffer(1,frames,context.sampleRate),samples=buffer.getChannelData(0);
  let random=1873,previous=0;
  for(let i=0;i<frames;i++){
   random=(Math.imul(random,1664525)+1013904223)>>>0;
   const noise=random/2147483648-1,t=i/context.sampleRate;
   previous+=.24*(noise-previous);
-  const envelope=Math.min(1,t*120)*Math.exp(-t*7)*(0.65+0.35*Math.sin(t*91)**2);
-  samples[i]=envelope*(.65*previous+.16*(noise-previous)+.08*Math.sin(t*780-t*t*320));
+  if(kind==='water'){
+   const envelope=Math.min(1,t*120)*Math.exp(-t*7)*(.65+.35*Math.sin(t*91)**2);
+   samples[i]=envelope*(.65*previous+.16*(noise-previous)+.08*Math.sin(t*780-t*t*320));
+  }else if(kind==='reeds'){
+   samples[i]=(noise-previous)*.65*Math.sin(Math.PI*i/frames)**2*(.35+.65*Math.sin(t*4.1)**2);
+  }else{
+   const beat=kind==='pottery'?t%.53:t%.73,decay=Math.exp(-beat*(kind==='pottery'?22:14));
+   const tone=kind==='pottery'?Math.sin(t*1060):Math.sin(t*420)+.3*Math.sin(t*870);
+   samples[i]=Math.min(1,beat*240)*Math.min(1,(frames-i)/240)*decay*(.48*previous+.2*tone);
+  }
  }
  return buffer;
 }
@@ -31,7 +62,8 @@ export function createWorkAudio(createContext=()=>{
  const Context=globalThis.AudioContext||globalThis.webkitAudioContext;
  return Context?new Context():null;
 }){
- let context=null,buffer=null,active=null;
+ let context=null,active=null;
+ const buffers=new Map();
  const heard=new WeakSet();
  function release(voice){voice.node.disconnect();voice.gain.disconnect();}
  function silence(){
@@ -49,22 +81,22 @@ export function createWorkAudio(createContext=()=>{
  }
  function tick(state,paused,listener){
   if(!context||context.state==='suspended'||context.state==='closed')return;
-  const source=paused||state.lost?null:waterWorkSource(state,listener);
-  if(active&&active.trip!==source?.trip)silence();
+  const source=paused||state.lost?null:workSoundSource(state,listener);
+  if(active&&active.token!==source?.token)silence();
   if(!source)return;
   if(active){active.gain.gain.value=source.gain;return;}
-  if(heard.has(source.trip))return;
-  heard.add(source.trip);
+  if(source.kind==='water'&&heard.has(source.token))return;
   try{
-   buffer??=splashBuffer(context);
-   const node=context.createBufferSource(),gain=context.createGain(),voice={node,gain,trip:source.trip};
-   node.buffer=buffer;gain.gain.value=source.gain;
+   if(!buffers.has(source.kind))buffers.set(source.kind,workBuffer(context,source.kind));
+   const node=context.createBufferSource(),gain=context.createGain(),voice={node,gain,token:source.token};
+   node.buffer=buffers.get(source.kind);node.loop=source.kind!=='water';gain.gain.value=source.gain;
    node.connect(gain);gain.connect(context.destination);
    active=voice;
    node.onended=()=>{if(active===voice)active=null;release(voice);};
    node.start();
+   if(source.kind==='water')heard.add(source.token);
   }catch{silence();}
  }
- function dispose(){silence();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffer=null;}
+ function dispose(){silence();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
  return {enable,tick,silence,dispose};
 }
