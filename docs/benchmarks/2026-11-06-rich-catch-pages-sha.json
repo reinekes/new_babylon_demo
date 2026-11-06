@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T10:33:44.003811+00:00",
+  "commit": "7d9ccdd0a6091187f48a09382f1245e9c9b29884",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0c9021d757b7e40fe8c4a0fe28ea7d3d11cffc58096956c0713f93b195606afb",
+      "actual": "0c9021d757b7e40fe8c4a0fe28ea7d3d11cffc58096956c0713f93b195606afb",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "10b82a707b06f7892baf04c794d23e3513aa71e6a59a96c1ee855d1491219762",
+      "actual": "10b82a707b06f7892baf04c794d23e3513aa71e6a59a96c1ee855d1491219762",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "f5d04d96171492f9ca11b3c458c7418a831e597e39eefa97ef4356f8b3c3edec",
+      "actual": "f5d04d96171492f9ca11b3c458c7418a831e597e39eefa97ef4356f8b3c3edec",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a8b918718ef0d16af30785f56f9fe1e5512b659ec021f28741570469c08f553e",
+      "actual": "a8b918718ef0d16af30785f56f9fe1e5512b659ec021f28741570469c08f553e",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "b7138f435436d1005b6600fe6b6f1154e1e6567ce45a8881f20f4daa1625fa8e",
+      "actual": "b7138f435436d1005b6600fe6b6f1154e1e6567ce45a8881f20f4daa1625fa8e",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "expected": "b948cc4f1e79e60dd6d9920f97429f192ced35f4013430cfbc125de8f550b568",
+      "actual": "b948cc4f1e79e60dd6d9920f97429f192ced35f4013430cfbc125de8f550b568",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "19a499ff405b9eb4f15d083bf9e97dc4292cb420122793c930e30d3b90811feb",
+      "actual": "19a499ff405b9eb4f15d083bf9e97dc4292cb420122793c930e30d3b90811feb",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "864cf812c74bcef3e72150941af94659379a218d88b5514f80d5cec21eb8f190",
+      "actual": "864cf812c74bcef3e72150941af94659379a218d88b5514f80d5cec21eb8f190",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "d37fbc8ece0fa5674be088b85eb0b76683c8c67be9c692fe786eed20cc517626",
+      "actual": "d37fbc8ece0fa5674be088b85eb0b76683c8c67be9c692fe786eed20cc517626",
+      "match": true
+    },
+    {
+      "path": "rich-catch.js",
+      "status": 200,
+      "expected": "45f72c4e340ea7b88137c81a251867d875b498c71eb9fabcd7cf878c151b13ec",
+      "actual": "45f72c4e340ea7b88137c81a251867d875b498c71eb9fabcd7cf878c151b13ec",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "2af7bfd1f216c7b65ad6408a771a72f73aa54bfb5c4f5f5829b60109b7243903",
+      "actual": "2af7bfd1f216c7b65ad6408a771a72f73aa54bfb5c4f5f5829b60109b7243903",
+      "match": true
+    },
+    {
+      "path": "tests/miracle-access.test.js",
+      "status": 200,
+      "expected": "0178b449661fff87785ca5021cd4e9e9cc1969ba0297e0ad6df3c8859a454ed7",
+      "actual": "0178b449661fff87785ca5021cd4e9e9cc1969ba0297e0ad6df3c8859a454ed7",
+      "match": true
+    },
+    {
+      "path": "tests/rich-catch.test.js",
+      "status": 200,
+      "expected": "9627031ab556e44407a22d60bc3fbe5da230e9d86a4330ae5f6a5e5a503d13ae",
+      "actual": "9627031ab556e44407a22d60bc3fbe5da230e9d86a4330ae5f6a5e5a503d13ae",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "5e6edc236172c364fd87879d51de94b9e72cdda5711fe6697a95bc9e248088c1",
+      "actual": "5e6edc236172c364fd87879d51de94b9e72cdda5711fe6697a95bc9e248088c1",
+      "match": true
+    },
+    {
+      "path": "ui-icons.js",
+      "status": 200,
+      "expected": "3d64f3fdcfc4652e174a1bdf52ee8462d486017b242385256a635703cdee2884",
+      "actual": "3d64f3fdcfc4652e174a1bdf52ee8462d486017b242385256a635703cdee2884",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "078f3acb962a53f0b775100ca76494341c803b423005a8c7bccc4c8ba42a4fcc",
+      "actual": "078f3acb962a53f0b775100ca76494341c803b423005a8c7bccc4c8ba42a4fcc",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "6010b0b74fefca96fdbab45548df692e129102c00fe5f425d4d4f29da0b39540",
+      "actual": "6010b0b74fefca96fdbab45548df692e129102c00fe5f425d4d4f29da0b39540",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
