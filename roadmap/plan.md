@@ -63,25 +63,6 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 ### Готово когда
 Резерв освобождается при отмене/смерти, нет отрицательной силы и тупиков.
 
-## god-human-consent | Согласие, сомнение и отказ
-group: godhood
-status: partial
-priority: P2
-depends: -
-sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
-
-### Описание
-Предложение заменить повторную случайную лотерею реальной готовностью человека и contextKey.
-
-### Что уже есть
-Вдохновение сейчас RNG, кроме первого строителя.
-
-### Следующий шаг
-Проверить и опубликовать устойчивое согласие дополнительного строителя в Южном Шумере.
-
-### Готово когда
-Повторный клик не фармит исход; причины понятны.
-
 ## god-human-projects | Человеческие намерения и общие проекты
 group: godhood
 status: planned

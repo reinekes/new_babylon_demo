@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T03:50:54.672677+00:00",
+  "commit": "5f3fbf33972f6758a24facbf4af37426489f104f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "27ea5bfec7402996529678708bb7b7af5248a0135af544f96261ae50b33e2409",
+      "actual": "27ea5bfec7402996529678708bb7b7af5248a0135af544f96261ae50b33e2409",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "e2e03f74e42905fe977a980cf88a6ac61c0d053f393ac30ff79582d95ef68558",
+      "actual": "e2e03f74e42905fe977a980cf88a6ac61c0d053f393ac30ff79582d95ef68558",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "5172ee8d73c66e22110656b6cb1130d7525caece0418162786d0bdc979525c97",
+      "actual": "5172ee8d73c66e22110656b6cb1130d7525caece0418162786d0bdc979525c97",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "434ed4657f975c0191b1e1a77d44ae3d92d5c48ca2757427bc1235975b44b9ef",
+      "actual": "434ed4657f975c0191b1e1a77d44ae3d92d5c48ca2757427bc1235975b44b9ef",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "e74c2ff1801ba036bfe5ab71b15bf757fc54d9fdd827f2fcfcab12bc957bfc7e",
+      "actual": "e74c2ff1801ba036bfe5ab71b15bf757fc54d9fdd827f2fcfcab12bc957bfc7e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3495931ab04c4bcb4efd9368faf8c23fcab10f6631ac6d7b0bad48d5d5f8140f",
+      "actual": "3495931ab04c4bcb4efd9368faf8c23fcab10f6631ac6d7b0bad48d5d5f8140f",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1cc9f4e13fb67f146ca624c5d8b95f172781458f0e8a1cf2ebb852d849590a9b",
+      "actual": "1cc9f4e13fb67f146ca624c5d8b95f172781458f0e8a1cf2ebb852d849590a9b",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "f24ec9d489b6d0391191ddd83e6e9e066c7c1f19fae76f704b038f8151298e58",
+      "actual": "f24ec9d489b6d0391191ddd83e6e9e066c7c1f19fae76f704b038f8151298e58",
+      "match": true
+    },
+    {
+      "path": "tests/builder-consent.test.js",
+      "status": 200,
+      "expected": "d79ac0fbc089acbc10017b4fdbfea09b53d0aa2d80bfb96b8565bc982013e3fe",
+      "actual": "d79ac0fbc089acbc10017b4fdbfea09b53d0aa2d80bfb96b8565bc982013e3fe",
+      "match": true
+    },
+    {
+      "path": "ui-professions.js",
+      "status": 200,
+      "expected": "2eda3b79fe4d0e2d2bc381571e35e68f81076dd9777d29b461c30f7674417a8f",
+      "actual": "2eda3b79fe4d0e2d2bc381571e35e68f81076dd9777d29b461c30f7674417a8f",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
