@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-06T01:53:26.482584+00:00",
+  "commit": "f57e966bde5f56c3ba1ffa46613e6e813db629c3",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "47834fc9f7052ca35970d9dda5c6573335cc12d89f913d60ee6651286b903fe1",
+      "actual": "47834fc9f7052ca35970d9dda5c6573335cc12d89f913d60ee6651286b903fe1",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "d8b78b91396d69406778ebf42404283fc7aa05321b3a5c433b32ead070ce01b1",
+      "actual": "d8b78b91396d69406778ebf42404283fc7aa05321b3a5c433b32ead070ce01b1",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "c8adba82750d2cde0c98546ebc4759ae565c94d9d026a7d92461c3ff12366094",
+      "actual": "c8adba82750d2cde0c98546ebc4759ae565c94d9d026a7d92461c3ff12366094",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "38f317efe44456628dbdc944c7be3b8b3bb362c0d7f25e0fe944615cdc7e3c0b",
+      "actual": "38f317efe44456628dbdc944c7be3b8b3bb362c0d7f25e0fe944615cdc7e3c0b",
+      "match": true
+    },
+    {
+      "path": "life-analytics.js",
+      "status": 200,
+      "expected": "8c8b4047f56ffe7dba0c57a829d061c924c02cc3325be1c8001c6c55a02933f6",
+      "actual": "8c8b4047f56ffe7dba0c57a829d061c924c02cc3325be1c8001c6c55a02933f6",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "0b9b951524e978656c3614e8ac61c722ee93cb870194dec1565174bf69978d04",
+      "actual": "0b9b951524e978656c3614e8ac61c722ee93cb870194dec1565174bf69978d04",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "50917d431a06e5de7c01676f0684a5c9f9210d48b17f8234dbcc5c66aba8f1bc",
+      "actual": "50917d431a06e5de7c01676f0684a5c9f9210d48b17f8234dbcc5c66aba8f1bc",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "708f42d5069993baaa52cf7ba03aea02a96d2932e664e59eab72beed29514e5f",
+      "actual": "708f42d5069993baaa52cf7ba03aea02a96d2932e664e59eab72beed29514e5f",
+      "match": true
+    },
+    {
+      "path": "tests/family-memorial.test.js",
+      "status": 200,
+      "expected": "21bfbbf4e3ed282913df6104378d1bd51babf1f94f8d165678a7fa2c643f42e4",
+      "actual": "21bfbbf4e3ed282913df6104378d1bd51babf1f94f8d165678a7fa2c643f42e4",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
