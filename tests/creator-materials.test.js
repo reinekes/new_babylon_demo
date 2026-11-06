@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,advanceTime,encode,decode} from '../engine.js';
+import {createGame,advanceTime,encode,decode,build} from '../engine.js';
 import {createNewCity} from '../new-game.js';
 import {strictScenario,CAT_DISCOVERY_RULES} from '../scenario-profiles.js';
 import {syncCitizens,invalidateAssignments} from '../workforce.js';
+import {cancelConstruction,inspireCitizen} from '../management.js';
 import {orderManualGathering} from '../manual-gathering.js';
-import {newCreatorMaterials,markCreatorCargo,acceptCreatorCargo,creatorMaterialsView} from '../creator-materials.js';
+import {reserveStock,refundSources,takeStock} from '../inventory.js';
+import {newCreatorMaterials,markCreatorCargo,acceptCreatorCargo,creatorMaterialsView,addCreatorStock} from '../creator-materials.js';
 
 test('only tagged locally gathered cargo is credited, once and up to the threshold',()=>{
  const s={creatorMaterials:newCreatorMaterials()},c={cargo:{clay:12}};
@@ -62,4 +64,51 @@ test('a workshop porter and a hand collector both deliver real material across a
   assert.ok(s.creatorMaterials[resource]>0,resource);
   assert.equal(encode(decode(encode(s))),encode(s));
  }
+});
+
+test('construction reserves local materials by store and cancellation restores their origin',()=>{
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.creatorMaterials=newCreatorMaterials();
+ const store=s.buildings.find(b=>b.type==='shrine');
+ addCreatorStock(store,'clay',7);
+ const clay=s.resources.clay;
+ const creatorAllocations={};
+ const materials=reserveStock(s,{clay:10},{creatorAllocations});
+ assert.equal(s.resources.clay,clay-10);
+ assert.deepEqual(creatorAllocations,{'9,8':{clay:7}});
+ assert.equal(store.creatorStock,undefined);
+ refundSources(s,materials,creatorAllocations);
+ assert.equal(s.resources.clay,clay);
+ assert.deepEqual(store.creatorStock,{clay:7});
+ const c={cargo:{clay:5}};
+ assert.equal(takeStock(s,'9,8','clay',5,{creatorTo:c}),5);
+ assert.equal(acceptCreatorCargo(s,c,'clay',5),5);
+ assert.equal(s.creatorMaterials.clay,0);
+});
+
+test('a real building order survives loading, cancels without losing provenance and records the completed build',()=>{
+ let s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.creatorMaterials=newCreatorMaterials();
+ const builder=s.citizens.find(c=>c.age>=16);
+ Object.assign(s.godhood,{stage:'recognized',witnessId:builder.id,recognitionAt:0,believerIds:[builder.id]});
+ s.resources.faith=1;
+ assert.ok(inspireCitizen(s,builder.id,'builder').success);
+ const point={x:8,y:9},shrine=()=>s.buildings.find(b=>b.type==='shrine'),yard=()=>s.buildings.find(b=>b.x===point.x&&b.y===point.y);
+ addCreatorStock(shrine(),'clay',20);
+ addCreatorStock(shrine(),'reed',10);
+ const order=()=>assert.equal(build(s,'house',point.x,point.y).ok,true);
+ order();
+ const allocated=yard().construction.creatorAllocations;
+ assert.ok(allocated['9,8'].clay>0&&allocated['9,8'].reed>0);
+ const raw=encode(s);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ assert.equal(cancelConstruction(s,point.x,point.y).ok,true);
+ assert.deepEqual(shrine().creatorStock,{clay:20,reed:10});
+ order();
+ for(let i=0;i<1800&&yard().construction;i++){s.event=null;advanceTime(s,.4);}
+ assert.equal(yard().construction,undefined);
+ assert.deepEqual(yard().creatorBuilt,allocated['9,8']);
+ assert.equal(encode(decode(encode(s))),encode(s));
 });

@@ -1,4 +1,4 @@
-import {markCreatorCargo,acceptCreatorCargo} from './creator-materials.js';
+import {markCreatorCargo,acceptCreatorCargo,addCreatorStock} from './creator-materials.js';
 import {foodYieldMultiplier,useRichCatch} from './rich-catch.js';
 import {appendFish,takeFish as takeFishEvidence,recordHomeFish,recordInspiredCatch} from './fish-provenance.js';
 import {acceptFieldGrain,recordFieldGrain} from './field-grain.js';
@@ -354,7 +354,7 @@ function deposit(s,c,ctx){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='votive'||destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?destination.targetKind==='votive'?receiveVotive(s,destination,c,amount):logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
   if(local&&destination.targetKind==='input'&&(resource==='food'||resource==='milk'))recordVowDelivery(s,site,c,accepted);
   if(!local&&accepted>0&&MATERIALS.includes(resource))stored[resource]=accepted;
-  if(c.creatorCargo)acceptCreatorCargo(s,c,resource,accepted);
+  if(c.creatorCargo){const tagged=acceptCreatorCargo(s,c,resource,accepted);if(tagged&&!local)addCreatorStock(ctx.buildings.get(c.store),resource,tagged);}
   if(resource==='food'){acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);
    if(c.fishCargo){
     const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
@@ -810,7 +810,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
   if(purchase&&k===purchase.resource)purchase.remaining+=n;
   else if(sale&&k===sale.resource){sale.remaining+=n;if(sale.sources)(sale.sources[c.store]??={})[k]=(sale.sources[c.store]?.[k]||0)+n;}
   else if(district?.targetKind==='votive'&&k===district.resource)district.remaining+=n;
-  else if(MATERIALS.includes(k)){const accepted=restore(k,n,k==='food'?'fishCargo':null);if(district)district.cancelled+=accepted;}
+  else if(MATERIALS.includes(k)){const accepted=restore(k,n,k==='food'?'fishCargo':null);if(c.creatorCargo?.resource===k)addCreatorStock(s.buildings.find(b=>buildingKey(b)===recovery),k,Math.min(accepted,c.creatorCargo.amount));if(district)district.cancelled+=accepted;}
   else s.resources[k]=(s.resources[k]||0)+n;
  }
  c.cargo={};c.buildCargo={};

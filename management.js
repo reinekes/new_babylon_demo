@@ -1,3 +1,4 @@
+import {addCreatorStock,takeCreatorStock} from './creator-materials.js';
 import {appendFish,takeFish} from './fish-provenance.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {protectsGuestBuilding} from './external-guest.js';
@@ -74,7 +75,7 @@ function rememberApproaches(s,b){
  for(const a of anchors)if(!s.roadAnchors.some(p=>p.x===a.x&&p.y===a.y))s.roadAnchors.push(a);
 }
 function refundOrder(s,b){
- const refund=cancellationRefund(b),key=buildingKey(b);refundSources(s,b.construction.allocations);s.resources.faith+=refund.faith||0;
+ const refund=cancellationRefund(b),key=buildingKey(b);refundSources(s,b.construction.allocations,b.construction.creatorAllocations);s.resources.faith+=refund.faith||0;
  for(const c of s.citizens)if(c.site===key)c.buildCargo={};
  delete b.construction;return refund;
 }
@@ -157,7 +158,7 @@ export function demolish(s,x,y){
  for(const q of s.district?.jobs||[])if(q.automatic&&(q.source===buildingKey(b)||q.target===buildingKey(b))){q.cancelled+=q.remaining;q.remaining=0;for(const c of s.citizens.filter(c=>c.districtJob===q.id))recoverCitizenCargo(s,c.id);}
  // All capacity, reservation, resident and route gates above have succeeded.
  // This emergency relocation follows the existing demolition-refund abstraction.
- if(transfer)for(const {target,key,amount}of transfer){target.stock??=Object.fromEntries(MATERIALS.map(k=>[k,0]));if(key==='food'&&b.fishStock)appendFish(target,'fishStock',takeFish(b,'fishStock',amount,b.stock.food),target.stock.food);target.stock[key]+=amount;b.stock[key]-=amount;}
+ if(transfer)for(const {target,key,amount}of transfer){target.stock??=Object.fromEntries(MATERIALS.map(k=>[k,0]));if(key==='food'&&b.fishStock)appendFish(target,'fishStock',takeFish(b,'fishStock',amount,b.stock.food),target.stock.food);if(b.creatorStock)addCreatorStock(target,key,takeCreatorStock(b,key,amount));target.stock[key]+=amount;b.stock[key]-=amount;}
  const localGoods=localDemolitionStock(b),localTarget=Object.values(localGoods).some(n=>n>0)?localRefundStore(s,b):null;if(localTarget){for(const [k,n]of Object.entries(localGoods))if(n>0){
   const accepted=putStock(s,buildingKey(localTarget),k,n,{overflow:true});
   if(k==='food'&&b.fishOutput)appendFish(localTarget,'fishStock',takeFish(b,'fishOutput',Math.min(accepted,b.workshopStock.output.food),b.workshopStock.output.food),localTarget.stock.food-accepted);

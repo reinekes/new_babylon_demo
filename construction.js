@@ -1,3 +1,4 @@
+import {recordCreatorConstruction} from './creator-materials.js';
 import {SICKLE_EDGE} from './agriculture.js';
 import {startManagedDairy} from './dairy.js';
 import {startManagedFlock} from './textiles.js';
@@ -26,6 +27,7 @@ export function finishConstruction(s){
  for(const b of constructionEntities(s)){const q=b.construction;if(!q||!materialsReady(q)||q.work<workRequired(b)-1e-8)continue;
   if(q.kind==='new'&&b.type!=='road'){
    stampBuildingCompletion(s,b);
+   recordCreatorConstruction(b,q);
    if(b.type==='field'&&isStrictSumer(s))b.sickle={edge:SICKLE_EDGE,pottery:0};
    if(b.type==='garden'&&isStrictSumer(s))b.orchardPlantedTick=s.tick;
    if(b.type==='sheepfold'&&isStrictSumer(s))startManagedFlock(b);
