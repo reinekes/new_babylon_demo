@@ -20,7 +20,7 @@ const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
 const HOME_ASSET='assets/art-courtyard/models/adobe-courtyard.glb';
 const tier=b=>Math.max(1,Math.min(3,b.level||1));
 const progress=b=>b.construction?Math.floor(Math.max(0,Math.min(1,constructionProgress(b).ratio))*12):12;
-const isHouse=b=>b.type==='house'&&(!b.construction||b.construction.kind==='upgrade');
+const isHouse=b=>b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
@@ -131,7 +131,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   // Supplied stepped sanctuaries have real stair flights; the former flat-roof
   // ladder would pass through their terraces at the obsolete roof height.
   if(!sacredModels.sources(b,state))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
-  if(b.construction?.kind==='upgrade')for(const mesh of createConstructionSite(B,scene,b,materialSet,state)){mesh.parent=root;sources.push(mesh);}
+  if(b.construction&&b.construction.kind!=='new')for(const mesh of createConstructionSite(B,scene,b,materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>clipField(mesh,b,state));
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){

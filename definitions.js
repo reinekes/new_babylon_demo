@@ -51,7 +51,7 @@ export const MIRACLES={
 };
 export const RESOURCE_NAMES={milk:'молоко',pottery:'керамика',beer:'напиток',food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
 export const levelOf=b=>b.level||1;
-export const isOperational=b=>!b.construction||b.construction.kind==='upgrade';
+export const isOperational=b=>!b.construction||b.construction.kind==='upgrade'||b.construction.kind==='repair';
 export const capacityOf=b=>b.type==='house'&&isOperational(b)?(b.starterHut&&levelOf(b)===1?4:4+4*levelOf(b)):0;
 export const outputMultiplier=b=>[0,1,1.6,2.4][levelOf(b)];
 export const buildingKey=b=>b.id||`${b.x},${b.y}`;

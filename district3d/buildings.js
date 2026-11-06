@@ -17,7 +17,7 @@ export function districtCropVisual(b) {
 
 export function districtBuildingPlan(b) {
  const height=2.2+(clamp(b.level||1,1,3)-1)*.32;
- const q=b.construction,construction=!!q&&q.kind!=='upgrade';
+ const q=b.construction,construction=q?.kind==='new';
  const progress=q?clamp(constructionProgress(b).ratio,0,1):1;
  return {position:[b.x*6,0,b.y*6],height,wallHeight:construction?.25+progress*(height-.25):height,footprint:5.5,doorWidth:.9,variant:Math.floor(hash(b.x,b.y)*4),construction,upgrading:q?.kind==='upgrade',progress};
 }

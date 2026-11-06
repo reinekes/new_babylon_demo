@@ -19,9 +19,9 @@ export function drawConstruction(r,b,s,t){
   if(q.kind==='upgrade')r.bridge(b,false);
   const bank=point(start+(east?.25:-.25),span.y);r.box(bank.x,bank.y,7*scale,3*scale,5*scale,'#d7b48a','#a77b54','#c49669');
  }else{
-  if(q.kind==='upgrade'){
+  if(q.kind!=='new'){
    r.building({...b,construction:undefined},s,t);
-   if(progress.work>.18){const lightCount=r.lights.length;c.save();const height=16+progress.work*120;c.beginPath();c.rect(p.x-95*scale,p.y-height*scale,190*scale,(height+40)*scale);c.clip();r.building({...b,level:q.target,construction:undefined},s,t);c.restore();r.lights.length=lightCount;}
+   if(q.kind==='upgrade'&&progress.work>.18){const lightCount=r.lights.length;c.save();const height=16+progress.work*120;c.beginPath();c.rect(p.x-95*scale,p.y-height*scale,190*scale,(height+40)*scale);c.clip();r.building({...b,level:q.target,construction:undefined},s,t);c.restore();r.lights.length=lightCount;}
   }
   else{
    r.tile(b.x,b.y,'#ac986d','#e0cb98');
@@ -31,7 +31,7 @@ export function drawConstruction(r,b,s,t){
    }
   }
   // Scaffold posts, cross-braces and the plank platform remain until completion.
-  const h=(q.kind==='upgrade'?70:18+progress.work*62)*scale;
+  const h=(q.kind!=='new'?70:18+progress.work*62)*scale;
   for(const [x,y]of [[-.46,.46],[.46,.46],[.46,-.46]]){const a=r.point(b.x+x,b.y+y);r.line([[a.x,a.y],[a.x,a.y-h]],'#866e4b',1.8*scale);}
   const a=r.point(b.x-.46,b.y+.46),d=r.point(b.x+.46,b.y+.46),e=r.point(b.x+.46,b.y-.46);
   for(const k of [.35,.7,1]){r.line([[a.x,a.y-h*k],[d.x,d.y-h*k],[e.x,e.y-h*k]],'#b99763',2.4*scale);}
@@ -43,7 +43,7 @@ export function drawConstruction(r,b,s,t){
 }
 export function drawConstructionLabel(r,b){
  const progress=constructionProgress(b),c=r.ctx,span=b.type==='bridge'?bridgeSpanAt(b,r.state):null,bank=span?worldFromRiver(span.left,span.y,r.state):b,p=r.point(bank.x,bank.y);
- const y=p.y-(b.type==='road'?15:b.construction.kind==='upgrade'?88:40+progress.work*62)*r.s,width=46*r.s;
+ const y=p.y-(b.type==='road'?15:b.construction.kind!=='new'?88:40+progress.work*62)*r.s,width=46*r.s;
  c.fillStyle='#f7efd8ed';c.fillRect(p.x-width/2-3*r.s,y-13*r.s,width+6*r.s,21*r.s);
  c.fillStyle='#617459';c.font=`${Math.max(8,9*r.s)}px Arial`;c.textAlign='center';c.fillText(`${b.construction.kind==='upgrade'?'↑':'⚒'} ${Math.floor(progress.ratio*100)}%`,p.x,y-3*r.s);
  c.fillStyle='#d1c4a0';c.fillRect(p.x-width/2,y+2*r.s,width,3*r.s);c.fillStyle='#7d9163';c.fillRect(p.x-width/2,y+2*r.s,width*progress.ratio,3*r.s);

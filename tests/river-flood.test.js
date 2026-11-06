@@ -207,3 +207,49 @@ test('a strict city can reserve a levee through normal construction and reload t
  assert.equal(build(createGame({start:'established',mode:'mature'}),'levee',13,6).ok,false);
  assert.equal(build(s,'levee',5,5).ok,false);
 });
+
+test('a flood damages houses and streets, and repairs preserve homes and road levels',async()=>{
+ const {repairFloodDamage}=await import('../engine.js');
+ const {buildingKey,capacityOf,housingOf}=await import('../definitions.js');
+ const {roadSpeed}=await import('../roads.js');
+ const {cancelConstruction}=await import('../management.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ for(let i=0;i<1200&&s.tick<11;i++){s.event=null;advanceTime(s,.5);}
+ assert.equal(s.tick,11);
+ const exposed=floodFootprint(s,s.riverFlood);
+ const open=[...exposed].find(key=>!s.buildings.some(b=>buildingKey(b)===key));
+ const [x,y]=open.split(',').map(Number);
+ s.buildings.push({type:'house',x,y,level:1});
+ s.capacity=housingOf(s);
+ for(let i=0;i<300&&s.tick<12;i++){s.event=null;advanceTime(s,.5);}
+ assert.equal(s.tick,12);
+ const house=s.buildings.find(b=>b.type==='house'&&b.floodDamage);
+ const road=s.roads.find(r=>r.floodDamage);
+ assert.ok(house&&road);
+ assert.equal(roadSpeed(s,road.a,road.b),.8);
+ const capacity=capacityOf(house),homeKey=buildingKey(house),roadLevel=road.level;
+ assert.ok(capacity>0);
+ s.event=null;
+ const materials={clay:s.resources.clay,reed:s.resources.reed};
+ assert.ok(repairFloodDamage(s,house).ok);
+ assert.equal(s.resources.clay,materials.clay-4);
+ assert.equal(s.resources.reed,materials.reed-2);
+ assert.ok(cancelConstruction(s,house.x,house.y).ok);
+ assert.equal(house.floodDamage,true);
+ assert.equal(s.resources.clay,materials.clay);
+ assert.equal(s.resources.reed,materials.reed);
+ assert.match(cityToolsHTML(s,{tab:'workshops'}),/Повреждения после разлива/);
+ assert.ok(repairFloodDamage(s,house).ok);
+ assert.ok(repairFloodDamage(s,road).ok);
+ assert.equal(capacityOf(house),capacity);
+ const raw=encode(s),restored=decode(raw);
+ assert.ok(restored);
+ assert.equal(encode(restored),raw);
+ const h=restored.buildings.find(b=>buildingKey(b)===homeKey),r=restored.roads.find(b=>b.id===road.id);
+ for(let i=0;i<2400&&(h.construction||r.construction);i++){restored.event=null;advanceTime(restored,.25);}
+ assert.equal(h.floodDamage,undefined);
+ assert.equal(r.floodDamage,undefined);
+ assert.equal(capacityOf(h),capacity);
+ assert.equal(r.level,roadLevel);
+ assert.equal(roadSpeed(restored,r.a,r.b),1);
+});

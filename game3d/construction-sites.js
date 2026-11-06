@@ -4,7 +4,7 @@ import {footprintSize} from '../footprints.js';
 // A site has its own full-size scaffold and rising brick courses, never a squashed model.
 export function siteLayout(b){
  const n=footprintSize(b),p=Math.max(0,Math.min(1,constructionProgress(b).ratio)),low=['field','garden','bridge','canal'].includes(b.type);
- return {n,center:(n-1)*3,width:n*6-.8,height:low?.65:b.type==='ziggurat'?8.8:b.type==='shrine'?3.5:2.8,p,upgrade:b.construction?.kind==='upgrade',low};
+ return {n,center:(n-1)*3,width:n*6-.8,height:low?.65:b.type==='ziggurat'?8.8:b.type==='shrine'?3.5:2.8,p,upgrade:!!b.construction&&b.construction.kind!=='new',low};
 }
 export function createConstructionSite(B,scene,b,m,s){
  const a=siteLayout(b),groups=new Map();let serial=0;
