@@ -1,8 +1,10 @@
+import {shapingBatchQuote} from './shaping-batch.js';
 import {createRevelationPresentation} from './revelation-presentation.js';
 import {REVELATION_BRANCHES,revelationAdviceQuote} from './revelation-advice.js';
 import {createSunlightPresentation} from './sunlight-presentation.js';
 import {createAbundancePresentation} from './abundance-presentation.js';
 import {giftAmount} from './abundance-origin.js';
+import {connectedStores} from './district-logistics.js';
 import {abundanceQuote} from './abundance-gift.js';
 import {createWindPresentation} from './wind-presentation.js';
 import {createCreatorPresentation} from './creator-presentation.js';
@@ -867,7 +869,9 @@ function update(){
   const card=el.closest('details'),branch=card.querySelector('[data-revelation-branch]');
   if(branch)branch.hidden=!state.revelationEvidence;
   const advice=branch&&!branch.hidden&&card.open&&!reason?revelationAdviceQuote(state,branch.querySelector('select').value):null;
-  updateMiracleCard(card,state,id,reason||advice?.reason,gift);
+  const shaping=id==='shaping'&&state.shapingProjects&&!reason&&card.open?
+   shapingBatchQuote(state,lastMiracleTarget,{connected:(from,to)=>connectedStores(state,from,to)}):null;
+  updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason,gift);
  }
  $('season-countdown').textContent=`Месяц ${calendar.number} / 12 · день ${calendar.day}${ceremonyActive(state)?' · время церемонии':paused?' · пауза':''}`;
  $('pause').textContent=paused?'▶':'Ⅱ';$('pause').setAttribute('aria-label',paused?'Продолжить время':'Приостановить время');$('pause').classList.toggle('active',paused);$('next-season').disabled=seasonJumping||!!seasonJumpReason(state);$('next-season').title=seasonJumpReason(state)||(state.festival||state.miracleCelebration?'Закончить праздник и перейти к следующему сезону':'Перейти к следующему сезону');

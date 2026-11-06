@@ -211,6 +211,13 @@ function windDeliveryHTML(s){
  return `<section class="management-row" data-wind-delivery><h3>История «Попутный ветер»</h3><p>Принято из мастерских · ${amount} из ${WIND_DELIVERY_GOAL} · Мест назначения · ${q.destinations.length} из ${WIND_DESTINATION_GOAL}.</p><p>Засчитываются первые доставки вдохновлённых носильщиков.</p><p>${q.path?q.path.kind==='road'?'Доставка по улучшенной дороге подтверждена.':'Доставка по мосту подтверждена.':'Ожидается доставка по улучшенной дороге или готовому мосту.'}</p>${windKnowledgeReason(s)?'':'<p>Чудо открыто · 40 веры.</p>'}</section>`;
 }
 
+function shapingBatchesHTML(s){
+ return (s.shapingBatches?.rows||[]).slice(-8).reverse().map(b=>{
+  const transitClay=Math.max(0,60-b.remaining.clay-b.delivered.clay),transitReed=Math.max(0,40-b.remaining.reed-b.delivered.reed);
+  return `<div data-shaping-batch="${b.id}"><h4>Партия №${b.id} · ${b.x}, ${b.y}${b.grounded?' · на земле':''}</h4><p>Остаток · ${number(b.remaining.clay)} глины и ${number(b.remaining.reed)} тростника. В пути · ${number(transitClay)} и ${number(transitReed)}. Доставлено · ${number(b.delivered.clay)} из 60 и ${number(b.delivered.reed)} из 40.</p></div>`;
+ }).join('');
+}
+
 function shapingProjectsHTML(s){
  const view=shapingProjectView(s);
  if(!view)return '';
@@ -219,7 +226,7 @@ function shapingProjectsHTML(s){
   model?`Макет в работе · ${Math.floor(model.work/6*100)}%. Потрачено 2 глины${model.reed?' и 1 тростник':''}.`:
   'После пяти построек и открытия «Рук творца» мастер возьмёт 2 глины из доступного запаса. Если мастер умер, двое жителей добавят 1 тростник.';
  const master=view.masterId==null?'':` · ${escape(displayName(s,view.masterId)||`житель №${view.masterId+1}`)}`;
- return `<section class="management-row" data-shaping-projects><h3>Постройки для «Повеления глине»</h3><p>${Math.min(view.count,view.required)} из ${view.required} в деле${master}.</p><p>Кирпичный двор · ${view.brickyard?'в деле':'ожидается'}. Общественная постройка · ${view.publicService?'в деле':'ожидается'}.</p><p>${modelStatus}</p></section>`;
+ return `<section class="management-row" data-shaping-projects><h3>Постройки для «Повеления глине»</h3><p>${Math.min(view.count,view.required)} из ${view.required} в деле${master}.</p><p>Кирпичный двор · ${view.brickyard?'в деле':'ожидается'}. Общественная постройка · ${view.publicService?'в деле':'ожидается'}.</p><p>${modelStatus}</p>${shapingBatchesHTML(s)}</section>`;
 }
 
 function creatorMaterialsHTML(s){

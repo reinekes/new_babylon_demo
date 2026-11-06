@@ -1,3 +1,4 @@
+import {groundShapingBatch} from './shaping-batch.js';
 import {moveGiftFood} from './abundance-origin.js';
 import {addCreatorStock,takeCreatorStock} from './creator-materials.js';
 import {appendFish,takeFish} from './fish-provenance.js';
@@ -122,7 +123,7 @@ export function canDemolish(s,b){
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
  if(s.citizens.some(c=>c.pantryTrip&&c.pantryTarget===buildingKey(b)))return 'Дождись доставки еды соседям';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';
- const key=buildingKey(b);if(s.votiveOfferings?.some(v=>v.temple===key&&v.receivedTick!==null))return 'Храм хранит именные посвящения';if(protectsGuestBuilding(s,key))return 'Здание используется приглашённым мастером';if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';if(!b.starterHut)syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7)&&!foundingStockTransfer(s,b))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.source===key||q.target===key)&&(!q.automatic||s.citizens.some(c=>c.districtJob===q.id&&Object.values(c.cargo||{}).some(n=>n>0)))))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
+ const key=buildingKey(b);if(s.votiveOfferings?.some(v=>v.temple===key&&v.receivedTick!==null))return 'Храм хранит именные посвящения';if(protectsGuestBuilding(s,key))return 'Здание используется приглашённым мастером';if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';if(!b.starterHut)syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7)&&!foundingStockTransfer(s,b))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.target===key||q.source===key&&!q.shapingBatch)&&(!q.automatic||s.citizens.some(c=>c.districtJob===q.id&&Object.values(c.cargo||{}).some(n=>n>0)))))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
  if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary','depot'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
@@ -182,6 +183,7 @@ if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.
  if(b.construction){const cancelled=refundOrder(s,b);for(const [k,n]of Object.entries(cancelled))refund[k]=(refund[k]||0)+n;}
  for(const [k,n]of Object.entries(demolitionRefund(b)))s.resources[k]+=n;
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}
+ groundShapingBatch(s,b);
  s.buildings=s.buildings.filter(v=>v!==b);discardFishingOutput(s,b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
  syncInventory(s);note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }

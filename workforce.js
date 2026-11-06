@@ -1,3 +1,4 @@
+import {deliverShapingLoad,returnShapingLoad} from './shaping-batch.js';
 import {advanceShapingModel} from './shaping-model.js';
 import {recordSunlightService} from './sunlight-gathering.js';
 import {recordAbundanceHome} from './abundance-discovery.js';
@@ -47,7 +48,7 @@ import {initializeWater,advanceWater,waterBusy,recoverWater,resumeWaterAtHome} f
 import {initializeTextiles,advanceTextiles,gatherWool,weaveCloth,weavingBatch,makeClothing,craftResource,craftState,craftLoad,craftBatch} from './textiles.js';
 import {initializeClothing,advanceClothing,equipClothing,REPLACE_CLOTHING_AT} from './clothing.js';
 import {stockStores,storeStock,storeCapacity,syncInventory,putStock,putRecoveryStock,takeStock,foodAvailableAt,foodAvailability,takeReserved} from './inventory.js';
-import {initializeDistricts,syncDistrictJobs,districtPickup,exportable,connectedStores,logisticsDeposit,logisticsRoom,createDistrictPass} from './district-logistics.js';
+import {initializeDistricts,syncDistrictJobs,districtPickup,districtExportable,connectedStores,logisticsDeposit,logisticsRoom,createDistrictPass} from './district-logistics.js';
 import {initializeBuildingInventory,collectReadyOutputs,isProductionStore,putProductionOutput,outputRoom} from './building-inventory.js';
 import {SEED_COST,seedReserve,availableFood} from './food-planning.js';
 import {advancePests,isPestStore,syncPestSites} from './pests.js';
@@ -254,7 +255,7 @@ export function syncCitizens(s){
   for(const c of [...citizens].sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id)){if(assigned>=2)break;if(reserved.has(c.id)||locked.has(c.id)||assignments.has(c.id)||tradeAssignments.has(c.id)||!['auto','carrier'].includes(c.role)||!routeBetween(s,ctx.ports.get(c.home)?.key,market.key,ctx))continue;const home=ctx.buildings.get(c.home);if(c.phase==='home'&&home&&homeMealFood(home)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food'))continue;tradeAssignments.set(c.id,{...sale?{saleJob:q.id,saleMarket:q.market}:{tradeJob:q.id,tradeMarket:q.market},store});assigned++;}
  }
  const districtAssignments=new Map(),districtPass=createDistrictPass(s,{network:ctx.network}),routeAssigned=new Map(districtPass.routeOwners),porterOrder=citizens.filter(c=>['home','working'].includes(c.phase)&&canWork(c)&&!locked.has(c.id)&&!assignments.has(c.id)&&!tradeAssignments.has(c.id)).sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id),porterTargets=new Map(),houseSupply=new Map();
- for(const q of s.district.jobs){if(!isWorkday(s.simTime)||q.remaining<=1e-8||q.targetKind!=='votive'&&(logisticsRoom(s,ctx.buildings.get(q.target),q.resource,q.targetKind,districtPass)<=1e-8||exportable(s,q.source,q.resource,districtPass)<=1e-8)||!connectedStores(s,q.source,q.target,districtPass))continue;const pair=`${q.source}>${q.target}`;let n=routeAssigned.get(pair)||0;if(n>=2)continue;
+ for(const q of s.district.jobs){if(!isWorkday(s.simTime)||q.remaining<=1e-8||q.targetKind!=='votive'&&(logisticsRoom(s,ctx.buildings.get(q.target),q.resource,q.targetKind,districtPass)<=1e-8||districtExportable(s,q,districtPass)<=1e-8)||!connectedStores(s,q.source,q.target,districtPass))continue;const pair=`${q.source}>${q.target}`;let n=routeAssigned.get(pair)||0;if(n>=2)continue;
   if(!porterTargets.has(q.target))porterTargets.set(q.target,[...porterOrder.filter(c=>c.workplace===q.target),...porterOrder.filter(c=>c.workplace!==q.target)]);
   for(const c of porterTargets.get(q.target)){if(n>=2)break;const pinned=c.workplace===q.target&&ctx.buildings.get(q.target)?.type==='depot';if(c.phase==='working'&&!pinned&&(c.role!=='auto'||c.workplace)||districtAssignments.has(c.id)||reserved.has(c.id)&&!pinned||!['auto','carrier'].includes(c.role)&&!pinned)continue;const home=ctx.ports.get(c.home),source=ctx.ports.get(q.source);if(!home||!source||!routeBetween(s,home.key,source.key,ctx))continue;
    if(c.phase==='home'){if(!houseSupply.has(c.home)){const house=ctx.buildings.get(c.home);houseSupply.set(c.home,!!(house&&homeMealFood(house)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food')));}if(houseSupply.get(c.home))continue;}
@@ -355,6 +356,14 @@ function harvest(s,c,ctx,via=null){
  startTrip(s,c,c.store,'toStore',ctx,via);return true;
 }
 function deposit(s,c,ctx){
+ if(c.shapingLoad){
+  const resource=c.shapingLoad.resource,job=s.district.jobs.find(q=>q.id===c.districtJob);
+  const accepted=deliverShapingLoad(s,c,c.store);
+  if(job)job.delivered+=accepted;
+  if(accepted>0){s.delivered[resource]=(s.delivered[resource]||0)+accepted;s.deliveries++;recordCitizenDelivery(s,c,{[resource]:accepted});}
+  return !c.shapingLoad;
+ }
+
  let delivered=0;const actual={},stored={};
  for(const [resource,amount]of Object.entries(c.cargo)){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='votive'||destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?destination.targetKind==='votive'?receiveVotive(s,destination,c,amount):logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
@@ -820,6 +829,7 @@ export function rerouteCitizens(s){
 export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  const c=s.citizens?.find(c=>c.id===id);if(!c)return false;
  const site=constructionEntities(s).find(b=>buildingKey(b)===c.site)?.construction,purchase=s.trade?.deliveries?.find(q=>q.id===c.tradeJob),sale=s.trade?.sales?.find(q=>q.id===c.saleJob),district=s.district?.jobs.find(q=>q.id===c.districtJob);
+ if(c.shapingLoad){const {amount}=c.shapingLoad;if(returnShapingLoad(s,c)&&district)district.cancelled+=amount;}
  const needsHolder=(!site&&hasBuildCargo(c))||craftLoad(c)>0||c.clothingLoad>0||c.seedFood>0||c.pantryFood>0||Object.entries(c.cargo||{}).some(([k,n])=>n>0&&MATERIALS.includes(k)&&!(purchase&&k===purchase.resource)&&!(sale&&k===sale.resource)&&!(district?.targetKind==='votive'&&k===district.resource)),recovery=needsHolder?localRecoveryStore(s,c):null;
  // Callers must retain a stranded owner if neither a warehouse, a home nor an
  // operational yard is reachable. Never clear a load without an accepted unit.

@@ -36,7 +36,7 @@ export function updateBuildingCardName(card,state){
 // Reused cards must update every visible/accessible price when switching saves.
 export function updateMiracleCard(details,s,id,reason='',gift=null){
  const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=price===0;
- const desc=id==='revelation'&&s.revelationEvidence?'Совет о следующем шаге выбранной ветви и +12 престижа.':id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
+ const desc=id==='shaping'&&s.shapingProjects?'Создаёт штабель из 60 глины и 40 тростника у выбранного ремесленного двора. Носильщики доставят материалы на склады.':id==='revelation'&&s.revelationEvidence?'Совет о следующем шаге выбранной ветви и +12 престижа.':id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
  const description=details.querySelector('.miracle-description');if(description)description.textContent=desc;
  const preview=details.querySelector('.abundance-quote');
  if(preview){
