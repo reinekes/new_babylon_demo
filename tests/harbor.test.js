@@ -52,3 +52,33 @@ test('river wear slows the next unloading until physical boat service finishes',
  assert.equal(loadedHarbor.boatWear,undefined);
  assert.equal(restored.trade.deliveries.at(-1).delivered,2);
 });
+
+test('low water fixes cargo size per visit and sends shallow-berth traders overland when possible',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const fixture=(level,market=false)=>{
+  const s=createGame({start:'established',scenario:strictScenario()});
+  s.buildings.push({type:'harbor',x:11,y:9,level});
+  if(market)s.buildings.push({type:'market',x:10,y:9,level:1});
+  s.tick=5;s.year=2;s.season=1;s.simTime=225;s.trade.visits=1;s.trade.nextArrival=5;
+  for(const b of s.buildings)if(b.crop)b.crop.year=s.year;
+  syncCitizens(s);advanceTrade(s);return s;
+ };
+ const light=fixture(1),deep=fixture(2),full=fixture(3),land=fixture(1,true);
+ assert.equal(light.trade.caravan.riverCapacity,1);
+ assert.equal(deep.trade.caravan.riverCapacity,2);
+ assert.equal(full.trade.caravan.riverCapacity,3);
+ assert.equal(land.trade.caravan.transport,undefined);
+ assert.equal(light.trade.caravan.stock.wood,land.trade.caravan.stock.wood);
+ assert.equal(deep.trade.caravan.stock.wood,light.trade.caravan.stock.wood*2);
+ assert.equal(full.trade.caravan.stock.stone,light.trade.caravan.stock.stone*3);
+ for(let i=0;i<700&&light.trade.caravan.phase!=='trading';i++)advanceTradeLogistics(light,.1);
+ assert.equal(light.trade.caravan.phase,'trading');
+ assert.ok(trade(light,'wood','buy',2).ok);
+ const raw=encode(light),copy=decode(raw);assert.ok(copy);assert.equal(encode(copy),raw);
+ assert.equal(copy.trade.deliveries[0].remaining,2);
+ const before={...light.trade.caravan.stock};
+ light.season=2;
+ advanceTradeLogistics(light,.1);
+ assert.deepEqual(light.trade.caravan.stock,before);
+ assert.equal(light.trade.deliveries[0].remaining,2);
+});

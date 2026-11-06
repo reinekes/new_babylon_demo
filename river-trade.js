@@ -1,4 +1,7 @@
+import {riverIsLow} from './irrigation.js';
+import {levelOf} from './definitions.js';
 import {terrain,riverLocal,riverPoint,riverLength,riverFlowSign,signedRiverDistance} from './world.js';
+export const harborCargoMultiplier=(s,harbor)=>riverIsLow(s)?levelOf(harbor):3;
 export const isTradePort=b=>['market','harbor'].includes(b?.type);
 export function isRiverBank(s,x,y){const riverOnly={world:{...s.world,lakes:[]}};return !['water','void'].includes(terrain(x,y,s))&&[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>terrain(x+dx,y+dy,riverOnly)==='water');}
 export function riverRoute(from,to,s){const route=[],direction=to>=from?1:-1;const add=along=>{const p=riverPoint(along,s);route.push({...p,key:`${p.x+.5},${p.y+.5}`});};for(let along=from;direction*(to-along)>.001;along+=direction*.5)add(along);add(to);return route;}
