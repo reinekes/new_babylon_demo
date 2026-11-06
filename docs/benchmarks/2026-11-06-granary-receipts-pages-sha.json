@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T05:05:50.622726+00:00",
+  "commit": "eb204b8f4f4854e55e353da21dd049228217b4a2",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "397d01bd2ac6b0ed236d635e44ff93b12dc3e9332e6afc53d4468b6930ee5e0f",
+      "actual": "397d01bd2ac6b0ed236d635e44ff93b12dc3e9332e6afc53d4468b6930ee5e0f",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "5ba52d2d055b496b05e12019c21bcff4831fe88b7ac274e607fbeb7e7c538ed6",
+      "actual": "5ba52d2d055b496b05e12019c21bcff4831fe88b7ac274e607fbeb7e7c538ed6",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0b8e1df779bcc6d0c1604757927a56c0577e4c6a9ee81ec45d540960cadbc12e",
+      "actual": "0b8e1df779bcc6d0c1604757927a56c0577e4c6a9ee81ec45d540960cadbc12e",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "950da0bf5a16dee96337f9e2850cfe4322f008df144afc7e3e15533f94b76ffa",
+      "actual": "950da0bf5a16dee96337f9e2850cfe4322f008df144afc7e3e15533f94b76ffa",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "57fbdfc4bebc3e1d80aaa559c743d71211373d701f15fcb76c8e439fb28b2833",
+      "actual": "57fbdfc4bebc3e1d80aaa559c743d71211373d701f15fcb76c8e439fb28b2833",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1a69d497e3ce2454c8380a47b646783f7e1bbc6ca47e0a3a2ff234de2a9f22b7",
+      "actual": "1a69d497e3ce2454c8380a47b646783f7e1bbc6ca47e0a3a2ff234de2a9f22b7",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9ef8aa00a2f853df7792ad365f67af4422d1544a6649eb5dbd1364a589bf3007",
+      "actual": "9ef8aa00a2f853df7792ad365f67af4422d1544a6649eb5dbd1364a589bf3007",
+      "match": true
+    },
+    {
+      "path": "scribes.js",
+      "status": 200,
+      "expected": "5cc95f57bdcdac99339d54b002f83c736834796217288716f8cd1d57bf056564",
+      "actual": "5cc95f57bdcdac99339d54b002f83c736834796217288716f8cd1d57bf056564",
+      "match": true
+    },
+    {
+      "path": "tests/scribe-receipts.test.js",
+      "status": 200,
+      "expected": "3739c6bd44e9853cb9bbacb2c74722f6ebfe65944a04bf2c347929230c3c048f",
+      "actual": "3739c6bd44e9853cb9bbacb2c74722f6ebfe65944a04bf2c347929230c3c048f",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "9d328eb94bb3fee653d98af4f4ebe1ee9535d00786b7780a6b87a9259cae2da0",
+      "actual": "9d328eb94bb3fee653d98af4f4ebe1ee9535d00786b7780a6b87a9259cae2da0",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
