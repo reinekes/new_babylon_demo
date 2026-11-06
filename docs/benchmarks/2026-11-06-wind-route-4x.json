@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "startPopulation": 251,
+  "endPopulation": 265,
+  "credited": 60,
+  "targets": 2,
+  "improvedRoute": "road",
+  "warehouseTransferExcluded": 6,
+  "byteEqualReload": true,
+  "samples": 1410,
+  "medianMs": 2.6380420000000413,
+  "p95Ms": 7.814458999999715
+}

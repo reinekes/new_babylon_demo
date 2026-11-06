@@ -1,4 +1,4 @@
-import {WIND_DELIVERY_GOAL,WIND_DESTINATION_GOAL} from './wind-delivery.js';
+import {WIND_DELIVERY_GOAL,WIND_DESTINATION_GOAL,windKnowledgeReason} from './wind-delivery.js';
 import {creatorMaterialsView} from './creator-materials.js';
 import {richCatchMapReason} from './rich-catch.js';
 import {richCatchView} from './fish-provenance.js';
@@ -173,7 +173,7 @@ function windDeliveryHTML(s){
  const q=s.windDelivery;
  if(!q)return '';
  const amount=Number(q.amount.toFixed(2)).toLocaleString('ru-RU');
- return `<section class="management-row" data-wind-delivery><h3>История «Попутный ветер»</h3><p>Принято из мастерских · ${amount} из ${WIND_DELIVERY_GOAL} · Мест назначения · ${q.destinations.length} из ${WIND_DESTINATION_GOAL}.</p><p>Засчитываются первые доставки вдохновлённых носильщиков.</p></section>`;
+ return `<section class="management-row" data-wind-delivery><h3>История «Попутный ветер»</h3><p>Принято из мастерских · ${amount} из ${WIND_DELIVERY_GOAL} · Мест назначения · ${q.destinations.length} из ${WIND_DESTINATION_GOAL}.</p><p>Засчитываются первые доставки вдохновлённых носильщиков.</p><p>${q.path?q.path.kind==='road'?'Доставка по улучшенной дороге подтверждена.':'Доставка по мосту подтверждена.':'Ожидается доставка по улучшенной дороге или готовому мосту.'}</p>${windKnowledgeReason(s)?'':'<p>Чудо открыто · 40 веры.</p>'}</section>`;
 }
 
 function creatorMaterialsHTML(s){

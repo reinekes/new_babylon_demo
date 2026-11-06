@@ -56,7 +56,7 @@ import {childPlay} from './local-motion.js';
 import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
 import {advanceTradeLogistics,loadSaleCargo} from './trading.js';
-import {ensureRoads,roadSpeed,roadTopologyRevision} from './roads.js';
+import {ensureRoads,roadSegment,roadPace,roadTopologyRevision} from './roads.js';
 import {isComplete,materialsReady,finishConstruction,orderedSites,constructionEntities,workRequired} from './construction.js';
 import {BUILDINGS,buildingKey,capacityOf,levelOf,outputMultiplier,storageOf,isOperational,MATERIALS,citizenName} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
@@ -721,11 +721,19 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
   const flooded=ctx.network.navigation.flooded;
   if(flooded&&floodedSegment(flooded,c,next)||ctx.network.navigation.fortifications&&!ctx.network.navigation.fortifications.segmentClear(c,next)){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
   const dist=distance(c,next);
-  let speed=1.05*(s.buffs?.haste?1.5:1)*roadSpeed(s,c,next);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?ctx.buildings.get(c.work)?.type:null);
+  const road=roadSegment(s,c,next);
+  let speed=1.05*(s.buffs?.haste?1.5:1)*roadPace(road);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?ctx.buildings.get(c.work)?.type:null);
   if(onBridge(s.buildings,c.x,c.y,s)){
    const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
   }
   const travel=dist/speed;
+  if(c.phase==='toDistrictStore'&&c.windCargo&&!c.windRoute&&!s.windDelivery.path&&dist>1e-8&&remaining>0){
+   if(road?.level>=2&&!road.floodDamage)c.windRoute='road';
+   else {
+    const mid=Math.min(1,remaining/travel)/2;
+    if(onBridge(s.buildings,c.x+(next.x-c.x)*mid,c.y+(next.y-c.y)*mid,s))c.windRoute='bridge';
+   }
+  }
   if(travel<=remaining+1e-8){c.x=next.x;c.y=next.y;c.routeIndex++;remaining-=travel;}
   else{const fraction=remaining/travel;c.x+=(next.x-c.x)*fraction;c.y+=(next.y-c.y)*fraction;return;}
  }
@@ -822,7 +830,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  if(c.clothingLoad)restore('clothing',c.clothingLoad);
  if(c.seedFood)restore('food',c.seedFood);
  if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
- delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;delete c.creatorCargo;delete c.windCargo;
+ delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;delete c.creatorCargo;delete c.windCargo;delete c.windRoute;
  delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;
