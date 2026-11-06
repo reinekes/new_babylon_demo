@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-06T11:17:10.862661+00:00",
+  "commit": "ea75dde40f7308d17d79bd48702bbc1572f96ece",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6f8ac014933f5db6986872d6f64dcbbe9e9a55313abf3d4f8d1f8f3c6b53cb65",
+      "actual": "6f8ac014933f5db6986872d6f64dcbbe9e9a55313abf3d4f8d1f8f3c6b53cb65",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "00a8fd94d3f063a68fa18a41be5c328368563ecee85fc7b262ac0e79219f18f5",
+      "actual": "00a8fd94d3f063a68fa18a41be5c328368563ecee85fc7b262ac0e79219f18f5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3fc3f040738619a5c15ee40c4891f42fc20090d5ea142a432e56235d41c92535",
+      "actual": "3fc3f040738619a5c15ee40c4891f42fc20090d5ea142a432e56235d41c92535",
+      "match": true
+    },
+    {
+      "path": "rich-catch.js",
+      "status": 200,
+      "expected": "36cbac26a1ea4b2f899bd568f73289f50a86c8f74a8a054185c496030bbcc922",
+      "actual": "36cbac26a1ea4b2f899bd568f73289f50a86c8f74a8a054185c496030bbcc922",
+      "match": true
+    },
+    {
+      "path": "tests/rich-catch.test.js",
+      "status": 200,
+      "expected": "272610b0f7d6ec9db5ad8891b519900e7e7d03bbf2e900c2b960547a0df06456",
+      "actual": "272610b0f7d6ec9db5ad8891b519900e7e7d03bbf2e900c2b960547a0df06456",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "c348ed680dfa5bc3efefcb7bbb2173483303ca1a9ae0959a17b6004d278ccc5b",
+      "actual": "c348ed680dfa5bc3efefcb7bbb2173483303ca1a9ae0959a17b6004d278ccc5b",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
