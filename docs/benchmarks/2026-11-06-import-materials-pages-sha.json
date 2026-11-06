@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-06T07:58:37.729297+00:00",
+  "commit": "b62101f2b6a04b87e00018b728a13a090745ae0b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c7d8cd8e015c762554b6d0be9e5af580505f36a0232f542231e0f3def002a5e7",
+      "actual": "c7d8cd8e015c762554b6d0be9e5af580505f36a0232f542231e0f3def002a5e7",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "5df46eeb6b01a5943e687a659078a7d463a51049135a9398d224352c8a3388c2",
+      "actual": "5df46eeb6b01a5943e687a659078a7d463a51049135a9398d224352c8a3388c2",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "f9617441ff0f602a000bff5caec44e3b08f2a6f56f8638c51f3399fafe43e2b2",
+      "actual": "f9617441ff0f602a000bff5caec44e3b08f2a6f56f8638c51f3399fafe43e2b2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "cfb062f9067d1bcbcf82b6b2e6ee024c0824d3b6dcce3d9e496bd48e31289439",
+      "actual": "cfb062f9067d1bcbcf82b6b2e6ee024c0824d3b6dcce3d9e496bd48e31289439",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "4af341780684053a557b367d3d83a147eaa1ccc7f78a083db6bc38280c0bd5ab",
+      "actual": "4af341780684053a557b367d3d83a147eaa1ccc7f78a083db6bc38280c0bd5ab",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c8aaefc4f74706699fec98b03a1b27020cf96ebb0585805f5c8693cef00523ff",
+      "actual": "c8aaefc4f74706699fec98b03a1b27020cf96ebb0585805f5c8693cef00523ff",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "512de6cd9432258787fc3b81f1d70be3e7e17f0790d7a26b922821428bab3937",
+      "actual": "512de6cd9432258787fc3b81f1d70be3e7e17f0790d7a26b922821428bab3937",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9f4bd2af4676a1d9c5e54b6c98c64620578aa4559a5ca5bd2025c0c9cd5e6b7d",
+      "actual": "9f4bd2af4676a1d9c5e54b6c98c64620578aa4559a5ca5bd2025c0c9cd5e6b7d",
+      "match": true
+    },
+    {
+      "path": "tests/new-game-profile.test.js",
+      "status": 200,
+      "expected": "86d2dd8a604951882564bffe14a31df0ede0814a79e3f48187a9ab41b3240dfe",
+      "actual": "86d2dd8a604951882564bffe14a31df0ede0814a79e3f48187a9ab41b3240dfe",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
