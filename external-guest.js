@@ -1,3 +1,4 @@
+import {recordArrivalHospitality} from './arrival-hospitality.js';
 import {isVotiveTemple,receiveForeignVotive} from './votive-offerings.js';
 import {stockStores} from './inventory.js';
 import {buildingKey,isOperational} from './definitions.js';
@@ -90,6 +91,7 @@ export function advanceExternalGuest(s,dt,network){
  if(g.phase==='returning'){
   if(walkGuest(s,g,network,portAt(network,g.market),dt)){
    g.phase='departed';g.route=[];g.routeIndex=0;
+   recordArrivalHospitality(s,'artisan',g);
    const title=g.outcome==='taught'?'Приглашённый мастер передал навык':'Визит мастера прерван';
    s.news.unshift({title,text:`${g.name} покинул город. ${g.outcome==='taught'?'Практика осталась у ученика.':'Занятие не состоялось.'}`,
     kind:'trade',year:s.year,season:s.season,tick:s.tick});
@@ -225,6 +227,7 @@ function advanceVisitor(s,kind,g,dt,network){
  }
  if(!walkGuest(s,g,network,portAt(network,g.market),dt))return;
  g.phase='departed';g.route=[];g.routeIndex=0;
+ recordArrivalHospitality(s,kind,g);
  if(g.outcome==='interrupted')visitorNews(s,'Гостевой визит прерван',`${g.name} вернулся к купцам. Припасы возвращены.`);
  else if(kind==='envoy')visitorNews(s,'Посланник увёз ответный дар',`${g.name} увёз одну ткань для партнёра «${g.partner}».`);
 }

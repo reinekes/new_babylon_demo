@@ -1,13 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode} from '../engine.js';
-import {strictScenario} from '../scenario-profiles.js';
+import {newArrivalHospitality,arrivalHospitalityView} from '../arrival-hospitality.js';
+import {CAT_DISCOVERY_RULES,strictScenario} from '../scenario-profiles.js';
 import {advanceTrade} from '../trading.js';
 import {inviteExternalMaster,advanceExternalGuest,externalGuestView} from '../external-guest.js';
 import {networkFor} from '../workforce.js';
 
-function fixture(){
- const s=createGame({start:'established',scenario:strictScenario()});
+function fixture({arrival=false}={}){
+ const s=createGame({start:'established',scenario:{...strictScenario(),...arrival?{miracles:CAT_DISCOVERY_RULES}:{}},...arrival?{mode:'awakening'}:{}});
+ if(arrival)s.arrivalHospitality=newArrivalHospitality();
  s.buildings.push({type:'market',x:10,y:9,level:1});
  s.tick=1;s.year=1;s.season=1;s.simTime=45;advanceTrade(s);
  Object.assign(s.trade.caravan,{phase:'trading',market:'10,9'});
@@ -73,7 +75,7 @@ test('pilgrim and envoy carry distinct gifts, retain identity on reload and reco
  const {inviteVisitor,visitorsView}=await import('../external-guest.js');
  const {putStock}=await import('../inventory.js');
  const {templeOfferings}=await import('../votive-offerings.js');
- let {s}=fixture();
+ let {s}=fixture({arrival:true});
  assert.equal(putStock(s,'9,8','cloth',1),1);
  const food=s.resources.food;
  assert.ok(inviteVisitor(s,'pilgrim').ok);
@@ -87,6 +89,8 @@ test('pilgrim and envoy carry distinct gifts, retain identity on reload and reco
   advanceTime(s,.25);carried||=visitorsView(s).some(p=>p.id===envoy.id&&p.cargo.cloth===1);
  }
  assert.equal(carried,true);
+ assert.equal(arrivalHospitalityView(s).qualified,true);
+ assert.deepEqual(s.arrivalHospitality.receipts.map(r=>r.kind).sort(),['envoy','pilgrim']);
  assert.equal(s.externalVisits.envoy.phase,'departed');assert.equal(s.externalVisits.pilgrim.phase,'departed');
  assert.equal(s.resources.pottery,0);
  assert.equal(templeOfferings(s,'9,8')[0].id,s.externalVisits.pilgrim.offeringId);
@@ -95,4 +99,16 @@ test('pilgrim and envoy carry distinct gifts, retain identity on reload and reco
  assert.equal(s.news.filter(n=>n.title==='Паломник посвятил сосуд').length,1);
  assert.ok(decode(encode(s)));
  assert.equal(inviteVisitor(s,'pilgrim').ok,false);
+});
+
+test('a fed master counts for future arrivals only after walking back to the market',()=>{
+ const {s}=fixture({arrival:true});
+ assert.ok(inviteExternalMaster(s).ok);
+ step(s,350,()=>s.externalGuest.phase==='returning');
+ assert.equal(s.externalGuest.outcome,'taught');
+ assert.equal(arrivalHospitalityView(s).visits,0);
+ step(s,350,()=>s.externalGuest.phase==='departed');
+ assert.equal(arrivalHospitalityView(s).visits,1);
+ assert.equal(s.arrivalHospitality.receipts[0].kind,'artisan');
+ const raw=encode(s);assert.equal(encode(decode(raw)),raw);
 });

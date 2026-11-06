@@ -1,3 +1,4 @@
+import {newArrivalHospitality} from './arrival-hospitality.js';
 import {newShapingProjects} from './shaping-projects.js';
 import {newRevelationEvidence} from './revelation-evidence.js';
 import {newAbundanceDiscovery} from './abundance-discovery.js';
@@ -22,6 +23,7 @@ export function createNewCity({mode,seed}={}){
  if(mode==='awakening'){
   state.rainDiscovery=newRainDiscovery();
   state.blessingDiscovery=newBlessingDiscovery();
+  state.arrivalHospitality=newArrivalHospitality();
   state.peaceDiscovery=newPeaceDiscovery();
   state.earthDiscovery=newEarthDiscovery();
   state.richCatchEvidence=newRichCatchEvidence();

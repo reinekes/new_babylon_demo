@@ -1,3 +1,4 @@
+import {validateArrivalHospitality} from './arrival-hospitality.js';
 import {connectedStores} from './district-logistics.js';
 import {createShapingBatch,validateShapingBatches} from './shaping-batch.js';
 import {validateShapingModel} from './shaping-model.js';
@@ -524,7 +525,7 @@ export function decode(raw){
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
   if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
-  initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
+  initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}
 }
