@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-06T19:52:29.885240+00:00",
+  "commit": "5ee0677216bd3f4c6b1343bb8fba740d680c690d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3b4fccfdec37e3db86ae619d2b4708834541cfabd54dcc467075aba9f3a7629b",
+      "actual": "3b4fccfdec37e3db86ae619d2b4708834541cfabd54dcc467075aba9f3a7629b",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "3c95c17dd92f408f8dd01746befde8a4417fcfe53d08741633b33ec54d16588c",
+      "actual": "3c95c17dd92f408f8dd01746befde8a4417fcfe53d08741633b33ec54d16588c",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "941646e51d8a1224e356f9c65937c944afcbe7204e1f81955551ece60cac8fb5",
+      "actual": "941646e51d8a1224e356f9c65937c944afcbe7204e1f81955551ece60cac8fb5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-revelation-apprentices-4x.json",
+      "status": 200,
+      "expected": "d6891490bf20730c22f929ae96cbded0a42dee33cdeff5b4a4c777e4a2231299",
+      "actual": "d6891490bf20730c22f929ae96cbded0a42dee33cdeff5b4a4c777e4a2231299",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "96038227d504e337cd6f850887611e3e27d2f69950869bbb18bdc41b8649e26d",
+      "actual": "96038227d504e337cd6f850887611e3e27d2f69950869bbb18bdc41b8649e26d",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "058c0d55a9f900f17edc4e4133e3dbb0dbc79254db8f8388c339e56749c65e1b",
+      "actual": "058c0d55a9f900f17edc4e4133e3dbb0dbc79254db8f8388c339e56749c65e1b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d6631c7bbe9c1238170691e9db2497b758e748a44e38bab067511110676d7650",
+      "actual": "d6631c7bbe9c1238170691e9db2497b758e748a44e38bab067511110676d7650",
+      "match": true
+    },
+    {
+      "path": "revelation-evidence.js",
+      "status": 200,
+      "expected": "efb9857b67bf6944dc9a91e509317ee40c9169a07ea07e55a81957449cfca7fd",
+      "actual": "efb9857b67bf6944dc9a91e509317ee40c9169a07ea07e55a81957449cfca7fd",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "6fa1413b411aa48c904c02d65709541f667bc801e984fa397f65676507621623",
+      "actual": "6fa1413b411aa48c904c02d65709541f667bc801e984fa397f65676507621623",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "3616037995107bc1188b647788c0ba4e5162bc252224277a6fd0b7d9a487c62a",
+      "actual": "3616037995107bc1188b647788c0ba4e5162bc252224277a6fd0b7d9a487c62a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4bfaf227c6852fc9ea599390a08316dd5da691553f7452b795938ec438a5e1c2",
+      "actual": "4bfaf227c6852fc9ea599390a08316dd5da691553f7452b795938ec438a5e1c2",
+      "match": true
+    },
+    {
+      "path": "tests/revelation-apprentices.test.js",
+      "status": 200,
+      "expected": "d61cf528742489a483226ac5ea523f37112404473f1aa35663f05eaf6695f2f2",
+      "actual": "d61cf528742489a483226ac5ea523f37112404473f1aa35663f05eaf6695f2f2",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "62007208213f50f11246edbc8308cc5772ab7c1fcf60f832644d544563b39d0b",
+      "actual": "62007208213f50f11246edbc8308cc5772ab7c1fcf60f832644d544563b39d0b",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "ed26156970388cf79701a7007e59bd2f412054eff6d13db7906a61e9298c46f5",
+      "actual": "ed26156970388cf79701a7007e59bd2f412054eff6d13db7906a61e9298c46f5",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
