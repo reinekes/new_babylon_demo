@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T05:18:15.210548+00:00",
+  "commit": "7c678ec2af7ab79bb8c2ae05387b596692078433",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4ff927a906cc28278e1a25a66d4f21d36e7f3a42dfec54293190362c9957b63b",
+      "actual": "4ff927a906cc28278e1a25a66d4f21d36e7f3a42dfec54293190362c9957b63b",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "926d1959fab5ea87c074807d1eed1f4a29a3d8d2830caca86ccf7afc10831165",
+      "actual": "926d1959fab5ea87c074807d1eed1f4a29a3d8d2830caca86ccf7afc10831165",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "6bdb4a03f4268e3820dbcb6f36a857f887de4e54ec273dbd66211765ca49dfde",
+      "actual": "6bdb4a03f4268e3820dbcb6f36a857f887de4e54ec273dbd66211765ca49dfde",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "dfd67d2d7b1b1464920d04b7147433095091bad87c639fc32cef5d1e8b36b967",
+      "actual": "dfd67d2d7b1b1464920d04b7147433095091bad87c639fc32cef5d1e8b36b967",
+      "match": true
+    },
+    {
+      "path": "household-games.js",
+      "status": 200,
+      "expected": "e212a0695ab1c9f374d8ed9bdd0d35ad7479c51336b0e654da8ffeb78e6c108a",
+      "actual": "e212a0695ab1c9f374d8ed9bdd0d35ad7479c51336b0e654da8ffeb78e6c108a",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d18cc8d098e1ff87584ea08161f68c4c30c997b02b42bc1d662c5e3f7e9659bb",
+      "actual": "d18cc8d098e1ff87584ea08161f68c4c30c997b02b42bc1d662c5e3f7e9659bb",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "063fd0336b10cec26d22c9a617174efaf9c9cb0b572d3450e03e82a6fd125f1e",
+      "actual": "063fd0336b10cec26d22c9a617174efaf9c9cb0b572d3450e03e82a6fd125f1e",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "5a3324526c9400563dd07447613e2a9fac9be383fbc8ec97363a16332caad291",
+      "actual": "5a3324526c9400563dd07447613e2a9fac9be383fbc8ec97363a16332caad291",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "16f5b59e4763ece6363783d56b56a2c52ecdecc75270e2ed3f9237ae4800aae5",
+      "actual": "16f5b59e4763ece6363783d56b56a2c52ecdecc75270e2ed3f9237ae4800aae5",
+      "match": true
+    },
+    {
+      "path": "tests/household-games.test.js",
+      "status": 200,
+      "expected": "c429d68b08893ff23681303775c8d9485c12f7de2b7e954582ddcb3e54bd76a5",
+      "actual": "c429d68b08893ff23681303775c8d9485c12f7de2b7e954582ddcb3e54bd76a5",
+      "match": true
+    },
+    {
+      "path": "wellbeing.js",
+      "status": 200,
+      "expected": "839ae43d16aad66a19c8839e018421b4f9e7a88373cf40cdad21f367f6e90b68",
+      "actual": "839ae43d16aad66a19c8839e018421b4f9e7a88373cf40cdad21f367f6e90b68",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
