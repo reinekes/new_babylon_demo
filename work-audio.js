@@ -63,7 +63,7 @@ export function createWorkAudio(createContext=()=>{
  const Context=globalThis.AudioContext||globalThis.webkitAudioContext;
  return Context?new Context():null;
 }){
- let context=null,active=null,rainVoices=[];
+ let context=null,active=null,rainVoices=[],earthVoice=null,earthNotes=[];
  const buffers=new Map();
  const heard=new WeakSet();
  function release(voice){voice.node.disconnect();voice.gain.disconnect();}
@@ -108,6 +108,28 @@ export function createWorkAudio(createContext=()=>{
   try{rainVoices=playStoneNote(context,phase==='drop'?660:245,phase==='drop'?.075:.043);}catch{return;}
   return stopRain;
  }
- function dispose(){silence();stopRain();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
- return {enable,tick,silence,cueRain,stopRain,dispose};
+ function stopEarth(){
+  for(const osc of earthNotes){try{osc.stop();}catch{}}
+  earthNotes=[];
+  if(!earthVoice)return;
+  const voice=earthVoice;earthVoice=null;voice.node.onended=null;
+  try{voice.node.stop();}catch{}
+  release(voice);
+ }
+ function cueEarth(phase){
+  if(!context||context.state!=='running')return;
+  stopEarth();
+  try{
+   if(phase==='sheaf'||phase==='furrows'||phase==='breath'){
+    if(!buffers.has('reeds'))buffers.set('reeds',workBuffer(context,'reeds'));
+    const node=context.createBufferSource(),gain=context.createGain(),voice={node,gain};
+    node.buffer=buffers.get('reeds');node.playbackRate.value=phase==='breath'?.62:.94;gain.gain.value=.10;
+    node.connect(gain);gain.connect(context.destination);earthVoice=voice;
+    node.onended=()=>{if(earthVoice===voice)earthVoice=null;release(voice);};node.start();
+   }else earthNotes=playStoneNote(context,phase==='bow'?220:330,.045);
+  }catch{stopEarth();}
+  return stopEarth;
+ }
+ function dispose(){silence();stopRain();stopEarth();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
+ return {enable,tick,silence,cueRain,stopRain,cueEarth,stopEarth,dispose};
 }

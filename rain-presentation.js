@@ -104,6 +104,7 @@ export function createRainPresentation(root,{focus,cue}={}){
    seen=state.irrigatedHarvest??null;
    start('cast',state,target,now);paint(state,now);
   },
+  get active(){return !!active;},
   get reaction(){return reaction;},
   skip
  };

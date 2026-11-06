@@ -1,0 +1,30 @@
+.earth-scene[hidden]{display:none}
+.earth-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.earth-scene-card{position:absolute;bottom:clamp(3.5rem,11vh,7rem);left:50%;transform:translateX(-50%);width:min(38rem,calc(100% - 2rem));box-sizing:border-box;display:flex;align-items:center;gap:clamp(.4rem,2vw,1rem);padding:.75rem 1rem;color:#faecd0;background:linear-gradient(115deg,#35291f,#21291f);border:1px solid #aa8b59;border-radius:.5rem;box-shadow:0 8px 30px #110e0ba0}
+.earth-scene-card h2{font-size:clamp(1rem,2.5vw,1.4rem);margin:0 0 .25rem;color:inherit}
+.earth-scene-card p{font-size:.88rem;margin:0;color:inherit}
+.earth-scene-step{display:block;margin-bottom:.25rem;color:#dcc192;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em}
+.earth-scene-card button{pointer-events:auto;margin-left:auto;color:#faecd0;background:#34352a;border:1px solid #b49a6e;padding:.45rem .65rem;border-radius:.25rem}
+.earth-scene-card svg{width:clamp(3rem,15vw,7.5rem);flex:none;overflow:visible;stroke-linecap:round;stroke-linejoin:round}
+.earth-scene-soil{fill:none;stroke:#c09967;stroke-width:2}
+.earth-scene-ear,.earth-scene-sheaf{fill:none;stroke:#e7c380;stroke-width:2}
+.earth-scene-ear{transform-origin:55% 86%;transform-box:view-box}
+.earth-scene-sheaf,.earth-scene-seeds,.earth-scene-leaves{opacity:0}
+.earth-scene-seeds{fill:#ecd498}
+.earth-scene-leaves{fill:#89ab7480;stroke:#c6dfa1;stroke-width:1.5}
+.earth-scene[data-phase="sheaf"] .earth-scene-sheaf{opacity:1}
+.earth-scene[data-phase="bow"] .earth-scene-ear{animation:earth-ear 5s ease both}
+.earth-scene[data-phase="bow"] .earth-scene-seeds{animation:earth-seeds 2s 3.5s ease-in both}
+.earth-scene[data-phase="garden"] .earth-scene-ear,.earth-scene[data-kind="cast"] .earth-scene-ear{opacity:.25}
+.earth-scene[data-phase="garden"] .earth-scene-leaves,.earth-scene[data-phase="furrows"] .earth-scene-leaves,.earth-scene[data-phase="leaves"] .earth-scene-leaves{opacity:1;animation:earth-leaves 3s ease-out both;transform-origin:50% 86%;transform-box:view-box}
+.earth-scene-light{position:absolute;inset:0;background:radial-gradient(ellipse at 53% 54%,#c6d99d42,transparent 48%);opacity:0;transform-origin:53% 54%}
+.earth-scene[data-phase="breath"] .earth-scene-light{animation:earth-breath 3s ease-in-out both}
+.earth-scene[data-phase="furrows"] .earth-scene-light{opacity:1;background:repeating-linear-gradient(156deg,transparent 0 32px,#d8dea126 37px,transparent 43px 70px);mask-image:radial-gradient(ellipse at 53% 54%,#000,transparent 68%);animation:earth-furrows 5s ease-out both}
+.earth-scene[data-phase="leaves"] .earth-scene-light{opacity:.6}
+@keyframes earth-ear{0%{transform:rotate(0)}60%,100%{transform:rotate(27deg)}}
+@keyframes earth-seeds{0%{opacity:0;transform:translateY(0)}20%{opacity:1}85%,100%{opacity:0;transform:translateY(31px)}}
+@keyframes earth-leaves{0%{opacity:0;transform:scale(.55)}100%{opacity:1;transform:scale(1)}}
+@keyframes earth-breath{0%,100%{opacity:0;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes earth-furrows{0%{transform:translateX(-14%);opacity:0}30%{opacity:1}100%{transform:translateX(8%);opacity:.5}}
+@media(prefers-reduced-motion:reduce){.earth-scene *{animation:none!important}.earth-scene[data-phase="bow"] .earth-scene-ear{transform:rotate(22deg)}.earth-scene[data-phase="breath"] .earth-scene-light{opacity:.7}}
+@media(max-width:420px){.earth-scene-card{padding:.65rem}.earth-scene-card svg{width:2.6rem}.earth-scene-card button{padding:.3rem;font-size:.75rem}}
