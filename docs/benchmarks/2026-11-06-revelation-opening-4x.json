@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 289,
+  "controlledEvidence": [
+    "building",
+    "food"
+  ],
+  "keeperId": 0,
+  "byteEqualReload": true,
+  "byteEqualOutsideEvidence": true,
+  "samples": 160,
+  "medianCpuMs": 3.988792000000103,
+  "p95CpuMs": 12.152917000000116
+}

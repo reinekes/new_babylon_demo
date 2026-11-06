@@ -1,4 +1,4 @@
-import {recordRevelationFact} from './revelation-evidence.js';
+import {advanceRevelationEvidence,recordRevelationFact,revelationKnowledgeReason} from './revelation-evidence.js';
 import {sunlightKnowledgeReason} from './sunlight-gathering.js';
 import {abundanceKnowledgeReason} from './abundance-discovery.js';
 import {windKnowledgeReason} from './wind-delivery.js';
@@ -73,6 +73,7 @@ export function buildingKnowledgeReason(s,type,level=1){
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){
+ if(id==='revelation'&&s.revelationEvidence)return revelationKnowledgeReason(s);
  if(id==='sunlight'&&s.sunlightChapter)return sunlightKnowledgeReason(s);
  if(id==='abundance'&&s.abundanceDiscovery)return abundanceKnowledgeReason(s);
  if(id==='haste'&&s.windDelivery)return windKnowledgeReason(s);
@@ -191,6 +192,7 @@ export function advanceGodhood(s,dt){
    !s.citizens.some(c=>c.id===help.recipientId&&c.home===help.home&&!c.floodShelter))cancelFirstWaterHelp(s,help.helperId);
   return;
  }
+ if(g.stage==='recognized'){advanceRevelationEvidence(s);return;}
  if(g.stage!=='sign')return;
  const c=s.citizens.find(c=>c.id===g.witnessId);
  if(!c||c.phase!=='awakening'||s.funeral||cargo(c)||!signPathValid(s,c,g)){loseSign(s,c);return;}

@@ -176,7 +176,7 @@ function revelationEvidenceHTML(s){
  const view=revelationEvidenceView(s);
  if(!view)return '';
  const labels={family:'Помощь семье',building:'Завершённая стройка',food:'Урожай или улов'};
- return `<section class="management-row" data-revelation-evidence><h3>Свидетельства для «Откровения» · ${view.count} из 3</h3><ul>${view.entries.map(({kind,recorded})=>`<li>${labels[kind]} · ${recorded?'есть свидетельство':'ожидается'}</li>`).join('')}</ul></section>`;
+ return `<section class="management-row" data-revelation-evidence><h3>Свидетельства для «Откровения» · ${view.count} из 3</h3><ul>${view.entries.map(({kind,recorded})=>`<li>${labels[kind]} · ${recorded?'есть свидетельство':'ожидается'}</li>`).join('')}</ul>${view.opening?'<p>Хранитель связал рассказы. Дар открыт.</p>':view.count===3?'<p>Три истории собраны. Ожидается взрослый хранитель рассказов.</p>':''}</section>`;
 }
 
 function sunlightDedicationsHTML(s){

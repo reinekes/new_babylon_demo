@@ -52,3 +52,28 @@ test('incomplete work and unmet requests do not count, confirmed work does',asyn
  recordFieldGrain(s,field,c,4,0);
  assert.equal(revelationEvidenceView(s).count,3);
 });
+
+test('a living adult keeper opens the gift once and the record survives their death',async()=>{
+ const {advanceRevelationEvidence,revelationKnowledgeReason}=await import('../revelation-evidence.js');
+ const {miracle}=await import('../engine.js');
+ const {advanceGodhood}=await import('../godhood.js');
+ const s=createNewCity({mode:'awakening',seed:1}),c=s.citizens.find(c=>c.age>=16),home=s.buildings.find(b=>b.type==='house');
+ s.resources.faith=100;
+ for(const kind of ['family','building','food'])recordRevelationFact(s,kind,c,home);
+ assert.match(miracle(s,'revelation').reason,/хранител/);
+ advanceRevelationEvidence(s);
+ assert.equal(s.revelationEvidence.opening,undefined);
+ Object.assign(s.godhood,{stage:'recognized',witnessId:c.id,believerIds:[c.id],recognitionAt:0});
+ advanceGodhood(s,.1);
+ const opened=s.revelationEvidence.opening;
+ assert.deepEqual(opened,{citizenId:c.id,time:0});
+ assert.equal(revelationKnowledgeReason(s),'');
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const corrupt=JSON.parse(raw);corrupt.revelationEvidence.opening.time=1;
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+ s.citizens=s.citizens.filter(p=>p.id!==c.id);
+ advanceRevelationEvidence(s);
+ assert.equal(s.revelationEvidence.opening,opened);
+ assert.equal(revelationKnowledgeReason(s),'');
+});
