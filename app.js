@@ -1,3 +1,4 @@
+import {createRainPresentation} from './rain-presentation.js';
 import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative,setAutonomousHousing} from './household-initiative.js';
@@ -137,6 +138,10 @@ document.addEventListener('click',event=>{if(seasonJumping){event.preventDefault
 document.addEventListener('keydown',event=>{if(seasonJumping){event.preventDefault();event.stopImmediatePropagation();}},true);
 let photoWasPaused=true;
 const cityAudio=createCityAudio(text=>toast(text));
+const rainPresentation=createRainPresentation($('city').parentNode,{
+ focus:point=>renderer.focusOn(point.x,point.y),cue:phase=>cityAudio.cueRain?.(phase)
+});
+rainPresentation.reset(state);
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
@@ -765,7 +770,7 @@ function makeMiracleCard(id,m){
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
  const el=details.querySelector('.miracle-cast');
- el.onclick=()=>{const result=miracle(state,id,lastMiracleTarget);if(result.ok){details.open=false;renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
+ el.onclick=()=>{const result=miracle(state,id,lastMiracleTarget);if(result.ok){details.open=false;if(id==='rain')rainPresentation.cast(state,lastMiracleTarget,performance.now());else renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
 }
 for(const [id,m]of Object.entries(MIRACLES))if(shouldShowMiracle(state,id))makeMiracleCard(id,m);
 function update(){
@@ -831,6 +836,7 @@ function pantheon(){
  openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p><div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
 }
 function resetCityPresentation(){
+ rainPresentation.reset(state);
  waterProjectDraft=null;lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
 }
 async function archiveCurrentCity(){
@@ -908,7 +914,7 @@ function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event;
  if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick;advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
- syncCeremonySpeed();ceremonyPresentation();if(!seasonJumping&&now-lastUI>350){update();lastUI=now;}
+ syncCeremonySpeed();ceremonyPresentation();rainPresentation.tick(state,now,!presentationPaused&&!ceremonyActive(state));if(!seasonJumping&&now-lastUI>350){update();lastUI=now;}
  renderer.inspected=inspected;renderer.focusCitizenId=inspectedPerson;cityAudio.tick(state,presentationPaused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
 }
 urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});

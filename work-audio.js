@@ -1,3 +1,4 @@
+import {playStoneNote} from './music-audio.js';
 import {buildingKey,isOperational} from './definitions.js';
 
 const sounds={
@@ -62,7 +63,7 @@ export function createWorkAudio(createContext=()=>{
  const Context=globalThis.AudioContext||globalThis.webkitAudioContext;
  return Context?new Context():null;
 }){
- let context=null,active=null;
+ let context=null,active=null,rainVoices=[];
  const buffers=new Map();
  const heard=new WeakSet();
  function release(voice){voice.node.disconnect();voice.gain.disconnect();}
@@ -97,6 +98,16 @@ export function createWorkAudio(createContext=()=>{
    if(source.kind==='water')heard.add(source.token);
   }catch{silence();}
  }
- function dispose(){silence();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
- return {enable,tick,silence,dispose};
+ function stopRain(){
+  for(const osc of rainVoices){try{osc.stop();}catch{}}
+  rainVoices=[];
+ }
+ function cueRain(phase){
+  if(!context||context.state!=='running')return;
+  stopRain();
+  try{rainVoices=playStoneNote(context,phase==='drop'?660:245,phase==='drop'?.075:.043);}catch{return;}
+  return stopRain;
+ }
+ function dispose(){silence();stopRain();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
+ return {enable,tick,silence,cueRain,stopRain,dispose};
 }

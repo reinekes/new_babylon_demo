@@ -39,3 +39,19 @@ test('reeds, an occupied forming workshop and an unloading caravan share one nea
  assert.equal(workSoundSource(s,{x:5,y:5}).kind,'reeds');
  assert.equal(workSoundSource(s,{x:30,y:30}),null);
 });
+
+test('rain cue uses the opted-in sound context and can stop its bounded motif',()=>{
+ const oscillators=[],context={
+  state:'running',currentTime:1,destination:{},resume(){},
+  createOscillator(){const voice={frequency:{},connect(){},start(){},stop(){this.stops=(this.stops||0)+1;}};oscillators.push(voice);return voice;},
+  createGain(){return {connect(){},gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}}};}
+ };
+ const audio=createWorkAudio(()=>context);
+ assert.equal(audio.cueRain('drop'),undefined);
+ assert.equal(oscillators.length,0);
+ audio.enable();
+ const stop=audio.cueRain('drop');
+ assert.equal(oscillators.length,3);
+ stop();
+ assert.ok(oscillators.every(voice=>voice.stops===2));
+});

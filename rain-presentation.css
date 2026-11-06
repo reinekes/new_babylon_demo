@@ -1,0 +1,23 @@
+.rain-scene[hidden]{display:none}
+.rain-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.rain-scene-cloud,.rain-scene-fall{position:absolute;inset:0;opacity:0;transition:opacity 1.8s}
+.rain-scene-cloud{background:linear-gradient(110deg,transparent 12%,#12202a99 48%,transparent 88%);animation:rain-cloud 6s ease-in-out both paused}
+.rain-scene[data-phase="shadow"] .rain-scene-cloud,.rain-scene[data-phase="rain"] .rain-scene-cloud{opacity:1;animation-play-state:running}
+.rain-scene-fall{background:repeating-linear-gradient(109deg,transparent 0 13px,#d1eced58 14px,transparent 15px 32px);background-size:160px 160px;mask-image:linear-gradient(90deg,transparent 15%,#000 48%,transparent 86%);animation:rain-sheet .65s linear infinite paused}
+.rain-scene[data-phase="rain"] .rain-scene-fall{opacity:.8;animation-play-state:running}
+.rain-scene-card{position:absolute;bottom:clamp(3.5rem,11vh,7rem);left:50%;transform:translateX(-50%);width:min(34rem,calc(100% - 2rem));box-sizing:border-box;display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;color:#fbedd1;background:linear-gradient(125deg,#292521,#17262b);border:1px solid #ba9d68;border-radius:.5rem;box-shadow:0 8px 30px #110e0ba0}
+.rain-scene-card h2{font-size:1.25rem;margin:0 0 .25rem;color:inherit}
+.rain-scene-card p{font-size:.88rem;margin:0;color:inherit}
+.rain-scene-card button{pointer-events:auto;margin-left:auto;color:#fbedd1;background:#282f2e;border:1px solid #bca57d;padding:.45rem .65rem;border-radius:.25rem;white-space:nowrap}
+.rain-scene-card svg{width:clamp(3rem,15vw,7rem);flex-shrink:0}
+.rain-scene[data-kind="cast"] svg{display:none}
+.rain-scene-stalks{fill:none;stroke:#c9a965;stroke-width:2.5;stroke-linecap:round}
+.rain-scene-drop,.rain-scene-ring{opacity:0}
+.rain-scene[data-phase="drop"] .rain-scene-drop{animation:rain-drop .22s ease-in both}
+.rain-scene[data-phase="drop"] .rain-scene-ring{animation:rain-ring 2s .2s ease-out both}
+@keyframes rain-drop{0%{opacity:1;transform:translateY(-36px)}85%{opacity:1}100%{opacity:0;transform:translateY(0)}}
+@keyframes rain-ring{0%,100%{opacity:0}25%{opacity:1}}
+@keyframes rain-cloud{from{transform:translateX(38%)}to{transform:translateX(-24%)}}
+@keyframes rain-sheet{to{background-position:-160px 160px}}
+@media(prefers-reduced-motion:reduce){.rain-scene *{animation:none!important;transition:none!important}.rain-scene[data-phase="drop"] .rain-scene-ring{opacity:1}}
+.rain-scene[data-phase="rain"]{background:radial-gradient(ellipse at 50% 68%,#21353534,transparent 45%)}
