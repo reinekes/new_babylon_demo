@@ -1,6 +1,6 @@
 import {isStrictSumer} from './scenario-profiles.js';
 import {citizenName,BUILDINGS,buildingKey,isOperational} from './definitions.js';
-import {mealRation,workRate} from './wellbeing.js';
+import {mealCycle,mealRation,workRate} from './wellbeing.js';
 import {displayName,syncCitizenEpithets} from './citizen-epithets.js';
 import {PROFESSION_NAMES,professionRole} from './professions.js';
 
@@ -15,10 +15,30 @@ const identity=(c,s)=>({id:c.id,name:citizenName(c.id),age:c.age??null,sex:c.sex
 export function personalMemory(s,id){
  const help=s.godhood?.firstWaterHelp;
  if(!help||!Number.isFinite(help.deliveredAt))return null;
- const role=id===help.helperId?'helper':id===help.recipientId?'recipient':null;
- if(!role)return null;
  const {helperId,recipientId,home,amount,deliveredAt}=help;
- return {fact:{cause:'neighbor-water',helperId,recipientId,home,amount,deliveredAt},role,interpretation:help.interpretations?.[role]??null};
+ const fact={cause:'neighbor-water',helperId,recipientId,home,amount,deliveredAt};
+ const role=id===helperId?'helper':id===recipientId?'recipient':null;
+ if(role)return {fact,role,interpretation:help.interpretations?.[role]??null};
+ const heard=s.lifeAnalytics?.people.find(p=>p.id===id)?.waterStory;
+ return heard?{fact,role:'listener',interpretation:null,tellerId:heard.tellerId,heardAt:heard.time}:null;
+}
+
+function waterStoryKnownAt(help,person){
+ if(!person)return Infinity;
+ if(person.id===help.helperId||person.id===help.recipientId)return help.deliveredAt;
+ return person.waterStory?.time??Infinity;
+}
+export function tellWaterStoryAtDinner(s,diners,archiveById){
+ const help=s.godhood?.firstWaterHelp;
+ if(!isStrictSumer(s)||!Number.isFinite(help?.deliveredAt)||diners.length<2)return;
+ const records=new Map(diners.map(c=>[c.id,archiveById.get(c.id)])),day=mealCycle(s.simTime);
+ for(const child of diners){
+  if(child.age<4||child.id===help.helperId||child.id===help.recipientId)continue;
+  const listener=records.get(child.id);
+  if(!listener||listener.waterStory)continue;
+  const teller=child.parents?.map(id=>records.get(id)).find(p=>waterStoryKnownAt(help,p)<s.simTime&&(!p.waterStory||p.waterStory.day<day));
+  if(teller)listener.waterStory={tellerId:teller.id,tick:tick(s),time:s.simTime,day};
+ }
 }
 
 /** Explicit simulation hooks only. Views below never initialise/mutate state.
@@ -118,6 +138,16 @@ export function validateLifeAnalytics(s){
  for(const p of a.people)for(const evidence of [p.medicalRecovery,p.medicalAid]){
   if(evidence===undefined)continue;
   if(!isStrictSumer(s)||!evidence||!integer(evidence.id)||evidence.id===p.id||!ids.has(evidence.id)||!integer(evidence.tick)||evidence.tick<p.firstSeenTick||evidence.tick>(p.diedTick??tick(s)))return false;
+ }
+ const help=s.godhood?.firstWaterHelp;
+ for(const p of a.people){
+  const story=p.waterStory;
+  if(story===undefined)continue;
+  if(!isStrictSumer(s)||!Number.isFinite(help?.deliveredAt)||!story||p.id===help.helperId||p.id===help.recipientId||
+   !p.parents.includes(story.tellerId)||!integer(story.tick)||story.tick<p.firstSeenTick||
+   story.tick>(p.diedTick??tick(s))||!finite(story.time,help.deliveredAt,s.simTime)||story.day!==mealCycle(story.time))return false;
+  const teller=ids.get(story.tellerId);
+  if(!teller||story.tick<teller.firstSeenTick||story.tick>(teller.diedTick??tick(s))||waterStoryKnownAt(help,teller)>=story.time||teller.waterStory&&teller.waterStory.day>=story.day)return false;
  }
  const carried=new Set();
  for(const c of s.citizens||[]){

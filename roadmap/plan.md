@@ -27,7 +27,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## people-memory-transmission | Передача истории между поколениями
 group: people
-status: planned
+status: partial
 priority: P2
 depends: god-personal-memory
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -39,7 +39,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 Семьи, поколения, праздники и музыка готовы.
 
 ### Следующий шаг
-Выбрать один канал передачи.
+Подтвердить выпуск семейной передачи за ужином, включая пересказ после смерти исходного свидетеля.
 
 ### Готово когда
 История сохраняет происхождение и доходит до нового человека без бесконечного размножения награды.
