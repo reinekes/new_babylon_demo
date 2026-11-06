@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledPreparedField": true,
+  "harvest": {
+    "x": 12,
+    "y": 8,
+    "tick": 20,
+    "at": 900
+  },
+  "samples": 360,
+  "medianStepCpuMs": 17.88758300000154,
+  "p95StepCpuMs": 52.00849999999991,
+  "journalEqualReload": true
+}

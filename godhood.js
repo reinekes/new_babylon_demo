@@ -1,4 +1,4 @@
-import {advanceStarObservations} from './star-observations.js';
+import {advanceStarObservations,starKnowledgeReason} from './star-observations.js';
 import {peaceKnowledgeReason} from './peace-discovery.js';
 import {arrivalKnowledgeReason} from './arrival-hospitality.js';
 import {shapingModelReason} from './shaping-model.js';
@@ -80,6 +80,7 @@ export function buildingKnowledgeReason(s,type,level=1){
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){
+ if(id==='stars'&&s.starObservations)return starKnowledgeReason(s);
  if(id==='peace'&&s.peaceDiscovery)return peaceKnowledgeReason(s);
  if(id==='healing'&&s.arrivalHospitality)return arrivalKnowledgeReason(s);
  if(id==='shaping'&&s.shapingProjects)return shapingModelReason(s);

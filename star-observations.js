@@ -25,14 +25,35 @@ export function advanceStarObservations(s){
  }
 }
 
+export function recordStarHarvestDeadline(s,b){
+ const journal=s.starObservations,c=b.crop;
+ if(!journal||journal.harvest||!isOperational(b)||c.legacyYear!==undefined||
+  c.sown!==1||c.growth<.95||!(c.total>0))return;
+ journal.harvest={x:b.x,y:b.y,tick:s.tick,at:s.simTime};
+}
+
+export function starKnowledgeReason(s){
+ if(!s.starObservations)return '';
+ if(!s.revelationEvidence?.opening||s.godhood.stage!=='recognized')return 'Сначала открой «Откровение»';
+ if(s.starObservations.nights.length<STAR_NIGHTS_REQUIRED)return 'Нужны три ночи наблюдений';
+ return s.starObservations.harvest?'':'Подготовь поле к началу жатвы';
+}
+
+const validLocation=(s,p)=>Number.isInteger(p.x)&&p.x>=0&&p.x<worldWidth(s)&&
+ Number.isInteger(p.y)&&p.y>=0&&p.y<worldHeight(s);
+
 export function validateStarObservations(s){
  const journal=s.starObservations;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||journal.version!==1||Object.keys(journal).length!==2||
+ if(!usesCatDiscovery(s)||!journal||journal.version!==1||Object.keys(journal).length!==2+Number(journal.harvest!==undefined)||
   !Array.isArray(journal.nights)||journal.nights.length>STAR_NIGHTS_REQUIRED)return false;
+ const harvest=journal.harvest;
+ if(harvest!==undefined&&(!harvest||Object.keys(harvest).length!==4||!validLocation(s,harvest)||
+  !Number.isSafeInteger(harvest.tick)||harvest.tick<1||harvest.tick>s.tick||![0,2].includes(harvest.tick%4)||
+  !Number.isFinite(harvest.at)||harvest.at<=0||harvest.at>s.simTime))return false;
  return journal.nights.every((n,i)=>n&&Object.keys(n).length===5&&
   Number.isFinite(n.at)&&n.at>=(s.revelationEvidence?.opening?.time??Infinity)&&n.at<=s.simTime&&nightAt(n.at)&&
   n.day===Math.floor(n.at/DAY_SECONDS)&&n.day>(journal.nights[i-1]?.day??-1)&&
   Number.isSafeInteger(n.observer)&&n.observer>=0&&n.observer<s.demography.nextId&&
-  Number.isInteger(n.x)&&n.x>=0&&n.x<worldWidth(s)&&Number.isInteger(n.y)&&n.y>=0&&n.y<worldHeight(s));
+  validLocation(s,n));
 }

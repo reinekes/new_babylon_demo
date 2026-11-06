@@ -223,8 +223,9 @@ function shapingBatchesHTML(s){
 function starObservationsHTML(s){
  const journal=s.starObservations;
  if(!journal)return '';
+ const harvest=journal.harvest?'Поле созрело к началу жатвы.':'Подготовь полностью засеянное поле к началу жатвы.';
  const detail=s.revelationEvidence?.opening?'Наблюдатель приходит к воде во дворе с 22:00 до 04:00.':'Сначала открой «Откровение».';
- return `<section class="management-row" data-star-observations><h3>История «Мудрость звёзд»</h3><p>Ночи наблюдений · ${journal.nights.length} из ${STAR_NIGHTS_REQUIRED}.</p><p>${detail}</p></section>`;
+ return `<section class="management-row" data-star-observations><h3>История «Мудрость звёзд»</h3><p>Ночи наблюдений · ${journal.nights.length} из ${STAR_NIGHTS_REQUIRED}.</p><p>${detail}</p><p>${harvest}</p></section>`;
 }
 
 function arrivalHospitalityHTML(s){

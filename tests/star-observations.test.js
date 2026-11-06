@@ -34,3 +34,24 @@ test('an unobserved new city and an older save both round-trip',()=>{
  const old=encode(s);
  assert.equal(encode(decode(old)),old);
 });
+
+test('the harvest deadline unlocks Stars only with a prepared field and three observations',async()=>{
+ const {changeCropSeason}=await import('../agriculture.js');
+ const {miracleKnowledgeReason}=await import('../godhood.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ const b={type:'field',x:8,y:9,level:1,crop:{sown:1,growth:.5}};
+ s.buildings.push(b);
+ s.godhood.stage='recognized';
+ s.revelationEvidence.opening={time:0};
+ s.tick=4;s.year=2;s.season=0;s.simTime=200;
+ assert.match(miracleKnowledgeReason(s,'stars'),/наблюдени/);
+ s.starObservations.nights=[35,95,155].map((at,day)=>({at,day}));
+ changeCropSeason(s,3);
+ assert.equal(s.starObservations.harvest,undefined);
+ assert.match(miracleKnowledgeReason(s,'stars'),/жатв/);
+ b.crop.growth=1;
+ changeCropSeason(s,3);
+ assert.equal(s.starObservations.harvest.tick,4);
+ assert.equal(s.starObservations.harvest.x,8);
+ assert.equal(miracleKnowledgeReason(s,'stars'),'');
+});

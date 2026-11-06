@@ -1,3 +1,4 @@
+import {recordStarHarvestDeadline} from './star-observations.js';
 import {takeGiftFood} from './abundance-origin.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {AUTUMN_CROPS,fieldCalendar} from './crop-calendar.js';
@@ -71,6 +72,7 @@ export function changeCropSeason(s,previous){
    c.total=c.remaining=84*outputMultiplier(b)*saltYieldFactor(s,b)*c.sown*c.growth*(s.buffs?.fertility?FERTILITY_MULTIPLIER:1);
    if(s.earthDiscovery&&s.buffs?.fertility)c.fertilityYield=true;
    c.harvested=0;ready+=c.remaining;
+   recordStarHarvestDeadline(s,b);
   }
   if(previous===calendar.harvest){
    c.spoiled+=c.remaining;lost+=c.remaining;c.remaining=0;
