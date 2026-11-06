@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T05:12:20.622442+00:00",
+  "commit": "d2a833184290bc932b03b585bc0d871bb4f19ffc",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "798b8a5780629ae96c5235e50a674733479ea2a06fb07763cd3c09819882119d",
+      "actual": "798b8a5780629ae96c5235e50a674733479ea2a06fb07763cd3c09819882119d",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "8cdfdc26eafef09080bdfb4865aeeedf67431b455739a772dd7c6f1a7cdf444a",
+      "actual": "8cdfdc26eafef09080bdfb4865aeeedf67431b455739a772dd7c6f1a7cdf444a",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "102d17296c4adb26273be00cd7993cf3bf4a7a02a2fbf938041d4fa0590f26c9",
+      "actual": "102d17296c4adb26273be00cd7993cf3bf4a7a02a2fbf938041d4fa0590f26c9",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8d1e58e584a60d4d7a008e17301cd486ee9f3d8333f7006a8f67e2b62b16de42",
+      "actual": "8d1e58e584a60d4d7a008e17301cd486ee9f3d8333f7006a8f67e2b62b16de42",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3277ae05f6390f290a074ba05c4fe59c36bc5f9e09d72ba87ea3b0e7737d56ff",
+      "actual": "3277ae05f6390f290a074ba05c4fe59c36bc5f9e09d72ba87ea3b0e7737d56ff",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "c1276cae05ba87c581bec2f65ac7cb19b4df05e3cef1a5dc712ce9378bf9f499",
+      "actual": "c1276cae05ba87c581bec2f65ac7cb19b4df05e3cef1a5dc712ce9378bf9f499",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "cbe06913df99c62a5584cdd242268da9807bbd0c2c4f1894004b8414efb9f7b0",
+      "actual": "cbe06913df99c62a5584cdd242268da9807bbd0c2c4f1894004b8414efb9f7b0",
+      "match": true
+    },
+    {
+      "path": "scribes.js",
+      "status": 200,
+      "expected": "67814eecb5a111a78e1583be2f41e35b182a3a36dc3703afe3a6976f9fb62a35",
+      "actual": "67814eecb5a111a78e1583be2f41e35b182a3a36dc3703afe3a6976f9fb62a35",
+      "match": true
+    },
+    {
+      "path": "tests/external-contracts.test.js",
+      "status": 200,
+      "expected": "3a5185fad0e1203b19ecfea8dec6899a458880b680fcee743bddf946380ede76",
+      "actual": "3a5185fad0e1203b19ecfea8dec6899a458880b680fcee743bddf946380ede76",
+      "match": true
+    },
+    {
+      "path": "trading.js",
+      "status": 200,
+      "expected": "afb82c3ce96fa3ab173d5e8ff9348de904b149e457cb2f4bf48daba64d209604",
+      "actual": "afb82c3ce96fa3ab173d5e8ff9348de904b149e457cb2f4bf48daba64d209604",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
