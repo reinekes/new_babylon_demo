@@ -1,0 +1,121 @@
+{
+  "at": "2026-11-06T19:29:00.829395+00:00",
+  "commit": "e326b67493b0d5bfa2eba117dd662c8240f4967b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "05caf6c75aff4496aca4e63d6d28a88ac6528d15834b3729f3391056b27a0217",
+      "actual": "05caf6c75aff4496aca4e63d6d28a88ac6528d15834b3729f3391056b27a0217",
+      "match": true
+    },
+    {
+      "path": "cat-fishing-ledger.js",
+      "status": 200,
+      "expected": "c4c4275e3d242e184bf80b06bc51e33224d642df0023aa05f85ce41d616af0a8",
+      "actual": "c4c4275e3d242e184bf80b06bc51e33224d642df0023aa05f85ce41d616af0a8",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "8489dd1d9fcf10fd65e591531b8771eafec47b6dab89251d937fef16b93ea364",
+      "actual": "8489dd1d9fcf10fd65e591531b8771eafec47b6dab89251d937fef16b93ea364",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-revelation-evidence-4x.json",
+      "status": 200,
+      "expected": "42e6e88eafb19f900d7b8882f0b3124193605eb76080d0d59712c1b21726c845",
+      "actual": "42e6e88eafb19f900d7b8882f0b3124193605eb76080d0d59712c1b21726c845",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "23f75f3e5c0f7b5259e63a16c99c838ad7ef57c86559ff58cc30db0e2e2e44cf",
+      "actual": "23f75f3e5c0f7b5259e63a16c99c838ad7ef57c86559ff58cc30db0e2e2e44cf",
+      "match": true
+    },
+    {
+      "path": "family-care.js",
+      "status": 200,
+      "expected": "1ab43735128f5d6c3dcb048034abcfa2ba6a950ce455eab634c818ab5f79aa01",
+      "actual": "1ab43735128f5d6c3dcb048034abcfa2ba6a950ce455eab634c818ab5f79aa01",
+      "match": true
+    },
+    {
+      "path": "field-grain.js",
+      "status": 200,
+      "expected": "9ba28db04acb0f9ad4e6139f1f41766018c39fb4259178ca0c675c5f36e6ce30",
+      "actual": "9ba28db04acb0f9ad4e6139f1f41766018c39fb4259178ca0c675c5f36e6ce30",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "fd7ab08ae5b79275a1a41c36fdafc266a3b85d8daa2ff219191d96deb55960e9",
+      "actual": "fd7ab08ae5b79275a1a41c36fdafc266a3b85d8daa2ff219191d96deb55960e9",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "34bcb7d838d760b095a135bfe2a157045885afe25a40fc78398adc336553bffb",
+      "actual": "34bcb7d838d760b095a135bfe2a157045885afe25a40fc78398adc336553bffb",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "55476e51d169a86df10cb192235b24264849da4a2c762c9df7eb9be5f6bd0c39",
+      "actual": "55476e51d169a86df10cb192235b24264849da4a2c762c9df7eb9be5f6bd0c39",
+      "match": true
+    },
+    {
+      "path": "revelation-evidence.js",
+      "status": 200,
+      "expected": "c73238db2f3ff737482b1105c0c8ef40ff6b8f700188de99531846e2387d4d05",
+      "actual": "c73238db2f3ff737482b1105c0c8ef40ff6b8f700188de99531846e2387d4d05",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "182a61b552fa6205ac7c3b945c5499058c8f553c172fc6ac6cd6caeae7d3a39d",
+      "actual": "182a61b552fa6205ac7c3b945c5499058c8f553c172fc6ac6cd6caeae7d3a39d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e7d70902ef4aa859e1c706f78d5a9f0f69bc941707dfe327cc549cf4470889c0",
+      "actual": "e7d70902ef4aa859e1c706f78d5a9f0f69bc941707dfe327cc549cf4470889c0",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "3a4b43c2bfee85c2bb77733d72d1436702be8b8f240cdb969565211c87ed1a2e",
+      "actual": "3a4b43c2bfee85c2bb77733d72d1436702be8b8f240cdb969565211c87ed1a2e",
+      "match": true
+    },
+    {
+      "path": "tests/revelation-evidence.test.js",
+      "status": 200,
+      "expected": "a9dc6009534756da5680542576393459d5602210f106446d1f776dad29ce792d",
+      "actual": "a9dc6009534756da5680542576393459d5602210f106446d1f776dad29ce792d",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "7cdeed923f0288cc98b34e2ecb975b40453f5468db62ae8c0939f14e25e74606",
+      "actual": "7cdeed923f0288cc98b34e2ecb975b40453f5468db62ae8c0939f14e25e74606",
+      "match": true
+    }
+  ],
+  "matched": 16,
+  "total": 16
+}
