@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-06T20:00:48.455935+00:00",
+  "commit": "f00f9cdb6a7080c2682d603ff5ee70440da1db80",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9fcf69382b8f36f1bf8119d33496a6edfe7a55d1f970295e34bbd01552af2f47",
+      "actual": "9fcf69382b8f36f1bf8119d33496a6edfe7a55d1f970295e34bbd01552af2f47",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-revelation-branches-4x.json",
+      "status": 200,
+      "expected": "e68d21d0786cac4aafd544080ca56611cf74e5f6084d9a49baa50bc5360a2583",
+      "actual": "e68d21d0786cac4aafd544080ca56611cf74e5f6084d9a49baa50bc5360a2583",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "b2f2b933b05d307410b8dbafcbe3d11c12603ccbef4a63535dbe4789bf409aaf",
+      "actual": "b2f2b933b05d307410b8dbafcbe3d11c12603ccbef4a63535dbe4789bf409aaf",
+      "match": true
+    },
+    {
+      "path": "revelation-advice.js",
+      "status": 200,
+      "expected": "903a0e33934fd3404f219d836ea13bb75145607424ac098d46b052324c3fa024",
+      "actual": "903a0e33934fd3404f219d836ea13bb75145607424ac098d46b052324c3fa024",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "34c403ffbe8464f29b196ef81b7342c2a65236b367864a2ebe56c6b2014c0300",
+      "actual": "34c403ffbe8464f29b196ef81b7342c2a65236b367864a2ebe56c6b2014c0300",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "97b138abc442529af3f9acd314a19e1509cb48fede404c0a5876e02ddca30dc7",
+      "actual": "97b138abc442529af3f9acd314a19e1509cb48fede404c0a5876e02ddca30dc7",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "eb9c14039e895e12cab595cca2ee252e322b76d3846e5d48c34897a03277f650",
+      "actual": "eb9c14039e895e12cab595cca2ee252e322b76d3846e5d48c34897a03277f650",
+      "match": true
+    },
+    {
+      "path": "tests/revelation-advice.test.js",
+      "status": 200,
+      "expected": "67b6f345ac43186e1b48e6683f6b5147134d39f1450fa3009d3f86850f0ebecc",
+      "actual": "67b6f345ac43186e1b48e6683f6b5147134d39f1450fa3009d3f86850f0ebecc",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
