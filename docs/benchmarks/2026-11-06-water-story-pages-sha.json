@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T03:42:43.541109+00:00",
+  "commit": "34a78a76a3a19a4cc815dcc26a12f33160d565db",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3e138c5ef68fe5f7e6fded965ca88e205b326636dac0c6901b08ebfcdc79d977",
+      "actual": "3e138c5ef68fe5f7e6fded965ca88e205b326636dac0c6901b08ebfcdc79d977",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "c17c58df997184cfd4ecbfc5fcc9ee344934b7905b49133747cdaccca9ec425d",
+      "actual": "c17c58df997184cfd4ecbfc5fcc9ee344934b7905b49133747cdaccca9ec425d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "cf21c57fd0789b65cb67d95d83fc81c62bad3d18518e87c0aaab17e1978f52e5",
+      "actual": "cf21c57fd0789b65cb67d95d83fc81c62bad3d18518e87c0aaab17e1978f52e5",
+      "match": true
+    },
+    {
+      "path": "life-analytics.js",
+      "status": 200,
+      "expected": "44ccc60be87febe6ad2df00be4f9b81cd2acb7cee1f377d37cf1a8426a641e27",
+      "actual": "44ccc60be87febe6ad2df00be4f9b81cd2acb7cee1f377d37cf1a8426a641e27",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "88bb8b206981e7e8850ca4c0e4aa80c27bd492e073d52f89b559452bbed56811",
+      "actual": "88bb8b206981e7e8850ca4c0e4aa80c27bd492e073d52f89b559452bbed56811",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1ef0b96e2d117c68116439ac539846f50ea9544f15eccd274d4c1a864aec88d1",
+      "actual": "1ef0b96e2d117c68116439ac539846f50ea9544f15eccd274d4c1a864aec88d1",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8002a13fae1756fa12b07960f36f8eb36b7a412fb53ec863e2c172298fed947b",
+      "actual": "8002a13fae1756fa12b07960f36f8eb36b7a412fb53ec863e2c172298fed947b",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "53ce78a044e76d2a3bd515838751c7d4fa34cefdb44ae98698cdaed435039b91",
+      "actual": "53ce78a044e76d2a3bd515838751c7d4fa34cefdb44ae98698cdaed435039b91",
+      "match": true
+    },
+    {
+      "path": "ui-life-analytics.js",
+      "status": 200,
+      "expected": "bbfc1eeab5465f1a5cdbc41ab505d96d103ae439332fd51c5c8ad30c8dd363db",
+      "actual": "bbfc1eeab5465f1a5cdbc41ab505d96d103ae439332fd51c5c8ad30c8dd363db",
+      "match": true
+    },
+    {
+      "path": "wellbeing.js",
+      "status": 200,
+      "expected": "d985ef6f85e8cca5605a813be2f3587a91e3e613cb082d9dbecf983ffd246889",
+      "actual": "d985ef6f85e8cca5605a813be2f3587a91e3e613cb082d9dbecf983ffd246889",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
