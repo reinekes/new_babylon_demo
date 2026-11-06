@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,decode,encode} from '../engine.js';
+import {advanceTime,createGame,decode,encode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {advanceWellbeing,mealRation} from '../wellbeing.js';
 import {buildingKey} from '../definitions.js';
@@ -37,4 +37,27 @@ test('a courier interrupts the game and the evening gives no bonus or retry',()=
  for(const c of crisis.members)c.hunger=70;
  advanceWellbeing(crisis.s,.25);
  assert.equal(crisis.b.eveningGame,undefined);
+});
+
+test('two fed neighbors walk to a shared game and the guest walks home after a save',()=>{
+ let {s,b}=evening();
+ const other=s.buildings.find(h=>h.type==='house'&&h!==b);
+ const host=s.citizens.find(c=>c.home===buildingKey(b)&&c.age>=16);
+ const guest=s.citizens.find(c=>c.home===buildingKey(other)&&c.age>=16);
+ for(const c of s.citizens)Object.assign(c,{mealDay:0,mealEaten:0,hunger:70});
+ for(const c of [host,guest])Object.assign(c,{phase:'home',mealEaten:mealRation(c),diningUntil:0,hunger:0,thirst:0});
+ b.pantry=0;other.pantry=0;s.resources.food=0;
+ for(let i=0;i<20&&!s.buildings.some(h=>h.eveningGame?.guestHome);i++)advanceTime(s,.1);
+ const meeting=s.buildings.find(h=>h.eveningGame?.guestHome);
+ assert.ok(meeting);
+ const game=meeting.eveningGame;
+ assert.equal(game.status,'waiting');
+ const visitor=s.citizens.find(c=>c.id===game.players[1]);
+ assert.equal(visitor.phase,'toEveningGame');
+ const saved=encode(s);s=decode(saved);assert.ok(s);assert.equal(encode(s),saved);
+ for(let i=0;i<180;i++)advanceTime(s,.1);
+ const restored=s.buildings.find(h=>h.eveningGame?.guestHome).eveningGame;
+ assert.equal(restored.status,'finished');
+ assert.equal(s.citizens.find(c=>c.id===visitor.id).home,game.guestHome);
+ assert.equal(s.citizens.find(c=>c.id===visitor.id).phase,'home');
 });
