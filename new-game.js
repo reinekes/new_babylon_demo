@@ -1,3 +1,4 @@
+import {newShapingProjects} from './shaping-projects.js';
 import {newRevelationEvidence} from './revelation-evidence.js';
 import {newAbundanceDiscovery} from './abundance-discovery.js';
 import {newAbundanceGift} from './abundance-gift.js';
@@ -25,6 +26,7 @@ export function createNewCity({mode,seed}={}){
   state.earthDiscovery=newEarthDiscovery();
   state.richCatchEvidence=newRichCatchEvidence();
   state.creatorMaterials=newCreatorMaterials();
+  state.shapingProjects=newShapingProjects();
   state.windDelivery=newWindDelivery();
   state.abundanceGift=newAbundanceGift();
   state.abundanceDiscovery=newAbundanceDiscovery();

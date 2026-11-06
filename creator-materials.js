@@ -1,3 +1,4 @@
+import {recordShapingUse} from './shaping-projects.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 
@@ -50,6 +51,7 @@ export function recordCreatorConstruction(b,q){
 }
 
 export function recordCreatorUse(s,b){
+ recordShapingUse(s,b);
  const q=s.creatorMaterials;
  if(!q||!b?.creatorBuilt||!isOperational(b)||q.projects?.length>=REQUIRED_PROJECTS)return;
  const key=buildingKey(b);
@@ -64,8 +66,9 @@ export function advanceCreatorEvidence(s){
  if(q.inspired?.length!==PROFESSIONS.length){
   for(const profession of PROFESSIONS)if(!q.inspired?.includes(profession)&&s.citizens.some(c=>c.calling===profession))recordCreatorInspiration(s,profession);
  }
- if(q.projects?.length>=REQUIRED_PROJECTS)return;
- const homes=s.buildings.filter(b=>b.type==='house'&&b.creatorBuilt&&!q.projects?.includes(buildingKey(b)));
+ const creatorOpen=q.projects?.length>=REQUIRED_PROJECTS;
+ if(creatorOpen&&!s.shapingProjects)return;
+ const homes=s.buildings.filter(b=>b.type==='house'&&(b.shapingProject||!creatorOpen&&b.creatorBuilt&&!q.projects?.includes(buildingKey(b))));
  if(!homes.length)return;
  const occupied=new Set(s.citizens.map(c=>c.home));
  for(const b of homes)if(occupied.has(buildingKey(b)))recordCreatorUse(s,b);

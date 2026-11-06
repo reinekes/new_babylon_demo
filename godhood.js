@@ -1,3 +1,4 @@
+import {recordShapingProject} from './shaping-projects.js';
 import {advanceRevelationEvidence,recordRevelationFact,recordRevelationTraining,revelationKnowledgeReason} from './revelation-evidence.js';
 import {sunlightKnowledgeReason} from './sunlight-gathering.js';
 import {abundanceKnowledgeReason} from './abundance-discovery.js';
@@ -92,11 +93,15 @@ export function recordBuilderCompletion(s,b){
  if(!isAwakening(s)||b.householdInitiative&&b.construction?.kind==='new')return false;
  const q=b.construction;if(!q||!['new','upgrade'].includes(q.kind)||!Number.isFinite(q.work)||![1,2,3].includes(q.target)||q.work+1e-8<(b.type==='road'?6:12)*q.target||Object.entries(q.required||{}).some(([k,n])=>(q.delivered?.[k]||0)<n))return false;
  const g=s.godhood,key=buildingKey(b),stamp=`${key}:${q.target}`;
- if(g.completedProjects.includes(stamp))return false;
+ const seen=g.completedProjects.includes(stamp);
+ if(seen&&(!s.shapingProjects||q.kind!=='new'||b.type==='road'))return false;
  // An assigned traveller has not performed this project's work yet.
  const ports=networkFor(s).ports,onsite=c=>{const port=b.type==='road'?b.a:ports.find(p=>p.building.siteKey?`site:${p.building.siteKey}:${p.building.side}`===c.sitePort:buildingKey(p.building)===c.sitePort);if(port)return Math.hypot(c.x-port.x,c.y-port.y)<.05;const n=footprintSize(b),dx=Math.max(b.x-.5-c.x,0,c.x-(b.x+n-.5)),dy=Math.max(b.y-.5-c.y,0,c.y-(b.y+n-.5));return Math.hypot(dx,dy)<.05;};
  const workers=s.citizens.filter(c=>c.site===key&&c.siteDuty==='builder'&&c.phase==='constructing'&&onsite(c)&&canLeadConstruction(s,c,b));
- if(!workers.length)return false;g.completedProjects.push(stamp);
+ if(!workers.length)return false;
+ recordShapingProject(s,b,workers);
+ if(seen)return false;
+ g.completedProjects.push(stamp);
  recordRevelationFact(s,'building',workers[0],b.type==='road'?b.a:b);
  for(const c of workers){c.builderSkill??={level:1,projects:0};c.builderSkill.projects++;c.builderSkill.level=levelFor(c.builderSkill);}
  for(const c of s.citizens.filter(c=>c.age>=16&&!g.believerIds.includes(c.id)&&(c.site===key||Math.hypot(c.x-b.x,c.y-b.y)<3)).slice(0,2)){g.believerIds.push(c.id);c.faith=Math.max(c.faith,55);s.resources.faith+=1;}

@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 133,
+  "citizens": 289,
+  "controlledCrewsAndMaterials": true,
+  "controlledOccupancy": true,
+  "completedAndUsed": true,
+  "byteEqualReload": true,
+  "byteEqualOutsideEvidence": true,
+  "samples": 167,
+  "medianCpuMs": 3.59370899999999,
+  "p95CpuMs": 9.688874999999996
+}
