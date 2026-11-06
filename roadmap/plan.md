@@ -255,7 +255,7 @@ sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKEN
 
 ## miracle-c04 | C04 · Тишина сердец
 group: godhood
-status: planned
+status: partial
 priority: P2
 depends: reliability-causal-facts; god-discovery-contract
 sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md; definitions.js; engine.js
@@ -264,10 +264,10 @@ sources: docs/MIRACLES_IMPLEMENTATION_REVIEW_2026-11-02.md; docs/MIRACLES_AWAKEN
 Предложение нового открытия и постановки, пока не реализованное дерево. Адресная группа после помощи трём людям либо двух спокойных встреч; спокойные позы и поверхность воды.
 
 ### Что уже есть
-Настроение уже изменяется.
+Настроение уже изменяется. В новых «Пробуждениях» сохраняется уход за тремя разными жителями или две спокойные общие трапезы в разные дни. Прогресс показан в обзоре города.
 
 ### Следующий шаг
-Описать минимальный этап и подтвердить его отдельным ограниченным планом.
+Связать условия с новым применением, явно показать получателей и подготовить сцены открытия и призыва.
 
 ### Готово когда
 Не обещает лечение/воскрешение; груз и нужды не блокируются.

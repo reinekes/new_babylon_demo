@@ -1,3 +1,4 @@
+import {recordCalmMeal} from './peace-discovery.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
@@ -40,6 +41,7 @@ function talkAtMeal(s,depot,diner,peer,day){
  if(dispute)depot.mealDispute=dispute;
  else delete depot.mealDispute;
  depot.mealTalk={day,people,topic,outcome};
+ recordCalmMeal(s,diner,peer,day,outcome);
 }
 
 export function serveCommonMeal(s,c,b){

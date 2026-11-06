@@ -1,3 +1,4 @@
+import {recordCompletedCare} from './peace-discovery.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {homeMealFood} from './households.js';
@@ -38,6 +39,7 @@ export function advanceFamilyCare(s,dt,mourners){
     house.water-=CARE_WATER;
     patient.thirst=Math.max(0,patient.thirst-10);
     patient.mood=Math.min(100,patient.mood+8);
+    recordCompletedCare(s,helper,patient);
    }
    break;
   }

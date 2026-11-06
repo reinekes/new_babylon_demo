@@ -1,3 +1,4 @@
+import {newPeaceDiscovery} from './peace-discovery.js';
 import {newBlessingDiscovery} from './blessing-discovery.js';
 import {newRainDiscovery} from './rain-discovery.js';
 import {newMonumentChapter} from './monument-chapter.js';
@@ -13,6 +14,7 @@ export function createNewCity({mode,seed}={}){
  if(mode==='awakening'){
   state.rainDiscovery=newRainDiscovery();
   state.blessingDiscovery=newBlessingDiscovery();
+  state.peaceDiscovery=newPeaceDiscovery();
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
