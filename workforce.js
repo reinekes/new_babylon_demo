@@ -1,4 +1,4 @@
-import {finishMemorialMove} from './life-analytics.js';
+import {finishMemorialMove,recordMedicalRecovery} from './life-analytics.js';
 import {commonMealWindow,commonMealDay,commonMealAvailable,serveCommonMeal,isMealDepot} from './common-meal.js';
 import {advanceFamilyCare} from './family-care.js';
 import {receiveVotive,recordVotiveMemory} from './votive-offerings.js';
@@ -625,7 +625,9 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
    if(b.type==='healer'){
     const patients=(ctx.care?.get(c.work)?.patients||[]).filter(p=>p.phase==='treatment'&&p.health<(p.careGoal||85)&&!s.funeral?.actors.some(a=>a.id===p.id));
     let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'healer')*healingSpeed(c);const cost=healingCost(c);
-    for(const patient of patients){const amount=Math.max(0,Math.min(budget/patients.length,(patient.careGoal||85)-patient.health,(b.workshopStock.input.food||0)/(.04*cost),(b.workshopStock.input.reed||0)/(.02*cost)));patient.health+=amount;if(amount>0)c.medicine.practice+=amount;b.workshopStock.input.food=Math.max(0,b.workshopStock.input.food-amount*.04*cost);b.workshopStock.input.reed=Math.max(0,b.workshopStock.input.reed-amount*.02*cost);}return;
+    for(const patient of patients){const amount=Math.max(0,Math.min(budget/patients.length,(patient.careGoal||85)-patient.health,(b.workshopStock.input.food||0)/(.04*cost),(b.workshopStock.input.reed||0)/(.02*cost)));const before=patient.health;patient.health+=amount;
+     if(amount>0)c.medicine.practice+=amount;
+     if(before<60&&patient.health>=60)recordMedicalRecovery(s,c,patient);b.workshopStock.input.food=Math.max(0,b.workshopStock.input.food-amount*.04*cost);b.workshopStock.input.reed=Math.max(0,b.workshopStock.input.reed-amount*.02*cost);}return;
    }
    const rate=workRate(c,b.type);
    if(GATHERING_TYPES.includes(b.type)){

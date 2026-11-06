@@ -20,3 +20,17 @@ test('upgrading healer keeps the existing service and increases capacity only af
 test('healer on the far bank cannot draw patients or staff without a bridge',()=>{const s=city();s.buildings.at(-1).x=25;invalidateAssignments(s);syncCitizens(s);const c=s.citizens.find(c=>c.age<16);c.health=40;advanceTime(s,18);assert.equal(c.health,40);assert.equal(c.clinic,undefined);});
 
 test('existing chosen professions in v9 receive their calling bonus without losing pending cargo',()=>{const s=createGame({start:'established'}),c=s.citizens[0];s.version=9;c.role='builder';const loaded=decode(encode(s));assert.ok(loaded);assert.equal(loaded.citizens[0].calling,'builder');assert.equal(workRate(loaded.citizens[0],'builder'),1.2);});
+
+test('paid treatment records the actual patient and healer in the Southern Sumer archive',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const s=city(),healer=s.citizens[0],patient=s.citizens.find(c=>c.age<16);
+ s.scenario=strictScenario();patient.health=40;
+ for(let i=0;i<240&&patient.health<60;i++)advanceTime(s,.1);
+ assert.ok(patient.health>=60);
+ const byId=id=>s.lifeAnalytics.people.find(p=>p.id===id);
+ assert.deepEqual(byId(patient.id).medicalRecovery,{id:healer.id,tick:s.tick});
+ assert.deepEqual(byId(healer.id).medicalAid,{id:patient.id,tick:s.tick});
+ const raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),raw);
+});

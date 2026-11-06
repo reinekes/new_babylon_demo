@@ -26,6 +26,20 @@ export function syncLifeAnalytics(s){
  return a;
 }
 export function recordLifeBirth(s,c){const a=initializeLifeAnalytics(s);let p=a.people.find(p=>p.id===c.id);if(!p){p=identity(c,s);a.people.push(p);}if(p.diedTick===null)p.bornTick??=tick(s);return p;}
+export function recordMedicalRecovery(s,healer,patient){
+ if(!isStrictSumer(s)||healer.id===patient.id)return;
+ const archive=initializeLifeAnalytics(s);
+ const findOrAdd=c=>{
+  let person=archive.people.find(p=>p.id===c.id);
+  if(!person){person=identity(c,s);archive.people.push(person);}
+  return person;
+ };
+ const recipient=findOrAdd(patient);
+ if(recipient.medicalRecovery?.tick===tick(s))return;
+ recipient.medicalRecovery={id:healer.id,tick:tick(s)};
+ findOrAdd(healer).medicalAid={id:patient.id,tick:tick(s)};
+}
+
 function recordFamilyMemorial(s,c,p){
  if(!isStrictSumer(s)||p.cause==='unknown')return;
  const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===c.home);
@@ -92,6 +106,10 @@ export function validateLifeAnalytics(s){
  const ids=new Map(),living=new Set((s.citizens||[]).map(c=>c.id));
  for(const p of a.people){if(!p||!integer(p.id)||(integer(s.demography?.nextId)&&p.id>=s.demography.nextId)||ids.has(p.id)||typeof p.name!=='string'||p.name.length>160||!(p.age===null||finite(p.age,0,100))||![null,'m','f'].includes(p.sex)||!Array.isArray(p.parents)||![0,2].includes(p.parents.length)||new Set(p.parents).size!==p.parents.length||p.parents.some(id=>!integer(id)||id>=p.id)||!(p.partner===null||integer(p.partner)&&p.partner!==p.id)||!integer(p.generation)||p.generation<1||!(p.home===null||typeof p.home==='string'&&/^\d+,\d+$/.test(p.home))||!integer(p.firstSeenTick)||p.firstSeenTick<a.startedTick||p.firstSeenTick>tick(s)||!(p.bornTick===null||integer(p.bornTick)&&p.bornTick>=a.startedTick&&p.bornTick<=p.firstSeenTick)||!(p.diedTick===null||integer(p.diedTick)&&p.diedTick>=p.firstSeenTick&&p.diedTick<=tick(s))||!(p.diedTick===null?p.cause===null:Object.hasOwn(LIFE_CAUSE_NAMES,p.cause))||living.has(p.id)!==(p.diedTick===null)||!validateMemorial(s,p))return false;ids.set(p.id,p);}
  if([...living].some(id=>!ids.has(id)))return false;
+ for(const p of a.people)for(const evidence of [p.medicalRecovery,p.medicalAid]){
+  if(evidence===undefined)continue;
+  if(!isStrictSumer(s)||!evidence||!integer(evidence.id)||evidence.id===p.id||!ids.has(evidence.id)||!integer(evidence.tick)||evidence.tick<p.firstSeenTick||evidence.tick>(p.diedTick??tick(s)))return false;
+ }
  const carried=new Set();
  for(const c of s.citizens||[]){
   const m=c.memorialMove;if(m===undefined)continue;
