@@ -115,6 +115,12 @@ export class GameRenderer3D{
  home(){const founding=foundingCameraTarget(this.state);this.mapOverview=false;this._zoom=founding?104/founding.radius:2.5;this.pan={x:0,y:0};this.camera?.setTarget(new this.B.Vector3(founding?founding.x*6:53,0,founding?founding.y*6:55));if(this.camera){this.camera.alpha=Math.PI/3;this.camera.beta=.96;this.camera.radius=104/this._zoom;}}
  overview(){this.mapOverview=true;this.camera.setTarget(new this.B.Vector3((worldWidth(this.state)-1)*3,0,(worldHeight(this.state)-1)*3));this.camera.beta=.68;this.camera.radius=this.overviewRadius();}
  focusOn(x,y){this.mapOverview=false;this.camera.setTarget(new this.B.Vector3(x*6,1,y*6));this.camera.radius=30;this.hover={x,y};}
+ projectWindPoint({x,y}){
+  if(!this.scene||!this.w||!this.h)return null;
+  const B=this.B,position=new B.Vector3(x*6,visualSurfaceElevation(x,y,this.state)+.32,y*6);
+  const p=B.Vector3.Project(position,B.Matrix.IdentityReadOnly,this.scene.getTransformMatrix(),new B.Viewport(0,0,this.w,this.h));
+  return Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.z>=0&&p.z<=1?p:null;
+ }
  captureView(){return {target:this.camera.target.clone(),alpha:this.camera.alpha,beta:this.camera.beta,radius:this.camera.radius};}
  restoreView(v){if(v){this.camera.setTarget(v.target);this.camera.alpha=v.alpha;this.camera.beta=v.beta;this.camera.radius=v.radius;}}
  resetPresentation(){this.resize();this.miracleGarden?.clear?.();this.sacredEffects?.reset(this.state);if(this.state){if(this.actors?.resetPresentation)this.actors.resetPresentation(this.state);else this.actors?.update(this.state,0,{paused:true});}this.effects=[];for(const v of this.effectViews){v.mesh.dispose();v.mat.dispose();}this.effectViews=[];this.lastSim=null;this.lastTime=null;}

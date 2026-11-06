@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 265,
+  "retainedIds": 265,
+  "openingFocuses": 3,
+  "castFocuses": 1,
+  "byteEqualControl": true,
+  "byteEqualReload": true,
+  "samples": 148,
+  "medianCpuMs": 2.7017499999999472,
+  "p95CpuMs": 8.205208000000084
+}

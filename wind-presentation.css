@@ -1,0 +1,12 @@
+.wind-scene[hidden]{display:none}
+.wind-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.wind-route{position:absolute;inset:0;width:100%;height:100%}
+.wind-route path{fill:none;stroke:#e7d2a7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 7;opacity:.78;filter:drop-shadow(0 0 3px #dcbb76)}
+.wind-scene-card{background:linear-gradient(115deg,#3a3021,#233338);border-color:#b59a67}
+.wind-basket,.wind-threads{fill:none;stroke:#e2bb7b;stroke-width:1.6}
+.wind-cloth{fill:#526e72;stroke:#c9d4c7;stroke-width:1.4;transform-origin:50% 50%}
+.wind-threads{opacity:0}
+.wind-scene:is([data-phase="trail"],[data-phase="gust"],[data-phase="cloth"]) .wind-threads{opacity:.8}
+.wind-scene:is([data-phase="trail"],[data-phase="gust"],[data-phase="cloth"]) .wind-cloth{animation:wind-cloth 1.9s ease-in-out infinite}
+@keyframes wind-cloth{0%,100%{transform:skewY(0)}50%{transform:skewY(-9deg)}}
+@media(prefers-reduced-motion:reduce){.wind-cloth{animation:none!important}.wind-route{display:none}}
