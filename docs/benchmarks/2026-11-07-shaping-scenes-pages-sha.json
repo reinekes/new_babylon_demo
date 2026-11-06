@@ -1,0 +1,149 @@
+{
+  "at": "2026-11-06T21:27:04.726463+00:00",
+  "commit": "74e6229b905ba606ae7830450487a832c056343d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "1697987cf9db6842742d61818abef4ba20c3d6974be41b3a9f82603cf6554868",
+      "actual": "1697987cf9db6842742d61818abef4ba20c3d6974be41b3a9f82603cf6554868",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "d6a7312a8565fe3595e369f3d9e4e5883d5582f0c31c5ecf6d15e3d0b490e64f",
+      "actual": "d6a7312a8565fe3595e369f3d9e4e5883d5582f0c31c5ecf6d15e3d0b490e64f",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "6db191e836ea222e4373ccaca133273f2c8463918deb7eb48f711b93cece077a",
+      "actual": "6db191e836ea222e4373ccaca133273f2c8463918deb7eb48f711b93cece077a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-shaping-batch-4x.json",
+      "status": 200,
+      "expected": "4ea0cd2c5aaad2b5dcc782cf9c823fd3d9c5b2af7fb60b7991f8a2d687f97cfb",
+      "actual": "4ea0cd2c5aaad2b5dcc782cf9c823fd3d9c5b2af7fb60b7991f8a2d687f97cfb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-shaping-scenes-4x.json",
+      "status": 200,
+      "expected": "1691b92496664b386977bce1fcc603c2091c036a444edeb1a3e66ef17c051502",
+      "actual": "1691b92496664b386977bce1fcc603c2091c036a444edeb1a3e66ef17c051502",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "588c988c14af0791044385f9b113b456c577454c40b1af357a1fb2d8a8f4b8d3",
+      "actual": "588c988c14af0791044385f9b113b456c577454c40b1af357a1fb2d8a8f4b8d3",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "22e1d6d59d80b1d06bd866b6a7c73345c3ffae72c00e5edfd590416b0fdf948b",
+      "actual": "22e1d6d59d80b1d06bd866b6a7c73345c3ffae72c00e5edfd590416b0fdf948b",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "c3efda3543f4dd40e3ddd929e91c9009d1a4862b0dcb1bae7b0e453dec06732a",
+      "actual": "c3efda3543f4dd40e3ddd929e91c9009d1a4862b0dcb1bae7b0e453dec06732a",
+      "match": true
+    },
+    {
+      "path": "revelation-presentation.js",
+      "status": 200,
+      "expected": "9ca132fd87d2bd0bce8f534da2a0b1cedd9009733199da745aa589d427b99ccc",
+      "actual": "9ca132fd87d2bd0bce8f534da2a0b1cedd9009733199da745aa589d427b99ccc",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "00f1af745ef81331e0b45bb5d2f8b32a13bec0a49311251213dec09f6d2ac523",
+      "actual": "00f1af745ef81331e0b45bb5d2f8b32a13bec0a49311251213dec09f6d2ac523",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "806f7bad255fc9a23f010701902d552a531ffe52f85f7c166fc83c9ea380e51a",
+      "actual": "806f7bad255fc9a23f010701902d552a531ffe52f85f7c166fc83c9ea380e51a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "05243b54b45ea13a9f7c42888ea49ac1f71fa0633f4048ca724acecb16bcab68",
+      "actual": "05243b54b45ea13a9f7c42888ea49ac1f71fa0633f4048ca724acecb16bcab68",
+      "match": true
+    },
+    {
+      "path": "shaping-batch.js",
+      "status": 200,
+      "expected": "361bfd2342244431afbe1bfa466887ff7e94530d9487a5968081a3aa065a8afd",
+      "actual": "361bfd2342244431afbe1bfa466887ff7e94530d9487a5968081a3aa065a8afd",
+      "match": true
+    },
+    {
+      "path": "shaping-presentation.css",
+      "status": 200,
+      "expected": "f0c6ee3011ed70c312f7ace98b6b6dcc5ba116f2dda8aea2a45fb90f81a541ff",
+      "actual": "f0c6ee3011ed70c312f7ace98b6b6dcc5ba116f2dda8aea2a45fb90f81a541ff",
+      "match": true
+    },
+    {
+      "path": "shaping-presentation.js",
+      "status": 200,
+      "expected": "b3e802448c24049dd90c9e53a2cbca8038754ed8df681fe57efdafbddffff577",
+      "actual": "b3e802448c24049dd90c9e53a2cbca8038754ed8df681fe57efdafbddffff577",
+      "match": true
+    },
+    {
+      "path": "tests/shaping-batch.test.js",
+      "status": 200,
+      "expected": "8d909e26c3fecb780bb615cdaa8594b38f3bbf74d8a7972aad6989671e250dd3",
+      "actual": "8d909e26c3fecb780bb615cdaa8594b38f3bbf74d8a7972aad6989671e250dd3",
+      "match": true
+    },
+    {
+      "path": "tests/shaping-presentation.test.js",
+      "status": 200,
+      "expected": "70cb30748a23383e26d5b4e05d55958033d9f4713e91b4fb0debc49e6266d96e",
+      "actual": "70cb30748a23383e26d5b4e05d55958033d9f4713e91b4fb0debc49e6266d96e",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "ead01d8b21ad81d8c48b7f4ccc129872cb1a3cc05d312089aaf111c951841ab0",
+      "actual": "ead01d8b21ad81d8c48b7f4ccc129872cb1a3cc05d312089aaf111c951841ab0",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "5d23dff63463c24aa24cbd592db1f0c54845d75bfb5721b15b53845c8e298268",
+      "actual": "5d23dff63463c24aa24cbd592db1f0c54845d75bfb5721b15b53845c8e298268",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "822667923c914dc4e74b2eb0d25b59e1a3905894f6d5e61c1dcb8eb06fa0c0db",
+      "actual": "822667923c914dc4e74b2eb0d25b59e1a3905894f6d5e61c1dcb8eb06fa0c0db",
+      "match": true
+    }
+  ],
+  "matched": 20,
+  "total": 20
+}
