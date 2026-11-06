@@ -1,3 +1,4 @@
+import {acceptFieldGrain,recordFieldGrain} from './field-grain.js';
 import {recordNeighborFoodFact} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {availableEveningPlayer,peacefulGame} from './household-games.js';
@@ -306,7 +307,15 @@ function harvest(s,c,ctx,via=null){
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}if(kilnNeedsRepair(b))repairKiln(b);else startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
  if(['sheepfold','weaver','tailor'].includes(b.type)){const kind=b.type==='sheepfold'?'wool':b.type==='weaver'?'cloth':'clothing',amount=b.type==='sheepfold'?gatherWool(s,b):b.type==='weaver'?weaveCloth(s,b):makeClothing(s,b);if(amount<=1e-8)return false;return produced({[kind]:amount});}
- if(b.type==='field'){const food=workField(s,b,BUILDINGS.field.workTime,c);if(food>0){produced({food});if(!fieldActive(s,b))invalidateAssignments(s);}else c.workElapsed=0;return food>0;}
+ if(b.type==='field'){
+  const before=cropFor(s,b).humanSheaves||0,prefix=b.workshopStock?.output?.food||0;
+  const food=workField(s,b,BUILDINGS.field.workTime,c);
+  if(food>0){
+   if(produced({food}))recordFieldGrain(s,b,c,Math.min(food,before),prefix);
+   if(!fieldActive(s,b))invalidateAssignments(s);
+  }else c.workElapsed=0;
+  return food>0;
+ }
  const def=BUILDINGS[b.type],boost=s.buffs||{};c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
@@ -333,7 +342,7 @@ function deposit(s,c,ctx){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='votive'||destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?destination.targetKind==='votive'?receiveVotive(s,destination,c,amount):logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
   if(local&&destination.targetKind==='input'&&(resource==='food'||resource==='milk'))recordVowDelivery(s,site,c,accepted);
   if(!local&&accepted>0&&MATERIALS.includes(resource))stored[resource]=accepted;
-  if(resource==='food')acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});
+  if(resource==='food'){acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);}
   if(!MATERIALS.includes(resource))s.resources[resource]=(s.resources[resource]||0)+accepted;if(!local)s.delivered[resource]=(s.delivered[resource]||0)+accepted;if(c.districtJob){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(q)q.delivered+=accepted;}c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];if(c.tradeJob){const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob);if(q){q.delivered=Math.min(q.amount,q.delivered+accepted);if(Math.abs(q.amount-q.delivered)<1e-7)q.delivered=q.amount;}}actual[resource]=accepted;delivered+=accepted;
  }
  if(delivered>0){queueGranaryReceipt(s,ctx.buildings.get(c.store),c,stored);recordCitizenDelivery(s,c,actual);s.deliveries++;s.lastDelivery={time:s.simTime,citizen:c.id,store:c.store,cargo:actual,...c.tradeJob?{source:'market'}:{}};}
@@ -756,7 +765,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  // Callers must retain a stranded owner if neither a warehouse, a home nor an
  // operational yard is reachable. Never clear a load without an accepted unit.
  if(needsHolder&&!recovery)return false;
- discardFishingCargo(s,c);
+ discardFishingCargo(s,c);delete c.fieldGrain;
  const restore=(k,n)=>{if(!(n>0))return 0;const accepted=putRecoveryStock(s,recovery,k,n);if(accepted!==n)throw new Error('Recovery holder refused owned cargo');return accepted;};
  recoverFestivalCitizen(s,id);
  for(const [k,n]of Object.entries(c.buildCargo||{}))if(site){site.remaining[k]=(site.remaining[k]||0)+n;if(site.sources)(site.sources[c.store]??={})[k]=(site.sources[c.store]?.[k]||0)+n;}else restore(k,n);

@@ -6,6 +6,7 @@ import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {fieldWater} from './irrigation.js';
 export const SICKLE_EDGE=42;
 export const sickleBlunt=b=>b.sickle?.edge===0;
+const FERTILITY_MULTIPLIER=1.6;
 const empty=year=>({year,sown:0,growth:0,remaining:0,total:0,harvested:0,spoiled:0,seedStock:0,seedUsed:0,sheaves:0,threshed:0});
 export function cropFor(s,b){const c=b.crop??=empty(s.year);c.seedStock??=0;c.seedUsed??=c.sown*SEED_COST;c.sheaves??=0;c.threshed??=0;return c;}
 export function enableAutumnCrops(state){
@@ -14,7 +15,7 @@ export function enableAutumnCrops(state){
   if(field.type!=='field')continue;
   const crop=cropFor(state,field);
   if(state.season!==3&&crop.sown>0)crop.springCycle=true;
-  else field.crop={...empty(state.year),seedStock:crop.seedStock,sheaves:crop.sheaves,threshed:crop.threshed};
+  else field.crop={...empty(state.year),seedStock:crop.seedStock,sheaves:crop.sheaves,threshed:crop.threshed,...crop.humanSheaves===undefined?{}:{humanSheaves:crop.humanSheaves}};
  }
  state.cropCalendar=AUTUMN_CROPS;
  return true;
@@ -25,7 +26,7 @@ export function initializeCrops(s,{legacy=false}={}){
 export function fieldActive(s,b){const c=cropFor(s,b),calendar=fieldCalendar(s,b);return isOperational(b)&&(s.season===calendar.sow&&!fieldResting(s,b)&&c.sown<1-1e-8||s.season===calendar.harvest&&c.remaining>1e-8||c.sheaves>1e-8);}
 export function workField(s,b,seconds,worker){
  const c=cropFor(s,b),calendar=fieldCalendar(s,b);if(!isOperational(b)||seconds<=0)return 0;
- if(c.sheaves>1e-8){const amount=Math.min(c.sheaves,7*outputMultiplier(b));c.sheaves=Math.max(0,c.sheaves-amount);c.threshed+=amount;return amount;}
+ if(c.sheaves>1e-8){const amount=Math.min(c.sheaves,7*outputMultiplier(b));c.sheaves=Math.max(0,c.sheaves-amount);c.threshed+=amount;if(c.humanSheaves!==undefined)c.humanSheaves=Math.max(0,c.humanSheaves-amount);return amount;}
  if(s.season===calendar.sow&&!fieldResting(s,b)){const delta=Math.max(0,Math.min(1-c.sown,seconds/12,c.seedStock/SEED_COST));c.sown+=delta;if(c.sown>=1-1e-8)c.sown=1;c.seedStock=Math.max(0,c.seedStock-delta*SEED_COST);c.seedUsed=c.sown*SEED_COST;return 0;}
  if(s.season!==calendar.harvest||c.remaining<=0)return 0;
  const tool=b.sickle;
@@ -34,6 +35,7 @@ export function workField(s,b,seconds,worker){
  const amount=Math.min(c.remaining,tool?(tool.edge>0?Math.min(batch,tool.edge):batch/2):batch);
  if(tool)tool.edge=Math.max(0,tool.edge-amount);
  c.remaining=Math.max(0,c.remaining-amount);c.harvested+=amount;c.sheaves+=amount;
+ if(s.earthDiscovery)c.humanSheaves=amount/(c.fertilityYield?FERTILITY_MULTIPLIER:1);
  if(amount>0&&usesCatDiscovery(s)&&!s.irrigatedHarvest&&c.legacyYear===undefined&&c.sown===1&&c.growth>=1-1e-8&&c.canalGrowth>0&&worker?.calling==='farmer'&&worker.age>=16){
   s.irrigatedHarvest={field:buildingKey(b),farmerId:worker.id,time:s.simTime};
   if(s.rainDiscovery){
@@ -61,11 +63,12 @@ export function changeCropSeason(s,previous){
  for(const b of s.buildings){
   if(b.type!=='field')continue;
   const c=cropFor(s,b),calendar=fieldCalendar(s,b);
-  const reset=()=>{b.crop={...empty(s.year),seedStock:c.seedStock,sheaves:c.sheaves,threshed:c.threshed};};
+  const reset=()=>{b.crop={...empty(s.year),seedStock:c.seedStock,sheaves:c.sheaves,threshed:c.threshed,...c.humanSheaves===undefined?{}:{humanSheaves:c.humanSheaves}};};
   if(s.season===calendar.sow){reset();continue;}
   c.year=s.year;
   if(previous===calendar.grow){
-   c.total=c.remaining=84*outputMultiplier(b)*saltYieldFactor(s,b)*c.sown*c.growth*(s.buffs?.fertility?1.6:1);
+   c.total=c.remaining=84*outputMultiplier(b)*saltYieldFactor(s,b)*c.sown*c.growth*(s.buffs?.fertility?FERTILITY_MULTIPLIER:1);
+   if(s.earthDiscovery&&s.buffs?.fertility)c.fertilityYield=true;
    c.harvested=0;ready+=c.remaining;
   }
   if(previous===calendar.harvest){
@@ -94,4 +97,4 @@ export function validateCrops(s){
  return s.buildings.every(b=>{
  const tool=b.sickle;
  if(tool!==undefined&&(!isStrictSumer(s)||b.type!=='field'||!isOperational(b)||!tool||Object.keys(tool).length!==2||!Number.isFinite(tool.edge)||tool.edge<0||tool.edge>SICKLE_EDGE||!Number.isFinite(tool.pottery)||tool.pottery<0||tool.pottery>1+1e-7))return false;
- if(b.type!=='field')return b.crop===undefined;const c=b.crop;if(!c)return true;const finite=(n,max)=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<=max;return (c.springCycle===undefined||c.springCycle===true&&s.cropCalendar===AUTUMN_CROPS&&s.season!==3)&&Number.isInteger(c.year)&&c.year===s.year&&finite(c.sown,1)&&finite(c.growth,1)&&(c.canalGrowth===undefined||usesCatDiscovery(s)&&finite(c.canalGrowth,c.growth+1e-8))&&['remaining','total','harvested','spoiled'].every(k=>finite(c[k],1e6))&&Math.abs(c.total-c.remaining-c.harvested-c.spoiled)<1e-6&&['seedStock','seedUsed','sheaves','threshed'].every(k=>Number.isFinite(c[k])&&c[k]>=-1e-8&&c[k]<=1e6)&&c.seedStock<=4.000001&&Math.abs(c.seedUsed-c.sown*SEED_COST)<1e-6&&(c.legacyYear===undefined||c.legacyYear===s.year);});}
+ if(b.type!=='field')return b.crop===undefined;const c=b.crop;if(!c)return true;const finite=(n,max)=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<=max;return (c.springCycle===undefined||c.springCycle===true&&s.cropCalendar===AUTUMN_CROPS&&s.season!==3)&&Number.isInteger(c.year)&&c.year===s.year&&finite(c.sown,1)&&finite(c.growth,1)&&(c.humanSheaves===undefined||s.earthDiscovery&&finite(c.humanSheaves,c.sheaves+1e-8))&&(c.fertilityYield===undefined||s.earthDiscovery&&c.fertilityYield===true)&&(c.canalGrowth===undefined||usesCatDiscovery(s)&&finite(c.canalGrowth,c.growth+1e-8))&&['remaining','total','harvested','spoiled'].every(k=>finite(c[k],1e6))&&Math.abs(c.total-c.remaining-c.harvested-c.spoiled)<1e-6&&['seedStock','seedUsed','sheaves','threshed'].every(k=>Number.isFinite(c[k])&&c[k]>=-1e-8&&c[k]<=1e6)&&c.seedStock<=4.000001&&Math.abs(c.seedUsed-c.sown*SEED_COST)<1e-6&&(c.legacyYear===undefined||c.legacyYear===s.year);});}
