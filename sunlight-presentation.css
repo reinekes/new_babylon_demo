@@ -1,0 +1,21 @@
+.sunlight-scene[hidden],.sunlight-glow[hidden]{display:none}
+.sunlight-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.sunlight-scene-card{background:linear-gradient(112deg,#433021,#26231f);border-color:#b89156}
+.sunlight-wall{fill:#543b30;stroke:#98744f;stroke-width:1.2}
+.sunlight-beam{fill:#ffda91;opacity:0;transform-origin:left center;transition:opacity .7s ease}
+.sunlight-vessel{fill:#96634b;stroke:#d59e67;stroke-width:1.1}
+.sunlight-reflection{fill:none;stroke:#ffdfa0;stroke-width:2;opacity:0}
+.sunlight-scene[data-vessel="false"] :is(.sunlight-vessel,.sunlight-reflection){display:none}
+.sunlight-scene:is([data-phase="beam"],[data-phase="witness"],[data-phase="threshold"],[data-phase="reflection"]) .sunlight-beam{opacity:.72}
+.sunlight-scene[data-phase="beam"] .sunlight-beam{animation:sunlight-reveal 2.8s ease-out}
+.sunlight-scene[data-phase="cloud"] .sunlight-beam{opacity:.24}
+.sunlight-scene:is([data-phase="reflection"],[data-phase="witness"]) .sunlight-reflection{opacity:1}
+.sunlight-hands,.sunlight-threshold{display:none;fill:none;stroke:#d19a69;stroke-width:2}
+.sunlight-scene[data-phase="witness"] .sunlight-hands,.sunlight-scene[data-phase="threshold"] .sunlight-threshold{display:block}
+.sunlight-scene[data-phase="threshold"] :is(.sunlight-vessel,.sunlight-reflection){display:none}
+.sunlight-scene[data-phase="threshold"] .sunlight-beam{transform:translate(30px,43px) scale(.42,.55)}
+.sunlight-glow{position:absolute;left:0;top:0;z-index:2;width:2.75rem;height:1.5rem;pointer-events:none;background:radial-gradient(ellipse,#ffcc7170,transparent 72%)}
+@keyframes sunlight-reveal{from{transform:scaleX(.04);opacity:.12}to{transform:none;opacity:.72}}
+@media(prefers-reduced-motion:reduce){
+ .sunlight-beam{animation:none!important;transition:none}
+}

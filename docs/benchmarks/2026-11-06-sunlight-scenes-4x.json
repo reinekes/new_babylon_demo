@@ -1,0 +1,20 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 289,
+  "controlledMealArrival": true,
+  "opening": true,
+  "cast": true,
+  "glowing": true,
+  "byteEqualControl": true,
+  "byteEqualReload": true,
+  "samples": 369,
+  "sceneCpuMs": {
+    "median": 7.2775420000000395,
+    "p95": 30.53216599999996
+  },
+  "controlCpuMs": {
+    "median": 6.618207999999868,
+    "p95": 31.9640830000003
+  }
+}

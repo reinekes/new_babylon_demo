@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T14:03:20.109441+00:00",
+  "commit": "a0c0495",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3211453511fb6dcf7b9c85a87a74a84c4e6c96f1a437eddcb38f4fa6e567ca82",
+      "actual": "3211453511fb6dcf7b9c85a87a74a84c4e6c96f1a437eddcb38f4fa6e567ca82",
+      "match": true
+    },
+    {
+      "path": "common-meal.js",
+      "status": 200,
+      "expected": "40c942c31f9f120258aa56e505b14493011b077049e429f8e9db416d79d63c63",
+      "actual": "40c942c31f9f120258aa56e505b14493011b077049e429f8e9db416d79d63c63",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-feast-pages-sha.json",
+      "status": 200,
+      "expected": "d0debda2c66940d8d3edaf3f5091c80f597ff688935f85e61a8fd29668d8e520",
+      "actual": "d0debda2c66940d8d3edaf3f5091c80f597ff688935f85e61a8fd29668d8e520",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-unlock-4x.json",
+      "status": 200,
+      "expected": "c80c680a655ad5a1c0da8b0a8cedd8d409933788ef7bb589ece6ee4ac892258a",
+      "actual": "c80c680a655ad5a1c0da8b0a8cedd8d409933788ef7bb589ece6ee4ac892258a",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-84.md",
+      "status": 200,
+      "expected": "26683e1c497ab2eae2d03264910b9cb05246eb1c11c929d2df9e3e5ef7c54bbf",
+      "actual": "26683e1c497ab2eae2d03264910b9cb05246eb1c11c929d2df9e3e5ef7c54bbf",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "5b3de4219c9188dd8604d049bdddeefcbdd04b8f44ae466fbef3fad1b0d555b0",
+      "actual": "5b3de4219c9188dd8604d049bdddeefcbdd04b8f44ae466fbef3fad1b0d555b0",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0ba7825a77abd9c134b40d5765fb5a0d7ce3d2eba3eb042a40bdef13816bf8b6",
+      "actual": "0ba7825a77abd9c134b40d5765fb5a0d7ce3d2eba3eb042a40bdef13816bf8b6",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "1032a3101e7b52767de2d3b15e5281b9902e8b86db65e09f61591d248c3f0d7c",
+      "actual": "1032a3101e7b52767de2d3b15e5281b9902e8b86db65e09f61591d248c3f0d7c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "456d242df643b1da21fc0ccb4b70b3eaf339a480f50b556247540f1366f0a1d6",
+      "actual": "456d242df643b1da21fc0ccb4b70b3eaf339a480f50b556247540f1366f0a1d6",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "bfe16c3858fabeb5dfe3dc39dc08e12ec9ed2145e58a19a3bc01d05ad008b835",
+      "actual": "bfe16c3858fabeb5dfe3dc39dc08e12ec9ed2145e58a19a3bc01d05ad008b835",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "411041c7b167de469203984c178c9bf2d80644743102b9eaeb95b99c568346bd",
+      "actual": "411041c7b167de469203984c178c9bf2d80644743102b9eaeb95b99c568346bd",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-sunlight-feast.md",
+      "status": 200,
+      "expected": "353403e4077fe851d46456dc1bc99fe0c8366a817ad219208fe2a829be1b30ab",
+      "actual": "353403e4077fe851d46456dc1bc99fe0c8366a817ad219208fe2a829be1b30ab",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "967d541c063b88394856b37596b6762472cda92504fdd7fc49c081677671e2e1",
+      "actual": "967d541c063b88394856b37596b6762472cda92504fdd7fc49c081677671e2e1",
+      "match": true
+    },
+    {
+      "path": "sunlight-gathering.js",
+      "status": 200,
+      "expected": "e302be862f75f9423f53d5c73892ab7c4fd965811d7a3049b10469dbb11e7b07",
+      "actual": "e302be862f75f9423f53d5c73892ab7c4fd965811d7a3049b10469dbb11e7b07",
+      "match": true
+    },
+    {
+      "path": "tests/common-meal.test.js",
+      "status": 200,
+      "expected": "47838567f8e84a3b7558c50afeb9143fa29d6f855a1285bef0ca758292d2e78c",
+      "actual": "47838567f8e84a3b7558c50afeb9143fa29d6f855a1285bef0ca758292d2e78c",
+      "match": true
+    },
+    {
+      "path": "tests/votive-offerings.test.js",
+      "status": 200,
+      "expected": "0979df9a43b2f9024491b8e0900d04a5a4ae9837cbe9c9094ce2a13e65d7cc8b",
+      "actual": "0979df9a43b2f9024491b8e0900d04a5a4ae9837cbe9c9094ce2a13e65d7cc8b",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "28d5c3fcde2c44bcb185b5f4af466255067d9e7e9e2476524688697a90141d91",
+      "actual": "28d5c3fcde2c44bcb185b5f4af466255067d9e7e9e2476524688697a90141d91",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
