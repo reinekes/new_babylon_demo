@@ -1,8 +1,9 @@
+import {advanceArrivalGroup} from './arrival-hospitality.js';
 import {deliverShapingLoad,returnShapingLoad} from './shaping-batch.js';
 import {advanceShapingModel} from './shaping-model.js';
 import {recordSunlightService} from './sunlight-gathering.js';
 import {recordAbundanceHome} from './abundance-discovery.js';
-import {giftInputFood,moveGiftFood,takeGiftFood} from './abundance-origin.js';
+import {addGiftFood,giftInputFood,moveGiftFood,takeGiftFood} from './abundance-origin.js';
 import {recordWindDelivery} from './wind-delivery.js';
 import {markCreatorCargo,acceptCreatorCargo,addCreatorStock,recordCreatorUse} from './creator-materials.js';
 import {foodYieldMultiplier,useRichCatch} from './rich-catch.js';
@@ -160,6 +161,12 @@ export function syncCitizens(s){
  while(s.citizens.length>s.population){const c=s.citizens.at(-1);if(recoverCitizenCargo(s,c.id)===false){s.population=s.citizens.length;break;}s.citizens.pop();}
  const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
  for(const c of s.citizens){if(!available.get(c.home))continue;homes[c.id]=c.home;available.set(c.home,available.get(c.home)-1);}
+ if(s.arrivalGroup&&available.has(s.arrivalGroup.home)){
+  const {home,count}=s.arrivalGroup;
+  available.set(home,Math.max(0,available.get(home)-count));
+  const free=[...available.values()].reduce((n,beds)=>n+beds,0);
+  s.population=Math.min(s.population,s.citizens.length+free);
+ }
  let nextId=Math.max(s.demography?.nextId||0,1+Math.max(-1,...s.citizens.map(c=>c.id)));
  while(s.citizens.length<s.population)s.citizens.push({id:nextId++});
  if(s.demography)s.demography.nextId=nextId;
@@ -771,7 +778,24 @@ function prepareCare(s,ctx){
 export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);advanceExternalGuest(s,dt,ctx.network);prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);const familyCare=advanceFamilyCare(s,dt,mourners),constructionWork=isAwakening(s)?new Map():null;
+ let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);advanceExternalGuest(s,dt,ctx.network);
+  if(advanceArrivalGroup(s,dt,ctx.network)){
+   const {home,count,provisions,giftReserve,water}=s.arrivalGroup,house=ctx.buildings.get(home);
+   for(const [source,{food}] of Object.entries(provisions)){
+    if(giftReserve?.[source])addGiftFood(house,'giftHome',giftReserve?.[source],house.pantry||0);
+    house.pantry=(house.pantry||0)+food;
+    house.pantryDelivered=(house.pantryDelivered||0)+food;
+   }
+   house.water+=water;
+   delete s.arrivalGroup;
+   const first=s.demography.nextId;
+   for(let i=0;i<count;i++)s.citizens.push({id:first+i,home});
+   s.demography.nextId+=count;s.population=s.citizens.length;
+   syncCitizens(s);ctx=context(s);
+   s.news.unshift({title:'Прибыли новые жители',text:`Поселились в доме ${home} · ${count} чел.`,kind:'good',year:s.year,season:s.season,tick:s.tick});
+   s.news=s.news.slice(0,80);
+  }
+  prepareCare(s,ctx);if(advanceWater(s,dt))invalidateAssignments(s);const familyCare=advanceFamilyCare(s,dt,mourners),constructionWork=isAwakening(s)?new Map():null;
  const modelWorkers=advanceShapingModel(s,dt,{busy:familyCare,reachable:(from,to)=>!!routeBetween(s,from,to,ctx)});
  for(const c of s.citizens)if(!modelWorkers.includes(c.id)&&!familyCare?.has(c.id)&&!waterBusy(c)&&!mourners?.has(c.id)&&!['relic','relicGuest','awakening'].includes(c.phase))advanceCitizen(s,c,dt,ctx,constructionWork);
  if(constructionWork)for(const [site,contributions] of constructionWork){
@@ -795,6 +819,9 @@ export function visibleCitizens(s){
  const people=(s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:c.floodShelter&&c.routeIndex<c.route.length||waterBusy(c)||['toEveningGame','toManualGathering','toCommonMeal','toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.memorialMove?true:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),guarding:c.guardPost===c.work&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...relicCitizenView(s,c),...godhoodCitizenView(s,c),...treatmentViewPosition(s,c)}));
  const guest=externalGuestView(s);if(guest)people.push(guest);
  if(s.externalVisits)people.push(...visitorsView(s));
+ const group=s.arrivalGroup;
+ if(group)people.push({id:1000010,name:`Переселенцы · ${group.count}`,age:30,sex:'m',lifeStage:'adult',kind:'person',visitor:true,
+  x:group.x,y:group.y,phase:'guest',walking:group.routeIndex<group.route.length,step:s.simTime*4,robe:'#b37b51',carrying:true,cargo:{food:group.count}});
  return people;
 }
 export function workforceStats(s){

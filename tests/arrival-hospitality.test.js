@@ -51,3 +51,106 @@ test('arrival housing counts permanent residents and temporary evacuees, excludi
  s.citizens=[{home:'6,7',floodShelter:'8,7'},{home:'8,7'},{home:'8,7'}];
  assert.deepEqual(arrivalHousing(s),[{home:'6,7',beds:3},{home:'8,7',beds:1}]);
 });
+
+test('an arrival route uses a connected map edge and a dry house with vacancies',async()=>{
+ const {arrivalRoute}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ const network=networkFor(s);
+ const offer=arrivalRoute(s,network);
+ assert.ok(offer);
+ const {route,home,beds}=offer;
+ assert.ok(beds>0&&beds<=6);
+ assert.ok(route[0].x===-.5||route[0].y===-.5||route[0].x===63.5||route[0].y===63.5);
+ assert.equal(route.at(-1).key,network.ports.find(p=>`${p.building.x},${p.building.y}`===home).key);
+ assert.ok(route.slice(1).every((p,i)=>network.graph.get(route[i].key).has(p.key)));
+ assert.equal(arrivalRoute(s,{...network,components:new Map()}),null);
+});
+
+test('arrival offer limits the group to water surplus and reachable food outside seed reserves',async()=>{
+ const {arrivalOffer}=await import('../arrival-hospitality.js');
+ const {syncInventory}=await import('../inventory.js');
+ const {networkFor}=await import('../workforce.js');
+ const s=createNewCity({mode:'awakening',seed:1}),network=networkFor(s);
+ const home=s.buildings.find(b=>b.type==='house');
+ const key=`${home.x},${home.y}`;
+ home.level=2;
+ for(const b of s.buildings)if(b.type==='house')b.water=0;
+ home.water=s.citizens.filter(c=>c.home===key).reduce((n,c)=>n+(c.age<16?.5:1),0)+2;
+ const offers=arrivalOffer(s,network);
+ assert.ok(offers);
+ assert.equal(offers.home,key);
+ assert.equal(offers.beds,2);
+ assert.equal(offers.food,2);
+ assert.equal(offers.water,2);
+ s.buildings.push({type:'field',x:0,y:0,level:1});
+ s.resources.food=4;syncInventory(s);
+ assert.equal(arrivalOffer(s,network),null,'the seed reserve cannot become a travel ration');
+});
+
+test('reserving the arrival ration debits supplies once and survives a reload',async()=>{
+ const {reserveArrival,arrivalHousing}=await import('../arrival-hospitality.js');
+ const {canDemolish}=await import('../management.js');
+ const {networkFor}=await import('../workforce.js');
+ const s=createNewCity({mode:'awakening',seed:1}),network=networkFor(s);
+ for(const b of s.buildings)if(b.type==='house')b.water=8;
+ const water=s.buildings.reduce((n,b)=>n+(b.water||0),0),food=s.resources.food,population=s.population;
+ const before=new Map(arrivalHousing(s).map(row=>[row.home,row.beds]));
+ assert.ok(reserveArrival(s,network));
+ const {count,home}=s.arrivalGroup;
+ assert.equal(arrivalHousing(s).find(row=>row.home===home)?.beds||0,before.get(home)-count);
+ assert.match(canDemolish(s,s.buildings.find(b=>`${b.x},${b.y}`===home)),/зарезервированы/);
+ assert.equal(s.resources.food,food-count);
+ assert.equal(s.buildings.reduce((n,b)=>n+(b.water||0),0),water-count);
+ assert.equal(s.population,population);
+ assert.equal(reserveArrival(s,network),false);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const broken=JSON.parse(raw);broken.arrivalGroup.count++;
+ assert.equal(decode(JSON.stringify(broken)),null);
+});
+
+test('a group waits behind a blocked path, then settles once through the normal simulation',async()=>{
+ const {reserveArrival,advanceArrivalGroup}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {advanceTime}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:1}),network=networkFor(s);
+ for(const b of s.buildings)if(b.type==='house')b.water=8;
+ assert.ok(reserveArrival(s,network));
+ const {count,home,x,y}=s.arrivalGroup,ids=s.citizens.map(c=>c.id);
+ assert.equal(advanceArrivalGroup(s,60,{...network,nodes:new Map(),components:new Map()}),false);
+ assert.deepEqual([s.arrivalGroup.x,s.arrivalGroup.y],[x,y]);
+ const copy=decode(encode(s));
+ assert.ok(copy);
+ for(let i=0;i<400&&copy.arrivalGroup;i++){copy.event=null;advanceTime(copy,.25);}
+ assert.equal(copy.arrivalGroup,undefined);
+ assert.equal(copy.population,ids.length+count);
+ assert.deepEqual(copy.citizens.slice(0,ids.length).map(c=>c.id),ids);
+ assert.ok(copy.citizens.slice(ids.length).every(c=>c.home===home));
+ const population=copy.population;
+ advanceTime(copy,.25);
+ assert.equal(copy.population,population);
+ assert.equal(encode(decode(encode(copy))),encode(copy));
+});
+
+test('the Call charges only for the displayed group and requires blessing and hospitality',async()=>{
+ const {miracle}=await import('../engine.js');
+ const {networkFor}=await import('../workforce.js');
+ const {arrivalOffer}=await import('../arrival-hospitality.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ s.resources.faith=100;s.godhood.stage='recognized';
+ for(const b of s.buildings)if(b.type==='house')b.water=8;
+ const population=s.population;
+ assert.match(miracle(s,'healing').reason,/Благословение/);
+ s.blessingDiscovery.qualifiedAt=s.simTime;
+ assert.match(miracle(s,'healing').reason,/гостеприимств/);
+ recordArrivalHospitality(s,'envoy',{phase:'departed',outcome:'accepted',destination:'6,7'});
+ recordArrivalHospitality(s,'artisan',{phase:'departed',outcome:'taught',fed:true,home:'6,7'});
+ const {beds,home}=arrivalOffer(s,networkFor(s));
+ assert.equal(miracle(s,'healing',{count:beds+1,home}).ok,false);
+ assert.equal(s.resources.faith,100);
+ assert.equal(miracle(s,'healing',{count:beds,home}).ok,true);
+ assert.equal(s.arrivalGroup.count,beds);
+ assert.equal(s.resources.faith,55);
+ assert.equal(s.population,population);
+});

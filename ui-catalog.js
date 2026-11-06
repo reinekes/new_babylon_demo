@@ -34,9 +34,9 @@ export function updateBuildingCardName(card,state){
 }
 
 // Reused cards must update every visible/accessible price when switching saves.
-export function updateMiracleCard(details,s,id,reason='',gift=null){
+export function updateMiracleCard(details,s,id,reason='',gift=null,arrival=null){
  const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=price===0;
- const desc=id==='shaping'&&s.shapingProjects?'Создаёт штабель из 60 глины и 40 тростника у выбранного ремесленного двора. Носильщики доставят материалы на склады.':id==='revelation'&&s.revelationEvidence?'Совет о следующем шаге выбранной ветви и +12 престижа.':id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
+ const desc=id==='healing'&&s.arrivalHospitality?'Приглашает путников. Жители войдут в город после прибытия в подготовленный дом.':id==='shaping'&&s.shapingProjects?'Создаёт штабель из 60 глины и 40 тростника у выбранного ремесленного двора. Носильщики доставят материалы на склады.':id==='revelation'&&s.revelationEvidence?'Совет о следующем шаге выбранной ветви и +12 престижа.':id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
  const description=details.querySelector('.miracle-description');if(description)description.textContent=desc;
  const preview=details.querySelector('.abundance-quote');
  if(preview){
@@ -45,7 +45,11 @@ export function updateMiracleCard(details,s,id,reason='',gift=null){
   const text=gift?.store?`${buildingDefinition(s,gift.store.type).name} · ${gift.store.x}, ${gift.store.y}. Свободно: ${show(gift.room)}. Получишь ${show(gift.amount)} из ${ABUNDANCE_LIMIT} еды.`:'';
   if(preview.textContent!==text)preview.textContent=text;
  }
- el.disabled=!!reason;el.textContent=`${id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
+ if(id==='healing'){
+  if(arrival){el.dataset.arrivalCount=arrival.beds;el.dataset.arrivalHome=arrival.home;}
+  else{delete el.dataset.arrivalCount;delete el.dataset.arrivalHome;}
+ }
+ el.disabled=!!reason;el.textContent=`${arrival?`Позвать ${arrival.beds} чел.`:id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
  el.title=`${m.name} · ${price} веры. ${desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
  details.querySelector('.miracle-facts span').textContent=`${price} веры${first?' · первый дар':''}`;

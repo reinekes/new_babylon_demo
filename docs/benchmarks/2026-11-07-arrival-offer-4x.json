@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "routeLength": 4,
+  "beds": 6,
+  "controlledHomeWater": true,
+  "samples": 120,
+  "medianOfferCpuMs": 0.12408300000004147,
+  "p95OfferCpuMs": 0.24166600000000926,
+  "byteEqualReload": true,
+  "unchangedSimulation": true
+}

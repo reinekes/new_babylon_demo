@@ -1,3 +1,4 @@
+import {reservedArrivalBeds} from './arrival-hospitality.js';
 import {prepareMemorialMove} from './life-analytics.js';
 import {mournResidents} from './wellbeing.js';
 import {totalFood} from './households.js';
@@ -34,7 +35,7 @@ export function advanceGenerations(s,recover=()=>{}){
   if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
   const component=housingNetwork.components.get(housingPorts.get(a.home));
   if(component===undefined||component!==housingNetwork.components.get(housingPorts.get(partner.home)))continue;
-  const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
+  const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
   const awaiting=b=>{
    const p=b.householdInitiative;
    return p&&!p.settled&&living.get(p.members[0])?.partner===p.members[1];
@@ -54,7 +55,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50);
   for(const a of adults){if(a.partner!==null)continue;const partner=adults.find(c=>c!==a&&c.sex!==a.sex&&c.partner===null&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
   const pair=adults.find(c=>c.sex==='f'&&c.age<45&&living.get(c.partner)?.home===home);
-  if(!pair||residents.length>=capacityOf(b)||s.happiness<65||s.hungry||totalFood(s)<foodDemand(s)*2+.6||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
+  if(!pair||residents.length>=capacityOf(b)-reservedArrivalBeds(s,home)||s.happiness<65||s.hungry||totalFood(s)<foodDemand(s)*2+.6||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
   const father=living.get(pair.partner),id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};
   newborns.push(baby);residents.push(baby);d.lastBirth[home]=s.tick;d.births++;news(s,'В семье родился ребёнок',`${citizenName(id)} · родители: ${citizenName(pair.id)} и ${citizenName(father.id)}. Поколение ${baby.generation}.`);
  }

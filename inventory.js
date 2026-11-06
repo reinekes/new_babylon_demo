@@ -9,7 +9,7 @@ function referencedStores(s){
  const refs=new Set(),loadedJobs=new Set(),allocation=q=>{for(const map of [q?.sources,q?.allocations])for(const key of Object.keys(map||{}))refs.add(key);};
  for(const b of [...s.buildings||[],...s.roads||[]])if(b.construction)allocation(b.construction);
  allocation(s.festival);
- for(const guest of [s.externalGuest,...Object.values(s.externalVisits||{})])for(const key of Object.keys(guest?.provisions||{}))refs.add(key);
+ for(const guest of [s.externalGuest,s.arrivalGroup,...Object.values(s.externalVisits||{})])for(const key of Object.keys(guest?.provisions||{}))refs.add(key);
  for(const q of s.trade?.sales||[])if(q.amount>q.loaded+q.cancelled)allocation(q);
  for(const c of s.citizens||[]){const loaded=Object.values(c.cargo||{}).some(n=>n>0);if(loaded&&c.districtJob!=null)loadedJobs.add(c.districtJob);if(c.clothingTarget!==undefined||c.craftSite||c.seedField||c.pantryTrip||loaded)refs.add(c.store);}
  for(const q of s.district?.jobs||[])if(q.remaining>0||loadedJobs.has(q.id)){refs.add(q.source);refs.add(q.target);}
@@ -66,10 +66,11 @@ export function takeStock(s,key,k,n,{fishTo,fishKey='fishCargo',giftTo,giftKey='
  if(b.creatorStock){const local=takeCreatorStock(b,k,taken);if(creatorTo)markCreatorCargo(s,creatorTo,k,local,true);}
  b.stock[k]-=taken;s.resources[k]-=taken;return taken;
 }
-export function foodAvailability(s){
- syncInventory(s);let target=0;
+export function foodAvailability(s,{reconcile=true}={}){
+ if(reconcile)syncInventory(s);
+ let target=0;
  if(s.foodPlan?.protectSeeds!==false){for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));target=Math.min(s.resources.food,Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0)));}
- const result=new Map();for(const b of stockStores(s)){const protectedFood=Math.min(b.stock.food,target);result.set(keyOf(b),Math.max(0,b.stock.food-protectedFood));target-=protectedFood;}return result;
+ const result=new Map();for(const b of stockStores(s)){const stored=b.stock?.food||0,protectedFood=Math.min(stored,target);result.set(keyOf(b),Math.max(0,stored-protectedFood));target-=protectedFood;}return result;
 }
 export const foodAvailableAt=(s,key)=>foodAvailability(s).get(key)||0;
 

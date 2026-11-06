@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "routeLength": 4,
+  "beds": 6,
+  "samples": 120,
+  "medianRouteCpuMs": 0.13324999999997544,
+  "p95RouteCpuMs": 0.3208750000000009,
+  "byteEqualReload": true,
+  "unchangedSimulation": true
+}
