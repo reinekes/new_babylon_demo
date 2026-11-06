@@ -1,5 +1,5 @@
 import {tradeSealReady} from './scribes.js';
-import {approveHouseholdInitiative,householdInitiative} from './household-initiative.js';
+import {approveHouseholdInitiative,householdInitiative,setAutonomousHousing} from './household-initiative.js';
 import {approveWaterProject,cityWaterRequest,householdWaterRequest,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
@@ -527,7 +527,7 @@ function showHouseholdInitiative(b){
 function householdInitiativePanel(b,h){
  if(!isStrictSumer(state))return '';
  const related=state.buildings.filter(site=>site.householdInitiative?.source===buildingKey(b)||site===b&&site.householdInitiative);
- return related.map(site=>`<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${site.construction?.kind==='new'?'Идёт стройка':site.householdInitiative.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}</p>`).join('')+
+ return related.map(site=>`<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${site.construction?.kind==='new'?'Идёт стройка':site.householdInitiative.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${site.householdInitiative.autonomous?' · семья начала сама':''}</p>`).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
 }
 function eveningGamePanel(b){
@@ -689,7 +689,7 @@ function showCityOverview(tab='districts'){
 }
 function refreshCityOverview(tab){
  const root=$('city-tools-root');if(modalKind!=='citytools'||!root||root.contains(document.activeElement)&&['SELECT','INPUT'].includes(document.activeElement.tagName))return;
- renderCityTools(root,state,{...(tab?{tab}:{}),audioStatus:cityAudio.status,mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onUnload:()=>mutate(callUnloadWorkers(state),'Объявлен призыв на разгрузку'),onRepair:()=>mutate(callRepairWorkers(state),'Объявлен призыв на расчистку каналов'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const road=state.roads.find(r=>r.id===key);if(road){closeDialog();renderer.focusOn(road.x,road.y);roadDetail(road);return;}const [x,y]=key.split(',').map(Number),b=buildingAt(state,x,y);if(!b)return;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
+ renderCityTools(root,state,{...(tab?{tab}:{}),audioStatus:cityAudio.status,onAutoHousing:enabled=>mutate(setAutonomousHousing(state,enabled),enabled?'Самостоятельная стройка разрешена':'Самостоятельная стройка выключена'),mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onUnload:()=>mutate(callUnloadWorkers(state),'Объявлен призыв на разгрузку'),onRepair:()=>mutate(callRepairWorkers(state),'Объявлен призыв на расчистку каналов'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const road=state.roads.find(r=>r.id===key);if(road){closeDialog();renderer.focusOn(road.x,road.y);roadDetail(road);return;}const [x,y]=key.split(',').map(Number),b=buildingAt(state,x,y);if(!b)return;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
 }
 function handleTestAction(action,data){
  if(action==='cat-scene'||action==='earth-scene'){

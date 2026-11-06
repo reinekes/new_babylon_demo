@@ -57,3 +57,22 @@ test('an Awakening household can approve a secular project and a stale offer spe
  assert.equal(s.resources.faith,0);
  assert.ok(decode(encode(s)));
 });
+
+test('autonomous housing is off by default and opt-in starts one reserved project per day',async()=>{
+ const {setAutonomousHousing}=await import('../household-initiative.js');
+ let s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ advanceTime(s,1);
+ assert.ok(!s.buildings.some(b=>b.householdInitiative));
+ assert.ok(setAutonomousHousing(s,true).ok);
+ const raw=encode(s);s=decode(raw);assert.equal(encode(s),raw);
+ const clay=s.resources.clay,faith=s.resources.faith;
+ advanceTime(s,.1);advanceTime(s,.1);
+ const sites=s.buildings.filter(b=>b.householdInitiative);
+ assert.equal(sites.length,1);
+ assert.equal(sites[0].householdInitiative.autonomous,true);
+ assert.equal(s.resources.clay,clay-12);
+ assert.equal(s.resources.faith,faith);
+ assert.ok(setAutonomousHousing(s,false).ok);
+ assert.equal(s.householdBuildingPolicy.enabled,false);
+ assert.ok(decode(encode(s)));
+});

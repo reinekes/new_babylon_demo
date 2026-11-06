@@ -1,6 +1,6 @@
 import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
-import {validateHouseholdInitiatives} from './household-initiative.js';
+import {advanceAutonomousHousing,autonomousHousingBoundary,validateHouseholdInitiatives} from './household-initiative.js';
 import {validateHumanProjects} from './human-projects.js';
 import {fortificationAccess} from './navigation.js';
 import {advanceSupplyVow,validateSupplyVows} from './supply-vow.js';
@@ -267,8 +267,9 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
   if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
   if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
   advanceSupplyVow(s);
+  advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;
-  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
   if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
  advanceEcology(s);syncInventory(s);check(s);return advanced;
