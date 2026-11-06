@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-06T19:00:26.890821+00:00",
+  "commit": "892006ec7f7aa5ddfaabea07072f51a999b454f2",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "315d6ccbf7adcb4210ee60f356554ae275b09b918e498f43ffca136b4d29856f",
+      "actual": "315d6ccbf7adcb4210ee60f356554ae275b09b918e498f43ffca136b4d29856f",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "9e3d5659f2c04b43c005222e98b82ad56b553932571b36fca504f7545e42e248",
+      "actual": "9e3d5659f2c04b43c005222e98b82ad56b553932571b36fca504f7545e42e248",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-scenes-4x.json",
+      "status": 200,
+      "expected": "1db0acf2cb610c48558ddc880ec731fda17b3a3347458c6d9d97fca66cec5402",
+      "actual": "1db0acf2cb610c48558ddc880ec731fda17b3a3347458c6d9d97fca66cec5402",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-unlock-pages-sha.json",
+      "status": 200,
+      "expected": "a437161ca06844b3b8f809c47e8debce50b95de15868135bdbba209796954ccd",
+      "actual": "a437161ca06844b3b8f809c47e8debce50b95de15868135bdbba209796954ccd",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-85.md",
+      "status": 200,
+      "expected": "11c12e8b4a71be9c924398acef07df137706648db6152e17b51a24179d87a065",
+      "actual": "11c12e8b4a71be9c924398acef07df137706648db6152e17b51a24179d87a065",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "df21bde3e8a513ed21710fed3d35718f0d8b86b5a6dcd5a514c59cf7829fe650",
+      "actual": "df21bde3e8a513ed21710fed3d35718f0d8b86b5a6dcd5a514c59cf7829fe650",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "627e9db78b96eaa89d7b30a7e4167b4b6a6e1e9c83e34fa68267c531d73928ea",
+      "actual": "627e9db78b96eaa89d7b30a7e4167b4b6a6e1e9c83e34fa68267c531d73928ea",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "6512c3abab71d9e2e185c74b52dbcba0df41e5412a1195cd628e68c6c6abf077",
+      "actual": "6512c3abab71d9e2e185c74b52dbcba0df41e5412a1195cd628e68c6c6abf077",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "463d69625ecc9cebaf3cdd2ef54058df2d8c306ae83595a2f133aceb8f6ee242",
+      "actual": "463d69625ecc9cebaf3cdd2ef54058df2d8c306ae83595a2f133aceb8f6ee242",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-sunlight-unlock.md",
+      "status": 200,
+      "expected": "f09cea8f03fdbac260e6cca864994adb71d5def571167728f473b1b6b51a990c",
+      "actual": "f09cea8f03fdbac260e6cca864994adb71d5def571167728f473b1b6b51a990c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "adeaf250af3d2d02617f62fd7083be01150026a2d03e323ac2e910e191d24e03",
+      "actual": "adeaf250af3d2d02617f62fd7083be01150026a2d03e323ac2e910e191d24e03",
+      "match": true
+    },
+    {
+      "path": "sunlight-presentation.css",
+      "status": 200,
+      "expected": "341f824e9c1ba67f6326f2a01c25a60bf4b7ecabd56b6b4ccceae89ee304ca4d",
+      "actual": "341f824e9c1ba67f6326f2a01c25a60bf4b7ecabd56b6b4ccceae89ee304ca4d",
+      "match": true
+    },
+    {
+      "path": "sunlight-presentation.js",
+      "status": 200,
+      "expected": "b2df58a8c887ccdf31c1c792f6112cc238462c9cac2c25ad5e44331be1ab6bfd",
+      "actual": "b2df58a8c887ccdf31c1c792f6112cc238462c9cac2c25ad5e44331be1ab6bfd",
+      "match": true
+    },
+    {
+      "path": "tests/sunlight-presentation.test.js",
+      "status": 200,
+      "expected": "f3148ce30a4b59255361e70bc154ee205a819a28a39291d49841e7e31ac5e3db",
+      "actual": "f3148ce30a4b59255361e70bc154ee205a819a28a39291d49841e7e31ac5e3db",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
