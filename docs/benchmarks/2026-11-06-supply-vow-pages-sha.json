@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-06T02:23:10.641955+00:00",
+  "commit": "ef69e8030711266ca372811d441620fff1d0a3e9",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c54a13f2df62698da1cf48bd6d59d06118e0729331b70f2cac5f57bc7d03742b",
+      "actual": "c54a13f2df62698da1cf48bd6d59d06118e0729331b70f2cac5f57bc7d03742b",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "16dfa54d4cfa7a03eaf6f847f428db15125cb5b144a168930eedf99d71a75f93",
+      "actual": "16dfa54d4cfa7a03eaf6f847f428db15125cb5b144a168930eedf99d71a75f93",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "dce4c3fe3c5d5a825280bc40db36f25bd504dcff078861db9e63de7044c293f9",
+      "actual": "dce4c3fe3c5d5a825280bc40db36f25bd504dcff078861db9e63de7044c293f9",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "4ff01564c1891d77924660fb32eeadde08b7ace4471db75fa7e8da7b28cb0b3d",
+      "actual": "4ff01564c1891d77924660fb32eeadde08b7ace4471db75fa7e8da7b28cb0b3d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "5bc2a3589dc2f7c37ac408593b7abd908f884eab77a1c823f81ed3e0a05d3ff6",
+      "actual": "5bc2a3589dc2f7c37ac408593b7abd908f884eab77a1c823f81ed3e0a05d3ff6",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "4465c1e022388f55bd8ad8b5c17fd00325fff10ad3421c8708b27329fd2c3c90",
+      "actual": "4465c1e022388f55bd8ad8b5c17fd00325fff10ad3421c8708b27329fd2c3c90",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "585aa21df36d15c4bfe8e25dd72f1facf09e658552ad2d050ca511dd574243ae",
+      "actual": "585aa21df36d15c4bfe8e25dd72f1facf09e658552ad2d050ca511dd574243ae",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "35d490df566fd4a0d03df74d436e0d976ce88459d35ebb8d49b7abb49fe13ded",
+      "actual": "35d490df566fd4a0d03df74d436e0d976ce88459d35ebb8d49b7abb49fe13ded",
+      "match": true
+    },
+    {
+      "path": "supply-vow.js",
+      "status": 200,
+      "expected": "6385054a2a3a87f3d732dabe79aacd66f51ac22f4e98fce2d107aadb7959c814",
+      "actual": "6385054a2a3a87f3d732dabe79aacd66f51ac22f4e98fce2d107aadb7959c814",
+      "match": true
+    },
+    {
+      "path": "supply.js",
+      "status": 200,
+      "expected": "663ff9d04fcd490cdb803929d32862b3ace34f4dd1ff3f3475bd4c71d3f1befd",
+      "actual": "663ff9d04fcd490cdb803929d32862b3ace34f4dd1ff3f3475bd4c71d3f1befd",
+      "match": true
+    },
+    {
+      "path": "tests/supply-vow.test.js",
+      "status": 200,
+      "expected": "9a06bc33dc5be0e65ca3ad65cf39b3c1366201d7d81ba55e7453d3efd9efafff",
+      "actual": "9a06bc33dc5be0e65ca3ad65cf39b3c1366201d7d81ba55e7453d3efd9efafff",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "7670e6bd36c006d373ad3ff1f4b3fced8172b57e6a831e1e0307491d13af109a",
+      "actual": "7670e6bd36c006d373ad3ff1f4b3fced8172b57e6a831e1e0307491d13af109a",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
