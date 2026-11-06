@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-06T00:40:57.694404+00:00",
+  "commit": "0100fcdd14042c4683cae09a2bd077395b85c86f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "e59dc19dc05784e904c19d22bacd10b68d0f247df1a9c775c61cacb0745cbc9f",
+      "actual": "e59dc19dc05784e904c19d22bacd10b68d0f247df1a9c775c61cacb0745cbc9f",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "2f9a2ebbbe059b84cfe8e4303503b574042f4295fe86536ccd357041789833ba",
+      "actual": "2f9a2ebbbe059b84cfe8e4303503b574042f4295fe86536ccd357041789833ba",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "14a08319d4eeeb3bd59bec3b594e32be01ed7b1ec21808514dd2189962c2e373",
+      "actual": "14a08319d4eeeb3bd59bec3b594e32be01ed7b1ec21808514dd2189962c2e373",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "942f110847bfa868f0c19b11fea6fc51aca0dbbfa19a0d882f47576985fb5798",
+      "actual": "942f110847bfa868f0c19b11fea6fc51aca0dbbfa19a0d882f47576985fb5798",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "11ddc88d180834d189625b8faec5c8604c148909dd68de78d3e3b1f2ae44ffe7",
+      "actual": "11ddc88d180834d189625b8faec5c8604c148909dd68de78d3e3b1f2ae44ffe7",
+      "match": true
+    },
+    {
+      "path": "river-flood.js",
+      "status": 200,
+      "expected": "9c2d248b5d253bc9fb9fad6fa7bfcf21913ae29f360f5c33d7a29e9e2836d88e",
+      "actual": "9c2d248b5d253bc9fb9fad6fa7bfcf21913ae29f360f5c33d7a29e9e2836d88e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "5b917fd02265aa4571c5122852910fe072d65e3fb586415f77d0b26d36c3fb4a",
+      "actual": "5b917fd02265aa4571c5122852910fe072d65e3fb586415f77d0b26d36c3fb4a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0f130877dbefe994eca2ecaa335dc06a8d0151f66dd15b75a9963ff700ce7661",
+      "actual": "0f130877dbefe994eca2ecaa335dc06a8d0151f66dd15b75a9963ff700ce7661",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "47c7fe59ab10ae8f53ca547c5a604ce5df4df186ea9879e8c944e0b3cb63fecc",
+      "actual": "47c7fe59ab10ae8f53ca547c5a604ce5df4df186ea9879e8c944e0b3cb63fecc",
+      "match": true
+    },
+    {
+      "path": "tests/flood-storage.test.js",
+      "status": 200,
+      "expected": "bd651bb0683f75339a3547cec4730c0310c092d7a196f2db27c38ebcff231e9c",
+      "actual": "bd651bb0683f75339a3547cec4730c0310c092d7a196f2db27c38ebcff231e9c",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "2d9b690911722326edcc887f46fff0414c56eb0b1cdfdb49efe38c38d356303f",
+      "actual": "2d9b690911722326edcc887f46fff0414c56eb0b1cdfdb49efe38c38d356303f",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "4ab222d501379ac5cfdd81d23ae598c98239b29188517d1fab74ad7a20a29c6c",
+      "actual": "4ab222d501379ac5cfdd81d23ae598c98239b29188517d1fab74ad7a20a29c6c",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
