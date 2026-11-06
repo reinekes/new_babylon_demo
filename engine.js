@@ -1,3 +1,4 @@
+import {advanceBlessingDiscovery,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
 import {validateEveningGames} from './household-games.js';
@@ -212,6 +213,7 @@ export function miracle(s,id,target){
 function check(s){
  s.capacity=housingOf(s);
  if(s.population<=0){s.population=0;s.lost=true;s.event=null;syncCitizens(s);return;}
+ if(advanceBlessingDiscovery(s))log(s,'Соседи поддержали друг друга','Три двора обеспечены едой и водой, две доставки помощи подтверждены. Условия истории «Благословение» выполнены.','good');
  if(advanceMonumentChapter(s))log(s,'Поздняя глава · Великий зиккурат','Город вступил в эпоху монументального строительства. Следующая цель — возвести Великий зиккурат.','good');
  const unnamed=s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized',hasMiracles=unnamed||s.deaths>0||s.relicQuest?.phase==='completed'||s.landRelicQuest?.phase==='completed'||Object.values(s.divinity.domains).some(v=>v>0);
  if(s.population>=24&&!s.achievements.includes('population')){s.achievements.push('population');log(s,'Поселение стало городом','Двадцать четыре человека называют это место домом.','good');}
@@ -484,7 +486,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s))return null;
+  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateBlessingDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}
