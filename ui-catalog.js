@@ -45,7 +45,8 @@ export function updateMiracleCard(details,s,id,reason=''){
  let advisory='';
  if(id==='inspiration'&&s.creatorMaterials&&!reason){
   const yards=new Set(s.buildings.filter(b=>['clay','reed'].includes(b.type)&&isOperational(b)).map(buildingKey));
-  if(!s.citizens.some(c=>yards.has(c.work)))advisory='Дар сейчас некому использовать. Назначь работников в добывающие дворы.';
+  const handOrders=s.manualGathering?.orders.some(q=>q.active&&['clay','reed'].includes(q.resource));
+  if(!handOrders&&!s.citizens.some(c=>yards.has(c.work)))advisory='Назначь работников в добывающие дворы или дай поручение на ручной сбор глины и тростника.';
  }
  const note=details.querySelector('.miracle-unavailable');note.hidden=!(reason||advisory);note.textContent=reason||advisory;
 }

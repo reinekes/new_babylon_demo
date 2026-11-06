@@ -45,3 +45,22 @@ test('funeral pauses hand work and moving mourners remain reloadable without a s
 test('a collector may become the chosen resident at home; possession locks new orders without duplicating goods',()=>{const s=fixture('mature');s.buildings.push({type:'shrine',x:9,y:8,level:1});syncInventory(s);syncCitizens(s);const d=target(s);orderManualGathering(s,d.x,d.y);assert.ok(until(s,()=>s.citizens.some(c=>c.phase==='manualGathering')));assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&c.phase==='home'&&!Object.values(c.cargo).some(n=>n>0)),500));const c=s.citizens.find(c=>c.manualGathering&&c.phase==='home'),identity=c.id,total=s.resources.clay+s.citizens.reduce((n,c)=>n+(c.cargo.clay||0),0),started=startRelicQuest(s,c.id,'land');assert.equal(started.ok,true,started.reason);assert.ok(decode(encode(s)),'the just-selected resident is reloadable before a frame');assert.equal(orderManualGathering(s,d.x,d.y).ok,false);assert.equal(cancelManualGathering(s,d.x,d.y).ok,false);step(s,.1);assert.equal(c.manualGathering,undefined);assert.equal(c.id,identity);assert.equal(s.resources.clay+s.citizens.reduce((n,c)=>n+(c.cargo.clay||0),0),total);assert.equal(cancelRelicQuest(s).ok,true);assert.ok(decode(encode(s)));});
 
 test('a home collector can join festival supply and the suspended hand-work reference is safely released',()=>{const s=fixture('mature');s.buildings.push({type:'shrine',x:9,y:8,level:1});s.resources.beer=20;syncInventory(s);syncCitizens(s);const d=target(s);orderManualGathering(s,d.x,d.y);assert.ok(until(s,()=>s.citizens.some(c=>c.phase==='manualGathering')));assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&c.phase==='home'&&!Object.values(c.cargo).some(n=>n>0)),500));const collectors=s.citizens.filter(c=>c.manualGathering),ids=new Set(collectors.map(c=>c.id));for(const c of s.citizens)if(!ids.has(c.id))setCitizenRole(s,c.id,'builder');assert.equal(orderFestival(s).ok,true);for(let i=0;i<600&&!s.festival.actors.some(a=>ids.has(a.id));i++)step(s,.1);assert.ok(s.festival.actors.some(a=>ids.has(a.id)));for(const a of s.festival.actors)assert.equal(s.citizens.find(c=>c.id===a.id).manualGathering,undefined);assert.ok(decode(encode(s)));assert.equal(cancelFestival(s).ok,true);step(s,.1);assert.ok(decode(encode(s)));});
+
+test('Hands of the Creator boosts a hand-carried load and the load survives buff expiry',()=>{
+ for(const resource of ['clay','reed','stone']){
+  const s=fixture();
+  const d=s.world.deposits.find(d=>d.kind===resource&&d.x<12&&!s.buildings.some(b=>b.x===d.x&&b.y===d.y));
+  assert.ok(d,resource);
+  s.buffs.inspiration=3;
+  const expected=resource==='stone'?1:1.75;
+  assert.equal(manualGatheringView(s,d.x,d.y).batchSize,expected);
+  assert.ok(orderManualGathering(s,d.x,d.y).ok);
+  assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&c.cargo[resource]>0)),resource);
+  const c=s.citizens.find(c=>c.manualGathering&&c.cargo[resource]>0);
+  assert.equal(c.cargo[resource],expected);
+  s.buffs.inspiration=0;
+  assert.equal(manualGatheringView(s,d.x,d.y).batchSize,1);
+  const raw=encode(s);
+  assert.equal(encode(decode(raw)),raw);
+ }
+});

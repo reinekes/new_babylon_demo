@@ -1,3 +1,4 @@
+import {WIND_DELIVERY_GOAL,WIND_DESTINATION_GOAL} from './wind-delivery.js';
 import {creatorMaterialsView} from './creator-materials.js';
 import {richCatchMapReason} from './rich-catch.js';
 import {richCatchView} from './fish-provenance.js';
@@ -168,6 +169,13 @@ function richCatchProgressHTML(s){
  return `<section class="management-row" data-rich-catch-progress><h3>История «Богатый улов»</h3><p>${details}</p></section>`;
 }
 
+function windDeliveryHTML(s){
+ const q=s.windDelivery;
+ if(!q)return '';
+ const amount=Number(q.amount.toFixed(2)).toLocaleString('ru-RU');
+ return `<section class="management-row" data-wind-delivery><h3>История «Попутный ветер»</h3><p>Принято из мастерских · ${amount} из ${WIND_DELIVERY_GOAL} · Мест назначения · ${q.destinations.length} из ${WIND_DESTINATION_GOAL}.</p><p>Засчитываются первые доставки вдохновлённых носильщиков.</p></section>`;
+}
+
 function creatorMaterialsHTML(s){
  const progress=creatorMaterialsView(s);
  if(!progress)return '';
@@ -178,7 +186,7 @@ function creatorMaterialsHTML(s){
 /** HTML-only entry point for snapshots/tests. No listeners or simulation changes. */
 export function cityToolsHTML(s,{tab='districts',filter={},page=0,group=null,model=cityDiagnostics(s),desiredInspirations=new Map(),expandedBuildings=new Set(),expandedCitizens=new Set(),testOptions={}}={}){
  const total=model.totals;
- return `<section class="city-tools" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>Жизнь кварталов</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['workshops','Работа'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,testOptions):tab==='citizens'?citizensHTML(s,model,filter,page,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings):tab==='homes'?homesHTML(model,group):blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+housingPolicyHTML(s)+neighborhoodsHTML(model)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
+ return `<section class="city-tools" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>Жизнь кварталов</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['workshops','Работа'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,testOptions):tab==='citizens'?citizensHTML(s,model,filter,page,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings):tab==='homes'?homesHTML(model,group):blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+windDeliveryHTML(s)+housingPolicyHTML(s)+neighborhoodsHTML(model)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
 }
 
 /** Mount in an existing panel root. Refresh on the app's throttled UI tick.

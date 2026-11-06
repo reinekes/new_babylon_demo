@@ -10,6 +10,7 @@ import {cityCommandReason} from './city-command-lock.js';
 
 // One small basket, with hand tools only: workshops remain substantially faster.
 export const MANUAL_GATHERING=Object.freeze({clay:{workSeconds:18,batchSize:1},reed:{workSeconds:18,batchSize:1},stone:{workSeconds:28,batchSize:1}});
+const manualBatchSize=(resource,boosted)=>MANUAL_GATHERING[resource].batchSize*(boosted&&resource!=='stone'?1.75:1);
 const customPhase=p=>p==='toManualGathering'||p==='manualGathering';
 const hasLoad=c=>Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0);
 const keyOf=(x,y)=>`${x},${y}`;
@@ -32,7 +33,7 @@ export function manualGatheringView(s,x,y){
  const reason=commandReason(s)||siteReason(s,x,y),active=!!q?.active,status=reason?'blocked':!active?'inactive':workers.some(c=>c.phase==='manualGathering')?'working':workers.some(c=>c.carrying)?'carrying':workers.length?'walking':'waiting';
  const statusReason=!active?'':!daylight(s)?'Ночью жители отдыхают; добыча продолжится утром':workers.length?'':accessFailures.get(s)?.get(key)||(!s.citizens.some(eligible)?'Нет свободных взрослых: занятые работой, стройкой и снабжением жители не отвлекаются':'Свободные жители готовятся выйти к залежи');
  const wetland=resource==='reed'?reedStatus(s,x,y):null;
- return {key,resource,wetland,remaining:wetland?.stock??mineralRemaining(s,resource,x,y),capacity:resource==='reed'?REED_CAPACITY:resource==='stone'?STONE_CAPACITY:CLAY_CAPACITY,active,status,reason,cancelReason:commandReason(s),statusReason,workers,progress:Math.max(0,...workers.map(c=>c.progress)),...MANUAL_GATHERING[resource],maxWorkers:2};
+ return {key,resource,wetland,remaining:wetland?.stock??mineralRemaining(s,resource,x,y),capacity:resource==='reed'?REED_CAPACITY:resource==='stone'?STONE_CAPACITY:CLAY_CAPACITY,active,status,reason,cancelReason:commandReason(s),statusReason,workers,progress:Math.max(0,...workers.map(c=>c.progress)),...MANUAL_GATHERING[resource],batchSize:manualBatchSize(resource,s.buffs?.inspiration),maxWorkers:2};
 }
 export function manualGatheringOrder(s,c){return orders(s).find(q=>q.key===c.manualGathering?.key);}
 export function manualGatheringStillAssigned(s,c){
@@ -67,7 +68,8 @@ export function beginManualGathering(s,c,ctx,routeFor){
 export function workManualGathering(s,c,dt,rate=1){
  const q=manualGatheringOrder(s,c),job=c.manualGathering;if(!q||!job||c.phase!=='manualGathering'||Math.hypot(c.x-job.stand.x,c.y-job.stand.y)>1e-6||hasLoad(c))return false;
  const config=MANUAL_GATHERING[q.resource];job.progress=Math.min(config.workSeconds,job.progress+dt*Math.max(0,rate));if(job.progress<config.workSeconds-1e-7)return false;
- const amount=q.resource==='reed'?takeReeds(s,q.x,q.y,config.batchSize):takeMineral(s,q.resource,q.x,q.y,config.batchSize);
+ const batch=manualBatchSize(q.resource,s.buffs?.inspiration);
+ const amount=q.resource==='reed'?takeReeds(s,q.x,q.y,batch):takeMineral(s,q.resource,q.x,q.y,batch);
  job.progress=0;
  if(amount<=1e-8)return false;
  c.cargo={[q.resource]:amount};return true;
@@ -80,7 +82,7 @@ export function validateManualGathering(s){
   const standKey=`${q.key}:${j.stand.x},${j.stand.y}`;if(stands.has(standKey))return false;stands.add(standKey);
   const n=(counts.get(q.key)||0)+1;if(n>2)return false;counts.set(q.key,n);
   if(customPhase(c.phase)&&(hasLoad(c)||c.work||c.site||c.pantryTrip||c.waterTrip||c.craftSite||c.clothingTarget!==undefined||c.tradeJob||c.saleJob||c.districtJob||c.clinic||c.school))return false;
-  if(Object.keys(c.cargo||{}).some(k=>(c.cargo[k]||0)>0&&(k!==q.resource||c.cargo[k]>MANUAL_GATHERING[q.resource].batchSize)))return false;
+  if(Object.keys(c.cargo||{}).some(k=>(c.cargo[k]||0)>0&&(k!==q.resource||c.cargo[k]>manualBatchSize(q.resource,true))))return false;
   if(c.phase==='manualGathering'&&!s.funeral?.actors.some(a=>a.id===c.id)&&Math.hypot(c.x-j.stand.x,c.y-j.stand.y)>1e-6)return false;
  }
  return true;

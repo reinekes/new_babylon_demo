@@ -1,3 +1,4 @@
+import {recordWindDelivery} from './wind-delivery.js';
 import {markCreatorCargo,acceptCreatorCargo,addCreatorStock,recordCreatorUse} from './creator-materials.js';
 import {foodYieldMultiplier,useRichCatch} from './rich-catch.js';
 import {appendFish,takeFish as takeFishEvidence,recordHomeFish,recordInspiredCatch} from './fish-provenance.js';
@@ -352,6 +353,7 @@ function deposit(s,c,ctx){
  let delivered=0;const actual={},stored={};
  for(const [resource,amount]of Object.entries(c.cargo)){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='votive'||destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?destination.targetKind==='votive'?receiveVotive(s,destination,c,amount):logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
+  if(c.windCargo)recordWindDelivery(s,c,destination,accepted);
   if(local&&destination.targetKind==='input'&&(resource==='food'||resource==='milk'))recordVowDelivery(s,site,c,accepted);
   if(!local&&accepted>0&&MATERIALS.includes(resource))stored[resource]=accepted;
   if(c.creatorCargo){const tagged=acceptCreatorCargo(s,c,resource,accepted);if(tagged&&!local)addCreatorStock(ctx.buildings.get(c.store),resource,tagged);}
@@ -820,7 +822,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  if(c.clothingLoad)restore('clothing',c.clothingLoad);
  if(c.seedFood)restore('food',c.seedFood);
  if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
- delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;delete c.creatorCargo;
+ delete c.fishCargo;delete c.fishPantry;delete c.inspiredFishReturn;delete c.creatorCargo;delete c.windCargo;
  delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;

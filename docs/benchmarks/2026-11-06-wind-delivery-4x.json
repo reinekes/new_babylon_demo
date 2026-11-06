@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "startPopulation": 251,
+  "endPopulation": 258,
+  "credited": 12,
+  "targets": 2,
+  "warehouseTransferExcluded": 6,
+  "byteEqualReload": true,
+  "samples": 448,
+  "medianMs": 2.6010839999999007,
+  "p95Ms": 7.835250000000087
+}

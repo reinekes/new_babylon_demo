@@ -1,0 +1,73 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createNewCity} from '../new-game.js';
+import {encode,decode} from '../engine.js';
+import {markWindCargo,recordWindDelivery} from '../wind-delivery.js';
+
+test('first acceptance counts only actual cargo handled by an inspired porter',()=>{
+ const s=createNewCity({mode:'awakening'}),c={calling:'carrier'};
+ const q={target:'8,9',resource:'clay'};
+ recordWindDelivery(s,c,q,12);
+ assert.equal(s.windDelivery.amount,0);
+ markWindCargo(s,c,12);
+ recordWindDelivery(s,c,q,0);
+ recordWindDelivery(s,c,q,5);
+ recordWindDelivery(s,c,q,7);
+ recordWindDelivery(s,c,q,12);
+ assert.equal(s.windDelivery.amount,12);
+ assert.deepEqual(s.windDelivery.destinations,['8,9']);
+ markWindCargo(s,c,12);
+ c.calling='auto';
+ recordWindDelivery(s,c,q,12);
+ assert.equal(s.windDelivery.amount,12);
+ c.calling='carrier';
+ for(let i=0;i<5;i++){
+  markWindCargo(s,c,12);
+  recordWindDelivery(s,c,{...q,target:'9,9'},12);
+ }
+ assert.equal(s.windDelivery.amount,60);
+ assert.deepEqual(s.windDelivery.destinations,['8,9','9,9']);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ assert.equal(createNewCity().windDelivery,undefined);
+});
+
+test('a workshop load survives reload and a warehouse transfer cannot credit it again',async()=>{
+ const {createGame,advanceTime}=await import('../engine.js');
+ const {strictScenario,CAT_DISCOVERY_RULES}=await import('../scenario-profiles.js');
+ const {newWindDelivery}=await import('../wind-delivery.js');
+ const {requestTransfer}=await import('../district-logistics.js');
+ const {invalidateAssignments,syncCitizens}=await import('../workforce.js');
+ let s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.windDelivery=newWindDelivery();
+ s.buildings.push({type:'depot',x:10,y:9,level:1,stockMinimum:{food:0}});
+ for(const c of s.citizens.filter(c=>c.age>=16))Object.assign(c,{role:'carrier',calling:'carrier'});
+ invalidateAssignments(s);
+ syncCitizens(s);
+ const clay=s.buildings.find(b=>b.type==='clay');
+ clay.workshopStock.output.clay=6;
+ const delivery=requestTransfer(s,'7,7','9,8','clay',6);
+ assert.ok(delivery.ok,delivery.reason);
+ const step=()=>{s.event=null;advanceTime(s,.2);};
+ for(let i=0;i<1000&&!s.citizens.some(c=>c.windCargo);i++)step();
+ const porter=s.citizens.find(c=>c.windCargo);
+ assert.ok(porter);
+ assert.equal(s.windDelivery.amount,0);
+ const raw=encode(s);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ const corrupt=JSON.parse(raw);
+ corrupt.citizens.find(c=>c.id===porter.id).windCargo=13;
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+ for(let i=0;i<1000&&s.windDelivery.amount<6;i++)step();
+ assert.equal(s.windDelivery.amount,6);
+ assert.deepEqual(s.windDelivery.destinations,['9,8']);
+ const transfer=requestTransfer(s,'9,8','10,9','clay',6);
+ assert.ok(transfer.ok,transfer.reason);
+ const job=s.district.jobs.find(q=>q.id===transfer.id);
+ for(let i=0;i<1000&&job.delivered<6;i++)step();
+ assert.equal(job.delivered,6);
+ assert.equal(s.windDelivery.amount,6);
+ assert.equal(encode(decode(encode(s))),encode(s));
+});
