@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T10:10:00.888252+00:00",
+  "commit": "8f82a4c60e14ed9aa6ef8e58c82ed09fdd54c435",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "1bb0577eab391afd45a1a59bf9729a64e6283d9d4ce2c39c7a3f453bb84aab93",
+      "actual": "1bb0577eab391afd45a1a59bf9729a64e6283d9d4ce2c39c7a3f453bb84aab93",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "f3349e582c4d863ccf20b6fd811468b2dec3ad6e97157c01d65f450d186525e2",
+      "actual": "f3349e582c4d863ccf20b6fd811468b2dec3ad6e97157c01d65f450d186525e2",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "19f6cb729f9f81c024b766533ec928d918b9c0c34fa9b16ec59a1fa86f3caa5a",
+      "actual": "19f6cb729f9f81c024b766533ec928d918b9c0c34fa9b16ec59a1fa86f3caa5a",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "8115bd702f46d2172ba0bb3e47c3980ed829d0b4138d14b00b657e3eaf62131d",
+      "actual": "8115bd702f46d2172ba0bb3e47c3980ed829d0b4138d14b00b657e3eaf62131d",
+      "match": true
+    },
+    {
+      "path": "fish-provenance.js",
+      "status": 200,
+      "expected": "30d4c33b6959cdb5c8090f681c775ccebaa7b635b3e1c16e68e097f579ba414a",
+      "actual": "30d4c33b6959cdb5c8090f681c775ccebaa7b635b3e1c16e68e097f579ba414a",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1b2f43b274a371e922cd8acfa6a231f5c34e19bd6500ab580c98855a2a3e139b",
+      "actual": "1b2f43b274a371e922cd8acfa6a231f5c34e19bd6500ab580c98855a2a3e139b",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "3a960819debf1f5eeec49a074a044390d9de326889b482b9015571d3cf123f86",
+      "actual": "3a960819debf1f5eeec49a074a044390d9de326889b482b9015571d3cf123f86",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "39aa511d54100a97010cc7750b6b7e4e5dc8f1c5dc7d9bc08d25fbbca8ecc865",
+      "actual": "39aa511d54100a97010cc7750b6b7e4e5dc8f1c5dc7d9bc08d25fbbca8ecc865",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "e8d57a8f5d05624bb8d49ecced84ef0a6c9b862bb2217723b504fb4a79ea2d30",
+      "actual": "e8d57a8f5d05624bb8d49ecced84ef0a6c9b862bb2217723b504fb4a79ea2d30",
+      "match": true
+    },
+    {
+      "path": "tests/fish-provenance.test.js",
+      "status": 200,
+      "expected": "4d8df3ceeaba84021fc98842858b3821cbc448236322c29f544569170291ccb4",
+      "actual": "4d8df3ceeaba84021fc98842858b3821cbc448236322c29f544569170291ccb4",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "610b5e99c5b77fdd631fb14f8a8ed143da81aaad9c31a87704c5f40a8dff2e6f",
+      "actual": "610b5e99c5b77fdd631fb14f8a8ed143da81aaad9c31a87704c5f40a8dff2e6f",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
