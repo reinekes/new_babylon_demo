@@ -11,3 +11,26 @@ test('yard workers carry ingredients, form and dry a batch, then carry bricks to
 test('authentic version 17 migration preserves paid orders and cargo without retroactive bricks',async()=>{const {readFileSync}=await import('node:fs');const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v17-water-bricks.json',import.meta.url),'utf8')),s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,30);for(const c of old.citizens){const p=s.citizens.find(p=>p.id===c.id);for(const k of Object.keys(c))assert.deepEqual(p[k],c[k]);}for(const b of old.buildings){const p=s.buildings.find(p=>p.x===b.x&&p.y===b.y);if(b.construction){assert.deepEqual(p.construction.required,b.construction.required);assert.deepEqual(p.construction.remaining,b.construction.remaining);assert.deepEqual(p.construction.delivered,b.construction.delivered);assert.equal(p.construction.legacyBricks,true);}}for(const [k,n]of Object.entries(old.resources))assert.equal(s.resources[k],n);assert.equal(s.resources.brick,0);assert.deepEqual(decode(encode(s)),s);});
 test('an unstaffed yard cannot create bricks from available stock or preloaded ingredients',async()=>{const {setCitizenRole}=await import('../management.js');const s=yard(),b=s.buildings.at(-1);for(const c of s.citizens)if(c.age>=16)setCitizenRole(s,c.id,'carrier');Object.assign(b.brickmaking,{clay:4,reed:1,water:2});for(let i=0;i<600;i++){s.event=null;advanceTime(s,.1);}assert.equal(b.brickmaking.clay,4);assert.equal(b.brickmaking.reed,1);assert.equal(b.brickmaking.wet,0);assert.equal(s.resources.brick,0);});
 test('interrupting a clay courier returns exactly their carried ingredient once',async()=>{const {recoverCitizenCargo}=await import('../workforce.js');const s=yard(),b=s.buildings.at(-1);b.brickmaking.water=2;let courier;for(let i=0;i<500;i++){s.event=null;advanceTime(s,.1);courier=s.citizens.find(c=>c.craftSite==='10,9'&&c.craftMaterial==='clay'&&c.craftAmount>0||c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob)?.target==='10,9'&&c.cargo.clay>0);if(courier)break;}assert.ok(courier);const n=courier.craftAmount||courier.cargo.clay,before=s.resources.clay;assert.ok(recoverCitizenCargo(s,courier.id));assert.equal(s.resources.clay,before+n);recoverCitizenCargo(s,courier.id);assert.equal(s.resources.clay,before+n);assert.equal(courier.craftMaterial,undefined);assert.ok(decode(encode(s)));});
+
+test('a dedicated brick and its three usable batchmates survive current-save validation',async()=>{
+ const {strictScenario,CAT_DISCOVERY_RULES}=await import('../scenario-profiles.js');
+ const {advanceBricks,formBricks,collectBricks}=await import('../bricks.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ const b={type:'brickyard',x:10,y:9,level:1};
+ s.buildings.push(b);
+ initializeBricks(s);
+ syncCitizens(s);
+ s.creatorMaterials={version:1,clay:30,reed:20,projects:['2,2','2,3'],inspired:['clayworker','reedcutter']};
+ Object.assign(b.brickmaking,{clay:4,reed:1,water:2});
+ assert.equal(formBricks(b),4);
+ advanceBricks(s,100);
+ assert.equal(b.brickmaking.ready,3);
+ const raw=encode(s),restored=decode(raw);
+ assert.ok(restored);
+ assert.equal(encode(restored),raw);
+ assert.equal(collectBricks(restored.buildings.at(-1)),3);
+ assert.equal(restored.creatorMaterials.dedication,'10,9');
+ const corrupt=JSON.parse(raw);
+ corrupt.creatorMaterials.dedication='11,9';
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+});

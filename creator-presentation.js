@@ -22,7 +22,7 @@ export function creatorSceneFrame(kind,seconds){
 export function creatorScenePoints(s){
  const active=new Set(s.citizens.map(c=>c.work));
  const find=type=>s.buildings.find(b=>b.type===type&&isOperational(b)&&active.has(buildingKey(b)))||null;
- const brick=s.buildings.find(b=>b.type==='brickyard'&&isOperational(b)&&((b.brickmaking?.ready||0)+(b.workshopStock?.output?.brick||0)>0))||null;
+ const brick=s.buildings.find(b=>b.type==='brickyard'&&isOperational(b)&&(b.creatorDedication||(b.brickmaking?.ready||0)+(b.workshopStock?.output?.brick||0)>0))||null;
  return {brick,clay:find('clay'),reed:find('reed')};
 }
 

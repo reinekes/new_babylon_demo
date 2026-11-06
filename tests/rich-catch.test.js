@@ -49,6 +49,7 @@ test('a real fishing trip consumes one charge and lands the bonus from the finit
  s.richCatchEvidence={version:1,homes:['8,8','9,9'],fisher:fisher.id};
  s.resources.faith=40;
  invalidateAssignments(s);syncCitizens(s);
+ s.buffs.fertility=3;
  assert.equal(miracle(s,'richCatch',yard).ok,true);
  for(let i=0;i<400&&!Object.keys(s.fisheries||{}).length;i++)advanceTime(s,.2);
  assert.equal(richCatchCharges(s,yard),5);

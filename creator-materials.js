@@ -86,20 +86,22 @@ export function creatorReady(s){
 
 export function creatorMaterialsView(s){
  const q=s.creatorMaterials;
- return q?{clay:q.clay,reed:q.reed,required:REQUIRED,qualified:creatorReady(s),projects:q.projects?.length||0,projectsRequired:REQUIRED_PROJECTS,inspired:q.inspired?.length||0,inspiredRequired:PROFESSIONS.length}:null;
+ return q?{clay:q.clay,reed:q.reed,required:REQUIRED,qualified:creatorReady(s),dedication:q.dedication,projects:q.projects?.length||0,projectsRequired:REQUIRED_PROJECTS,inspired:q.inspired?.length||0,inspiredRequired:PROFESSIONS.length}:null;
 }
 
 export function validateCreatorMaterials(s){
  const q=s.creatorMaterials;
  const unique=(value,max,test)=>Array.isArray(value)&&value.length>0&&value.length<=max&&new Set(value).size===value.length&&value.every(test);
- if(q!==undefined&&(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==3+Number(q.projects!==undefined)+Number(q.inspired!==undefined)||
+ if(q!==undefined&&(!usesCatDiscovery(s)||!q||q.version!==1||Object.keys(q).length!==3+Number(q.projects!==undefined)+Number(q.inspired!==undefined)+Number(q.dedication!==undefined)||
+  q.dedication!==undefined&&(!creatorReady(s)||typeof q.dedication!=='string'||!/^\d+,\d+$/.test(q.dedication))||
   q.projects!==undefined&&!unique(q.projects,REQUIRED_PROJECTS,key=>typeof key==='string'&&/^\d+,\d+$/.test(key))||
   q.inspired!==undefined&&!unique(q.inspired,PROFESSIONS.length,p=>PROFESSIONS.includes(p))||
   Object.entries(REQUIRED).some(([resource,max])=>!Number.isFinite(q[resource])||q[resource]<0||q[resource]>max)))return false;
  const matches=(marks,physical)=>!!q&&marks&&typeof marks==='object'&&!Array.isArray(marks)&&
   Object.keys(marks).length>0&&Object.entries(marks).every(([resource,n])=>Object.hasOwn(REQUIRED,resource)&&
    Number.isFinite(n)&&n>EPS&&n<=(physical?.[resource]||0)+EPS);
- if(!s.buildings.every(b=>(b.creatorStock===undefined||matches(b.creatorStock,b.stock))&&
+ if(!s.buildings.every(b=>(b.creatorDedication===undefined||b.creatorDedication===true&&b.type==='brickyard'&&isOperational(b)&&q?.dedication===buildingKey(b))&&
+  (b.creatorStock===undefined||matches(b.creatorStock,b.stock))&&
   (b.creatorBuilt===undefined||b.construction?.kind!=='new'&&matches(b.creatorBuilt,BUILDINGS[b.type]))&&
   (b.construction?.creatorAllocations===undefined||b.construction.kind==='new'&&
    b.construction.creatorAllocations&&Object.keys(b.construction.creatorAllocations).length>0&&

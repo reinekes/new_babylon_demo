@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 258,
+  "site": "2,10",
+  "samples": 374,
+  "availableBricks": 3,
+  "dedicatedBricks": 1,
+  "byteEqualReload": true,
+  "medianMs": 2.5368330000000014,
+  "p95Ms": 7.6744169999999485
+}

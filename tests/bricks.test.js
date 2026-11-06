@@ -11,3 +11,27 @@ test('no automatic formation without worker action; missing inputs and new const
 test('rain pauses and cloudy/windy weather slows drying',()=>{for(const [type,rate] of [['rain',0],['cloudy',.6],['wind',.85]]){const s=fixture(),b=s.buildings[0];fill(b);formBricks(b);weather(s,type);advanceBricks(s,10);assert.equal(b.brickmaking.drying,10*rate);assert.equal(b.brickmaking.wet,4);}});
 test('invalid time never damages or creates a batch',()=>{for(const dt of [NaN,Infinity,-1,0,'4']){const s=fixture(),b=s.buildings[0];fill(b);formBricks(b);const before=JSON.stringify(s);advanceBricks(s,dt);assert.equal(JSON.stringify(s),before);}});
 test('strict validation rejects wrong buildings, nonfinite amounts, excess and inconsistent batches',()=>{for(const mutate of [b=>b.type='house',b=>b.brickmaking=null,b=>delete b.brickmaking.water,b=>b.brickmaking.clay=Infinity,b=>b.brickmaking.clay=-1,b=>b.brickmaking.water=3,b=>b.brickmaking.wet=3,b=>b.brickmaking.drying=1,b=>{b.brickmaking.wet=4;b.brickmaking.ready=4;},b=>b.brickmaking.extra=1]){const s=fixture();mutate(s.buildings[0]);assert.equal(validateBricks(s),false);}assert.ok(validateBricks({buildings:[{type:'house'}]}));});
+
+test('the first dried batch after Hands of the Creator reserves one brick permanently',()=>{
+ const s=fixture(),b=s.buildings[0];
+ Object.assign(b,{x:1,y:2});
+ s.creatorMaterials={version:1,clay:30,reed:20,projects:['2,2','2,3'],inspired:['clayworker','reedcutter']};
+ weather(s,'sunny');
+ fill(b);
+ formBricks(b);
+ advanceBricks(s,30);
+ assert.equal(s.creatorMaterials.dedication,'1,2');
+ assert.equal(b.creatorDedication,true);
+ assert.ok(validateBricks(s));
+ assert.equal(collectBricks(b),3);
+
+ // A replacement at the same location has no marker or second deduction.
+ s.buildings=[{type:'brickyard',level:1,x:1,y:2}];
+ initializeBricks(s);
+ const replacement=s.buildings[0];
+ fill(replacement);
+ formBricks(replacement);
+ advanceBricks(s,30);
+ assert.equal(replacement.creatorDedication,undefined);
+ assert.equal(collectBricks(replacement),4);
+});
