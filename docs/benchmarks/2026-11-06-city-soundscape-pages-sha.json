@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-06T04:59:05.934653+00:00",
+  "commit": "f9f573f62c28f97153c3b8d5ee9fd851849ce5ea",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4aa3b6a82b0e517b16ddec2f35187d28882e70746b49a6ae98760d57f2781c32",
+      "actual": "4aa3b6a82b0e517b16ddec2f35187d28882e70746b49a6ae98760d57f2781c32",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "c2fbf479e5575fd595915e38c6ac5bd99f3461e57c222a809a553ec6cc4b0682",
+      "actual": "c2fbf479e5575fd595915e38c6ac5bd99f3461e57c222a809a553ec6cc4b0682",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "de4b44ab44db10b72280e8ddb93aa4d59cb22d8b8159edd44f11a126ad526319",
+      "actual": "de4b44ab44db10b72280e8ddb93aa4d59cb22d8b8159edd44f11a126ad526319",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "09f62e42f6ece7599dc45b1e330f9489ef46059b3cd79336d6ef3461e12e19d1",
+      "actual": "09f62e42f6ece7599dc45b1e330f9489ef46059b3cd79336d6ef3461e12e19d1",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "02275870bd21f0c74e0b31de676d941fa71ad7b9bc45810dc1c1fc54b4b70133",
+      "actual": "02275870bd21f0c74e0b31de676d941fa71ad7b9bc45810dc1c1fc54b4b70133",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "cccb716561da3e1a05eb3b1614c6bbafde1a6919bd94b0dd4f8728e766af3103",
+      "actual": "cccb716561da3e1a05eb3b1614c6bbafde1a6919bd94b0dd4f8728e766af3103",
+      "match": true
+    },
+    {
+      "path": "tests/work-audio.test.js",
+      "status": 200,
+      "expected": "6ac6d44bc9daa57e8daea32a0550710392c4e36b4af14bba620da61f609f521e",
+      "actual": "6ac6d44bc9daa57e8daea32a0550710392c4e36b4af14bba620da61f609f521e",
+      "match": true
+    },
+    {
+      "path": "work-audio.js",
+      "status": 200,
+      "expected": "88624cf215764ebac459feccf93bc99967823b57f273e530744089b02a690fe1",
+      "actual": "88624cf215764ebac459feccf93bc99967823b57f273e530744089b02a690fe1",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
