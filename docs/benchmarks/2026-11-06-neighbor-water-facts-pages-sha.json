@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T09:06:17.963049+00:00",
+  "commit": "b9edf3257d54fdefa41795efb8b3336f2d867151",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6ccd971a9cabbe1b1ec380a1fc698cbaa6763fd42a4d13c880606cbb890fe5c6",
+      "actual": "6ccd971a9cabbe1b1ec380a1fc698cbaa6763fd42a4d13c880606cbb890fe5c6",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "c1d453f15e45bf54c8f3bc18a4aa2537ae1f60836e859e5a90df1b0637a532f7",
+      "actual": "c1d453f15e45bf54c8f3bc18a4aa2537ae1f60836e859e5a90df1b0637a532f7",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "8a7455078f4b30d24f463aa2007dfbc006068292656c9ba99d1978c9bb0bb33e",
+      "actual": "8a7455078f4b30d24f463aa2007dfbc006068292656c9ba99d1978c9bb0bb33e",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "5ed9e1f52be5cb6cc647ab5030c1b3333c9db59c0ebb15b2cca62f89eef808f1",
+      "actual": "5ed9e1f52be5cb6cc647ab5030c1b3333c9db59c0ebb15b2cca62f89eef808f1",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "caed87d63f0a12245c190cd7f4bfbfb3928f13675384a4b3207f4aa7c1ef0b34",
+      "actual": "caed87d63f0a12245c190cd7f4bfbfb3928f13675384a4b3207f4aa7c1ef0b34",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "cc9033a07064c0ff17120a6bc55002600fb60a7d047ac6560ca824fea4ff472d",
+      "actual": "cc9033a07064c0ff17120a6bc55002600fb60a7d047ac6560ca824fea4ff472d",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "235753cc9eccf6881c1e50693c7077f5fcd2cbd3c001c72af90f3854bcb4f1f9",
+      "actual": "235753cc9eccf6881c1e50693c7077f5fcd2cbd3c001c72af90f3854bcb4f1f9",
+      "match": true
+    },
+    {
+      "path": "tests/first-water-help.test.js",
+      "status": 200,
+      "expected": "706cb0bf82b7bbe79ebb2a7dced69466e6fbf3edbd64a67aea49c1db700b67f5",
+      "actual": "706cb0bf82b7bbe79ebb2a7dced69466e6fbf3edbd64a67aea49c1db700b67f5",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "63e57f69fb134ba573b49c05211e60bdd32193bb8c90d4a96067f10c15f621e1",
+      "actual": "63e57f69fb134ba573b49c05211e60bdd32193bb8c90d4a96067f10c15f621e1",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "6967286dca686500622d9b623a2d4e23816ef153f918dc36d06fb55083ffbc6b",
+      "actual": "6967286dca686500622d9b623a2d4e23816ef153f918dc36d06fb55083ffbc6b",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
