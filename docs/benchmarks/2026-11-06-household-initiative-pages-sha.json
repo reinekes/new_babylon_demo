@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T04:32:22.549014+00:00",
+  "commit": "daeed5b08837ba7c4312dcb8ec0683fd337ec1bc",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "04da0212d376029b59c93a11b907754f2fafe867d1d59b477c715e8a54203e31",
+      "actual": "04da0212d376029b59c93a11b907754f2fafe867d1d59b477c715e8a54203e31",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "e25d89d14d9c5dc07ecfa0b4d0beee215fb647fd6fe01f5718d90e74edd9f3dc",
+      "actual": "e25d89d14d9c5dc07ecfa0b4d0beee215fb647fd6fe01f5718d90e74edd9f3dc",
+      "match": true
+    },
+    {
+      "path": "building-presentation.js",
+      "status": 200,
+      "expected": "560b7db5d7dcde68a6777dfdccb8fc5902101d49dd401c5d8ffd135e871e814d",
+      "actual": "560b7db5d7dcde68a6777dfdccb8fc5902101d49dd401c5d8ffd135e871e814d",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "149c2b281919fb0ec39094ebef3f79666cc61eae2d02c25413b1452603f7dcb1",
+      "actual": "149c2b281919fb0ec39094ebef3f79666cc61eae2d02c25413b1452603f7dcb1",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "30c8f8d7a744c2e3a59e2326cc2ff5677e0064e8091348fd94fe74f65db969f2",
+      "actual": "30c8f8d7a744c2e3a59e2326cc2ff5677e0064e8091348fd94fe74f65db969f2",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "cb8e53dfde0173deef10f62e0b3f98540ec205311735d10c509b9bbf5fcd5134",
+      "actual": "cb8e53dfde0173deef10f62e0b3f98540ec205311735d10c509b9bbf5fcd5134",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "6b0649644f00005d792aed66731544daa01de975c45bf71669353dbb7394b7cd",
+      "actual": "6b0649644f00005d792aed66731544daa01de975c45bf71669353dbb7394b7cd",
+      "match": true
+    },
+    {
+      "path": "household-initiative.js",
+      "status": 200,
+      "expected": "303d5387f29b5f60ecd99e612306d9773fafb43a743d1fd5ef294bf932cf1c16",
+      "actual": "303d5387f29b5f60ecd99e612306d9773fafb43a743d1fd5ef294bf932cf1c16",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "bba88fde420b221c48cd83a228b672bb1fa6a7f9b69c284d6394fd393191e27c",
+      "actual": "bba88fde420b221c48cd83a228b672bb1fa6a7f9b69c284d6394fd393191e27c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "76a7571d79b786760352788cc02be54e3f19cf66c6240c089f59c9331ee5521c",
+      "actual": "76a7571d79b786760352788cc02be54e3f19cf66c6240c089f59c9331ee5521c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "7861b39cc8dc7b74adb6857650e8ff558d86acafd3fb7af9dc4eb84859ce069f",
+      "actual": "7861b39cc8dc7b74adb6857650e8ff558d86acafd3fb7af9dc4eb84859ce069f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "e2593b56fbb595cef68f963b4ce161703f6737c4e2703575598be56e2337b0e8",
+      "actual": "e2593b56fbb595cef68f963b4ce161703f6737c4e2703575598be56e2337b0e8",
+      "match": true
+    },
+    {
+      "path": "tests/household-initiative.test.js",
+      "status": 200,
+      "expected": "f636dc7da62974ebb31042742544e2ce0c5c2ec88e1ced6836602c3e60a941d3",
+      "actual": "f636dc7da62974ebb31042742544e2ce0c5c2ec88e1ced6836602c3e60a941d3",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
