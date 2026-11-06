@@ -28,7 +28,7 @@ export function abundanceQuote(s,target){
 export function receiveAbundance(s,target){
  const {store,amount,reason}=abundanceQuote(s,target);
  if(reason)return {ok:false,reason};
- const key=buildingKey(store),accepted=putStock(s,key,'food',amount);
+ const key=buildingKey(store),accepted=putStock(s,key,'food',amount,{gift:[amount]});
  if(accepted<=0)return {ok:false,reason:'Выбранное хранилище заполнено'};
  s.abundanceGift.last={store:key,amount:accepted,at:s.simTime};
  return {ok:true};

@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 265,
+  "giftMoved": 6,
+  "byteEqualCargo": true,
+  "byteEqualStore": true,
+  "samples": 54,
+  "medianMs": 3.5400829999999814,
+  "p95Ms": 12.725458000000003
+}

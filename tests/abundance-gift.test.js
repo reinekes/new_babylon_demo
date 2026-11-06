@@ -50,3 +50,49 @@ test('missing or full targets cost nothing, while previous cities retain the agg
  assert.equal(s.resources.food,food+45);
  assert.ok(createNewCity({mode:'awakening'}).abundanceGift);
 });
+
+test('food keeps its gift origin through mixed stock, split loads and a return',async()=>{
+ const {takeStock}=await import('../inventory.js');
+ const {s,b}=fixture();
+ assert.equal(putStock(s,'10,9','food',50),50);
+ assert.equal(miracle(s,'abundance',b).ok,true);
+ assert.deepEqual(b.giftStock,[-50,10]);
+ assert.equal(takeStock(s,'10,9','food',54),54);
+ const c={cargo:{}};
+ c.cargo.food=takeStock(s,'10,9','food',4,{giftTo:c});
+ assert.deepEqual(c.giftCargo,[4]);
+ assert.deepEqual(b.giftStock,[2]);
+ assert.equal(putStock(s,'9,8','food',4,{gift:c.giftCargo}),4);
+ assert.deepEqual(s.buildings.find(b=>b.type==='shrine').giftStock,[-100,4]);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const corrupt=JSON.parse(raw);
+ corrupt.citizens[0].giftCargo=[5];
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+});
+
+test('an actual district transfer carries marked gift food across a reload',async()=>{
+ const {advanceTime}=await import('../engine.js');
+ const {requestTransfer}=await import('../district-logistics.js');
+ const {invalidateAssignments,syncCitizens}=await import('../workforce.js');
+ let {s,b}=fixture();
+ assert.equal(miracle(s,'abundance',b).ok,true);
+ for(const c of s.citizens.filter(c=>c.age>=16))c.role='carrier';
+ invalidateAssignments(s);syncCitizens(s);
+ const order=requestTransfer(s,'10,9','9,8','food',6);
+ assert.ok(order.ok,order.reason);
+ const step=()=>{s.event=null;advanceTime(s,.2);};
+ for(let i=0;i<1000&&!s.citizens.some(c=>c.districtJob===order.id&&c.giftCargo);i++)step();
+ const porter=s.citizens.find(c=>c.districtJob===order.id&&c.giftCargo);
+ assert.ok(porter);
+ assert.deepEqual(porter.giftCargo,[6]);
+ const raw=encode(s);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ const job=s.district.jobs.find(q=>q.id===order.id);
+ for(let i=0;i<1000&&!job.delivered;i++)step();
+ assert.equal(job.delivered,6);
+ assert.equal(s.buildings.find(b=>b.type==='shrine').giftStock.at(-1),6);
+ assert.equal(encode(decode(encode(s))),encode(s));
+});

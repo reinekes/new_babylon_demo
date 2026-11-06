@@ -1,3 +1,4 @@
+import {addGiftFood,takeGiftFood} from './abundance-origin.js';
 import {takeCreatorStock,addCreatorStock,markCreatorCargo} from './creator-materials.js';
 import {appendFish,takeFish} from './fish-provenance.js';
 import {MATERIALS,isOperational,levelOf} from './definitions.js';
@@ -39,16 +40,16 @@ export function syncInventory(s){
   if(!stores.length){if(target>0)throw new Error('No operational inventory store');continue;}
   if(first){if(total===0)stores[0].stock[k]+=target;else if(target>total)stores[0].stock[k]+=target-total;}
   else if(target>total)stores[0].stock[k]+=target-total;
-  else if(target<total){let remaining=total-target;for(const b of stores){const taken=Math.min(b.stock[k],remaining);if(k==='food'&&b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.creatorStock)takeCreatorStock(b,k,taken);b.stock[k]-=taken;remaining-=taken;if(remaining<=0)break;}}
+  else if(target<total){let remaining=total-target;for(const b of stores){const taken=Math.min(b.stock[k],remaining);if(k==='food'){if(b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.giftStock)takeGiftFood(b,'giftStock',taken,b.stock[k]);}if(b.creatorStock)takeCreatorStock(b,k,taken);b.stock[k]-=taken;remaining-=taken;if(remaining<=0)break;}}
   s.resources[k]=first?Math.max(total,target):target;
  }
  return s;
 }
 function store(s,key){return stockStores(s).find(b=>keyOf(b)===key);}
 export function storeStock(s,key,k){syncInventory(s);return MATERIALS.includes(k)?store(s,key)?.stock[k]||0:0;}
-export function putStock(s,key,k,n,{overflow=false}={}){
+export function putStock(s,key,k,n,{overflow=false,gift}={}){
  syncInventory(s);const b=store(s,key);if(!b||!MATERIALS.includes(k))return 0;
- const accepted=Math.min(amount(n),overflow?Infinity:Math.max(0,storeCapacity(b)-b.stock[k]));b.stock[k]+=accepted;s.resources[k]+=accepted;return accepted;
+ const accepted=Math.min(amount(n),overflow?Infinity:Math.max(0,storeCapacity(b)-b.stock[k]));if(gift&&k==='food'&&accepted>0)addGiftFood(b,'giftStock',takeGiftFood({gift:[...gift]},'gift',accepted,n),b.stock[k]);b.stock[k]+=accepted;s.resources[k]+=accepted;return accepted;
 }
 // Emergency recovery keeps a real holder on the same reachable bank. A
 // depleted home can become ground storage again; another yard is temporary.
@@ -57,10 +58,11 @@ export function putRecoveryStock(s,key,k,n){
  if(!['house','shrine','granary','depot'].includes(b.type))b.recoveryOnly=true;
  b.stock??=empty();b.stock[k]+=accepted;s.resources[k]+=accepted;return accepted;
 }
-export function takeStock(s,key,k,n,{fishTo,fishKey='fishCargo',creatorTo}={}){
+export function takeStock(s,key,k,n,{fishTo,fishKey='fishCargo',giftTo,giftKey='giftCargo',creatorTo}={}){
  syncInventory(s);const b=store(s,key);if(!b||!MATERIALS.includes(k))return 0;
  const taken=Math.min(b.stock[k],amount(n));
  if(k==='food'&&b.fishStock)appendFish(fishTo,fishKey,takeFish(b,'fishStock',taken,b.stock[k]),0);
+ if(k==='food'&&b.giftStock)addGiftFood(giftTo,giftKey,takeGiftFood(b,'giftStock',taken,b.stock[k]),0);
  if(b.creatorStock){const local=takeCreatorStock(b,k,taken);if(creatorTo)markCreatorCargo(s,creatorTo,k,local,true);}
  b.stock[k]-=taken;s.resources[k]-=taken;return taken;
 }
@@ -74,7 +76,7 @@ export const foodAvailableAt=(s,key)=>foodAvailability(s).get(key)||0;
 export function reserveStock(s,cost,{eligibleStores,creatorAllocations}={}){
  syncInventory(s);const stores=stockStores(s).filter(b=>!eligibleStores||eligibleStores.has(keyOf(b))),entries=Object.entries(cost).filter(([k])=>MATERIALS.includes(k)),food=entries.some(([k])=>k==='food')?foodAvailability(s):null;
  if(entries.some(([k,n])=>!Number.isFinite(n)||n<0||n>stores.reduce((total,b)=>total+(k==='food'?food.get(keyOf(b))||0:b.stock[k]),0)))return null;
- const sources={};for(const [k,n] of entries){let left=n;for(const b of stores){const taken=Math.min(left,k==='food'?food.get(keyOf(b))||0:b.stock[k]);if(taken>0){(sources[keyOf(b)]??={})[k]=taken;if(k==='food'&&b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.creatorStock){const local=takeCreatorStock(b,k,taken);if(local&&creatorAllocations)(creatorAllocations[keyOf(b)]??={})[k]=local;}b.stock[k]-=taken;s.resources[k]-=taken;left-=taken;}if(left<=0)break;}}return sources;
+ const sources={};for(const [k,n] of entries){let left=n;for(const b of stores){const taken=Math.min(left,k==='food'?food.get(keyOf(b))||0:b.stock[k]);if(taken>0){(sources[keyOf(b)]??={})[k]=taken;if(k==='food'){if(b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.giftStock)takeGiftFood(b,'giftStock',taken,b.stock[k]);}if(b.creatorStock){const local=takeCreatorStock(b,k,taken);if(local&&creatorAllocations)(creatorAllocations[keyOf(b)]??={})[k]=local;}b.stock[k]-=taken;s.resources[k]-=taken;left-=taken;}if(left<=0)break;}}return sources;
 }
 export function takeReserved(s,sources,key,k,n){const source=sources?.[key];if(!source||!MATERIALS.includes(k))return 0;const taken=Math.min(amount(source[k]),amount(n));source[k]-=taken;return taken;}
 export function refundSources(s,sources,creatorAllocations){

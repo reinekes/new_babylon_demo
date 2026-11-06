@@ -7,7 +7,7 @@ export const newRichCatchEvidence=()=>({version:1,homes:[]});
 
 // Positive segments are local catches. Negative segments are unidentified food;
 // trailing unidentified food is implicit in the physical amount.
-export function appendFish(holder,key,parts,before){
+export function appendFish(holder,key,parts,before,limit=LIMIT){
  if(!holder||!parts.some(part=>part>EPS))return;
  let queue=holder[key]||[], tracked=magnitude(queue);
  if(tracked>before+EPS){queue=[];tracked=0;}
@@ -19,8 +19,8 @@ export function appendFish(holder,key,parts,before){
  };
  push(tracked-before);
  for(const part of parts)push(part);
- if(queue.length>LIMIT){
-  const old=queue.splice(0,queue.length-LIMIT+1);
+ if(queue.length>limit){
+  const old=queue.splice(0,queue.length-limit+1);
   if(queue[0]<0)queue[0]-=magnitude(old);
   else queue.unshift(-magnitude(old));
  }
