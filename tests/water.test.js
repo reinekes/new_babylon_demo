@@ -22,3 +22,52 @@ test('a bridge enables real cross-bank water delivery and return',()=>{const sta
 test('a healthy neighbor supplies a home with children and comes back to their own home',()=>{const s=city([{...home},{type:'house',x:9,y:9,level:1}]),p=generateStreets(s.buildings,s).ports.find(p=>p.building.x===9);s.citizens.push({...s.citizens[0],id:2,age:8,home:'9,9',x:p.x,y:p.y});s.buildings[0].water=3;s.buildings[1].water=0;advanceWater(s,.1);assert.equal(s.citizens[0].waterTrip.target,'9,9');assert.equal(s.citizens[0].waterTrip.origin,'8,8');advance(s,40);assert.ok(s.buildings[1].water>0);assert.equal(s.citizens[1].waterTrip,undefined);});
 test('after a city ceremony a loaded courier resumes from home along the bridge',()=>{const station={type:'waterpoint',x:11,y:8,level:1},s=city([{type:'house',x:22,y:8,level:1},station,{type:'bridge',x:13,y:8,level:1}]),c=s.citizens[0],net=generateStreets(s.buildings,s),p=net.ports.find(p=>p.building===station),h=net.ports.find(p=>p.building.type==='house');Object.assign(c,{work:'11,8',phase:'working',x:p.x,y:p.y});s.buildings[0].water=0;advanceWater(s,.1);for(let i=0;i<200&&!c.waterTrip.load;i++)advance(s,.1);assert.ok(c.waterTrip.load>0);Object.assign(c,{x:h.x,y:h.y});assert.ok(resumeWaterAtHome(s,c));assert.equal(c.waterTrip.phase,'deliver');advance(s,1);assert.ok(s.buildings[0].water>0);assert.ok(validateWater(s));});
 test('real city water trips keep saves valid through several days',async()=>{const {createGame,advanceTime,encode,decode}=await import('../engine.js');const s=createGame({start:'established'});let carrying=false;for(let i=0;i<500;i++){s.event=null;advanceTime(s,.5);carrying||=s.citizens.some(c=>c.waterTrip?.load>0);assert.ok(decode(encode(s)),`save at ${i}`);}assert.ok(carrying);assert.ok(s.citizens.every(c=>c.thirst===0));});
+
+function cityEnclosure(){
+ const walls=[];
+ for(let y=4;y<=10;y++)for(let x=3;x<=8;x++)if(x===3||y===4||x===8||y===10)walls.push({type:'cityWall',x,y,level:1});
+ return walls;
+}
+
+test('a closed wall prevents a new trip to the bank until a breach opens',()=>{
+ const s=city([{type:'house',x:5,y:7,level:1},...cityEnclosure()]),c=s.citizens[0];
+ s.buildings[0].water=0;
+ advanceWater(s,.1);
+ assert.equal(c.waterTrip,undefined);
+ s.buildings=s.buildings.filter(b=>b.type!=='cityWall'||b.x!==8||b.y!==8);
+ advanceWater(s,.1);
+ assert.ok(c.waterTrip);
+});
+
+test('a wall that closes in front of a loaded courier holds the vessel until passage reopens',()=>{
+ const s=city([{type:'house',x:5,y:7,level:1}]),c=s.citizens[0],h=s.buildings[0];
+ h.water=0;
+ advanceWater(s,.1);
+ for(let i=0;i<350&&!c.waterTrip.load;i++)advance(s,.1);
+ assert.ok(c.waterTrip.load>0);
+ const load=c.waterTrip.load,delivered=h.waterDelivered;
+ s.buildings.push(...cityEnclosure());
+ advance(s,30);
+ assert.equal(c.waterTrip?.load,load);
+ assert.equal(h.waterDelivered,delivered);
+ s.buildings=s.buildings.filter(b=>b.type!=='cityWall'||b.x!==8||b.y!==8);
+ advance(s,35);
+ assert.ok(h.waterDelivered>delivered);
+ assert.ok(validateWater(s));
+});
+
+test('a closure during filling cannot credit a household from the river',()=>{
+ const s=city([{type:'house',x:5,y:7,level:1}]),c=s.citizens[0],h=s.buildings[0];
+ h.water=0;
+ advanceWater(s,.1);
+ for(let i=0;i<300&&c.waterTrip.phase!=='fill';i++)advance(s,.1);
+ assert.equal(c.waterTrip.phase,'fill');
+ const delivered=h.waterDelivered;
+ s.buildings.push(...cityEnclosure());
+ advance(s,6);
+ assert.equal(h.waterDelivered,delivered);
+ assert.ok(c.waterTrip.load>0);
+ s.buildings=s.buildings.filter(b=>b.type!=='cityWall'||b.x!==8||b.y!==8);
+ advance(s,30);
+ assert.ok(h.waterDelivered>delivered);
+});

@@ -1,3 +1,4 @@
+import {fortificationAccess} from './navigation.js';
 import {floodPhase,floodFootprint,floodProtectionRevision,floodedSegment} from './river-flood.js';
 import {supplyHome} from './households.js';
 import {cachedStreetsFor} from './workforce.js';
@@ -13,23 +14,24 @@ export const WATER_DAY=60;
 export const waterBusy=c=>!!c.waterTrip;
 // A broken vessel/death spills water; it cannot teleport into a house or store.
 export function recoverWater(s,c){const amount=c.waterTrip?.load||0;if(c.waterTrip)finish(s,c);return amount;}
-const caches=new WeakMap(),changes=new WeakSet(),eps=1e-7;
+const caches=new WeakMap(),blockedWaterTrips=new WeakMap(),changes=new WeakSet(),eps=1e-7;
 const demand=c=>c.age<16?.5:1;
 const point=p=>({x:p.x,y:p.y});
 const key=p=>`${Math.round(p.x+.5)},${Math.round(p.y+.5)}`;
 const dryEdge=(s,a,b)=>[0,.25,.5,.75,1].every(t=>isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t));
 function navigation(s){
  const flood=floodPhase(s)==='active'?s.riverFlood:null;
- const geometry=(flood?`${flood.along},${flood.bank}:${floodProtectionRevision(s)}|`:'')+s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|'),signature=geometry+'|anchors:'+(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
+ const geometry=(flood?`${flood.along},${flood.bank}:${floodProtectionRevision(s)}|`:'')+s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}:${b.type==='cityGate'?b.rotation||0:''}`).join('|'),signature=geometry+'|anchors:'+(s.roadAnchors||[]).map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||''}`).join('|');
  let cache=caches.get(s);const sameTerrain=cache&&cache.world===s.world&&cache.river===s.world?.river&&cache.lakes===s.world?.lakes&&cache.lakeCount===(s.world?.lakes?.length||0);if(cache?.signature===signature&&sameTerrain)return cache;
  const reuse=cache?.geometry===geometry&&sameTerrain;
  const network=cachedStreetsFor(s)||generateStreets([...s.buildings,...s.roadAnchors||[]],s),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),nodes=reuse?cache.nodes:new Map(),graph=reuse?cache.graph:new Map();
  const flooded=reuse?cache.flooded:flood?floodFootprint(s,flood):null;
+ const forts=reuse?cache.forts:fortificationAccess(s.buildings);
  if(!reuse){
-  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)&&(!flooded||!floodedSegment(flooded,p,p))){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
-  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q)&&(!flooded||!floodedSegment(flooded,p,q)))graph.get(k).push(qk);}
+  for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)&&(!forts||forts.pointClear(p))&&(!flooded||!floodedSegment(flooded,p,p))){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
+  for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q)&&(!forts||forts.segmentClear(p,q))&&(!flooded||!floodedSegment(flooded,p,q)))graph.get(k).push(qk);}
  }
- cache={signature,geometry,flooded,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
+ cache={signature,geometry,flooded,forts,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
 }
 function path(nodes,graph,from,to,flooded=null){
  if(!nodes.has(from))return null;const prev=new Map([[from,null]]),queue=[from];
@@ -83,6 +85,26 @@ export function resumeWaterAtHome(s,c){
  return true;
 }
 function finish(s,c){if(c.pendingRole)changes.add(s);const t=c.waterTrip;c.phase=t.origin===c.home?'home':c.work===t.origin?'working':'home';c.route=[];c.routeIndex=0;delete c.waterTrip;}
+function waterDetour(s,c,t,nav,phase=t.phase){
+ if(blockedWaterTrips.get(t)===nav)return null;
+ const x=Math.round(c.x+.5),y=Math.round(c.y+.5),starts=[];
+ for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+  const p={x:x+dx-.5,y:y+dy-.5};
+  if(nav.forts.pointClear(p)&&nav.forts.segmentClear(c,p)&&dryEdge(s,c,p)&&(!nav.flooded||!floodedSegment(nav.flooded,c,p)))starts.push(p);
+ }
+ starts.sort((a,b)=>Math.hypot(a.x-c.x,a.y-c.y)-Math.hypot(b.x-c.x,b.y-c.y));
+ const destination=phase==='source'?null:nav.ports.get(phase==='deliver'?t.target:t.origin);
+ for(const p of starts){
+  const at=key(p);
+  const route=phase==='source'
+   ?path(nav.nodes,nav.graph,at,(_,q)=>Math.abs(signedRiverDistance(q.x,q.y,s))<2.25)
+   :destination&&(path(nav.network.nodes,nav.network.graph,at,k=>k===destination.key,nav.flooded)||
+     path(nav.nodes,nav.graph,at,k=>k===destination.key));
+  if(route)return route;
+ }
+ blockedWaterTrips.set(t,nav);
+ return null;
+}
 function advanceTrip(s,c,dt,nav){
  const t=c.waterTrip,b=s.buildings.find(b=>buildingKey(b)===t.target&&isOperational(b));
  if(!b){finish(s,c);return;}
@@ -90,6 +112,12 @@ function advanceTrip(s,c,dt,nav){
  for(let turn=0;turn<8&&budget>eps;turn++){
   if(t.phase==='fill'){
    const used=Math.min(budget,2-t.elapsed);t.elapsed+=used;budget-=used;if(t.elapsed<2-eps)return;
+   if(nav.forts){
+    t.load=t.amount;
+    const route=waterDetour(s,c,t,nav,'deliver');
+    if(!route)return;
+    setRoute(t,route,'deliver',c);continue;
+   }
    const origin=nav.ports.get(t.origin);
    const back=nav.flooded?origin&&path(nav.nodes,nav.graph,key(c),k=>k===origin.key):[...bankRoute(s,nav,t.origin)||[]].reverse();
    if(!back)return;
@@ -98,6 +126,11 @@ function advanceTrip(s,c,dt,nav){
   }
   const next=t.route[t.index];
   if(next&&nav.flooded&&floodedSegment(nav.flooded,c,next))return;
+  if(next&&nav.forts&&!nav.forts.segmentClear(c,next)){
+   const route=waterDetour(s,c,t,nav);
+   if(!route)return;
+   setRoute(t,route,t.phase,c);continue;
+  }
   if(next){const d=Math.hypot(next.x-c.x,next.y-c.y),speed=(t.station?1.35:1.05)*(s.buffs?.haste?1.5:1)*(t.station&&c.calling==='watercarrier'&&c.role==='watercarrier'?1.2:1),time=d/speed;if(time>budget){c.x+=(next.x-c.x)*budget/time;c.y+=(next.y-c.y)*budget/time;return;}c.x=next.x;c.y=next.y;t.index++;budget-=time;continue;}
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
