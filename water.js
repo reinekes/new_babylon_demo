@@ -17,7 +17,7 @@ export const waterBusy=c=>!!c.waterTrip;
 // A broken vessel/death spills water; it cannot teleport into a house or store.
 export function recoverWater(s,c){const amount=c.waterTrip?.load||0;if(c.waterTrip)finish(s,c);return amount;}
 const caches=new WeakMap(),blockedWaterTrips=new WeakMap(),changes=new WeakSet(),eps=1e-7;
-const demand=c=>c.age<16?.5:1;
+export const waterDemand=c=>c.age<16?.5:1;
 const point=p=>({x:p.x,y:p.y});
 const key=p=>`${Math.round(p.x+.5)},${Math.round(p.y+.5)}`;
 const dryEdge=(s,a,b)=>[0,.25,.5,.75,1].every(t=>isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t));
@@ -47,13 +47,13 @@ function roadRoute(nav,from,to){
  const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key,nav.flooded):null);}return nav.roads.get(id);
 }
 const targetStock=b=>b.type==='house'?b.water:(b.type==='cowshed'?b.dairy?.water:isArtisan(b)?b.artisan?.water:b.brickmaking?.water)||0;
-function targetCapacity(s,b){return b.type==='cowshed'?12:b.type==='house'?Math.max(2,s.citizens.filter(c=>supplyHome(c)===buildingKey(b)).reduce((n,c)=>n+demand(c),0)*3):b.type==='brewery'?3:2;}
+function targetCapacity(s,b){return b.type==='cowshed'?12:b.type==='house'?Math.max(2,s.citizens.filter(c=>supplyHome(c)===buildingKey(b)).reduce((n,c)=>n+waterDemand(c),0)*3):b.type==='brewery'?3:2;}
 export function waterSummary(s,b){
- const residents=s.citizens.filter(c=>supplyHome(c)===buildingKey(b)),daily=residents.reduce((n,c)=>n+demand(c),0),trips=s.citizens.filter(c=>c.waterTrip?.target===buildingKey(b));
+ const residents=s.citizens.filter(c=>supplyHome(c)===buildingKey(b)),daily=residents.reduce((n,c)=>n+waterDemand(c),0),trips=s.citizens.filter(c=>c.waterTrip?.target===buildingKey(b));
  return {stock:targetStock(b)||0,demand:daily,capacity:targetCapacity(s,b),delivered:b.waterDelivered||0,inTransit:trips.reduce((n,c)=>n+c.waterTrip.load,0),couriers:trips.length,thirsty:residents.filter(c=>(c.thirst||0)>30).length};
 }
 export function initializeWater(s){
- const demands=new Map();for(const c of s.citizens||[]){c.thirst??=0;demands.set(c.home,(demands.get(c.home)||0)+demand(c));}
+ const demands=new Map();for(const c of s.citizens||[]){c.thirst??=0;demands.set(c.home,(demands.get(c.home)||0)+waterDemand(c));}
  for(const b of s.buildings||[])if(b.type==='house'){const daily=demands.get(buildingKey(b))||0;b.water??=daily*2;b.waterDelivered??=b.water;}
 }
 function eligible(c){return c.age>=16&&c.health>20&&!c.clinic&&!c.school&&!c.waterTrip&&!c.pantryTrip&&!c.craftSite&&!c.seedField&&c.clothingTarget===undefined&&!c.districtJob&&!c.tradeJob&&!c.saleJob&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);}
@@ -158,14 +158,14 @@ function advanceTrip(s,c,dt,nav){
 export function advanceWater(s,dt){
  if(!Number.isFinite(dt)||dt<=0)return;initializeWater(s);
  const houses=new Map(s.buildings.filter(b=>b.type==='house').map(b=>[buildingKey(b),b]));
- for(const c of s.citizens){const b=houses.get(supplyHome(c,{arrived:true})),amount=demand(c)*dt/WATER_DAY,drunk=b?Math.min(b.water,amount):0;if(b)b.water=Math.max(0,b.water-drunk);const shortage=amount-drunk;c.thirst=Math.max(0,Math.min(100,c.thirst+(shortage>eps?dt*.8:-dt*3)));if(c.thirst>30){c.health=Math.max(0,c.health-dt*.025*(c.thirst/100));c.mood=Math.max(0,c.mood-dt*.04);}}
+ for(const c of s.citizens){const b=houses.get(supplyHome(c,{arrived:true})),amount=waterDemand(c)*dt/WATER_DAY,drunk=b?Math.min(b.water,amount):0;if(b)b.water=Math.max(0,b.water-drunk);const shortage=amount-drunk;c.thirst=Math.max(0,Math.min(100,c.thirst+(shortage>eps?dt*.8:-dt*3)));if(c.thirst>30){c.health=Math.max(0,c.health-dt*.025*(c.thirst/100));c.mood=Math.max(0,c.mood-dt*.04);}}
  if(s.funeral&&s.funeral.scope!=='family')return;
  const nav=navigation(s),mourning=new Set(s.funeral?.actors.map(a=>a.id)||[]),day=((8+s.simTime*.4)%24+24)%24;
  for(const c of s.citizens)if(c.waterTrip&&!mourning.has(c.id))advanceTrip(s,c,dt,nav);
  if(day<6||day>=19)return changes.delete(s);
  // Build household demand once per step: never rescan every resident per courier.
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),daily=new Map(),adults=new Set(),assigned=new Set();
- for(const c of s.citizens){const home=supplyHome(c);daily.set(home,(daily.get(home)||0)+demand(c));if(c.age>=16&&c.health>20&&!c.floodShelter)adults.add(home);if(c.waterTrip)assigned.add(c.waterTrip.target);}
+ for(const c of s.citizens){const home=supplyHome(c);daily.set(home,(daily.get(home)||0)+waterDemand(c));if(c.age>=16&&c.health>20&&!c.floodShelter)adults.add(home);if(c.waterTrip)assigned.add(c.waterTrip.target);}
  const targets=s.buildings.filter(b=>isOperational(b)&&(b.type==='house'?(daily.get(buildingKey(b))||0)>0&&b.water<(daily.get(buildingKey(b))||0):b.type==='cowshed'?dairyNeeds(b).water>eps:isArtisan(b)?(artisanNeeds(b).water||0)>eps:b.type==='brickyard'&&b.brickmaking&&!b.brickmaking.wet&&!b.brickmaking.ready&&b.brickmaking.water<2-eps));
  const needy=new Set(targets.map(buildingKey)),orphans=targets.filter(b=>b.type==='house'&&!adults.has(buildingKey(b)));
  const wanted=b=>b&&needy.has(buildingKey(b))&&!assigned.has(buildingKey(b));

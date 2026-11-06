@@ -5,9 +5,42 @@ import {build,canBuild} from './engine.js';
 import {canLeadConstruction} from './godhood.js';
 import {networkFor} from './workforce.js';
 import {stockStores} from './inventory.js';
-import {waterSummary} from './water.js';
+import {waterDemand,waterSummary} from './water.js';
+import {supplyHome} from './households.js';
 
 const projectType='waterpoint';
+function awaitingWaterProject(s,b){
+ return s.buildings.some(site=>{
+  const p=site.humanWaterProject;
+  return p?.home===buildingKey(b)&&!p.delivery&&(p.homeId===undefined||p.homeId===b.waterEntityId);
+ });
+}
+function waterRequest(s,b,requester,demand){
+ const shortage=demand-(b.water||0);
+ if(!requester||shortage<=1e-7||awaitingWaterProject(s,b))return null;
+ return {home:buildingKey(b),requesterId:requester.id,shortage,cost:BUILDINGS[projectType]};
+}
+export function householdWaterRequest(s,b){
+ if(!isStrictSumer(s)||b.type!=='house'||!isOperational(b))return null;
+ const requester=s.citizens.find(c=>c.home===buildingKey(b)&&c.age>=16&&!c.floodShelter);
+ return waterRequest(s,b,requester,waterSummary(s,b).demand);
+}
+export function cityWaterRequest(s){
+ if(!isStrictSumer(s))return null;
+ const demand=new Map(),requesters=new Map();
+ for(const c of s.citizens){
+  const home=supplyHome(c);
+  demand.set(home,(demand.get(home)||0)+waterDemand(c));
+  if(c.age>=16&&!c.floodShelter&&!requesters.has(c.home))requesters.set(c.home,c);
+ }
+ let request=null;
+ for(const b of s.buildings){
+  if(b.type!=='house'||!isOperational(b))continue;
+  const home=buildingKey(b),candidate=waterRequest(s,b,requesters.get(home),demand.get(home)||0);
+  if(candidate&&(!request||candidate.shortage>request.shortage))request=candidate;
+ }
+ return request;
+}
 export function waterProjectOrganizerReason(s,organizer){
  if(!organizer||organizer.age<16||!['auto','builder'].includes(organizer.role)||!canLeadConstruction(s,organizer,{type:projectType,level:1}))return 'Нужен взрослый организатор, который может строить';
  if(organizer.hunger>=30)return 'Организатор голоден и пока откладывает стройку';

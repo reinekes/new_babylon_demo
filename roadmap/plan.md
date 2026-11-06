@@ -179,7 +179,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## ux-human-requests | Просьбы, отношения и намерения
 group: ux
-status: planned
+status: partial
 priority: P2
 depends: -
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -188,10 +188,10 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 Предложение прогрессивных представлений новых сущностей с причиной и ценой до действия.
 
 ### Что уже есть
-Пролог, серые допуски и компактные панели уже работают.
+Локально в снабжении и карточке двора показана просьба о воде: проситель, причина, цена и бесплатный переход к согласованию.
 
 ### Следующий шаг
-Карточка одной просьбы поверх будущего контракта.
+Подтвердить публикацию карточки просьбы.
 
 ### Готово когда
 Причина, адресат и следующее действие понятны бесплатно.
