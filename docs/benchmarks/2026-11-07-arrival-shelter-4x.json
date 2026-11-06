@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledEvacueeArrival": true,
+  "servedHouseholds": 2,
+  "byteEqualReload": true,
+  "byteEqualOutsideJournal": true,
+  "samples": 120,
+  "medianCpuMs": 13.91924999999901,
+  "p95CpuMs": 42.77754199999981
+}

@@ -1,3 +1,4 @@
+import {recordArrivalShelter} from './arrival-hospitality.js';
 import {takeGiftFood} from './abundance-origin.js';
 import {advanceEveningGame} from './household-games.js';
 import {tellWaterStoryAtDinner} from './life-analytics.js';
@@ -28,7 +29,7 @@ export function advanceWellbeing(s,dt){
    if(!families.has(home))families.set(home,[]);
    families.get(home).push(c);
   }
-  for(const b of s.buildings){const family=families.get(`${b.x},${b.y}`);if(b.type!=='house'||!family||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=family.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total);for(let i=0;i<family.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=family[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;if(b.giftHome)takeGiftFood(b,'giftHome',amount-milk*.5,b.pantry);b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;}
+  for(const b of s.buildings){const family=families.get(`${b.x},${b.y}`);if(b.type!=='house'||!family||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=family.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total);for(let i=0;i<family.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=family[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;if(b.giftHome)takeGiftFood(b,'giftHome',amount-milk*.5,b.pantry);b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;if(c.floodShelter)recordArrivalShelter(s,b,c,amount);}
    if(s.godhood?.firstWaterHelp?.deliveredAt!==undefined&&family.length>1){
     storyRecords??=new Map((s.lifeAnalytics?.people||[]).map(p=>[p.id,p]));
     tellWaterStoryAtDinner(s,family.filter((_,i)=>requests[i]*share>1e-9),storyRecords);

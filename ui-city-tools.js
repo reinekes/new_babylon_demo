@@ -222,7 +222,7 @@ function shapingBatchesHTML(s){
 function arrivalHospitalityHTML(s){
  const view=arrivalHospitalityView(s);
  if(!view)return '';
- return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${view.visits} из ${view.needed}.</p></section>`;
+ return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p></section>`;
 }
 
 function shapingProjectsHTML(s){
