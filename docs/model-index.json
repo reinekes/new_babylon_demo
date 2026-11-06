@@ -17,7 +17,7 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "841485bd9fdce30fb1f7f955f8b9b8d8e060ac08afeac216d294e6216530a865"
+      "sha256": "9faba5efc7ebcb851abd4080612bdddef51a41e91c35888990fb14e33913721f"
     },
     {
       "file": "game3d/ambient-fauna.js",
@@ -730,7 +730,7 @@
         {
           "model": "historical-man.glb",
           "file": "game3d/actors.js",
-          "line": 88,
+          "line": 89,
           "kind": "literal"
         }
       ]
@@ -762,7 +762,7 @@
         {
           "model": "human-native-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -794,7 +794,7 @@
         {
           "model": "human-native-child.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -826,7 +826,7 @@
         {
           "model": "human-native-female.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -858,7 +858,7 @@
         {
           "model": "human-native-male.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1767,7 +1767,7 @@
         {
           "model": "source-walk-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1799,7 +1799,7 @@
         {
           "model": "source-walk-child.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1831,7 +1831,7 @@
         {
           "model": "source-walk-female.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1863,7 +1863,7 @@
         {
           "model": "source-walk-male.glb",
           "file": "game3d/actors.js",
-          "line": 77,
+          "line": 78,
           "kind": "reviewed-dynamic-expansion"
         },
         {
@@ -1901,7 +1901,7 @@
         {
           "model": "sumer-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 79,
+          "line": 80,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1933,7 +1933,7 @@
         {
           "model": "sumer-child.glb",
           "file": "game3d/actors.js",
-          "line": 79,
+          "line": 80,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1965,7 +1965,7 @@
         {
           "model": "sumer-people.glb",
           "file": "game3d/actors.js",
-          "line": 78,
+          "line": 79,
           "kind": "reviewed-dynamic-expansion"
         }
       ]

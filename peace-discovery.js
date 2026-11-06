@@ -52,13 +52,23 @@ export function peaceQuote(s,target){
  return {ids,reason:ids.length?'':'В выбранном квартале сейчас некому помочь'};
 }
 
+export function peaceResting(s,c){
+ const cast=s.peaceDiscovery?.lastCast;
+ return !!cast&&s.simTime-cast.at<60&&cast.ids.includes(c.id)&&
+  ['home','resting'].includes(c.phase)&&!c.floodShelter&&!c.waterTrip&&!c.pantryTrip&&
+  !Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
+}
+
 export function validatePeaceDiscovery(s){
  const evidence=s.peaceDiscovery;
  if(evidence===undefined)return true;
- if(!usesCatDiscovery(s)||!evidence||evidence.version!==1||Object.keys(evidence).length!==3+Number(evidence.lastCast!==undefined)+Number(evidence.sceneSeen!==undefined)||
+ if(!usesCatDiscovery(s)||!evidence||evidence.version!==1||Object.keys(evidence).length!==3+Number(evidence.lastCast!==undefined)+Number(evidence.sceneSeen!==undefined)+Number(evidence.keepsakes!==undefined)||
   (evidence.sceneSeen!==undefined&&evidence.sceneSeen!==true)||
   !Array.isArray(evidence.care)||evidence.care.length>CARE_REQUIRED||!Array.isArray(evidence.meals)||evidence.meals.length>MEALS_REQUIRED)return false;
  const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId;
+ const keepsakes=evidence.keepsakes;
+ if(keepsakes!==undefined&&(!Array.isArray(keepsakes)||keepsakes.length<1||keepsakes.length>80||
+  !keepsakes.every(id)||new Set(keepsakes).size!==keepsakes.length))return false;
  const cast=evidence.lastCast;
  if(cast!==undefined&&(!peaceDiscoveryView(s).qualified||!validCenter(s,cast)||Object.keys(cast).length!==4||
   !Number.isFinite(cast.at)||cast.at<0||cast.at>s.simTime||!Array.isArray(cast.ids)||

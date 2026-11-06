@@ -249,7 +249,12 @@ export function miracle(s,id,target){
  if(id==='sunlight'){affectResidents(s,{mood:7});s.happiness=Math.min(100,s.happiness+10);}
  if(id==='revelation'){if(!s.revelationEvidence)s.resources.faith+=20;s.resources.prestige+=12;}
  if(id==='stars')s.resources.prestige+=18;
- if(peace)s.peaceDiscovery.lastCast={x:target.x,y:target.y,at:s.simTime,ids:peace.ids};
+ if(peace){
+  s.peaceDiscovery.lastCast={x:target.x,y:target.y,at:s.simTime,ids:peace.ids};
+  const keepsakes=s.peaceDiscovery.keepsakes??=[];
+  if(!keepsakes.includes(peace.ids[0]))keepsakes.push(peace.ids[0]);
+  if(keepsakes.length>80)keepsakes.shift();
+ }
  else if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
  applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};

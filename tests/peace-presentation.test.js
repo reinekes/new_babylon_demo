@@ -22,3 +22,9 @@ test('peace scenes are skippable and only resting recipients show the relief mar
  s.simTime=80;scene.tick(s,16);
  assert.equal(root.querySelectorAll('.peace-relief').length,0);
 });
+
+test('resting recipients have a distinct idle pose, while cargo keeps its normal pose',async()=>{
+ const {actorAnimation}=await import('../game3d/actors.js');
+ assert.deepEqual(actorAnimation({kind:'person',peaceRelief:true}),{clip:'Idle_Loop',pose:'peaceRelief'});
+ assert.notEqual(actorAnimation({kind:'person',peaceRelief:true,carrying:true}).pose,'peaceRelief');
+});

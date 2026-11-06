@@ -334,6 +334,14 @@ test('real workplace joints visibly cycle by trade, freeze on pause and children
   assert.ok(Math.hypot(root.position.x/6-child.x,root.position.z/6-child.y)<1.5,'toys remain on the existing safe home play route');
   const arm=root.getChildTransformNodes().find(n=>n.name.endsWith('-upperarm_r')),pose=arm.rotationQuaternion.asArray();view.update(s,.1,{paused:true});scene.render();assert.deepEqual(arm.rotationQuaternion.asArray(),pose);
   s.simTime=35;view.update(s,.1);assert.equal(root.isEnabled(),false,'night removes the child and outdoor toy scene together');
+  c.phase='resting';c.activity=undefined;s.citizens=[c];s.peaceDiscovery={lastCast:{at:s.simTime,ids:[c.id]},keepsakes:[c.id]};
+  const stateBefore=JSON.stringify(s);view.update(s,.1);scene.render();
+  const adultRoot=view.rootFor({citizenId:c.id}),keepsake=adultRoot.getChildMeshes().find(m=>m.name==='peace-clay-ram-body');
+  assert.ok(keepsake?.isEnabled());assert.match(keepsake.parent.parent.name,/hand_r$/);
+  assert.equal(JSON.stringify(s),stateBefore);
+  c.phase='toStore';c.cargo={food:2};view.update(s,.1);scene.render();
+  assert.equal(keepsake.isEnabled(),false);
+
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoader;scene.dispose();engine.dispose();}
 });
 

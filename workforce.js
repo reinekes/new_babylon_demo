@@ -1,3 +1,4 @@
+import {peaceResting} from './peace-discovery.js';
 import {advanceArrivalGroup,createArrivalFamily} from './arrival-hospitality.js';
 import {deliverShapingLoad,returnShapingLoad} from './shaping-batch.js';
 import {advanceShapingModel} from './shaping-model.js';
@@ -816,6 +817,16 @@ export function treatmentViewPosition(s,c){
 }
 export function visibleCitizens(s){
  const people=(s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:c.floodShelter&&c.routeIndex<c.route.length||waterBusy(c)||['toEveningGame','toManualGathering','toCommonMeal','toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.memorialMove?true:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),guarding:c.guardPost===c.work&&c.phase==='working'&&!s.funeral?.actors.some(a=>a.id===c.id),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...relicCitizenView(s,c),...godhoodCitizenView(s,c),...treatmentViewPosition(s,c)}));
+ const cast=s.peaceDiscovery?.lastCast;
+ if(cast&&s.simTime-cast.at<60){
+  for(const c of s.citizens)if(peaceResting(s,c)){
+   const shown=people.find(p=>p.id===c.id);
+   if(shown?.walking)continue;
+   const pose={peaceRelief:true,peaceKeepsake:s.peaceDiscovery.keepsakes?.includes(c.id)||false,playing:false};
+   if(shown)Object.assign(shown,pose);
+   else people.push({...c,...pose,kind:'person',lifeStage:lifeStage(c),walking:false,carrying:false,robe:'#d2b66e',step:s.simTime*4});
+  }
+ }
  const guest=externalGuestView(s);if(guest)people.push(guest);
  if(s.externalVisits)people.push(...visitorsView(s));
  const group=s.arrivalGroup;

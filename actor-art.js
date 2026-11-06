@@ -6,6 +6,7 @@ export function residentPose(person,craft,time=0,reduce=false){
  if(person.phase==='unloading'&&person.carrying)return {kind:'unload',beat};
  if(person.carrying||person.waterTrip?.load>0)return {kind:'carry',beat};
  if(person.walking)return {kind:'walk',beat};
+ if(person.peaceRelief)return {kind:'peaceRelief',beat};
  if(person.playing)return {kind:'play',beat};
  if(['working','manualGathering'].includes(person.phase))return {kind:craft==='brewery'?'stir':craft==='weaver'?'weave':['brickyard','clay','pottery'].includes(craft)?'mould':['field','garden','reed'].includes(craft)?'harvest':'work',beat};
  return {kind:person.age>=55?'elder':'idle',beat};
@@ -27,6 +28,10 @@ export function drawActorGesture(r,p,q,person,pose){
   line([[-2,-7],[-3,-6],[-1,-4]],skin,1.3);line([[2,-7],[4,-8],[5,-6]],skin,1.3);
  }else if(pose.kind==='play'){
   line([[-2,-7],[-4,-7-n],[-5,-9-n]],skin,1);line([[2,-7],[4,-5+n]],skin,1);
+ }else if(pose.kind==='peaceRelief'){
+  line([[-2,-7],[-3,-5],[-2,-4]],skin,1.25);
+  line([[2,-7],[3,-5],person.peaceKeepsake?[1.7,-6]:[2,-4]],skin,1.25);
+  if(person.peaceKeepsake)line([[1,-6.4],[2.4,-6.4]],'#c88350',1.9);
  }else if(pose.kind==='elder'){
   line([[2,-7],[4,-5],[5,-7]],skin,1.3);line([[5,-8],[5,1]],'#846e50',.9);line([[-.8,-10],[1,-8.4],[.6,-7.8]],'#dad6c2',1.1);
  }

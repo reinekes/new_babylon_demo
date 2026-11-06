@@ -243,7 +243,7 @@ export class Renderer{
    this.line([[p.x-2*q,p.y-7*q],[p.x-4*q,p.y-(raised?9:6)*q],[p.x-(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);
    this.line([[p.x+2*q,p.y-7*q],[p.x+4*q,p.y-(raised?9:6)*q],[p.x+(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);
   }
-  if(!rain&&!['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind)){
+  if(!rain&&!['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder','peaceRelief'].includes(pose.kind)){
    this.line([[p.x-2*q,p.y-7*q],[p.x-3*q,p.y-(4+stride*.4)*q]],'#a3835e',1.2*q);
    this.line([[p.x+2*q,p.y-7*q],[p.x+3*q,p.y-(4-stride*.4)*q]],'#a3835e',1.2*q);
   }
@@ -265,7 +265,7 @@ export class Renderer{
    this.line([[p.x+2*q,p.y-7*q],[p.x+(4.5*q+stroke),p.y-9.2*q]],'#a3835e',1.15*q);
    this.line([[p.x+(4.5*q+stroke),p.y-9.2*q],[p.x+4*q,p.y-7*q]],'#704c31',.7*q);
   }
-  else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
+  else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder','peaceRelief'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
   else if(look.craft&&person.phase==='working'){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-6*q],[p.x+(4+swing)*q,p.y-7*q]],'#a3835e',q);}
   else if(['working','manualGathering','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
   if(person.waterTrip?.load>0){for(const side of [-1,1]){const x=p.x+side*4*q,y=p.y-4*q;c.fillStyle='#b4784f';c.beginPath();c.ellipse(x,y,2.4*q,3.1*q,0,0,7);c.fill();this.line([[x-1.4*q,y-2.7*q],[x+1.4*q,y-2.7*q]],'#78aaa6',1.2*q);this.line([[p.x+side*1.5*q,p.y-7*q],[x,y-3*q]],'#a3835e',1.2*q);}}else if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={firedBrick:'#bd7550',brick:'#cba373',food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}

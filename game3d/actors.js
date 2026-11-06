@@ -58,6 +58,7 @@ export function residentVisual(c,state,buildingTypes=state.buildings||[]){
 }
 export function actorAnimation(c,distance=0){
  if(c.kind==='sheep')return {clip:distance>.00001?'Walk':['grazing','drinking'].includes(c.behavior)?'Graze':'Idle',pose:c.behavior||'idle'};
+ if(c.peaceRelief&&!c.walking&&!c.carrying&&!c.swimming&&!c.funeralContact&&!c.miracleContact)return {clip:'Idle_Loop',pose:'peaceRelief'};
  const pose=residentPose(c,null,0).kind;
  return {clip:!c.swimming&&(distance>.00001||pose==='dance')?'Walk_Loop':'Idle_Loop',pose:c.relic?'carry':c.activity&&!c.carrying?(!c.activity.stage||['working','strike','searching'].includes(c.activity.stage)?c.activity.kind:'idle'):c.swimming?'swim':['carry','unload','play','dance','elder'].includes(pose)?pose:c.phase==='working'||c.phase==='constructing'?'work':'idle'};
 }
@@ -111,6 +112,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  function box(name,parent,material,x,y,z,sx,sy,sz){const mesh=B.MeshBuilder.CreateBox(name,{width:sx,height:sy,depth:sz},scene);mesh.parent=parent;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=true;mesh.receiveShadows=true;meshes.push(mesh);return mesh;}
  function sphere(name,parent,material,x,y,z,sx,sy,sz){const mesh=B.MeshBuilder.CreateSphere(name,{diameter:1,segments:8},scene);mesh.scaling.set(sx,sy,sz);mesh.parent=parent;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=true;mesh.receiveShadows=true;meshes.push(mesh);return mesh;}
  function remove(a){releaseSleepingRig(a);if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();}prune(a.root);for(const g of a.groups?.values()||[])g.dispose();a.root.dispose();for(const s of a.skeletons||[])s.dispose();for(const m of a.materials||[])m.dispose();}
+ function clayAnimal(name,parent,kind){
+  const toy=new B.TransformNode(`${name}-clay-toy`,scene);
+  toy.parent=parent;toy.position.set(0,.025,0);toy.scaling.setAll(.75);toy.setEnabled(false);
+  sphere(`${kind}-clay-ram-body`,toy,clay,0,.08,0,.23,.13,.12);sphere(`${kind}-clay-ram-face`,toy,clay,.12,.14,0,.10,.10,.10);
+  for(const x of [-.07,.07])for(const z of [-.04,.04])box(`${kind}-clay-ram-leg`,toy,clay,x,.025,z,.035,.07,.035);
+  return toy;
+ }
  function instantiate(source,name,metadata){
   const copy=source.instantiateModelsToScene(n=>`${name}-${n}`,false,{doNotInstantiate:true});
   const root=new B.TransformNode(name,scene),model=new B.TransformNode(`${name}-model`,scene);model.parent=root;root.metadata=metadata;
@@ -161,9 +169,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(metadata.child){a.playProps=new B.TransformNode(`${name}-play-props`,scene);a.playProps.parent=root;a.playProps.setEnabled(false);
    // Terracotta animal and simple counters are period-inspired materials; this
    // particular children's scene is a game interpretation, not an excavated rule.
-   a.playAnimal=new B.TransformNode(`${name}-clay-toy`,scene);a.playAnimal.parent=a.hands.r||a.playProps;a.playAnimal.position.set(0,.025,0);a.playAnimal.scaling.setAll(.75);a.playAnimal.setEnabled(false);
-   sphere('child-clay-ram-body',a.playAnimal,clay,0,.08,0,.23,.13,.12);sphere('child-clay-ram-face',a.playAnimal,clay,.12,.14,0,.10,.10,.10);
-   for(const x of [-.07,.07])for(const z of [-.04,.04])box('child-clay-ram-leg',a.playAnimal,clay,x,.025,z,.035,.07,.035);
+   a.playAnimal=clayAnimal(name,a.hands.r||a.playProps,'child');
    a.playBoard=new B.TransformNode(`${name}-counters`,scene);a.playBoard.parent=a.playProps;
    box('child-clay-play-board',a.playBoard,clay,0,.025,.46,.39,.035,.30);
    for(let i=0;i<4;i++)sphere('child-play-counter',a.playBoard,i%2?stone:dark,(i%2-.5)*.15,.06,.39+Math.floor(i/2)*.13,.055,.035,.055);}
@@ -358,7 +364,12 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.wasPloughing=!!plough;
   a.plough=plough;
   a.paused=paused;
-  if(a.playProps&&!paused){const playing=c.playing&&c.age<16;a.playProps.setEnabled(!!playing);a.playBoard.setEnabled(!!playing&&!c.walking);a.playAnimal.setEnabled(!!playing);}
+  if(!paused||!a.hasModelPose){
+   const playing=c.playing&&c.age<16,keepsake=a.pose==='peaceRelief'&&c.peaceKeepsake;
+   if(a.playProps){a.playProps.setEnabled(!!playing);a.playBoard.setEnabled(!!playing&&!c.walking);}
+   if(keepsake&&!a.playAnimal){a.playAnimal=clayAnimal(a.root.name,a.hands.r||a.root,'peace');if(!a.hands.r)a.playAnimal.position.set(.25,.05,.3);}
+   a.playAnimal?.setEnabled(!!(playing||keepsake));
+  }
   if(a.tool&&plough)workerTool(a,null);
   else if(a.tool&&(!paused||a.toolKind===null||a.ploughPoseChanged)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
    const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,!c.carrying&&active?kind:null);}
@@ -432,6 +443,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const covered=a.rainReaction==='cover',spread=covered?.12:.41,height=covered?1.42:1.06;
     poseArm(a,'l',vec(-spread,height,.36));poseArm(a,'r',vec(spread,height,.36));
    }else if(a.c.mourningTorch||a.c.festivalTorch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
+   }else if(a.pose==='peaceRelief'){
+    const breath=reducedMotion?0:Math.sin(a.time*1.4)*.015;
+    poseArm(a,'l',vec(-.24,.81+breath,.18));poseArm(a,'r',vec(.23,a.c.peaceKeepsake?1.02:.81+breath,.22));
    }else if(swimming){
     const stroke=residentSwimmingPresentation(a.c,a.time,{reducedMotion}).stroke;
     if(carry){a.load.position.set(0,.50,1.05);for(let solve=0;solve<4;solve++){poseArm(a,'l',vec(-.21,.50,1.05));poseArm(a,'r',vec(.21,.50,1.05));}}
