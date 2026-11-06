@@ -1,0 +1,22 @@
+{
+  "speed": 4,
+  "fixtures": [
+    {
+      "buildings": 132,
+      "citizens": 289,
+      "kind": "opening",
+      "controlledEvidence": true
+    },
+    {
+      "buildings": 132,
+      "citizens": 265,
+      "kind": "cast",
+      "controlledOpening": true
+    }
+  ],
+  "byteEqualReload": true,
+  "byteEqualControl": true,
+  "samples": 150,
+  "medianCpuMs": 2.9276250000000346,
+  "p95CpuMs": 8.716957999999977
+}

@@ -1,0 +1,23 @@
+.revelation-scene[hidden]{display:none}
+.revelation-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.revelation-scene-card{background:linear-gradient(116deg,#4a3029,#202b34);border-color:#c2986d}
+.revelation-clay{fill:#a3684c;stroke:#dfae7c;stroke-width:1.5}
+.revelation-object{opacity:0;fill:#4a302d;stroke:#f0c18e;stroke-width:1.6;transition:opacity 1s ease,transform 1.8s ease}
+.revelation-scene[data-craft="true"] .revelation-object{fill:#6b4032}
+.revelation-scene[data-phase="first"] .revelation-first,
+.revelation-scene[data-phase="second"] :is(.revelation-first,.revelation-second),
+.revelation-scene:is([data-phase="third"],[data-phase="shadow"],[data-phase="separate"]) .revelation-object{opacity:1}
+.revelation-shadows{opacity:0;transition:opacity 1s ease;fill:#382725;transform:translateY(13px)}
+.revelation-shadow{transition:transform 2.2s ease}
+.revelation-scene:is([data-phase="third"],[data-phase="shadow"],[data-phase="separate"]) .revelation-shadows{opacity:.58}
+.revelation-scene[data-phase="shadow"] .revelation-shadow-first{transform:translateX(30px)}
+.revelation-scene[data-phase="shadow"] .revelation-shadow-third{transform:translateX(-30px)}
+.revelation-scene[data-phase="separate"] .revelation-shadows{animation:revelation-depart 5s 1s both}
+.revelation-scene[data-phase="separate"] .revelation-object{animation:revelation-depart 5s 1s both}
+.revelation-grooves,.revelation-work{fill:none;stroke:#ffe4a8;stroke-width:2;opacity:0;transition:opacity .6s ease}
+.revelation-scene[data-phase="grooves"] .revelation-grooves,
+.revelation-scene[data-phase="work"] .revelation-work{opacity:1}
+@keyframes revelation-depart{to{opacity:0;transform:translateY(7px)}}
+@media(prefers-reduced-motion:reduce){
+ .revelation-object,.revelation-shadows,.revelation-shadow,.revelation-grooves,.revelation-work{animation:none!important;transition:none}
+}

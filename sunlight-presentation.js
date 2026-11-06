@@ -93,6 +93,7 @@ export function createSunlightPresentation(root,{focus,project,cue}={}){
    if(!active&&pending&&allowOpening){start('opening',s,serviceTemple(s));pending=false;}
    if(active){paint(s);if(active)active.seconds+=dt/1000;}
   },
+  get active(){return !!active;},
   skip
  };
 }
