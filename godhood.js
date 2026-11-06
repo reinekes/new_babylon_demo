@@ -1,6 +1,7 @@
+import {dispatchNeighborWater,neighborWaterRoute} from './water.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
-import {buildingKey,isCityFortification} from './definitions.js';
+import {buildingKey,isCityFortification,isOperational} from './definitions.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
 import {isDryPoint,worldWidth,worldHeight} from './world.js';
@@ -113,17 +114,72 @@ export function beginFirstSign(s,id){
  if(!chosen)return {ok:false,reason:'Пусть здоровый свободный взрослый вернётся домой; нужен доступный берег'};
  g.stage='sign';g.witnessId=chosen.id;g.signTarget={...route.at(-1)};g.signOrigin={x:chosen.x,y:chosen.y};chosen.phase='awakening';chosen.route=route;chosen.routeIndex=1;chosen.work=null;chosen.site=null;invalidateAssignments(s);return {ok:true,citizenId:chosen.id};
 }
+export function firstWaterHelpChoices(s){
+ if(!isStrictSumer(s)||!isAwakening(s)||s.godhood.stage!=='unseen'||s.godhood.recognitionAt!==null||s.lost||s.funeral||s.event)return [];
+ const homes=new Map(s.buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>[buildingKey(b),b]));
+ const residents=new Map();
+ for(const c of s.citizens)if(homes.has(c.home)&&!c.floodShelter&&!residents.has(c.home))residents.set(c.home,c);
+ const choices=[];
+ for(const [home,recipient] of residents){
+  let helpers=0;
+  for(const c of s.citizens){
+   if(!neighborWaterRoute(s,c,homes.get(home)))continue;
+   choices.push({helperId:c.id,recipientId:recipient.id,home});
+   if(choices.length===4)return choices;
+   if(++helpers===2)break;
+  }
+ }
+ return choices;
+}
+export function beginFirstWaterHelp(s,helperId,recipientId){
+ reconcileWitness(s);
+ const choice=firstWaterHelpChoices(s).find(c=>c.helperId===helperId&&c.recipientId===recipientId);
+ if(!choice)return {ok:false,reason:'Нужен свободный взрослый и доступный соседний двор с местом для воды'};
+ const c=s.citizens.find(p=>p.id===helperId),b=s.buildings.find(p=>buildingKey(p)===choice.home);
+ if(!dispatchNeighborWater(s,c,b))return {ok:false,reason:'Житель пока не может отправиться за водой'};
+ const g=s.godhood;
+ g.stage='help';g.witnessId=helperId;g.firstWaterHelp=choice;
+ invalidateAssignments(s);
+ return {ok:true,citizenId:helperId};
+}
+export function cancelFirstWaterHelp(s,helperId){
+ const g=s.godhood;
+ if(g?.stage!=='help'||g.witnessId!==helperId)return;
+ delete g.firstWaterHelp;loseSign(s);
+}
+export function confirmFirstWaterHelp(s,c,b,amount){
+ const g=s.godhood,help=g?.firstWaterHelp;
+ if(g?.stage!=='help'||help.helperId!==c.id||help.home!==buildingKey(b)||amount<=1e-7)return;
+ if(!s.citizens.some(p=>p.id===help.recipientId&&p.home===help.home&&!p.floodShelter))return;
+ help.amount=amount;help.deliveredAt=s.simTime;
+ recognizeWitness(s,c,'помог соседям и доставил воду');
+}
+function recognizeWitness(s,c,action){
+ const g=s.godhood,first=g.recognitionAt===null;
+ g.stage='recognized';
+ if(first)g.recognitionAt=s.simTime||0;
+ if(!g.believerIds.includes(c.id))g.believerIds.push(c.id);
+ if(first)s.resources.faith+=1;
+ c.faith=Math.max(c.faith,65);
+ if(first){s.name='Услышанный у воды';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}
+ invalidateAssignments(s);
+ s.news.unshift({title:first?'Первый, кто услышал':'Новое свидетельство',text:`Житель ${c.id+1} ${action}. ${first?'Теперь он признаёт твоё присутствие: +1 вера.':'Он признаёт твоё присутствие; первая награда уже была получена.'} Вдохнови его строителем.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
+}
 export function advanceGodhood(s,dt){
- if(!isAwakening(s)||!Number.isFinite(dt)||dt<=0)return;reconcileWitness(s);const g=s.godhood;if(g.stage!=='sign')return;
+ if(!isAwakening(s)||!Number.isFinite(dt)||dt<=0)return;reconcileWitness(s);const g=s.godhood;
+ if(g.stage==='help'){
+  const help=g.firstWaterHelp;
+  if(!s.citizens.some(c=>c.id===help.helperId&&c.waterTrip?.target===help.home)||
+   !s.citizens.some(c=>c.id===help.recipientId&&c.home===help.home&&!c.floodShelter))cancelFirstWaterHelp(s,help.helperId);
+  return;
+ }
+ if(g.stage!=='sign')return;
  const c=s.citizens.find(c=>c.id===g.witnessId);
  if(!c||c.phase!=='awakening'||s.funeral||cargo(c)||!signPathValid(s,c,g)){loseSign(s,c);return;}
  let left=dt;while(left>1e-8&&c.routeIndex<c.route.length){const p=c.route[c.routeIndex],d=Math.hypot(c.x-p.x,c.y-p.y);if(!clearSignSegment(s,c,c,p,c.routeIndex===1)){loseSign(s,c);return;}const moved=Math.min(d,left*.95);if(d>1e-8){c.x+=(p.x-c.x)*moved/d;c.y+=(p.y-c.y)*moved/d;}left-=moved/.95;if(d<=moved+1e-8)c.routeIndex++;else break;}
  if(c.routeIndex<c.route.length)return;if(!samePoint(c,g.signTarget)){loseSign(s,c);return;}
- const first=g.recognitionAt===null;g.stage='recognized';if(first)g.recognitionAt=s.simTime||0;if(!g.believerIds.includes(c.id))g.believerIds.push(c.id);
- if(first)s.resources.faith+=1;c.faith=Math.max(c.faith,65);
- if(first){s.name='Услышанный у воды';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}
- const route=[...c.route].reverse();c.phase='toHome';c.route=route;c.routeIndex=1;invalidateAssignments(s);
- s.news.unshift({title:first?'Первый, кто услышал':'Новое свидетельство',text:`Житель ${c.id+1} заметил знак и дошёл до источника. ${first?'Теперь он признаёт твоё присутствие: +1 вера.':'Он признаёт твоё присутствие; первая награда уже была получена.'} Вдохнови его строителем.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
+ const route=[...c.route].reverse();c.phase='toHome';c.route=route;c.routeIndex=1;
+ recognizeWitness(s,c,'заметил знак и дошёл до источника');
 }
 
 export function godhoodCitizenView(s,c){return c.phase==='awakening'?{walking:c.routeIndex<c.route.length,controlled:false}:{};}
@@ -137,9 +193,16 @@ function validProjectStamp(value,s){
 export function validateGodhood(s){
  const g=s.godhood;if(g===undefined)return !(s.citizens||[]).some(c=>c.phase==='awakening');
  const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId,point=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5&&isDryPoint(s,p.x,p.y);
- if(!g||typeof g!=='object'||Array.isArray(g)||g.version!==1||!['awakening','mature'].includes(g.mode)||!['unseen','sign','recognized'].includes(g.stage)||!Array.isArray(g.believerIds)||new Set(g.believerIds).size!==g.believerIds.length||g.believerIds.some(n=>!id(n))||typeof g.firstBuilderGift!=='boolean'||!Array.isArray(g.completedProjects)||g.completedProjects.length>10000||new Set(g.completedProjects).size!==g.completedProjects.length||g.completedProjects.some(v=>!validProjectStamp(v,s)))return false;
+ if(!g||typeof g!=='object'||Array.isArray(g)||g.version!==1||!['awakening','mature'].includes(g.mode)||!['unseen','sign','help','recognized'].includes(g.stage)||!Array.isArray(g.believerIds)||new Set(g.believerIds).size!==g.believerIds.length||g.believerIds.some(n=>!id(n))||typeof g.firstBuilderGift!=='boolean'||!Array.isArray(g.completedProjects)||g.completedProjects.length>10000||new Set(g.completedProjects).size!==g.completedProjects.length||g.completedProjects.some(v=>!validProjectStamp(v,s)))return false;
  if(g.witnessId!==null&&!id(g.witnessId)||g.recognitionAt!==null&&(!Number.isFinite(g.recognitionAt)||g.recognitionAt<0||g.recognitionAt>(s.simTime||0)+.1))return false;
  if(g.signTarget!==null&&!point(g.signTarget)||g.signOrigin!==null&&!point(g.signOrigin))return false;
+ const help=g.firstWaterHelp;
+ if(help!==undefined){
+  if(!isStrictSumer(s)||g.mode!=='awakening'||!help||!id(help.helperId)||!id(help.recipientId)||help.helperId===help.recipientId||typeof help.home!=='string'||!/^\d+,\d+$/.test(help.home))return false;
+  if(g.stage==='help'){
+   if(!s.citizens.some(c=>c.id===help.helperId&&c.waterTrip?.target===help.home)||g.witnessId!==help.helperId||g.signTarget!==null||g.signOrigin!==null||help.amount!==undefined||help.deliveredAt!==undefined)return false;
+  }else if(!Number.isFinite(help.amount)||help.amount<=0||help.amount>6||!Number.isFinite(help.deliveredAt)||help.deliveredAt<0||help.deliveredAt>s.simTime||g.recognitionAt===null||help.deliveredAt<g.recognitionAt)return false;
+ }else if(g.stage==='help')return false;
  if(g.mode==='mature'&&(g.stage!=='recognized'||g.witnessId!==null||g.signTarget!==null||g.signOrigin!==null||g.recognitionAt!==null||g.believerIds.length||g.firstBuilderGift||g.completedProjects.length))return false;
  if(g.mode==='awakening'){
   if(g.stage==='unseen'&&(g.witnessId!==null||g.signTarget!==null||g.signOrigin!==null))return false;

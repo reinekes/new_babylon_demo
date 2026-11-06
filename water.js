@@ -1,3 +1,4 @@
+import {cancelFirstWaterHelp,confirmFirstWaterHelp} from './godhood.js';
 import {fortificationAccess} from './navigation.js';
 import {floodPhase,floodFootprint,floodProtectionRevision,floodedSegment} from './river-flood.js';
 import {supplyHome} from './households.js';
@@ -72,6 +73,17 @@ function begin(s,c,b,station,nav,from=null){
  if(Math.hypot(c.x-source[0].x,c.y-source[0].y)>.8)return false;
  c.waterTrip={target:buildingKey(b),station:station||null,origin,load:0,amount:load,phase:'source',route:[point(c),...source.map(point)],index:1,elapsed:0};c.phase='waterTrip';return true;
 }
+export function neighborWaterRoute(s,c,b){
+ if(!c||!b||b.type!=='house'||!isOperational(b)||!eligible(c)||c.health<60||c.phase!=='home'||c.floodShelter||c.site||c.workplace||
+  c.home===buildingKey(b)||s.citizens.some(p=>p.waterTrip?.target===buildingKey(b))||targetCapacity(s,b)-targetStock(b)<1)return null;
+ const nav=navigation(s),source=bankRoute(s,nav,c.home);
+ if(!source||Math.hypot(c.x-source[0].x,c.y-source[0].y)>.8||!roadRoute(nav,c.home,buildingKey(b)))return null;
+ return nav;
+}
+export function dispatchNeighborWater(s,c,b){
+ const nav=neighborWaterRoute(s,c,b);
+ return !!nav&&begin(s,c,b,null,nav,c.home);
+}
 function setRoute(t,route,phase,c){t.route=[point(c),...route.map(point)];t.index=1;t.phase=phase;}
 // A city funeral returns everyone home. Resume from that real position rather
 // than drawing a straight line to a stale waypoint on the opposite riverbank.
@@ -84,7 +96,7 @@ export function resumeWaterAtHome(s,c){
  else{const source=bankRoute(s,nav,t.origin);if(!source){recoverWater(s,c);return false;}setRoute(t,[...roads,...source],'source',c);}
  return true;
 }
-function finish(s,c){if(c.pendingRole)changes.add(s);const t=c.waterTrip;c.phase=t.origin===c.home?'home':c.work===t.origin?'working':'home';c.route=[];c.routeIndex=0;delete c.waterTrip;}
+function finish(s,c){cancelFirstWaterHelp(s,c.id);if(c.pendingRole)changes.add(s);const t=c.waterTrip;c.phase=t.origin===c.home?'home':c.work===t.origin?'working':'home';c.route=[];c.routeIndex=0;delete c.waterTrip;}
 function waterDetour(s,c,t,nav,phase=t.phase){
  if(blockedWaterTrips.get(t)===nav)return null;
  const x=Math.round(c.x+.5),y=Math.round(c.y+.5),starts=[];
@@ -135,7 +147,7 @@ function advanceTrip(s,c,dt,nav){
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
    const amount=Math.min(t.load,Math.max(0,targetCapacity(s,b)-targetStock(b)));
-   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;recordCitizenDelivery(s,c,{water:amount});t.load-=amount;
+   if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;recordCitizenDelivery(s,c,{water:amount});t.load-=amount;confirmFirstWaterHelp(s,c,b,amount);
    if(t.origin!==t.target){const back=roadRoute(nav,t.target,t.origin);if(!back)return;setRoute(t,back,'return',c);}else finish(s,c);
    if(!c.waterTrip)return;continue;
   }

@@ -27,7 +27,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 
 ## god-help-variants | Альтернативы первой человеческой помощи
 group: godhood
-status: planned
+status: partial
 priority: P2
 depends: -
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -39,7 +39,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GODHOOD_GAME_DESI
 Первый знак и маршрут к источнику уже работают.
 
 ### Следующий шаг
-Подключить маршрут помощи водой из GAME_DESIGN.md. Водоносы уже учитывают проходы в опубликованной версии.
+Подтвердить выпуск альтернативы первого признания через соседскую доставку воды.
 
 ### Готово когда
 Поступок выполнен существующими людьми и грузами, узнавание однократно.
