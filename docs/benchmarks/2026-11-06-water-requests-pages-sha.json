@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-06T04:47:31.129113+00:00",
+  "commit": "c4dd3649b2bf65a81d59a8fb2892451cfa53fcb8",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d74cae516e9e518bee9da13ac214bbe593567d47965d6a5acf9bc37eb6e65fb2",
+      "actual": "d74cae516e9e518bee9da13ac214bbe593567d47965d6a5acf9bc37eb6e65fb2",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "0a0da7f5a1ea1c12ffd76957bdffed0833897b06e269bbf9018010097b38e6e9",
+      "actual": "0a0da7f5a1ea1c12ffd76957bdffed0833897b06e269bbf9018010097b38e6e9",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "9eeda3f0444b1fbf15b31d4e7cf66477a1d17ae3dbe9e52b1e179425b5e60911",
+      "actual": "9eeda3f0444b1fbf15b31d4e7cf66477a1d17ae3dbe9e52b1e179425b5e60911",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-water-causal-facts-pages-sha.json",
+      "status": 200,
+      "expected": "9084145218220bf94204bcceff499a227dbe038d17c58c8460669983091f9913",
+      "actual": "9084145218220bf94204bcceff499a227dbe038d17c58c8460669983091f9913",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-38.md",
+      "status": 200,
+      "expected": "b025662b5287609c6d5a774a6842200d8ac1c31b73b49a127e0882456d00cb5f",
+      "actual": "b025662b5287609c6d5a774a6842200d8ac1c31b73b49a127e0882456d00cb5f",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "971f18639b78b7adee5d3743fa2bb373c3a314197b82cb02554d34dd84e76f52",
+      "actual": "971f18639b78b7adee5d3743fa2bb373c3a314197b82cb02554d34dd84e76f52",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "cfbcd0f96180fa127a4328b59dd871f84e2c82ff89ed551d9978ccd3d6e6d828",
+      "actual": "cfbcd0f96180fa127a4328b59dd871f84e2c82ff89ed551d9978ccd3d6e6d828",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "4885d4ca20e8de9b4de6f82aba46b04e93eb0e4e21b26e4535b6b11cd54bc72c",
+      "actual": "4885d4ca20e8de9b4de6f82aba46b04e93eb0e4e21b26e4535b6b11cd54bc72c",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "c3401f269439b708e3063becb14f5f5d30c0e21301dac9e3f37ea00a5a21b0e4",
+      "actual": "c3401f269439b708e3063becb14f5f5d30c0e21301dac9e3f37ea00a5a21b0e4",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "31c6fe86c3b87f946e2f02173e94ed6d537e44be42885dea7432b8335a8eb110",
+      "actual": "31c6fe86c3b87f946e2f02173e94ed6d537e44be42885dea7432b8335a8eb110",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-water-causal-facts.md",
+      "status": 200,
+      "expected": "44e91b9f024dfb5ae164fc0ddb86591f500f2246990b790584f65b6ee358037f",
+      "actual": "44e91b9f024dfb5ae164fc0ddb86591f500f2246990b790584f65b6ee358037f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4b69bafe7a3ec6590b855b229b0d944191179b6bba1e0d2e83604ccfc73f7b9b",
+      "actual": "4b69bafe7a3ec6590b855b229b0d944191179b6bba1e0d2e83604ccfc73f7b9b",
+      "match": true
+    },
+    {
+      "path": "tests/water-requests.test.js",
+      "status": 200,
+      "expected": "f5c4d24f7713550008f7dbefe4d869ae1849daf56e4011a5ae88ef206f4c1446",
+      "actual": "f5c4d24f7713550008f7dbefe4d869ae1849daf56e4011a5ae88ef206f4c1446",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "eb75dcc29c302d20f1158218aee25608a3eef73bcdc2fa0cefa07fa345b1463c",
+      "actual": "eb75dcc29c302d20f1158218aee25608a3eef73bcdc2fa0cefa07fa345b1463c",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
