@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T23:35:23.058960+00:00",
+  "commit": "58d832aca7130f84912e720ecfcab86f0e8b913c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "b8910682451d9602079b4d123b2eb95c3fe0c6a7242bd045087ea4d45221c673",
+      "actual": "b8910682451d9602079b4d123b2eb95c3fe0c6a7242bd045087ea4d45221c673",
+      "match": true
+    },
+    {
+      "path": "agriculture.js",
+      "status": 200,
+      "expected": "0d91a7de8847633f90bbc6be517f07aef746d8ad0155c1bf4421fb2439703fba",
+      "actual": "0d91a7de8847633f90bbc6be517f07aef746d8ad0155c1bf4421fb2439703fba",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-star-deadline-4x.json",
+      "status": 200,
+      "expected": "334d9bea4b72c827157f15de3432ce1ca2865c8d5e2c6ec2545336b5ebd4ae20",
+      "actual": "334d9bea4b72c827157f15de3432ce1ca2865c8d5e2c6ec2545336b5ebd4ae20",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "81acbe67094da0e4e7b230a2b7521f66dca10d136bf550dc880015774d953fd5",
+      "actual": "81acbe67094da0e4e7b230a2b7521f66dca10d136bf550dc880015774d953fd5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "63a34504583219b21654baa8a37d24ed0632f68fc04ce44cf2be169318ef3599",
+      "actual": "63a34504583219b21654baa8a37d24ed0632f68fc04ce44cf2be169318ef3599",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "d51b97c5a639b46be9c56e49126741742f7d2bcf91f01bb11bd40155c135dffc",
+      "actual": "d51b97c5a639b46be9c56e49126741742f7d2bcf91f01bb11bd40155c135dffc",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "09164709e6e65030f44159550284968872f720398049ac749253efe6fd8821cd",
+      "actual": "09164709e6e65030f44159550284968872f720398049ac749253efe6fd8821cd",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "bd59fa76f304bcceae205f1a685a07d003aef1c478eb0ed178fec750a2e07044",
+      "actual": "bd59fa76f304bcceae205f1a685a07d003aef1c478eb0ed178fec750a2e07044",
+      "match": true
+    },
+    {
+      "path": "star-observations.js",
+      "status": 200,
+      "expected": "02f18fbb14064c6837fc78f5bb9f61c4928055b99fd1aaed0673a1c623e38ddf",
+      "actual": "02f18fbb14064c6837fc78f5bb9f61c4928055b99fd1aaed0673a1c623e38ddf",
+      "match": true
+    },
+    {
+      "path": "tests/star-observations.test.js",
+      "status": 200,
+      "expected": "e78950154386e7e12a3d22e9ae4faf81f17c2933e56e7e0c963b1b689b8e6730",
+      "actual": "e78950154386e7e12a3d22e9ae4faf81f17c2933e56e7e0c963b1b689b8e6730",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "0ff8f6aa1b6931fdaf661bc3fadd61fedf4c7379034e12bbc8e40fbaee7ebf63",
+      "actual": "0ff8f6aa1b6931fdaf661bc3fadd61fedf4c7379034e12bbc8e40fbaee7ebf63",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
