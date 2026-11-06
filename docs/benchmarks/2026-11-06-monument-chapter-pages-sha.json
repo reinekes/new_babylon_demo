@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T08:23:02.263302+00:00",
+  "commit": "46e53536168c030eae1cc705a232781d6b31022a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f1ea8bc16325415e4d5249373965c04c741b868b355db8beaea7219d6fd64136",
+      "actual": "f1ea8bc16325415e4d5249373965c04c741b868b355db8beaea7219d6fd64136",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "aac74d9aca200125777b6d559f7408e0789aa003c7adc6adf64fcbad0df15c55",
+      "actual": "aac74d9aca200125777b6d559f7408e0789aa003c7adc6adf64fcbad0df15c55",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "849f8414a0f8adb22be474e035c985827f551e58e640f912850803eeaa5ae7f3",
+      "actual": "849f8414a0f8adb22be474e035c985827f551e58e640f912850803eeaa5ae7f3",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "75e835ab698ed2271e14316c7aa5b251476e380aaef5fbe63579ba8e294bc092",
+      "actual": "75e835ab698ed2271e14316c7aa5b251476e380aaef5fbe63579ba8e294bc092",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "4918da6ddb78826e2d776f58dea832f69f171d3fa8a753d09fcf0ca05ae78bdb",
+      "actual": "4918da6ddb78826e2d776f58dea832f69f171d3fa8a753d09fcf0ca05ae78bdb",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0af4319d67af9f36e37b0e25fa3d1a3d7c90a65d7cb64cfdee17e86db070b119",
+      "actual": "0af4319d67af9f36e37b0e25fa3d1a3d7c90a65d7cb64cfdee17e86db070b119",
+      "match": true
+    },
+    {
+      "path": "monument-chapter.js",
+      "status": 200,
+      "expected": "c4feface34cb1c475957b47fc1ab90b0dbb9d2013372a13edfbbae2a6de50414",
+      "actual": "c4feface34cb1c475957b47fc1ab90b0dbb9d2013372a13edfbbae2a6de50414",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "49e9cbb3c967a2006b60499a243005825a9a1826e0b3e886aaf6eeb0d24a49f3",
+      "actual": "49e9cbb3c967a2006b60499a243005825a9a1826e0b3e886aaf6eeb0d24a49f3",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "37555198bcebf9cf501b19868a0388f4d5e4657bd7a10da069aad4c4ac791c0f",
+      "actual": "37555198bcebf9cf501b19868a0388f4d5e4657bd7a10da069aad4c4ac791c0f",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "d2513f8db68e9f6dc981f54b5b364543e1835f9c37700d6b4be0f3596b2406ad",
+      "actual": "d2513f8db68e9f6dc981f54b5b364543e1835f9c37700d6b4be0f3596b2406ad",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-city-walls.md",
+      "status": 200,
+      "expected": "4d4aef4a9612b2a4ca7c46e9e72df448d37353ad40ced0df6cd6332f13675fe0",
+      "actual": "4d4aef4a9612b2a4ca7c46e9e72df448d37353ad40ced0df6cd6332f13675fe0",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4b0fad76da954630cd511397e51fc7e0999a9e80e40d384f1eea192e6aff5895",
+      "actual": "4b0fad76da954630cd511397e51fc7e0999a9e80e40d384f1eea192e6aff5895",
+      "match": true
+    },
+    {
+      "path": "tests/monument-chapter.test.js",
+      "status": 200,
+      "expected": "09a0a937bb2851b544f46407d259892b08ff85fc2912343ab2169c3888fe9d4b",
+      "actual": "09a0a937bb2851b544f46407d259892b08ff85fc2912343ab2169c3888fe9d4b",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
