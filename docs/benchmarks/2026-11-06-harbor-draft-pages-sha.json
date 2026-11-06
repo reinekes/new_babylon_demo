@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T07:33:19.093731+00:00",
+  "commit": "e220e1a25d408aa07795640bcfd9f969675a3351",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "496d7ccebb31f7ec2513be325a60a2cb072cdca1700cf3a82387c52eea79dbc3",
+      "actual": "496d7ccebb31f7ec2513be325a60a2cb072cdca1700cf3a82387c52eea79dbc3",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "5b763d1906301149c52273f64ceadc387a2f8036b74ffa9c2d00e2137306acba",
+      "actual": "5b763d1906301149c52273f64ceadc387a2f8036b74ffa9c2d00e2137306acba",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "88c4d642b01c007f5f49c59a6186fca718f6cf8ee28a3c346d122ac6111df7f7",
+      "actual": "88c4d642b01c007f5f49c59a6186fca718f6cf8ee28a3c346d122ac6111df7f7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "57f618a43c2ed0e78ecffecf24261229d45875001cc6dd36611f36f366c6e026",
+      "actual": "57f618a43c2ed0e78ecffecf24261229d45875001cc6dd36611f36f366c6e026",
+      "match": true
+    },
+    {
+      "path": "river-trade.js",
+      "status": 200,
+      "expected": "778f01584c8e586232a59e90ff286ea7b02b627bfba8109472d313659b85dbc8",
+      "actual": "778f01584c8e586232a59e90ff286ea7b02b627bfba8109472d313659b85dbc8",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "2018dde43fe261caf51e25f41110c941eeec65137e905a5b15a237d018fc300b",
+      "actual": "2018dde43fe261caf51e25f41110c941eeec65137e905a5b15a237d018fc300b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "a56c9377a820a52f7645ffa47c0a8ec1947bbbaa7a8c31f12d05f5a5eaf9a182",
+      "actual": "a56c9377a820a52f7645ffa47c0a8ec1947bbbaa7a8c31f12d05f5a5eaf9a182",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8ad72d93aa49c9d7a2f5a3fa9f257e5395de20b1eeabb7fa211d5b5671fd441a",
+      "actual": "8ad72d93aa49c9d7a2f5a3fa9f257e5395de20b1eeabb7fa211d5b5671fd441a",
+      "match": true
+    },
+    {
+      "path": "tests/harbor.test.js",
+      "status": 200,
+      "expected": "e3f12b1fb0bb1f351ad8cb91cef75dcdc4e740068f7f693d42abd0992b21982e",
+      "actual": "e3f12b1fb0bb1f351ad8cb91cef75dcdc4e740068f7f693d42abd0992b21982e",
+      "match": true
+    },
+    {
+      "path": "trading.js",
+      "status": 200,
+      "expected": "5f927f111c6efac1b058682ba6a8e849e1ca45b8f1f187e3b782ff1ccb5b819f",
+      "actual": "5f927f111c6efac1b058682ba6a8e849e1ca45b8f1f187e3b782ff1ccb5b819f",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
