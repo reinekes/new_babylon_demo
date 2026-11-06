@@ -2,7 +2,7 @@ import {miraclePrice} from './miracle-discovery.js';
 import {miracleKnowledgeReason} from './godhood.js';
 import {DOMAIN_NAMES} from './divinity.js';
 import {buildingDefinition} from './building-presentation.js';
-import {MIRACLES} from './definitions.js';
+import {MIRACLES,buildingKey,isOperational} from './definitions.js';
 import {sacredMiracleUnlocked} from './sacred-unlocks.js';
 
 // Ordinary powers remain in the catalogue while unavailable. Only earned blue
@@ -42,5 +42,10 @@ export function updateMiracleCard(details,s,id,reason=''){
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
  details.querySelector('.miracle-facts span').textContent=`${price} веры${first?' · первый дар':''}`;
  details.querySelector('.miracle-summary-status').textContent=reason||`${price} веры · ${first?'первый дар':DOMAIN_NAMES[m.domain]}`;
- const note=details.querySelector('.miracle-unavailable');note.hidden=!reason;note.textContent=reason;
+ let advisory='';
+ if(id==='inspiration'&&s.creatorMaterials&&!reason){
+  const yards=new Set(s.buildings.filter(b=>['clay','reed'].includes(b.type)&&isOperational(b)).map(buildingKey));
+  if(!s.citizens.some(c=>yards.has(c.work)))advisory='Дар сейчас некому использовать. Назначь работников в добывающие дворы.';
+ }
+ const note=details.querySelector('.miracle-unavailable');note.hidden=!(reason||advisory);note.textContent=reason||advisory;
 }

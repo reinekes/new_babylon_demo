@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,advanceTime,encode,decode,build} from '../engine.js';
+import {createGame,advanceTime,encode,decode,build,miracle} from '../engine.js';
 import {createNewCity} from '../new-game.js';
 import {strictScenario,CAT_DISCOVERY_RULES} from '../scenario-profiles.js';
 import {syncCitizens,invalidateAssignments} from '../workforce.js';
@@ -137,4 +137,23 @@ test('real use of two different plots and both inspirations survive replacement 
  assert.equal(encode(saved),raw);
  assert.equal(creatorMaterialsView(saved).projects,2);
  assert.equal(creatorMaterialsView(saved).inspired,2);
+});
+
+test('the creator wonder requires all four facts, survives loading and keeps the established cast cost',()=>{
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.creatorMaterials=newCreatorMaterials();
+ s.resources.faith=50;
+ const q=s.creatorMaterials;
+ Object.assign(q,{clay:30,reed:20,projects:['8,8','9,9'],inspired:['clayworker']});
+ const raw=encode(s);
+ assert.match(miracle(s,'inspiration').reason,/глины.*тростника/);
+ assert.equal(encode(s),raw);
+ recordCreatorInspiration(s,'reedcutter');
+ const completed=encode(s),loaded=decode(completed);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),completed);
+ assert.equal(miracle(loaded,'inspiration').ok,true);
+ assert.equal(loaded.resources.faith,20);
+ assert.equal(loaded.buffs.inspiration,3);
+ assert.equal(loaded.cooldowns.inspiration,3);
 });

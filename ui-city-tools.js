@@ -172,7 +172,7 @@ function creatorMaterialsHTML(s){
  const progress=creatorMaterialsView(s);
  if(!progress)return '';
  const show=n=>Number(n.toFixed(2)).toLocaleString('ru-RU');
- return `<section class="management-row" data-creator-materials><h3>История «Руки творца»</h3><p>Доставлено местной глины · ${show(progress.clay)} из ${progress.required.clay} · Тростника · ${show(progress.reed)} из ${progress.required.reed}.</p><p>Постройки в деле · ${progress.projects} из ${progress.projectsRequired} · Вдохновлённые специальности · ${progress.inspired} из ${progress.inspiredRequired}.</p></section>`;
+ return `<section class="management-row" data-creator-materials><h3>История «Руки творца»</h3><p>Доставлено местной глины · ${show(progress.clay)} из ${progress.required.clay} · Тростника · ${show(progress.reed)} из ${progress.required.reed}.</p><p>Постройки в деле · ${progress.projects} из ${progress.projectsRequired} · Вдохновлённые специальности · ${progress.inspired} из ${progress.inspiredRequired}.</p>${progress.qualified?'<p>Чудо открыто · 30 веры.</p>':''}</section>`;
 }
 
 /** HTML-only entry point for snapshots/tests. No listeners or simulation changes. */

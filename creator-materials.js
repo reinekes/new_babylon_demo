@@ -78,9 +78,15 @@ export function recordCreatorInspiration(s,profession){
  if(!inspired.includes(profession))inspired.push(profession);
 }
 
+export function creatorReady(s){
+ const q=s.creatorMaterials;
+ return !!q&&q.clay>=REQUIRED.clay&&q.reed>=REQUIRED.reed&&
+  q.projects?.length===REQUIRED_PROJECTS&&q.inspired?.length===PROFESSIONS.length;
+}
+
 export function creatorMaterialsView(s){
  const q=s.creatorMaterials;
- return q?{clay:q.clay,reed:q.reed,required:REQUIRED,projects:q.projects?.length||0,projectsRequired:REQUIRED_PROJECTS,inspired:q.inspired?.length||0,inspiredRequired:PROFESSIONS.length}:null;
+ return q?{clay:q.clay,reed:q.reed,required:REQUIRED,qualified:creatorReady(s),projects:q.projects?.length||0,projectsRequired:REQUIRED_PROJECTS,inspired:q.inspired?.length||0,inspiredRequired:PROFESSIONS.length}:null;
 }
 
 export function validateCreatorMaterials(s){
