@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-06T04:53:46.713771+00:00",
+  "commit": "adea0641a2ddb6d49202c247ab06085109490f7a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "fcaf6e3e5327c092de4346df6b388b9a83b6a9e22f9503035a644877157bfc0b",
+      "actual": "fcaf6e3e5327c092de4346df6b388b9a83b6a9e22f9503035a644877157bfc0b",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "46acf68a0bb53a3fdfeb7142c37428f77f9ea7eeb351726ac2418f7b9aedd5f3",
+      "actual": "46acf68a0bb53a3fdfeb7142c37428f77f9ea7eeb351726ac2418f7b9aedd5f3",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "expected": "9310ec50df0ea686f9ea6cdc5466488c89c437f2ba109c202a4e88ad5ffb99ca",
+      "actual": "9310ec50df0ea686f9ea6cdc5466488c89c437f2ba109c202a4e88ad5ffb99ca",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "12ec7bb08465e7c0701e71aa62eade9081e5ec15d2eb60f0860b176bb808e920",
+      "actual": "12ec7bb08465e7c0701e71aa62eade9081e5ec15d2eb60f0860b176bb808e920",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "009eb04bd5a5310bf44fcd5714b9cd77b7dc3d57a745fa1a8ecb593e04fddac0",
+      "actual": "009eb04bd5a5310bf44fcd5714b9cd77b7dc3d57a745fa1a8ecb593e04fddac0",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "844681aadd092cb941b62217694bb68d43743a67ccef2baac1f166c1f37d94a4",
+      "actual": "844681aadd092cb941b62217694bb68d43743a67ccef2baac1f166c1f37d94a4",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "6e3128ff05b6a7b7b362d6d5056f15167c47f6ddec64d4c350b6d940d7f44d5a",
+      "actual": "6e3128ff05b6a7b7b362d6d5056f15167c47f6ddec64d4c350b6d940d7f44d5a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0796723a639907378c92ce9ca9e85f8bda87dd04169b975f5d0d4fd4f27c42fb",
+      "actual": "0796723a639907378c92ce9ca9e85f8bda87dd04169b975f5d0d4fd4f27c42fb",
+      "match": true
+    },
+    {
+      "path": "tests/work-audio.test.js",
+      "status": 200,
+      "expected": "7c273c5f12a41cccdcc436655c61292d119d16b3f33ab89ca9dcc0ca3c261736",
+      "actual": "7c273c5f12a41cccdcc436655c61292d119d16b3f33ab89ca9dcc0ca3c261736",
+      "match": true
+    },
+    {
+      "path": "work-audio.js",
+      "status": 200,
+      "expected": "6b9ade8c5f6cb7fba3887d199d55e2f0354119ab2bbc91c300fbf98bce232c48",
+      "actual": "6b9ade8c5f6cb7fba3887d199d55e2f0354119ab2bbc91c300fbf98bce232c48",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
