@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-06T08:07:20.012407+00:00",
+  "commit": "19e257306224866ee729d68e3d0d3f69ce400475",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0fd1b0b53010c6f71240e77187ef3aa086ff59fec84fad475cc1b8edc33f5066",
+      "actual": "0fd1b0b53010c6f71240e77187ef3aa086ff59fec84fad475cc1b8edc33f5066",
+      "match": true
+    },
+    {
+      "path": "agriculture.js",
+      "status": 200,
+      "expected": "63c5a0015ad1dcbdccc57ca8750b2293e9d30d22cbeea6a2020f1a7952a3ca57",
+      "actual": "63c5a0015ad1dcbdccc57ca8750b2293e9d30d22cbeea6a2020f1a7952a3ca57",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "b2426b4ea38ed18023534accf8a6fc3a92f4a69a95704b820ef9b76b52c85704",
+      "actual": "b2426b4ea38ed18023534accf8a6fc3a92f4a69a95704b820ef9b76b52c85704",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "4f3ba70e35490e9df44fd02972a34ab306dde64ba9fea745631f2c9d87eedb32",
+      "actual": "4f3ba70e35490e9df44fd02972a34ab306dde64ba9fea745631f2c9d87eedb32",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a0b9da62bab77837ebeae6b451100e7d4d659a5ad5bd79a37d4ca34f22a838c5",
+      "actual": "a0b9da62bab77837ebeae6b451100e7d4d659a5ad5bd79a37d4ca34f22a838c5",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "b1792eb5727a90715ab5478a29560d0102496a04024cc62173d02abbb61409ae",
+      "actual": "b1792eb5727a90715ab5478a29560d0102496a04024cc62173d02abbb61409ae",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "3932737a91659aa9be5bbbb2c557c05431588c44010e5b0f9ba04a8758f5ec22",
+      "actual": "3932737a91659aa9be5bbbb2c557c05431588c44010e5b0f9ba04a8758f5ec22",
+      "match": true
+    },
+    {
+      "path": "tests/irrigated-harvest.test.js",
+      "status": 200,
+      "expected": "78c6b4ef73b8623c26f861415fa895986ad2d291d2e79d7c3671057cd5dae81e",
+      "actual": "78c6b4ef73b8623c26f861415fa895986ad2d291d2e79d7c3671057cd5dae81e",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "308f81401333d377bc4da91979c312b5b37c7b30ea76c8d8c7b07a9a53ced37c",
+      "actual": "308f81401333d377bc4da91979c312b5b37c7b30ea76c8d8c7b07a9a53ced37c",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
