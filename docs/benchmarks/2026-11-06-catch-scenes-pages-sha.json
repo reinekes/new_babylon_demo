@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T11:08:45.738073+00:00",
+  "commit": "ae298b4d9c5fd587d07ef13d97f343c737f4b1f2",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a069674d31f461e1161ac14a9507462e1f22294894de1af1c1efcb213e543032",
+      "actual": "a069674d31f461e1161ac14a9507462e1f22294894de1af1c1efcb213e543032",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "6fc3ee9fb50df1365a8676b3ac945ef1bc4e83139618f7f1c677bcc9f13d662f",
+      "actual": "6fc3ee9fb50df1365a8676b3ac945ef1bc4e83139618f7f1c677bcc9f13d662f",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "expected": "4303f674884c96c2a06e662288440e835fd274a6a903813f81d76e1a0e0cbc6f",
+      "actual": "4303f674884c96c2a06e662288440e835fd274a6a903813f81d76e1a0e0cbc6f",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "23751a85a13d2030e02789e5c8309f6c079b57f31535ba266fb4c13550bde2fc",
+      "actual": "23751a85a13d2030e02789e5c8309f6c079b57f31535ba266fb4c13550bde2fc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-earth-scenes-pages-sha.json",
+      "status": 200,
+      "expected": "62130036c32530698f73dc5d6bb45c71cdcbe12408134a863caa63bb49a677a6",
+      "actual": "62130036c32530698f73dc5d6bb45c71cdcbe12408134a863caa63bb49a677a6",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-65.md",
+      "status": 200,
+      "expected": "d04a046ad1f39dac621a707280496ebbe01ee2703ac33ef7212b5458c623a9fd",
+      "actual": "d04a046ad1f39dac621a707280496ebbe01ee2703ac33ef7212b5458c623a9fd",
+      "match": true
+    },
+    {
+      "path": "earth-presentation.js",
+      "status": 200,
+      "expected": "93216cbc85c6edece04a3404708132da17c07e251852c8e8b14bba017af37a55",
+      "actual": "93216cbc85c6edece04a3404708132da17c07e251852c8e8b14bba017af37a55",
+      "match": true
+    },
+    {
+      "path": "fish-provenance.js",
+      "status": 200,
+      "expected": "fd9e3f8b4b3b5e7a02aca62899425af3ccdbc932992165869780f63cba0b9d4c",
+      "actual": "fd9e3f8b4b3b5e7a02aca62899425af3ccdbc932992165869780f63cba0b9d4c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ccce8fb5c86274d2169211d568a494fb34ac4b88830dd8290f767ae0a423f703",
+      "actual": "ccce8fb5c86274d2169211d568a494fb34ac4b88830dd8290f767ae0a423f703",
+      "match": true
+    },
+    {
+      "path": "rich-catch-presentation.css",
+      "status": 200,
+      "expected": "8414799ab9377273e929ed2b2df58fa4edb1dd379ab83aa990d51744532d6c36",
+      "actual": "8414799ab9377273e929ed2b2df58fa4edb1dd379ab83aa990d51744532d6c36",
+      "match": true
+    },
+    {
+      "path": "rich-catch-presentation.js",
+      "status": 200,
+      "expected": "447c9927925fdcf1511a6650f13a61ee7587469b5af146b6799478116e68d702",
+      "actual": "447c9927925fdcf1511a6650f13a61ee7587469b5af146b6799478116e68d702",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "4dcee152655b19cf87255814d31f258f22d627a7704379477c4372bb3e77081f",
+      "actual": "4dcee152655b19cf87255814d31f258f22d627a7704379477c4372bb3e77081f",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "325271cc3b4b98bf197f980fa5e2a0f8143ac77584c6fdcaa3fb31547d33ef16",
+      "actual": "325271cc3b4b98bf197f980fa5e2a0f8143ac77584c6fdcaa3fb31547d33ef16",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "39c1d1543709da85476111e3468813c766073f51d02fa394c1b10fde19aa1092",
+      "actual": "39c1d1543709da85476111e3468813c766073f51d02fa394c1b10fde19aa1092",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-earth-scenes.md",
+      "status": 200,
+      "expected": "cd443fe62008bd3a155ad48e6ec58d6deb73b603f89b49f94d6582263ba5aa94",
+      "actual": "cd443fe62008bd3a155ad48e6ec58d6deb73b603f89b49f94d6582263ba5aa94",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d060607ae22c18578a5d58394a3e2414057c226d40f7ed777c7979747885cbde",
+      "actual": "d060607ae22c18578a5d58394a3e2414057c226d40f7ed777c7979747885cbde",
+      "match": true
+    },
+    {
+      "path": "tests/rich-catch-presentation.test.js",
+      "status": 200,
+      "expected": "cfc0f68c57c02d84fa4e6628ed51b6c5330e89af90e4dac60ba4d6a122f72944",
+      "actual": "cfc0f68c57c02d84fa4e6628ed51b6c5330e89af90e4dac60ba4d6a122f72944",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
