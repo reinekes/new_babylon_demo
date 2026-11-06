@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-06T11:35:47.147371+00:00",
+  "commit": "87ccb8a1173e5b17d20bac5946937d7a366cca7f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "b904dde8b4a58e66b417c10a77af1e6af0ea0f1c56c668310a8824e2856e1103",
+      "actual": "b904dde8b4a58e66b417c10a77af1e6af0ea0f1c56c668310a8824e2856e1103",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "c4edc47d0e649fbe7f8382bc9629589bc590c1a7ec1489cdc0f2404b0f10d0f8",
+      "actual": "c4edc47d0e649fbe7f8382bc9629589bc590c1a7ec1489cdc0f2404b0f10d0f8",
+      "match": true
+    },
+    {
+      "path": "creator-materials.js",
+      "status": 200,
+      "expected": "26e1197d615459df0b0b405bfb2903759a93e785aa98dd6c9ebfd699da5d1a01",
+      "actual": "26e1197d615459df0b0b405bfb2903759a93e785aa98dd6c9ebfd699da5d1a01",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "119aac31df22c3bfffe3f0b582b19bdb00d64b7d01cef1cb8e0ffd26b7247bba",
+      "actual": "119aac31df22c3bfffe3f0b582b19bdb00d64b7d01cef1cb8e0ffd26b7247bba",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "4d893070f5d6dcc65f761c4778a1213709be3b6b0fd9d6b68b1926e7da5631f8",
+      "actual": "4d893070f5d6dcc65f761c4778a1213709be3b6b0fd9d6b68b1926e7da5631f8",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "f09a73381738272447cca879144a42013aeae60d617c69d93c7d6e982a3a8a76",
+      "actual": "f09a73381738272447cca879144a42013aeae60d617c69d93c7d6e982a3a8a76",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "20a2e4d66e1cfe20a084a8dbe090cac2c64357159e9f55bee3d3526928f66ae8",
+      "actual": "20a2e4d66e1cfe20a084a8dbe090cac2c64357159e9f55bee3d3526928f66ae8",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "a474a0f04cd0f4e4d817694a79949f7572eb6f2be04a4137d1c5aa3607d617b8",
+      "actual": "a474a0f04cd0f4e4d817694a79949f7572eb6f2be04a4137d1c5aa3607d617b8",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "3e4478c58ac994b79d82344988b6a7815ab03325a7691d98d59192674cf6cef6",
+      "actual": "3e4478c58ac994b79d82344988b6a7815ab03325a7691d98d59192674cf6cef6",
+      "match": true
+    },
+    {
+      "path": "tests/creator-materials.test.js",
+      "status": 200,
+      "expected": "b08154c1bef94018722288b9d4cfd1894f3578c7903ff8e2ccf65f2463a2501b",
+      "actual": "b08154c1bef94018722288b9d4cfd1894f3578c7903ff8e2ccf65f2463a2501b",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "eab5ab3d045a98db8882e9b0a26f2c8c378c037bcda2d1ebde656c72c006b0d7",
+      "actual": "eab5ab3d045a98db8882e9b0a26f2c8c378c037bcda2d1ebde656c72c006b0d7",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
