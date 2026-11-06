@@ -221,7 +221,7 @@ export function miracle(s,id,target){
 function check(s){
  s.capacity=housingOf(s);
  if(s.population<=0){s.population=0;s.lost=true;s.event=null;syncCitizens(s);return;}
- if(advanceFieldGrain(s))log(s,'Три поля дали зерно','Склад принял урожай с трёх действующих полей. Условия истории «Дыхание земли» выполнены.','good');
+ if(advanceFieldGrain(s))log(s,'Три поля дали зерно','Склад принял урожай с трёх действующих полей. Открылось чудо «Дыхание земли».','good');
  if(advanceBlessingDiscovery(s))log(s,'Соседи поддержали друг друга','Три двора обеспечены едой и водой, две доставки помощи подтверждены. Условия истории «Благословение» выполнены.','good');
  if(advanceMonumentChapter(s))log(s,'Поздняя глава · Великий зиккурат','Город вступил в эпоху монументального строительства. Следующая цель — возвести Великий зиккурат.','good');
  const unnamed=s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized',hasMiracles=unnamed||s.deaths>0||s.relicQuest?.phase==='completed'||s.landRelicQuest?.phase==='completed'||Object.values(s.divinity.domains).some(v=>v>0);

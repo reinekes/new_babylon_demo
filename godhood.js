@@ -69,6 +69,7 @@ export function buildingKnowledgeReason(s,type,level=1){
 }
 export function miracleKnowledgeReason(s,id){
  if(id==='richCatch')return richCatchKnowledgeReason(s);
+ if(id==='fertility'&&s.earthDiscovery)return s.earthDiscovery.qualifiedAt==null?'Нужна доставка урожая с трёх полей, включая урожай вдохновлённого земледельца':'';
  if(id==='rain'&&s.rainDiscovery)return s.irrigatedHarvest?'':'Нужна жатва вдохновлённого земледельца на поле, выросшем с водой из канала';
  if(id==='cat'&&usesCatDiscovery(s))return s.catDiscovery?.phase==='opened'?'':'Дар кошки откроется через историю рыбака';if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Пока никто не признал твоё присутствие';const need=['rain','bless','peace'].includes(id)?1:['inannaProtection','relicAwakening','earthMemory'].includes(id)?3:2;return godhoodView(s).builderLevel>=need?'':`Чудо откроется с мастером ${['','I','II','III'][need]} уровня`;}
 export function godhoodInspirationReason(s,c,profession){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Сначала помоги первому человеку заметить присутствие бога';if(!knowsPresence(s,c)&&!preparedFisherInspiration(s,c,profession))return 'Этот человек ещё не признал присутствие бога: помоги ему увидеть дело общины';return '';}

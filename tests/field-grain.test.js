@@ -52,7 +52,7 @@ test('rebuilding on the same tile replaces its evidence and cannot add another f
 
 test('the milestone needs three currently operational fields and an inspired grain receipt',async()=>{
  const {advanceFieldGrain,fieldGrainView}=await import('../field-grain.js');
- const {decode,encode}=await import('../engine.js');
+ const {decode,encode,miracle}=await import('../engine.js');
  const {cityToolsHTML}=await import('../ui-city-tools.js');
  const {stampBuildingCompletion}=await import('../building-chronology.js');
  const {initializeBuildingInventory}=await import('../building-inventory.js');
@@ -62,6 +62,10 @@ test('the milestone needs three currently operational fields and an inspired gra
  const sites=[[9,7],[10,7],[11,7]].map(([x,y])=>({type:'field',x,y,level:1}));
  for(const site of sites){s.buildings.push(site);stampBuildingCompletion(s,site);}
  initializeBuildingInventory(s);initializeCrops(s);syncCitizens(s);
+ s.resources.faith=100;
+ const before=encode(s);
+ assert.match(miracle(s,'fertility').reason,/трёх полей/);
+ assert.equal(encode(s),before);
  function deliver(field){
   recordFieldGrain(s,field,farmer,2,0);
   pickupFieldGrain(field,courier,2,2);
@@ -70,6 +74,7 @@ test('the milestone needs three currently operational fields and an inspired gra
  for(const field of sites)deliver(field);
  assert.equal(advanceFieldGrain(s),false);
  assert.equal(fieldGrainView(s).fields,3);
+ assert.equal(miracle(s,'fertility').ok,false);
  farmer.calling='farmer';
  deliver(sites[0]);
  const missing=s.buildings.pop();
@@ -91,4 +96,14 @@ test('the milestone needs three currently operational fields and an inspired gra
  assert.ok(old);
  assert.equal(encode(old),prior);
  assert.equal(advanceFieldGrain(old),true);
+ const {miracleKnowledgeReason}=await import('../godhood.js');
+ assert.equal(miracleKnowledgeReason(loaded,'fertility').includes('трёх полей'),true);
+ assert.equal(miracleKnowledgeReason(old,'fertility'),'');
+ assert.equal(miracle(old,'fertility').ok,true);
+ assert.equal(old.resources.faith,65);
+ assert.equal(old.buffs.fertility,3);
+ assert.equal(old.miracleCelebration.kind,'fertility');
+ const classic=createNewCity({mode:'awakening',seed:137});
+ delete classic.earthDiscovery;
+ assert.match(miracleKnowledgeReason(classic,'fertility'),/признал/);
 });

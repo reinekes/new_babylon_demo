@@ -152,7 +152,7 @@ function peaceProgressHTML(s){
 function earthProgressHTML(s){
  const progress=fieldGrainView(s);
  if(!progress)return '';
- const details=progress.qualified?'Условия выполнены. Три поля дали зерно.':
+ const details=progress.qualified?'Условия выполнены. Три поля дали зерно, чудо открыто.':
   `Поля со складской приёмкой · ${progress.fields} из ${progress.required} · ${progress.inspired?'Работа вдохновлённого земледельца подтверждена':'Нужна доставка зерна от вдохновлённого земледельца'}.`;
  return `<section class="management-row" data-earth-progress><h3>История «Дыхание земли»</h3><p>${details}</p></section>`;
 }
