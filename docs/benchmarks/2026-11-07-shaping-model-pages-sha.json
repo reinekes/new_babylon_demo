@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T20:43:14.175474+00:00",
+  "commit": "c890defd90ef2b7e72823fc42af4a279a5774c17",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ffca3a227bc0230750b62bd778d533fded6f56dd95807848b571d1e0e5c5d358",
+      "actual": "ffca3a227bc0230750b62bd778d533fded6f56dd95807848b571d1e0e5c5d358",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-shaping-model-4x.json",
+      "status": 200,
+      "expected": "e2d54f97fe2f9ecc3a5ba01b5026e20692da1f613683514f61836b161999d7f4",
+      "actual": "e2d54f97fe2f9ecc3a5ba01b5026e20692da1f613683514f61836b161999d7f4",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "dc561999392ffc438fb1ca4fad6ea538faa64f5197843e5b3445b7680ea6de14",
+      "actual": "dc561999392ffc438fb1ca4fad6ea538faa64f5197843e5b3445b7680ea6de14",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "8772df480d8a4ac983ec5629c4229d8927a32825038bcc5dea41cfe479ae0d96",
+      "actual": "8772df480d8a4ac983ec5629c4229d8927a32825038bcc5dea41cfe479ae0d96",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "fd869cfbd3deb73bb25b7e7e0eb9a7ad9bf0f341100a42bd52d0ff9e9cf87e5d",
+      "actual": "fd869cfbd3deb73bb25b7e7e0eb9a7ad9bf0f341100a42bd52d0ff9e9cf87e5d",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "681aacae61af18d085f5c0998d17fe3a53dac642c43741122a6455ef8c09d56d",
+      "actual": "681aacae61af18d085f5c0998d17fe3a53dac642c43741122a6455ef8c09d56d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "6dcd3147e4d7b48283da7fc338b574c2cfa5e28432c8f468514485ec20ca2e79",
+      "actual": "6dcd3147e4d7b48283da7fc338b574c2cfa5e28432c8f468514485ec20ca2e79",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d4ae999c33df6e1fc79c9ceaf0d6b4fdaf723fd1df95ac57e4eb77cbff6f1717",
+      "actual": "d4ae999c33df6e1fc79c9ceaf0d6b4fdaf723fd1df95ac57e4eb77cbff6f1717",
+      "match": true
+    },
+    {
+      "path": "shaping-model.js",
+      "status": 200,
+      "expected": "712eebcc9e6bab92ed51df64b281b23d085bc633874e3d6a69a4eed55153427f",
+      "actual": "712eebcc9e6bab92ed51df64b281b23d085bc633874e3d6a69a4eed55153427f",
+      "match": true
+    },
+    {
+      "path": "shaping-projects.js",
+      "status": 200,
+      "expected": "c8204b53e5392f6e9259a7f341f638981a0e9d598a159114b363b6dc507d6f9b",
+      "actual": "c8204b53e5392f6e9259a7f341f638981a0e9d598a159114b363b6dc507d6f9b",
+      "match": true
+    },
+    {
+      "path": "tests/shaping-model.test.js",
+      "status": 200,
+      "expected": "c34ffe9f34b84d94285a23aae048f1de83ffbbc58e1ab35e84cf047c4f6e4ede",
+      "actual": "c34ffe9f34b84d94285a23aae048f1de83ffbbc58e1ab35e84cf047c4f6e4ede",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "14675c463fab043da77496b50ff76ce192267a0d4823997bb985c9c608b0b8a4",
+      "actual": "14675c463fab043da77496b50ff76ce192267a0d4823997bb985c9c608b0b8a4",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "97c318583255364fc92f82258f7502a62f0433d09c113e301fa3d13b2d078512",
+      "actual": "97c318583255364fc92f82258f7502a62f0433d09c113e301fa3d13b2d078512",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
