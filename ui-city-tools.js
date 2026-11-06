@@ -173,7 +173,7 @@ function richCatchProgressHTML(s){
 
 function sunlightDedicationsHTML(s){
  if(!usesCatDiscovery(s))return '';
- return `<section class="management-row" data-sunlight-dedications><h3>История «Золотое сияние»</h3><p>Принятые посвящения от разных домов · ${sunlightDedications(s).length} из 3.</p><p>${s.sunlightFeast?'Общий пир завершён.':'Общий пир ещё не завершён.'}</p><p>${s.sunlightService?'Служение жреца подтверждено.':'Ожидается работа вдохновлённого жреца.'}</p></section>`;
+ return `<section class="management-row" data-sunlight-dedications><h3>История «Золотое сияние»</h3><p>Принятые посвящения от разных домов · ${sunlightDedications(s).length} из 3.</p><p>${s.sunlightFeast?'Общий пир завершён.':s.sunlightMeal?'Трапеза трёх семей состоялась.':'Нужен общий пир или трапеза трёх семей в одном раздаточном дворе.'}</p><p>${s.sunlightService?'Служение жреца подтверждено.':'Ожидается работа вдохновлённого жреца.'}</p></section>`;
 }
 
 function abundanceDiscoveryHTML(s){

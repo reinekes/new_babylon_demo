@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 279,
+  "homes": [
+    "2,3",
+    "3,3",
+    "4,3"
+  ],
+  "beer": 0,
+  "reloaded": true,
+  "controlledArrivals": true,
+  "byteEqualReload": true,
+  "samples": 164,
+  "medianMs": 3.0965419999999995,
+  "p95Ms": 9.044999999999959
+}

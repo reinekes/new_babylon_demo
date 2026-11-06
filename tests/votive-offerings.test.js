@@ -109,3 +109,27 @@ test('Sunlight records real work after an inspired priest is assigned',async()=>
  const raw=encode(s);
  assert.equal(encode(decode(raw)),raw);
 });
+
+test('Sunlight requires offerings, a real service record and a completed gathering',async()=>{
+ const {miracle}=await import('../engine.js');
+ const {assignWorkplace}=await import('../management.js');
+ const {s,donor,temple}=fixture(true);
+ s.sunlightChapter=1;
+ s.resources.faith=100;
+ const before=encode(s);
+ assert.match(miracle(s,'sunlight').reason,/посвящения/);
+ assert.equal(encode(s),before);
+ s.votiveOfferings=[0,1,2].map((donorId,i)=>({donorId,donorHome:`${8+i},8`,receivedTick:0}));
+ assert.match(miracle(s,'sunlight').reason,/жрец/);
+ Object.assign(donor,{calling:'priest',role:'production'});
+ assert.ok(assignWorkplace(s,donor.id,temple).ok);
+ assert.match(miracle(s,'sunlight').reason,/жрец/);
+ for(let i=0;i<500&&!s.sunlightService;i++){s.event=null;advanceTime(s,.25);}
+ assert.ok(s.sunlightService);
+ assert.match(miracle(s,'sunlight').reason,/трапеза/);
+ s.sunlightFeast={temple,guests:4,at:s.simTime};
+ s.event=null;s.resources.faith=100;
+ assert.ok(miracle(s,'sunlight').ok);
+ assert.equal(s.resources.faith,70);
+ assert.equal(s.buffs.sunlight,3);
+});

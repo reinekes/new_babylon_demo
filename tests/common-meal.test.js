@@ -92,3 +92,28 @@ test('diners discuss city news and can resolve their own food dispute at a later
  assert.equal(d.mealDispute.status,'resolved');
  assert.equal(d.mealTalk.outcome,'reconciled');
 });
+
+test('three households at one midday meal can substitute for a feast',async()=>{
+ const {serveCommonMeal}=await import('../common-meal.js');
+ const {CAT_DISCOVERY_RULES}=await import('../scenario-profiles.js');
+ const {housingOf}=await import('../definitions.js');
+ const {syncCitizens,invalidateAssignments}=await import('../workforce.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ const depot={type:'depot',x:10,y:9,level:1,commonMeals:true},house={type:'house',x:11,y:9,level:1};
+ s.buildings.push(depot,house);
+ const [a,b,c]=s.citizens.filter(p=>p.age>=16&&p.home==='8,8');
+ const d=s.citizens.find(p=>p.age>=16&&p.home==='9,9');
+ c.home='11,9';
+ s.capacity=housingOf(s);invalidateAssignments(s);syncCitizens(s);
+ putStock(s,'10,9','food',20);
+ Object.assign(s,{simTime:12,seasonElapsed:12});
+ for(const person of [a,b,d])assert.ok(serveCommonMeal(s,person,depot));
+ assert.equal(s.sunlightMeal,undefined);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ assert.ok(serveCommonMeal(s,c,depot));
+ assert.deepEqual(s.sunlightMeal.homes,['8,8','9,9','11,9']);
+ assert.equal(s.resources.beer,0);
+ assert.equal(s.sunlightFeast,undefined);
+ assert.equal(encode(decode(encode(s))),encode(s));
+});

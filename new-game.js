@@ -27,6 +27,7 @@ export function createNewCity({mode,seed}={}){
   state.windDelivery=newWindDelivery();
   state.abundanceGift=newAbundanceGift();
   state.abundanceDiscovery=newAbundanceDiscovery();
+  state.sunlightChapter=1;
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);

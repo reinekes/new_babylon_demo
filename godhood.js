@@ -1,3 +1,4 @@
+import {sunlightKnowledgeReason} from './sunlight-gathering.js';
 import {abundanceKnowledgeReason} from './abundance-discovery.js';
 import {windKnowledgeReason} from './wind-delivery.js';
 import {recordCreatorInspiration,creatorReady} from './creator-materials.js';
@@ -71,6 +72,7 @@ export function buildingKnowledgeReason(s,type,level=1){
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){
+ if(id==='sunlight'&&s.sunlightChapter)return sunlightKnowledgeReason(s);
  if(id==='abundance'&&s.abundanceDiscovery)return abundanceKnowledgeReason(s);
  if(id==='haste'&&s.windDelivery)return windKnowledgeReason(s);
  if(id==='richCatch')return richCatchKnowledgeReason(s);

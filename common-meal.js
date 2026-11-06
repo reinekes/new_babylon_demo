@@ -1,3 +1,4 @@
+import {recordSunlightMeal,validateSunlightMeal} from './sunlight-gathering.js';
 import {recordCalmMeal} from './peace-discovery.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -49,6 +50,7 @@ export function serveCommonMeal(s,c,b){
  if(!isStrictSumer(s)||c.age<16||!commonMealWindow(s.simTime)||c.commonMealDay===day||!commonMealAvailable(s,b))return false;
  if(takeStock(s,buildingKey(b),'food',COMMON_PORTION)!==COMMON_PORTION)return false;
  c.commonMealDay=day;
+ recordSunlightMeal(s,b,c,day);
  c.hunger=Math.max(0,c.hunger-22.5);
  c.mood=Math.min(100,c.mood+3);
  for(const peer of s.citizens){
@@ -65,7 +67,7 @@ export function validateCommonMeals(s){
  const strict=isStrictSumer(s);
  const depots=new Set(s.buildings.filter(b=>b.type==='depot'&&isOperational(b)).map(buildingKey));
  const pair=v=>v&&Number.isSafeInteger(v.day)&&v.day>=0&&v.day<=commonMealDay(s.simTime)&&Array.isArray(v.people)&&v.people.length===2&&v.people.every(id=>Number.isSafeInteger(id)&&id>=0)&&v.people[0]<v.people[1];
- return s.buildings.every(b=>{
+ return validateSunlightMeal(s,commonMealDay(s.simTime))&&s.buildings.every(b=>{
   if(b.commonMeals!==undefined&&(!strict||!isMealDepot(b)))return false;
   if(b.mealTalk===undefined&&b.mealDispute===undefined)return true;
   if(!strict||b.type!=='depot'||!isOperational(b))return false;

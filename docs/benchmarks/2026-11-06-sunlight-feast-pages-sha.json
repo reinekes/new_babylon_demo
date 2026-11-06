@@ -1,0 +1,128 @@
+{
+  "at": "2026-11-06T13:54:13.590562+00:00",
+  "commit": "b9b79cf",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "53f6a8636e3ac0518c9a2a0eee4fcf3a53354c4c69ef66c7d8a2a2ffafe300fd",
+      "actual": "53f6a8636e3ac0518c9a2a0eee4fcf3a53354c4c69ef66c7d8a2a2ffafe300fd",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-dedications-pages-sha.json",
+      "status": 200,
+      "expected": "01496469ff358f2e2fb96d16f15959ac713587d30902a37064eaf5963ebf7268",
+      "actual": "01496469ff358f2e2fb96d16f15959ac713587d30902a37064eaf5963ebf7268",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-06-sunlight-feast-4x.json",
+      "status": 200,
+      "expected": "8d6e94e7db4e31e0217a9ec48e584b99424295380dd5135b2b3e3bf8fe4e5d88",
+      "actual": "8d6e94e7db4e31e0217a9ec48e584b99424295380dd5135b2b3e3bf8fe4e5d88",
+      "match": true
+    },
+    {
+      "path": "docs/versions/2026-11-06-83.md",
+      "status": 200,
+      "expected": "7149867f1b3ecc877aa2c4ee5a4a4ab56d83e06f0b6366043d9c54ff0c2132e3",
+      "actual": "7149867f1b3ecc877aa2c4ee5a4a4ab56d83e06f0b6366043d9c54ff0c2132e3",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "21d56c055d03f2c9857e246db21b8bd90072c7ba668b18c8c0af36b968d4d728",
+      "actual": "21d56c055d03f2c9857e246db21b8bd90072c7ba668b18c8c0af36b968d4d728",
+      "match": true
+    },
+    {
+      "path": "festival.js",
+      "status": 200,
+      "expected": "4f3dbd82bf0f8b8789994692a5bd937f060f4c2be7ae0c0e68902d213fee9653",
+      "actual": "4f3dbd82bf0f8b8789994692a5bd937f060f4c2be7ae0c0e68902d213fee9653",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ad1db8d0a34a36042c83f3bd4b005e7a97f3f68087fe9414533dd5ae4ac9b6ee",
+      "actual": "ad1db8d0a34a36042c83f3bd4b005e7a97f3f68087fe9414533dd5ae4ac9b6ee",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ea4bd91101996647861c700b3c52ee92beeccad2d84289b41b53250f771c2696",
+      "actual": "ea4bd91101996647861c700b3c52ee92beeccad2d84289b41b53250f771c2696",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "25d2e2dacc449d7a6e9913af97e81e1b8f0a8806ea923ebfebee1c171dc02561",
+      "actual": "25d2e2dacc449d7a6e9913af97e81e1b8f0a8806ea923ebfebee1c171dc02561",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e63609384832187774b50e663d813158200861583706b54d812acb01f00463e3",
+      "actual": "e63609384832187774b50e663d813158200861583706b54d812acb01f00463e3",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-06-sunlight-dedications.md",
+      "status": 200,
+      "expected": "849b6c5cadca61a9944bfcb363dbc148a6a7d893bf6bd8505823e60a2329cda9",
+      "actual": "849b6c5cadca61a9944bfcb363dbc148a6a7d893bf6bd8505823e60a2329cda9",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "089bf8c0c44c697217e5198bd7da09fd0e90ca9209e996345456b7e8544d1692",
+      "actual": "089bf8c0c44c697217e5198bd7da09fd0e90ca9209e996345456b7e8544d1692",
+      "match": true
+    },
+    {
+      "path": "sunlight-gathering.js",
+      "status": 200,
+      "expected": "6b7e5c9f30a33387da280809e7270d5839bf902a5cc9b035418345141eab2808",
+      "actual": "6b7e5c9f30a33387da280809e7270d5839bf902a5cc9b035418345141eab2808",
+      "match": true
+    },
+    {
+      "path": "tests/festival.test.js",
+      "status": 200,
+      "expected": "f5ff54522e3ec533b626b37bca3e776a2219d3a3dc667f62f13f755ebb7ec534",
+      "actual": "f5ff54522e3ec533b626b37bca3e776a2219d3a3dc667f62f13f755ebb7ec534",
+      "match": true
+    },
+    {
+      "path": "tests/votive-offerings.test.js",
+      "status": 200,
+      "expected": "ca4a3d4ae44a3968b1bba0579de81437ac7df2150165b4b789b8e64ebfa38cc2",
+      "actual": "ca4a3d4ae44a3968b1bba0579de81437ac7df2150165b4b789b8e64ebfa38cc2",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "4f2b711ecfb05c86b159d3e4ce27cabdae01b310e95f91b1498f27a535253c2e",
+      "actual": "4f2b711ecfb05c86b159d3e4ce27cabdae01b310e95f91b1498f27a535253c2e",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "6fb41ab8014809814edd061a2f1eb8368ce4a8d03cc9f19cf9393bab64445cb1",
+      "actual": "6fb41ab8014809814edd061a2f1eb8368ce4a8d03cc9f19cf9393bab64445cb1",
+      "match": true
+    }
+  ],
+  "matched": 17,
+  "total": 17
+}
