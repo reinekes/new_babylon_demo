@@ -81,8 +81,8 @@ import {upgradeRoad,roadUpgradeCost,planRoadRoute,upgradeRoadRoute,planNewRoad,l
 import {weatherAt} from './environment.js';
 import {builderConsent,setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
-import {constructionProgress,orderedSites,floodRepairCost} from './construction.js';
-import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage} from './engine.js';
+import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost} from './construction.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,levelOf,outputMultiplier} from './definitions.js';
@@ -456,6 +456,10 @@ function updateDetail(){
  if(['market','harbor'].includes(b.type)&&(!q||q.kind==='upgrade')){$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>${esc(state.trade.caravan?.market===buildingKey(b)?marketStatus(state)||'Торговля открыта · товары разгружены':b.type==='harbor'?'Пристань ждёт следующую грузовую лодку':'Рынок ждёт следующий караван')}</b>${deliveryOverview(buildingKey(b))}<button class="market-open-trade" id="market-open-trade">Открыть торговлю</button></div>`);$('market-open-trade').onclick=showTrade;bindSaleCancellations($('building-controls'));}
  if(!q||q.kind!=='new')$('building-controls').insertAdjacentHTML('beforeend',`<button class="management-button danger" id="demolish-building" ${demolitionReason?'disabled':''}>Снести здание</button>${demolitionReason?`<small class="blocked-reason">${esc(demolitionReason)}</small>`:''}`);
  if((!q||q.kind==='upgrade')&&stockStores(state).some(store=>buildingKey(store)===buildingKey(b))){$('building-controls').insertAdjacentHTML('afterbegin',storePolicy(b));bindStorePolicy($('building-controls'));}
+ if(b.type==='harbor'){
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Обслуживание лодок</h4><p>${b.boatWear?'Износ · разгрузка занимает до 8 секунд симуляции.':'Готово к рейсу · разгрузка занимает 4 секунды симуляции.'}</p>${b.boatWear&&!q?`${costs(boatRepairCost)}<button type="button" id="repair-harbor-boat">Заказать обслуживание</button>`:''}</section>`);
+  if($('repair-harbor-boat'))$('repair-harbor-boat').onclick=()=>mutate(repairHarborBoat(state,b),'Обслуживание лодок заказано');
+ }
  if(!q&&b.floodDamage)$('building-controls').insertAdjacentHTML('afterbegin',floodRepairControl(b));bindManagement($('building-controls'));bindFloodRepair(b);if($('upgrade-building'))$('upgrade-building').onclick=()=>{if(mutate(upgrade(state,b.x,b.y),'Заказ на улучшение создан'))detail(b.type,false,b);};if($('demolish-building'))$('demolish-building').onclick=()=>confirmRemoval(b,true);
 }
 function wellbeingReadout(c){return `<div class="wellbeing-readout"><span>Голод <b>${Math.round(c.hunger||0)}%</b></span><span>Здоровье <b>${Math.round(c.health??100)}%</b></span><span>Настроение <b>${Math.round(c.mood??75)}%</b></span><span>Вера <b>${Math.round(c.faith??60)}%</b></span><span>Работоспособность <b>${Math.round(workRate(c,c.siteDuty||state.buildings.find(b=>buildingKey(b)===c.work)?.type||c.role)*100)}%</b></span><span class="${c.clothing<=25?'clothing-poor':''}">Одежда <b>${Math.ceil(c.clothing??100)}%</b> · ${clothingStatus(c)}</span></div><small class="clothing-help">Одежда служит около 3 лет. При остатке ≤25% взрослые несут замену со склада себе и детям. Ветхая одежда ухудшает настроение и здоровье, сильнее зимой и в дождь.</small>`;}

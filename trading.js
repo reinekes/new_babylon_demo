@@ -153,6 +153,15 @@ function advanceRiverLogistics(s,c,dt){
  if(departing&&c.phase!=='departing')routeBoat(c,exitAlong,'departing',s);
  if(c.phase==='blocked'){if(departing)routeBoat(c,exitAlong,'departing',s);else if(marketAccess(s,c.market)){c.phase='unloading';c.unloadTime=0;}return;}
  if(c.phase==='trading'){if(!marketAccess(s,c.market))c.phase='blocked';return;}
- if(c.phase==='unloading'){if(!marketAccess(s,c.market)){c.phase='blocked';return;}c.unloadTime=Math.min(4,c.unloadTime+dt);if(c.unloadTime>=4)c.phase='trading';return;}
- if(['arriving','departing'].includes(c.phase)&&moveBoat(c,dt,s)){if(c.phase==='departing'){s.trade.caravan=null;news(s,'Лодка покинула город','Купцы увезли погруженный товар по реке.');}else{c.phase='unloading';c.unloadTime=0;}}
+ if(c.phase==='unloading'){
+  const access=marketAccess(s,c.market);
+  if(!access){c.phase='blocked';return;}
+  c.unloadTime=Math.min(4,c.unloadTime+dt*(access.market.boatWear ? .5 : 1));
+  if(c.unloadTime>=4)c.phase='trading';
+  return;
+ }
+ if(['arriving','departing'].includes(c.phase)&&moveBoat(c,dt,s)){if(c.phase==='departing'){
+  const harbor=s.buildings.find(b=>b.type==='harbor'&&buildingKey(b)===c.market);
+  if(harbor&&isStrictSumer(s)&&c.unloadTime>=4)harbor.boatWear=true;
+  s.trade.caravan=null;news(s,'Лодка покинула город','Купцы увезли погруженный товар по реке.');}else{c.phase='unloading';c.unloadTime=0;}}
 }

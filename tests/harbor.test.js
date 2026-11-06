@@ -17,3 +17,38 @@ test('uncollected paid purchases remain at harbor after boat leaves, then allow 
 test('unfinished sales hold the boat at berth; cancelling reserved goods permits departure',async()=>{const {cancelSale}=await import('../trading.js');const s=ready();for(const c of s.citizens)c.role='production';syncCitizens(s);assert.ok(trade(s,'clay','sell',2).ok);run(s,90);assert.equal(s.trade.caravan.transport,'river');assert.equal(s.trade.caravan.phase,'trading');assert.equal(s.trade.sales.at(-1).loaded,0);s.event=null;assert.ok(cancelSale(s,s.trade.sales.at(-1).id).ok);run(s,15);assert.equal(s.trade.caravan,null);assert.ok(decode(encode(s)));});
 test('harbor and overland market alternate future visits without changing an active merchant',()=>{const s=ready();s.buildings.push({type:'market',x:10,y:9,level:1});syncCitizens(s);run(s,170);assert.equal(s.trade.visits,2);assert.equal(s.trade.caravan.transport,'river');run(s,180);assert.equal(s.trade.visits,3);assert.notEqual(s.trade.caravan.transport,'river');assert.equal(s.trade.caravan.market,'10,9');assert.ok(decode(encode(s)));});
 test('harbor is completed by material deliveries and builders rather than instant placement',async()=>{const {build}=await import('../engine.js');const s=createGame({start:'established'});s.resources.brick=12;assert.ok(build(s,'harbor',11,9).ok);const b=s.buildings.at(-1);assert.ok(b.construction);assert.equal(b.construction.required.brick,12);assert.equal(b.construction.delivered.brick,0);run(s,180);assert.equal(b.construction,undefined);assert.ok(decode(encode(s)));});
+
+test('river wear slows the next unloading until physical boat service finishes',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {repairHarborBoat}=await import('../engine.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const harbor={type:'harbor',x:11,y:9,level:1};
+ s.buildings.push(harbor);syncCitizens(s);
+ run(s,160);
+ assert.equal(harbor.boatWear,true);
+ assert.ok(decode(encode(s)));
+ run(s,75);
+ const c=s.trade.caravan;
+ assert.equal(c.transport,'river');
+ for(let i=0;i<600&&c.phase!=='unloading';i++)advanceTradeLogistics(s,.1);
+ assert.equal(c.phase,'unloading');
+ const progress=c.unloadTime;
+ advanceTradeLogistics(s,4);
+ assert.equal(c.phase,'unloading');
+ assert.ok(Math.abs(c.unloadTime-progress-2)<1e-8);
+ advanceTradeLogistics(s,4);
+ assert.equal(c.phase,'trading');
+ const wood=s.resources.wood;
+ s.event=null;
+ assert.ok(trade(s,'stone','buy',2).ok);
+ assert.ok(repairHarborBoat(s,harbor).ok);
+ assert.equal(s.resources.wood,wood-4);
+ assert.equal(harbor.construction.delivered.wood,0);
+ const saved=encode(s),restored=decode(saved);
+ assert.ok(restored);assert.equal(encode(restored),saved);
+ const loadedHarbor=restored.buildings.find(b=>b.type==='harbor');
+ for(let i=0;i<1500&&(loadedHarbor.construction||restored.trade.deliveries.at(-1).delivered<2);i++){restored.event=null;advanceTime(restored,.25);}
+ assert.equal(loadedHarbor.construction,undefined);
+ assert.equal(loadedHarbor.boatWear,undefined);
+ assert.equal(restored.trade.deliveries.at(-1).delivered,2);
+});

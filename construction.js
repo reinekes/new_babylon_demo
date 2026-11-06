@@ -10,6 +10,7 @@ import {isStrictSumer} from './scenario-profiles.js';
 import {markRoadTopologyChanged} from './road-revisions.js';
 export const isComplete=isOperational;
 export const floodRepairCost=b=>b.type==='road'?{clay:2,reed:1}:{clay:4,reed:2};
+export const boatRepairCost={wood:4,reed:3};
 export const constructionEntities=s=>[...s.buildings,...s.roads||[]];
 export const workRequired=b=>b.construction.kind==='repair'?(b.type==='road'?6:8):(b.type==='road'?6:12)*b.construction.target;
 export const createOrder=(cost,target=1,kind='new')=>({kind,target,priority:1,required:Object.fromEntries(MATERIALS.map(k=>[k,cost[k]||0])),remaining:Object.fromEntries(MATERIALS.map(k=>[k,cost[k]||0])),delivered:Object.fromEntries(MATERIALS.map(k=>[k,0])),work:0});
@@ -30,7 +31,9 @@ export function finishConstruction(s){
    if(b.type==='kiln'&&isStrictSumer(s))b.kilnWear=0;
    if(b.type==='cowshed'&&isStrictSumer(s))startManagedDairy(b);
   }
-  if(q.kind==='repair')delete b.floodDamage;
+  if(q.kind==='repair'){
+   if(b.type==='harbor')delete b.boatWear;else delete b.floodDamage;
+  }
   recordBuilderCompletion(s,b);b.level=q.target;if(b.type==='road')markRoadTopologyChanged(s);if(q.legacyMasonry&&b.type!=='road')b.legacyMasonryLevel=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;
   s.news.unshift({title:q.kind==='repair'?`Отремонтировано: ${buildingDefinition(s,b.type)?.name||'Дорога'}`:q.kind==='upgrade'?`${(buildingDefinition(s,b.type)?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(buildingDefinition(s,b.type)?.name||'Дорога')}`,text:'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
   // Workforce synchronization sees the old site and routes builders home.
