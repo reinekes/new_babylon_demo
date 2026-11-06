@@ -1,0 +1,135 @@
+{
+  "at": "2026-11-06T03:09:27.645500+00:00",
+  "commit": "5ca66e68141fe94d0c34f1a5ca3afe63b0802c1c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c781f13a95cfb4638e07b03a90fd14f0550a72c86fdec071fa2eb2c4d4c6d20a",
+      "actual": "c781f13a95cfb4638e07b03a90fd14f0550a72c86fdec071fa2eb2c4d4c6d20a",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "fb7566daccdd560dfc36065b80230a1fb0b08e257f569e19f652a08c959f422a",
+      "actual": "fb7566daccdd560dfc36065b80230a1fb0b08e257f569e19f652a08c959f422a",
+      "match": true
+    },
+    {
+      "path": "docs/ART_REVIEW_2026-11-06.md",
+      "status": 200,
+      "expected": "fb3a286ee213b101d237d6078348000f214ed8834a34aa892180abe71266bd55",
+      "actual": "fb3a286ee213b101d237d6078348000f214ed8834a34aa892180abe71266bd55",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "9be9d08c6037004c029ec2ddf23f2fb070dfd2b7641906e4f3c91ea8dd9bcf80",
+      "actual": "9be9d08c6037004c029ec2ddf23f2fb070dfd2b7641906e4f3c91ea8dd9bcf80",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/01-sumer-overview.jpg",
+      "status": 200,
+      "expected": "7d2247330d83f7dbbadadc5c3fa5b18ffe6a2c998cae4208e54d5a75ccd6e1c7",
+      "actual": "7d2247330d83f7dbbadadc5c3fa5b18ffe6a2c998cae4208e54d5a75ccd6e1c7",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/02-sumer-street.jpg",
+      "status": 200,
+      "expected": "2e03f380df54595cf081229c9fef1df9ca5a9c715ed5840c5ffeaa2329f92743",
+      "actual": "2e03f380df54595cf081229c9fef1df9ca5a9c715ed5840c5ffeaa2329f92743",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/03-sumer-resident.jpg",
+      "status": 200,
+      "expected": "e77429ba5e46a9c1086a940a6578204784ef0177b777b847948aa827ec13be9c",
+      "actual": "e77429ba5e46a9c1086a940a6578204784ef0177b777b847948aa827ec13be9c",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/04-sumer-potter.jpg",
+      "status": 200,
+      "expected": "424242c71581f02ab6a90fc2808597d518e1e855e3c9292683525f7b628e500b",
+      "actual": "424242c71581f02ab6a90fc2808597d518e1e855e3c9292683525f7b628e500b",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/05-sumer-child.jpg",
+      "status": 200,
+      "expected": "31c40f0849a119e1e1c6277785eb5521c210cbaf7fa304548c31c7031ccc40da",
+      "actual": "31c40f0849a119e1e1c6277785eb5521c210cbaf7fa304548c31c7031ccc40da",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/06-sumer-potter-contact.jpg",
+      "status": 200,
+      "expected": "891482a1df78972e29d7fc0519ae12aed5b388643b8df1d7425c04b1b488c760",
+      "actual": "891482a1df78972e29d7fc0519ae12aed5b388643b8df1d7425c04b1b488c760",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/07-resident-palette-before.jpg",
+      "status": 200,
+      "expected": "aa55e5991538a583f6f2c33e7fb2ebd10729f138345c178277e6090e41593066",
+      "actual": "aa55e5991538a583f6f2c33e7fb2ebd10729f138345c178277e6090e41593066",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/08-resident-palette-after.jpg",
+      "status": 200,
+      "expected": "dd8d9600f01df83e0b825abde32e31b842478c844685a52b1f8da110772539e3",
+      "actual": "dd8d9600f01df83e0b825abde32e31b842478c844685a52b1f8da110772539e3",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/09-potter-simulation-side.jpg",
+      "status": 200,
+      "expected": "f50487f11d3d587c4c7c28f962b8616da6f7fc19fdd6633788b645979fc2509a",
+      "actual": "f50487f11d3d587c4c7c28f962b8616da6f7fc19fdd6633788b645979fc2509a",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "c4f5d8828c108aea821bce7f330fbdaa47b684844d4e25c4b7ba9f14b50fb2cd",
+      "actual": "c4f5d8828c108aea821bce7f330fbdaa47b684844d4e25c4b7ba9f14b50fb2cd",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "4c839cf04a0355952ff1b14b32456eff68cc6ebc9b0f109e3b3248f138fb40c4",
+      "actual": "4c839cf04a0355952ff1b14b32456eff68cc6ebc9b0f109e3b3248f138fb40c4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a0009863a4958b252afe27092a539d92f199f0cb0d733760a993c748b18ab59d",
+      "actual": "a0009863a4958b252afe27092a539d92f199f0cb0d733760a993c748b18ab59d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "795cfda66397e2ade453cf36eb706b974e1e05665adbb855debf4ee06d947a62",
+      "actual": "795cfda66397e2ade453cf36eb706b974e1e05665adbb855debf4ee06d947a62",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "bd0b7b1f8e4db98457b2c3ed4cb7d06e095c5db085e99faf6921d3cb4a14a06d",
+      "actual": "bd0b7b1f8e4db98457b2c3ed4cb7d06e095c5db085e99faf6921d3cb4a14a06d",
+      "match": true
+    }
+  ],
+  "matched": 18,
+  "total": 18
+}
