@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-06T10:21:30.114681+00:00",
+  "commit": "f15d7de3fc139ca41c0319f87f429aa66d16da83",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "50385a3a9817e75ef411d013de9ee74d0e5849cea83505f4f317d93d63e17545",
+      "actual": "50385a3a9817e75ef411d013de9ee74d0e5849cea83505f4f317d93d63e17545",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "26e116d0ed8020ceb95962b20e418bbb5be94c614f79048587a7f7b3a3f1f95c",
+      "actual": "26e116d0ed8020ceb95962b20e418bbb5be94c614f79048587a7f7b3a3f1f95c",
+      "match": true
+    },
+    {
+      "path": "fish-provenance.js",
+      "status": 200,
+      "expected": "3d0e44229b809e5440e1985a503b14735715a5c8cd105743c0d5a6230a23d24c",
+      "actual": "3d0e44229b809e5440e1985a503b14735715a5c8cd105743c0d5a6230a23d24c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8e6eda041e6d90affe995c644a822ace9fd891ffaf27b8ce4c0e412d7c2e8545",
+      "actual": "8e6eda041e6d90affe995c644a822ace9fd891ffaf27b8ce4c0e412d7c2e8545",
+      "match": true
+    },
+    {
+      "path": "tests/fish-provenance.test.js",
+      "status": 200,
+      "expected": "9146a052ea94c649fe2ac5254fbd502477742bfcd6fee2fb2bf5140d1c4713a8",
+      "actual": "9146a052ea94c649fe2ac5254fbd502477742bfcd6fee2fb2bf5140d1c4713a8",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "98a2c7f65b120055864a6e475ae9073c2ca4d2b459be2d0f108519423b859305",
+      "actual": "98a2c7f65b120055864a6e475ae9073c2ca4d2b459be2d0f108519423b859305",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "c10b1df7264bd1012a2aee20e23ffc2e5b5e7d0680f86d3b64cc144eca43df12",
+      "actual": "c10b1df7264bd1012a2aee20e23ffc2e5b5e7d0680f86d3b64cc144eca43df12",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
