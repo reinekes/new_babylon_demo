@@ -1,0 +1,18 @@
+.creator-scene[hidden]{display:none}
+.creator-scene{position:absolute;inset:0;z-index:6;overflow:hidden;pointer-events:none}
+.creator-scene-card{background:linear-gradient(117deg,#38271f,#292b21);border-color:#b99564}
+.creator-scene-card svg{fill:none;stroke-width:1.5}
+.creator-mat{stroke:#b69461;opacity:.72}
+.creator-clay{fill:#a76145;stroke:#e4b082}
+.creator-print,.creator-echo{opacity:0;fill:#553328;stroke:#e0ad7d}
+.creator-reeds{opacity:0;stroke:#c2bd7d;stroke-width:2}
+.creator-scene[data-phase="hand"] .creator-print,.creator-scene[data-phase="echo"] .creator-echo,.creator-scene[data-phase="lesson"] .creator-reeds,.creator-scene[data-phase="bundle"] .creator-reeds{animation:creator-trace 1.7s ease-out both}
+.creator-scene[data-phase="echo"] .creator-print,.creator-scene[data-phase="lesson"] .creator-print{opacity:.78}
+.creator-scene[data-phase="lesson"] .creator-echo{opacity:.7}
+.creator-scene[data-phase="cut"] .creator-clay{animation:creator-cut 2s ease-in-out both;transform-origin:40% 70%}
+.creator-dust{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at 55% 58%,#f0d8b539,transparent 50%)}
+.creator-scene[data-phase="dust"] .creator-dust,.creator-scene[data-phase="cut"] .creator-dust{animation:creator-dust 2.5s ease-out both}
+@keyframes creator-trace{0%{opacity:0;transform:translateY(-4px)}100%{opacity:.9;transform:translateY(0)}}
+@keyframes creator-cut{0%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
+@keyframes creator-dust{0%,100%{opacity:0}40%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.creator-scene *{animation:none!important}.creator-scene[data-phase="hand"] .creator-print,.creator-scene[data-phase="echo"] .creator-echo,.creator-scene[data-phase="lesson"] .creator-reeds,.creator-scene[data-phase="bundle"] .creator-reeds{opacity:.9}.creator-scene[data-phase="dust"] .creator-dust{opacity:.7}}

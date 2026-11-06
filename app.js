@@ -1,3 +1,4 @@
+import {createCreatorPresentation} from './creator-presentation.js';
 import {createRichCatchPresentation} from './rich-catch-presentation.js';
 import {createEarthPresentation} from './earth-presentation.js';
 import {richCatchTarget} from './rich-catch.js';
@@ -153,6 +154,10 @@ const catchPresentation=createRichCatchPresentation($('city').parentNode,{
  focus:point=>renderer.focusOn(point.x,point.y),cue:phase=>cityAudio.cueCatch(phase)
 });
 catchPresentation.reset(state);
+const creatorPresentation=createCreatorPresentation($('city').parentNode,{
+ focus:point=>renderer.focusOn(point.x,point.y),cue:phase=>cityAudio.cueEarth(phase==='echo'?'bow':'sheaf')
+});
+creatorPresentation.reset(state);
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
@@ -781,9 +786,10 @@ function makeMiracleCard(id,m){
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
  const el=details.querySelector('.miracle-cast');
- el.onclick=()=>{const result=miracle(state,id,lastMiracleTarget);if(result.ok){details.open=false;if(id==='rain'){catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
- else if(id==='richCatch'){rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
- else {if(id==='fertility')catchPresentation.skip();renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);}toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
+ el.onclick=()=>{const result=miracle(state,id,lastMiracleTarget);if(result.ok){details.open=false;if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
+ else if(id==='inspiration'&&state.creatorMaterials){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.cast(state);}
+ else {if(id==='fertility'){creatorPresentation.skip();catchPresentation.skip();}renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);}toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
 }
 for(const [id,m]of Object.entries(MIRACLES))if(shouldShowMiracle(state,id))makeMiracleCard(id,m);
 function update(){
@@ -852,6 +858,7 @@ function resetCityPresentation(){
  rainPresentation.reset(state);
  earthPresentation.reset(state);
  catchPresentation.reset(state);
+ creatorPresentation.reset(state);
  waterProjectDraft=null;lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
 }
 async function archiveCurrentCity(){
@@ -929,14 +936,17 @@ function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event;
  if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick;advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
- syncCeremonySpeed();ceremonyPresentation();rainPresentation.tick(state,now,!presentationPaused&&!ceremonyActive(state)&&!earthPresentation.active&&!catchPresentation.active);
+ syncCeremonySpeed();ceremonyPresentation();rainPresentation.tick(state,now,!presentationPaused&&!ceremonyActive(state)&&!earthPresentation.active&&!catchPresentation.active&&!creatorPresentation.active);
  const storyVisible=!seasonJumping&&!document.hidden&&!photo.active&&!windowBlocks&&!rainPresentation.active;
  const openingAllowed=!presentationPaused&&!ceremonyActive(state);
+ const creatorHasPriority=creatorPresentation.active&&!ceremonyActive(state);
  const catchHasPriority=catchPresentation.active&&!ceremonyActive(state);
- earthPresentation.tick(state,dt,{allowOpening:openingAllowed&&!catchHasPriority,
-  visible:storyVisible&&!catchHasPriority});
- catchPresentation.tick(state,dt,{allowOpening:openingAllowed&&!earthPresentation.active,
-  visible:storyVisible&&!earthPresentation.active&&!ceremonyActive(state)});
+ earthPresentation.tick(state,dt,{allowOpening:openingAllowed&&!catchHasPriority&&!creatorHasPriority,
+  visible:storyVisible&&!catchHasPriority&&!creatorHasPriority});
+ catchPresentation.tick(state,dt,{allowOpening:openingAllowed&&!earthPresentation.active&&!creatorHasPriority,
+  visible:storyVisible&&!earthPresentation.active&&!creatorHasPriority&&!ceremonyActive(state)});
+ creatorPresentation.tick(state,dt,{allowOpening:openingAllowed&&!earthPresentation.active&&!catchPresentation.active,
+  visible:storyVisible&&!earthPresentation.active&&!catchPresentation.active&&!ceremonyActive(state)});
  if(!seasonJumping&&now-lastUI>350){update();lastUI=now;}
  renderer.inspected=inspected;renderer.focusCitizenId=inspectedPerson;cityAudio.tick(state,presentationPaused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,rainReaction:rainPresentation.reaction,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);requestAnimationFrame(frame);
 }
