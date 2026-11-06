@@ -7,7 +7,7 @@ import {validateForests} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,validateMineralPits} from './mineral-stock.js';
 import {validateFisheries} from './fishery-stock.js';
 import {AUTUMN_CROPS} from './crop-calendar.js';
-import {changeFloodSeason,validateRiverFlood} from './river-flood.js';
+import {changeFloodSeason,validateRiverFlood,floodFootprint,floodStorageRisk} from './river-flood.js';
 import {validateFieldSoil} from './field-soil.js';
 import {depositCanalSilt,validateCanalMaintenance} from './canal-maintenance.js';
 import {validateCityLabor} from './city-labor.js';
@@ -46,7 +46,7 @@ import {initializeKilns,validateKilns} from './kilns.js';
 import {initializeBricks,validateBricks} from './bricks.js';
 import {initializeWater,validateWater} from './water.js';
 import {initializeTextiles,validateTextiles} from './textiles.js';
-import {syncInventory,validateInventory,stockStores,reserveStock} from './inventory.js';
+import {syncInventory,validateInventory,stockStores,reserveStock,takeStock} from './inventory.js';
 import {initializeDistricts,validateDistricts} from './district-logistics.js';
 import {initializeFoodPlan,availableFood,validateFoodPlan} from './food-planning.js';
 import {initializePests,syncPestSites,validatePests,catReason,bringCat} from './pests.js';
@@ -181,8 +181,14 @@ function settleSeason(s){
  depositCanalSilt(s,irrigationFor(s));
  const previous=s.season,pasture=pastureCredits(s,previous);s.tick++;s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);settleManagedFlocks(s,pasture);settleManagedDairy(s,pasture);advanceTrade(s);advanceMedicalYear(s);
  const flood=changeFloodSeason(s);
- if(flood==='warning')log(s,'Весной ожидается разлив','Посмотри затронутые дороги в обзоре города, в разделе «Работа».','bad');
- if(flood==='active')log(s,'Река вышла из берегов','Жители ищут сухой путь в обход затопленных дорог.','bad');
+ if(flood==='warning')log(s,'Весной ожидается разлив','Проверь дороги и запасы под угрозой в обзоре города, в разделе «Работа».','bad');
+ if(flood==='active'){
+  log(s,'Река вышла из берегов','Жители ищут сухой путь в обход затопленных дорог.','bad');
+  syncInventory(s);
+  const exposed=floodStorageRisk(s,floodFootprint(s,s.riverFlood));
+  const loss=exposed.reduce((sum,{key,loss})=>sum+takeStock(s,key,'food',loss),0);
+  if(loss>0)log(s,'Разлив испортил запасы',`Сырость испортила ${Number(loss.toFixed(2))} ед. еды на складах (${exposed.length}).`,'bad');
+ }
  if(flood==='ended')log(s,'Вода отступила','Проходы у берега снова открыты.','good');
  if(lowWaterYear(s)&&s.season===0)log(s,'Летом ожидается маловодье','Проверь поля и запасные водозаборы в обзоре города, в разделе «Работа».','bad');
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);snapshotLifeAnalytics(s);check(s);return;}

@@ -104,6 +104,12 @@ export function floodFootprint(state,{along,bank},{withDrainage=true,withLevees=
  return exposed;
 }
 
+// Only food still physically in flooded warehouses is exposed.
+export function floodStorageRisk(state,footprint){
+ return state.buildings.filter(b=>['granary','depot'].includes(b.type)&&isOperational(b)&&b.stock?.food>0&&footprint.has(tileKey(b.x,b.y)))
+  .map(building=>({building,key:tileKey(building.x,building.y),loss:building.stock.food/4}));
+}
+
 function intersectsTile(a,b,x,y){
  let enter=0,leave=1;
  for(const [start,end,center] of [[a.x,b.x,x],[a.y,b.y,y]]){

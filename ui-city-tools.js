@@ -1,4 +1,4 @@
-import {floodPhase,floodFootprint,floodedRoads} from './river-flood.js';
+import {floodPhase,floodFootprint,floodedRoads,floodStorageRisk} from './river-flood.js';
 import {lowWaterForecast} from './irrigation.js';
 import {needsCanalCleaning} from './canal-maintenance.js';
 import {activeLaborKind,harvestCallActive,harvestDemand,harvestCandidates,unloadDemand,UNLOAD_PORTERS} from './city-labor.js';
@@ -97,8 +97,10 @@ function floodHTML(s){
  const exposed=floodFootprint(s,s.riverFlood,{withDrainage:false,withLevees:false}).size;
  const relieved=withLevees-footprint.size,protectedCells=exposed-withLevees;
  const evacuees=s.citizens.filter(c=>c.floodShelter),walking=evacuees.filter(c=>c.routeIndex<c.route.length).length;
+ const storage=phase==='warning'?floodStorageRisk(s,footprint):[];
+ const storageWarning=storage.length?`<p>При разливе отсыреет четверть оставшейся здесь еды. Закажи вывоз в разделе «Склады и перевозки» или защити берег.</p><ul>${storage.map(({building,key,loss})=>`<li>${focus(key,`${buildingDefinition(s,building.type).name} · ${building.x}, ${building.y}`)} · Под угрозой ${number(loss)} ед. еды</li>`).join('')}</ul>`:'';
  const coordinates=roads.slice(0,8).map(r=>`(${r.a.x}, ${r.a.y}) → (${r.b.x}, ${r.b.y})`).join(' · ');
- return `<article class="city-tools-row"><h3>${phase==='active'?'Река вышла из берегов':'Прогноз весеннего разлива'}</h3><p>Затронутых дорожных участков: ${roads.length}. Защищённые клетки: вал — ${protectedCells}, отвод — ${relieved}.</p><small>Для отвода нужна непрерывная цепочка чистых дренажных каналов с выходом в воду за пределами разлива.</small>${phase==='active'?`<p>Идут в укрытие: ${walking}. В укрытии: ${evacuees.length-walking}.</p>`: ''}${coordinates?`<small>${coordinates}</small>`:''}</article>`;
+ return `<article class="city-tools-row"><h3>${phase==='active'?'Река вышла из берегов':'Прогноз весеннего разлива'}</h3><p>Затронутых дорожных участков: ${roads.length}. Защищённые клетки: вал — ${protectedCells}, отвод — ${relieved}.</p><small>Для отвода нужна непрерывная цепочка чистых дренажных каналов с выходом в воду за пределами разлива.</small>${phase==='active'?`<p>Идут в укрытие: ${walking}. В укрытии: ${evacuees.length-walking}.</p>`: ''}${storageWarning}${coordinates?`<small>${coordinates}</small>`:''}</article>`;
 }
 function lowWaterHTML(s){
  const forecast=lowWaterForecast(s);
