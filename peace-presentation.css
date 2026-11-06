@@ -1,0 +1,6 @@
+.peace-scene-card { background: linear-gradient(135deg,#312820,#1d2b2c); }
+.peace-scene-card svg { fill: none; stroke: #ddbb92; stroke-width: 2; }
+.peace-scene-card .peace-water { stroke: #a9c7bd; transform-origin: center; transition: transform 1.4s ease; }
+.peace-scene:not([data-phase="0"]) .peace-water { transform: scaleY(.12); }
+.peace-relief { position: absolute; top: 0; left: 0; z-index: 4; pointer-events: none; width: 13px; height: 5px; border-radius: 50%; border: 1px solid #fae0ac; box-shadow: 0 0 5px #f2c982; }
+@media (prefers-reduced-motion: reduce) { .peace-scene-card .peace-water { transition: none; } }

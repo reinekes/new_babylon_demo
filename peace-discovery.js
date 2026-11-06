@@ -55,7 +55,8 @@ export function peaceQuote(s,target){
 export function validatePeaceDiscovery(s){
  const evidence=s.peaceDiscovery;
  if(evidence===undefined)return true;
- if(!usesCatDiscovery(s)||!evidence||evidence.version!==1||Object.keys(evidence).length!==3+Number(evidence.lastCast!==undefined)||
+ if(!usesCatDiscovery(s)||!evidence||evidence.version!==1||Object.keys(evidence).length!==3+Number(evidence.lastCast!==undefined)+Number(evidence.sceneSeen!==undefined)||
+  (evidence.sceneSeen!==undefined&&evidence.sceneSeen!==true)||
   !Array.isArray(evidence.care)||evidence.care.length>CARE_REQUIRED||!Array.isArray(evidence.meals)||evidence.meals.length>MEALS_REQUIRED)return false;
  const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId;
  const cast=evidence.lastCast;
