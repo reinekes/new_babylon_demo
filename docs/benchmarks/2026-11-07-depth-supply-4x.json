@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 296,
+  "controlledDryHomes": true,
+  "realTrips": 3,
+  "samples": 120,
+  "medianStepCpuMs": 22.631583000002138,
+  "p95StepCpuMs": 54.114165999999386,
+  "journalEqualReload": true
+}

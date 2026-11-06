@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 296,
+  "controlledRainEvidence": true,
+  "realWaterDeliveries": 3,
+  "questStarted": true,
+  "questEqualReload": true,
+  "samples": 120,
+  "medianStepCpuMs": 24.071916999999758,
+  "p95StepCpuMs": 61.99958400000014
+}
