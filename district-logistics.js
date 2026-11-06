@@ -1,3 +1,4 @@
+import {appendFish,takeFish} from './fish-provenance.js';
 import {pickupFieldGrain} from './field-grain.js';
 import {isVotiveTemple} from './votive-offerings.js';
 import {pickupFishingOutput} from './cat-fishing-ledger.js';
@@ -66,7 +67,7 @@ export function districtPickup(s,c){
  const pass=createDistrictPass(s),q=pass.jobsById.get(c.districtJob);if(!q||q.remaining<=eps||!connectedStores(s,q.source,q.target,pass))return 0;const target=store(s,q.target,pass);if(!target)return 0;if(q.targetKind==='votive'){
  if(!isVotiveTemple(target)||q.remaining!==1)return 0;
  q.remaining=0;c.cargo={pottery:1};c.store=q.target;invalidateAssignments(s);return 1;
-}const key=entry(q.target,q.resource),n=Math.min(12,q.remaining,exportable(s,q.source,q.resource,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const source=store(s,q.source,pass),beforeOutput=source?.workshopStock?.output?.food||0,actual=central(s,source,pass)?takeStock(s,q.source,q.resource,n):takeBuildingOutput(source,q.resource,n);q.remaining-=actual;if(q.remaining<eps)q.remaining=0;c.cargo={[q.resource]:actual};if(q.resource==='food'&&!central(s,source,pass)){pickupFishingOutput(s,source,c,actual,beforeOutput);pickupFieldGrain(source,c,actual,beforeOutput);}c.store=q.target;invalidateAssignments(s);return actual;
+}const key=entry(q.target,q.resource),n=Math.min(12,q.remaining,exportable(s,q.source,q.resource,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const source=store(s,q.source,pass),beforeOutput=source?.workshopStock?.output?.food||0,actual=central(s,source,pass)?takeStock(s,q.source,q.resource,n,{fishTo:c}):takeBuildingOutput(source,q.resource,n);q.remaining-=actual;if(q.remaining<eps)q.remaining=0;c.cargo={[q.resource]:actual};if(q.resource==='food'&&!central(s,source,pass)){pickupFishingOutput(s,source,c,actual,beforeOutput);pickupFieldGrain(source,c,actual,beforeOutput);if(source?.fishOutput)appendFish(c,'fishCargo',takeFish(source,'fishOutput',actual,beforeOutput),0);}c.store=q.target;invalidateAssignments(s);return actual;
 }
 export function districtReport(s){
  initializeDistricts(s);const pass=createDistrictPass(s),jobs=s.district.jobs.map(q=>{const inTransit=transferCarried(s,q,pass),carriers=pass.owners.get(q.id)||[],done=q.remaining+inTransit<=eps;return {...q,inTransit,status:done?(q.delivered>eps?'done':'cancelled'):!connectedStores(s,q.source,q.target,pass)||carriers.some(c=>c.phase==='blocked')?'blocked':inTransit>eps?'carrying':carriers.length?'active':q.targetKind!=='votive'&&exportable(s,q.source,q.resource,pass)<=eps?'blocked':'waiting'};});

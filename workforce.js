@@ -1,3 +1,4 @@
+import {appendFish,takeFish as takeFishEvidence,recordHomeFish} from './fish-provenance.js';
 import {acceptFieldGrain,recordFieldGrain} from './field-grain.js';
 import {recordNeighborFoodFact} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -303,7 +304,11 @@ export function syncCitizens(s){
 function workshopIncoming(s,key,k){return (s.district?.jobs||[]).filter(q=>q.target===key&&q.resource===k).reduce((n,q)=>n+q.remaining+s.citizens.filter(c=>c.districtJob===q.id).reduce((a,c)=>a+(c.cargo?.[k]||0),0),0);}
 function harvest(s,c,ctx,via=null){
  const b=ctx.buildings.get(c.work);if(!b)return false;
- const produced=(goods,options)=>{if(!putProductionOutput(s,b,goods,options))return false;recordCitizenHarvest(s,c,goods);if(b.type==='fishing')recordFishingCatch(s,b,c,goods.food||0,{inBuffer:true,before:(b.workshopStock.output.food||0)-(goods.food||0)});return true;};
+ const produced=(goods,options)=>{if(!putProductionOutput(s,b,goods,options))return false;recordCitizenHarvest(s,c,goods);if(b.type==='fishing'){
+  const amount=goods.food||0,before=(b.workshopStock.output.food||0)-amount;
+  recordFishingCatch(s,b,c,amount,{inBuffer:true,before});
+  if(s.richCatchEvidence)appendFish(b,'fishOutput',[amount],before);
+ }return true;};
  if(b.type==='kiln'){const amount=collectFired(b);if(amount>0){return produced({firedBrick:amount},{record:false});}if(kilnNeedsRepair(b))repairKiln(b);else startFiring(b);return false;}
  if(b.type==='brickyard'){const amount=collectBricks(b);if(amount>0){return produced({brick:amount},{record:false});}formBricks(b);return false;}
  if(['sheepfold','weaver','tailor'].includes(b.type)){const kind=b.type==='sheepfold'?'wool':b.type==='weaver'?'cloth':'clothing',amount=b.type==='sheepfold'?gatherWool(s,b):b.type==='weaver'?weaveCloth(s,b):makeClothing(s,b);if(amount<=1e-8)return false;return produced({[kind]:amount});}
@@ -332,7 +337,7 @@ function harvest(s,c,ctx,via=null){
   // The target has already yielded this load. Returning to the local shed is
   // transport, even if New Year or a save/reload happens while it is carried.
   for(const [resource,amount]of Object.entries(c.cargo))recordBuildingProduction(s,b,resource,amount);
-  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing')recordFishingCatch(s,b,c,c.cargo.food||0);startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
+  recordCitizenHarvest(s,c,c.cargo);if(b.type==='fishing'){recordFishingCatch(s,b,c,c.cargo.food||0);if(s.richCatchEvidence)appendFish(c,'fishCargo',[c.cargo.food||0],0);}startTrip(s,c,c.work,'toWorkshop',ctx,via);return true;
  }const goods=c.cargo;c.cargo={};return produced(goods);}
  startTrip(s,c,c.store,'toStore',ctx,via);return true;
 }
@@ -342,7 +347,13 @@ function deposit(s,c,ctx){
   const destination=c.districtJob&&s.district.jobs.find(q=>q.id===c.districtJob),site=destination&&s.buildings.find(b=>buildingKey(b)===c.store),local=destination&&site&&(destination.targetKind==='votive'||destination.targetKind==='input'||!stockStores(s).includes(site));const accepted=MATERIALS.includes(resource)?local?destination.targetKind==='votive'?receiveVotive(s,destination,c,amount):logisticsDeposit(s,c.store,resource,amount,destination.targetKind):putStock(s,c.store,resource,amount):amount;
   if(local&&destination.targetKind==='input'&&(resource==='food'||resource==='milk'))recordVowDelivery(s,site,c,accepted);
   if(!local&&accepted>0&&MATERIALS.includes(resource))stored[resource]=accepted;
-  if(resource==='food'){acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);}
+  if(resource==='food'){acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);
+   if(c.fishCargo){
+    const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
+    if(!local)appendFish(store,'fishStock',parts,(store?.stock?.food||0)-accepted);
+    else if(destination.targetKind==='input')recordHomeFish(s,site,parts);
+   }
+  }
   if(!MATERIALS.includes(resource))s.resources[resource]=(s.resources[resource]||0)+accepted;if(!local)s.delivered[resource]=(s.delivered[resource]||0)+accepted;if(c.districtJob){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(q)q.delivered+=accepted;}c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];if(c.tradeJob){const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob);if(q){q.delivered=Math.min(q.amount,q.delivered+accepted);if(Math.abs(q.amount-q.delivered)<1e-7)q.delivered=q.amount;}}actual[resource]=accepted;delivered+=accepted;
  }
  if(delivered>0){queueGranaryReceipt(s,ctx.buildings.get(c.store),c,stored);recordCitizenDelivery(s,c,actual);s.deliveries++;s.lastDelivery={time:s.simTime,citizen:c.id,store:c.store,cargo:actual,...c.tradeJob?{source:'market'}:{}};}
@@ -380,7 +391,10 @@ function arrival(s,c,ctx){
   return;
  }
  if(c.phase==='toManualGathering'){c.phase='manualGathering';return;}
- if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo,{record:false})){moveFishingCargoToOutput(s,b,c,c.cargo.food||0,(b.workshopStock.output.food||0)-(c.cargo.food||0),c.cargo.food||0);c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
+ if(c.phase==='toWorkshop'){const b=ctx.buildings.get(c.work);if(b&&putProductionOutput(s,b,c.cargo,{record:false})){moveFishingCargoToOutput(s,b,c,c.cargo.food||0,(b.workshopStock.output.food||0)-(c.cargo.food||0),c.cargo.food||0);if(c.fishCargo){
+  const amount=c.cargo.food||0;
+  appendFish(b,'fishOutput',takeFishEvidence(c,'fishCargo',amount,amount),b.workshopStock.output.food-amount);
+ }c.cargo={};c.phase='working';if(!isWorkday(s.simTime))startTrip(s,c,c.home,'toHome',ctx);}else if(!b){c.store=receivingStore(s,ctx,c.home,c.cargo);startTrip(s,c,c.store,'toStore',ctx);}return;}
  if(c.phase==='toClothesSupply'){
   const target=s.citizens.find(p=>p.id===c.clothingTarget&&p.home===c.home),amount=target&&target.clothing<=REPLACE_CLOTHING_AT&&storeStock(s,c.store,'clothing')>=1?takeStock(s,c.store,'clothing',1):0;
   if(amount===1){c.clothingLoad=1;startTrip(s,c,c.home,'toClothesHome',ctx);}else{delete c.clothingTarget;delete c.clothingLoad;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}return;
@@ -403,10 +417,16 @@ function arrival(s,c,ctx){
  if(c.phase==='toRest'){c.phase='resting';return;}
  if(c.phase==='toPantrySupply'){
   const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),inTransit=s.citizens.filter(p=>p.pantryTrip&&(p.pantryTarget||p.home)===target).reduce((n,p)=>n+(p.pantryFood||0),0),amount=b?Math.min(6,Math.max(0,houseDemand(s,ctx,target)*8/3-(b.pantry||0)-inTransit),foodAvailableAt(s,c.store)):0;
-  if(amount>1e-8){takeStock(s,c.store,'food',amount);c.pantryFood=amount;startTrip(s,c,target,'toPantryHome',ctx);}else{delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);}return;
+  if(amount>1e-8){c.pantryFood=takeStock(s,c.store,'food',amount,{fishTo:c,fishKey:'fishPantry'});startTrip(s,c,target,'toPantryHome',ctx);}else{delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);}return;
  }
  if(c.phase==='toPantryHome'){
-  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);}else putStock(s,c.store,'food',amount,{overflow:true});
+  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
+   if(c.fishPantry)recordHomeFish(s,b,takeFishEvidence(c,'fishPantry',amount,amount));
+  }else{
+   const accepted=putStock(s,c.store,'food',amount,{overflow:true}),store=ctx.buildings.get(c.store);
+   if(c.fishPantry)appendFish(store,'fishStock',takeFishEvidence(c,'fishPantry',accepted,amount),(store?.stock?.food||0)-accepted);
+  }
+  delete c.fishPantry;
   delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;if(target!==c.home)startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);else c.phase=hasCargo(c)?'resting':'home';return;
  }
  if(c.phase==='toSaleSupply'){
@@ -766,7 +786,12 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  // operational yard is reachable. Never clear a load without an accepted unit.
  if(needsHolder&&!recovery)return false;
  discardFishingCargo(s,c);delete c.fieldGrain;
- const restore=(k,n)=>{if(!(n>0))return 0;const accepted=putRecoveryStock(s,recovery,k,n);if(accepted!==n)throw new Error('Recovery holder refused owned cargo');return accepted;};
+ const restore=(k,n,fishKey)=>{if(!(n>0))return 0;const accepted=putRecoveryStock(s,recovery,k,n);if(accepted!==n)throw new Error('Recovery holder refused owned cargo');
+  if(fishKey&&c[fishKey]){
+   const holder=s.buildings.find(b=>buildingKey(b)===recovery);
+   appendFish(holder,'fishStock',takeFishEvidence(c,fishKey,n,n),holder.stock.food-accepted);
+  }
+  return accepted;};
  recoverFestivalCitizen(s,id);
  for(const [k,n]of Object.entries(c.buildCargo||{}))if(site){site.remaining[k]=(site.remaining[k]||0)+n;if(site.sources)(site.sources[c.store]??={})[k]=(site.sources[c.store]?.[k]||0)+n;}else restore(k,n);
  if(c.waterTrip)recoverWater(s,c);
@@ -774,7 +799,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
   if(purchase&&k===purchase.resource)purchase.remaining+=n;
   else if(sale&&k===sale.resource){sale.remaining+=n;if(sale.sources)(sale.sources[c.store]??={})[k]=(sale.sources[c.store]?.[k]||0)+n;}
   else if(district?.targetKind==='votive'&&k===district.resource)district.remaining+=n;
-  else if(MATERIALS.includes(k)){const accepted=restore(k,n);if(district)district.cancelled+=accepted;}
+  else if(MATERIALS.includes(k)){const accepted=restore(k,n,k==='food'?'fishCargo':null);if(district)district.cancelled+=accepted;}
   else s.resources[k]=(s.resources[k]||0)+n;
  }
  c.cargo={};c.buildCargo={};
@@ -783,7 +808,8 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  const hadCraft=!!c.craftSite||c.clothingTarget!==undefined;
  if(c.clothingLoad)restore('clothing',c.clothingLoad);
  if(c.seedFood)restore('food',c.seedFood);
- if(c.pantryFood)restore('food',c.pantryFood);
+ if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
+ delete c.fishCargo;delete c.fishPantry;
  delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;

@@ -1,3 +1,4 @@
+import {newRichCatchEvidence} from './fish-provenance.js';
 import {newEarthDiscovery} from './field-grain.js';
 import {newPeaceDiscovery} from './peace-discovery.js';
 import {newBlessingDiscovery} from './blessing-discovery.js';
@@ -17,6 +18,7 @@ export function createNewCity({mode,seed}={}){
   state.blessingDiscovery=newBlessingDiscovery();
   state.peaceDiscovery=newPeaceDiscovery();
   state.earthDiscovery=newEarthDiscovery();
+  state.richCatchEvidence=newRichCatchEvidence();
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
