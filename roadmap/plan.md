@@ -692,7 +692,7 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GAMEPLAY_IDEAS_20
 
 ## people-games-leisure | Полноценный взрослый отдых и игры
 group: people
-status: planned
+status: partial
 priority: P2
 depends: -
 sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GAMEPLAY_IDEAS_2026-10-26.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
@@ -701,10 +701,10 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GAMEPLAY_IDEAS_20
 Предложение игры взрослых и новых встреч; музыка и детские игрушки уже существуют.
 
 ### Что уже есть
-Детские доски/игрушки и музыкальный двор готовы.
+Детские игры и музыкальный двор готовы. Локально взрослые играют вдвоём после ужина, запись видна в карточке семьи.
 
 ### Следующий шаг
-Выбрать одно занятие с небольшим расходом времени.
+Подтвердить публикацию. Затем развить встречи между дворами.
 
 ### Готово когда
 Не вытесняет последний ужин/работу в кризисе; имеет реальную социальную роль.

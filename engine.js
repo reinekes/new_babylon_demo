@@ -1,3 +1,4 @@
+import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
 import {validateHouseholdInitiatives} from './household-initiative.js';
 import {validateHumanProjects} from './human-projects.js';
@@ -433,7 +434,7 @@ export function decode(raw){
   if(oldCalling)for(const c of s.citizens){const role=c.pendingRole||c.role;if(role&&role!=='auto')c.calling??=role;}
   if(oldEducation)for(const c of s.citizens)if(buildings.get(c.work)?.type==='healer'){c.role='healer';if(!c.pendingRole)c.calling='healer';c.medicine=newMedicalSkill(s.year,1);}
   if(!validateManualGathering(s))return null;
-  if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateCommonMeals(s)||!validateFamilyCare(s)||!validateWellbeing(s))return null;
+  if(!validateEducation(s)||!validateDemography(s)||!validateHouseholds(s)||!validateCommonMeals(s)||!validateFamilyCare(s)||!validateWellbeing(s)||!validateEveningGames(s))return null;
   if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
   if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateCrops(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});

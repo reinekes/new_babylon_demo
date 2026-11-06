@@ -1,3 +1,4 @@
+import {advanceEveningGame} from './household-games.js';
 import {tellWaterStoryAtDinner} from './life-analytics.js';
 import {knowsPresence} from './godhood.js';
 import {ration,supplyHome} from './households.js';
@@ -32,6 +33,7 @@ export function advanceWellbeing(s,dt){
     tellWaterStoryAtDinner(s,family.filter((_,i)=>requests[i]*share>1e-9),storyRecords);
    }
   }
+  for(const b of s.buildings)advanceEveningGame(s,b,families.get(`${b.x},${b.y}`));
  }else for(const c of s.citizens){if(c.mealDay!==day||c.mealEvaluated>=day)continue;const quality=Math.min(1,c.mealEaten/mealRation(c)),fed=quality>=.95;c.lastMealQuality=quality;c.mealEvaluated=day;c.missedMeals=fed?0:c.missedMeals+1;c.hunger=clamp(fed?c.hunger-20:Math.max(c.hunger+20*(1-quality),(1-quality)*100));c.health=clamp(c.health+5*quality-28*(1-quality)-c.hunger*.04);c.mood=clamp(c.mood+(fed?3+(c.familyMeal?2:0)+Math.min(4,gardenJoy*.25):-12*(1-quality)));c.faith=clamp(c.faith+(fed?1:-8*(1-quality)));const prayer=knowsPresence(s,c)?c.faith/100*.15:0;s.resources.faith+=prayer;c.prayerTotal+=prayer;}
 }
 export function validateWellbeing(s){const pct=n=>Number.isFinite(n)&&n>=0&&n<=100,int=n=>Number.isSafeInteger(n)&&n>=-1&&n<=1e9;return s.citizens.every(c=>['hunger','health','mood','faith'].every(k=>pct(c[k]))&&int(c.mealDay)&&c.mealDay<=mealCycle(s.simTime)&&int(c.mealEvaluated)&&c.mealEvaluated<=c.mealDay&&Number.isFinite(c.mealEaten)&&c.mealEaten>=0&&c.mealEaten<=mealRation(c)+1e-7&&Number.isInteger(c.missedMeals)&&c.missedMeals>=0&&c.missedMeals<=1e6&&Number.isFinite(c.lastMealQuality)&&c.lastMealQuality>=0&&c.lastMealQuality<=1&&typeof c.familyMeal==='boolean'&&Number.isFinite(c.diningUntil)&&c.diningUntil>=0&&c.diningUntil<=s.simTime+2.1&&Number.isFinite(c.prayerTotal)&&c.prayerTotal>=0&&c.prayerTotal<=1e9);}
