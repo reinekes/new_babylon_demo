@@ -214,8 +214,12 @@ function windDeliveryHTML(s){
 function shapingProjectsHTML(s){
  const view=shapingProjectView(s);
  if(!view)return '';
+ const model=s.shapingModel;
+ const modelStatus=model?.completedAt!==undefined?`Макет готов · ${escape(buildingDefinition(s,model.type).name)}. Дар открыт.`:
+  model?`Макет в работе · ${Math.floor(model.work/6*100)}%. Потрачено 2 глины${model.reed?' и 1 тростник':''}.`:
+  'После пяти построек и открытия «Рук творца» мастер возьмёт 2 глины из доступного запаса. Если мастер умер, двое жителей добавят 1 тростник.';
  const master=view.masterId==null?'':` · ${escape(displayName(s,view.masterId)||`житель №${view.masterId+1}`)}`;
- return `<section class="management-row" data-shaping-projects><h3>Постройки для «Повеления глине»</h3><p>${Math.min(view.count,view.required)} из ${view.required} в деле${master}.</p><p>Кирпичный двор · ${view.brickyard?'в деле':'ожидается'}. Общественная постройка · ${view.publicService?'в деле':'ожидается'}.</p></section>`;
+ return `<section class="management-row" data-shaping-projects><h3>Постройки для «Повеления глине»</h3><p>${Math.min(view.count,view.required)} из ${view.required} в деле${master}.</p><p>Кирпичный двор · ${view.brickyard?'в деле':'ожидается'}. Общественная постройка · ${view.publicService?'в деле':'ожидается'}.</p><p>${modelStatus}</p></section>`;
 }
 
 function creatorMaterialsHTML(s){

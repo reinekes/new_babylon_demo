@@ -18,11 +18,12 @@ export function recordShapingUse(s,b){
  q.used.push({...project,type:b.type,x:b.x,y:b.y,time:s.simTime});
 }
 
-export function shapingProjectView(s){
+export function shapingProjectView(s,masterId){
  const q=s.shapingProjects;
  if(!q)return null;
  const builders=new Map();
  for(const row of q.used)for(const id of row.builders){
+  if(masterId!==undefined&&masterId!==id)continue;
   const entry=builders.get(id)||{masterId:id,count:0,brickyard:false,publicService:false};
   entry.count++;
   entry.brickyard||=row.type==='brickyard';

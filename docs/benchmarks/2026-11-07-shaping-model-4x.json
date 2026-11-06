@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 133,
+  "citizens": 289,
+  "controlledPrerequisites": true,
+  "masterId": 1,
+  "claySpentOnModel": 2,
+  "netClayChange": -2,
+  "byteEqualPartialAndCompleted": true,
+  "samples": 48,
+  "medianCpuMs": 3.1655000000000086,
+  "p95CpuMs": 9.742874999999998
+}
