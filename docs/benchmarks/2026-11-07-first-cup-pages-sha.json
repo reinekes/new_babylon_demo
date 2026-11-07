@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-07T13:42:54.031455+00:00",
+  "commit": "e312d56684e673f0377751276efc57d68bcf3d3c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a2b8fb8e4908fbd70918c5c183ea7bc18c355ab934a80d58f4f8ff5f5eb7b91c",
+      "actual": "a2b8fb8e4908fbd70918c5c183ea7bc18c355ab934a80d58f4f8ff5f5eb7b91c",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "37ec804018175e00c2f153c7299871330e19b080a6d00a6cc5289d7aaf894429",
+      "actual": "37ec804018175e00c2f153c7299871330e19b080a6d00a6cc5289d7aaf894429",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "ff752d1a388783f4acbc97db99abf1f58c1f4be3325ed52b75528d4d45c27b99",
+      "actual": "ff752d1a388783f4acbc97db99abf1f58c1f4be3325ed52b75528d4d45c27b99",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-first-cup-4x.json",
+      "status": 200,
+      "expected": "a9a20cd6c019f047afe36e675e85777410ddcefd70e0dd33ad67bf70ace29be8",
+      "actual": "a9a20cd6c019f047afe36e675e85777410ddcefd70e0dd33ad67bf70ace29be8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-first-cup-browser.json",
+      "status": 200,
+      "expected": "8e9fb308f66412524e54433709851c07deaaa79b406d16f1959e0df49b19a9dd",
+      "actual": "8e9fb308f66412524e54433709851c07deaaa79b406d16f1959e0df49b19a9dd",
+      "match": true
+    },
+    {
+      "path": "festival.js",
+      "status": 200,
+      "expected": "06e19dfb628c4d07341d6e338448441009b58274994242ed96e4b5cf59e9d71e",
+      "actual": "06e19dfb628c4d07341d6e338448441009b58274994242ed96e4b5cf59e9d71e",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "5f1d3995640133fa16203720743ae0014e74c735fdee4fa904e8ec3d8f442bdc",
+      "actual": "5f1d3995640133fa16203720743ae0014e74c735fdee4fa904e8ec3d8f442bdc",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "da808e05df1f17e4fc08068a0a86ed5026c656332bc6edd2649195d977127e74",
+      "actual": "da808e05df1f17e4fc08068a0a86ed5026c656332bc6edd2649195d977127e74",
+      "match": true
+    },
+    {
+      "path": "tests/festival-court.test.js",
+      "status": 200,
+      "expected": "da4632dde56a3620943c5eac75832b56957ac01a743fa3c7fcba23ae6d59ab79",
+      "actual": "da4632dde56a3620943c5eac75832b56957ac01a743fa3c7fcba23ae6d59ab79",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
