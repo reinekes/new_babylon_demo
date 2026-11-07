@@ -90,8 +90,10 @@ test('a high-risk firing stops at a local fire until neighbors contribute reacha
   if(!carrier.waterTrip)assert.ok(origin.water-water>1.9);
  }
  assert.equal(carrier.waterTrip,undefined);
+ assert.equal(cancelled.news.some(n=>n.title.includes('принёс воду к печи')),false);
  for(let i=0;i<120&&kiln.kilnFire;i++)advanceWater(s,.1);
  assert.equal(kiln.kilnFire,undefined);
+ assert.equal(s.news.filter(n=>n.title.includes('принёс воду к печи')).length,1);
  advanceKilns(s,28);
  assert.equal(collectFired(kiln),4);
 });

@@ -1,0 +1,24 @@
+{
+  "shelter": {
+    "buildings": 129,
+    "population": 200,
+    "evacuated": 8,
+    "speed": 4,
+    "steps": 204,
+    "medianCpuMs": 2.0538329999999974,
+    "p95CpuMs": 5.296249999999986,
+    "reloadByteIdentical": true,
+    "returnedAfterReopen": true
+  },
+  "water": {
+    "buildings": 129,
+    "population": 200,
+    "speed": 4,
+    "steps": 18,
+    "medianCpuMs": 1.4544580000000167,
+    "p95CpuMs": 30.256917,
+    "delivered": 2,
+    "returnedOnCancellation": 2,
+    "reloadByteIdentical": true
+  }
+}

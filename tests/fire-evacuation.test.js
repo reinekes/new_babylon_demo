@@ -25,10 +25,17 @@ test('a neighboring family walks to temporary shelter, then returns without chan
  family[0].cargo={};
  assert.ok(evacuateFireHome(s,kiln,source).ok);
  assert.ok(family.every(c=>supplyHome(c,{arrived:true})===null));
+ assert.equal(s.news.filter(n=>n.title.includes('принял семью')).length,0);
  const raw=encode(s);s=decode(raw);assert.equal(encode(s),raw);
  const people=()=>s.citizens.filter(c=>ids.includes(c.id));
  for(let i=0;i<100&&!people().every(c=>supplyHome(c,{arrived:true})===host);i++){s.event=null;advanceTime(s,.1);}
  assert.ok(people().every(c=>supplyHome(c,{arrived:true})===host));
+ const entries=()=>s.news.filter(n=>n.title.includes('принял семью'));
+ assert.equal(entries().length,1);
+ assert.match(entries()[0].text,/9,9/);
+ s=decode(encode(s));
+ advanceTime(s,.5);
+ assert.equal(entries().length,1);
  assert.ok(setKilnBanked(s,s.buildings.find(b=>b.type==='kiln'),true).ok);
  for(let i=0;i<100&&people().some(c=>c.fireShelter);i++){s.event=null;advanceTime(s,.1);}
  assert.ok(people().every(c=>!c.fireShelter&&c.home===source));

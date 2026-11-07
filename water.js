@@ -1,3 +1,4 @@
+import {log} from './engine.js';
 import {recordDepthSupply} from './depth-supply.js';
 import {recordCreatorUse} from './creator-materials.js';
 import {recordNeighborWaterFact} from './causal-facts.js';
@@ -10,7 +11,7 @@ import {cachedStreetsFor} from './workforce.js';
 import {recordCitizenDelivery} from './citizen-epithets.js';
 import {dairyNeeds} from './dairy.js';
 import {isArtisan,artisanNeeds} from './artisan.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {buildingKey,citizenName,isOperational} from './definitions.js';
 import {isDryPoint,signedRiverDistance,worldWidth,worldHeight} from './world.js';
 import {generateStreets} from './city-life.js';
 
@@ -197,11 +198,14 @@ function advanceTrip(s,c,dt,nav){
   if(t.phase==='deliver'){
    if(t.fire){
     if(t.load>eps&&b.kilnFire){
-     b.kilnFireWater=(b.kilnFireWater||0)+t.load;
+     const amount=t.load;
+     b.kilnFireWater=(b.kilnFireWater||0)+amount;
      t.load=0;
-     if(b.kilnFireWater+eps>=2){
+     const extinguished=b.kilnFireWater+eps>=2;
+     if(extinguished){
       delete b.kilnFire;delete b.kilnFireElapsed;delete b.kilnFireWater;
      }
+     log(s,`${citizenName(c.id)} принёс воду к печи`,`Из двора ${t.origin} к печи ${t.target} · ${Math.round(amount*100)/100} воды. ${extinguished?'Очаг потушен.':'Ждут остальную воду.'}`,'good');
     }
     const route=roadRoute(nav,t.target,t.origin);
     if(!route)return;

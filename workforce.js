@@ -1,3 +1,4 @@
+import {log} from './engine.js';
 import {peaceResting} from './peace-discovery.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {advanceArrivalGroup,arrivalHousing,createArrivalFamily} from './arrival-hospitality.js';
@@ -605,6 +606,7 @@ function advanceFireShelter(s,c,dt,ctx){
   if(!c.route.length){c.route=route;c.routeIndex=routeIndex;return true;}
   if(goingHome)shelter.returning=true;
  }
+ const wasWalking=c.routeIndex<c.route.length;
  let travel=dt*1.05;
  while(travel>1e-8&&c.routeIndex<c.route.length){
   const next=c.route[c.routeIndex],length=distance(c,next),flooded=ctx.network.navigation.flooded;
@@ -614,8 +616,17 @@ function advanceFireShelter(s,c,dt,ctx){
   if(length<=travel){c.x=next.x;c.y=next.y;c.routeIndex++;travel-=length;}
   else{c.x+=(next.x-c.x)*travel/length;c.y+=(next.y-c.y)*travel/length;break;}
  }
- if(shelter.returning&&c.routeIndex>=c.route.length){
-  delete c.fireShelter;c.phase='home';c.route=[];c.routeIndex=0;ctx.foodCitizens=null;invalidateAssignments(s);
+ if(c.routeIndex>=c.route.length){
+  if(shelter.returning){
+   delete c.fireShelter;c.phase='home';c.route=[];c.routeIndex=0;ctx.foodCitizens=null;invalidateAssignments(s);
+  }else if(wasWalking){
+   const family=s.citizens.filter(p=>p.home===c.home&&p.fireShelter?.host===shelter.host&&p.fireShelter.kiln===shelter.kiln);
+   if(family.every(p=>supplyHome(p,{arrived:true})===shelter.host)){
+    const host=s.citizens.find(p=>p.home===shelter.host&&p.age>=16&&!p.fireShelter&&!p.floodShelter&&['home','resting'].includes(p.phase));
+    const title=host?`${citizenName(host.id)} принял семью из двора ${c.home}`:`Двор ${shelter.host} принял семью из двора ${c.home}`;
+    log(s,title,`Жильцы двора ${c.home} дошли до укрытия в доме ${shelter.host} · ${family.length} чел.`,'good');
+   }
+  }
  }
  return true;
 }
