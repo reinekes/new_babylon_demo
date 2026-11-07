@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T21:45:27.955429+00:00",
+  "commit": "10227994d7d3c5bdc88d3e618db0df9cae063f0d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f25098ba608b921a30c6cb42163f4607d530f0c638cee84c9efb0c9d49384edb",
+      "actual": "f25098ba608b921a30c6cb42163f4607d530f0c638cee84c9efb0c9d49384edb",
+      "match": true
+    },
+    {
+      "path": "docs/NEW_PLAYER_PLAYTEST.md",
+      "status": 200,
+      "expected": "d84855667149273ba99b3be964698d4c7121b0d6e65a8202efdbc161ae136064",
+      "actual": "d84855667149273ba99b3be964698d4c7121b0d6e65a8202efdbc161ae136064",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-playtest-saves-browser.json",
+      "status": 200,
+      "expected": "e64b2e3ce3f3029e40a88a101e476efbcc297e5243702d9306c2efa61fb500c6",
+      "actual": "e64b2e3ce3f3029e40a88a101e476efbcc297e5243702d9306c2efa61fb500c6",
+      "match": true
+    },
+    {
+      "path": "docs/playtest/before-last-witness.json",
+      "status": 200,
+      "expected": "e15993b05f32d342b9159d5588a77cbefee6c3c2cdad41123b34174115ed8d7e",
+      "actual": "e15993b05f32d342b9159d5588a77cbefee6c3c2cdad41123b34174115ed8d7e",
+      "match": true
+    },
+    {
+      "path": "docs/playtest/family-before-adulthood.json",
+      "status": 200,
+      "expected": "348aa5e3aff45079514bea33013e318ecec9634bab70b7ad03321d74da8ee310",
+      "actual": "348aa5e3aff45079514bea33013e318ecec9634bab70b7ad03321d74da8ee310",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "00e2f956f1ec47ce5aa792bdef3aa65939f61f9c971bdc6647d7b11caf911215",
+      "actual": "00e2f956f1ec47ce5aa792bdef3aa65939f61f9c971bdc6647d7b11caf911215",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "8a9571547c5cb030e2a611a2afc562bd07d86fb4e54bfa3b89b5c3dd2bb4f18b",
+      "actual": "8a9571547c5cb030e2a611a2afc562bd07d86fb4e54bfa3b89b5c3dd2bb4f18b",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "ae39697fc56f4452ef95b9033a9163f5ca289f63b7ab42c7615439655d81dd52",
+      "actual": "ae39697fc56f4452ef95b9033a9163f5ca289f63b7ab42c7615439655d81dd52",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
