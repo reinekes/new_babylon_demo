@@ -117,7 +117,7 @@ export function floodStorageRisk(state,footprint){
  return state.buildings.filter(b=>['granary','depot'].includes(b.type)&&isOperational(b)&&b.stock?.food>0&&footprint.has(tileKey(b.x,b.y)))
   .map(building=>{
    const {jars,covered}=storageJarCover(building);
-   return {building,key:tileKey(building.x,building.y),jars,covered,loss:(building.stock.food-covered)/4};
+   return {building,key:tileKey(building.x,building.y),jars,covered,loss:(building.stock.food-covered)/(building.joineryLevels?.length?8:4)};
   });
 }
 

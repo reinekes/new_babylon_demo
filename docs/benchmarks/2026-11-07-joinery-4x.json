@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "stages": [
+    "idle",
+    "cuttingJoinery"
+  ],
+  "received": 1,
+  "boatCompleted": true,
+  "steps": 1400,
+  "medianCPUms": 2.2879579999998896,
+  "p95CPUms": 8.653874999999971,
+  "exactSave": true
+}

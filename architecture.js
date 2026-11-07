@@ -118,10 +118,11 @@ export function drawBuilding(r, b, state, t) {
     poly([[7,-18],[17,-23],[17,-10],[7,-5]],'#e0cf9e');
     line([[7,-8],[17,-13]],'#a9825d',1);pot(-22,3,.8);
   }
-  if(['basketry','matYard'].includes(b.type)){
+  if(['basketry','matYard','joineryYard'].includes(b.type)){
     box(-7,-3,18,9,22,'#e2cda1','#b6986b','#cfb484');
     box(11,5,12,5,3,'#c3ab77','#a08758','#b89a65');
-    if(b.type==='matYard')box(12,3,12,4,1.5,'#dfc58c','#ab915d','#c4a873');
+    if(b.type==='joineryYard')for(let i=0;i<4;i++)box(10+i*1.5,6-i,10,2,1.5,'#ad8961','#806348','#9d7c58');
+    else if(b.type==='matYard')box(12,3,12,4,1.5,'#dfc58c','#ab915d','#c4a873');
     else for(const x of [2,11,20]){box(x,3,4,2.8,5,'#ba9d62','#947541','#a68850');line([[x-3,1],[x+3,1]],'#deca97',.8);}
   }
   if(['weaver','linenYard'].includes(b.type)) {

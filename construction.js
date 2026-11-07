@@ -5,6 +5,7 @@ import {startManagedDairy} from './dairy.js';
 import {startManagedFlock} from './textiles.js';
 import {buildingDefinition} from './building-presentation.js';
 import {recordBuilderCompletion} from './godhood.js';
+import {upgradeCost} from './masonry.js';
 import {housingOf,MATERIALS,isOperational} from './definitions.js';
 import {stampBuildingCompletion} from './building-chronology.js';
 import {initializeProductionAccounting} from './building-production-history.js';
@@ -14,8 +15,16 @@ export const isComplete=isOperational;
 export const floodRepairCost=b=>b.type==='road'?{clay:2,reed:1}:{clay:4,reed:2};
 export const boatRepairCost={wood:4,reed:3};
 export const boatTenderCost={wood:8,reed:6};
+export const joineryBoatCost=kind=>kind==='boat'?{joinery:2,reed:6}:{joinery:1,reed:3};
+export const joineryUpgradeTypes=['granary','depot','shrine','ziggurat'];
+export const joineryUpgradeCost=b=>({...upgradeCost(b),joinery:2});
 export const constructionEntities=s=>[...s.buildings,...s.roads||[]];
-export const workRequired=b=>b.construction.kind==='boat'?12:b.construction.kind==='repair'?(b.type==='road'?6:8):(b.type==='road'?6:12)*b.construction.target;
+export function workRequired(b){
+ const q=b.construction;
+ if(q.kind==='boat')return q.joinery?8:12;
+ if(q.kind==='repair')return q.joinery?5:b.type==='road'?6:8;
+ return (q.joinery?9:b.type==='road'?6:12)*q.target;
+}
 export const createOrder=(cost,target=1,kind='new')=>({kind,target,priority:1,required:Object.fromEntries(MATERIALS.map(k=>[k,cost[k]||0])),remaining:Object.fromEntries(MATERIALS.map(k=>[k,cost[k]||0])),delivered:Object.fromEntries(MATERIALS.map(k=>[k,0])),work:0});
 export const materialsReady=q=>Object.keys(q.required).every(k=>(q.delivered[k]||0)>=q.required[k]);
 export function constructionProgress(b){
@@ -36,6 +45,7 @@ export function finishConstruction(s){
    if(b.type==='cowshed'&&isStrictSumer(s))startManagedDairy(b);
   }
   if(q.kind==='boat')b.boatTender=true;
+  if(q.kind==='upgrade'&&q.joinery)(b.joineryLevels??=[]).push(q.target);
   if(q.kind==='repair'){
    if(b.type==='harbor')delete b.boatWear;else delete b.floodDamage;
   }

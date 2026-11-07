@@ -11,11 +11,12 @@ export const POTTERY_RECIPE=Object.freeze({clay:4,reed:2,water:2});
 export const BEER_RECIPE=Object.freeze({food:4,water:3,pottery:1});
 export const BREAD_RECIPE=Object.freeze({food:4,water:2,reed:2});
 const DAIRY_STORE_RECIPE=Object.freeze({milk:6,pottery:1});
+const JOINERY_RECIPE=Object.freeze({timber:2});
 const AXE_RECIPE=Object.freeze({copper:2,reed:2});
 const MAT_RECIPE=Object.freeze({reed:5});
 const BASKET_RECIPE=Object.freeze({reed:4});
 const LINEN_RECIPE=Object.freeze({flax:3,water:2});
-export const isArtisan=b=>['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith'].includes(b?.type);
+export const isArtisan=b=>['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard'].includes(b?.type);
 export const COPPER_PRODUCTS=['axe','blade','chisel'];
 export const artisanOutput=b=>b?.type==='coppersmith'?b.toolProduct||'axe':Object.keys(BUILDINGS[b?.type]?.output||{})[0];
 export function setCopperProduct(s,b,product){
@@ -26,18 +27,18 @@ export function setCopperProduct(s,b,product){
  if(product==='axe')delete b.toolProduct;else b.toolProduct=product;
  return {ok:true};
 }
-export const artisanRecipe=b=>b?.type==='pottery'?POTTERY_RECIPE:b?.type==='bakery'?BREAD_RECIPE:b?.type==='linenYard'?LINEN_RECIPE:b?.type==='dairyStore'?DAIRY_STORE_RECIPE:b?.type==='basketry'?BASKET_RECIPE:b?.type==='matYard'?MAT_RECIPE:b?.type==='coppersmith'?AXE_RECIPE:BEER_RECIPE;
+export const artisanRecipe=b=>b?.type==='pottery'?POTTERY_RECIPE:b?.type==='bakery'?BREAD_RECIPE:b?.type==='linenYard'?LINEN_RECIPE:b?.type==='dairyStore'?DAIRY_STORE_RECIPE:b?.type==='basketry'?BASKET_RECIPE:b?.type==='matYard'?MAT_RECIPE:b?.type==='coppersmith'?AXE_RECIPE:b?.type==='joineryYard'?JOINERY_RECIPE:BEER_RECIPE;
 const fields=['clay','reed','water','food','pottery','vesselUses','stage','elapsed','ready'];
-const extraInput={linenYard:'flax',dairyStore:'milk',coppersmith:'copper'};
-const durations={forming:5,drying:12,firing:12,cooling:6,brewing:15,milling:6,baking:9,preparingFiber:8,weavingLinen:10,preservingMilk:12,weavingBasket:10,weavingMat:12,castingAxe:14};
+const extraInput={linenYard:'flax',dairyStore:'milk',coppersmith:'copper',joineryYard:'timber'};
+const durations={forming:5,drying:12,firing:12,cooling:6,brewing:15,milling:6,baking:9,preparingFiber:8,weavingLinen:10,preservingMilk:12,weavingBasket:10,weavingMat:12,castingAxe:14,cuttingJoinery:12};
 const empty=()=>({clay:0,reed:0,water:0,food:0,pottery:0,vesselUses:0,stage:'idle',elapsed:0,ready:0});
 function valid(b){
  const extra=extraInput[b?.type],keys=extra?[...fields,extra]:fields;
  const v=b?.artisan;if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).length!==keys.length||keys.some(k=>!Object.hasOwn(v,k)))return false;
  if(keys.filter(k=>k!=='stage').some(k=>!Number.isFinite(v[k])||v[k]<0))return false;
- const pottery=b.type==='pottery',recipe=artisanRecipe(b),stages=pottery?['idle','forming','drying','firing','cooling','ready']:b.type==='bakery'?['idle','milling','baking','ready']:b.type==='linenYard'?['idle','preparingFiber','weavingLinen','ready']:b.type==='dairyStore'?['idle','preservingMilk','ready']:b.type==='basketry'?['idle','weavingBasket','ready']:b.type==='matYard'?['idle','weavingMat','ready']:b.type==='coppersmith'?['idle','castingAxe','ready']:['idle','brewing','ready'];
+ const pottery=b.type==='pottery',recipe=artisanRecipe(b),stages=pottery?['idle','forming','drying','firing','cooling','ready']:b.type==='bakery'?['idle','milling','baking','ready']:b.type==='linenYard'?['idle','preparingFiber','weavingLinen','ready']:b.type==='dairyStore'?['idle','preservingMilk','ready']:b.type==='basketry'?['idle','weavingBasket','ready']:b.type==='matYard'?['idle','weavingMat','ready']:b.type==='coppersmith'?['idle','castingAxe','ready']:b.type==='joineryYard'?['idle','cuttingJoinery','ready']:['idle','brewing','ready'];
  if(!stages.includes(v.stage)||!Number.isInteger(v.vesselUses)||v.vesselUses>3||b.type!=='brewery'&&v.vesselUses!==0)return false;
- for(const k of ['clay','reed','water','food','pottery','flax','milk','copper'])if(Object.hasOwn(v,k)&&(v[k]>(recipe[k]||0)||v.stage!=='idle'&&v[k]!==0))return false;
+ for(const k of ['clay','reed','water','food','pottery','flax','milk','copper','timber'])if(Object.hasOwn(v,k)&&(v[k]>(recipe[k]||0)||v.stage!=='idle'&&v[k]!==0))return false;
  if(v.pottery&&v.vesselUses)return false;
  if(v.stage==='ready')return v.ready===BUILDINGS[b.type].output[artisanOutput(b)]&&v.elapsed===0;
  if(v.ready!==0)return false;
@@ -57,6 +58,7 @@ export function workArtisan(b,seconds,s=null){
   // tolerance as the needs check while keeping the consumed buffers canonical.
   const consume=(k,n)=>{v[k]=Math.max(0,v[k]-n);};
   if(b.type==='pottery'){consume('clay',4);consume('reed',2);consume('water',2);v.stage='forming';}
+  else if(b.type==='joineryYard'){consume('timber',JOINERY_RECIPE.timber);v.stage='cuttingJoinery';}
   else if(b.type==='coppersmith'){for(const [k,n]of Object.entries(AXE_RECIPE))consume(k,n);v.stage='castingAxe';}
   else if(b.type==='matYard'){consume('reed',MAT_RECIPE.reed);v.stage='weavingMat';}
   else if(b.type==='basketry'){consume('reed',BASKET_RECIPE.reed);v.stage='weavingBasket';}
@@ -65,7 +67,7 @@ export function workArtisan(b,seconds,s=null){
   else if(b.type==='bakery'){if(b.giftInput)takeGiftFood(b,'giftInput',4,v.food);for(const [k,n]of Object.entries(BREAD_RECIPE))consume(k,n);v.stage='milling';}
   else{if(b.giftInput)takeGiftFood(b,'giftInput',4,v.food);consume('food',4);consume('water',3);if(!v.vesselUses){consume('pottery',1);v.vesselUses=4;}v.vesselUses--;v.stage='brewing';}
  }
- if(!['forming','brewing','milling','baking','preparingFiber','weavingLinen','preservingMilk','weavingBasket','weavingMat','castingAxe'].includes(v.stage))return;
+ if(!['forming','brewing','milling','baking','preparingFiber','weavingLinen','preservingMilk','weavingBasket','weavingMat','castingAxe','cuttingJoinery'].includes(v.stage))return;
  v.elapsed+=seconds*outputMultiplier(b);
  if(v.stage==='milling'&&v.elapsed>=durations.milling){v.elapsed-=durations.milling;v.stage='baking';}
  if(v.stage==='preparingFiber'&&v.elapsed>=durations.preparingFiber){v.elapsed-=durations.preparingFiber;v.stage='weavingLinen';}

@@ -96,13 +96,13 @@ import {initializeDemography,advanceGenerations,validateDemography} from './demo
 import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
 import {marketAccess,initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {roadUpgradeCost,roadKey} from './roads.js';
-import {createOrder,isComplete,nextOrder,constructionEntities,workRequired,floodRepairCost,boatRepairCost,boatTenderCost} from './construction.js';
+import {createOrder,isComplete,nextOrder,constructionEntities,workRequired,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
 import {WIDTH,HEIGHT,worldWidth,worldHeight,bridgeSpanAt,riverLocal,signedRiverDistance,terrain,river,bridgeSpan,initializeWorld,initializeGeneratedWorld,nearDeposit,isShore,validateWorld,isDryPoint,ensureResourceSites} from './world.js';
 import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf,citizenName,isCityFortification} from './definitions.js';
 import {networkFor,syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle,refreshResultName,usesResultNames} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=35;
+export const VERSION=36;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
 const emptyCooldowns=()=>Object.fromEntries(Object.keys(MIRACLES).filter(k=>k!=='richCatch').map(k=>[k,0]));
@@ -156,33 +156,33 @@ export function canBuild(s,type,x,y,placementOnly=false,rotation=0,{householdIni
 export const canPlace=(s,type,x,y,rotation=0)=>canBuild(s,type,x,y,true,rotation);
 export function build(s,type,x,y,rotation=0,{eligibleStores,humanWaterProject,householdInitiative}={}){const reason=canBuild(s,type,x,y,false,rotation,{householdInitiative});if(reason)return {ok:false,reason};const creatorAllocations={};const sources=reserveStock(s,BUILDINGS[type],{eligibleStores,creatorAllocations});if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,rotation,...humanWaterProject?{humanWaterProject}:{},...householdInitiative?{starterHut:true,householdInitiative}:{},...(newFootprint(type)>1?{footprint:newFootprint(type)}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),...(Object.keys(creatorAllocations).length?{creatorAllocations}:{}),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${buildingDefinition(s,type).name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 
-export function canUpgrade(s,b){if(s.godhood?.namelessEndingAt!==undefined)return cityCommandReason(s);if(s.miracleCelebration)return miracleCelebrationReason(s);if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(isCityFortification(b.type)||['canal','levee'].includes(b.type))return 'У сооружения один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
-export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
+export function canUpgrade(s,b,{joinery=false}={}){if(s.godhood?.namelessEndingAt!==undefined)return cityCommandReason(s);if(s.miracleCelebration)return miracleCelebrationReason(s);if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(isCityFortification(b.type)||['canal','levee'].includes(b.type))return 'У сооружения один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';if(joinery&&(!isStrictSumer(s)||!joineryUpgradeTypes.includes(b.type)))return 'Готовые детали доступны для крупных построек Южного Шумера';const cost=joinery?joineryUpgradeCost(b):upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
+export function upgrade(s,x,y,{joinery=false}={}){const b=buildingAt(s,x,y),reason=canUpgrade(s,b,{joinery});if(reason)return {ok:false,reason};const cost=joinery?joineryUpgradeCost(b):upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),...joinery?{joinery:true}:{},sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function repairFloodDamage(s,b){
  if(!isStrictSumer(s)||!b?.floodDamage||!['house','road'].includes(b.type)||!constructionEntities(s).includes(b))return {ok:false,reason:'Выбери повреждённый дом или дорогу'};
  return orderSiteWork(s,b,'repair',floodRepairCost(b));
 }
-export function repairHarborBoat(s,b){
+export function repairHarborBoat(s,b,{joinery=false}={}){
  if(!isStrictSumer(s)||b?.type!=='harbor'||!b.boatWear||!s.buildings.includes(b))return {ok:false,reason:'Выбери пристань, где требуется обслуживание'};
- return orderHarborWork(s,b,'repair',boatRepairCost);
+ return orderHarborWork(s,b,'repair',joinery?joineryBoatCost('repair'):boatRepairCost,joinery);
 }
-export function buildHarborTender(s,b){
+export function buildHarborTender(s,b,{joinery=false}={}){
  if(!isStrictSumer(s)||b?.type!=='harbor'||!isComplete(b)||b.boatTender||!s.buildings.includes(b))return {ok:false,reason:'Нужна готовая пристань без перегрузочной лодки'};
- return orderHarborWork(s,b,'boat',boatTenderCost);
+ return orderHarborWork(s,b,'boat',joinery?joineryBoatCost('boat'):boatTenderCost,joinery);
 }
-function orderHarborWork(s,b,kind,cost){
+function orderHarborWork(s,b,kind,cost,joinery){
  const preview={...s,roads:[...s.roads]},access=marketAccess(preview,buildingKey(b),'harbor');
  if(!access)return {ok:false,reason:'Нужен проходимый путь от пристани к складу и жилому двору'};
  const network=networkFor(preview),group=network.components.get(access.p.key);
  const stores=new Set(network.ports.filter(p=>network.components.get(p.key)===group).map(p=>buildingKey(p.building)));
- return orderSiteWork(s,b,kind,cost,stores);
+ return orderSiteWork(s,b,kind,cost,stores,joinery);
 }
-function orderSiteWork(s,b,kind,cost,eligibleStores){
+function orderSiteWork(s,b,kind,cost,eligibleStores,joinery=false){
  if(s.miracleCelebration||relicControlActive(s)||s.event||s.lost||s.funeral&&s.funeral.scope!=='family')return {ok:false,reason:'Сначала заверши текущее событие'};
  if(b.construction)return {ok:false,reason:'Работы уже идут'};
  const sources=reserveStock(s,cost,{eligibleStores});
  if(!sources)return {ok:false,reason:'Не хватает материалов'};
- b.construction={...createOrder(cost,b.level,kind),sources,allocations:structuredClone(sources),order:nextOrder(s)};
+ b.construction={...createOrder(cost,b.level,kind),...joinery?{joinery:true}:{},sources,allocations:structuredClone(sources),order:nextOrder(s)};
  syncCitizens(s);
  return {ok:true};
 }
@@ -410,7 +410,7 @@ export function goals(s){
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);if(Array.isArray(s?.citizens)&&Array.isArray(s.lifeAnalytics?.people))syncLifeAnalytics(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28,oldFlax=s?.version<31,oldBaskets=s?.version<32,oldMats=s?.version<33,oldCopper=s?.version<34,oldToolTypes=s?.version<35;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28,oldFlax=s?.version<31,oldBaskets=s?.version<32,oldMats=s?.version<33,oldCopper=s?.version<34,oldToolTypes=s?.version<35,oldJoinery=s?.version<36;
   if(!s||!Number.isInteger(s.version)||s.version<1||s.version>VERSION)return null;
   // Enroll old cities before any older migration rewrites the save version.
   if(s.version<30)s.scenario=legacyScenario();
@@ -480,6 +480,10 @@ export function decode(raw){
    for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r){r.blade??=0;r.chisel??=0;}
    const c=s.trade?.caravan;if(c)for(const k of ['blade','chisel']){c.stock[k]??=0;c.prices[k]??={buy:36,sell:34};}
   }
+  if(oldJoinery){
+   for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r){r.timber??=0;r.joinery??=0;}
+   const c=s.trade?.caravan;if(c)for(const [k,sell]of [['timber',8],['joinery',24]]){c.stock[k]??=0;c.prices[k]??={buy:sell+2,sell};}
+  }
   if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s)||!validateFisheries(s))return null;
   if(s.world&&!validateWorld(s)||!validateMineralPits(s,'clay')||!validateMineralPits(s,'stone')||!validateForests(s)||!validateReedBeds(s))return null;
   if(oldEcology)initializeEcology(s,{legacy:true});
@@ -499,8 +503,9 @@ export function decode(raw){
   for(const b of s.buildings){
    const key=buildingKey(b),land=terrain(b.x,b.y,s);if(b.starterHut!==undefined&&(b.type!=='house'||b.starterHut!==true))return null;if(b.rotation!==undefined&&!validRotation(b.type,b.rotation))return null;if(b.footprint!==undefined&&(newFootprint(b.type)===1||b.footprint!==newFootprint(b.type)))return null;
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
-   if(['linenYard','dairyStore','basketry','matYard','coppersmith'].includes(b.type)&&!isStrictSumer(s))return null;
+   if(['linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard'].includes(b.type)&&!isStrictSumer(s))return null;
    if(isCityFortification(b.type)&&(!isStrictSumer(s)||b.level!==1||b.construction?.kind==='upgrade'||b.type==='cityGate'&&b.footprint!==2))return null;
+   if(b.joineryLevels!==undefined&&(!isStrictSumer(s)||!joineryUpgradeTypes.includes(b.type)||!Array.isArray(b.joineryLevels)||!b.joineryLevels.length||b.joineryLevels.some((v,i)=>!integer(v,2,b.level)||i>0&&v<=b.joineryLevels[i-1])))return null;
    if(b.legacyMasonryLevel!==undefined&&!integer(b.legacyMasonryLevel,1,b.level))return null;
    if(b.legacyFiringLevel!==undefined&&!integer(b.legacyFiringLevel,1,b.level))return null;
    if(b.type==='bridge'){if(land!=='water'||bridgeRows.has(riverLocal(b.x,b.y,s).along))return null;bridgeRows.add(riverLocal(b.x,b.y,s).along);}
@@ -567,12 +572,13 @@ export function decode(raw){
    if(b.floodDamage!==undefined&&(b.floodDamage!==true||!isStrictSumer(s)||!['road','house'].includes(b.type)||!isComplete(b)))return null;
    const q=b.construction;if(!q)continue;
    if(!validateRevelationTraining(s,b))return null;
+   if(q.joinery!==undefined&&(q.joinery!==true||!isStrictSumer(s)||q.kind==='upgrade'&&(!joineryUpgradeTypes.includes(b.type)||q.legacyMasonry||q.legacyFiring||q.legacyBricks||q.legacyPrice)||q.kind!=='upgrade'&&(!['boat','repair'].includes(q.kind)||b.type!=='harbor')))return null;
    if(q.kind==='boat'&&(!isStrictSumer(s)||b.type!=='harbor'||b.boatTender))return null;
    if(['repair','boat'].includes(q.kind)&&(q.kind==='repair'&&!(b.floodDamage||b.boatWear)||['routeOrder','legacyMasonry','legacyFiring','legacyBricks','legacyPrice'].some(k=>q[k]!==undefined)))return null;
    if(!['new','upgrade','repair','boat'].includes(q.kind)||!integer(q.target,1,3)||q.target!==(q.kind==='new'?1:q.kind==='upgrade'?b.level+1:b.level)||q.kind==='new'&&b.level!==1||!finite(q.work,0,workRequired(b)))return null;
    if(q.routeOrder!==undefined&&(b.type!=='road'||!integer(q.routeOrder,0,1e9)))return null;
    if(q.priority!==undefined&&!integer(q.priority,0,2)||q.order!==undefined&&!integer(q.order,0,1e9))return null;
-   const cost=q.kind==='boat'?boatTenderCost:q.kind==='repair'?(b.type==='harbor'?boatRepairCost:floodRepairCost(b)):b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:q.legacyMasonry?legacyUpgradeCost(b):upgradeCost(b);
+   const cost=q.joinery?(q.kind==='upgrade'?joineryUpgradeCost(b):joineryBoatCost(q.kind)):q.kind==='boat'?boatTenderCost:q.kind==='repair'?(b.type==='harbor'?boatRepairCost:floodRepairCost(b)):b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:q.legacyMasonry?legacyUpgradeCost(b):upgradeCost(b);
    if(!q.required||!q.remaining||!q.delivered||[q.required,q.remaining,q.delivered].some(v=>Object.keys(v).some(k=>!MATERIALS.includes(k))))return null;
    if([q.remaining,q.delivered].some(v=>Object.keys(v).length!==Object.keys(q.required).length||Object.keys(v).some(k=>!(k in q.required))))return null;
    const expected=q.legacyPrice?{clay:cost.clay||0,reed:cost.reed||0}:{...cost,...q.legacyBricks?{brick:0}:{},...q.legacyFiring?{firedBrick:0}:{}};

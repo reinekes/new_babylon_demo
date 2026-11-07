@@ -39,7 +39,7 @@ test('current saves reject missing, future, malformed and unsupported rules',()=
  for(const scenario of [undefined,null,[],{},'legacy-v1',{...legacyScenario(),version:2},{...legacyScenario(),history:'future'},{...legacyScenario(),miracles:'future-c99-v1'}]){
   assert.equal(validateScenario(scenario),false);assert.equal(decode(JSON.stringify({...s,scenario})),null);
  }
- for(const version of [0,1.5,'29',36])assert.equal(decode(JSON.stringify({...s,version})),null);
+ for(const version of [0,1.5,'29',37])assert.equal(decode(JSON.stringify({...s,version})),null);
  assert.throws(()=>createGame({scenario:{history:'future'}}),/scenario/i);
 });
 
