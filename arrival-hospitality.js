@@ -15,11 +15,16 @@ const needed=2;
 const customWater=custom=>custom==='libation'?1:0;
 export const newArrivalHospitality=()=>({version:1,receipts:[]});
 
+function completedVisitPlace(kind,guest){
+ if(guest.phase!=='departed')return null;
+ if(kind==='artisan')return guest.outcome==='taught'&&guest.fed?guest.home:null;
+ return guest.outcome==='accepted'?guest.destination:null;
+}
 export function recordArrivalHospitality(s,kind,guest){
  const journal=s.arrivalHospitality;
- if(!journal||!kinds.includes(kind)||guest.phase!=='departed'||journal.receipts.some(r=>r.kind===kind))return;
- if(kind==='artisan'?guest.outcome!=='taught'||!guest.fed:guest.outcome!=='accepted')return;
- journal.receipts.push({kind,place:kind==='artisan'?guest.home:guest.destination,at:s.simTime});
+ if(!journal||!kinds.includes(kind)||journal.receipts.some(r=>r.kind===kind))return;
+ const place=completedVisitPlace(kind,guest);
+ if(place)journal.receipts.push({kind,place,at:s.simTime});
 }
 
 const cell=(s,key)=>{
@@ -311,7 +316,8 @@ export function validateArrivalHospitality(s){
  for(const row of journal.receipts){
   if(!row||Object.keys(row).length!==3||!kinds.includes(row.kind)||seen.has(row.kind)||
    !Number.isFinite(row.at)||row.at<previous||row.at>s.simTime)return false;
-  if(!cell(s,row.place))return false;
+  const guest=row.kind==='artisan'?s.externalGuest:s.externalVisits?.[row.kind];
+  if(!cell(s,row.place)||guest&&completedVisitPlace(row.kind,guest)!==row.place)return false;
   previous=row.at;seen.add(row.kind);
  }
  const welcomes=journal.welcomes;

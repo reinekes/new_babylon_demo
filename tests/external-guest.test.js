@@ -99,6 +99,12 @@ test('pilgrim and envoy carry distinct gifts, retain identity on reload and reco
  assert.equal(s.news.filter(n=>n.title==='Паломник посвятил сосуд').length,1);
  assert.ok(decode(encode(s)));
  assert.equal(inviteVisitor(s,'pilgrim').ok,false);
+ const wrongPlace=structuredClone(s);
+ wrongPlace.arrivalHospitality.receipts.find(r=>r.kind==='pilgrim').place='8,8';
+ assert.equal(decode(encode(wrongPlace)),null);
+ const interrupted=structuredClone(s);
+ interrupted.externalVisits.envoy.outcome='interrupted';
+ assert.equal(decode(encode(interrupted)),null);
 });
 
 test('a fed master counts for future arrivals only after walking back to the market',()=>{

@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledMarketAndCaravan": true,
+  "visits": [
+    "envoy",
+    "pilgrim"
+  ],
+  "byteEqualReload": true,
+  "rejectsWrongPlace": true,
+  "rejectsInterruptedVisit": true,
+  "byteEqualOutsideJournal": true,
+  "samples": 84,
+  "medianCpuMs": 4.609208999999964,
+  "p95CpuMs": 12.889957999999979
+}
