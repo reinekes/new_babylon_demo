@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T06:34:58.582997+00:00",
+  "commit": "fef4ce3f5808ddee736129f192f88fda2683cf3e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "fa12fbd89149d2f1ac06ea929e38930b89ebb1f51b434e6d8b4660a28a7bc669",
+      "actual": "fa12fbd89149d2f1ac06ea929e38930b89ebb1f51b434e6d8b4660a28a7bc669",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "fadd1c4eca472ce3082be2795c282253d2a6ae738aff94a688c2e03d9c66b990",
+      "actual": "fadd1c4eca472ce3082be2795c282253d2a6ae738aff94a688c2e03d9c66b990",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-forgotten-contact-4x.json",
+      "status": 200,
+      "expected": "31b2ae4974dfae6c5e44c791fd696907fd7eaa9308de740dac9e74875d6ffaa9",
+      "actual": "31b2ae4974dfae6c5e44c791fd696907fd7eaa9308de740dac9e74875d6ffaa9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-forgotten-contact-browser.json",
+      "status": 200,
+      "expected": "573641f29eb4a04ebac6025d325c56e41cbffc5f40661d670f16b06fb9bc563d",
+      "actual": "573641f29eb4a04ebac6025d325c56e41cbffc5f40661d670f16b06fb9bc563d",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "1035043a9a76c0549a50c779f506be449686750e368ae1d8fc7b9f69e21e3b0c",
+      "actual": "1035043a9a76c0549a50c779f506be449686750e368ae1d8fc7b9f69e21e3b0c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "cf542d2301c45a62637a583e7e97372be3fa19b090492783d6de94d4013fbf1b",
+      "actual": "cf542d2301c45a62637a583e7e97372be3fa19b090492783d6de94d4013fbf1b",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "35245f6223c369e63906115f6ad7fc627c9697d56f92c9842a7265295339edc9",
+      "actual": "35245f6223c369e63906115f6ad7fc627c9697d56f92c9842a7265295339edc9",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0f9a78da9fafc4534b5431f02de98fd696740232c0ea137b77c94d0870feb6e7",
+      "actual": "0f9a78da9fafc4534b5431f02de98fd696740232c0ea137b77c94d0870feb6e7",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4e0bea9bf1d6fb0c5aa58b26641ac046d26f5f2b88ba8f96d0b935fcae3d1081",
+      "actual": "4e0bea9bf1d6fb0c5aa58b26641ac046d26f5f2b88ba8f96d0b935fcae3d1081",
+      "match": true
+    },
+    {
+      "path": "tests/godhood-modes.test.js",
+      "status": 200,
+      "expected": "dbd23250f163031928ddfcc54111d2f8d811f75bda2f31850b689c5ae2fa3442",
+      "actual": "dbd23250f163031928ddfcc54111d2f8d811f75bda2f31850b689c5ae2fa3442",
+      "match": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "status": 200,
+      "expected": "2efc75f9b66f689e9037dfddc00f36b071e24a0dfdddc54f9fff65753e44398f",
+      "actual": "2efc75f9b66f689e9037dfddc00f36b071e24a0dfdddc54f9fff65753e44398f",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
