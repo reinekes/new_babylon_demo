@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-07T06:47:15.143937+00:00",
+  "commit": "149b612c13ed683e455912c73524e2b8e5b77512",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ff8345af000b43a845c8a0da3decf9e2036200cb37ac7a8c200473be5a17fdff",
+      "actual": "ff8345af000b43a845c8a0da3decf9e2036200cb37ac7a8c200473be5a17fdff",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "fa6fd418c18cdc074710994be894f07aa01438ddce3527243d38d25bf427f830",
+      "actual": "fa6fd418c18cdc074710994be894f07aa01438ddce3527243d38d25bf427f830",
+      "match": true
+    },
+    {
+      "path": "city-command-lock.js",
+      "status": 200,
+      "expected": "d8757b134eaeb3617115251b3816aa70aa7ac8694da078ae8228fc7a3e2ee595",
+      "actual": "d8757b134eaeb3617115251b3816aa70aa7ac8694da078ae8228fc7a3e2ee595",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-nameless-ending-4x.json",
+      "status": 200,
+      "expected": "c749cb197927a5d49fdffd3c166afe560fc912e58b145ca301b911fe2d59ae61",
+      "actual": "c749cb197927a5d49fdffd3c166afe560fc912e58b145ca301b911fe2d59ae61",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-nameless-ending-browser.json",
+      "status": 200,
+      "expected": "be072cd962c85064139c8aa2967bef15b16bcac66fa68f09c18f61d4df49be90",
+      "actual": "be072cd962c85064139c8aa2967bef15b16bcac66fa68f09c18f61d4df49be90",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "a2f97158698ad5b072b687561b6eab4dccf0a314d3b63b215a0b585f2b9e1fa1",
+      "actual": "a2f97158698ad5b072b687561b6eab4dccf0a314d3b63b215a0b585f2b9e1fa1",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "e9e2f2c2161937c8e7619ef7b338b83dfc7eb9113537b909a0df7d9504e77816",
+      "actual": "e9e2f2c2161937c8e7619ef7b338b83dfc7eb9113537b909a0df7d9504e77816",
+      "match": true
+    },
+    {
+      "path": "household-initiative.js",
+      "status": 200,
+      "expected": "8512a09e0fa44ffa928f49a052c7f113b70df186b6d719fad2ecc68fc0792075",
+      "actual": "8512a09e0fa44ffa928f49a052c7f113b70df186b6d719fad2ecc68fc0792075",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "5fe9cde325da4e14c37469b3926aa6564b61b9ec08ab700c0523b76f4e129ddd",
+      "actual": "5fe9cde325da4e14c37469b3926aa6564b61b9ec08ab700c0523b76f4e129ddd",
+      "match": true
+    },
+    {
+      "path": "relic-quest.js",
+      "status": 200,
+      "expected": "144cf71d459e63f3abe43d3ab19198f90f226c9568f43f1a8b18ef81840c7c36",
+      "actual": "144cf71d459e63f3abe43d3ab19198f90f226c9568f43f1a8b18ef81840c7c36",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "d3c859a433e962d4c1c25b59e9e3863daf62e7258c33a042c69c92e0fc32312e",
+      "actual": "d3c859a433e962d4c1c25b59e9e3863daf62e7258c33a042c69c92e0fc32312e",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "31a842c88fb0f7b75d147770314e4fd418b4213aabcb86c53cdef6b2053743c0",
+      "actual": "31a842c88fb0f7b75d147770314e4fd418b4213aabcb86c53cdef6b2053743c0",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "58d44028e9ee737b148bcde2a63daba6f45b70fdaa53316482388ee61772c911",
+      "actual": "58d44028e9ee737b148bcde2a63daba6f45b70fdaa53316482388ee61772c911",
+      "match": true
+    },
+    {
+      "path": "tests/godhood-modes.test.js",
+      "status": 200,
+      "expected": "9d0bab00e9f314c707d80de2f593ed486b549dc76af416f9036588dbadc634c6",
+      "actual": "9d0bab00e9f314c707d80de2f593ed486b549dc76af416f9036588dbadc634c6",
+      "match": true
+    },
+    {
+      "path": "ui-godhood.js",
+      "status": 200,
+      "expected": "8f30ad52eeb98e0486495fccf7aebfa3ab5d8024cadf43e5a78e1f6bae775d2c",
+      "actual": "8f30ad52eeb98e0486495fccf7aebfa3ab5d8024cadf43e5a78e1f6bae775d2c",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
