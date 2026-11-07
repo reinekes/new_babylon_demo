@@ -443,3 +443,34 @@ test('a paid group waits at a real gate, keeps its reserve on reload and settles
  assert.equal(copy.population,ids.length+offer.beds);
  assert.equal(encode(decode(encode(copy))),encode(copy));
 });
+
+test('the Call records its opening independently of housing and presentation',async()=>{
+ const {advanceTime}=await import('../engine.js');
+ const {arrivalOffer}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ const witness=s.citizens[0];
+ Object.assign(s.godhood,{stage:'recognized',witnessId:witness.id,recognitionAt:0,believerIds:[witness.id]});
+ s.causalFacts={version:1,nextEntityId:4,water:[]};
+ const houses=s.buildings.filter(b=>b.type==='house').slice(0,3);
+ const keys=houses.map(b=>b.x+','+b.y);
+ houses.forEach((house,i)=>{house.waterEntityId=i+1;});
+ s.causalFacts.neighborWater=[1,2].map(i=>({originId:1,homeId:i+1,origin:keys[0],home:keys[i],courierId:witness.id,time:0,amount:1}));
+ s.blessingDiscovery.qualifiedAt=0;
+ recordArrivalHospitality(s,'envoy',{phase:'departed',outcome:'accepted',destination:keys[0]});
+ assert.equal(s.arrivalHospitality.openedAt,undefined);
+ recordArrivalHospitality(s,'artisan',{phase:'departed',outcome:'taught',fed:true,home:keys[1]});
+ for(const b of s.buildings)b.water=0;
+ assert.equal(arrivalOffer(s,networkFor(s)),null);
+ advanceTime(s,.1);
+ assert.equal(s.arrivalHospitality.openedAt,s.simTime);
+ assert.equal(s.arrivalHospitality.sceneSeen,undefined);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const broken=JSON.parse(raw);
+ broken.arrivalHospitality.openedAt=-1;
+ assert.equal(decode(JSON.stringify(broken)),null);
+ delete broken.arrivalHospitality.openedAt;
+ const legacy=JSON.stringify(broken);
+ assert.equal(encode(decode(legacy)),legacy);
+});

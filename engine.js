@@ -5,7 +5,7 @@ import {landMemoryCastQuote,validateLandMemory} from './land-memory.js';
 import {validateDepthSupply} from './depth-supply.js';
 import {recordStarForecast} from './star-forecast.js';
 import {validateStarObservations} from './star-observations.js';
-import {arrivalHousing,reserveArrival,validateArrivalHospitality} from './arrival-hospitality.js';
+import {advanceArrivalOpening,arrivalHousing,reserveArrival,validateArrivalHospitality} from './arrival-hospitality.js';
 import {connectedStores} from './district-logistics.js';
 import {createShapingBatch,validateShapingBatches} from './shaping-batch.js';
 import {validateShapingModel} from './shaping-model.js';
@@ -300,6 +300,7 @@ function check(s){
  advanceCreatorEvidence(s);
  if(advanceFieldGrain(s))log(s,'Три поля дали зерно','Склад принял урожай с трёх действующих полей. Открылось чудо «Дыхание земли».','good');
  if(advanceBlessingDiscovery(s))log(s,'Соседи поддержали друг друга','Три двора обеспечены едой и водой, две доставки помощи подтверждены. Условия истории «Благословение» выполнены.','good');
+ advanceArrivalOpening(s);
  if(advanceMonumentChapter(s))log(s,'Поздняя глава · Великий зиккурат','Город вступил в эпоху монументального строительства. Следующая цель — возвести Великий зиккурат.','good');
  if(advanceForeignName(s)){
   const reported=s.foreignName.reportedAt!==null;

@@ -138,6 +138,12 @@ export function arrivalKnowledgeReason(s){
  return arrivalHospitalityView(s).qualified?'':'Нужны два подтверждения гостеприимства одного вида';
 }
 
+export function advanceArrivalOpening(s){
+ const journal=s.arrivalHospitality;
+ if(!journal||journal.openedAt!==undefined||!Number.isFinite(s.godhood?.recognitionAt)||arrivalKnowledgeReason(s))return;
+ journal.openedAt=s.simTime;
+}
+
 export function reserveArrival(s,network,expected){
  if(!s.arrivalHospitality||s.arrivalGroup)return false;
  const custom=expected?.custom;
@@ -322,7 +328,7 @@ export function validateArrivalHospitality(s){
  if(!validArrivalGroup(s))return false;
  const journal=s.arrivalHospitality;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.welcomes!==undefined)+Number(journal.sceneSeen!==undefined)||journal.version!==1||
+ if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.welcomes!==undefined)+Number(journal.sceneSeen!==undefined)+Number(journal.openedAt!==undefined)||journal.version!==1||
   (journal.sceneSeen!==undefined&&journal.sceneSeen!==true)||
   !Array.isArray(journal.receipts)||journal.receipts.length>kinds.length)return false;
  const seen=new Set();
@@ -350,7 +356,13 @@ export function validateArrivalHospitality(s){
    lastTime=row.at;lastId=row.members.at(-1);
   }
  }
- const shelters=journal.shelters;
+ const shelters=journal.shelters,openedAt=journal.openedAt;
+ if(openedAt!==undefined){
+  const hospitalityAt=Math.min(journal.receipts[needed-1]?.at??Infinity,shelters?.[needed-1]?.at??Infinity);
+  const blessingAt=s.blessingDiscovery?.qualifiedAt,recognizedAt=s.godhood?.recognitionAt;
+  if(!Number.isFinite(openedAt)||!Number.isFinite(blessingAt)||!Number.isFinite(recognizedAt)||
+   openedAt<Math.max(hospitalityAt,blessingAt,recognizedAt)||openedAt>s.simTime)return false;
+ }
  if(shelters===undefined)return true;
  if(!Array.isArray(shelters)||!shelters.length||shelters.length>needed)return false;
  const hosts=new Set(),origins=new Set();

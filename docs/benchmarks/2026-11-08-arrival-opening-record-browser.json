@@ -1,0 +1,16 @@
+[
+  {
+    "id": "chain",
+    "view": "2d",
+    "url": "?id=chain&view=2d",
+    "mode": "2d",
+    "result": "PASS opening in overview, both visits open the Call, one paid reserve, confirmed count in the cast scene, byte-identical load"
+  },
+  {
+    "id": "chain",
+    "view": "3d",
+    "url": "?id=chain&view=3d",
+    "mode": "3d",
+    "result": "PASS opening in overview, both visits open the Call, one paid reserve, confirmed count in the cast scene, byte-identical load"
+  }
+]

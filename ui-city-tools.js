@@ -284,12 +284,13 @@ function arrivalHospitalityHTML(s){
  const view=arrivalHospitalityView(s);
  if(!view)return '';
  const beds=arrivalHousing(s).reduce((total,row)=>total+row.beds,0);
+ const opening=s.arrivalHospitality.openedAt===undefined?'':'<p data-arrival-opened>Дар открыт. Путь, жильё и провизия проверяются при каждом применении.</p>';
  const welcome=s.arrivalHospitality.welcomes?.at(-1);
  const house=welcome&&arrivalWelcomeHouse(s,welcome);
  const group=s.arrivalGroup;
  const transit=group?`<p data-arrival-transit>${arrivalTransitLabel(group)} · ${focus(group.home,'Принимающий двор')}</p>`:'';
  const latest=house?`<p>${focus(welcome.home,`Последнее заселение · ${welcome.members.length} чел.`)}</p>`:welcome?'<p>Дом последнего заселения больше не существует.</p>':'';
- return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p>${transit}${latest}</section>`;
+ return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p>${opening}${transit}${latest}</section>`;
 }
 
 function shapingProjectsHTML(s){
