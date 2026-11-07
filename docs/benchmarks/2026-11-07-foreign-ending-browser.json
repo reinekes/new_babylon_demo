@@ -1,0 +1,30 @@
+[
+  {
+    "id": "waiting",
+    "view": "2d",
+    "url": "?id=waiting&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d waiting for later visit"
+  },
+  {
+    "id": "waiting",
+    "view": "3d",
+    "url": "?id=waiting&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d waiting for later visit"
+  },
+  {
+    "id": "ready",
+    "view": "2d",
+    "url": "?id=ready&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d outside report and continuing save"
+  },
+  {
+    "id": "ready",
+    "view": "3d",
+    "url": "?id=ready&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d outside report and continuing save"
+  }
+]

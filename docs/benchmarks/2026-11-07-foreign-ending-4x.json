@@ -1,0 +1,19 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "buildings": 134,
+  "initialPopulation": 289,
+  "population": 382,
+  "steps": 8431,
+  "foreignName": {
+    "name": "Покровитель мастеров",
+    "offeringId": 152,
+    "sentVisit": 7,
+    "sentAt": 1134,
+    "reportedVisit": 10,
+    "reportedAt": 1674,
+    "endingAt": 1674
+  },
+  "reloadByteIdentical": true,
+  "cpuMedianMs": 3.098083000000088,
+  "cpuP95Ms": 9.19629200000054
+}

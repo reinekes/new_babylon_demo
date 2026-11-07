@@ -98,6 +98,8 @@ test('campaign chapters require causal milestones in order and survive loss of a
  s.votiveOfferings=[{visitorKind:'pilgrim',receivedTick:0}];
  assert.equal(advanceCampaignChapter(s),false);
  s.votiveOfferings[0].memory={keeperId:witness.id};
+ assert.equal(advanceCampaignChapter(s),false);
+ s.foreignName={reportedAt:5};
  assert.ok(advanceCampaignChapter(s));
  assert.equal(campaignChapterView(s).rank,5);
  delete s.causalFacts;
@@ -159,4 +161,30 @@ test('the city ending can be recorded without a monument and post-monument goals
  s.votiveOfferings.push({id:2,temple:'6,6',receivedTick:0,memory:{keeperId:keeper.id}});
  s.supplyVows.history.push({id:2,outcome:'fulfilled',start:11,ended:12,targets:[]});
  assert.deepEqual(monumentLifeView(s),{temple:'6,6',dedication:true,vow:true});
+});
+
+test('a departed pilgrim needs a later actual visit by the same partner to earn the foreign ending',async()=>{
+ const {advanceForeignName,foreignEndingOffer,recordForeignEnding}=await import('../campaign.js');
+ const s=createNewCity({mode:'awakening',seed:137}),witness=s.citizens[0];
+ Object.assign(s.godhood,{stage:'recognized',recognitionAt:0,witnessId:witness.id,believerIds:[witness.id]});
+ s.name='Услышанный у воды';s.divinity.names.push(s.name);
+ s.externalVisits={pilgrim:{name:'Ур-Баба',phase:'returning',outcome:'accepted',partner:'Купцы Урука',offeringId:1}};
+ s.votiveOfferings=[{id:1,visitorKind:'pilgrim',memory:{keeperId:witness.id}}];
+ s.trade.visits=1;s.trade.caravan={name:'Купцы Урука',phase:'trading'};
+ assert.equal(advanceForeignName(s),false);
+ s.externalVisits.pilgrim.phase='departed';
+ assert.ok(advanceForeignName(s));
+ assert.equal(foreignEndingOffer(s),null);
+ assert.equal(advanceForeignName(s),false);
+ s.trade.visits=2;s.trade.caravan.name='Другой партнёр';
+ assert.equal(advanceForeignName(s),false);
+ s.trade.visits=3;s.trade.caravan.name='Купцы Урука';s.trade.caravan.phase='approach';
+ assert.equal(advanceForeignName(s),false);
+ s.trade.caravan.phase='trading';
+ assert.ok(advanceForeignName(s));
+ assert.equal(foreignEndingOffer(s)?.reportedVisit,3);
+ assert.equal(s.foreignName.name,'Услышанный у воды');
+ assert.ok(recordForeignEnding(s).ok);
+ assert.equal(recordForeignEnding(s).ok,false);
+ assert.equal(s.won,false);
 });

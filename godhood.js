@@ -152,6 +152,7 @@ export function namelessEndingReason(s){
  if(lock||s.event||s.funeral)return lock||'Дождись завершения события';
  const living=new Set(s.citizens.map(c=>c.id));
  if(g.believerIds.some(id=>living.has(id)))return 'В городе ещё есть последователи';
+ if(s.foreignName?.reportedAt!=null)return 'Имя ещё помнят за пределами города';
  const help=g.firstWaterHelp,facts=s.causalFacts;
  const memories=[
   [help?.helperId,help?.recipientId],

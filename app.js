@@ -1,4 +1,4 @@
-import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding,craftEndingOffer,recordCraftEnding,cityEndingOffer,recordCityEnding,monumentLifeView} from './campaign.js';
+import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding,craftEndingOffer,recordCraftEnding,cityEndingOffer,recordCityEnding,monumentLifeView,foreignEndingOffer,recordForeignEnding} from './campaign.js';
 import {createInannaPresentation} from './inanna-presentation.js';
 import {createLandPresentation} from './land-presentation.js';
 import {landMemoryCastQuote,landMemoryStories} from './land-memory.js';
@@ -1054,10 +1054,13 @@ function update(){
  const cityEnding=state.cityEnding?'<button type="button" data-city-ending>Бог города · завершено</button>'
   :cityEndingOffer(state)?'<button type="button" data-city-ending>Открыть финал «Бог города»</button>'
   :chapter&&state.godhood.namelessEndingAt===undefined?'<small>Бог города · заслужи общее имя, сохрани посвящение в действующем храме и исполни обеты двум дворам.</small>':'';
+ const foreign=state.foreignName?.endingAt!=null?'<button type="button" data-foreign-ending>Имя за рекой · завершено</button>'
+  :foreignEndingOffer(state)?'<button type="button" data-foreign-ending>Открыть финал «Имя за рекой»</button>'
+  :chapter&&state.godhood.namelessEndingAt===undefined?`<small>Имя за рекой · ${state.foreignName?'дождись вести в следующий визит того же торгового партнёра.':'прими паломника, сохрани его посвящение и дождись купцов.'}</small>`:'';
  const monument=monumentLifeView(state);
  const monumentHTML=monument?`<section data-monument-life><h4>Жизнь после монумента</h4><p>Зиккурат · ${esc(monument.temple)}</p><ul><li>${monument.dedication?'✓':'○'} Новое посвящение записано хранителем зиккурата</li><li>${monument.vow?'✓':'○'} Новый обет снабжения исполнен</li></ul></section>`:'';
  const chapterHTML=chapter?`<section class="goal" data-campaign-chapter="${chapter.rank}"><div><b>${esc(chapter.title)}</b><p>${esc(chapter.condition)}</p></div></section>`:'';
- setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding+craftEnding+cityEnding+monumentHTML);
+ setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding+craftEnding+cityEnding+foreign+monumentHTML);
  const hearthButton=$('goals').querySelector('[data-hearth-ending]');
  if(hearthButton)hearthButton.onclick=showHearthEnding;
  const waterButton=$('goals').querySelector('[data-water-ending]');
@@ -1066,6 +1069,8 @@ function update(){
  if(craftButton)craftButton.onclick=showCraftEnding;
  const cityButton=$('goals').querySelector('[data-city-ending]');
  if(cityButton)cityButton.onclick=showCityEnding;
+ const foreignButton=$('goals').querySelector('[data-foreign-ending]');
+ if(foreignButton)foreignButton.onclick=showForeignEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'&&!richCatchTarget(state,lastMiracleTarget)?'Выбери действующий рыбацкий двор на карте':'');
@@ -1150,6 +1155,17 @@ function showCityEnding(){
  if($('city-ending-continue'))$('city-ending-continue').onclick=()=>{
   const result=recordCityEnding(state);
   if(mutate(result,'Финал «Бог города» записан в летопись')){closeDialog();paused=false;update();}
+ };
+}
+function showForeignEnding(){
+ const ending=state.foreignName?.endingAt!=null,story=ending?state.foreignName:foreignEndingOffer(state);
+ if(!story){toast('Весть из-за реки ещё не получена.');return;}
+ const guest=state.externalVisits.pilgrim;
+ openDialog('foreign-ending',`<span class="eyebrow">ВЕСТЬ ИЗ-ЗА РЕКИ</span><h2>Имя за рекой</h2><p>${esc(guest.name)} оставил в храме ${esc(guest.destination)} посвящение №${story.offeringId}. Купцы увезли рассказ в визит №${story.sentVisit}.</p><p>В следующий приезд, №${story.reportedVisit}, ${esc(guest.partner)} сообщили, что паломник хранит имя «${esc(story.name)}» в своём городе.</p><div class="dialog-actions">${ending?'<button class="primary" id="foreign-ending-back">Вернуться в город</button>':'<button class="primary" id="foreign-ending-continue">Записать финал и продолжить</button><button id="foreign-ending-back">Вернуться в город</button>'}</div>`);
+ $('foreign-ending-back').onclick=closeDialog;
+ if($('foreign-ending-continue'))$('foreign-ending-continue').onclick=()=>{
+  const result=recordForeignEnding(state);
+  if(mutate(result,'Финал «Имя за рекой» записан в летопись')){closeDialog();paused=false;update();}
  };
 }
 function showNamelessEnding(){

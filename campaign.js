@@ -19,8 +19,8 @@ const CHAPTERS=[
  {title:'I · Чаша у порога',condition:'Добейся подтверждённого результата для двух независимых дворов.'},
  {title:'II · Имя двора',condition:'Доставь воду из общего водозабора в разные дворы и дай укрытие соседям при разливе.'},
  {title:'III · Покровитель квартала',condition:'Передай семейную память следующему поколению и исполни обет снабжения.'},
- {title:'IV · Бог города',condition:'Прими дар паломника и дождись, пока хранитель внесёт его в память храма.'},
- {title:'V · Имя за рекой',condition:'Гость принёс дар, и его сохранили в храмовой памяти.'}
+ {title:'IV · Бог города',condition:'Прими и запиши дар паломника. Дождись вести от купцов из следующего визита.'},
+ {title:'V · Имя за рекой',condition:'Купцы подтвердили, что паломник хранит имя в своём городе.'}
 ];
 
 function inheritedMemory(s){
@@ -44,7 +44,7 @@ export function advanceCampaignChapter(s){
  if(rank===1&&earnedResultNames(s).length)rank++;
  if(rank===2&&s.causalFacts?.water?.length&&waterNameEvidence(s)&&s.arrivalHospitality?.shelters?.length)rank++;
  if(rank===3&&s.supplyVows?.history?.some(v=>v.outcome==='fulfilled')&&inheritedMemory(s))rank++;
- if(rank===4&&s.votiveOfferings?.some(item=>item.visitorKind==='pilgrim'&&Number.isSafeInteger(item.receivedTick)&&item.memory))rank++;
+ if(rank===4&&s.foreignName?.reportedAt!=null)rank++;
  if(rank===start)return false;
  s.campaignChapter=rank;
  return true;
@@ -257,4 +257,55 @@ export function validateMonumentLife(s){
   life.buildOrder!==null&&(!Number.isSafeInteger(life.buildOrder)||life.buildOrder<0))return false;
  const [x,y]=life.temple.split(',').map(Number);
  return x<worldWidth(s)&&y<worldHeight(s);
+}
+
+function pilgrimDedication(s){
+ const guest=s.externalVisits?.pilgrim;
+ if(guest?.phase!=='departed'||guest.outcome!=='accepted')return null;
+ return s.votiveOfferings?.find(item=>item.id===guest.offeringId&&item.visitorKind==='pilgrim'&&item.memory)||null;
+}
+
+export function advanceForeignName(s){
+ if(!usesCampaign(s)||s.lost||s.godhood.namelessEndingAt!==undefined)return false;
+ const guest=s.externalVisits?.pilgrim,caravan=s.trade?.caravan,visit=s.trade?.visits;
+ if(!guest||caravan?.phase!=='trading'||caravan.name!==guest.partner||!Number.isSafeInteger(visit)||visit<1)return false;
+ const witness=s.foreignName;
+ if(witness){
+  if(witness.reportedAt!==null||visit<=witness.sentVisit)return false;
+  witness.reportedVisit=visit;
+  witness.reportedAt=s.simTime;
+  return true;
+ }
+ const item=pilgrimDedication(s);
+ if(!item||s.godhood.recognitionAt===null||!s.divinity.names.includes(s.name))return false;
+ s.foreignName={name:s.name,offeringId:item.id,sentVisit:visit,sentAt:s.simTime,reportedVisit:null,reportedAt:null,endingAt:null};
+ return true;
+}
+
+export function foreignEndingOffer(s){
+ const witness=s.foreignName;
+ return usesCampaign(s)&&!s.lost&&!s.event&&!s.funeral&&!cityCommandReason(s)&&
+  witness?.reportedAt!=null&&witness.endingAt===null?witness:null;
+}
+
+export function recordForeignEnding(s){
+ const witness=foreignEndingOffer(s);
+ if(!witness)return {ok:false,reason:'Нужна весть о посвящении от купцов из следующего визита'};
+ witness.endingAt=s.simTime;
+ s.news.unshift({title:'Имя за рекой',text:'Купцы привезли весть: паломник хранит имя в своём городе. Долина продолжает жить.',kind:'good',year:s.year,season:s.season,tick:s.tick});
+ s.news=s.news.slice(0,80);
+ return {ok:true};
+}
+
+export function validateForeignName(s){
+ const witness=s.foreignName;
+ if(witness===undefined)return true;
+ const visit=n=>Number.isSafeInteger(n)&&n>=1&&n<=s.trade?.visits;
+ const time=n=>Number.isFinite(n)&&n>=0&&n<=s.simTime;
+ if(!usesCampaign(s)||!witness||Object.keys(witness).length!==7||
+  typeof witness.name!=='string'||!s.divinity.names.includes(witness.name)||pilgrimDedication(s)?.id!==witness.offeringId||
+  !visit(witness.sentVisit)||!time(witness.sentAt)||s.godhood.recognitionAt===null||witness.sentAt<s.godhood.recognitionAt)return false;
+ if(witness.reportedAt===null)return witness.reportedVisit===null&&witness.endingAt===null;
+ return visit(witness.reportedVisit)&&witness.reportedVisit>witness.sentVisit&&time(witness.reportedAt)&&witness.reportedAt>=witness.sentAt&&
+  (witness.endingAt===null||time(witness.endingAt)&&witness.endingAt>=witness.reportedAt);
 }
