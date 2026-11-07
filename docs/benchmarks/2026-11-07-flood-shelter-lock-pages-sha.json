@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T14:45:25.580672+00:00",
+  "commit": "2e9b03a802733118b3a82dca3980d7b4832c4e7d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "380b4c15f6615fbd6b83d4a4abee3d50ac621085734e344e5e20e7bf537bf64e",
+      "actual": "380b4c15f6615fbd6b83d4a4abee3d50ac621085734e344e5e20e7bf537bf64e",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a017baf36718ff2465323b2b411e319677f6b51ca80bed7a81c6e22c4394b3f9",
+      "actual": "a017baf36718ff2465323b2b411e319677f6b51ca80bed7a81c6e22c4394b3f9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-flood-shelter-lock-4x.json",
+      "status": 200,
+      "expected": "93b550ec07de71a66518fdfdb941184b35560bc13113379f83eea38b0f55d182",
+      "actual": "93b550ec07de71a66518fdfdb941184b35560bc13113379f83eea38b0f55d182",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-flood-shelter-lock-browser.json",
+      "status": 200,
+      "expected": "7e566e461b9e62e9374dde33f3d75fab7b1af683dd227e0f6edb81aed8df68b6",
+      "actual": "7e566e461b9e62e9374dde33f3d75fab7b1af683dd227e0f6edb81aed8df68b6",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f7eac2de8321644d7a56e0ca3d7bb4fe61bec9aad3dba74f5850d8099b5b80c2",
+      "actual": "f7eac2de8321644d7a56e0ca3d7bb4fe61bec9aad3dba74f5850d8099b5b80c2",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "f6378c9307fa1316727dca19cef1da5f21eff6c3cb7e9a9112ebcc631e2976a3",
+      "actual": "f6378c9307fa1316727dca19cef1da5f21eff6c3cb7e9a9112ebcc631e2976a3",
+      "match": true
+    },
+    {
+      "path": "tests/river-flood.test.js",
+      "status": 200,
+      "expected": "908030548311a8bb8973feb57f814e3bd4dada42be51a66b35f7a325d40a933d",
+      "actual": "908030548311a8bb8973feb57f814e3bd4dada42be51a66b35f7a325d40a933d",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
