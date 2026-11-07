@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T22:11:40.274405+00:00",
+  "commit": "653172ad99d0011648db7d37fbf2182ee59979b5",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7a4455fc7ceeb3fcc8ec5d4c8cf574895450d521fe25a1e427eef683710de3f3",
+      "actual": "7a4455fc7ceeb3fcc8ec5d4c8cf574895450d521fe25a1e427eef683710de3f3",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "c26a021f3d23e5fcd3d4619074e8422b329aa53367bfebf8df81202bea088e2b",
+      "actual": "c26a021f3d23e5fcd3d4619074e8422b329aa53367bfebf8df81202bea088e2b",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "92ea229ad46de224cee64bb9f441c0ed3e5644191891d5e0db9d3ac8a2e4f24d",
+      "actual": "92ea229ad46de224cee64bb9f441c0ed3e5644191891d5e0db9d3ac8a2e4f24d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-population-miracle-beds-4x.json",
+      "status": 200,
+      "expected": "2972f9bcd9e7a219e2ec37beae6d340fa80fb99764fcbe0da589f17250ec0de5",
+      "actual": "2972f9bcd9e7a219e2ec37beae6d340fa80fb99764fcbe0da589f17250ec0de5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-population-miracle-beds-browser.json",
+      "status": 200,
+      "expected": "69587183240f5aab7ec2d770c73c1ced70014001d994310e086919a29b6237d1",
+      "actual": "69587183240f5aab7ec2d770c73c1ced70014001d994310e086919a29b6237d1",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "05594bff90cdb0b97c869e2a7ab20f623b6279ba5d3c9747902fd6b8751aaa04",
+      "actual": "05594bff90cdb0b97c869e2a7ab20f623b6279ba5d3c9747902fd6b8751aaa04",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ab4d9fd711f94aa620aa976d059357acbf0952aeb2d7efd4e4c8aa2c545756f9",
+      "actual": "ab4d9fd711f94aa620aa976d059357acbf0952aeb2d7efd4e4c8aa2c545756f9",
+      "match": true
+    },
+    {
+      "path": "tests/engine.test.js",
+      "status": 200,
+      "expected": "786f6e64358e55ec279e02b42e2771630238dec820762360b27dda9762db340d",
+      "actual": "786f6e64358e55ec279e02b42e2771630238dec820762360b27dda9762db340d",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
