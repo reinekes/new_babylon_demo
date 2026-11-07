@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-06T23:59:53.653117+00:00",
+  "commit": "5487a80dd489864f014764c26f9390c22844a60c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d45423f066ff4ddf9b9c0a404f965075539f27a3d4e118becb600fefe1e1bc6e",
+      "actual": "d45423f066ff4ddf9b9c0a404f965075539f27a3d4e118becb600fefe1e1bc6e",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "4cc31c809da7b765230dea5d4f32da3da801343c2366bcde2b53c5f3b464adf8",
+      "actual": "4cc31c809da7b765230dea5d4f32da3da801343c2366bcde2b53c5f3b464adf8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-star-scenes-4x.json",
+      "status": 200,
+      "expected": "6ef60541034b688ba6c4df49bf1e6928ff117b2f11f61ee3bae50b636b7b995f",
+      "actual": "6ef60541034b688ba6c4df49bf1e6928ff117b2f11f61ee3bae50b636b7b995f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "49c382907a360e72bee1396b195f05c8ca4f6324aaa267668dd6da808dc977fb",
+      "actual": "49c382907a360e72bee1396b195f05c8ca4f6324aaa267668dd6da808dc977fb",
+      "match": true
+    },
+    {
+      "path": "peace-presentation.js",
+      "status": 200,
+      "expected": "79726b71afb4fc1785c069a4a8ebec6ce309ae033905d6e1e1bb4821ee36e5fc",
+      "actual": "79726b71afb4fc1785c069a4a8ebec6ce309ae033905d6e1e1bb4821ee36e5fc",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "6ab4363017fdc3b53abcb9bcf67ad3ed753c6f4ea0bd23d79859fec51cae6c71",
+      "actual": "6ab4363017fdc3b53abcb9bcf67ad3ed753c6f4ea0bd23d79859fec51cae6c71",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "11787d54cd788f5a57dbff76b161682b91741dc7ca6c77639d8e06f4b5461100",
+      "actual": "11787d54cd788f5a57dbff76b161682b91741dc7ca6c77639d8e06f4b5461100",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "bfc040f572817f0fdc33a9703b0ba49809df5f59d5fbc30ba3c19922ac03c4ed",
+      "actual": "bfc040f572817f0fdc33a9703b0ba49809df5f59d5fbc30ba3c19922ac03c4ed",
+      "match": true
+    },
+    {
+      "path": "star-observations.js",
+      "status": 200,
+      "expected": "277e5460a04f1573c16b3ddcfa821fb9d44d70ce66d2a9336ae9ef03e628899c",
+      "actual": "277e5460a04f1573c16b3ddcfa821fb9d44d70ce66d2a9336ae9ef03e628899c",
+      "match": true
+    },
+    {
+      "path": "star-presentation.css",
+      "status": 200,
+      "expected": "ae21504eecd97b2054a68c77694b43e990e66b3c066effedf48ec9e90662e54e",
+      "actual": "ae21504eecd97b2054a68c77694b43e990e66b3c066effedf48ec9e90662e54e",
+      "match": true
+    },
+    {
+      "path": "star-presentation.js",
+      "status": 200,
+      "expected": "aec11a2674965d6b8b0e0a4d29a3e6b9e6f7722f29483b7736f4d9e6aad8dd11",
+      "actual": "aec11a2674965d6b8b0e0a4d29a3e6b9e6f7722f29483b7736f4d9e6aad8dd11",
+      "match": true
+    },
+    {
+      "path": "tests/star-presentation.test.js",
+      "status": 200,
+      "expected": "1d1c680655a9e330bbb24da688045d54542bcb55fda1ce52a408bdb54dc7d9a9",
+      "actual": "1d1c680655a9e330bbb24da688045d54542bcb55fda1ce52a408bdb54dc7d9a9",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
