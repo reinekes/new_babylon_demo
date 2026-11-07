@@ -1,0 +1,35 @@
+{
+  "shelter": {
+    "speed": 4,
+    "buildings": 129,
+    "initialPopulation": 200,
+    "population": 200,
+    "locked": [
+      "9,9",
+      "8,8"
+    ],
+    "reservedAtLoad": 1,
+    "reservedAfterFlood": 0,
+    "identitiesPreserved": true,
+    "reloadByteIdentical": true,
+    "steps": 101,
+    "medianCpuMs": 3.854000000000042,
+    "p95CpuMs": 22.879249999999956
+  },
+  "relocation": {
+    "speed": 4,
+    "cancelledCargoOnce": true,
+    "reapproved": true,
+    "steps": 986,
+    "buildings": 130,
+    "population": 245,
+    "retainedIds": 218,
+    "site": "5,4",
+    "complete": true,
+    "settled": true,
+    "byteExact": true,
+    "medianCpuMs": 1.4579589999998461,
+    "p95CpuMs": 22.18270900000016
+  },
+  "measurement": "CPU wall time per simulation step during concurrent checks, not FPS"
+}

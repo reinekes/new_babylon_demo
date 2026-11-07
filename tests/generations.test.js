@@ -76,3 +76,18 @@ test('population grants preserve the beds of flood evacuees and do not consume u
  assert.equal(s.citizens.at(-1).id,nextId);
  assert.equal(s.citizens.at(-1).home,home);
 });
+
+test('permanent family relocation waits until flood evacuation ends',()=>{
+ const s=createGame({start:'established'});
+ const destination='10,9';
+ s.happiness=0;
+ s.buildings.push({type:'house',x:10,y:9,level:1});
+ const homes=s.citizens.map(c=>[c.id,c.home]);
+ const evacuees=s.citizens.filter(c=>c.sex==='f');
+ for(const c of evacuees)c.floodShelter=c.home==='8,8'?'9,9':'8,8';
+ advanceGenerations(s);
+ assert.deepEqual(s.citizens.map(c=>[c.id,c.home]),homes);
+ for(const c of evacuees)delete c.floodShelter;
+ advanceGenerations(s);
+ assert.ok(s.citizens.some(c=>c.home===destination));
+});

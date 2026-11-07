@@ -1,5 +1,5 @@
 import {householdInitiativeReserved} from './household-initiative.js';
-import {reservedArrivalBeds} from './arrival-hospitality.js';
+import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {prepareMemorialMove} from './life-analytics.js';
 import {mournResidents} from './wellbeing.js';
 import {totalFood} from './households.js';
@@ -44,7 +44,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const awaiting=b=>householdInitiativeReserved(b.householdInitiative,living.get(b.householdInitiative?.members[0]));
   const reserved=s.buildings.find(b=>available(b)&&awaiting(b)&&[a.id,partner.id].includes(b.householdInitiative.members[0]));
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
-  if(!house||family.some(c=>c.fireShelter||s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+  if(!house||family.some(c=>shelterHome(c)||s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
   const destination=buildingKey(house);for(const c of family){
    const source=housingNetwork.ports.find(p=>p.key===housingPorts.get(c.home));
    if(source&&Math.hypot(c.x-source.x,c.y-source.y)<.05)prepareMemorialMove(s,c,house);
