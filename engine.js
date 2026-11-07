@@ -380,7 +380,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,(45-s.seasonElapsed)/calendarRateFor(s))>0;}
-export const refugeeArrivalCount=s=>Math.min(6,arrivalHousing(s,{includeFlooded:true}).reduce((total,row)=>total+row.beds,0));
+export const refugeeArrivalCount=s=>Math.min(6,arrivalHousing(s).reduce((total,row)=>total+row.beds,0));
 export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&!refugeeArrivalCount(s))return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
  if(choice==='accept'&&s.godhood?.namelessEndingAt!==undefined)return {ok:false,reason:'История завершена: доступно наблюдение'};

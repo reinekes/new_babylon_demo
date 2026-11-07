@@ -30,3 +30,28 @@ test('new families spend food only when unreserved beds are available',()=>{
  assert.deepEqual(s.citizens.slice(0,-1).map(c=>c.id),ids);
  assert.equal(s.citizens.at(-1).home,home);
 });
+
+test('new families and automatic grants wait if only flooded housing has room',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {floodFootprint}=await import('../river-flood.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ s.population=s.capacity;syncCitizens(s);
+ Object.assign(s,{year:4,season:0,riverFlood:{year:4,along:6,bank:-1}});
+ const key=[...floodFootprint(s,s.riverFlood)].find(k=>!s.buildings.some(b=>k===b.x+','+b.y));
+ assert.ok(key);
+ const [x,y]=key.split(',').map(Number);
+ s.buildings.push({type:'house',x,y,level:1});s.capacity+=8;
+ s.event=api.createCityEvent(s,'refugees');
+ const raw=encode(s),count=s.population,nextId=s.demography.nextId;
+ assert.match(resolveEvent(s,'accept').reason??'',/Нет свободного жилья/);
+ assert.equal(encode(s),raw);
+ s.population++;
+ syncCitizens(s);
+ assert.equal(s.population,count);
+ assert.equal(s.demography.nextId,nextId);
+ delete s.riverFlood;
+ assert.ok(resolveEvent(s,'accept').ok);
+ assert.equal(s.population,count+6);
+ assert.ok(s.citizens.slice(-6).every(c=>c.home===key));
+});

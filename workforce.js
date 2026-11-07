@@ -171,7 +171,8 @@ export function syncCitizens(s){
   const shelter=shelterHome(c);
   if(shelter&&shelter!==c.home)reservations.set(shelter,(reservations.get(shelter)||0)+1);
  }
- if(reservations.size){
+ const flooded=ctx.network.navigation.flooded;
+ if(reservations.size||flooded?.size){
   // Existing residents keep priority over requests to add population.
   for(const c of s.citizens){
    if(homes[c.id])continue;
@@ -179,6 +180,7 @@ export function syncCitizens(s){
    if(home){homes[c.id]=home;available.set(home,available.get(home)-1);}
   }
   for(const [home,count] of reservations)if(available.has(home))available.set(home,Math.max(0,available.get(home)-count));
+  if(flooded)for(const home of available.keys())if(flooded.has(home))available.set(home,0);
   const free=[...available.values()].reduce((n,beds)=>n+beds,0);
   s.population=Math.min(s.population,s.citizens.length+free);
  }
