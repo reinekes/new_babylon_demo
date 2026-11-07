@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T21:16:25.381439+00:00",
+  "commit": "28b07cec6990e26c8a2109c69bfd35634bfdec30",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3d6b607697b44143e522dd7aab4df674ec91ec516dec5b56e1656834460b3529",
+      "actual": "3d6b607697b44143e522dd7aab4df674ec91ec516dec5b56e1656834460b3529",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "ea3f7691c375bb7f4ce215b509e4185169e361bf026a4bd96b9eb2e891b9c4f0",
+      "actual": "ea3f7691c375bb7f4ce215b509e4185169e361bf026a4bd96b9eb2e891b9c4f0",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "006733f038108cecb8309fb97b402209a4daa427ddc4aecf3f21bd9a5f930b7a",
+      "actual": "006733f038108cecb8309fb97b402209a4daa427ddc4aecf3f21bd9a5f930b7a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-dry-arrival-housing-4x.json",
+      "status": 200,
+      "expected": "fd4451c1abc4f4e65a3cc8ab2bbe85961cbf9b66e61dcf05d82a99dba9243258",
+      "actual": "fd4451c1abc4f4e65a3cc8ab2bbe85961cbf9b66e61dcf05d82a99dba9243258",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "ccccb313c3c35bcb7d78bddca6c8ce43a6f758adb511c98b03ca8b1ed7ec3432",
+      "actual": "ccccb313c3c35bcb7d78bddca6c8ce43a6f758adb511c98b03ca8b1ed7ec3432",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "14586d001091da59c6ab502a9b2083ab97263e8299f3b8e6bb915ad19e8f9c47",
+      "actual": "14586d001091da59c6ab502a9b2083ab97263e8299f3b8e6bb915ad19e8f9c47",
+      "match": true
+    },
+    {
+      "path": "tests/city-events.test.js",
+      "status": 200,
+      "expected": "17220bde8dc2f87abb9abc52b3922c4558b50801b7783d6728085e6256224fcf",
+      "actual": "17220bde8dc2f87abb9abc52b3922c4558b50801b7783d6728085e6256224fcf",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "3c0c7db7957dd5d8fc115c3757f9054135424ce47044e8f887b3b839eb630511",
+      "actual": "3c0c7db7957dd5d8fc115c3757f9054135424ce47044e8f887b3b839eb630511",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
