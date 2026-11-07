@@ -34,14 +34,14 @@ export function createArrivalPresentation(root,{opening,onOpening,project,cue}={
  let active=null,seen=false,retry=0,stopCue;
  function silence(){stopCue?.();stopCue=null;}
  function skip(){silence();active=null;panel.hidden=true;}
- function start(kind){
-  skip();active={kind,elapsed:0,phase:-1};panel.dataset.kind=kind;
+ function start(kind,count=0){
+  skip();active={kind,count,elapsed:0,phase:-1};panel.dataset.kind=kind;
   title.textContent=stories[kind].title;step.textContent=kind==='opening'?'Открытие дара':'Применение';
  }
  panel.querySelector('button').addEventListener('click',skip);
  return {
   reset(){skip();seen=false;retry=0;mark.hidden=true;},
-  cast(group){if(group)start('cast');},
+  cast(count){if(count>0)start('cast',count);},
   get active(){return !!active;},
   skip,
   tick(s,dt,{visible=true,allowOpening=true,markVisible=visible}={}){
@@ -63,7 +63,7 @@ export function createArrivalPresentation(root,{opening,onOpening,project,cue}={
    if(phase===story.lines.length){skip();return;}
    panel.hidden=false;
    if(phase!==active.phase){
-    active.phase=phase;panel.dataset.phase=String(phase);caption.textContent=story.lines[phase];
+    active.phase=phase;panel.dataset.phase=String(phase);caption.textContent=phase===1&&active.kind==='cast'?story.lines[phase]+' В группе '+active.count+' чел.':story.lines[phase];
     silence();stopCue=cue?.(active.kind,phase);
    }
    active.elapsed+=dt;

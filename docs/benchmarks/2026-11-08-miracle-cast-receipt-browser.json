@@ -1,0 +1,30 @@
+[
+  {
+    "id": "sound",
+    "view": "2d",
+    "url": "?id=sound&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"audible\":true,\"voices\":6,\"backgroundStarts\":1,\"oneCommit\":true,\"actualOutcome\":true,\"skipPreservedSave\":true}"
+  },
+  {
+    "id": "sound",
+    "view": "3d",
+    "url": "?id=sound&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"audible\":true,\"voices\":6,\"backgroundStarts\":1,\"oneCommit\":true,\"actualOutcome\":true,\"skipPreservedSave\":true}"
+  },
+  {
+    "id": "chain",
+    "view": "2d",
+    "url": "?id=chain&view=2d",
+    "mode": "2d",
+    "result": "PASS both visits open the Call, one paid reserve, confirmed count in the cast scene, byte-identical load"
+  },
+  {
+    "id": "chain",
+    "view": "3d",
+    "url": "?id=chain&view=3d",
+    "mode": "3d",
+    "result": "PASS both visits open the Call, one paid reserve, confirmed count in the cast scene, byte-identical load"
+  }
+]

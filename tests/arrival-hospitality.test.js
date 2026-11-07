@@ -181,7 +181,11 @@ test('the Call charges only for the displayed group and requires blessing and ho
  assert.notEqual(arrivalOffer(s,networkFor(s))?.home,home);
  s.buildings[index].water=homeRef.water;
  const fresh=arrivalOffer(s,networkFor(s));
- assert.equal(miracle(s,'healing',{count:fresh.beds,home:fresh.home,homeRef:fresh.homeRef}).ok,true);
+ const cast=miracle(s,'healing',{count:fresh.beds,home:fresh.home,homeRef:fresh.homeRef});
+ assert.equal(cast.ok,true);
+ assert.equal(cast.receipt.faithSpent,45);
+ assert.equal(cast.receipt.population.reserved,beds);
+ assert.equal(cast.receipt.population.newResidents,0);
  assert.equal(s.arrivalGroup.count,beds);
  assert.equal(s.resources.faith,55);
  assert.equal(s.population,population);

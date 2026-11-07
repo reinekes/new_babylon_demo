@@ -21,8 +21,9 @@ test('the opening is acknowledged once and a cast scene can be skipped without m
  scene.tick(city,1000);
  assert.equal(mark.hidden,true);
  const before=structuredClone(city);
- scene.cast(city.arrivalGroup);scene.tick(city,1000);
+ scene.cast(city.arrivalGroup.count);scene.tick(city,3000);scene.tick(city,1000);
  assert.equal(root.querySelector('.arrival-scene').dataset.kind,'cast');
+ assert.match(root.querySelector('.arrival-scene p').textContent,/В группе 3 чел/);
  root.querySelector('.arrival-scene button').click();
  assert.ok(root.querySelector('.arrival-scene').hidden);
  assert.deepEqual(city,before);

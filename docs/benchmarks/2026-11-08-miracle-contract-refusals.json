@@ -1,0 +1,222 @@
+{
+  "inannaProtection": {
+    "fixture": "inanna-scenes-ready",
+    "faith": 80,
+    "people": 296,
+    "buildings": 135,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "relicAwakening": {
+    "fixture": "depth-wave-ready",
+    "faith": 45,
+    "people": 296,
+    "buildings": 140,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "earthMemory": {
+    "fixture": "land-scenes-ready",
+    "faith": 45,
+    "people": 296,
+    "buildings": 134,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "cat": {
+    "fixture": "classic established",
+    "faith": 12,
+    "people": 12,
+    "buildings": 5,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true,
+    "trial": {
+      "faith": 0,
+      "duplicateRejected": true,
+      "saveByteEqual": true,
+      "replayRejected": true,
+      "matchedControlAt4x": true
+    }
+  },
+  "rain": {
+    "fixture": "rain-ready",
+    "faith": 0,
+    "people": 240,
+    "buildings": 129,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true,
+    "paid": {
+      "faith": 15,
+      "duplicateRejected": true,
+      "saveByteEqual": true,
+      "replayRejected": true,
+      "matchedControlAt4x": true
+    }
+  },
+  "abundance": {
+    "fixture": "abundance-discovery-ready",
+    "faith": 25,
+    "people": 265,
+    "buildings": 132,
+    "target": {
+      "x": 8,
+      "y": 9
+    },
+    "unchangedRefusals": 130,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "bless": {
+    "fixture": "classic established",
+    "faith": 20,
+    "people": 15,
+    "buildings": 5,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "fertility": {
+    "fixture": "earth-unlock-ready",
+    "faith": 35,
+    "people": 251,
+    "buildings": 129,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "richCatch": {
+    "fixture": "rich-catch-ready",
+    "faith": 18,
+    "people": 200,
+    "buildings": 129,
+    "target": {
+      "x": 11,
+      "y": 9
+    },
+    "unchangedRefusals": 6,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "inspiration": {
+    "fixture": "creator-unlock-ready",
+    "faith": 30,
+    "people": 251,
+    "buildings": 131,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "haste": {
+    "fixture": "wind-route-ready",
+    "faith": 40,
+    "people": 265,
+    "buildings": 132,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "revelation": {
+    "fixture": "revelation-branches-ready",
+    "faith": 15,
+    "people": 265,
+    "buildings": 132,
+    "target": {
+      "branch": "prestige"
+    },
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "peace": {
+    "fixture": "peace-neighborhood-ready",
+    "faith": 30,
+    "people": 289,
+    "buildings": 134,
+    "target": {
+      "x": 8,
+      "y": 8
+    },
+    "unchangedRefusals": 1,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "sunlight": {
+    "fixture": "sunlight-unlock-ready",
+    "faith": 30,
+    "people": 279,
+    "buildings": 132,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "healing": {
+    "fixture": "arrival-call-ready",
+    "faith": 45,
+    "people": 289,
+    "buildings": 134,
+    "unchangedRefusals": 1,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "stars": {
+    "fixture": "star-forecast-ready",
+    "faith": 45,
+    "people": 289,
+    "buildings": 134,
+    "unchangedRefusals": 0,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  },
+  "shaping": {
+    "fixture": "shaping-batch-pending",
+    "faith": 50,
+    "people": 289,
+    "buildings": 134,
+    "target": {
+      "x": 4,
+      "y": 6
+    },
+    "unchangedRefusals": 134,
+    "duplicateRejected": true,
+    "saveByteEqual": true,
+    "replayRejected": true,
+    "matchedControlAt4x": true
+  }
+}

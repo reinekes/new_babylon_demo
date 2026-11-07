@@ -30,7 +30,9 @@ test('population miracles check unreserved housing before charging at maximum ha
   assert.match(miracle(s,id).reason??'',/свободное жильё/);
   assert.equal(encode(s),raw);
   s.happiness=95;
-  assert.ok(miracle(s,id).ok);
+  const cast=miracle(s,id);
+  assert.ok(cast.ok);
+  assert.deepEqual(cast.receipt.population,{newResidents:0,happiness:5,reserved:0});
   assert.equal(s.happiness,100);
   assert.deepEqual(s.citizens.map(c=>c.id),ids);
  }
