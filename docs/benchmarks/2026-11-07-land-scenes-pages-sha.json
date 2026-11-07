@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-07T02:21:17.074983+00:00",
+  "commit": "2edbfa65ed612a1c6a5923e1ff731a1fafacb0cd",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "8fcd9e793524ea4d745415588ab493a84cc0c536dda3f30cd81ffc338d8c6c8c",
+      "actual": "8fcd9e793524ea4d745415588ab493a84cc0c536dda3f30cd81ffc338d8c6c8c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "e1c59e94d767ce61d37637b69f67c37e04cca9962bf47f5e8d58953285ecbab5",
+      "actual": "e1c59e94d767ce61d37637b69f67c37e04cca9962bf47f5e8d58953285ecbab5",
+      "match": true
+    },
+    {
+      "path": "depth-presentation.js",
+      "status": 200,
+      "expected": "6e13b1a14dc91fcc31e1202cffcedded656cbf383a3dcf2f4b608e85a71ddb75",
+      "actual": "6e13b1a14dc91fcc31e1202cffcedded656cbf383a3dcf2f4b608e85a71ddb75",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "72a32ac074ca15040979935a240665cc96262a8141e194127f8a966c04cdcb5f",
+      "actual": "72a32ac074ca15040979935a240665cc96262a8141e194127f8a966c04cdcb5f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-land-scenes-4x.json",
+      "status": 200,
+      "expected": "d7b0f9699f260bfeabb7f970f5175af61a23750ed5f72090f8a892d457d866ee",
+      "actual": "d7b0f9699f260bfeabb7f970f5175af61a23750ed5f72090f8a892d457d866ee",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1d82e698c5f75d1950fbd8e1b2185ef6f75abd1eebc93cc05a9a0f5c1751cc4e",
+      "actual": "1d82e698c5f75d1950fbd8e1b2185ef6f75abd1eebc93cc05a9a0f5c1751cc4e",
+      "match": true
+    },
+    {
+      "path": "land-memory.js",
+      "status": 200,
+      "expected": "a145dc4f1da37e0ee28736ba2af4ed0e6694868b837292d066a11f3529160e0d",
+      "actual": "a145dc4f1da37e0ee28736ba2af4ed0e6694868b837292d066a11f3529160e0d",
+      "match": true
+    },
+    {
+      "path": "land-presentation.css",
+      "status": 200,
+      "expected": "7ba893c6d543e471b72a7fe6d1f8d41c946a7377c67dfcbbcd98933f6b4413b6",
+      "actual": "7ba893c6d543e471b72a7fe6d1f8d41c946a7377c67dfcbbcd98933f6b4413b6",
+      "match": true
+    },
+    {
+      "path": "land-presentation.js",
+      "status": 200,
+      "expected": "0fc7dd8f92f0887e44ede77e1672e6b2bd5e9d55aec70d48f5790b2b43d31a04",
+      "actual": "0fc7dd8f92f0887e44ede77e1672e6b2bd5e9d55aec70d48f5790b2b43d31a04",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "61337d5c4a1d7ceb75b06a2a9e2154ec54ee1d8799bd9981a9f7f3a3cf83df49",
+      "actual": "61337d5c4a1d7ceb75b06a2a9e2154ec54ee1d8799bd9981a9f7f3a3cf83df49",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "5ed1580e551e3d34856e9797ca213b8d3817d5887fb56cdf4554bde11fb33de9",
+      "actual": "5ed1580e551e3d34856e9797ca213b8d3817d5887fb56cdf4554bde11fb33de9",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9616953e11947ef2ca205cb90fb91fe3c0d0c4386b6d6902dd1755ad1e7537b5",
+      "actual": "9616953e11947ef2ca205cb90fb91fe3c0d0c4386b6d6902dd1755ad1e7537b5",
+      "match": true
+    },
+    {
+      "path": "tests/land-presentation.test.js",
+      "status": 200,
+      "expected": "8011e8a1ed9715ef065b21bfe8c1d4b9f59315e38dfd3df700bec28ab6a346c5",
+      "actual": "8011e8a1ed9715ef065b21bfe8c1d4b9f59315e38dfd3df700bec28ab6a346c5",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
