@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T04:10:05.126976+00:00",
+  "commit": "0c345ec7c63539bd03e99c2a0f0accb2daa48149",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "03583d9f35f1787d935ed5e97f00b89a94fd4486ecc9706f25b52b29422a5ef1",
+      "actual": "03583d9f35f1787d935ed5e97f00b89a94fd4486ecc9706f25b52b29422a5ef1",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "316bfad861c40a3571f29c3c614af7aa4926fe784cd26025d2d57096880de7af",
+      "actual": "316bfad861c40a3571f29c3c614af7aa4926fe784cd26025d2d57096880de7af",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-project-helpers-4x.json",
+      "status": 200,
+      "expected": "3d866895e3fa6cf0aab48070a1101e2b2a572d78cee410462c5ad151f115db45",
+      "actual": "3d866895e3fa6cf0aab48070a1101e2b2a572d78cee410462c5ad151f115db45",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-project-helpers-browser.json",
+      "status": 200,
+      "expected": "7027007e943f291c0db1839611f4465e1d2664ec50aed62a9fb3ade7d16e70fd",
+      "actual": "7027007e943f291c0db1839611f4465e1d2664ec50aed62a9fb3ade7d16e70fd",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "15658f7e7cfcf182e5ba87f21d09cb60f9494c38d61bfe002ba9c64528b20e6b",
+      "actual": "15658f7e7cfcf182e5ba87f21d09cb60f9494c38d61bfe002ba9c64528b20e6b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "c8e8affe74bbb62e9da575ab271fe6d5e01db52a3166085063fb79da8b27d8fc",
+      "actual": "c8e8affe74bbb62e9da575ab271fe6d5e01db52a3166085063fb79da8b27d8fc",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a528c6c8460cf1e717177554d89919c9e00d7047715b144742bc5650e88ad07b",
+      "actual": "a528c6c8460cf1e717177554d89919c9e00d7047715b144742bc5650e88ad07b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "eada95bd0328a3536d8a63a1d65777c226e87fa6a322473a84fe1d9c7505321a",
+      "actual": "eada95bd0328a3536d8a63a1d65777c226e87fa6a322473a84fe1d9c7505321a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "223ab434505e5f1f4b59d82642d1b282eb5be1640a9bbdf2c20538684934ace1",
+      "actual": "223ab434505e5f1f4b59d82642d1b282eb5be1640a9bbdf2c20538684934ace1",
+      "match": true
+    },
+    {
+      "path": "tests/human-water-project.test.js",
+      "status": 200,
+      "expected": "41b77a249633b2e20a16a021adb6e74d7527e78533559fa907ed9a9bcaf70e92",
+      "actual": "41b77a249633b2e20a16a021adb6e74d7527e78533559fa907ed9a9bcaf70e92",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "8861792b4657661e3541a641b041c97abd68497eff1f73d5cd628ab513bbea7a",
+      "actual": "8861792b4657661e3541a641b041c97abd68497eff1f73d5cd628ab513bbea7a",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
