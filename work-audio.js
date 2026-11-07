@@ -130,6 +130,9 @@ export function createWorkAudio(createContext=()=>{
     node.buffer=buffers.get('reeds');node.playbackRate.value=phase==='breath'?.62:.94;gain.gain.value=.10;
     node.connect(gain);gain.connect(context.destination);earthVoice=voice;
     node.onended=()=>{if(earthVoice===voice)earthVoice=null;release(voice);};node.start();
+   }else if(phase==='blessing'){
+    earthNotes=playStoneNote(context,294,.041);
+    earthNotes.push(...playStoneNote(context,392,.032,.16));
    }else earthNotes=playStoneNote(context,phase==='bow'?220:330,.045);
   }catch{stopEarth();}
   return ()=>{if(id===cueId)stopEarth();};

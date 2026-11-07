@@ -1099,7 +1099,7 @@ function makeMiracleCard(id,m){
  else if(id==='abundance'&&state.abundanceGift){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();abundancePresentation.cast(state);}
  else if(id==='haste'&&state.windDelivery){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();windPresentation.cast(state,lastMiracleTarget);}
  else if(id==='inspiration'&&state.creatorMaterials){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.cast(state);}
- else {if(id==='fertility'){creatorPresentation.skip();catchPresentation.skip();}renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);}toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
+ else {if(id==='fertility'){creatorPresentation.skip();catchPresentation.skip();}renderer.addEffect(id,state.miracleCelebration?.center||lastMiracleTarget);}if(id==='bless')cityAudio.cueEarth('blessing');toast(`${m.name} · ${state.name}`);save();update();checkDialogs();}else toast(result.reason);};$('miracles').append(details);return el;
 }
 for(const [id,m]of Object.entries(MIRACLES))if(shouldShowMiracle(state,id))makeMiracleCard(id,m);
 function update(){

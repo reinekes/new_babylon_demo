@@ -1,0 +1,30 @@
+[
+  {
+    "id": "sound",
+    "view": "2d",
+    "url": "?id=sound&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"audible\":true,\"voices\":6,\"backgroundStarts\":1,\"oneCommit\":true}"
+  },
+  {
+    "id": "sound",
+    "view": "3d",
+    "url": "?id=sound&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"audible\":true,\"voices\":6,\"backgroundStarts\":1,\"oneCommit\":true}"
+  },
+  {
+    "id": "muted",
+    "view": "2d",
+    "url": "?id=muted&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"audible\":false,\"voices\":0,\"backgroundStarts\":0,\"oneCommit\":true}"
+  },
+  {
+    "id": "muted",
+    "view": "3d",
+    "url": "?id=muted&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"audible\":false,\"voices\":0,\"backgroundStarts\":0,\"oneCommit\":true}"
+  }
+]
