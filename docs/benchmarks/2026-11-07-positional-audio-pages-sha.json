@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T15:50:08.633119+00:00",
+  "commit": "5cec2039f7fe3a840fe70a328f83c65fa1038ba4",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "260743281aa268e6ba1ac79488bf5e80b327f35508ab12f45712d97a29e660ca",
+      "actual": "260743281aa268e6ba1ac79488bf5e80b327f35508ab12f45712d97a29e660ca",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "expected": "a083135ce7d42a9148fb734cc3b75eea69738a1beecef15e5e70e79d8e28f1a3",
+      "actual": "a083135ce7d42a9148fb734cc3b75eea69738a1beecef15e5e70e79d8e28f1a3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-positional-audio-4x.json",
+      "status": 200,
+      "expected": "f4a0733a4b3541a72b5005b351aede3ed7eef9d459f8607d9fc672dba8e2b807",
+      "actual": "f4a0733a4b3541a72b5005b351aede3ed7eef9d459f8607d9fc672dba8e2b807",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-positional-audio-browser.json",
+      "status": 200,
+      "expected": "896713ff9b6158cacd23ff9eba590fbcab0a7e1f846d78615489a8dbeea261e5",
+      "actual": "896713ff9b6158cacd23ff9eba590fbcab0a7e1f846d78615489a8dbeea261e5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "c2aa9fbaf94a275585821b90f11a4ac7fb017aef298cff9ebbaac9f418faa9a6",
+      "actual": "c2aa9fbaf94a275585821b90f11a4ac7fb017aef298cff9ebbaac9f418faa9a6",
+      "match": true
+    },
+    {
+      "path": "tests/city-audio.test.js",
+      "status": 200,
+      "expected": "589f17c69052cdb93395e64647b4fb1118a6ac93275602979e9e63a5aa379179",
+      "actual": "589f17c69052cdb93395e64647b4fb1118a6ac93275602979e9e63a5aa379179",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
