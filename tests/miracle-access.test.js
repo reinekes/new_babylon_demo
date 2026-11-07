@@ -84,3 +84,31 @@ test('cat availability explains missing stores and blocked yards instead of clai
  assert.match(catReason(s),/свободный сухой двор/);
  assert.equal(s.pests.cats.length,0);
 });
+
+test('ordinary classic miracles commit once and reject repeats after a byte-identical reload',()=>{
+ const powers=Object.entries(MIRACLES).filter(([id,definition])=>id!=='richCatch'&&!definition.unlockBuilding&&!definition.unlockQuest);
+ for(const [id,definition] of powers){
+  const s=createGame({start:'established',mode:'mature'});
+  s.resources.faith=0;
+  const before=encode(s);
+  const denied=miracle(s,id);
+  assert.equal(denied.ok,false,id);
+  assert.match(denied.reason,/веры/,id);
+  assert.equal(encode(s),before,id);
+
+  s.resources.faith=100;
+  const cast=miracle(s,id);
+  assert.equal(cast.ok,true,`${id}: ${cast.reason}`);
+  assert.equal(s.resources.faith,100-definition.cost+(id==='revelation'?20:0),id);
+  assert.equal(s.miracleCount,1,id);
+  const committed=encode(s);
+  assert.equal(miracle(s,id).ok,false,id);
+  assert.equal(encode(s),committed,id);
+
+  const loaded=decode(committed);
+  assert.ok(loaded,id);
+  assert.equal(encode(loaded),committed,id);
+  assert.equal(miracle(loaded,id).ok,false,id);
+  assert.equal(encode(loaded),committed,id);
+ }
+});
