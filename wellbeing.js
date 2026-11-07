@@ -26,7 +26,7 @@ export function advanceWellbeing(s,dt){
    if(c.mealDay!==day){c.mealDay=day;c.mealEaten=c.commonMealDay===day?COMMON_PORTION:0;c.familyMeal=false;}
    if(s.funeral?.actors.some(a=>a.id===c.id))continue;
    const home=supplyHome(c,{arrived:true});
-   if(!home||!c.floodShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+   if(!home||!c.floodShelter&&!c.fireShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
    if(!families.has(home))families.set(home,[]);
    families.get(home).push(c);
   }

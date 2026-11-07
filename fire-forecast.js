@@ -2,6 +2,7 @@ import {buildingKey,isOperational} from './definitions.js';
 import {weatherAt} from './environment.js';
 import {FIRING_SECONDS,FIRE_RESPONSE_SECONDS,kilnNeedsRepair} from './kilns.js';
 import {isStrictSumer} from './scenario-profiles.js';
+import {supplyHome} from './households.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {planFireWaterTrips,waterDemand,waterpointCanReach} from './water.js';
 
@@ -18,7 +19,7 @@ function exposedHomes(s,kiln){
    homes.set(buildingKey(b),{home:b,need:0});
  }
  for(const c of s.citizens){
-  const row=homes.get(c.home);
+  const row=homes.get(supplyHome(c));
   if(row&&!c.floodShelter)row.need+=waterDemand(c);
  }
  return [...homes.values()].filter(row=>row.need>0).map(({home,need})=>({home,surplus:Math.max(0,(home.water||0)-need)}));

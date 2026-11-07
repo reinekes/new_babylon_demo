@@ -29,13 +29,13 @@ export function householdInitiative(s,source){
  const inProgress=new Set(s.buildings.flatMap(b=>b.householdInitiative&&!b.householdInitiative.settled?b.householdInitiative.members:[]));
  const families=residents.flatMap(c=>{
   const partner=byId.get(c.partner);
-  if(c.age<16||!partner||partner.age<16||c.floodShelter||partner.floodShelter)return [];
+  if(c.age<16||!partner||partner.age<16||c.floodShelter||partner.floodShelter||c.fireShelter||partner.fireShelter)return [];
   const split=c.home!==partner.home;
   const crowded=residents.some(other=>other!==c&&other!==partner&&other.partner!==null&&byId.get(other.partner)?.home===sourceKey);
   if(!split&&(!crowded||c.id>partner.id))return [];
   const mother=c.sex==='f'?c:partner;
   const family=[c,partner,...s.citizens.filter(child=>child.age<16&&child.parents.includes(mother.id))];
-  if(family.length>4||family.some(member=>member.floodShelter||inProgress.has(member.id)))return [];
+  if(family.length>4||family.some(member=>member.floodShelter||member.fireShelter||inProgress.has(member.id)))return [];
   return [family];
  });
  if(!families.length)return refuse('Новый двор нужен паре, которая живёт порознь или делит дом с другой семьёй');

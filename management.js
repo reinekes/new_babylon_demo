@@ -121,6 +121,7 @@ export function canDemolish(s,b){
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
  if(b.brickmaking?.wet>0)return 'Дождись высыхания партии сырца';
  if(Object.values(localDemolitionStock(b)).some(n=>n>1e-7)&&!localRefundStore(s,b))return 'Нужен доступный склад для домашних запасов и готовой продукции';
+ if(s.citizens.some(c=>c.fireShelter&&[c.home,c.fireShelter.host,c.fireShelter.kiln].includes(buildingKey(b))))return 'Дождись возвращения семьи из укрытия';
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
  if(s.citizens.some(c=>c.pantryTrip&&c.pantryTarget===buildingKey(b)))return 'Дождись доставки еды соседям';
  if(b.type==='healer'&&s.citizens.some(c=>c.clinic===buildingKey(b)))return 'Дождись возвращения пациентов домой';

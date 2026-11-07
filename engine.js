@@ -501,6 +501,12 @@ export function decode(raw){
    if(!integer(c.id)||ids.has(c.id)||!point(c)||(buildings.get(c.home)?.type!=='house'||!isComplete(buildings.get(c.home)))||!['toEveningGame','eveningGuest','toManualGathering','manualGathering','toCommonMeal','commonMeal','home','toWork','toWorkshop','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying','toDistrictSupply','toDistrictStore','waterTrip','toCraftSupply','toClothesSupply','toClothesHome','festival','relic','relicGuest','awakening'].includes(c.phase))return null;
    if(['toEveningGame','eveningGuest'].includes(c.phase)&&(!isStrictSumer(s)||c.age<16))return null;
    if(c.floodShelter!==undefined&&(typeof c.floodShelter!=='string'||!/^\d+,\d+$/.test(c.floodShelter)||c.phase!=='blocked'||!isStrictSumer(s)))return null;
+   if(c.fireShelter!==undefined){
+    const shelter=c.fireShelter;
+    if(!isStrictSumer(s)||!shelter||c.floodShelter||c.phase!=='blocked'||shelter.host===c.home||
+     buildings.get(shelter.host)?.type!=='house'||buildings.get(shelter.kiln)?.type!=='kiln'||
+     shelter.returning!==undefined&&shelter.returning!==true||Object.keys(shelter).length!==2+Number(shelter.returning===true))return null;
+   }
    if(c.recovering!==undefined&&typeof c.recovering!=='boolean')return null;
    if(c.clinic!=null&&(buildings.get(c.clinic)?.type!=='healer'||!isComplete(buildings.get(c.clinic))||!['toHealer','treatment','blocked'].includes(c.phase)||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)||c.pantryTrip||c.tradeJob||c.saleJob))return null;
    if(['toHealer','treatment'].includes(c.phase)&&!c.clinic)return null;

@@ -55,8 +55,8 @@ export function arrivalHousing(s,{includeReserved=false}={}){
  }
  for(const c of s.citizens){
   if(vacancies.has(c.home))vacancies.set(c.home,vacancies.get(c.home)-1);
-  if(c.floodShelter!==c.home&&vacancies.has(c.floodShelter))
-   vacancies.set(c.floodShelter,vacancies.get(c.floodShelter)-1);
+  const shelter=c.floodShelter||c.fireShelter?.host;
+  if(shelter!==c.home&&vacancies.has(shelter))vacancies.set(shelter,vacancies.get(shelter)-1);
  }
  const group=s.arrivalGroup;
  if(!includeReserved&&group&&vacancies.has(group.home))vacancies.set(group.home,vacancies.get(group.home)-group.count);
@@ -136,7 +136,7 @@ export function reserveArrival(s,network,expected){
  return true;
 }
 
-export const reservedArrivalBeds=(s,home)=>s.arrivalGroup?.home===home?s.arrivalGroup.count:0;
+export const reservedArrivalBeds=(s,home)=>(s.arrivalGroup?.home===home?s.arrivalGroup.count:0)+s.citizens.filter(c=>c.fireShelter?.host===home).length;
 
 function welcomeEvidence(welcomes){
  const candidates=[];
