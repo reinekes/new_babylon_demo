@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T19:42:24.017593+00:00",
+  "commit": "5c04fffd6130a4525e3151feeded355c52df7517",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "b7082c7a8101a877f9e8701dd97a5bad81dde7e98d7dc4739d602c717a42e20c",
+      "actual": "b7082c7a8101a877f9e8701dd97a5bad81dde7e98d7dc4739d602c717a42e20c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "74e56059390761c2dea3f70b4dc5438abdbb8ccdd61de7353fb39a552aeb4269",
+      "actual": "74e56059390761c2dea3f70b4dc5438abdbb8ccdd61de7353fb39a552aeb4269",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "f0ee2dc99e127e82dc602925fd8f878da2f28b7200aa47df08627012391bdf09",
+      "actual": "f0ee2dc99e127e82dc602925fd8f878da2f28b7200aa47df08627012391bdf09",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-project-progress-4x.json",
+      "status": 200,
+      "expected": "5fc09b2c7b29258dd67d23ca920f84e0bf794dbb111f3b7d11cc3ca5130bdd6f",
+      "actual": "5fc09b2c7b29258dd67d23ca920f84e0bf794dbb111f3b7d11cc3ca5130bdd6f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-project-progress-browser.json",
+      "status": 200,
+      "expected": "7711a0cb83d7a745c468334cd3c2d7489adf028412dffaee2c86751c0218cfef",
+      "actual": "7711a0cb83d7a745c468334cd3c2d7489adf028412dffaee2c86751c0218cfef",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1c6ef03e799081a5bc48a44c3751d5a4b7db16edea699562269f005f09c6716c",
+      "actual": "1c6ef03e799081a5bc48a44c3751d5a4b7db16edea699562269f005f09c6716c",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
