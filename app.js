@@ -31,7 +31,7 @@ import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
 import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
-import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,VOW_FAILURE_TEXT} from './supply-vow.js';
+import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,vowTargetRebuilt,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
 import {setCommonMeals} from './common-meal.js';
 import {isVotiveTemple,isMemoryKeeper,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
@@ -471,7 +471,7 @@ function supplyVowPanel(report){
  const forecast=(h,required)=>h
   ? `Дома ${foodAmount(h.food)} из ${foodAmount(required)} · в пути ${foodAmount(h.inTransit)} · на доступных складах ${foodAmount(h.localFood)} · ${h.reachable?'путь открыт':'путь закрыт'}`
   : 'Двор больше недоступен';
- const progress=active?`<p>Осталось ${Math.max(0,(active.deadline-state.simTime)/60).toFixed(1)} игр. дня.</p><ul>${active.targets.map(t=>`<li>Двор ${esc(t.home)} · ${t.residents.map(id=>resident(id)).join(', ')}<br>${t.delivery?`Доставку подтвердил ${resident(t.delivery.witness)}`:forecast(houses.get(t.home),t.required)}</li>`).join('')}</ul>${active.previous===null?'<button type="button" data-vow-extend>Продлить на день · −1 доверие получателей</button>':''}`
+ const progress=active?`<p>Осталось ${Math.max(0,(active.deadline-state.simTime)/60).toFixed(1)} игр. дня.</p><ul>${active.targets.map(t=>`<li>Двор ${esc(t.home)} · ${t.residents.map(id=>resident(id)).join(', ')}<br>${t.delivery?`Доставку подтвердил ${resident(t.delivery.witness)}`:vowTargetRebuilt(t,houses.get(t.home))?VOW_FAILURE_TEXT.rebuilt:forecast(houses.get(t.home),t.required)}</li>`).join('')}</ul>${active.previous===null?'<button type="button" data-vow-extend>Продлить на день · −1 доверие получателей</button>':''}`
   : `<p>Выбери до трёх дворов. Цель — запас на два ужина за два игровых дня.</p><ul>${[...vowDraft].map(key=>{const h=houses.get(key);return `<li>${town(h)} · ${forecast(h,2*h.demand)}</li>`;}).join('')}</ul><button type="button" data-vow-accept ${vowDraft.size&&state.resources.faith>=2?'':'disabled'}>Принять обет · 2 веры</button>`;
  const results=history.slice(-5).reverse().map(v=>`<li><b>${vowOutcomes[v.outcome]}</b> · ${v.targets.map(t=>`${esc(t.home)} — ${t.delivery?'доставлено':v.outcome==='renegotiated'?'ожидают':VOW_FAILURE_TEXT[t.failure]}`).join(', ')}</li>`).join('');
  return `<section class="food-forecast"><h3>Обет снабжения дворов</h3>${progress}${results?`<details><summary>Последние исходы</summary><ul>${results}</ul></details>`:''}</section>`;

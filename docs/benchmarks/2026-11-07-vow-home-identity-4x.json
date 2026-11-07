@@ -1,0 +1,11 @@
+{
+  "buildings": 130,
+  "initialPopulation": 200,
+  "population": 242,
+  "failure": "rebuilt",
+  "byteIdenticalReload": true,
+  "steps": 960,
+  "cpuMedianMs": 11.497166000001016,
+  "cpuP95Ms": 44.90762500000028,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

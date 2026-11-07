@@ -140,3 +140,44 @@ test('vow names distinguish actual fulfilment, repeated households, and repaired
  assert.deepEqual(vowNameEvidence(s)?.map(f=>f.target.home),[buildingKey(a),buildingKey(b)]);
  assert.equal(s.supplyVows.history[0].outcome,'broken');
 });
+
+test('a rebuilt courtyard cannot fulfill a vow to the original even with the same residents',()=>{
+ let {s,houses}=city();
+ const original=houses[0],key=buildingKey(original);
+ for(const house of houses.slice(1))house.pantry=house.pantryDelivered=40;
+ assert.ok(acceptSupplyVow(s,[key]).ok);
+ const replacement={...original,pantry:s.supplyVows.active.targets[0].required};
+ replacement.pantryDelivered=replacement.pantry;
+ delete replacement.waterEntityId;
+ s.buildings[s.buildings.indexOf(original)]=replacement;
+ recordVowDelivery(s,replacement,s.citizens.find(c=>c.home===key),replacement.pantry);
+ assert.equal(s.supplyVows.active?.targets[0].delivery,null);
+ assert.ok(extendSupplyVow(s).ok);
+ const raw=encode(s);
+ const forged=JSON.parse(raw);
+ delete forged.supplyVows.active.targets[0].homeId;
+ assert.equal(decode(JSON.stringify(forged)),null);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ for(let i=0;i<800&&s.supplyVows.active;i++){s.event=null;advanceTime(s,.5);}
+ assert.equal(s.supplyVows.active,null);
+ assert.equal(s.supplyVows.history.at(-1).targets[0].failure,'rebuilt');
+ assert.ok(decode(encode(s)));
+});
+
+test('old address-based vows round-trip and keep their original delivery rule',()=>{
+ const {s,houses}=city(),home=houses[0],key=buildingKey(home);
+ assert.ok(acceptSupplyVow(s,[key]).ok);
+ const target=s.supplyVows.active.targets[0];
+ delete target.homeId;
+ delete home.waterEntityId;
+ delete s.causalFacts;
+ const raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),raw);
+ const house=loaded.buildings.find(b=>buildingKey(b)===key);
+ house.pantry=house.pantryDelivered=target.required;
+ recordVowDelivery(loaded,house,loaded.citizens.find(c=>c.home===key),house.pantry);
+ assert.equal(loaded.supplyVows.history.at(-1).outcome,'fulfilled');
+});

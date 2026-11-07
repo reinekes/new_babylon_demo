@@ -4,6 +4,7 @@ import {homeMealFood} from './households.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {supplyOverview} from './supply.js';
+import {ensureHouseEntityId} from './causal-facts.js';
 import {affectResidents} from './wellbeing.js';
 
 const EPS=1e-7;
@@ -11,6 +12,7 @@ const COST=2;
 const INITIAL_TERM=2*DAY_SECONDS;
 const outcomes=['fulfilled','partial','broken','renegotiated'];
 export const VOW_FAILURE_TEXT={
+ rebuilt:'Первоначальный двор снесён или заменён',
  moved:'Получатели больше не живут по этому адресу',
  route:'Путь к складу закрыт',
  inTransit:'Еда ещё в пути',
@@ -18,6 +20,8 @@ export const VOW_FAILURE_TEXT={
  short:'Двор не получил запас на два ужина',
  noDelivery:'К сроку не было подтверждённой доставки',
 };
+
+export const vowTargetRebuilt=(target,home)=>target.homeId!==undefined&&target.homeId!==home?.homeId;
 
 export function acceptSupplyVow(s,keys){
  const reason=cityCommandReason(s);
@@ -28,7 +32,8 @@ export function acceptSupplyVow(s,keys){
  const houses=new Map(supplyOverview(s).houses.map(h=>[h.key,h]));
  const selected=keys.map(key=>houses.get(key));
  if(selected.some(h=>!h?.residents.length||!h.reachable||h.food+EPS>=2*h.demand))return {ok:false,reason:'Выбранному двору нужен запас и доступный путь к складу'};
- const targets=selected.map(h=>({home:h.key,residents:h.residents.map(c=>c.id),initial:h.food,required:2*h.demand,delivery:null}));
+ const buildings=new Map(s.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new').map(b=>[buildingKey(b),b]));
+ const targets=selected.map(h=>({home:h.key,homeId:ensureHouseEntityId(s,buildings.get(h.key)),residents:h.residents.map(c=>c.id),initial:h.food,required:2*h.demand,delivery:null}));
  s.supplyVows??={active:null,history:[]};
  s.supplyVows.active={id:s.supplyVows.history.length+1,start:s.simTime,deadline:s.simTime+INITIAL_TERM,previous:null,targets};
  s.resources.faith-=COST;
@@ -63,7 +68,8 @@ export function advanceSupplyVow(s){
  for(const target of vow.targets){
   if(target.delivery)continue;
   const home=houses.get(target.home);
-  if(!home?.residents.some(c=>target.residents.includes(c.id)))target.failure='moved';
+  if(vowTargetRebuilt(target,home))target.failure='rebuilt';
+  else if(!home?.residents.some(c=>target.residents.includes(c.id)))target.failure='moved';
   else if(!home.reachable)target.failure='route';
   else if(home.inTransit>EPS)target.failure='inTransit';
   else if(home.food+EPS>=target.required)target.failure='noDelivery';
@@ -76,7 +82,7 @@ export function advanceSupplyVow(s){
 export function recordVowDelivery(s,house,courier,amount){
  const vow=s.supplyVows?.active;
  if(!vow||house?.type!=='house'||amount<=EPS||s.simTime>=vow.deadline)return;
- const target=vow.targets.find(t=>t.home===buildingKey(house)&&!t.delivery);
+ const target=vow.targets.find(t=>t.home===buildingKey(house)&&!t.delivery&&(t.homeId===undefined||t.homeId===house.waterEntityId));
  if(!target||homeMealFood(house)+EPS<target.required)return;
  const recipient=s.citizens.find(c=>c.home===target.home&&target.residents.includes(c.id));
  if(!recipient)return;
@@ -164,7 +170,7 @@ export function validateSupplyVows(s){
   const original=rows[index-1];
   return v.start===original.ended&&v.deadline===original.deadline+DAY_SECONDS&&v.targets.length===original.targets.length&&v.targets.every((target,i)=>{
    const prior=original.targets[i];
-   return target.home===prior.home&&target.initial===prior.initial&&target.required===prior.required&&
+   return target.home===prior.home&&target.homeId===prior.homeId&&target.initial===prior.initial&&target.required===prior.required&&
     target.residents.length===prior.residents.length&&target.residents.every((id,j)=>id===prior.residents[j])&&
     (prior.delivery?target.delivery?.witness===prior.delivery.witness&&target.delivery.recipient===prior.delivery.recipient&&target.delivery.time===prior.delivery.time:
      !target.delivery||target.delivery.time>=v.start);
