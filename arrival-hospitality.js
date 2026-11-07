@@ -170,6 +170,13 @@ export function createArrivalFamily(s,home,count){
  return family;
 }
 
+export function householdWelcomeEvidence(s,residents){
+ if(!residents.length||!s.arrivalHospitality?.welcomes)return null;
+ const ids=new Set(residents.map(c=>c.id));
+ return s.arrivalHospitality.welcomes.findLast(row=>row.host!==null&&
+  (ids.has(row.host)||row.members.some(id=>ids.has(id))))||null;
+}
+
 export function lastArrivalWelcome(s,home,residents){
  const ids=residents&&new Set(residents.map(c=>c.id));
  return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home&&

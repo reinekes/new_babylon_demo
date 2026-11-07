@@ -181,13 +181,18 @@ test('an arriving family keeps its parents, home welcome and independent belief 
 });
 
 test('the hospitality name requires different hosts at different occupied courtyards and retains their welcomes',async()=>{
- const {createArrivalFamily,hospitalityNameEvidence,lastArrivalWelcome}=await import('../arrival-hospitality.js');
+ const {createArrivalFamily,hospitalityNameEvidence,lastArrivalWelcome,householdWelcomeEvidence}=await import('../arrival-hospitality.js');
  const s=createNewCity({mode:'awakening',seed:1}),first=s.citizens[0],second=s.citizens[1];
  first.age=second.age=30;
  const a=first.home,b='10,8';
  assert.notEqual(a,b);
- createArrivalFamily(s,b,2);
- createArrivalFamily(s,a,2);
+ const unhosted=createArrivalFamily(s,b,2);
+ assert.equal(householdWelcomeEvidence(s,unhosted),null);
+ const guests=createArrivalFamily(s,a,2);
+ const firstWelcome=s.arrivalHospitality.welcomes.at(-1);
+ assert.deepEqual(householdWelcomeEvidence(s,[first]),firstWelcome);
+ assert.deepEqual(householdWelcomeEvidence(s,[{...guests[0],home:b}]),firstWelcome);
+ assert.equal(householdWelcomeEvidence(s,[second]),null);
  assert.equal(hospitalityNameEvidence(s),null);
  first.home=b;
  second.home=a;

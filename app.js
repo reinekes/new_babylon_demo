@@ -9,7 +9,7 @@ import {starForecastView} from './star-forecast.js';
 import {createPeacePresentation} from './peace-presentation.js';
 import {PEACE_LIMIT,PEACE_MOOD,PEACE_RADIUS,peaceKnowledgeReason,peaceQuote} from './peace-discovery.js';
 import {createArrivalPresentation} from './arrival-presentation.js';
-import {arrivalKnowledgeReason,arrivalOffer,arrivalRoute,hospitalityNameEvidence,lastArrivalWelcome} from './arrival-hospitality.js';
+import {arrivalKnowledgeReason,arrivalOffer,arrivalRoute,hospitalityNameEvidence,householdWelcomeEvidence,lastArrivalWelcome} from './arrival-hospitality.js';
 import {createShapingPresentation} from './shaping-presentation.js';
 import {shapingBatchQuote} from './shaping-batch.js';
 import {createRevelationPresentation} from './revelation-presentation.js';
@@ -720,12 +720,16 @@ function eveningGamePanel(b){
  return `<section class="house-food" data-evening-game><b>${game.guestHome?'Игра с соседями':'Вечерняя игра'} · день ${Math.floor(game.startedAt/60)+1}</b><p>${game.players.map(id=>resident(id)).join(' и ')}<br>${text[game.status]}</p></section>`;
 }
 function householdNamesHTML(residents){
- const {water,healing}=householdNameEvidence(state,residents);
+ const {water,healing,harvest,craft}=householdNameEvidence(state,residents);
  const vow=householdVowEvidence(state,residents);
- if(!water&&!healing&&!vow)return '';
+ const welcome=householdWelcomeEvidence(state,residents);
+ if(!water&&!healing&&!vow&&!harvest&&!craft&&!welcome)return '';
+ const grain=harvest?`<p data-household-harvest-name><b>Накормивший семью</b><br>${resident(harvest.recipientId)} помнит, как двор ${esc(harvest.home)} получил ${foodAmount(harvest.amount)} зерна с поля ${esc(harvest.field)}. Земледелец — ${resident(harvest.farmerId)}.</p>`:'';
+ const guests=welcome?`<p data-household-hospitality-name><b>Соединивший семьи</b><br>${resident(welcome.host)} принял во дворе ${esc(welcome.home)} новых жителей: ${welcome.members.map(id=>resident(id)).join(', ')}.</p>`:'';
+ const training=craft?`<p data-household-craft-name><b>Помогший стать мастером</b><br>${resident(craft.pupilId)} достиг III уровня на стройке ${esc(craft.site.join(', '))}. Наставник — ${resident(craft.mentorId)}.</p>`:'';
  const promise=vow?`<p><b>${vow.target.delivery?'Сдержавший слово':'Не сдержавший слова'}</b><br>Обет №${vow.vowId} · двор ${esc(vow.target.home)}<br>${vow.target.delivery?`${resident(vow.target.delivery.recipient)} получил обещанный запас. В доставке участвовал ${resident(vow.target.delivery.witness)}.`:esc(VOW_FAILURE_TEXT[vow.target.failure])}</p>`:'';
 
- return `<section class="house-food" data-household-names><h4>Как семья называет бога</h4>${water?`<p><b>Принёсший воду</b><br>${resident(water.recipientId??water.requesterId)} помнит доставку из водозабора ${esc(water.station)}. Водонос ${resident(water.courierId)} принёс ${foodAmount(water.amount)} воды.</p>`:''}${healing?`<p><b>Сберёгший больного</b><br>${resident(healing.patientId)} помнит, как ${resident(healing.healerId)} помог выйти из тяжёлого состояния.</p>`:''}${promise}</section>`;
+ return `<section class="house-food" data-household-names><h4>Как семья называет бога</h4>${water?`<p><b>Принёсший воду</b><br>${resident(water.recipientId??water.requesterId)} помнит доставку из водозабора ${esc(water.station)}. Водонос ${resident(water.courierId)} принёс ${foodAmount(water.amount)} воды.</p>`:''}${healing?`<p><b>Сберёгший больного</b><br>${resident(healing.patientId)} помнит, как ${resident(healing.healerId)} помог выйти из тяжёлого состояния.</p>`:''}${promise}${grain}${guests}${training}</section>`;
 }
 function renderHousehold(b){const panel=$('household-panel');if(!panel)return;const h=household(state,b),diagnostic=householdTab==='food'?supplyOverview(state).houses.find(h=>h.key===buildingKey(b)):null,adult=h.residents.filter(c=>c.age>=16);
  const row=c=>`<article class="house-person"><b>${resident(c)}</b><span>${rounded(c.age)} лет · ${c.age<16?'ребёнок':c.age>=55?'пожилой':'взрослый'}${['home','resting'].includes(c.phase)&&(c.diningUntil||0)>state.simTime?' · ужинает':''}</span><small>Голод ${Math.round(c.hunger||0)}% · здоровье ${Math.round(c.health??100)}% · настроение ${Math.round(c.mood??75)}% · вера ${Math.round(c.faith??60)}%</small><small>${c.parents?.length?`Родители: ${c.parents.map(id=>`${resident(id)}${state.citizens.some(p=>p.id===id)?'':state.lifeAnalytics?.people.some(p=>p.id===id&&p.diedTick!==null)?' †':' · запись не сохранилась'}`).join(', ')}`:c.partner!==null?`Супруг(а): ${resident(c.partner)}`:'Основатель / переселенец'}</small></article>`;

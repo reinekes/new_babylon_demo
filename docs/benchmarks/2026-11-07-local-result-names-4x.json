@@ -1,0 +1,41 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "results": [
+    {
+      "name": "harvest",
+      "buildings": 130,
+      "initialPopulation": 200,
+      "population": 222,
+      "steps": 300,
+      "participant": 0,
+      "localEvidencePreserved": true,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.5539169999999842,
+      "cpuP95Ms": 5.359082999999998
+    },
+    {
+      "name": "craft",
+      "buildings": 130,
+      "initialPopulation": 222,
+      "population": 242,
+      "steps": 300,
+      "participant": 1,
+      "localEvidencePreserved": true,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.3808329999999387,
+      "cpuP95Ms": 5.502915999999914
+    },
+    {
+      "name": "hospitality",
+      "buildings": 130,
+      "initialPopulation": 212,
+      "population": 235,
+      "steps": 300,
+      "participant": 200,
+      "localEvidencePreserved": true,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.369499999999789,
+      "cpuP95Ms": 6.204833000000008
+    }
+  ]
+}

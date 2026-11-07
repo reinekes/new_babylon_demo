@@ -109,7 +109,7 @@ test('the milestone needs three currently operational fields and an inspired gra
 });
 
 test('home grain counts the tagged portion at two separate recipients',async()=>{
- const {harvestNameEvidence}=await import('../causal-facts.js');
+ const {harvestNameEvidence,householdNameEvidence}=await import('../causal-facts.js');
  const {createGame}=await import('../engine.js');
  const {strictScenario,CAT_DISCOVERY_RULES}=await import('../scenario-profiles.js');
  const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
@@ -126,6 +126,10 @@ test('home grain counts the tagged portion at two separate recipients',async()=>
  acceptFieldGrain(s,courier,2,false,first);
  acceptFieldGrain(s,courier,1,false,first);
  assert.equal(harvestNameEvidence(s),null);
+ const firstReceipt=s.causalFacts.harvest[0];
+ const recipient=s.citizens.find(c=>c.id===firstReceipt.recipientId);
+ assert.deepEqual(householdNameEvidence(s,[{...recipient,home:'2,2'}]).harvest,firstReceipt);
+ assert.equal(householdNameEvidence(s,s.citizens.filter(c=>c.id!==recipient.id)).harvest,null);
  acceptFieldGrain(s,courier,1,false,second);
  assert.deepEqual(harvestNameEvidence(s)?.map(r=>r.amount),[2,1]);
  assert.equal(s.earthDiscovery.receipts.length,0);

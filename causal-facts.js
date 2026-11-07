@@ -68,13 +68,15 @@ export function healingNameEvidence(s){
 
 export function householdNameEvidence(s,residents){
  const ledger=s.causalFacts;
- if(!ledger||!residents.length)return {water:null,healing:null};
+ if(!ledger||!residents.length)return {water:null,healing:null,harvest:null,craft:null};
  const ids=new Set(residents.map(c=>c.id));
  const requested=ledger.water.findLast(f=>ids.has(f.requesterId));
  const witnessed=ledger.waterWitnesses?.findLast(f=>ids.has(f.recipientId));
  const water=witnessed&&(!requested||witnessed.time>requested.time)?witnessed:requested;
  const healing=ledger.healing?.findLast(f=>ids.has(f.patientId));
- return {water:water||null,healing:healing||null};
+ const harvest=ledger.harvest?.findLast(f=>ids.has(f.recipientId));
+ const craft=ledger.craft?.findLast(f=>ids.has(f.pupilId));
+ return {water:water||null,healing:healing||null,harvest:harvest||null,craft:craft||null};
 }
 
 export function recordHealingNameEvidence(s,healer,patient){

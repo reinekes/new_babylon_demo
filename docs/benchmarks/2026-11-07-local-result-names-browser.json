@@ -1,0 +1,44 @@
+[
+  {
+    "id": "harvest",
+    "view": "2d",
+    "url": "?id=harvest&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d harvest evidence follows participant after move and load"
+  },
+  {
+    "id": "harvest",
+    "view": "3d",
+    "url": "?id=harvest&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d harvest evidence follows participant after move and load"
+  },
+  {
+    "id": "hospitality",
+    "view": "2d",
+    "url": "?id=hospitality&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d hospitality evidence follows participant after move and load"
+  },
+  {
+    "id": "hospitality",
+    "view": "3d",
+    "url": "?id=hospitality&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d hospitality evidence follows participant after move and load"
+  },
+  {
+    "id": "craft",
+    "view": "2d",
+    "url": "?id=craft&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d craft evidence follows participant after move and load"
+  },
+  {
+    "id": "craft",
+    "view": "3d",
+    "url": "?id=craft&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d craft evidence follows participant after move and load"
+  }
+]

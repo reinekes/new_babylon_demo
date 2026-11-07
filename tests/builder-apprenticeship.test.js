@@ -62,7 +62,7 @@ test('two builders train on a real site, and changing the mentor role preserves 
 test('craft title counts mastery earned through shared work in two households',async()=>{
  const {createGame,encode,decode}=await import('../engine.js');
  const {strictScenario}=await import('../scenario-profiles.js');
- const {craftNameEvidence}=await import('../causal-facts.js');
+ const {craftNameEvidence,householdNameEvidence}=await import('../causal-facts.js');
  const s=createGame({start:'established',mode:'awakening',scenario:strictScenario()});
  const mentor=s.citizens[0],first=s.citizens[1],second=s.citizens.find(c=>c.home!==first.home&&c.age>=16);
  Object.assign(s.godhood,{stage:'recognized',witnessId:mentor.id,recognitionAt:0,believerIds:[mentor.id,first.id,second.id]});
@@ -80,5 +80,8 @@ test('craft title counts mastery earned through shared work in two households',a
  const pair=craftNameEvidence(s);
  assert.deepEqual(pair?.map(row=>row.pupilId),[first.id,second.id]);
  assert.deepEqual(pair[1].site,[10.5,9]);
- assert.deepEqual(craftNameEvidence(decode(encode(s))),pair);
+ const loaded=decode(encode(s));
+ assert.deepEqual(craftNameEvidence(loaded),pair);
+ assert.deepEqual(householdNameEvidence(loaded,[{...second,home:'2,2'}]).craft,pair[1]);
+ assert.equal(householdNameEvidence(loaded,[mentor]).craft,null);
 });
