@@ -39,7 +39,7 @@ import {reedStatus,REED_CAPACITY} from './reed-stock.js';
 import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
 import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
 import {fisheryOptions} from './labor-life.js';
-import {isStrictSumer} from './scenario-profiles.js';
+import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
@@ -47,7 +47,7 @@ import {canalSiltingForecast,depthCanalTarget,irrigationFor,fieldWater} from './
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {miraclePrice} from './miracle-discovery.js';
-import {miracleCelebrationReason,startInannaMeeting} from './miracle-celebration.js';
+import {advanceMiracleCelebration,miracleCelebrationReason,startInannaMeeting} from './miracle-celebration.js';
 import {createNewCity} from './new-game.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {createUrukInterface} from './ui-uruk.js';
@@ -1346,14 +1346,24 @@ dialog.addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='mode'&&d
 document.addEventListener('keydown',e=>{if(seasonJumping){e.preventDefault();return;}if(relicControlActive(state)){if(e.code==='Space'&&!['INPUT','SELECT','BUTTON'].includes(e.target.tagName)){e.preventDefault();paused=!paused;save();update();}return;}if(photo.active||dialog.open||['INPUT','TEXTAREA','SELECT','SUMMARY'].includes(e.target.tagName))return;if(e.code==='KeyR'&&selection){e.preventDefault();rotatePlacement(e.shiftKey?-1:1);return;}if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(testMapUpgrade){testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');toast('Тестовое улучшение закончено');return;}if(roadMode){clearRoadRoute();$('tile-detail').hidden=true;roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
 let shownEvent=null,shownFeast=null,shownMiracle=null,lastBeerStatus=state.firstBeerFeast?.status;
-const ceremonyNotice=document.createElement('button');ceremonyNotice.className='ceremony-notice';ceremonyNotice.hidden=true;$('city').parentNode.append(ceremonyNotice);ceremonyNotice.onclick=()=>{if(state.miracleCelebration){const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);}else if(state.festival)showFestival();else if(state.funeral?.gather)renderer.focusOn(state.funeral.gather.x,state.funeral.gather.y);};
+const ceremonyControls=document.createElement('div');ceremonyControls.className='ceremony-notice';ceremonyControls.hidden=true;
+const ceremonyNotice=document.createElement('button');ceremonyNotice.type='button';
+const skipCatScene=document.createElement('button');skipCatScene.type='button';skipCatScene.textContent='Пропустить сцену';skipCatScene.hidden=true;
+ceremonyControls.append(ceremonyNotice,skipCatScene);$('city').parentNode.append(ceremonyControls);
+ceremonyNotice.onclick=()=>{if(state.miracleCelebration){const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);}else if(state.festival)showFestival();else if(state.funeral?.gather)renderer.focusOn(state.funeral.gather.x,state.funeral.gather.y);};
+skipCatScene.onclick=()=>{
+ const scene=state.miracleCelebration;
+ if(scene?.kind!=='cat'||!usesCatDiscovery(state))return;
+ advanceMiracleCelebration(state,scene.duration-scene.elapsed);
+ syncCeremonySpeed();ceremonyPresentation();save();update();
+};
 function ceremonyPresentation(){
- const miracleScene=state.miracleCelebration;if(miracleScene&&shownMiracle!==miracleScene){shownMiracle=miracleScene;renderer.focusOn(miracleScene.center.x,miracleScene.center.y);toast(miracleScene.kind==='cat'?(miracleScene.duration===8?'Кошка идёт к новому хранилищу.':'Неожиданный гость: жители встречают кошку!'):'Дыхание земли: жители собираются у чудесного сада!');}if(!miracleScene)shownMiracle=null;
+ const miracleScene=state.miracleCelebration;if(miracleScene&&shownMiracle!==miracleScene){shownMiracle=miracleScene;if(miracleScene.kind!=='cat'||!usesCatDiscovery(state))renderer.focusOn(miracleScene.center.x,miracleScene.center.y);toast(miracleScene.kind==='cat'?(miracleScene.duration===8?'Кошка идёт к новому хранилищу.':'Неожиданный гость: жители встречают кошку!'):'Дыхание земли: жители собираются у чудесного сада!');}if(!miracleScene)shownMiracle=null;
  if(state.event!==shownEvent){shownEvent=state.event;if(shownEvent)renderer.addEffect(cityEventDefinition(shownEvent.id)?.effectId||'blessing');}
  const q=state.festival;if(q?.stage==='celebrating'&&q!==shownFeast){shownFeast=q;const view=festivalView(state),p=view?.court||view;if(p){renderer.addEffect('festival',{x:p.x,y:p.y});renderer.focusOn(p.x,p.y);}toast(q.occasion==='firstBeer'?'Первая партия пива выпущена! Начался пир у пивоварни.':'Ночь огней началась: жители пируют и танцуют.');}
  if(!q)shownFeast=null;
  if(lastBeerStatus!==state.firstBeerFeast?.status){lastBeerStatus=state.firstBeerFeast?.status;if(lastBeerStatus==='pending')toast('Первая партия пива выпущена! Жители готовят малый пир у пивоварни.');}
- const text=festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);ceremonyNotice.hidden=!text;ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
+ const text=festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);ceremonyControls.hidden=!text;skipCatScene.hidden=miracleScene?.kind!=='cat'||!usesCatDiscovery(state);ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
 }
 function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();

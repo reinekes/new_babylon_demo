@@ -33,3 +33,20 @@ test('a saved single-point short arrival cannot stand in water',()=>{
  const s=afterFirst();assert.equal(miracle(s,'cat').ok,true);let wet;for(let y=0;y<32&&!wet;y++)for(let x=0;x<40;x++)if(terrain(x,y,s)==='water'){wet={x,y};break;}
  assert.ok(decode(encode(s)));s.miracleCelebration.cat.path=[wet];s.miracleCelebration.cat.stroll=[wet];s.miracleCelebration.cat.exit=[wet];assert.equal(decode(encode(s)),null);
 });
+
+test('the first C01 arrival invites at most four free adults and keeps busy residents out of the scene',()=>{
+ const s=afterFirst();
+ const busy=s.citizens[0],child=s.citizens[1],rest=s.citizens.slice(2);
+ Object.assign(busy,{age:30,phase:'home',cargo:{food:1}});
+ Object.assign(child,{age:10,phase:'home'});
+ for(const c of rest)Object.assign(c,{age:30,phase:'home',health:100,cargo:{},buildCargo:{}});
+ s.catDiscovery.trial='ready';
+ assert.ok(startMiracleCelebration(s,'cat',{catId:s.pests.cats[0].id}));
+ const joined=s.miracleCelebration.participants.filter(a=>a.joined);
+ assert.equal(joined.length,4);
+ assert.ok(joined.every(a=>a.id!==busy.id&&a.id!==child.id));
+ const people=structuredClone(s.citizens);
+ advanceTime(s,20);
+ assert.deepEqual(miracleCelebrationView(s).participants.filter(a=>a.celebrating).map(a=>a.id),joined.map(a=>a.id));
+ assert.deepEqual(s.citizens,people);
+});

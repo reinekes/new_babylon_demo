@@ -1,0 +1,16 @@
+[
+  {
+    "id": "skip",
+    "view": "2d",
+    "url": "?id=skip&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d scene skip preserved cat, faith and time"
+  },
+  {
+    "id": "skip",
+    "view": "3d",
+    "url": "?id=skip&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d scene skip preserved cat, faith and time"
+  }
+]

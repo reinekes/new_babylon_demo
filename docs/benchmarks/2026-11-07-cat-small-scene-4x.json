@@ -1,0 +1,10 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "speed": 4,
+  "joined": 4,
+  "planCpuMs": 22.50070799999999,
+  "medianStepCpuMs": 0.09012500000000045,
+  "p95StepCpuMs": 0.16045799999997712,
+  "reloadByteIdentical": true
+}
