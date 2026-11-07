@@ -10,3 +10,6 @@
 .depth-ripple::before { content: ''; display: block; width: 100%; height: 100%; border: 1px solid #c1f2da; border-radius: 50%; animation: depth-ripple 6s infinite; }
 @keyframes depth-ripple { 0%,65%,100% { opacity: 0; transform: scale(.5); } 75% { opacity: .8; } 95% { opacity: 0; transform: scale(1.65); } }
 @media (prefers-reduced-motion: reduce) { .depth-ripple::before { animation: none; } .depth-scene-card svg * { transition: none; } }
+.depth-wave[hidden] { display: none; }
+.depth-wave { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+.depth-wave path,.depth-wave ellipse { fill: none; stroke: #b9ffed; stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 4px #64d9e9); }

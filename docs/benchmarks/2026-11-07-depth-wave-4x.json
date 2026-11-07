@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 140,
+  "citizens": 296,
+  "connectedEdges": 1,
+  "blockedAndIndependentExcluded": true,
+  "saveByteEqual": true,
+  "expired": true,
+  "samples": 243,
+  "medianStepCpuMs": 20.556790999999976,
+  "p95StepCpuMs": 66.42266700000005
+}

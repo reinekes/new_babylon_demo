@@ -901,7 +901,13 @@ function makeMiracleCard(id,m){
  }
  el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
- else if(id==='relicAwakening'&&state.depthSupply){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();depthPresentation.cast();}
+ else if(id==='relicAwakening'&&state.depthSupply){
+  rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
+  const intake=depthWaterpointTarget(state,lastMiracleTarget);
+  const wave=intake?{point:intake}:depthCanalTarget(state,lastMiracleTarget)?irrigationFor(state).depthWave:null;
+  if(wave)renderer.focusOn(wave.point.x,wave.point.y);
+  depthPresentation.cast(wave);
+ }
  else if(id==='stars'&&state.starObservations){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();starPresentation.cast();}
  else if(id==='peace'&&state.peaceDiscovery){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();peacePresentation.cast();}
  else if(id==='healing'&&state.arrivalGroup){rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();arrivalPresentation.cast(state.arrivalGroup);}

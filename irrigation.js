@@ -52,13 +52,18 @@ export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
   if(wet.has(next)||limited&&!capacity.get(next))continue;
   wet.add(next);queue.push(next);
  }
+ let depthWave=null;
  if(limited&&wet.has(anchor)){
-  const supported=new Set([anchor]);
-  for(const id of supported){
+  const supported=new Map([[anchor,0]]),edges=[];
+  for(const [id,distance] of supported){
    capacity.set(id,capacity.get(id)+1);
    if(intakeLimits.has(id))intakeLimits.set(id,intakeLimits.get(id)+1);
-   for(const next of adjacent.get(id))if(wet.has(next))supported.add(next);
+   for(const next of adjacent.get(id))if(wet.has(next)&&!supported.has(next)){
+    supported.set(next,distance+1);
+    edges.push({from:cells.get(id),to:cells.get(next),distance:distance+1});
+   }
   }
+  depthWave={point:cells.get(anchor),edges};
  }
  const reachableFields=new Map();
  for(const id of wet){
@@ -71,7 +76,7 @@ export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
  }
  const flow=limited?allocateCanalWater({adjacent,heads,capacity,intakeLimits,fields:new Map([...reachableFields].filter(([id])=>fields.has(id)))}):null;
  const irrigated=new Set(flow?flow.routes.keys():reachableFields.keys());
- const result={signature,cells,wet,arms,irrigated,reachableFields,flow,fields,heads,adjacent,drained,outlets,intakeLimits};variants.set(lowRiver,result);return result;
+ const result={signature,cells,wet,arms,irrigated,reachableFields,flow,fields,heads,adjacent,drained,outlets,intakeLimits,depthWave};variants.set(lowRiver,result);return result;
 }
 export function fieldWater(s,b,options){
  const network=irrigationFor(s,options),id=key(b.x,b.y),natural=terrain(b.x,b.y,s)==='fertile';
