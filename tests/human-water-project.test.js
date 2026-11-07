@@ -4,6 +4,7 @@ import {createGame,decode,encode,advanceTime} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {approveWaterProject,waterProjectProposal} from '../human-projects.js';
 import {assignWorkplace,setCitizenRole} from '../management.js';
+import {syncCitizens,invalidateAssignments} from '../workforce.js';
 import {buildingKey} from '../definitions.js';
 
 test('a dry household and a ready organizer can approve exactly one real waterpoint order',()=>{
@@ -52,4 +53,109 @@ test('a dry household and a ready organizer can approve exactly one real waterpo
  assert.deepEqual(s.causalFacts.water.map(f=>[f.stationId,f.homeId,f.courierId,f.amount]),[[project.waterEntityId,project.humanWaterProject.homeId,courier.id,delivery.amount]]);
  const restored=decode(encode(s));assert.ok(restored);
  assert.deepEqual(restored.buildings.find(b=>buildingKey(b)===result.key).humanWaterProject.delivery,delivery);
+});
+
+test('a waterpoint project records consenting helpers and prioritizes their actual construction after reload',()=>{
+ let s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const house=s.buildings.findLast(b=>b.type==='house');
+ const requester=s.citizens.find(c=>c.home===buildingKey(house));
+ const adults=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ const organizer=adults[0],helper=adults.at(-1);
+ setCitizenRole(s,organizer.id,'builder');
+ setCitizenRole(s,helper.id,'builder');
+ house.water=0;
+ const result=approveWaterProject(s,organizer.id,requester.id,12,7,[helper.id]);
+ assert.ok(result.ok,result.reason);
+ assert.deepEqual(s.buildings.find(b=>buildingKey(b)===result.key).humanWaterProject.participantIds,[helper.id]);
+ const raw=encode(s);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ let joined=false;
+ for(let i=0;i<500&&!joined;i++){
+  s.event=null;
+  advanceTime(s,.25);
+  joined=s.citizens.some(c=>c.id===helper.id&&c.site===result.key&&c.phase==='constructing');
+ }
+ assert.ok(joined,'the chosen helper physically joins construction');
+});
+
+test('invalid or unavailable helpers refuse before reservation and legacy projects still load',()=>{
+ const fixture=()=>{
+  const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+  const house=s.buildings.findLast(b=>b.type==='house');
+  const requester=s.citizens.find(c=>c.home===buildingKey(house));
+  const [organizer,helper]=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+  setCitizenRole(s,organizer.id,'builder');
+  setCitizenRole(s,helper.id,'builder');
+  house.water=0;
+  return {s,organizer,helper,requester};
+ };
+ for(const choice of ['duplicate','organizer','missing','hungry','cargo','guard','flood','manual','too-many']){
+  const {s,organizer,helper,requester}=fixture();
+  let ids=[helper.id];
+  if(choice==='duplicate')ids.push(helper.id);
+  if(choice==='organizer')ids=[organizer.id];
+  if(choice==='missing')ids=[s.demography.nextId];
+  if(choice==='hungry')helper.hunger=40;
+  if(choice==='cargo')helper.cargo={clay:1};
+  if(choice==='guard')helper.guardPost='9,8';
+  if(choice==='flood')helper.floodShelter=true;
+  if(choice==='manual')helper.manualGathering={key:'7,7'};
+  if(choice==='too-many')ids=[1,2,3,4];
+  const before=encode(s);
+  assert.equal(approveWaterProject(s,organizer.id,requester.id,12,7,ids).ok,false,choice);
+  assert.equal(encode(s),before,choice);
+ }
+ const {s,organizer,helper,requester}=fixture();
+ assert.ok(approveWaterProject(s,organizer.id,requester.id,12,7,[helper.id]).ok);
+ const p=s.buildings.find(b=>b.humanWaterProject).humanWaterProject;
+ for(const ids of [[helper.id,helper.id],[organizer.id],[s.demography.nextId],null]){
+  p.participantIds=ids;
+  assert.equal(decode(encode(s)),null);
+ }
+ delete p.participantIds;
+ assert.ok(decode(encode(s)),'projects created before helpers remain supported');
+});
+
+
+test('automatic helpers take both carrier slots and the second builder slot',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const house=s.buildings.findLast(b=>b.type==='house');
+ const requester=s.citizens.find(c=>c.home===buildingKey(house));
+ const adults=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ const organizer=adults[0],helpers=adults.slice(-3);
+ setCitizenRole(s,organizer.id,'builder');
+ for(const c of helpers)setCitizenRole(s,c.id,'auto');
+ house.water=0;
+ const result=approveWaterProject(s,organizer.id,requester.id,12,7,helpers.map(c=>c.id));
+ assert.ok(result.ok,result.reason);
+ const worked=new Set(),assigned=new Set();
+ for(let i=0;i<500&&s.buildings.find(b=>buildingKey(b)===result.key).construction;i++){
+  s.event=null;advanceTime(s,.25);
+  for(const c of s.citizens)if(c.site===result.key){
+   assigned.add(c.id);
+   if(c.phase==='constructing'||Object.values(c.buildCargo||{}).some(n=>n>0))worked.add(c.id);
+  }
+ }
+ for(const c of helpers)assert.ok(assigned.has(c.id),'helper '+c.id+' assigned to the project');
+ assert.ok(helpers.filter(c=>worked.has(c.id)).length>=2,'helpers deliver actual cargo and construct');
+});
+
+
+test('completed project membership gives no priority to a later construction order',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const house=s.buildings.findLast(b=>b.type==='house'),requester=s.citizens.find(c=>c.home===buildingKey(house));
+ const adults=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ const organizer=adults.at(-1),helper=adults.at(-2);
+ setCitizenRole(s,organizer.id,'builder');setCitizenRole(s,helper.id,'builder');house.water=0;
+ assert.ok(approveWaterProject(s,organizer.id,requester.id,12,7,[helper.id]).ok);
+ const site=s.buildings.find(b=>b.humanWaterProject);
+ site.construction.kind='upgrade';
+ for(const c of s.citizens){delete c.site;delete c.siteDuty;delete c.store;c.phase='home';}
+ const without=structuredClone(s);
+ delete without.buildings.find(b=>b.humanWaterProject).humanWaterProject;
+ invalidateAssignments(s);invalidateAssignments(without);
+ syncCitizens(s);syncCitizens(without);
+ assert.deepEqual(s.citizens,without.citizens);
 });

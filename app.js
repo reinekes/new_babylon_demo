@@ -626,12 +626,15 @@ function confirmWaterProjectPlacement({x,y}){
  const {organizerId,requesterId}=waterProjectDraft,offer=waterProjectProposal(state,organizerId,requesterId,x,y);
  if(!offer.ok){toast(offer.reason);return;}
  const organizer=state.citizens.find(c=>c.id===organizerId);
- openDialog('water-project',`<h2>Водозабор для двора</h2><p>${esc(organizer.name)} возглавит стройку на участке ${x}, ${y}. Материалы зарезервируют на доступных складах. После стройки назначь водоноса.</p>${costs(offer.cost,false)}<button id="approve-water-project">Начать стройку</button> <button id="cancel-water-project">Выбрать другое место</button>`);
+ const helpers=state.citizens.filter(c=>c.id!==organizerId&&!waterProjectOrganizerReason(state,c));
+ const helperChoice=helpers.length?`<label>Помощники · до трёх, необязательно<select id="water-project-helpers" multiple size="4">${helpers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label><p>Помощники займутся доставкой и стройкой, когда закончат домашние дела. На это время они отложат другую свободную работу.</p>`:'<p>Свободных помощников пока нет. Организатор может начать стройку.</p>';
+ openDialog('water-project',`<h2>Водозабор для двора</h2><p>${esc(organizer.name)} возглавит стройку на участке ${x}, ${y}. Материалы зарезервируют на доступных складах. После стройки назначь водоноса.</p>${costs(offer.cost,false)}${helperChoice}<p id="water-project-error" role="alert"></p><button id="approve-water-project">Начать стройку</button> <button id="cancel-water-project">Выбрать другое место</button>`);
  $('cancel-water-project').onclick=closeDialog;
  $('approve-water-project').onclick=()=>{
-  const result=approveWaterProject(state,organizerId,requesterId,x,y);
+  const participantIds=[...($('water-project-helpers')?.selectedOptions||[])].map(option=>Number(option.value));
+  const result=approveWaterProject(state,organizerId,requesterId,x,y,participantIds);
+  if(!result.ok){$('water-project-error').textContent=result.reason;return;}
   closeDialog();
-  if(!result.ok){toast(result.reason);return;}
   choose('waterpoint');save();update();toast('Жители начали проект водозабора');checkDialogs();
  };
 }
@@ -646,7 +649,12 @@ function waterProjectHousehold(b){
   `<p data-water-delivery-memory><b>Первая доставка из прежнего водозабора · ${esc(f.station)}</b><br>${resident(f.courierId)} · ${foodAmount(f.amount)} воды</p>`).join('');
  const status=archive+projects.map(site=>{
   const p=site.humanWaterProject,organizer=state.citizens.find(c=>c.id===p.organizerId);
-  return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?'Идёт строительство':'Построен · ожидается первая доставка'}</p>`;
+  const helpers=(p.participantIds||[]).map(id=>{
+   const c=state.citizens.find(c=>c.id===id);
+   const status=!c?'выбыл':site.construction?.kind!=='new'?'стройка завершена':c.site===buildingKey(site)?'на стройке':waterProjectOrganizerReason(state,c)||'ожидает свободного места на стройке';
+   return `Помощник · ${resident(id)} · ${esc(status)}<br>`;
+  }).join('');
+  return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${helpers}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?.kind==='new'?'Идёт строительство':'Построен · ожидается первая доставка'}</p>`;
  }).join('');
  const request=householdWaterRequest(state,b);
  if(!request)return status;

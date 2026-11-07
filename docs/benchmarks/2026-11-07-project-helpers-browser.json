@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-07",
+  "browser": "Chrome 157",
+  "fixture": "Prepared 129-building, 200-resident city. Real app entry copied with test-only exports to open confirmation and inspect state.",
+  "runs": [
+    {
+      "id": "helpers",
+      "view": "2d",
+      "url": "?id=helpers&view=2d",
+      "mode": "2d",
+      "result": "PASS 2d helper selection, approval, household, saved membership"
+    },
+    {
+      "id": "helpers",
+      "view": "3d",
+      "url": "?id=helpers&view=3d",
+      "mode": "3d",
+      "result": "PASS 3d helper selection, approval, household, saved membership"
+    }
+  ],
+  "inlineRefusalWithoutMutation": true
+}

@@ -43,6 +43,7 @@ export function cityWaterRequest(s){
 }
 export function waterProjectOrganizerReason(s,organizer){
  if(!organizer||organizer.age<16||!['auto','builder'].includes(organizer.role)||!canLeadConstruction(s,organizer,{type:projectType,level:1}))return 'Нужен взрослый организатор, который может строить';
+ if(organizer.guardPost||organizer.floodShelter||organizer.manualGathering)return 'Житель занят охраной, переселением или ручным сбором';
  if(organizer.hunger>=30)return 'Организатор голоден и пока откладывает стройку';
  if(organizer.health<60||organizer.clinic)return 'Организатор сначала восстанавливает здоровье';
  const organizerHome=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===organizer.home);
@@ -53,7 +54,7 @@ export function waterProjectOrganizerReason(s,organizer){
   Object.values(organizer.cargo||{}).some(n=>n>0)||Object.values(organizer.buildCargo||{}).some(n=>n>0))return 'Организатор занят текущей работой или доставкой';
  return null;
 }
-export function waterProjectProposal(s,organizerId,requesterId,x,y){
+export function waterProjectProposal(s,organizerId,requesterId,x,y,participantIds=[]){
  const refuse=reason=>({ok:false,reason});
  if(!isStrictSumer(s))return refuse('Инициатива доступна в Южном Шумере');
  if(s.buildings.some(b=>b.humanWaterProject&&b.construction?.kind==='new'))return refuse('Один водозабор уже строится по инициативе жителей');
@@ -64,19 +65,27 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y){
  if(water.stock>=water.demand)return refuse('У двора есть запас воды на день');
  const organizerReason=waterProjectOrganizerReason(s,organizer);
  if(organizerReason)return refuse(organizerReason);
+ if(!Array.isArray(participantIds)||participantIds.length>3||new Set(participantIds).size!==participantIds.length||participantIds.includes(organizerId))return refuse('Выберите до трёх разных помощников');
+ const participants=participantIds.map(id=>s.citizens.find(c=>c.id===id));
+ for(const c of participants){
+  const reason=waterProjectOrganizerReason(s,c);
+  if(reason)return refuse(c?c.name+' · '+reason:'Помощник больше не живёт в городе');
+ }
+
  const reason=canBuild(s,projectType,x,y);
  if(reason)return refuse(reason);
  const site={type:projectType,x,y,level:1},preview={...s,buildings:[...s.buildings,site],roads:[...s.roads]};
  const network=networkFor(preview),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key]));
  const component=key=>network.components.get(ports.get(key)),group=component(buildingKey(site));
  if(group===undefined||component(buildingKey(home))!==group||component(organizer.home)!==group)return refuse('Нет прохода между водозабором, двором и организатором');
+ if(participants.some(c=>component(c.home)!==group))return refuse('Помощник не может пройти от своего двора к водозабору');
  const eligibleStores=new Set(stockStores(s).filter(b=>component(buildingKey(b))===group).map(buildingKey));
  if(!eligibleStores.size)return refuse('На этом берегу нет доступного склада');
- return {ok:true,key:buildingKey(site),eligibleStores,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime},cost:BUILDINGS[projectType]};
+ return {ok:true,key:buildingKey(site),eligibleStores,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime,...participantIds.length?{participantIds:[...participantIds]}:{}},cost:BUILDINGS[projectType]};
 }
 
-export function approveWaterProject(s,organizerId,requesterId,x,y){
- const offer=waterProjectProposal(s,organizerId,requesterId,x,y);
+export function approveWaterProject(s,organizerId,requesterId,x,y,participantIds=[]){
+ const offer=waterProjectProposal(s,organizerId,requesterId,x,y,participantIds);
  if(!offer.ok)return offer;
  const result=build(s,projectType,x,y,0,{eligibleStores:offer.eligibleStores,humanWaterProject:offer.project});
  if(!result.ok)return result;
@@ -100,6 +109,7 @@ export function validateHumanProjects(s){
   if(p===undefined)return true;
   return isStrictSumer(s)&&b.type===projectType&&p&&id(p.organizerId)&&id(p.requesterId)&&typeof p.home==='string'&&/^\d+,\d+$/.test(p.home)&&
    Number.isFinite(p.startedAt)&&p.startedAt>=0&&p.startedAt<=s.simTime&&
+   (p.participantIds===undefined||Array.isArray(p.participantIds)&&p.participantIds.length<=3&&new Set(p.participantIds).size===p.participantIds.length&&p.participantIds.every(n=>id(n)&&n!==p.organizerId))&&
    (p.delivery===undefined||isOperational(b)&&p.delivery&&id(p.delivery.courierId)&&Number.isFinite(p.delivery.time)&&
     p.delivery.time>=p.startedAt&&p.delivery.time<=s.simTime&&Number.isFinite(p.delivery.amount)&&p.delivery.amount>0&&p.delivery.amount<=12);
  });

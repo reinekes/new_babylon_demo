@@ -246,10 +246,16 @@ export function syncCitizens(s){
   for(const duty of ['carrier','builder']){
    if(duty==='carrier'&&!Object.values(q.remaining).some(n=>n>0))continue;
    let n=[...assignments.values()].filter(a=>a.site===key&&a.siteDuty===duty).length;
-   const candidates=[...citizens].sort((a,b)=>{
-    const rank=c=>duty==='builder'&&c.id===b.humanWaterProject?.organizerId?-1:c.role===duty?0:c.site===key&&c.siteDuty===duty?1:c.work?3:2;return rank(a)-rank(b)||a.id-b.id;
-   });
-   for(const c of candidates){if(n>=2)break;if(duty==='carrier'&&c.id===b.humanWaterProject?.organizerId||reserved.has(c.id)||locked.has(c.id)||assignments.has(c.id)||!['auto',duty].includes(c.role))continue;
+   const project=q.kind==='new'?b.humanWaterProject:null;
+   const rank=c=>{
+    if(project){
+     if(duty==='builder'&&c.id===project.organizerId)return -2;
+     if(project.participantIds?.includes(c.id))return -1;
+    }
+    return c.role===duty?0:c.site===key&&c.siteDuty===duty?1:c.work?3:2;
+   };
+   const candidates=[...citizens].sort((a,b)=>rank(a)-rank(b)||a.id-b.id);
+   for(const c of candidates){if(n>=2)break;if(duty==='carrier'&&c.id===project?.organizerId||reserved.has(c.id)||locked.has(c.id)||assignments.has(c.id)||!['auto',duty].includes(c.role))continue;
     // Automatic workers deliver first, rather than leaving scarce carriers idle.
     if(duty==='builder'&&!canLeadConstruction(s,c,b))continue;
     if(duty==='builder'&&c.role==='auto'&&!materialsReady(q)&&![...assignments.values()].some(a=>a.site===key&&a.siteDuty==='carrier'))continue;
