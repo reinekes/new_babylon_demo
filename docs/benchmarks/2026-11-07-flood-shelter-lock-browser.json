@@ -1,0 +1,16 @@
+[
+  {
+    "id": "protected",
+    "view": "2d",
+    "url": "?id=protected&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d origin and receiving building protected"
+  },
+  {
+    "id": "protected",
+    "view": "3d",
+    "url": "?id=protected&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d origin and receiving building protected"
+  }
+]

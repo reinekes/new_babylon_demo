@@ -8,6 +8,7 @@ import {routeBetween,networkFor} from "../workforce.js";
 import {cityToolsHTML} from "../ui-city-tools.js";
 import {advanceWellbeing} from "../wellbeing.js";
 import {advanceWater} from "../water.js";
+import {canDemolish,demolish} from "../management.js";
 
 const world=axis=>({
  width:64,height:64,river:{axis,offset:25,slope:0,amplitude:.5,frequency:.1,phase:Math.PI*2-2}
@@ -150,11 +151,28 @@ test('a resident on a flooded bank walks to shelter while retaining their home a
  assert.ok(restored);
  assert.equal(encode(restored),raw);
  const evacuee=restored.citizens.find(p=>p.id===id);
+ const shelter=restored.buildings.find(b=>`${b.x},${b.y}`===evacuee.floodShelter);
+ const origin=restored.buildings.find(b=>`${b.x},${b.y}`===home);
+ assert.ok(shelter&&origin);
+ const reason='Дождись окончания эвакуации из-за разлива';
+ for(const b of [shelter,origin]){
+  assert.equal(canDemolish(restored,b),reason);
+  assert.deepEqual(demolish(restored,b.x,b.y),{ok:false,reason});
+ }
+
  for(let i=0;i<90&&evacuee.routeIndex<evacuee.route.length;i++)advanceTime(restored,.25);
  assert.equal(evacuee.routeIndex,evacuee.route.length);
  assert.equal(floodedSegment(footprint,evacuee,evacuee),false);
  assert.equal(evacuee.home,home);
  assert.deepEqual(evacuee.cargo,{stone:2});
+ assert.equal(canDemolish(restored,shelter),reason);
+ for(let i=0;i<250&&restored.citizens.some(p=>p.floodShelter);i++){
+  restored.event=null;
+  advanceTime(restored,.5);
+ }
+ assert.equal(evacuee.floodShelter,undefined);
+ for(const b of [shelter,origin])assert.notEqual(canDemolish(restored,b),reason);
+
 });
 
 test('evacuees consume real food and water only after reaching a receiving home',()=>{
