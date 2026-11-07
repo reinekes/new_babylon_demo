@@ -45,3 +45,16 @@ test('the birth food threshold reports the same decision as the simulation at th
   assert.equal(advanceGenerations(copy).newborns.length>0,food.enough);
  }
 });
+
+test('births wait for beds occupied by families sheltering from a flood',()=>{
+ const s=createGame({start:'established'});
+ const home=s.citizens.at(-1).home;
+ for(const c of s.citizens)Object.assign(c,{age:24,partner:null});
+ const evacuees=s.citizens.filter(c=>c.home!==home).slice(0,4);
+ for(const c of evacuees)c.floodShelter=home;
+ s.resources.food=1000;
+ s.demography.rngState=1;
+ assert.equal(advanceGenerations(s).newborns.length,0);
+ for(const c of evacuees)delete c.floodShelter;
+ assert.equal(advanceGenerations(s).newborns[0]?.home,home);
+});

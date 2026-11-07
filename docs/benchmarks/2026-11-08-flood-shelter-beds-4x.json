@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "initialPopulation": 200,
+  "population": 200,
+  "locked": [
+    "9,9",
+    "8,8"
+  ],
+  "reservedAtLoad": 1,
+  "reservedAfterFlood": 0,
+  "identitiesPreserved": true,
+  "reloadByteIdentical": true,
+  "steps": 101,
+  "medianCpuMs": 2.2835829999999646,
+  "p95CpuMs": 6.7624589999999785
+}

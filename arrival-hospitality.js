@@ -54,6 +54,8 @@ export function arrivalHospitalityView(s){
  return {visits,shelters,needed,qualified:visits>=needed||shelters>=needed};
 }
 
+const shelterHome=c=>c.floodShelter||c.fireShelter?.host;
+
 export function arrivalHousing(s,{includeReserved=false}={}){
  const flood=floodMapView(s);
  const flooded=new Set(flood?.phase==='active'?flood.tiles.map(buildingKey):[]);
@@ -64,7 +66,7 @@ export function arrivalHousing(s,{includeReserved=false}={}){
  }
  for(const c of s.citizens){
   if(vacancies.has(c.home))vacancies.set(c.home,vacancies.get(c.home)-1);
-  const shelter=c.floodShelter||c.fireShelter?.host;
+  const shelter=shelterHome(c);
   if(shelter!==c.home&&vacancies.has(shelter))vacancies.set(shelter,vacancies.get(shelter)-1);
  }
  const group=s.arrivalGroup;
@@ -152,7 +154,7 @@ export function reserveArrival(s,network,expected){
  return true;
 }
 
-export const reservedArrivalBeds=(s,home)=>(s.arrivalGroup?.home===home?s.arrivalGroup.count:0)+s.citizens.filter(c=>c.fireShelter?.host===home).length;
+export const reservedArrivalBeds=(s,home)=>(s.arrivalGroup?.home===home?s.arrivalGroup.count:0)+s.citizens.filter(c=>c.home!==home&&shelterHome(c)===home).length;
 
 function welcomeEvidence(welcomes){
  const candidates=[];
