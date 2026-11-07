@@ -1,11 +1,13 @@
+import {cityCommandReason} from './city-command-lock.js';
+import {mealCycle} from './wellbeing.js';
 import {bindWaterProject,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
-import {canLeadConstruction} from './godhood.js';
+import {canLeadConstruction,isAwakening} from './godhood.js';
 import {networkFor} from './workforce.js';
 import {stockStores} from './inventory.js';
-import {waterDemand,waterSummary} from './water.js';
+import {dispatchNeighborWater,waterDemand,waterSummary} from './water.js';
 import {supplyHome} from './households.js';
 import {worldWidth,worldHeight} from './world.js';
 import {DAY_SECONDS} from './city-life.js';
@@ -31,6 +33,28 @@ export function householdWaterRequest(s,b){
  const requester=s.citizens.find(c=>c.home===buildingKey(b)&&c.age>=16&&!c.floodShelter);
  return waterRequest(s,b,requester,waterSummary(s,b).demand);
 }
+export function smallWaterResponseReason(s){
+ if(!isStrictSumer(s)||!isAwakening(s)||s.godhood.stage!=='recognized'||!s.citizens.some(c=>s.godhood.believerIds.includes(c.id)))return 'Нужен живой последователь';
+ if(s.resources.faith>=1)return 'У тебя есть вера для обычного обращения';
+ const lock=cityCommandReason(s);
+ if(lock||s.event||s.funeral||s.lost)return lock||'Дождись завершения события';
+ const cycle=mealCycle(s.simTime);
+ if((s.godhood.lastPrayerCycle??-Infinity)>=cycle-1)return 'Недавно город получил веру от молитв';
+ if(s.godhood.smallWaterResponse?.cycle===cycle)return 'Малый ответ уже использован в этом цикле';
+ return '';
+}
+
+export function answerWaterRequest(s,b){
+ const reason=smallWaterResponseReason(s);
+ if(reason)return {ok:false,reason};
+ const request=s.buildings.includes(b)&&householdWaterRequest(s,b);
+ if(!request)return {ok:false,reason:'У двора сейчас нет просьбы о воде'};
+ const helper=s.citizens.find(c=>dispatchNeighborWater(s,c,b));
+ if(!helper)return {ok:false,reason:'Нужен свободный взрослый сосед с доступным берегом и путём к двору'};
+ s.godhood.smallWaterResponse={cycle:mealCycle(s.simTime),home:request.home,requesterId:request.requesterId,helperId:helper.id};
+ return {ok:true,helperId:helper.id};
+}
+
 export function cityWaterRequest(s){
  if(!isStrictSumer(s))return null;
  const demand=new Map(),requesters=new Map();

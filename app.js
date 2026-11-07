@@ -29,7 +29,7 @@ import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
-import {acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
+import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
 import {setCommonMeals} from './common-meal.js';
@@ -688,7 +688,10 @@ function waterProjectHousehold(b){
  }).join('');
  const request=householdWaterRequest(state,b);
  if(!request)return status;
- const card=status+waterRequestCard(request);
+ const response=gameMode(state)==='awakening'&&state.godhood.stage==='recognized'&&state.resources.faith<1
+  ?smallWaterResponseReason(state):null;
+ const small=response===null?'':response?`<small>${esc(response)}</small>`:'<button type="button" data-small-water-response>Попросить соседа о воде · бесплатно</button><small>Один малый ответ за бытовой цикл. Вода поступит после доставки.</small>';
+ const card=status+waterRequestCard(request)+small;
  if(state.buildings.some(site=>site.humanWaterProject&&site.construction?.kind==='new'))return card+'<p>Другой двор уже строит водозабор.</p>';
  const organizers=state.citizens.filter(c=>!waterProjectOrganizerReason(state,c));
  if(!organizers.length)return card+'<p>Для водозабора нужен свободный взрослый строитель с запасом воды дома.</p>';
@@ -744,6 +747,8 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
  const selectedOrganizer=panel.querySelector('[data-water-organizer]')?.value;
  if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}</div>`)){
  bindWaterDream(panel);
+ const smallResponse=panel.querySelector('[data-small-water-response]');
+ if(smallResponse)smallResponse.onclick=()=>{if(mutate(answerWaterRequest(state,b),'Сосед отправился за водой'))renderHousehold(b);};
  panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{householdTab=el.dataset.houseTab;renderHousehold(b);});
  const initiative=panel.querySelector('[data-household-initiative]');
  if(initiative)initiative.onclick=()=>showHouseholdInitiative(b);

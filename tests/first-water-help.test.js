@@ -75,3 +75,35 @@ test('a canceled trip gives no recognition and restores the original choice',()=
  assert.ok(decode(encode(s)));
  assert.ok(beginFirstSign(s).ok);
 });
+
+test('zero faith allows one real response to a water request per cycle and the limit survives reload',async()=>{
+ const {answerWaterRequest,smallWaterResponseReason}=await import('../human-projects.js');
+ const {mealCycle}=await import('../wellbeing.js');
+ let s=createNewCity({mode:'awakening',seed:137});
+ const choice=firstWaterHelpChoices(s)[0];
+ const b=s.buildings.find(b=>buildingKey(b)===choice.home);
+ const witness=s.citizens.find(c=>c.id===choice.recipientId);
+ Object.assign(s.godhood,{stage:'recognized',recognitionAt:0,believerIds:[witness.id],witnessId:witness.id});
+ b.water=0;
+ const result=answerWaterRequest(s,b);
+ assert.ok(result.ok,result.reason);
+ const helper=s.citizens.find(c=>c.id===result.helperId);
+ assert.equal(helper.waterTrip.target,choice.home);
+ assert.equal(b.water,0);
+ assert.equal(s.resources.faith,0);
+ assert.match(smallWaterResponseReason(s),/уже/);
+ const raw=encode(s);s=decode(raw);
+ assert.ok(s);assert.equal(encode(s),raw);
+ assert.match(answerWaterRequest(s,s.buildings.find(b=>buildingKey(b)===choice.home)).reason,/уже/);
+ const invalid=structuredClone(s);
+ invalid.godhood.smallWaterResponse.cycle++;
+ assert.equal(decode(encode(invalid)),null);
+ const nextCycle=structuredClone(s);
+ nextCycle.simTime+=60;
+ assert.equal(smallWaterResponseReason(nextCycle),'');
+ s.godhood.lastPrayerCycle=mealCycle(s.simTime);
+ assert.match(smallWaterResponseReason(s),/молитв/);
+ for(let i=0;i<350&&s.buildings.find(b=>buildingKey(b)===choice.home).water<.5;i++)advanceTime(s,.1);
+ assert.ok(s.buildings.find(b=>buildingKey(b)===choice.home).water>=.5);
+ assert.equal(s.resources.faith,0);
+});

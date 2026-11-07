@@ -1,3 +1,4 @@
+import {mealCycle} from './wellbeing.js';
 import {recordCraftNameEvidence} from './causal-facts.js';
 import {advanceStarObservations,starKnowledgeReason} from './star-observations.js';
 import {peaceKnowledgeReason} from './peace-discovery.js';
@@ -263,6 +264,14 @@ export function validateGodhood(s){
  if(!g||typeof g!=='object'||Array.isArray(g)||g.version!==1||!['awakening','mature'].includes(g.mode)||!['unseen','sign','help','recognized'].includes(g.stage)||!Array.isArray(g.believerIds)||new Set(g.believerIds).size!==g.believerIds.length||g.believerIds.some(n=>!id(n))||typeof g.firstBuilderGift!=='boolean'||!Array.isArray(g.completedProjects)||g.completedProjects.length>10000||new Set(g.completedProjects).size!==g.completedProjects.length||g.completedProjects.some(v=>!validProjectStamp(v,s)))return false;
  if(g.witnessId!==null&&!id(g.witnessId)||g.recognitionAt!==null&&(!Number.isFinite(g.recognitionAt)||g.recognitionAt<0||g.recognitionAt>(s.simTime||0)+.1))return false;
  if(g.signTarget!==null&&!point(g.signTarget)||g.signOrigin!==null&&!point(g.signOrigin))return false;
+ const cycle=n=>Number.isSafeInteger(n)&&n>=-1&&n<=mealCycle(s.simTime);
+ if(g.lastPrayerCycle!==undefined&&(!isStrictSumer(s)||g.mode!=='awakening'||g.recognitionAt===null||!cycle(g.lastPrayerCycle)))return false;
+ if(g.smallWaterResponse!==undefined){
+  const r=g.smallWaterResponse;
+  if(!isStrictSumer(s)||g.mode!=='awakening'||g.recognitionAt===null||!r||Object.keys(r).length!==4||!cycle(r.cycle)||!id(r.requesterId)||!id(r.helperId)||r.requesterId===r.helperId||typeof r.home!=='string'||!/^\d+,\d+$/.test(r.home))return false;
+  const [x,y]=r.home.split(',').map(Number);
+  if(x>=worldWidth(s)||y>=worldHeight(s))return false;
+ }
  const help=g.firstWaterHelp;
  if(help!==undefined){
   if(!isStrictSumer(s)||g.mode!=='awakening'||!help||!id(help.helperId)||!id(help.recipientId)||help.helperId===help.recipientId||typeof help.home!=='string'||!/^\d+,\d+$/.test(help.home))return false;
