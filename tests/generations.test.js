@@ -58,3 +58,21 @@ test('births wait for beds occupied by families sheltering from a flood',()=>{
  for(const c of evacuees)delete c.floodShelter;
  assert.equal(advanceGenerations(s).newborns[0]?.home,home);
 });
+
+test('population grants preserve the beds of flood evacuees and do not consume unused IDs',()=>{
+ const s=createGame({start:'established'}),home=s.citizens.at(-1).home;
+ const evacuees=s.citizens.filter(c=>c.home!==home).slice(0,4);
+ for(const c of evacuees)c.floodShelter=home;
+ const people=s.citizens.map(c=>[c.id,c.home]),nextId=s.demography.nextId;
+ s.population++;
+ syncCitizens(s);
+ assert.equal(s.population,people.length);
+ assert.equal(s.demography.nextId,nextId);
+ assert.deepEqual(s.citizens.map(c=>[c.id,c.home]),people);
+ for(const c of evacuees)delete c.floodShelter;
+ s.population++;
+ syncCitizens(s);
+ assert.equal(s.population,people.length+1);
+ assert.equal(s.citizens.at(-1).id,nextId);
+ assert.equal(s.citizens.at(-1).home,home);
+});

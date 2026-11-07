@@ -54,7 +54,7 @@ export function arrivalHospitalityView(s){
  return {visits,shelters,needed,qualified:visits>=needed||shelters>=needed};
 }
 
-const shelterHome=c=>c.floodShelter||c.fireShelter?.host;
+export const shelterHome=c=>c.floodShelter||c.fireShelter?.host;
 
 export function arrivalHousing(s,{includeReserved=false}={}){
  const flood=floodMapView(s);

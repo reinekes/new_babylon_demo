@@ -1,7 +1,7 @@
 import {log} from './engine.js';
 import {peaceResting} from './peace-discovery.js';
 import {cityCommandReason} from './city-command-lock.js';
-import {advanceArrivalGroup,arrivalHousing,createArrivalFamily} from './arrival-hospitality.js';
+import {advanceArrivalGroup,arrivalHousing,createArrivalFamily,shelterHome} from './arrival-hospitality.js';
 import {deliverShapingLoad,returnShapingLoad} from './shaping-batch.js';
 import {advanceShapingModel} from './shaping-model.js';
 import {recordSunlightService} from './sunlight-gathering.js';
@@ -158,16 +158,27 @@ function siteAccess(s,ctx,c,b){
 export function syncCitizens(s){
  if(s.funeral&&s.funeral.scope!=='family')return;
  initializeBricks(s);initializeArtisans(s);initializeBuildingInventory(s);syncInventory(s);initializeDistricts(s);syncPestSites(s);s.simTime??=s.tick*45;s.citizens??=[];s.deliveries??=0;s.delivered??={food:0,clay:0,reed:0,wood:0,stone:0,hides:0,faith:0,prestige:0};
- const ctx=context(s),cache=caches.get(s),laborKind=isWorkday(s.simTime)?activeLaborKind(s):null,signature=`${cache.signature}/${laborKind||''}/${s.population}/${Number(isWorkday(s.simTime))}/${s.season}:${s.buildings.filter(b=>b.type==='field').map(b=>Number(fieldActive(s,b))).join('')}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}:${b.canalCleaning?1:0}`).join(',')}/${s.district.jobs.map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}:${c.workplace||''}:${c.guardPost||''}`).join(',')}`;
+ const ctx=context(s),cache=caches.get(s),laborKind=isWorkday(s.simTime)?activeLaborKind(s):null,signature=`${cache.signature}/${laborKind||''}/${s.population}/${Number(isWorkday(s.simTime))}/${s.season}:${s.arrivalGroup?.home||''}:${s.arrivalGroup?.count||0}:${s.buildings.filter(b=>b.type==='field').map(b=>Number(fieldActive(s,b))).join('')}/${constructionEntities(s).map(b=>`${b.level||1}:${b.construction?.priority??1}:${b.construction?.order??0}:${b.construction?materialsReady(b.construction):0}:${b.canalCleaning?1:0}`).join(',')}/${s.district.jobs.map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.sales||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${(s.trade?.deliveries||[]).map(q=>`${q.id}:${q.remaining}`).join(',')}/${s.citizens.map(c=>`${c.id}:${c.home}:${shelterHome(c)||''}:${canWork(c)}:${c.role||'auto'}:${c.pendingRole||''}:${c.workplace||''}:${c.guardPost||''}`).join(',')}`;
  for(const c of s.citizens)reconcileManualGathering(s,c,ctx);
  if(cache.synced===signature)return;
  // Population is a count; stable IDs are never reused after a death.
  while(s.citizens.length>s.population){const c=s.citizens.at(-1);if(recoverCitizenCargo(s,c.id)===false){s.population=s.citizens.length;break;}s.citizens.pop();}
  const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
  for(const c of s.citizens){if(!available.get(c.home))continue;homes[c.id]=c.home;available.set(c.home,available.get(c.home)-1);}
- if(s.arrivalGroup&&available.has(s.arrivalGroup.home)){
-  const {home,count}=s.arrivalGroup;
-  available.set(home,Math.max(0,available.get(home)-count));
+ const reservations=new Map();
+ if(s.arrivalGroup)reservations.set(s.arrivalGroup.home,s.arrivalGroup.count);
+ for(const c of s.citizens){
+  const shelter=shelterHome(c);
+  if(shelter&&shelter!==c.home)reservations.set(shelter,(reservations.get(shelter)||0)+1);
+ }
+ if(reservations.size){
+  // Existing residents keep priority over requests to add population.
+  for(const c of s.citizens){
+   if(homes[c.id])continue;
+   const home=[...available].find(([,beds])=>beds>0)?.[0];
+   if(home){homes[c.id]=home;available.set(home,available.get(home)-1);}
+  }
+  for(const [home,count] of reservations)if(available.has(home))available.set(home,Math.max(0,available.get(home)-count));
   const free=[...available.values()].reduce((n,beds)=>n+beds,0);
   s.population=Math.min(s.population,s.citizens.length+free);
  }
