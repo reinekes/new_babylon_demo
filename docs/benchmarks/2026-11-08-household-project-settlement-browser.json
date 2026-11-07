@@ -1,0 +1,16 @@
+[
+  {
+    "id": "settlement",
+    "view": "2d",
+    "url": "?id=settlement&view=2d",
+    "mode": "2d",
+    "result": "PASS occupancy and original project history in both courtyard cards"
+  },
+  {
+    "id": "settlement",
+    "view": "3d",
+    "url": "?id=settlement&view=3d",
+    "mode": "3d",
+    "result": "PASS occupancy and original project history in both courtyard cards"
+  }
+]

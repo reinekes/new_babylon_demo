@@ -150,3 +150,22 @@ test('the first accepted neighbor delivery is remembered by a settled small cour
  invalid.buildings.find(b=>b.householdInitiative).householdInitiative.firstNeighborAid.originId=home.waterEntityId;
  assert.equal(decode(JSON.stringify(invalid)),null);
 });
+
+test('a different family can occupy the finished courtyard without settling the original project',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [first,second]=s.citizens;
+ const source=s.buildings.find(h=>buildingKey(h)===first.home);
+ const offer=householdInitiative(s,source),result=approveHouseholdInitiative(s,source,offer);
+ assert.ok(result.ok,result.reason);
+ const home=s.buildings.find(b=>buildingKey(b)===result.key);
+ for(const resident of [first,second])Object.assign(resident,{partner:null,age:46});
+ for(let step=0;step<1400&&!s.citizens.some(c=>c.home===result.key);step++){
+  s.event=null;
+  advanceTime(s,.25);
+ }
+ assert.equal(home.construction,undefined);
+ assert.ok(s.citizens.some(c=>c.home===result.key&&!offer.members.includes(c.id)));
+ assert.equal(home.householdInitiative.settled,undefined);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+});

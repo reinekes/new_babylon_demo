@@ -35,7 +35,7 @@ import {richCatchTarget} from './rich-catch.js';
 import {createRainPresentation} from './rain-presentation.js';
 import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
-import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,setAutonomousHousing} from './household-initiative.js';
+import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,householdInitiativeReserved,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
 import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterDreamHomeReason,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,vowTargetRebuilt,VOW_FAILURE_TEXT} from './supply-vow.js';
@@ -765,9 +765,12 @@ function householdInitiativePanel(b,h){
   const project=site.householdInitiative,active=site.construction?.kind==='new';
   const working=active?state.citizens.filter(c=>c.site===buildingKey(site)&&project.members.includes(c.id)):[];
   const team=working.map(c=>`${esc(displayName(state,c.id))} · ${c.siteDuty==='builder'?'строит':'доставляет материалы'}`).join('<br>');
+  const reserved=householdInitiativeReserved(project,state.citizens.find(c=>c.id===project.members[0]));
+  const status=active?'Идёт стройка':project.settled?'Семья переехала':reserved?'Дом готов · семья ещё не переехала':
+   state.citizens.some(c=>c.home===buildingKey(site))?'Поселилась другая семья':'Дом готов · доступен другим семьям';
   const aid=project.firstNeighborAid;
   const witness=aid?`<br><span data-household-first-aid>Первая помощь соседей · ${foodAmount(aid.amount)} ${aid.resource==='water'?'воды':'еды'} · ${resident(aid.courierId)}</span>`:'';
-  return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${active?'Идёт стройка':project.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}${witness}</p>`;
+  return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${status}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}${witness}</p>`;
  }).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
 }

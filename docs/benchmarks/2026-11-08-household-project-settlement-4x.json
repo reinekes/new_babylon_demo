@@ -1,0 +1,20 @@
+{
+  "speed": 4,
+  "buildings": 130,
+  "initialResidents": 218,
+  "residents": 245,
+  "projectMembers": [
+    172,
+    177
+  ],
+  "occupants": [
+    177,
+    178
+  ],
+  "originalProjectSettled": false,
+  "loadedDuringDelivery": true,
+  "byteIdenticalReload": true,
+  "steps": 1019,
+  "medianCpuMs": 1.6731670000001486,
+  "p95CpuMs": 8.756458000000066
+}

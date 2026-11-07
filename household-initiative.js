@@ -21,12 +21,14 @@ export function householdInitiativeFrom(project,home){
   (project.sourceId===undefined||project.sourceId===home.waterEntityId);
 }
 
+export const householdInitiativeReserved=(project,first)=>!!project&&!project.settled&&first?.partner===project.members[1];
+
 export function householdInitiative(s,source){
  if(!isStrictSumer(s)||source?.type!=='house'||!isOperational(source)||!s.buildings.includes(source))return refuse('Нужен жилой двор Южного Шумера');
  const sourceKey=buildingKey(source),residents=s.citizens.filter(c=>c.home===sourceKey);
  if(!residents.length)return refuse('Во дворе пока никто не живёт');
  const occupied=new Set(s.citizens.map(c=>c.home)),byId=new Map(s.citizens.map(c=>[c.id,c]));
- const inProgress=new Set(s.buildings.flatMap(b=>b.householdInitiative&&!b.householdInitiative.settled?b.householdInitiative.members:[]));
+ const inProgress=new Set(s.buildings.flatMap(b=>householdInitiativeReserved(b.householdInitiative,byId.get(b.householdInitiative?.members[0]))?b.householdInitiative.members:[]));
  const families=residents.flatMap(c=>{
   const partner=byId.get(c.partner);
   if(c.age<16||!partner||partner.age<16||c.floodShelter||partner.floodShelter||c.fireShelter||partner.fireShelter)return [];
