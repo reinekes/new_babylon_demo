@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T22:35:07.128682+00:00",
+  "commit": "0ccdba9ab571f2d8d4edaa978723bac419d8c8d7",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "65cb84427b9845962a20be2b121bec74536f5d1bf99a5cf29f2c1fea3e6622a9",
+      "actual": "65cb84427b9845962a20be2b121bec74536f5d1bf99a5cf29f2c1fea3e6622a9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-audio-completion-4x.json",
+      "status": 200,
+      "expected": "5f54de5b5f3e1687728af78f57c10d1a7313c1bb712775d51ba876ac2406b916",
+      "actual": "5f54de5b5f3e1687728af78f57c10d1a7313c1bb712775d51ba876ac2406b916",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "b6dd2d9dd57ba1a7afe546139555432573f15fa29b3be37cdf50c4d0e656ea62",
+      "actual": "b6dd2d9dd57ba1a7afe546139555432573f15fa29b3be37cdf50c4d0e656ea62",
+      "match": true
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "status": 200,
+      "expected": "46c2fe470ff9e993424b29f6fb9b482fc8ced9f8fa399ca18827047623630cb4",
+      "actual": "46c2fe470ff9e993424b29f6fb9b482fc8ced9f8fa399ca18827047623630cb4",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "bcc82ac79c85a5458e40f79dbf801f5e2b1daf1ba069ebf04a2e46362f9b40f9",
+      "actual": "bcc82ac79c85a5458e40f79dbf801f5e2b1daf1ba069ebf04a2e46362f9b40f9",
+      "match": true
+    },
+    {
+      "path": "roadmap/reports/2026-11-08-miracle-audio-completion.md",
+      "status": 200,
+      "expected": "a57f02fd323d9089080d45f29de67c4ff4ea3baf49afeacc14462d958439aff6",
+      "actual": "a57f02fd323d9089080d45f29de67c4ff4ea3baf49afeacc14462d958439aff6",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "dd5ebbc9d6c841edf3517a53fc5eb07c90b71bfb278135422e8efeaae7102477",
+      "actual": "dd5ebbc9d6c841edf3517a53fc5eb07c90b71bfb278135422e8efeaae7102477",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}

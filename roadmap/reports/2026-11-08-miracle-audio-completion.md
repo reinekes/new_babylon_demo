@@ -2,7 +2,8 @@
 date: 2026-11-08
 type: completion
 release: miracle-audio-completion-20261108-1
-publication: pending
+commit: 0ccdba9ab571f2d8d4edaa978723bac419d8c8d7
+publication: recorded
 groups: audio
 completed: audio-miracle-motifs
 source: docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md
@@ -13,10 +14,13 @@ source: docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md
 ### Проверки
 Прошёл 21 профильный тест, включая разные сигналы кошки и отсутствие повтора после загрузки. Матрица C02 и C04–C17 проверила обе фазы и сохранение результата. Восемь повторных проверок Chrome подтвердили C03 со звуком и в тишине в 2D и 3D, открытие и применение через Web Audio без медиаплеера, затухание литофона с расстоянием и изоляцию ошибки 404. На 4× в городе со 129 зданиями проверены одно применение, отказ в повторе и побайтная загрузка.
 
-- [Матрица звуковых фаз](../docs/benchmarks/2026-11-07-miracle-audio-phases.json)
-- [Благословение в Chrome](../docs/benchmarks/2026-11-08-blessing-cast-card-browser.json)
-- [Резервный звук в Chrome](../docs/benchmarks/2026-11-07-miracle-audio-fallback-browser.json)
-- [Литофон в Chrome](../docs/benchmarks/2026-11-07-positional-audio-browser.json)
-- [Повторный прогон 4×](../docs/benchmarks/2026-11-08-miracle-audio-completion-4x.json)
+- [Матрица звуковых фаз](../../docs/benchmarks/2026-11-07-miracle-audio-phases.json)
+- [Благословение в Chrome](../../docs/benchmarks/2026-11-08-blessing-cast-card-browser.json)
+- [Резервный звук в Chrome](../../docs/benchmarks/2026-11-07-miracle-audio-fallback-browser.json)
+- [Литофон в Chrome](../../docs/benchmarks/2026-11-07-positional-audio-browser.json)
+- [Повторный прогон 4×](../../docs/benchmarks/2026-11-08-miracle-audio-completion-4x.json)
 
 Если будет согласован новый игровой эффект C03, его применение проверяется вместе со звуком в рамках C03.
+
+### Публикация
+GitHub Pages 42421105316. Совпали 7 файлов по SHA-256. [Снимок выпуска](../../docs/versions/2026-11-08-23.md)
