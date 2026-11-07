@@ -1,7 +1,7 @@
 import {vowNameEvidence} from './supply-vow.js';
 import {isMemoryKeeper,isVotiveTemple} from './votive-offerings.js';
 import {floodPhase} from './river-flood.js';
-import {waterNameEvidence} from './causal-facts.js';
+import {matchesProjectWaterReceipt,waterNameEvidence} from './causal-facts.js';
 import {earnedResultNames,RESULT_NAMES} from './divinity.js';
 import {familyMemorialsAt} from './life-analytics.js';
 import {cityCommandReason} from './city-command-lock.js';
@@ -146,7 +146,8 @@ export function validateWaterEnding(s){
   Number.isSafeInteger(row.courierId)&&row.courierId>=0&&row.courierId<s.demography.nextId&&
   Number.isFinite(row.time)&&row.time>=0&&row.time<=ending.at&&Number.isFinite(row.amount)&&row.amount>0&&row.amount<=12;
  const [a,b]=ending.deliveries;
- return valid(a)&&valid(b)&&a.homeId!==b.homeId&&a.home!==b.home;
+ return valid(a)&&valid(b)&&a.homeId!==b.homeId&&a.home!==b.home&&
+  ending.deliveries.every(row=>matchesProjectWaterReceipt(s.causalFacts,ending.station,ending.stationId,row));
 }
 
 function completedTimberContract(s,visit){

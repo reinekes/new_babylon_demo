@@ -1,0 +1,38 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "buildings": 130,
+  "initialPopulation": 242,
+  "population": 251,
+  "steps": 300,
+  "waterEnding": {
+    "station": "12,7",
+    "stationId": 1,
+    "shelter": {
+      "host": "5,4",
+      "origin": "9,30",
+      "at": 129.125
+    },
+    "deliveries": [
+      {
+        "home": "11,7",
+        "homeId": 3,
+        "courierId": 9,
+        "time": 62.85,
+        "amount": 7.5
+      },
+      {
+        "home": "10,6",
+        "homeId": 4,
+        "courierId": 9,
+        "time": 129,
+        "amount": 6
+      }
+    ],
+    "at": 129.125
+  },
+  "reloadByteIdentical": true,
+  "alteredReceiptRejected": true,
+  "archivedReceiptAccepted": true,
+  "cpuMedianMs": 6.268207999999959,
+  "cpuP95Ms": 22.86454200000003
+}

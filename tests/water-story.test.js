@@ -109,7 +109,7 @@ test('campaign chapters require causal milestones in order and survive loss of a
 });
 
 test('the shared water ending requires shelter, two supplied homes and the same operating waterpoint',async()=>{
- const {waterEndingOffer,recordWaterEnding}=await import('../campaign.js');
+ const {waterEndingOffer,recordWaterEnding,validateWaterEnding}=await import('../campaign.js');
  const s=createNewCity({mode:'awakening',seed:137});
  const station={type:'waterpoint',x:12,y:7,level:1,waterEntityId:1};
  s.buildings.push(station);
@@ -118,7 +118,7 @@ test('the shared water ending requires shelter, two supplied homes and the same 
   b.waterEntityId=index+2;
   return {station:'12,7',stationId:1,home:b.x+','+b.y,homeId:b.waterEntityId,courierId:0,time:0,amount:2};
  });
- s.causalFacts={water:[receipts[0]],waterWitnesses:[receipts[1]]};
+ s.causalFacts={nextEntityId:5,water:[receipts[0]],waterWitnesses:[receipts[1]]};
  assert.equal(waterEndingOffer(s),null);
  s.arrivalHospitality.shelters=[{origin:'1,1',host:'2,2',at:0}];
  s.riverFlood={year:s.year,along:3,bank:1};
@@ -132,6 +132,17 @@ test('the shared water ending requires shelter, two supplied homes and the same 
  receipts[1].stationId=1;
  assert.ok(recordWaterEnding(s).ok);
  assert.deepEqual(s.waterEnding.deliveries.map(row=>row.home),receipts.map(row=>row.home));
+ assert.ok(validateWaterEnding(s));
+ const altered=structuredClone(s);
+ altered.waterEnding.deliveries[0].amount=3;
+ assert.equal(validateWaterEnding(altered),false);
+ const missing=structuredClone(s);
+ missing.causalFacts.water=[];
+ assert.equal(validateWaterEnding(missing),false);
+ const archived=structuredClone(s);
+ archived.causalFacts.water=Array.from({length:32},(_,i)=>({...receipts[0],stationId:5+i}));
+ assert.ok(validateWaterEnding(archived));
+
  assert.equal(s.won,false);
  assert.equal(recordWaterEnding(s).ok,false);
 });

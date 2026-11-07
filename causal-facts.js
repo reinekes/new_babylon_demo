@@ -46,6 +46,17 @@ function trimNameReceipts(receipts){
  receipts.splice(oldest,1);
 }
 
+export function matchesProjectWaterReceipt(ledger,station,stationId,receipt){
+ const {water,waterWitnesses=[]}=ledger;
+ const matches=row=>row.stationId===stationId&&row.homeId===receipt.homeId;
+ const retained=water.find(matches)??waterWitnesses.find(matches);
+ if(retained)return retained.station===station&&retained.home===receipt.home&&retained.courierId===receipt.courierId&&
+  retained.time===receipt.time&&retained.amount===receipt.amount;
+ // The witness journal can keep old entries while evicting newer ones.
+ return water.length===LIMIT&&receipt.time<=water[0].time||
+  waterWitnesses.length===LIMIT&&receipt.time<=waterWitnesses.at(-1).time;
+}
+
 export function waterNameEvidence(s){
  return distinctCourtyardPair(s.causalFacts?.waterWitnesses);
 }
