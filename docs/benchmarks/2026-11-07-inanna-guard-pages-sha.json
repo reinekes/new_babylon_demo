@@ -1,0 +1,135 @@
+{
+  "at": "2026-11-07T02:29:19.455957+00:00",
+  "commit": "00e834f8dfc66d4fb131c879a0b5bf1b1755dc2d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0c88df4b97114085c3ec2d51979a4998c5f7bc7ecf14303a4f96f957a5dbabdb",
+      "actual": "0c88df4b97114085c3ec2d51979a4998c5f7bc7ecf14303a4f96f957a5dbabdb",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "4d2bd62cda05d8fa986a055598d1a8798876a3ab9dfb3ee9f01f717764349353",
+      "actual": "4d2bd62cda05d8fa986a055598d1a8798876a3ab9dfb3ee9f01f717764349353",
+      "match": true
+    },
+    {
+      "path": "building-presentation.js",
+      "status": 200,
+      "expected": "3aa7568f6da7a323d9250b00b80e258f34ae8b399f41e9e2d59abf62ef9fe92e",
+      "actual": "3aa7568f6da7a323d9250b00b80e258f34ae8b399f41e9e2d59abf62ef9fe92e",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "2c7c4b63a057e8df403bf0c396ccb07d3deac62ab5e5a56e11336112dd18f7e9",
+      "actual": "2c7c4b63a057e8df403bf0c396ccb07d3deac62ab5e5a56e11336112dd18f7e9",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "f852e6968011a0631a8e8329e86d8eb3af0a77bd18fe52cf565b8aff16082203",
+      "actual": "f852e6968011a0631a8e8329e86d8eb3af0a77bd18fe52cf565b8aff16082203",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-inanna-guard-4x.json",
+      "status": 200,
+      "expected": "812e89f16fb18d73287bf8c4a3989f28c38d9e57fb2acef3f4ae70d906df8043",
+      "actual": "812e89f16fb18d73287bf8c4a3989f28c38d9e57fb2acef3f4ae70d906df8043",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "ef518d6908399d48ef45437af26a05ce7a4ddfda6a3a31266601d17e71d041da",
+      "actual": "ef518d6908399d48ef45437af26a05ce7a4ddfda6a3a31266601d17e71d041da",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "271b7191f978e1cc09222dc16e94c63918876bf139b84191f33b0791a7b0b6e4",
+      "actual": "271b7191f978e1cc09222dc16e94c63918876bf139b84191f33b0791a7b0b6e4",
+      "match": true
+    },
+    {
+      "path": "inanna-discovery.js",
+      "status": 200,
+      "expected": "277983658b499e8ab3251e247ed88d95c95a7ca5504aba7f944dfba7135bc339",
+      "actual": "277983658b499e8ab3251e247ed88d95c95a7ca5504aba7f944dfba7135bc339",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1a2c0e72db871132ac78176f6022de2b9124dfc4dc262207d668eb65f5f36a2d",
+      "actual": "1a2c0e72db871132ac78176f6022de2b9124dfc4dc262207d668eb65f5f36a2d",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "6a3cc21b35062e09afae0762871e2937bb8c7f61b501fd91587ebbe031dab80d",
+      "actual": "6a3cc21b35062e09afae0762871e2937bb8c7f61b501fd91587ebbe031dab80d",
+      "match": true
+    },
+    {
+      "path": "pests.js",
+      "status": 200,
+      "expected": "c5e321a8815ccd41ff9e9d45e0e2e3d53f40c745bafa002fa768a824938c9a15",
+      "actual": "c5e321a8815ccd41ff9e9d45e0e2e3d53f40c745bafa002fa768a824938c9a15",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ea89762deed7926e18086d78f8b0708a3dd9e9e65a468e7688fa3488bc397a33",
+      "actual": "ea89762deed7926e18086d78f8b0708a3dd9e9e65a468e7688fa3488bc397a33",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "712092881b781071505c918cae0c78b17cb692d64d79a68cd4ae3b83d1851e16",
+      "actual": "712092881b781071505c918cae0c78b17cb692d64d79a68cd4ae3b83d1851e16",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "2859cd05ff8c00b3b41245b13e4fc40fc2bf3ef811fcab6f5aba3f7a95f9c66d",
+      "actual": "2859cd05ff8c00b3b41245b13e4fc40fc2bf3ef811fcab6f5aba3f7a95f9c66d",
+      "match": true
+    },
+    {
+      "path": "sacred-unlocks.js",
+      "status": 200,
+      "expected": "0c5e04c5db7c580bac8baced4c846a82867d50fa9388db63beb784c9cba486e7",
+      "actual": "0c5e04c5db7c580bac8baced4c846a82867d50fa9388db63beb784c9cba486e7",
+      "match": true
+    },
+    {
+      "path": "tests/inanna-discovery.test.js",
+      "status": 200,
+      "expected": "213ee52a4423b54864992dabf1761c307b63d94d597522826d394bbd8dc6cdde",
+      "actual": "213ee52a4423b54864992dabf1761c307b63d94d597522826d394bbd8dc6cdde",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "2b8cc19615999c1be1eac32d9d954768c8712b55d89db1d739945c4d4b31285c",
+      "actual": "2b8cc19615999c1be1eac32d9d954768c8712b55d89db1d739945c4d4b31285c",
+      "match": true
+    }
+  ],
+  "matched": 18,
+  "total": 18
+}
