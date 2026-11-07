@@ -17,3 +17,34 @@ test('synthetic notes follow the audio clock while simulation is paused without 
  try{const audio=createCityAudio(),s=town();await audio.toggle();audio.tick(s,false,{x:5,y:5});audio.tick(s,true,{x:5,y:5});assert.equal(fake.oscillators.length,3);fake.contexts[0].currentTime=13;audio.tick(s,true,{x:5,y:5});assert.equal(fake.oscillators.length,6);audio.tick(s,true,{x:5,y:5});assert.equal(fake.oscillators.length,6);}
  finally{if(oldAudio===undefined)delete globalThis.AudioContext;else globalThis.AudioContext=oldAudio;}
 });
+
+test('cat discovery and summon play distinct cues over continuous background and never replay on load',async()=>{
+ const {oscillators,Context}=fakeAudio(),context=new Context(),media=[];
+ context.state='running';
+ const audio=createCityAudio(undefined,{createWorkContext:()=>context,createMedia:()=>{
+  const element={paused:true,plays:0,play(){this.paused=false;this.plays++;},pause(){this.paused=true;}};
+  media.push(element);return element;
+ }});
+ const s=town();
+ s.scenario={miracles:'awakening-c01-v1'};
+ s.catDiscovery={openedAt:null};
+ audio.tick(s,true,null);
+ await audio.toggle();
+ const background=media[0];
+ s.catDiscovery.openedAt=1;
+ audio.tick(s,true,null);
+ const opening=oscillators.map(o=>o.frequency.value);
+ assert.equal(opening.length,9);
+ audio.tick(s,true,null);
+ assert.equal(oscillators.length,9);
+ s.miracleCelebration={kind:'cat',duration:8};
+ audio.tick(s,true,null);
+ const summon=oscillators.slice(9).map(o=>o.frequency.value);
+ assert.equal(summon.length,9);
+ assert.notDeepEqual(summon,opening);
+ assert.equal(media.length,1);
+ assert.equal(background.plays,1);
+ audio.tick(structuredClone(s),true,null);
+ assert.equal(oscillators.length,18);
+ audio.dispose();
+});

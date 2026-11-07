@@ -18,8 +18,8 @@ export function musicSoundSources(s,listener){
  if(!Number.isFinite(proximity)||proximity<=0)return [];
  return (s.buildings||[]).filter(b=>b.type==='musicHouse').map(b=>({b,performance:musicPerformance(s,b),distance:Math.hypot(b.x-listener.x,b.y-listener.y)})).filter(v=>v.performance.playing&&v.distance<1.5).sort((a,b)=>a.distance-b.distance).slice(0,2).map(({b,distance})=>({id:b.id||`${b.x},${b.y}`,x:b.x,y:b.y,gain:.012*clamp((1.5-distance)/.9)**2*proximity}));
 }
-export function playStoneNote(context,frequency,gainValue){
- const now=context.currentTime,voices=[];
+export function playStoneNote(context,frequency,gainValue,delay=0){
+ const now=context.currentTime+delay,voices=[];
  for(const [ratio,volume,decay] of [[1,1,1.4],[2.76,.22,.65],[5.4,.055,.24]]){const osc=context.createOscillator(),gain=context.createGain();osc.type='sine';osc.frequency.value=frequency*ratio;gain.gain.setValueAtTime(.00001,now);gain.gain.exponentialRampToValueAtTime(Math.max(.00002,gainValue*volume),now+.008);gain.gain.exponentialRampToValueAtTime(.00001,now+decay);osc.connect(gain);gain.connect(context.destination);osc.start(now);osc.stop(now+decay+.03);osc.onended=()=>{osc.disconnect?.();gain.disconnect?.();};voices.push(osc);}
  return voices;
 }

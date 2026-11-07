@@ -1,3 +1,4 @@
+import {usesCatDiscovery} from './scenario-profiles.js';
 import {createWorkAudio} from './work-audio.js';
 import {musicSoundSources,playStoneNote,STONE_NOTES} from './music-audio.js';
 import {cityEventDefinition} from './city-events.js';
@@ -28,7 +29,8 @@ const activeFuneral=s=>s.funeral&&s.funeral.stage!=='returning';
 const activeFestival=s=>s.festival?.stage==='celebrating'&&s.festival.consumed&&s.festival.actors?.some(a=>a.kind==='guest'&&a.stage==='dancing');
 export function eventMusicTheme(s,funeralVariant=1){
  if(activeFuneral(s))return funeralVariant===2?'funeral2':'funeral1';
- if(s.miracleCelebration)return s.miracleCelebration.kind==='cat'?'catArrival':'earthBreath';
+ const celebration=s.miracleCelebration;
+ if(celebration&&!(celebration.kind==='cat'&&usesCatDiscovery(s)))return celebration.kind==='cat'?'catArrival':'earthBreath';
  if(s.lost)return 'extinction';
  if(activeFestival(s))return s.festival.occasion==='firstBeer'?'firstBeer':'nightLights';
  const eventTheme=cityEventDefinition(s.event?.id)?.music;
@@ -47,11 +49,11 @@ export function createCityAudio(onMessage,options={}){
  const createMedia=options.createMedia||(typeof globalThis.Audio==='function'?()=>new globalThis.Audio():null);
  if(!createMedia)return createSyntheticCityAudio(onMessage);
  const now=options.now||(()=>performance.now()/1000),cache=new Map(),doc=globalThis.document,work=createWorkAudio(options.createWorkContext);
- let enabled=false,current=null,outgoing=null,lithophone=null,disposed=false,epoch=0,lastFuneral='',funeralCount=0,lastError='',lastFrame=null,previewing=false,funeralWasActive=false,afterFuneralPending=false,lastGame=null;
+ let enabled=false,current=null,outgoing=null,lithophone=null,disposed=false,epoch=0,lastFuneral='',funeralCount=0,lastError='',lastFrame=null,previewing=false,funeralWasActive=false,afterFuneralPending=false,lastGame=null,lastCatOpening=null,lastCatScene=null;
  const clamp=v=>Math.max(0,Math.min(1,v));
  function voice(id){let v=cache.get(id);if(!v){const element=createMedia();element.preload='none';element.loop=id!=='afterFuneral';element.volume=0;element.src=musicTrackURL(id);v={id,element,playing:false,level:0,target:0,from:0,since:now(),duration:0};element.addEventListener?.('error',()=>{if(v.playing)fail(Error('media load'));});element.addEventListener?.('ended',()=>{if(id==='afterFuneral'&&current===v)afterFuneralPending=false;});cache.set(id,v);}return v;}
  function stop(v){if(!v)return;v.playing=false;v.level=0;v.target=0;v.element.volume=0;v.element.pause();}
- function silence(){work.silence();work.stopRain();work.stopEarth();epoch++;for(const v of cache.values())if(v.playing||!v.element.paused)stop(v);current=null;outgoing=null;lithophone=null;}
+ function silence(){work.silence();work.stopRain();work.stopEarth();work.stopCat();epoch++;for(const v of cache.values())if(v.playing||!v.element.paused)stop(v);current=null;outgoing=null;lithophone=null;}
  function fail(error){if(disposed||!enabled)return;enabled=false;silence();const key=String(error?.name||error?.message||'media');if(lastError!==key){lastError=key;onMessage?.('Музыка не запустилась. Нажми кнопку звука ещё раз, чтобы разрешить воспроизведение.');}}
  function play(v){if(v.playing)return;const ticket=epoch,attempt=v.attempt=(v.attempt||0)+1;v.playing=true;try{Promise.resolve(v.element.play()).then(()=>{if(attempt!==v.attempt){if(!v.playing)v.element.pause();return;}if(ticket!==epoch||!enabled||disposed||!v.playing)v.element.pause();},error=>{if(attempt===v.attempt&&ticket===epoch&&v.playing)fail(error);});}catch(error){fail(error);}}
  function target(v,value,duration=1.2){if(!v)return;value=clamp(value);if(Math.abs(v.target-value)<.00001)return;v.from=v.level;v.target=value;v.since=now();v.duration=duration;}
@@ -60,7 +62,14 @@ export function createCityAudio(onMessage,options={}){
  async function toggle(){if(disposed)return false;enabled=!enabled;if(!enabled)silence();else{work.enable();if(lastFrame)tick(lastFrame.s,lastFrame.paused,lastFrame.listener);}return enabled;}
  function tick(s,paused,listener){
   if(disposed)return;
-  if(lastGame!==s){silence();lastGame=s;lastFuneral='';funeralCount=0;funeralWasActive=false;afterFuneralPending=false;}
+  const sameCity=lastGame===s;
+  if(!sameCity){silence();lastGame=s;lastFuneral='';funeralCount=0;funeralWasActive=false;afterFuneralPending=false;}
+  const catOpening=s.catDiscovery?.openedAt??null;
+  const catScene=usesCatDiscovery(s)&&s.miracleCelebration?.kind==='cat'?s.miracleCelebration:null;
+  const catCue=sameCity&&(catScene&&catScene!==lastCatScene?'summon':
+   catOpening!==null&&catOpening!==lastCatOpening?'opening':null);
+  lastCatOpening=catOpening;
+  lastCatScene=catScene;
   lastFrame={s,paused,listener};
   const funeral=!!activeFuneral(s);
   if(funeral){const key=(s.funeral.deceased||[]).map(d=>d.id).join(',')||'ceremony';if(!funeralWasActive||key!==lastFuneral){lastFuneral=key;funeralCount++;}afterFuneralPending=false;}
@@ -68,6 +77,7 @@ export function createCityAudio(onMessage,options={}){
   funeralWasActive=funeral;
   if(s.lost||activeFestival(s)||s.miracleCelebration||s.event)afterFuneralPending=false;
   if(!enabled||previewing||doc?.hidden){silence();return;}
+  if(catCue)work.cueCat(catCue);
   work.tick(s,paused,listener);
   const id=afterFuneralPending?'afterFuneral':eventMusicTheme(s,funeralCount%2?1:2),source=s.lost?null:musicSoundSources(s,listener)[0];select(id);
   if(source){if(!lithophone){lithophone=voice('lithophone');play(lithophone);}target(lithophone,.20*clamp(source.gain/.012),.35);}

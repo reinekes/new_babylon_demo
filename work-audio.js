@@ -63,7 +63,7 @@ export function createWorkAudio(createContext=()=>{
  const Context=globalThis.AudioContext||globalThis.webkitAudioContext;
  return Context?new Context():null;
 }){
- let context=null,active=null,rainVoices=[],earthVoice=null,earthNotes=[];
+ let context=null,active=null,rainVoices=[],earthVoice=null,earthNotes=[],catNotes=[];
  const buffers=new Map();
  const heard=new WeakSet();
  function release(voice){voice.node.disconnect();voice.gain.disconnect();}
@@ -130,6 +130,18 @@ export function createWorkAudio(createContext=()=>{
   }catch{stopEarth();}
   return stopEarth;
  }
- function dispose(){silence();stopRain();stopEarth();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
- return {enable,tick,silence,cueRain,stopRain,cueEarth,stopEarth,dispose};
+ function stopCat(){
+  for(const osc of catNotes){try{osc.stop();}catch{}}
+  catNotes=[];
+ }
+ function cueCat(kind){
+  if(context?.state!=='running')return;
+  stopCat();
+  const notes=kind==='opening'?[294,392,490]:[392,294,245];
+  try{
+   notes.forEach((frequency,i)=>catNotes.push(...playStoneNote(context,frequency,.034-i*.006,i*.16)));
+  }catch{stopCat();}
+ }
+ function dispose(){silence();stopRain();stopEarth();stopCat();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
+ return {enable,tick,silence,cueRain,stopRain,cueEarth,stopEarth,cueCat,stopCat,dispose};
 }

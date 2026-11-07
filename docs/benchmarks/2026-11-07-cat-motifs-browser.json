@@ -1,0 +1,8 @@
+[
+  {
+    "id": "cues",
+    "view": "audio",
+    "url": "?id=cues&view=audio",
+    "result": "PASS Chrome real Web Audio, two distinct cues, recorded theme continuous, no replay on load"
+  }
+]
