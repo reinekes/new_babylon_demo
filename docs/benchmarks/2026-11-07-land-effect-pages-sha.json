@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-07T02:14:41.608951+00:00",
+  "commit": "9642efde084939538d7c3c1b757889d637b6c3c0",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ddc60b721b73515fc19e6d7aa5eeeba8327f7f6356747a3342c3b3fca5aa847c",
+      "actual": "ddc60b721b73515fc19e6d7aa5eeeba8327f7f6356747a3342c3b3fca5aa847c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "44c2da72eaf9dbecfbe00ea18e185fa2bad0dd291203cd3212091e08eb5aa9d3",
+      "actual": "44c2da72eaf9dbecfbe00ea18e185fa2bad0dd291203cd3212091e08eb5aa9d3",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "40c5f619dc671bb5cdd8dc95f9e4404186131e88026b104b21ada4bf34995973",
+      "actual": "40c5f619dc671bb5cdd8dc95f9e4404186131e88026b104b21ada4bf34995973",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-land-effect-4x.json",
+      "status": 200,
+      "expected": "e572faf919e5656f3b5131c9a019c9936d29ccf5a1583dcc678378777a95382c",
+      "actual": "e572faf919e5656f3b5131c9a019c9936d29ccf5a1583dcc678378777a95382c",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "feb77a74a426d7f56815dbcd691491eb2771b6e263a20f8817e29f35a987ce1b",
+      "actual": "feb77a74a426d7f56815dbcd691491eb2771b6e263a20f8817e29f35a987ce1b",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "8dc8c13b07612ec301ef693616c184ab8d6315a17e3e59b1dc7adf805a5c477d",
+      "actual": "8dc8c13b07612ec301ef693616c184ab8d6315a17e3e59b1dc7adf805a5c477d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f26382e5789f98800deb73842ae23e116659d8a100744f278d55e564149d1d10",
+      "actual": "f26382e5789f98800deb73842ae23e116659d8a100744f278d55e564149d1d10",
+      "match": true
+    },
+    {
+      "path": "land-memory.js",
+      "status": 200,
+      "expected": "0dbb4d2428d81badc7ecb02124936be49f55e7949f56dbc92997066077f981b9",
+      "actual": "0dbb4d2428d81badc7ecb02124936be49f55e7949f56dbc92997066077f981b9",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "44d934b7f0f53d2b20be8fad37e6afe2f26f97631772fc27488b547bc479878c",
+      "actual": "44d934b7f0f53d2b20be8fad37e6afe2f26f97631772fc27488b547bc479878c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "155c9b003114fb44533706079c554f29e916b3f4f1ae423cab951c8629e8cbb6",
+      "actual": "155c9b003114fb44533706079c554f29e916b3f4f1ae423cab951c8629e8cbb6",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "e31cd828870849fc4b690c9e6c60f2404332be4f2dff782680a886ab2682fef8",
+      "actual": "e31cd828870849fc4b690c9e6c60f2404332be4f2dff782680a886ab2682fef8",
+      "match": true
+    },
+    {
+      "path": "sacred-unlocks.js",
+      "status": 200,
+      "expected": "335b6c4643840ddd0ae9fa131e08ec7e13784d38276689255e7a2b0568645511",
+      "actual": "335b6c4643840ddd0ae9fa131e08ec7e13784d38276689255e7a2b0568645511",
+      "match": true
+    },
+    {
+      "path": "tests/land-memory.test.js",
+      "status": 200,
+      "expected": "efdc2a60a13b6b3266bd2160f4cfb9a3556ee8116be5df3368c744e549a5f81c",
+      "actual": "efdc2a60a13b6b3266bd2160f4cfb9a3556ee8116be5df3368c744e549a5f81c",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
