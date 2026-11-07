@@ -1,4 +1,4 @@
-import {bindWaterProject,recordProjectWaterFact} from './causal-facts.js';
+import {bindWaterProject,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
@@ -95,10 +95,15 @@ export function approveWaterProject(s,organizerId,requesterId,x,y,participantIds
 }
 
 export function confirmProjectWater(s,c,station,home,amount){
- if(!station||amount<=1e-7)return;
+ if(!station||!Number.isFinite(amount)||amount<=1e-7)return;
  const b=s.buildings.find(b=>b.type===projectType&&buildingKey(b)===station&&isOperational(b));
  const p=b?.humanWaterProject;
- if(!p||p.delivery||p.home!==buildingKey(home)||p.homeId!==undefined&&p.homeId!==home.waterEntityId||!s.citizens.some(r=>r.id===p.requesterId&&r.home===p.home))return;
+ if(!p)return;
+ if(p.home!==buildingKey(home)){
+  recordProjectWaterWitness(s,b,home,{courierId:c.id,time:s.simTime,amount});
+  return;
+ }
+ if(p.delivery||p.homeId!==undefined&&p.homeId!==home.waterEntityId||!s.citizens.some(r=>r.id===p.requesterId&&r.home===p.home))return;
  p.delivery={courierId:c.id,time:s.simTime,amount};
  recordProjectWaterFact(s,b,home,p.delivery);
 }

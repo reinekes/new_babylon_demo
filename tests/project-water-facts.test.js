@@ -109,3 +109,35 @@ test('food and water for the same pair on the same day are one aid event',()=>{
  saved.causalFacts.neighborWater=[{...saved.causalFacts.neighborFood[0]}];
  assert.equal(decode(encode(saved)),null);
 });
+
+test('a second occupied courtyard records an actual project delivery once and keeps it after demolition',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [home,neighbor]=s.buildings.filter(b=>b.type==='house');
+ const requester=s.citizens.find(c=>c.home===buildingKey(home));
+ const courier=s.citizens.find(c=>c.home===buildingKey(neighbor));
+ const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:buildingKey(home),startedAt:0}};
+ s.buildings.push(station);
+ bindWaterProject(s,station,home);
+ confirmProjectWater(s,courier,buildingKey(station),neighbor,0);
+ const evacuated=s.citizens.filter(c=>c.home===buildingKey(neighbor));
+ for(const c of evacuated)c.floodShelter=buildingKey(home);
+ confirmProjectWater(s,courier,buildingKey(station),neighbor,3);
+ for(const c of evacuated)delete c.floodShelter;
+ assert.equal(s.causalFacts.waterWitnesses,undefined);
+ confirmProjectWater(s,courier,buildingKey(station),neighbor,3);
+ confirmProjectWater(s,courier,buildingKey(station),neighbor,2);
+ assert.equal(s.causalFacts.waterWitnesses.length,1);
+ const [receipt]=s.causalFacts.waterWitnesses;
+ delete s.causalFacts.waterWitnesses;
+ assert.equal(decode(encode(s)),null);
+ s.causalFacts.waterWitnesses=[receipt];
+ assert.deepEqual([receipt.stationId,receipt.homeId,receipt.courierId,receipt.amount],[station.waterEntityId,neighbor.waterEntityId,courier.id,3]);
+ assert.equal(station.humanWaterProject.delivery,undefined);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ s.causalFacts.waterWitnesses.push({...receipt});
+ assert.equal(decode(encode(s)),null);
+ s.causalFacts.waterWitnesses.pop();
+ s.buildings.pop();
+ assert.deepEqual(decode(encode(s)).causalFacts.waterWitnesses,[receipt]);
+});

@@ -1,0 +1,20 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Real 4x water deliveries in a 130-building city, loaded into the real app with a test-only entry to open household cards.",
+  "runs": [
+    {
+      "id": "witnesses",
+      "view": "2d",
+      "url": "?id=witnesses&view=2d",
+      "mode": "2d",
+      "result": "PASS 2d source count and two real receipt cards after load"
+    },
+    {
+      "id": "witnesses",
+      "view": "3d",
+      "url": "?id=witnesses&view=3d",
+      "mode": "3d",
+      "result": "PASS 3d source count and two real receipt cards after load"
+    }
+  ]
+}

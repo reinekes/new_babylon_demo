@@ -647,14 +647,19 @@ function waterProjectHousehold(b){
  const activeIds=new Set(projects.map(site=>site.waterEntityId));
  const archive=(state.causalFacts?.water||[]).filter(f=>f.homeId===b.waterEntityId&&!activeIds.has(f.stationId)).reverse().map(f=>
   `<p data-water-delivery-memory><b>Первая доставка из прежнего водозабора · ${esc(f.station)}</b><br>${resident(f.courierId)} · ${foodAmount(f.amount)} воды</p>`).join('');
- const status=archive+projects.map(site=>{
+ const witnesses=state.causalFacts?.waterWitnesses||[];
+ const received=witnesses.filter(f=>f.homeId===b.waterEntityId).reverse().map(f=>
+  `<p data-project-water-witness><b>Двор получил воду из общего водозабора · ${esc(f.station)}</b><br>${resident(f.courierId)} · ${foodAmount(f.amount)} воды</p>`).join('');
+ const status=archive+received+projects.map(site=>{
   const p=site.humanWaterProject,organizer=state.citizens.find(c=>c.id===p.organizerId);
   const helpers=(p.participantIds||[]).map(id=>{
    const c=state.citizens.find(c=>c.id===id);
    const status=!c?'выбыл':site.construction?.kind!=='new'?'стройка завершена':c.site===buildingKey(site)?'на стройке':waterProjectOrganizerReason(state,c)||'ожидает свободного места на стройке';
    return `Помощник · ${resident(id)} · ${esc(status)}<br>`;
   }).join('');
-  return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${helpers}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?.kind==='new'?'Идёт строительство':'Построен · ожидается первая доставка'}</p>`;
+  const served=(p.witnessHomeIds||[]).length;
+  const witnessSummary=served?`<br>Доставки подтверждены в других дворах · ${served}`:'';
+  return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${helpers}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?.kind==='new'?'Идёт строительство':'Построен · ожидается первая доставка'}${witnessSummary}</p>`;
  }).join('');
  const request=householdWaterRequest(state,b);
  if(!request)return status;
