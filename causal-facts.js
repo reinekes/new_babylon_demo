@@ -3,6 +3,7 @@ import {DAY_SECONDS} from './city-life.js';
 import {buildingKey} from './definitions.js';
 import {supplyHome} from './households.js';
 import {isStrictSumer} from './scenario-profiles.js';
+import {worldWidth,worldHeight} from './world.js';
 
 const LIMIT=32;
 const WITNESSES_PER_PROJECT=2;
@@ -85,6 +86,22 @@ export function recordHealingNameEvidence(s,healer,patient){
  home.waterEntityId??=ledger.nextEntityId++;
  care.push({homeId:home.waterEntityId,home:patient.home,healerId:healer.id,patientId:patient.id,time:s.simTime});
  trimNameReceipts(care);
+}
+
+export function craftNameEvidence(s){
+ return distinctCourtyardPair(s.causalFacts?.craft);
+}
+
+export function recordCraftNameEvidence(s,site,{mentor,pupil}){
+ if(!isStrictSumer(s)||!site?.construction||!Number.isFinite(site.x)||!Number.isFinite(site.y))return;
+ const first=s.causalFacts?.craft?.[0];
+ if(craftNameEvidence(s)||first?.home===pupil.home||first?.pupilId===pupil.id)return;
+ const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===pupil.home);
+ if(!home||first&&first.homeId===home.waterEntityId)return;
+ const ledger=causalLedger(s);
+ home.waterEntityId??=ledger.nextEntityId++;
+ (ledger.craft??=[]).push({homeId:home.waterEntityId,home:pupil.home,mentorId:mentor.id,pupilId:pupil.id,
+  site:[site.x,site.y],time:s.simTime});
 }
 
 export function harvestNameEvidence(s){
@@ -216,6 +233,16 @@ export function validateCausalFacts(s){
     !Number.isFinite(fact.time)||fact.time<previousHealingTime||fact.time>s.simTime)return false;
    patients.add(fact.patientId);previousHealingTime=fact.time;
   }
+ }
+ const craft=ledger.craft;
+ if(craft!==undefined){
+  if(s.godhood?.mode!=='awakening'||!Array.isArray(craft)||!craft.length||craft.length>2)return false;
+  const [first,second]=craft;
+  if(!craft.every(f=>f&&Object.keys(f).length===6&&entity(f.homeId)&&typeof f.home==='string'&&keyPattern.test(f.home)&&
+   entityMatches(f.homeId,'house',f.home)&&Array.isArray(f.site)&&f.site.length===2&&
+   f.site.every((value,i)=>Number.isFinite(value)&&value>=-.5&&value<=(i===0?worldWidth(s):worldHeight(s))-.5)&&
+   citizen(f.mentorId)&&citizen(f.pupilId)&&f.mentorId!==f.pupilId&&Number.isFinite(f.time)&&f.time>=0&&f.time<=s.simTime)||
+   second&&(second.homeId===first.homeId||second.home===first.home||second.pupilId===first.pupilId||second.time<first.time))return false;
  }
  const harvest=ledger.harvest;
  if(harvest!==undefined){

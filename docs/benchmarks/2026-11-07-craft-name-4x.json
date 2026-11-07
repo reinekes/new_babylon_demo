@@ -1,0 +1,35 @@
+{
+  "buildings": 130,
+  "population": 222,
+  "initialPopulation": 200,
+  "evidence": [
+    {
+      "homeId": 1,
+      "home": "8,8",
+      "mentorId": 0,
+      "pupilId": 1,
+      "site": [
+        8,
+        8
+      ],
+      "time": 6.125
+    },
+    {
+      "homeId": 2,
+      "home": "9,9",
+      "mentorId": 0,
+      "pupilId": 8,
+      "site": [
+        9,
+        9
+      ],
+      "time": 21.125
+    }
+  ],
+  "loadedCargo": true,
+  "reloadByteIdentical": true,
+  "steps": 620,
+  "cpuMedianMs": 2.26316700000001,
+  "cpuP95Ms": 6.273415999999997,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

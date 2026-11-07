@@ -1,3 +1,4 @@
+import {recordCraftNameEvidence} from './causal-facts.js';
 import {advanceStarObservations,starKnowledgeReason} from './star-observations.js';
 import {peaceKnowledgeReason} from './peace-discovery.js';
 import {arrivalKnowledgeReason} from './arrival-hospitality.js';
@@ -52,6 +53,7 @@ export function applyBuilderInstruction(s,contributions,room=Infinity,site=null)
  const practice=shared*Math.min(1,room/effective);
  recordRevelationTraining(s,site,pair,practice);
  addBuilderPractice(pair.pupil,practice,builderLevel(pair.mentor));
+ if(builderLevel(pair.pupil)===3)recordCraftNameEvidence(s,site,pair);
  return Math.min(effective,room);
 }
 export const knowledgeTier=(type,level=1)=>Math.max(level,MONUMENTS.has(type)?3:BASIC.has(type)||type==='road'?1:2);

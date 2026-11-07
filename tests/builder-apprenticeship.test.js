@@ -58,3 +58,27 @@ test('two builders train on a real site, and changing the mentor role preserves 
  bad.citizens.find(c=>c.id===pupil.id).builderSkill.practice=-1;
  assert.equal(decode(encode(bad)),null);
 });
+
+test('craft title counts mastery earned through shared work in two households',async()=>{
+ const {createGame,encode,decode}=await import('../engine.js');
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {craftNameEvidence}=await import('../causal-facts.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:strictScenario()});
+ const mentor=s.citizens[0],first=s.citizens[1],second=s.citizens.find(c=>c.home!==first.home&&c.age>=16);
+ Object.assign(s.godhood,{stage:'recognized',witnessId:mentor.id,recognitionAt:0,believerIds:[mentor.id,first.id,second.id]});
+ Object.assign(mentor,{role:'builder',calling:'builder',builderSkill:{level:3,projects:5}});
+ for(const pupil of [first,second])Object.assign(pupil,{role:'builder',calling:'builder',builderSkill:{level:2,projects:4,practice:7.5}});
+ const site={type:'house',x:10,y:9,construction:{kind:'new'}};
+ const practice=(pupil,place=site)=>applyBuilderInstruction(s,[{c:mentor,work:1},{c:pupil,work:1}],4,place);
+ practice(first);
+ assert.equal(builderLevel(first),3);
+ assert.equal(craftNameEvidence(s),null);
+ practice(first);
+ assert.equal(s.causalFacts.craft.length,1);
+ practice(second,{type:'road',x:10.5,y:9,construction:{kind:'new'}});
+ assert.equal(builderLevel(second),3);
+ const pair=craftNameEvidence(s);
+ assert.deepEqual(pair?.map(row=>row.pupilId),[first.id,second.id]);
+ assert.deepEqual(pair[1].site,[10.5,9]);
+ assert.deepEqual(craftNameEvidence(decode(encode(s))),pair);
+});
