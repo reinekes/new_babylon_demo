@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "stages": [
+    "idle",
+    "milling",
+    "baking"
+  ],
+  "received": 5,
+  "steps": 800,
+  "medianCPUms": 2.4669999999999845,
+  "p95CPUms": 6.582875000000058,
+  "exactSave": true
+}

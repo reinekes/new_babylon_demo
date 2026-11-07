@@ -87,6 +87,7 @@ export function godhoodView(s){
 }
 
 export function buildingKnowledgeReason(s,type,level=1){
+ if(type==='bakery'&&!isStrictSumer(s))return 'Общая печь доступна в Южном Шумере';
  if(type==='ziggurat'&&level===1){const reason=monumentChapterReason(s);if(reason)return reason;}
  if(isCityFortification(type)){
   if(!isStrictSumer(s))return 'Городские стены доступны в Южном Шумере';

@@ -8,7 +8,7 @@ import {EARTH} from './map-art.js';
 const EMPTY=Object.freeze({stage:'idle',elapsed:0,ready:0,clay:0,reed:0,water:0,food:0,pottery:0,vesselUses:0});
 export function artisanArtState(b){return artisanSummary(b)||EMPTY;}
 export function drawArtisan(r,b,s,t=0){
- if(!['pottery','brewery'].includes(b.type))return;
+ if(!['pottery','brewery','bakery'].includes(b.type))return;
  const p=r.point(b.x,b.y),q=r.s,c=r.ctx,level=levelOf(b),v=artisanArtState(b),pottery=b.type==='pottery';
  const poly=(pts,color)=>r.polygon(pts.map(([x,y])=>[p.x+x*q,p.y+y*q]),color),line=(pts,color,w=1)=>r.line(pts.map(([x,y])=>[p.x+x*q,p.y+y*q]),color,w*q),box=(x,y,w,d,h,top=EARTH.ivory,left=EARTH.shade,right=EARTH.plaster)=>r.box(p.x+x*q,p.y+y*q,w*q,d*q,h*q,top,left,right),oval=(x,y,w,h,color)=>{c.fillStyle=color;c.beginPath();c.ellipse(p.x+x*q,p.y+y*q,w*q,h*q,0,0,Math.PI*2);c.fill();};
  const jar=(x,y,size=1,color='#bd825f',sealed=false)=>{oval(x,y-3.8*size,2.8*size,3.8*size,color);oval(x-.7*size,y-4*size,.7*size,2.5*size,'#e3b58a');oval(x,y-7*size,1.8*size,.8*size,sealed?'#d7c495':'#695a43');line([[x-1.9*size,y-7*size],[x+1.9*size,y-7*size]],'#ecd2a5',.7);};
@@ -45,6 +45,13 @@ export function drawArtisan(r,b,s,t=0){
   if(wheel.forming)jar(15,1,.65,'#b49a7b');
   if(v.stage==='drying')for(let k=0;k<2;k++)jar(11+k*8,6-k*2,.9,'#c5b08b');
   if(v.stage==='ready'&&v.ready>0)for(let k=0;k<Math.min(2,v.ready);k++)jar(12+k*9,9-k*1.7,1,'#bd7d57');
+ }else if(b.type==='bakery'){
+  box(8,4,10,5,9,'#c68e65','#906549','#ad7d56');
+  oval(8,-7,7,4,'#cf9b70');
+  oval(8,1,3,2,v.stage==='baking'?'#eda45f':'#5e4c3c');
+  box(21,6,6,3,2,'#b7aa91','#877b65','#9f9075');
+  line([[18,4],[23,2]],'#786d5e',1.6);
+  if(v.stage==='ready')for(let k=0;k<5;k++)oval(2+k*4,11-k%2*2,2,.9,'#d8ab68');
  }else{
   // Two large clay brewing vessels are equipment; their surfaces show actual contents.
   for(const [x,y,size]of [[8,3,1.35],[21,3,1.1]]){

@@ -37,3 +37,33 @@ test('natural death during an ingredient trip recovers that cargo once and retai
 test('v21 caravan migration preserves paid trade, prices and carried cargo without new charges',async()=>{const {readFileSync}=await import('node:fs');const base=decode(readFileSync(new URL('./fixtures/legacy-v16-textiles.json',import.meta.url),'utf8'));assert.ok(base.trade.caravan);const old=JSON.parse(encode(base));old.version=21;for(const r of [old.resources,old.delivered,...old.buildings.map(b=>b.stock),old.trade.caravan.stock,old.trade.caravan.prices])if(r){delete r.pottery;delete r.beer;}const s=decode(JSON.stringify(old));assert.ok(s);assert.deepEqual(s.citizens,old.citizens);assert.deepEqual(s.trade.sales,old.trade.sales);assert.deepEqual(s.trade.deliveries,old.trade.deliveries);for(const k of Object.keys(old.trade.caravan.prices))assert.deepEqual(s.trade.caravan.prices[k],old.trade.caravan.prices[k]);assert.equal(s.trade.caravan.stock.beer,0);assert.deepEqual(s.trade.caravan.prices.pottery,{buy:16,sell:14});});
 test('strict save validation rejects extra vessels in transit and duplicated recipe buffers',()=>{const s=fixture('brewery');putStock(s,'9,8','pottery',1);let c;for(let i=0;i<1500;i++){s.event=null;advanceTime(s,.1);c=inputCourier(s,'pottery');if(c)break;}assert.ok(c);assert.ok(decode(encode(s)));const raw=JSON.parse(encode(s));if(c.craftSite)raw.citizens.find(p=>p.id===c.id).craftAmount=2;else raw.citizens.find(p=>p.id===c.id).cargo.pottery=2;assert.equal(decode(JSON.stringify(raw)),null);const dup=JSON.parse(encode(s));dup.buildings.at(-1).artisan.pottery=1;assert.equal(decode(JSON.stringify(dup)),null);});
 test('all clay and reed remain accounted for across buffers, active batch, finished stock and hands',()=>{const s=fixture('pottery'),b=s.buildings.at(-1);for(const c of s.citizens)if(c.age>=16&&c.id>1)setCitizenRole(s,c.id,'carrier');const original={clay:s.resources.clay,reed:s.resources.reed};for(let i=0;i<1200;i++){s.event=null;advanceTime(s,.1);const active=!['idle','ready'].includes(b.artisan.stage)?2:0,outputs=s.resources.pottery+(b.workshopStock?.output?.pottery||0)+s.buildings.reduce((n,b)=>n+(b.householdStock?.pottery||0),0)+b.artisan.ready+active+s.citizens.reduce((n,c)=>n+(c.cargo.pottery||0),0);for(const [k,ratio]of [['clay',2],['reed',1]]){const hands=s.citizens.reduce((n,c)=>n+(c.craftMaterial===k?c.craftAmount||0:0)+(c.cargo?.[k]||0),0);assert.ok(Math.abs(s.resources[k]+b.artisan[k]+hands+outputs*ratio-original[k])<1e-6,`${k} at ${i}`);}}assert.ok(s.delivered.pottery>=2,'finished goods were physically delivered before being distributed to home stores');});
+test('Southern Sumer builds a common oven and delivers bread after both stages of work',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {finishConstruction,workRequired}=await import('../construction.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ assert.equal(build(createGame({start:'established'}),'bakery',10,9).ok,false);
+ putStock(s,'9,8','stone',8);
+ const result=build(s,'bakery',10,9);assert.ok(result.ok,result.reason);
+ const b=s.buildings.at(-1);
+ b.construction.delivered={...b.construction.required};
+ for(const k of Object.keys(b.construction.remaining))b.construction.remaining[k]=0;
+ b.construction.work=workRequired(b);
+ assert.ok(finishConstruction(s));syncCitizens(s);
+ assert.ok(assignWorkplace(s,0,'10,9').ok);
+ assert.ok(assignWorkplace(s,1,'10,9').ok);
+ const stages=new Set();let food=false,reed=false,water=false,cargo=false;
+ for(let i=0;i<3600;i++){
+  s.event=null;advanceTime(s,.1);stages.add(b.artisan.stage);
+  food||=!!inputCourier(s,'food');reed||=!!inputCourier(s,'reed');
+  water||=s.citizens.some(c=>c.waterTrip?.target==='10,9'&&c.waterTrip.load>0);
+  cargo||=s.citizens.some(c=>c.cargo.food>0&&s.district.jobs.some(q=>q.id===c.districtJob&&q.source==='10,9'));
+  if(i%20===0)assert.ok(decode(encode(s)),`bakery save ${i} ${b.artisan.stage}`);
+  if(cargo&&s.district.jobs.some(q=>q.source==='10,9'&&q.resource==='food'&&q.delivered>=5))break;
+ }
+ assert.ok(food&&reed&&water,[food,reed,water]);
+ assert.ok(stages.has('milling')&&stages.has('baking'),[...stages]);
+ assert.ok(b.productionHistory.some(row=>row.resources.food>=5));
+ assert.ok(cargo);
+ assert.ok(s.district.jobs.some(q=>q.source==='10,9'&&q.resource==='food'&&q.delivered>=5));
+ assert.ok(decode(encode(s)));
+});

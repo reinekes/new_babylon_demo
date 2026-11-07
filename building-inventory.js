@@ -79,7 +79,7 @@ export function buildingInventory(s,b){
  if(b.artisan?.ready)sum(output,artisanOutput(b),b.artisan.ready);
  if(b.brickmaking?.ready)sum(output,'brick',b.brickmaking.ready);if(b.firing?.ready)sum(output,'firedBrick',b.firing.ready);
  if(b.brickmaking?.wet)inProcess.brick=b.brickmaking.wet;if(b.firing?.hot)inProcess.firedBrick=b.firing.hot;
- if(b.artisan&&!['idle','ready'].includes(b.artisan.stage))inProcess[artisanOutput(b)]=b.type==='pottery'?2:3;
+ if(b.artisan&&!['idle','ready'].includes(b.artisan.stage))inProcess[artisanOutput(b)]=BUILDINGS[b.type].output[artisanOutput(b)];
  if(b.crop){input.food=n(b.crop.seedStock);inProcess.sheaves=n(b.crop.sheaves);inProcess.crop=n(b.crop.remaining);}
  if(b.flock)inProcess.wool=n(b.flock.fleece);
  const key=buildingKey(b);

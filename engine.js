@@ -196,6 +196,7 @@ export function yieldSummary(s,b){
  if(b.type==='levee')return 'Земляной вал · замкни разрывы вдоль берега';
  if(b.type==='canal')return !Number.isInteger(b.x)?'Соединяй участки от реки или озера · полив соседних полей':b.construction?'Вода появится после завершения связного пути от реки или озера':b.silt>=.95?'Русло перекрыто илом · закажи расчистку':irrigationFor(s).wet.has(`${b.x},${b.y}`)?'Канал наполнен · полив по доступным долям':'Сухое русло · проверь источник и участки выше по течению';
  if(b.type==='pottery')return `4 глины + 2 воды + 2 тростника → 2 керамики · формовка ${(5/outputMultiplier(b)).toFixed(1)} с · труд ×${outputMultiplier(b)} · сушка 12 с · обжиг 12 с · остывание 6 с`;
+ if(b.type==='bakery')return '4 еды + 2 воды + 2 тростника → 5 еды · помол и выпечка · семенной резерв защищён';
  if(b.type==='brewery')return `4 еды + 3 воды → 3 напитка · ${(15/outputMultiplier(b)).toFixed(1)} с труда · труд ×${outputMultiplier(b)} · 1 сосуд на 4 партии · семенной резерв защищён`;
  if(b.type==='kiln')return `4 сырца + 3 тростника → 4 обожжённых · обжиг ${(20/outputMultiplier(b)).toFixed(1)} с + остывание ${(8/outputMultiplier(b)).toFixed(1)} с`;
  if(b.type==='brickyard')return '4 глины + 1 тростник + 2 воды → 4 сырца · сушка на солнце 30 с · 2 работника';
