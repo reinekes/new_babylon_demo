@@ -24,7 +24,8 @@ export function depthSearchReason(s){
 export function validateDepthSupply(s){
  const record=s.depthSupply;
  if(record===undefined)return true;
- if(!usesCatDiscovery(s)||!record||Object.keys(record).length!==2||record.version!==1||
+ if(!usesCatDiscovery(s)||!record||Object.keys(record).length!==2+Number(record.sceneSeen!==undefined)||record.version!==1||
+  (record.sceneSeen!==undefined&&(record.sceneSeen!==true||s.relicQuest?.phase!=='completed'))||
   !Array.isArray(record.homes)||record.homes.length>DEPTH_HOMES_REQUIRED)return false;
  const seen=new Set();
  return record.homes.every((row,i)=>{

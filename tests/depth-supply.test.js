@@ -39,3 +39,14 @@ test('only the new oasis search needs the rain milestone and three supplied home
  delete s.depthSupply;
  assert.equal(relicStartReason(s,c.id),newReason);
 });
+
+test('delivering the oasis relic opens Depths without a builder rank in the new chapter',async()=>{
+ const {miracle}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ s.resources.faith=100;
+ assert.match(miracle(s,'relicAwakening').reason,/артефакт/);
+ s.relicQuest.phase='completed';
+ assert.equal(miracle(s,'relicAwakening').ok,true);
+ assert.equal(s.resources.faith,55);
+ assert.equal(s.rain,2);
+});

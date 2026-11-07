@@ -49,6 +49,7 @@ export function createStarPresentation(root,{ready,onOpening,forecasts,project,c
   for(const [kind,mark] of marks)if(!keep.has(kind)){mark.remove();marks.delete(kind);}
  }
  return {
+  get active(){return !!active;},
   skip,cast(){start('cast');},
   reset(){skip();seen=false;record=null;rows=[];refresh=0;drawMarks({},0,false);},
   tick(s,dt,{visible=true,allowOpening=true,marksVisible=visible}={}){

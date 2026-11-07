@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 296,
+  "relicDelivered": true,
+  "questEqualReload": true,
+  "rainEffect": 2,
+  "samples": 443,
+  "medianStepCpuMs": 3.628749999999968,
+  "p95StepCpuMs": 10.02208299999998
+}

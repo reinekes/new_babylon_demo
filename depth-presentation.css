@@ -1,0 +1,12 @@
+.depth-scene-card { background: linear-gradient(135deg,#293a38,#172633); }
+.depth-scene-card svg { fill: #8e694d; stroke: #d8ba94; stroke-width: 1.7; }
+.depth-scene-card .depth-surface { fill: #284d59; }
+.depth-scene-card .depth-inner,.depth-scene-card .depth-arch { fill: none; stroke: #a6e5dc; opacity: 0; transition: opacity .8s ease, transform .8s ease; }
+.depth-scene:not([data-phase="0"]) .depth-inner,.depth-scene[data-kind="opening"][data-phase="2"] .depth-arch { opacity: 1; }
+.depth-scene[data-kind="opening"][data-phase="1"] .depth-inner { transform: translateY(-7px); }
+.depth-scene[data-kind="cast"] .depth-relic { opacity: 0; }
+.depth-ripple[hidden] { display: none; }
+.depth-ripple { position: absolute; top: 0; left: 0; z-index: 4; width: 27px; height: 12px; pointer-events: none; }
+.depth-ripple::before { content: ''; display: block; width: 100%; height: 100%; border: 1px solid #c1f2da; border-radius: 50%; animation: depth-ripple 6s infinite; }
+@keyframes depth-ripple { 0%,65%,100% { opacity: 0; transform: scale(.5); } 75% { opacity: .8; } 95% { opacity: 0; transform: scale(1.65); } }
+@media (prefers-reduced-motion: reduce) { .depth-ripple::before { animation: none; } .depth-scene-card svg * { transition: none; } }
