@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T14:20:22.943609+00:00",
+  "commit": "1b6d03573d350b1e8eb3f3a627b6df0bacaf92cd",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "1b92621b102df848e828fadd12cfc0d5bae26f2b4013980f3a65e1d0ba97a5db",
+      "actual": "1b92621b102df848e828fadd12cfc0d5bae26f2b4013980f3a65e1d0ba97a5db",
+      "match": true
+    },
+    {
+      "path": "blessing-discovery.js",
+      "status": 200,
+      "expected": "6bbfea2d5986281285fe9a61da5f8dd87370c7dcdfd41cb54a7d1fd76832d817",
+      "actual": "6bbfea2d5986281285fe9a61da5f8dd87370c7dcdfd41cb54a7d1fd76832d817",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "57136de31acd1400f30c711d57cab473524b7026d20c2dbfa1ac3418ad0960a1",
+      "actual": "57136de31acd1400f30c711d57cab473524b7026d20c2dbfa1ac3418ad0960a1",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-blessing-shelter-4x.json",
+      "status": 200,
+      "expected": "f5084a0dbee06f933ffb1a4073fe5a6e0bba8bf260b2fa054dca9bb635cc3beb",
+      "actual": "f5084a0dbee06f933ffb1a4073fe5a6e0bba8bf260b2fa054dca9bb635cc3beb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-blessing-shelter-browser.json",
+      "status": 200,
+      "expected": "c14c24c9fb119cfeb3e7a2fdc6d33b2d4d23fdbb1d1479341b4e54dc1bdfff19",
+      "actual": "c14c24c9fb119cfeb3e7a2fdc6d33b2d4d23fdbb1d1479341b4e54dc1bdfff19",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "21b2e4073ba609b37644ab9d020dcd670c20f3b6ea9de321201a5c4da4661276",
+      "actual": "21b2e4073ba609b37644ab9d020dcd670c20f3b6ea9de321201a5c4da4661276",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-discovery.test.js",
+      "status": 200,
+      "expected": "fd97a24e3afc4b5d63a83635f9924423a7e22758152fc5d755b9b3a893bb503e",
+      "actual": "fd97a24e3afc4b5d63a83635f9924423a7e22758152fc5d755b9b3a893bb503e",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "77fe90c4b9af9b7e9cd7857de700ec8be4a29211b48e37c4480a9c1f061aca8e",
+      "actual": "77fe90c4b9af9b7e9cd7857de700ec8be4a29211b48e37c4480a9c1f061aca8e",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
