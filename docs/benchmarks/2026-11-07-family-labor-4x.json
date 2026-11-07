@@ -1,0 +1,18 @@
+{
+  "speed": 4,
+  "buildings": 130,
+  "initialPopulation": 218,
+  "population": 245,
+  "source": "6,4",
+  "site": "5,4",
+  "workers": [
+    "172:carrier",
+    "177:carrier",
+    "177:builder",
+    "172:builder"
+  ],
+  "settled": true,
+  "loadedDuringDelivery": true,
+  "medianCpuMs": 1.3542499999998654,
+  "p95CpuMs": 6.127250000000004
+}

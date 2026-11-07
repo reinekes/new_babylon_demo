@@ -250,11 +250,13 @@ export function syncCitizens(s){
    if(duty==='carrier'&&!Object.values(q.remaining).some(n=>n>0))continue;
    let n=[...assignments.values()].filter(a=>a.site===key&&a.siteDuty===duty).length;
    const project=q.kind==='new'?b.humanWaterProject:null;
+   const family=q.kind==='new'?b.householdInitiative:null;
    const rank=c=>{
     if(project){
      if(duty==='builder'&&c.id===project.organizerId)return -2;
      if(project.participantIds?.includes(c.id))return -1;
     }
+    if(family?.members.includes(c.id))return -1;
     return c.role===duty?0:c.site===key&&c.siteDuty===duty?1:c.work?3:2;
    };
    const candidates=[...citizens].sort((a,b)=>rank(a)-rank(b)||a.id-b.id);

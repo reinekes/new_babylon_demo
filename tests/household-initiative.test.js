@@ -100,3 +100,24 @@ test('new family projects retain their original courtyard through rebuilding and
  const oldSave=JSON.stringify(legacy);
  assert.equal(encode(decode(oldSave)),oldSave);
 });
+
+test('a family building a small courtyard takes part through the normal site queue',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [builder,carrier]=s.citizens.filter(c=>c.home==='9,9'&&c.age>=16);
+ const source=s.buildings.find(b=>buildingKey(b)===builder.home);
+ s.buildings.find(b=>buildingKey(b)==='8,8').level=2;
+ carrier.home='8,8';
+ builder.role='builder';
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ assert.ok(offer.members.includes(builder.id)&&offer.members.includes(carrier.id));
+ const result=approveHouseholdInitiative(s,source,offer);
+ assert.ok(result.ok,result.reason);
+ advanceTime(s,.1);
+ assert.equal(builder.site,result.key);
+ assert.equal(builder.siteDuty,'builder');
+ assert.equal(carrier.site,result.key);
+ assert.equal(carrier.siteDuty,'carrier');
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+});

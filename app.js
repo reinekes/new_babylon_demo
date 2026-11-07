@@ -729,7 +729,7 @@ function showHouseholdInitiative(b){
  if(!offer.ok){toast(offer.reason);return;}
  const names=offer.members.map(id=>state.citizens.find(c=>c.id===id)?.name).filter(Boolean);
  renderer.focusOn(offer.x,offer.y);
- openDialog('household-initiative',`<h2>Семья предлагает построить малый двор</h2><p>${esc(names.join(', '))} хотят жить отдельно. Они нашли место рядом с домом · ${offer.x}, ${offer.y}.</p>${costs(offer.cost,false)}<p>Четыре места после стройки. Согласие стоит 0 веры. Семья переедет, когда сможет закончить текущие дела.</p><button id="approve-household-initiative">Согласовать стройку</button> <button id="cancel-household-initiative">Отложить</button>`);
+ openDialog('household-initiative',`<h2>Семья предлагает построить малый двор</h2><p>${esc(names.join(', '))} хотят жить отдельно. Они нашли место рядом с домом · ${offer.x}, ${offer.y}.</p>${costs(offer.cost,false)}<p>Четыре места после стройки. Согласие стоит 0 веры. Свободные взрослые из семьи первыми получают подходящую работу на стройке. Семья переедет, когда сможет закончить текущие дела.</p><button id="approve-household-initiative">Согласовать стройку</button> <button id="cancel-household-initiative">Отложить</button>`);
  $('cancel-household-initiative').onclick=closeDialog;
  $('approve-household-initiative').onclick=()=>{
   const result=approveHouseholdInitiative(state,b,offer);
@@ -740,7 +740,12 @@ function showHouseholdInitiative(b){
 function householdInitiativePanel(b,h){
  if(!isStrictSumer(state))return '';
  const related=state.buildings.filter(site=>site.householdInitiative&&(site===b||householdInitiativeFrom(site.householdInitiative,b)));
- return related.map(site=>`<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${site.construction?.kind==='new'?'Идёт стройка':site.householdInitiative.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${site.householdInitiative.autonomous?' · семья начала сама':''}</p>`).join('')+
+ return related.map(site=>{
+  const project=site.householdInitiative,active=site.construction?.kind==='new';
+  const working=active?state.citizens.filter(c=>c.site===buildingKey(site)&&project.members.includes(c.id)):[];
+  const team=working.map(c=>`${esc(displayName(state,c.id))} · ${c.siteDuty==='builder'?'строит':'доставляет материалы'}`).join('<br>');
+  return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${active?'Идёт стройка':project.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}</p>`;
+ }).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
 }
 function eveningGamePanel(b){
