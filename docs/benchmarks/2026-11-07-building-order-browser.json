@@ -1,0 +1,16 @@
+[
+  {
+    "id": "order",
+    "view": "2d",
+    "url": "?id=order&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d house rebuilding save loaded"
+  },
+  {
+    "id": "order",
+    "view": "3d",
+    "url": "?id=order&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d house rebuilding save loaded"
+  }
+]

@@ -63,3 +63,25 @@ test('a newly finished building has a known annual total including zero before i
  const s={...date(2,2,10),buildings:[]},b={type:'pottery'};s.buildings.push(b);stampBuildingCompletion(s,b);initializeProductionAccounting(s);recordBuildingProduction(s,b,'pottery',2);
  assert.deepEqual(annualProductionHistory(date(3),b).at(-1),{year:2,known:true,complete:true,resources:{pottery:2}});
 });
+
+test('a replacement on the same tile and instant never reuses the demolished completion order',async()=>{
+ const {familyMemorialsAt}=await import('../life-analytics.js');
+ const s=createGame({start:'established'}),original={type:'house',x:10,y:9,level:1};
+ s.buildings.push(original);stampBuildingCompletion(s,original);
+ const order=original.built.order;
+ const person={memorial:{home:'10,9',built:{...original.built},skills:[]}};
+ s.lifeAnalytics.people.push(person);
+ assert.deepEqual(familyMemorialsAt(s,original),[person]);
+ s.buildings.pop();
+ const replacement={...original,built:undefined};s.buildings.push(replacement);
+ stampBuildingCompletion(s,replacement);
+ assert.ok(replacement.built.order>order);
+ assert.deepEqual(familyMemorialsAt(s,replacement),[]);
+});
+
+test('the first post-upgrade completion skips orders preserved only in archived memorials',()=>{
+ const s={...date(1),buildings:[],lifeAnalytics:{people:[{memorial:{built:{...date(1),order:9}}}]}};
+ const house={type:'house'};s.buildings.push(house);
+ stampBuildingCompletion(s,house);
+ assert.equal(house.built.order,10);
+});

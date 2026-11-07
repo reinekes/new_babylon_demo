@@ -4,6 +4,7 @@ import {createGame,encode,decode,advanceTime} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {recordLifeDeath,familyMemorialsAt,syncLifeAnalytics} from '../life-analytics.js';
 import {buildingKey} from '../definitions.js';
+import {stampBuildingCompletion} from '../building-chronology.js';
 
 test('a recorded death anchors a named memorial to the actual home across save and rebuild',()=>{
  const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
@@ -43,8 +44,8 @@ test('a relative carries the memorial to the new home without changing the biogr
  deceased.age=85;advanceTime(s,45,{calendarRate:1});
  s.funeral=null;
  assert.equal(carrier.home,buildingKey(origin));
- const destination={type:'house',x:6,y:8,level:1,built:{year:1,season:1,elapsed:0,order:5}};
- s.buildings.push(destination);s.capacity+=8;
+ const destination={type:'house',x:6,y:8,level:1};
+ s.buildings.push(destination);stampBuildingCompletion(s,destination);s.capacity+=8;
  const partner=s.citizens.find(c=>c.id===2),previous=s.citizens.find(c=>c.id===partner.partner);
  previous.partner=null;partner.partner=carrier.id;carrier.partner=partner.id;
  const port=networkFor(s).ports.find(p=>p.building===origin);

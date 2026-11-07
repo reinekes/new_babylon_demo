@@ -5,8 +5,21 @@ const moment=d=>((d.year-1)*4+d.season)*45+d.elapsed;
 export function stampBuildingCompletion(s,b){
  if(!b||b.built!==undefined)return false;
  const d={year:s.year,season:s.season,elapsed:s.seasonElapsed||0};if(!validDate(d))return false;
- const orders=(s.buildings||[]).map(item=>item.built?.order).filter(Number.isSafeInteger);
- b.built={...d,order:Math.max(-1,...orders)+1};return true;
+ let order=s.nextBuildingOrder;
+ if(order===undefined){
+  // A legacy city's newest completed house may survive only in a memorial.
+  let latest=-1;
+  for(const item of s.buildings||[])if(Number.isSafeInteger(item.built?.order))latest=Math.max(latest,item.built.order);
+  for(const person of s.lifeAnalytics?.people||[]){
+   const archived=person.memorial?.built?.order;
+   if(Number.isSafeInteger(archived))latest=Math.max(latest,archived);
+  }
+  order=latest+1;
+ }
+ if(!Number.isSafeInteger(order)||order<0||order===Number.MAX_SAFE_INTEGER)return false;
+ b.built={...d,order};
+ s.nextBuildingOrder=order+1;
+ return true;
 }
 export function buildingChronology(b){
  const d=b?.built,known=validDate(d)&&Number.isSafeInteger(d.order)&&d.order>=0;
@@ -19,5 +32,8 @@ export function compareBuildingsNewest(a,b){
 }
 export function validateBuildingChronology(s){
  const now={year:s.year,season:s.season,elapsed:s.seasonElapsed||0};if(!validDate(now))return false;
- return (s.buildings||[]).every(b=>b.built===undefined||buildingChronology(b).known&&moment(b.built)<=moment(now)&&b.construction?.kind!=='new');
+ const next=s.nextBuildingOrder;
+ if(next!==undefined&&(!Number.isSafeInteger(next)||next<1||(s.lifeAnalytics?.people||[]).some(p=>p.memorial?.built?.order>=next)))return false;
+ return (s.buildings||[]).every(b=>b.built===undefined||buildingChronology(b).known&&moment(b.built)<=moment(now)&&
+  b.construction?.kind!=='new'&&(next===undefined||b.built.order<next));
 }

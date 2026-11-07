@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "originalOrder": 5,
+  "replacementOrder": 6,
+  "sameInstant": true,
+  "steps": 800,
+  "medianCPUms": 2.2766660000000343,
+  "p95CPUms": 7.117124999999987,
+  "exactSave": true
+}
