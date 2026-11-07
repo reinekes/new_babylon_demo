@@ -167,7 +167,7 @@ function blessingProgressHTML(s){
  if(!progress)return '';
  const details=progress.qualified?'Условия выполнены. Дворы запомнили помощь соседей.':
   `Снабжённые дворы · ${progress.homes} из ${progress.homesRequired} · Подтверждённая помощь · ${progress.aid} из ${progress.aidRequired}.`;
- return `<section class="management-row" data-blessing-progress><h3>История «Благословение»</h3><p>${details}</p></section>`;
+ return `<section class="management-row" data-blessing-progress><h3>История «Благословение»</h3><p>${details}</p><small>Двору нужен запас на один ужин и день воды для жильцов и уже прибывших укрывшихся семей.</small></section>`;
 }
 
 function peaceProgressHTML(s){

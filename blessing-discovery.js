@@ -1,6 +1,7 @@
 import {buildingKey,isOperational} from './definitions.js';
-import {homeMealFood,ration} from './households.js';
+import {homeMealFood,ration,supplyHome} from './households.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
+import {floodFootprint,floodPhase} from './river-flood.js';
 import {waterDemand} from './water.js';
 
 const HOMES_REQUIRED=3;
@@ -15,15 +16,18 @@ function aidCount(s){
 function suppliedHomes(s){
  const needs=new Map();
  for(const person of s.citizens){
-  if(!person.home||person.floodShelter)continue;
-  const demand=needs.get(person.home)||{food:0,water:0};
+  const home=supplyHome(person,{arrived:true});
+  if(!home)continue;
+  const demand=needs.get(home)||{food:0,water:0};
   demand.food+=ration(person)*4/3;
   demand.water+=waterDemand(person);
-  needs.set(person.home,demand);
+  needs.set(home,demand);
  }
+ const flooded=floodPhase(s)==='active'?floodFootprint(s,s.riverFlood):null;
  return s.buildings.filter(b=>{
-  if(b.type!=='house'||!isOperational(b))return false;
-  const demand=needs.get(buildingKey(b));
+  const key=buildingKey(b);
+  if(b.type!=='house'||!isOperational(b)||flooded?.has(key))return false;
+  const demand=needs.get(key);
   return demand&&homeMealFood(b)+1e-8>=demand.food&&(b.water||0)+1e-8>=demand.water;
  }).length;
 }

@@ -1,0 +1,10 @@
+{
+  "buildings": 129,
+  "population": 222,
+  "retainedIds": 200,
+  "byteExact": true,
+  "medianCpuMs": 2.023833000000195,
+  "p95CpuMs": 7.179583000000093,
+  "speed": 4,
+  "initialPopulation": 200
+}

@@ -41,3 +41,27 @@ test('mature towns do not enroll in the awakening milestone',()=>{
  const raw=encode(old);
  assert.equal(encode(decode(raw)),raw);
 });
+
+test('evacuated families do not qualify an empty origin and shelters need supplies for their guests',async()=>{
+ const {blessingDiscoveryView}=await import('../blessing-discovery.js');
+ const {ration}=await import('../households.js');
+ const {waterDemand}=await import('../water.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ const [origin,host,other]=s.buildings.filter(b=>b.type==='house'&&s.citizens.some(c=>c.home===buildingKey(b)));
+ for(const b of s.buildings){b.pantry=0;b.water=0;}
+ for(const b of [origin,host,other]){
+  const residents=s.citizens.filter(c=>c.home===buildingKey(b));
+  b.pantry=residents.reduce((n,c)=>n+ration(c)*4/3,0);
+  b.water=residents.reduce((n,c)=>n+waterDemand(c),0);
+ }
+ assert.equal(blessingDiscoveryView(s).homes,3);
+ const moved=s.citizens.filter(c=>c.home===buildingKey(origin));
+ for(const c of moved){
+  c.fireShelter={host:buildingKey(host),kiln:'2,2'};
+  c.route=[{x:host.x,y:host.y}];c.routeIndex=1;
+ }
+ assert.equal(blessingDiscoveryView(s).homes,1);
+ host.pantry+=moved.reduce((n,c)=>n+ration(c)*4/3,0);
+ host.water+=moved.reduce((n,c)=>n+waterDemand(c),0);
+ assert.equal(blessingDiscoveryView(s).homes,2);
+});
