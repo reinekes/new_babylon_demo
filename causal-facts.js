@@ -78,7 +78,7 @@ export function householdNameEvidence(s,residents){
  const ledger=s.causalFacts;
  if(!ledger||!residents.length)return {water:null,healing:null,harvest:null,craft:null};
  const ids=new Set(residents.map(c=>c.id));
- const requested=ledger.water.findLast(f=>ids.has(f.requesterId));
+ const requested=ledger.water.findLast(f=>ids.has(f.recipientId??f.requesterId));
  const witnessed=ledger.waterWitnesses?.findLast(f=>ids.has(f.recipientId));
  const water=witnessed&&(!requested||witnessed.time>requested.time)?witnessed:requested;
  const healing=ledger.healing?.findLast(f=>ids.has(f.patientId));
@@ -253,11 +253,11 @@ export function validateCausalFacts(s){
   if(!fact||!entity(fact.stationId)||!entity(fact.homeId)||fact.stationId===fact.homeId||seen.has(fact.stationId)||
    typeof fact.station!=='string'||!keyPattern.test(fact.station)||typeof fact.home!=='string'||!keyPattern.test(fact.home)||
    !entityMatches(fact.stationId,'waterpoint',fact.station)||!entityMatches(fact.homeId,'house',fact.home)||
-   ![fact.organizerId,fact.requesterId,fact.courierId].every(citizen)||!Number.isFinite(fact.time)||fact.time<previousTime||fact.time>s.simTime||
+   ![fact.organizerId,fact.requesterId,fact.courierId].every(citizen)||fact.recipientId!==undefined&&!citizen(fact.recipientId)||!Number.isFinite(fact.time)||fact.time<previousTime||fact.time>s.simTime||
    !Number.isFinite(fact.amount)||fact.amount<=0||fact.amount>12)return false;
   const p=live.get(fact.stationId)?.humanWaterProject;
   if(p&&(p.homeId!==fact.homeId||p.home!==fact.home||p.organizerId!==fact.organizerId||p.requesterId!==fact.requesterId||
-   p.delivery?.courierId!==fact.courierId||p.delivery?.time!==fact.time||p.delivery?.amount!==fact.amount))return false;
+   p.delivery?.courierId!==fact.courierId||p.delivery?.recipientId!==fact.recipientId||p.delivery?.time!==fact.time||p.delivery?.amount!==fact.amount))return false;
   seen.add(fact.stationId);previousTime=fact.time;
  }
  const witnessedByStation=new Map();

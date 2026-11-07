@@ -35,6 +35,29 @@ test('delivery evidence survives demolition and distinguishes a replacement on t
  assert.equal(decode(encode(s)),null);
 });
 
+test('a remaining resident receives the first delivery after the original requester moves',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const home=s.buildings.find(b=>b.type==='house'),key=buildingKey(home);
+ const [requester,recipient]=s.citizens.filter(c=>c.home===key);
+ const courier=s.citizens.find(c=>c.home!==key);
+ const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:key,startedAt:0}};
+ s.buildings.push(station);
+ bindWaterProject(s,station,home);
+ requester.home=courier.home;
+ confirmProjectWater(s,courier,buildingKey(station),home,3);
+ confirmProjectWater(s,courier,buildingKey(station),home,3);
+ const [fact]=s.causalFacts.water;
+ assert.equal(s.causalFacts.water.length,1);
+ assert.equal(fact.requesterId,requester.id);
+ assert.equal(fact.recipientId,recipient.id);
+ assert.equal(householdNameEvidence(s,[requester]).water,null);
+ assert.equal(householdNameEvidence(s,[recipient]).water,fact);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ fact.recipientId=s.demography.nextId;
+ assert.equal(decode(encode(s)),null);
+});
+
 test('a replaced recipient dwelling cannot receive evidence intended for its predecessor',()=>{
  const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
  const home=s.buildings.find(b=>b.type==='house'),key=buildingKey(home);

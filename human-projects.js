@@ -185,8 +185,11 @@ export function confirmProjectWater(s,c,station,home,amount){
   recordProjectWaterWitness(s,b,home,{courierId:c.id,time:s.simTime,amount});
   return;
  }
- if(p.delivery||p.homeId!==undefined&&p.homeId!==home.waterEntityId||!s.citizens.some(r=>r.id===p.requesterId&&r.home===p.home))return;
- p.delivery={courierId:c.id,time:s.simTime,amount};
+ if(p.delivery||p.homeId!==undefined&&p.homeId!==home.waterEntityId)return;
+ const supplied=r=>supplyHome(r,{arrived:true})===p.home;
+ const recipient=s.citizens.find(r=>r.id===p.requesterId&&supplied(r))??s.citizens.find(supplied);
+ if(!recipient)return;
+ p.delivery={courierId:c.id,time:s.simTime,amount,...recipient.id===p.requesterId?{}:{recipientId:recipient.id}};
  recordProjectWaterFact(s,b,home,p.delivery);
 }
 export function validateHumanProjects(s){
@@ -205,7 +208,7 @@ export function validateHumanProjects(s){
   return isStrictSumer(s)&&b.type===projectType&&p&&id(p.organizerId)&&id(p.requesterId)&&typeof p.home==='string'&&/^\d+,\d+$/.test(p.home)&&
    Number.isFinite(p.startedAt)&&p.startedAt>=0&&p.startedAt<=s.simTime&&
    (p.participantIds===undefined||Array.isArray(p.participantIds)&&p.participantIds.length<=3&&new Set(p.participantIds).size===p.participantIds.length&&p.participantIds.every(n=>id(n)&&n!==p.organizerId))&&
-   (p.delivery===undefined||isOperational(b)&&p.delivery&&id(p.delivery.courierId)&&Number.isFinite(p.delivery.time)&&
+   (p.delivery===undefined||isOperational(b)&&p.delivery&&id(p.delivery.courierId)&&(p.delivery.recipientId===undefined||id(p.delivery.recipientId))&&Number.isFinite(p.delivery.time)&&
     p.delivery.time>=p.startedAt&&p.delivery.time<=s.simTime&&Number.isFinite(p.delivery.amount)&&p.delivery.amount>0&&p.delivery.amount<=12);
  });
 }
