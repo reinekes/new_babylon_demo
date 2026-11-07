@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-07T05:13:27.265519+00:00",
+  "commit": "ad36f3e928e62e5ab5b33fe9a5f5b6748277ef69",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "176f8032349c2a0d8a3d862652c9ec892b183d6a1b5d41c7a14f4f972aac02bf",
+      "actual": "176f8032349c2a0d8a3d862652c9ec892b183d6a1b5d41c7a14f4f972aac02bf",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "823c004c124ec1c9a97c8b4fe1edc3da586b61f69f2d0e24e398806bfd2e7288",
+      "actual": "823c004c124ec1c9a97c8b4fe1edc3da586b61f69f2d0e24e398806bfd2e7288",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "53ac9a22caa95681b7a545a76499da69bbd943ee92cd378ef805b2c12c27ccfe",
+      "actual": "53ac9a22caa95681b7a545a76499da69bbd943ee92cd378ef805b2c12c27ccfe",
+      "match": true
+    },
+    {
+      "path": "district-logistics.js",
+      "status": 200,
+      "expected": "d2e69764ca8047901f16cef25cc208fcbb7ed0ca52ffaf0659f5e4ee23820e09",
+      "actual": "d2e69764ca8047901f16cef25cc208fcbb7ed0ca52ffaf0659f5e4ee23820e09",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-harvest-name-4x.json",
+      "status": 200,
+      "expected": "b294808640459f1f9c2af3c85c9d5c5dab83cc28eb152bac9e8751596a8ffced",
+      "actual": "b294808640459f1f9c2af3c85c9d5c5dab83cc28eb152bac9e8751596a8ffced",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-harvest-name-browser.json",
+      "status": 200,
+      "expected": "0d7d9e89a3c1dddccdfba49b2fee6b1fae0f15e50efa6f6e75f540dc270df65d",
+      "actual": "0d7d9e89a3c1dddccdfba49b2fee6b1fae0f15e50efa6f6e75f540dc270df65d",
+      "match": true
+    },
+    {
+      "path": "field-grain.js",
+      "status": 200,
+      "expected": "42c5faa519d7811d20d8d4e85a6a6975b823167db83b9d53ad49eba5dac37de5",
+      "actual": "42c5faa519d7811d20d8d4e85a6a6975b823167db83b9d53ad49eba5dac37de5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0dbd56e7995c290da896afb7e6a274e1ad70d72eab792f1c9104ea8dd04972da",
+      "actual": "0dbd56e7995c290da896afb7e6a274e1ad70d72eab792f1c9104ea8dd04972da",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "64f8b9a47edcb875feb3d6400934eb7edaec6bd0ddb80857e8389f443bfc9da0",
+      "actual": "64f8b9a47edcb875feb3d6400934eb7edaec6bd0ddb80857e8389f443bfc9da0",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "6fd63a09889d1ddbe018f12e1e05f899ad9a1b1daf809f320cf07cb1f879fd24",
+      "actual": "6fd63a09889d1ddbe018f12e1e05f899ad9a1b1daf809f320cf07cb1f879fd24",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9f927ead9d97c0d794c5b2725c380f72d8f7deff8bd14355424de0b5b34ff63d",
+      "actual": "9f927ead9d97c0d794c5b2725c380f72d8f7deff8bd14355424de0b5b34ff63d",
+      "match": true
+    },
+    {
+      "path": "tests/field-grain.test.js",
+      "status": 200,
+      "expected": "41619a08255226d93337bbbaae1a2587579ec9e01962b17f79f3284ee160f467",
+      "actual": "41619a08255226d93337bbbaae1a2587579ec9e01962b17f79f3284ee160f467",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "55617dfd20f143deca023f0f1f4bb81ca69e88e95549255f323eece900fc1c01",
+      "actual": "55617dfd20f143deca023f0f1f4bb81ca69e88e95549255f323eece900fc1c01",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
