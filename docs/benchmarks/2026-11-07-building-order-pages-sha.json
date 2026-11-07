@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T13:50:41.857197+00:00",
+  "commit": "51537665445e025ee590dac1a8febc97a16e69a5",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4d78994b8709608e65e4a036b6b2694a3870f3803a704bf00d3a8f888fe2c770",
+      "actual": "4d78994b8709608e65e4a036b6b2694a3870f3803a704bf00d3a8f888fe2c770",
+      "match": true
+    },
+    {
+      "path": "building-chronology.js",
+      "status": 200,
+      "expected": "b298ce4749e475a105f4c7a62c4b3371725101db9d9ece0e80f1d88e3ec933dc",
+      "actual": "b298ce4749e475a105f4c7a62c4b3371725101db9d9ece0e80f1d88e3ec933dc",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "7cd8139c0f89e49c05c799f70ca87d5f97c5220bb6c248a5e81985f292cf0973",
+      "actual": "7cd8139c0f89e49c05c799f70ca87d5f97c5220bb6c248a5e81985f292cf0973",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-building-order-4x.json",
+      "status": 200,
+      "expected": "3665b597ce03a4ef029a2bc1fd314cf7476f7da280fa0aa4c4ecd7cd06f2755e",
+      "actual": "3665b597ce03a4ef029a2bc1fd314cf7476f7da280fa0aa4c4ecd7cd06f2755e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-building-order-browser.json",
+      "status": 200,
+      "expected": "4a189261e55344332658eba24d1eb6e0b975c6391b2f8b3171a49387deb2afc6",
+      "actual": "4a189261e55344332658eba24d1eb6e0b975c6391b2f8b3171a49387deb2afc6",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a031ebe90e9cb225f302f3521b6baabb883b501eddeffc2adddef8b1fdb10170",
+      "actual": "a031ebe90e9cb225f302f3521b6baabb883b501eddeffc2adddef8b1fdb10170",
+      "match": true
+    },
+    {
+      "path": "tests/building-annual-chronology.test.js",
+      "status": 200,
+      "expected": "f1cd449adb1510bd3d08ee6306283f2b240e64470ff98632fbc072e738de3132",
+      "actual": "f1cd449adb1510bd3d08ee6306283f2b240e64470ff98632fbc072e738de3132",
+      "match": true
+    },
+    {
+      "path": "tests/family-memorial.test.js",
+      "status": 200,
+      "expected": "6e73f056a3ca1395071299771c78f0cf5dd6698377391e856e8ddd6bc2dbc991",
+      "actual": "6e73f056a3ca1395071299771c78f0cf5dd6698377391e856e8ddd6bc2dbc991",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
