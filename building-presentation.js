@@ -7,7 +7,7 @@ const reedShrine=Object.freeze({...BUILDINGS.shrine,name:'Тростниково
 export function isReedShrine(state,b){
  return b?.type==='shrine'&&levelOf(b)===1&&isStrictSumer(state);
 }
-const inannaChapterGate=Object.freeze({...sumerGate,desc:'Сырцовый священный порог с деревянной перемычкой. Для открытия Покрова Инанны также нужны жрец и доказанная охрана запаса.'});
+const inannaChapterGate=Object.freeze({...sumerGate,desc:'Сырцовый священный порог с деревянной перемычкой. Для открытия Покрова Инанны нужны жрец, доказанная охрана запаса и встреча общины.'});
 export function buildingDefinition(state,type){return type==='ishtarGate'&&isStrictSumer(state)?state.inannaDiscovery?inannaChapterGate:sumerGate:BUILDINGS[type];}
 export function buildingPresentation(state,b){
  if(isReedShrine(state,b))return reedShrine;

@@ -1,3 +1,4 @@
+import {inannaMeetingReason} from './miracle-celebration.js';
 import {INANNA_GUARD_DAYS} from './inanna-discovery.js';
 import {miracleLockReason} from './sacred-unlocks.js';
 import {LAND_STORIES_REQUIRED,landMemoryStories,landSearchReason} from './land-memory.js';
@@ -230,7 +231,8 @@ function inannaDiscoveryHTML(s){
  if(!record)return '';
  const guard=record.chased?'Сторож прогнал мышь.':`Дежурства у запаса · ${record.days.length} из ${INANNA_GUARD_DAYS} разных дней.`;
  const reason=miracleLockReason(s,'inannaProtection');
- return `<section class="management-row" data-inanna-discovery><h3>История «Покров Инанны»</h3><p>${guard}</p><p>${escape(reason||'Чудо открыто · 80 веры.')}</p></section>`;
+ const meeting=!inannaMeetingReason(s)?'<button type="button" data-city-inanna-meeting>Собрать встречу у порога</button>':'';
+ return `<section class="management-row" data-inanna-discovery><h3>История «Покров Инанны»</h3><p>${guard}</p><p>${escape(reason||'Чудо открыто · 80 веры.')}</p>${meeting}</section>`;
 }
 
 function landMemoryHTML(s){
@@ -320,6 +322,7 @@ export function renderCityTools(root,s,options={}){
    if(button.hasAttribute('data-city-repair')){ctl.options.onRepair?.();ctl.refresh();return;}
    if(button.hasAttribute('data-city-unload')){ctl.options.onUnload?.();ctl.refresh();return;}
    if(button.hasAttribute('data-city-harvest')){ctl.options.onHarvest?.();ctl.refresh();return;}
+   if(button.dataset.cityInannaMeeting!==undefined){ctl.options.onInannaMeeting?.();return;}
    if(button.dataset.cityFocus!==undefined){ctl.options.onFocus?.(button.dataset.cityFocus);return;}
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
    if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id));ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}

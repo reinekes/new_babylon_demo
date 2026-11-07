@@ -7,19 +7,19 @@ import {worldWidth,worldHeight} from './world.js';
 export const SACRED_MIRACLE_IDS=Object.freeze(['inannaProtection','relicAwakening','earthMemory']);
 export function initializeSacredUnlocks(s){s.sacred??={version:1,unlocks:{}};}
 /** Called after simulation construction updates, never while rendering a panel. */
-export function syncSacredUnlocks(s){
+export function syncSacredUnlocks(s,{inannaGate}={}){
  initializeSacredUnlocks(s);let changed=false;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(!m.unlockBuilding||s.sacred.unlocks[id])continue;
-  const source=(s.buildings||[]).find(b=>b.type===m.unlockBuilding&&isOperational(b));if(!source||id==='inannaProtection'&&inannaReadinessReason(s))continue;
+  const source=(s.buildings||[]).find(b=>b.type===m.unlockBuilding&&isOperational(b));if(!source||id==='inannaProtection'&&s.inannaDiscovery&&(inannaGate!==buildingKey(source)||inannaReadinessReason(s)))continue;
   s.sacred.unlocks[id]={year:s.year,tick:s.tick,source:buildingKey(source)};changed=true;
-  s.news??=[];s.news.unshift({title:`Новое чудо: ${m.name}`,text:`${buildingDefinition(s,source.type).name} завершены. В панели чудес появился синий дар.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
+  s.news??=[];s.news.unshift({title:`Новое чудо: ${m.name}`,text:inannaGate?'Община приняла гостя у порога. Открылся Покров Инанны.':`${buildingDefinition(s,source.type).name} завершены. В панели чудес появился синий дар.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
  }
  return changed;
 }
 export function miracleLockReason(s,id){
  const m=MIRACLES[id];if(m?.unlockBuilding&&!s.sacred?.unlocks?.[id]){
-  if(id==='inannaProtection'&&s.inannaDiscovery&&s.buildings.some(b=>b.type===m.unlockBuilding&&isOperational(b)))return inannaReadinessReason(s)||'Дождись, пока община признает защиту';
+  if(id==='inannaProtection'&&s.inannaDiscovery&&s.buildings.some(b=>b.type===m.unlockBuilding&&isOperational(b)))return inannaReadinessReason(s)||'Проведи встречу защиты у порога';
   return `Сначала заверши: ${buildingDefinition(s,m.unlockBuilding).name}`;
  }
  if(m?.unlockQuest==='relic'&&s.relicQuest?.phase!=='completed')return 'Сначала найди артефакт и доставь его в храм';
