@@ -1,0 +1,20 @@
+{
+  "fixture": "world64-seed137",
+  "width": 64,
+  "height": 64,
+  "buildings": 129,
+  "population": 200,
+  "assignmentMs": 3.4027919999999767,
+  "simulation4x": {
+    "medianMs": 3.116457999999966,
+    "p95Ms": 6.414957999999842,
+    "maxMs": 35.950874999999996
+  },
+  "encode": {
+    "medianMs": 1.1292909999997391,
+    "maxMs": 1.3657079999998132,
+    "bytes": 343755
+  },
+  "stateSHA256": "d56bed3d8c5c7b73afe2a37f3ca620b524508ccb1127f36978acfb586447545d",
+  "stateMatchesControl": true
+}

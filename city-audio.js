@@ -51,15 +51,20 @@ export function createCityAudio(onMessage,options={}){
  const now=options.now||(()=>performance.now()/1000),cache=new Map(),doc=globalThis.document,work=createWorkAudio(options.createWorkContext);
  let enabled=false,current=null,outgoing=null,lithophone=null,disposed=false,epoch=0,lastFuneral='',funeralCount=0,lastError='',lastFrame=null,previewing=false,funeralWasActive=false,afterFuneralPending=false,lastGame=null,lastCatOpening=null,lastCatScene=null;
  const clamp=v=>Math.max(0,Math.min(1,v));
- function voice(id){let v=cache.get(id);if(!v){const element=createMedia();element.preload='none';element.loop=id!=='afterFuneral';element.volume=0;element.src=musicTrackURL(id);v={id,element,playing:false,level:0,target:0,from:0,since:now(),duration:0};element.addEventListener?.('error',()=>{if(v.playing)fail(Error('media load'));});element.addEventListener?.('ended',()=>{if(id==='afterFuneral'&&current===v)afterFuneralPending=false;});cache.set(id,v);}return v;}
+ function voice(id){let v=cache.get(id);if(!v){const element=createMedia();element.preload='none';element.loop=id!=='afterFuneral';element.volume=0;element.src=musicTrackURL(id);v={id,element,playing:false,level:0,target:0,from:0,since:now(),duration:0};element.addEventListener?.('error',()=>{if(v.playing)failVoice(v,Error('media load'));});element.addEventListener?.('ended',()=>{if(id==='afterFuneral'&&current===v)afterFuneralPending=false;});cache.set(id,v);}return v;}
  function stop(v){if(!v)return;v.playing=false;v.level=0;v.target=0;v.element.volume=0;v.element.pause();}
  function silence(){work.silence();work.stopRain();work.stopEarth();work.stopCat();epoch++;for(const v of cache.values())if(v.playing||!v.element.paused)stop(v);current=null;outgoing=null;lithophone=null;}
  function fail(error){if(disposed||!enabled)return;enabled=false;silence();const key=String(error?.name||error?.message||'media');if(lastError!==key){lastError=key;onMessage?.('Музыка не запустилась. Нажми кнопку звука ещё раз, чтобы разрешить воспроизведение.');}}
- function play(v){if(v.playing)return;const ticket=epoch,attempt=v.attempt=(v.attempt||0)+1;v.playing=true;try{Promise.resolve(v.element.play()).then(()=>{if(attempt!==v.attempt){if(!v.playing)v.element.pause();return;}if(ticket!==epoch||!enabled||disposed||!v.playing)v.element.pause();},error=>{if(attempt===v.attempt&&ticket===epoch&&v.playing)fail(error);});}catch(error){fail(error);}}
+ function failVoice(v,error){
+  if(v.id!=='lithophone'){fail(error);return;}
+  v.failed=true;stop(v);
+  if(lithophone===v)lithophone=null;
+ }
+ function play(v){if(v.playing)return;const ticket=epoch,attempt=v.attempt=(v.attempt||0)+1;v.playing=true;try{Promise.resolve(v.element.play()).then(()=>{if(attempt!==v.attempt){if(!v.playing)v.element.pause();return;}if(ticket!==epoch||!enabled||disposed||!v.playing)v.element.pause();},error=>{if(attempt===v.attempt&&ticket===epoch&&v.playing)failVoice(v,error);});}catch(error){failVoice(v,error);}}
  function target(v,value,duration=1.2){if(!v)return;value=clamp(value);if(Math.abs(v.target-value)<.00001)return;v.from=v.level;v.target=value;v.since=now();v.duration=duration;}
  function fade(v){if(!v)return;const t=v.duration?clamp((now()-v.since)/v.duration):1;v.level=v.from+(v.target-v.from)*t;v.element.volume=clamp(v.level);if(t===1&&v.target===0)stop(v);}
  function select(id){if(current?.id===id)return;stop(outgoing);outgoing=current;if(outgoing)target(outgoing,0);current=voice(id);current.level=0;current.target=0;current.element.volume=0;play(current);}
- async function toggle(){if(disposed)return false;enabled=!enabled;if(!enabled)silence();else{work.enable();if(lastFrame)tick(lastFrame.s,lastFrame.paused,lastFrame.listener);}return enabled;}
+ async function toggle(){if(disposed)return false;enabled=!enabled;if(!enabled)silence();else{const positional=cache.get('lithophone');if(positional?.failed){positional.failed=false;positional.element.load?.();}work.enable();if(lastFrame)tick(lastFrame.s,lastFrame.paused,lastFrame.listener);}return enabled;}
  function tick(s,paused,listener){
   if(disposed)return;
   const sameCity=lastGame===s;
@@ -80,9 +85,12 @@ export function createCityAudio(onMessage,options={}){
   if(catCue)work.cueCat(catCue);
   work.tick(s,paused,listener);
   const id=afterFuneralPending?'afterFuneral':eventMusicTheme(s,funeralCount%2?1:2),source=s.lost?null:musicSoundSources(s,listener)[0];select(id);
-  if(source){if(!lithophone){lithophone=voice('lithophone');play(lithophone);}target(lithophone,.20*clamp(source.gain/.012),.35);}
+  if(source){
+   if(!lithophone){const positional=voice('lithophone');if(!positional.failed){lithophone=positional;play(lithophone);}}
+   target(lithophone,.20*clamp(source.gain/.012),.35);
+  }
   else if(lithophone){stop(lithophone);lithophone=null;}
-  target(current,(id.startsWith('funeral')?.17:.16)*(source?.45:1));fade(current);fade(outgoing);fade(lithophone);
+  target(current,(id.startsWith('funeral')?.17:.16)*(lithophone?.playing ? .45 : 1));fade(current);fade(outgoing);fade(lithophone);
   if(outgoing&&!outgoing.playing)outgoing=null;
  }
  const onVisibility=()=>{if(doc?.hidden)silence();};doc?.addEventListener?.('visibilitychange',onVisibility);

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "working",
+    "view": "audio",
+    "url": "?id=working&view=audio",
+    "result": "PASS nearby track and cues mix; distance silences only courtyard"
+  },
+  {
+    "id": "missing",
+    "view": "audio",
+    "url": "?id=missing&view=audio",
+    "result": "PASS 404 isolated; background and cues stay live; retry restored track"
+  }
+]

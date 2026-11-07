@@ -48,3 +48,39 @@ test('cat discovery and summon play distinct cues over continuous background and
  assert.equal(oscillators.length,18);
  audio.dispose();
 });
+
+test('a missing positional track leaves background and miracle cues playing',async()=>{
+ const {oscillators,Context}=fakeAudio(),context=new Context(),media=[];
+ context.state='running';
+ let time=0,missing=true;
+ const audio=createCityAudio(undefined,{now:()=>time,createWorkContext:()=>context,createMedia:()=>{
+  const element={paused:true,plays:0,loads:0,load(){this.loads++;},play(){
+   this.plays++;
+   if(missing&&media.indexOf(this)===1)return Promise.reject(new Error('missing lithophone recording'));
+   this.paused=false;
+  },pause(){this.paused=true;}};
+  media.push(element);return element;
+ }});
+ try{
+  const s=town(),near={x:5,y:5};
+  audio.tick(s,true,near);
+  await audio.toggle();
+  await Promise.resolve();
+  time=2;
+  audio.tick(s,true,near);
+  assert.equal(audio.enabled,true);
+  assert.deepEqual(audio.status.playing,['main']);
+  assert.equal(media[0].plays,1);
+  time=4;audio.tick(s,true,near);
+  assert.equal(media[0].volume,.16);
+  assert.equal(media[1].plays,1);
+  audio.cueEarth('bow');
+  assert.ok(oscillators.length>0);
+  missing=false;
+  await audio.toggle();
+  assert.equal(await audio.toggle(),true);
+  assert.equal(media[1].loads,1);
+  assert.equal(media[1].plays,2);
+  assert.equal(audio.status.lithophone,true);
+ }finally{audio.dispose();}
+});
