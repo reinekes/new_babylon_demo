@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T21:59:16.774423+00:00",
+  "commit": "2ce824183dd08e06f2eb9c73c78f1ca2c98bf265",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "431d92927a7120c3b5bf838f1e83dfce513b9a18655bc916df002ee67a8b0974",
+      "actual": "431d92927a7120c3b5bf838f1e83dfce513b9a18655bc916df002ee67a8b0974",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "8e52a265779b6773886c97d4bbca3283c70c45cab5cf5c66431e48bb9a72196d",
+      "actual": "8e52a265779b6773886c97d4bbca3283c70c45cab5cf5c66431e48bb9a72196d",
+      "match": true
+    },
+    {
+      "path": "blessing-presentation.js",
+      "status": 200,
+      "expected": "c1ba78ba116e9a0051c99a4fd92a9b9b0847427cee6eb0a6484746e93b56c279",
+      "actual": "c1ba78ba116e9a0051c99a4fd92a9b9b0847427cee6eb0a6484746e93b56c279",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "97cd3f2120481a81b487255ce2a7b77a7b4ef745d7ea299c3641c3e246b0895f",
+      "actual": "97cd3f2120481a81b487255ce2a7b77a7b4ef745d7ea299c3641c3e246b0895f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-cast-card-4x.json",
+      "status": 200,
+      "expected": "2ff6cae726f7bc288f0222e0e3e80168f9ec20589838cdf104e75740e07d4fbb",
+      "actual": "2ff6cae726f7bc288f0222e0e3e80168f9ec20589838cdf104e75740e07d4fbb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-cast-card-browser.json",
+      "status": 200,
+      "expected": "7e843bc12849f66aaee6cad0ad38929d522d76c5fb3af25b458eee44a3b99178",
+      "actual": "7e843bc12849f66aaee6cad0ad38929d522d76c5fb3af25b458eee44a3b99178",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "b43e6ed037b211c76f5ea66ebd0943d713b041357b2d2eff635fe5906f31f7a4",
+      "actual": "b43e6ed037b211c76f5ea66ebd0943d713b041357b2d2eff635fe5906f31f7a4",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-presentation.test.js",
+      "status": 200,
+      "expected": "593bf4240bf3b405a0f45155bd3991f6efc6cb618df87f01e049ab2ec1c93b73",
+      "actual": "593bf4240bf3b405a0f45155bd3991f6efc6cb618df87f01e049ab2ec1c93b73",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
