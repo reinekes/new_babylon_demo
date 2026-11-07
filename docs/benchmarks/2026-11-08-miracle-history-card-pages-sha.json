@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T23:21:43.002594+00:00",
+  "commit": "e096362175660f7f9fd5ba26c630de7400c54c2d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c83f1c5db2ada2c6cd23041137ffa19e5cc74e3e617d4daa6c1588f81d4dec35",
+      "actual": "c83f1c5db2ada2c6cd23041137ffa19e5cc74e3e617d4daa6c1588f81d4dec35",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "dcfa6f734e4d9d0327a829768feae37264cf055d6608535bbc67e9262a3c9c0d",
+      "actual": "dcfa6f734e4d9d0327a829768feae37264cf055d6608535bbc67e9262a3c9c0d",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "7fec2e896f6cc61d20ec869cc344340ed3b0e9f745cb45f54c5ceaec6e73d658",
+      "actual": "7fec2e896f6cc61d20ec869cc344340ed3b0e9f745cb45f54c5ceaec6e73d658",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-history-card-4x.json",
+      "status": 200,
+      "expected": "3ac56c755bf6444543e7b98a3954b2595c829966c6e530408ca76048f24e1f19",
+      "actual": "3ac56c755bf6444543e7b98a3954b2595c829966c6e530408ca76048f24e1f19",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-history-card-browser.json",
+      "status": 200,
+      "expected": "f77b65d4b604def4375f32aa9d1ca72f2cbd2a66d1b5205aa2516603cabc3af1",
+      "actual": "f77b65d4b604def4375f32aa9d1ca72f2cbd2a66d1b5205aa2516603cabc3af1",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d2a58ae7fbce336c49330b4610d68a0f924f9f861580a3b8d5c7373590cd30d4",
+      "actual": "d2a58ae7fbce336c49330b4610d68a0f924f9f861580a3b8d5c7373590cd30d4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "eba6aef28cac3a51b58526692b4eff96577c9462f099c6d1140b4e8214dc3839",
+      "actual": "eba6aef28cac3a51b58526692b4eff96577c9462f099c6d1140b4e8214dc3839",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "6912e6a1fbfef50540e84f99bcb734c005516a57e5c26ca5df65ea5079952002",
+      "actual": "6912e6a1fbfef50540e84f99bcb734c005516a57e5c26ca5df65ea5079952002",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "85def895ba1e163b7d52d81cc2d7f69a106b2e8b2e6a558ddd83145fdc90cac9",
+      "actual": "85def895ba1e163b7d52d81cc2d7f69a106b2e8b2e6a558ddd83145fdc90cac9",
+      "match": true
+    },
+    {
+      "path": "tests/ui-cat-discovery.test.js",
+      "status": 200,
+      "expected": "162861fbe4a0625411951313f96462bd6b9c7154c82c36170a3cb55ca61330d7",
+      "actual": "162861fbe4a0625411951313f96462bd6b9c7154c82c36170a3cb55ca61330d7",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "8b160f27a51206761c738475bc1d4c7562936b4dfb97f497e78242e5c8577e7f",
+      "actual": "8b160f27a51206761c738475bc1d4c7562936b4dfb97f497e78242e5c8577e7f",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
