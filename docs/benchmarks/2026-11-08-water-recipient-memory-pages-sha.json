@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T20:48:10.310534+00:00",
+  "commit": "abf18ec1b7d659df4936dcf27213c16bc58adbb2",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "bd6ac6e164db185688d62531babee83f6982c455c8a376c8cd6e9e1140192fd2",
+      "actual": "bd6ac6e164db185688d62531babee83f6982c455c8a376c8cd6e9e1140192fd2",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "e3fe200d425c5333b1fefde6a0a14c2929bb209d681ab3497c3cf6cdf988fb7a",
+      "actual": "e3fe200d425c5333b1fefde6a0a14c2929bb209d681ab3497c3cf6cdf988fb7a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-recipient-memory-4x.json",
+      "status": 200,
+      "expected": "61e0cfbcf8dcaac6b048040987b742def28b5662daac6dea766cf32e9b143819",
+      "actual": "61e0cfbcf8dcaac6b048040987b742def28b5662daac6dea766cf32e9b143819",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-recipient-memory-browser.json",
+      "status": 200,
+      "expected": "99f792b97a942fcb34a8ff9b0208734e87039e0a7127826ecdbb64fe08d01c60",
+      "actual": "99f792b97a942fcb34a8ff9b0208734e87039e0a7127826ecdbb64fe08d01c60",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "648d2246f96a1f10363ed1b9404713d61c795493c2bc57504553fa1f46dae90f",
+      "actual": "648d2246f96a1f10363ed1b9404713d61c795493c2bc57504553fa1f46dae90f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "6b97e340ae22d483dc01c22b7bde6aa634b30208d45cbcc6ee2f9cb62df2d5d8",
+      "actual": "6b97e340ae22d483dc01c22b7bde6aa634b30208d45cbcc6ee2f9cb62df2d5d8",
+      "match": true
+    },
+    {
+      "path": "tests/godhood-modes.test.js",
+      "status": 200,
+      "expected": "857ba66c0aefc5a03df9af135dc3fb607ee9e8a19fd8a451bb1e7905bc7f5f30",
+      "actual": "857ba66c0aefc5a03df9af135dc3fb607ee9e8a19fd8a451bb1e7905bc7f5f30",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
