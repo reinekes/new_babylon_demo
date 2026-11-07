@@ -28,6 +28,13 @@ export function recordProjectWaterFact(s,station,home,delivery){
  if(ledger.water.length>LIMIT)ledger.water.shift();
 }
 
+export function waterNameEvidence(s){
+ const receipts=s.causalFacts?.waterWitnesses,first=receipts?.[0];
+ if(!first)return null;
+ const second=receipts.find(receipt=>receipt.homeId!==first.homeId&&receipt.home!==first.home);
+ return second?[first,second]:null;
+}
+
 export function recordProjectWaterWitness(s,station,home,delivery){
  const project=station.humanWaterProject,ledger=s.causalFacts,homeKey=buildingKey(home);
  if(!ledger||!station.waterEntityId||!project.homeId||project.home===homeKey||home.type!=='house')return;
@@ -38,7 +45,12 @@ export function recordProjectWaterWitness(s,station,home,delivery){
  (project.witnessHomeIds??=[]).push(home.waterEntityId);
  const facts=ledger.waterWitnesses??=[];
  facts.push({stationId:station.waterEntityId,station:buildingKey(station),homeId:home.waterEntityId,home:homeKey,...delivery});
- if(facts.length>LIMIT)facts.shift();
+ if(facts.length>LIMIT){
+  const evidence=waterNameEvidence(s);
+  // Keep the first receipt while it waits for a different courtyard.
+  const oldest=facts.findIndex((receipt,index)=>index>0&&!evidence?.includes(receipt));
+  facts.splice(oldest,1);
+ }
 }
 
 export function recordNeighborWaterFact(s,c,home,trip,amount){

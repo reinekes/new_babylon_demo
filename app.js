@@ -28,6 +28,7 @@ import {createRainPresentation} from './rain-presentation.js';
 import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative,setAutonomousHousing} from './household-initiative.js';
+import {waterNameEvidence} from './causal-facts.js';
 import {acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
@@ -1016,7 +1017,7 @@ function update(){
  $('date').title='1 год города = 2 года возраста. Дети работают с 16 лет.';const calendar=calendarAt(state);$('date').textContent=`Год ${state.year} · ${SEASONS[state.season]} · ${calendar.monthName}`;$('season-icon').textContent=['❀','☀','❧','❄'][state.season];
  setHTML($('season-track'),monthTrackHTML(state));if(!seasonJumping)monthNotice.update(state);
  $('god-name').textContent=state.name;$('god-rating').textContent=`Слава ${state.divinity.rating} · вдохновлено ${state.divinity.inspirationSuccesses} · вера людей ${Math.round(beliefMultiplier(state)*60)}%`;setHTML($('god-description'),MOURNING_NAMES.includes(state.name)?'Город помнит тех, кого потерял.<br>Люди называют бога по судьбе своих близких.':Object.values(state.divinity.domains).some(v=>v>0)?'Твоё имя рождается из деяний.<br>Деяния остаются в памяти людей.':'Люди строят город.<br>Ты выбираешь, каким богом стать.');
- $('god-level').textContent=count(state,'ziggurat')?'III · БОГ ВЕЛИКОГО ГОРОДА':state.population>=24?'II · ПОКРОВИТЕЛЬ ГОРОДА':'I · ДУХ ПОСЕЛЕНИЯ';$('pantheon').textContent=`Заслуженные имена · ${state.divinity.names.length}`;
+ $('god-level').textContent=count(state,'ziggurat')?'III · БОГ ВЕЛИКОГО ГОРОДА':state.population>=24?'II · ПОКРОВИТЕЛЬ ГОРОДА':'I · ДУХ ПОСЕЛЕНИЯ';$('pantheon').textContent=`Заслуженные имена · ${state.divinity.names.length+Number(!!waterNameEvidence(state))}`;
  const weather=weatherAt(state);$('weather').textContent=state.drought?`☀ Засуха · ${state.drought} сез.`:state.rain?`☂ Благодатный дождь · ${state.rain} сез.`:({sunny:'☀ Ясно',cloudy:'☁ Облачно',rain:'☂ Дождь',wind:'≋ Ветер'}[weather.type]);$('weather').classList.toggle('drought',!!state.drought);
 
  const signature=`${state.news.length}|${state.news[0]?.title}|${state.tick}`;
@@ -1082,7 +1083,9 @@ function checkDialogs(){
  }
 }
 function pantheon(){
- openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p><div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
+ const evidence=waterNameEvidence(state);
+ const localName=evidence?`<section class="food-forecast" data-water-result-name><h3>Напоивший дворы</h3><p>Так жители назвали бога после подтверждённых доставок в два двора.</p><ul>${evidence.map(f=>`<li>Двор ${esc(f.home)} · водозабор ${esc(f.station)} · ${foodAmount(f.amount)} воды · принёс ${resident(f.courierId)}</li>`).join('')}</ul></section>`:'';
+ openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p>${localName}<div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
 }
 function resetCityPresentation(){
  rainPresentation.reset(state);

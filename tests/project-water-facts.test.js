@@ -3,8 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
-import {buildingKey} from '../definitions.js';
-import {bindWaterProject,recordNeighborFoodFact,recordNeighborWaterFact} from '../causal-facts.js';
+import {buildingKey,housingOf} from '../definitions.js';
+import {bindWaterProject,recordNeighborFoodFact,recordNeighborWaterFact,waterNameEvidence} from '../causal-facts.js';
 import {confirmProjectWater} from '../human-projects.js';
 
 test('delivery evidence survives demolition and distinguishes a replacement on the same tile',()=>{
@@ -140,4 +140,50 @@ test('a second occupied courtyard records an actual project delivery once and ke
  s.causalFacts.waterWitnesses.pop();
  s.buildings.pop();
  assert.deepEqual(decode(encode(s)).causalFacts.waterWitnesses,[receipt]);
+});
+
+test('the water name needs two distinct courtyards and keeps its first witnesses when the archive fills',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [origin,first]=s.buildings.filter(b=>b.type==='house');
+ const second={...first,x:10,y:8};
+ s.buildings.push(second);
+ s.capacity=housingOf(s);
+ const requester=s.citizens.find(c=>c.home===buildingKey(origin));
+ const courier=s.citizens.find(c=>c.home===buildingKey(first));
+ const resident=s.citizens.find(c=>c!==courier&&c.home===buildingKey(first));
+ resident.home=buildingKey(second);
+ const nextStation=()=>{
+  const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:buildingKey(origin),startedAt:0}};
+  s.buildings.push(station);
+  bindWaterProject(s,station,origin);
+  return station;
+ };
+ const station=nextStation();
+ confirmProjectWater(s,courier,buildingKey(station),first,3);
+ confirmProjectWater(s,courier,buildingKey(station),first,2);
+ assert.equal(waterNameEvidence(s),null);
+ s.buildings.pop();
+ for(let i=0;i<34;i++){
+  const next=nextStation();
+  confirmProjectWater(s,courier,buildingKey(next),first,3);
+  s.buildings.pop();
+ }
+ assert.equal(waterNameEvidence(s),null);
+ const secondStation=nextStation();
+ confirmProjectWater(s,courier,buildingKey(secondStation),second,1);
+ const evidence=waterNameEvidence(s);
+ assert.deepEqual(evidence?.map(f=>f.home),[buildingKey(first),buildingKey(second)]);
+ assert.deepEqual(evidence?.map(f=>f.stationId),[station.waterEntityId,secondStation.waterEntityId]);
+ s.buildings.pop();
+ for(let i=0;i<20;i++){
+  const next=nextStation();
+  confirmProjectWater(s,courier,buildingKey(next),first,3);
+  confirmProjectWater(s,courier,buildingKey(next),second,2);
+  s.buildings.pop();
+ }
+ assert.equal(s.causalFacts.waterWitnesses.length,32);
+ assert.deepEqual(waterNameEvidence(s),evidence);
+ const restored=decode(encode(s));
+ assert.ok(restored);
+ assert.deepEqual(waterNameEvidence(restored),evidence);
 });

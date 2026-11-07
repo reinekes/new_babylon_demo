@@ -1,0 +1,20 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Actual simulation delivery save, tested once with one receipt and once with both. Opened the in-game pantheon in the real app.",
+  "runs": [
+    {
+      "id": "watername",
+      "view": "2d",
+      "url": "?id=watername&view=2d&earned",
+      "mode": "2d",
+      "result": "PASS 2d no name for one receipt, name and two evidence lines for two"
+    },
+    {
+      "id": "watername",
+      "view": "3d",
+      "url": "?id=watername&view=3d&earned",
+      "mode": "3d",
+      "result": "PASS 3d no name for one receipt, name and two evidence lines for two"
+    }
+  ]
+}
