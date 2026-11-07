@@ -12,7 +12,7 @@ export function musicWorking(s,b,c){
 }
 export function musicPerformance(s,b){
  const performers=(s.citizens||[]).filter(c=>musicWorking(s,b,c)).sort((a,c)=>a.id-c.id);
- return {playing:performers.length>0,musician:performers[0]||null,performers,range:MUSIC_RANGE};
+ return {playing:performers.length>0,musician:performers[0]||null,lyrist:performers[1]||null,performers,range:MUSIC_RANGE};
 }
 export const musicPlaying=(s,b)=>musicPerformance(s,b).playing;
 

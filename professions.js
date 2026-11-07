@@ -21,7 +21,7 @@ export const PROFESSION_NAMES=Object.freeze(Object.fromEntries(Object.entries(PR
 export const professionRole=id=>PROFESSIONS[id]?.role;
 const byBuilding=Object.freeze(Object.fromEntries(Object.entries(PROFESSIONS).flatMap(([id,p])=>p.buildings.map(type=>[type,id]))));
 export const professionForBuilding=type=>byBuilding[type]||null;
-export const workplaceCapacity=type=>['healer','musicHouse','granary'].includes(type)?1:2;
+export const workplaceCapacity=type=>['healer','granary'].includes(type)?1:2;
 export const hasWorkplace=type=>['healer','depot','waterpoint','granary'].includes(type)||Object.keys(BUILDINGS[type]?.output||{}).length>0;
 export function professionMatchesTask(c,task){
  const p=PROFESSIONS[c.calling];if(c.age<16||!p||c.calling==='auto'||c.role!==p.role)return false;

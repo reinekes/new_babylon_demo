@@ -77,6 +77,13 @@ test('the season estimate never promises music prestige from an uninspired or un
  const {createGame}=await import('../engine.js'),{syncCitizens}=await import('../workforce.js'),{seasonBalance}=await import('../season-balance.js'),s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.buildings.push({type:'musicHouse',x:10,y:8,level:1});
  for(const c of s.citizens){c.work=null;c.site=null;c.role='carrier';}const c=s.citizens.find(c=>c.age>=16);c.role='production';c.work='10,8';c.store='9,8';syncCitizens(s);c.work='10,8';c.store='9,8';assert.equal(seasonBalance(s).prestige.income,0);c.calling='musician';assert.equal(seasonBalance(s).prestige.income,0);c.workplace='10,8';assert.ok(seasonBalance(s).prestige.income>0);
 });
-test('one central instrument has one permanent musician seat',async()=>{
- const {createGame}=await import('../engine.js'),{assignWorkplace}=await import('../management.js'),{cityDiagnostics}=await import('../city-diagnostics.js'),s=createGame({start:'established'});s.buildings.push({type:'musicHouse',x:10,y:8,level:1});const adults=s.citizens.filter(c=>c.age>=16).slice(0,2);for(const c of adults){c.role='production';c.calling='musician';}assert.ok(assignWorkplace(s,adults[0].id,'10,8').ok);assert.equal(assignWorkplace(s,adults[1].id,'10,8').ok,false);assert.equal(cityDiagnostics(s).workshops.find(b=>b.type==='musicHouse').staffing.capacity,1);
+test('the music courtyard accepts two permanent performers and refuses a third',async()=>{
+ const {createGame}=await import('../engine.js'),{assignWorkplace}=await import('../management.js'),{cityDiagnostics}=await import('../city-diagnostics.js');
+ const s=createGame({start:'established'});
+ s.buildings.push({type:'musicHouse',x:10,y:8,level:1});
+ const adults=s.citizens.filter(c=>c.age>=16).slice(0,3);
+ for(const c of adults){c.role='production';c.calling='musician';}
+ for(const c of adults.slice(0,2))assert.ok(assignWorkplace(s,c.id,'10,8').ok);
+ assert.equal(assignWorkplace(s,adults[2].id,'10,8').ok,false);
+ assert.equal(cityDiagnostics(s).workshops.find(b=>b.type==='musicHouse').staffing.capacity,2);
 });

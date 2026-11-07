@@ -29,3 +29,20 @@ test('audio listener follows 3D zoom and 2D map pan instead of a fixed town tile
  assert.equal(listener({...map,mapOverview:true}).proximity,0);
  assert.equal(listener({}),null,'uninitialised renderer is not a listener');
 });
+
+test('the lyre needs a second on-site performer and stops at the listening boundary',()=>{
+ const s=town(),near={x:5,y:5},notes=[];
+ const context={currentTime:0,destination:{},createOscillator(){
+  const note={frequency:{},connect(){},start(){},stop(at){this.stops.push(at);},stops:[]};notes.push(note);return note;
+ },createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}};
+ const voice=musicAudio.createLyreVoice();
+ voice.tick(context,musicSoundSources(s,near)[0]);assert.equal(notes.length,0);
+ const second={...s.citizens[0],id:2};s.citizens.push(second);
+ voice.tick(context,musicSoundSources(s,near)[0]);
+ assert.deepEqual(notes.map(n=>n.type),['triangle','triangle','triangle']);
+ voice.tick(context,musicSoundSources(s,near)[0]);assert.equal(notes.length,3);
+ voice.tick(context,musicSoundSources(s,{x:6.5,y:5})[0]);
+ assert.ok(notes.every(n=>n.stops.includes(undefined)));
+ second.phase='toWork';context.currentTime=1;
+ voice.tick(context,musicSoundSources(s,near)[0]);assert.equal(notes.length,3);
+});

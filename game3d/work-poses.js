@@ -12,7 +12,7 @@ import {artisanNeeds} from '../artisan.js';
 import {brickNeeds} from '../bricks.js';
 import {kilnNeeds} from '../kilns.js';
 import {craftBatch,craftResource,craftState} from '../textiles.js';
-import {musicWorking} from '../music.js';
+import {musicPerformance,musicWorking} from '../music.js';
 import {ACCOUNT_WORK_SECONDS} from '../scribes.js';
 
 export const WORK_POSES=new Set(['work','building','farming','gathering','pottery','weaving','brewing','brickmaking','logging','quarry','hunting','fishing','healing','music','relicSearch','scribing']);
@@ -30,7 +30,7 @@ export function workplaceActivity(s,c,index){
  if(b.type==='granary'&&isOperational(b)&&!c.guarding&&c.calling==='scribe'&&c.role==='production'&&c.workplace===c.work){
   return {kind:'scribing',stage:'working',target:b,progress:(c.workElapsed||0)/ACCOUNT_WORK_SECONDS};
  }
- if(b.type==='musicHouse')return {kind:'music',task:'lithophone',stage:musicWorking(s,b,c)?'working':'waiting',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/12};
+ if(b.type==='musicHouse')return {kind:'music',task:musicPerformance(s,b).lyrist?.id===c.id?'lyre':'lithophone',stage:musicWorking(s,b,c)?'working':'waiting',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/12};
  if(b.type==='healer'){
   const waiting={kind:'healing',stage:'waiting',target:b};
   if(!isOperational(b)||c.guarding||c.role!=='healer'||!qualifiedHealer(c)||!isWorkday(s.simTime||0)||s.funeral?.actors.some(a=>a.id===c.id))return waiting;

@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "initialPopulation": 200,
+  "population": 200,
+  "performers": [
+    0,
+    1
+  ],
+  "performances": 2,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 2.106999999999971,
+  "p95CpuMs": 6.0916670000000295
+}

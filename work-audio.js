@@ -1,4 +1,4 @@
-import {playStoneNote} from './music-audio.js';
+import {createLyreVoice,playStoneNote} from './music-audio.js';
 import {buildingKey,isOperational} from './definitions.js';
 
 const sounds={
@@ -64,7 +64,7 @@ export function createWorkAudio(createContext=()=>{
  return Context?new Context():null;
 }){
  let context=null,active=null,rainVoices=[],earthVoice=null,earthNotes=[],catNotes=[],cueId=0;
- const buffers=new Map();
+ const lyre=createLyreVoice(),buffers=new Map();
  const heard=new WeakSet();
  function release(voice){voice.node.disconnect();voice.gain.disconnect();}
  function silence(){
@@ -146,6 +146,6 @@ export function createWorkAudio(createContext=()=>{
    notes.forEach((frequency,i)=>catNotes.push(...playStoneNote(context,frequency,.034-i*.006,i*.16)));
   }catch{stopCat();}
  }
- function dispose(){silence();stopRain();stopEarth();stopCat();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
- return {enable,tick,silence,cueRain,stopRain,cueEarth,stopEarth,cueCat,stopCat,dispose};
+ function dispose(){lyre.silence();silence();stopRain();stopEarth();stopCat();try{Promise.resolve(context?.close?.()).catch(()=>{});}catch{}context=null;buffers.clear();}
+ return {enable,tick,tickLyre:source=>{if(context?.state==='running')lyre.tick(context,source);},stopLyre:lyre.silence,silence,cueRain,stopRain,cueEarth,stopEarth,cueCat,stopCat,dispose};
 }

@@ -11,3 +11,23 @@ test('the music pose follows real working eligibility and palms aim at separate 
  }
 });
 test('only an adopted musical calling receives its muted green shoulder wrap',async()=>{const {professionClothing}=await import('../game3d/profession-clothing.js'),c={age:30,calling:'musician',role:'production'};assert.equal(professionClothing(c)?.shape,'sash');c.calling='auto';assert.equal(professionClothing(c),null);});
+
+test('two real performers use separate stations and the lyre hands follow the strings',()=>{
+ for(const rotation of [0,1,2,3]){
+  const b={type:'musicHouse',x:6,y:10,level:1,rotation};
+  const musician={id:1,age:30,phase:'working',role:'production',calling:'musician',work:'6,10',workplace:'6,10',x:6.5,y:10.5,cargo:{}};
+  const second={...musician,id:2};
+  const s={simTime:4,buildings:[b],citizens:[second,musician]};
+  const index=workplaceIndex(s);
+  for(const c of s.citizens)c.activity=workplaceActivity(s,c,index);
+  const stone=workstationFor(musician.activity.target,musician);
+  const lyre=workstationFor(second.activity.target,second);
+  assert.equal(stone.kind,'lithophone');
+  assert.equal(lyre.kind,'lyre');
+  assert.ok(Math.hypot(stone.stand.x-lyre.stand.x,stone.stand.y-lyre.stand.y)>.18);
+  assert.notDeepEqual(workstationHands(lyre,0).right,workstationHands(lyre,.2).right);
+  second.phase='toWork';
+  assert.equal(workplaceActivity(s,musician,index).task,'lithophone');
+  assert.equal(workplaceActivity(s,second,index),null);
+ }
+});

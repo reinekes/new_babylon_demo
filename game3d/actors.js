@@ -362,7 +362,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   }
   a.lastX=shownX;a.lastY=shownY;
-  const decision=plough?{clip:'Walk_Loop',pose:'idle'}:actorAnimation(c,['dairy','lithophone'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
+  const decision=plough?{clip:'Walk_Loop',pose:'idle'}:actorAnimation(c,['dairy','lithophone','lyre'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
   if(!paused||!a.clip||a.ploughPoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
   a.wasPloughing=!!plough;

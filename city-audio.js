@@ -1,20 +1,20 @@
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {createWorkAudio} from './work-audio.js';
-import {musicSoundSources,playStoneNote,STONE_NOTES} from './music-audio.js';
+import {createLyreVoice,musicSoundSources,playStoneNote,STONE_NOTES} from './music-audio.js';
 import {cityEventDefinition} from './city-events.js';
 import {EVENT_MUSIC_TRACKS,musicTrackURL} from './music-tracks.js';
 export {EVENT_MUSIC_TRACKS} from './music-tracks.js';
 // Quiet original phrases, not reconstructed ancient scores. User opt-in only.
 function createSyntheticCityAudio(onMessage){
- let context=null,enabled=false,previewing=false;const beats=new Map(),voices=new Map();
+ let context=null,enabled=false,previewing=false;const beats=new Map(),voices=new Map(),lyre=createLyreVoice();
  function stopVoice(osc){try{osc.stop(context.currentTime);}catch{}osc.disconnect?.();}
  function stopSource(id){for(const osc of voices.get(id)||[])stopVoice(osc);voices.delete(id);beats.delete(id);}
- function silence(){for(const id of voices.keys())stopSource(id);beats.clear();}
+ function silence(){lyre.silence();for(const id of voices.keys())stopSource(id);beats.clear();}
  function track(id,nodes){if(!voices.has(id))voices.set(id,new Set());const active=voices.get(id);for(const osc of nodes){const ended=osc.onended;osc.onended=()=>{active.delete(osc);ended?.();};active.add(osc);}while(active.size>12){const first=active.values().next().value;stopVoice(first);active.delete(first);}}
  async function toggle(){try{if(!context){const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)throw Error('unavailable');context=new C();}enabled=!enabled;if(enabled)await context.resume();else{silence();await context.suspend();}return enabled;}catch{silence();enabled=false;onMessage?.('Звук недоступен в этом браузере');return false;}}
  function tick(s,paused,listener){
   if(!enabled||previewing||!context||globalThis.document?.hidden){silence();return;}
-  const sources=musicSoundSources(s,listener),festival=activeFestival(s),active=new Set(sources.map(source=>`music:${source.id}`));if(festival)active.add('festival');for(const id of voices.keys())if(!active.has(id))stopSource(id);
+  const sources=musicSoundSources(s,listener),festival=activeFestival(s),active=new Set(sources.map(source=>`music:${source.id}`));lyre.tick(context,sources[0]);if(festival)active.add('festival');for(const id of voices.keys())if(!active.has(id))stopSource(id);
   const beat=Math.floor(context.currentTime*2),pattern=[0,2,4,3,2,5,4,1];
   for(const source of sources){const id=`music:${source.id}`;if(beats.get(id)===beat)continue;beats.set(id,beat);track(id,playStoneNote(context,STONE_NOTES[pattern[((beat%pattern.length)+pattern.length)%pattern.length]],source.gain));}
   if(festival&&beats.get('festival')!==beat){beats.set('festival',beat);const notes=[62,65,69,67,65,72,69,67],note=notes[((beat%notes.length)+notes.length)%notes.length],osc=context.createOscillator(),gain=context.createGain(),now=context.currentTime;osc.type='triangle';osc.frequency.value=440*2**((note-69)/12);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.026,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.65);osc.connect(gain);gain.connect(context.destination);osc.start(now);osc.stop(now+.7);osc.onended=()=>{osc.disconnect?.();gain.disconnect?.();};track('festival',[osc]);}
@@ -53,7 +53,7 @@ export function createCityAudio(onMessage,options={}){
  const clamp=v=>Math.max(0,Math.min(1,v));
  function voice(id){let v=cache.get(id);if(!v){const element=createMedia();element.preload='none';element.loop=id!=='afterFuneral';element.volume=0;element.src=musicTrackURL(id);v={id,element,playing:false,level:0,target:0,from:0,since:now(),duration:0};element.addEventListener?.('error',()=>{if(v.playing)failVoice(v,Error('media load'));});element.addEventListener?.('ended',()=>{if(id==='afterFuneral'&&current===v)afterFuneralPending=false;});cache.set(id,v);}return v;}
  function stop(v){if(!v)return;v.playing=false;v.level=0;v.target=0;v.element.volume=0;v.element.pause();}
- function silence(){work.silence();work.stopRain();work.stopEarth();work.stopCat();epoch++;for(const v of cache.values())if(v.playing||!v.element.paused)stop(v);current=null;outgoing=null;lithophone=null;}
+ function silence(){work.stopLyre();work.silence();work.stopRain();work.stopEarth();work.stopCat();epoch++;for(const v of cache.values())if(v.playing||!v.element.paused)stop(v);current=null;outgoing=null;lithophone=null;}
  function fail(error){if(disposed||!enabled)return;enabled=false;silence();const key=String(error?.name||error?.message||'media');if(lastError!==key){lastError=key;onMessage?.('Музыка не запустилась. Нажми кнопку звука ещё раз, чтобы разрешить воспроизведение.');}}
  function failVoice(v,error){
   if(v.id!=='lithophone'){fail(error);return;}
@@ -85,6 +85,7 @@ export function createCityAudio(onMessage,options={}){
   if(catCue)work.cueCat(catCue);
   work.tick(s,paused,listener);
   const id=afterFuneralPending?'afterFuneral':eventMusicTheme(s,funeralCount%2?1:2),source=s.lost?null:musicSoundSources(s,listener)[0];select(id);
+  work.tickLyre(source);
   if(source){
    if(!lithophone){const positional=voice('lithophone');if(!positional.failed){lithophone=positional;play(lithophone);}}
    target(lithophone,.20*clamp(source.gain/.012),.35);

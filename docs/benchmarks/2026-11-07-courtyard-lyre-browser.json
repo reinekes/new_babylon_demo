@@ -1,0 +1,16 @@
+[
+  {
+    "id": "duet",
+    "view": "2d",
+    "url": "?id=duet&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d two actual musicians, recorded lithophone and Web Audio lyre, both stop at distance"
+  },
+  {
+    "id": "duet",
+    "view": "3d",
+    "url": "?id=duet&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d two actual musicians, recorded lithophone and Web Audio lyre, both stop at distance"
+  }
+]
