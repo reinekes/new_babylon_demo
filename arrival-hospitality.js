@@ -137,6 +137,22 @@ export function reserveArrival(s,network,expected){
 
 export const reservedArrivalBeds=(s,home)=>s.arrivalGroup?.home===home?s.arrivalGroup.count:0;
 
+function welcomeEvidence(welcomes){
+ const candidates=[];
+ for(const row of welcomes){
+  if(row.host===null)continue;
+  const different=candidates.find(prior=>prior.home!==row.home&&prior.host!==row.host);
+  if(different)return {pair:[different,row],keep:[different,row]};
+  // Retain one alternative when earlier welcomes share the same host or address.
+  if(!candidates.length||candidates.length===1&&(candidates[0].home!==row.home||candidates[0].host!==row.host))candidates.push(row);
+ }
+ return {pair:null,keep:candidates};
+}
+
+export function hospitalityNameEvidence(s){
+ return welcomeEvidence(s.arrivalHospitality?.welcomes||[]).pair;
+}
+
 export function createArrivalFamily(s,home,count){
  const first=s.demography.nextId;
  const host=s.citizens.find(c=>c.home===home&&!c.floodShelter&&c.age>=16)?.id??null;
@@ -147,12 +163,17 @@ export function createArrivalFamily(s,home,count){
  s.demography.nextId+=count;
  const welcomes=s.arrivalHospitality.welcomes??=[];
  welcomes.push({home,host,members:family.map(c=>c.id),at:s.simTime});
- if(welcomes.length>80)welcomes.shift();
+ if(welcomes.length>80){
+  const {keep}=welcomeEvidence(welcomes);
+  welcomes.splice(welcomes.findIndex(row=>!keep.includes(row)),1);
+ }
  return family;
 }
 
-export function lastArrivalWelcome(s,home){
- return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home)||null;
+export function lastArrivalWelcome(s,home,residents){
+ const ids=residents&&new Set(residents.map(c=>c.id));
+ return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home&&
+  (!ids||ids.has(row.host)||row.members.some(id=>ids.has(id))))||null;
 }
 
 export function advanceArrivalGroup(s,dt,network){

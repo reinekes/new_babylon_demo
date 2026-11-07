@@ -179,3 +179,27 @@ test('an arriving family keeps its parents, home welcome and independent belief 
  assert.ok(family.every(c=>!loaded.godhood.believerIds.includes(c.id)));
  assert.deepEqual(loaded.arrivalHospitality.welcomes[0].members,family.map(c=>c.id));
 });
+
+test('the hospitality name requires different hosts at different occupied courtyards and retains their welcomes',async()=>{
+ const {createArrivalFamily,hospitalityNameEvidence,lastArrivalWelcome}=await import('../arrival-hospitality.js');
+ const s=createNewCity({mode:'awakening',seed:1}),first=s.citizens[0],second=s.citizens[1];
+ first.age=second.age=30;
+ const a=first.home,b='10,8';
+ assert.notEqual(a,b);
+ createArrivalFamily(s,b,2);
+ createArrivalFamily(s,a,2);
+ assert.equal(hospitalityNameEvidence(s),null);
+ first.home=b;
+ second.home=a;
+ createArrivalFamily(s,b,2);
+ assert.equal(hospitalityNameEvidence(s),null);
+ createArrivalFamily(s,a,2);
+ const earned=hospitalityNameEvidence(s);
+ assert.deepEqual(earned?.map(f=>f.host),[first.id,second.id]);
+ assert.deepEqual(earned?.map(f=>f.home),[b,a]);
+ assert.equal(lastArrivalWelcome(s,a,[{id:s.demography.nextId}]),null);
+ assert.equal(lastArrivalWelcome(s,a,[second]),earned[1]);
+ for(let i=0;i<85;i++)createArrivalFamily(s,b,1);
+ assert.equal(s.arrivalHospitality.welcomes.length,80);
+ assert.deepEqual(hospitalityNameEvidence(s),earned);
+});

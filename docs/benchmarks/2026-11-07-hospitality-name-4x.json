@@ -1,0 +1,39 @@
+{
+  "buildings": 130,
+  "population": 212,
+  "initialPopulation": 200,
+  "evidence": [
+    {
+      "home": "8,8",
+      "host": 0,
+      "members": [
+        200,
+        201,
+        202,
+        203,
+        204,
+        205
+      ],
+      "at": 9
+    },
+    {
+      "home": "9,9",
+      "host": 8,
+      "members": [
+        206,
+        207,
+        208,
+        209,
+        210,
+        211
+      ],
+      "at": 19.125
+    }
+  ],
+  "loadedTransit": true,
+  "reloadByteIdentical": true,
+  "steps": 154,
+  "cpuMedianMs": 2.0854590000000144,
+  "cpuP95Ms": 6.223708999999985,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}
