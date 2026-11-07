@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-07T11:23:05.898196+00:00",
+  "commit": "470f3be3e00ce920f7c3e4a220d34bb6dc95d22b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d222bee1784777bbea5968f64ebff9a013664f3444e7e4c83e0375ab09d82889",
+      "actual": "d222bee1784777bbea5968f64ebff9a013664f3444e7e4c83e0375ab09d82889",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "1d3d2cdfac63c8dd01f7d18ecd9fce621a10f005ff41239f1852e25f28999291",
+      "actual": "1d3d2cdfac63c8dd01f7d18ecd9fce621a10f005ff41239f1852e25f28999291",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-flood-4x.json",
+      "status": 200,
+      "expected": "ea67669e41731c8db53f095f99c5a6386acb1f9bfe56faeb69fe73351357efcb",
+      "actual": "ea67669e41731c8db53f095f99c5a6386acb1f9bfe56faeb69fe73351357efcb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-flood-browser.json",
+      "status": 200,
+      "expected": "b813eb66e6160604ee4cc53a7bf825ef0fb82e5d1bced29ebe9232b5de7771ef",
+      "actual": "b813eb66e6160604ee4cc53a7bf825ef0fb82e5d1bced29ebe9232b5de7771ef",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-response-chronicle-4x.json",
+      "status": 200,
+      "expected": "7e1a040b378f0f000aba478bee95534aab17af099ebe281b42fac8f909d5200d",
+      "actual": "7e1a040b378f0f000aba478bee95534aab17af099ebe281b42fac8f909d5200d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-response-chronicle-browser.json",
+      "status": 200,
+      "expected": "597020945688f0c4336e4300d5c29119a32cc9183949cf984f233c107ddd5fb3",
+      "actual": "597020945688f0c4336e4300d5c29119a32cc9183949cf984f233c107ddd5fb3",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "fada51c52e2e880a6edcc5b10433a8746f607dfc57b8c16d2c3578528eec2ead",
+      "actual": "fada51c52e2e880a6edcc5b10433a8746f607dfc57b8c16d2c3578528eec2ead",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "678af8744da7ca0a7dbe5134b28a156cbabc8815f5f9e97e5faa92861d9e776b",
+      "actual": "678af8744da7ca0a7dbe5134b28a156cbabc8815f5f9e97e5faa92861d9e776b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "ad29841a6c4809079eb62271be5e0bec11fd0d3fcc67d3e2729fbc16a03002f7",
+      "actual": "ad29841a6c4809079eb62271be5e0bec11fd0d3fcc67d3e2729fbc16a03002f7",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "6b24516211c9d9f16366536d3267dc86416510819834eea3ca547c925d498a55",
+      "actual": "6b24516211c9d9f16366536d3267dc86416510819834eea3ca547c925d498a55",
+      "match": true
+    },
+    {
+      "path": "tests/fire-evacuation.test.js",
+      "status": 200,
+      "expected": "7968a4ec8fd62ea793064b1ddf48cad273450f1407b821f64c1c28ade500c091",
+      "actual": "7968a4ec8fd62ea793064b1ddf48cad273450f1407b821f64c1c28ade500c091",
+      "match": true
+    },
+    {
+      "path": "tests/kilns.test.js",
+      "status": 200,
+      "expected": "ce404ac370935acf98e990cfa4940483be13605aa2add5caa4bca0f2004d38bd",
+      "actual": "ce404ac370935acf98e990cfa4940483be13605aa2add5caa4bca0f2004d38bd",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "cb8bbec43f21c87117a270000d2995a5c91359193f92a670a0064d87882018c6",
+      "actual": "cb8bbec43f21c87117a270000d2995a5c91359193f92a670a0064d87882018c6",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "618f464e3d34a4d618fef8eed84284e5360454f413381cb80156d3d3f0a01805",
+      "actual": "618f464e3d34a4d618fef8eed84284e5360454f413381cb80156d3d3f0a01805",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
