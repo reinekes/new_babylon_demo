@@ -28,6 +28,7 @@ export function inannaReadinessReason(s){
 
 export function validateInannaDiscovery(s){
  const record=s.inannaDiscovery;
+ if(s.inannaSceneSeen!==undefined&&(!record||s.inannaSceneSeen!==true||!s.sacred?.unlocks?.inannaProtection))return false;
  return record===undefined||usesCatDiscovery(s)&&!!record&&Object.keys(record).length===3&&record.version===1&&
   typeof record.chased==='boolean'&&Array.isArray(record.days)&&record.days.length<=INANNA_GUARD_DAYS&&
   record.days.every((day,index)=>Number.isSafeInteger(day)&&day>=0&&day<=guardDay(s)&&(index===0||day>record.days[index-1]));

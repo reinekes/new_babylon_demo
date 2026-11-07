@@ -1,0 +1,48 @@
+{
+  "speed": 4,
+  "buildings": 135,
+  "citizens": 296,
+  "roofMark": true,
+  "sceneAndControlEqual": true,
+  "saveByteEqual": true,
+  "samples": 72,
+  "medianStepWithPresentationCpuMs": 10.686791000000085,
+  "p95StepWithPresentationCpuMs": 41.341042000000016,
+  "mouseComparison": {
+    "simulationSeconds": 1620,
+    "storeCount": 4,
+    "catSite": "9,8",
+    "faith": {
+      "cloak": 80,
+      "regularCat": 12,
+      "firstEligibleCat": 0
+    },
+    "bare": {
+      "total": 58.32000000006432,
+      "byStore": {
+        "9,8": 14.5799999999964,
+        "8,9": 14.5799999999964,
+        "10,8": 14.5799999999964,
+        "10,9": 14.5799999999964
+      }
+    },
+    "cloak": {
+      "total": 29.16000000003216,
+      "byStore": {
+        "9,8": 7.2899999999982,
+        "8,9": 7.2899999999982,
+        "10,8": 7.2899999999982,
+        "10,9": 7.2899999999982
+      }
+    },
+    "cat": {
+      "total": 45.00030000004339,
+      "byStore": {
+        "9,8": 1.260299999999933,
+        "8,9": 14.5799999999964,
+        "10,8": 14.5799999999964,
+        "10,9": 14.5799999999964
+      }
+    }
+  }
+}

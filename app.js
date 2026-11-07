@@ -1,3 +1,4 @@
+import {createInannaPresentation} from './inanna-presentation.js';
 import {createLandPresentation} from './land-presentation.js';
 import {landMemoryCastQuote,landMemoryStories} from './land-memory.js';
 import {createDepthPresentation} from './depth-presentation.js';
@@ -112,7 +113,7 @@ import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost,boatTen
 import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
-import {RESOURCE_NAMES,MATERIALS,buildingKey,levelOf,outputMultiplier} from './definitions.js';
+import {RESOURCE_NAMES,MATERIALS,buildingKey,isOperational,levelOf,outputMultiplier} from './definitions.js';
 import {DIVINE_NAMES,DOMAIN_NAMES,MOURNING_NAMES} from './divinity.js';
 import {DAY_SECONDS,lightingAt} from './city-life.js';
 
@@ -264,6 +265,16 @@ const landPresentation=createLandPresentation($('city').parentNode,{
  },
  cue:(_kind,phase)=>cityAudio.cueEarth(['bow','breath','sheaf','bow'][phase])
 });
+const inannaGateFor=s=>s.buildings.find(b=>b.type==='ishtarGate'&&isOperational(b));
+const inannaPresentation=createInannaPresentation($('city').parentNode,{
+ openingGate:inannaGateFor,
+ onOpening:s=>{s.inannaSceneSeen=true;save();},
+ project:point=>{
+  const p=renderer.ctx?renderer.point(point.x,point.y,0):renderer.projectWindPoint?.(point);
+  return p&&p.x>=0&&p.x<=renderer.w&&p.y>=0&&p.y<=renderer.h?p:null;
+ },
+ cue:(_kind,phase)=>cityAudio.cueEarth(['bow','breath','sheaf','bow'][phase])
+});
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
@@ -309,7 +320,7 @@ function stockAccountControl(b){
  return `<section class="staffing-panel">${snapshot}${receipts}${seals?'<h4>Печати договоров по этому адресу</h4>'+seals:''}</section>`;
 }
 
-function guardControl(b){if(!isPestStore(b))return '';const key=buildingKey(b),guard=state.citizens.find(c=>c.guardPost===key);return `<section class="staffing-panel pest-panel"><h4>Защита запасов</h4><p>${pestReport(state,key)}</p>${guard?`<p>${resident(guard)} · сторож <button data-release-guard="${guard.id}">Освободить</button></p>`:`<label class="control-label">Назначить сторожа <select data-guard-building="${key}" aria-label="Сторож хранилища"><option value="">Выбрать взрослого</option>${state.citizens.filter(c=>canWork(c)&&['auto','production'].includes(c.role)).map(c=>`<option value="${c.id}">${displayName(state,c.id)}${c.workplace||c.guardPost?' · сменит работу':''}</option>`).join('')}</select></label>`}<small>Сторож занимает одного жителя, ест дома и отдыхает ночью. Сторож прогоняет мышей и уменьшает потери запасов. Потери относятся к запасам этого склада; дома и грузы защищены.</small></section>`;}
+function guardControl(b){if(!isPestStore(b))return '';const key=buildingKey(b),guard=state.citizens.find(c=>c.guardPost===key);return `<section class="staffing-panel pest-panel"><h4>Защита запасов</h4><p>${pestReport(state,key)}</p>${state.buffs.inannaProtection>0?`<p>Покров Инанны · потери от мышей вдвое ниже · ${state.buffs.inannaProtection} сез.</p>`: ''}${guard?`<p>${resident(guard)} · сторож <button data-release-guard="${guard.id}">Освободить</button></p>`:`<label class="control-label">Назначить сторожа <select data-guard-building="${key}" aria-label="Сторож хранилища"><option value="">Выбрать взрослого</option>${state.citizens.filter(c=>canWork(c)&&['auto','production'].includes(c.role)).map(c=>`<option value="${c.id}">${displayName(state,c.id)}${c.workplace||c.guardPost?' · сменит работу':''}</option>`).join('')}</select></label>`}<small>Сторож занимает одного жителя, ест дома и отдыхает ночью. Сторож прогоняет мышей и уменьшает потери запасов. Потери относятся к запасам этого склада; дома и грузы защищены.</small></section>`;}
 
 function votivePanel(b){
  if(!isStrictSumer(state)||!isVotiveTemple(b))return '';
@@ -913,8 +924,16 @@ function makeMiracleCard(id,m){
   el.before(choice);
   choice.querySelector('select').onchange=()=>update();
  }
- el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
+ else if(id==='inannaProtection'&&state.inannaDiscovery){
+  rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
+  const gate=inannaGateFor(state),stores=state.buildings.filter(isPestStore);
+  if(gate)stores.sort((a,b)=>Math.hypot(a.x-gate.x,a.y-gate.y)-Math.hypot(b.x-gate.x,b.y-gate.y));
+  const point=stores[0]||gate;
+  if(point)renderer.focusOn(point.x,point.y);
+  inannaPresentation.cast({gate,stores});
+ }
  else if(id==='earthMemory'&&state.landMemoryCast){
   rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
   const rows=landSceneRows(state,state.landMemoryCast.stories);
@@ -1040,7 +1059,7 @@ function resetCityPresentation(){
  arrivalPresentation.reset();
  peacePresentation.reset();
  starPresentation.reset();
- depthPresentation.reset();landPresentation.reset();
+ depthPresentation.reset();landPresentation.reset();inannaPresentation.reset();
  waterProjectDraft=null;lastMiracleTarget=null;desiredRoles.clear();storeMinimumDraft.clear();tradeQuantities.clear();Object.assign(transferDraft,{source:'',target:'',resource:'food',amount:10});householdTab='family';supplyFilter='all';routeTarget=2;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');paused=true;setSpeed(1);closeDialog();$('tile-detail').hidden=true;document.body.classList.remove('is-building');for(const el of document.querySelectorAll('.building-card')){el.classList.remove('selected');el.setAttribute('aria-pressed','false');}placementRotation=0;updatePlacementControls();renderer.state=state;renderer.resetPresentation?.();renderer.effects=[];renderer.ambient=0;renderer.lightMode='auto';renderer.home();shownEvent=null;shownFeast=null;shownMiracle=null;lastBeerStatus=state.firstBeerFeast?.status;newsSignature='';ceremonySpeed(state,1);last=performance.now();
 }
 async function archiveCurrentCity(){
@@ -1147,10 +1166,12 @@ function frame(now){
  peacePresentation.tick(state,dt,{allowOpening:openingAllowed&&peaceVisible,visible:peaceVisible,marksVisible:!document.hidden&&!seasonJumping});
  const starVisible=peaceVisible&&!peacePresentation.active;
  starPresentation.tick(state,dt,{allowOpening:openingAllowed&&starVisible,visible:starVisible,marksVisible:!document.hidden&&!seasonJumping});
- const landVisible=starVisible&&!starPresentation.active&&!relicControlActive(state);
+ const inannaVisible=starVisible&&!starPresentation.active&&!relicControlActive(state);
+ const landVisible=inannaVisible&&!inannaPresentation.active;
  const depthVisible=landVisible&&!landPresentation.active;
  depthPresentation.tick(state,dt,{allowOpening:openingAllowed&&depthVisible,visible:depthVisible,rippleVisible:!document.hidden&&!seasonJumping});
  landPresentation.tick(state,dt,{allowOpening:openingAllowed&&!depthPresentation.active,visible:landVisible&&!depthPresentation.active});
+ inannaPresentation.tick(state,dt,{allowOpening:openingAllowed&&!depthPresentation.active&&!landPresentation.active,visible:inannaVisible&&!depthPresentation.active&&!landPresentation.active});
  requestAnimationFrame(frame);
 }
 urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});
