@@ -30,16 +30,20 @@ export function inannaMeetingReason(s){
  return inannaReadinessReason(s);
 }
 
+function inannaMeetingSpots(s,net,center){
+ const spots=[];
+ for(let i=0;i<12;i++){
+  const angle=i*Math.PI/6,p={x:center.x+.8*Math.cos(angle),y:center.y+.8*Math.sin(angle)};
+  if(p.x>=0&&p.y>=0&&p.x<worldWidth(s)&&p.y<worldHeight(s)&&isDryPoint(s,p.x,p.y)&&navigationSegmentClear(s,p,p,net.navigation?.obstacles))spots.push(p);
+ }
+ return spots;
+}
 export function startInannaMeeting(s){
  const reason=inannaMeetingReason(s);
  if(reason)return {ok:false,reason};
  const gate=inannaGate(s),net=networkFor(s),port=net.ports.find(p=>p.building===gate);
  if(!port)return {ok:false,reason:'У порога нужен доступный вход'};
- const center=point(port),spots=[];
- for(let i=0;i<12;i++){
-  const angle=i*Math.PI/6,p={x:center.x+.8*Math.cos(angle),y:center.y+.8*Math.sin(angle)};
-  if(p.x>=0&&p.y>=0&&p.x<worldWidth(s)&&p.y<worldHeight(s)&&isDryPoint(s,p.x,p.y)&&navigationSegmentClear(s,p,p,net.navigation?.obstacles))spots.push(p);
- }
+ const center=point(port),spots=inannaMeetingSpots(s,net,center);
  const candidates=s.citizens.filter(c=>c.age>=16&&c.health>0&&distance(c,center)<=24)
   .sort((a,b)=>distance(a,center)-distance(b,center)||a.id-b.id);
  const paths=new Map();
@@ -99,5 +103,13 @@ export function validateMiracleCelebration(s){const q=s.miracleCelebration;if(q=
    !s.citizens.some(c=>c.id===meeting.guest&&c.age>=16)||
    ![meeting.priest,meeting.guest].every(id=>q.participants.some(p=>p?.id===id&&p.joined))||
    q.participants.filter(p=>p?.joined).length>6)return false;
+  const spots=inannaMeetingSpots(s,net,q.center);
+  for(const participant of q.participants){
+   if(!participant?.joined)continue;
+   const destination=Array.isArray(participant.path)&&participant.path.at(-1);
+   const spot=destination?spots.findIndex(p=>distance(p,destination)<1e-7):-1;
+   if(spot<0)return false;
+   spots.splice(spot,1);
+  }
  }else if(q.inanna!==undefined)return false;
  const safePath=p=>p.every((v,i)=>!i||((isDryPoint(s,v.x,v.y)||onBridge(s.buildings,v.x,v.y,s))&&navigationSegmentClear(s,p[i-1],v,net.navigation?.obstacles)));const ids=new Set();for(const a of q.participants){if(ids.has(a.id)||!s.citizens.some(c=>c.id===a.id)||typeof a.joined!=='boolean'||!path(a.path)||length(a.path)>24.00001||!safePath(a.path))return false;const citizen=s.citizens.find(c=>c.id===a.id);if(distance(a.path[0],citizen)>1e-7||q.duration===8&&(a.joined||a.path.length!==1))return false;ids.add(a.id);}const safeStart=p=>path(p)&&(isDryPoint(s,p[0].x,p[0].y)||onBridge(s.buildings,p[0].x,p[0].y,s))&&navigationSegmentClear(s,p[0],p[0],net.navigation?.obstacles);if(q.duration===8&&(!q.cat||!safeStart(q.cat.path)||!safeStart(q.cat.stroll)||!safeStart(q.cat.exit)||q.cat.stroll.length!==1||q.cat.exit.length!==1))return false;return !q.cat||q.kind==='cat'&&s.pests.cats.some(c=>`cat:${c.id}`===q.cat.id)&&path(q.cat.path)&&path(q.cat.stroll)&&path(q.cat.exit)&&safePath(q.cat.path)&&safePath(q.cat.stroll)&&safePath(q.cat.exit)&&length(q.cat.path)<=12.00001&&length(q.cat.exit)<=12.00001&&length(q.cat.stroll)<=12.00001&&distance(q.cat.path.at(-1),q.cat.stroll[0])<1e-7&&distance(q.cat.stroll.at(-1),q.cat.exit[0])<1e-7;}

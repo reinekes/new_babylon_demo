@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 135,
+  "citizens": 296,
+  "priest": 1,
+  "guest": 115,
+  "guestOutsideCult": true,
+  "calendarFrozen": true,
+  "meetingSaveByteEqual": true,
+  "forgedDestinationsRejected": true,
+  "earnedPaidCast": true,
+  "samples": 480,
+  "medianStepCpuMs": 0.040208000000006905,
+  "p95StepCpuMs": 0.10679100000004382
+}

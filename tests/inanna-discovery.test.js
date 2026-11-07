@@ -47,6 +47,11 @@ test('only stocked shifts on distinct days count, then the earned unlock survive
  assert.equal(s.sacred.unlocks.inannaProtection,undefined);
  const {guest}=s.miracleCelebration.inanna;
  assert.ok(!s.godhood.believerIds.includes(guest));
+ const guestRoute=s.miracleCelebration.participants.find(p=>p.id===guest);
+ const path=guestRoute.path;
+ guestRoute.path=[path[0]];
+ assert.equal(validateMiracleCelebration(s),false,'the guest must reach a spot beside the threshold');
+ guestRoute.path=path;
  advanceMiracleCelebration(s,59);
  assert.equal(s.sacred.unlocks.inannaProtection,undefined);
  advanceMiracleCelebration(s,1);
