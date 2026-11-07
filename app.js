@@ -282,6 +282,11 @@ const inannaPresentation=createInannaPresentation($('city').parentNode,{
  },
  cue:(_kind,phase)=>cityAudio.cueEarth(['bow','breath','sheaf','bow'][phase])
 });
+const miracleStories=[
+ rainPresentation,earthPresentation,catchPresentation,creatorPresentation,windPresentation,
+ abundancePresentation,sunlightPresentation,revelationPresentation,shapingPresentation,arrivalPresentation,
+ peacePresentation,starPresentation,depthPresentation,landPresentation,inannaPresentation
+];
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
@@ -1433,41 +1438,45 @@ function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event&&state.godhood?.namelessEndingAt===undefined;
  if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
- syncCeremonySpeed();ceremonyPresentation();rainPresentation.tick(state,now,!presentationPaused&&!ceremonyActive(state)&&!earthPresentation.active&&!catchPresentation.active&&!creatorPresentation.active);
- const storyVisible=!seasonJumping&&!document.hidden&&!photo.active&&!windowBlocks&&!rainPresentation.active;
+ syncCeremonySpeed();ceremonyPresentation();
+ const currentStory=miracleStories.find(scene=>scene.active);
  const openingAllowed=!presentationPaused&&!ceremonyActive(state);
+ // A new discovery waits for the current scene, even if its usual priority is higher.
+ const canShowOpening=scene=>openingAllowed&&(!currentStory||currentStory===scene);
+ rainPresentation.tick(state,now,canShowOpening(rainPresentation));
+ const storyVisible=!seasonJumping&&!document.hidden&&!photo.active&&!windowBlocks&&!rainPresentation.active;
  const creatorHasPriority=creatorPresentation.active&&!ceremonyActive(state);
  const catchHasPriority=catchPresentation.active&&!ceremonyActive(state);
- earthPresentation.tick(state,dt,{allowOpening:openingAllowed&&!catchHasPriority&&!creatorHasPriority,
+ earthPresentation.tick(state,dt,{allowOpening:canShowOpening(earthPresentation)&&!catchHasPriority&&!creatorHasPriority,
   visible:storyVisible&&!catchHasPriority&&!creatorHasPriority});
- catchPresentation.tick(state,dt,{allowOpening:openingAllowed&&!earthPresentation.active&&!creatorHasPriority,
+ catchPresentation.tick(state,dt,{allowOpening:canShowOpening(catchPresentation)&&!earthPresentation.active&&!creatorHasPriority,
   visible:storyVisible&&!earthPresentation.active&&!creatorHasPriority&&!ceremonyActive(state)});
- creatorPresentation.tick(state,dt,{allowOpening:openingAllowed&&!earthPresentation.active&&!catchPresentation.active,
+ creatorPresentation.tick(state,dt,{allowOpening:canShowOpening(creatorPresentation)&&!earthPresentation.active&&!catchPresentation.active,
   visible:storyVisible&&!earthPresentation.active&&!catchPresentation.active&&!ceremonyActive(state)});
  if(!seasonJumping&&now-lastUI>350){update();lastUI=now;}
  renderer.inspected=inspected;renderer.focusCitizenId=inspectedPerson;cityAudio.tick(state,presentationPaused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,rainReaction:rainPresentation.reaction,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);
  const windVisible=storyVisible&&!earthPresentation.active&&!catchPresentation.active&&!creatorPresentation.active&&!ceremonyActive(state);
- windPresentation.tick(state,dt,{allowOpening:openingAllowed&&windVisible,visible:windVisible});
+ windPresentation.tick(state,dt,{allowOpening:canShowOpening(windPresentation)&&windVisible,visible:windVisible});
  const abundanceVisible=windVisible&&!windPresentation.active;
- abundancePresentation.tick(state,dt,{allowOpening:openingAllowed&&abundanceVisible,visible:abundanceVisible});
+ abundancePresentation.tick(state,dt,{allowOpening:canShowOpening(abundancePresentation)&&abundanceVisible,visible:abundanceVisible});
  const sunlightVisible=abundanceVisible&&!abundancePresentation.active&&!relicControlActive(state);
- sunlightPresentation.tick(state,dt,{allowOpening:openingAllowed&&sunlightVisible,visible:sunlightVisible,glowVisible:!document.hidden&&!seasonJumping});
+ sunlightPresentation.tick(state,dt,{allowOpening:canShowOpening(sunlightPresentation)&&sunlightVisible,visible:sunlightVisible,glowVisible:!document.hidden&&!seasonJumping});
  const revelationVisible=sunlightVisible&&!sunlightPresentation.active;
- revelationPresentation.tick(state,dt,{allowOpening:openingAllowed&&revelationVisible,visible:revelationVisible});
+ revelationPresentation.tick(state,dt,{allowOpening:canShowOpening(revelationPresentation)&&revelationVisible,visible:revelationVisible});
  const shapingVisible=revelationVisible&&!revelationPresentation.active;
- shapingPresentation.tick(state,dt,{allowOpening:openingAllowed&&shapingVisible,visible:shapingVisible,pilesVisible:!document.hidden&&!seasonJumping});
+ shapingPresentation.tick(state,dt,{allowOpening:canShowOpening(shapingPresentation)&&shapingVisible,visible:shapingVisible,pilesVisible:!document.hidden&&!seasonJumping});
  const arrivalVisible=shapingVisible&&!shapingPresentation.active;
- arrivalPresentation.tick(state,dt,{allowOpening:openingAllowed&&arrivalVisible,visible:arrivalVisible,markVisible:!document.hidden&&!seasonJumping});
+ arrivalPresentation.tick(state,dt,{allowOpening:canShowOpening(arrivalPresentation)&&arrivalVisible,visible:arrivalVisible,markVisible:!document.hidden&&!seasonJumping});
  const peaceVisible=arrivalVisible&&!arrivalPresentation.active;
- peacePresentation.tick(state,dt,{allowOpening:openingAllowed&&peaceVisible,visible:peaceVisible,marksVisible:!document.hidden&&!seasonJumping});
+ peacePresentation.tick(state,dt,{allowOpening:canShowOpening(peacePresentation)&&peaceVisible,visible:peaceVisible,marksVisible:!document.hidden&&!seasonJumping});
  const starVisible=peaceVisible&&!peacePresentation.active;
- starPresentation.tick(state,dt,{allowOpening:openingAllowed&&starVisible,visible:starVisible,marksVisible:!document.hidden&&!seasonJumping});
+ starPresentation.tick(state,dt,{allowOpening:canShowOpening(starPresentation)&&starVisible,visible:starVisible,marksVisible:!document.hidden&&!seasonJumping});
  const inannaVisible=starVisible&&!starPresentation.active&&!relicControlActive(state);
  const landVisible=inannaVisible&&!inannaPresentation.active;
  const depthVisible=landVisible&&!landPresentation.active;
- depthPresentation.tick(state,dt,{allowOpening:openingAllowed&&depthVisible,visible:depthVisible,rippleVisible:!document.hidden&&!seasonJumping});
- landPresentation.tick(state,dt,{allowOpening:openingAllowed&&!depthPresentation.active,visible:landVisible&&!depthPresentation.active});
- inannaPresentation.tick(state,dt,{allowOpening:openingAllowed&&!depthPresentation.active&&!landPresentation.active,visible:inannaVisible&&!depthPresentation.active&&!landPresentation.active});
+ depthPresentation.tick(state,dt,{allowOpening:canShowOpening(depthPresentation)&&depthVisible,visible:depthVisible,rippleVisible:!document.hidden&&!seasonJumping});
+ landPresentation.tick(state,dt,{allowOpening:canShowOpening(landPresentation)&&!depthPresentation.active,visible:landVisible&&!depthPresentation.active});
+ inannaPresentation.tick(state,dt,{allowOpening:canShowOpening(inannaPresentation)&&!depthPresentation.active&&!landPresentation.active,visible:inannaVisible&&!depthPresentation.active&&!landPresentation.active});
  requestAnimationFrame(frame);
 }
 urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});

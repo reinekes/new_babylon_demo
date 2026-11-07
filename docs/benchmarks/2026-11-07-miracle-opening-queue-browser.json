@@ -1,0 +1,63 @@
+{
+  "before": [
+    {
+      "id": "queue",
+      "view": "2d",
+      "url": "?id=queue&view=2d",
+      "mode": "2d",
+      "result": "FAIL rain interrupted arrival at frame 6"
+    },
+    {
+      "id": "queue",
+      "view": "3d",
+      "url": "?id=queue&view=3d",
+      "mode": "3d",
+      "result": "FAIL rain interrupted arrival at frame 6"
+    }
+  ],
+  "after": [
+    {
+      "id": "queue",
+      "view": "2d",
+      "url": "?id=queue&view=2d",
+      "mode": "2d",
+      "result": {
+        "view": "2d",
+        "first": "arrival",
+        "next": "rain",
+        "buildings": 129,
+        "population": 240,
+        "skipPreservedSave": true
+      }
+    },
+    {
+      "id": "queue",
+      "view": "3d",
+      "url": "?id=queue&view=3d",
+      "mode": "3d",
+      "result": {
+        "view": "3d",
+        "first": "arrival",
+        "next": "rain",
+        "buildings": 129,
+        "population": 240,
+        "skipPreservedSave": true
+      }
+    },
+    {
+      "id": "low",
+      "view": "3d",
+      "url": "?id=low&view=3d",
+      "mode": "3d",
+      "result": {
+        "view": "3d",
+        "lowQuality": true,
+        "first": "arrival",
+        "next": "rain",
+        "buildings": 129,
+        "population": 240,
+        "skipPreservedSave": true
+      }
+    }
+  ]
+}
