@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T19:31:22.779761+00:00",
+  "commit": "15fff93763d8f9b9251ca81a2def99ee4d6b3af1",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "24157e2a4598d9738950a9d393f18ed83bc1a55c37b5acfbca611121097b2db5",
+      "actual": "24157e2a4598d9738950a9d393f18ed83bc1a55c37b5acfbca611121097b2db5",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "26d5b6ac6cf3bee70318289f1a4b7775de1f7bff6b430da53af98e086a37f389",
+      "actual": "26d5b6ac6cf3bee70318289f1a4b7775de1f7bff6b430da53af98e086a37f389",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-project-local-stock-4x.json",
+      "status": 200,
+      "expected": "da421e9b7f61288b35483bcb57b88fb42afd65d10b27e325bf78623fe3adc68c",
+      "actual": "da421e9b7f61288b35483bcb57b88fb42afd65d10b27e325bf78623fe3adc68c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-project-local-stock-browser.json",
+      "status": 200,
+      "expected": "3a7b6ef9b6b8343da0910e2fe56ec2f69e96b8c1180439c5f609024e6dd75c02",
+      "actual": "3a7b6ef9b6b8343da0910e2fe56ec2f69e96b8c1180439c5f609024e6dd75c02",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "df7f226b75f74c5d89304fc741ec931602ea0a63e8d381ef1782bba2b8cb9596",
+      "actual": "df7f226b75f74c5d89304fc741ec931602ea0a63e8d381ef1782bba2b8cb9596",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "56a9e3ef500a970d137dcbbe78c3c98b4e17781b373bf42da078ed2b22ca7172",
+      "actual": "56a9e3ef500a970d137dcbbe78c3c98b4e17781b373bf42da078ed2b22ca7172",
+      "match": true
+    },
+    {
+      "path": "tests/human-water-project.test.js",
+      "status": 200,
+      "expected": "f487debc341b2ec128f0b3d45fb6ecbfcec5a9308e1632cd351a5cffbf9343e0",
+      "actual": "f487debc341b2ec128f0b3d45fb6ecbfcec5a9308e1632cd351a5cffbf9343e0",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
