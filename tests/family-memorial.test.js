@@ -21,7 +21,7 @@ test('a recorded death anchors a named memorial to the actual home across save a
  assert.equal(encode(loaded),raw);
  const house=loaded.buildings.find(b=>buildingKey(b)===c.home);
  assert.equal(familyMemorialsAt(loaded,house).length,1);
- assert.equal(familyMemorialsAt(loaded,{...house,built:{year:1,season:0,elapsed:1,order:10}}).length,0);
+ assert.equal(familyMemorialsAt(loaded,{...house,waterEntityId:undefined,built:{year:1,season:0,elapsed:1,order:10}}).length,0);
 });
 
 test('an unknown disappearance and a legacy death never invent a home memorial',()=>{
@@ -56,9 +56,18 @@ test('a relative carries the memorial to the new home without changing the biogr
  syncCitizens(s);
  assert.equal(familyMemorialsAt(s,destination).length,0);
  assert.equal(familyMemorialsAt(s,origin).length,1);
+ assert.ok(carrier.memorialMove.sourceId>0);
+ assert.ok(carrier.memorialMove.targetId>0);
  const raw=encode(s),restored=decode(raw);
  assert.ok(restored);
  assert.equal(encode(restored),raw);
+ const corrupt=JSON.parse(raw);delete corrupt.buildings.find(b=>buildingKey(b)===carrier.home).waterEntityId;
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+ const {finishMemorialMove}=await import('../life-analytics.js');
+ const altered=structuredClone(restored),target=altered.buildings.find(b=>buildingKey(b)===carrier.home);
+ delete target.waterEntityId;
+ finishMemorialMove(altered,altered.citizens.find(c=>c.id===carrier.id));
+ assert.equal(altered.lifeAnalytics.people.find(p=>p.id===deceased.id).memorial.home,buildingKey(origin));
  for(let i=0;i<300&&restored.citizens.find(c=>c.id===carrier.id).memorialMove;i++)advanceTime(restored,.1,{calendarRate:1});
  const record=restored.lifeAnalytics.people.find(p=>p.id===deceased.id);
  assert.equal(record.home,buildingKey(origin));

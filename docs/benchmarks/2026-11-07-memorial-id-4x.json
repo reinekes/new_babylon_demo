@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 218,
+  "sourceId": 1,
+  "targetId": 2,
+  "received": true,
+  "steps": 800,
+  "medianCPUms": 1.7647500000000491,
+  "p95CPUms": 5.926541999999927,
+  "exactSave": true
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "memorial",
+    "view": "2d",
+    "url": "?id=memorial&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d receiving home displays the delivered memorial"
+  },
+  {
+    "id": "memorial",
+    "view": "3d",
+    "url": "?id=memorial&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d receiving home displays the delivered memorial"
+  }
+]
