@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T20:42:53.579138+00:00",
+  "commit": "3bc2da8779af21db4c378eeacf8d4ae5dda53881",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ffe5994c000ad147780202d12a949e7d98b70284f96f072890cea3378f0783a0",
+      "actual": "ffe5994c000ad147780202d12a949e7d98b70284f96f072890cea3378f0783a0",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "835cab5aa0f8a3dacad4cf266249c7e5c245819b447813cb4820a812de5f043a",
+      "actual": "835cab5aa0f8a3dacad4cf266249c7e5c245819b447813cb4820a812de5f043a",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "5d55bfe9d4ca49fbe311406d23ce56e570e729e9730f6147de6b887da52312f5",
+      "actual": "5d55bfe9d4ca49fbe311406d23ce56e570e729e9730f6147de6b887da52312f5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-dream-observation-4x.json",
+      "status": 200,
+      "expected": "34ad92e6fc389c1ef534e1133313c3c7ff7d768b90fc6f537564033f4485feba",
+      "actual": "34ad92e6fc389c1ef534e1133313c3c7ff7d768b90fc6f537564033f4485feba",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-dream-observation-browser.json",
+      "status": 200,
+      "expected": "6332d8785996af4bf1c98376de44ca7d04d6be174b2717068afb48b2ff1c9ca9",
+      "actual": "6332d8785996af4bf1c98376de44ca7d04d6be174b2717068afb48b2ff1c9ca9",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "fdd6dd496d5129cea34a092fdd815371267b2da5df6af3da9445330e4e128d22",
+      "actual": "fdd6dd496d5129cea34a092fdd815371267b2da5df6af3da9445330e4e128d22",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "48f45e1f6df13fb6f48cf7c895211c48576a02f27bca6d550dc8ac8db34768fe",
+      "actual": "48f45e1f6df13fb6f48cf7c895211c48576a02f27bca6d550dc8ac8db34768fe",
+      "match": true
+    },
+    {
+      "path": "tests/human-water-project.test.js",
+      "status": 200,
+      "expected": "6043b171df22a89c0ae8ff80f952f5a4f7466c4b3ec5942c5a4055b11235ddd6",
+      "actual": "6043b171df22a89c0ae8ff80f952f5a4f7466c4b3ec5942c5a4055b11235ddd6",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
