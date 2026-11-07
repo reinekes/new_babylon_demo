@@ -1,3 +1,7 @@
+import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,waterNameEvidence} from './causal-facts.js';
+import {hospitalityNameEvidence} from './arrival-hospitality.js';
+import {vowNameEvidence} from './supply-vow.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {affectResidents} from './wellbeing.js';
 export const DIVINE_NAMES={
  water:['Дарующий дождь','Хранитель берегов','Повелитель разлива','Владыка живых вод','Океан над миром'],
@@ -16,6 +20,27 @@ export function registerInspiration(s,success){
  s.divinity ||= createDivinity();s.divinity.inspirationAttempts=(s.divinity.inspirationAttempts||0)+1;s.divinity.inspirationSuccesses=(s.divinity.inspirationSuccesses||0)+(success?1:0);s.divinity.rating=Math.max(0,(s.divinity.rating||0)+(success?3:-1));
  if(success){s.divinity.domains.craft++;refreshDivineName(s);}
 }
+export const usesResultNames=s=>isStrictSumer(s)&&s.godhood?.mode==='awakening';
+export const RESULT_NAMES={
+ water:'Напоивший дворы',life:'Вернувший силы',harvest:'Наполнивший закрома',
+ knowledge:'Сдержавший слово',sun:'Давший кров',craft:'Передавший мастерство'
+};
+export function earnedResultNames(s){
+ const water=waterNameEvidence(s),life=healingNameEvidence(s),harvest=harvestNameEvidence(s);
+ const knowledge=vowNameEvidence(s),sun=hospitalityNameEvidence(s),craft=craftNameEvidence(s);
+ const vow=knowledge&&s.supplyVows.history.find(row=>row.id===knowledge[1].vowId);
+ return Object.entries({
+  water:water?.[1].time,life:life?.[1].time,harvest:harvest?.[1].time,
+  knowledge:vow?.ended,sun:sun?.[1].at,craft:craft?.[1].time
+ }).filter(([,time])=>Number.isFinite(time)).sort((a,b)=>a[1]-b[1]).map(([domain])=>RESULT_NAMES[domain]);
+}
+export function refreshResultName(s){
+ if(!usesResultNames(s)||s.godhood.stage!=='recognized'||s.funeral)return null;
+ const names=earnedResultNames(s).filter(name=>!s.divinity.names.includes(name));
+ if(!names.length)return null;
+ s.divinity.names.push(...names);
+ return s.name=names.at(-1);
+}
 export const MOURNING_NAMES=['Слышащий плач','Хранитель пепла','Владыка погребальных огней','Несущий смерть','Жестокий владыка пустыни'];
 export function registerLoss(s,count=1){
  if(s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized')return;
@@ -24,6 +49,7 @@ export function registerLoss(s,count=1){
 }
 function refreshDivineName(s){
  if(s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized')return;
+ if(usesResultNames(s))return;
  if(s.funeral?.scope==='family'&&!s.hungry){s.name='Хранитель памяти';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);return;}
  if(s.deaths>0&&(s.hungry>0||s.funeral)){registerLoss(s);return;}
 

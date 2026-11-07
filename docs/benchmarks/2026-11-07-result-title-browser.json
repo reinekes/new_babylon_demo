@@ -1,0 +1,16 @@
+[
+  {
+    "id": "craft",
+    "view": "2d",
+    "url": "?id=craft&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d result title in HUD and journal, historical name and byte-identical save"
+  },
+  {
+    "id": "craft",
+    "view": "3d",
+    "url": "?id=craft&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d result title in HUD and journal, historical name and byte-identical save"
+  }
+]

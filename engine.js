@@ -98,7 +98,7 @@ import {createOrder,isComplete,nextOrder,constructionEntities,workRequired,flood
 import {WIDTH,HEIGHT,worldWidth,worldHeight,bridgeSpanAt,riverLocal,signedRiverDistance,terrain,river,bridgeSpan,initializeWorld,initializeGeneratedWorld,nearDeposit,isShore,validateWorld,isDryPoint,ensureResourceSites} from './world.js';
 import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf,citizenName,isCityFortification} from './definitions.js';
 import {networkFor,syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
-import {createDivinity,registerMiracle} from './divinity.js';
+import {createDivinity,registerMiracle,refreshResultName,usesResultNames} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
 export const VERSION=30;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
@@ -279,7 +279,9 @@ function check(s){
  if(advanceFieldGrain(s))log(s,'Три поля дали зерно','Склад принял урожай с трёх действующих полей. Открылось чудо «Дыхание земли».','good');
  if(advanceBlessingDiscovery(s))log(s,'Соседи поддержали друг друга','Три двора обеспечены едой и водой, две доставки помощи подтверждены. Условия истории «Благословение» выполнены.','good');
  if(advanceMonumentChapter(s))log(s,'Поздняя глава · Великий зиккурат','Город вступил в эпоху монументального строительства. Следующая цель — возвести Великий зиккурат.','good');
- const unnamed=s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized',hasMiracles=unnamed||s.deaths>0||s.relicQuest?.phase==='completed'||s.landRelicQuest?.phase==='completed'||Object.values(s.divinity.domains).some(v=>v>0);
+ const resultName=refreshResultName(s);
+ if(resultName)log(s,'Город дал богу имя',resultName,'good');
+ const unnamed=s.godhood?.mode==='awakening'&&s.godhood.stage!=='recognized',hasMiracles=usesResultNames(s)||unnamed||s.deaths>0||s.relicQuest?.phase==='completed'||s.landRelicQuest?.phase==='completed'||Object.values(s.divinity.domains).some(v=>v>0);
  if(s.population>=24&&!s.achievements.includes('population')){s.achievements.push('population');log(s,'Поселение стало городом','Двадцать четыре человека называют это место домом.','good');}
  if(s.resources.food>=150&&!s.achievements.includes('food')){s.achievements.push('food');if(!hasMiracles){s.name='Наполняющий амбары';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}log(s,'Полные амбары','Запас еды достиг 150. Город встречает будущее с надеждой.','good');}
  if(s.population>=30&&!s.achievements.includes('keeper')){s.achievements.push('keeper');if(!hasMiracles){s.name='Хранитель людей';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}}

@@ -1,0 +1,89 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "reports": [
+    {
+      "fixture": "household-names-water",
+      "initialName": "Хранитель людей",
+      "name": "Хранитель берегов",
+      "expected": "Напоивший дворы",
+      "wasRecognized": false,
+      "buildings": 130,
+      "initialPopulation": 242,
+      "population": 251,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 2.555583000000013,
+      "cpuP95Ms": 7.557999999999993
+    },
+    {
+      "fixture": "healing-name-after",
+      "initialName": "Направляющий руки",
+      "name": "Хранитель берегов",
+      "expected": "Вернувший силы",
+      "wasRecognized": false,
+      "buildings": 130,
+      "initialPopulation": 251,
+      "population": 260,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.4494580000000497,
+      "cpuP95Ms": 6.952124999999796
+    },
+    {
+      "fixture": "vow-name-after",
+      "initialName": "Хранитель людей",
+      "name": "Хранитель берегов",
+      "expected": "Сдержавший слово",
+      "wasRecognized": false,
+      "buildings": 130,
+      "initialPopulation": 200,
+      "population": 222,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.678957999999966,
+      "cpuP95Ms": 5.478791000000001
+    },
+    {
+      "fixture": "craft-name-after",
+      "initialName": "Хранитель людей",
+      "name": "Передавший мастерство",
+      "expected": "Передавший мастерство",
+      "wasRecognized": true,
+      "buildings": 130,
+      "initialPopulation": 222,
+      "population": 242,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.4665420000001177,
+      "cpuP95Ms": 6.053332999999839
+    },
+    {
+      "fixture": "harvest-name-after",
+      "initialName": "Незримый дух",
+      "name": "Незримый дух",
+      "expected": "Наполнивший закрома",
+      "wasRecognized": false,
+      "buildings": 130,
+      "initialPopulation": 200,
+      "population": 222,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.6261250000002292,
+      "cpuP95Ms": 4.88170799999989
+    },
+    {
+      "fixture": "hospitality-name-after",
+      "initialName": "Незримый дух",
+      "name": "Незримый дух",
+      "expected": "Давший кров",
+      "wasRecognized": false,
+      "buildings": 130,
+      "initialPopulation": 212,
+      "population": 235,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.3341249999994034,
+      "cpuP95Ms": 5.650832999999693
+    }
+  ]
+}
