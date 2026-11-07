@@ -6,7 +6,8 @@ import {beginFirstWaterHelp,firstWaterHelpChoices} from '../godhood.js';
 import {personalMemory} from '../life-analytics.js';
 import {lifeAnalyticsHTML} from '../ui-life-analytics.js';
 
-test('a child hears the first water story at dinner and keeps the source after the teller dies',()=>{
+test('a child hears the first water story at dinner and keeps the source after the teller dies',async()=>{
+ const {hearthEndingOffer,recordHearthEnding}=await import('../campaign.js');
  let s=createNewCity({mode:'awakening',seed:137});
  const choice=firstWaterHelpChoices(s)[0],child=s.citizens.find(c=>c.age<16&&c.home===s.citizens.find(p=>p.id===choice.helperId).home);
  assert.ok(child);
@@ -23,12 +24,29 @@ test('a child hears the first water story at dinner and keeps the source after t
  assert.equal(heard.tellerId,choice.helperId);
  assert.deepEqual(heard.fact,personalMemory(s,choice.helperId).fact);
  assert.match(lifeAnalyticsHTML(s,{tab:'family',selectedId:child.id}),/Услышал за семейным ужином/);
+ assert.equal(hearthEndingOffer(s),null);
  const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
  const teller=s.citizens.find(c=>c.id===choice.helperId);teller.age=85;
  for(let i=0;i<200&&!s.lifeAnalytics.people.find(p=>p.id===choice.helperId).diedTick;i++){s.event=null;advanceTime(s,.5);}
  assert.ok(s.lifeAnalytics.people.find(p=>p.id===choice.helperId).diedTick);
  const restored=decode(encode(s));assert.ok(restored);
  assert.deepEqual(personalMemory(restored,child.id),heard);
+ const familyCity=structuredClone(restored);
+ familyCity.funeral=null;familyCity.event=null;
+ const listener=familyCity.citizens.find(c=>c.id===child.id);
+ const home=familyCity.buildings.find(b=>b.x+','+b.y===listener.home);
+ home.water=0;
+ assert.equal(hearthEndingOffer(familyCity),null);
+ home.water=home.waterDelivered;
+ assert.equal(hearthEndingOffer(familyCity)?.listenerId,child.id);
+ assert.equal(recordHearthEnding(familyCity).ok,true);
+ assert.equal(recordHearthEnding(familyCity).ok,false);
+ const final=encode(familyCity);
+ assert.equal(encode(decode(final)),final);
+ assert.equal(familyCity.won,false);
+ const forgedEnding=structuredClone(familyCity);
+ forgedEnding.hearthEnding.tellerId=child.id;
+ assert.equal(decode(encode(forgedEnding)),null);
  const corrupt=structuredClone(restored);
  corrupt.lifeAnalytics.people.find(p=>p.id===child.id).waterStory.tellerId=choice.recipientId;
  assert.equal(decode(encode(corrupt)),null);

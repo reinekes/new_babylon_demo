@@ -1,0 +1,16 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "buildingCount": 129,
+  "initialPopulation": 200,
+  "population": 221,
+  "steps": 896,
+  "ending": {
+    "listenerId": 11,
+    "tellerId": 1,
+    "home": "10,6"
+  },
+  "afterEnding": 37.50000000000001,
+  "byteExact": true,
+  "cpuMedianMs": 1.5582089999999198,
+  "cpuP95Ms": 5.500250000000051
+}
