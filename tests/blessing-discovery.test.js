@@ -4,6 +4,7 @@ import {createNewCity} from '../new-game.js';
 import {advanceTime,decode,encode} from '../engine.js';
 import {recordNeighborWaterFact} from '../causal-facts.js';
 import {buildingKey} from '../definitions.js';
+import {blessingCupAt} from '../blessing-discovery.js';
 import {cityToolsHTML} from '../ui-city-tools.js';
 
 test('new Awakening remembers the neighborhood milestone only after two deliveries and three supplied homes',()=>{
@@ -26,12 +27,26 @@ test('new Awakening remembers the neighborhood milestone only after two deliveri
  advanceTime(s,.1);
  const qualified=s.blessingDiscovery.qualifiedAt;
  assert.equal(qualified,s.simTime);
+ assert.deepEqual(s.blessingDiscovery.cup,{home:buildingKey(c),homeId:c.waterEntityId});
+ assert.equal(blessingCupAt(s,c),true);
+
  c.pantry=0;
  advanceTime(s,.1);
  const loaded=decode(encode(s));
  assert.ok(loaded);
  assert.equal(loaded.blessingDiscovery.qualifiedAt,qualified);
  assert.match(cityToolsHTML(loaded),/Условия выполнены/);
+ const index=loaded.buildings.findIndex(b=>buildingKey(b)===buildingKey(c));
+ const replacement={...loaded.buildings[index]};
+ delete replacement.waterEntityId;
+ loaded.buildings[index]=replacement;
+ assert.equal(blessingCupAt(loaded,replacement),false);
+ const raw=encode(loaded);
+ assert.equal(encode(decode(raw)),raw);
+ const old=JSON.parse(raw);
+ delete old.blessingDiscovery.cup;
+ assert.equal(encode(decode(JSON.stringify(old))),JSON.stringify(old));
+
 });
 
 test('mature towns do not enroll in the awakening milestone',()=>{

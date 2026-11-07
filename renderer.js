@@ -1,3 +1,4 @@
+import {blessingCupAt} from './blessing-discovery.js';
 import {showRainObserver} from './rain-presentation.js';
 import {floodMapView} from './river-flood.js';
 import {catDiscoveryView} from './miracle-discovery.js';
@@ -59,7 +60,7 @@ export class Renderer{
   if(!spriteTypes.has(b.type)||b.construction){drawBuilding(this,b,state,t);return;}
   const dx=(this.canvas?.width/this.w)||1,dy=(this.canvas?.height/this.h)||dx,q=this.s,scale=`${q}/${dx}/${dy}`;
   if(this.spriteScale!==scale){this.spriteScale=scale;this.buildingSprites=new Map();this.spriteBytes=0;}
-  const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${houseVariant(b)}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
+  const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${houseVariant(b)}:${Number(blessingCupAt(state,b))}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
   const key=`${isStrictSumer(state)?'sumer-iii-v1':'legacy-v1'}/${b.type}/${variant}/${b.level||1}/${(this.lighting?.night||0)>.12}/${b.type==='house'?houseLightCount(b,this.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(c=>c.home===`${b.x},${b.y}`).length??0):''}`;
   let entry=this.buildingSprites.get(key);
   if(!entry){

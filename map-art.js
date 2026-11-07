@@ -1,3 +1,4 @@
+import {blessingCupAt} from './blessing-discovery.js';
 import {cultSign} from './cult-sign.js';
 import {seed} from './city-life.js';
 import {levelOf} from './definitions.js';
@@ -32,6 +33,7 @@ export function drawCourtyardHouse(r,b,state){
  c.save();a.oval(4,7,28,8,'#625e4430');a.box(0,0,28,14,2.5,'#d6bf95','#ab9169','#c4aa7e');
  // A real open court in the plan replaces the former single solid tower.
  mat(a,3,5,12,b.householdStock?.mat>=1?'#e6c37f':'#c5ac7e');
+ if(blessingCupAt(state,b)){a.oval(5,8,3.5,2.2,'#aa6849');a.oval(5,6.5,3.5,1.4,'#efbe86');a.oval(5,6.5,2.7,.85,'#6d4533');}
  if(b.householdStock?.mat>=2)shade(a,-8,5,13,'#d8b577');
  const wing=(x,z,w,d,height)=>{
   if(level>1)masonryBox(r,p.x+x*q,p.y+z*q,w*q,d*q,height*q,level===3?'fired':'mud',q);

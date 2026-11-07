@@ -1,3 +1,4 @@
+import {blessingCupAt} from '../blessing-discovery.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {organicHousePoint,organicHouseVariant} from './field-shore.js';
 
@@ -57,6 +58,12 @@ export function createHouseArchitecture(B,scene,b,m,state){
   canopy('courtyard-shade',-.05,.48,2.5,1.48,2.17);
   block('court-front-wall',-1.46,.72,2.23,1.92,1.44,.22);block('court-front-wall',1.25,.72,2.23,1.5,1.44,.22);
   block('court-bench',-1.58,.28,1.49,.55,.56,.95,m.trim);jar('water-jar',.89,-.11,.68);jar('terrace-planter',.38,-1.55,.54,2.51,true);jar('court-planter',-1.8,1.82,.53,0,true);block('courtyard-mat',-.06,.09,1.42,1.05,.025,.65,m.reed);
+ }
+ if(blessingCupAt(state,b)){
+  const shape=[[0,0],[.13,0],[.25,.12],[.27,.18],[.235,.18],[.215,.125],[.115,.035],[0,.035]]
+   .map(([radius,height])=>new B.Vector3(radius,height,0));
+  const bowl=B.MeshBuilder.CreateLathe('house-blessing-cup',{shape,tessellation:14,sideOrientation:B.Mesh.DOUBLESIDE},scene);
+  bowl.position.set(.4,.13,1.72);add(bowl,m.terracotta,'blessing-cup');
  }
  if(b.householdStock?.mat>=1)block('installed-mat',0,.10,1.85,1.35,.05,.58,m.reed);
  if(b.householdStock?.mat>=2)canopy('installed-reed-awning',-.8,1.15,1.35,1.12,1.55);

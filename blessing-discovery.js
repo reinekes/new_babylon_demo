@@ -1,3 +1,4 @@
+import {ensureHouseEntityId} from './causal-facts.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {homeMealFood,ration,supplyHome} from './households.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
@@ -29,25 +30,40 @@ function suppliedHomes(s){
   if(b.type!=='house'||!isOperational(b)||flooded?.has(key))return false;
   const demand=needs.get(key);
   return demand&&homeMealFood(b)+1e-8>=demand.food&&(b.water||0)+1e-8>=demand.water;
- }).length;
+ });
 }
 
 export function advanceBlessingDiscovery(s){
  const milestone=s.blessingDiscovery;
- if(!milestone||milestone.qualifiedAt!==null||aidCount(s)<HELP_REQUIRED||suppliedHomes(s)<HOMES_REQUIRED)return false;
+ if(!milestone||milestone.qualifiedAt!==null||aidCount(s)<HELP_REQUIRED)return false;
+ const supplied=suppliedHomes(s);
+ if(supplied.length<HOMES_REQUIRED)return false;
+ const byKey=new Map(supplied.map(home=>[buildingKey(home),home]));
+ const recent=(s.causalFacts.neighborWater||[]).concat(s.causalFacts.neighborFood||[])
+  .filter(fact=>byKey.get(fact.home)?.waterEntityId===fact.homeId)
+  .reduce((latest,fact)=>!latest||fact.time>=latest.time?fact:latest,null);
+ const home=byKey.get(recent?.home)??supplied[0];
  milestone.qualifiedAt=s.simTime;
+ milestone.cup={home:buildingKey(home),homeId:ensureHouseEntityId(s,home)};
  return true;
 }
 
 export function blessingDiscoveryView(s){
  const milestone=s.blessingDiscovery;
  if(!milestone)return null;
- return {qualified:milestone.qualifiedAt!==null,homes:Math.min(HOMES_REQUIRED,suppliedHomes(s)),aid:Math.min(HELP_REQUIRED,aidCount(s)),homesRequired:HOMES_REQUIRED,aidRequired:HELP_REQUIRED};
+ return {qualified:milestone.qualifiedAt!==null,homes:Math.min(HOMES_REQUIRED,suppliedHomes(s).length),aid:Math.min(HELP_REQUIRED,aidCount(s)),homesRequired:HOMES_REQUIRED,aidRequired:HELP_REQUIRED};
+}
+
+export function blessingCupAt(s,home){
+ const cup=s?.blessingDiscovery?.cup;
+ return !!cup&&home.type==='house'&&home.waterEntityId===cup.homeId&&buildingKey(home)===cup.home;
 }
 
 export function validateBlessingDiscovery(s){
  const milestone=s.blessingDiscovery;
  if(milestone===undefined)return true;
- return usesCatDiscovery(s)&&!!milestone&&Object.keys(milestone).length===2&&milestone.version===1&&
+ return usesCatDiscovery(s)&&!!milestone&&Object.keys(milestone).length===2+Number(milestone.cup!==undefined)&&milestone.version===1&&
+  (milestone.cup===undefined||milestone.qualifiedAt!==null&&milestone.cup&&Object.keys(milestone.cup).length===2&&
+   Number.isSafeInteger(milestone.cup.homeId)&&milestone.cup.homeId>0&&/^\d+,\d+$/.test(milestone.cup.home))&&
   (milestone.qualifiedAt===null||Number.isFinite(milestone.qualifiedAt)&&milestone.qualifiedAt>=0&&milestone.qualifiedAt<=s.simTime&&aidCount(s)>=HELP_REQUIRED);
 }

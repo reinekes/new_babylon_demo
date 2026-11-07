@@ -1,0 +1,30 @@
+[
+  {
+    "id": "original",
+    "view": "2d",
+    "url": "?id=original&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"view\":\"2d\",\"home\":\"10,6\",\"replaced\":false,\"card\":true,\"model\":true}"
+  },
+  {
+    "id": "original",
+    "view": "3d",
+    "url": "?id=original&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"view\":\"3d\",\"home\":\"10,6\",\"replaced\":false,\"card\":true,\"model\":1}"
+  },
+  {
+    "id": "replaced",
+    "view": "2d",
+    "url": "?id=replaced&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"view\":\"2d\",\"home\":\"10,6\",\"replaced\":true,\"card\":false,\"model\":false}"
+  },
+  {
+    "id": "replaced",
+    "view": "3d",
+    "url": "?id=replaced&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"view\":\"3d\",\"home\":\"10,6\",\"replaced\":true,\"card\":false,\"model\":0}"
+  }
+]
