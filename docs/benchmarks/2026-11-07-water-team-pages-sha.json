@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T15:28:23.668808+00:00",
+  "commit": "08ea206ed757d6198a0e732d13d2d6d8d0f5bccd",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3477170b72bc69658c895891a259a6edafad82f31d0497d7c46102de6e845857",
+      "actual": "3477170b72bc69658c895891a259a6edafad82f31d0497d7c46102de6e845857",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "50b224b152d613334746422ef3695f75861ff0f0783bc3db217ec80a932058b3",
+      "actual": "50b224b152d613334746422ef3695f75861ff0f0783bc3db217ec80a932058b3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-team-4x.json",
+      "status": 200,
+      "expected": "1b9babf923d91d6312a4b2e5a62a0ea1ef843104e8dd8d4293d82d9df1da88ee",
+      "actual": "1b9babf923d91d6312a4b2e5a62a0ea1ef843104e8dd8d4293d82d9df1da88ee",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-team-browser.json",
+      "status": 200,
+      "expected": "50387a8e38e12122eebb639dbfe5a35da5773e966802126b281f114103ac5eb5",
+      "actual": "50387a8e38e12122eebb639dbfe5a35da5773e966802126b281f114103ac5eb5",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "57b9776d38e6b708d8e1d8fdd0e821ebcd575db7246d3ea39dd9a9546dca2f0d",
+      "actual": "57b9776d38e6b708d8e1d8fdd0e821ebcd575db7246d3ea39dd9a9546dca2f0d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "7450a518d4d5fb24e33bbd8711729cdf337c62dffc6042769670557ac292f7d1",
+      "actual": "7450a518d4d5fb24e33bbd8711729cdf337c62dffc6042769670557ac292f7d1",
+      "match": true
+    },
+    {
+      "path": "tests/human-water-project.test.js",
+      "status": 200,
+      "expected": "15b0488684e6c5e297e4575ed52ef97cb480b8f10820612f56c92a2e2c0d9be8",
+      "actual": "15b0488684e6c5e297e4575ed52ef97cb480b8f10820612f56c92a2e2c0d9be8",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
