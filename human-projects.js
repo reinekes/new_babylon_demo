@@ -116,10 +116,13 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  const stores=stockStores(s).filter(b=>component(buildingKey(b))===group);
  if(!stores.length)return refuse('На этом берегу нет доступного склада');
  const cost=BUILDINGS[projectType];
- const missing=MATERIALS.filter(k=>cost[k]>0&&stores.reduce((sum,b)=>sum+(b.stock?.[k]||0),0)<cost[k]);
+ const availableStock=Object.fromEntries(MATERIALS.filter(k=>cost[k]>0)
+  .map(k=>[k,stores.reduce((sum,b)=>sum+(b.stock?.[k]||0),0)]));
+ const missing=Object.keys(availableStock).filter(k=>availableStock[k]<cost[k]);
  if(missing.length)return refuse(`На доступных складах не хватает: ${missing.map(k=>RESOURCE_NAMES[k]).join(', ')}`);
  const eligibleStores=new Set(stores.map(buildingKey));
- return {ok:true,key:buildingKey(site),eligibleStores,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime,...participantIds.length?{participantIds:[...participantIds]}:{}},cost};
+ const reachableHomes=new Set(s.buildings.filter(b=>b.type==='house'&&component(buildingKey(b))===group).map(buildingKey));
+ return {ok:true,key:buildingKey(site),eligibleStores,availableStock,reachableHomes,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime,...participantIds.length?{participantIds:[...participantIds]}:{}},cost};
 }
 
 export function approveWaterProject(s,organizerId,requesterId,x,y,participantIds=[]){

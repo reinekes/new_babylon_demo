@@ -687,9 +687,11 @@ function confirmWaterProjectPlacement({x,y}){
  const {organizerId,requesterId}=waterProjectDraft,offer=waterProjectProposal(state,organizerId,requesterId,x,y);
  if(!offer.ok){toast(offer.reason);return;}
  const organizer=state.citizens.find(c=>c.id===organizerId);
- const helpers=state.citizens.filter(c=>c.id!==organizerId&&!waterProjectOrganizerReason(state,c));
+ const helpers=state.citizens.filter(c=>c.id!==organizerId&&offer.reachableHomes.has(c.home)&&!waterProjectOrganizerReason(state,c));
+ const stockPreview=Object.entries(offer.availableStock).map(([material,available])=>
+  `<li>${esc(label(material))} · нужно ${foodAmount(offer.cost[material])}, доступно ${foodAmount(available)}</li>`).join('');
  const helperChoice=helpers.length?`<label>Помощники · до трёх, необязательно<select id="water-project-helpers" multiple size="4">${helpers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label><p>Помощники займутся доставкой и стройкой, когда закончат домашние дела. На это время они отложат другую свободную работу.</p>`:'<p>Свободных помощников пока нет. Организатор может начать стройку.</p>';
- openDialog('water-project',`<h2>Водозабор для двора</h2><p>${esc(organizer.name)} возглавит стройку на участке ${x}, ${y}. Материалы зарезервируют на доступных складах. После стройки назначь водоноса.</p>${costs(offer.cost,false)}${helperChoice}${helpers.length&&!state.waterProjectDream?`<p>Общий сон соберёт участников к рассвету. Цена — ${WATER_DREAM_COST} веры.</p><button type="button" id="send-water-project-dream">Послать общий сон</button>`: ''}<p id="water-project-error" role="alert"></p><button id="approve-water-project">Начать стройку</button> <button id="cancel-water-project">Выбрать другое место</button>`);
+ openDialog('water-project',`<h2>Водозабор для двора</h2><p>${esc(organizer.name)} возглавит стройку на участке ${x}, ${y}. Материалы зарезервируют на доступных складах. После стройки назначь водоноса.</p><section data-water-project-stock><h3>Материалы на доступных складах</h3><ul>${stockPreview}</ul></section>${helperChoice}${helpers.length&&!state.waterProjectDream?`<p>Общий сон соберёт участников к рассвету. Цена — ${WATER_DREAM_COST} веры.</p><button type="button" id="send-water-project-dream">Послать общий сон</button>`: ''}<p id="water-project-error" role="alert"></p><button id="approve-water-project">Начать стройку</button> <button id="cancel-water-project">Выбрать другое место</button>`);
  $('cancel-water-project').onclick=closeDialog;
  const selectedHelpers=()=>[...($('water-project-helpers')?.selectedOptions||[])].map(option=>Number(option.value));
  const sendDream=$('send-water-project-dream');

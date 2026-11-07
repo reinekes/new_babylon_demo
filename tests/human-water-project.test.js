@@ -250,4 +250,13 @@ test('a water project and its paid dream refuse before spending when materials a
  assert.match(waterProjectProposal(...args).reason,/доступных складах.*дерево/i);
  assert.match(sendWaterProjectDream(...args).reason,/доступных складах.*дерево/i);
  assert.equal(encode(s),before);
+ const remote=s.buildings.find(b=>b.x===24&&b.y===7);
+ local.stock.wood=4;remote.stock.wood-=4;
+ const supplied=encode(s),offer=waterProjectProposal(...args);
+ assert.ok(offer.ok,offer.reason);
+ assert.equal(offer.availableStock.wood,4);
+ assert.equal(offer.cost.wood,4);
+ assert.ok(offer.reachableHomes.has(organizer.home));
+ assert.ok(!offer.eligibleStores.has(buildingKey(remote)));
+ assert.equal(encode(s),supplied);
 });
