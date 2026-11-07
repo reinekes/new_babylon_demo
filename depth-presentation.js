@@ -52,6 +52,7 @@ export function createDepthPresentation(root,{eligible,onOpening,project,cue}={}
  }
  panel.querySelector('button').onclick=skip;
  return {
+  get active(){return !!active;},
   skip,cast(target){start('cast',target);},
   reset(){skip();seen=false;ripple.hidden=true;},
   tick(s,dt,{visible=true,allowOpening=true,rippleVisible=visible}={}){

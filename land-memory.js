@@ -54,6 +54,7 @@ export function landSearchReason(s){
 export function validateLandMemory(s){
  const active=s.landMemoryChapter===1;
  if(s.landMemoryChapter!==undefined&&(!active||!usesCatDiscovery(s)))return false;
+ if(s.landMemorySceneSeen!==undefined&&(!active||s.landMemorySceneSeen!==true||s.landRelicQuest?.phase!=='completed'))return false;
  const cast=s.landMemoryCast;
  if(cast!==undefined){
   const known=new Set(s.lifeAnalytics.people.map(person=>person.id));

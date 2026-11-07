@@ -1,0 +1,10 @@
+.land-scene-card { background: linear-gradient(145deg,#433127,#251d1c); }
+.land-scene-card svg { stroke: #edc892; stroke-width: 2; }
+.land-tablet { fill: #8e5c42; }
+.land-imprint { fill: none; opacity: .2; transition: opacity 1s ease; }
+.land-scene:not([data-phase="0"]) .land-imprint { opacity: 1; }
+.land-scene-names { color: #efd2a1; font-size: .9em; }
+.land-trace[hidden] { display: none; }
+.land-trace { position: absolute; top: 0; left: 0; z-index: 4; width: 50px; height: 52px; pointer-events: none; }
+.land-trace svg { width: 100%; height: 100%; fill: none; stroke: #ffd393; stroke-width: 2; stroke-linecap: round; opacity: .75; filter: drop-shadow(0 0 5px #e49a61); }
+@media (prefers-reduced-motion: reduce) { .land-imprint { transition: none; } }

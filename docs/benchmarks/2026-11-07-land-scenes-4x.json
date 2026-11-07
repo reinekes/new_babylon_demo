@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 296,
+  "trace": true,
+  "sceneAndControlEqual": true,
+  "saveByteEqual": true,
+  "samples": 80,
+  "medianStepWithPresentationCpuMs": 4.076999999999998,
+  "p95StepWithPresentationCpuMs": 23.383499999999913
+}

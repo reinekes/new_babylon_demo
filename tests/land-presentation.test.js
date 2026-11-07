@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {JSDOM} from 'jsdom';
+
+test('Earth Memory scenes follow delivery and only mark surviving historical places',async()=>{
+ const {createLandPresentation}=await import('../land-presentation.js');
+ const root=new JSDOM('<main></main>').window.document.querySelector('main');
+ const place={x:4,y:5},s={landMemoryChapter:1,landRelicQuest:{phase:'carrying'},buildings:[place],buffs:{earthMemory:3}};
+ let openings=0;
+ const scene=createLandPresentation(root,{project:p=>p,onOpening:()=>openings++});
+ scene.tick(s,16);
+ assert.equal(openings,0);
+ s.landRelicQuest.phase='completed';
+ scene.tick(s,16);
+ assert.equal(openings,1);
+ const panel=root.querySelector('.land-scene');
+ assert.equal(panel.dataset.kind,'opening');
+ scene.tick(s,36000);
+ scene.tick(s,16);
+ assert.equal(panel.hidden,true);
+ scene.cast([{kind:'building',name:'Илу',place}]);
+ scene.tick(s,5000);
+ scene.tick(s,16);
+ const mark=root.querySelector('.land-trace');
+ assert.equal(mark.hidden,false);
+ s.buildings=[{...place}];
+ scene.tick(s,16);
+ assert.equal(mark.hidden,true);
+ const before=structuredClone(s);
+ panel.querySelector('button').click();
+ scene.tick(s,16);
+ assert.deepEqual(s,before);
+ assert.equal(panel.hidden,true);
+ assert.equal(openings,1);
+});
