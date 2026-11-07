@@ -53,12 +53,18 @@ export function waterNameEvidence(s){
 export function recordProjectWaterWitness(s,station,home,delivery){
  const project=station.humanWaterProject,ledger=s.causalFacts,homeKey=buildingKey(home);
  if(!ledger||!station.waterEntityId||!project.homeId||project.home===homeKey||home.type!=='house')return;
- const witnessed=project.witnessHomeIds;
- if(witnessed?.length>=WITNESSES_PER_PROJECT||witnessed?.includes(home.waterEntityId))return;
+ const witnessed=project.witnessHomeIds??[];
+ if(witnessed.length>=WITNESSES_PER_PROJECT||witnessed.includes(home.waterEntityId))return;
+ const places=project.witnessHomePlaces??witnessed.map(uid=>{
+  const house=s.buildings.find(b=>b.waterEntityId===uid&&b.type==='house');
+  return house?buildingKey(house):ledger.waterWitnesses?.find(f=>f.stationId===station.waterEntityId&&f.homeId===uid)?.home??null;
+ });
+ if(places.includes(homeKey))return;
  const recipient=s.citizens.find(c=>supplyHome(c,{arrived:true})===homeKey);
  if(!recipient)return;
  ensureHouseEntityId(s,home);
  (project.witnessHomeIds??=[]).push(home.waterEntityId);
+ project.witnessHomePlaces=[...places,homeKey];
  const facts=ledger.waterWitnesses??=[];
  facts.push({stationId:station.waterEntityId,station:buildingKey(station),homeId:home.waterEntityId,home:homeKey,recipientId:recipient.id,...delivery});
  trimNameReceipts(facts);
@@ -186,7 +192,7 @@ export function validateCausalFacts(s){
  const memorials=(s.lifeAnalytics?.people||[]).map(p=>p.memorial).filter(m=>m?.homeId!==undefined);
  const welcomes=s.arrivalHospitality?.welcomes;
  const linkedWelcomes=Array.isArray(welcomes)?welcomes.filter(w=>w?.homeId!==undefined):[];
- if(ledger===undefined)return firstCup?.breweryId===undefined&&!memorials.length&&!linkedWelcomes.length&&dream?.homeId===undefined&&!targets.length&&s.buildings.every(b=>b.causalEntityId===undefined&&b.waterEntityId===undefined&&b.householdInitiative?.sourceId===undefined&&b.householdInitiative?.firstNeighborAid===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined);
+ if(ledger===undefined)return firstCup?.breweryId===undefined&&!memorials.length&&!linkedWelcomes.length&&dream?.homeId===undefined&&!targets.length&&s.buildings.every(b=>b.causalEntityId===undefined&&b.waterEntityId===undefined&&b.householdInitiative?.sourceId===undefined&&b.householdInitiative?.firstNeighborAid===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined&&b.humanWaterProject?.witnessHomePlaces===undefined);
  if(!isStrictSumer(s)||!ledger||ledger.version!==1||!id(ledger.nextEntityId)||!Array.isArray(ledger.water)||ledger.water.length>LIMIT||
   [ledger.neighborWater,ledger.neighborFood,ledger.waterWitnesses].some(rows=>rows!==undefined&&(!Array.isArray(rows)||rows.length>LIMIT)))return false;
  const entity=n=>id(n)&&n<ledger.nextEntityId;
@@ -233,6 +239,11 @@ export function validateCausalFacts(s){
   if(witnesses!==undefined&&(!p.homeId||b.construction?.kind==='new'||!Array.isArray(witnesses)||
    witnesses.length<1||witnesses.length>WITNESSES_PER_PROJECT||new Set(witnesses).size!==witnesses.length||
    witnesses.some(uid=>!entity(uid)||uid===p.homeId||uid===b.waterEntityId||live.has(uid)&&live.get(uid).type!=='house')))return false;
+  const places=p?.witnessHomePlaces;
+  if(places!==undefined&&(!Array.isArray(places)||!witnesses||places.length!==witnesses.length||
+   new Set(places).size!==places.length||places.some((key,i)=>key===null?
+    live.has(witnesses[i])||(ledger.waterWitnesses?.length||0)<LIMIT:
+    typeof key!=='string'||!keyPattern.test(key)||key===p.home||key===buildingKey(b)||!entityMatches(witnesses[i],'house',key))))return false;
 
  }
  let previousTime=0;
@@ -259,7 +270,11 @@ export function validateCausalFacts(s){
   const origin=ledger.water.find(row=>row.stationId===fact.stationId);
   if(origin&&(origin.homeId===fact.homeId||origin.home===fact.home))return false;
   const p=live.get(fact.stationId)?.humanWaterProject;
-  if(p&&(!p.witnessHomeIds?.includes(fact.homeId)||p.home===fact.home||fact.time<p.startedAt))return false;
+  if(p){
+   const index=p.witnessHomeIds?.indexOf(fact.homeId)??-1;
+   if(index<0||p.home===fact.home||fact.time<p.startedAt||
+    p.witnessHomePlaces&&p.witnessHomePlaces[index]!==fact.home)return false;
+  }
   const homes=witnessedByStation.get(fact.stationId)||new Set();
   if(homes.has(fact.homeId)||homes.size>=WITNESSES_PER_PROJECT)return false;
   homes.add(fact.homeId);witnessedByStation.set(fact.stationId,homes);previousTime=fact.time;

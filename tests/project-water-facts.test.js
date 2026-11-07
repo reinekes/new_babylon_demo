@@ -198,3 +198,35 @@ test('the water name needs two distinct courtyards and keeps its first witnesses
  assert.ok(restored);
  assert.deepEqual(waterNameEvidence(restored),evidence);
 });
+
+test('a rebuilt house cannot consume the second witness slot at the same address',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [origin,first]=s.buildings.filter(b=>b.type==='house');
+ const second={...first,x:10,y:8};
+ s.buildings.push(second);s.capacity=housingOf(s);
+ const requester=s.citizens.find(c=>c.home===buildingKey(origin));
+ const courier=s.citizens.find(c=>c.home===buildingKey(first));
+ s.citizens.find(c=>c!==courier&&c.home===courier.home).home=buildingKey(second);
+ const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:buildingKey(origin),startedAt:0}};
+ s.buildings.push(station);bindWaterProject(s,station,origin);
+ confirmProjectWater(s,courier,buildingKey(station),first,3);
+ const replacement={...first};
+ delete replacement.waterEntityId;
+ s.buildings[s.buildings.indexOf(first)]=replacement;
+ const legacy=JSON.parse(encode(s));
+ delete legacy.buildings.find(b=>b.humanWaterProject).humanWaterProject.witnessHomePlaces;
+ for(const input of [encode(s),JSON.stringify(legacy)]){
+  const copy=decode(input);assert.ok(copy);
+  const site=copy.buildings.find(b=>b.humanWaterProject),p=site.humanWaterProject;
+  const resident=copy.citizens.find(c=>c.id===courier.id);
+  const houseAt=key=>copy.buildings.find(b=>buildingKey(b)===key);
+  confirmProjectWater(copy,resident,buildingKey(site),houseAt(buildingKey(first)),2);
+  assert.deepEqual(p.witnessHomeIds,[first.waterEntityId]);
+  confirmProjectWater(copy,resident,buildingKey(site),houseAt(buildingKey(second)),2);
+  assert.deepEqual(waterNameEvidence(copy).map(f=>f.home),[buildingKey(first),buildingKey(second)]);
+  assert.deepEqual(p.witnessHomePlaces,[buildingKey(first),buildingKey(second)]);
+  assert.equal(encode(decode(encode(copy))),encode(copy));
+  p.witnessHomePlaces[0]=p.witnessHomePlaces[1];
+  assert.equal(decode(encode(copy)),null);
+ }
+});
