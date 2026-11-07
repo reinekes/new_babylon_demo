@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T16:36:58.055120+00:00",
+  "commit": "5afeafacaadb0dc148b495e0ebe89461236b93a8",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "17d25d21585872591862676d7008a991b55717cb24e15351849970892708eb55",
+      "actual": "17d25d21585872591862676d7008a991b55717cb24e15351849970892708eb55",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "a7f37fe72959cebc00453b0a65b50099e67d9b82d3ed686f2f54b5c6c40cb8d1",
+      "actual": "a7f37fe72959cebc00453b0a65b50099e67d9b82d3ed686f2f54b5c6c40cb8d1",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "066d54c918cfaeb39f32d447917d2a869567522d4ddf281490d6edc0b2cf7c90",
+      "actual": "066d54c918cfaeb39f32d447917d2a869567522d4ddf281490d6edc0b2cf7c90",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-guest-custom-4x.json",
+      "status": 200,
+      "expected": "9463a098b262b72e38ca8e7322fe2c39e38e4d1ea416858f3e333236c5696be2",
+      "actual": "9463a098b262b72e38ca8e7322fe2c39e38e4d1ea416858f3e333236c5696be2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-guest-custom-browser.json",
+      "status": 200,
+      "expected": "26edc7fe3768fbe784ccb5ae830d066c2ad2ef9edf81337c69df8f58a81a909c",
+      "actual": "26edc7fe3768fbe784ccb5ae830d066c2ad2ef9edf81337c69df8f58a81a909c",
+      "match": true
+    },
+    {
+      "path": "external-guest.js",
+      "status": 200,
+      "expected": "e8aba993d925802aa5053070e5768c8e5331a27b78a1f50b204680718293a7c7",
+      "actual": "e8aba993d925802aa5053070e5768c8e5331a27b78a1f50b204680718293a7c7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "edc66c7f180aaa427e5cb8e7c768807fa893410aaf909405ca09d7351c3c3806",
+      "actual": "edc66c7f180aaa427e5cb8e7c768807fa893410aaf909405ca09d7351c3c3806",
+      "match": true
+    },
+    {
+      "path": "tests/external-guest.test.js",
+      "status": 200,
+      "expected": "feb3f8b290c987115714d5fdd31ebac049cd7f56e3f660f53c237032f6d1383e",
+      "actual": "feb3f8b290c987115714d5fdd31ebac049cd7f56e3f660f53c237032f6d1383e",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
