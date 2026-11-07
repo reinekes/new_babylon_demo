@@ -28,3 +28,17 @@
 @keyframes earth-furrows{0%{transform:translateX(-14%);opacity:0}30%{opacity:1}100%{transform:translateX(8%);opacity:.5}}
 @media(prefers-reduced-motion:reduce){.earth-scene *{animation:none!important}.earth-scene[data-phase="bow"] .earth-scene-ear{transform:rotate(22deg)}.earth-scene[data-phase="breath"] .earth-scene-light{opacity:.7}}
 @media(max-width:420px){.earth-scene-card{padding:.65rem}.earth-scene-card svg{width:2.6rem}.earth-scene-card button{padding:.3rem;font-size:.75rem}}
+
+.blessing-scene-card { background:linear-gradient(125deg,#493327,#272722); }
+.blessing-mat { fill:#6e5035;stroke:#c59c69;stroke-width:1.1; }
+.blessing-bowls,.blessing-cup { fill:#b3754f;stroke:#f0c18d;stroke-width:1.7; }
+.blessing-cup,.blessing-light { opacity:0;transition:opacity .8s ease,transform .8s ease; }
+.blessing-cup { transform:translateX(9px); }
+.blessing-light { fill:#ffe0a3; }
+.blessing-scene:not([data-phase="mat"]) .blessing-cup { opacity:1;transform:none; }
+.blessing-scene:is([data-phase="light"],[data-phase="neighbors"]) .blessing-light { opacity:.26; }
+.blessing-scene[data-phase="light"] .blessing-mat { transform:skewX(-2deg); }
+@media (prefers-reduced-motion:reduce) {
+ .blessing-cup,.blessing-light { transition:none; }
+ .blessing-scene[data-phase="light"] .blessing-mat { transform:none; }
+}

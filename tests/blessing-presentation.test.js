@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {JSDOM} from 'jsdom';
+import {createBlessingPresentation} from '../blessing-presentation.js';
+
+test('blessing opening waits in the scene queue, skips without changing the city and does not replay on load',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const root=window.document.querySelector('main'),cues=[];
+ const scene=createBlessingPresentation(root,{cue:phase=>{cues.push(phase);return ()=>cues.push('stop');}});
+ const panel=root.querySelector('section'),s={blessingDiscovery:{qualifiedAt:null},resources:{food:8,faith:20}};
+ scene.reset(s);
+ s.blessingDiscovery.qualifiedAt=60;
+ const save=JSON.stringify(s);
+ scene.tick(s,250,{visible:false,allowOpening:false});
+ assert.ok(panel.hidden);
+ scene.tick(s,7000);
+ assert.equal(panel.dataset.phase,'mat');
+ scene.tick(s,8000);
+ assert.equal(panel.dataset.phase,'cup');
+ assert.deepEqual(cues,['sheaf']);
+ panel.querySelector('button').click();
+ assert.ok(panel.hidden);
+ assert.deepEqual(cues,['sheaf','stop']);
+ scene.tick(s,250);
+ assert.ok(panel.hidden);
+ scene.reset(JSON.parse(save));
+ scene.tick(s,250);
+ assert.ok(panel.hidden);
+ assert.equal(JSON.stringify(s),save);
+ window.close();
+});
