@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T17:17:11.056439+00:00",
+  "commit": "8fd1e87b3a366301d237ac65d0a8434007766eb4",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "5e4a93bd4c1552cfd49827a28f0ee71d5bff139a64def7dfcf31566ed3b1466a",
+      "actual": "5e4a93bd4c1552cfd49827a28f0ee71d5bff139a64def7dfcf31566ed3b1466a",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "1ca85b8aeece33f1967ce50defdf6eaf38bfebf38804d65ca9a903ea89c2bae7",
+      "actual": "1ca85b8aeece33f1967ce50defdf6eaf38bfebf38804d65ca9a903ea89c2bae7",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "08d2c511aa15e7a86256cb702a00188df7175beadf7d63714da8623f0d2f9f7e",
+      "actual": "08d2c511aa15e7a86256cb702a00188df7175beadf7d63714da8623f0d2f9f7e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-reserved-home-4x.json",
+      "status": 200,
+      "expected": "f0d4851e08f9dffd1b0156f293ff71b1334c405af9f64c82704b9a20461ca2b2",
+      "actual": "f0d4851e08f9dffd1b0156f293ff71b1334c405af9f64c82704b9a20461ca2b2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "01d1e757f505dc26f506f2db17c7b2e58184d000b87fb33eba708ff4940fd0e1",
+      "actual": "01d1e757f505dc26f506f2db17c7b2e58184d000b87fb33eba708ff4940fd0e1",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "8d56800db29d84a2352f2d9f2bfaf2161d019f0382ae354ef624c7a63476133d",
+      "actual": "8d56800db29d84a2352f2d9f2bfaf2161d019f0382ae354ef624c7a63476133d",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
