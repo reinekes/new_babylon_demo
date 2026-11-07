@@ -44,3 +44,20 @@ test('an archived story keeps its participant when a replacement occupies the or
  assert.ok(loaded);
  assert.equal(landMemoryStories(loaded)[0].place,null);
 });
+
+test('Earth Memory supports only living witnesses in the new chapter',async()=>{
+ const {miracle}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:137}),[builder,farmer,neighbor]=s.citizens;
+ const place=s.buildings.find(b=>b.type==='house');
+ recordRevelationFact(s,'building',builder,place);
+ recordRevelationFact(s,'food',farmer,place);
+ s.resources.faith=100;
+ s.landRelicQuest.phase='completed';
+ for(const c of [builder,farmer,neighbor])Object.assign(c,{mood:50,faith:50});
+ assert.equal(miracle(s,'earthMemory').ok,true);
+ assert.equal(s.resources.faith,55);
+ assert.deepEqual(s.landMemoryCast.ids,[builder.id,farmer.id]);
+ assert.deepEqual([builder.mood,farmer.mood,neighbor.mood],[61,61,50]);
+ assert.deepEqual([builder.faith,farmer.faith,neighbor.faith],[54,54,50]);
+ assert.equal(s.buffs.earthMemory,3);
+});

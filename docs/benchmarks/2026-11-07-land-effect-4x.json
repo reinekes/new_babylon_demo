@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 308,
+  "recipients": 2,
+  "responses": 3,
+  "saveByteEqual": true,
+  "rejectsUnknownCitizen": true,
+  "samples": 765,
+  "medianStepCpuMs": 19.549125000001368,
+  "p95StepCpuMs": 54.62708300000031
+}

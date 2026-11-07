@@ -25,7 +25,7 @@ export function miracleLockReason(s,id){
 export const sacredMiracleUnlocked=(s,id)=>SACRED_MIRACLE_IDS.includes(id)&&!miracleLockReason(s,id);
 export function applySacredMiracle(s,id){
  if(id==='inannaProtection'){s.buffs.inannaProtection=3;affectResidents(s,{mood:8});return true;}
- if(id==='earthMemory'){s.buffs.earthMemory=3;affectResidents(s,{mood:8});return true;}
+ if(id==='earthMemory'){s.buffs.earthMemory=3;affectResidents(s,{mood:8},s.landMemoryCast?.ids);return true;}
  if(id==='relicAwakening'){s.rain=Math.max(s.rain||0,2);s.drought=0;affectResidents(s,{mood:6,faith:3});return true;}
  return false;
 }

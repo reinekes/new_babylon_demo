@@ -1,4 +1,4 @@
-import {validateLandMemory} from './land-memory.js';
+import {landMemoryCastQuote,validateLandMemory} from './land-memory.js';
 import {validateDepthSupply} from './depth-supply.js';
 import {recordStarForecast} from './star-forecast.js';
 import {validateStarObservations} from './star-observations.js';
@@ -243,11 +243,15 @@ export function miracle(s,id,target){
  }
  const depthCanal=id==='relicAwakening'?depthCanalTarget(s,target):null;
  const depthIntake=id==='relicAwakening'?depthWaterpointTarget(s,target):null;
+ if(id==='earthMemory'&&s.landMemoryCast)return {ok:false,reason:'Дождись последнего сезонного отклика'};
+ const land=id==='earthMemory'&&s.landMemoryChapter===1?landMemoryCastQuote(s):null;
+ if(land&&!land.ids.length)return {ok:false,reason:'У сохранённых историй пока нет живых участников'};
+ if(land)s.landMemoryCast=land;
  if(depthIntake)depthIntake.waterReserve=WATERPOINT_CAPACITY;
  if(depthCanal)s.depthSupply.pressure={x:depthCanal.x,y:depthCanal.y,tick:s.tick};
  s.resources.faith-=price;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
- const oldName=s.name;registerMiracle(s,m.domain,peace?{ids:peace.ids,mood:PEACE_MOOD}:undefined);
+ const oldName=s.name;registerMiracle(s,m.domain,peace?{ids:peace.ids,mood:PEACE_MOOD}:land?{ids:land.ids}:undefined);
  if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
  if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
  if(fishingYard)startRichCatch(s,fishingYard);
@@ -265,7 +269,7 @@ export function miracle(s,id,target){
  }
  else if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
- applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
+ applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':land?`Поддержаны живые участники историй · ${land.ids.length} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }
 function check(s){
  s.capacity=housingOf(s);
@@ -317,7 +321,15 @@ function settleSeason(s){
  if(victims.length){const deceased=victims.map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));mournResidents(s,victims.map(c=>c.id));for(const c of victims)recordLifeDeath(s,c,'starvation');const ids=new Set(victims.map(c=>c.id));s.citizens=s.citizens.filter(c=>!ids.has(c.id));s.population=s.citizens.length;s.deaths+=victims.length;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${victims.length} жителей из семей, которым не хватало еды. Город провожает умерших.`,'bad');}
  if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>{const citizen=s.citizens.find(c=>c.id===id);if(recoverCitizenCargo(s,id)===false)return false;if(citizen)recordLifeDeath(s,citizen,'oldAge');return true;});for(const c of report.newborns)recordLifeBirth(s,c);syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{family:true});}
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);snapshotLifeAnalytics(s);check(s);return;}
- if(s.buffs.earthMemory>0)affectResidents(s,{mood:2,faith:1});
+ if(s.buffs.earthMemory>0){
+  const land=s.landMemoryCast;
+  affectResidents(s,{mood:2,faith:1},land?.ids);
+  if(land){
+   const witnesses=[...new Set(land.stories.map(row=>citizenName(row.citizenId)))].join(', ');
+   log(s,'Память земли · сезонный отклик',`Истории жителей: ${witnesses}. Осталось откликов: ${s.buffs.earthMemory-1}.`,'miracle');
+   if(s.buffs.earthMemory===1)delete s.landMemoryCast;
+  }
+ }
  s.drought=Math.max(0,s.drought-1);s.rain=Math.max(0,s.rain-1);for(const k of Object.keys(s.buffs))s.buffs[k]=Math.max(0,s.buffs[k]-1);
  if(s.season===0){
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');

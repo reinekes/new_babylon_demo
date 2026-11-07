@@ -1,3 +1,4 @@
+import {landMemoryCastQuote} from './land-memory.js';
 import {createDepthPresentation} from './depth-presentation.js';
 import {depthSearchReason} from './depth-supply.js';
 import {createStarPresentation} from './star-presentation.js';
@@ -887,8 +888,8 @@ function updateDepthTargetPreview(card){
 }
 function makeMiracleCard(id,m){
  const details=document.createElement('details');details.className='miracle-disclosure'+(m.unlockBuilding||m.unlockQuest?' is-sacred':'');details.dataset.miracle=id;
- details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}${id==='relicAwakening'?'<p data-depth-quote hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
- details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing'||id==='peace')update();});
+ details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}${id==='relicAwakening'?'<p data-depth-quote hidden></p>':''}${id==='earthMemory'?'<p data-land-cast hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
+ details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing'||id==='peace'||id==='earthMemory')update();});
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
  const el=details.querySelector('.miracle-cast');
@@ -954,7 +955,14 @@ function update(){
   const arrival=id==='healing'&&state.arrivalHospitality&&card.open&&!reason&&!state.arrivalGroup?arrivalOffer(state,networkFor(state)):null;
   const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?`Группа уже в пути · ${state.arrivalGroup.count} чел.`:card.open&&!reason&&!arrival?'Нужны сухой путь, свободный дом, еда и вода':''):'';
   const peace=id==='peace'&&state.peaceDiscovery&&card.open&&!reason?peaceQuote(state,lastMiracleTarget):null;
-  updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason||arrivalReason||peace?.reason,gift,arrival);
+  const land=id==='earthMemory'&&state.landMemoryChapter===1&&card.open&&!reason?landMemoryCastQuote(state):null;
+  const landReason=id==='earthMemory'&&state.landMemoryCast?'Дождись последнего сезонного отклика':land&&!land.ids.length?'У сохранённых историй пока нет живых участников':'';
+  updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason||arrivalReason||peace?.reason||landReason,gift,arrival);
+  const landPreview=card.querySelector('[data-land-cast]');
+  if(landPreview){
+   landPreview.hidden=!land?.ids.length;
+   if(!landPreview.hidden)landPreview.textContent=`Поддержка живых участников · ${land.ids.length} чел. · ещё три сезонных отклика.`;
+  }
   if(id==='relicAwakening')updateDepthTargetPreview(card);
   const peacePreview=card.querySelector('[data-peace-quote]');
   if(peacePreview){

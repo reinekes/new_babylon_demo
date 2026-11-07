@@ -40,6 +40,12 @@ export function landMemoryStories(s){
  return stories;
 }
 
+export function landMemoryCastQuote(s){
+ const rows=landMemoryStories(s).filter(row=>row.livingIds.length);
+ const ids=[...new Set(rows.flatMap(row=>row.livingIds))];
+ return {ids,stories:rows.map(({kind,citizenId})=>({kind,citizenId}))};
+}
+
 export function landSearchReason(s){
  if(s.landMemoryChapter!==1||s.landRelicQuest?.attempts>0)return '';
  return landMemoryStories(s).length<LAND_STORIES_REQUIRED?'Для поиска Печати земли нужны две разные истории жителей':'';
@@ -48,6 +54,15 @@ export function landSearchReason(s){
 export function validateLandMemory(s){
  const active=s.landMemoryChapter===1;
  if(s.landMemoryChapter!==undefined&&(!active||!usesCatDiscovery(s)))return false;
+ const cast=s.landMemoryCast;
+ if(cast!==undefined){
+  const known=new Set(s.lifeAnalytics.people.map(person=>person.id));
+  if(!active||s.landRelicQuest?.phase!=='completed'||!(s.buffs?.earthMemory>0)||!cast||
+   Object.keys(cast).length!==2||!Array.isArray(cast.ids)||!cast.ids.length||!cast.ids.every(id=>known.has(id))||
+   new Set(cast.ids).size!==cast.ids.length||!Array.isArray(cast.stories)||!cast.stories.length||cast.stories.length>3||
+   cast.stories.some(row=>!row||Object.keys(row).length!==2||![...locationKinds,'memorial','waterStory'].includes(row.kind)||!known.has(row.citizenId))||
+   new Set(cast.stories.map(row=>`${row.kind}:${row.citizenId}`)).size!==cast.stories.length)return false;
+ }
  const seen=new Set(),evidence=s.revelationEvidence;
  for(const kind of locationKinds){
   const fact=evidence?.[kind];
