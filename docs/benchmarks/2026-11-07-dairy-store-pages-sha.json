@@ -1,0 +1,184 @@
+{
+  "at": "2026-11-07T12:09:48.961236+00:00",
+  "commit": "58b5685e3df96439b416ff26751b1fea6fb8a7b2",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "da9ec7d035c3976a76d4f52d19bf2bd3f9cf4a5ef0763f56b5d46272cd064ac6",
+      "actual": "da9ec7d035c3976a76d4f52d19bf2bd3f9cf4a5ef0763f56b5d46272cd064ac6",
+      "match": true
+    },
+    {
+      "path": "architecture.js",
+      "status": 200,
+      "expected": "c7aa1f192734af121ca70197e063238e6538f09b95307eee531dd9f92f5a0960",
+      "actual": "c7aa1f192734af121ca70197e063238e6538f09b95307eee531dd9f92f5a0960",
+      "match": true
+    },
+    {
+      "path": "artisan-art.js",
+      "status": 200,
+      "expected": "b498d506ad3ea159b4e2da760b1b8a7980490d83c9bc9df6bb7c47b210b93114",
+      "actual": "b498d506ad3ea159b4e2da760b1b8a7980490d83c9bc9df6bb7c47b210b93114",
+      "match": true
+    },
+    {
+      "path": "artisan.js",
+      "status": 200,
+      "expected": "c0115b6fe86677e338cfa3f46ade779a71cb073fa815ba74f190a4595d987cea",
+      "actual": "c0115b6fe86677e338cfa3f46ade779a71cb073fa815ba74f190a4595d987cea",
+      "match": true
+    },
+    {
+      "path": "building-presentation.js",
+      "status": 200,
+      "expected": "d461ee366708ef86f1c3f4b274d2d4a84bd98bf9fceb0609bc5a90c623dc1e26",
+      "actual": "d461ee366708ef86f1c3f4b274d2d4a84bd98bf9fceb0609bc5a90c623dc1e26",
+      "match": true
+    },
+    {
+      "path": "dairy.js",
+      "status": 200,
+      "expected": "3a7250007266ac3dfd91f7e8495630ab696d46e6a16472f19d721594a0dec47e",
+      "actual": "3a7250007266ac3dfd91f7e8495630ab696d46e6a16472f19d721594a0dec47e",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "d9d5fb279d3555166bf4bcfc056cd24550206ea6735c8b2fb118ae3baedfe4b7",
+      "actual": "d9d5fb279d3555166bf4bcfc056cd24550206ea6735c8b2fb118ae3baedfe4b7",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "42c22cd26ac352dbb6c22d5a68099f25a0e6955fa6020beba323db996d445bbd",
+      "actual": "42c22cd26ac352dbb6c22d5a68099f25a0e6955fa6020beba323db996d445bbd",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-dairy-store-4x.json",
+      "status": 200,
+      "expected": "40107638e1b3ad7c3dfc9d7fdf52738d6670db59c09eaac7112fee03d8bb858a",
+      "actual": "40107638e1b3ad7c3dfc9d7fdf52738d6670db59c09eaac7112fee03d8bb858a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-dairy-store-browser.json",
+      "status": 200,
+      "expected": "17cdae506732edf51ff543549532498a35f530b792f2d4641c7dced910b9354f",
+      "actual": "17cdae506732edf51ff543549532498a35f530b792f2d4641c7dced910b9354f",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "b3ce39d38f7e5b330c7734691d91f4af0168912ce6682627ad85089a52bff8ef",
+      "actual": "b3ce39d38f7e5b330c7734691d91f4af0168912ce6682627ad85089a52bff8ef",
+      "match": true
+    },
+    {
+      "path": "game3d/architecture.js",
+      "status": 200,
+      "expected": "d15286e97b7b44343708dea4e025832d0c8e6bf335d339c54361a0bdfe653937",
+      "actual": "d15286e97b7b44343708dea4e025832d0c8e6bf335d339c54361a0bdfe653937",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "3124f15708a88e2d90fa5d781b3faef125a70a31117c901f108494bb1532c0a2",
+      "actual": "3124f15708a88e2d90fa5d781b3faef125a70a31117c901f108494bb1532c0a2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "77e9e81a1c75eb194af3f5e28bd050705f1e11dc4987ac7a140e3ff2c9c45b24",
+      "actual": "77e9e81a1c75eb194af3f5e28bd050705f1e11dc4987ac7a140e3ff2c9c45b24",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "3684cb8d3517fc79379cc5adb7d4049e8fbba60973f75b41a725d947be500cf4",
+      "actual": "3684cb8d3517fc79379cc5adb7d4049e8fbba60973f75b41a725d947be500cf4",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "17920debf85721fb3ed28496cdb14345f1862ce362ae83de58e0c07dce8206d2",
+      "actual": "17920debf85721fb3ed28496cdb14345f1862ce362ae83de58e0c07dce8206d2",
+      "match": true
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "status": 200,
+      "expected": "d86b06e58e22014796475abfda552d551c3c615ae031245c48866428b5966d7c",
+      "actual": "d86b06e58e22014796475abfda552d551c3c615ae031245c48866428b5966d7c",
+      "match": true
+    },
+    {
+      "path": "tests/building-inventory.test.js",
+      "status": 200,
+      "expected": "3d616aa62e22278a1352edb50844936241d0f8c3546ee5a796a3353bed44b8ff",
+      "actual": "3d616aa62e22278a1352edb50844936241d0f8c3546ee5a796a3353bed44b8ff",
+      "match": true
+    },
+    {
+      "path": "tests/dairy.test.js",
+      "status": 200,
+      "expected": "8ec97bedaaadd6b4957a97ea9e4ded46f1d18cb39f5579838cd2277b7d39671b",
+      "actual": "8ec97bedaaadd6b4957a97ea9e4ded46f1d18cb39f5579838cd2277b7d39671b",
+      "match": true
+    },
+    {
+      "path": "textiles.js",
+      "status": 200,
+      "expected": "0a63e273f0d8487289a3642d2c2daf2ff4646e86c0664b9cc43290fe9f1d6d43",
+      "actual": "0a63e273f0d8487289a3642d2c2daf2ff4646e86c0664b9cc43290fe9f1d6d43",
+      "match": true
+    },
+    {
+      "path": "ui-art.js",
+      "status": 200,
+      "expected": "9df39aaed511a5b0311c16a923625ad1b88bc50aa836bb4f46d866a65bc17d27",
+      "actual": "9df39aaed511a5b0311c16a923625ad1b88bc50aa836bb4f46d866a65bc17d27",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "ec9d1e16c49ced6701dba5858e5707705745aa50a037d331577da3030df8aa3f",
+      "actual": "ec9d1e16c49ced6701dba5858e5707705745aa50a037d331577da3030df8aa3f",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "b38ea7b1ab3d75105e3a6e76b2d77bcf73c4a8bc5d3a1a473933877b10f1d833",
+      "actual": "b38ea7b1ab3d75105e3a6e76b2d77bcf73c4a8bc5d3a1a473933877b10f1d833",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "e620bf203a9452b3fb68aae753e4d0e629e8d1863c8c6a531d415bf32eb16fa0",
+      "actual": "e620bf203a9452b3fb68aae753e4d0e629e8d1863c8c6a531d415bf32eb16fa0",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "d647c181018c4431c381d8ab0eac3bd89ee3d611abc1878423f0fcaa10c85783",
+      "actual": "d647c181018c4431c381d8ab0eac3bd89ee3d611abc1878423f0fcaa10c85783",
+      "match": true
+    }
+  ],
+  "matched": 25,
+  "total": 25
+}
