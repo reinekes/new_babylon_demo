@@ -1,5 +1,5 @@
 import {reservedArrivalBeds} from './arrival-hospitality.js';
-import {householdInitiativeReserved} from './household-initiative.js';
+import {householdAwaitingFamily} from './household-initiative.js';
 import {groundShapingBatch} from './shaping-batch.js';
 import {moveGiftFood} from './abundance-origin.js';
 import {addCreatorStock,takeCreatorStock} from './creator-materials.js';
@@ -95,11 +95,7 @@ function ports(s){const net=networkFor(s),map=new Map(net.ports.filter(p=>!p.bui
 function relocations(s,b){
  if(b.type!=='house')return new Map();
  const {net,map}=ports(s),source=map.get(buildingKey(b)),residents=s.citizens.filter(c=>c.home===buildingKey(b));
- const beds=s.buildings.filter(h=>{
-  if(h===b||h.type!=='house'||!isComplete(h))return false;
-  const project=h.householdInitiative;
-  return !project||!householdInitiativeReserved(project,s.citizens.find(c=>c.id===project.members[0]));
- }).map(h=>({key:buildingKey(h),free:capacityOf(h)-reservedArrivalBeds(s,buildingKey(h))-s.citizens.filter(c=>c.home===buildingKey(h)).length}));
+ const beds=s.buildings.filter(h=>h!==b&&h.type==='house'&&isComplete(h)&&!householdAwaitingFamily(s,h)).map(h=>({key:buildingKey(h),free:capacityOf(h)-reservedArrivalBeds(s,buildingKey(h))-s.citizens.filter(c=>c.home===buildingKey(h)).length}));
  const result=new Map();
  for(const c of residents){const target=beds.find(h=>h.free>0&&source&&map.get(h.key)&&net.components.get(source.key)===net.components.get(map.get(h.key).key));if(!target)return null;target.free--;result.set(c.id,target.key);}
  return result;

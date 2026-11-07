@@ -1,0 +1,42 @@
+{
+  "family": {
+    "speed": 4,
+    "cancelledCargoOnce": true,
+    "reapproved": true,
+    "steps": 986,
+    "buildings": 130,
+    "population": 245,
+    "retainedIds": 218,
+    "site": "5,4",
+    "complete": true,
+    "settled": true,
+    "byteExact": true,
+    "medianCpuMs": 1.6627079999998386,
+    "p95CpuMs": 23.903499999999894
+  },
+  "call": {
+    "speed": 4,
+    "buildings": 131,
+    "initialPopulation": 222,
+    "population": 251,
+    "confirmedNeighborDeliveries": 2,
+    "visits": [
+      "pilgrim",
+      "envoy"
+    ],
+    "gatedBeforeVisits": true,
+    "openedAt": 91.625,
+    "openedWithoutPresentation": true,
+    "waterRefusalUnchanged": true,
+    "requiresBlessingOpening": true,
+    "blessingCastCost": 20,
+    "callCost": 45,
+    "controlledShrineMarketCaravanAndHomeWater": true,
+    "arrivalCount": 6,
+    "settledOnce": true,
+    "byteIdenticalReload": true,
+    "steps": 40,
+    "medianCpuMs": 3.251167000000123,
+    "p95CpuMs": 278.49404100000004
+  }
+}

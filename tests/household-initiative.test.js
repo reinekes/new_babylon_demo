@@ -216,3 +216,28 @@ test('demolition cannot relocate neighbors into a courtyard reserved for another
  delete reserved.householdInitiative;
  assert.ok(demolish(s,oldHome.x,oldHome.y).ok);
 });
+
+test('a finished courtyard waiting for its family does not take new arrivals',async()=>{
+ const {arrivalHousing}=await import('../arrival-hospitality.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ s.population=s.capacity;
+ syncCitizens(s);
+ const source=s.buildings.find(b=>buildingKey(b)==='8,8');
+ const {x,y,members}=householdInitiative(s,source);
+ const house={type:'house',x,y,level:1,starterHut:true,householdInitiative:{source:'8,8',members,startedAt:0}};
+ s.buildings.push(house);
+ const key=buildingKey(house);
+ assert.equal(arrivalHousing(s).some(row=>row.home===key),false);
+ const count=s.population;
+ s.population+=1;
+ syncCitizens(s);
+ assert.equal(s.population,count);
+ s.arrivalGroup={home:key,count:2};
+ assert.equal(arrivalHousing(s,{includeReserved:true}).find(row=>row.home===key)?.beds,4);
+ delete s.arrivalGroup;
+ delete house.householdInitiative;
+ s.population+=1;
+ syncCitizens(s);
+ assert.equal(s.citizens.at(-1).home,key);
+});

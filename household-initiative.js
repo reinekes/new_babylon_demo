@@ -24,6 +24,11 @@ export function householdInitiativeFrom(project,home){
 
 export const householdInitiativeReserved=(project,first)=>!!project&&!project.settled&&first?.partner===project.members[1];
 
+export function householdAwaitingFamily(s,building){
+ const project=building.householdInitiative;
+ return !!project&&householdInitiativeReserved(project,s.citizens.find(c=>c.id===project.members[0]));
+}
+
 export function householdInitiative(s,source){
  if(!isStrictSumer(s)||source?.type!=='house'||!isOperational(source)||!s.buildings.includes(source))return refuse('Нужен жилой двор Южного Шумера');
  const sourceKey=buildingKey(source),residents=s.citizens.filter(c=>c.home===sourceKey);

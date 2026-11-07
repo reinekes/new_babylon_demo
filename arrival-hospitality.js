@@ -1,3 +1,4 @@
+import {householdAwaitingFamily} from './household-initiative.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {affectResidents} from './wellbeing.js';
 import {ensureHouseEntityId} from './causal-facts.js';
@@ -62,17 +63,16 @@ export const shelterHome=c=>c.floodShelter||c.fireShelter?.host;
 export function arrivalHousing(s,{includeReserved=false}={}){
  const flood=floodMapView(s);
  const flooded=new Set(flood?.phase==='active'?flood.tiles.map(buildingKey):[]);
- const vacancies=new Map();
+ const vacancies=new Map(),group=s.arrivalGroup;
  for(const b of s.buildings){
   const beds=capacityOf(b),home=buildingKey(b);
-  if(beds&&!flooded.has(home))vacancies.set(home,beds);
+  if(beds&&!flooded.has(home)&&(includeReserved&&group?.home===home||!householdAwaitingFamily(s,b)))vacancies.set(home,beds);
  }
  for(const c of s.citizens){
   if(vacancies.has(c.home))vacancies.set(c.home,vacancies.get(c.home)-1);
   const shelter=shelterHome(c);
   if(shelter!==c.home&&vacancies.has(shelter))vacancies.set(shelter,vacancies.get(shelter)-1);
  }
- const group=s.arrivalGroup;
  if(!includeReserved&&group&&vacancies.has(group.home))vacancies.set(group.home,vacancies.get(group.home)-group.count);
  return [...vacancies].filter(([,beds])=>beds>0).map(([home,beds])=>({home,beds}));
 }
