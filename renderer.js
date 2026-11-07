@@ -11,7 +11,7 @@ import {roadTopologyRevision} from './roads.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
 import {ceremonyJoinStep} from './festival-layout.js';
-import {houseVariant} from './map-art.js';
+import {drawCultSign,houseVariant} from './map-art.js';
 import {residentPose,drawActorGesture} from './actor-art.js';
 import {drawTradeBoat} from './waterfront-art.js';
 import {residentAppearance,drawResidentClothes} from './resident-appearance.js';
@@ -390,7 +390,7 @@ export class Renderer{
   if(e.kind==='person'&&s.funeral?.actors.some(a=>a.id===e.id)&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;
   const p=this.point(e.x,e.y);
   if(e.kind==='bridgeRail')this.bridgeRail(e.across,e.end,e.along);
-  else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawFestivalBuildingLights(this,e,s);}
+  else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawCultSign(this,e,s);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='catOffering')drawCatOffering(this,e);
   else if(e.kind==='person')this.person(e);
   else if(e.kind==='ploughTeam')drawPloughTeam(this,e);

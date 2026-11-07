@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "4a19dacc9adf50c7170855551d673c0ff50ef9b953d43d26c8d14936808b65eb"
+      "sha256": "464b99534b7e7ad3f550b3522d22ac5ee6f5073cd21ebfaef90f8b85eb14e1e6"
     },
     {
       "file": "game3d/caravan.js",
@@ -115,7 +115,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 20,
+          "line": 21,
           "kind": "literal"
         }
       ]

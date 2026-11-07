@@ -28,3 +28,20 @@ test('recognized strict Awakening uses real outcomes while repeated acts still e
  assert.equal(refreshResultName(s),null);
  assert.equal(s.name,'Хранитель памяти');
 });
+
+test('the clay shrine tablet follows earned names even after the public name changes',async()=>{
+ const {RESULT_NAMES,refreshResultName}=await import('../divinity.js');
+ const {cultSign}=await import('../cult-sign.js');
+ const s={...state(),scenario:{history:'sumer-iii-v1'},godhood:{mode:'awakening',stage:'recognized'}};
+ const shrine={type:'shrine',level:1};
+ const a={home:'1,1',homeId:1,time:1},b={home:'2,2',homeId:2,time:2};
+ s.causalFacts={waterWitnesses:[a,b]};
+ assert.deepEqual(cultSign(s,shrine),[]);
+ refreshResultName(s);
+ assert.deepEqual(cultSign(s,shrine).map(mark=>mark.id),['water']);
+ s.causalFacts.harvest=[a,b];refreshResultName(s);
+ assert.equal(s.name,RESULT_NAMES.harvest);
+ assert.deepEqual(cultSign(structuredClone(s),shrine).map(mark=>mark.id),['water','grain']);
+ assert.deepEqual(cultSign(s,{...shrine,construction:{kind:'new'}}),[]);
+ assert.deepEqual(cultSign({...s,scenario:undefined},shrine),[]);
+});

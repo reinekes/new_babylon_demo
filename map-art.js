@@ -1,3 +1,4 @@
+import {cultSign} from './cult-sign.js';
 import {seed} from './city-life.js';
 import {levelOf} from './definitions.js';
 import {houseLightCount} from './households.js';
@@ -132,4 +133,15 @@ export function drawSumerSacred(r,b,state){
   else{vessel(a,-23,7,.6);vessel(a,23,7,.6);}
  }
  a.c.restore();
+}
+
+export function drawCultSign(r,b,state){
+ const marks=cultSign(state,b);
+ if(!marks.length)return;
+ const a=brush(r,b),x=18,y=4;
+ a.poly([[x-6,y-18],[x+6,y-18],[x+6,y-1],[x-6,y-1]],'#80513a');
+ a.poly([[x-5,y-17],[x+5,y-17],[x+5,y-2],[x-5,y-2]],'#ac704e');
+ marks.forEach((mark,i)=>{
+  for(const line of mark.lines)a.line(line.map(([u,v])=>[x+u*10,y-13+i*7-v*7]),'#f1d8ae',1.1);
+ });
 }

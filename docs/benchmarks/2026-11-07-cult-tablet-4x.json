@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "initialPopulation": 289,
+  "population": 289,
+  "steps": 120,
+  "marks": [
+    "water",
+    "grain"
+  ],
+  "updated3DSignature": true,
+  "stateMatchesControl": true,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 2.281499999999994,
+  "p95CpuMs": 11.044207999999912
+}

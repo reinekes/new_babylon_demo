@@ -1,0 +1,30 @@
+[
+  {
+    "id": "water",
+    "view": "2d",
+    "url": "?id=water&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d water shrine plaque and matching inspector"
+  },
+  {
+    "id": "water",
+    "view": "3d",
+    "url": "?id=water&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d water shrine plaque and matching inspector"
+  },
+  {
+    "id": "grain",
+    "view": "2d",
+    "url": "?id=grain&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d grain shrine plaque and matching inspector"
+  },
+  {
+    "id": "grain",
+    "view": "3d",
+    "url": "?id=grain&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d grain shrine plaque and matching inspector"
+  }
+]

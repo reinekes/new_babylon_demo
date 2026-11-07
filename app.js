@@ -1,3 +1,4 @@
+import {cultSign} from './cult-sign.js';
 import {artisanOutput,COPPER_PRODUCTS,setCopperProduct} from './artisan.js';
 import {evacuateFireHome} from './workforce.js';
 import {extinguishKilnFire} from './fire-forecast.js';
@@ -570,6 +571,8 @@ function updateDetail(){
  $('building-controls').innerHTML=q?`<div id="inspector-site-live">${siteStatus(b)}</div>${priorityControl(b)}<button class="management-button danger" data-cancel="${b.x},${b.y}">${q.kind==='repair'?'Отменить ремонт':q.kind==='upgrade'?'Отменить улучшение':'Отменить строительство'}</button>`:`<p>${b.type==='house'?'':['market','harbor'].includes(b.type)?`Носильщиков у торговой площадки: ${state.citizens.filter(c=>(c.tradeMarket||c.saleMarket)===buildingKey(b)).length} / ${activeLaborKind(state)==='unload'?UNLOAD_PORTERS:2}.`:stockStores(state).some(store=>buildingKey(store)===buildingKey(b))?'':`Назначено работников: ${state.citizens.filter(c=>c.work===buildingKey(b)).length}.`}</p>${!['canal','levee'].includes(b.type)&&levelOf(b)<3?`<h4>Цена улучшения до ${levelOf(b)+1}</h4>${costs(cost,true,b.type!=='house')}<small>${levelOf(b)===1?'II уровень: сырцовая кладка':'III уровень: обожжённая кладка, новый сырец не нужен'}</small>`:''}<button class="upgrade-button" id="upgrade-building" ${reason?'disabled':''}>${['canal','levee'].includes(b.type)?'Один уровень':levelOf(b)>=3?'Максимальный уровень':`Улучшить до ${levelOf(b)+1}`}</button><small id="upgrade-reason">${esc(reason||'Материалы резервируются сразу.')}</small>`;
  if(!q||q.kind!=='new')$('building-controls').insertAdjacentHTML('afterbegin',votivePanel(b)+guardControl(b)+staffingControl(b)+stockAccountControl(b));
  if(receiptsOpen){const receipts=$('building-controls').querySelector('[data-granary-receipts]');if(receipts)receipts.open=true;}
+ const marks=cultSign(state,b);
+ if(marks.length)$('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel" data-cult-sign><h4>Глиняная табличка культа</h4><p>${marks.map(mark=>`${mark.label} · ${esc(mark.name)}`).join('<br>')}</p></section>`);
  if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
  const gifted=giftAmount(b.giftStock);
  if(gifted>0)$('building-controls').insertAdjacentHTML('afterbegin',`<p class="abundance-store-mark">${resourceIcon('grain')} Дарственное зерно · ${foodAmount(gifted)}</p>`);

@@ -1,3 +1,4 @@
+import {cultSign} from '../cult-sign.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {potterWheelView} from '../potter-wheel.js';
 import {workstationBuilding} from './workstations.js';
@@ -24,7 +25,7 @@ const isHouse=b=>b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}`:'',foundationSignature(b,state,shoreContext)].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}`:'',foundationSignature(b,state,shoreContext),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -127,6 +128,25 @@ export async function createGameBuildings(B,scene,materials,options={}){
     for(const source of sacredModels.sources(b,state)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
    }else for(const mesh of sacredModels.fallback(b,materialSet,state)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
 
+  }
+  const marks=cultSign(state,b);
+  if(marks.length){
+   const x=1.65,y=.89,z=2.62;
+   const part=(name,width,height,depth,position,material)=>{
+    const mesh=B.MeshBuilder.CreateBox(name,{width,height,depth},scene);
+    mesh.position.set(...position);mesh.parent=root;mesh.material=material;sources.push(mesh);
+    return mesh;
+   };
+   part('cult-tablet-plinth',.94,.36,.38,[x,.18,z],raw);
+   part('cult-tablet-clay',.98,1.04,.15,[x,y-.01,z],fired);
+   marks.forEach((mark,i)=>{
+    const centre=y+.23-i*.46;
+    for(const line of mark.lines)for(let j=1;j<line.length;j++){
+     const [a,b]=line[j-1],[c,d]=line[j],dx=c-a,dy=d-b;
+     const stroke=part('cult-tablet-'+mark.id,Math.hypot(dx,dy)*.48,.027,.018,[x+(a+c)*.24,centre+(b+d)*.24,z+.08],trim);
+     stroke.rotation.z=Math.atan2(dy,dx);
+    }
+   });
   }
   // Supplied stepped sanctuaries have real stair flights; the former flat-roof
   // ladder would pass through their terraces at the obsolete roof height.
