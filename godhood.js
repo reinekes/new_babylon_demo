@@ -30,12 +30,26 @@ export const builderLevel=c=>c?.builderSkill?.level||1;
 export const PRACTICE_PER_PROJECT=8;
 export const builderExperience=skill=>(skill?.projects||0)+Math.floor(((skill?.practice||0)+1e-8)/PRACTICE_PER_PROJECT);
 const levelFor=skill=>builderExperience(skill)>=5?3:builderExperience(skill)>=2?2:1;
+const canTeachOrLearn=(s,c)=>c.age>=16&&c.role==='builder'&&!c.pendingRole&&c.calling==='builder'&&knowsPresence(s,c);
 export function builderTeachingPair(s,people){
  if(!isAwakening(s))return null;
- const builders=people.filter(c=>c.age>=16&&c.role==='builder'&&!c.pendingRole&&c.calling==='builder'&&knowsPresence(s,c));
+ const builders=people.filter(c=>canTeachOrLearn(s,c));
  if(builders.length!==2||builderLevel(builders[0])===builderLevel(builders[1]))return null;
  const [mentor,pupil]=builders.sort((a,b)=>builderLevel(b)-builderLevel(a));
  return {mentor,pupil};
+}
+export function builderTeachingCandidates(s,network){
+ if(!isAwakening(s))return [];
+ const homes=new Map(network.ports.map(port=>[buildingKey(port.building),network.components.get(port.key)]));
+ const builders=s.citizens.filter(c=>canTeachOrLearn(s,c)&&!c.site&&!c.clinic&&!c.floodShelter&&homes.get(c.home)!==undefined)
+  .sort((a,b)=>builderLevel(b)-builderLevel(a)||a.id-b.id);
+ const mentors=new Map(),pairs=[];
+ for(const builder of builders){
+  const component=homes.get(builder.home),mentor=mentors.get(component);
+  if(!mentor)mentors.set(component,builder);
+  else if(builderLevel(mentor)>builderLevel(builder))pairs.push({mentor,pupil:builder});
+ }
+ return pairs;
 }
 export function addBuilderPractice(c,amount,maxLevel){
  if(builderLevel(c)>=maxLevel)return;

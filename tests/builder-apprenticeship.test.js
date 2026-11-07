@@ -85,3 +85,24 @@ test('craft title counts mastery earned through shared work in two households',a
  assert.deepEqual(householdNameEvidence(loaded,[{...second,home:'2,2'}]).craft,pair[1]);
  assert.equal(householdNameEvidence(loaded,[mentor]).craft,null);
 });
+
+test('the craft forecast suggests compatible unassigned builders on connected land',async()=>{
+ const {builderTeachingCandidates}=await import('../godhood.js');
+ const mentor={...builder(1,5),home:'1,1'};
+ const pupil={...builder(2,2),home:'2,1'};
+ const equal={...builder(3,5),home:'1,1'};
+ const otherBank={...builder(4,1),home:'1,8'};
+ const busy={...builder(5,1),home:'1,1',site:'4,4'};
+ const pending={...builder(6,1),home:'1,1',pendingRole:'farmer'};
+ const unaware={...builder(7,1),home:'1,1'};
+ const sick={...builder(8,1),home:'1,1',clinic:'8,8'};
+ const s={godhood:{mode:'awakening',believerIds:[1,2,3,4,5,6,8]},citizens:[unaware,busy,pupil,mentor,equal,otherBank,pending,sick]};
+ const network={
+  ports:[{key:'a',building:{x:1,y:1}},{key:'b',building:{x:2,y:1}},{key:'c',building:{x:1,y:8}}],
+  components:new Map([['a',0],['b',0],['c',1]])
+ };
+ const before=structuredClone(s);
+ assert.deepEqual(builderTeachingCandidates(s,network),[{mentor,pupil}]);
+ assert.deepEqual(s,before);
+ assert.deepEqual(builderTeachingCandidates({...s,godhood:{mode:'mature'}},network),[]);
+});

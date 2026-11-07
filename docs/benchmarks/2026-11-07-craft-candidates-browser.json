@@ -1,0 +1,16 @@
+[
+  {
+    "id": "craft",
+    "view": "2d",
+    "url": "?id=craft&view=2d&earned",
+    "mode": "2d",
+    "result": "PASS 2d locked and earned views, linked candidates and byte-identical save"
+  },
+  {
+    "id": "craft",
+    "view": "3d",
+    "url": "?id=craft&view=3d&earned",
+    "mode": "3d",
+    "result": "PASS 3d locked and earned views, linked candidates and byte-identical save"
+  }
+]

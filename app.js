@@ -59,7 +59,7 @@ import {runSeasonJump,seasonJumpReason} from './season-jump.js';
 import {festivalBlessingFrame} from './festival-blessing.js';
 import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
 import {cityEventDefinition} from './city-events.js';
-import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,gameMode,builderTeachingPair,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
+import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
 import {modeChooserHTML,createGodhoodControls,gameModeLabel} from './ui-godhood.js';
 import {relicControlActive,relicQuestView,relicQuestViews} from './relic-quest.js';
 import {createRelicControls,relicStartHTML} from './ui-relic-control.js';
@@ -1133,7 +1133,9 @@ function craftSpecializationHTML(){
   crews.get(c.site).push(c);
  }
  const pairs=[...crews].map(([site,people])=>({site,pair:builderTeachingPair(state,people)})).filter(({pair})=>pair);
- return `<section data-name-specialization="craft"><h4>Где передают мастерство</h4>${pairs.length?`<ul>${pairs.slice(0,3).map(({site,pair})=>`<li>Стройка ${esc(site)} · ${resident(pair.mentor)} обучает ${resident(pair.pupil)}</li>`).join('')}</ul>`:'<p>Сейчас подходящие наставник и ученик не трудятся вместе. Им нужна общая стройка и разный уровень мастерства.</p>'}${pairs.length>3?`<p>Другие пары на стройках · ${pairs.length-3}</p>`:''}</section>`;
+ const candidates=builderTeachingCandidates(state,networkFor(state));
+ const suggestions=candidates.length?`<h4>Кого можно свести на стройке</h4><p>У этих строителей разный уровень и есть сухая связь между дворами. Для обучения им нужна общая стройка.</p><ul>${candidates.slice(0,3).map(({mentor,pupil})=>`<li>${resident(mentor)} · ур. ${builderLevel(mentor)} → ${resident(pupil)} · ур. ${builderLevel(pupil)}</li>`).join('')}</ul>${candidates.length>3?`<p>Другие ученики · ${candidates.length-3}</p>`:''}`:'<p>Среди строителей без стройки сейчас нет подходящей пары с сухим путём между дворами.</p>';
+ return `<section data-name-specialization="craft"><h4>Где передают мастерство</h4>${pairs.length?`<ul>${pairs.slice(0,3).map(({site,pair})=>`<li>Стройка ${esc(site)} · ${resident(pair.mentor)} обучает ${resident(pair.pupil)}</li>`).join('')}</ul>`:'<p>Сейчас подходящие наставник и ученик не трудятся вместе. Им нужна общая стройка и разный уровень мастерства.</p>'}${pairs.length>3?`<p>Другие пары на стройках · ${pairs.length-3}</p>`:''}<div data-craft-candidates>${suggestions}</div></section>`;
 }
 function pantheon(){
  const evidence=waterNameEvidence(state);
