@@ -8,24 +8,26 @@ import {weatherAt} from './environment.js';
 export const POTTERY_RECIPE=Object.freeze({clay:4,reed:2,water:2});
 export const BEER_RECIPE=Object.freeze({food:4,water:3,pottery:1});
 export const BREAD_RECIPE=Object.freeze({food:4,water:2,reed:2});
-export const isArtisan=b=>['pottery','brewery','bakery'].includes(b?.type);
-export const artisanOutput=b=>b?.type==='pottery'?'pottery':b?.type==='bakery'?'food':'beer';
-export const artisanRecipe=b=>b?.type==='pottery'?POTTERY_RECIPE:b?.type==='bakery'?BREAD_RECIPE:BEER_RECIPE;
+const LINEN_RECIPE=Object.freeze({flax:3,water:2});
+export const isArtisan=b=>['pottery','brewery','bakery','linenYard'].includes(b?.type);
+export const artisanOutput=b=>Object.keys(BUILDINGS[b?.type]?.output||{})[0];
+export const artisanRecipe=b=>b?.type==='pottery'?POTTERY_RECIPE:b?.type==='bakery'?BREAD_RECIPE:b?.type==='linenYard'?LINEN_RECIPE:BEER_RECIPE;
 const fields=['clay','reed','water','food','pottery','vesselUses','stage','elapsed','ready'];
-const durations={forming:5,drying:12,firing:12,cooling:6,brewing:15,milling:6,baking:9};
+const durations={forming:5,drying:12,firing:12,cooling:6,brewing:15,milling:6,baking:9,preparingFiber:8,weavingLinen:10};
 const empty=()=>({clay:0,reed:0,water:0,food:0,pottery:0,vesselUses:0,stage:'idle',elapsed:0,ready:0});
 function valid(b){
- const v=b?.artisan;if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).length!==fields.length||fields.some(k=>!Object.hasOwn(v,k)))return false;
- if(fields.filter(k=>k!=='stage').some(k=>!Number.isFinite(v[k])||v[k]<0))return false;
- const pottery=b.type==='pottery',recipe=artisanRecipe(b),stages=pottery?['idle','forming','drying','firing','cooling','ready']:b.type==='bakery'?['idle','milling','baking','ready']:['idle','brewing','ready'];
+ const keys=b?.type==='linenYard'?[...fields,'flax']:fields;
+ const v=b?.artisan;if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).length!==keys.length||keys.some(k=>!Object.hasOwn(v,k)))return false;
+ if(keys.filter(k=>k!=='stage').some(k=>!Number.isFinite(v[k])||v[k]<0))return false;
+ const pottery=b.type==='pottery',recipe=artisanRecipe(b),stages=pottery?['idle','forming','drying','firing','cooling','ready']:b.type==='bakery'?['idle','milling','baking','ready']:b.type==='linenYard'?['idle','preparingFiber','weavingLinen','ready']:['idle','brewing','ready'];
  if(!stages.includes(v.stage)||!Number.isInteger(v.vesselUses)||v.vesselUses>3||b.type!=='brewery'&&v.vesselUses!==0)return false;
- for(const k of ['clay','reed','water','food','pottery'])if(v[k]>(recipe[k]||0)||v.stage!=='idle'&&v[k]!==0)return false;
+ for(const k of ['clay','reed','water','food','pottery','flax'])if(Object.hasOwn(v,k)&&(v[k]>(recipe[k]||0)||v.stage!=='idle'&&v[k]!==0))return false;
  if(v.pottery&&v.vesselUses)return false;
  if(v.stage==='ready')return v.ready===BUILDINGS[b.type].output[artisanOutput(b)]&&v.elapsed===0;
  if(v.ready!==0)return false;
  return v.stage==='idle'?v.elapsed===0:v.elapsed<durations[v.stage];
 }
-export function initializeArtisans(s){for(const b of s.buildings||[])if(isArtisan(b)&&b.artisan===undefined)b.artisan=empty();}
+export function initializeArtisans(s){for(const b of s.buildings||[])if(isArtisan(b)&&b.artisan===undefined)b.artisan=b.type==='linenYard'?{...empty(),flax:0}:empty();}
 export function artisanNeeds(b){
  const recipe=artisanRecipe(b),v=b?.artisan;
  return Object.fromEntries(Object.entries(recipe).map(([k,n])=>[k,isArtisan(b)&&isOperational(b)&&valid(b)&&v.stage==='idle'?Math.max(0,n-(k==='pottery'&&v.vesselUses?1:v[k])):0]));
@@ -39,12 +41,14 @@ export function workArtisan(b,seconds,s=null){
   // tolerance as the needs check while keeping the consumed buffers canonical.
   const consume=(k,n)=>{v[k]=Math.max(0,v[k]-n);};
   if(b.type==='pottery'){consume('clay',4);consume('reed',2);consume('water',2);v.stage='forming';}
+  else if(b.type==='linenYard'){for(const [k,n]of Object.entries(LINEN_RECIPE))consume(k,n);v.stage='preparingFiber';}
   else if(b.type==='bakery'){if(b.giftInput)takeGiftFood(b,'giftInput',4,v.food);for(const [k,n]of Object.entries(BREAD_RECIPE))consume(k,n);v.stage='milling';}
   else{if(b.giftInput)takeGiftFood(b,'giftInput',4,v.food);consume('food',4);consume('water',3);if(!v.vesselUses){consume('pottery',1);v.vesselUses=4;}v.vesselUses--;v.stage='brewing';}
  }
- if(!['forming','brewing','milling','baking'].includes(v.stage))return;
+ if(!['forming','brewing','milling','baking','preparingFiber','weavingLinen'].includes(v.stage))return;
  v.elapsed+=seconds*outputMultiplier(b);
  if(v.stage==='milling'&&v.elapsed>=durations.milling){v.elapsed-=durations.milling;v.stage='baking';}
+ if(v.stage==='preparingFiber'&&v.elapsed>=durations.preparingFiber){v.elapsed-=durations.preparingFiber;v.stage='weavingLinen';}
  if(v.elapsed>=durations[v.stage]){v.elapsed=0;if(v.stage==='forming')v.stage='drying';else{const output=artisanOutput(b);v.stage='ready';v.ready=BUILDINGS[b.type].output[output];if(s){recordBuildingProduction(s,b,output,v.ready);if(output==='beer')noteFirstBeer(s,b);}}}
 }
 export function advanceArtisans(s,seconds){
@@ -66,7 +70,7 @@ export function validateArtisans(s){
   for(const c of s.citizens||[])if(c.craftSite===buildingKey(b)&&c.craftMaterial&&(c.craftAmount||0)>0)incoming[c.craftMaterial]=(incoming[c.craftMaterial]||0)+c.craftAmount;
   if(v.stage!=='idle'&&Object.values(incoming).some(n=>n>0))return false;
   for(const [k,n]of Object.entries(incoming))if(!(k in recipe)||k==='water'||v[k]+n>recipe[k]+1e-7)return false;
-  return isOperational(b)||v.stage==='idle'&&['clay','reed','water','food','pottery','vesselUses'].every(k=>v[k]===0);
+  return isOperational(b)||v.stage==='idle'&&[...Object.keys(recipe),'vesselUses'].every(k=>v[k]===0);
  });
 }
 export function artisanSummary(b){const v=b?.artisan;if(!isArtisan(b)||!valid(b))return null;return {...v,output:artisanOutput(b),needs:artisanNeeds(b),laborMultiplier:outputMultiplier(b),duration:durations[v.stage]||0};}

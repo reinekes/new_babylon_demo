@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "stages": [
+    "idle",
+    "preparingFiber",
+    "weavingLinen"
+  ],
+  "received": 2,
+  "steps": 800,
+  "medianCPUms": 2.347584000000097,
+  "p95CPUms": 6.412832999999864,
+  "exactSave": true
+}

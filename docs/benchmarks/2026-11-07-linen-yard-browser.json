@@ -1,0 +1,16 @@
+[
+  {
+    "id": "linen",
+    "view": "2d",
+    "url": "?id=linen&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d flax yard and weaving readout"
+  },
+  {
+    "id": "linen",
+    "view": "3d",
+    "url": "?id=linen&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d flax yard and weaving readout"
+  }
+]

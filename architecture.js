@@ -118,14 +118,14 @@ export function drawBuilding(r, b, state, t) {
     poly([[7,-18],[17,-23],[17,-10],[7,-5]],'#e0cf9e');
     line([[7,-8],[17,-13]],'#a9825d',1);pot(-22,3,.8);
   }
-  if(b.type==='weaver') {
+  if(['weaver','linenYard'].includes(b.type)) {
     box(-7,-3,18,9,25,'#e2cda1','#b6986b','#cfb484');
     box(-7,-28,19,9.5,3,'#ead9ae','#c1a87b','#d5bf94');
     poly([[-11,-15],[-3,-11],[-3,1],[-11,-3]],'#796a4d');
     // Wooden upright loom and hanging woven panel in the open courtyard.
     line([[5,8],[5,-20],[23,-29],[23,-1]],'#826c47',2);
     line([[5,-20],[23,-29]],'#b49a64',2);line([[5,5],[23,-4]],'#8b754d',1.8);
-    poly([[7,-18],[21,-25],[21,-5],[7,2]],'#92a58c');
+    poly([[7,-18],[21,-25],[21,-5],[7,2]],b.type==='linenYard'?'#ded0a8':'#92a58c');
     for(let i=0;i<7;i++)line([[8+i*1.8,-18-i*.9],[8+i*1.8,1-i*.9]],'#d5d2a5',.55);
     for(let i=0;i<5;i++)line([[7,-15+i*3.5],[21,-22+i*3.5]],'#6f8a79',.7);
     line([[4,-5],[24,-15]],'#bba575',1.5);pot(-21,3,.8);

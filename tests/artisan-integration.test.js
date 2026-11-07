@@ -5,7 +5,7 @@ import {syncCitizens,recoverCitizenCargo} from '../workforce.js';import {assignW
 const fixture=type=>{const s=createGame({start:'established'});s.buildings.push({type,x:10,y:9,level:1});initializeArtisans(s);syncCitizens(s);assignWorkplace(s,0,'10,9');assignWorkplace(s,1,'10,9');return s;};
 const inputLoad=(s,c,key='10,9')=>{if(c.craftSite===key)return {resource:c.craftMaterial,amount:c.craftAmount||0,phase:c.phase};const q=s.district?.jobs.find(q=>q.id===c.districtJob&&q.target===key&&q.targetKind==='input');return q?{resource:q.resource,amount:c.cargo?.[q.resource]||0,phase:c.phase}:null;};
 const inputCourier=(s,k=null,loaded=true)=>s.citizens.find(c=>{const load=inputLoad(s,c);return load&&(!k||load.resource===k)&&(loaded?load.amount>0:['toCraftSupply','toDistrictSupply'].includes(c.phase)&&load.amount===0);});
-test('both new buildings can be ordered and v22 strictly roundtrips resources and artisan state',()=>{for(const type of ['pottery','brewery']){const s=createGame({start:'established'});assert.ok(build(s,type,10,9).ok);assert.ok(decode(encode(s)));assert.equal(s.version,30);const raw=JSON.parse(encode(s));raw.buildings.at(-1).artisan.ready=100;assert.equal(decode(JSON.stringify(raw)),null);delete raw.buildings.at(-1).artisan;assert.equal(decode(JSON.stringify(raw)),null);}});
+test('both new buildings can be ordered and v22 strictly roundtrips resources and artisan state',()=>{for(const type of ['pottery','brewery']){const s=createGame({start:'established'});assert.ok(build(s,type,10,9).ok);assert.ok(decode(encode(s)));assert.equal(s.version,31);const raw=JSON.parse(encode(s));raw.buildings.at(-1).artisan.ready=100;assert.equal(decode(JSON.stringify(raw)),null);delete raw.buildings.at(-1).artisan;assert.equal(decode(JSON.stringify(raw)),null);}});
 test('pottery materials and finished goods travel as real cargo and save through every stage',()=>{const s=fixture('pottery'),b=s.buildings.at(-1);let clay=false,reed=false,water=false,cargo=false;const stages=new Set();for(let i=0;i<3600;i++){s.event=null;advanceTime(s,.1);clay||=!!inputCourier(s,'clay');reed||=!!inputCourier(s,'reed');water||=s.citizens.some(c=>c.waterTrip?.target==='10,9'&&c.waterTrip.load>0);cargo||=s.citizens.some(c=>c.cargo.pottery>0);stages.add(b.artisan.stage);if(i%40===0)assert.ok(decode(encode(s)),`save ${i} ${b.artisan.stage}`);if(s.resources.pottery>=2)break;}assert.ok(clay&&reed&&water&&cargo);assert.ok(stages.has('drying')&&stages.has('firing')&&stages.has('cooling'));assert.equal(s.resources.pottery,2);});
 test('brewer leaves protected seed food in stock',()=>{const s=fixture('brewery'),b=s.buildings.at(-1);s.foodPlan.protectSeeds=true;for(const c of s.citizens)if(c.age>=16&&c.id>1)setCitizenRole(s,c.id,'carrier');s.resources.food=4;syncInventory(s);assert.equal(seedReserve(s),4);Object.assign(b.artisan,{water:3,pottery:1});for(let i=0;i<300;i++){s.event=null;advanceTime(s,.1);}assert.equal(b.artisan.food,0);assert.equal(s.resources.beer,0);});
 test('interrupted delivery recovers original ingredients once and hot artisan blocks demolition',()=>{const s=fixture('pottery'),b=s.buildings.at(-1);let c;for(let i=0;i<800;i++){advanceTime(s,.1);c=inputCourier(s);if(c)break;}assert.ok(c);const {resource:material,amount:n}=inputLoad(s,c),before=s.resources[material];recoverCitizenCargo(s,c.id);assert.equal(s.resources[material],before+n);recoverCitizenCargo(s,c.id);assert.equal(s.resources[material],before+n);b.artisan={clay:0,reed:0,water:0,food:0,pottery:0,vesselUses:0,stage:'firing',elapsed:0,ready:0};assert.match(canDemolish(s,b),/партии/);assert.ok(decode(encode(s)));});
@@ -66,4 +66,28 @@ test('Southern Sumer builds a common oven and delivers bread after both stages o
  assert.ok(cargo);
  assert.ok(s.district.jobs.some(q=>q.source==='10,9'&&q.resource==='food'&&q.delivered>=5));
  assert.ok(decode(encode(s)));
+});
+
+test('a flax yard processes delivered flax and water into cloth for the warehouse',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {finishConstruction,workRequired}=await import('../construction.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ putStock(s,'9,8','flax',3);
+ const result=build(s,'linenYard',10,9);assert.ok(result.ok,result.reason);
+ const b=s.buildings.at(-1);
+ b.construction.delivered={...b.construction.required};
+ for(const k of Object.keys(b.construction.remaining))b.construction.remaining[k]=0;
+ b.construction.work=workRequired(b);
+ assert.ok(finishConstruction(s));syncCitizens(s);
+ assert.ok(assignWorkplace(s,0,'10,9').ok);
+ assert.ok(assignWorkplace(s,1,'10,9').ok);
+ const stages=new Set();
+ for(let i=0;i<3600&&s.resources.cloth<2;i++){
+  s.event=null;advanceTime(s,.1);stages.add(b.artisan.stage);
+  if(i%20===0)assert.ok(decode(encode(s)),`linen save ${i} ${b.artisan.stage}`);
+ }
+ assert.ok(stages.has('preparingFiber')&&stages.has('weavingLinen'));
+ assert.equal(s.resources.flax,0);
+ assert.equal(s.resources.cloth,2);
+ assert.ok(s.district.jobs.some(q=>q.source==='10,9'&&q.resource==='cloth'&&q.delivered===2));
 });

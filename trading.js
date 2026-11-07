@@ -16,13 +16,13 @@ const nextVisit=t=>1+4*(Math.floor((t-1)/4)+1);
 const keys=(o,list)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length===list.length&&list.every(k=>k in o);
 export function initializeTrade(s){s.trade??={silver:40,visits:0,nextArrival:s.tick===0?1:nextVisit(s.tick),caravan:null};s.trade.deliveries??=[];s.trade.nextDelivery??=1;s.trade.sales??=[];s.trade.nextSale??=1;if(s.trade.caravan&&s.trade.caravan.phase===undefined)Object.assign(s.trade.caravan,{phase:'waitingMarket',x:null,y:null,route:[],routeIndex:0,entry:null,market:null,unloadTime:0});return s.trade;}
 function news(s,title,text){s.news.unshift({title,text,kind:'trade',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
-function createCaravan(tick,visit){const prices={},stock={},base={food:3,clay:4,reed:3,wood:5,stone:7,hides:6,wool:4,cloth:22,clothing:52,brick:8,firedBrick:16,pottery:14,beer:8,milk:1};for(const [i,k]of MATERIALS.entries()){const sell=base[k]+(visit+i)%3;prices[k]={buy:sell+2,sell};stock[k]=25+(visit*13+i*17)%46;}return {id:`caravan:${visit}`,name:['Купцы Урука','Караван южного пути','Торговцы речной долины'][(visit-1)%3],arrived:tick,departAt:tick+2,stock,prices,silver:180+(visit%4)*40};}
+function createCaravan(tick,visit,hasFlax){const prices={},stock={},base={food:3,clay:4,reed:3,wood:5,stone:7,hides:6,wool:4,cloth:22,clothing:52,brick:8,firedBrick:16,pottery:14,beer:8,milk:1,flax:6};for(const [i,k]of MATERIALS.entries()){const sell=base[k]+(visit+i)%3;prices[k]={buy:sell+2,sell};stock[k]=k==='flax'&&!hasFlax?0:25+(visit*13+i*17)%46;}return {id:`caravan:${visit}`,name:['Купцы Урука','Караван южного пути','Торговцы речной долины'][(visit-1)%3],arrived:tick,departAt:tick+2,stock,prices,silver:180+(visit%4)*40};}
 export function advanceTrade(s){
  const t=initializeTrade(s);settleTradeContract(s);
  if(s.tick<t.nextArrival)return t;
  t.nextArrival=nextVisit(s.tick);
  if(t.caravan)return t;
- const c=t.caravan=createCaravan(s.tick,++t.visits);
+ const c=t.caravan=createCaravan(s.tick,++t.visits,isStrictSumer(s));
  Object.assign(c,{phase:'waitingMarket',x:null,y:null,route:[],routeIndex:0,entry:null,market:null,unloadTime:0});
  const low=riverIsLow(s),land=marketAccess(s,null,'market');
  const harbor=low&&(marketAccess(s,null,'harbor',3)||marketAccess(s,null,'harbor',2))||marketAccess(s,null,'harbor');

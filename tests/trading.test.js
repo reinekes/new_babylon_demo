@@ -13,7 +13,7 @@ test('partial trades resume identically after save and version three migration a
 test('trade saves reject malformed schedules, inventory, purse and missing material prices',()=>{const s=summer();for(const corrupt of [t=>t.silver=-1,t=>t.nextArrival=2,t=>t.caravan.departAt=9,t=>t.caravan.stock.wood=-1,t=>delete t.caravan.prices.hides,t=>t.caravan.silver=Infinity,t=>t.caravan.prices.food.buy=1.5]){const bad=structuredClone(s);corrupt(bad.trade);assert.equal(decode(encode(bad)),null);}const noCaravan=createGame({start:'established'});assert.equal(trading.trade(noCaravan,'food','sell',1).ok,false);});
 test('new garden requires dates site while migrated existing gardens remain valid',()=>{const s=createGame({start:'established'});const before=encode(s.resources);assert.equal(build(s,'garden',2,2).ok,false);assert.equal(encode(s.resources),before);const d=s.world.deposits.find(d=>d.kind==='dates'&&!s.buildings.some(b=>b.x===d.x&&b.y===d.y));assert.ok(d);assert.ok(build(s,'garden',d.x,d.y).ok);assert.ok(decode(encode(s)));});
 import {readFileSync} from 'node:fs';
-test('actual version three engine fixture preserves overflow, order and carried reservations',()=>{const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v3.json',import.meta.url),'utf8'));assert.equal(old.version,3);assert.equal(old.trade,undefined);const s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,30);assert.deepEqual(Object.fromEntries(Object.keys(old.resources).map(k=>[k,s.resources[k]])),old.resources);assert.deepEqual(projectLegacy(s.buildings,old.buildings),old.buildings);assert.deepEqual(s.citizens.map((c,i)=>Object.fromEntries(Object.keys(old.citizens[i]).map(k=>[k,c[k]]))),old.citizens);assert.equal(s.trade.silver,40);assert.equal(s.trade.caravan,null);assert.ok(decode(encode(s)));});
+test('actual version three engine fixture preserves overflow, order and carried reservations',()=>{const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v3.json',import.meta.url),'utf8'));assert.equal(old.version,3);assert.equal(old.trade,undefined);const s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,31);assert.deepEqual(Object.fromEntries(Object.keys(old.resources).map(k=>[k,s.resources[k]])),old.resources);assert.deepEqual(projectLegacy(s.buildings,old.buildings),old.buildings);assert.deepEqual(s.citizens.map((c,i)=>Object.fromEntries(Object.keys(old.citizens[i]).map(k=>[k,c[k]]))),old.citizens);assert.equal(s.trade.silver,40);assert.equal(s.trade.caravan,null);assert.ok(decode(encode(s)));});
 test('food sale cannot spend protected seed reserve; explicit crisis release allows it',async()=>{const {seedReserve,setSeedProtection}=await import('../food-planning.js');const s=summer();s.event=null;s.resources.food=4;assert.equal(seedReserve(s),4);const before=encode(s);assert.match(trading.trade(s,'food','sell',1).reason,/Семенной резерв/);assert.equal(encode(s),before);assert.ok(setSeedProtection(s,false).ok);assert.ok(trading.trade(s,'food','sell',1).ok);assert.equal(s.resources.food,3);});
 
 test('cloth export pays only after porters physically load the caravan and survives an in-flight save',async()=>{
@@ -22,4 +22,38 @@ test('cloth export pays only after porters physically load the caravan and survi
  assert.ok(trading.trade(s,'cloth','sell',2).ok);const order=s.trade.sales.at(-1);assert.equal(s.resources.cloth,0);assert.equal(s.trade.silver,silver);assert.equal(order.loaded,0);
  let carried=false;for(let i=0;i<1000&&order.loaded<2;i++){s.event=null;advanceTime(s,.1);if(s.citizens.some(c=>c.cargo.cloth>0)){carried=true;assert.deepEqual(decode(encode(s)),s);}}
  assert.ok(carried);assert.equal(order.loaded,2);assert.equal(s.trade.silver,silver+2*price);assert.equal(caravan.silver,merchantSilver-2*price);assert.equal(caravan.stock.cloth,stock+2);assert.equal(s.resources.cloth,0);assert.ok(validateInventory(s));assert.ok(decode(encode(s)));
+});
+
+test('Southern Sumer merchants sell flax and porters deliver the order after a saved load',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ let s=createGame({start:'established',scenario:strictScenario()});
+ assert.ok(build(s,'market',10,9).ok);
+ for(let i=0;i<3000&&s.trade.caravan?.phase!=='trading';i++){s.event=null;advanceTime(s,.1);}
+ const price=s.trade.caravan.prices.flax.buy;
+ assert.ok(trading.trade(s,'flax','buy',3).ok);
+ assert.equal(s.resources.flax,0);
+ let loaded=false;
+ for(let i=0;i<1000&&s.resources.flax<3;i++){
+  s.event=null;advanceTime(s,.1);
+  if(!loaded&&s.citizens.some(c=>c.tradeJob&&c.cargo.flax>0)){
+   const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);loaded=true;
+  }
+ }
+ assert.ok(loaded);
+ assert.equal(s.resources.flax,3);
+ assert.equal(s.trade.silver,40-3*price);
+});
+
+test('version 30 adds flax slots without changing an active order or any worker',()=>{
+ const s=summer();assert.ok(trading.trade(s,'stone','buy',2).ok);
+ for(let i=0;i<800&&!s.citizens.some(c=>c.tradeJob&&c.cargo.stone>0);i++){s.event=null;advanceTime(s,.1);}
+ assert.ok(s.citizens.some(c=>c.tradeJob&&c.cargo.stone>0));
+ const old=structuredClone(s);old.version=30;
+ for(const r of [old.resources,old.delivered,old.trade.caravan.stock,old.trade.caravan.prices,...old.buildings.map(b=>b.stock)])if(r)delete r.flax;
+ const migrated=decode(encode(old));assert.ok(migrated);
+ assert.equal(migrated.resources.flax,0);
+ assert.equal(migrated.trade.caravan.stock.flax,0);
+ assert.deepEqual(migrated.trade.deliveries,old.trade.deliveries);
+ assert.deepEqual(migrated.citizens,old.citizens);
+ assert.equal(migrated.trade.silver,old.trade.silver);
 });

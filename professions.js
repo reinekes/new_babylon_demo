@@ -9,7 +9,7 @@ export const PROFESSIONS=Object.freeze({
  lumberjack:entry('Лесоруб','production',['logging']),clayworker:entry('Добытчик глины','production',['clay']),
  reedcutter:entry('Заготовитель тростника','production',['reed']),quarrier:entry('Каменотёс','production',['quarry']),
  potter:entry('Гончар','production',['pottery']),brewer:entry('Пивовар','production',['brewery']),
- weaver:entry('Ткач','production',['weaver']),shepherd:entry('Пастух','production',['sheepfold']),
+ weaver:entry('Ткач','production',['weaver','linenYard']),shepherd:entry('Пастух','production',['sheepfold']),
  dairyman:entry('Молочник','production',['cowshed']),
  musician:entry('Музыкант','production',['musicHouse']),
  fisher:entry('Рыбак','production',['fishing']),hunter:entry('Охотник','production',['hunting']),

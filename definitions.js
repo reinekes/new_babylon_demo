@@ -1,4 +1,4 @@
-export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth','clothing','brick','firedBrick','pottery','beer','milk'];
+export const MATERIALS=['food','clay','reed','wood','stone','hides','wool','cloth','clothing','brick','firedBrick','pottery','beer','milk','flax'];
 export const isCityFortification=type=>type==='cityWall'||type==='cityGate';
 export const BUILDINGS={
  cityWall:{name:'Городская стена',icon:'▰',brick:8,clay:4,desc:'Сырцовая секция. Соседние секции смыкаются, а замкнутый периметр перекрывает путь. Оставь место для городских ворот.',effect:'Перекрывает проход · 1 клетка',output:{}},
@@ -7,6 +7,7 @@ export const BUILDINGS={
  ishtarGate:{name:'Врата Иштар',icon:'♜',clay:100,reed:30,wood:20,brick:45,firedBrick:80,faith:100,prestige:65,unique:true,desc:'Чудесные синие врата открывают «Покров Инанны» после завершения строительства. Образ врат Вавилона VI века до н. э. помещён в шумерскую долину как явное чудо из будущего.',effect:'Монумент 3 × 3 · открывает синее чудо: Покров Инанны',output:{}},
  cowshed:{name:'Коровник',icon:'♉',clay:22,reed:16,wood:8,desc:'Три коровы и два телёнка в загоне с навесом. Два работника доят коров: доставленные тростник и вода расходуются на уход. Молоко хранится отдельно и перевозится носильщиками в склады и дома. Числа — игровой баланс.',effect:'1 тростник + 4 воды → 3 молока · 2 работника',output:{milk:3},workTime:8},
  pottery:{name:'Гончарный двор',icon:'◉',clay:20,reed:12,wood:4,desc:'Работники приносят глину, тростник и воду. Формовка трудом, сушка с погодой, обжиг и остывание; готовые сосуды относят на склад. Рецепт — игровой баланс.',effect:'4 глины + 2 воды + 2 тростника → 2 керамики',output:{pottery:2},workTime:5},
+ linenYard:{name:'Льняной двор',icon:'▤',clay:22,reed:12,wood:6,desc:'Купи лён у торговцев. Работники приносят стебли со склада, готовят волокно с водой и ткут полотно. Полотно поступает в общий запас ткани.',effect:'3 льна + 2 воды → 2 ткани',output:{cloth:2},workTime:18},
  bakery:{name:'Общая печь',icon:'♨',clay:22,reed:12,stone:4,desc:'Пекари вручную мелют ячмень и пекут хлеб. Партия требует еды сверх семенного резерва, воды и тростника. Хлеб относят на склад как еду.',effect:'4 еды + 2 воды + 2 тростника → 5 еды',output:{food:5},workTime:15},
  brewery:{name:'Пивоварня',icon:'♜',clay:24,reed:14,wood:6,desc:'Из 4 еды и 3 воды за 15 секунд труда готовят 3 напитка. Семенной резерв защищён; один керамический сосуд служит четырём партиям. Готовый напиток относят на склад. Рецепт — игровой баланс.',effect:'4 еды + 3 воды → 3 напитка · сосуд на 4 партии',output:{beer:3},workTime:15},
  harbor:{name:'Речная пристань',icon:'⚓',clay:28,reed:22,wood:12,brick:12,desc:'На берегу главной реки. Грузовая лодка швартуется, открывает торговлю и привозит крупные партии леса и камня. Два носильщика доставляют покупки на склад и загружают продажи. Нужны дорога, склад и населённый дом на этом берегу.',effect:'Речная торговля · крупные грузы · 2 носильщика',output:{}},
@@ -54,7 +55,7 @@ export const MIRACLES={
  stars:{name:'Мудрость звёзд',cost:45,cooldown:4,icon:'✶',domain:'knowledge',desc:'+18 престижа; открывает мудрые имена.'},
  shaping:{name:'Повеление глине',cost:50,cooldown:4,icon:'◈',domain:'craft',desc:'+60 глины и +40 тростника.'}
 };
-export const RESOURCE_NAMES={milk:'молоко',pottery:'керамика',beer:'напиток',food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
+export const RESOURCE_NAMES={flax:'лён',milk:'молоко',pottery:'керамика',beer:'напиток',food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
 export const levelOf=b=>b.level||1;
 export const isOperational=b=>!b.construction||b.construction.kind==='upgrade'||b.construction.kind==='repair'||b.construction.kind==='boat';
 export const capacityOf=b=>b.type==='house'&&isOperational(b)?(b.starterHut&&levelOf(b)===1?4:4+4*levelOf(b)):0;

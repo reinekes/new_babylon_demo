@@ -6,7 +6,7 @@ import {createMusicCourtyard} from './music-courtyard.js';
 import {createIshtarGateFallback,createSumerGate} from './sacred-models.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
 // not reconstructions. One merged mesh per shared material and building template.
-export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','bakery','levee','cityWall','cityGate','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market','musicHouse','ishtarGate']);
+export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','bakery','levee','cityWall','cityGate','harbor','kiln','brickyard','waterpoint','tailor','sheepfold','weaver','linenYard','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market','musicHouse','ishtarGate']);
 export function createArchitecture(B,scene,b,m,state){
  if(b.type==='musicHouse')return createMusicCourtyard(B,scene,b,m);
  if(b.type==='ishtarGate')return isStrictSumer(state)?createSumerGate(B,scene,m,b):createIshtarGateFallback(B,scene,m,null,b);
@@ -127,6 +127,7 @@ export function createArchitecture(B,scene,b,m,state){
  case 'brickyard':ground();room(-1.6,-1.7,1.8,1.5,1.65);basin(-1.45,.05,1.65,1.35);cloth(-1.4,-.25,2,1.6,1.65,m.reed);for(let r=0;r<5;r++)for(let k=0;k<5;k++)block(-.1+k*.5,.13,-1.8+r*.88,.4,.2,.57,m.raw);bench(-1.5,1.6,1.5);block(-1.5,.86,1.6,.6,.08,.34,m.wood);break;
  case 'kiln':ground();block(-.6,1.05,-.55,2.75,2.1,2.8,m.fired);block(-.6,2.14,-.55,2.4,.18,2.45,m.raw);for(const x of [-1.3,.1]){block(x,.5,.87,.47,.67,.04,m.shade);cylinder(x,2.4,-.95,.19,.65,m.fired,.15);}cloth(1.8,.2,1.25,3.2,1.65,m.reed);stack(.95,.2,17,m.fired);stack(-1.8,1.7,9);break;
  case 'waterpoint':ground();basin(0,.4,2.6,2.1);cloth(-.25,-.8,3.6,1.5,2.1,m.reed);for(let i=0;i<6;i++)jar(-2.1+i*.8,1.95,.55);beam([-1.8,.3,-2],[1.8,.3,-2],.13,m.reed);block(0,.26,-1.7,.55,.1,.6,m.shade);break;
+ case 'linenYard':
  case 'weaver':ground();room(-1.5,-.4,1.7,3.8,2);cloth(.65,.05,3,3.6,2.25,m.reed);loom(.3,-.9);loom(.5,1.1);for(let i=0;i<5;i++)cylinder(1.8,.28,-1.4+i*.66,.24,.52,m.linen,.18);break;
  case 'tailor':ground();room(0,-1.55,4.3,1.65,2.35);cloth(-.5,.55,3.3,2,2.05);bench(-.7,.5,2.5);for(let i=0;i<3;i++)block(-1.4+i*.65,.86,.5,.55,.06,.58,m.linen);for(let i=0;i<4;i++){beam([1.65,.1,-.5+i*.65],[1.65,1.7,-.5+i*.65]);block(1.65,1.27,-.5+i*.65,.6,.8,.07,m.linen);}break;
  case 'cowshed':ground();fence(0,0,5,5);cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
