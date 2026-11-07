@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-07T16:14:32.010548+00:00",
+  "commit": "73297abbea08d59138dbb74dfa783c0041488fac",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7db2b82b6035539c790b8343844330660d8d748cac2c4f1fedc0a6de859764b0",
+      "actual": "7db2b82b6035539c790b8343844330660d8d748cac2c4f1fedc0a6de859764b0",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "1bf6b1b8292559d48e5254a63897b54f3f1cb68dbd4eeddd1d9b43b5fce0d4d5",
+      "actual": "1bf6b1b8292559d48e5254a63897b54f3f1cb68dbd4eeddd1d9b43b5fce0d4d5",
+      "match": true
+    },
+    {
+      "path": "cult-sign.js",
+      "status": 200,
+      "expected": "d428c480ad17bd4014f136f2148a2267fa12585ebcd33c918e6e23e02a151859",
+      "actual": "d428c480ad17bd4014f136f2148a2267fa12585ebcd33c918e6e23e02a151859",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "d6fdf869bdfcd88b01789d3733d85b1d478dc4df9af126b2d2991da8d46fa7ed",
+      "actual": "d6fdf869bdfcd88b01789d3733d85b1d478dc4df9af126b2d2991da8d46fa7ed",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-cult-tablet-4x.json",
+      "status": 200,
+      "expected": "b4c40c6f5a46e25a6a98b855664657d07ef0fc93f0262d3c818633a7fd2ed963",
+      "actual": "b4c40c6f5a46e25a6a98b855664657d07ef0fc93f0262d3c818633a7fd2ed963",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-cult-tablet-browser.json",
+      "status": 200,
+      "expected": "8d0ff49c6aad38517cfd681daed27a38c0ee7fc0904e5e581acf8f2109f60a41",
+      "actual": "8d0ff49c6aad38517cfd681daed27a38c0ee7fc0904e5e581acf8f2109f60a41",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "e1f254695f073aebc718539ce614597b437961bc0b13fb9e8a76ed92d92d3982",
+      "actual": "e1f254695f073aebc718539ce614597b437961bc0b13fb9e8a76ed92d92d3982",
+      "match": true
+    },
+    {
+      "path": "game3d/buildings.js",
+      "status": 200,
+      "expected": "464b99534b7e7ad3f550b3522d22ac5ee6f5073cd21ebfaef90f8b85eb14e1e6",
+      "actual": "464b99534b7e7ad3f550b3522d22ac5ee6f5073cd21ebfaef90f8b85eb14e1e6",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a73ec346ccf5dbf9ecb57db64075d037b56a21b3bb9045fbcc5df310aea9f913",
+      "actual": "a73ec346ccf5dbf9ecb57db64075d037b56a21b3bb9045fbcc5df310aea9f913",
+      "match": true
+    },
+    {
+      "path": "map-art.js",
+      "status": 200,
+      "expected": "d6ac722c635d4c614d40388e87fb36b3bd4a13e894f90ecd43b58941a9aa3453",
+      "actual": "d6ac722c635d4c614d40388e87fb36b3bd4a13e894f90ecd43b58941a9aa3453",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "9575de8aece8f69ac3499cc866d2cfeaa3a2212413bb2925b63a0d852e234cd7",
+      "actual": "9575de8aece8f69ac3499cc866d2cfeaa3a2212413bb2925b63a0d852e234cd7",
+      "match": true
+    },
+    {
+      "path": "tests/divine-reputation.test.js",
+      "status": 200,
+      "expected": "88c05fdda722e91c7604b341ddbffe44974c5dcf43cedf96c62cb833de049b32",
+      "actual": "88c05fdda722e91c7604b341ddbffe44974c5dcf43cedf96c62cb833de049b32",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
