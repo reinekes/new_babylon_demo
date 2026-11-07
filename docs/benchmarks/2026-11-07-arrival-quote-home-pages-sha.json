@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T19:23:46.416433+00:00",
+  "commit": "04862c44acc3a586ba693de1e89f867a5e55856d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9da6128b0687e6cba44b93c9db5f434a7605a199f5e02a8d7dbc1c901ae32819",
+      "actual": "9da6128b0687e6cba44b93c9db5f434a7605a199f5e02a8d7dbc1c901ae32819",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "6bd5df5897c39d6f65d3fff14fd9add3c70ace52e04324b08a69e288197ffc1d",
+      "actual": "6bd5df5897c39d6f65d3fff14fd9add3c70ace52e04324b08a69e288197ffc1d",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "8de566b46c93aab5c2e8ba1069424659f75f59cccc0eda6d208d7de812099e91",
+      "actual": "8de566b46c93aab5c2e8ba1069424659f75f59cccc0eda6d208d7de812099e91",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "394b46b082f3107b01c0fcd2c0dcf82fec0b7931fc63426138fcde96740f513e",
+      "actual": "394b46b082f3107b01c0fcd2c0dcf82fec0b7931fc63426138fcde96740f513e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-quote-home-4x.json",
+      "status": 200,
+      "expected": "7858533c5df0f1e74df6375788130f1ae5357972c20bf93d021adfc40d453121",
+      "actual": "7858533c5df0f1e74df6375788130f1ae5357972c20bf93d021adfc40d453121",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-quote-home-browser.json",
+      "status": 200,
+      "expected": "ad52a0c47235f12357c226856c625c7eec987cf7d741d6e28875f6acf00a93fd",
+      "actual": "ad52a0c47235f12357c226856c625c7eec987cf7d741d6e28875f6acf00a93fd",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "c425671dc5b886ed63e79fe20895276b6ea9a86ce7690f8a1da2a7e307b8bfb1",
+      "actual": "c425671dc5b886ed63e79fe20895276b6ea9a86ce7690f8a1da2a7e307b8bfb1",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "1c6ee5d9efb694cb0a279d0cd3a289f40dc38dab4cc5c17f3b1fd1126eb561dd",
+      "actual": "1c6ee5d9efb694cb0a279d0cd3a289f40dc38dab4cc5c17f3b1fd1126eb561dd",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
