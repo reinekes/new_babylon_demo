@@ -5,7 +5,7 @@ import {landMemoryCastQuote,validateLandMemory} from './land-memory.js';
 import {validateDepthSupply} from './depth-supply.js';
 import {recordStarForecast} from './star-forecast.js';
 import {validateStarObservations} from './star-observations.js';
-import {reserveArrival,validateArrivalHospitality} from './arrival-hospitality.js';
+import {arrivalHousing,reserveArrival,validateArrivalHospitality} from './arrival-hospitality.js';
 import {connectedStores} from './district-logistics.js';
 import {createShapingBatch,validateShapingBatches} from './shaping-batch.js';
 import {validateShapingModel} from './shaping-model.js';
@@ -380,7 +380,8 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,(45-s.seasonElapsed)/calendarRateFor(s))>0;}
-export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
+export const refugeeArrivalCount=s=>Math.min(6,arrivalHousing(s,{includeFlooded:true}).reduce((total,row)=>total+row.beds,0));
+export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&!refugeeArrivalCount(s))return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
  if(choice==='accept'&&s.godhood?.namelessEndingAt!==undefined)return {ok:false,reason:'История завершена: доступно наблюдение'};
  if(s.miracleCelebration)return {ok:false,reason:miracleCelebrationReason(s)};
@@ -390,7 +391,7 @@ export function resolveEvent(s,choice){
  if(isAdditionalCityEvent(s.event.id)){const result=applyCityEvent(s,s.event.id,choice);if(!result.ok)return result;}
  else if(choice==='accept'){
   const reason=eventReason(s);if(reason)return {ok:false,reason};const id=s.event.id;s.resources.food-=id==='caravan'?35:20;
-  if(id==='caravan'){s.resources.clay+=25;s.resources.reed+=20;}if(id==='refugees')s.population+=Math.min(6,s.capacity-s.population);
+  if(id==='caravan'){s.resources.clay+=25;s.resources.reed+=20;}if(id==='refugees')s.population+=refugeeArrivalCount(s);
  }
  log(s,s.event.title,choice==='accept'?'Город принял твоё решение.':'Город сохранил запасы и продолжил свой путь.',choice==='accept'?'good':'info');s.event=null;syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }

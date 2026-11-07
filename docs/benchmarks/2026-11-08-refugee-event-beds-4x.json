@@ -1,0 +1,20 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "initialPopulation": 200,
+  "population": 206,
+  "locked": [
+    "9,9",
+    "8,8"
+  ],
+  "reservedAtLoad": 1,
+  "reservedAfterFlood": 0,
+  "acceptedRefugees": 6,
+  "newResidentHome": "23,3",
+  "shelter": "8,8",
+  "identitiesPreserved": true,
+  "reloadByteIdentical": true,
+  "steps": 101,
+  "medianCpuMs": 2.356458000000032,
+  "p95CpuMs": 7.288624999999968
+}

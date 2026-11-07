@@ -13,3 +13,20 @@ test('every new event accepts, skips, saves and cannot grant twice',()=>{
 test('new events reject unaffordable choices without mutation',()=>{
  assert.equal(typeof api.createCityEvent,'function');const s=createGame({start:'established'});s.event=api.createCityEvent(s,'potterVisit');s.resources.food=0;const raw=encode(s);assert.equal(resolveEvent(s,'accept').ok,false);assert.equal(encode(s),raw);
 });
+
+test('new families spend food only when unreserved beds are available',()=>{
+ const s=createGame({start:'established'}),home=s.citizens.at(-1).home;
+ const guests=s.citizens.filter(c=>c.home!==home).slice(0,4);
+ for(const c of guests)c.floodShelter=home;
+ s.event=api.createCityEvent(s,'refugees');
+ const before=encode(s);
+ assert.match(resolveEvent(s,'accept').reason??'',/Нет свободного жилья/);
+ assert.equal(encode(s),before);
+ delete guests[0].floodShelter;
+ const food=s.resources.food,ids=s.citizens.map(c=>c.id);
+ assert.ok(resolveEvent(s,'accept').ok);
+ assert.equal(s.population,ids.length+1);
+ assert.equal(s.resources.food,food-20);
+ assert.deepEqual(s.citizens.slice(0,-1).map(c=>c.id),ids);
+ assert.equal(s.citizens.at(-1).home,home);
+});

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "refugees",
+    "view": "2d",
+    "url": "?id=refugees&view=2d",
+    "mode": "2d",
+    "result": "PASS quote and admission of six people"
+  },
+  {
+    "id": "refugees",
+    "view": "3d",
+    "url": "?id=refugees&view=3d",
+    "mode": "3d",
+    "result": "PASS quote and admission of six people"
+  }
+]

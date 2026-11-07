@@ -120,7 +120,7 @@ import {weatherAt} from './environment.js';
 import {builderConsent,setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
-import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,refugeeArrivalCount,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,isOperational,levelOf,outputMultiplier} from './definitions.js';
@@ -1280,7 +1280,9 @@ function checkDialogs(){
  }
  if(state.event&&state.godhood?.namelessEndingAt===undefined){
   const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
-  const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':ev.text;
+  const arrivals=ev.id==='refugees'?refugeeArrivalCount(state):null;
+  const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':
+   arrivals===null?ev.text:arrivals?`Можно принять жителей: ${arrivals}. Приём стоит 20 еды.`:'Сейчас нет свободных мест для новых жителей.';
   const eventCost=festival?`<div class="event-costs" role="group" aria-label="Цена праздника">${[['prestige','престижа'],['food','еды'],['beer','пива']].map(([kind,name])=>`<span>${resourceIcon(kind)}<span><b>${FESTIVAL_COST[kind]}</b> ${name}</span></span>`).join('')}</div>`:'';
   openDialog('event',`${ev.id==='festival'?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:''}<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span><h2>${esc(ev.title)}</h2><p>${esc(description)}</p>${eventCost}${reason?`<p class="warning-note">${reason}</p>`:''}<div class="dialog-actions"><button class="primary" id="event-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button class="secondary" id="event-skip">${esc(definition?.skipLabel||'Отказаться')}</button></div><p class="keyboard-note">Время на паузе. Ресурсы сверху остаются видны.</p>`);
   for(const choice of ['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(result.ok){closeDialog();if(choice==='accept'&&ev.id==='festival'){paused=false;showFestival();}save();update();checkDialogs();}else toast(result.reason);};

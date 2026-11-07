@@ -56,8 +56,8 @@ export function arrivalHospitalityView(s){
 
 export const shelterHome=c=>c.floodShelter||c.fireShelter?.host;
 
-export function arrivalHousing(s,{includeReserved=false}={}){
- const flood=floodMapView(s);
+export function arrivalHousing(s,{includeReserved=false,includeFlooded=false}={}){
+ const flood=includeFlooded?null:floodMapView(s);
  const flooded=new Set(flood?.phase==='active'?flood.tiles.map(buildingKey):[]);
  const vacancies=new Map();
  for(const b of s.buildings){
