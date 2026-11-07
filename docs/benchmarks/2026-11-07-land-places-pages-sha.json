@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T01:43:34.265627+00:00",
+  "commit": "a24227b15d70f96a72bc3b31ff60fcbcf4c6ea76",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ca5ddbd8f394d2f50701cb1e0725d0a25e0364e0e604510f0e123493b8ea165f",
+      "actual": "ca5ddbd8f394d2f50701cb1e0725d0a25e0364e0e604510f0e123493b8ea165f",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "dcebb1af111655835cb9a17c661bfc82d34a7ead74e4c4fa06ba8c9ec5e5f13e",
+      "actual": "dcebb1af111655835cb9a17c661bfc82d34a7ead74e4c4fa06ba8c9ec5e5f13e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-land-places-4x.json",
+      "status": 200,
+      "expected": "f108f17a0754d8d794caa41c84287babd0381271b3b17f873203c60372fb21e2",
+      "actual": "f108f17a0754d8d794caa41c84287babd0381271b3b17f873203c60372fb21e2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "8d08d53ae33d4f55732166b8814c0b9ef783fa27d88f3c2c62ed498f12289b9b",
+      "actual": "8d08d53ae33d4f55732166b8814c0b9ef783fa27d88f3c2c62ed498f12289b9b",
+      "match": true
+    },
+    {
+      "path": "land-memory.js",
+      "status": 200,
+      "expected": "b50ec7999c1a4b324a3dcc109cd7fcac5564ebfb477295761487c2deecec2b78",
+      "actual": "b50ec7999c1a4b324a3dcc109cd7fcac5564ebfb477295761487c2deecec2b78",
+      "match": true
+    },
+    {
+      "path": "revelation-evidence.js",
+      "status": 200,
+      "expected": "aee77ccf3111a5302c672b33b9af3521c519ad5dac54165e652ea6575506f62a",
+      "actual": "aee77ccf3111a5302c672b33b9af3521c519ad5dac54165e652ea6575506f62a",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a3548301c97da29543e440e259f2bec78b0e358622ba9f7e799c4c0b0105d86f",
+      "actual": "a3548301c97da29543e440e259f2bec78b0e358622ba9f7e799c4c0b0105d86f",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "d1ea2734557f6f2e4cb1d78245c83294f1ce1886f29ee789e08c1dbe81b50e9b",
+      "actual": "d1ea2734557f6f2e4cb1d78245c83294f1ce1886f29ee789e08c1dbe81b50e9b",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "55eaaf5b9bc1331798d658c44cc5bdd159479b20acca45bf1bf59b8c7c14bc32",
+      "actual": "55eaaf5b9bc1331798d658c44cc5bdd159479b20acca45bf1bf59b8c7c14bc32",
+      "match": true
+    },
+    {
+      "path": "tests/land-memory.test.js",
+      "status": 200,
+      "expected": "c24dae89d28d9945afcfb98a1caa85d2757e7d4e6ebf8875e71f45b759c3dc82",
+      "actual": "c24dae89d28d9945afcfb98a1caa85d2757e7d4e6ebf8875e71f45b759c3dc82",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "1124e49b5c8ccee5ecb3e2edb1cebc7a6cb4bdccb2f2b83167ee263f07feb93b",
+      "actual": "1124e49b5c8ccee5ecb3e2edb1cebc7a6cb4bdccb2f2b83167ee263f07feb93b",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
