@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "initialPopulation": 200,
+  "population": 201,
+  "count": 1,
+  "idleWhileWaiting": true,
+  "walkedAfterOpening": true,
+  "byteIdenticalReload": true,
+  "walkingReload": true,
+  "displacedRejected": true,
+  "finishedEarlyRejected": true,
+  "steps": 57,
+  "medianCpuMs": 1.69500000000005,
+  "p95CpuMs": 81.95008299999995
+}

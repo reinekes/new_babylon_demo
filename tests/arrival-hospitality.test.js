@@ -387,6 +387,15 @@ test('a paid group waits at a real gate, keeps its reserve on reload and settles
  const waiting=encode(s),copy=decode(waiting);
  assert.equal(encode(copy),waiting);
  assert.deepEqual(copy.arrivalGroup.provisions,reserve);
+ for(const invalidRoute of [
+  g=>{g.x+=3;},
+  g=>{g.routeIndex=g.route.length;},
+  g=>{g.route=[];g.routeIndex=0;}
+ ]){
+  const invalid=JSON.parse(waiting);
+  invalidRoute(invalid.arrivalGroup);
+  assert.equal(decode(JSON.stringify(invalid)),null);
+ }
  const {cityToolsHTML}=await import('../ui-city-tools.js');
  assert.match(cityToolsHTML(copy),/Ждут открытия пути/);
  assert.equal(advanceArrivalGroup(copy,60,networkFor(copy)),false);

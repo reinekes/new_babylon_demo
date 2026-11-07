@@ -290,13 +290,13 @@ function validArrivalGroup(s){
   !g.provisions||typeof g.provisions!=='object'||Array.isArray(g.provisions)||
   !Number.isFinite(g.x)||g.x<-.5||g.x>worldWidth(s)-.5||
   !Number.isFinite(g.y)||g.y<-.5||g.y>worldHeight(s)-.5||
-  !Array.isArray(g.route)||g.route.length>(worldWidth(s)+1)*(worldHeight(s)+1)||
+  !Array.isArray(g.route)||!g.route.length||g.route.length>(worldWidth(s)+1)*(worldHeight(s)+1)||
   !Number.isInteger(g.routeIndex)||g.routeIndex<0||g.routeIndex>g.route.length)return false;
  const sources=Object.entries(g.provisions);
  if(!sources.every(([key,lot])=>lot&&Object.keys(lot).length===1&&Number.isFinite(lot.food)&&lot.food>0&&
   s.buildings.some(b=>buildingKey(b)===key&&b.stock))||
   Math.abs(sources.reduce((n,[,lot])=>n+lot.food,0)-g.count)>1e-7)return false;
- return g.route.every((key,i)=>{
+ const validRoute=g.route.every((key,i)=>{
   if(typeof key!=='string'||!/^\d+,\d+$/.test(key))return false;
   const [x,y]=key.split(',').map(Number);
   if(x>worldWidth(s)||y>worldHeight(s))return false;
@@ -304,6 +304,15 @@ function validArrivalGroup(s){
   const [a,b]=g.route[i-1].split(',').map(Number);
   return key!==g.route[i-1]&&Math.abs(x-a)<=1&&Math.abs(y-b)<=1;
  });
+ if(!validRoute)return false;
+ const point=key=>key.split(',').map(value=>Number(value)-.5);
+ const distance=([x,y])=>Math.hypot(g.x-x,g.y-y);
+ const tolerance=1e-7;
+ if(g.routeIndex===0)return distance(point(g.route[0]))<=Math.SQRT2+tolerance;
+ const start=point(g.route[g.routeIndex-1]);
+ if(g.routeIndex===g.route.length)return distance(start)<=tolerance;
+ const end=point(g.route[g.routeIndex]);
+ return distance(start)+distance(end)<=Math.hypot(start[0]-end[0],start[1]-end[1])+tolerance;
 }
 
 export function validateArrivalHospitality(s){
