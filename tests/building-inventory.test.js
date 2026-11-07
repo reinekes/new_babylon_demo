@@ -79,3 +79,23 @@ test('a carrier delivers workshop input and exports completed goods with conserv
  for(let i=0;i<450;i++){s.event=null;advanceTime(s,.1);inputInHands ||= s.citizens.some(c=>c.districtJob&&c.cargo.wool>0);outputInHands ||= s.citizens.some(c=>c.districtJob&&c.cargo.cloth>0);if(i%20===0)assert.ok(decode(encode(s)),`reload ${i}`);if(b.weaving.wool>=3&&b.workshopStock.output.cloth===0)break;}
  assert.ok(inputInHands);assert.ok(outputInHands);assert.equal(b.weaving.wool,3);assert.equal(s.resources.wool,9);assert.equal(s.resources.cloth,before);assert.equal(b.workshopStock.output.cloth,0);
 });
+
+test('a milk delivery crossing a seasonal boundary keeps the complete physical load',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {advanceSeason}=await import('../engine.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));
+ s.citizens=[s.citizens[0]];s.population=1;
+ const c=s.citizens[0],b=s.buildings.find(b=>`${b.x},${b.y}`===c.home);
+ c.role='carrier';b.pantry=100;b.pantryDelivered=100;b.water=100;
+ s.resources.milk=6;syncInventory(s);
+ assert.ok(requestTransfer(s,'9,8',c.home,'milk',2,{automatic:true,targetKind:'input'}).ok);
+ for(let i=0;i<120&&!c.cargo.milk;i++){s.event=null;advanceTime(s,.1);}
+ assert.equal(c.cargo.milk,2);
+ s.simTime=s.seasonElapsed=45-1e-6;s.event=null;
+ assert.ok(advanceSeason(s));
+ assert.equal(c.cargo.milk,2);
+ assert.equal(s.resources.milk,3);
+ const restored=decode(encode(s));assert.ok(restored);
+ assert.equal(restored.citizens[0].cargo.milk,2);
+});

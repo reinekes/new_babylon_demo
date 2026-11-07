@@ -8,7 +8,14 @@ export function isReedShrine(state,b){
  return b?.type==='shrine'&&levelOf(b)===1&&isStrictSumer(state);
 }
 const inannaChapterGate=Object.freeze({...sumerGate,desc:'Сырцовый священный порог с деревянной перемычкой. Для открытия Покрова Инанны нужны жрец, доказанная охрана запаса и встреча общины.'});
-export function buildingDefinition(state,type){return type==='ishtarGate'&&isStrictSumer(state)?state.inannaDiscovery?inannaChapterGate:sumerGate:BUILDINGS[type];}
+const sumerCowshed={...BUILDINGS.cowshed,desc:BUILDINGS.cowshed.desc+' При смене сезона портится четверть свежего молока в запасах. Двор молочных припасов превращает молоко в сухой сыр.'};
+export function buildingDefinition(state,type){
+ if(isStrictSumer(state)){
+  if(type==='ishtarGate')return state.inannaDiscovery?inannaChapterGate:sumerGate;
+  if(type==='cowshed')return sumerCowshed;
+ }
+ return BUILDINGS[type];
+}
 export function buildingPresentation(state,b){
  if(isReedShrine(state,b))return reedShrine;
  const def=buildingDefinition(state,b?.type);

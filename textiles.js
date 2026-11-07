@@ -34,7 +34,7 @@ export function settleManagedFlocks(s,pasture=new Map()){
 }
 export const fleeceGrowth=b=>b.flock?.shortage>0?0:fleeceCapacity(b)/180;
 export const weavingBatch=b=>WOOL_PER_CLOTH*outputMultiplier(b);
-export const craftResource=b=>isArtisan(b)?(b.type==='pottery'?'clay':'food'):b?.type==='tailor'?'cloth':b?.type==='kiln'?'brick':b?.type==='brickyard'?'clay':'wool';
+export const craftResource=b=>isArtisan(b)?Object.keys(artisanRecipe(b))[0]:b?.type==='tailor'?'cloth':b?.type==='kiln'?'brick':b?.type==='brickyard'?'clay':'wool';
 export const craftState=b=>isArtisan(b)?b.artisan:b?.type==='tailor'?b.tailoring:b?.type==='kiln'?b.firing:b?.type==='brickyard'?b.brickmaking:b?.weaving;
 export const craftLoad=c=>(c.craftWool||0)+(c.craftCloth||0)+(c.craftAmount||0);
 export const craftBatch=b=>(b.type==='tailor'?2:3)*outputMultiplier(b);

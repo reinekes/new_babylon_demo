@@ -64,7 +64,7 @@ import {orchardMaturity,validateOrchards} from './orchard-layout.js';
 import {stampBuildingCompletion,validateBuildingChronology} from './building-chronology.js';
 import {validateStockAccounts} from './scribes.js';
 import {initializeProductionAccounting,validateProductionHistory} from './building-production-history.js';
-import {validateDairy,settleManagedDairy} from './dairy.js';
+import {validateDairy,settleManagedDairy,settleMilkSpoilage} from './dairy.js';
 import {initializeBuildingInventory,validateBuildingInventory} from './building-inventory.js';
 import {initializeEcology,advanceEcology,validateEcology} from './ecology.js';
 import {starterHomes,distributeFounders} from './starter-settlement.js';
@@ -300,6 +300,8 @@ function settleSeason(s){
  syncLifeAnalytics(s);
  depositCanalSilt(s,irrigationFor(s));
  const previous=s.season,pasture=pastureCredits(s,previous);s.tick++;expireRichCatch(s);s.season=s.tick%4;s.year=1+Math.floor(s.tick/4);changeCropSeason(s,previous);settleManagedFlocks(s,pasture);settleManagedDairy(s,pasture);advanceTrade(s);advanceMedicalYear(s);
+ const spoiledMilk=settleMilkSpoilage(s);
+ if(spoiledMilk>0)log(s,'Часть молока испортилась',`В запасах потеряно ${Number(spoiledMilk.toFixed(2))} ед. свежего молока. Сухой сыр остаётся в запасе еды.`,'bad');
  const flood=changeFloodSeason(s);
  if(flood==='warning')log(s,'Весной ожидается разлив','Проверь дороги и запасы под угрозой в обзоре города, в разделе «Работа».','bad');
  if(flood==='active'){
@@ -475,7 +477,7 @@ export function decode(raw){
   for(const b of s.buildings){
    const key=buildingKey(b),land=terrain(b.x,b.y,s);if(b.starterHut!==undefined&&(b.type!=='house'||b.starterHut!==true))return null;if(b.rotation!==undefined&&!validRotation(b.type,b.rotation))return null;if(b.footprint!==undefined&&(newFootprint(b.type)===1||b.footprint!==newFootprint(b.type)))return null;
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
-   if(b.type==='linenYard'&&!isStrictSumer(s))return null;
+   if(['linenYard','dairyStore'].includes(b.type)&&!isStrictSumer(s))return null;
    if(isCityFortification(b.type)&&(!isStrictSumer(s)||b.level!==1||b.construction?.kind==='upgrade'||b.type==='cityGate'&&b.footprint!==2))return null;
    if(b.legacyMasonryLevel!==undefined&&!integer(b.legacyMasonryLevel,1,b.level))return null;
    if(b.legacyFiringLevel!==undefined&&!integer(b.legacyFiringLevel,1,b.level))return null;

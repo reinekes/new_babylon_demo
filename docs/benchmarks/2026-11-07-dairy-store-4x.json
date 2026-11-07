@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "stages": [
+    "idle",
+    "preservingMilk"
+  ],
+  "received": 3,
+  "steps": 800,
+  "medianCPUms": 2.1617089999999735,
+  "p95CPUms": 6.128582999999935,
+  "exactSave": true
+}

@@ -28,3 +28,20 @@ test('carriers deliver real dairy feed, export milk and stock homes without tele
  for(let i=0;i<900&&!homeMilk;i++){s.event=null;advanceTime(s,.1);carriedFeed||=s.citizens.some(c=>c.cargo.reed>0&&s.district.jobs.some(q=>q.id===c.districtJob&&q.target==='10,8'));carriedMilk||=s.citizens.some(c=>c.cargo.milk>0);localMilk||=b.workshopStock.output.milk>0;homeMilk||=s.buildings.some(h=>h.householdStock?.milk>0);if(i%100===0)assert.ok(decode(encode(s)));}
  assert.ok(carriedFeed,'fodder has a real courier');assert.ok(localMilk,'milk first enters its own output shed');assert.ok(carriedMilk,'milk has a real courier');assert.ok(homeMilk,'a home receives actual milk');assert.ok(s.delivered.milk>0);assert.ok(decode(encode(s)));
 });
+
+test('Southern Sumer seasonal spoilage removes stored milk only in that scenario',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {advanceSeason,createGame}=await import('../engine.js');
+ const {putStock}=await import('../inventory.js');
+ for(const scenario of [strictScenario(),undefined]){
+  const s=createGame({start:'established',scenario});
+  assert.equal(putStock(s,'9,8','milk',20),20);
+  // Cross only the seasonal boundary. Workers have no time to take a fresh load.
+  const skip=45-1e-6;
+  s.seasonElapsed=skip;s.simTime=skip;
+  assert.ok(advanceSeason(s));
+  assert.equal(s.resources.milk,scenario?15:20);
+  assert.equal(s.buildings.find(b=>b.type==='shrine').stock.milk,s.resources.milk);
+  assert.equal(s.news.some(row=>row.title==='Часть молока испортилась'),!!scenario);
+ }
+});

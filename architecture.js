@@ -15,7 +15,7 @@ import {seed} from './city-life.js';
 export function drawBuilding(r, b, state, t) {
   if(isStrictSumer(state)&&['shrine','ziggurat','ishtarGate'].includes(b.type)){drawSumerSacred(r,b,state);return;}
   if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
-  if(['pottery','brewery','bakery'].includes(b.type)){drawArtisan(r,b,state,t);return;}
+  if(['pottery','brewery','bakery','dairyStore'].includes(b.type)){drawArtisan(r,b,state,t);return;}
   if(b.type==='harbor'){drawHarbor(r,b,state);return;}
   if(b.type==='canal'){drawCanal(r,b,state);return;}
   if(b.type==='bridge'){r.bridge(b);return;}

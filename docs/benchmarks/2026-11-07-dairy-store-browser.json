@@ -1,0 +1,16 @@
+[
+  {
+    "id": "dairy",
+    "view": "2d",
+    "url": "?id=dairy&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d dairy store and cheese readout"
+  },
+  {
+    "id": "dairy",
+    "view": "3d",
+    "url": "?id=dairy&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d dairy store and cheese readout"
+  }
+]

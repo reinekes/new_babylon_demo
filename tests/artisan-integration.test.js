@@ -91,3 +91,28 @@ test('a flax yard processes delivered flax and water into cloth for the warehous
  assert.equal(s.resources.cloth,2);
  assert.ok(s.district.jobs.some(q=>q.source==='10,9'&&q.resource==='cloth'&&q.delivered===2));
 });
+
+test('dairy stores turn delivered fresh milk and a vessel into food for the warehouse',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {finishConstruction,workRequired}=await import('../construction.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ putStock(s,'9,8','milk',6);putStock(s,'9,8','pottery',1);
+ const result=build(s,'dairyStore',10,9);assert.ok(result.ok,result.reason);
+ const b=s.buildings.at(-1);
+ b.construction.delivered={...b.construction.required};
+ for(const k of Object.keys(b.construction.remaining))b.construction.remaining[k]=0;
+ b.construction.work=workRequired(b);
+ assert.ok(finishConstruction(s));syncCitizens(s);
+ assert.ok(assignWorkplace(s,0,'10,9').ok);
+ assert.ok(assignWorkplace(s,1,'10,9').ok);
+ let work=false,delivered=false;
+ for(let i=0;i<3600&&!delivered;i++){
+  s.event=null;advanceTime(s,.1);
+  work||=b.artisan.stage==='preservingMilk';
+  delivered=s.district.jobs.some(q=>q.source==='10,9'&&q.resource==='food'&&q.delivered>=3);
+  if(i%20===0)assert.ok(decode(encode(s)),`dairy save ${i} ${b.artisan.stage}`);
+ }
+ assert.ok(work&&delivered);
+ assert.equal(s.resources.pottery,0);
+ assert.equal(b.productionHistory[0].resources.food,3);
+});
