@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T20:07:37.562929+00:00",
+  "commit": "ed101fdb6c5d53cececdf6ae95466c79637cefde",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "5f2d15e44ba4aeb99a94f78b88a75417c61f7b99c96e385a94425a64baf40e31",
+      "actual": "5f2d15e44ba4aeb99a94f78b88a75417c61f7b99c96e385a94425a64baf40e31",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "5bed64fe5c2b751d4d21cc38bc27470561c85ec18075627bcf423222bdc63f39",
+      "actual": "5bed64fe5c2b751d4d21cc38bc27470561c85ec18075627bcf423222bdc63f39",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "005be0543b74fbb4b416c62940e8b28a7a20e370cc1fd819a2cde187e0f93bff",
+      "actual": "005be0543b74fbb4b416c62940e8b28a7a20e370cc1fd819a2cde187e0f93bff",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-project-recipient-4x.json",
+      "status": 200,
+      "expected": "ee57896d4f0e719e1d4042b6cbb9988074e238f00d7884394c04e804a67e71ae",
+      "actual": "ee57896d4f0e719e1d4042b6cbb9988074e238f00d7884394c04e804a67e71ae",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "898cc7aceb5777a9d2a0c908174d68616681830d8e12d801508f43b9a142aca4",
+      "actual": "898cc7aceb5777a9d2a0c908174d68616681830d8e12d801508f43b9a142aca4",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "53d9c0a70f51ee7a361fb27d9695d135f77abfec61dba8fb71f897540f91e604",
+      "actual": "53d9c0a70f51ee7a361fb27d9695d135f77abfec61dba8fb71f897540f91e604",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "eb4efc22ae2bd12248e2840c446fc6741cdd54207e83be2078837aab0282b6d5",
+      "actual": "eb4efc22ae2bd12248e2840c446fc6741cdd54207e83be2078837aab0282b6d5",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
