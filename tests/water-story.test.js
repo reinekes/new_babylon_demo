@@ -133,3 +133,30 @@ test('the shared water ending requires shelter, two supplied homes and the same 
  assert.equal(s.won,false);
  assert.equal(recordWaterEnding(s).ok,false);
 });
+
+test('the city ending can be recorded without a monument and post-monument goals need new work',async()=>{
+ const {cityEndingOffer,recordCityEnding,advanceMonumentLife,monumentLifeView}=await import('../campaign.js');
+ const s=createNewCity({mode:'awakening',seed:137}),keeper=s.citizens[0];
+ const temple={type:'shrine',x:5,y:5,level:1};
+ s.buildings.push(temple);
+ Object.assign(s.godhood,{stage:'recognized',recognitionAt:0,witnessId:keeper.id,believerIds:[keeper.id]});
+ s.name='Сдержавший слово';s.divinity.names.push(s.name);
+ Object.assign(keeper,{role:'production',calling:'priest',workplace:'5,5'});
+ s.votiveOfferings=[{id:1,temple:'5,5',receivedTick:0,memory:{keeperId:keeper.id}}];
+ s.supplyVows={history:[{id:1,outcome:'fulfilled',ended:0,targets:[
+  {home:'1,1',delivery:{recipient:1}},{home:'2,2',delivery:{recipient:2}}
+ ]}]};
+ assert.ok(cityEndingOffer(s));
+ assert.ok(recordCityEnding(s).ok);
+ assert.equal(s.won,false);
+ assert.equal(recordCityEnding(s).ok,false);
+ assert.equal(monumentLifeView(s),null);
+ s.buildings.push({type:'ziggurat',x:6,y:6,level:1});
+ s.simTime=10;s.district.nextId=2;
+ assert.ok(advanceMonumentLife(s));
+ s.votiveOfferings.push({id:1,temple:'6,6',memory:{keeperId:keeper.id}});
+ assert.deepEqual(monumentLifeView(s),{temple:'6,6',dedication:false,vow:false});
+ s.votiveOfferings.push({id:2,temple:'6,6',receivedTick:0,memory:{keeperId:keeper.id}});
+ s.supplyVows.history.push({id:2,outcome:'fulfilled',start:11,ended:12,targets:[]});
+ assert.deepEqual(monumentLifeView(s),{temple:'6,6',dedication:true,vow:true});
+});

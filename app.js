@@ -1,4 +1,4 @@
-import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding,craftEndingOffer,recordCraftEnding} from './campaign.js';
+import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding,craftEndingOffer,recordCraftEnding,cityEndingOffer,recordCityEnding,monumentLifeView} from './campaign.js';
 import {createInannaPresentation} from './inanna-presentation.js';
 import {createLandPresentation} from './land-presentation.js';
 import {landMemoryCastQuote,landMemoryStories} from './land-memory.js';
@@ -1051,14 +1051,21 @@ function update(){
  const craftEnding=state.craftEnding?'<button type="button" data-craft-ending>Бог мастерства · завершено</button>'
   :craftEndingOffer(state)?'<button type="button" data-craft-ending>Открыть финал «Бог мастерства»</button>'
   :chapter&&state.godhood.namelessEndingAt===undefined?'<small>Бог мастерства · обучи строителя следующего поколения до III уровня и прими весь лес по исполненному торговому договору.</small>':'';
+ const cityEnding=state.cityEnding?'<button type="button" data-city-ending>Бог города · завершено</button>'
+  :cityEndingOffer(state)?'<button type="button" data-city-ending>Открыть финал «Бог города»</button>'
+  :chapter&&state.godhood.namelessEndingAt===undefined?'<small>Бог города · заслужи общее имя, сохрани посвящение в действующем храме и исполни обеты двум дворам.</small>':'';
+ const monument=monumentLifeView(state);
+ const monumentHTML=monument?`<section data-monument-life><h4>Жизнь после монумента</h4><p>Зиккурат · ${esc(monument.temple)}</p><ul><li>${monument.dedication?'✓':'○'} Новое посвящение записано хранителем зиккурата</li><li>${monument.vow?'✓':'○'} Новый обет снабжения исполнен</li></ul></section>`:'';
  const chapterHTML=chapter?`<section class="goal" data-campaign-chapter="${chapter.rank}"><div><b>${esc(chapter.title)}</b><p>${esc(chapter.condition)}</p></div></section>`:'';
- setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding+craftEnding);
+ setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding+craftEnding+cityEnding+monumentHTML);
  const hearthButton=$('goals').querySelector('[data-hearth-ending]');
  if(hearthButton)hearthButton.onclick=showHearthEnding;
  const waterButton=$('goals').querySelector('[data-water-ending]');
  if(waterButton)waterButton.onclick=showWaterEnding;
  const craftButton=$('goals').querySelector('[data-craft-ending]');
  if(craftButton)craftButton.onclick=showCraftEnding;
+ const cityButton=$('goals').querySelector('[data-city-ending]');
+ if(cityButton)cityButton.onclick=showCityEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'&&!richCatchTarget(state,lastMiracleTarget)?'Выбери действующий рыбацкий двор на карте':'');
@@ -1133,6 +1140,16 @@ function showCraftEnding(){
  if($('craft-ending-continue'))$('craft-ending-continue').onclick=()=>{
   const result=recordCraftEnding(state);
   if(mutate(result,'Финал «Бог мастерства» записан в летопись')){closeDialog();paused=false;update();}
+ };
+}
+function showCityEnding(){
+ const ending=state.cityEnding,story=ending||cityEndingOffer(state);
+ if(!story){toast('Условия финала изменились. Проверь храм и обеты.');return;}
+ openDialog('city-ending',`<span class="eyebrow">ИСТОРИЯ ГОРОДА</span><h2>Бог города</h2><p>Дворы знают имя «${esc(story.name)}». В храме ${esc(story.temple)} служил хранитель ${resident(story.keeperId)}. Здесь записали посвящение №${story.offeringId}.</p><ul>${story.vows.map(row=>`<li>Обет №${row.id} · двор ${esc(row.home)} получил обещанный запас</li>`).join('')}</ul><p>Город может продолжить свою историю.</p><div class="dialog-actions">${ending?'<button class="primary" id="city-ending-back">Вернуться в город</button>':'<button class="primary" id="city-ending-continue">Записать финал и продолжить</button><button id="city-ending-back">Вернуться в город</button>'}</div>`);
+ $('city-ending-back').onclick=closeDialog;
+ if($('city-ending-continue'))$('city-ending-continue').onclick=()=>{
+  const result=recordCityEnding(state);
+  if(mutate(result,'Финал «Бог города» записан в летопись')){closeDialog();paused=false;update();}
  };
 }
 function showNamelessEnding(){

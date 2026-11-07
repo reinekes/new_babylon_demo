@@ -1,0 +1,31 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "buildings": 133,
+  "initialPopulation": 200,
+  "population": 222,
+  "steps": 580,
+  "offer": {
+    "name": "Сдержавший слово",
+    "temple": "9,8",
+    "keeperId": 0,
+    "offeringId": 5,
+    "vows": [
+      {
+        "id": 1,
+        "home": "8,8"
+      },
+      {
+        "id": 2,
+        "home": "9,9"
+      }
+    ]
+  },
+  "monument": {
+    "temple": "2,15",
+    "dedication": true,
+    "vow": true
+  },
+  "reloadByteIdentical": true,
+  "cpuMedianMs": 2.2897499999999695,
+  "cpuP95Ms": 6.728834000000006
+}

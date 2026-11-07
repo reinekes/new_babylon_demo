@@ -1,6 +1,8 @@
+import {vowNameEvidence} from './supply-vow.js';
+import {isMemoryKeeper,isVotiveTemple} from './votive-offerings.js';
 import {floodPhase} from './river-flood.js';
 import {waterNameEvidence} from './causal-facts.js';
-import {earnedResultNames} from './divinity.js';
+import {earnedResultNames,RESULT_NAMES} from './divinity.js';
 import {familyMemorialsAt} from './life-analytics.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {buildingKey,isOperational} from './definitions.js';
@@ -185,4 +187,74 @@ export function validateCraftEnding(s){
  const people=s.lifeAnalytics?.people||[];
  const pupil=people.find(c=>c.id===ending.pupilId),mentor=people.find(c=>c.id===ending.mentorId);
  return !!pupil&&!!mentor&&pupil.generation>mentor.generation&&!!completedTimberContract(s,ending.visit);
+}
+
+export function cityEndingOffer(s){
+ if(!usesCampaign(s)||s.cityEnding||s.lost||s.event||s.funeral||cityCommandReason(s)||s.godhood.stage!=='recognized')return null;
+ const vows=vowNameEvidence(s),name=earnedResultNames(s).at(-1);
+ if(!vows||!name||!s.divinity.names.includes(name))return null;
+ const temples=s.buildings.filter(b=>isVotiveTemple(b)&&!b.floodDamage);
+ for(const temple of temples){
+  const key=buildingKey(temple),keeper=s.citizens.find(c=>isMemoryKeeper(c,key));
+  const offering=s.votiveOfferings?.find(item=>item.temple===key&&item.memory&&item.receivedTick!==null);
+  if(keeper&&offering)return {name,temple:key,keeperId:keeper.id,offeringId:offering.id,
+   vows:vows.map(({vowId,target})=>({id:vowId,home:target.home}))};
+ }
+ return null;
+}
+
+export function recordCityEnding(s){
+ const offer=cityEndingOffer(s);
+ if(!offer)return {ok:false,reason:'Нужны признанное имя, работающий храм и исполненные обеты двух дворов'};
+ s.cityEnding={...offer,at:s.simTime};
+ s.news.unshift({title:'Бог города',text:'Храм хранит имена, а дворы помнят исполненные обещания. Город продолжает жить.',kind:'good',year:s.year,season:s.season,tick:s.tick});
+ s.news=s.news.slice(0,80);
+ return {ok:true};
+}
+
+export function validateCityEnding(s){
+ const ending=s.cityEnding;
+ if(ending===undefined)return true;
+ if(!usesCampaign(s)||!ending||Object.keys(ending).length!==6||!Number.isFinite(ending.at)||ending.at<0||ending.at>s.simTime||
+  !Object.values(RESULT_NAMES).includes(ending.name)||!s.divinity.names.includes(ending.name)||
+  !Number.isSafeInteger(ending.keeperId)||ending.keeperId<0||ending.keeperId>=s.demography.nextId||
+  !Array.isArray(ending.vows)||ending.vows.length!==2||ending.vows[0]?.home===ending.vows[1]?.home)return false;
+ const offering=s.votiveOfferings?.find(item=>item.id===ending.offeringId&&item.temple===ending.temple);
+ return !!offering?.memory&&ending.vows.every(row=>row&&Object.keys(row).length===2&&s.supplyVows?.history?.some(
+  vow=>vow.id===row.id&&vow.outcome==='fulfilled'&&vow.ended<=ending.at&&vow.targets.some(target=>target.home===row.home&&target.delivery)));
+}
+
+function activeMonument(s){
+ return s.buildings.find(b=>b.type==='ziggurat'&&isOperational(b));
+}
+function currentMonumentLife(s){
+ const b=activeMonument(s),life=s.monumentLife;
+ return b&&life&&buildingKey(b)===life.temple&&(b.built?.order??null)===life.buildOrder?life:null;
+}
+export function advanceMonumentLife(s){
+ if(!usesCampaign(s)||s.godhood.namelessEndingAt!==undefined||currentMonumentLife(s))return false;
+ const b=activeMonument(s);
+ if(!b)return false;
+ s.monumentLife={temple:buildingKey(b),buildOrder:b.built?.order??null,openedAt:s.simTime,nextOfferingId:s.district.nextId};
+ return true;
+}
+
+export function monumentLifeView(s){
+ if(!usesCampaign(s))return null;
+ const life=currentMonumentLife(s);
+ if(!life)return null;
+ return {temple:life.temple,
+  dedication:!!s.votiveOfferings?.some(item=>item.id>=life.nextOfferingId&&item.temple===life.temple&&item.memory),
+  vow:!!s.supplyVows?.history?.some(v=>v.outcome==='fulfilled'&&v.start>=life.openedAt)};
+}
+
+export function validateMonumentLife(s){
+ const life=s.monumentLife;
+ if(life===undefined)return true;
+ if(!usesCampaign(s)||!life||Object.keys(life).length!==4||typeof life.temple!=='string'||!/^\d+,\d+$/.test(life.temple)||
+  !Number.isFinite(life.openedAt)||life.openedAt<0||life.openedAt>s.simTime||
+  !Number.isSafeInteger(life.nextOfferingId)||life.nextOfferingId<1||life.nextOfferingId>s.district?.nextId||
+  life.buildOrder!==null&&(!Number.isSafeInteger(life.buildOrder)||life.buildOrder<0))return false;
+ const [x,y]=life.temple.split(',').map(Number);
+ return x<worldWidth(s)&&y<worldHeight(s);
 }

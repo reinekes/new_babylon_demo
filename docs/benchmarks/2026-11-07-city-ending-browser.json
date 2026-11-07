@@ -1,0 +1,30 @@
+[
+  {
+    "id": "city",
+    "view": "2d",
+    "url": "?id=city&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d two vows, reversible preview and stable continuing city"
+  },
+  {
+    "id": "city",
+    "view": "3d",
+    "url": "?id=city&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d two vows, reversible preview and stable continuing city"
+  },
+  {
+    "id": "monument",
+    "view": "2d",
+    "url": "?id=monument&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d both post-monument goals and historical finale"
+  },
+  {
+    "id": "monument",
+    "view": "3d",
+    "url": "?id=monument&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d both post-monument goals and historical finale"
+  }
+]
