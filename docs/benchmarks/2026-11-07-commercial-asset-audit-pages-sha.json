@@ -1,0 +1,44 @@
+{
+  "at": "2026-11-07T20:00:38.517204+00:00",
+  "commit": "7f26f297a5574becd1df1a3652b90a6133e90a72",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "92a41ce7920d1d2513ceaf854dd3a098d57f05d1af40b4372f05d5bd1f8e88ff",
+      "actual": "92a41ce7920d1d2513ceaf854dd3a098d57f05d1af40b4372f05d5bd1f8e88ff",
+      "match": true
+    },
+    {
+      "path": "docs/COMMERCIAL_ASSET_AUDIT_2026-11-07.md",
+      "status": 200,
+      "expected": "1bb6e4d78c1a578ab28421afcada3f03afdd651b143eedbad759ecd59a5580cc",
+      "actual": "1bb6e4d78c1a578ab28421afcada3f03afdd651b143eedbad759ecd59a5580cc",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fa6a24e52847dba9b4e523b1e893f9f0995d5633f149f0c27fa106c0f209a346",
+      "actual": "fa6a24e52847dba9b4e523b1e893f9f0995d5633f149f0c27fa106c0f209a346",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "31ffc1f9bce71545835aa522afc986e32f25728d902016941191a7d68aec28b2",
+      "actual": "31ffc1f9bce71545835aa522afc986e32f25728d902016941191a7d68aec28b2",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "714fc5ebe80a8d0f58491f86ddbcbb6a1c770b7acb8c3d845b827e2e41213327",
+      "actual": "714fc5ebe80a8d0f58491f86ddbcbb6a1c770b7acb8c3d845b827e2e41213327",
+      "match": true
+    }
+  ],
+  "matched": 5,
+  "total": 5
+}
