@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T20:28:42.016167+00:00",
+  "commit": "70a7ce69b57ea4b16f055476ce5e1ec2316f70b7",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "afb015f37b7d46823b5ca02bdf2f9a9bf3f803f09f8fd16dce511b6c52e0a4f6",
+      "actual": "afb015f37b7d46823b5ca02bdf2f9a9bf3f803f09f8fd16dce511b6c52e0a4f6",
+      "match": true
+    },
+    {
+      "path": "construction.js",
+      "status": 200,
+      "expected": "03fe351d2f232b7ed6c12f43bed571d2e9c535c9d9cc472a4c31ca839bddbfde",
+      "actual": "03fe351d2f232b7ed6c12f43bed571d2e9c535c9d9cc472a4c31ca839bddbfde",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "d38dfefe78a6dd25a275a0fab7cdcc25c4e1527a995ca27c4653494adeeb53ae",
+      "actual": "d38dfefe78a6dd25a275a0fab7cdcc25c4e1527a995ca27c4653494adeeb53ae",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-birth-cooldown-house-4x.json",
+      "status": 200,
+      "expected": "0b18729e9c9c50606a4aaa877b3cb0a36da2984ef17b15f5b2dd61f7ea84ce8b",
+      "actual": "0b18729e9c9c50606a4aaa877b3cb0a36da2984ef17b15f5b2dd61f7ea84ce8b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "66016fb559f48cda46d20cf41c49d44c31a68420071f7184a4f24cc791423ab0",
+      "actual": "66016fb559f48cda46d20cf41c49d44c31a68420071f7184a4f24cc791423ab0",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "c5bb02d6f87526c9010874344eca089d86e9063bc91e6dfa48101b3b5b9142c1",
+      "actual": "c5bb02d6f87526c9010874344eca089d86e9063bc91e6dfa48101b3b5b9142c1",
+      "match": true
+    },
+    {
+      "path": "tests/management.test.js",
+      "status": 200,
+      "expected": "12492a6b270f35c6f806b47e385d2d5f9cfff8932a651ad615e6763de6ebf036",
+      "actual": "12492a6b270f35c6f806b47e385d2d5f9cfff8932a651ad615e6763de6ebf036",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
