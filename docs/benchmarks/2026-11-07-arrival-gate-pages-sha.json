@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-07T19:09:11.115825+00:00",
+  "commit": "1c98874fa05076ede7f69ee8fc3d05be79c43631",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a22948d7a524fcfe56980327c0f1fc792974a83d4670c4bb2e488c53a77000cb",
+      "actual": "a22948d7a524fcfe56980327c0f1fc792974a83d4670c4bb2e488c53a77000cb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-gate-4x.json",
+      "status": 200,
+      "expected": "e2abaa830569da2dceeb4f92487c247e9ed8617f0557e58e02e508f076ebc4a6",
+      "actual": "e2abaa830569da2dceeb4f92487c247e9ed8617f0557e58e02e508f076ebc4a6",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "83f614c287d95018e2c6edb052ae728961552974fdc5cb88d32a3f58f505c9c3",
+      "actual": "83f614c287d95018e2c6edb052ae728961552974fdc5cb88d32a3f58f505c9c3",
+      "match": true
+    }
+  ],
+  "matched": 3,
+  "total": 3
+}
