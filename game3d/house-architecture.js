@@ -58,6 +58,8 @@ export function createHouseArchitecture(B,scene,b,m,state){
   block('court-front-wall',-1.46,.72,2.23,1.92,1.44,.22);block('court-front-wall',1.25,.72,2.23,1.5,1.44,.22);
   block('court-bench',-1.58,.28,1.49,.55,.56,.95,m.trim);jar('water-jar',.89,-.11,.68);jar('terrace-planter',.38,-1.55,.54,2.51,true);jar('court-planter',-1.8,1.82,.53,0,true);block('courtyard-mat',-.06,.09,1.42,1.05,.025,.65,m.reed);
  }
+ if(b.householdStock?.mat>=1)block('installed-mat',0,.10,1.85,1.35,.05,.58,m.reed);
+ if(b.householdStock?.mat>=2)canopy('installed-reed-awning',-.8,1.15,1.35,1.12,1.55);
  if(kind!=='hut'){
   const roof=kind==='courtyard-3'?4.08:kind==='courtyard-2'?2.26:1.95;
   for(let i=0;i<3;i++)block('roof-reed-ends',(kind==='courtyard-3'?-1.7:-.6)+i*.43,roof-.17,kind==='courtyard-3'?-.51:kind==='courtyard-2'?-.68:-.04,.1,.1,.18,m.wood);

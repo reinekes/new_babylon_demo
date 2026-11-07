@@ -219,13 +219,16 @@ test('a flood damages houses and streets, and repairs preserve homes and road le
  const exposed=floodFootprint(s,s.riverFlood);
  const open=[...exposed].find(key=>!s.buildings.some(b=>buildingKey(b)===key));
  const [x,y]=open.split(',').map(Number);
- s.buildings.push({type:'house',x,y,level:1});
+ s.buildings.push({type:'house',x,y,level:1,householdStock:{mat:2}});
  s.capacity=housingOf(s);
  for(let i=0;i<300&&s.tick<12;i++){s.event=null;advanceTime(s,.5);}
  assert.equal(s.tick,12);
  const house=s.buildings.find(b=>b.type==='house'&&b.floodDamage);
  const road=s.roads.find(r=>r.floodDamage);
  assert.ok(house&&road);
+ const furnished=s.buildings.find(b=>b.x===x&&b.y===y);
+ assert.equal(furnished.householdStock.mat,1);
+ assert.ok(s.news.some(n=>n.title==='Разлив повредил плетение'));
  assert.equal(roadSpeed(s,road.a,road.b),.8);
  const capacity=capacityOf(house),homeKey=buildingKey(house),roadLevel=road.level;
  assert.ok(capacity>0);

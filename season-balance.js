@@ -16,7 +16,7 @@ import {stockStores,storeCapacity} from './inventory.js';
 import {craftBatch,craftResource,craftState,craftLoad,fleeceGrowth} from './textiles.js';
 export const RESOURCE_GROUPS=[
  {id:'basic',name:'Добыча',keys:['food','clay','reed','wood','stone','hides','wool','flax']},
- {id:'processed',name:'Переработка',keys:['brick','firedBrick','cloth','clothing','pottery','beer','milk','basket']},
+ {id:'processed',name:'Переработка',keys:['brick','firedBrick','cloth','clothing','pottery','beer','milk','basket','mat']},
  {id:'divine',name:'Влияние',keys:['faith','prestige']}
 ];
 // Analytical estimate over a full current season, not a second simulation.
@@ -75,7 +75,7 @@ export function seasonBalance(s){
  // estimate never invents future water trips or borrows protected seed grain.
  const protectedByComponent=new Map();let reserve=seedReserve(s);
  for(const store of stockStores(s)){const n=Math.min(store.stock?.food||0,reserve),id=component(buildingKey(store));protectedByComponent.set(id,(protectedByComponent.get(id)||0)+n);reserve-=n;}
- for(const type of ['pottery','brewery','bakery','linenYard','dairyStore','basketry'])for(const [key]of groups){const b=buildings.get(key);if(b.type!==type)continue;
+ for(const type of ['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard'])for(const [key]of groups){const b=buildings.get(key);if(b.type!==type)continue;
   const id=component(key),v=b.artisan,output=artisanOutput(b),pottery=type==='pottery',dryRate={sunny:1,cloudy:.6,wind:.85,rain:0}[weatherAt(s).type]||0;
   const buffers={clay:v.clay,reed:v.reed,food:v.food,pottery:v.pottery,flax:v.flax||0,milk:v.milk||0};for(const c of s.citizens)if(c.craftSite===key&&c.craftMaterial)buffers[c.craftMaterial]=(buffers[c.craftMaterial]||0)+(c.craftAmount||0);
   const available=k=>Math.max(0,(stocks.get(id)?.[k]||0)+(byComponent.get(id)?.[k]||0)-(k==='food'?(protectedByComponent.get(id)||0):0));
@@ -84,7 +84,7 @@ export function seasonBalance(s){
   const laborRate=groups.get(key).reduce((n,c)=>n+workRate(c,b.type),0)*13/24*outputMultiplier(b);
   const laborTime=seconds=>laborRate>0?Math.max(0,seconds)/laborRate:Infinity;
   const duration=pottery?laborTime(5)+(dryRate?12/dryRate:Infinity)+18:laborTime(BUILDINGS[type].workTime);
-  const activeRemaining={forming:laborTime(5-v.elapsed)+(dryRate?12/dryRate:Infinity)+18,drying:(dryRate?(12-v.elapsed)/dryRate:Infinity)+18,firing:12-v.elapsed+6,cooling:6-v.elapsed,brewing:laborTime(15-v.elapsed),milling:laborTime(15-v.elapsed),baking:laborTime(9-v.elapsed),preparingFiber:laborTime(18-v.elapsed),weavingLinen:laborTime(10-v.elapsed),preservingMilk:laborTime(12-v.elapsed),weavingBasket:laborTime(10-v.elapsed),ready:0,idle:0}[v.stage];
+  const activeRemaining={forming:laborTime(5-v.elapsed)+(dryRate?12/dryRate:Infinity)+18,drying:(dryRate?(12-v.elapsed)/dryRate:Infinity)+18,firing:12-v.elapsed+6,cooling:6-v.elapsed,brewing:laborTime(15-v.elapsed),milling:laborTime(15-v.elapsed),baking:laborTime(9-v.elapsed),preparingFiber:laborTime(18-v.elapsed),weavingLinen:laborTime(10-v.elapsed),preservingMilk:laborTime(12-v.elapsed),weavingBasket:laborTime(10-v.elapsed),weavingMat:laborTime(12-v.elapsed),ready:0,idle:0}[v.stage];
   const active=v.stage!=='idle'&&activeRemaining<=seasonSeconds?1:0;
   const {water,...amounts}=artisanRecipe(b),vessel=type==='brewery';if(vessel)delete amounts.pottery;
   let batches=v.stage==='idle'?Math.floor(Math.max(0,Math.min(production.get(key)||0,seasonSeconds/duration,water?(v.water||0)/water:Infinity,...Object.entries(amounts).map(([k,n])=>(available(k)+buffers[k])/n),vessel?v.vesselUses+4*(available('pottery')+buffers.pottery):Infinity))):0;

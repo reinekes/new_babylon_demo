@@ -83,7 +83,7 @@ function workshopCard(s,w,b,expanded){
 export const CITY_WORK_CATEGORIES=[
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Сырьё',types:['clay','reed','logging','quarry','sheepfold']},
- {id:'production',name:'Производство',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','kiln','brickyard','weaver','tailor']},
+ {id:'production',name:'Производство',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','kiln','brickyard','weaver','tailor']},
  {id:'services',name:'Снабжение и услуги',types:['waterpoint','depot','granary','market','healer','musicHouse','house','bridge','canal','levee','harbor']},
  {id:'sacred',name:'Культ',types:['shrine','ziggurat','ishtarGate']}
 ];

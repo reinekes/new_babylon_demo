@@ -89,3 +89,37 @@ test('version 31 adds the basket stock slot without changing an existing residen
  assert.equal(s.resources.basket,0);
  assert.deepEqual(s.citizens,old.citizens);
 });
+
+test('woven mats are made from delivered reeds and furnish an occupied home',async()=>{
+ const {advanceTime,build}=await import('../engine.js');
+ const {finishConstruction,workRequired}=await import('../construction.js');
+ const {assignWorkplace}=await import('../management.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const result=build(s,'matYard',10,9);assert.ok(result.ok,result.reason);
+ const b=s.buildings.at(-1);
+ b.construction.delivered={...b.construction.required};
+ for(const k of Object.keys(b.construction.remaining))b.construction.remaining[k]=0;
+ b.construction.work=workRequired(b);assert.ok(finishConstruction(s));
+ syncCitizens(s);assert.ok(assignWorkplace(s,0,'10,9').ok);assert.ok(assignWorkplace(s,1,'10,9').ok);
+ const home=s.buildings.find(b=>b.type==='house'&&b.x===9);
+ for(let i=0;i<3600&&!(home.householdStock.mat>=2);i++){
+  s.event=null;advanceTime(s,.1);
+  if(i%50===0)assert.ok(decode(encode(s)));
+ }
+ assert.equal(home.householdStock.mat,2);
+ assert.ok(b.productionHistory.some(row=>row.resources.mat>=1));
+ assert.ok(s.district.jobs.some(q=>q.target==='9,9'&&q.resource==='mat'&&q.delivered>0));
+});
+
+test('a furnished home gives a fed resident a mat bonus and summer shade bonus',async()=>{
+ const {advanceWellbeing,mealRation}=await import('../wellbeing.js');
+ for(const [season,mats,expected]of [[0,0,3],[0,1,4],[1,1,4],[1,2,5]]){
+  const s=createGame({start:'established',scenario:strictScenario()}),c=s.citizens[0];
+  s.season=season;s.simTime=57;s.citizens=[c];c.phase='home';c.mealDay=0;c.mealEvaluated=-1;
+  c.mealEaten=mealRation(c);c.familyMeal=false;c.mood=50;
+  s.buildings.find(b=>`${b.x},${b.y}`===c.home).householdStock.mat=mats;
+  advanceWellbeing(s,.1);
+  assert.equal(c.mood,50+expected);
+ }
+});

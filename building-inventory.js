@@ -6,6 +6,7 @@ import {isArtisan,artisanRecipe,artisanNeeds,artisanOutput,collectArtisan} from 
 import {BRICK_RECIPE,brickNeeds,collectBricks} from './bricks.js';
 import {KILN_RECIPE,kilnNeeds,collectFired} from './kilns.js';
 import {craftBatch,flockCapacity,flockRation} from './textiles.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {ration} from './households.js';
 const eps=1e-7,n=value=>Number.isFinite(value)?Math.max(0,value):0;
 const sum=(target,k,value)=>{if(value>0)target[k]=(target[k]||0)+value;};
@@ -34,6 +35,7 @@ export function initializeBuildingInventory(s){
  }
 }
 export function homeStockCapacity(s,b,k){
+ if(k==='mat')return isStrictSumer(s)&&!b.floodDamage&&s.citizens.some(c=>c.home===buildingKey(b))?2:0;
  const people=(s.citizens||[]).filter(c=>c.home===buildingKey(b));
  if(!people.length)return 0;
  if(k==='food')return people.reduce((a,c)=>a+ration(c)*8/3,0);
@@ -73,7 +75,7 @@ export function putBuildingInput(s,b,k,amount){
 export function takeBuildingOutput(b,k,amount){const actual=Math.min(n(amount),n(b.workshopStock?.output?.[k]));if(actual)b.workshopStock.output[k]-=actual;return actual;}
 export function buildingInventory(s,b){
  const input={},output={...b.workshopStock?.output},storage={...b.stock},inProcess={},incoming={},outgoing={},capacities={input:{},output:{},storage:{}};
- if(b.type==='house')for(const k of ['food','water','clothing','pottery','beer','milk']){input[k]=buildingInputStock(b,k);capacities.input[k]=homeStockCapacity(s,b,k);}
+ if(b.type==='house')for(const k of ['food','water','clothing','pottery','beer','milk',...isStrictSumer(s)?['mat']:[]]){input[k]=buildingInputStock(b,k);capacities.input[k]=homeStockCapacity(s,b,k);}
  else for(const [k,v]of Object.entries(inputRecipe(b))){input[k]=n(inputBuffer(b)?.[k]);capacities.input[k]=v;}
  for(const [k,v]of Object.entries(BUILDINGS[b.type]?.output||{}))if(MATERIALS.includes(k)){output[k]??=0;capacities.output[k]=outputCapacity(b);}
  if(b.artisan?.ready)sum(output,artisanOutput(b),b.artisan.ready);
@@ -96,7 +98,7 @@ export function validateBuildingInventory(s){
   if(isProductionStore(b)||b.type==='healer'){if(!b.workshopStock||Object.keys(b.workshopStock).some(k=>!['input','output'].includes(k))||!validMap(b.workshopStock.output,Object.keys(BUILDINGS[b.type]?.output||{}).filter(k=>MATERIALS.includes(k)),outputCapacity(b)+eps))return false;if(b.type==='healer'?!validMap(b.workshopStock.input,['food','reed'],4):b.workshopStock.input!==undefined)return false;}
   if(b.type!=='house')for(const [k,capacity]of Object.entries(inputRecipe(b))){if(k==='water')continue;const key=buildingKey(b),incoming=(s.citizens||[]).reduce((n,c)=>n+(c.craftSite===key&&(c.craftMaterial===k||!c.craftMaterial&&(k==='wool'&&c.craftWool!==undefined||k==='cloth'&&c.craftCloth!==undefined))?(c.craftAmount||0)+(c.craftWool||0)+(c.craftCloth||0):0)+((s.district?.jobs||[]).some(q=>q.id===c.districtJob&&q.target===key&&q.resource===k&&q.targetKind==='input')?c.cargo?.[k]||0:0),0);if(n(inputBuffer(b)?.[k])+incoming>capacity+eps||isArtisan(b)&&b.artisan?.stage!=='idle'&&incoming>eps)return false;}
   if(!isProductionStore(b)&&b.type!=='healer'&&b.workshopStock!==undefined)return false;
-  if(b.type==='house'){if(!validMap(b.householdStock,['clothing','pottery','beer','milk']))return false;}else if(b.householdStock!==undefined)return false;
+  if(b.type==='house'){if(!validMap(b.householdStock,['clothing','pottery','beer','milk','mat'])||b.householdStock.mat!==undefined&&(!isStrictSumer(s)||b.householdStock.mat>2))return false;}else if(b.householdStock!==undefined)return false;
  }
  return true;
 }

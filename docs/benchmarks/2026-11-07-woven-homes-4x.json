@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 245,
+  "stages": [
+    "idle",
+    "weavingMat"
+  ],
+  "received": 1,
+  "furnishedHomes": 2,
+  "awnings": 2,
+  "steps": 1400,
+  "medianCPUms": 2.2012079999999514,
+  "p95CPUms": 6.633542000000034,
+  "exactSave": true
+}

@@ -30,7 +30,8 @@ export function drawCourtyardHouse(r,b,state){
  const residents=r.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(v=>v.home===`${b.x},${b.y}`).length??0,lights=night?houseLightCount(b,residents):0;
  c.save();a.oval(4,7,28,8,'#625e4430');a.box(0,0,28,14,2.5,'#d6bf95','#ab9169','#c4aa7e');
  // A real open court in the plan replaces the former single solid tower.
- mat(a,3,5,12,'#c5ac7e');
+ mat(a,3,5,12,b.householdStock?.mat>=1?'#e6c37f':'#c5ac7e');
+ if(b.householdStock?.mat>=2)shade(a,-8,5,13,'#d8b577');
  const wing=(x,z,w,d,height)=>{
   if(level>1)masonryBox(r,p.x+x*q,p.y+z*q,w*q,d*q,height*q,level===3?'fired':'mud',q);
   else a.box(x,z,w,d,height,'#e2cda5','#b89b73','#d6bd94');

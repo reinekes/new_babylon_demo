@@ -102,7 +102,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {networkFor,syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle,refreshResultName,usesResultNames} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=32;
+export const VERSION=33;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
 const emptyCooldowns=()=>Object.fromEntries(Object.keys(MIRACLES).filter(k=>k!=='richCatch').map(k=>[k,0]));
@@ -311,6 +311,12 @@ function settleSeason(s){
   const homes=s.buildings.filter(b=>b.type==='house'&&isComplete(b)&&footprint.has(buildingKey(b)));
   const roads=floodedRoads(s,footprint);
   for(const b of [...homes,...roads])b.floodDamage=true;
+  let weaveLost=0;
+  for(const home of homes)if(home.householdStock?.mat>0){
+   const lost=Math.min(1,home.householdStock.mat);
+   home.householdStock.mat-=lost;weaveLost+=lost;
+  }
+  if(weaveLost>0)log(s,'Разлив повредил плетение',`Утрачено ${Number(weaveLost.toFixed(2))} ед. циновок и навесов. Жители пополнят их после ремонта домов.`,'bad');
   if(homes.length||roads.length)log(s,'Разлив повредил дома и улицы',`Домов: ${homes.length}, участков дорог: ${roads.length}. Ремонт заказывается в карточке на карте.`,'bad');
   const exposed=floodStorageRisk(s,footprint);
   let foodLost=0,jarsLost=0;
@@ -404,7 +410,7 @@ export function goals(s){
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);if(Array.isArray(s?.citizens)&&Array.isArray(s.lifeAnalytics?.people))syncLifeAnalytics(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28,oldFlax=s?.version<31,oldBaskets=s?.version<32;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28,oldFlax=s?.version<31,oldBaskets=s?.version<32,oldMats=s?.version<33;
   if(!s||!Number.isInteger(s.version)||s.version<1||s.version>VERSION)return null;
   // Enroll old cities before any older migration rewrites the save version.
   if(s.version<30)s.scenario=legacyScenario();
@@ -462,6 +468,10 @@ export function decode(raw){
    for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)r.basket??=0;
    const c=s.trade?.caravan;if(c){c.stock.basket??=0;c.prices.basket??={buy:14,sell:12};}
   }
+  if(oldMats){
+   for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r)r.mat??=0;
+   const c=s.trade?.caravan;if(c){c.stock.mat??=0;c.prices.mat??={buy:16,sell:14};}
+  }
   if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s)||!validateFisheries(s))return null;
   if(s.world&&!validateWorld(s)||!validateMineralPits(s,'clay')||!validateMineralPits(s,'stone')||!validateForests(s)||!validateReedBeds(s))return null;
   if(oldEcology)initializeEcology(s,{legacy:true});
@@ -481,7 +491,7 @@ export function decode(raw){
   for(const b of s.buildings){
    const key=buildingKey(b),land=terrain(b.x,b.y,s);if(b.starterHut!==undefined&&(b.type!=='house'||b.starterHut!==true))return null;if(b.rotation!==undefined&&!validRotation(b.type,b.rotation))return null;if(b.footprint!==undefined&&(newFootprint(b.type)===1||b.footprint!==newFootprint(b.type)))return null;
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
-   if(['linenYard','dairyStore','basketry'].includes(b.type)&&!isStrictSumer(s))return null;
+   if(['linenYard','dairyStore','basketry','matYard'].includes(b.type)&&!isStrictSumer(s))return null;
    if(isCityFortification(b.type)&&(!isStrictSumer(s)||b.level!==1||b.construction?.kind==='upgrade'||b.type==='cityGate'&&b.footprint!==2))return null;
    if(b.legacyMasonryLevel!==undefined&&!integer(b.legacyMasonryLevel,1,b.level))return null;
    if(b.legacyFiringLevel!==undefined&&!integer(b.legacyFiringLevel,1,b.level))return null;
