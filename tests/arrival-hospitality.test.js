@@ -341,3 +341,52 @@ test('a paid arrival keeps the original courtyard identity and loads an older ad
  assert.equal(advanceArrivalGroup(s,120,network),false);
  assert.deepEqual([group.x,group.y,group.routeIndex],position);
 });
+
+test('a paid group waits at a real gate, keeps its reserve on reload and settles once after reopening',async()=>{
+ const {arrivalOffer,advanceArrivalGroup}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {advanceTime,miracle}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ for(let y=4;y<=10;y++)for(let x=4;x<=8;x++){
+  if((x===4||y===4||x===8||y===10)&&!(x===8&&[6,7].includes(y)))s.buildings.push({type:'cityWall',x,y,level:1});
+ }
+ const gate={type:'cityGate',x:8,y:6,footprint:2,rotation:0,level:1};
+ s.buildings.push(gate);
+ for(const b of s.buildings)if(b.type==='house')b.water=b.x===6&&b.y===7?12:0;
+ const witness=s.citizens[0];
+ Object.assign(s.godhood,{stage:'recognized',witnessId:witness.id,recognitionAt:0,believerIds:[witness.id]});
+ const {recordNeighborWaterFact}=await import('../causal-facts.js');
+ for(const home of s.buildings.filter(b=>b.type==='house').slice(1,3)){
+  recordNeighborWaterFact(s,witness,home,{station:null,origin:witness.home,target:`${home.x},${home.y}`},2);
+ }
+ s.blessingDiscovery.qualifiedAt=0;
+ recordArrivalHospitality(s,'envoy',{phase:'departed',outcome:'accepted',destination:'6,7'});
+ recordArrivalHospitality(s,'artisan',{phase:'departed',outcome:'taught',fed:true,home:'6,7'});
+ s.resources.faith=100;
+ const open=networkFor(s),offer=arrivalOffer(s,open,{custom:'libation'});
+ assert.equal(offer.home,'6,7');
+ assert.ok(offer.route.some(p=>p.x===8.5&&p.y===6.5));
+ assert.ok(miracle(s,'healing',{home:offer.home,count:offer.beds,custom:'libation'}).ok);
+ assert.equal(s.resources.faith,55);
+ const ids=s.citizens.map(c=>c.id),reserve=structuredClone(s.arrivalGroup.provisions);
+ gate.rotation=1;
+ const closed=networkFor(s);
+ assert.equal(arrivalOffer(s,closed),null);
+ assert.equal(advanceArrivalGroup(s,60,closed),false);
+ const waiting=encode(s),copy=decode(waiting);
+ assert.equal(encode(copy),waiting);
+ assert.deepEqual(copy.arrivalGroup.provisions,reserve);
+ assert.equal(advanceArrivalGroup(copy,60,networkFor(copy)),false);
+ assert.equal(encode(copy),waiting);
+ copy.buildings.find(b=>b.type==='cityGate').rotation=0;
+ for(let i=0;i<400&&copy.arrivalGroup;i++){copy.event=null;advanceTime(copy,.25);}
+ assert.equal(copy.arrivalGroup,undefined);
+ assert.deepEqual(copy.citizens.slice(0,ids.length).map(c=>c.id),ids);
+ const welcomes=copy.arrivalHospitality.welcomes;
+ assert.equal(welcomes.length,1);
+ assert.equal(welcomes[0].custom,'libation');
+ assert.equal(welcomes[0].members.length,offer.beds);
+ advanceTime(copy,.25);
+ assert.equal(copy.population,ids.length+offer.beds);
+ assert.equal(encode(decode(encode(copy))),encode(copy));
+});
