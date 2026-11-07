@@ -1,0 +1,16 @@
+[
+  {
+    "id": "call",
+    "view": "2d",
+    "url": "?id=call&view=2d",
+    "mode": "2d",
+    "result": "PASS both visits open the Call, one paid reserve, byte-identical load"
+  },
+  {
+    "id": "call",
+    "view": "3d",
+    "url": "?id=call&view=3d",
+    "mode": "3d",
+    "result": "PASS both visits open the Call, one paid reserve, byte-identical load"
+  }
+]

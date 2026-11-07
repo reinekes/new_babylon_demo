@@ -1,0 +1,22 @@
+{
+  "speed": 4,
+  "buildings": 131,
+  "initialPopulation": 222,
+  "population": 251,
+  "confirmedNeighborDeliveries": 2,
+  "visits": [
+    "pilgrim",
+    "envoy"
+  ],
+  "gatedBeforeVisits": true,
+  "requiresBlessingOpening": true,
+  "blessingCastCost": 20,
+  "callCost": 45,
+  "controlledShrineMarketCaravanAndHomeWater": true,
+  "arrivalCount": 6,
+  "settledOnce": true,
+  "byteIdenticalReload": true,
+  "steps": 40,
+  "medianCpuMs": 1.6377499999999827,
+  "p95CpuMs": 87.85987499999999
+}
