@@ -116,3 +116,14 @@ test('dairy stores turn delivered fresh milk and a vessel into food for the ware
  assert.equal(s.resources.pottery,0);
  assert.equal(b.productionHistory[0].resources.food,3);
 });
+
+test('demolition preview rejects buffered ingredients without a reachable store',()=>{
+ const s=fixture('brewery'),brewery=s.buildings.at(-1);
+ Object.assign(brewery,{x:20,y:9});
+ Object.assign(brewery.artisan,{food:2,pottery:1});
+ const before=encode(s);
+ const reason=canDemolish(s,brewery);
+ assert.match(reason,/доступный склад/);
+ assert.deepEqual(demolish(s,brewery.x,brewery.y),{ok:false,reason});
+ assert.equal(encode(s),before);
+});

@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "steps": 120,
+  "buildings": 130,
+  "population": 218,
+  "isolatedRefusalUnchanged": true,
+  "refunded": {
+    "food": 2,
+    "pottery": 1
+  },
+  "duplicateRefund": false,
+  "identitiesPreserved": true,
+  "byteExact": true,
+  "medianCpuMs": 2.3922079999999823,
+  "p95CpuMs": 6.6815
+}

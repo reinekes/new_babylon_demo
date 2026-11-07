@@ -114,7 +114,23 @@ function foundingStockTransfer(s,b){
  return plan;
 }
 function localDemolitionStock(b){const goods={...b.workshopStock?.output};const kit=workTool(b),tool=toolResource(b);if(kit?.[tool])goods[tool]=kit[tool];if(kit?.copper)goods.copper=kit.copper;if(b.sickle?.pottery)goods.pottery=(goods.pottery||0)+b.sickle.pottery;if(b.dairy?.reed||b.flock?.reed)goods.reed=(goods.reed||0)+(b.dairy?.reed||0)+(b.flock?.reed||0);for(const [k,n]of Object.entries(b.workshopStock?.input||{}))goods[k]=(goods[k]||0)+n;for(const [k,n]of Object.entries(b.householdStock||{}))if(MATERIALS.includes(k))goods[k]=(goods[k]||0)+n;return goods;}
-function localRefundStore(s,b){const net=networkFor(s),p=net.ports.find(p=>p.building===b);return stockStores(s).find(a=>a!==b&&net.ports.some(port=>port.building===a&&p&&net.components.get(port.key)===net.components.get(p.key)));}
+function workshopDemolitionStock(b){
+ const batches=[];
+ if(b.brickmaking)batches.push({amounts:{clay:b.brickmaking.clay,reed:b.brickmaking.reed,brick:b.brickmaking.ready}});
+ if(isArtisan(b)){
+  const {clay,reed,food,pottery,flax,milk,copper,timber,ready}=b.artisan;
+  const amounts={clay,reed,food,pottery,flax,milk,copper,timber},output=artisanOutput(b);
+  amounts[output]=(amounts[output]||0)+ready;
+  batches.push({amounts,gift:b.giftInput});
+ }
+ if(b.firing)batches.push({amounts:{brick:b.firing.brick,reed:b.firing.reed,firedBrick:b.firing.ready}});
+ if((b.weaving?.wool||b.tailoring?.cloth)>0){
+  const resource=craftResource(b);
+  batches.push({amounts:{[resource]:craftState(b)[resource]}});
+ }
+ return batches.filter(({amounts})=>Object.values(amounts).some(n=>n>0));
+}
+function localRefundStore(s,b){const net=networkFor(s,{materializeRoads:false}),p=net.ports.find(p=>p.building===b);return stockStores(s).find(a=>a!==b&&net.ports.some(port=>port.building===a&&p&&net.components.get(port.key)===net.components.get(p.key)));}
 export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.
  if(b?.starterHut)s={...s,roads:[...(s.roads||[])]};
@@ -124,6 +140,7 @@ export function canDemolish(s,b){
  if(b.firing?.hot>0)return 'Дождись завершения обжига и остывания печи';
  if(b.brickmaking?.wet>0)return 'Дождись высыхания партии сырца';
  if(Object.values(localDemolitionStock(b)).some(n=>n>1e-7)&&!localRefundStore(s,b))return 'Нужен доступный склад для домашних запасов и готовой продукции';
+ if(workshopDemolitionStock(b).length&&!localRefundStore(s,b))return 'Нужен доступный склад для возврата ремесленных запасов';
  if(s.citizens.some(c=>c.fireShelter&&[c.home,c.fireShelter.host,c.fireShelter.kiln].includes(buildingKey(b))))return 'Дождись возвращения семьи из укрытия';
  if(s.citizens.some(c=>c.floodShelter&&(c.floodShelter===buildingKey(b)||c.home===buildingKey(b))))return 'Дождись окончания эвакуации из-за разлива';
  if(s.citizens.some(c=>c.waterTrip&&(c.waterTrip.target===buildingKey(b)||c.waterTrip.origin===buildingKey(b)||c.waterTrip.station===buildingKey(b))))return 'Дождись доставки воды';
@@ -165,6 +182,9 @@ export function canDemolish(s,b){
 export function demolish(s,x,y){
  const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
  const homes=relocations(s,b),refund=demolitionRefund(b),transfer=b.starterHut?foundingStockTransfer(s,b):null;
+ const workshopBatches=workshopDemolitionStock(b);
+ const workshopTarget=workshopBatches.length?localRefundStore(s,b):null;
+ if(workshopBatches.length&&!workshopTarget)return {ok:false,reason:'Нужен доступный склад для возврата ремесленных запасов'};
  for(const q of s.district?.jobs||[])if(q.automatic&&(q.source===buildingKey(b)||q.target===buildingKey(b))){q.cancelled+=q.remaining;q.remaining=0;for(const c of s.citizens.filter(c=>c.districtJob===q.id))recoverCitizenCargo(s,c.id);}
  // All capacity, reservation, resident and route gates above have succeeded.
  // This emergency relocation follows the existing demolition-refund abstraction.
@@ -174,10 +194,13 @@ export function demolish(s,x,y){
   if(k==='food'&&b.giftInput)moveGiftFood(b,'giftInput',localTarget,'giftStock',accepted,b.workshopStock.input.food,localTarget.stock.food-accepted);
   if(k==='food'&&b.fishOutput)appendFish(localTarget,'fishStock',takeFish(b,'fishOutput',Math.min(accepted,b.workshopStock.output.food),b.workshopStock.output.food),localTarget.stock.food-accepted);
  }if(b.workshopStock){b.workshopStock.output={};if(b.workshopStock.input)for(const k of Object.keys(b.workshopStock.input))b.workshopStock.input[k]=0;}if(b.householdStock)for(const k of Object.keys(b.householdStock))b.householdStock[k]=0;if(b.dairy)b.dairy.reed=0;}
- if(b.brickmaking){const amounts={clay:b.brickmaking.clay,reed:b.brickmaking.reed,brick:b.brickmaking.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья и сырца'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.brickmaking.clay=0;b.brickmaking.reed=0;b.brickmaking.ready=0;}}
-if(isArtisan(b)){const v=b.artisan,amounts={clay:v.clay,reed:v.reed,food:v.food,pottery:v.pottery,flax:v.flax||0,milk:v.milk||0,copper:v.copper||0,timber:v.timber||0};amounts[artisanOutput(b)]=(amounts[artisanOutput(b)]||0)+v.ready;if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата ремесленных грузов'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true,gift:k==='food'?b.giftInput:undefined});}}
-if(b.firing){const amounts={brick:b.firing.brick,reed:b.firing.reed,firedBrick:b.firing.ready};if(Object.values(amounts).some(n=>n>0)){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата топлива и кирпича'};for(const [k,n]of Object.entries(amounts))if(n>0)putStock(s,buildingKey(target),k,n,{overflow:true});b.firing.brick=0;b.firing.reed=0;b.firing.ready=0;}}
-if((b.weaving?.wool||b.tailoring?.cloth)>0){const net=networkFor(s),p=net.ports.find(p=>p.building===b),target=stockStores(s).find(a=>{const port=net.ports.find(p=>p.building===a);return port&&p&&net.components.get(port.key)===net.components.get(p.key);});if(!target)return {ok:false,reason:'Нужен доступный склад для возврата сырья'};putStock(s,buildingKey(target),craftResource(b),craftState(b)[craftResource(b)],{overflow:true});craftState(b)[craftResource(b)]=0;}rememberApproaches(s,b);if(b.pantry){
+ for(const {amounts,gift} of workshopBatches)for(const [resource,amount] of Object.entries(amounts))if(amount>0){
+  putStock(s,buildingKey(workshopTarget),resource,amount,{overflow:true,gift:resource==='food'?gift:undefined});
+ }
+ if(b.brickmaking)Object.assign(b.brickmaking,{clay:0,reed:0,ready:0});
+ if(b.firing)Object.assign(b.firing,{brick:0,reed:0,ready:0});
+ if((b.weaving?.wool||b.tailoring?.cloth)>0)craftState(b)[craftResource(b)]=0;
+ rememberApproaches(s,b);if(b.pantry){
  const receiver=b.giftHome&&stockStores(s).find(store=>store!==b);
  if(receiver){
   const key=buildingKey(receiver),accepted=putStock(s,key,'food',b.pantry,{overflow:true});
