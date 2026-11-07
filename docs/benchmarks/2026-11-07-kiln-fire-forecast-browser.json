@@ -1,0 +1,30 @@
+[
+  {
+    "id": "high",
+    "view": "2d",
+    "url": "?id=high&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d high kiln forecast and links"
+  },
+  {
+    "id": "high",
+    "view": "3d",
+    "url": "?id=high&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d high kiln forecast and links"
+  },
+  {
+    "id": "rain",
+    "view": "2d",
+    "url": "?id=rain&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d rain kiln forecast and links"
+  },
+  {
+    "id": "rain",
+    "view": "3d",
+    "url": "?id=rain&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d rain kiln forecast and links"
+  }
+]

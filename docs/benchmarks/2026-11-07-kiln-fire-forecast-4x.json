@@ -1,0 +1,15 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "speed": 4,
+  "steps": 250,
+  "simulation": {
+    "medianMs": 2.013417000000004,
+    "p95Ms": 5.3649580000000014
+  },
+  "forecast": {
+    "medianMs": 0.01970899999997755,
+    "p95Ms": 0.025959000000000287
+  },
+  "reloadByteIdentical": true
+}
