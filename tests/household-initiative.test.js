@@ -195,3 +195,24 @@ test('a house with reserved places does not prevent another family from proposin
  house.householdInitiative={members:[2,3]};
  assert.ok(householdInitiative(s,source).ok);
 });
+
+test('demolition cannot relocate neighbors into a courtyard reserved for another family',async()=>{
+ const {canDemolish,demolish}=await import('../management.js');
+ const {networkFor}=await import('../workforce.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const source=s.buildings.find(b=>buildingKey(b)==='8,8');
+ const oldHome=s.buildings.find(b=>buildingKey(b)==='9,9');
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ const {x,y,members}=offer;
+ const reserved={type:'house',x,y,level:1,starterHut:true,householdInitiative:{source:offer.source,members,startedAt:s.simTime}};
+ s.buildings.push(reserved);
+ s.capacity+=capacityOf(reserved);
+ networkFor(s);
+ const raw=encode(s);
+ assert.match(canDemolish(s,oldHome),/доступного жилья/);
+ assert.equal(demolish(s,oldHome.x,oldHome.y).ok,false);
+ assert.equal(encode(s),raw);
+ delete reserved.householdInitiative;
+ assert.ok(demolish(s,oldHome.x,oldHome.y).ok);
+});
