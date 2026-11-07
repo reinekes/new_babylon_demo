@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-07T10:41:37.640791+00:00",
+  "commit": "5a59346cf54be2aeb1d492408cbc9a1944391835",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9b04f32d9ddf37175d48359b497b34f0a2de112e38e3c3c866da8a4699e190b3",
+      "actual": "9b04f32d9ddf37175d48359b497b34f0a2de112e38e3c3c866da8a4699e190b3",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "b1d8d408d4fe3ffc82f64738c4b745d1e6cc93eb2bedc5687173c4817fd35bcb",
+      "actual": "b1d8d408d4fe3ffc82f64738c4b745d1e6cc93eb2bedc5687173c4817fd35bcb",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "fcdd431391fc6e73f4dad864cfe326f703471d690e30331b66171bad76a8b6b3",
+      "actual": "fcdd431391fc6e73f4dad864cfe326f703471d690e30331b66171bad76a8b6b3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-kiln-fire-courier-4x.json",
+      "status": 200,
+      "expected": "1cbd936c53e349ccf7e03283c1d1c458e74136438577772d977a0a0331ca2d30",
+      "actual": "1cbd936c53e349ccf7e03283c1d1c458e74136438577772d977a0a0331ca2d30",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-kiln-fire-courier-browser.json",
+      "status": 200,
+      "expected": "0e4f956fa884fe94cca251f75cfdbb0fe8fbc8dffc79e567e49f88e25223aaf9",
+      "actual": "0e4f956fa884fe94cca251f75cfdbb0fe8fbc8dffc79e567e49f88e25223aaf9",
+      "match": true
+    },
+    {
+      "path": "fire-forecast.js",
+      "status": 200,
+      "expected": "508de386ff2385bc71deb7b7f7f6047a4115e2b08fb4e7fe022af8aeb1f31a08",
+      "actual": "508de386ff2385bc71deb7b7f7f6047a4115e2b08fb4e7fe022af8aeb1f31a08",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d5bb0d81382a071fdbdc70e8db9105136f2ffc37133e860453c570ec3e331979",
+      "actual": "d5bb0d81382a071fdbdc70e8db9105136f2ffc37133e860453c570ec3e331979",
+      "match": true
+    },
+    {
+      "path": "kilns.js",
+      "status": 200,
+      "expected": "d9b8355716f469d5fb3dbfbc66a6343c3d7f97fdf03d66be15fac8c65116516c",
+      "actual": "d9b8355716f469d5fb3dbfbc66a6343c3d7f97fdf03d66be15fac8c65116516c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "4a8a90edc592ddb7f261048bdbb4ae3d9f23ced9e99f5c1f2b01c5c70ca3309c",
+      "actual": "4a8a90edc592ddb7f261048bdbb4ae3d9f23ced9e99f5c1f2b01c5c70ca3309c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "3ae19abe247e76f5c548bf9d622e9a6344b843588145487dd220afc8d2712b6e",
+      "actual": "3ae19abe247e76f5c548bf9d622e9a6344b843588145487dd220afc8d2712b6e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "2b3da9b4b635b1ce3425c83bc38b4e3e977b826373d7f71caf23cb8d042ecf40",
+      "actual": "2b3da9b4b635b1ce3425c83bc38b4e3e977b826373d7f71caf23cb8d042ecf40",
+      "match": true
+    },
+    {
+      "path": "tests/kilns.test.js",
+      "status": 200,
+      "expected": "1e6bf41a0c061c527037f588442b2740b865c8cff01607ba57ddb1d2c3ccb8a1",
+      "actual": "1e6bf41a0c061c527037f588442b2740b865c8cff01607ba57ddb1d2c3ccb8a1",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "e771fd0fb0011a4d548897103dcb1a0f4991c92754b3b396e09ad80d25f98255",
+      "actual": "e771fd0fb0011a4d548897103dcb1a0f4991c92754b3b396e09ad80d25f98255",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "f53eec4a1f4b099e5843fa7bf89bf05c6ed9ca8db80cf530e793c741593a343f",
+      "actual": "f53eec4a1f4b099e5843fa7bf89bf05c6ed9ca8db80cf530e793c741593a343f",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
