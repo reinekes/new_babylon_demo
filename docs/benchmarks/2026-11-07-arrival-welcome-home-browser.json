@@ -1,0 +1,30 @@
+[
+  {
+    "id": "original",
+    "view": "2d",
+    "url": "?id=original&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d original welcome link"
+  },
+  {
+    "id": "original",
+    "view": "3d",
+    "url": "?id=original&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d original welcome link"
+  },
+  {
+    "id": "replacement",
+    "view": "2d",
+    "url": "?id=replacement&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d replacement welcome link"
+  },
+  {
+    "id": "replacement",
+    "view": "3d",
+    "url": "?id=replacement&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d replacement welcome link"
+  }
+]

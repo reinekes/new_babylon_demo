@@ -1,4 +1,4 @@
-import {buildingKey} from './definitions.js';
+import {arrivalWelcomeHouse} from './arrival-hospitality.js';
 
 const stories={
  opening:{title:'Дым, который виден издалека',timing:[0,7,15,23,30],lines:[
@@ -46,7 +46,7 @@ export function createArrivalPresentation(root,{opening,onOpening,project,cue}={
   skip,
   tick(s,dt,{visible=true,allowOpening=true,markVisible=visible}={}){
    const welcome=s.arrivalHospitality?.welcomes?.at(-1);
-   const house=markVisible&&welcome&&s.buildings.find(b=>b.type==='house'&&buildingKey(b)===welcome.home);
+   const house=markVisible&&welcome&&arrivalWelcomeHouse(s,welcome);
    const point=house&&project?.(house);
    mark.hidden=!point;
    if(point)mark.style.transform=`translate(${point.x}px,${point.y}px) translate(-50%,-125%)`;

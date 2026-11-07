@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "count": 6,
+  "controlledHomeWater": true,
+  "foodDebit": 6,
+  "reservationCpuMs": 12.414500000000004,
+  "samples": 120,
+  "medianStepCpuMs": 3.255665999999991,
+  "p95StepCpuMs": 10.241207999999972,
+  "byteEqualReload": true,
+  "maxStockRoundoff": 0,
+  "settled": true,
+  "replacementHidden": true,
+  "replacementByteEqualReload": true
+}

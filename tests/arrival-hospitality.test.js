@@ -178,6 +178,24 @@ test('an arriving family keeps its parents, home welcome and independent belief 
  }
  assert.ok(family.every(c=>!loaded.godhood.believerIds.includes(c.id)));
  assert.deepEqual(loaded.arrivalHospitality.welcomes[0].members,family.map(c=>c.id));
+ const {arrivalWelcomeHouse,lastArrivalWelcome,householdWelcomeEvidence}=await import('../arrival-hospitality.js');
+ const welcome=loaded.arrivalHospitality.welcomes[0];
+ assert.ok(Number.isSafeInteger(welcome.homeId));
+ const original=arrivalWelcomeHouse(loaded,welcome);
+ assert.ok(original);
+ const replacement={...original};
+ delete replacement.waterEntityId;
+ loaded.buildings[loaded.buildings.indexOf(original)]=replacement;
+ assert.equal(arrivalWelcomeHouse(loaded,welcome),undefined);
+ assert.equal(lastArrivalWelcome(loaded,welcome.home,family),null);
+ assert.equal(householdWelcomeEvidence(loaded,family),welcome);
+ const raw=encode(loaded);
+ assert.equal(encode(decode(raw)),raw);
+ const old=JSON.parse(raw);
+ delete old.arrivalHospitality.welcomes[0].homeId;
+ delete old.causalFacts;
+ const legacyRaw=JSON.stringify(old);
+ assert.equal(encode(decode(legacyRaw)),legacyRaw);
 });
 
 test('the hospitality name requires different hosts at different occupied courtyards and retains their welcomes',async()=>{

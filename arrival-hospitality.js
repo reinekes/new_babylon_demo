@@ -1,4 +1,5 @@
-import {usesCatDiscovery} from './scenario-profiles.js';
+import {ensureHouseEntityId} from './causal-facts.js';
+import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {buildingKey,capacityOf,isOperational} from './definitions.js';
 import {foodAvailability,reserveStock} from './inventory.js';
 import {navigationSegmentClear,nearestWalkingNode,shortestWalkingPath} from './navigation.js';
@@ -161,8 +162,10 @@ export function createArrivalFamily(s,home,count){
   parents:i<2?[]:[first,first+1],partner:i<2&&count>1?first+1-i:null,generation:i<2?1:2,faith:20
  }));
  s.demography.nextId+=count;
+ const house=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===home);
+ const homeId=house&&isStrictSumer(s)?ensureHouseEntityId(s,house):undefined;
  const welcomes=s.arrivalHospitality.welcomes??=[];
- welcomes.push({home,host,members:family.map(c=>c.id),at:s.simTime});
+ welcomes.push({home,...homeId===undefined?{}:{homeId},host,members:family.map(c=>c.id),at:s.simTime});
  if(welcomes.length>80){
   const {keep}=welcomeEvidence(welcomes);
   welcomes.splice(welcomes.findIndex(row=>!keep.includes(row)),1);
@@ -177,9 +180,14 @@ export function householdWelcomeEvidence(s,residents){
   (ids.has(row.host)||row.members.some(id=>ids.has(id))))||null;
 }
 
+export function arrivalWelcomeHouse(s,welcome){
+ return s.buildings.find(b=>b.type==='house'&&buildingKey(b)===welcome.home&&
+  (welcome.homeId===undefined||welcome.homeId===b.waterEntityId));
+}
+
 export function lastArrivalWelcome(s,home,residents){
  const ids=residents&&new Set(residents.map(c=>c.id));
- return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home&&
+ return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home&&(row.homeId===undefined||arrivalWelcomeHouse(s,row))&&
   (!ids||ids.has(row.host)||row.members.some(id=>ids.has(id))))||null;
 }
 
@@ -256,7 +264,7 @@ export function validateArrivalHospitality(s){
   if(!Array.isArray(welcomes)||!welcomes.length||welcomes.length>80)return false;
   let lastTime=0,lastId=-1;
   for(const row of welcomes){
-   if(!row||Object.keys(row).length!==4||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
+   if(!row||Object.keys(row).length!==4+Number(row.homeId!==undefined)||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
     !Array.isArray(row.members)||!row.members.length||row.members.length>6||
     !row.members.every((id,i)=>Number.isSafeInteger(id)&&id>lastId&&id<s.demography.nextId&&(!i||id===row.members[i-1]+1))||
     row.host!==null&&(!Number.isSafeInteger(row.host)||row.host<0||row.host>=row.members[0]))return false;
