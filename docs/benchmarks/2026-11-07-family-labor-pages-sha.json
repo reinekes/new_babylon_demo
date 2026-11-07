@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T15:21:32.793626+00:00",
+  "commit": "70a919afa1eb61cf98469e1df7c597884989f561",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7feaf1fa12ede16108aec4b2493ff694e1361f2c98a16d409ebda5226ccc36ed",
+      "actual": "7feaf1fa12ede16108aec4b2493ff694e1361f2c98a16d409ebda5226ccc36ed",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "99e43846edb3791a6127c40efe36799c6b3b8d9b97e2d79564ba9927491c469e",
+      "actual": "99e43846edb3791a6127c40efe36799c6b3b8d9b97e2d79564ba9927491c469e",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "bbf4f7f968d9a1bfadb637d50144893819622c16d2159b3e24368ae4f7a6be57",
+      "actual": "bbf4f7f968d9a1bfadb637d50144893819622c16d2159b3e24368ae4f7a6be57",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-family-labor-4x.json",
+      "status": 200,
+      "expected": "145ec3d00d1e4e8f33deaf543e8f9e00c3f79ea526af9340b9facf12bb8d2be2",
+      "actual": "145ec3d00d1e4e8f33deaf543e8f9e00c3f79ea526af9340b9facf12bb8d2be2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-family-labor-browser.json",
+      "status": 200,
+      "expected": "8dfac5b8c73041d4ca614d524f37223287e1e09ef76cbdba0bed7c519e3f9046",
+      "actual": "8dfac5b8c73041d4ca614d524f37223287e1e09ef76cbdba0bed7c519e3f9046",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1901ad9e153abfa19707ed543e94dcce1a71ba8e845cfd1c0682014e3df31f27",
+      "actual": "1901ad9e153abfa19707ed543e94dcce1a71ba8e845cfd1c0682014e3df31f27",
+      "match": true
+    },
+    {
+      "path": "tests/household-initiative.test.js",
+      "status": 200,
+      "expected": "e6e682d1fd2003f11392717537b1b77a517af13ff11c4227818deab65cce9c3d",
+      "actual": "e6e682d1fd2003f11392717537b1b77a517af13ff11c4227818deab65cce9c3d",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "1bafdb002a50816fad77123cc782c7f96478a15a6e3591db129e71fd9bf06173",
+      "actual": "1bafdb002a50816fad77123cc782c7f96478a15a6e3591db129e71fd9bf06173",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
