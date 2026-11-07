@@ -319,3 +319,25 @@ test('a household water dispute has a one-time outcome tied to the people who we
  const corrupt=JSON.parse(raw);corrupt.arrivalHospitality.welcomes.at(-1).dispute.guest=host.id;
  assert.equal(decode(JSON.stringify(corrupt)),null);
 });
+
+test('a paid arrival keeps the original courtyard identity and loads an older address-only reservation',async()=>{
+ const {reserveArrival,advanceArrivalGroup}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const s=createNewCity({mode:'awakening',seed:1}),network=networkFor(s);
+ for(const b of s.buildings)if(b.type==='house')b.water=8;
+ assert.ok(reserveArrival(s,network));
+ const group=s.arrivalGroup,house=s.buildings.find(b=>`${b.x},${b.y}`===group.home);
+ assert.ok(Number.isSafeInteger(group.homeId));
+ assert.equal(group.homeId,house.waterEntityId);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const legacy=JSON.parse(raw);
+ delete legacy.arrivalGroup.homeId;
+ const old=JSON.stringify(legacy);
+ assert.equal(encode(decode(old)),old);
+ house.waterEntityId=s.causalFacts.nextEntityId++;
+ assert.equal(decode(encode(s)),null);
+ const position=[group.x,group.y,group.routeIndex];
+ assert.equal(advanceArrivalGroup(s,120,network),false);
+ assert.deepEqual([group.x,group.y,group.routeIndex],position);
+});

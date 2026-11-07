@@ -137,7 +137,8 @@ export function reserveArrival(s,network,expected){
  if(!provisions)return false;
  home.water-=offer.water;
  const start=offer.route[0];
- s.arrivalGroup={home:offer.home,count:offer.beds,water:offer.water,provisions,...custom?{custom}:{},
+ const homeId=isStrictSumer(s)?ensureHouseEntityId(s,home):undefined;
+ s.arrivalGroup={home:offer.home,...homeId===undefined?{}:{homeId},count:offer.beds,water:offer.water,provisions,...custom?{custom}:{},
   x:start.x,y:start.y,route:offer.route.map(p=>p.key),routeIndex:1,
   ...Object.keys(giftReserve).length?{giftReserve}:{}};
  return true;
@@ -232,7 +233,7 @@ export function lastArrivalWelcome(s,home,residents){
 export function advanceArrivalGroup(s,dt,network){
  const g=s.arrivalGroup;
  if(!g)return false;
- const target=network.ports.find(p=>buildingKey(p.building)===g.home);
+ const target=network.ports.find(p=>matchesArrivalHome(g,p.building));
  const component=target&&network.components.get(target.key);
  if(component===undefined||!network.nodes.has(target.key))return false;
  const clear=p=>navigationSegmentClear(s,g,p,network.navigation.obstacles)&&
@@ -258,11 +259,17 @@ export function advanceArrivalGroup(s,dt,network){
   arrivalHousing(s,{includeReserved:true}).some(row=>row.home===g.home&&row.beds>=g.count);
 }
 
+function matchesArrivalHome(group,house){
+ return house.type==='house'&&buildingKey(house)===group.home&&
+  (group.homeId===undefined||house.waterEntityId===group.homeId);
+}
+
 function validArrivalGroup(s){
  const g=s.arrivalGroup;
  if(g===undefined)return true;
  if(!g||!s.arrivalHospitality||!Number.isInteger(g.count)||g.count<1||g.count>6||g.custom!==undefined&&g.custom!=='libation'||g.water!==g.count+customWater(g.custom)||
-  !s.buildings.some(b=>buildingKey(b)===g.home&&capacityOf(b)>=g.count)||
+  g.homeId!==undefined&&(!isStrictSumer(s)||!Number.isSafeInteger(g.homeId)||g.homeId<1)||
+  !s.buildings.some(b=>matchesArrivalHome(g,b)&&capacityOf(b)>=g.count)||
   !g.provisions||typeof g.provisions!=='object'||Array.isArray(g.provisions)||
   !Number.isFinite(g.x)||g.x<-.5||g.x>worldWidth(s)-.5||
   !Number.isFinite(g.y)||g.y<-.5||g.y>worldHeight(s)-.5||

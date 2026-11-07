@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "initialPopulation": 289,
+  "population": 295,
+  "arrivals": 6,
+  "home": "2,2",
+  "customWater": 1,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 2.93591600000002,
+  "p95CpuMs": 11.489083999999991
+}
