@@ -169,3 +169,21 @@ test('a different family can occupy the finished courtyard without settling the 
  const raw=encode(s);
  assert.equal(encode(decode(raw)),raw);
 });
+
+test('a house with reserved places does not prevent another family from proposing a courtyard',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const source=s.buildings.find(b=>buildingKey(b)===s.citizens[0].home);
+ const first=householdInitiative(s,source);
+ assert.ok(first.ok,first.reason);
+ const house={type:'house',x:first.x,y:first.y,level:1,starterHut:true};
+ s.buildings.push(house);
+ assert.match(householdInitiative(s,source).reason,/свободный дом/);
+ const key=buildingKey(house);
+ s.arrivalGroup={home:key,count:2};
+ assert.match(householdInitiative(s,source).reason,/свободный дом/);
+ s.arrivalGroup.count=3;
+ assert.ok(householdInitiative(s,source).ok);
+ delete s.arrivalGroup;
+ house.householdInitiative={members:[2,3]};
+ assert.ok(householdInitiative(s,source).ok);
+});

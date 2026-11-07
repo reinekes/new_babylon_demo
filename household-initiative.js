@@ -1,3 +1,4 @@
+import {reservedArrivalBeds} from './arrival-hospitality.js';
 import {ensureHouseEntityId} from './causal-facts.js';
 import {DAY_SECONDS} from './city-life.js';
 import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
@@ -44,7 +45,14 @@ export function householdInitiative(s,source){
  const current=components({...s,roads:[...s.roads]}),district=current.get(sourceKey);
  const family=families.find(group=>district!==undefined&&group.every(c=>current.get(c.home)===district));
  if(!family)return refuse('Между домами семьи нет сухого пути');
- if(s.buildings.some(b=>capacityOf(b)>=family.length&&!occupied.has(buildingKey(b))&&current.get(buildingKey(b))===district))return refuse('Семья может занять свободный дом в этом квартале');
+ const canMoveInto=b=>{
+  const key=buildingKey(b);
+  const project=b.householdInitiative;
+  return current.get(key)===district&&!occupied.has(key)&&
+   !householdInitiativeReserved(project,byId.get(project?.members[0]))&&
+   capacityOf(b)-reservedArrivalBeds(s,key)>=family.length;
+ };
+ if(s.buildings.some(canMoveInto))return refuse('Семья может занять свободный дом в этом квартале');
  const flooded=floodPhase(s)==='active'?floodFootprint(s,s.riverFlood):null;
  let reason='Рядом нет свободного участка с проходом к семье и складу';
  for(let ring=1;ring<=3;ring++)for(let dx=-ring;dx<=ring;dx++){
