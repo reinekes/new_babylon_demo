@@ -1,0 +1,31 @@
+{
+  "buildings": 130,
+  "population": 200,
+  "initialPopulation": 200,
+  "evidence": [
+    {
+      "vowId": 1,
+      "home": "8,8",
+      "delivery": {
+        "witness": 7,
+        "recipient": 0,
+        "time": 5.625
+      }
+    },
+    {
+      "vowId": 2,
+      "home": "9,9",
+      "delivery": {
+        "witness": 9,
+        "recipient": 8,
+        "time": 9.5
+      }
+    }
+  ],
+  "loadedCargo": true,
+  "reloadByteIdentical": true,
+  "steps": 77,
+  "cpuMedianMs": 2.2180830000000356,
+  "cpuP95Ms": 6.175708000000043,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

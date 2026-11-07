@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {advanceTime,createGame,decode,encode} from '../engine.js';
 import {buildingKey} from '../definitions.js';
 import {strictScenario} from '../scenario-profiles.js';
-import {acceptSupplyVow,advanceSupplyVow,extendSupplyVow,recordVowDelivery} from '../supply-vow.js';
+import {acceptSupplyVow,advanceSupplyVow,extendSupplyVow,householdVowEvidence,recordVowDelivery,vowNameEvidence} from '../supply-vow.js';
 
 function city(){
  const s=createGame({start:'established',scenario:strictScenario()});
@@ -67,6 +67,10 @@ test('extension is one public outcome, and preserves evidence for partial fulfil
  advanceSupplyVow(s);
  assert.equal(s.supplyVows.history[1].outcome,'partial');
  assert.ok(s.supplyVows.history[1].targets[0].delivery);
+ assert.equal(vowNameEvidence(s),null);
+ const combined=householdVowEvidence(s,s.citizens);
+ assert.equal(combined.target.home,buildingKey(b));
+ assert.ok(combined.target.failure);
 });
 
 test('unreachable recipients and legacy cities cannot spend faith on a vow',()=>{
@@ -106,5 +110,33 @@ test('a long advance closes the vow at its deadline rather than its final simula
  s.supplyVows.active.targets[0].required=100;
  assert.ok(advanceTime(s,2)>1);
  assert.equal(s.supplyVows.history[0].ended,deadline);
+ assert.equal(s.supplyVows.history[0].outcome,'broken');
+});
+
+test('vow names distinguish actual fulfilment, repeated households, and repaired trust',()=>{
+ const {s,houses}=city(),[a,b]=houses;
+ const people=s.citizens.filter(c=>c.home===buildingKey(a));
+ const start=house=>{
+  house.pantry=0;
+  assert.ok(acceptSupplyVow(s,[buildingKey(house)]).ok);
+ };
+ const deliver=house=>{
+  const amount=s.supplyVows.active.targets[0].required;
+  house.pantry=amount;house.pantryDelivered+=amount;
+  recordVowDelivery(s,house,s.citizens[0],amount);
+ };
+ start(a);
+ assert.equal(vowNameEvidence(s),null);
+ assert.equal(householdVowEvidence(s,people),null);
+ s.simTime=s.supplyVows.active.deadline;
+ advanceSupplyVow(s);
+ assert.equal(householdVowEvidence(s,people)?.target.failure,'short');
+ assert.equal(vowNameEvidence(s),null);
+ start(a);deliver(a);
+ assert.ok(householdVowEvidence(s,people)?.target.delivery);
+ start(a);deliver(a);
+ assert.equal(vowNameEvidence(s),null);
+ start(b);deliver(b);
+ assert.deepEqual(vowNameEvidence(s)?.map(f=>f.target.home),[buildingKey(a),buildingKey(b)]);
  assert.equal(s.supplyVows.history[0].outcome,'broken');
 });

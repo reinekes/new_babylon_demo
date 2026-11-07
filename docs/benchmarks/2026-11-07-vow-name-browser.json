@@ -1,0 +1,34 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Actual fulfilled and failed vow saves. Pantheon accessed in the real app. Test-only entry opens the normal family tab.",
+  "runs": [
+    {
+      "id": "vows",
+      "view": "2d",
+      "url": "?id=vows&view=2d&earned",
+      "mode": "2d",
+      "result": "PASS 2d no name for one receipt, name and two evidence lines for two"
+    },
+    {
+      "id": "vows",
+      "view": "3d",
+      "url": "?id=vows&view=3d&earned",
+      "mode": "3d",
+      "result": "PASS 3d no name for one receipt, name and two evidence lines for two"
+    },
+    {
+      "id": "family",
+      "view": "2d",
+      "url": "?id=family&view=2d",
+      "mode": "2d",
+      "result": "PASS 2d actual failed vow visible in family tab"
+    },
+    {
+      "id": "family",
+      "view": "3d",
+      "url": "?id=family&view=3d",
+      "mode": "3d",
+      "result": "PASS 3d actual failed vow visible in family tab"
+    }
+  ]
+}

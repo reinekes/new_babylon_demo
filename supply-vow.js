@@ -84,6 +84,41 @@ export function recordVowDelivery(s,house,courier,amount){
  if(vow.targets.every(t=>t.delivery))close(s,'fulfilled');
 }
 
+export function vowNameEvidence(s){
+ const candidates=[];
+ for(const vow of s.supplyVows?.history||[]){
+  if(vow.outcome!=='fulfilled')continue;
+  for(const target of vow.targets){
+   const different=candidates.find(({target:prior})=>prior.home!==target.home&&prior.delivery.recipient!==target.delivery.recipient);
+   const fact={vowId:vow.id,target};
+   if(different)return [different,fact];
+   // A second candidate breaks a tie on address or recipient.
+   if(candidates.length===0||candidates.length===1&&
+    (candidates[0].target.home!==target.home||candidates[0].target.delivery.recipient!==target.delivery.recipient))candidates.push(fact);
+  }
+ }
+ return null;
+}
+
+export function householdVowEvidence(s,residents){
+ const history=s.supplyVows?.history;
+ if(!history?.length||!residents.length)return null;
+ const ids=new Set(residents.map(c=>c.id));
+ for(let i=history.length-1;i>=0;i--){
+  const vow=history[i];
+  if(vow.outcome==='renegotiated')continue;
+  let target=null,latest=-1;
+  for(const candidate of vow.targets){
+   const belongs=candidate.delivery?ids.has(candidate.delivery.recipient):candidate.residents.some(id=>ids.has(id));
+   if(!belongs)continue;
+   const time=candidate.delivery?.time??vow.ended;
+   if(time>latest||time===latest&&candidate.home<target.home){target=candidate;latest=time;}
+  }
+  if(target)return {vowId:vow.id,target};
+ }
+ return null;
+}
+
 export function validateSupplyVows(s){
  const book=s.supplyVows;
  if(book===undefined)return true;
