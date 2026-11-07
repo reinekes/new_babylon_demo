@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T06:07:26.735032+00:00",
+  "commit": "e8b92d17bd403333fa9fd90e7f6396044eab372e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "25c49434e0d9a3ac86988788ec85399b69a10c93fb1d4318cf81ea0fb5d8f32e",
+      "actual": "25c49434e0d9a3ac86988788ec85399b69a10c93fb1d4318cf81ea0fb5d8f32e",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "6cb39b7769267a7677410302b12f828a05c6fbcf42b92bf46c7d76e489d579ad",
+      "actual": "6cb39b7769267a7677410302b12f828a05c6fbcf42b92bf46c7d76e489d579ad",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-craft-candidates-4x.json",
+      "status": 200,
+      "expected": "3712349c7256876f5560478ecb8348b796f113f560951a64229003736107b4dc",
+      "actual": "3712349c7256876f5560478ecb8348b796f113f560951a64229003736107b4dc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-craft-candidates-browser.json",
+      "status": 200,
+      "expected": "5201c88a9766145806457f06682403b73e18148802f9ad5896092d4a0baee511",
+      "actual": "5201c88a9766145806457f06682403b73e18148802f9ad5896092d4a0baee511",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "9324d072503f445369ff031bb92555224fc353449aba07d86996f3ea0b277fb7",
+      "actual": "9324d072503f445369ff031bb92555224fc353449aba07d86996f3ea0b277fb7",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "bff742b23c8e53c16e6ed0a0ac0ed678cf7a8cc8aedd43b8ba001bce00fa5847",
+      "actual": "bff742b23c8e53c16e6ed0a0ac0ed678cf7a8cc8aedd43b8ba001bce00fa5847",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "faa8d75116ea2a73c9b2c674014185bd05f56a771043a15327bf25022fae94eb",
+      "actual": "faa8d75116ea2a73c9b2c674014185bd05f56a771043a15327bf25022fae94eb",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "4ed0efcb745151edc2b3c9e5038feea971dd3126df0c0e3fc7ff7bb0a43143f5",
+      "actual": "4ed0efcb745151edc2b3c9e5038feea971dd3126df0c0e3fc7ff7bb0a43143f5",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "60e10ea42ba8b4981879554442aab0f1e34ef05e1b878aaaa6e4b8e76228345d",
+      "actual": "60e10ea42ba8b4981879554442aab0f1e34ef05e1b878aaaa6e4b8e76228345d",
+      "match": true
+    },
+    {
+      "path": "tests/builder-apprenticeship.test.js",
+      "status": 200,
+      "expected": "a7aa056a7a362589e77e7c4d73c4cad9eba3459673dbf49b714b512182735c1e",
+      "actual": "a7aa056a7a362589e77e7c4d73c4cad9eba3459673dbf49b714b512182735c1e",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
