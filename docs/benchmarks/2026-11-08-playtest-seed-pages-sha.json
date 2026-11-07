@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-07T22:19:58.727474+00:00",
+  "commit": "4c145101c9f52c435f049a8861566f314dccfcb3",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "403984f4b55533c6d29ea66371c294359a418bb697095d84d2eaf76c47361b2c",
+      "actual": "403984f4b55533c6d29ea66371c294359a418bb697095d84d2eaf76c47361b2c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "c159180c0d5d5e59f9e9f3b1fac4c082c6a03a03e694d8eab7f976ca7343c4f9",
+      "actual": "c159180c0d5d5e59f9e9f3b1fac4c082c6a03a03e694d8eab7f976ca7343c4f9",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0264a9be4c9604205f7bf91802e5135888561a84d945e5e203af4203d9fb31ff",
+      "actual": "0264a9be4c9604205f7bf91802e5135888561a84d945e5e203af4203d9fb31ff",
+      "match": true
+    },
+    {
+      "path": "docs/NEW_PLAYER_PLAYTEST.md",
+      "status": 200,
+      "expected": "0d337118d7e8ba76f16b62bc9bb9b7a70a1b0a874312c8fafc971d258f790dc1",
+      "actual": "0d337118d7e8ba76f16b62bc9bb9b7a70a1b0a874312c8fafc971d258f790dc1",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-playtest-seed-browser.json",
+      "status": 200,
+      "expected": "1521c9cc2987bb831d67f21a158666de755f7efcd9921213d92128ccaaa66a71",
+      "actual": "1521c9cc2987bb831d67f21a158666de755f7efcd9921213d92128ccaaa66a71",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2a2cb8d0e6d3c1ca4b83b5166473157b3b78e76e9a8ee70e107161118ef4e15e",
+      "actual": "2a2cb8d0e6d3c1ca4b83b5166473157b3b78e76e9a8ee70e107161118ef4e15e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "6096f742f174f894633eed199f250322a7eafa5d14a55fe5e29006dc723ec9cf",
+      "actual": "6096f742f174f894633eed199f250322a7eafa5d14a55fe5e29006dc723ec9cf",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "353653d97cc9e05ec5f0133cf87f419b59ce2a47b28a7e832cf6bb53e4775735",
+      "actual": "353653d97cc9e05ec5f0133cf87f419b59ce2a47b28a7e832cf6bb53e4775735",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d3611c3b1262e72b58a8c4134aae688801fe3558f5bde82d5f2a5cf2f316a8af",
+      "actual": "d3611c3b1262e72b58a8c4134aae688801fe3558f5bde82d5f2a5cf2f316a8af",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
