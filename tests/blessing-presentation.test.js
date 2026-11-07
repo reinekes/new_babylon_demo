@@ -29,3 +29,25 @@ test('blessing opening waits in the scene queue, skips without changing the city
  assert.equal(JSON.stringify(s),save);
  window.close();
 });
+
+test('only free adults already at the original courtyard appear and busy residents leave the scene',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const root=window.document.querySelector('main');
+ const home={type:'house',x:4,y:5,waterEntityId:7};
+ const person=(id,extra={})=>({id,name:'Житель '+id,age:30,health:100,phase:'resting',home:'4,5',x:4,y:5,...extra});
+ const s={simTime:1,buildings:[home],citizens:[person(1),person(2,{cargo:{food:1}}),person(3,{clinic:'4,5'}),person(4,{x:9}),person(5,{age:12}),person(6)],blessingDiscovery:{qualifiedAt:null}};
+ const scene=createBlessingPresentation(root);
+ scene.reset(s);
+ s.blessingDiscovery={qualifiedAt:1,cup:{home:'4,5',homeId:7}};
+ scene.tick(s,7000);
+ scene.tick(s,100);
+ const list=root.querySelector('[data-blessing-guests]');
+ assert.match(list.textContent,/Житель 1, Житель 6/);
+ s.citizens[0].waterTrip={};
+ scene.tick(s,100);
+ assert.equal(list.textContent,'Во дворе · Житель 6');
+ s.buildings[0]={...home,waterEntityId:8};
+ scene.tick(s,100);
+ assert.equal(list.hidden,true);
+ window.close();
+});

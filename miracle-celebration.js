@@ -68,7 +68,7 @@ export function startInannaMeeting(s){
   participants:s.citizens.map(c=>({id:c.id,path:paths.get(c.id)||[point(c)],joined:paths.has(c.id)}))};
  return {ok:true};
 }
-function freeCatGuest(c,time){
+export function freeCeremonyGuest(c,time){
  return c.age>=16&&c.health>=60&&['home','resting'].includes(c.phase)&&
   !c.recovering&&!c.floodShelter&&!(c.diningUntil>time)&&!c.pendingRole&&!c.guardPost&&!c.site&&!c.clinic&&!c.school&&
   !c.waterTrip&&!c.pantryTrip&&!c.craftSite&&!c.seedField&&c.clothingTarget===undefined&&
@@ -95,7 +95,7 @@ export function startMiracleCelebration(s,kind,{center,catId,catDestination}={})
  const places=[];for(let ring=1;ring<=15&&places.length<limit;ring++){const r=.4+ring*.22,count=Math.ceil(r*2*Math.PI/.22);for(let i=0;i<count;i++){const a=i*2*Math.PI/count,p={x:center.x+r*Math.cos(a),y:center.y+r*Math.sin(a)};if(free(p)&&places.every(q=>distance(p,q)>=.18))places.push(p);}}
  let joined=0;
  const participants=s.citizens.map(c=>{const origin=point(c);
-  if(joined>=limit||smallCat&&!freeCatGuest(c,s.simTime))return {id:c.id,path:[origin],joined:false};
+  if(joined>=limit||smallCat&&!freeCeremonyGuest(c,s.simTime))return {id:c.id,path:[origin],joined:false};
   let path=null;for(let i=0;i<places.length;i++){if(distance(origin,places[i])>24+1e-7)continue;const candidate=route(s,net,origin,places[i]);if(candidate&&length(candidate)<=24){path=candidate;places.splice(i,1);joined++;break;}}return {id:c.id,path:path||[origin],joined:!!path};});
  const q={kind,elapsed:0,duration:60,center,participants,cat:null};
  if(kind==='cat'){

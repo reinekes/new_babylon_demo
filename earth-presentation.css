@@ -42,3 +42,9 @@
  .blessing-cup,.blessing-light { transition:none; }
  .blessing-scene[data-phase="light"] .blessing-mat { transform:none; }
 }
+.blessing-shadow { fill:#271b1a;opacity:0;transition:opacity .8s ease; }
+.blessing-shadow[hidden] { display:none; }
+.blessing-scene:is([data-phase="light"],[data-phase="neighbors"]) .blessing-shadow { opacity:.76; }
+.blessing-scene-card [data-blessing-guests] { display:block;margin-top:.35rem;color:#ebd0a2; }
+.blessing-scene-card [data-blessing-guests][hidden] { display:none; }
+@media (prefers-reduced-motion:reduce) { .blessing-shadow { transition:none; } }
