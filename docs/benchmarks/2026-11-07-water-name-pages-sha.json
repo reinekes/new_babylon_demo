@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T04:31:00.297605+00:00",
+  "commit": "5a751ccb90e7dc5eef62aa873fef66f3afb9713e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0d43e3116611fa5bb084d41e2cdcc78420a53816538c231349b298a7b35c8b24",
+      "actual": "0d43e3116611fa5bb084d41e2cdcc78420a53816538c231349b298a7b35c8b24",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "246712dfcc9a8fd359da1f775a17da103d5687bc253584c80d4677203848e427",
+      "actual": "246712dfcc9a8fd359da1f775a17da103d5687bc253584c80d4677203848e427",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "117f940b033718027116bc8e573566ae24282fb2493796bb8e3119d509d5583a",
+      "actual": "117f940b033718027116bc8e573566ae24282fb2493796bb8e3119d509d5583a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-name-4x.json",
+      "status": 200,
+      "expected": "d40c3e6645536583326d64dd2cccf4d562f543243129fc6d312772e2a2f20ddb",
+      "actual": "d40c3e6645536583326d64dd2cccf4d562f543243129fc6d312772e2a2f20ddb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-name-browser.json",
+      "status": 200,
+      "expected": "ef82706083acea52ede5cc0a19c79231eeffca2235e7f735c69579d3eb805963",
+      "actual": "ef82706083acea52ede5cc0a19c79231eeffca2235e7f735c69579d3eb805963",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "06938a653e8d16f8d24f7746d7240c53f1af7aa1b5fdc70f4905b214602ec2de",
+      "actual": "06938a653e8d16f8d24f7746d7240c53f1af7aa1b5fdc70f4905b214602ec2de",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "b4618b5ee5aa24912713e59bad5f0667e0c46e1614d364ab767ec8d1ee1acfa7",
+      "actual": "b4618b5ee5aa24912713e59bad5f0667e0c46e1614d364ab767ec8d1ee1acfa7",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "65902cc8276d00d9fa0be8e6578da1b91cab3db2c64d3b3242388c881bd59664",
+      "actual": "65902cc8276d00d9fa0be8e6578da1b91cab3db2c64d3b3242388c881bd59664",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "f1102a4e22e1c0e3abc29e8e33d8be4da388a53629b7dab14c537c3d3312973c",
+      "actual": "f1102a4e22e1c0e3abc29e8e33d8be4da388a53629b7dab14c537c3d3312973c",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "d3512b1254986af11302a9fee78c5e11f10cfa2d62f8965f4d3de711ff225dc0",
+      "actual": "d3512b1254986af11302a9fee78c5e11f10cfa2d62f8965f4d3de711ff225dc0",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
