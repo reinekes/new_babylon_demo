@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T04:37:51.819449+00:00",
+  "commit": "c92e7a2e3c7bb9eb35a5928bbbfc77bd03d836c6",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "b1924924cc3b90050e2e1428267cabe1424a5a0ee489f110e9477e735761f367",
+      "actual": "b1924924cc3b90050e2e1428267cabe1424a5a0ee489f110e9477e735761f367",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "d7cb8349beefabd5a8289450bf801f77cbb57eb14f081b70cb4588a52b6fc672",
+      "actual": "d7cb8349beefabd5a8289450bf801f77cbb57eb14f081b70cb4588a52b6fc672",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "c62a1260e6a677f48da67256e47f46e1b11e40b8cede598b13e8286d66156ff8",
+      "actual": "c62a1260e6a677f48da67256e47f46e1b11e40b8cede598b13e8286d66156ff8",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-healing-name-4x.json",
+      "status": 200,
+      "expected": "586611dd16c3dd8770a200f68decc67a87628724bdce10b225f99c475b002621",
+      "actual": "586611dd16c3dd8770a200f68decc67a87628724bdce10b225f99c475b002621",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-healing-name-browser.json",
+      "status": 200,
+      "expected": "978f470afcea9c02ccc5029253af10391a637d970b3b57656a7af6bb17b60993",
+      "actual": "978f470afcea9c02ccc5029253af10391a637d970b3b57656a7af6bb17b60993",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e313fc6a67dcbfbfb188cfff80fc813c839ea2c6d77bc2d9c4b9b7ebdaa2ce54",
+      "actual": "e313fc6a67dcbfbfb188cfff80fc813c839ea2c6d77bc2d9c4b9b7ebdaa2ce54",
+      "match": true
+    },
+    {
+      "path": "life-analytics.js",
+      "status": 200,
+      "expected": "905b9c6847ea08ed920f482a352b4aa267dd54d8beea8ef7ba0037f030858f86",
+      "actual": "905b9c6847ea08ed920f482a352b4aa267dd54d8beea8ef7ba0037f030858f86",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f43b35f05347c859d3dc7ec675cf83480ce64a3a2f5c8f65c1015b4910a00144",
+      "actual": "f43b35f05347c859d3dc7ec675cf83480ce64a3a2f5c8f65c1015b4910a00144",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0e8d33c847210d2fd411f8370fdd5986b33197f07f8994a433eef0ae38749055",
+      "actual": "0e8d33c847210d2fd411f8370fdd5986b33197f07f8994a433eef0ae38749055",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "b798e7b7ebe91d1871ff3a96a385cae63bc58082162e8636f84be4e9ff4bdfde",
+      "actual": "b798e7b7ebe91d1871ff3a96a385cae63bc58082162e8636f84be4e9ff4bdfde",
+      "match": true
+    },
+    {
+      "path": "tests/healer.test.js",
+      "status": 200,
+      "expected": "cb19f5bb4dad40d4cfb9444b91e98852668b0e923d21c6e54298d2fd6433363a",
+      "actual": "cb19f5bb4dad40d4cfb9444b91e98852668b0e923d21c6e54298d2fd6433363a",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
