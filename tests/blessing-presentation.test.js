@@ -73,3 +73,21 @@ test('the courtyard camera moves only on request and checks the current house id
  assert.equal(button.hidden,true);
  window.close();
 });
+
+test('a saved opening that has not started plays after reload and is consumed once',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const root=window.document.querySelector('main'),s={blessingDiscovery:{qualifiedAt:5,cup:{home:'4,5',homeId:7},openingPending:true}};
+ let starts=0;
+ const scene=createBlessingPresentation(root,{onOpening:city=>{delete city.blessingDiscovery.openingPending;starts++;}});
+ scene.reset(s);
+ scene.tick(s,250,{allowOpening:false});
+ assert.equal(starts,0);
+ scene.tick(s,250);
+ assert.equal(starts,1);
+ assert.equal(root.querySelector('section').hidden,false);
+ scene.reset(structuredClone(s));
+ scene.tick(s,250);
+ assert.equal(starts,1);
+ assert.ok(root.querySelector('section').hidden);
+ window.close();
+});

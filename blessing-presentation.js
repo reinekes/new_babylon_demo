@@ -9,7 +9,7 @@ const phases=[
  {at:22000,id:'neighbors',caption:'Соседи вспоминают тех, кто помог в трудный день. Дар открыт.',cue:'bow'}
 ];
 
-export function createBlessingPresentation(root,{cue,focus}={}){
+export function createBlessingPresentation(root,{cue,focus,onOpening}={}){
  const panel=root.ownerDocument.createElement('section');
  panel.className='earth-scene blessing-scene';
  panel.hidden=true;
@@ -42,12 +42,12 @@ export function createBlessingPresentation(root,{cue,focus}={}){
  return {
   get active(){return elapsed!==null;},
   skip,
-  reset(s){skip();seen=s.blessingDiscovery?.qualifiedAt??null;pending=false;},
+  reset(s){skip();seen=s.blessingDiscovery?.qualifiedAt??null;pending=s.blessingDiscovery?.openingPending===true;},
   tick(s,dt,{visible=true,allowOpening=true}={}){
    const qualified=s.blessingDiscovery?.qualifiedAt??null;
    if(qualified!==null&&qualified!==seen){seen=qualified;pending=true;}
    if(!visible||!allowOpening){panel.hidden=true;silence();return;}
-   if(elapsed===null&&pending){elapsed=0;pending=false;}
+   if(elapsed===null&&pending){elapsed=0;pending=false;onOpening?.(s);}
    if(elapsed===null)return;
    if(elapsed>=28000){skip();return;}
    panel.hidden=false;city=s;

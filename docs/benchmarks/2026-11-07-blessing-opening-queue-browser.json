@@ -1,0 +1,16 @@
+[
+  {
+    "id": "bless",
+    "view": "2d",
+    "url": "?id=bless&view=2d&reloaded",
+    "mode": "2d",
+    "result": "PASS 2d queued scene restored once; second reload stayed quiet"
+  },
+  {
+    "id": "bless",
+    "view": "3d",
+    "url": "?id=bless&view=3d&reloaded",
+    "mode": "3d",
+    "result": "PASS 3d queued scene restored once; second reload stayed quiet"
+  }
+]

@@ -45,6 +45,7 @@ export function advanceBlessingDiscovery(s){
  const home=byKey.get(recent?.home)??supplied[0];
  milestone.qualifiedAt=s.simTime;
  milestone.cup={home:buildingKey(home),homeId:ensureHouseEntityId(s,home)};
+ milestone.openingPending=true;
  return true;
 }
 
@@ -62,7 +63,8 @@ export function blessingCupAt(s,home){
 export function validateBlessingDiscovery(s){
  const milestone=s.blessingDiscovery;
  if(milestone===undefined)return true;
- return usesCatDiscovery(s)&&!!milestone&&Object.keys(milestone).length===2+Number(milestone.cup!==undefined)&&milestone.version===1&&
+ return usesCatDiscovery(s)&&!!milestone&&Object.keys(milestone).length===2+Number(milestone.cup!==undefined)+Number(milestone.openingPending!==undefined)&&milestone.version===1&&
+  (milestone.openingPending===undefined||milestone.openingPending===true&&!!milestone.cup)&&
   (milestone.cup===undefined||milestone.qualifiedAt!==null&&milestone.cup&&Object.keys(milestone.cup).length===2&&
    Number.isSafeInteger(milestone.cup.homeId)&&milestone.cup.homeId>0&&/^\d+,\d+$/.test(milestone.cup.home))&&
   (milestone.qualifiedAt===null||Number.isFinite(milestone.qualifiedAt)&&milestone.qualifiedAt>=0&&milestone.qualifiedAt<=s.simTime&&aidCount(s)>=HELP_REQUIRED);

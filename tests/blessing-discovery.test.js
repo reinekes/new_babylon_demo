@@ -29,6 +29,7 @@ test('new Awakening remembers the neighborhood milestone only after two deliveri
  assert.equal(qualified,s.simTime);
  assert.deepEqual(s.blessingDiscovery.cup,{home:buildingKey(c),homeId:c.waterEntityId});
  assert.equal(blessingCupAt(s,c),true);
+ assert.equal(s.blessingDiscovery.openingPending,true);
 
  c.pantry=0;
  advanceTime(s,.1);
@@ -45,6 +46,7 @@ test('new Awakening remembers the neighborhood milestone only after two deliveri
  assert.equal(encode(decode(raw)),raw);
  const old=JSON.parse(raw);
  delete old.blessingDiscovery.cup;
+ delete old.blessingDiscovery.openingPending;
  assert.equal(encode(decode(JSON.stringify(old))),JSON.stringify(old));
 
 });
