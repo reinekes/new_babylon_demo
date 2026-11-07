@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-07T02:43:53.806625+00:00",
+  "commit": "ee8f688289f4cb62a43e5edaae32e03e471d5285",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "493634a4696e0800b179c2d0f65c9e6c7bb358a31ce4d22439c7c283ee6477fc",
+      "actual": "493634a4696e0800b179c2d0f65c9e6c7bb358a31ce4d22439c7c283ee6477fc",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "e0ba14879c258dcab9a143e35b2176b2e29a3fe89b4b7aff44bb4d2cc0f9207f",
+      "actual": "e0ba14879c258dcab9a143e35b2176b2e29a3fe89b4b7aff44bb4d2cc0f9207f",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "6647f305d8921b42642460a88982babb560806b89ac177ad6d95bc9d48ea3374",
+      "actual": "6647f305d8921b42642460a88982babb560806b89ac177ad6d95bc9d48ea3374",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-inanna-scenes-4x.json",
+      "status": 200,
+      "expected": "92341b3c50f38205a70d10549dc68e163f03ce2439cd6939b1bbbbb1c99e114c",
+      "actual": "92341b3c50f38205a70d10549dc68e163f03ce2439cd6939b1bbbbb1c99e114c",
+      "match": true
+    },
+    {
+      "path": "inanna-discovery.js",
+      "status": 200,
+      "expected": "91e4902a08a644fe0da81f3d1af7dae1b1b1318a84b55a947b1bc24e742a2579",
+      "actual": "91e4902a08a644fe0da81f3d1af7dae1b1b1318a84b55a947b1bc24e742a2579",
+      "match": true
+    },
+    {
+      "path": "inanna-presentation.css",
+      "status": 200,
+      "expected": "a7c2a780edf74221fc5807bf45f26474e502f0489f0159b36e906f50f3829873",
+      "actual": "a7c2a780edf74221fc5807bf45f26474e502f0489f0159b36e906f50f3829873",
+      "match": true
+    },
+    {
+      "path": "inanna-presentation.js",
+      "status": 200,
+      "expected": "5c0568d065469b8a45c672d5747f8900ab806f857d832ffb584ad2a9637eb70c",
+      "actual": "5c0568d065469b8a45c672d5747f8900ab806f857d832ffb584ad2a9637eb70c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d44f5be8a089e71b0be8801a347c53713c2237bdd6f81b35927706e9cb50f58d",
+      "actual": "d44f5be8a089e71b0be8801a347c53713c2237bdd6f81b35927706e9cb50f58d",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "8dfc1443e5679fc19111068a1d9b4d9d9bdefcb3bed03738ff353e96b8c2f4bf",
+      "actual": "8dfc1443e5679fc19111068a1d9b4d9d9bdefcb3bed03738ff353e96b8c2f4bf",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "28acbf032ed94de270c4589adbad1a01adadc2fd353ffff0e1a6d7f6846ae897",
+      "actual": "28acbf032ed94de270c4589adbad1a01adadc2fd353ffff0e1a6d7f6846ae897",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8ca4bd84bad1b0bba8735a80f5ed578703c19baf5381cf8fb42d51de112ef1b2",
+      "actual": "8ca4bd84bad1b0bba8735a80f5ed578703c19baf5381cf8fb42d51de112ef1b2",
+      "match": true
+    },
+    {
+      "path": "tests/inanna-presentation.test.js",
+      "status": 200,
+      "expected": "166d9c5a31a7847e9b97eb7ca452995c906d89c6fc47d4bc82e1974fdd1d06ee",
+      "actual": "166d9c5a31a7847e9b97eb7ca452995c906d89c6fc47d4bc82e1974fdd1d06ee",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
