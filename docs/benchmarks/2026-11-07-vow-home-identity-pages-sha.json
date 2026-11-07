@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-07T07:59:00.020470+00:00",
+  "commit": "49b273facea5bb4689c2b7c57a654a008e695d29",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "2c9cf1937bf0d217b6118ec00a8908e0776387bdb1fcca0e313821c6e70680b6",
+      "actual": "2c9cf1937bf0d217b6118ec00a8908e0776387bdb1fcca0e313821c6e70680b6",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "100b9bcd8f1f62ae9e7a5f6a908ee338aec3dd5b1eca77c320d4e76b2bff1c37",
+      "actual": "100b9bcd8f1f62ae9e7a5f6a908ee338aec3dd5b1eca77c320d4e76b2bff1c37",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "b22e6b73f92e213749c26914d0e64bdae4be30f6f2b973517645740a2ceaf28c",
+      "actual": "b22e6b73f92e213749c26914d0e64bdae4be30f6f2b973517645740a2ceaf28c",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "e9963ea72aa2c19bca590c318d4d8b097eb8631483d43dc7583c22b4e0d08ff5",
+      "actual": "e9963ea72aa2c19bca590c318d4d8b097eb8631483d43dc7583c22b4e0d08ff5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-vow-home-identity-4x.json",
+      "status": 200,
+      "expected": "2656fc37e345b713f34ed72f105be5b7bd797b30af34c80b28c2bdf8afbd53a5",
+      "actual": "2656fc37e345b713f34ed72f105be5b7bd797b30af34c80b28c2bdf8afbd53a5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-vow-home-identity-browser.json",
+      "status": 200,
+      "expected": "2199bd0beae6299e67ac463e6838dc9fbcb109ec3844efda261704c8c7e844ea",
+      "actual": "2199bd0beae6299e67ac463e6838dc9fbcb109ec3844efda261704c8c7e844ea",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "52c4b07e0cad7fbf56e6434f561c7d0e79b5cf352d4e6dc59721c2836fccdbfb",
+      "actual": "52c4b07e0cad7fbf56e6434f561c7d0e79b5cf352d4e6dc59721c2836fccdbfb",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "483673d2125c51e2962f4647bfc101db1d7137e05042819913be036c6d51d2c7",
+      "actual": "483673d2125c51e2962f4647bfc101db1d7137e05042819913be036c6d51d2c7",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "172bd21ca4165fcc33d3b746be9fa2f7b9c688951e25fd73a4e9027792214a3a",
+      "actual": "172bd21ca4165fcc33d3b746be9fa2f7b9c688951e25fd73a4e9027792214a3a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "3488e6bee41adeed0e77b4da9041a117d0997c6928b4e68b87f97389a4a74282",
+      "actual": "3488e6bee41adeed0e77b4da9041a117d0997c6928b4e68b87f97389a4a74282",
+      "match": true
+    },
+    {
+      "path": "supply-vow.js",
+      "status": 200,
+      "expected": "87b6af796f6bc230e0dcc46d92e276583e7f3a8b96d39713db47af85d5ee7d9f",
+      "actual": "87b6af796f6bc230e0dcc46d92e276583e7f3a8b96d39713db47af85d5ee7d9f",
+      "match": true
+    },
+    {
+      "path": "supply.js",
+      "status": 200,
+      "expected": "df1667c38011416416c0336882de76f65ae45853f72a8eafec84931a7cc5d7bb",
+      "actual": "df1667c38011416416c0336882de76f65ae45853f72a8eafec84931a7cc5d7bb",
+      "match": true
+    },
+    {
+      "path": "tests/supply-vow.test.js",
+      "status": 200,
+      "expected": "ad3df8eea031232ed0205b7adb174d930d251e93325ae2b651459a7623768bab",
+      "actual": "ad3df8eea031232ed0205b7adb174d930d251e93325ae2b651459a7623768bab",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
