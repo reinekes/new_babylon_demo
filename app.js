@@ -145,6 +145,7 @@ let encyclopediaUI=null,encyclopediaRequest=0;
 let seasonJumping=false;
 let urukUI=null;
 let waterProjectDraft=null;
+let quotedArrivalHome;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
 const ceremonySpeed=createCeremonySpeedControl();
 function setSpeed(value){speed=value;for(const button of document.querySelectorAll('[data-speed]')){const active=Number(button.dataset.speed)===speed;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}}
@@ -1056,7 +1057,7 @@ function makeMiracleCard(id,m){
   agreement.querySelector('input').onchange=()=>update();
   el.before(agreement);
  }
- el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome,custom:el.dataset.arrivalCustom}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;blessingPresentation.skip();inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome,homeRef:quotedArrivalHome,custom:el.dataset.arrivalCustom}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;blessingPresentation.skip();inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
  else if(id==='inannaProtection'&&state.inannaDiscovery){
   rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
@@ -1159,6 +1160,7 @@ function update(){
   const custom=agreement&&!agreement.hidden&&agreement.querySelector('input').checked?'libation':undefined;
   const arrival=id==='healing'&&state.arrivalHospitality&&card.open&&!reason&&!state.arrivalGroup?arrivalOffer(state,networkFor(state),{custom}):null;
   if(id==='healing'){
+   quotedArrivalHome=arrival?.homeRef;
    if(custom&&arrival)el.dataset.arrivalCustom=custom;
    else delete el.dataset.arrivalCustom;
   }

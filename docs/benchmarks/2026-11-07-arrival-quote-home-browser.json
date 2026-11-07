@@ -1,0 +1,16 @@
+[
+  {
+    "id": "healing",
+    "view": "2d",
+    "url": "?id=healing&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"phases\":{\"0\":1,\"1\":3,\"2\":1,\"3\":1},\"backgroundStarts\":1,\"paidSaveUnchanged\":true}"
+  },
+  {
+    "id": "healing",
+    "view": "3d",
+    "url": "?id=healing&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"phases\":{\"0\":1,\"1\":3,\"2\":1,\"3\":1},\"backgroundStarts\":1,\"paidSaveUnchanged\":true}"
+  }
+]

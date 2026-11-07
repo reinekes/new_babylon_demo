@@ -96,6 +96,7 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
 
 export function arrivalOffer(s,network,{custom}={}){
  const extra=customWater(custom);
+ const homes=new Map(s.buildings.filter(b=>b.type==='house').map(b=>[buildingKey(b),b]));
  const food=foodAvailability(s,{reconcile:false}),storesByComponent=new Map(),waterNeeds=new Map();
  for(const c of s.citizens){
   const home=supplyHome(c);
@@ -111,12 +112,13 @@ export function arrivalOffer(s,network,{custom}={}){
   component,Math.floor([...stores.values()].reduce((n,amount)=>n+amount,0))
  ]));
  const offer=arrivalRoute(s,network,(port,beds)=>{
-  const surplus=(port.building.water||0)-(waterNeeds.get(buildingKey(port.building))||0);
+  const key=buildingKey(port.building);
+  const surplus=(homes.get(key)?.water||0)-(waterNeeds.get(key)||0);
   return Math.max(0,Math.min(beds,Math.floor(surplus-extra),provisions.get(network.components.get(port.key))||0));
  });
  if(!offer)return null;
  const component=network.components.get(offer.route.at(-1).key);
- return {...offer,food:offer.beds,water:offer.beds+extra,eligibleStores:new Set(storesByComponent.get(component).keys())};
+ return {...offer,homeRef:homes.get(offer.home),food:offer.beds,water:offer.beds+extra,eligibleStores:new Set(storesByComponent.get(component).keys())};
 }
 
 export function arrivalKnowledgeReason(s){
@@ -131,8 +133,9 @@ export function reserveArrival(s,network,expected){
  const custom=expected?.custom;
  if(custom!==undefined&&custom!=='libation')return false;
  const offer=arrivalOffer(s,network,{custom});
- if(!offer||expected&&(expected.count!==offer.beds||expected.home!==offer.home))return false;
- const home=s.buildings.find(b=>buildingKey(b)===offer.home),giftReserve={};
+ if(!offer||expected&&(expected.count!==offer.beds||expected.home!==offer.home||expected.homeRef!==undefined&&expected.homeRef!==offer.homeRef))return false;
+ const home=offer.homeRef,giftReserve={};
+ if(!home)return false;
  const provisions=reserveStock(s,{food:offer.food},{eligibleStores:offer.eligibleStores,giftReserve});
  if(!provisions)return false;
  home.water-=offer.water;
