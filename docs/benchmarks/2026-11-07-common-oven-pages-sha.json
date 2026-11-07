@@ -1,0 +1,163 @@
+{
+  "at": "2026-11-07T11:37:53.698667+00:00",
+  "commit": "93ab8d2757b281f7cb84298aaa8ff256ceccf3f0",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "953820b0bf69dc65e8e8840d63ea24b5583f74cfb04c9f134c4b42ee1b6308f4",
+      "actual": "953820b0bf69dc65e8e8840d63ea24b5583f74cfb04c9f134c4b42ee1b6308f4",
+      "match": true
+    },
+    {
+      "path": "architecture.js",
+      "status": 200,
+      "expected": "25768eeb25717e1c92609da8ec3547e6bf524c1dd53701512f6487772b48c777",
+      "actual": "25768eeb25717e1c92609da8ec3547e6bf524c1dd53701512f6487772b48c777",
+      "match": true
+    },
+    {
+      "path": "artisan-art.js",
+      "status": 200,
+      "expected": "59a176a91136b60c40f2b530b55656035b11415fb2d506516bafefdfb1270990",
+      "actual": "59a176a91136b60c40f2b530b55656035b11415fb2d506516bafefdfb1270990",
+      "match": true
+    },
+    {
+      "path": "artisan.js",
+      "status": 200,
+      "expected": "0fc354f1dfaf7bdda501f4a80fd3428c92486614d07336064e0762bc5394740a",
+      "actual": "0fc354f1dfaf7bdda501f4a80fd3428c92486614d07336064e0762bc5394740a",
+      "match": true
+    },
+    {
+      "path": "building-inventory.js",
+      "status": 200,
+      "expected": "d0405cd0a2541a4974c904a694d849dcf09a6e90fafb13ea235784e6f48716e2",
+      "actual": "d0405cd0a2541a4974c904a694d849dcf09a6e90fafb13ea235784e6f48716e2",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "18ae6a25faf01e1e4f44d236bd932e60367a763a29c8031d2f09bdc316c0218e",
+      "actual": "18ae6a25faf01e1e4f44d236bd932e60367a763a29c8031d2f09bdc316c0218e",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "adf60819a80cad4ae6f780a1fe3f7ef66cfde7770bb1092093e5f028d0831ca9",
+      "actual": "adf60819a80cad4ae6f780a1fe3f7ef66cfde7770bb1092093e5f028d0831ca9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-common-oven-4x.json",
+      "status": 200,
+      "expected": "ec60febd5ff4ac85c636326102c91c3ccfd1364b50f75de63f1aba80add3f3c4",
+      "actual": "ec60febd5ff4ac85c636326102c91c3ccfd1364b50f75de63f1aba80add3f3c4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-common-oven-browser.json",
+      "status": 200,
+      "expected": "6f5fc784b899abec0912e95e3ec72d5720f60216ca44c77489a5783359f06d94",
+      "actual": "6f5fc784b899abec0912e95e3ec72d5720f60216ca44c77489a5783359f06d94",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "217eb786a10d1e15eb3c82c088b5187caf955f8465547b884b8cd4aa8e23c1f7",
+      "actual": "217eb786a10d1e15eb3c82c088b5187caf955f8465547b884b8cd4aa8e23c1f7",
+      "match": true
+    },
+    {
+      "path": "game3d/architecture.js",
+      "status": 200,
+      "expected": "cfcdf0535058e03f61bd0de0a90f9e8509f0182c477761350391cf375d7df59f",
+      "actual": "cfcdf0535058e03f61bd0de0a90f9e8509f0182c477761350391cf375d7df59f",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "ef154bd652e8f06afae4dd8fd70f100ef98230a0a64b4e828aafce91ccbc3a35",
+      "actual": "ef154bd652e8f06afae4dd8fd70f100ef98230a0a64b4e828aafce91ccbc3a35",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0e009a48144f8866eab2f3fe4b79c905d87e5293938ba54ea01df69724565b4e",
+      "actual": "0e009a48144f8866eab2f3fe4b79c905d87e5293938ba54ea01df69724565b4e",
+      "match": true
+    },
+    {
+      "path": "season-balance.js",
+      "status": 200,
+      "expected": "f19fe8081c760d4e32281366278ebe7d07b7f8573b1e8f2b659ea992c9dbeb4a",
+      "actual": "f19fe8081c760d4e32281366278ebe7d07b7f8573b1e8f2b659ea992c9dbeb4a",
+      "match": true
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "status": 200,
+      "expected": "11588510aa42e8ea5f000aa5bd3606d9ebef46e155c2d7ee01e21e572df4d429",
+      "actual": "11588510aa42e8ea5f000aa5bd3606d9ebef46e155c2d7ee01e21e572df4d429",
+      "match": true
+    },
+    {
+      "path": "tests/artisan.test.js",
+      "status": 200,
+      "expected": "437efc05d77581a7d052e287ec1c79bc96790da9f6fdbb1ba20b6b9d1b3ce21b",
+      "actual": "437efc05d77581a7d052e287ec1c79bc96790da9f6fdbb1ba20b6b9d1b3ce21b",
+      "match": true
+    },
+    {
+      "path": "ui-art.js",
+      "status": 200,
+      "expected": "a7d487cac4610ab9f9ce8fafbf4af17ab08f13ff5e0b94cad26c3931498cf5c6",
+      "actual": "a7d487cac4610ab9f9ce8fafbf4af17ab08f13ff5e0b94cad26c3931498cf5c6",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "06ba9b8d06ba2c060872b0ebe4871d01f2e277a684149fdfc4a73d344ba67644",
+      "actual": "06ba9b8d06ba2c060872b0ebe4871d01f2e277a684149fdfc4a73d344ba67644",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "83425a0581401f7d58ce27fcee2e160b533302dcbc0069e0e847c2f83d38cf1b",
+      "actual": "83425a0581401f7d58ce27fcee2e160b533302dcbc0069e0e847c2f83d38cf1b",
+      "match": true
+    },
+    {
+      "path": "ui-production.js",
+      "status": 200,
+      "expected": "401535fc9f6352541325c34ae2f3acb13ebb34a51e71548cf22ad84525ad99e7",
+      "actual": "401535fc9f6352541325c34ae2f3acb13ebb34a51e71548cf22ad84525ad99e7",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "d9464cf19289432452d00fbd56f046aebef79c685d1b1357ec1d859f1558381e",
+      "actual": "d9464cf19289432452d00fbd56f046aebef79c685d1b1357ec1d859f1558381e",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "9678c526265be78ed568ae53399e1b4aa3b79281686df251e7c2956c786e7795",
+      "actual": "9678c526265be78ed568ae53399e1b4aa3b79281686df251e7c2956c786e7795",
+      "match": true
+    }
+  ],
+  "matched": 22,
+  "total": 22
+}
