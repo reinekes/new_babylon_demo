@@ -23,10 +23,16 @@ test('offering, night and ready trial guide the player without requiring a survi
 });
 test('classic cities never display the C01 task',()=>{for(const s of [createGame({mode:'awakening'}),createGame({mode:'mature'})])assert.doesNotMatch(awakeningHTML(s),/cat-discovery-guide/);});
 test('miracle card updates every price and accessibility label between trial, paid and classic saves',()=>{
- const {s}=fixture(),dom=new JSDOM('<details><small class="miracle-summary-status"></small><div class="miracle-facts"><span></span></div><p class="miracle-unavailable"></p><button class="miracle-cast"></button></details>'),details=dom.window.document.querySelector('details');
+ const {s}=fixture(),dom=new JSDOM('<details><small class="miracle-summary-status"></small><div class="miracle-facts"><span></span></div><p class="miracle-unavailable"></p><p data-miracle-history hidden></p><button class="miracle-cast"></button></details>'),details=dom.window.document.querySelector('details');
  Object.assign(s.catDiscovery,{phase:'opened',trial:'ready'});const before=JSON.stringify(s);catalog.updateMiracleCard(details,s,'cat','');assert.equal(details.querySelector('button').textContent,'Призвать · 0 веры');assert.match(details.querySelector('button').getAttribute('aria-label'),/0 веры/);assert.equal(details.querySelector('.miracle-facts span').textContent,'0 веры · первый дар');assert.equal(JSON.stringify(s),before);
  s.catDiscovery.trial='spent';catalog.updateMiracleCard(details,s,'cat','Нужно 12 веры');assert.equal(details.querySelector('button').disabled,true);assert.match(details.querySelector('button').textContent,/12 веры/);assert.match(details.querySelector('.miracle-unavailable').textContent,/12 веры/);
- catalog.updateMiracleCard(details,createGame(),'cat','');assert.equal(details.querySelector('button').disabled,false);assert.equal(details.querySelector('.miracle-facts span').textContent,'12 веры');dom.window.close();
+ s.miracleHistory={version:1,trials:{cat:{number:1,at:3,faithSpent:0}},paid:{cat:{number:4,at:100,faithSpent:12}}};
+ const history=details.querySelector('[data-miracle-history]');
+ catalog.updateMiracleCard(details,s,'cat','');
+ assert.equal(history.hidden,false);
+ assert.match(history.textContent,/Бесплатная проба использована/);
+ assert.match(history.textContent,/Последнее платное применение · 12 веры/);
+ catalog.updateMiracleCard(details,createGame(),'cat','');assert.equal(details.querySelector('button').disabled,false);assert.equal(details.querySelector('.miracle-facts span').textContent,'12 веры');assert.equal(history.hidden,true);assert.equal(history.textContent,'');dom.window.close();
 });
 test('an existing fishery guides completion or delivery instead of asking for a duplicate hut',()=>{
  const {s,c}=fixture(),b={type:'fishing',x:16,y:7,level:1,construction:{kind:'new'}};s.buildings.push(b);const {dom,root,controls}=domFor(s);let guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/Дострой/);assert.equal(guide.querySelector('[data-awakening-build="fishing"]'),null);

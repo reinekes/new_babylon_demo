@@ -1,0 +1,19 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 258,
+  "trial": {
+    "number": 1,
+    "at": 129.25,
+    "faithSpent": 0
+  },
+  "paid": {
+    "number": 2,
+    "at": 180,
+    "faithSpent": 15
+  },
+  "byteExactReload": true,
+  "steps": 406,
+  "medianCpuMs": 4.211332999999968,
+  "p95CpuMs": 24.73195899999996
+}

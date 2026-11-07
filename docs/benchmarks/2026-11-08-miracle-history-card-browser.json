@@ -1,0 +1,16 @@
+[
+  {
+    "id": "history",
+    "view": "2d",
+    "url": "?id=history&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"trial\":true,\"paid\":15,\"byteExact\":true}"
+  },
+  {
+    "id": "history",
+    "view": "3d",
+    "url": "?id=history&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"trial\":true,\"paid\":15,\"byteExact\":true}"
+  }
+]
