@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T23:58:49.898021+00:00",
+  "commit": "ca20b783d36e51f5f7aab21788ad3d3479898ac4",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c9703cb6a047e00ebbec5ff28a2f9f4e4d20320f30ddee07978ea8837cddfa05",
+      "actual": "c9703cb6a047e00ebbec5ff28a2f9f4e4d20320f30ddee07978ea8837cddfa05",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "31ff8bf67be20f5fca36022a4ef54dbfc79b8ff69e947f5240169234bbb209c5",
+      "actual": "31ff8bf67be20f5fca36022a4ef54dbfc79b8ff69e947f5240169234bbb209c5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-workshop-demolition-4x.json",
+      "status": 200,
+      "expected": "316204daf9bc3943dcb1828a7f22091e0b791ee41be52fb8ea35aed5072f3d09",
+      "actual": "316204daf9bc3943dcb1828a7f22091e0b791ee41be52fb8ea35aed5072f3d09",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9ab0c1384c42dca0293482e1878363e202fe81b7d843e610aabf6fc727469a38",
+      "actual": "9ab0c1384c42dca0293482e1878363e202fe81b7d843e610aabf6fc727469a38",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "e8cbe1ac339596d4017cd512b0aff477f69bf816f3caef255b061ec40c56403a",
+      "actual": "e8cbe1ac339596d4017cd512b0aff477f69bf816f3caef255b061ec40c56403a",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "11d574f6934337ec1429ceb6c478c4e1c82765b910a5718dcf306abc73353307",
+      "actual": "11d574f6934337ec1429ceb6c478c4e1c82765b910a5718dcf306abc73353307",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "25dee78686d4fb0af3b9bcd27f3cf7bf304b078fa9a026ee88ebfa850c659767",
+      "actual": "25dee78686d4fb0af3b9bcd27f3cf7bf304b078fa9a026ee88ebfa850c659767",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "171db966a396a6631a6976f8c9ccc518ed4e70831d5c4f040296fc9e00859908",
+      "actual": "171db966a396a6631a6976f8c9ccc518ed4e70831d5c4f040296fc9e00859908",
+      "match": true
+    },
+    {
+      "path": "tests/artisan-integration.test.js",
+      "status": 200,
+      "expected": "bda2a3632d1d4388db72cfc94f0c840a487ce3bc64d7205cf0b9e01d53ac3f8b",
+      "actual": "bda2a3632d1d4388db72cfc94f0c840a487ce3bc64d7205cf0b9e01d53ac3f8b",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "7574e63e18f8c3abd5f355dc0d886ca05af2c43a0e2da79b7dd292bb835ee7f2",
+      "actual": "7574e63e18f8c3abd5f355dc0d886ca05af2c43a0e2da79b7dd292bb835ee7f2",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
