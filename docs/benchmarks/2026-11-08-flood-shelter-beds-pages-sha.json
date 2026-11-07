@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T20:59:22.461991+00:00",
+  "commit": "012e626433c4e4dde1b05767bd8a1b28375940b9",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "8eab8e994fd138ef5a67d2d664c0d996e0d51f683fee557bea4363b9fe2cc8ae",
+      "actual": "8eab8e994fd138ef5a67d2d664c0d996e0d51f683fee557bea4363b9fe2cc8ae",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "7f615ecb487752e15ca83f1200acf254c750d15a6d61da8abbb83afa023c4ed2",
+      "actual": "7f615ecb487752e15ca83f1200acf254c750d15a6d61da8abbb83afa023c4ed2",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a1b1d180f67a8ed07ec04ec9ab1bda779f452540624f64946fd906c659024a15",
+      "actual": "a1b1d180f67a8ed07ec04ec9ab1bda779f452540624f64946fd906c659024a15",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-flood-shelter-beds-4x.json",
+      "status": 200,
+      "expected": "40a63b8ac3b4cea2cf1573af906bbac31109a358472fd7681f187cf2f920b464",
+      "actual": "40a63b8ac3b4cea2cf1573af906bbac31109a358472fd7681f187cf2f920b464",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "b048bb1487f1c601fc0678c10924c40d7240d4e792bc3e104de0ae8a298a7d31",
+      "actual": "b048bb1487f1c601fc0678c10924c40d7240d4e792bc3e104de0ae8a298a7d31",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "1dbf4edd83be646739373a128d7f230657c070b979f90e6806c09f01ef198561",
+      "actual": "1dbf4edd83be646739373a128d7f230657c070b979f90e6806c09f01ef198561",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
