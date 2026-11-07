@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode,advanceTime} from '../engine.js';
 import {syncCitizens,invalidateAssignments,recoverCitizenCargo} from '../workforce.js';
-import {advanceGenerations,foodDemand,lifeStage} from '../demography.js';
+import {advanceGenerations,birthFoodStatus,foodDemand,lifeStage} from '../demography.js';
 import {inspireCitizen} from '../management.js';
 test('new city has children and adults; children cannot work but can discover a future calling',()=>{const s=createGame({start:'established'}),kids=s.citizens.filter(c=>c.age<16);assert.ok(kids.length);for(const c of kids){assert.equal(c.work,null);assert.equal(c.site,null);const faith=s.resources.faith;assert.equal(inspireCitizen(s,c.id,'builder').ok,true);assert.equal(s.resources.faith,faith-1);assert.equal(c.work,null);}assert.ok(foodDemand(s)<s.population*.6);assert.ok(decode(encode(s)));});
 test('birthday at sixteen enters workforce without changing identity',()=>{const s=createGame({start:'established'}),c=s.citizens.at(-1);s.buildings.push({type:'shrine',x:10,y:9,level:1},{type:'shrine',x:11,y:9,level:1},{type:'shrine',x:11,y:10,level:1});c.age=15.5;const id=c.id;c.parents=[0,1];s.resources.food=1000;advanceGenerations(s);invalidateAssignments(s);syncCitizens(s);assert.equal(c.age,16);assert.equal(c.id,id);assert.equal(lifeStage(c),'adult');assert.ok(c.work||c.site);assert.deepEqual(c.parents,[0,1]);});
@@ -28,3 +28,20 @@ test('natural ceremony uses a few mourners, freezes production, then resumes it;
 test('birth gates and cooldown prevent free population; RNG survives save and reload',()=>{for(const gate of ['food','happiness','capacity']){const s=createGame({start:'established'});s.citizens.forEach(c=>c.age=24);if(gate==='food')s.resources.food=0;if(gate==='happiness')s.happiness=64;if(gate==='capacity'){s.population=16;syncCitizens(s);}const n=s.population;for(let i=0;i<8;i++)advanceGenerations(s);assert.equal(s.population,n,gate);}const s=createGame({start:'established'}),loaded=decode(encode(s));for(let i=0;i<12;i++){advanceGenerations(s);advanceGenerations(loaded);syncCitizens(s);syncCitizens(loaded);}assert.deepEqual(s,loaded);});
 test('young unrelated adults move together to a free house and can become a new generation',()=>{const s=createGame({start:'established'});s.buildings.push({type:'house',x:10,y:9,level:1});s.capacity=24;syncCitizens(s);s.resources.food=1000;advanceGenerations(s);syncCitizens(s);const moved=s.citizens.filter(c=>c.home==='10,9');assert.ok(moved.length>=2);assert.ok(moved.some(c=>c.partner!==null));assert.ok(decode(encode(s)));});
 test('natural aging does not count as cruelty when divine names change',async()=>{const {registerLoss,registerMiracle}=await import('../divinity.js');const s=createGame({start:'established'});s.deaths=31;s.demography.naturalDeaths=30;registerLoss(s,1);assert.equal(s.name,'Слышащий плач');s.buildings.push({type:'shrine',x:10,y:9,level:1});s.citizens[0].age=85;s.resources.food=1000;advanceTime(s,45);registerMiracle(s,'life');assert.equal(s.name,'Хранитель памяти');assert.ok(decode(encode(s)));});
+
+test('the birth food threshold reports the same decision as the simulation at the boundary',()=>{
+ const s=createGame({start:'established'});
+ for(const c of s.citizens)Object.assign(c,{age:24,partner:null});
+ for(const b of s.buildings)if(b.type==='house')b.pantry=0;
+ s.demography.rngState=1;
+ const needed=foodDemand(s)*2+.6;
+ for(const delta of [-.01,0]){
+  const copy=structuredClone(s);
+  copy.resources.food=needed+delta;
+  const food=birthFoodStatus(copy);
+  assert.equal(food.available,needed+delta);
+  assert.equal(food.needed,needed);
+  assert.equal(food.enough,delta===0);
+  assert.equal(advanceGenerations(copy).newborns.length>0,food.enough);
+ }
+});

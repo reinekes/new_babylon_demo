@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 130,
+  "initialResidents": 218,
+  "residents": 245,
+  "birthFood": {
+    "available": 4727.159400000008,
+    "needed": 266.3999999999994,
+    "enough": true
+  },
+  "loadedDuringDelivery": true,
+  "byteIdenticalReload": true,
+  "steps": 1019,
+  "medianCpuMs": 1.2052499999999782,
+  "p95CpuMs": 5.726333000000068
+}
