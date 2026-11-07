@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-07T06:40:13.417327+00:00",
+  "commit": "62b1ebaa3804c87914c8cdaf4fc26c7a73edbb6a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3b9607326b4d8818aac2c90b1edbca3b8384549c2ab7f619e6144fd215b5fb74",
+      "actual": "3b9607326b4d8818aac2c90b1edbca3b8384549c2ab7f619e6144fd215b5fb74",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "7aa8195337f5dbb7de99275a88264cd9ac15f1bd937ea7ace779a142bfbaa3e5",
+      "actual": "7aa8195337f5dbb7de99275a88264cd9ac15f1bd937ea7ace779a142bfbaa3e5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-small-water-response-4x.json",
+      "status": 200,
+      "expected": "e546b329506b275de9da69baade3cd51b8b35d540812a3d7ad6dbe1a06a90f30",
+      "actual": "e546b329506b275de9da69baade3cd51b8b35d540812a3d7ad6dbe1a06a90f30",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-small-water-response-browser.json",
+      "status": 200,
+      "expected": "698db7ea2a232eb737622c0f708734cb67362305b7679db2aee762faa4e6639c",
+      "actual": "698db7ea2a232eb737622c0f708734cb67362305b7679db2aee762faa4e6639c",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "c33a65e168e3fcf7725551bbf9d02ec27a1c1d9e76f361770c548852e25d0448",
+      "actual": "c33a65e168e3fcf7725551bbf9d02ec27a1c1d9e76f361770c548852e25d0448",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "9ff0836b6e1ccceabf0ada47fac079886705c921830f3e0371c01c6535b6ebfa",
+      "actual": "9ff0836b6e1ccceabf0ada47fac079886705c921830f3e0371c01c6535b6ebfa",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "b7633979fc4a5af140c84c9ba012dbb0527ea83b8a8a21bedda92477cf73c12e",
+      "actual": "b7633979fc4a5af140c84c9ba012dbb0527ea83b8a8a21bedda92477cf73c12e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f9171af40e21c3ab47ae1f1f36aa3dd20b202d2f8c7dd657ed0719752999d3d2",
+      "actual": "f9171af40e21c3ab47ae1f1f36aa3dd20b202d2f8c7dd657ed0719752999d3d2",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "b93f4a9e4a4b21b8f0faeb720ff5de4d2334ea43a7138dc3ec69feae43966732",
+      "actual": "b93f4a9e4a4b21b8f0faeb720ff5de4d2334ea43a7138dc3ec69feae43966732",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "1504968386ac71e0ab92dd084d3aa42d87761410b2c23af6131a66caa50fa3de",
+      "actual": "1504968386ac71e0ab92dd084d3aa42d87761410b2c23af6131a66caa50fa3de",
+      "match": true
+    },
+    {
+      "path": "tests/first-water-help.test.js",
+      "status": 200,
+      "expected": "5a6ca246246a51aae97985d8cb5c2d1a80ab331348185d0edba988ff596768f0",
+      "actual": "5a6ca246246a51aae97985d8cb5c2d1a80ab331348185d0edba988ff596768f0",
+      "match": true
+    },
+    {
+      "path": "wellbeing.js",
+      "status": 200,
+      "expected": "28104bbdb2efbcfe85bf0124c17c16b6108e4ebc80f31b3336f19da219b7ec64",
+      "actual": "28104bbdb2efbcfe85bf0124c17c16b6108e4ebc80f31b3336f19da219b7ec64",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
