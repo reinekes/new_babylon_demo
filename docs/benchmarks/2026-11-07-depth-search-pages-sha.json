@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-07T00:03:27.699825+00:00",
+  "commit": "243fab6d1f3ec9703d11d5126026b6ed3b6a79c7",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "1207ba57e9515d7a15da57a663328b36bef6a479ad2ddf850275a83203e1cc35",
+      "actual": "1207ba57e9515d7a15da57a663328b36bef6a479ad2ddf850275a83203e1cc35",
+      "match": true
+    },
+    {
+      "path": "depth-supply.js",
+      "status": 200,
+      "expected": "298269174ec24bc31dd77748ab396303930154917d2ff5121a5ff96a602ca8e6",
+      "actual": "298269174ec24bc31dd77748ab396303930154917d2ff5121a5ff96a602ca8e6",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-depth-search-4x.json",
+      "status": 200,
+      "expected": "b05a823a9d3d3280561a6e860e22ca77059d41952ed79b7b314c13e4dde3975e",
+      "actual": "b05a823a9d3d3280561a6e860e22ca77059d41952ed79b7b314c13e4dde3975e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-depth-supply-4x.json",
+      "status": 200,
+      "expected": "a4adda7cb821514dbe34444ef848a29d9fa3ce7453d158b447f5fd5eec0334ae",
+      "actual": "a4adda7cb821514dbe34444ef848a29d9fa3ce7453d158b447f5fd5eec0334ae",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "9328f4263fbd8095fb95da05cd6ceccb93b8dede99a5105f285786ae0a21377e",
+      "actual": "9328f4263fbd8095fb95da05cd6ceccb93b8dede99a5105f285786ae0a21377e",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d78ba21ff60ef4c603373651df1cc9dddc7c7299e077c661c361378afd79ff6e",
+      "actual": "d78ba21ff60ef4c603373651df1cc9dddc7c7299e077c661c361378afd79ff6e",
+      "match": true
+    },
+    {
+      "path": "new-game.js",
+      "status": 200,
+      "expected": "d48cc1b5f6b801d69216afe50d7a6f09efab6e6fe68a370f97e4389245f2b973",
+      "actual": "d48cc1b5f6b801d69216afe50d7a6f09efab6e6fe68a370f97e4389245f2b973",
+      "match": true
+    },
+    {
+      "path": "relic-quest.js",
+      "status": 200,
+      "expected": "ad5921a385ba266a02eadb27d9294f7e323a0ea2ec643b705a63c455f00c3f2c",
+      "actual": "ad5921a385ba266a02eadb27d9294f7e323a0ea2ec643b705a63c455f00c3f2c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "66ee420a1160ea839be3a5aedc8d62d3b6ab7e57f580f36a418c90d577c24249",
+      "actual": "66ee420a1160ea839be3a5aedc8d62d3b6ab7e57f580f36a418c90d577c24249",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "685e222cee4c03e334c605ff9d6462ccc06b8f4475ca8473e5804e7c8f49cb3d",
+      "actual": "685e222cee4c03e334c605ff9d6462ccc06b8f4475ca8473e5804e7c8f49cb3d",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a3380f38fb5b8d93482695216e91c5c00f2259b5deebbcb1e2992970da60fdd8",
+      "actual": "a3380f38fb5b8d93482695216e91c5c00f2259b5deebbcb1e2992970da60fdd8",
+      "match": true
+    },
+    {
+      "path": "tests/depth-supply.test.js",
+      "status": 200,
+      "expected": "6ee45718463baf02161c414ca759822f9e4726d3ef744108353df14ba1cdee7f",
+      "actual": "6ee45718463baf02161c414ca759822f9e4726d3ef744108353df14ba1cdee7f",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "303cc54486d6abdfe21e4479f95d17370ee0e9b8db443f5780b78d3fa23cc4a4",
+      "actual": "303cc54486d6abdfe21e4479f95d17370ee0e9b8db443f5780b78d3fa23cc4a4",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "cd62fc767c5986a13677ab591bd00cdafe6ae97f25c56912b792b7d2c39620f6",
+      "actual": "cd62fc767c5986a13677ab591bd00cdafe6ae97f25c56912b792b7d2c39620f6",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
