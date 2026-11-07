@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T02:48:47.160528+00:00",
+  "commit": "7b5759987c3de6d8ffee9bfa4a275ed897f69b29",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "af9a0316b13ee23be8f6bb5b0e1d505cc512540d4a94a906e011be63aa715f93",
+      "actual": "af9a0316b13ee23be8f6bb5b0e1d505cc512540d4a94a906e011be63aa715f93",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-inanna-routes-4x.json",
+      "status": 200,
+      "expected": "649c338426cd1d6bc6f614f63d7d314edfc03831d093f5b52f932d286a2cd4a3",
+      "actual": "649c338426cd1d6bc6f614f63d7d314edfc03831d093f5b52f932d286a2cd4a3",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f4565d92a7489373862c1aadddf8c42c1f0b3226417ab7c733eecfcd22794409",
+      "actual": "f4565d92a7489373862c1aadddf8c42c1f0b3226417ab7c733eecfcd22794409",
+      "match": true
+    },
+    {
+      "path": "miracle-celebration.js",
+      "status": 200,
+      "expected": "23d43fd40c51053b8dd0cd2f1b07d6e8bca09d2d6d4cb34ed793e986501ed404",
+      "actual": "23d43fd40c51053b8dd0cd2f1b07d6e8bca09d2d6d4cb34ed793e986501ed404",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "b8ba271028ddfa79a56f21b4068d13dcb5bfdb5169bc1fc71ed591f5b5484fa5",
+      "actual": "b8ba271028ddfa79a56f21b4068d13dcb5bfdb5169bc1fc71ed591f5b5484fa5",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1417392f4d52cb6524fa91c858bed8bed99985406a6a25be763be2ce5e298235",
+      "actual": "1417392f4d52cb6524fa91c858bed8bed99985406a6a25be763be2ce5e298235",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0337e19202636aec17730fbfd1c87ad8323a5e09f1239055d93917a8bc982015",
+      "actual": "0337e19202636aec17730fbfd1c87ad8323a5e09f1239055d93917a8bc982015",
+      "match": true
+    },
+    {
+      "path": "tests/inanna-discovery.test.js",
+      "status": 200,
+      "expected": "4062fdda39da2e42ef6e1da01f01c193f244198144826ed463419e60590a922f",
+      "actual": "4062fdda39da2e42ef6e1da01f01c193f244198144826ed463419e60590a922f",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
