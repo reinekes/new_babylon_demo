@@ -54,7 +54,7 @@ test('a high-risk firing stops at a local fire until neighbors contribute reacha
  const {createGame}=await import('../engine.js');
  const {strictScenario}=await import('../scenario-profiles.js');
  const {weatherAt}=await import('../environment.js');
- const {waterDemand}=await import('../water.js');
+ const {waterDemand,advanceWater}=await import('../water.js');
  const {extinguishKilnFire}=await import('../fire-forecast.js');
  const s=createGame({start:'established',scenario:strictScenario()});
  const kiln={type:'kiln',x:10,y:9,level:1};
@@ -73,9 +73,25 @@ test('a high-risk firing stops at a local fire until neighbors contribute reacha
  const home=s.buildings.find(b=>b.type==='house'&&b.x===9&&b.y===9);
  const daily=s.citizens.filter(c=>c.home==='9,9').reduce((n,c)=>n+waterDemand(c),0);
  home.water=daily+2;
+ for(const c of s.citizens.filter(c=>c.home==='9,9'))c.phase='home';
  assert.ok(extinguishKilnFire(s,kiln).ok);
+ assert.equal(kiln.kilnFire,true);
+ assert.equal(s.citizens.reduce((sum,c)=>sum+(c.waterTrip?.load||0),0),2);
  assert.equal(home.water,daily);
  assert.equal(extinguishKilnFire(s,kiln).ok,false);
+ const cancelled=structuredClone(s),stopped=cancelled.buildings.find(b=>b.type==='kiln');
+ const carrier=cancelled.citizens.find(c=>c.waterTrip?.fire),origin=cancelled.buildings.find(b=>b.x===9&&b.y===9);
+ const {setKilnBanked}=await import('../kilns.js');
+ advanceWater(cancelled,.1);
+ assert.ok(setKilnBanked(cancelled,stopped,true).ok);
+ for(let i=0;i<120&&carrier.waterTrip;i++){
+  const water=origin.water;
+  advanceWater(cancelled,.1);
+  if(!carrier.waterTrip)assert.ok(origin.water-water>1.9);
+ }
+ assert.equal(carrier.waterTrip,undefined);
+ for(let i=0;i<120&&kiln.kilnFire;i++)advanceWater(s,.1);
+ assert.equal(kiln.kilnFire,undefined);
  advanceKilns(s,28);
  assert.equal(collectFired(kiln),4);
 });

@@ -19,6 +19,7 @@ function bankBatch(b){
  Object.assign(batch,{brick:batch.hot,hot:0,time:0});
  delete b.kilnFire;
  delete b.kilnFireElapsed;
+ delete b.kilnFireWater;
  b.kilnBanked=true;
 }
 export function setKilnBanked(s,b,banked){
@@ -73,4 +74,4 @@ export function advanceKilns(s,dt){
  }
 }
 export function collectFired(b){if(b?.type!=='kiln'||!isOperational(b)||!valid(b.firing))return 0;const n=b.firing.ready;b.firing.ready=0;return n;}
-export function validateKilns(s){return Array.isArray(s.buildings)&&s.buildings.every(b=>b.type==='kiln'?valid(b.firing)&&(b.kilnFire===undefined||b.kilnFire===true&&isStrictSumer(s)&&b.firing.hot>0&&b.firing.time===IGNITION_CHECK)&&(b.kilnFireElapsed===undefined||b.kilnFire===true&&Number.isFinite(b.kilnFireElapsed)&&b.kilnFireElapsed>=0&&b.kilnFireElapsed<FIRE_RESPONSE_SECONDS)&&(b.kilnBanked===undefined||b.kilnBanked===true&&isStrictSumer(s)&&!b.firing.hot&&!b.firing.ready)&&(b.kilnWear===undefined||Number.isInteger(b.kilnWear)&&b.kilnWear>=0&&b.kilnWear<=KILN_WEAR_LIMIT&&!(b.firing.hot&&kilnNeedsRepair(b))):!Object.hasOwn(b,'kilnFireElapsed')&&!Object.hasOwn(b,'kilnFire')&&!Object.hasOwn(b,'kilnBanked')&&!Object.hasOwn(b,'firing')&&!Object.hasOwn(b,'kilnWear'));}
+export function validateKilns(s){return Array.isArray(s.buildings)&&s.buildings.every(b=>b.type==='kiln'?valid(b.firing)&&(b.kilnFire===undefined||b.kilnFire===true&&isStrictSumer(s)&&b.firing.hot>0&&b.firing.time===IGNITION_CHECK)&&(b.kilnFireElapsed===undefined||b.kilnFire===true&&Number.isFinite(b.kilnFireElapsed)&&b.kilnFireElapsed>=0&&b.kilnFireElapsed<FIRE_RESPONSE_SECONDS)&&(b.kilnFireWater===undefined||b.kilnFire===true&&Number.isFinite(b.kilnFireWater)&&b.kilnFireWater>0&&b.kilnFireWater<2)&&(b.kilnBanked===undefined||b.kilnBanked===true&&isStrictSumer(s)&&!b.firing.hot&&!b.firing.ready)&&(b.kilnWear===undefined||Number.isInteger(b.kilnWear)&&b.kilnWear>=0&&b.kilnWear<=KILN_WEAR_LIMIT&&!(b.firing.hot&&kilnNeedsRepair(b))):!Object.hasOwn(b,'kilnFireWater')&&!Object.hasOwn(b,'kilnFireElapsed')&&!Object.hasOwn(b,'kilnFire')&&!Object.hasOwn(b,'kilnBanked')&&!Object.hasOwn(b,'firing')&&!Object.hasOwn(b,'kilnWear'));}

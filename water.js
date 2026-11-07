@@ -108,26 +108,45 @@ export function dispatchNeighborWater(s,c,b){
  const nav=neighborWaterRoute(s,c,b);
  return !!nav&&begin(s,c,b,null,nav,c.home);
 }
+export function planFireWaterTrips(s,kiln,sources,amount){
+ const nav=navigation(s),target=buildingKey(kiln),trips=[];
+ let remaining=amount;
+ for(const {home,surplus} of sources){
+  const origin=buildingKey(home),route=roadRoute(nav,origin,target);
+  if(!route)continue;
+  const courier=s.citizens.find(c=>c.home===origin&&c.phase==='home'&&eligible(c)&&c.health>=60&&!c.floodShelter&&
+   !c.pendingRole&&!c.site&&!c.guardPost&&Math.hypot(c.x-route[0].x,c.y-route[0].y)<=.8);
+  if(!courier)continue;
+  const load=Math.min(surplus,remaining);
+  trips.push({home,courier,trip:{fire:true,target,origin,station:null,load,amount:load,phase:'deliver',route:[point(courier),...route.map(point)],index:1,elapsed:0}});
+  remaining-=load;
+  if(remaining<=eps)return trips;
+ }
+ return null;
+}
 function setRoute(t,route,phase,c){t.route=[point(c),...route.map(point)];t.index=1;t.phase=phase;}
 // A city funeral returns everyone home. Resume from that real position rather
 // than drawing a straight line to a stale waypoint on the opposite riverbank.
 export function resumeWaterAtHome(s,c){
  const t=c.waterTrip;if(!t)return false;const nav=navigation(s),home=nav.ports.get(c.home);
  if(!home||Math.hypot(c.x-home.x,c.y-home.y)>.05)return false;
- const destination=t.load>eps?t.target:t.origin,roads=roadRoute(nav,c.home,destination);
+ const returning=t.fire&&(t.phase==='return'||t.load<=eps||!s.buildings.some(b=>buildingKey(b)===t.target&&b.kilnFire));
+ const destination=!returning&&t.load>eps?t.target:t.origin,roads=roadRoute(nav,c.home,destination);
  if(!roads){recoverWater(s,c);return false;}
- if(t.load>eps)setRoute(t,roads,'deliver',c);
+ if(returning)setRoute(t,roads,'return',c);
+ else if(t.load>eps)setRoute(t,roads,'deliver',c);
  else if(t.neighborRecorded)setRoute(t,roads,'return',c);
  else{const source=bankRoute(s,nav,t.origin);if(!source){recoverWater(s,c);return false;}setRoute(t,[...roads,...source],'source',c);}
  return true;
 }
 function finish(s,c){cancelFirstWaterHelp(s,c.id);if(c.pendingRole)changes.add(s);const t=c.waterTrip;c.phase=t.origin===c.home?'home':c.work===t.origin?'working':'home';c.route=[];c.routeIndex=0;delete c.waterTrip;}
 function waterDetour(s,c,t,nav,phase=t.phase){
- if(blockedWaterTrips.get(t)===nav)return null;
+ const blocked=blockedWaterTrips.get(t);
+ if(blocked?.nav===nav&&blocked.phase===phase)return null;
  const x=Math.round(c.x+.5),y=Math.round(c.y+.5),starts=[];
  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
   const p={x:x+dx-.5,y:y+dy-.5};
-  if(nav.forts.pointClear(p)&&nav.forts.segmentClear(c,p)&&dryEdge(s,c,p)&&(!nav.flooded||!floodedSegment(nav.flooded,c,p)))starts.push(p);
+  if((!nav.forts||nav.forts.pointClear(p)&&nav.forts.segmentClear(c,p))&&dryEdge(s,c,p)&&(!nav.flooded||!floodedSegment(nav.flooded,c,p)))starts.push(p);
  }
  starts.sort((a,b)=>Math.hypot(a.x-c.x,a.y-c.y)-Math.hypot(b.x-c.x,b.y-c.y));
  const destination=phase==='source'?null:nav.ports.get(phase==='deliver'?t.target:t.origin);
@@ -139,12 +158,17 @@ function waterDetour(s,c,t,nav,phase=t.phase){
      path(nav.nodes,nav.graph,at,k=>k===destination.key));
   if(route)return route;
  }
- blockedWaterTrips.set(t,nav);
+ blockedWaterTrips.set(t,{nav,phase});
  return null;
 }
 function advanceTrip(s,c,dt,nav){
  const t=c.waterTrip,b=s.buildings.find(b=>buildingKey(b)===t.target&&isOperational(b));
- if(!b){finish(s,c);return;}
+ if(t.fire&&t.phase==='deliver'&&!b?.kilnFire){
+  const route=waterDetour(s,c,t,nav,'return');
+  if(!route)return;
+  setRoute(t,route,'return',c);
+ }
+ if(!b&&!t.fire){finish(s,c);return;}
  let budget=dt;
  for(let turn=0;turn<8&&budget>eps;turn++){
   if(t.phase==='fill'){
@@ -171,11 +195,27 @@ function advanceTrip(s,c,dt,nav){
   if(next){const d=Math.hypot(next.x-c.x,next.y-c.y),speed=(t.station?1.35:1.05)*(s.buffs?.haste?1.5:1)*(t.station&&c.calling==='watercarrier'&&c.role==='watercarrier'?1.2:1),time=d/speed;if(time>budget){c.x+=(next.x-c.x)*budget/time;c.y+=(next.y-c.y)*budget/time;return;}c.x=next.x;c.y=next.y;t.index++;budget-=time;continue;}
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
+   if(t.fire){
+    if(t.load>eps&&b.kilnFire){
+     b.kilnFireWater=(b.kilnFireWater||0)+t.load;
+     t.load=0;
+     if(b.kilnFireWater+eps>=2){
+      delete b.kilnFire;delete b.kilnFireElapsed;delete b.kilnFireWater;
+     }
+    }
+    const route=roadRoute(nav,t.target,t.origin);
+    if(!route)return;
+    setRoute(t,route,'return',c);continue;
+   }
    const amount=Math.min(t.load,Math.max(0,targetCapacity(s,b)-targetStock(b)));
    if(b.type==='house')b.water+=amount;else if(b.type==='cowshed')b.dairy.water+=amount;else if(isArtisan(b))b.artisan.water+=amount;else b.brickmaking.water+=amount;b.waterDelivered=(b.waterDelivered||0)+amount;
    if(amount>0&&t.station&&s.creatorMaterials)recordCreatorUse(s,s.buildings.find(site=>site.type==='waterpoint'&&buildingKey(site)===t.station));recordCitizenDelivery(s,c,{water:amount});t.load-=amount;recordDepthSupply(s,c,b,amount);recordNeighborWaterFact(s,c,b,t,amount);confirmFirstWaterHelp(s,c,b,amount);confirmProjectWater(s,c,t.station,b,amount);
    if(t.origin!==t.target){const back=roadRoute(nav,t.target,t.origin);if(!back)return;setRoute(t,back,'return',c);}else finish(s,c);
    if(!c.waterTrip)return;continue;
+  }
+  if(t.fire&&t.load>eps){
+   const origin=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===t.origin);
+   if(origin)origin.water+=t.load;
   }
   finish(s,c);return;
  }
@@ -214,6 +254,6 @@ export function validateWater(s){
  if(!s.buildings.every(b=>(b.type==='house'?finite(b.water)&&finite(b.waterDelivered):b.water===undefined)&&
   (b.waterReserve===undefined||s.depthSupply&&b.type==='waterpoint'&&isOperational(b)&&finite(b.waterReserve,WATERPOINT_CAPACITY))))return false;
  return s.citizens.every(c=>{if(!finite(c.thirst,100)||c.phase==='waterTrip'&&!c.waterTrip)return false;const t=c.waterTrip;if(!t)return true;
-  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&(t.neighborRecorded===undefined||t.neighborRecorded===true&&t.station===null&&t.origin!==t.target&&['deliver','return'].includes(t.phase))&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<worldWidth(s)*worldHeight(s)*4&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
+  return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&(t.fire===true?b.type==='kiln':['house','brickyard','pottery','brewery','cowshed'].includes(b.type)))&&(t.fire===undefined||t.fire===true&&t.station===null&&t.origin!==t.target&&s.buildings.some(b=>b.type==='house'&&buildingKey(b)===t.origin)&&['deliver','return'].includes(t.phase)&&t.amount<=2&&t.neighborRecorded===undefined)&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&(t.neighborRecorded===undefined||t.neighborRecorded===true&&t.station===null&&t.origin!==t.target&&['deliver','return'].includes(t.phase))&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<worldWidth(s)*worldHeight(s)*4&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
  });
 }

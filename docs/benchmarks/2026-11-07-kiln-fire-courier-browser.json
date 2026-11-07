@@ -1,0 +1,16 @@
+[
+  {
+    "id": "trip",
+    "view": "2d",
+    "url": "?id=trip&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d dispatch moves two water units into an actual trip"
+  },
+  {
+    "id": "trip",
+    "view": "3d",
+    "url": "?id=trip&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d dispatch moves two water units into an actual trip"
+  }
+]

@@ -3,7 +3,7 @@ import {weatherAt} from './environment.js';
 import {FIRING_SECONDS,FIRE_RESPONSE_SECONDS,kilnNeedsRepair} from './kilns.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
-import {waterDemand,waterpointCanReach} from './water.js';
+import {planFireWaterTrips,waterDemand,waterpointCanReach} from './water.js';
 
 const MIN_RESPONSE_WATER=2;
 
@@ -38,17 +38,18 @@ export function extinguishKilnFire(s,kiln){
  const reason=cityCommandReason(s);
  if(reason)return {ok:false,reason};
  if(!kiln?.kilnFire||!s.buildings.includes(kiln))return {ok:false,reason:'У этой печи нет очага'};
+ const key=buildingKey(kiln);
+ const traveling=s.citizens.reduce((sum,c)=>sum+(c.waterTrip?.fire&&c.waterTrip.target===key&&c.waterTrip.phase==='deliver'?c.waterTrip.load:0),0);
+ const needed=MIN_RESPONSE_WATER-(kiln.kilnFireWater||0)-traveling;
+ if(needed<=1e-8)return {ok:false,reason:'Вода уже в пути'};
  const sources=reachableWater(s,kiln,exposedHomes(s,kiln));
- if(totalWater(sources)+1e-8<MIN_RESPONSE_WATER)return {ok:false,reason:'Нужны 2 единицы воды сверх питьевого запаса в соседних дворах с проходом'};
- let remaining=MIN_RESPONSE_WATER;
- for(const {home,surplus} of sources){
-  const used=Math.min(surplus,remaining);
-  home.water-=used;
-  remaining-=used;
-  if(remaining<=1e-8)break;
+ const trips=planFireWaterTrips(s,kiln,sources,needed);
+ if(!trips)return {ok:false,reason:'Нужны свободные соседи с доступной водой сверх питьевого запаса'};
+ for(const {home,courier,trip} of trips){
+  home.water-=trip.load;
+  courier.waterTrip=trip;
+  courier.phase='waterTrip';
  }
- delete kiln.kilnFire;
- delete kiln.kilnFireElapsed;
  return {ok:true};
 }
 export function fireForecast(s){
@@ -61,8 +62,10 @@ export function fireForecast(s){
   if(!kiln.firing?.hot||kiln.firing.time>=FIRING_SECONDS)continue;
   const homes=exposedHomes(s,kiln),reserve=totalWater(reachableWater(s,kiln,homes)),fire=kiln.kilnFire===true;
   const level=!homes.length||!dry&&!wind?'low':dry&&wind&&reserve+1e-8<MIN_RESPONSE_WATER?'high':'watch';
-  sites.push({key:buildingKey(kiln),homes:homes.map(({home})=>buildingKey(home)),reserve,level,fire,remaining:fire?Math.max(0,FIRE_RESPONSE_SECONDS-(kiln.kilnFireElapsed||0)):null,
-   canExtinguish:fire&&reserve+1e-8>=MIN_RESPONSE_WATER});
+  const key=buildingKey(kiln),inTransit=fire?s.citizens.reduce((sum,c)=>sum+(c.waterTrip?.fire&&c.waterTrip.target===key&&c.waterTrip.phase==='deliver'?c.waterTrip.load:0),0):0;
+  const needed=MIN_RESPONSE_WATER-(kiln.kilnFireWater||0)-inTransit;
+  sites.push({key,inTransit,homes:homes.map(({home})=>buildingKey(home)),reserve,level,fire,remaining:fire?Math.max(0,FIRE_RESPONSE_SECONDS-(kiln.kilnFireElapsed||0)):null,
+   canExtinguish:fire&&needed>1e-8&&reserve+1e-8>=needed});
  }
  return {dry,wind,sites,banked:kilns.filter(b=>b.kilnBanked).map(b=>({key:buildingKey(b),repair:kilnNeedsRepair(b)}))};
 }

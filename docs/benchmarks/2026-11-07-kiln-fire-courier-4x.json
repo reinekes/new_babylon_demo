@@ -1,0 +1,11 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "speed": 4,
+  "steps": 18,
+  "medianCpuMs": 1.4829159999999888,
+  "p95CpuMs": 30.037333000000004,
+  "delivered": 2,
+  "returnedOnCancellation": 2,
+  "reloadByteIdentical": true
+}
