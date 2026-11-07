@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T21:39:02.896391+00:00",
+  "commit": "4a05f905e0df3a23ab68955201ba95bae3d0fcd8",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d3aeeb22f9db1c67692c7ec98688383d1760a25f64736914b023e2e36e88e957",
+      "actual": "d3aeeb22f9db1c67692c7ec98688383d1760a25f64736914b023e2e36e88e957",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "2b9ed29b6c2697354d5bd6623f143f49e19b05ac56f85fee5a1cfd84d7e8c526",
+      "actual": "2b9ed29b6c2697354d5bd6623f143f49e19b05ac56f85fee5a1cfd84d7e8c526",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0d5e27a422118ec46f04c7aec9fc60850ad9b79c696b7e09ac9e68eab2122d87",
+      "actual": "0d5e27a422118ec46f04c7aec9fc60850ad9b79c696b7e09ac9e68eab2122d87",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-arrival-route-position-4x.json",
+      "status": 200,
+      "expected": "a5fff23961d41fbe1c0a09d167c54b0ff21f87c5de500e21940c8bb1d0434578",
+      "actual": "a5fff23961d41fbe1c0a09d167c54b0ff21f87c5de500e21940c8bb1d0434578",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "53acf9ab441f444a50d9e9189207a6d751d55df3389a8ad7f61655975c1f913a",
+      "actual": "53acf9ab441f444a50d9e9189207a6d751d55df3389a8ad7f61655975c1f913a",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "fbeb6be77a09774028d50234a220f4b9217225fbc9fa782e5aaed293e590e497",
+      "actual": "fbeb6be77a09774028d50234a220f4b9217225fbc9fa782e5aaed293e590e497",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
