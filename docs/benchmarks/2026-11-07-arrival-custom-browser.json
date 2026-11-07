@@ -1,0 +1,44 @@
+[
+  {
+    "id": "libation",
+    "view": "2d",
+    "url": "?id=libation&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d libation family agreement"
+  },
+  {
+    "id": "libation",
+    "view": "3d",
+    "url": "?id=libation&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d libation family agreement"
+  },
+  {
+    "id": "standard",
+    "view": "2d",
+    "url": "?id=standard&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d standard family agreement"
+  },
+  {
+    "id": "standard",
+    "view": "3d",
+    "url": "?id=standard&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d standard family agreement"
+  },
+  {
+    "id": "settled",
+    "view": "2d",
+    "url": "?id=settled&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d settled family agreement"
+  },
+  {
+    "id": "settled",
+    "view": "3d",
+    "url": "?id=settled&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d settled family agreement"
+  }
+]

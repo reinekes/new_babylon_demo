@@ -763,7 +763,7 @@ function householdNamesHTML(residents){
  const welcome=householdWelcomeEvidence(state,residents);
  if(!water&&!healing&&!vow&&!harvest&&!craft&&!welcome)return '';
  const grain=harvest?`<p data-household-harvest-name><b>Накормивший семью</b><br>${resident(harvest.recipientId)} помнит, как двор ${esc(harvest.home)} получил ${foodAmount(harvest.amount)} зерна с поля ${esc(harvest.field)}. Земледелец — ${resident(harvest.farmerId)}.</p>`:'';
- const guests=welcome?`<p data-household-hospitality-name><b>Соединивший семьи</b><br>${resident(welcome.host)} принял во дворе ${esc(welcome.home)} новых жителей: ${welcome.members.map(id=>resident(id)).join(', ')}.</p>`:'';
+ const guests=welcome?`<p data-household-hospitality-name><b>Соединивший семьи</b><br>${resident(welcome.host)} принял во дворе ${esc(welcome.home)} новых жителей: ${welcome.members.map(id=>resident(id)).join(', ')}.${welcome.custom==='libation'?' Двор поддержал обычай семейного возлияния.':''}</p>`:'';
  const training=craft?`<p data-household-craft-name><b>Помогший стать мастером</b><br>${resident(craft.pupilId)} достиг III уровня на стройке ${esc(craft.site.join(', '))}. Наставник — ${resident(craft.mentorId)}.</p>`:'';
  const promise=vow?`<p><b>${vow.target.delivery?'Сдержавший слово':'Не сдержавший слова'}</b><br>Обет №${vow.vowId} · двор ${esc(vow.target.home)}<br>${vow.target.delivery?`${resident(vow.target.delivery.recipient)} получил обещанный запас. В доставке участвовал ${resident(vow.target.delivery.witness)}.`:esc(VOW_FAILURE_TEXT[vow.target.failure])}</p>`:'';
 
@@ -772,7 +772,7 @@ function householdNamesHTML(residents){
 function renderHousehold(b){const panel=$('household-panel');if(!panel)return;const h=household(state,b),diagnostic=householdTab==='food'?supplyOverview(state).houses.find(h=>h.key===buildingKey(b)):null,adult=h.residents.filter(c=>c.age>=16);
  const row=c=>`<article class="house-person"><b>${resident(c)}</b><span>${rounded(c.age)} лет · ${c.age<16?'ребёнок':c.age>=55?'пожилой':'взрослый'}${['home','resting'].includes(c.phase)&&(c.diningUntil||0)>state.simTime?' · ужинает':''}</span><small>Голод ${Math.round(c.hunger||0)}% · здоровье ${Math.round(c.health??100)}% · настроение ${Math.round(c.mood??75)}% · вера ${Math.round(c.faith??60)}%</small><small>${c.parents?.length?`Родители: ${c.parents.map(id=>`${resident(id)}${state.citizens.some(p=>p.id===id)?'':state.lifeAnalytics?.people.some(p=>p.id===id&&p.diedTick!==null)?' †':' · запись не сохранилась'}`).join(', ')}`:c.partner!==null?`Супруг(а): ${resident(c.partner)}`:'Основатель / переселенец'}</small></article>`;
  const welcome=householdTab==='family'?lastArrivalWelcome(state,buildingKey(b),h.residents):null;
- const welcomeText=welcome?`<section class="house-food" data-arrival-welcome><b>Память о переселении</b><p>${welcome.host===null?'Этот дом стал первым жильём для семьи.':`${resident(welcome.host)} принял семью.`} Прибыли ${welcome.members.map(id=>resident(id)).join(', ')}.</p><small>На память семья оставила глиняный знак.</small></section>`:'';
+ const welcomeText=welcome?`<section class="house-food" data-arrival-welcome><b>Память о переселении</b><p>${welcome.host===null?'Этот дом стал первым жильём для семьи.':`${resident(welcome.host)} принял семью.`} Прибыли ${welcome.members.map(id=>resident(id)).join(', ')}.</p><small>На память семья оставила глиняный знак.</small>${welcome.custom==='libation'?'<p data-arrival-custom>Семья сохранила свой обычай. При заселении одну единицу воды выделили на возлияние.</p>':''}</section>`:'';
  const memorials=householdTab==='family'?familyMemorialsAt(state,b):[];
  const memoryText=memorials.length?`<section class="house-food"><b>Память дома</b><ul>${memorials.map(p=>`<li>${resident(p.id)}${state.citizens.some(c=>c.memorialMove?.id===p.id)?' · памятный предмет в пути':''} · год ${Math.floor(p.diedTick/4)+1} · ${esc(LIFE_CAUSE_NAMES[p.cause])}${p.memorial.skills.map(skill=>` · ${skill.kind==='builder'?'Строитель':'Лекарь'} · ур. ${skill.level}`).join('')}${medicalMemoryHTML(p)}${vowMemoryHTML(p.id)}</li>`).join('')}</ul></section>`:'';
  const care=b.familyCare,helper=care&&h.residents.find(c=>c.id===care.helper),patient=care&&h.residents.find(c=>c.id===care.target);
@@ -1021,7 +1021,15 @@ function makeMiracleCard(id,m){
   el.before(choice);
   choice.querySelector('select').onchange=()=>update();
  }
- el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
+ if(id==='healing'){
+  const agreement=document.createElement('label');
+  agreement.dataset.arrivalAgreement='';
+  agreement.innerHTML='<input type="checkbox" value="libation"> Оставить воду для семейного возлияния (+1 вода)';
+  agreement.hidden=true;
+  agreement.querySelector('input').onchange=()=>update();
+  el.before(agreement);
+ }
+ el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome,custom:el.dataset.arrivalCustom}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:lastMiracleTarget);if(result.ok){details.open=false;inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchTarget(state,lastMiracleTarget));}
  else if(id==='inannaProtection'&&state.inannaDiscovery){
   rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
@@ -1119,8 +1127,15 @@ function update(){
   const advice=branch&&!branch.hidden&&card.open&&!reason?revelationAdviceQuote(state,branch.querySelector('select').value):null;
   const shaping=id==='shaping'&&state.shapingProjects&&!reason&&card.open?
    shapingBatchQuote(state,lastMiracleTarget,{connected:(from,to)=>connectedStores(state,from,to)}):null;
-  const arrival=id==='healing'&&state.arrivalHospitality&&card.open&&!reason&&!state.arrivalGroup?arrivalOffer(state,networkFor(state)):null;
-  const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?`Группа уже в пути · ${state.arrivalGroup.count} чел.`:card.open&&!reason&&!arrival?'Нужны сухой путь, свободный дом, еда и вода':''):'';
+  const agreement=card.querySelector('[data-arrival-agreement]');
+  if(agreement)agreement.hidden=!state.arrivalHospitality||!!state.arrivalGroup;
+  const custom=agreement&&!agreement.hidden&&agreement.querySelector('input').checked?'libation':undefined;
+  const arrival=id==='healing'&&state.arrivalHospitality&&card.open&&!reason&&!state.arrivalGroup?arrivalOffer(state,networkFor(state),{custom}):null;
+  if(id==='healing'){
+   if(custom&&arrival)el.dataset.arrivalCustom=custom;
+   else delete el.dataset.arrivalCustom;
+  }
+  const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?`Группа уже в пути · ${state.arrivalGroup.count} чел.`:card.open&&!reason&&!arrival?custom?'Нужны сухой путь, жильё, паёк и дополнительная вода для обычая':'Нужны сухой путь, свободный дом, еда и вода':''):'';
   const peace=id==='peace'&&state.peaceDiscovery&&card.open&&!reason?peaceQuote(state,lastMiracleTarget):null;
   const land=id==='earthMemory'&&state.landMemoryChapter===1&&card.open&&!reason?landMemoryCastQuote(state):null;
   const landReason=id==='earthMemory'&&state.landMemoryCast?'Дождись последнего сезонного отклика':land&&!land.ids.length?'У сохранённых историй пока нет живых участников':'';

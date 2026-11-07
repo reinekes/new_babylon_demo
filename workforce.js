@@ -863,15 +863,15 @@ export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
  let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);advanceExternalGuest(s,dt,ctx.network);
   if(advanceArrivalGroup(s,dt,ctx.network)){
-   const {home,count,provisions,giftReserve,water}=s.arrivalGroup,house=ctx.buildings.get(home);
+   const {home,count,provisions,giftReserve,custom}=s.arrivalGroup,house=ctx.buildings.get(home);
    for(const [source,{food}] of Object.entries(provisions)){
     if(giftReserve?.[source])addGiftFood(house,'giftHome',giftReserve?.[source],house.pantry||0);
     house.pantry=(house.pantry||0)+food;
     house.pantryDelivered=(house.pantryDelivered||0)+food;
    }
-   house.water+=water;
+   house.water+=count;
    delete s.arrivalGroup;
-   s.citizens.push(...createArrivalFamily(s,home,count));
+   s.citizens.push(...createArrivalFamily(s,home,count,custom));
    s.population=s.citizens.length;
    syncCitizens(s);ctx=context(s);
    s.news.unshift({title:'Прибыли новые жители',text:`Поселились в доме ${home} · ${count} чел.`,kind:'good',year:s.year,season:s.season,tick:s.tick});

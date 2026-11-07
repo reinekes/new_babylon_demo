@@ -250,3 +250,31 @@ test('the Call reserves only water left after families sheltering from fire are 
  assert.equal(reserveArrival(s,network,{home:key,count:1}),true);
  assert.equal(home.water,residentWater+guestWater);
 });
+
+test('an arrival agreement reserves one additional water and follows the family after settlement',async()=>{
+ const {arrivalOffer,reserveArrival}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {advanceTime}=await import('../engine.js');
+ const {housingOf}=await import('../definitions.js');
+ let s=createNewCity({mode:'awakening',seed:1});
+ const house=s.buildings.find(b=>b.type==='house'),home=`${house.x},${house.y}`;
+ for(const b of s.buildings)if(b.type==='house')b.water=0;
+ house.level=3;s.capacity=housingOf(s);
+ house.water=12;
+ const network=networkFor(s),offer=arrivalOffer(s,network,{custom:'libation'});
+ assert.equal(offer.home,home);
+ assert.equal(offer.water,offer.beds+1);
+ assert.equal(reserveArrival(s,network,{home,count:offer.beds,custom:'libation'}),true);
+ assert.equal(house.water,12-offer.water);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ assert.equal(s.arrivalGroup.custom,'libation');
+ const invalid=JSON.parse(raw);invalid.arrivalGroup.water--;
+ assert.equal(decode(JSON.stringify(invalid)),null);
+ for(let i=0;i<400&&s.arrivalGroup;i++){s.event=null;advanceTime(s,.25);}
+ assert.equal(s.arrivalGroup,undefined);
+ const welcome=s.arrivalHospitality.welcomes.at(-1);
+ assert.equal(welcome.custom,'libation');
+ assert.equal(welcome.members.length,offer.beds);
+ assert.ok(welcome.members.every(id=>s.citizens.some(c=>c.id===id&&c.faith<50)));
+ const complete=encode(s);assert.equal(encode(decode(complete)),complete);
+});

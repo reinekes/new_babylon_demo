@@ -10,6 +10,7 @@ import {isDryPoint,signedRiverDistance,worldHeight,worldWidth} from './world.js'
 
 const kinds=['artisan','envoy','pilgrim'];
 const needed=2;
+const customWater=custom=>custom==='libation'?1:0;
 export const newArrivalHospitality=()=>({version:1,receipts:[]});
 
 export function recordArrivalHospitality(s,kind,guest){
@@ -91,7 +92,8 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
  return route?{home:best.home,beds:best.beds,route}:null;
 }
 
-export function arrivalOffer(s,network){
+export function arrivalOffer(s,network,{custom}={}){
+ const extra=customWater(custom);
  const food=foodAvailability(s,{reconcile:false}),storesByComponent=new Map(),waterNeeds=new Map();
  for(const c of s.citizens){
   const home=supplyHome(c);
@@ -108,11 +110,11 @@ export function arrivalOffer(s,network){
  ]));
  const offer=arrivalRoute(s,network,(port,beds)=>{
   const surplus=(port.building.water||0)-(waterNeeds.get(buildingKey(port.building))||0);
-  return Math.max(0,Math.min(beds,Math.floor(surplus),provisions.get(network.components.get(port.key))||0));
+  return Math.max(0,Math.min(beds,Math.floor(surplus-extra),provisions.get(network.components.get(port.key))||0));
  });
  if(!offer)return null;
  const component=network.components.get(offer.route.at(-1).key);
- return {...offer,food:offer.beds,water:offer.beds,eligibleStores:new Set(storesByComponent.get(component).keys())};
+ return {...offer,food:offer.beds,water:offer.beds+extra,eligibleStores:new Set(storesByComponent.get(component).keys())};
 }
 
 export function arrivalKnowledgeReason(s){
@@ -124,14 +126,16 @@ export function arrivalKnowledgeReason(s){
 
 export function reserveArrival(s,network,expected){
  if(!s.arrivalHospitality||s.arrivalGroup)return false;
- const offer=arrivalOffer(s,network);
+ const custom=expected?.custom;
+ if(custom!==undefined&&custom!=='libation')return false;
+ const offer=arrivalOffer(s,network,{custom});
  if(!offer||expected&&(expected.count!==offer.beds||expected.home!==offer.home))return false;
  const home=s.buildings.find(b=>buildingKey(b)===offer.home),giftReserve={};
  const provisions=reserveStock(s,{food:offer.food},{eligibleStores:offer.eligibleStores,giftReserve});
  if(!provisions)return false;
  home.water-=offer.water;
  const start=offer.route[0];
- s.arrivalGroup={home:offer.home,count:offer.beds,water:offer.water,provisions,
+ s.arrivalGroup={home:offer.home,count:offer.beds,water:offer.water,provisions,...custom?{custom}:{},
   x:start.x,y:start.y,route:offer.route.map(p=>p.key),routeIndex:1,
   ...Object.keys(giftReserve).length?{giftReserve}:{}};
  return true;
@@ -155,7 +159,7 @@ export function hospitalityNameEvidence(s){
  return welcomeEvidence(s.arrivalHospitality?.welcomes||[]).pair;
 }
 
-export function createArrivalFamily(s,home,count){
+export function createArrivalFamily(s,home,count,custom){
  const first=s.demography.nextId;
  const host=s.citizens.find(c=>c.home===home&&!c.floodShelter&&c.age>=16)?.id??null;
  const family=Array.from({length:count},(_,i)=>({
@@ -166,7 +170,7 @@ export function createArrivalFamily(s,home,count){
  const house=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===home);
  const homeId=house&&isStrictSumer(s)?ensureHouseEntityId(s,house):undefined;
  const welcomes=s.arrivalHospitality.welcomes??=[];
- welcomes.push({home,...homeId===undefined?{}:{homeId},host,members:family.map(c=>c.id),at:s.simTime});
+ welcomes.push({home,...homeId===undefined?{}:{homeId},...custom?{custom}:{},host,members:family.map(c=>c.id),at:s.simTime});
  if(welcomes.length>80){
   const {keep}=welcomeEvidence(welcomes);
   welcomes.splice(welcomes.findIndex(row=>!keep.includes(row)),1);
@@ -224,7 +228,7 @@ export function advanceArrivalGroup(s,dt,network){
 function validArrivalGroup(s){
  const g=s.arrivalGroup;
  if(g===undefined)return true;
- if(!g||!s.arrivalHospitality||!Number.isInteger(g.count)||g.count<1||g.count>6||g.water!==g.count||
+ if(!g||!s.arrivalHospitality||!Number.isInteger(g.count)||g.count<1||g.count>6||g.custom!==undefined&&g.custom!=='libation'||g.water!==g.count+customWater(g.custom)||
   !s.buildings.some(b=>buildingKey(b)===g.home&&capacityOf(b)>=g.count)||
   !g.provisions||typeof g.provisions!=='object'||Array.isArray(g.provisions)||
   !Number.isFinite(g.x)||g.x<-.5||g.x>worldWidth(s)-.5||
@@ -265,7 +269,7 @@ export function validateArrivalHospitality(s){
   if(!Array.isArray(welcomes)||!welcomes.length||welcomes.length>80)return false;
   let lastTime=0,lastId=-1;
   for(const row of welcomes){
-   if(!row||Object.keys(row).length!==4+Number(row.homeId!==undefined)||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
+   if(!row||Object.keys(row).length!==4+Number(row.homeId!==undefined)+Number(row.custom!==undefined)||row.custom!==undefined&&row.custom!=='libation'||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
     !Array.isArray(row.members)||!row.members.length||row.members.length>6||
     !row.members.every((id,i)=>Number.isSafeInteger(id)&&id>lastId&&id<s.demography.nextId&&(!i||id===row.members[i-1]+1))||
     row.host!==null&&(!Number.isSafeInteger(row.host)||row.host<0||row.host>=row.members[0]))return false;
