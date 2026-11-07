@@ -1,3 +1,4 @@
+import {validateInannaDiscovery} from './inanna-discovery.js';
 import {landMemoryCastQuote,validateLandMemory} from './land-memory.js';
 import {validateDepthSupply} from './depth-supply.js';
 import {recordStarForecast} from './star-forecast.js';
@@ -197,7 +198,7 @@ export function yieldSummary(s,b){
  if(b.type==='kiln')return `4 сырца + 3 тростника → 4 обожжённых · обжиг ${(20/outputMultiplier(b)).toFixed(1)} с + остывание ${(8/outputMultiplier(b)).toFixed(1)} с`;
  if(b.type==='brickyard')return '4 глины + 1 тростник + 2 воды → 4 сырца · сушка на солнце 30 с · 2 работника';
  if(b.type==='musicHouse')return `1 вдохновлённый музыкант · ${def.workTime} с игры → ${(def.output.prestige*outputMultiplier(b)).toLocaleString('ru-RU')} престижа · тихая музыка и отдых соседей`;
- if(b.type==='ishtarGate')return `Уникальные культовые ворота · после завершения открывают чудо «${MIRACLES.inannaProtection.name}»`;
+ if(b.type==='ishtarGate')return s.inannaDiscovery?'Священный порог для истории «Покров Инанны»':`Уникальные культовые ворота · после завершения открывают чудо «${MIRACLES.inannaProtection.name}»`;
  if(b.type==='waterpoint')return 'Вода домам и кирпичным дворам · 2 водоноса';
  if(b.type==='healer')return `1 обученный лекарь · ${1+level} места · база ${1+(level-1)*.5} здоровья/с · требуется обучение в храме`;
  if(b.type==='harbor')return `Грузовые лодки · 2 носильщика · до ${4+2*level} ед. за рейс`;
@@ -558,7 +559,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
+  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}

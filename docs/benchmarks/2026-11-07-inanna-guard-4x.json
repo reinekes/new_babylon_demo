@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 135,
+  "citizens": 296,
+  "guardId": 0,
+  "guardDays": [
+    19
+  ],
+  "chased": true,
+  "saveByteEqual": true,
+  "paidCast": true,
+  "samples": 251,
+  "medianStepCpuMs": 19.56662499999993,
+  "p95StepCpuMs": 75.7607079999998
+}

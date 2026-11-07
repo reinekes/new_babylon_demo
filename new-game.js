@@ -1,3 +1,4 @@
+import {newInannaDiscovery} from './inanna-discovery.js';
 import {newDepthSupply} from './depth-supply.js';
 import {newStarObservations} from './star-observations.js';
 import {newArrivalHospitality} from './arrival-hospitality.js';
@@ -39,6 +40,7 @@ export function createNewCity({mode,seed}={}){
   state.starObservations=newStarObservations();
   state.depthSupply=newDepthSupply();
   state.landMemoryChapter=1;
+  state.inannaDiscovery=newInannaDiscovery();
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);

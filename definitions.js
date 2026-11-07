@@ -35,7 +35,7 @@ export const BUILDINGS={
  market:{name:'Рынок',icon:'⚖',clay:20,reed:12,wood:8,desc:'Принимает караваны. Два носильщика доставляют покупки на склад.',effect:'Торговля · 2 носильщика',output:{}}
 };
 export const MIRACLES={
- inannaProtection:{name:'Покров Инанны',cost:80,cooldown:4,icon:'♜',domain:'life',unlockBuilding:'ishtarGate',desc:'Открывается завершёнными вратами Иштар: три сезона мыши портят вдвое меньше еды, настроение жителей +8. Чудесный эффект — игровой.'},
+ inannaProtection:{name:'Покров Инанны',cost:80,cooldown:4,icon:'♜',domain:'life',unlockBuilding:'ishtarGate',desc:'Три сезона мыши портят вдвое меньше еды, настроение жителей растёт. Чудесный эффект — игровой.'},
  relicAwakening:{name:'Пробуждение глубин',cost:45,cooldown:3,icon:'◈',domain:'water',unlockQuest:'relic',desc:'Тайна найденного артефакта возвращает влагу долине и поднимает дух жителей.'},
  earthMemory:{name:'Память земли',cost:45,cooldown:3,icon:'◈',domain:'knowledge',unlockQuest:'land',desc:'После доставки Печати земли: настроение жителей +8; на ближайших трёх сменах сезона настроение +2 и личная вера +1. Художественное чудо памяти предков.'},
  cat:{name:'Кошка — дар бога',cost:12,cooldown:1,icon:'🐈',domain:'life',desc:'Приводит кошку к хранилищу без кошки. Она ловит мышей и защищает еду; первую кошку приводит только бог.'},
