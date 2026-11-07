@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T23:52:41.324844+00:00",
+  "commit": "afa7044cdbe389d3af1d7c22a3f1b86dc95e3152",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6bcdec6ab40f445effb1bb2db958bfca963edd8f63fe0ea1c5267b83c89aa1db",
+      "actual": "6bcdec6ab40f445effb1bb2db958bfca963edd8f63fe0ea1c5267b83c89aa1db",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "b02a56ab5aeaa0cfd7fb0cb1b4dc852b2e27b69101732d5a456e2db4ee3118c1",
+      "actual": "b02a56ab5aeaa0cfd7fb0cb1b4dc852b2e27b69101732d5a456e2db4ee3118c1",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "ff5c8b5418dbe50601740e42037a0c6f152fb0517fdd77bf13e86864730a6361",
+      "actual": "ff5c8b5418dbe50601740e42037a0c6f152fb0517fdd77bf13e86864730a6361",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-household-flood-relocation-4x.json",
+      "status": 200,
+      "expected": "4fc0250c8afd11117f9b04cc3c34723529230f10795d4b01abab8c28649ca467",
+      "actual": "4fc0250c8afd11117f9b04cc3c34723529230f10795d4b01abab8c28649ca467",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "28dc16193cfd50733cf3864540f3366a790dab53fc89cbb54b05080fb9072bdf",
+      "actual": "28dc16193cfd50733cf3864540f3366a790dab53fc89cbb54b05080fb9072bdf",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "2a2fab5bdf43325b5becf53c7cecdef1234bfbf7695c6e1c9ddaed42a1ab0367",
+      "actual": "2a2fab5bdf43325b5becf53c7cecdef1234bfbf7695c6e1c9ddaed42a1ab0367",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
