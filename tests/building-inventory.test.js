@@ -18,7 +18,7 @@ test('a porter returning home with an uncollected district job can still fetch a
 });
 
 test('actual v27 fixture migrates empty new containers while preserving every citizen and owned load',()=>{
- const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v27-local-stock.json',import.meta.url))),s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,34);assert.deepEqual(s.citizens,old.citizens);
+ const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v27-local-stock.json',import.meta.url))),s=decode(JSON.stringify(old));assert.ok(s);assert.equal(s.version,35);assert.deepEqual(s.citizens,old.citizens);
  for(const [k,n]of Object.entries(old.resources))assert.equal(s.resources[k],n);
  for(let i=0;i<old.buildings.length;i++)for(const [k,value]of Object.entries(old.buildings[i]))assert.deepEqual(projectLegacy(s.buildings[i][k],value),value,k);
  assert.ok(s.buildings.filter(b=>b.workshopStock).every(b=>Object.values(b.workshopStock.output).every(n=>n===0)));assert.ok(s.buildings.filter(b=>b.type==='house').every(b=>Object.values(b.householdStock).every(n=>n===0)));assert.ok(decode(encode(s)));

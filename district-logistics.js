@@ -1,3 +1,4 @@
+import {toolResource} from './axe-kit.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {harvestNameEvidence} from './causal-facts.js';
 import {supplyHome} from './households.js';
@@ -100,7 +101,7 @@ export function syncDistrictJobs(s){
  // An emergency yard first returns recovered stock. Its ordinary finished
  // goods remain safely in their separate output buffer until that stock clears.
  for(const b of [...destinations.filter(b=>isProductionStore(b)&&!b.recoveryOnly),...stores.filter(b=>b.recoveryOnly)])for(const [k,amount]of Object.entries(b.recoveryOnly?b.stock:b.workshopStock?.output||{})){const source=buildingKey(b),queued=pass.queued.get(entry(source,k))||0;if(amount-queued<.01)continue;const target=nearest(b).find(a=>logisticsRoom(s,a,k,null,pass)-pending(s,buildingKey(a),k,pass)>.01);if(target){const key=buildingKey(target),n=Math.min(amount-queued,logisticsRoom(s,target,k,null,pass)-pending(s,key,k,pass));if(n>=.01)requestTransfer(s,source,key,k,n,{automatic:true},pass);}}
- for(const b of destinations)if(b.type!=='house'&&(b.type!=='logging'||isStrictSumer(s)))for(const [k,need]of Object.entries(inputNeeds(b)))if(k!=='water')inbound(b,k,need);
+ for(const b of destinations)if(b.type!=='house'&&(!toolResource(b)||isStrictSumer(s)))for(const [k,need]of Object.entries(inputNeeds(b)))if(k!=='water')inbound(b,k,need);
  for(const b of destinations)if(b.type==='house')for(const k of ['clothing','pottery','beer','milk','mat'])inbound(b,k,buildingInputRoom(s,b,k));
  for(const b of stores)for(const k of MATERIALS){const target=buildingKey(b),need=storeMinimum(b,k)-b.stock[k]-pending(s,target,k,pass);if(need<=eps||need<Math.min(1,storeMinimum(b,k))-eps)continue;for(const a of nearest(b,'taxicab')){const source=buildingKey(a),n=Math.min(need,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(n>eps&&requestTransfer(s,source,target,k,n,{automatic:true},pass).ok)break;}}
 }

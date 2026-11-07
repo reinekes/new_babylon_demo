@@ -21,6 +21,7 @@ import {relicControlActive,relicCommandReason} from './relic-quest.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {recoverFestivalCitizen} from './festival.js';
 import {recordProfessionEpithet,recordInspirationOutcome} from './citizen-epithets.js';
+import {workTool,toolResource} from './axe-kit.js';
 import {isArtisan,artisanOutput} from './artisan.js';
 import {isTradePort} from './river-trade.js';
 import {upgradeCost} from './masonry.js';
@@ -110,7 +111,7 @@ function foundingStockTransfer(s,b){
  }
  return plan;
 }
-function localDemolitionStock(b){const goods={...b.workshopStock?.output};if(b.axeKit?.axe)goods.axe=b.axeKit.axe;if(b.axeKit?.copper)goods.copper=b.axeKit.copper;if(b.sickle?.pottery)goods.pottery=(goods.pottery||0)+b.sickle.pottery;if(b.dairy?.reed||b.flock?.reed)goods.reed=(goods.reed||0)+(b.dairy?.reed||0)+(b.flock?.reed||0);for(const [k,n]of Object.entries(b.workshopStock?.input||{}))goods[k]=(goods[k]||0)+n;for(const [k,n]of Object.entries(b.householdStock||{}))if(MATERIALS.includes(k))goods[k]=(goods[k]||0)+n;return goods;}
+function localDemolitionStock(b){const goods={...b.workshopStock?.output};const kit=workTool(b),tool=toolResource(b);if(kit?.[tool])goods[tool]=kit[tool];if(kit?.copper)goods.copper=kit.copper;if(b.sickle?.pottery)goods.pottery=(goods.pottery||0)+b.sickle.pottery;if(b.dairy?.reed||b.flock?.reed)goods.reed=(goods.reed||0)+(b.dairy?.reed||0)+(b.flock?.reed||0);for(const [k,n]of Object.entries(b.workshopStock?.input||{}))goods[k]=(goods[k]||0)+n;for(const [k,n]of Object.entries(b.householdStock||{}))if(MATERIALS.includes(k))goods[k]=(goods[k]||0)+n;return goods;}
 function localRefundStore(s,b){const net=networkFor(s),p=net.ports.find(p=>p.building===b);return stockStores(s).find(a=>a!==b&&net.ports.some(port=>port.building===a&&p&&net.components.get(port.key)===net.components.get(p.key)));}
 export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.

@@ -1,3 +1,5 @@
+import {cityCommandReason} from './city-command-lock.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {takeGiftFood} from './abundance-origin.js';
 import {noteFirstBeer} from './festival.js';
 import {recordBuildingProduction} from './building-production-history.js';
@@ -14,7 +16,16 @@ const MAT_RECIPE=Object.freeze({reed:5});
 const BASKET_RECIPE=Object.freeze({reed:4});
 const LINEN_RECIPE=Object.freeze({flax:3,water:2});
 export const isArtisan=b=>['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith'].includes(b?.type);
-export const artisanOutput=b=>Object.keys(BUILDINGS[b?.type]?.output||{})[0];
+export const COPPER_PRODUCTS=['axe','blade','chisel'];
+export const artisanOutput=b=>b?.type==='coppersmith'?b.toolProduct||'axe':Object.keys(BUILDINGS[b?.type]?.output||{})[0];
+export function setCopperProduct(s,b,product){
+ const reason=cityCommandReason(s);
+ if(reason)return {ok:false,reason};
+ if(!isStrictSumer(s)||!s.buildings.includes(b)||b.type!=='coppersmith'||!isOperational(b)||!COPPER_PRODUCTS.includes(product))return {ok:false,reason:'Выбери готовый медный двор и изделие'};
+ if(b.artisan?.stage!=='idle')return {ok:false,reason:'Сначала закончи текущую партию'};
+ if(product==='axe')delete b.toolProduct;else b.toolProduct=product;
+ return {ok:true};
+}
 export const artisanRecipe=b=>b?.type==='pottery'?POTTERY_RECIPE:b?.type==='bakery'?BREAD_RECIPE:b?.type==='linenYard'?LINEN_RECIPE:b?.type==='dairyStore'?DAIRY_STORE_RECIPE:b?.type==='basketry'?BASKET_RECIPE:b?.type==='matYard'?MAT_RECIPE:b?.type==='coppersmith'?AXE_RECIPE:BEER_RECIPE;
 const fields=['clay','reed','water','food','pottery','vesselUses','stage','elapsed','ready'];
 const extraInput={linenYard:'flax',dairyStore:'milk',coppersmith:'copper'};
@@ -74,6 +85,7 @@ export function advanceArtisans(s,seconds){
 export function collectArtisan(b){if(!isArtisan(b)||!isOperational(b)||!valid(b)||b.artisan.stage!=='ready')return 0;const n=b.artisan.ready;b.artisan.ready=0;b.artisan.stage='idle';return n;}
 export function validateArtisans(s){
  return Array.isArray(s.buildings)&&s.buildings.every(b=>{
+  if(b.toolProduct!==undefined&&(b.type!=='coppersmith'||!COPPER_PRODUCTS.includes(b.toolProduct)))return false;
   if(!isArtisan(b))return !Object.hasOwn(b,'artisan');if(!valid(b))return false;
   const v=b.artisan,recipe=artisanRecipe(b),incoming={};
   for(const c of s.citizens||[])if(c.craftSite===buildingKey(b)&&c.craftMaterial&&(c.craftAmount||0)>0)incoming[c.craftMaterial]=(incoming[c.craftMaterial]||0)+c.craftAmount;

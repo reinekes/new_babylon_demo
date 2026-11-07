@@ -44,7 +44,7 @@ import {canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js'
 import {queueGranaryReceipt,workOnAccount} from './scribes.js';
 import {workDairy} from './dairy.js';
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
-import {useAxe} from './axe-kit.js';
+import {toolResource,wearWorkTool} from './axe-kit.js';
 import {GATHERING_TYPES,workGathering,advanceGathering} from './labor-life.js';
 import {initializeArtisans,isArtisan,artisanNeeds,artisanOutput,workArtisan,advanceArtisans,collectArtisan} from './artisan.js';
 import {advanceKilns,kilnNeeds,startFiring,collectFired,kilnNeedsRepair,repairKiln} from './kilns.js';
@@ -356,8 +356,9 @@ function harvest(s,c,ctx,via=null){
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,b.x,b.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,b.x,b.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
   if(amount<=1e-8)continue;
-  c.cargo[resource]=amount;if(resource==='wood')useAxe(b,amount);if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
+  c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
+ if(toolResource(b)&&hasCargo(c))wearWorkTool(b);
  if(c.cargo.faith>0&&c.calling==='priest')recordSunlightService(s,b,c);
  if(b.type==='clay'&&clayRemaining(s,b.x,b.y)<=1e-8||b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)invalidateAssignments(s);
  if(['fishing','clay','quarry','logging','reed','garden'].includes(b.type)&&!hasCargo(c))return false;
@@ -796,7 +797,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
    if(b.type==='musicHouse'){workMusic(s,b,c,remaining*workRate(c,'musicHouse'));return;}
    if(b.type==='cowshed'){if(outputRoom(b,'milk')<3-1e-7)return;const amount=workDairy(b,remaining*workRate(c,'cowshed')*outputMultiplier(b));if(amount){putProductionOutput(s,b,{milk:amount});recordCitizenHarvest(s,c,{milk:amount});}return;}
    if(b.type==='garden'&&orchardMaturity(s,b).yield===0)return;
-   if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*(isArtisan(b)?1:outputMultiplier(b)*(b.type==='garden'?orchardMaturity(s,b).yield:1)*(k==='food'?foodYieldMultiplier(s,b):['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1))))return;
+   if(isProductionStore(b)&&Object.entries(BUILDINGS[b.type].output).some(([k,n])=>(b.type!=='coppersmith'||k===artisanOutput(b))&&MATERIALS.includes(k)&&outputRoom(b,k)+1e-7<n*(isArtisan(b)?1:outputMultiplier(b)*(b.type==='garden'?orchardMaturity(s,b).yield:1)*(k==='food'?foodYieldMultiplier(s,b):['clay','reed'].includes(k)&&s.buffs?.inspiration?1.75:1))))return;
    if(isArtisan(b)){
     const v=b.artisan;
     if(v.stage==='ready'){collectReadyOutputs(s);return;}

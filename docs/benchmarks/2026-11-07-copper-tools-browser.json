@@ -1,0 +1,16 @@
+[
+  {
+    "id": "chisel",
+    "view": "2d",
+    "url": "?id=chisel&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d copper-tools stage and reed readout"
+  },
+  {
+    "id": "chisel",
+    "view": "3d",
+    "url": "?id=chisel&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d copper-tools stage and reed readout"
+  }
+]

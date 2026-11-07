@@ -1,0 +1,34 @@
+{
+  "chisel": {
+    "speed": 4,
+    "buildings": 129,
+    "population": 237,
+    "stages": [
+      "idle",
+      "castingAxe"
+    ],
+    "received": 1,
+    "equipped": true,
+    "edge": 0,
+    "steps": 1400,
+    "medianCPUms": 1.8534159999999247,
+    "p95CPUms": 6.499374999999873,
+    "exactSave": true
+  },
+  "blade": {
+    "speed": 4,
+    "buildings": 129,
+    "population": 237,
+    "stages": [
+      "idle",
+      "castingAxe"
+    ],
+    "received": 1,
+    "equipped": true,
+    "edge": 3,
+    "steps": 1400,
+    "medianCPUms": 1.8839579999998932,
+    "p95CPUms": 6.6394579999999905,
+    "exactSave": true
+  }
+}

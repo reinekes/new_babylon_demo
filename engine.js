@@ -102,7 +102,7 @@ import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMul
 import {networkFor,syncCitizens,advanceWorkers,workforceStats,recoverCitizenCargo} from './workforce.js';
 import {createDivinity,registerMiracle,refreshResultName,usesResultNames} from './divinity.js';
 export {WIDTH,HEIGHT,terrain,river,bridgeSpan,BUILDINGS,MIRACLES};
-export const VERSION=34;
+export const VERSION=35;
 export const SEASONS=['Весна','Лето','Осень','Зима'];
 const emptyResources=()=>({...Object.fromEntries(MATERIALS.map(k=>[k,0])),food:0,clay:0,reed:0,wood:0,stone:0,hides:0,wool:0,cloth:0,clothing:0,brick:0,firedBrick:0,pottery:0,beer:0,faith:0,prestige:0});
 const emptyCooldowns=()=>Object.fromEntries(Object.keys(MIRACLES).filter(k=>k!=='richCatch').map(k=>[k,0]));
@@ -410,7 +410,7 @@ export function goals(s){
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);if(Array.isArray(s?.citizens)&&Array.isArray(s.lifeAnalytics?.people))syncLifeAnalytics(s);return JSON.stringify(s);};
 export function decode(raw){
  try{
-  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28,oldFlax=s?.version<31,oldBaskets=s?.version<32,oldMats=s?.version<33,oldCopper=s?.version<34;
+  const s=JSON.parse(raw),legacy=s?.version===1,old=s?.version<3,oldTrade=s?.version<4,oldLogistics=s?.version<5,oldMortality=s?.version<6,oldGenerations=s?.version<7,oldHouseholds=s?.version<8,oldWellbeing=s?.version<9,oldCalling=s?.version<10,oldEducation=s?.version<11,oldAgriculture=s?.version<12,oldPests=s?.version<13,oldFoodPlan=s?.version<14,oldInventory=s?.version<15,oldTextiles=s?.version<16,oldClothing=s?.version<17,oldBricks=s?.version<18,oldFiring=s?.version<19,oldMasonry=s?.version<20,oldArtisans=s?.version<22,oldGathering=s?.version<23,oldLifeAnalytics=s?.version<26,oldEcology=s?.version<27,oldBuildingInventory=s?.version<28,oldFlax=s?.version<31,oldBaskets=s?.version<32,oldMats=s?.version<33,oldCopper=s?.version<34,oldToolTypes=s?.version<35;
   if(!s||!Number.isInteger(s.version)||s.version<1||s.version>VERSION)return null;
   // Enroll old cities before any older migration rewrites the save version.
   if(s.version<30)s.scenario=legacyScenario();
@@ -475,6 +475,10 @@ export function decode(raw){
   if(oldCopper){
    for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r){r.copper??=0;r.axe??=0;}
    const c=s.trade?.caravan;if(c){c.stock.copper??=0;c.stock.axe??=0;c.prices.copper??={buy:12,sell:10};c.prices.axe??={buy:36,sell:34};}
+  }
+  if(oldToolTypes){
+   for(const r of [s.resources,s.delivered,...(s.buildings||[]).map(b=>b.stock)])if(r){r.blade??=0;r.chisel??=0;}
+   const c=s.trade?.caravan;if(c)for(const k of ['blade','chisel']){c.stock[k]??=0;c.prices[k]??={buy:36,sell:34};}
   }
   if(oldGathering&&s.gathering===undefined)initializeGathering(s);if(!validateGathering(s)||!validateFisheries(s))return null;
   if(s.world&&!validateWorld(s)||!validateMineralPits(s,'clay')||!validateMineralPits(s,'stone')||!validateForests(s)||!validateReedBeds(s))return null;

@@ -1,6 +1,6 @@
 // Display-only goods. Rectangular parcels share baked geometry; amounts remain in simulation.
 export const GOODS_HEIGHT=.36;
-export const GOODS_KINDS=['food','wood','clay','stone','reed','pottery','wool','cloth','beer','hides','clothing','brick','firedBrick','water','milk','flax','basket','mat','copper','axe'];
+export const GOODS_KINDS=['food','wood','clay','stone','reed','pottery','wool','cloth','beer','hides','clothing','brick','firedBrick','water','milk','flax','basket','mat','copper','axe','blade','chisel'];
 export function cargoLayout(stock,{columns=4,layers=3,maxKinds=Infinity}={}){
  const result=[];let i=0;
  for(const kind of GOODS_KINDS){if(i>=maxKinds)break;const amount=stock?.[kind];if(!Number.isFinite(amount)||amount<=0)continue;
@@ -16,7 +16,7 @@ export function createGoodsSources(B,scene,materials){
    // Clay vessels retain their functional shape, resting in a rectangular carrier.
    box(0,.035,0,.68,.07,.56);
    for(const x of [-.16,.16]){const m=B.MeshBuilder.CreateCylinder('goods-clay-vessel',{height:.29,diameterTop:.15,diameterBottom:.21,tessellation:8},scene);m.position.set(x,.215,0);pieces.push(m);}
-  }else if(kind==='axe'){
+  }else if(['axe','blade','chisel'].includes(kind)){
    box(0,.05,0,.64,.10,.53);box(-.03,.155,0,.54,.11,.09);box(.18,.17,0,.22,.13,.41);
   }else if(kind==='mat'){
    for(const x of [-.2,0,.2])box(x,.105,0,.19,.21,.56);

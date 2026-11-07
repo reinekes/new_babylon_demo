@@ -16,7 +16,7 @@ import {stockStores,storeCapacity} from './inventory.js';
 import {craftBatch,craftResource,craftState,craftLoad,fleeceGrowth} from './textiles.js';
 export const RESOURCE_GROUPS=[
  {id:'basic',name:'Добыча',keys:['food','clay','reed','wood','stone','hides','wool','flax','copper']},
- {id:'processed',name:'Переработка',keys:['brick','firedBrick','cloth','clothing','pottery','beer','milk','basket','mat','axe']},
+ {id:'processed',name:'Переработка',keys:['brick','firedBrick','cloth','clothing','pottery','beer','milk','basket','mat','axe','blade','chisel']},
  {id:'divine',name:'Влияние',keys:['faith','prestige']}
 ];
 // Analytical estimate over a full current season, not a second simulation.

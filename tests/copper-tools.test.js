@@ -76,3 +76,32 @@ test('a delivered axe wears only after the logging yard produces real wood',asyn
  assert.ok(s.citizens.some(c=>c.work===`${yard.x},${yard.y}`&&c.cargo.wood>0));
  const raw=encode(s);assert.equal(encode(decode(raw)),raw);
 });
+
+test('copper workshop saves its selected product and cannot switch a funded batch in progress',async()=>{
+ const {initializeArtisans,workArtisan,collectArtisan,setCopperProduct}=await import('../artisan.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const b={type:'coppersmith',level:1,x:10,y:9};s.buildings.push(b);initializeArtisans(s);
+ assert.ok(setCopperProduct(s,b,'chisel').ok);
+ b.artisan.copper=2;b.artisan.reed=2;
+ workArtisan(b,1,s);
+ assert.equal(setCopperProduct(s,b,'blade').ok,false);
+ syncCitizens(s);
+ const restored=decode(encode(s));assert.ok(restored);
+ const shop=restored.buildings.at(-1);
+ assert.equal(shop.toolProduct,'chisel');
+ workArtisan(shop,14,restored);assert.equal(shop.productionHistory[0].resources.chisel,1);
+ assert.equal(collectArtisan(shop),1);
+ assert.ok(setCopperProduct(restored,shop,'blade').ok);
+});
+
+test('a quarry takes only its own delivered tool and uses copper for repair',async()=>{
+ const {buildingInputRoom,putBuildingInput}=await import('../building-inventory.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const b={type:'quarry',level:1,x:4,y:4};
+ assert.equal(buildingInputRoom(s,b,'axe'),0);
+ assert.equal(putBuildingInput(s,b,'chisel',1),1);
+ assert.equal(b.toolKit.edge,6);
+ b.toolKit.edge=0;
+ assert.equal(putBuildingInput(s,b,'copper',1),1);
+ assert.equal(b.toolKit.edge,6);
+});

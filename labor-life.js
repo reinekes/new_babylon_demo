@@ -1,4 +1,4 @@
-import {axeWorkMultiplier} from './axe-kit.js';
+import {toolWorkMultiplier} from './axe-kit.js';
 import {advanceReedBeds} from './reed-stock.js';
 import {forestOpen} from './forest-stock.js';
 import {stoneRemaining} from './mineral-stock.js';
@@ -84,7 +84,7 @@ export function workGathering(s,c,b,dt,rate,origin){
  if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
  if(!j)j=newJob(s,c,b,origin||c);if(!j)return false;
  if(j.stage==='approach'){if(move(c,j.stand,dt,rate))j.stage='working';return false;}
- c.workElapsed=Math.min(BUILDINGS[b.type].workTime,c.workElapsed+dt*rate*axeWorkMultiplier(b));j.progress=clamp(c.workElapsed/BUILDINGS[b.type].workTime);
+ c.workElapsed=Math.min(BUILDINGS[b.type].workTime,c.workElapsed+dt*rate*toolWorkMultiplier(b));j.progress=clamp(c.workElapsed/BUILDINGS[b.type].workTime);
  if(j.progress<1)return false;
  if(b.type==='hunting'){
   // The same living actor falls; this ID cannot yield a second load until recovery.
