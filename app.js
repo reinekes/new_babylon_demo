@@ -1392,7 +1392,13 @@ async function replaceCity(next,{fresh=false}={}){
 async function newGame(mode){
  if(switchingCity)return;
  const buttons=[...document.querySelectorAll('[data-new-mode]')];for(const button of buttons)button.disabled=true;
- try{let seed=globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??(Date.now()>>>0);if(seed===state.world?.seed)seed=(seed+1)>>>0;await replaceCity(createNewCity({mode,seed}),{fresh:true});}
+ try{
+  const playtestSeed=new URLSearchParams(location.search).get('playtest-seed');
+  const fixedSeed=mode==='awakening'&&playtestSeed!==null&&/^\d{1,10}$/.test(playtestSeed)&&Number(playtestSeed)<=0xffffffff;
+  let seed=fixedSeed?Number(playtestSeed):(globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??(Date.now()>>>0));
+  if(!fixedSeed&&seed===state.world?.seed)seed=(seed+1)>>>0;
+  await replaceCity(createNewCity({mode,seed}),{fresh:true});
+ }
  catch(error){toast(`Новая игра не начата: ${error.message}`);for(const button of buttons)button.disabled=false;}
 }
 function showSaves(){

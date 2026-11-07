@@ -1,0 +1,47 @@
+[
+  {
+    "view": "2d",
+    "mode": "awakening",
+    "param": "137",
+    "seed": 137,
+    "world": "6b413a048c70d2fc635bfb420ee6c8a6d21523c20a69f0e3023f710881a1949a",
+    "intro": true,
+    "tick": 0
+  },
+  {
+    "view": "3d",
+    "mode": "awakening",
+    "param": "137",
+    "seed": 137,
+    "world": "6b413a048c70d2fc635bfb420ee6c8a6d21523c20a69f0e3023f710881a1949a",
+    "intro": true,
+    "tick": 0
+  },
+  {
+    "view": "2d",
+    "mode": "mature",
+    "param": "137",
+    "seed": 3897182606,
+    "world": "388ca492671822a56b5247872b1067407d512eaab365c4ced5d05667c6c22e9e",
+    "intro": true,
+    "tick": 0
+  },
+  {
+    "view": "2d",
+    "mode": "awakening",
+    "param": "4294967296",
+    "seed": 3870080492,
+    "world": "29f7be9c8ab2d439ec0454b24c5d71453e2e7eca4de516ed514334dcf5f9635f",
+    "intro": true,
+    "tick": 0
+  },
+  {
+    "view": "2d",
+    "mode": "awakening",
+    "param": "0",
+    "seed": 0,
+    "world": "c9ac2a517c7995b41ba4c3ccbf35ac2f0506016b54dbe25c8edd0eb988392d51",
+    "intro": true,
+    "tick": 0
+  }
+]
