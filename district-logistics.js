@@ -1,3 +1,5 @@
+import {harvestNameEvidence} from './causal-facts.js';
+import {supplyHome} from './households.js';
 import {findShapingBatch,loadShapingBatch} from './shaping-batch.js';
 import {markWindCargo} from './wind-delivery.js';
 import {markCreatorCargo} from './creator-materials.js';
@@ -73,7 +75,27 @@ export function syncDistrictJobs(s){
  const stores=pass.stores,destinations=[...pass.endpoints.values()].filter(isBuildingStore),donors=new Map();
  const nearest=(b,metric='round')=>{const target=buildingKey(b),id=target+metric;if(!donors.has(id))donors.set(id,stores.filter(a=>a!==b&&connectedStores(s,buildingKey(a),target,pass)).sort((a,c)=>metric==='round'?Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y):Math.abs(a.x-b.x)+Math.abs(a.y-b.y)-Math.abs(c.x-b.x)-Math.abs(c.y-b.y)));return donors.get(id);};
  const inbound=(b,k,need)=>{const target=buildingKey(b),wanted=need-pending(s,target,k,pass)-(pass.extra.get(entry(target,k))||0);if(wanted<(b.type==='house'&&k==='food'?Math.min(1,homeStockCapacity(s,b,'food')/2):.01))return;for(const a of nearest(b)){const source=buildingKey(a),amount=Math.min(wanted,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(amount>=.01&&requestTransfer(s,source,target,k,amount,{automatic:true,targetKind:'input'},pass).ok)break;}};
- for(const b of destinations)if(b.type==='house')inbound(b,'food',buildingInputRoom(s,b,'food'));
+ const markedFields=s.earthDiscovery?.qualifiedAt!=null&&!harvestNameEvidence(s)?
+  destinations.filter(b=>b.type==='field'&&b.grainEvidence?.inspired):[];
+ const harvestRecipients=new Map(),credited=s.causalFacts?.harvest||[];
+ if(markedFields.length)for(const c of s.citizens){
+  const home=supplyHome(c,{arrived:true});
+  if(home&&!harvestRecipients.has(home))harvestRecipients.set(home,c.id);
+ }
+ for(const b of destinations)if(b.type==='house'){
+  const target=buildingKey(b),need=buildingInputRoom(s,b,'food');
+  const incoming=pending(s,target,'food',pass),wanted=need-incoming-(pass.extra.get(entry(target,'food'))||0);
+  const recipient=harvestRecipients.get(target);
+  if(wanted>=1&&incoming<=eps&&recipient!==undefined&&!credited.some(f=>f.home===target||f.recipientId===recipient)){
+   for(const field of markedFields){
+    const source=buildingKey(field),mark=field.grainEvidence,queued=pass.queued.get(entry(source,'food'))||0;
+    const amount=Math.min(12,wanted,mark.prefix+mark.amount,exportable(s,source,'food',pass)-queued);
+    if(queued>eps||amount<=mark.prefix+eps)continue;
+    if(requestTransfer(s,source,target,'food',amount,{automatic:true,targetKind:'input'},pass).ok)break;
+   }
+  }
+  inbound(b,'food',need);
+ }
  // An emergency yard first returns recovered stock. Its ordinary finished
  // goods remain safely in their separate output buffer until that stock clears.
  for(const b of [...destinations.filter(b=>isProductionStore(b)&&!b.recoveryOnly),...stores.filter(b=>b.recoveryOnly)])for(const [k,amount]of Object.entries(b.recoveryOnly?b.stock:b.workshopStock?.output||{})){const source=buildingKey(b),queued=pass.queued.get(entry(source,k))||0;if(amount-queued<.01)continue;const target=nearest(b).find(a=>logisticsRoom(s,a,k,null,pass)-pending(s,buildingKey(a),k,pass)>.01);if(target){const key=buildingKey(target),n=Math.min(amount-queued,logisticsRoom(s,target,k,null,pass)-pending(s,key,k,pass));if(n>=.01)requestTransfer(s,source,key,k,n,{automatic:true},pass);}}

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createNewCity} from '../new-game.js';
-import {recordFieldGrain,pickupFieldGrain,acceptFieldGrain} from '../field-grain.js';
+import {recordFieldGrain,pickupFieldGrain,acceptFieldGrain,newEarthDiscovery} from '../field-grain.js';
 
 test('only accepted human grain counts, after the ordinary prefix in the same load',()=>{
  const s=createNewCity({mode:'awakening',seed:137});
@@ -106,4 +106,27 @@ test('the milestone needs three currently operational fields and an inspired gra
  const classic=createNewCity({mode:'awakening',seed:137});
  delete classic.earthDiscovery;
  assert.match(miracleKnowledgeReason(classic,'fertility'),/признал/);
+});
+
+test('home grain counts the tagged portion at two separate recipients',async()=>{
+ const {harvestNameEvidence}=await import('../causal-facts.js');
+ const {createGame}=await import('../engine.js');
+ const {strictScenario,CAT_DISCOVERY_RULES}=await import('../scenario-profiles.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.earthDiscovery=newEarthDiscovery();
+ const [farmer,courier]=s.citizens;
+ farmer.calling='farmer';
+ const [first,second]=s.buildings.filter(b=>b.type==='house');
+ const field={type:'field',x:12,y:8,level:1};
+ s.buildings.push(field);
+ recordFieldGrain(s,field,farmer,4,5);
+ pickupFieldGrain(field,courier,9,9);
+ acceptFieldGrain(s,courier,5,false,first);
+ assert.equal(s.causalFacts?.harvest,undefined);
+ acceptFieldGrain(s,courier,2,false,first);
+ acceptFieldGrain(s,courier,1,false,first);
+ assert.equal(harvestNameEvidence(s),null);
+ acceptFieldGrain(s,courier,1,false,second);
+ assert.deepEqual(harvestNameEvidence(s)?.map(r=>r.amount),[2,1]);
+ assert.equal(s.earthDiscovery.receipts.length,0);
 });

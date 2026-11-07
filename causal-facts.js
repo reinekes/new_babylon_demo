@@ -87,6 +87,24 @@ export function recordHealingNameEvidence(s,healer,patient){
  trimNameReceipts(care);
 }
 
+export function harvestNameEvidence(s){
+ return distinctCourtyardPair(s.causalFacts?.harvest);
+}
+
+export function recordHarvestNameEvidence(s,field,home,part){
+ if(!isStrictSumer(s)||!part.inspired||home.type!=='house')return;
+ const key=buildingKey(home);
+ const recipient=s.citizens.find(c=>supplyHome(c,{arrived:true})===key);
+ if(!recipient)return;
+ const known=s.causalFacts?.harvest;
+ if(known?.some(f=>f.home===key||f.homeId===home.waterEntityId||f.recipientId===recipient.id))return;
+ const ledger=causalLedger(s),receipts=ledger.harvest??=[];
+ home.waterEntityId??=ledger.nextEntityId++;
+ receipts.push({homeId:home.waterEntityId,home:key,fieldId:field.grainFieldId,field:buildingKey(field),
+  farmerId:part.farmerId,recipientId:recipient.id,amount:part.amount,time:s.simTime});
+ trimNameReceipts(receipts);
+}
+
 export function recordNeighborWaterFact(s,c,home,trip,amount){
  if(trip.station!==null||trip.neighborRecorded||trip.origin!==c.home||trip.target!==buildingKey(home))return;
  if(recordNeighborAid(s,c,home,amount,'neighborWater'))trip.neighborRecorded=true;
@@ -197,6 +215,23 @@ export function validateCausalFacts(s){
     patients.has(fact.patientId)||
     !Number.isFinite(fact.time)||fact.time<previousHealingTime||fact.time>s.simTime)return false;
    patients.add(fact.patientId);previousHealingTime=fact.time;
+  }
+ }
+ const harvest=ledger.harvest;
+ if(harvest!==undefined){
+  if(!Array.isArray(harvest)||!harvest.length||harvest.length>LIMIT||!s.earthDiscovery)return false;
+  const homes=new Set(),addresses=new Set(),recipients=new Set();
+  let previousHarvestTime=0;
+  for(const fact of harvest){
+   if(!fact||Object.keys(fact).length!==8||!entity(fact.homeId)||typeof fact.home!=='string'||!keyPattern.test(fact.home)||
+    !entityMatches(fact.homeId,'house',fact.home)||!id(fact.fieldId)||fact.fieldId>=s.earthDiscovery.nextFieldId||
+    typeof fact.field!=='string'||!keyPattern.test(fact.field)||!citizen(fact.farmerId)||!citizen(fact.recipientId)||
+    homes.has(fact.homeId)||addresses.has(fact.home)||recipients.has(fact.recipientId)||
+    !Number.isFinite(fact.amount)||fact.amount<=0||fact.amount>12||
+    !Number.isFinite(fact.time)||fact.time<previousHarvestTime||fact.time>s.simTime)return false;
+   const field=s.buildings.find(b=>b.grainFieldId===fact.fieldId);
+   if(field&&buildingKey(field)!==fact.field)return false;
+   homes.add(fact.homeId);addresses.add(fact.home);recipients.add(fact.recipientId);previousHarvestTime=fact.time;
   }
  }
  const aidedPairs=new Set();

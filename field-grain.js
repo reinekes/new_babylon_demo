@@ -1,3 +1,4 @@
+import {recordHarvestNameEvidence} from './causal-facts.js';
 import {recordRevelationFact} from './revelation-evidence.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
@@ -14,7 +15,7 @@ export function recordFieldGrain(s,field,farmer,amount,prefix){
  recordRevelationFact(s,'food',farmer,field);
  const previous=q.receipts.find(r=>r.fieldId===field.grainFieldId);
  const inspired=farmer.calling==='farmer';
- if(previous&&(!inspired||previous.inspired))return;
+ if(previous&&(!inspired||previous.inspired&&q.qualifiedAt==null))return;
  field.grainFieldId??=q.nextFieldId++;
  field.grainEvidence={fieldId:field.grainFieldId,farmerId:farmer.id,inspired,prefix,amount};
 }
@@ -36,14 +37,16 @@ export function pickupFieldGrain(field,courier,n,before){
  if(part.amount>EPS)courier.fieldGrain=part;
 }
 
-export function acceptFieldGrain(s,courier,n,qualifies){
+export function acceptFieldGrain(s,courier,n,qualifies,home=null){
  const mark=courier.fieldGrain;
  if(!mark||n<=EPS)return;
  const part=takeEvidence(mark,n);
  if(mark.amount<=EPS)delete courier.fieldGrain;
- if(part.amount<=EPS||!qualifies)return;
+ if(part.amount<=EPS||!qualifies&&!home)return;
  const q=s.earthDiscovery,field=s.buildings.find(b=>b.grainFieldId===mark.fieldId&&isOperational(b));
  if(!q||!field)return;
+ if(home)recordHarvestNameEvidence(s,field,home,part);
+ if(!qualifies)return;
  const key=buildingKey(field),previous=q.receipts.findIndex(r=>r.field===key);
  if(previous>=0){
   const prior=q.receipts[previous];

@@ -393,7 +393,7 @@ function deposit(s,c,ctx){
     gift=moveGiftFood(c,'giftCargo',receiver,home?'giftHome':local?'giftInput':'giftStock',accepted,amount,remaining-accepted);
    }
    if(local&&destination.targetKind==='input')recordAbundanceHome(s,site,c,ctx.buildings.get(destination.source),accepted,gift);
-   acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local);
+   acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local,local&&destination.targetKind==='input'&&site.type==='house'?site:null);
    if(c.fishCargo){
     const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
     if(!local)appendFish(store,'fishStock',parts,(store?.stock?.food||0)-accepted);

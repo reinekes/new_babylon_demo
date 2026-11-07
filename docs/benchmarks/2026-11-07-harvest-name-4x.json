@@ -1,0 +1,33 @@
+{
+  "buildings": 130,
+  "population": 200,
+  "initialPopulation": 200,
+  "evidence": [
+    {
+      "homeId": 1,
+      "home": "8,8",
+      "fieldId": 1,
+      "field": "9,7",
+      "farmerId": 0,
+      "recipientId": 0,
+      "amount": 6,
+      "time": 9.5
+    },
+    {
+      "homeId": 2,
+      "home": "9,9",
+      "fieldId": 2,
+      "field": "10,7",
+      "farmerId": 0,
+      "recipientId": 8,
+      "amount": 6,
+      "time": 11.375
+    }
+  ],
+  "loadedCargo": true,
+  "reloadByteIdentical": true,
+  "steps": 92,
+  "cpuMedianMs": 1.9478750000000105,
+  "cpuP95Ms": 5.550917000000027,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

@@ -1,0 +1,20 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Actual direct deliveries of prepared tagged grain at 4x. Opened pantheon from one and two receipts.",
+  "runs": [
+    {
+      "id": "harvestname",
+      "view": "2d",
+      "url": "?id=harvestname&view=2d&earned",
+      "mode": "2d",
+      "result": "PASS 2d no name for one receipt, name and two evidence lines for two"
+    },
+    {
+      "id": "harvestname",
+      "view": "3d",
+      "url": "?id=harvestname&view=3d&earned",
+      "mode": "3d",
+      "result": "PASS 3d no name for one receipt, name and two evidence lines for two"
+    }
+  ]
+}
