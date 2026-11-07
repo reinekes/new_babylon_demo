@@ -79,7 +79,7 @@ export function createBlessingPresentation(root,{cue,focus,onOpening}={}){
    }
    const home=courtyard(s);
    focusButton.hidden=!focus||!home;
-   const present=home&&phase.id!=='mat'?s.citizens.filter(c=>c.home===s.blessingDiscovery.cup.home&&!c.fireShelter&&
+   const present=home&&phase.id!=='mat'?s.citizens.filter(c=>c.home===s.blessingDiscovery.cup.home&&
     Math.hypot(c.x-home.x,c.y-home.y)<=1.4&&freeCeremonyGuest(c,s.simTime)).slice(0,shadows.length):[];
    const names=present.length?`Во дворе · ${present.map(c=>displayName(s,c)).join(', ')}`:'';
    if(guests.textContent!==names)guests.textContent=names;

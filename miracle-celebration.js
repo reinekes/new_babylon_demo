@@ -70,8 +70,8 @@ export function startInannaMeeting(s){
 }
 export function freeCeremonyGuest(c,time){
  return c.age>=16&&c.health>=60&&['home','resting'].includes(c.phase)&&
-  !c.recovering&&!c.floodShelter&&!(c.diningUntil>time)&&!c.pendingRole&&!c.guardPost&&!c.site&&!c.clinic&&!c.school&&
-  !c.waterTrip&&!c.pantryTrip&&!c.craftSite&&!c.seedField&&c.clothingTarget===undefined&&
+  !c.recovering&&!c.floodShelter&&!c.fireShelter&&!(c.diningUntil>time)&&!c.pendingRole&&!c.guardPost&&!c.site&&!c.clinic&&!c.school&&
+  !c.waterTrip&&!c.pantryTrip&&!c.craftSite&&!c.seedField&&!c.memorialMove&&!(c.clothingLoad>0)&&c.clothingTarget===undefined&&
   !c.tradeJob&&!c.saleJob&&!c.districtJob&&
   !Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
 }
