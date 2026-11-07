@@ -51,3 +51,25 @@ test('only free adults already at the original courtyard appear and busy residen
  assert.equal(list.hidden,true);
  window.close();
 });
+
+test('the courtyard camera moves only on request and checks the current house identity',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const root=window.document.querySelector('main'),moves=[];
+ const home={type:'house',x:4,y:5,waterEntityId:7};
+ const s={buildings:[home],citizens:[],blessingDiscovery:{qualifiedAt:null}};
+ const scene=createBlessingPresentation(root,{focus:point=>moves.push(point)});
+ scene.reset(s);
+ s.blessingDiscovery={qualifiedAt:1,cup:{home:'4,5',homeId:7}};
+ scene.tick(s,250);
+ const button=root.querySelector('[data-blessing-focus]');
+ assert.equal(button.hidden,false);
+ assert.deepEqual(moves,[]);
+ button.click();
+ assert.deepEqual(moves,[home]);
+ s.buildings[0]={...home,waterEntityId:8};
+ button.click();
+ assert.deepEqual(moves,[home]);
+ scene.tick(s,250);
+ assert.equal(button.hidden,true);
+ window.close();
+});

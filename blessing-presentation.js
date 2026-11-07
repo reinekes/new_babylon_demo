@@ -9,7 +9,7 @@ const phases=[
  {at:22000,id:'neighbors',caption:'Соседи вспоминают тех, кто помог в трудный день. Дар открыт.',cue:'bow'}
 ];
 
-export function createBlessingPresentation(root,{cue}={}){
+export function createBlessingPresentation(root,{cue,focus}={}){
  const panel=root.ownerDocument.createElement('section');
  panel.className='earth-scene blessing-scene';
  panel.hidden=true;
@@ -24,14 +24,21 @@ export function createBlessingPresentation(root,{cue}={}){
    <path class="blessing-cup" d="M50 52h20q-2 12-10 12t-10-12Z"/>
   </svg>
   <div><small class="earth-scene-step">Открытие дара</small><h2>Одно место за столом</h2><p role="status"></p><small data-blessing-guests hidden></small></div>
-  <button type="button">Пропустить</button>
+  <div class="blessing-scene-actions"><button type="button">Пропустить</button><button type="button" data-blessing-focus hidden>К чаше</button></div>
  </div>`;
  root.append(panel);
  const caption=panel.querySelector('p'),guests=panel.querySelector('[data-blessing-guests]'),shadows=panel.querySelectorAll('.blessing-shadow');
- let seen=null,pending=false,elapsed=null,phase=null,stopCue;
+ const focusButton=panel.querySelector('[data-blessing-focus]');
+ let seen=null,pending=false,elapsed=null,phase=null,stopCue,city;
  function silence(){stopCue?.();stopCue=null;}
- function skip(){silence();elapsed=null;phase=null;panel.hidden=true;}
+ function skip(){silence();elapsed=null;phase=null;city=null;panel.hidden=true;}
  panel.querySelector('button').onclick=skip;
+ const courtyard=s=>s?.buildings?.find(building=>blessingCupAt(s,building));
+ focusButton.onclick=()=>{
+  if(panel.hidden)return;
+  const home=courtyard(city);
+  if(home)focus?.(home);
+ };
  return {
   get active(){return elapsed!==null;},
   skip,
@@ -43,15 +50,16 @@ export function createBlessingPresentation(root,{cue}={}){
    if(elapsed===null&&pending){elapsed=0;pending=false;}
    if(elapsed===null)return;
    if(elapsed>=28000){skip();return;}
-   panel.hidden=false;
+   panel.hidden=false;city=s;
    const next=phases.findLast(item=>item.at<=elapsed);
    if(next!==phase){
     phase=next;
     panel.dataset.phase=phase.id;caption.textContent=phase.caption;
     silence();if(phase.cue)stopCue=cue?.(phase.cue);
    }
-   const home=phase.id!=='mat'&&s.buildings?.find(building=>blessingCupAt(s,building));
-   const present=home?s.citizens.filter(c=>c.home===s.blessingDiscovery.cup.home&&!c.fireShelter&&
+   const home=courtyard(s);
+   focusButton.hidden=!focus||!home;
+   const present=home&&phase.id!=='mat'?s.citizens.filter(c=>c.home===s.blessingDiscovery.cup.home&&!c.fireShelter&&
     Math.hypot(c.x-home.x,c.y-home.y)<=1.4&&freeCeremonyGuest(c,s.simTime)).slice(0,shadows.length):[];
    const names=present.length?`Во дворе · ${present.map(c=>displayName(s,c)).join(', ')}`:'';
    if(guests.textContent!==names)guests.textContent=names;

@@ -234,7 +234,9 @@ const arrivalPresentation=createArrivalPresentation($('city').parentNode,{
  },
  cue:(_kind,phase)=>cityAudio.cueEarth(['breath','bow','sheaf','breath'][phase])
 });
-const blessingPresentation=createBlessingPresentation($('city').parentNode,{cue:phase=>cityAudio.cueEarth(phase)});
+const blessingPresentation=createBlessingPresentation($('city').parentNode,{
+ cue:phase=>cityAudio.cueEarth(phase),focus:home=>renderer.focusOn(home.x,home.y)
+});
 blessingPresentation.reset(state);
 const peacePresentation=createPeacePresentation($('city').parentNode,{
  ready:s=>!!s.peaceDiscovery&&!peaceKnowledgeReason(s),

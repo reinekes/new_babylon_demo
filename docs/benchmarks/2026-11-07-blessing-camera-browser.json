@@ -1,0 +1,16 @@
+[
+  {
+    "id": "bless",
+    "view": "2d",
+    "url": "?id=bless&view=2d",
+    "mode": "2d",
+    "result": "PASS {\"phases\":{\"mat\":0,\"cup\":1,\"light\":1,\"neighbors\":3},\"saved\":true,\"qualified\":89.625,\"prop\":\"cup on mat\",\"guests\":[\"Во дворе · Энлил 2, Ишме 2\"],\"cameraTarget\":\"10,6\",\"viewport\":[390,640]}"
+  },
+  {
+    "id": "bless",
+    "view": "3d",
+    "url": "?id=bless&view=3d",
+    "mode": "3d",
+    "result": "PASS {\"phases\":{\"mat\":0,\"cup\":1,\"light\":1,\"neighbors\":3},\"saved\":true,\"qualified\":89.625,\"prop\":\"cup on mat\",\"guests\":[\"Во дворе · Энлил 2, Ишме 2\"],\"cameraTarget\":\"10,6\",\"viewport\":[390,640]}"
+  }
+]

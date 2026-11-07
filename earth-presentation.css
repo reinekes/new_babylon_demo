@@ -48,3 +48,5 @@
 .blessing-scene-card [data-blessing-guests] { display:block;margin-top:.35rem;color:#ebd0a2; }
 .blessing-scene-card [data-blessing-guests][hidden] { display:none; }
 @media (prefers-reduced-motion:reduce) { .blessing-shadow { transition:none; } }
+.blessing-scene-actions { display:grid;gap:.4rem;margin-left:auto;flex:none; }
+.blessing-scene-actions button { width:100%;margin-left:0; }
