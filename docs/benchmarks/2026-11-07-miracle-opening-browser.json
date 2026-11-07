@@ -1,0 +1,221 @@
+{
+  "date": "2026-11-07",
+  "testedCommit": "6286226",
+  "browser": "Headless Chrome 157",
+  "runsPassed": 30,
+  "scenesShownAndSkipped": 12,
+  "previouslyEarnedMilestonesRestoredWithoutOpening": 18,
+  "method": "Load prepared saves through the real app. Freeze simulation with a zero-delta frame to isolate presentation. For openings verify only the expected seen flag changes, skip and reload in the opposite renderer, then compare saved data byte for byte. For already earned milestones verify reload stays quiet in both directions.",
+  "runs": [
+    {
+      "id": "arrival",
+      "view": "2d",
+      "url": "?id=arrival&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS arrival 2d→3d one-opening"
+    },
+    {
+      "id": "arrival",
+      "view": "3d",
+      "url": "?id=arrival&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS arrival 3d→2d one-opening"
+    },
+    {
+      "id": "peace",
+      "view": "2d",
+      "url": "?id=peace&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS peace 2d→3d one-opening"
+    },
+    {
+      "id": "peace",
+      "view": "3d",
+      "url": "?id=peace&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS peace 3d→2d one-opening"
+    },
+    {
+      "id": "stars",
+      "view": "2d",
+      "url": "?id=stars&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS stars 2d→3d one-opening"
+    },
+    {
+      "id": "stars",
+      "view": "3d",
+      "url": "?id=stars&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS stars 3d→2d one-opening"
+    },
+    {
+      "id": "depth",
+      "view": "2d",
+      "url": "?id=depth&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS depth 2d→3d one-opening"
+    },
+    {
+      "id": "depth",
+      "view": "3d",
+      "url": "?id=depth&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS depth 3d→2d one-opening"
+    },
+    {
+      "id": "land",
+      "view": "2d",
+      "url": "?id=land&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS land 2d→3d one-opening"
+    },
+    {
+      "id": "land",
+      "view": "3d",
+      "url": "?id=land&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS land 3d→2d one-opening"
+    },
+    {
+      "id": "inanna",
+      "view": "2d",
+      "url": "?id=inanna&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS inanna 2d→3d one-opening"
+    },
+    {
+      "id": "inanna",
+      "view": "3d",
+      "url": "?id=inanna&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS inanna 3d→2d one-opening"
+    },
+    {
+      "id": "rain",
+      "view": "2d",
+      "url": "?id=rain&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS rain 2d→3d restored-quiet"
+    },
+    {
+      "id": "rain",
+      "view": "3d",
+      "url": "?id=rain&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS rain 3d→2d restored-quiet"
+    },
+    {
+      "id": "earth",
+      "view": "2d",
+      "url": "?id=earth&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS earth 2d→3d restored-quiet"
+    },
+    {
+      "id": "earth",
+      "view": "3d",
+      "url": "?id=earth&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS earth 3d→2d restored-quiet"
+    },
+    {
+      "id": "catch",
+      "view": "2d",
+      "url": "?id=catch&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS catch 2d→3d restored-quiet"
+    },
+    {
+      "id": "catch",
+      "view": "3d",
+      "url": "?id=catch&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS catch 3d→2d restored-quiet"
+    },
+    {
+      "id": "creator",
+      "view": "2d",
+      "url": "?id=creator&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS creator 2d→3d restored-quiet"
+    },
+    {
+      "id": "creator",
+      "view": "3d",
+      "url": "?id=creator&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS creator 3d→2d restored-quiet"
+    },
+    {
+      "id": "wind",
+      "view": "2d",
+      "url": "?id=wind&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS wind 2d→3d restored-quiet"
+    },
+    {
+      "id": "wind",
+      "view": "3d",
+      "url": "?id=wind&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS wind 3d→2d restored-quiet"
+    },
+    {
+      "id": "abundance",
+      "view": "2d",
+      "url": "?id=abundance&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS abundance 2d→3d restored-quiet"
+    },
+    {
+      "id": "abundance",
+      "view": "3d",
+      "url": "?id=abundance&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS abundance 3d→2d restored-quiet"
+    },
+    {
+      "id": "sunlight",
+      "view": "2d",
+      "url": "?id=sunlight&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS sunlight 2d→3d restored-quiet"
+    },
+    {
+      "id": "sunlight",
+      "view": "3d",
+      "url": "?id=sunlight&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS sunlight 3d→2d restored-quiet"
+    },
+    {
+      "id": "revelation",
+      "view": "2d",
+      "url": "?id=revelation&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS revelation 2d→3d restored-quiet"
+    },
+    {
+      "id": "revelation",
+      "view": "3d",
+      "url": "?id=revelation&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS revelation 3d→2d restored-quiet"
+    },
+    {
+      "id": "shaping",
+      "view": "2d",
+      "url": "?id=shaping&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS shaping 2d→3d restored-quiet"
+    },
+    {
+      "id": "shaping",
+      "view": "3d",
+      "url": "?id=shaping&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS shaping 3d→2d restored-quiet"
+    }
+  ]
+}
