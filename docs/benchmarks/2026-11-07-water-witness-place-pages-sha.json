@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T18:18:03.467921+00:00",
+  "commit": "de23841e32d83404b67e1b9e01c199711cb45b2d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ad175687da0ae66e188907a5804c2e76afc902626eae0a97795da9a93af02307",
+      "actual": "ad175687da0ae66e188907a5804c2e76afc902626eae0a97795da9a93af02307",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "e59129e92eb017946c54d9eed0efe51bd202e038ad5e200c5e6ed38d743694e0",
+      "actual": "e59129e92eb017946c54d9eed0efe51bd202e038ad5e200c5e6ed38d743694e0",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "b45b98ccf4aa6caad40996690c4643b7ebaade893c8c8d0269a6da545859dccc",
+      "actual": "b45b98ccf4aa6caad40996690c4643b7ebaade893c8c8d0269a6da545859dccc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-witness-place-4x.json",
+      "status": 200,
+      "expected": "cf276e9bd3f4d93ef7e7e57d1d9d84b9001e6c5a4d6c136e77c30d9ac12dc8ee",
+      "actual": "cf276e9bd3f4d93ef7e7e57d1d9d84b9001e6c5a4d6c136e77c30d9ac12dc8ee",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-witness-place-browser.json",
+      "status": 200,
+      "expected": "08e85599d497ebc5c5883e8585a49df2ad1ca18bdd26d66565f607caa5c1f319",
+      "actual": "08e85599d497ebc5c5883e8585a49df2ad1ca18bdd26d66565f607caa5c1f319",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ab51c28db7ca15edc7f088e6e06d6379e51e6a241d7372dff851aa2e77e6ba68",
+      "actual": "ab51c28db7ca15edc7f088e6e06d6379e51e6a241d7372dff851aa2e77e6ba68",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "07b3ef8e965721bccc73af2f1b69d7df51f60b75869b4d0c44f7239f218bab58",
+      "actual": "07b3ef8e965721bccc73af2f1b69d7df51f60b75869b4d0c44f7239f218bab58",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
