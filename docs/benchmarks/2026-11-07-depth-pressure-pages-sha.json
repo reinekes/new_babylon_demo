@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-07T00:25:27.154848+00:00",
+  "commit": "3b5fd483121764c4b7c8a3765373147b1e465e84",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9f206e1fdae7268b8da7181cbc75a1e430702b3ce9a2a3f2390208e2722365d9",
+      "actual": "9f206e1fdae7268b8da7181cbc75a1e430702b3ce9a2a3f2390208e2722365d9",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "2a731260314e2d899d4fc6c3271b384f465d21591f11c323426c4863aec74f91",
+      "actual": "2a731260314e2d899d4fc6c3271b384f465d21591f11c323426c4863aec74f91",
+      "match": true
+    },
+    {
+      "path": "depth-supply.js",
+      "status": 200,
+      "expected": "76eac0dbb1c032820ea9ad2dd7effb92359ba5889cf18447c9a04bc3fc373954",
+      "actual": "76eac0dbb1c032820ea9ad2dd7effb92359ba5889cf18447c9a04bc3fc373954",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "e6343ca452bd3d583ca27ce4d42178904d750cf8be5f11fa73caade0361551c4",
+      "actual": "e6343ca452bd3d583ca27ce4d42178904d750cf8be5f11fa73caade0361551c4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-depth-pressure-4x.json",
+      "status": 200,
+      "expected": "b743933da0894a75130192edd2a905d860205dbdaac7813f13c9f710b4a8ab6f",
+      "actual": "b743933da0894a75130192edd2a905d860205dbdaac7813f13c9f710b4a8ab6f",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "b3d2b7d9e452728d44f51216dcd1be1830f096c2394cb59c6d4399d3601bb47c",
+      "actual": "b3d2b7d9e452728d44f51216dcd1be1830f096c2394cb59c6d4399d3601bb47c",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9b836a9e2ddf38b398b518cf6f66e6a96b1041818939a9cc8cc97e7702d9f597",
+      "actual": "9b836a9e2ddf38b398b518cf6f66e6a96b1041818939a9cc8cc97e7702d9f597",
+      "match": true
+    },
+    {
+      "path": "irrigation.js",
+      "status": 200,
+      "expected": "55f0efdcb38e7ff601c4c9423e86567bfc6cc5f76c1e3b93b52450ca7c5aed7e",
+      "actual": "55f0efdcb38e7ff601c4c9423e86567bfc6cc5f76c1e3b93b52450ca7c5aed7e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "5ccddf827ebba61386e7e3970fcaea2cc34402f2ee4c104a0cf5150690abfd66",
+      "actual": "5ccddf827ebba61386e7e3970fcaea2cc34402f2ee4c104a0cf5150690abfd66",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "d4dbd9e5b09d58f063776a477afcf5e1e4ea3ba82a5538cb64b521951bf8bb5e",
+      "actual": "d4dbd9e5b09d58f063776a477afcf5e1e4ea3ba82a5538cb64b521951bf8bb5e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "f1282efcaf35487c052d275b6cfe81436691415bc895b391f1ec7b7d4bb84a59",
+      "actual": "f1282efcaf35487c052d275b6cfe81436691415bc895b391f1ec7b7d4bb84a59",
+      "match": true
+    },
+    {
+      "path": "tests/canal-flow.test.js",
+      "status": 200,
+      "expected": "163b84ca23934c23f282d2e59c99c90c695c4ac589d33ab8eb7facbfc4eca265",
+      "actual": "163b84ca23934c23f282d2e59c99c90c695c4ac589d33ab8eb7facbfc4eca265",
+      "match": true
+    },
+    {
+      "path": "tests/ui-manual-gathering.test.js",
+      "status": 200,
+      "expected": "7a7257af62bc40602b0c1fb56c0e944d2a5e9563e490dd2191c4ae94c78962e8",
+      "actual": "7a7257af62bc40602b0c1fb56c0e944d2a5e9563e490dd2191c4ae94c78962e8",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
