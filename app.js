@@ -237,6 +237,7 @@ const arrivalPresentation=createArrivalPresentation($('city').parentNode,{
  cue:(_kind,phase)=>cityAudio.cueEarth(['breath','bow','sheaf','breath'][phase])
 });
 const blessingPresentation=createBlessingPresentation($('city').parentNode,{
+ approachNetwork:networkFor,
  cue:phase=>cityAudio.cueEarth(phase),focus:home=>renderer.focusOn(home.x,home.y),
  onOpening:s=>{if(s.blessingDiscovery?.openingPending){delete s.blessingDiscovery.openingPending;save();}}
 });
@@ -1485,7 +1486,7 @@ function frame(now){
  creatorPresentation.tick(state,dt,{allowOpening:canShowOpening(creatorPresentation)&&!earthPresentation.active&&!catchPresentation.active,
   visible:storyVisible&&!earthPresentation.active&&!catchPresentation.active&&!ceremonyActive(state)});
  if(!seasonJumping&&now-lastUI>350){update();lastUI=now;}
- renderer.inspected=inspected;renderer.focusCitizenId=inspectedPerson;cityAudio.tick(state,presentationPaused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,rainReaction:rainPresentation.reaction,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);
+ renderer.inspected=inspected;renderer.focusCitizenId=inspectedPerson;cityAudio.tick(state,presentationPaused,cityAudioListener(renderer));renderer.draw(state,photo.active?null:selection,now,{paused:presentationPaused,rainReaction:rainPresentation.reaction,blessingApproach:presentationPaused?null:blessingPresentation.approach,speed:relicControlActive(state)?1:speed});if(renderer.ctx)drawRelic2D(renderer,state);
  const windVisible=storyVisible&&!earthPresentation.active&&!catchPresentation.active&&!creatorPresentation.active&&!ceremonyActive(state);
  windPresentation.tick(state,dt,{allowOpening:canShowOpening(windPresentation)&&windVisible,visible:windVisible});
  const abundanceVisible=windVisible&&!windPresentation.active;

@@ -1,3 +1,4 @@
+import {showBlessingApproach} from './blessing-presentation.js';
 import {blessingCupAt} from './blessing-discovery.js';
 import {showRainObserver} from './rain-presentation.js';
 import {floodMapView} from './river-flood.js';
@@ -337,7 +338,7 @@ export class Renderer{
  ceremonyCitizens(s,dt,{paused=false,speed=1}={}){
   if(this.presentedCeremonyState!==s){this.presentedCeremonyState=s;this.ceremonyPositions=new Map();}
   const records=this.ceremonyPositions,seen=new Set();let network;
-  const miracle=miracleCelebrationView(s),overrides=new Map(miracle?.participants.map(p=>[p.id,p])||[]),source=miracle?s.citizens:showRainObserver(visibleCitizens(s),s,this.rainReaction);
+  const miracle=miracleCelebrationView(s),overrides=new Map(miracle?.participants.map(p=>[p.id,p])||[]),source=miracle?s.citizens:showBlessingApproach(showRainObserver(visibleCitizens(s),s,this.rainReaction),s,this.blessingApproach);
   const people=source.map(original=>{
    const participant=overrides.get(original.id),person=participant?{...original,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,eventContact:null,festivalContact:null,miracleContact:participant}:original;
    seen.add(person.id);const contact=person.eventContact||person.festivalContact,target={x:contact?.x??person.x,y:contact?.y??person.y},eventContact=!!person.eventContact;
@@ -353,7 +354,7 @@ export class Renderer{
   for(const id of records.keys())if(!seen.has(id))records.delete(id);
   return people;
  }
- draw(s,selection,time=performance.now(),{paused=false,speed=1,rainReaction=null}={}){this.state=s;this.rainReaction=rainReaction;this.layout();
+ draw(s,selection,time=performance.now(),{paused=false,speed=1,rainReaction=null,blessingApproach=null}={}){this.state=s;this.rainReaction=rainReaction;this.blessingApproach=blessingApproach;this.layout();
  const dt=this.visualLast===null?0:Math.min(.1,Math.max(0,(time-this.visualLast)/1000));speed=Math.max(0,Number.isFinite(speed)?speed:1);
  if(this.visualLast!==null&&!(typeof document!=='undefined'&&document.hidden))this.ambient+=Math.min(.25,Math.max(0,(time-this.visualLast)/1000));
  this.visualLast=time;

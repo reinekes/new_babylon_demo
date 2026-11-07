@@ -1,3 +1,4 @@
+import {showBlessingApproach} from '../blessing-presentation.js';
 import {showRainObserver} from '../rain-presentation.js';
 import {createActorShadowFilter} from './shadow-casters.js';
 import {residentPoseInterval,residentPoseSlot} from './resident-pose-schedule.js';
@@ -586,14 +587,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Actor ownership/disposal remains with remove(a), including never-woken rigs.
   a.sleepingRig=null;
  }
- function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null,rainReaction=null}={}){
+ function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null,rainReaction=null,blessingApproach=null}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   const replacedState=presentedState!==state;presentedState=state;
   if(replacedState)for(const a of people.values())resetResidentPresentation(a);
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused){poseTime+=dt*speed;poseClock+=dt;}
-  const frame=actorViewFrame(state),visible=showRainObserver(frame.citizens,state,rainReaction),positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
+  const frame=actorViewFrame(state),visible=showBlessingApproach(showRainObserver(frame.citizens,state,rainReaction),state,blessingApproach),positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   const teams=ambient?.hasPloughTeams?ploughTeams(state,visible):[];
   for(const team of teams)positions.set(team.driverId,{...team.driver,plough:team});
   // Match residentAppearance's first array.find, including falsy-ID fallback.

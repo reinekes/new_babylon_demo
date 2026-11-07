@@ -114,3 +114,27 @@ test('the cast reports the committed outcome, skips and does not replay on reloa
  assert.deepEqual(city,{population:12,happiness:100});
  window.close();
 });
+
+test('the courtyard approach moves only free guests and clears on skip',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const home={type:'house',x:4,y:5,waterEntityId:7};
+ const guest={id:1,age:30,health:100,phase:'resting',home:'4,5',x:4,y:5.5};
+ const s={simTime:1,buildings:[home],citizens:[guest],blessingDiscovery:{qualifiedAt:1,cup:{home:'4,5',homeId:7},openingPending:true}};
+ const network={ports:[{building:home,x:4,y:5.5}]};
+ const scene=createBlessingPresentation(window.document.querySelector('main'),{approachNetwork:()=>network});
+ scene.reset(s);
+ const raw=JSON.stringify(s);
+ scene.tick(s,3500);
+ scene.tick(s,100);
+ assert.equal(scene.approach[0].id,1);
+ assert.ok(Math.abs(scene.approach[0].x-4)>.1&&Math.abs(scene.approach[0].x-4)<.34);
+ assert.equal(scene.approach[0].walking,true);
+ guest.clothingLoad=1;
+ scene.tick(s,100);
+ assert.deepEqual(scene.approach,[]);
+ delete guest.clothingLoad;
+ scene.skip();
+ assert.deepEqual(scene.approach,[]);
+ assert.equal(JSON.stringify(s),raw);
+ window.close();
+});
