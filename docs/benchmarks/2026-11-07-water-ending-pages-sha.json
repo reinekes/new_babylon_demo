@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-07T07:08:09.709428+00:00",
+  "commit": "e17b491b2b04f4abba5b9c83d0ab94a5ecd73774",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "37c63a3f3455854fb6d7ef10941adfee880783f0b81bff077ba175f8e065b769",
+      "actual": "37c63a3f3455854fb6d7ef10941adfee880783f0b81bff077ba175f8e065b769",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "46ce52fe57fcdcd27dec581546b2657e4e18252310d94607194428daba801e83",
+      "actual": "46ce52fe57fcdcd27dec581546b2657e4e18252310d94607194428daba801e83",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "fc58c7e15704b783f8bb1768df14e5b6fce40a6911a4596df6afbcb9e1aaa766",
+      "actual": "fc58c7e15704b783f8bb1768df14e5b6fce40a6911a4596df6afbcb9e1aaa766",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-ending-4x.json",
+      "status": 200,
+      "expected": "53901862a03c2545d2b8e9b7d5e55c36b0b1f0b02edf6d90036389b2a08d42e2",
+      "actual": "53901862a03c2545d2b8e9b7d5e55c36b0b1f0b02edf6d90036389b2a08d42e2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-ending-browser.json",
+      "status": 200,
+      "expected": "21169abee99d36e7a83b6222e777313752a8e457d912ede0be306bcfb2532310",
+      "actual": "21169abee99d36e7a83b6222e777313752a8e457d912ede0be306bcfb2532310",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "f485bb7b9a63a9ff4b4e165c75857212d173752fcf6fa244ac5169a8f9319ab9",
+      "actual": "f485bb7b9a63a9ff4b4e165c75857212d173752fcf6fa244ac5169a8f9319ab9",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0e7a4f0db7d71dd5d95fcfdd5a4daaf400c0bb05b2909a990f89d7ff9bdafaa4",
+      "actual": "0e7a4f0db7d71dd5d95fcfdd5a4daaf400c0bb05b2909a990f89d7ff9bdafaa4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "424d2dd09b14559a9234b8a1bbbe525340f3f76526d183b9fb9305f6872f2047",
+      "actual": "424d2dd09b14559a9234b8a1bbbe525340f3f76526d183b9fb9305f6872f2047",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1d26fdf575a20498913d143631145fd06f09e9c62384dbeaf897e7a899605e8e",
+      "actual": "1d26fdf575a20498913d143631145fd06f09e9c62384dbeaf897e7a899605e8e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "2d832af7961ff7cf5fa6ac5ad52394c3a26ed60a7bcbefb395ef62336cdc9ce0",
+      "actual": "2d832af7961ff7cf5fa6ac5ad52394c3a26ed60a7bcbefb395ef62336cdc9ce0",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "e598c9b6ed0c98a923edf435a2cbf08958c776ff57e818c7bfb3d3856b1450e2",
+      "actual": "e598c9b6ed0c98a923edf435a2cbf08958c776ff57e818c7bfb3d3856b1450e2",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "4bcef2c2e9bf7c272a2a4ba6c89b7e9ea8dc995192ff00c8c2e576ba610bfd00",
+      "actual": "4bcef2c2e9bf7c272a2a4ba6c89b7e9ea8dc995192ff00c8c2e576ba610bfd00",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
