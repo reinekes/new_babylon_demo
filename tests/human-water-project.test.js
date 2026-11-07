@@ -230,3 +230,24 @@ test('a shared dream cannot start construction for a replacement courtyard',()=>
  old.simTime=old.waterProjectDream.readyAt;
  assert.ok(acceptWaterProjectDream(old).ok);
 });
+
+test('a water project and its paid dream refuse before spending when materials are across the river',async()=>{
+ const {stockStores,syncInventory}=await import('../inventory.js');
+ const {terrain}=await import('../engine.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const home=s.buildings.findLast(b=>b.type==='house'),requester=s.citizens.find(c=>c.home===buildingKey(home));
+ const [organizer,helper]=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ home.water=0;
+ for(const c of [organizer,helper])assert.ok(setCitizenRole(s,c.id,'builder').ok);
+ s.resources.faith=10;
+ const local=stockStores(s)[0],wood=local.stock.wood;
+ assert.ok(wood>=4);
+ assert.notEqual(terrain(24,7,s),'water');
+ local.stock.wood=0;
+ s.buildings.push({type:'granary',x:24,y:7,level:1,stock:{wood}});
+ syncInventory(s);
+ const before=encode(s),args=[s,organizer.id,requester.id,12,7,[helper.id]];
+ assert.match(waterProjectProposal(...args).reason,/доступных складах.*дерево/i);
+ assert.match(sendWaterProjectDream(...args).reason,/доступных складах.*дерево/i);
+ assert.equal(encode(s),before);
+});

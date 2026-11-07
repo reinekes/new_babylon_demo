@@ -1,7 +1,7 @@
 import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
 import {bindWaterProject,ensureHouseEntityId,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
-import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
+import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
 import {canLeadConstruction,isAwakening} from './godhood.js';
@@ -113,9 +113,13 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  const component=key=>network.components.get(ports.get(key)),group=component(buildingKey(site));
  if(group===undefined||component(buildingKey(home))!==group||component(organizer.home)!==group)return refuse('Нет прохода между водозабором, двором и организатором');
  if(participants.some(c=>component(c.home)!==group))return refuse('Помощник не может пройти от своего двора к водозабору');
- const eligibleStores=new Set(stockStores(s).filter(b=>component(buildingKey(b))===group).map(buildingKey));
- if(!eligibleStores.size)return refuse('На этом берегу нет доступного склада');
- return {ok:true,key:buildingKey(site),eligibleStores,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime,...participantIds.length?{participantIds:[...participantIds]}:{}},cost:BUILDINGS[projectType]};
+ const stores=stockStores(s).filter(b=>component(buildingKey(b))===group);
+ if(!stores.length)return refuse('На этом берегу нет доступного склада');
+ const cost=BUILDINGS[projectType];
+ const missing=MATERIALS.filter(k=>cost[k]>0&&stores.reduce((sum,b)=>sum+(b.stock?.[k]||0),0)<cost[k]);
+ if(missing.length)return refuse(`На доступных складах не хватает: ${missing.map(k=>RESOURCE_NAMES[k]).join(', ')}`);
+ const eligibleStores=new Set(stores.map(buildingKey));
+ return {ok:true,key:buildingKey(site),eligibleStores,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime,...participantIds.length?{participantIds:[...participantIds]}:{}},cost};
 }
 
 export function approveWaterProject(s,organizerId,requesterId,x,y,participantIds=[]){
