@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-07T02:35:41.634467+00:00",
+  "commit": "e4f80bc7a74a3c30166d859a7371af39c7d5c12e",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "20973ef47e85084ab58223a78e8aa577a82f2f5caea699e8ffe624cae081a331",
+      "actual": "20973ef47e85084ab58223a78e8aa577a82f2f5caea699e8ffe624cae081a331",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "a3d675b56ea0531262e77b8e4eddcddcc14060ef5bf152725de33dacc6d702e3",
+      "actual": "a3d675b56ea0531262e77b8e4eddcddcc14060ef5bf152725de33dacc6d702e3",
+      "match": true
+    },
+    {
+      "path": "building-presentation.js",
+      "status": 200,
+      "expected": "134e25051778750b69a891e93c273b77ca36560d13090bcefe3a5acad02e6439",
+      "actual": "134e25051778750b69a891e93c273b77ca36560d13090bcefe3a5acad02e6439",
+      "match": true
+    },
+    {
+      "path": "ceremony-time.js",
+      "status": 200,
+      "expected": "6303af4b43bf9e32f00656f868fc3624f37df5fae4d98e130d3c7a5c8b8d2170",
+      "actual": "6303af4b43bf9e32f00656f868fc3624f37df5fae4d98e130d3c7a5c8b8d2170",
+      "match": true
+    },
+    {
+      "path": "docs/MIRACLES_AWAKENING_AND_VISUALS_2026-11-02.md",
+      "status": 200,
+      "expected": "5d9bcd813f91f1c83d966095b456a2e128a9947a9ba9839be7f422e58d035a5c",
+      "actual": "5d9bcd813f91f1c83d966095b456a2e128a9947a9ba9839be7f422e58d035a5c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-inanna-meeting-4x.json",
+      "status": 200,
+      "expected": "90b458f9a2552558b60653194df4dd2528d43943ef2875061703219511929e6a",
+      "actual": "90b458f9a2552558b60653194df4dd2528d43943ef2875061703219511929e6a",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "6ecef6293491b3f8bc5fd55b9841b363ff946c018cd9ba28693730e653b17d58",
+      "actual": "6ecef6293491b3f8bc5fd55b9841b363ff946c018cd9ba28693730e653b17d58",
+      "match": true
+    },
+    {
+      "path": "miracle-celebration.js",
+      "status": 200,
+      "expected": "fabe36085732b92d493223776f5f2cd0c00439473d5a6b1531ea7e696bbf10e1",
+      "actual": "fabe36085732b92d493223776f5f2cd0c00439473d5a6b1531ea7e696bbf10e1",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c8b9c364cb685ccc64378c72be4dda5ad664744432eede33843a3685aa08a7c8",
+      "actual": "c8b9c364cb685ccc64378c72be4dda5ad664744432eede33843a3685aa08a7c8",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e05721b6716bff56278f24df417b62966ebdf0b5e3f2a3e1963d5ca2e39ee974",
+      "actual": "e05721b6716bff56278f24df417b62966ebdf0b5e3f2a3e1963d5ca2e39ee974",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "228558fe46231127ab6fb9c046e2ef858b56be2ca646a10e5da3f267207c1a24",
+      "actual": "228558fe46231127ab6fb9c046e2ef858b56be2ca646a10e5da3f267207c1a24",
+      "match": true
+    },
+    {
+      "path": "sacred-unlocks.js",
+      "status": 200,
+      "expected": "c67dc368eab2d67bb58246cb11947494fb9bd6b21f81e15b6f2c89ca78490f1f",
+      "actual": "c67dc368eab2d67bb58246cb11947494fb9bd6b21f81e15b6f2c89ca78490f1f",
+      "match": true
+    },
+    {
+      "path": "tests/inanna-discovery.test.js",
+      "status": 200,
+      "expected": "fb5c2122e8671918c26854c8481cbfee0a0855873b2d7c3985aafaf4b243ca3d",
+      "actual": "fb5c2122e8671918c26854c8481cbfee0a0855873b2d7c3985aafaf4b243ca3d",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "55b3d5c07dffbf5e4402a88c60c76f88d5fc34fc06309d501fabe1db2e49f495",
+      "actual": "55b3d5c07dffbf5e4402a88c60c76f88d5fc34fc06309d501fabe1db2e49f495",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
