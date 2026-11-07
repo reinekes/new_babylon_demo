@@ -45,7 +45,15 @@ test('an Awakening household can approve a secular project and a stale offer spe
  const before=encode(s);
  assert.equal(approveHouseholdInitiative(s,source,{...offer,x:offer.x+1}).ok,false);
  assert.equal(encode(s),before);
- assert.ok(approveHouseholdInitiative(s,source,offer).ok);
+ const replacement={...source};
+ s.buildings[s.buildings.indexOf(source)]=replacement;
+ const replaced=encode(s);
+ assert.equal(approveHouseholdInitiative(s,replacement,offer).ok,false);
+ assert.equal(encode(s),replaced);
+ const fresh=householdInitiative(s,replacement);
+ assert.equal(approveHouseholdInitiative(s,replacement,{...fresh,members:null}).ok,false);
+ assert.equal(encode(s),replaced);
+ assert.ok(approveHouseholdInitiative(s,replacement,fresh).ok);
  const project=s.buildings.find(b=>b.householdInitiative);
  for(let step=0;step<480&&project.construction;step++){
   s.event=null;

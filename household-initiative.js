@@ -71,7 +71,7 @@ export function householdInitiative(s,source){
     reason='На доступных складах мало глины или тростника';
     continue;
    }
-   return {ok:true,x,y,members:family.map(c=>c.id),source:sourceKey,eligibleStores:new Set(stores.map(buildingKey)),cost:BUILDINGS.house};
+   return {ok:true,x,y,members:family.map(c=>c.id),source:sourceKey,sourceRef:source,eligibleStores:new Set(stores.map(buildingKey)),cost:BUILDINGS.house};
   }
  }
  return refuse(reason);
@@ -82,7 +82,9 @@ export function approveHouseholdInitiative(s,source,offer){
  if(reason)return refuse(reason);
  const now=householdInitiative(s,source);
  if(!now.ok)return now;
- if(!offer?.ok||offer.x!==now.x||offer.y!==now.y||offer.source!==now.source||offer.members.join()!==now.members.join())return refuse('Условия изменились. Открой предложение заново');
+ if(!offer?.ok||offer.sourceRef!==source||offer.source!==now.source||offer.x!==now.x||offer.y!==now.y||
+  !Array.isArray(offer.members)||offer.members.length!==now.members.length||
+  now.members.some((id,i)=>offer.members[i]!==id))return refuse('Условия изменились. Открой предложение заново');
  return startHouseholdInitiative(s,source,now);
 }
 
