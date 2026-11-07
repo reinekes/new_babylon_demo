@@ -1,0 +1,16 @@
+[
+  {
+    "id": "stop",
+    "view": "2d",
+    "url": "?id=stop&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d stopped and resumed without crediting output"
+  },
+  {
+    "id": "stop",
+    "view": "3d",
+    "url": "?id=stop&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d stopped and resumed without crediting output"
+  }
+]

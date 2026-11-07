@@ -1,3 +1,5 @@
+import {cityCommandReason} from './city-command-lock.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {isOperational,outputMultiplier} from './definitions.js';
 export const KILN_RECIPE=Object.freeze({brick:4,reed:3});
@@ -10,7 +12,22 @@ function valid(v){return v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(
 export function initializeKilns(s){for(const b of s.buildings||[])if(b.type==='kiln'&&b.firing===undefined)b.firing=empty();}
 export function kilnNeeds(b){const v=b?.firing;return b?.type==='kiln'&&isOperational(b)&&valid(v)&&!v.hot&&!v.ready?(kilnNeedsRepair(b)?{brick:Math.max(0,1-v.brick),reed:0}:{brick:4-v.brick,reed:3-v.reed}):{brick:0,reed:0};}
 // Loading/ignition is worker action; charged fuel keeps burning overnight.
-export function startFiring(b){const v=b?.firing;if(b?.type!=='kiln'||!isOperational(b)||!valid(v)||v.hot||v.ready||kilnNeedsRepair(b)||v.brick<4||v.reed<3)return 0;v.brick-=4;v.reed-=3;v.hot=4;v.time=0;return 4;}
+export function startFiring(b){const v=b?.firing;if(b?.type!=='kiln'||!isOperational(b)||!valid(v)||b.kilnBanked||v.hot||v.ready||kilnNeedsRepair(b)||v.brick<4||v.reed<3)return 0;v.brick-=4;v.reed-=3;v.hot=4;v.time=0;return 4;}
+export function setKilnBanked(s,b,banked){
+ const reason=cityCommandReason(s);
+ if(reason)return {ok:false,reason};
+ if(!isStrictSumer(s)||!s.buildings.includes(b)||b.type!=='kiln'||!isOperational(b)||!valid(b.firing))return {ok:false,reason:'Нужна действующая кирпичная печь'};
+ if(!banked){
+  if(!b.kilnBanked)return {ok:false,reason:'Печь не остановлена'};
+  delete b.kilnBanked;
+  return {ok:true};
+ }
+ const batch=b.firing;
+ if(!batch.hot||batch.time>=FIRING_SECONDS)return {ok:false,reason:'Можно остановить только горящий обжиг'};
+ Object.assign(batch,{brick:batch.hot,hot:0,time:0});
+ b.kilnBanked=true;
+ return {ok:true};
+}
 // Called after a resident completes the ordinary kiln work interval.
 export function repairKiln(b){
  const v=b?.firing;
@@ -20,4 +37,4 @@ export function repairKiln(b){
 }
 export function advanceKilns(s,dt){if(!Number.isFinite(dt)||dt<=0)return;for(const b of s.buildings||[]){const v=b.firing;if(b.type!=='kiln'||!isOperational(b)||!valid(v)||!v.hot)continue;v.time=Math.min(28,v.time+dt*outputMultiplier(b));if(v.time>=28){v.ready=v.hot;v.hot=0;v.time=0;if(b.kilnWear!==undefined)b.kilnWear++;recordBuildingProduction(s,b,'firedBrick',v.ready);}}}
 export function collectFired(b){if(b?.type!=='kiln'||!isOperational(b)||!valid(b.firing))return 0;const n=b.firing.ready;b.firing.ready=0;return n;}
-export function validateKilns(s){return Array.isArray(s.buildings)&&s.buildings.every(b=>b.type==='kiln'?valid(b.firing)&&(b.kilnWear===undefined||Number.isInteger(b.kilnWear)&&b.kilnWear>=0&&b.kilnWear<=KILN_WEAR_LIMIT&&!(b.firing.hot&&kilnNeedsRepair(b))):!Object.hasOwn(b,'firing')&&!Object.hasOwn(b,'kilnWear'));}
+export function validateKilns(s){return Array.isArray(s.buildings)&&s.buildings.every(b=>b.type==='kiln'?valid(b.firing)&&(b.kilnBanked===undefined||b.kilnBanked===true&&isStrictSumer(s)&&!b.firing.hot&&!b.firing.ready)&&(b.kilnWear===undefined||Number.isInteger(b.kilnWear)&&b.kilnWear>=0&&b.kilnWear<=KILN_WEAR_LIMIT&&!(b.firing.hot&&kilnNeedsRepair(b))):!Object.hasOwn(b,'kilnBanked')&&!Object.hasOwn(b,'firing')&&!Object.hasOwn(b,'kilnWear'));}

@@ -26,3 +26,26 @@ test('the last firing cools and yields a full batch before wear blocks a new cha
  assert.equal(b.firing.brick,0);
  assert.equal(repairKiln(b),false);
 });
+
+test('banking a lit kiln restores the unfired batch but neither spent fuel nor output',async()=>{
+ const {setKilnBanked}=await import('../kilns.js');
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const s=fixture(),b=s.buildings[0];
+ s.scenario=strictScenario();
+ Object.assign(b.firing,{brick:4,reed:3});
+ assert.equal(startFiring(b),4);
+ advanceKilns(s,5);
+ assert.ok(setKilnBanked(s,b,true).ok);
+ assert.deepEqual(b.firing,{brick:4,reed:0,hot:0,time:0,ready:0});
+ assert.ok(!setKilnBanked(s,b,true).ok);
+ b.firing.reed=3;
+ assert.equal(startFiring(b),0);
+ advanceKilns(s,60);
+ assert.equal(collectFired(b),0);
+ assert.ok(validateKilns(s));
+ assert.ok(setKilnBanked(s,b,false).ok);
+ assert.equal(startFiring(b),4);
+ advanceKilns(s,28);
+ assert.equal(collectFired(b),4);
+ assert.equal(collectFired(b),0);
+});

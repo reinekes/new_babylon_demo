@@ -48,6 +48,7 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
   return reason('construction',missing.length?'Ждёт стройматериалы':active.length?'Строится':builders.length?'Строители идут / заняты':'Нужны строители',missing.length?missing.map(k=>`${RESOURCE_NAMES[k]||k}: ${Math.max(0,q.required[k]-amount(q.delivered?.[k])).toFixed(1)}`).join(' · ')+` · носильщиков: ${carriers.length}`:`Материалы доставлены · строителей: ${builders.length} · работают: ${active.length}`,key);
  }
  if(b.brickmaking?.wet)return reason('drying','Сушка на дворе','Дождь приостанавливает сушку',key);
+ if(b.kilnBanked)return reason('kilnBanked','Обжиг остановлен','Возобнови обжиг в обзоре кварталов',key);
  if(b.firing?.hot)return reason('firing',b.firing.time<20?'Обжиг':'Остывание','Загруженная печь продолжает цикл ночью',key);
  if(artisan&&['drying','firing','cooling'].includes(artisan.stage))return reason(artisan.stage==='drying'?'drying':'firing',{drying:'Сушка керамики',firing:'Обжиг керамики',cooling:'Остывание керамики'}[artisan.stage],artisan.stage==='drying'?'Дождь приостанавливает сушку':'Загруженная партия продолжает цикл ночью',key);
  if(!isDay)return reason('night','Ночной отдых','Рабочий день с 06:00 до 19:00',key);

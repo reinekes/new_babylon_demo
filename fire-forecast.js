@@ -33,5 +33,5 @@ export function fireForecast(s){
   const level=!exposed.length||!dry&&!wind?'low':dry&&wind&&reserve<MIN_RESPONSE_WATER?'high':'watch';
   sites.push({key:buildingKey(kiln),homes:exposed,reserve,level});
  }
- return {dry,wind,sites};
+ return {dry,wind,sites,banked:kilns.filter(b=>b.kilnBanked).map(buildingKey)};
 }

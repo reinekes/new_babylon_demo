@@ -1,0 +1,10 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "speed": 4,
+  "steps": 240,
+  "medianCpuMs": 2.068667000000005,
+  "p95CpuMs": 5.378667000000007,
+  "rawBricksPreserved": 4,
+  "reloadByteIdentical": true
+}
