@@ -1,0 +1,16 @@
+[
+  {
+    "id": "blocked",
+    "view": "2d",
+    "url": "?id=blocked&view=2d",
+    "mode": "2d",
+    "result": "PASS evacuated helper blocks approval without changing save"
+  },
+  {
+    "id": "blocked",
+    "view": "3d",
+    "url": "?id=blocked&view=3d",
+    "mode": "3d",
+    "result": "PASS evacuated helper blocks approval without changing save"
+  }
+]

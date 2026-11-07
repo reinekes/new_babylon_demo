@@ -91,7 +91,7 @@ test('invalid or unavailable helpers refuse before reservation and legacy projec
   house.water=0;
   return {s,organizer,helper,requester};
  };
- for(const choice of ['duplicate','organizer','missing','hungry','cargo','guard','flood','manual','too-many']){
+ for(const choice of ['duplicate','organizer','missing','hungry','cargo','guard','flood','fire','manual','too-many']){
   const {s,organizer,helper,requester}=fixture();
   let ids=[helper.id];
   if(choice==='duplicate')ids.push(helper.id);
@@ -101,6 +101,7 @@ test('invalid or unavailable helpers refuse before reservation and legacy projec
   if(choice==='cargo')helper.cargo={clay:1};
   if(choice==='guard')helper.guardPost='9,8';
   if(choice==='flood')helper.floodShelter=true;
+  if(choice==='fire')helper.fireShelter={host:requester.home,kiln:'10,10'};
   if(choice==='manual')helper.manualGathering={key:'7,7'};
   if(choice==='too-many')ids=[1,2,3,4];
   const before=encode(s);
@@ -108,6 +109,13 @@ test('invalid or unavailable helpers refuse before reservation and legacy projec
   assert.equal(encode(s),before,choice);
  }
  const {s,organizer,helper,requester}=fixture();
+ for(const person of [organizer,requester]){
+  person.fireShelter={host:person===organizer?requester.home:organizer.home,kiln:'10,10',returning:true};
+  const before=encode(s);
+  assert.match(approveWaterProject(s,organizer.id,requester.id,12,7,[helper.id]).reason,/эвакуаци/);
+  assert.equal(encode(s),before);
+  delete person.fireShelter;
+ }
  assert.ok(approveWaterProject(s,organizer.id,requester.id,12,7,[helper.id]).ok);
  const p=s.buildings.find(b=>b.humanWaterProject).humanWaterProject;
  for(const ids of [[helper.id,helper.id],[organizer.id],[s.demography.nextId],null]){

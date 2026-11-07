@@ -30,7 +30,7 @@ function waterRequest(s,b,requester,demand){
 }
 export function householdWaterRequest(s,b){
  if(!isStrictSumer(s)||b.type!=='house'||!isOperational(b))return null;
- const requester=s.citizens.find(c=>c.home===buildingKey(b)&&c.age>=16&&!c.floodShelter);
+ const requester=s.citizens.find(c=>c.home===buildingKey(b)&&c.age>=16&&!c.floodShelter&&!c.fireShelter);
  return waterRequest(s,b,requester,waterSummary(s,b).demand);
 }
 export function smallWaterResponseReason(s){
@@ -61,7 +61,7 @@ export function cityWaterRequest(s){
  for(const c of s.citizens){
   const home=supplyHome(c);
   demand.set(home,(demand.get(home)||0)+waterDemand(c));
-  if(c.age>=16&&!c.floodShelter&&!requesters.has(c.home))requesters.set(c.home,c);
+  if(c.age>=16&&!c.floodShelter&&!c.fireShelter&&!requesters.has(c.home))requesters.set(c.home,c);
  }
  let request=null;
  for(const b of s.buildings){
@@ -73,7 +73,8 @@ export function cityWaterRequest(s){
 }
 export function waterProjectOrganizerReason(s,organizer){
  if(!organizer||organizer.age<16||!['auto','builder'].includes(organizer.role)||!canLeadConstruction(s,organizer,{type:projectType,level:1}))return 'Нужен взрослый организатор, который может строить';
- if(organizer.guardPost||organizer.floodShelter||organizer.manualGathering)return 'Житель занят охраной, переселением или ручным сбором';
+ if(organizer.floodShelter||organizer.fireShelter)return 'Житель ещё не вернулся домой после эвакуации';
+ if(organizer.guardPost||organizer.manualGathering)return 'Житель занят охраной или ручным сбором';
  if(organizer.hunger>=30)return 'Организатор голоден и пока откладывает стройку';
  if(organizer.health<60||organizer.clinic)return 'Организатор сначала восстанавливает здоровье';
  const organizerHome=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===organizer.home);
@@ -91,7 +92,8 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  if(s.buildings.some(b=>b.humanWaterProject&&b.construction?.kind==='new'))return refuse('Один водозабор уже строится по инициативе жителей');
  const organizer=s.citizens.find(c=>c.id===organizerId),requester=s.citizens.find(c=>c.id===requesterId);
  const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===requester?.home);
- if(!home||requester.age<16||requester.floodShelter)return refuse('Нужен населённый двор, которому не хватает воды');
+ if(!home||requester.age<16)return refuse('Нужен населённый двор, которому не хватает воды');
+ if(requester.floodShelter||requester.fireShelter)return refuse('Проситель ещё не вернулся домой после эвакуации');
  const water=waterSummary(s,home);
  if(water.stock>=water.demand)return refuse('У двора есть запас воды на день');
  if(awaitingWaterProject(s,home))return refuse('Двор уже ждёт доставку из своего проекта');
