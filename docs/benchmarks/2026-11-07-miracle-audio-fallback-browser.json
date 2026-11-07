@@ -1,0 +1,16 @@
+[
+  {
+    "id": "opening",
+    "view": "2d",
+    "url": "?id=opening&view=2d",
+    "mode": "2d",
+    "result": "PASS synthetic browser audio · 1 sound sources · automatic opening and skip"
+  },
+  {
+    "id": "cast",
+    "view": "2d",
+    "url": "?id=cast&view=2d",
+    "mode": "2d",
+    "result": "PASS synthetic browser audio · 1 sound sources · confirmed receipt, warehouse mark and skip"
+  }
+]

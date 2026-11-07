@@ -84,3 +84,34 @@ test('a missing positional track leaves background and miracle cues playing',asy
   assert.equal(audio.status.lithophone,true);
  }finally{audio.dispose();}
 });
+
+test('miracle cues stay safe without a media element and share the synthetic audio context',async()=>{
+ const oldAudio=globalThis.AudioContext,oldMedia=globalThis.Audio,fake=fakeAudio();
+ globalThis.AudioContext=fake.Context;
+ delete globalThis.Audio;
+ let audio;
+ try{
+  audio=createCityAudio();
+  assert.equal(audio.cueRain('drop'),undefined);
+  assert.equal(audio.cueEarth('bow'),undefined);
+  assert.equal(audio.cueCatch('reflection'),undefined);
+  assert.equal(await audio.toggle(),true);
+  fake.contexts[0].state='running';
+  const stopRain=audio.cueRain('drop'),rain=fake.oscillators.slice();
+  const stopCatch=audio.cueCatch('reflection'),catchNotes=fake.oscillators.slice(rain.length);
+  assert.equal(fake.contexts.length,1);
+  assert.equal(rain.length,3);
+  assert.equal(catchNotes.length,3);
+  stopRain();
+  assert.ok(rain.every(o=>o.stops.includes(undefined)));
+  assert.ok(catchNotes.every(o=>!o.stops.includes(undefined)));
+  stopCatch();
+  assert.ok(catchNotes.every(o=>o.stops.includes(undefined)));
+  await audio.toggle();
+  assert.equal(audio.cueEarth('bow'),undefined);
+ }finally{
+  audio?.dispose();
+  if(oldAudio===undefined)delete globalThis.AudioContext;else globalThis.AudioContext=oldAudio;
+  if(oldMedia!==undefined)globalThis.Audio=oldMedia;
+ }
+});

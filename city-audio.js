@@ -4,14 +4,25 @@ import {createLyreVoice,musicSoundSources,playStoneNote,STONE_NOTES} from './mus
 import {cityEventDefinition} from './city-events.js';
 import {EVENT_MUSIC_TRACKS,musicTrackURL} from './music-tracks.js';
 export {EVENT_MUSIC_TRACKS} from './music-tracks.js';
+function miracleCues(work,canPlay){
+ return {
+  cueRain(phase){if(canPlay())return work.cueRain(phase);},
+  cueEarth(phase){if(canPlay())return work.cueEarth(phase);},
+  cueCatch(phase){
+   if(!canPlay())return;
+   return phase==='unload'||phase==='reflection'?work.cueEarth(phase==='unload'?'sheaf':'bow'):work.cueRain(phase==='ripple'?'drop':'rain');
+  }
+ };
+}
+
 // Quiet original phrases, not reconstructed ancient scores. User opt-in only.
 function createSyntheticCityAudio(onMessage){
- let context=null,enabled=false,previewing=false;const beats=new Map(),voices=new Map(),lyre=createLyreVoice();
+ let context=null,enabled=false,previewing=false;const beats=new Map(),voices=new Map(),lyre=createLyreVoice(),work=createWorkAudio(()=>context);
  function stopVoice(osc){try{osc.stop(context.currentTime);}catch{}osc.disconnect?.();}
  function stopSource(id){for(const osc of voices.get(id)||[])stopVoice(osc);voices.delete(id);beats.delete(id);}
- function silence(){lyre.silence();for(const id of voices.keys())stopSource(id);beats.clear();}
+ function silence(){work.stopRain();work.stopEarth();lyre.silence();for(const id of voices.keys())stopSource(id);beats.clear();}
  function track(id,nodes){if(!voices.has(id))voices.set(id,new Set());const active=voices.get(id);for(const osc of nodes){const ended=osc.onended;osc.onended=()=>{active.delete(osc);ended?.();};active.add(osc);}while(active.size>12){const first=active.values().next().value;stopVoice(first);active.delete(first);}}
- async function toggle(){try{if(!context){const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)throw Error('unavailable');context=new C();}enabled=!enabled;if(enabled)await context.resume();else{silence();await context.suspend();}return enabled;}catch{silence();enabled=false;onMessage?.('Звук недоступен в этом браузере');return false;}}
+ async function toggle(){try{if(!context){const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)throw Error('unavailable');context=new C();work.enable(false);}enabled=!enabled;if(enabled)await context.resume();else{silence();await context.suspend();}return enabled;}catch{silence();enabled=false;onMessage?.('Звук недоступен в этом браузере');return false;}}
  function tick(s,paused,listener){
   if(!enabled||previewing||!context||globalThis.document?.hidden){silence();return;}
   const sources=musicSoundSources(s,listener),festival=activeFestival(s),active=new Set(sources.map(source=>`music:${source.id}`));lyre.tick(context,sources[0]);if(festival)active.add('festival');for(const id of voices.keys())if(!active.has(id))stopSource(id);
@@ -19,7 +30,7 @@ function createSyntheticCityAudio(onMessage){
   for(const source of sources){const id=`music:${source.id}`;if(beats.get(id)===beat)continue;beats.set(id,beat);track(id,playStoneNote(context,STONE_NOTES[pattern[((beat%pattern.length)+pattern.length)%pattern.length]],source.gain));}
   if(festival&&beats.get('festival')!==beat){beats.set('festival',beat);const notes=[62,65,69,67,65,72,69,67],note=notes[((beat%notes.length)+notes.length)%notes.length],osc=context.createOscillator(),gain=context.createGain(),now=context.currentTime;osc.type='triangle';osc.frequency.value=440*2**((note-69)/12);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.026,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.65);osc.connect(gain);gain.connect(context.destination);osc.start(now);osc.stop(now+.7);osc.onended=()=>{osc.disconnect?.();gain.disconnect?.();};track('festival',[osc]);}
  }
- return {toggle,tick,setPreviewing(value){previewing=!!value;if(previewing)silence();},get enabled(){return enabled;},dispose(){silence();enabled=false;context?.close?.();}};
+ return {toggle,tick,...miracleCues(work,()=>enabled&&!previewing&&!globalThis.document?.hidden),setPreviewing(value){previewing=!!value;if(previewing)silence();},get enabled(){return enabled;},dispose(){silence();enabled=false;work.dispose();}};
 }
 
 
@@ -95,8 +106,5 @@ export function createCityAudio(onMessage,options={}){
   if(outgoing&&!outgoing.playing)outgoing=null;
  }
  const onVisibility=()=>{if(doc?.hidden)silence();};doc?.addEventListener?.('visibilitychange',onVisibility);
- return {toggle,tick,cueRain(phase){if(enabled&&!previewing&&!doc?.hidden)return work.cueRain(phase);},cueEarth(phase){if(enabled&&!previewing&&!doc?.hidden)return work.cueEarth(phase);},cueCatch(phase){
-  if(!enabled||previewing||doc?.hidden)return;
-  return phase==='unload'||phase==='reflection'?work.cueEarth(phase==='unload'?'sheaf':'bow'):work.cueRain(phase==='ripple'?'drop':'rain');
- },setPreviewing(value){previewing=!!value;if(previewing)silence();},get enabled(){return enabled;},get status(){return {enabled,theme:current?.id||null,lithophone:!!lithophone,playing:[...cache.values()].filter(v=>v.playing).map(v=>v.id),cached:cache.size};},dispose(){if(disposed)return;silence();work.dispose();disposed=true;enabled=false;doc?.removeEventListener?.('visibilitychange',onVisibility);for(const v of cache.values()){v.element.removeAttribute?.('src');v.element.load?.();}cache.clear();}};
+ return {toggle,tick,...miracleCues(work,()=>enabled&&!previewing&&!doc?.hidden),setPreviewing(value){previewing=!!value;if(previewing)silence();},get enabled(){return enabled;},get status(){return {enabled,theme:current?.id||null,lithophone:!!lithophone,playing:[...cache.values()].filter(v=>v.playing).map(v=>v.id),cached:cache.size};},dispose(){if(disposed)return;silence();work.dispose();disposed=true;enabled=false;doc?.removeEventListener?.('visibilitychange',onVisibility);for(const v of cache.values()){v.element.removeAttribute?.('src');v.element.load?.();}cache.clear();}};
 }

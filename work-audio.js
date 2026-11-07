@@ -74,10 +74,10 @@ export function createWorkAudio(createContext=()=>{
   try{voice.node.stop();}catch{}
   release(voice);
  }
- function enable(){
+ function enable(resume=true){
   try{
    context??=createContext();
-   Promise.resolve(context?.resume()).catch(()=>{});
+   if(resume)Promise.resolve(context?.resume()).catch(()=>{});
   }catch{}
  }
  function tick(state,paused,listener){
