@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T14:53:09.271148+00:00",
+  "commit": "3c76d853e7e6b321a99b55e546b66dbaf5e2af63",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "91bba4bad43d1e5b1524c071045e810f800f528d44f6ebef24f1dbf007e2531a",
+      "actual": "91bba4bad43d1e5b1524c071045e810f800f528d44f6ebef24f1dbf007e2531a",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "633360c3819cccb71165bbe85ecefc2cd6a02c55addb8ad4482d698bd75f1554",
+      "actual": "633360c3819cccb71165bbe85ecefc2cd6a02c55addb8ad4482d698bd75f1554",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-water-4x.json",
+      "status": 200,
+      "expected": "314a866fa89ea0e5e8a2a42996bc475931add6df27d7419545ea31aa7cc5a30e",
+      "actual": "314a866fa89ea0e5e8a2a42996bc475931add6df27d7419545ea31aa7cc5a30e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-arrival-water-browser.json",
+      "status": 200,
+      "expected": "8720ab344bd0db9d324ad7a6bd83d674463cd92b46f76fc93f666307dcb5a285",
+      "actual": "8720ab344bd0db9d324ad7a6bd83d674463cd92b46f76fc93f666307dcb5a285",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "c4cccca96682c36e46773ba19091b4c5e066f4dfa9227763491fb786a805f00a",
+      "actual": "c4cccca96682c36e46773ba19091b4c5e066f4dfa9227763491fb786a805f00a",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "1c63ef9660dd7f4676e36c734c6b5b495cab1b6442e3514391af5e53d4a04689",
+      "actual": "1c63ef9660dd7f4676e36c734c6b5b495cab1b6442e3514391af5e53d4a04689",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
