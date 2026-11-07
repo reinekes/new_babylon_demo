@@ -63,7 +63,7 @@ export function createWorkAudio(createContext=()=>{
  const Context=globalThis.AudioContext||globalThis.webkitAudioContext;
  return Context?new Context():null;
 }){
- let context=null,active=null,rainVoices=[],earthVoice=null,earthNotes=[],catNotes=[];
+ let context=null,active=null,rainVoices=[],earthVoice=null,earthNotes=[],catNotes=[],cueId=0;
  const buffers=new Map();
  const heard=new WeakSet();
  function release(voice){voice.node.disconnect();voice.gain.disconnect();}
@@ -102,11 +102,15 @@ export function createWorkAudio(createContext=()=>{
   for(const osc of rainVoices){try{osc.stop();}catch{}}
   rainVoices=[];
  }
+ function beginCue(){
+  stopRain();stopEarth();stopCat();
+  return ++cueId;
+ }
  function cueRain(phase){
   if(!context||context.state!=='running')return;
-  stopRain();
+  const id=beginCue();
   try{rainVoices=playStoneNote(context,phase==='drop'?660:245,phase==='drop'?.075:.043);}catch{return;}
-  return stopRain;
+  return ()=>{if(id===cueId)stopRain();};
  }
  function stopEarth(){
   for(const osc of earthNotes){try{osc.stop();}catch{}}
@@ -118,7 +122,7 @@ export function createWorkAudio(createContext=()=>{
  }
  function cueEarth(phase){
   if(!context||context.state!=='running')return;
-  stopEarth();
+  const id=beginCue();
   try{
    if(phase==='sheaf'||phase==='furrows'||phase==='breath'){
     if(!buffers.has('reeds'))buffers.set('reeds',workBuffer(context,'reeds'));
@@ -128,7 +132,7 @@ export function createWorkAudio(createContext=()=>{
     node.onended=()=>{if(earthVoice===voice)earthVoice=null;release(voice);};node.start();
    }else earthNotes=playStoneNote(context,phase==='bow'?220:330,.045);
   }catch{stopEarth();}
-  return stopEarth;
+  return ()=>{if(id===cueId)stopEarth();};
  }
  function stopCat(){
   for(const osc of catNotes){try{osc.stop();}catch{}}
@@ -136,7 +140,7 @@ export function createWorkAudio(createContext=()=>{
  }
  function cueCat(kind){
   if(context?.state!=='running')return;
-  stopCat();
+  beginCue();
   const notes=kind==='opening'?[294,392,490]:[392,294,245];
   try{
    notes.forEach((frequency,i)=>catNotes.push(...playStoneNote(context,frequency,.034-i*.006,i*.16)));

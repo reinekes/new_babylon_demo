@@ -55,3 +55,28 @@ test('rain cue uses the opted-in sound context and can stop its bounded motif',(
  stop();
  assert.ok(oscillators.every(voice=>voice.stops===2));
 });
+
+test('only the current scene can stop its cue and a new motif replaces the previous one',()=>{
+ const oscillators=[],context={
+  state:'running',currentTime:1,destination:{},resume(){},
+  createOscillator(){const voice={frequency:{},stops:0,connect(){},start(){},stop(){this.stops++;}};oscillators.push(voice);return voice;},
+  createGain(){return {connect(){},gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}}};}
+ };
+ const audio=createWorkAudio(()=>context);
+ audio.enable();
+ const oldEarth=audio.cueEarth('bow');
+ const currentEarth=audio.cueEarth('stone');
+ oldEarth();
+ assert.ok(oscillators.slice(0,3).every(v=>v.stops===2));
+ assert.ok(oscillators.slice(3,6).every(v=>v.stops===1));
+ const rain=audio.cueRain('drop');
+ currentEarth();
+ assert.ok(oscillators.slice(3,6).every(v=>v.stops===2));
+ assert.ok(oscillators.slice(6,9).every(v=>v.stops===1));
+ audio.cueCat('summon');
+ rain();
+ assert.ok(oscillators.slice(6,9).every(v=>v.stops===2));
+ assert.ok(oscillators.slice(9).every(v=>v.stops===1));
+ audio.dispose();
+ assert.ok(oscillators.slice(9).every(v=>v.stops===2));
+});
