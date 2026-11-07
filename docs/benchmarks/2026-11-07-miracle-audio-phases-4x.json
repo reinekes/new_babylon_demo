@@ -1,0 +1,1 @@
+{"fixture":"world64-seed137","width":64,"height":64,"buildings":129,"population":200,"assignmentMs":3.0392499999999814,"simulation4x":{"medianMs":3.087417000000187,"p95Ms":6.0917910000000575,"maxMs":35.88600000000042},"encode":{"medianMs":1.1077500000001237,"maxMs":1.4941249999997126,"bytes":343755},"stateSHA256":"d56bed3d8c5c7b73afe2a37f3ca620b524508ccb1127f36978acfb586447545d"}

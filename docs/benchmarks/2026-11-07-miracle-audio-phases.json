@@ -1,0 +1,490 @@
+{
+  "browser": "Chrome",
+  "renderer": "2d",
+  "audio": "Web Audio and HTMLMediaElement",
+  "cast": [
+    {
+      "id": "rain",
+      "view": "2d",
+      "url": "?id=rain&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "shadow": 0,
+          "rain": 3
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "richCatch",
+      "view": "2d",
+      "url": "?id=richCatch&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "ripple": 3,
+          "school": 3,
+          "silt": 0
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "fertility",
+      "view": "2d",
+      "url": "?id=fertility&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "breath": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "abundance",
+      "view": "2d",
+      "url": "?id=abundance&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "empty": 0,
+          "fill": 1,
+          "accepted": 0,
+          "grain": 3
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "inspiration",
+      "view": "2d",
+      "url": "?id=inspiration&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "dust": 1,
+          "cut": 0,
+          "bundle": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "haste",
+      "view": "2d",
+      "url": "?id=haste&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "gust": 1,
+          "cloth": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "sunlight",
+      "view": "2d",
+      "url": "?id=sunlight&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "beam": 1,
+          "cloud": 0,
+          "reflection": 3
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "revelation",
+      "view": "2d",
+      "url": "?id=revelation&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "tablet": 0,
+          "grooves": 1,
+          "work": 0
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "healing",
+      "view": "2d",
+      "url": "?id=healing&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 3,
+          "2": 1,
+          "3": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "peace",
+      "view": "2d",
+      "url": "?id=peace&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 3,
+          "2": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "stars",
+      "view": "2d",
+      "url": "?id=stars&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 1,
+          "2": 3
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "shaping",
+      "view": "2d",
+      "url": "?id=shaping&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 3,
+          "1": 1,
+          "2": 1,
+          "3": 3
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "relicAwakening",
+      "view": "2d",
+      "url": "?id=relicAwakening&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 3,
+          "2": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "earthMemory",
+      "view": "2d",
+      "url": "?id=earthMemory&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 3,
+          "1": 1,
+          "2": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "inannaProtection",
+      "view": "2d",
+      "url": "?id=inannaProtection&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 3,
+          "1": 1,
+          "2": 1
+        },
+        "backgroundStarts": 1,
+        "paidSaveUnchanged": true
+      }
+    }
+  ],
+  "opening": [
+    {
+      "id": "arrival",
+      "view": "2d",
+      "url": "?id=arrival&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 3,
+          "2": 1,
+          "3": 1
+        },
+        "backgroundStarts": 1,
+        "seenSaved": true
+      }
+    },
+    {
+      "id": "peace",
+      "view": "2d",
+      "url": "?id=peace&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 3,
+          "2": 1
+        },
+        "backgroundStarts": 1,
+        "seenSaved": true
+      }
+    },
+    {
+      "id": "stars",
+      "view": "2d",
+      "url": "?id=stars&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 1,
+          "2": 3,
+          "3": 1
+        },
+        "backgroundStarts": 1,
+        "seenSaved": true
+      }
+    },
+    {
+      "id": "depth",
+      "view": "2d",
+      "url": "?id=depth&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 1,
+          "1": 3,
+          "2": 1,
+          "3": 1
+        },
+        "backgroundStarts": 1,
+        "seenSaved": true
+      }
+    },
+    {
+      "id": "land",
+      "view": "2d",
+      "url": "?id=land&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 3,
+          "1": 1,
+          "2": 1,
+          "3": 3
+        },
+        "backgroundStarts": 1,
+        "seenSaved": true
+      }
+    },
+    {
+      "id": "inanna",
+      "view": "2d",
+      "url": "?id=inanna&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 3,
+          "1": 1,
+          "2": 1,
+          "3": 3
+        },
+        "backgroundStarts": 1,
+        "seenSaved": true
+      }
+    },
+    {
+      "id": "earth",
+      "view": "2d",
+      "url": "?id=earth&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "field-one": 0,
+          "field-two": 0,
+          "field-three": 0,
+          "sheaf": 1,
+          "bow": 3,
+          "garden": 3
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "creator",
+      "view": "2d",
+      "url": "?id=creator&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "brick": 0,
+          "hand": 1,
+          "echo": 3,
+          "lesson": 0
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "wind",
+      "view": "2d",
+      "url": "?id=wind&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "load": 0,
+          "trail": 1,
+          "receive": 3
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "abundance",
+      "view": "2d",
+      "url": "?id=abundance&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "measure": 0,
+          "grains": 1
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "sunlight",
+      "view": "2d",
+      "url": "?id=sunlight&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "meal": 0,
+          "clean": 0,
+          "beam": 1,
+          "witness": 3,
+          "threshold": 0
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "revelation",
+      "view": "2d",
+      "url": "?id=revelation&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "first": 1,
+          "second": 1,
+          "third": 3,
+          "shadow": 3,
+          "separate": 0
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "shaping",
+      "view": "2d",
+      "url": "?id=shaping&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "0": 3,
+          "1": 1,
+          "2": 1,
+          "3": 3
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "rain",
+      "view": "2d",
+      "url": "?id=rain&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "waiting": 0,
+          "drop": 3,
+          "shadow": 0,
+          "rain": 3
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    },
+    {
+      "id": "catch",
+      "view": "2d",
+      "url": "?id=catch&view=2d",
+      "mode": "2d",
+      "result": {
+        "phases": {
+          "unload": 1,
+          "share": 0,
+          "reflection": 3,
+          "still": 0
+        },
+        "backgroundStarts": 1,
+        "saved": true
+      }
+    }
+  ],
+  "lithophone": [
+    {
+      "id": "near",
+      "view": "audio",
+      "url": "?id=near&view=audio",
+      "result": "PASS nearby track and cues mix; distance silences only courtyard"
+    },
+    {
+      "id": "missing",
+      "view": "audio",
+      "url": "?id=missing&view=audio",
+      "result": "PASS 404 isolated; background and cues stay live; retry restored track"
+    }
+  ]
+}
