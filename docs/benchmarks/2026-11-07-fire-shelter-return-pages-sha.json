@@ -1,0 +1,163 @@
+{
+  "at": "2026-11-07T11:04:46.928808+00:00",
+  "commit": "9a4b15ee65e23629f122d4d82a02e296d427f38c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "2b825a58a2df84f077fb9440495367cce620391ce3619cede5d003cb3666fe16",
+      "actual": "2b825a58a2df84f077fb9440495367cce620391ce3619cede5d003cb3666fe16",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "ff36b322cb671d9032f32a8dd7041c571fee7ac1c8d07dd81dc98b5b3f3aeb3e",
+      "actual": "ff36b322cb671d9032f32a8dd7041c571fee7ac1c8d07dd81dc98b5b3f3aeb3e",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "cb67082ffbb3fa6d6fe0ae83b0302c234a63a635e20a268bf7ea2d1f4286a1c7",
+      "actual": "cb67082ffbb3fa6d6fe0ae83b0302c234a63a635e20a268bf7ea2d1f4286a1c7",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "d9b896adc182a7865f2fe96e7bf177ab48007f50156e6ea7a952db10d407e1b5",
+      "actual": "d9b896adc182a7865f2fe96e7bf177ab48007f50156e6ea7a952db10d407e1b5",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "1dca57d94c9af177d269658b10e8132879cbf0e8ed68a48e6e6c643f7a6f321b",
+      "actual": "1dca57d94c9af177d269658b10e8132879cbf0e8ed68a48e6e6c643f7a6f321b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-evacuation-4x.json",
+      "status": 200,
+      "expected": "27bc0f44a47996bff0bb028a79c6a26f9fdb5035e6bd0dc1d7488b4a6407ca24",
+      "actual": "27bc0f44a47996bff0bb028a79c6a26f9fdb5035e6bd0dc1d7488b4a6407ca24",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-evacuation-browser.json",
+      "status": 200,
+      "expected": "1224d4022e006dba511b2f055473aa588a4c4f7d8c6b9dad879e93565cf93e95",
+      "actual": "1224d4022e006dba511b2f055473aa588a4c4f7d8c6b9dad879e93565cf93e95",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-shelter-return-4x.json",
+      "status": 200,
+      "expected": "0d14b6032a5d0e0f68649d75cd72a6e05fee4caea1c0e00df36fa60c2ca18f8b",
+      "actual": "0d14b6032a5d0e0f68649d75cd72a6e05fee4caea1c0e00df36fa60c2ca18f8b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fire-shelter-return-browser.json",
+      "status": 200,
+      "expected": "387af37d085a8572374c86d708f59eb2561490d7082e60c4f442e6f84c205253",
+      "actual": "387af37d085a8572374c86d708f59eb2561490d7082e60c4f442e6f84c205253",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "f526be3f621e1e17f5ba30c05a49232b43d3d8566aed0ac01fd8d4f3c3d76a55",
+      "actual": "f526be3f621e1e17f5ba30c05a49232b43d3d8566aed0ac01fd8d4f3c3d76a55",
+      "match": true
+    },
+    {
+      "path": "fire-forecast.js",
+      "status": 200,
+      "expected": "91d1b2aa2a50d788dde6f2d6b5275833e123b951fad168799cf97b54a5bac244",
+      "actual": "91d1b2aa2a50d788dde6f2d6b5275833e123b951fad168799cf97b54a5bac244",
+      "match": true
+    },
+    {
+      "path": "household-initiative.js",
+      "status": 200,
+      "expected": "52f1264b1838f6fe20ce3f8ec25ab529e78a11345452943e81b368c6fe9607d0",
+      "actual": "52f1264b1838f6fe20ce3f8ec25ab529e78a11345452943e81b368c6fe9607d0",
+      "match": true
+    },
+    {
+      "path": "households.js",
+      "status": 200,
+      "expected": "efb1d16a4984a396a19ab440d98a887bf52414502bcdf16ceec3006b0d07a61d",
+      "actual": "efb1d16a4984a396a19ab440d98a887bf52414502bcdf16ceec3006b0d07a61d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a2fc5172ff1660b377417b1028a2729c0663991c56dd5017cf78f0ddec1a7fc2",
+      "actual": "a2fc5172ff1660b377417b1028a2729c0663991c56dd5017cf78f0ddec1a7fc2",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "97d329973d012665f799fdf7359b8303197874a414830f94a53362877b8ad667",
+      "actual": "97d329973d012665f799fdf7359b8303197874a414830f94a53362877b8ad667",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "5ffb60807c02fbad70562d602c2b5eb40e5753dcfe16aed4da8d99b396c07c14",
+      "actual": "5ffb60807c02fbad70562d602c2b5eb40e5753dcfe16aed4da8d99b396c07c14",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "db78e23cb3c4643d640fdc446445ee47db09e1ab42bad2eb36ce463683076cb2",
+      "actual": "db78e23cb3c4643d640fdc446445ee47db09e1ab42bad2eb36ce463683076cb2",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "ce9e93bbc80c6e3b00fe8c1c3cd25c0a5d3b858e0517c614337cccb5cf989547",
+      "actual": "ce9e93bbc80c6e3b00fe8c1c3cd25c0a5d3b858e0517c614337cccb5cf989547",
+      "match": true
+    },
+    {
+      "path": "tests/fire-evacuation.test.js",
+      "status": 200,
+      "expected": "70f65cfe95b9b1e5d4046d11ae90b03a818625cc8682afcb9992e9e8ea5d5ac3",
+      "actual": "70f65cfe95b9b1e5d4046d11ae90b03a818625cc8682afcb9992e9e8ea5d5ac3",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "312bb08ef87fd30ef5d791d495db73031e9dce8a59e859560054018ab720d36d",
+      "actual": "312bb08ef87fd30ef5d791d495db73031e9dce8a59e859560054018ab720d36d",
+      "match": true
+    },
+    {
+      "path": "wellbeing.js",
+      "status": 200,
+      "expected": "70b511820d6d86fc0e5467607e41795222e879195ba19a11806394aead84e622",
+      "actual": "70b511820d6d86fc0e5467607e41795222e879195ba19a11806394aead84e622",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "ae17c2f6e2a839178efbf9bd06317f8b7e02f4bff7aec20bff376cb74d3838d8",
+      "actual": "ae17c2f6e2a839178efbf9bd06317f8b7e02f4bff7aec20bff376cb74d3838d8",
+      "match": true
+    }
+  ],
+  "matched": 22,
+  "total": 22
+}
