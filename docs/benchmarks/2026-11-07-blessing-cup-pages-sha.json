@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-07T18:34:12.590143+00:00",
+  "commit": "cf95dceea03e42e497af4fe3bd930c0c1134e94b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "01e18aeefb6dc81bd936e280c9eb03576d5504ce28446acd24f13a423c151cc8",
+      "actual": "01e18aeefb6dc81bd936e280c9eb03576d5504ce28446acd24f13a423c151cc8",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "b3f31ca581f9b2e2ff95f0adc4ab3949c34887797c364d77f0aad31f1090b472",
+      "actual": "b3f31ca581f9b2e2ff95f0adc4ab3949c34887797c364d77f0aad31f1090b472",
+      "match": true
+    },
+    {
+      "path": "blessing-discovery.js",
+      "status": 200,
+      "expected": "fe855b742bd7f9dbf93ecfd62ed8d720743ecb2b90dba98c2d4a48ebb16b1aa0",
+      "actual": "fe855b742bd7f9dbf93ecfd62ed8d720743ecb2b90dba98c2d4a48ebb16b1aa0",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "c987ffdd774e0a6a6fff21f2c08ff2d2c36e06f62b2556b47feb6099bb243eda",
+      "actual": "c987ffdd774e0a6a6fff21f2c08ff2d2c36e06f62b2556b47feb6099bb243eda",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "82ea5989ec5d91168cfd35e57fde53ae1aa223b4062e502fec21725cdb5aaf64",
+      "actual": "82ea5989ec5d91168cfd35e57fde53ae1aa223b4062e502fec21725cdb5aaf64",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-blessing-cup-4x.json",
+      "status": 200,
+      "expected": "243da1c27310344a0c2589c359a75076ca68bdf563b0a222230443747df68d37",
+      "actual": "243da1c27310344a0c2589c359a75076ca68bdf563b0a222230443747df68d37",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-blessing-cup-browser.json",
+      "status": 200,
+      "expected": "3fc176fade60dbfaa122dc8a6415963df3ba93d31b0e79bbd0bcb29bfde717ec",
+      "actual": "3fc176fade60dbfaa122dc8a6415963df3ba93d31b0e79bbd0bcb29bfde717ec",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "2fb6bc799a42380e4cf74569d94dcbb0be00d2e151cc6f7f45e6e48d4b282385",
+      "actual": "2fb6bc799a42380e4cf74569d94dcbb0be00d2e151cc6f7f45e6e48d4b282385",
+      "match": true
+    },
+    {
+      "path": "game3d/buildings.js",
+      "status": 200,
+      "expected": "c9f3d4bb259089bb92a3acf68b137d2232487afa75a1afddb7acd18d262ea60e",
+      "actual": "c9f3d4bb259089bb92a3acf68b137d2232487afa75a1afddb7acd18d262ea60e",
+      "match": true
+    },
+    {
+      "path": "game3d/house-architecture.js",
+      "status": 200,
+      "expected": "ba54f2a7a7c80a3517135681b2716866b34f96e9b9ede4857ac454114a38da30",
+      "actual": "ba54f2a7a7c80a3517135681b2716866b34f96e9b9ede4857ac454114a38da30",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "75ab0c8a7bb34a73845de3df686108374622f541612888c3ae93eba8094e777e",
+      "actual": "75ab0c8a7bb34a73845de3df686108374622f541612888c3ae93eba8094e777e",
+      "match": true
+    },
+    {
+      "path": "map-art.js",
+      "status": 200,
+      "expected": "339c069058f3b2121b9aee9193bd22703356fb7d57ed30e83f8f0e041dd4df04",
+      "actual": "339c069058f3b2121b9aee9193bd22703356fb7d57ed30e83f8f0e041dd4df04",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "996184aa0ad9492c207223c7026071c1699af35f62684b997c6e4327f762b4fd",
+      "actual": "996184aa0ad9492c207223c7026071c1699af35f62684b997c6e4327f762b4fd",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-discovery.test.js",
+      "status": 200,
+      "expected": "498bb5fa66847c4bb3926cc1200ddd2c8a975fc2fadee450af6cd8eb5d0dfdf2",
+      "actual": "498bb5fa66847c4bb3926cc1200ddd2c8a975fc2fadee450af6cd8eb5d0dfdf2",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
