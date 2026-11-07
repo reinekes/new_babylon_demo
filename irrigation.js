@@ -7,8 +7,15 @@ const cache=new WeakMap(),crossingCache=new WeakMap(),key=(x,y)=>`${x},${y}`;
 // Derived topology only: water is never a second stock saved alongside buildings.
 export const lowWaterYear=s=>canalMaintenanceEnabled(s)&&s.year%3===2;
 export const riverIsLow=s=>lowWaterYear(s)&&s.season===1;
+export function depthCanalTarget(s,target){
+ if(!s.depthSupply||!canalMaintenanceEnabled(s)||!Number.isInteger(target?.x)||!Number.isInteger(target?.y))return null;
+ const network=irrigationFor(s),id=key(target.x,target.y);
+ return network.wet.has(id)?network.cells.get(id):null;
+}
 export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
- const limited=canalMaintenanceEnabled(s),canals=s.buildings.filter(b=>b.type==='canal'),fields=new Set(s.buildings.filter(b=>b.type==='field'&&(!limited||isOperational(b))).map(b=>key(b.x,b.y))),lakes=(s.world?.lakes||[]).map(l=>l.cells.map(c=>key(c.x,c.y)).join(';')).join('|'),signature=canals.map(b=>`${b.x},${b.y}:${isOperational(b)?1:0}:${limited?canalShares(b):'-'}:${b.drain?1:0}`).join('|')+';'+[...fields].join('|')+';lakes:'+lakes+';river:'+JSON.stringify(s.world?.river)+';low:'+lowRiver;
+ const pressure=s.depthSupply?.pressure;
+ const anchor=pressure&&pressure.tick===s.tick?key(pressure.x,pressure.y):'';
+ const limited=canalMaintenanceEnabled(s),canals=s.buildings.filter(b=>b.type==='canal'),fields=new Set(s.buildings.filter(b=>b.type==='field'&&(!limited||isOperational(b))).map(b=>key(b.x,b.y))),lakes=(s.world?.lakes||[]).map(l=>l.cells.map(c=>key(c.x,c.y)).join(';')).join('|'),signature=canals.map(b=>`${b.x},${b.y}:${isOperational(b)?1:0}:${limited?canalShares(b):'-'}:${b.drain?1:0}`).join('|')+';'+[...fields].join('|')+';lakes:'+lakes+';river:'+JSON.stringify(s.world?.river)+';low:'+lowRiver+';depth:'+anchor;
  let variants=cache.get(s);if(!variants){variants=new Map();cache.set(s,variants);}
  const old=variants.get(lowRiver);if(old?.signature===signature)return old;
  const cells=new Map(canals.filter(isOperational).map(b=>[key(b.x,b.y),b])),wet=new Set(),arms=new Map();
@@ -44,6 +51,14 @@ export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
  const queue=[...wet];for(let i=0;i<queue.length;i++)for(const next of adjacent.get(queue[i])){
   if(wet.has(next)||limited&&!capacity.get(next))continue;
   wet.add(next);queue.push(next);
+ }
+ if(limited&&wet.has(anchor)){
+  const supported=new Set([anchor]);
+  for(const id of supported){
+   capacity.set(id,capacity.get(id)+1);
+   if(intakeLimits.has(id))intakeLimits.set(id,intakeLimits.get(id)+1);
+   for(const next of adjacent.get(id))if(wet.has(next))supported.add(next);
+  }
  }
  const reachableFields=new Map();
  for(const id of wet){

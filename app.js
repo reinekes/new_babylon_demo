@@ -38,7 +38,7 @@ import {isStrictSumer} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
-import {irrigationFor,fieldWater} from './irrigation.js';
+import {depthCanalTarget,irrigationFor,fieldWater} from './irrigation.js';
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {miraclePrice} from './miracle-discovery.js';
@@ -141,6 +141,7 @@ const dialog=$('dialog');
 const renderer=await createGameRenderer($('city'),tile=>{
  if(seasonJumping||dialog.open||photo?.active)return;
  lastMiracleTarget={x:tile.x,y:tile.y};
+ updateDepthTargetPreview($('miracle-relicAwakening')?.closest('details'));
  if(testMapUpgrade){const b=buildingAt(state,tile.x,tile.y);if(!b){toast('Выбери готовое здание для мгновенного улучшения');return;}const r=instantTestUpgrade(state,buildingKey(b));mutate(r,r.ok?`${buildingDefinition(state,b.type).name}: уровень ${b.level}`:'');return;}
  if(relicControlActive(state)){const b=buildingAt(state,tile.x,tile.y),q=relicQuestView(state);if(q.phase==='carrying'&&b&&['shrine','ziggurat'].includes(b.type))relicUI.deliver(buildingKey(b));else relicUI.move(tile);return;}
  if(selection==='waterpoint'&&waterProjectDraft){confirmWaterProjectPlacement(tile);return;}
@@ -874,9 +875,18 @@ for(const [i,[type]]of Object.entries(Object.entries(BUILDINGS))){
  el.innerHTML=`<span class="building-icon">${uiIcon(type)}</span><span class="build-copy"><strong>${b.name}</strong><span class="build-effect">${buildBenefit(type)}</span><span class="catalog-cost" data-cost="${type}">${costs(b)}</span></span><span class="build-hotkey">${Number(i)<9?Number(i)+1:''}</span>`;
  const choice=document.createElement('div');choice.className='building-choice';const info=document.createElement('button');info.className='building-info';info.type='button';info.textContent='?';info.setAttribute('aria-label',`О здании: ${b.name}`);info.setAttribute('aria-controls','tile-detail');info.title=`Описание: ${b.name}`;info.onclick=()=>{showBuildGroup(groupFor(type).id);detail(type,true);};el.onclick=()=>choose(type);choice.append(el,info);buildSections.get(groupFor(type).id).querySelector('.accordion-buildings').append(choice);
 }
+function updateDepthTargetPreview(card){
+ const preview=card?.querySelector('[data-depth-quote]');
+ if(!preview)return;
+ preview.hidden=!state.depthSupply;
+ if(preview.hidden)return;
+ const canal=depthCanalTarget(state,lastMiracleTarget);
+ const message=canal?'Дождь и +1 доля воды в выбранной сети до конца сезона.':'Без выбранного канала чудо вызовет дождь. Выбери канал с водой на карте, чтобы добавить подпор.';
+ if(preview.textContent!==message)preview.textContent=message;
+}
 function makeMiracleCard(id,m){
  const details=document.createElement('details');details.className='miracle-disclosure'+(m.unlockBuilding||m.unlockQuest?' is-sacred':'');details.dataset.miracle=id;
- details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
+ details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}${id==='relicAwakening'?'<p data-depth-quote hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
  details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing'||id==='peace')update();});
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
@@ -938,6 +948,7 @@ function update(){
   const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?`Группа уже в пути · ${state.arrivalGroup.count} чел.`:card.open&&!reason&&!arrival?'Нужны сухой путь, свободный дом, еда и вода':''):'';
   const peace=id==='peace'&&state.peaceDiscovery&&card.open&&!reason?peaceQuote(state,lastMiracleTarget):null;
   updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason||arrivalReason||peace?.reason,gift,arrival);
+  if(id==='relicAwakening')updateDepthTargetPreview(card);
   const peacePreview=card.querySelector('[data-peace-quote]');
   if(peacePreview){
    const ids=peace?.ids||[];

@@ -24,9 +24,14 @@ export function depthSearchReason(s){
 export function validateDepthSupply(s){
  const record=s.depthSupply;
  if(record===undefined)return true;
- if(!usesCatDiscovery(s)||!record||Object.keys(record).length!==2+Number(record.sceneSeen!==undefined)||record.version!==1||
+ if(!usesCatDiscovery(s)||!record||Object.keys(record).length!==2+Number(record.sceneSeen!==undefined)+Number(record.pressure!==undefined)||record.version!==1||
   (record.sceneSeen!==undefined&&(record.sceneSeen!==true||s.relicQuest?.phase!=='completed'))||
   !Array.isArray(record.homes)||record.homes.length>DEPTH_HOMES_REQUIRED)return false;
+ const pressure=record.pressure;
+ if(pressure!==undefined&&(!pressure||Object.keys(pressure).length!==3||s.relicQuest?.phase!=='completed'||
+  !Number.isInteger(pressure.x)||pressure.x<0||pressure.x>=worldWidth(s)||
+  !Number.isInteger(pressure.y)||pressure.y<0||pressure.y>=worldHeight(s)||
+  !Number.isSafeInteger(pressure.tick)||pressure.tick<0||pressure.tick>s.tick))return false;
  const seen=new Set();
  return record.homes.every((row,i)=>{
   if(!row||Object.keys(row).length!==4||!Number.isInteger(row.x)||row.x<0||row.x>=worldWidth(s)||

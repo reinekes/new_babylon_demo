@@ -1,0 +1,21 @@
+{
+  "speed": 4,
+  "buildings": 138,
+  "citizens": 296,
+  "anchor": {
+    "x": 16,
+    "y": 6
+  },
+  "unaffectedIntake": {
+    "x": 28,
+    "y": 6
+  },
+  "extraIrrigatedFields": 1,
+  "expiry": true,
+  "saveByteEqual": true,
+  "rejectsFuturePressure": true,
+  "legacyNoPressure": true,
+  "samples": 243,
+  "medianStepCpuMs": 3.2037500000000136,
+  "p95StepCpuMs": 9.081583000000023
+}

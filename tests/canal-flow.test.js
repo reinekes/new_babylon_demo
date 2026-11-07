@@ -67,3 +67,21 @@ test('summer low water reduces real field supply and an independent lake intake 
  assert.equal(lowWaterForecast(s),null);
  assert.equal(fields.filter(b=>fieldWater(s,b).canal).length,2);
 });
+
+test('Depths pressure lends a share to one connected intake during low water, then expires',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const fields=[{type:'field',x:12,y:6,level:1},{type:'field',x:13,y:5,level:1}];
+ s.buildings.push({type:'canal',x:13,y:6,level:1},{type:'canal',x:13,y:12,level:1},...fields);
+ s.year=2;
+ s.season=1;
+ const low=()=>irrigationFor(s,{lowRiver:true});
+ assert.equal(low().flow.routes.size,1);
+ assert.equal(low().intakeLimits.get('13,12'),1);
+ s.tick=5;
+ s.depthSupply={pressure:{x:13,y:6,tick:5}};
+ assert.equal(low().flow.routes.size,2);
+ assert.equal(low().intakeLimits.get('13,12'),1);
+ s.season=2;
+ s.tick++;
+ assert.equal(low().flow.routes.size,1);
+});
