@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 236,
+  "stages": [
+    "idle",
+    "castingAxe"
+  ],
+  "received": 1,
+  "equipped": true,
+  "edge": 2,
+  "steps": 1400,
+  "medianCPUms": 1.799082999999996,
+  "p95CPUms": 6.420375000000149,
+  "exactSave": true
+}

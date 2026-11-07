@@ -47,7 +47,7 @@ test('newgame buildings have known year1; actual completion sets date and upgrad
 
 test('v28 old metadata omission roundtrips without changing people, freight, resources or inventing build year',()=>{
  const s=createGame({start:'established'});for(const b of s.buildings){delete b.built;delete b.productionAnnual;}const original=JSON.parse(encode(s)),restored=decode(JSON.stringify(original));
- assert.ok(restored);assert.equal(restored.version,33);assert.deepEqual(restored,original);assert.ok(restored.buildings.every(b=>!b.built&&!b.productionAnnual));
+ assert.ok(restored);assert.equal(restored.version,34);assert.deepEqual(restored,original);assert.ok(restored.buildings.every(b=>!b.built&&!b.productionAnnual));
  const people=structuredClone(restored.citizens),resources=structuredClone(restored.resources);initializeProductionAccounting(restored);assert.deepEqual(restored.citizens,people);assert.deepEqual(restored.resources,resources);assert.ok(restored.buildings.every(b=>!b.built));assert.ok(decode(encode(restored)));
  const bad=JSON.parse(encode(s));bad.buildings[0].built={year:0,season:0,elapsed:0,order:0};assert.equal(decode(JSON.stringify(bad)),null);
 });

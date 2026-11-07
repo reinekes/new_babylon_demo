@@ -8,7 +8,7 @@ import {EARTH} from './map-art.js';
 const EMPTY=Object.freeze({stage:'idle',elapsed:0,ready:0,clay:0,reed:0,water:0,food:0,pottery:0,vesselUses:0});
 export function artisanArtState(b){return artisanSummary(b)||EMPTY;}
 export function drawArtisan(r,b,s,t=0){
- if(!['pottery','brewery','bakery','dairyStore'].includes(b.type))return;
+ if(!['pottery','brewery','bakery','dairyStore','coppersmith'].includes(b.type))return;
  const p=r.point(b.x,b.y),q=r.s,c=r.ctx,level=levelOf(b),v=artisanArtState(b),pottery=b.type==='pottery';
  const poly=(pts,color)=>r.polygon(pts.map(([x,y])=>[p.x+x*q,p.y+y*q]),color),line=(pts,color,w=1)=>r.line(pts.map(([x,y])=>[p.x+x*q,p.y+y*q]),color,w*q),box=(x,y,w,d,h,top=EARTH.ivory,left=EARTH.shade,right=EARTH.plaster)=>r.box(p.x+x*q,p.y+y*q,w*q,d*q,h*q,top,left,right),oval=(x,y,w,h,color)=>{c.fillStyle=color;c.beginPath();c.ellipse(p.x+x*q,p.y+y*q,w*q,h*q,0,0,Math.PI*2);c.fill();};
  const jar=(x,y,size=1,color='#bd825f',sealed=false)=>{oval(x,y-3.8*size,2.8*size,3.8*size,color);oval(x-.7*size,y-4*size,.7*size,2.5*size,'#e3b58a');oval(x,y-7*size,1.8*size,.8*size,sealed?'#d7c495':'#695a43');line([[x-1.9*size,y-7*size],[x+1.9*size,y-7*size]],'#ecd2a5',.7);};
@@ -45,6 +45,10 @@ export function drawArtisan(r,b,s,t=0){
   if(wheel.forming)jar(15,1,.65,'#b49a7b');
   if(v.stage==='drying')for(let k=0;k<2;k++)jar(11+k*8,6-k*2,.9,'#c5b08b');
   if(v.stage==='ready'&&v.ready>0)for(let k=0;k<Math.min(2,v.ready);k++)jar(12+k*9,9-k*1.7,1,'#bd7d57');
+ }else if(b.type==='coppersmith'){
+  box(10,4,8,4,7,'#bc8561','#97674c','#a97655');
+  oval(10,-3,4,2,v.stage==='castingAxe'?'#f3ae56':'#574234');
+  box(20,6,6,3,3,'#9c9b86','#76765f','#848572');
  }else if(b.type==='dairyStore'){
   jar(9,6,1.35);jar(21,4,1);
   box(-2,5,7,3,2,'#c8ad81','#95805f','#ab9069');

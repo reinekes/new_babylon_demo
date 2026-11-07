@@ -17,7 +17,7 @@ export const BUILDING_GROUPS=[
  {id:'life',name:'Жители',types:['house','healer','musicHouse']},
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Сырьё',types:['clay','reed','logging','quarry']},
- {id:'craft',name:'Ремёсла',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','kiln','brickyard','sheepfold','weaver','tailor']},
+ {id:'craft',name:'Ремёсла',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith','kiln','brickyard','sheepfold','weaver','tailor']},
  {id:'supply',name:'Снабжение',types:['waterpoint','granary','depot','market']},
  {id:'sacred',name:'Храмы',types:['shrine','ziggurat','ishtarGate']},
  {id:'routes',name:'Пути и вода',types:['canal','levee','bridge','harbor','cityWall','cityGate']}

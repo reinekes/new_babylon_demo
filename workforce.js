@@ -44,6 +44,7 @@ import {canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js'
 import {queueGranaryReceipt,workOnAccount} from './scribes.js';
 import {workDairy} from './dairy.js';
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
+import {useAxe} from './axe-kit.js';
 import {GATHERING_TYPES,workGathering,advanceGathering} from './labor-life.js';
 import {initializeArtisans,isArtisan,artisanNeeds,artisanOutput,workArtisan,advanceArtisans,collectArtisan} from './artisan.js';
 import {advanceKilns,kilnNeeds,startFiring,collectFired,kilnNeedsRepair,repairKiln} from './kilns.js';
@@ -287,7 +288,7 @@ export function syncCitizens(s){
    if(worker){labor.set(worker.id,{work:key,store:laborAccess(worker,key)});reserved.add(worker.id);}
   }
  }
- const priority={waterpoint:-.5,pottery:1,brewery:1,bakery:1,linenYard:1,dairyStore:1,basketry:1,matYard:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
+ const priority={waterpoint:-.5,pottery:1,brewery:1,bakery:1,linenYard:1,dairyStore:1,basketry:1,matYard:1,coppersmith:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
  const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='garden'||orchardMaturity(s,b).yield>0)&&(b.type!=='clay'||clayRemaining(s,b.x,b.y)>1e-8)&&(b.type!=='quarry'||stoneRemaining(s,b.x,b.y)>1e-8)).sort((a,b)=>priority[a.type]-priority[b.type]);
  const slots=jobs.flatMap(b=>Array(workplaceCapacity(b.type)).fill(buildingKey(b))),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work&&!c.guardPost)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
@@ -355,7 +356,7 @@ function harvest(s,c,ctx,via=null){
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
   const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,b.x,b.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,b.x,b.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,b.x,b.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,b.x,b.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
   if(amount<=1e-8)continue;
-  c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
+  c.cargo[resource]=amount;if(resource==='wood')useAxe(b,amount);if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
  if(c.cargo.faith>0&&c.calling==='priest')recordSunlightService(s,b,c);
  if(b.type==='clay'&&clayRemaining(s,b.x,b.y)<=1e-8||b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)invalidateAssignments(s);
