@@ -1,0 +1,58 @@
+[
+  {
+    "id": "allow",
+    "view": "2d",
+    "url": "?id=allow&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d allow guest custom"
+  },
+  {
+    "id": "allow",
+    "view": "3d",
+    "url": "?id=allow&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d allow guest custom"
+  },
+  {
+    "id": "lesson",
+    "view": "2d",
+    "url": "?id=lesson&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d lesson guest custom"
+  },
+  {
+    "id": "lesson",
+    "view": "3d",
+    "url": "?id=lesson&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d lesson guest custom"
+  },
+  {
+    "id": "after",
+    "view": "2d",
+    "url": "?id=after&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d after guest custom"
+  },
+  {
+    "id": "after",
+    "view": "3d",
+    "url": "?id=after&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d after guest custom"
+  },
+  {
+    "id": "interrupted",
+    "view": "2d",
+    "url": "?id=interrupted&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d interrupted guest custom"
+  },
+  {
+    "id": "interrupted",
+    "view": "3d",
+    "url": "?id=interrupted&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d interrupted guest custom"
+  }
+]

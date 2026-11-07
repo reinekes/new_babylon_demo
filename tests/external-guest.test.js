@@ -112,3 +112,25 @@ test('a fed master counts for future arrivals only after walking back to the mar
  assert.equal(s.arrivalHospitality.receipts[0].kind,'artisan');
  const raw=encode(s);assert.equal(encode(decode(raw)),raw);
 });
+
+test('a guest can keep his libation custom without drawing on the household ration or changing belief',()=>{
+ for(const [choice,extra,expected] of [['allow',2,'honored'],['allow',0,'unfulfilled'],['lesson',2,'lesson']]){
+  let {s,pupil,house}=fixture();
+  const faith=pupil.faith,mood=pupil.mood;
+  house.water=10+extra;
+  assert.ok(inviteExternalMaster(s,choice).ok);
+  assert.equal(house.water,10+extra,'the invitation does not spend water');
+  const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+  pupil=s.citizens.find(c=>c.id===pupil.id);
+  house=s.buildings.find(b=>`${b.x},${b.y}`===pupil.home);
+  step(s,350,()=>s.externalGuest.phase==='departed');
+  assert.equal(s.externalGuest.outcome,'taught');
+  assert.equal(s.externalGuest.custom,expected);
+  assert.equal(pupil.faith,faith);
+  assert.equal(pupil.mood,mood+(expected==='honored'?6:0));
+  assert.equal(house.water,10+extra-2-(expected==='honored'?1:0));
+  step(s,10);
+  assert.equal(pupil.mood,mood+(expected==='honored'?6:0));
+  const complete=encode(s);assert.equal(encode(decode(complete)),complete);
+ }
+});

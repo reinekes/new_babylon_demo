@@ -859,14 +859,17 @@ function externalGuestHTML(){
   const phase={arriving:'Идёт к дому ученика',staying:g.fed?'Передаёт навык при встрече':'Ждёт ученика дома и воду',
    returning:'Возвращается к торговому двору',departed:'Покинул город'}[g.phase];
   const outcome=g.outcome==='taught'?'Ученик получил практику строителя.':g.outcome==='interrupted'?'Занятие не состоялось.':'';
+  const custom={allow:g.outcome==='interrupted'?'Возлияние не состоялось.':'Гостю выделят 1 воду на возлияние, если после пайка останется излишек.',lesson:'Договорились встретиться для урока.',honored:'Лу-Уту совершил возлияние. Двор выделил 1 воду, настроение ученика выросло.',unfulfilled:'Свободной воды для возлияния не было. Мастер продолжил визит без обряда.'}[g.custom]||'';
+
   return `<section class="management-row"><h3>Приглашённый мастер · ${esc(g.name)}</h3>
    <p>${esc(g.partner)} · ${phase}. ${outcome}<br>Ученик: ${learner?resident(learner):'больше не живёт в городе'} · дом ${g.home}.
-   ${g.fed?'Паёк принят.':g.phase==='arriving'||g.phase==='staying'?'В резерве 3 еды, в доме нужно 2 воды.':''}</p></section>`;
+   ${g.fed?'Паёк принят.':g.phase==='arriving'||g.phase==='staying'?'В резерве 3 еды, в доме нужно 2 воды.':''}</p>${custom?`<p data-guest-custom>${custom}</p>`:''}</section>`;
  }
  return `<section class="management-row"><h3>Приглашённый мастер · ${esc(offer.name)}</h3>
   <p>Мастер прибыл с купцами. Встретится с местным строителем I уровня у него дома. Для визита нужны ${offer.food} еды и ${offer.water} воды.
   ${offer.learner!==undefined?`Ученик: ${resident(offer.learner)}.`:''}</p>
-  <button data-invite-external-master ${offer.reason?'disabled':''}>Пригласить мастера</button>${offer.reason?`<small> ${esc(offer.reason)}</small>`:''}</section>`;
+  <p>Лу-Уту просит одну лишнюю единицу воды на возлияние по своему обычаю. Можно договориться только об уроке.</p>
+  <button data-invite-external-master="allow" ${offer.reason?'disabled':''}>Пригласить с возлиянием</button> <button data-invite-external-master="lesson" ${offer.reason?'disabled':''}>Пригласить на урок</button>${offer.reason?`<small> ${esc(offer.reason)}</small>`:''}</section>`;
 }
 
 function visitorPanel(kind,title){
@@ -896,8 +899,9 @@ function renderTrade(){
  if(feed)feed.onclick=()=>{if(mutate(feedDonkeyCaravan(state),'Корм зарезервирован. Носильщики доставят его ослам.'))renderTrade();};
  const sign=$('trade-content').querySelector('[data-accept-trade-contract]');
  if(sign)sign.onclick=()=>{if(mutate(acceptTradeContract(state),'Договор подписан. Ткань зарезервирована.'))renderTrade();};
- const invite=$('trade-content').querySelector('[data-invite-external-master]');
- if(invite)invite.onclick=()=>{if(mutate(inviteExternalMaster(state),'Мастер приглашён. Паёк зарезервирован.'))renderTrade();};
+ for(const button of $('trade-content').querySelectorAll('[data-invite-external-master]'))button.onclick=()=>{
+  if(mutate(inviteExternalMaster(state,button.dataset.inviteExternalMaster),'Мастер приглашён. Паёк зарезервирован.'))renderTrade();
+ };
  for(const button of $('trade-content').querySelectorAll('[data-invite-visitor]'))button.onclick=()=>{
   if(mutate(inviteVisitor(state,button.dataset.inviteVisitor),'Гость принят. Припасы зарезервированы.'))renderTrade();
  };

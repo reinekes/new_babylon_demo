@@ -1,3 +1,5 @@
+import {affectResidents} from './wellbeing.js';
+import {waterSummary} from './water.js';
 import {recordArrivalHospitality} from './arrival-hospitality.js';
 import {isVotiveTemple,receiveForeignVotive} from './votive-offerings.js';
 import {stockStores} from './inventory.js';
@@ -37,7 +39,8 @@ export function externalMasterOffer(s){
  return {...base,reason:'Нужен взрослый вдохновлённый строитель I уровня с дорогой от дома до торгового двора'};
 }
 
-export function inviteExternalMaster(s){
+export function inviteExternalMaster(s,custom){
+ if(custom!==undefined&&!['allow','lesson'].includes(custom))return {ok:false,reason:'Выбери условия визита'};
  const offer=externalMasterOffer(s);
  if(!offer||offer.reason)return {ok:false,reason:offer?.reason||'Визит мастера уже был или пока недоступен'};
  const network=networkFor(s),market=portAt(network,offer.market),home=portAt(network,offer.home);
@@ -50,7 +53,7 @@ export function inviteExternalMaster(s){
  if(!provisions)return {ok:false,reason:'Нужно 3 еды без семенного резерва на доступных складах'};
  s.externalGuest={name:NAME,partner:offer.partner,learner:offer.learner,home:offer.home,market:offer.market,
   x:market.x,y:market.y,phase:'arriving',route:path.map(p=>p.key),routeIndex:1,
-  deadline:s.simTime+VISIT_SECONDS,progress:0,provisions,...Object.keys(giftReserve).length?{giftReserve}:{},fed:false,outcome:null};
+  deadline:s.simTime+VISIT_SECONDS,progress:0,...custom?{custom}:{},provisions,...Object.keys(giftReserve).length?{giftReserve}:{},fed:false,outcome:null};
  return {ok:true};
 }
 
@@ -107,6 +110,11 @@ export function advanceExternalGuest(s,dt,network){
  if(!g.fed){
   if(home.building.water<WATER)return;
   home.building.water-=WATER;g.provisions={};delete g.giftReserve;g.fed=true;
+  if(g.custom==='allow'){
+   const water=waterSummary(s,home.building);
+   g.custom=water.stock>=water.demand+1?'honored':'unfulfilled';
+   if(g.custom==='honored'){home.building.water-=1;affectResidents(s,{mood:6},[pupil.id]);}
+  }
  }
  g.progress=Math.min(LESSON,g.progress+dt);
  if(g.progress>=LESSON-1e-8){
@@ -151,6 +159,7 @@ export function validateExternalGuest(s){
   !Array.isArray(g.route)||g.route.length>(worldWidth(s)+1)*(worldHeight(s)+1)||
   !Number.isInteger(g.routeIndex)||g.routeIndex<0||g.routeIndex>g.route.length||
   !g.provisions||typeof g.provisions!=='object'||Array.isArray(g.provisions))return false;
+ if(g.custom!==undefined&&!(g.custom==='lesson'||(g.fed?['honored','unfulfilled'].includes(g.custom):g.custom==='allow')))return false;
  const beforeReturn=['arriving','staying'].includes(g.phase);
  if(beforeReturn?g.outcome!==null:!['taught','interrupted'].includes(g.outcome))return false;
  if((g.outcome==='taught')!==(g.progress===LESSON)||g.progress>0&&!g.fed)return false;

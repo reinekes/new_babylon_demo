@@ -1,0 +1,10 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "practice": 8,
+  "custom": "honored",
+  "speed": 4,
+  "byteExact": true,
+  "medianCpuMs": 0.5744159999999852,
+  "p95CpuMs": 4.6057500000000005
+}
