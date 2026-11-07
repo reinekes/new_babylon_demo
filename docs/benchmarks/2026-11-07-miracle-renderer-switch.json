@@ -1,0 +1,285 @@
+{
+  "commit": "f3b4bcce27ff309eed64355e437fd5de4e8e47aa",
+  "browser": "Google Chrome 157.0.8103.39 headless on macOS",
+  "conditions": "Paused city, real 2D canvas and WebGL 3D checked via the renderer marker. Browser control via DevTools. No FPS measurement.",
+  "checks": [
+    "paid or trial cast",
+    "immediate second click",
+    "skip when available",
+    "full page navigation to the other renderer",
+    "disabled replay and byte-identical stored save"
+  ],
+  "cases": 19,
+  "powers": 17,
+  "runs": 38,
+  "skips": 32,
+  "scope": "Blessing uses the classic scenario. Both cat routes and Blessing have no standalone skip control. Opening cinematics are outside this cast matrix.",
+  "results": [
+    {
+      "id": "rain",
+      "view": "2d",
+      "url": "?id=rain&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS rain 2d→3d skip"
+    },
+    {
+      "id": "rain",
+      "view": "3d",
+      "url": "?id=rain&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS rain 3d→2d skip"
+    },
+    {
+      "id": "inannaProtection",
+      "view": "2d",
+      "url": "?id=inannaProtection&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS inannaProtection 2d→3d skip"
+    },
+    {
+      "id": "inannaProtection",
+      "view": "3d",
+      "url": "?id=inannaProtection&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS inannaProtection 3d→2d skip"
+    },
+    {
+      "id": "relicAwakening",
+      "view": "2d",
+      "url": "?id=relicAwakening&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS relicAwakening 2d→3d skip"
+    },
+    {
+      "id": "relicAwakening",
+      "view": "3d",
+      "url": "?id=relicAwakening&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS relicAwakening 3d→2d skip"
+    },
+    {
+      "id": "earthMemory",
+      "view": "2d",
+      "url": "?id=earthMemory&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS earthMemory 2d→3d skip"
+    },
+    {
+      "id": "earthMemory",
+      "view": "3d",
+      "url": "?id=earthMemory&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS earthMemory 3d→2d skip"
+    },
+    {
+      "id": "cat",
+      "view": "2d",
+      "url": "?id=cat&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS cat 2d→3d no-skippable-scene"
+    },
+    {
+      "id": "cat",
+      "view": "3d",
+      "url": "?id=cat&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS cat 3d→2d no-skippable-scene"
+    },
+    {
+      "id": "abundance",
+      "view": "2d",
+      "url": "?id=abundance&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS abundance 2d→3d skip"
+    },
+    {
+      "id": "abundance",
+      "view": "3d",
+      "url": "?id=abundance&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS abundance 3d→2d skip"
+    },
+    {
+      "id": "bless",
+      "view": "2d",
+      "url": "?id=bless&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS bless 2d→3d no-skippable-scene"
+    },
+    {
+      "id": "bless",
+      "view": "3d",
+      "url": "?id=bless&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS bless 3d→2d no-skippable-scene"
+    },
+    {
+      "id": "fertility",
+      "view": "2d",
+      "url": "?id=fertility&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS fertility 2d→3d skip"
+    },
+    {
+      "id": "fertility",
+      "view": "3d",
+      "url": "?id=fertility&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS fertility 3d→2d skip"
+    },
+    {
+      "id": "richCatch",
+      "view": "2d",
+      "url": "?id=richCatch&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS richCatch 2d→3d skip"
+    },
+    {
+      "id": "richCatch",
+      "view": "3d",
+      "url": "?id=richCatch&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS richCatch 3d→2d skip"
+    },
+    {
+      "id": "inspiration",
+      "view": "2d",
+      "url": "?id=inspiration&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS inspiration 2d→3d skip"
+    },
+    {
+      "id": "inspiration",
+      "view": "3d",
+      "url": "?id=inspiration&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS inspiration 3d→2d skip"
+    },
+    {
+      "id": "haste",
+      "view": "2d",
+      "url": "?id=haste&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS haste 2d→3d skip"
+    },
+    {
+      "id": "haste",
+      "view": "3d",
+      "url": "?id=haste&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS haste 3d→2d skip"
+    },
+    {
+      "id": "revelation",
+      "view": "2d",
+      "url": "?id=revelation&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS revelation 2d→3d skip"
+    },
+    {
+      "id": "revelation",
+      "view": "3d",
+      "url": "?id=revelation&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS revelation 3d→2d skip"
+    },
+    {
+      "id": "peace",
+      "view": "2d",
+      "url": "?id=peace&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS peace 2d→3d skip"
+    },
+    {
+      "id": "peace",
+      "view": "3d",
+      "url": "?id=peace&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS peace 3d→2d skip"
+    },
+    {
+      "id": "sunlight",
+      "view": "2d",
+      "url": "?id=sunlight&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS sunlight 2d→3d skip"
+    },
+    {
+      "id": "sunlight",
+      "view": "3d",
+      "url": "?id=sunlight&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS sunlight 3d→2d skip"
+    },
+    {
+      "id": "healing",
+      "view": "2d",
+      "url": "?id=healing&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS healing 2d→3d skip"
+    },
+    {
+      "id": "healing",
+      "view": "3d",
+      "url": "?id=healing&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS healing 3d→2d skip"
+    },
+    {
+      "id": "stars",
+      "view": "2d",
+      "url": "?id=stars&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS stars 2d→3d skip"
+    },
+    {
+      "id": "stars",
+      "view": "3d",
+      "url": "?id=stars&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS stars 3d→2d skip"
+    },
+    {
+      "id": "shaping",
+      "view": "2d",
+      "url": "?id=shaping&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS shaping 2d→3d skip"
+    },
+    {
+      "id": "shaping",
+      "view": "3d",
+      "url": "?id=shaping&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS shaping 3d→2d skip"
+    },
+    {
+      "id": "rainPaid",
+      "view": "2d",
+      "url": "?id=rainPaid&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS rainPaid 2d→3d skip"
+    },
+    {
+      "id": "rainPaid",
+      "view": "3d",
+      "url": "?id=rainPaid&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS rainPaid 3d→2d skip"
+    },
+    {
+      "id": "catTrial",
+      "view": "2d",
+      "url": "?id=catTrial&view=3d&reload&from=2d",
+      "mode": "3d",
+      "result": "PASS catTrial 2d→3d no-skippable-scene"
+    },
+    {
+      "id": "catTrial",
+      "view": "3d",
+      "url": "?id=catTrial&view=2d&reload&from=3d",
+      "mode": "2d",
+      "result": "PASS catTrial 3d→2d no-skippable-scene"
+    }
+  ]
+}
