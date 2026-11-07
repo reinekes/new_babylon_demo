@@ -1,0 +1,27 @@
+[
+  {
+    "view": "2d",
+    "mode": "awakening",
+    "param": "137",
+    "seed": 137,
+    "world": "6b413a048c70d2fc635bfb420ee6c8a6d21523c20a69f0e3023f710881a1949a",
+    "intro": true,
+    "tick": 0
+  },
+  {
+    "view": "3d",
+    "mode": "awakening",
+    "param": "137",
+    "seed": 137,
+    "world": "6b413a048c70d2fc635bfb420ee6c8a6d21523c20a69f0e3023f710881a1949a",
+    "intro": true,
+    "tick": 0
+  },
+  {
+    "view": "2d",
+    "legacy": true,
+    "intro": true,
+    "spring": true,
+    "localSupplies": true
+  }
+]
