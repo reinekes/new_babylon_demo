@@ -1,4 +1,4 @@
-import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding} from './campaign.js';
+import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding,craftEndingOffer,recordCraftEnding} from './campaign.js';
 import {createInannaPresentation} from './inanna-presentation.js';
 import {createLandPresentation} from './land-presentation.js';
 import {landMemoryCastQuote,landMemoryStories} from './land-memory.js';
@@ -1048,12 +1048,17 @@ function update(){
  const waterEnding=state.waterEnding?'<button type="button" data-water-ending>Бог общей воды · завершено</button>'
   :waterEndingOffer(state)?'<button type="button" data-water-ending>Открыть финал «Бог общей воды»</button>'
   :chapter&&state.godhood.namelessEndingAt===undefined?'<small>Бог общей воды · укрой соседей при разливе и доставь воду двум дворам из одного общего водозабора.</small>':'';
+ const craftEnding=state.craftEnding?'<button type="button" data-craft-ending>Бог мастерства · завершено</button>'
+  :craftEndingOffer(state)?'<button type="button" data-craft-ending>Открыть финал «Бог мастерства»</button>'
+  :chapter&&state.godhood.namelessEndingAt===undefined?'<small>Бог мастерства · обучи строителя следующего поколения до III уровня и прими весь лес по исполненному торговому договору.</small>':'';
  const chapterHTML=chapter?`<section class="goal" data-campaign-chapter="${chapter.rank}"><div><b>${esc(chapter.title)}</b><p>${esc(chapter.condition)}</p></div></section>`:'';
- setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding);
+ setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding+craftEnding);
  const hearthButton=$('goals').querySelector('[data-hearth-ending]');
  if(hearthButton)hearthButton.onclick=showHearthEnding;
  const waterButton=$('goals').querySelector('[data-water-ending]');
  if(waterButton)waterButton.onclick=showWaterEnding;
+ const craftButton=$('goals').querySelector('[data-craft-ending]');
+ if(craftButton)craftButton.onclick=showCraftEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'&&!richCatchTarget(state,lastMiracleTarget)?'Выбери действующий рыбацкий двор на карте':'');
@@ -1117,6 +1122,17 @@ function showWaterEnding(){
  if($('water-ending-continue'))$('water-ending-continue').onclick=()=>{
   const result=recordWaterEnding(state);
   if(mutate(result,'Финал «Бог общей воды» записан в летопись')){closeDialog();paused=false;update();}
+ };
+}
+function showCraftEnding(){
+ const ending=state.craftEnding,story=ending||craftEndingOffer(state);
+ if(!story){toast('Условия финала изменились. Проверь ученика и договор.');return;}
+ const contract=state.tradeContracts.find(q=>q.visit===story.visit);
+ openDialog('craft-ending',`<span class="eyebrow">ИСТОРИЯ МАСТЕРСТВА</span><h2>Бог мастерства</h2><p>${resident(story.pupilId)} освоил III уровень на стройке ${esc(story.site.join(', '))} вместе с наставником ${resident(story.mentorId)}. На момент финала ученик работал строителем.</p><p>Купцы приняли ткань, а город получил ${contract.wood} дерева. Договор №${story.visit} · ${esc(contract.partner)}.</p><div class="dialog-actions">${ending?'<button class="primary" id="craft-ending-back">Вернуться в город</button>':'<button class="primary" id="craft-ending-continue">Записать финал и продолжить</button><button id="craft-ending-back">Вернуться в город</button>'}</div>`);
+ $('craft-ending-back').onclick=closeDialog;
+ if($('craft-ending-continue'))$('craft-ending-continue').onclick=()=>{
+  const result=recordCraftEnding(state);
+  if(mutate(result,'Финал «Бог мастерства» записан в летопись')){closeDialog();paused=false;update();}
  };
 }
 function showNamelessEnding(){

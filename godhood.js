@@ -160,7 +160,7 @@ export function namelessEndingReason(s){
   ...(facts?.waterWitnesses||[]).map(f=>[f.recipientId,f.courierId]),
   ...(facts?.healing||[]).map(f=>[f.patientId,f.healerId]),
   ...(facts?.harvest||[]).map(f=>[f.recipientId,f.farmerId]),
-  ...(facts?.craft||[]).map(f=>[f.pupilId,f.mentorId]),
+  ...[...(facts?.craft||[]),...(facts?.craftSuccession||[])].map(f=>[f.pupilId,f.mentorId]),
   ...(s.arrivalHospitality?.welcomes||[]).map(f=>[f.host,...f.members]),
   ...(s.supplyVows?.history||[]).flatMap(v=>v.targets.map(t=>[...t.residents,t.delivery?.witness])),
   ...(s.supplyVows?.active?.targets||[]).map(t=>[...t.residents,t.delivery?.witness])

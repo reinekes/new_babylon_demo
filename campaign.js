@@ -146,3 +146,43 @@ export function validateWaterEnding(s){
  const [a,b]=ending.deliveries;
  return valid(a)&&valid(b)&&a.homeId!==b.homeId&&a.home!==b.home;
 }
+
+function completedTimberContract(s,visit){
+ return s.tradeContracts?.find(q=>q.status==='fulfilled'&&(visit===undefined||q.visit===visit)&&
+  s.trade?.deliveries.some(row=>row.id===q.deliveryId&&row.resource==='wood'&&row.amount===q.wood&&row.delivered>=row.amount));
+}
+
+export function craftEndingOffer(s){
+ if(!usesCampaign(s)||s.craftEnding||s.lost||s.event||s.funeral||cityCommandReason(s))return null;
+ const archive=s.causalFacts;
+ if(!archive?.craftSuccession?.length&&!archive?.craft?.length)return null;
+ const contract=completedTimberContract(s);
+ if(!contract)return null;
+ const builders=new Map(s.citizens.filter(c=>c.role==='builder'&&c.calling==='builder'&&!c.pendingRole&&c.builderSkill?.level===3).map(c=>[c.id,c]));
+ const people=new Map((s.lifeAnalytics?.people||[]).map(c=>[c.id,c]));
+ const lesson=[...(archive.craftSuccession||[]),...(archive.craft||[])].find(f=>{
+  const pupil=builders.get(f.pupilId),mentor=people.get(f.mentorId);
+  return pupil&&mentor&&pupil.generation>mentor.generation;
+ });
+ return lesson?{pupilId:lesson.pupilId,mentorId:lesson.mentorId,site:[...lesson.site],trainedAt:lesson.time,visit:contract.visit}:null;
+}
+
+export function recordCraftEnding(s){
+ const offer=craftEndingOffer(s);
+ if(!offer)return {ok:false,reason:'Нужны работающий ученик следующего поколения и полученный лес по исполненному договору'};
+ s.craftEnding={...offer,at:s.simTime};
+ s.news.unshift({title:'Бог мастерства',text:'Ученик продолжил дело наставника. Город выполнил договор и принял лес.',kind:'good',year:s.year,season:s.season,tick:s.tick});
+ s.news=s.news.slice(0,80);
+ return {ok:true};
+}
+
+export function validateCraftEnding(s){
+ const ending=s.craftEnding;
+ if(ending===undefined)return true;
+ if(!usesCampaign(s)||!ending||Object.keys(ending).length!==6||!Number.isSafeInteger(ending.visit)||
+  !Number.isFinite(ending.at)||ending.at>s.simTime||!Number.isFinite(ending.trainedAt)||ending.trainedAt<0||ending.trainedAt>ending.at||
+  !Array.isArray(ending.site)||ending.site.length!==2||!ending.site.every((n,i)=>Number.isFinite(n)&&n>=-.5&&n<=(i===0?worldWidth(s):worldHeight(s))-.5))return false;
+ const people=s.lifeAnalytics?.people||[];
+ const pupil=people.find(c=>c.id===ending.pupilId),mentor=people.find(c=>c.id===ending.mentorId);
+ return !!pupil&&!!mentor&&pupil.generation>mentor.generation&&!!completedTimberContract(s,ending.visit);
+}

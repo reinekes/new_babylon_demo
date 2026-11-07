@@ -106,3 +106,27 @@ test('the craft forecast suggests compatible unassigned builders on connected la
  assert.deepEqual(s,before);
  assert.deepEqual(builderTeachingCandidates({...s,godhood:{mode:'mature'}},network),[]);
 });
+
+test('a younger pupil who reaches mastery after the name is earned can qualify for the craft ending',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ const {recordCraftNameEvidence}=await import('../causal-facts.js');
+ const {craftEndingOffer,recordCraftEnding}=await import('../campaign.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ const [mentor,first,second,pupil]=s.citizens.filter(c=>c.age>=16);
+ const site={x:5,y:5,construction:{kind:'new'}};
+ Object.assign(mentor,{generation:1});
+ Object.assign(pupil,{generation:2,role:'builder',calling:'builder',builderSkill:{projects:5,level:3}});
+ recordCraftNameEvidence(s,site,{mentor,pupil:first});
+ recordCraftNameEvidence(s,site,{mentor,pupil:second});
+ assert.equal(s.causalFacts.craft.length,2);
+ recordCraftNameEvidence(s,site,{mentor,pupil});
+ assert.equal(s.causalFacts.craft.length,2);
+ assert.equal(s.causalFacts.craftSuccession[0].pupilId,pupil.id);
+ s.tradeContracts=[{status:'fulfilled',visit:1,deliveryId:3,wood:12}];
+ s.trade.deliveries=[{id:3,resource:'wood',amount:12,delivered:11}];
+ assert.equal(craftEndingOffer(s),null);
+ s.trade.deliveries[0].delivered=12;
+ assert.equal(craftEndingOffer(s)?.pupilId,pupil.id);
+ assert.ok(recordCraftEnding(s).ok);
+ assert.equal(recordCraftEnding(s).ok,false);
+});

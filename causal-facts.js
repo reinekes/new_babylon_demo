@@ -96,14 +96,19 @@ export function craftNameEvidence(s){
 
 export function recordCraftNameEvidence(s,site,{mentor,pupil}){
  if(!isStrictSumer(s)||!site?.construction||!Number.isFinite(site.x)||!Number.isFinite(site.y))return;
+ const lesson={mentorId:mentor.id,pupilId:pupil.id,site:[site.x,site.y],time:s.simTime};
+ if(pupil.generation>mentor.generation){
+  const successors=causalLedger(s).craftSuccession??=[];
+  if(!successors.some(f=>f.pupilId===pupil.id))successors.push(lesson);
+  if(successors.length>LIMIT)successors.shift();
+ }
  const first=s.causalFacts?.craft?.[0];
  if(craftNameEvidence(s)||first?.home===pupil.home||first?.pupilId===pupil.id)return;
  const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===pupil.home);
  if(!home||first&&first.homeId===home.waterEntityId)return;
  const ledger=causalLedger(s);
  home.waterEntityId??=ledger.nextEntityId++;
- (ledger.craft??=[]).push({homeId:home.waterEntityId,home:pupil.home,mentorId:mentor.id,pupilId:pupil.id,
-  site:[site.x,site.y],time:s.simTime});
+ (ledger.craft??=[]).push({homeId:home.waterEntityId,home:pupil.home,...lesson});
 }
 
 export function harvestNameEvidence(s){
@@ -236,14 +241,28 @@ export function validateCausalFacts(s){
    patients.add(fact.patientId);previousHealingTime=fact.time;
   }
  }
+ const validLesson=f=>f&&Array.isArray(f.site)&&f.site.length===2&&
+  f.site.every((value,i)=>Number.isFinite(value)&&value>=-.5&&value<=(i===0?worldWidth(s):worldHeight(s))-.5)&&
+  citizen(f.mentorId)&&citizen(f.pupilId)&&f.mentorId!==f.pupilId&&Number.isFinite(f.time)&&f.time>=0&&f.time<=s.simTime;
+ const successors=ledger.craftSuccession;
+ if(successors!==undefined){
+  if(s.godhood?.mode!=='awakening'||!Array.isArray(successors)||!successors.length||successors.length>LIMIT)return false;
+  const people=new Map((s.lifeAnalytics?.people||[]).map(c=>[c.id,c]));
+  for(const c of s.citizens)people.set(c.id,c);
+  const pupils=new Set();
+  let previous=-1;
+  for(const f of successors){
+   if(!validLesson(f)||Object.keys(f).length!==4||pupils.has(f.pupilId)||f.time<previous||
+    !(people.get(f.pupilId)?.generation>people.get(f.mentorId)?.generation))return false;
+   pupils.add(f.pupilId);previous=f.time;
+  }
+ }
  const craft=ledger.craft;
  if(craft!==undefined){
   if(s.godhood?.mode!=='awakening'||!Array.isArray(craft)||!craft.length||craft.length>2)return false;
   const [first,second]=craft;
   if(!craft.every(f=>f&&Object.keys(f).length===6&&entity(f.homeId)&&typeof f.home==='string'&&keyPattern.test(f.home)&&
-   entityMatches(f.homeId,'house',f.home)&&Array.isArray(f.site)&&f.site.length===2&&
-   f.site.every((value,i)=>Number.isFinite(value)&&value>=-.5&&value<=(i===0?worldWidth(s):worldHeight(s))-.5)&&
-   citizen(f.mentorId)&&citizen(f.pupilId)&&f.mentorId!==f.pupilId&&Number.isFinite(f.time)&&f.time>=0&&f.time<=s.simTime)||
+   entityMatches(f.homeId,'house',f.home)&&validLesson(f))||
    second&&(second.homeId===first.homeId||second.home===first.home||second.pupilId===first.pupilId||second.time<first.time))return false;
  }
  const harvest=ledger.harvest;
