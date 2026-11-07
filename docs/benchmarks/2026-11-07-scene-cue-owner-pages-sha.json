@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T09:58:29.567547+00:00",
+  "commit": "692be4fd37aeea2d0a622c9041f8ab60f4e0ba15",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "95dd428ef16badb39db28699192a69e363af854628d7ae65cf55e46c7e640ec1",
+      "actual": "95dd428ef16badb39db28699192a69e363af854628d7ae65cf55e46c7e640ec1",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "87829f154c20d5f81a381a7e471ead989002bd3ba0d919ba26a3726227dacca9",
+      "actual": "87829f154c20d5f81a381a7e471ead989002bd3ba0d919ba26a3726227dacca9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-scene-cue-owner-4x.json",
+      "status": 200,
+      "expected": "3b19883cc6cb632c6110d9a5d23636eca8aa7e11eeb4f46b487cd97cf6bd39bb",
+      "actual": "3b19883cc6cb632c6110d9a5d23636eca8aa7e11eeb4f46b487cd97cf6bd39bb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-scene-cue-owner-browser.json",
+      "status": 200,
+      "expected": "00857e0387b4e8ebdc84fbb5f70d4eb6c5a21242dfdee57c5a42be91a09ecd3b",
+      "actual": "00857e0387b4e8ebdc84fbb5f70d4eb6c5a21242dfdee57c5a42be91a09ecd3b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d86fc8d128886458a706449a0e4f445a31971f63a03e1fa45540b6f371bee885",
+      "actual": "d86fc8d128886458a706449a0e4f445a31971f63a03e1fa45540b6f371bee885",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "add12482254d313c8be6d1cda05b27de3b1a2af7f3279ac960bd3946f729e64d",
+      "actual": "add12482254d313c8be6d1cda05b27de3b1a2af7f3279ac960bd3946f729e64d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "b36b7c3ea3fa05a4c9bdebee1276225478fbe9703b25ffb7042d4eb3d72fabf4",
+      "actual": "b36b7c3ea3fa05a4c9bdebee1276225478fbe9703b25ffb7042d4eb3d72fabf4",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "d27fac19694120e6febc8db95e9af3657e752c7161ce68081bc6bac47db772f4",
+      "actual": "d27fac19694120e6febc8db95e9af3657e752c7161ce68081bc6bac47db772f4",
+      "match": true
+    },
+    {
+      "path": "tests/work-audio.test.js",
+      "status": 200,
+      "expected": "ae0419e369232e60852d1720c29f5fe3be001c42db7fc9412d7fde1fc64e9fbb",
+      "actual": "ae0419e369232e60852d1720c29f5fe3be001c42db7fc9412d7fde1fc64e9fbb",
+      "match": true
+    },
+    {
+      "path": "work-audio.js",
+      "status": 200,
+      "expected": "c2aab0ec11bcde1e31c4f83196c2a94fd8bd43143a7d712718ac8dd02047b56a",
+      "actual": "c2aab0ec11bcde1e31c4f83196c2a94fd8bd43143a7d712718ac8dd02047b56a",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
