@@ -1,0 +1,20 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Actual simulation saves after one and two recoveries. Opened the in-game pantheon in the real app.",
+  "runs": [
+    {
+      "id": "healingname",
+      "view": "2d",
+      "url": "?id=healingname&view=2d&earned",
+      "mode": "2d",
+      "result": "PASS 2d no name for one receipt, name and two evidence lines for two"
+    },
+    {
+      "id": "healingname",
+      "view": "3d",
+      "url": "?id=healingname&view=3d&earned",
+      "mode": "3d",
+      "result": "PASS 3d no name for one receipt, name and two evidence lines for two"
+    }
+  ]
+}

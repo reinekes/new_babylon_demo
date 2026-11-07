@@ -1,0 +1,26 @@
+{
+  "buildings": 130,
+  "population": 251,
+  "initialPopulation": 200,
+  "evidence": [
+    {
+      "homeId": 1,
+      "home": "5,4",
+      "healerId": 0,
+      "patientId": 1,
+      "time": 83.625
+    },
+    {
+      "homeId": 2,
+      "home": "8,4",
+      "healerId": 0,
+      "patientId": 8,
+      "time": 144.125
+    }
+  ],
+  "reloadByteIdentical": true,
+  "steps": 1154,
+  "cpuMedianMs": 2.1002079999998386,
+  "cpuP95Ms": 6.69458399999985,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

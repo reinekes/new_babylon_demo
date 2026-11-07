@@ -53,6 +53,22 @@ export function recordProjectWaterWitness(s,station,home,delivery){
  }
 }
 
+export function healingNameEvidence(s){
+ const care=s.causalFacts?.healing;
+ return care?.length===2?care:null;
+}
+
+export function recordHealingNameEvidence(s,healer,patient){
+ if(healer.calling!=='healer'||patient.health<60)return;
+ const first=s.causalFacts?.healing?.[0];
+ if(healingNameEvidence(s)||first?.home===patient.home||first?.patientId===patient.id)return;
+ const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===patient.home);
+ if(!home||first&&first.homeId===home.waterEntityId)return;
+ const ledger=causalLedger(s);
+ home.waterEntityId??=ledger.nextEntityId++;
+ (ledger.healing??=[]).push({homeId:home.waterEntityId,home:patient.home,healerId:healer.id,patientId:patient.id,time:s.simTime});
+}
+
 export function recordNeighborWaterFact(s,c,home,trip,amount){
  if(trip.station!==null||trip.neighborRecorded||trip.origin!==c.home||trip.target!==buildingKey(home))return;
  if(recordNeighborAid(s,c,home,amount,'neighborWater'))trip.neighborRecorded=true;
@@ -149,6 +165,19 @@ export function validateCausalFacts(s){
   for(const [stationId,b] of live){
    const homes=witnessedByStation.get(stationId);
    if(b.humanWaterProject?.witnessHomeIds?.some(uid=>!homes?.has(uid)))return false;
+  }
+ }
+ const healing=ledger.healing;
+ if(healing!==undefined){
+  if(!Array.isArray(healing)||healing.length<1||healing.length>2)return false;
+  const homes=new Set(),addresses=new Set(),patients=new Set();
+  let previousHealingTime=0;
+  for(const fact of healing){
+   if(!fact||Object.keys(fact).length!==5||!entity(fact.homeId)||typeof fact.home!=='string'||!keyPattern.test(fact.home)||
+    !entityMatches(fact.homeId,'house',fact.home)||!citizen(fact.healerId)||!citizen(fact.patientId)||fact.healerId===fact.patientId||
+    homes.has(fact.homeId)||addresses.has(fact.home)||patients.has(fact.patientId)||
+    !Number.isFinite(fact.time)||fact.time<previousHealingTime||fact.time>s.simTime)return false;
+   homes.add(fact.homeId);addresses.add(fact.home);patients.add(fact.patientId);previousHealingTime=fact.time;
   }
  }
  const aidedPairs=new Set();

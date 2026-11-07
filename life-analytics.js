@@ -1,3 +1,4 @@
+import {recordHealingNameEvidence} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {citizenName,BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {mealCycle,mealRation,workRate} from './wellbeing.js';
@@ -67,6 +68,7 @@ export function recordMedicalRecovery(s,healer,patient){
  if(recipient.medicalRecovery?.tick===tick(s))return;
  recipient.medicalRecovery={id:healer.id,tick:tick(s)};
  findOrAdd(healer).medicalAid={id:patient.id,tick:tick(s)};
+ recordHealingNameEvidence(s,healer,patient);
 }
 
 function recordFamilyMemorial(s,c,p){

@@ -34,3 +34,34 @@ test('paid treatment records the actual patient and healer in the Southern Sumer
  assert.ok(loaded);
  assert.equal(encode(loaded),raw);
 });
+
+test('inspired treatment gives a name after two distinct households recover',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {healingNameEvidence}=await import('../causal-facts.js');
+ let s=city();
+ s.scenario=strictScenario();
+ const healer=s.citizens[0],first=s.citizens.find(c=>c.home===healer.home&&c.id!==healer.id);
+ const second=s.citizens.find(c=>c.home!==first.home&&c.age<16);
+ const recover=id=>{
+  const patient=s.citizens.find(c=>c.id===id);
+  patient.health=40;
+  for(let i=0;i<1600&&patient.health<60;i++){s.event=null;advanceTime(s,.1);}
+  assert.ok(patient.health>=60,patient.id);
+ };
+ recover(first.id);
+ assert.equal(healingNameEvidence(s),null);
+ const pending=encode(s);
+ s=decode(pending);
+ assert.ok(s);
+ assert.equal(encode(s),pending);
+ recover(second.id);
+ const evidence=healingNameEvidence(s);
+ assert.deepEqual(evidence?.map(f=>f.patientId),[first.id,second.id]);
+ assert.deepEqual(evidence?.map(f=>f.home),[first.home,second.home]);
+ const loaded=decode(encode(s));
+ assert.ok(loaded);
+ assert.deepEqual(healingNameEvidence(loaded),evidence);
+ const malformed=JSON.parse(encode(s));
+ malformed.causalFacts.healing[1].patientId=first.id;
+ assert.equal(decode(JSON.stringify(malformed)),null);
+});
