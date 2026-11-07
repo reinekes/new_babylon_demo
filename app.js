@@ -1095,20 +1095,62 @@ function canalSpecializationHTML(){
  if(!risks.length)return '<p data-canal-specialization>На действующих каналах ближайшее заиление не уменьшит пропускную способность.</p>';
  return `<section data-canal-specialization><h4>Где расчистить русло заранее</h4><p>Если канал останется в работе, при следующем сезонном заилении он может пропустить меньше воды.</p><ul>${risks.slice(0,3).map(r=>`<li>Канал ${r.x}, ${r.y} · доли воды ${r.current} → ${r.next}${r.queued?' · расчистка заказана':''} <button type="button" data-canal-specialization-target="${r.x},${r.y}">Открыть канал</button></li>`).join('')}</ul>${risks.length>3?`<p>Другие участки под риском · ${risks.length-3}</p>`:''}</section>`;
 }
+function healingSpecializationHTML(){
+ const patients=state.citizens.filter(c=>c.health<60).sort((a,b)=>a.health-b.health||a.id-b.id);
+ if(!patients.length)return '<p data-name-specialization="healing">Сейчас у всех жителей здоровье не ниже 60.</p>';
+ return `<section data-name-specialization="healing"><h4>Кому сейчас нужна помощь</h4><ul>${patients.slice(0,3).map(c=>`<li>${resident(c)} · здоровье ${foodAmount(c.health)}${c.phase==='treatment'?' · на лечении':c.clinic?' · направляется к лекарю':''}</li>`).join('')}</ul>${patients.length>3?`<p>Другие жители со здоровьем ниже 60 · ${patients.length-3}</p>`:''}</section>`;
+}
+function harvestSpecializationHTML(){
+ const forecast=foodForecast(state,{includeCrops:false});
+ const food=forecast.balance < -1e-7?`До жатвы не хватает около ${Math.ceil(-forecast.balance)} еды.`:'По городскому прогнозу еды хватит до жатвы.';
+ const missing=Math.max(0,forecast.target-state.resources.food);
+ const seeds=missing>1e-7?`Для следующего посева не хватает ${Math.ceil(missing*10)/10} еды на семена.`
+  :forecast.target<=1e-7?'Дополнительный семенной резерв пока не нужен.'
+  :forecast.protected?`На складе защищено ${foodAmount(forecast.reserve)} семян.`:'Запас для посева есть, но его можно съесть или продать.';
+ return `<section data-name-specialization="harvest"><h4>Запас до жатвы</h4><p>${food} ${seeds}</p><button type="button">Открыть снабжение и прогноз</button></section>`;
+}
+function vowSpecializationHTML(){
+ const active=state.supplyVows?.active;
+ const text=active?`Обет №${active.id} · осталось ${Math.max(0,(active.deadline-state.simTime)/60).toFixed(1)} игр. дня. Ждут подтверждения доставки дворы ${active.targets.filter(t=>!t.delivery).map(t=>esc(t.home)).join(' · ')}.`:'Сейчас нет действующего обета снабжения.';
+ return `<section data-name-specialization="vow"><h4>Обещания перед дворами</h4><p>${text}</p><button type="button">Открыть обеты снабжения</button></section>`;
+}
+function hospitalitySpecializationHTML(){
+ const group=state.arrivalGroup,offer=group?null:arrivalOffer(state,networkFor(state)),home=group?.home||offer?.home;
+ const text=group?`В пути ${group.count} чел. · двор ${esc(home)}.`
+  :offer?`Двор ${esc(home)} может принять ${offer.beds} чел. с учётом пути, еды и воды.`
+  :'Сейчас нет двора, где одновременно хватает мест, воды, доступной еды и есть сухой путь с края долины.';
+ return `<section data-name-specialization="hospitality"><h4>Место для новых семей</h4><p>${text}</p>${home?`<button type="button" data-welcome-home="${esc(home)}">Открыть двор</button>`:''}</section>`;
+}
+function craftSpecializationHTML(){
+ const crews=new Map();
+ for(const c of state.citizens){
+  if(!c.site||c.siteDuty!=='builder'||c.phase!=='constructing')continue;
+  if(!crews.has(c.site))crews.set(c.site,[]);
+  crews.get(c.site).push(c);
+ }
+ const pairs=[...crews].map(([site,people])=>({site,pair:builderTeachingPair(state,people)})).filter(({pair})=>pair);
+ return `<section data-name-specialization="craft"><h4>Где передают мастерство</h4>${pairs.length?`<ul>${pairs.slice(0,3).map(({site,pair})=>`<li>Стройка ${esc(site)} · ${resident(pair.mentor)} обучает ${resident(pair.pupil)}</li>`).join('')}</ul>`:'<p>Сейчас подходящие наставник и ученик не трудятся вместе. Им нужна общая стройка и разный уровень мастерства.</p>'}${pairs.length>3?`<p>Другие пары на стройках · ${pairs.length-3}</p>`:''}</section>`;
+}
 function pantheon(){
  const evidence=waterNameEvidence(state);
  const localName=evidence?`<section class="food-forecast" data-water-result-name><h3>Напоивший дворы</h3><p>Так жители назвали бога после подтверждённых доставок в два двора.</p><ul>${evidence.map(f=>`<li>Двор ${esc(f.home)} · водозабор ${esc(f.station)} · ${foodAmount(f.amount)} воды · принёс ${resident(f.courierId)}</li>`).join('')}</ul>${canalSpecializationHTML()}</section>`:'';
  const care=healingNameEvidence(state);
- const healingName=care?`<section class="food-forecast" data-healing-result-name><h3>Вернувший силы</h3><p>Так жители назвали бога после того, как вдохновлённый лекарь помог больным из двух дворов выйти из тяжёлого состояния.</p><ul>${care.map(f=>`<li>Двор ${esc(f.home)} · ${resident(f.healerId)} помог жителю ${resident(f.patientId)}</li>`).join('')}</ul></section>`:'';
+ const healingName=care?`<section class="food-forecast" data-healing-result-name><h3>Вернувший силы</h3><p>Так жители назвали бога после того, как вдохновлённый лекарь помог больным из двух дворов выйти из тяжёлого состояния.</p><ul>${care.map(f=>`<li>Двор ${esc(f.home)} · ${resident(f.healerId)} помог жителю ${resident(f.patientId)}</li>`).join('')}</ul>${healingSpecializationHTML()}</section>`:'';
  const grain=harvestNameEvidence(state);
- const harvestName=grain?`<section class="food-forecast" data-harvest-result-name><h3>Наполнивший закрома</h3><p>Два двора приняли зерно, которое вырастили вдохновлённые земледельцы.</p><ul>${grain.map(f=>`<li>Двор ${esc(f.home)} · поле ${esc(f.field)} · ${foodAmount(f.amount)} зерна · земледелец ${resident(f.farmerId)}</li>`).join('')}</ul></section>`:'';
+ const harvestName=grain?`<section class="food-forecast" data-harvest-result-name><h3>Наполнивший закрома</h3><p>Два двора приняли зерно, которое вырастили вдохновлённые земледельцы.</p><ul>${grain.map(f=>`<li>Двор ${esc(f.home)} · поле ${esc(f.field)} · ${foodAmount(f.amount)} зерна · земледелец ${resident(f.farmerId)}</li>`).join('')}</ul>${harvestSpecializationHTML()}</section>`:'';
  const vows=vowNameEvidence(state);
- const vowName=vows?`<section class="food-forecast" data-vow-result-name><h3>Сдержавший слово</h3><p>Два разных двора получили обещанный запас к сроку.</p><ul>${vows.map(({vowId,target})=>`<li>Обет №${vowId} · двор ${esc(target.home)} · ${resident(target.delivery.recipient)} получил запас на два ужина.</li>`).join('')}</ul></section>`:'';
+ const vowName=vows?`<section class="food-forecast" data-vow-result-name><h3>Сдержавший слово</h3><p>Два разных двора получили обещанный запас к сроку.</p><ul>${vows.map(({vowId,target})=>`<li>Обет №${vowId} · двор ${esc(target.home)} · ${resident(target.delivery.recipient)} получил запас на два ужина.</li>`).join('')}</ul>${vowSpecializationHTML()}</section>`:'';
  const guests=hospitalityNameEvidence(state);
- const guestName=guests?`<section class="food-forecast" data-hospitality-result-name><h3>Давший кров</h3><p>Два хозяина приняли новые семьи в разных дворах.</p><ul>${guests.map(f=>`<li>Двор ${esc(f.home)} · хозяин ${resident(f.host)} · приняли ${f.members.map(id=>resident(id)).join(', ')}</li>`).join('')}</ul></section>`:'';
+ const guestName=guests?`<section class="food-forecast" data-hospitality-result-name><h3>Давший кров</h3><p>Два хозяина приняли новые семьи в разных дворах.</p><ul>${guests.map(f=>`<li>Двор ${esc(f.home)} · хозяин ${resident(f.host)} · приняли ${f.members.map(id=>resident(id)).join(', ')}</li>`).join('')}</ul>${hospitalitySpecializationHTML()}</section>`:'';
  const craft=craftNameEvidence(state);
- const craftName=craft?`<section class="food-forecast" data-craft-result-name><h3>Передавший мастерство</h3><p>Двое учеников из разных дворов стали строителями III уровня после совместного труда.</p><ul>${craft.map(f=>`<li>Двор ${esc(f.home)} · стройка ${esc(f.site.join(', '))} · ${resident(f.mentorId)} обучил жителя ${resident(f.pupilId)}</li>`).join('')}</ul></section>`:'';
+ const craftName=craft?`<section class="food-forecast" data-craft-result-name><h3>Передавший мастерство</h3><p>Двое учеников из разных дворов стали строителями III уровня после совместного труда.</p><ul>${craft.map(f=>`<li>Двор ${esc(f.home)} · стройка ${esc(f.site.join(', '))} · ${resident(f.mentorId)} обучил жителя ${resident(f.pupilId)}</li>`).join('')}</ul>${craftSpecializationHTML()}</section>`:'';
  openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p>${localName}${healingName}${harvestName}${vowName}${guestName}${craftName}<div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
+ for(const kind of ['harvest','vow']){
+  const button=dialog.querySelector(`[data-name-specialization="${kind}"] button`);
+  if(button)button.onclick=()=>showSupply();
+ }
+ const welcome=dialog.querySelector('[data-welcome-home]');
+ if(welcome)welcome.onclick=()=>showSupplyHome(welcome.dataset.welcomeHome,'water');
  dialog.querySelectorAll('[data-canal-specialization-target]').forEach(button=>button.onclick=()=>{
   const [x,y]=button.dataset.canalSpecializationTarget.split(',').map(Number),canal=buildingAt(state,x,y);
   if(canal?.type!=='canal')return;

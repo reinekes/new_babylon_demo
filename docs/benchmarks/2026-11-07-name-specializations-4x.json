@@ -1,0 +1,55 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "cases": [
+    {
+      "id": "harvest",
+      "buildings": 130,
+      "initialPopulation": 200,
+      "population": 222,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.8158750000000055,
+      "cpuP95Ms": 5.452625000000012
+    },
+    {
+      "id": "healing",
+      "buildings": 130,
+      "initialPopulation": 251,
+      "population": 260,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.475500000000011,
+      "cpuP95Ms": 6.60391699999991
+    },
+    {
+      "id": "vow",
+      "buildings": 130,
+      "initialPopulation": 200,
+      "population": 222,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.8437079999998787,
+      "cpuP95Ms": 5.411249999999882
+    },
+    {
+      "id": "hospitality",
+      "buildings": 130,
+      "initialPopulation": 212,
+      "population": 235,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.4748749999998836,
+      "cpuP95Ms": 5.913250000000062
+    },
+    {
+      "id": "craft",
+      "buildings": 130,
+      "initialPopulation": 222,
+      "population": 242,
+      "steps": 300,
+      "reloadByteIdentical": true,
+      "cpuMedianMs": 1.3812910000001466,
+      "cpuP95Ms": 5.757166999999754
+    }
+  ]
+}

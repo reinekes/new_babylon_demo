@@ -1,0 +1,72 @@
+[
+  {
+    "id": "harvest",
+    "view": "2d",
+    "url": "?id=harvest&view=2d&earned",
+    "mode": "2d",
+    "result": "PASS 2d harvest locked and earned views, byte-identical save"
+  },
+  {
+    "id": "harvest",
+    "view": "3d",
+    "url": "?id=harvest&view=3d&earned",
+    "mode": "3d",
+    "result": "PASS 3d harvest locked and earned views, byte-identical save"
+  },
+  {
+    "id": "healing",
+    "view": "2d",
+    "url": "?id=healing&view=2d&earned",
+    "mode": "2d",
+    "result": "PASS 2d healing locked and earned views, byte-identical save"
+  },
+  {
+    "id": "healing",
+    "view": "3d",
+    "url": "?id=healing&view=3d&earned",
+    "mode": "3d",
+    "result": "PASS 3d healing locked and earned views, byte-identical save"
+  },
+  {
+    "id": "vow",
+    "view": "2d",
+    "url": "?id=vow&view=2d&earned",
+    "mode": "2d",
+    "result": "PASS 2d vow locked and earned views, byte-identical save"
+  },
+  {
+    "id": "vow",
+    "view": "3d",
+    "url": "?id=vow&view=3d&earned",
+    "mode": "3d",
+    "result": "PASS 3d vow locked and earned views, byte-identical save"
+  },
+  {
+    "id": "hospitality",
+    "view": "2d",
+    "url": "?id=hospitality&view=2d&earned",
+    "mode": "2d",
+    "result": "PASS 2d hospitality locked and earned views, byte-identical save"
+  },
+  {
+    "id": "hospitality",
+    "view": "3d",
+    "url": "?id=hospitality&view=3d&earned",
+    "mode": "3d",
+    "result": "PASS 3d hospitality locked and earned views, byte-identical save"
+  },
+  {
+    "id": "craft",
+    "view": "2d",
+    "url": "?id=craft&view=2d&earned",
+    "mode": "2d",
+    "result": "PASS 2d craft locked and earned views, byte-identical save"
+  },
+  {
+    "id": "craft",
+    "view": "3d",
+    "url": "?id=craft&view=3d&earned",
+    "mode": "3d",
+    "result": "PASS 3d craft locked and earned views, byte-identical save"
+  }
+]
