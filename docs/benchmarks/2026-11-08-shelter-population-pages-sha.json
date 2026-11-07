@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T21:06:09.436880+00:00",
+  "commit": "cd20d56cba8586c65160e9bc872b586b41a729e2",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "5d2259458666deac3a8db7da472b1a42157a1177d3a53c1cbf3f1922febec330",
+      "actual": "5d2259458666deac3a8db7da472b1a42157a1177d3a53c1cbf3f1922febec330",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "ea3f7691c375bb7f4ce215b509e4185169e361bf026a4bd96b9eb2e891b9c4f0",
+      "actual": "ea3f7691c375bb7f4ce215b509e4185169e361bf026a4bd96b9eb2e891b9c4f0",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "92738d05072d5d49fcbda1901ce0d2f606d14d76e07c21a9212df999130dbfad",
+      "actual": "92738d05072d5d49fcbda1901ce0d2f606d14d76e07c21a9212df999130dbfad",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-shelter-population-4x.json",
+      "status": 200,
+      "expected": "867955b75e4a600fe29837d5c98152d9ea781d489da84493d5037331bfdffb14",
+      "actual": "867955b75e4a600fe29837d5c98152d9ea781d489da84493d5037331bfdffb14",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2f8331a5f2770b728cae4b9d9175346954bb21cf271dfd229b37ee3ff1493bed",
+      "actual": "2f8331a5f2770b728cae4b9d9175346954bb21cf271dfd229b37ee3ff1493bed",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "64bad747ade923b784ad01ca31162a73981ed0a0b4d7d40e8a3d5c88e958d557",
+      "actual": "64bad747ade923b784ad01ca31162a73981ed0a0b4d7d40e8a3d5c88e958d557",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "0fecb709f3124cb8d0dc5b86ac2180e5c22514393846dbe144b9732549c2a06a",
+      "actual": "0fecb709f3124cb8d0dc5b86ac2180e5c22514393846dbe144b9732549c2a06a",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
