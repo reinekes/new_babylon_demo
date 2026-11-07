@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-07T23:06:12.694940+00:00",
+  "commit": "122dfe984484aff8b2b2a77710a3ffaec9711c7a",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4d14af6fb5285aac084c37916fe73738dfc7f758cd454129b85c003ade0f12f8",
+      "actual": "4d14af6fb5285aac084c37916fe73738dfc7f758cd454129b85c003ade0f12f8",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "d62b12aa504d2272c36baeb20a773f8fd6ba936bea6da408dd9823351fc49dca",
+      "actual": "d62b12aa504d2272c36baeb20a773f8fd6ba936bea6da408dd9823351fc49dca",
+      "match": true
+    },
+    {
+      "path": "arrival-presentation.js",
+      "status": 200,
+      "expected": "75ba06824b5c6b90700994f1006e39866ffe8427b8b9e10c93ae62ac0f132d14",
+      "actual": "75ba06824b5c6b90700994f1006e39866ffe8427b8b9e10c93ae62ac0f132d14",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "fa2743c390a831d8310f7e8f6f9dbc8c4e0023b663f4087398aef9c2756cb28c",
+      "actual": "fa2743c390a831d8310f7e8f6f9dbc8c4e0023b663f4087398aef9c2756cb28c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-cast-receipt-4x.json",
+      "status": 200,
+      "expected": "ab1fe050a308764775d8dd5c457cc521eb0c89da2cfb83d98759533894d51193",
+      "actual": "ab1fe050a308764775d8dd5c457cc521eb0c89da2cfb83d98759533894d51193",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-cast-receipt-browser.json",
+      "status": 200,
+      "expected": "0b5742fef1689dc2ea713008876a55e09b128e6a5b0a39ffaeb1ecd5b289378d",
+      "actual": "0b5742fef1689dc2ea713008876a55e09b128e6a5b0a39ffaeb1ecd5b289378d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-contract-refusals.json",
+      "status": 200,
+      "expected": "039ef9e38dbd35bcfd373b2499db58e2baf3590f0c356bcaea88c8ae593a278e",
+      "actual": "039ef9e38dbd35bcfd373b2499db58e2baf3590f0c356bcaea88c8ae593a278e",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "254750d2833e4db3cb53c9f1ffe7a4692f7affe3f17d02b4291cc184c53bb17e",
+      "actual": "254750d2833e4db3cb53c9f1ffe7a4692f7affe3f17d02b4291cc184c53bb17e",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a46833b9e902f6e6eca510ab5d8961ae0545c7466ba51e1156e19f8031b2a86e",
+      "actual": "a46833b9e902f6e6eca510ab5d8961ae0545c7466ba51e1156e19f8031b2a86e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "8412774576dad2b119bc52394ad10945de62ebce2f6a4b4342ea55c1b74f872b",
+      "actual": "8412774576dad2b119bc52394ad10945de62ebce2f6a4b4342ea55c1b74f872b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "273a02e735d7fb08a01cfe3a7c04ce54b32d692c710e8cbac999066118042db1",
+      "actual": "273a02e735d7fb08a01cfe3a7c04ce54b32d692c710e8cbac999066118042db1",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8a236213860b3904a26a7f1373d652eca6606287ea1f6549205d7a2c879ba468",
+      "actual": "8a236213860b3904a26a7f1373d652eca6606287ea1f6549205d7a2c879ba468",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "4848d74f3ace6186323e90d3c25c30d8a54269c28d3839e35a1679f9a11b1394",
+      "actual": "4848d74f3ace6186323e90d3c25c30d8a54269c28d3839e35a1679f9a11b1394",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-presentation.test.js",
+      "status": 200,
+      "expected": "3d221db55dc75e1e5f14ffb44987f520ee4f0df8a86e38e066268fff0d84fe9f",
+      "actual": "3d221db55dc75e1e5f14ffb44987f520ee4f0df8a86e38e066268fff0d84fe9f",
+      "match": true
+    },
+    {
+      "path": "tests/engine.test.js",
+      "status": 200,
+      "expected": "6187ebf1c21baf89ce69ccab3a0bc702da2cec002ae7e4a7d9934f04b9041483",
+      "actual": "6187ebf1c21baf89ce69ccab3a0bc702da2cec002ae7e4a7d9934f04b9041483",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
