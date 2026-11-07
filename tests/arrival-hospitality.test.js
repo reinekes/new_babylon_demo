@@ -373,9 +373,12 @@ test('a paid group waits at a real gate, keeps its reserve on reload and settles
  const closed=networkFor(s);
  assert.equal(arrivalOffer(s,closed),null);
  assert.equal(advanceArrivalGroup(s,60,closed),false);
+ assert.equal(s.arrivalGroup.waiting,'route');
  const waiting=encode(s),copy=decode(waiting);
  assert.equal(encode(copy),waiting);
  assert.deepEqual(copy.arrivalGroup.provisions,reserve);
+ const {cityToolsHTML}=await import('../ui-city-tools.js');
+ assert.match(cityToolsHTML(copy),/Ждут открытия пути/);
  assert.equal(advanceArrivalGroup(copy,60,networkFor(copy)),false);
  assert.equal(encode(copy),waiting);
  copy.buildings.find(b=>b.type==='cityGate').rotation=0;

@@ -230,12 +230,18 @@ export function lastArrivalWelcome(s,home,residents){
   (!ids||ids.has(row.host)||row.members.some(id=>ids.has(id))))||null;
 }
 
+export function arrivalTransitLabel(group){
+ const status={route:'Ждут открытия пути',housing:'Ждут места в принимающем дворе'}[group.waiting]||'Группа в пути';
+ return `${status} · ${group.count} чел.`;
+}
+
 export function advanceArrivalGroup(s,dt,network){
  const g=s.arrivalGroup;
  if(!g)return false;
+ const wait=reason=>{g.waiting=reason;return false;};
  const target=network.ports.find(p=>matchesArrivalHome(g,p.building));
  const component=target&&network.components.get(target.key);
- if(component===undefined||!network.nodes.has(target.key))return false;
+ if(component===undefined||!network.nodes.has(target.key))return wait('route');
  const clear=p=>navigationSegmentClear(s,g,p,network.navigation.obstacles)&&
   !(network.navigation.flooded&&floodedSegment(network.navigation.flooded,g,p));
  const next=network.nodes.get(g.route[g.routeIndex]),previous=g.route[g.routeIndex-1];
@@ -244,19 +250,20 @@ export function advanceArrivalGroup(s,dt,network){
   const node=nearestWalkingNode(network,g,p=>Math.hypot(p.x-g.x,p.y-g.y)<=Math.SQRT2&&
    network.components.get(p.key)===component&&clear(p));
   const route=node&&shortestWalkingPath(network,node.key,target.key);
-  if(!route)return false;
+  if(!route)return wait('route');
   g.route=route.map(p=>p.key);g.routeIndex=0;
  }
+ delete g.waiting;
  let remaining=dt;
  while(remaining>1e-8&&g.routeIndex<g.route.length){
   const p=network.nodes.get(g.route[g.routeIndex]),last=g.route[g.routeIndex-1];
-  if(!p||last&&!network.graph.get(last)?.has(p.key))return false;
+  if(!p||last&&!network.graph.get(last)?.has(p.key))return wait('route');
   const distance=Math.hypot(g.x-p.x,g.y-p.y);
   if(distance>remaining){g.x+=(p.x-g.x)*remaining/distance;g.y+=(p.y-g.y)*remaining/distance;return false;}
   g.x=p.x;g.y=p.y;g.routeIndex++;remaining-=distance;
  }
- return g.routeIndex===g.route.length&&Math.hypot(g.x-target.x,g.y-target.y)<1e-8&&
-  arrivalHousing(s,{includeReserved:true}).some(row=>row.home===g.home&&row.beds>=g.count);
+ if(g.routeIndex!==g.route.length||Math.hypot(g.x-target.x,g.y-target.y)>=1e-8)return false;
+ return arrivalHousing(s,{includeReserved:true}).some(row=>row.home===g.home&&row.beds>=g.count)||wait('housing');
 }
 
 function matchesArrivalHome(group,house){
@@ -267,7 +274,7 @@ function matchesArrivalHome(group,house){
 function validArrivalGroup(s){
  const g=s.arrivalGroup;
  if(g===undefined)return true;
- if(!g||!s.arrivalHospitality||!Number.isInteger(g.count)||g.count<1||g.count>6||g.custom!==undefined&&g.custom!=='libation'||g.water!==g.count+customWater(g.custom)||
+ if(!g||!s.arrivalHospitality||g.waiting!==undefined&&!['route','housing'].includes(g.waiting)||!Number.isInteger(g.count)||g.count<1||g.count>6||g.custom!==undefined&&g.custom!=='libation'||g.water!==g.count+customWater(g.custom)||
   g.homeId!==undefined&&(!isStrictSumer(s)||!Number.isSafeInteger(g.homeId)||g.homeId<1)||
   !s.buildings.some(b=>matchesArrivalHome(g,b)&&capacityOf(b)>=g.count)||
   !g.provisions||typeof g.provisions!=='object'||Array.isArray(g.provisions)||

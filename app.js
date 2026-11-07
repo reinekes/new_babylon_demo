@@ -17,7 +17,7 @@ import {createBlessingPresentation} from './blessing-presentation.js';
 import {createPeacePresentation} from './peace-presentation.js';
 import {PEACE_LIMIT,PEACE_MOOD,PEACE_RADIUS,peaceKnowledgeReason,peaceQuote} from './peace-discovery.js';
 import {createArrivalPresentation} from './arrival-presentation.js';
-import {householdDisputeMemory,arrivalCustomDispute,resolveArrivalCustomDispute,arrivalKnowledgeReason,arrivalOffer,arrivalRoute,hospitalityNameEvidence,householdWelcomeEvidence,lastArrivalWelcome} from './arrival-hospitality.js';
+import {householdDisputeMemory,arrivalCustomDispute,resolveArrivalCustomDispute,arrivalKnowledgeReason,arrivalOffer,arrivalRoute,arrivalTransitLabel,hospitalityNameEvidence,householdWelcomeEvidence,lastArrivalWelcome} from './arrival-hospitality.js';
 import {createShapingPresentation} from './shaping-presentation.js';
 import {shapingBatchQuote} from './shaping-batch.js';
 import {createRevelationPresentation} from './revelation-presentation.js';
@@ -1162,11 +1162,12 @@ function update(){
    if(custom&&arrival)el.dataset.arrivalCustom=custom;
    else delete el.dataset.arrivalCustom;
   }
-  const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?`Группа уже в пути · ${state.arrivalGroup.count} чел.`:card.open&&!reason&&!arrival?custom?'Нужны сухой путь, жильё, паёк и дополнительная вода для обычая':'Нужны сухой путь, свободный дом, еда и вода':''):'';
+  const arrivalReason=id==='healing'&&state.arrivalHospitality?(state.arrivalGroup?arrivalTransitLabel(state.arrivalGroup):card.open&&!reason&&!arrival?custom?'Нужны сухой путь, жильё, паёк и дополнительная вода для обычая':'Нужны сухой путь, свободный дом, еда и вода':''):'';
   const peace=id==='peace'&&state.peaceDiscovery&&card.open&&!reason?peaceQuote(state,lastMiracleTarget):null;
   const land=id==='earthMemory'&&state.landMemoryChapter===1&&card.open&&!reason?landMemoryCastQuote(state):null;
   const landReason=id==='earthMemory'&&state.landMemoryCast?'Дождись последнего сезонного отклика':land&&!land.ids.length?'У сохранённых историй пока нет живых участников':'';
-  updateMiracleCard(card,state,id,reason||advice?.reason||shaping?.reason||arrivalReason||peace?.reason||landReason,gift,arrival);
+  const transitReason=id==='healing'&&state.arrivalGroup?arrivalReason:'';
+  updateMiracleCard(card,state,id,transitReason||reason||advice?.reason||shaping?.reason||arrivalReason||peace?.reason||landReason,gift,arrival);
   const landPreview=card.querySelector('[data-land-cast]');
   if(landPreview){
    landPreview.hidden=!land?.ids.length;
@@ -1300,7 +1301,7 @@ function vowSpecializationHTML(){
 }
 function hospitalitySpecializationHTML(){
  const group=state.arrivalGroup,offer=group?null:arrivalOffer(state,networkFor(state)),home=group?.home||offer?.home;
- const text=group?`В пути ${group.count} чел. · двор ${esc(home)}.`
+ const text=group?`${arrivalTransitLabel(group)} · двор ${esc(home)}.`
   :offer?`Двор ${esc(home)} может принять ${offer.beds} чел. с учётом пути, еды и воды.`
   :'Сейчас нет двора, где одновременно хватает мест, воды, доступной еды и есть сухой путь с края долины.';
  return `<section data-name-specialization="hospitality"><h4>Место для новых семей</h4><p>${text}</p>${home?`<button type="button" data-welcome-home="${esc(home)}">Открыть двор</button>`:''}</section>`;

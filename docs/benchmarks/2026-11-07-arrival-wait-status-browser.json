@@ -1,0 +1,16 @@
+[
+  {
+    "id": "check",
+    "view": "2d",
+    "url": "?id=check&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d waiting status in miracle card and city overview"
+  },
+  {
+    "id": "check",
+    "view": "3d",
+    "url": "?id=check&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d waiting status in miracle card and city overview"
+  }
+]

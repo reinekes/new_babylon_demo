@@ -6,7 +6,7 @@ import {LAND_STORIES_REQUIRED,landMemoryStories,landSearchReason} from './land-m
 import {DEPTH_HOMES_REQUIRED,depthSearchReason} from './depth-supply.js';
 import {starForecastView} from './star-forecast.js';
 import {STAR_NIGHTS_REQUIRED} from './star-observations.js';
-import {arrivalHospitalityView,arrivalHousing,arrivalWelcomeHouse} from './arrival-hospitality.js';
+import {arrivalHospitalityView,arrivalHousing,arrivalTransitLabel,arrivalWelcomeHouse} from './arrival-hospitality.js';
 import {shapingProjectView} from './shaping-projects.js';
 import {revelationAdviceView} from './revelation-advice.js';
 import {revelationEvidenceView} from './revelation-evidence.js';
@@ -281,8 +281,10 @@ function arrivalHospitalityHTML(s){
  const beds=arrivalHousing(s).reduce((total,row)=>total+row.beds,0);
  const welcome=s.arrivalHospitality.welcomes?.at(-1);
  const house=welcome&&arrivalWelcomeHouse(s,welcome);
+ const group=s.arrivalGroup;
+ const transit=group?`<p data-arrival-transit>${arrivalTransitLabel(group)} · ${focus(group.home,'Принимающий двор')}</p>`:'';
  const latest=house?`<p>${focus(welcome.home,`Последнее заселение · ${welcome.members.length} чел.`)}</p>`:welcome?'<p>Дом последнего заселения больше не существует.</p>':'';
- return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p>${latest}</section>`;
+ return `<section class="management-row" data-arrival-hospitality><h3>Гостеприимство для «Зова новых жителей»</h3><p>Завершённые гостевые визиты · ${Math.min(view.visits,view.needed)} из ${view.needed}.</p><p>Дома, принявшие семьи с другого берега · ${view.shelters} из ${view.needed}.</p><p>Свободные места в сухих домах · ${beds}.</p>${transit}${latest}</section>`;
 }
 
 function shapingProjectsHTML(s){
