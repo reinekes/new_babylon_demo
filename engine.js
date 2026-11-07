@@ -24,6 +24,7 @@ import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
 import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js';
 import {advanceBlessingDiscovery,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
+import {recordMiracleCast,validateMiracleHistory} from './miracle-history.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
 import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
@@ -290,6 +291,7 @@ export function miracle(s,id,target){
  const receipt={faithSpent:price};
  if(id==='bless'||id==='healing')receipt.population={newResidents:s.population-populationBefore,
   happiness:s.happiness-happinessBefore,reserved:id==='healing'?s.arrivalGroup?.count??0:0};
+ recordMiracleCast(s,id,price);
  return {ok:true,receipt};
 }
 function check(s){
@@ -535,6 +537,7 @@ export function decode(raw){
   for(const [k,m]of Object.entries(MIRACLES))if(!(k==='richCatch'&&s.cooldowns?.[k]===undefined)&&!integer(s.cooldowns?.[k],0,m.cooldown))return null;
   for(const k of Object.keys(emptyBuffs()))if(!integer(s.buffs?.[k],0,3))return null;
   for(const k of ['drought','rain','hungry','miracleCount'])if(!integer(s[k]))return null;
+  if(!validateMiracleHistory(s))return null;
   for(const k of ['droughtSeen','won','lost','continued'])if(typeof s[k]!=='boolean')return null;
   if(s.lost!==(s.population===0)||s.lost&&s.event!==null||s.continued&&!s.won)return null;
   if(typeof s.name!=='string'||s.name.length>100)return null;

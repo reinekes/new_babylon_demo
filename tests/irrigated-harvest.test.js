@@ -81,7 +81,17 @@ test('new Awakening locks rain until an irrigated harvest, then grants exactly o
  assert.equal(miracle(spent,'rain').ok,true);
  assert.equal(spent.resources.faith,0);
  assert.equal(spent.rainDiscovery.lastPaidAt,91);
- assert.ok(decode(encode(spent)));
+ assert.deepEqual(spent.miracleHistory,{version:1,
+  trials:{rain:{number:1,at:90,faithSpent:0}},
+  paid:{rain:{number:2,at:91,faithSpent:15}}});
+ const committed=encode(spent);
+ assert.equal(encode(decode(committed)),committed);
+ const invalid=JSON.parse(committed);
+ invalid.miracleHistory.trials.rain.at=89;
+ assert.equal(decode(JSON.stringify(invalid)),null);
+ delete invalid.miracleHistory;
+ const oldSave=JSON.stringify(invalid);
+ assert.equal(encode(decode(oldSave)),oldSave);
  const classic=createGame({mode:'mature',scenario:strictScenario()});
  assert.equal(miraclePrice(classic,'rain'),15);
  assert.equal(miracle(classic,'rain').ok,true);
