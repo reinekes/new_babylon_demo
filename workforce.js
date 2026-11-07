@@ -599,10 +599,11 @@ function advanceFireShelter(s,c,dt,ctx){
  if(!shelter)return false;
  const goingHome=shelter.returning||!ctx.buildings.get(shelter.kiln)?.kilnFire;
  if(goingHome&&!shelter.returning||!c.route.length){
+  const {route,routeIndex}=c;
   startTrip(s,c,goingHome?c.home:shelter.host,'toHome',ctx);
   c.phase='blocked';
+  if(!c.route.length){c.route=route;c.routeIndex=routeIndex;return true;}
   if(goingHome)shelter.returning=true;
-  if(!c.route.length)return true;
  }
  let travel=dt*1.05;
  while(travel>1e-8&&c.routeIndex<c.route.length){
@@ -907,7 +908,7 @@ export function rerouteCitizens(s){
  invalidateAssignments(s);syncCitizens(s);const ctx=context(s);
  for(const c of s.citizens){
   if(['festival','relic','relicGuest','awakening'].includes(c.phase))continue;
-  if(c.fireShelter){c.route=[];c.routeIndex=0;continue;}
+  if(c.fireShelter)continue;
   if(waterBusy(c)){resumeWaterAtHome(s,c);continue;}
   if(c.commonMealTarget)returnFromCommonMeal(s,c,ctx);
   else if(c.school)startTrip(s,c,c.school,'toSchool',ctx);
