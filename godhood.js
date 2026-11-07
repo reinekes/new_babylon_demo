@@ -158,12 +158,26 @@ function signRoute(s,c){
  const goal=[...net.nodes.values()].filter(n=>Math.hypot(n.x-target.x,n.y-target.y)<.8).sort((a,b)=>Math.hypot(a.x-target.x,a.y-target.y)-Math.hypot(b.x-target.x,b.y-target.y)).find(n=>net.components.get(n.key)===net.components.get(home.key));
  const route=goal&&routeBetween(s,home.key,goal.key),points=route?.length?[{x:c.x,y:c.y},...route.map(n=>({x:n.x,y:n.y}))]:null;return points&&points.every((p,i)=>!i||clearSignSegment(s,c,points[i-1],p,i===1))?points:null;
 }
+const isRecoverySign=s=>isStrictSumer(s)&&s.godhood.recognitionAt!==null;
+function homeSignRoute(s,c){
+ const home=networkFor(s).ports.find(p=>p.building.type==='house'&&buildingKey(p.building)===c.home);
+ const origin={x:c.x,y:c.y};
+ if(!home||!isDryPoint(s,home.x,home.y)||!clearSignSegment(s,c,origin,home,true))return null;
+ return [origin,{x:home.x,y:home.y}];
+}
 export function beginFirstSign(s,id){
  reconcileWitness(s);const g=s.godhood;if(!isAwakening(s)||g.stage!=='unseen')return {ok:false,reason:'Первый знак уже подан'};
  if(s.lost||s.funeral||s.event)return {ok:false,reason:'Дождись завершения события'};
- let chosen=null,route=null;for(const c of s.citizens.filter(c=>(id===undefined||c.id===id)&&c.age>=16&&c.health>=60&&['home','resting','blocked'].includes(c.phase)&&!c.site&&!c.workplace&&!cargo(c)&&!c.waterTrip&&!c.clinic&&!c.pantryTrip)){const r=signRoute(s,c);if(r){chosen=c;route=r;break;}}
- if(!chosen)return {ok:false,reason:'Пусть здоровый свободный взрослый вернётся домой; нужен доступный берег'};
- g.stage='sign';g.witnessId=chosen.id;g.signTarget={...route.at(-1)};g.signOrigin={x:chosen.x,y:chosen.y};chosen.phase='awakening';chosen.route=route;chosen.routeIndex=1;chosen.work=null;chosen.site=null;invalidateAssignments(s);return {ok:true,citizenId:chosen.id};
+ const recovery=isRecoverySign(s);
+ let chosen=null,route=null;
+ for(const c of s.citizens){
+  if((id!==undefined&&c.id!==id)||c.age<16||c.health<60||c.site||cargo(c)||c.waterTrip||c.clinic||c.pantryTrip)continue;
+  if(recovery?(c.floodShelter||!['home','resting'].includes(c.phase)):(c.workplace||!['home','resting','blocked'].includes(c.phase)))continue;
+  const path=recovery?homeSignRoute(s,c):signRoute(s,c);
+  if(path){chosen=c;route=path;break;}
+ }
+ if(!chosen)return {ok:false,reason:recovery?'Дождись здорового взрослого дома. Для знака нужен сухой выход из двора.':'Пусть здоровый свободный взрослый вернётся домой; нужен доступный берег'};
+ g.stage='sign';g.witnessId=chosen.id;g.signTarget={...route.at(-1)};g.signOrigin={x:chosen.x,y:chosen.y};chosen.phase='awakening';chosen.route=route;chosen.routeIndex=1;chosen.work=null;chosen.site=null;invalidateAssignments(s);return {ok:true,citizenId:chosen.id,recovery};
 }
 export function firstWaterHelpChoices(s){
  if(!isStrictSumer(s)||!isAwakening(s)||s.godhood.stage!=='unseen'||s.godhood.recognitionAt!==null||s.lost||s.funeral||s.event)return [];
@@ -232,7 +246,7 @@ export function advanceGodhood(s,dt){
  let left=dt;while(left>1e-8&&c.routeIndex<c.route.length){const p=c.route[c.routeIndex],d=Math.hypot(c.x-p.x,c.y-p.y);if(!clearSignSegment(s,c,c,p,c.routeIndex===1)){loseSign(s,c);return;}const moved=Math.min(d,left*.95);if(d>1e-8){c.x+=(p.x-c.x)*moved/d;c.y+=(p.y-c.y)*moved/d;}left-=moved/.95;if(d<=moved+1e-8)c.routeIndex++;else break;}
  if(c.routeIndex<c.route.length)return;if(!samePoint(c,g.signTarget)){loseSign(s,c);return;}
  const route=[...c.route].reverse();c.phase='toHome';c.route=route;c.routeIndex=1;
- recognizeWitness(s,c,'заметил знак и дошёл до источника');
+ recognizeWitness(s,c,isRecoverySign(s)?'откликнулся на знак':'заметил знак и дошёл до источника');
 }
 
 export function godhoodCitizenView(s,c){return c.phase==='awakening'?{walking:c.routeIndex<c.route.length,controlled:false}:{};}

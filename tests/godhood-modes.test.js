@@ -24,3 +24,31 @@ test('mode validator rejects fabricated future witnesses, skill levels and a mis
 
 test('a master at the real far corner of a 3×3 Ishtar gate gains completion credit and keeps a valid save',()=>{const s=createGame({mode:'awakening'}),c=s.citizens[0];Object.assign(s.godhood,{stage:'recognized',witnessId:c.id,believerIds:[c.id],recognitionAt:0,firstBuilderGift:true});Object.assign(c,{role:'builder',calling:'builder',builderSkill:{level:3,projects:5}});for(const k of MATERIALS)s.resources[k]=200;s.resources.faith=1000;s.resources.prestige=250;assert.equal(build(s,'ishtarGate',2,2).ok,true);const b=s.buildings.at(-1);assert.equal(b.footprint,3);const p=networkFor(s).ports.find(p=>p.building===b);assert.deepEqual({x:p.x,y:p.y},{x:4.5,y:4.5});const q=b.construction;for(const k of MATERIALS){q.delivered[k]=q.required[k];q.remaining[k]=0;}for(const source of Object.values(q.sources))for(const k of Object.keys(source))source[k]=0;q.work=11.99;Object.assign(c,{site:buildingKey(b),siteDuty:'builder',sitePort:buildingKey(b),phase:'constructing',x:p.x,y:p.y,route:[],routeIndex:0});advanceTime(s,.2);assert.equal(b.construction,undefined);assert.equal(c.builderSkill.projects,6);assert.ok(s.godhood.completedProjects.includes('2,2:1'));assert.ok(decode(encode(s)));});
 test('completed road project stamps preserve the real road ID and survive an awakening save',()=>{const s=createGame({mode:'awakening'}),c=s.citizens[0];Object.assign(s.godhood,{stage:'recognized',witnessId:c.id,believerIds:[c.id],recognitionAt:0,firstBuilderGift:true});Object.assign(c,{role:'builder',calling:'builder',builderSkill:{level:2,projects:2}});const road=ensureRoads(s)[0];assert.equal(upgradeRoad(s,road).ok,true);const q=road.construction;for(const k of MATERIALS){q.delivered[k]=q.required[k];q.remaining[k]=0;}for(const source of Object.values(q.sources))for(const k of Object.keys(source))source[k]=0;q.work=11.99;Object.assign(c,{site:road.id,siteDuty:'builder',sitePort:road.id,phase:'constructing',x:road.a.x,y:road.a.y,route:[],routeIndex:0});invalidateAssignments(s);advanceTime(s,.2);assert.equal(road.construction,undefined);assert.equal(c.builderSkill.projects,3);assert.ok(s.godhood.completedProjects.includes(`${road.id}:2`));assert.equal(validateGodhood(s),true);assert.ok(decode(encode(s)));});
+
+test('a forgotten strict city recovers at an occupied home without the source or a repeat faith reward',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {awakeningHTML}=await import('../ui-godhood.js');
+ let s=createGame({mode:'awakening',scenario:strictScenario()});
+ const first=recognize(s),recognitionAt=s.godhood.recognitionAt;
+ removeWitness(s,first);
+ s.resources.faith=0;
+ advanceGodhood(s,.1);
+ assert.match(awakeningHTML(s),/ЗАБЫТЫЙ БОГ/);
+ const ports=networkFor(s).ports;
+ const c=s.citizens.find(c=>c.age>=16&&c.phase==='home'&&ports.some(p=>buildingKey(p.building)===c.home&&Math.hypot(c.x-p.x,c.y-p.y)>.2));
+ assert.ok(c);
+ const port=ports.find(p=>buildingKey(p.building)===c.home);
+ const shore=s.relicQuest.site.shore;
+ s.relicQuest.site.shore={x:-100,y:-100};
+ assert.equal(beginFirstSign(s,c.id).ok,true);
+ s.relicQuest.site.shore=shore;
+ assert.deepEqual(s.godhood.signTarget,{x:port.x,y:port.y});
+ assert.equal(s.resources.faith,0);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ for(let i=0;i<200&&s.godhood.stage==='sign';i++)advanceTime(s,.1);
+ assert.equal(s.godhood.stage,'recognized');
+ assert.equal(s.godhood.witnessId,c.id);
+ assert.equal(s.godhood.recognitionAt,recognitionAt);
+ assert.equal(s.resources.faith,0);
+ assert.equal(beginFirstSign(s,c.id).ok,false);
+});

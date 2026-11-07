@@ -1,0 +1,14 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "initialPopulation": 221,
+  "population": 241,
+  "buildings": 130,
+  "steps": 301,
+  "previous": 0,
+  "newWitness": 5,
+  "faithAtContact": 0,
+  "faithAfterPrayer": 4.291628205128205,
+  "reloadByteIdentical": true,
+  "cpuMedianMs": 1.3969159999999192,
+  "cpuP95Ms": 5.909124999999989
+}
