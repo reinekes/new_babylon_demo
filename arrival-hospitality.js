@@ -194,6 +194,11 @@ export function arrivalWelcomeHouse(s,welcome){
 
 const disputeChoices=['queue','pause'];
 
+export function householdDisputeMemory(s,residents){
+ const ids=new Set(residents.map(c=>c.id));
+ return s.arrivalHospitality?.welcomes?.findLast(row=>row.dispute&&(ids.has(row.host)||ids.has(row.dispute.guest)))||null;
+}
+
 export function arrivalCustomDispute(s,house,welcome){
  if(welcome?.custom!=='libation'||welcome.host===null||welcome.dispute||!isOperational(house)||
   arrivalWelcomeHouse(s,welcome)!==house||!s.arrivalHospitality.welcomes.includes(welcome))return null;

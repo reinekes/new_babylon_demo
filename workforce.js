@@ -696,16 +696,25 @@ function scheduleEveningVisit(s,ctx){
   const home=ctx.buildings.get(c.home);
   return home?.type==='house'&&home.eveningGame?.day!==day&&peacefulGame(s,home)&&availableEveningPlayer(c,s.simTime,day,c.home);
  });
- for(const host of eligible)for(const guest of eligible){
-  if(guest.home===host.home||Math.abs(guest.x-host.x)+Math.abs(guest.y-host.y)>4)continue;
+ const tryVisit=(host,guest)=>{
+  if(!host||!guest||guest.home===host.home||Math.abs(guest.x-host.x)+Math.abs(guest.y-host.y)>4)return false;
   const from=ctx.ports.get(guest.home),to=ctx.ports.get(host.home),route=from&&to&&routeBetween(s,from.key,to.key,ctx);
-  if(!route||route.length>5)continue;
+  if(!route||route.length>5)return false;
   const saved={phase:guest.phase,route:guest.route,routeIndex:guest.routeIndex};
   startTrip(s,guest,host.home,'toEveningGame',ctx);
-  if(guest.phase!=='toEveningGame'){Object.assign(guest,saved);continue;}
+  if(guest.phase!=='toEveningGame'){Object.assign(guest,saved);return false;}
   ctx.buildings.get(host.home).eveningGame={day,players:[host.id,guest.id],guestHome:guest.home,startedAt:s.simTime,status:'waiting'};
-  return;
+  return true;
+ };
+ const welcomes=s.arrivalHospitality?.welcomes;
+ if(welcomes?.length){
+  const byId=new Map(eligible.map(c=>[c.id,c]));
+  for(let i=welcomes.length-1;i>=0;i--){
+   const {host,dispute}=welcomes[i];
+   if(dispute?.choice==='queue'&&tryVisit(byId.get(host),byId.get(dispute.guest)))return;
+  }
  }
+ for(const host of eligible)for(const guest of eligible)if(tryVisit(host,guest))return;
 }
 function advanceCitizen(s,c,dt,ctx,constructionWork){
  reconcileManualGathering(s,c,ctx);

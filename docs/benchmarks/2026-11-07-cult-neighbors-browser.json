@@ -1,0 +1,30 @@
+[
+  {
+    "id": "moved",
+    "view": "2d",
+    "url": "?id=moved&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d moved memory and visit use current homes"
+  },
+  {
+    "id": "moved",
+    "view": "3d",
+    "url": "?id=moved&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d moved memory and visit use current homes"
+  },
+  {
+    "id": "visit",
+    "view": "2d",
+    "url": "?id=visit&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d visit memory and visit use current homes"
+  },
+  {
+    "id": "visit",
+    "view": "3d",
+    "url": "?id=visit&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d visit memory and visit use current homes"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "population": 295,
+  "participants": [
+    16,
+    289
+  ],
+  "oldHome": "2,2",
+  "newHome": "3,2",
+  "visitFinished": true,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 5.565207999999984,
+  "p95CpuMs": 12.340374999999995
+}

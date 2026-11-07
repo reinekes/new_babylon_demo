@@ -61,3 +61,32 @@ test('two fed neighbors walk to a shared game and the guest walks home after a s
  assert.equal(s.citizens.find(c=>c.id===visitor.id).home,game.guestHome);
  assert.equal(s.citizens.find(c=>c.id===visitor.id).phase,'home');
 });
+
+test('a resolved water dispute gives the same people priority for a visit after moving apart',async()=>{
+ const {CAT_DISCOVERY_RULES}=await import('../scenario-profiles.js');
+ const {householdDisputeMemory,newArrivalHospitality}=await import('../arrival-hospitality.js');
+ const {housingOf}=await import('../definitions.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ s.arrivalHospitality=newArrivalHospitality();
+ s.simTime=s.seasonElapsed=34;
+ const [early,host]=s.citizens.filter(c=>c.home==='8,8'&&c.age>=16);
+ const guest=s.citizens.find(c=>c.home==='9,9'&&c.age>=16);
+ const newHome={type:'house',x:8,y:9,level:1,water:0,waterDelivered:0};
+ s.buildings.push(newHome);s.capacity=housingOf(s);
+ Object.assign(host,{home:'8,9',x:8.5,y:9.5});
+ for(const c of s.citizens)Object.assign(c,{mealDay:0,mealEaten:0,hunger:70});
+ for(const c of [early,host,guest])Object.assign(c,{phase:'home',mealEaten:mealRation(c),diningUntil:0,hunger:0,thirst:0});
+ s.resources.food=0;
+ s.arrivalHospitality.welcomes=[{home:'8,8',host:host.id,members:[guest.id],at:18,custom:'libation',dispute:{choice:'queue',guest:guest.id,at:24}}];
+ assert.equal(householdDisputeMemory(s,[host])?.dispute.guest,guest.id);
+ assert.equal(householdDisputeMemory(s,[early]),null);
+ const control=structuredClone(s);control.arrivalHospitality.welcomes[0].dispute.choice='pause';
+ for(let i=0;i<20&&!control.buildings.some(h=>h.eveningGame?.guestHome);i++)advanceTime(control,.1);
+ assert.deepEqual(control.buildings.find(h=>h.eveningGame?.guestHome).eveningGame.players,[early.id,host.id]);
+ for(let i=0;i<20&&!s.buildings.some(h=>h.eveningGame?.guestHome);i++)advanceTime(s,.1);
+ const meeting=s.buildings.find(h=>h.eveningGame?.guestHome);
+ assert.ok(meeting);
+ assert.deepEqual(meeting.eveningGame.players,[host.id,guest.id]);
+ assert.equal(buildingKey(meeting),host.home);
+ const raw=encode(s);assert.equal(encode(decode(raw)),raw);
+});
