@@ -29,7 +29,7 @@ test('demolition refunds half of completed investments and protects houses and f
  const b=s.buildings.find(b=>b.type==='clay');b.level=2;const before=s.resources.clay,bricks=s.resources.brick;assert.ok(management.demolish(s,b.x,b.y).ok);assert.equal(s.resources.clay,before+5);assert.equal(s.resources.brick,bricks+7);assert.ok(decode(encode(s)));
 });
 test('demolishing a home moves residents to reachable beds without losing anyone',()=>{
- const s=stocked();build(s,'house',10,9);run(s,90);for(let i=0;i<120&&s.citizens.some(c=>c.waterTrip?.target==='8,8');i++)run(s,.5);s.event=null;const ids=s.citizens.map(c=>c.id);assert.ok(management.demolish(s,8,8).ok);assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.ok(s.citizens.every(c=>c.home!=='8,8'));assert.ok(decode(encode(s)));run(s,3);assert.ok(decode(encode(s)));
+ const s=stocked();build(s,'house',10,9);run(s,90);for(let i=0;i<120&&s.citizens.some(c=>c.waterTrip?.target==='8,8');i++)run(s,.5);s.event=null;const ids=s.citizens.map(c=>c.id);s.demography.lastBirth['8,8']=s.tick;assert.ok(management.demolish(s,8,8).ok);assert.equal(s.demography.lastBirth['8,8'],undefined);assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.ok(s.citizens.every(c=>c.home!=='8,8'));assert.ok(decode(encode(s)));run(s,3);assert.ok(decode(encode(s)));
 });
 test('old saves default to automatic roles and ordinary priorities',()=>{
  const s=stocked();build(s,'house',10,9);for(const c of s.citizens){delete c.role;delete c.siteDuty;}delete s.buildings.at(-1).construction.priority;const loaded=decode(encode(s));assert.ok(loaded);syncCitizens(loaded);assert.ok(loaded.citizens.every(c=>(c.role||'auto')==='auto'));assert.ok(decode(encode(loaded)));
@@ -49,4 +49,19 @@ test('empty bridges can be removed; occupied bridges and food-overflowing wareho
  const s=stocked();s.buildings.push({type:'bridge',x:13,y:9,level:1});const before=s.resources.clay;assert.ok(management.demolish(s,13,9).ok);assert.equal(s.resources.clay,before+22);assert.ok(decode(encode(s)));
  s.buildings.push({type:'bridge',x:13,y:9,level:1});s.citizens[0].x=13;s.citizens[0].y=9.5;assert.equal(management.demolish(s,13,9).ok,false);
  const t=stocked();t.buildings.push({type:'granary',x:10,y:9,level:1});t.resources.food=300;assert.equal(management.demolish(t,10,9).ok,false);assert.equal(t.resources.food,300);
+});
+
+test('a new house clears an obsolete birth cooldown from a legacy save',()=>{
+ const s=stocked();
+ s.demography.lastBirth['10,9']=s.tick;
+ s.demography.lastBirth['8,8']=s.tick;
+ const raw=encode(s),loaded=decode(raw);
+ assert.equal(encode(loaded),raw);
+ assert.ok(build(loaded,'house',10,9).ok);
+ const house=loaded.buildings.find(b=>b.x===10&&b.y===9);
+ for(let i=0;i<120&&house.construction;i++)run(loaded,.5);
+ assert.equal(house.construction,undefined);
+ assert.equal(loaded.demography.lastBirth['10,9'],undefined);
+ assert.equal(loaded.demography.lastBirth['8,8'],0);
+ assert.ok(decode(encode(loaded)));
 });

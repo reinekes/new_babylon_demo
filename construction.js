@@ -6,7 +6,7 @@ import {startManagedFlock} from './textiles.js';
 import {buildingDefinition} from './building-presentation.js';
 import {recordBuilderCompletion} from './godhood.js';
 import {upgradeCost} from './masonry.js';
-import {housingOf,MATERIALS,isOperational} from './definitions.js';
+import {buildingKey,housingOf,MATERIALS,isOperational} from './definitions.js';
 import {stampBuildingCompletion} from './building-chronology.js';
 import {initializeProductionAccounting} from './building-production-history.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -37,6 +37,7 @@ export function finishConstruction(s){
  for(const b of constructionEntities(s)){const q=b.construction;if(!q||!materialsReady(q)||q.work<workRequired(b)-1e-8)continue;
   if(q.kind==='new'&&b.type!=='road'){
    stampBuildingCompletion(s,b);
+   if(b.type==='house')delete s.demography?.lastBirth?.[buildingKey(b)];
    recordCreatorConstruction(b,q);
    if(b.type==='field'&&isStrictSumer(s))b.sickle={edge:SICKLE_EDGE,pottery:0};
    if(b.type==='garden'&&isStrictSumer(s))b.orchardPlantedTick=s.tick;

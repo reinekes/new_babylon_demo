@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 130,
+  "initialResidents": 218,
+  "residents": 245,
+  "staleKey": "5,4",
+  "liveKey": "6,4",
+  "lastBirth": 1,
+  "obsoleteCooldownCleared": true,
+  "existingCooldownPreserved": true,
+  "loadedDuringDelivery": true,
+  "byteIdenticalReload": true,
+  "steps": 1019,
+  "medianCpuMs": 1.260332999999946,
+  "p95CpuMs": 6.13408400000003
+}
