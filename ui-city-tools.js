@@ -1,3 +1,4 @@
+import {residentLinkHTML} from './ui-resident-links.js';
 import {inannaMeetingReason} from './miracle-celebration.js';
 import {INANNA_GUARD_DAYS} from './inanna-discovery.js';
 import {miracleLockReason} from './sacred-unlocks.js';
@@ -179,7 +180,9 @@ function richCatchProgressHTML(s){
  const {catches,homes,requiredCatches,requiredHomes,qualified}=progress;
  const details=richCatchMapReason(s)||(qualified?'Условия выполнены.':
   `Уловы одного вдохновлённого рыбака · ${catches} из ${requiredCatches} · Жилые дворы с доставленной рыбой · ${homes} из ${requiredHomes}.`);
- return `<section class="management-row" data-rich-catch-progress><h3>История «Богатый улов»</h3><p>${details}</p></section>`;
+ const receipts=s.causalFacts?.fishHomes||[];
+ const rows=receipts.map(f=>`<li>Двор ${escape(f.home)} · ${Number(f.amount.toFixed(2))} рыбы · получил ${residentLinkHTML(s,f.recipientId)} · доставил ${residentLinkHTML(s,f.courierId)}</li>`);
+ return `<section class="management-row" data-rich-catch-progress><h3>История «Богатый улов»</h3><p>${details}</p>${rows.length?`<ul data-fish-home-receipts>${rows.join('')}</ul>`:''}</section>`;
 }
 
 function revelationAdviceHTML(s){

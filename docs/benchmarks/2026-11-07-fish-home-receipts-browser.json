@@ -1,0 +1,30 @@
+[
+  {
+    "id": "detailed",
+    "view": "2d",
+    "url": "?id=detailed&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d two linked physical receipts"
+  },
+  {
+    "id": "detailed",
+    "view": "3d",
+    "url": "?id=detailed&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d two linked physical receipts"
+  },
+  {
+    "id": "legacy",
+    "view": "2d",
+    "url": "?id=legacy&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d historical address-only qualification"
+  },
+  {
+    "id": "legacy",
+    "view": "3d",
+    "url": "?id=legacy&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d historical address-only qualification"
+  }
+]

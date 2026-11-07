@@ -1,3 +1,4 @@
+import {recordFishHomeFact} from './causal-facts.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 
@@ -59,11 +60,11 @@ export function richCatchView(s){
  return {catches,homes:q.homes.length,requiredCatches:REQUIRED_CATCHES,requiredHomes:REQUIRED_HOMES,qualified};
 }
 
-export function recordHomeFish(s,home,parts){
+export function recordHomeFish(s,home,parts,courier){
  const q=s.richCatchEvidence;
- if(!q||q.homes.length>=REQUIRED_HOMES||home?.type!=='house'||!isOperational(home)||!parts.some(part=>part>EPS))return;
- const key=buildingKey(home);
- if(q.homes.includes(key)||!s.citizens.some(c=>c.home===key))return;
+ if(!q||q.homes.length>=REQUIRED_HOMES||home?.type!=='house'||!isOperational(home)||!courier)return;
+ const amount=parts.reduce((total,part)=>total+Math.max(0,part),0),key=buildingKey(home);
+ if(amount<=EPS||q.homes.includes(key)||!recordFishHomeFact(s,home,courier,amount))return;
  q.homes.push(key);
 }
 

@@ -397,7 +397,7 @@ function deposit(s,c,ctx){
    if(c.fishCargo){
     const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
     if(!local)appendFish(store,'fishStock',parts,(store?.stock?.food||0)-accepted);
-    else if(destination.targetKind==='input')recordHomeFish(s,site,parts);
+    else if(destination.targetKind==='input')recordHomeFish(s,site,parts,c);
     if(!c.fishCargo)delete c.inspiredFishReturn;
    }
   }
@@ -472,7 +472,7 @@ function arrival(s,c,ctx){
   const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
    const gift=moveGiftFood(c,'giftPantry',b,'giftHome',amount,amount,b.pantry-amount);
    recordAbundanceHome(s,b,c,ctx.buildings.get(c.store),amount,gift);
-   if(c.fishPantry)recordHomeFish(s,b,takeFishEvidence(c,'fishPantry',amount,amount));
+   if(c.fishPantry)recordHomeFish(s,b,takeFishEvidence(c,'fishPantry',amount,amount),c);
   }else{
    const accepted=putStock(s,c.store,'food',amount,{overflow:true}),store=ctx.buildings.get(c.store);
    moveGiftFood(c,'giftPantry',store,'giftStock',accepted,amount,(store?.stock?.food||0)-accepted);

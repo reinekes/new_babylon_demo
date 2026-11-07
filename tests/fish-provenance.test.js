@@ -14,15 +14,23 @@ test('untagged food ahead of and between catches remains untagged after a split'
 
 test('only distinct inhabited courtyards receiving tagged food count',()=>{
  const a={type:'house',x:1,y:2},b={type:'house',x:2,y:2};
- const s={simTime:5,richCatchEvidence:newRichCatchEvidence(),citizens:[{home:'1,2'}]};
- recordHomeFish(s,a,[]);
- recordHomeFish(s,b,[3]);
+ const courier={id:0,home:'3,2'},recipient={id:1,home:'1,2'};
+ const s={simTime:5,richCatchEvidence:newRichCatchEvidence(),citizens:[courier,recipient]};
+ recordHomeFish(s,a,[],courier);
+ recordHomeFish(s,b,[3],courier);
  assert.deepEqual(s.richCatchEvidence.homes,[]);
- recordHomeFish(s,a,[1]);
- recordHomeFish(s,{...a},[1]);
- s.citizens.push({home:'2,2'});
- recordHomeFish(s,b,[-3,1]);
+ recordHomeFish(s,a,[1],courier);
+ recordHomeFish(s,{...a},[1],courier);
+ recipient.home='2,2';
+ recordHomeFish(s,b,[2],courier);
+ assert.deepEqual(s.richCatchEvidence.homes,['1,2']);
+ s.citizens.push({id:2,home:'2,2'});
+ recordHomeFish(s,b,[-3,1],courier);
  assert.deepEqual(s.richCatchEvidence.homes,['1,2','2,2']);
+ assert.deepEqual(s.causalFacts.fishHomes,[
+  {home:'1,2',homeId:a.waterEntityId,recipientId:1,courierId:0,time:5,amount:1},
+  {home:'2,2',homeId:b.waterEntityId,recipientId:2,courierId:0,time:5,amount:1}
+ ]);
 });
 
 import {createGame,advanceTime,decode,encode} from '../engine.js';
@@ -63,14 +71,25 @@ test('actual catches reach two occupied houses after a warehouse haul and a save
  assert.ok(reloaded);
  assert.ok(richCatchView(s).qualified);
  assert.equal(s.richCatchEvidence.homes.length,2,JSON.stringify({time:s.simTime,pop:s.population,stores:s.buildings.filter(b=>b.fishStock).map(b=>[b.type,b.stock.food,b.fishStock]),houses:s.buildings.filter(b=>b.type==='house').map(b=>[b.x,b.y,b.pantry]),jobs:s.district.jobs.slice(-4)}));
+ assert.equal(s.causalFacts.fishHomes.length,2);
+ assert.ok(s.causalFacts.fishHomes.every(r=>r.amount>0&&s.richCatchEvidence.homes.includes(r.home)));
  assert.equal(encode(decode(encode(s))),encode(s));
+ const invalid=JSON.parse(encode(s));
+ invalid.causalFacts.fishHomes[1].recipientId=invalid.causalFacts.fishHomes[0].recipientId;
+ assert.equal(decode(JSON.stringify(invalid)),null);
+ const former=JSON.parse(encode(s));
+ delete former.causalFacts.fishHomes;
+ const oldWithReceipts=decode(JSON.stringify(former));
+ assert.ok(oldWithReceipts);
+ assert.equal(richCatchView(oldWithReceipts).qualified,true);
+ assert.equal(oldWithReceipts.causalFacts.fishHomes,undefined);
  const old=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
  delete old.richCatchEvidence;
  assert.equal(encode(decode(encode(old))),encode(old));
 });
 
 test('ten catches must come from one inspired fisher and two homes must receive fish',()=>{
- const s={richCatchEvidence:newRichCatchEvidence(),citizens:[{id:1,home:'1,2'},{id:2,home:'2,2'}]};
+ const s={simTime:0,richCatchEvidence:newRichCatchEvidence(),citizens:[{id:1,home:'1,2'},{id:2,home:'2,2'}]};
  const [a,b]=s.citizens;
  const fishery={type:'fishing',x:3,y:2};
  a.work=b.work='3,2';
@@ -82,8 +101,8 @@ test('ten catches must come from one inspired fisher and two homes must receive 
  for(let i=0;i<5;i++)recordInspiredCatch(s,fishery,a,1);
  assert.equal(richCatchView(s).qualified,false);
  assert.equal(richCatchView(s).catches,10);
- recordHomeFish(s,{type:'house',x:a.id,y:2},[1]);
+ recordHomeFish(s,{type:'house',x:a.id,y:2},[1],a);
  s.citizens.shift();
- recordHomeFish(s,{type:'house',x:b.id,y:2},[1]);
+ recordHomeFish(s,{type:'house',x:b.id,y:2},[1],b);
  assert.equal(richCatchView(s).qualified,true);
 });

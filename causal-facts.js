@@ -129,6 +129,17 @@ export function recordHarvestNameEvidence(s,field,home,part){
  trimNameReceipts(receipts);
 }
 
+export function recordFishHomeFact(s,home,courier,amount){
+ const key=buildingKey(home),prior=s.causalFacts?.fishHomes||[];
+ if(prior.some(f=>f.home===key||f.homeId===home.waterEntityId))return false;
+ const recipient=s.citizens.find(c=>supplyHome(c,{arrived:true})===key&&!prior.some(f=>f.recipientId===c.id));
+ if(!recipient)return false;
+ const ledger=causalLedger(s);
+ home.waterEntityId??=ledger.nextEntityId++;
+ (ledger.fishHomes??=[]).push({home:key,homeId:home.waterEntityId,recipientId:recipient.id,courierId:courier.id,time:s.simTime,amount});
+ return true;
+}
+
 export function recordNeighborWaterFact(s,c,home,trip,amount){
  if(trip.station!==null||trip.neighborRecorded||trip.origin!==c.home||trip.target!==buildingKey(home))return;
  if(recordNeighborAid(s,c,home,amount,'neighborWater'))trip.neighborRecorded=true;
@@ -239,6 +250,20 @@ export function validateCausalFacts(s){
     patients.has(fact.patientId)||
     !Number.isFinite(fact.time)||fact.time<previousHealingTime||fact.time>s.simTime)return false;
    patients.add(fact.patientId);previousHealingTime=fact.time;
+  }
+ }
+ const fishHomes=ledger.fishHomes;
+ if(fishHomes!==undefined){
+  if(!s.richCatchEvidence||!Array.isArray(fishHomes)||!fishHomes.length||fishHomes.length>2)return false;
+  const homes=new Set(),addresses=new Set(),recipients=new Set();
+  let previous=-1;
+  for(const f of fishHomes){
+   if(!f||Object.keys(f).length!==6||!entity(f.homeId)||!s.richCatchEvidence.homes?.includes(f.home)||
+    !entityMatches(f.homeId,'house',f.home)||homes.has(f.homeId)||addresses.has(f.home)||
+    !citizen(f.recipientId)||!citizen(f.courierId)||recipients.has(f.recipientId)||
+    !Number.isFinite(f.time)||f.time<0||f.time<previous||f.time>s.simTime||
+    !Number.isFinite(f.amount)||f.amount<=0)return false;
+   homes.add(f.homeId);addresses.add(f.home);recipients.add(f.recipientId);previous=f.time;
   }
  }
  const validLesson=f=>f&&Array.isArray(f.site)&&f.site.length===2&&
