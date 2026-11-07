@@ -38,6 +38,28 @@ test('only a served and arrived evacuee from the opposite bank records a hosting
  assert.ok(b.pantry<prior);
  assert.equal(arrivalHospitalityView(s).shelters,1);
  assert.equal(arrivalHospitalityView(s).qualified,false);
+ const [receipt]=s.arrivalHospitality.shelters;
+ assert.ok(Number.isSafeInteger(receipt.hostId));
+ assert.ok(Number.isSafeInteger(receipt.originId));
+ assert.equal(receipt.hostId,b.waterEntityId);
+ assert.equal(receipt.originId,origin.waterEntityId);
+
+ const original=createNewCity({mode:'awakening',seed:1});
+ const replacement=original.buildings.find(row=>row.x===b.x&&row.y===b.y);
+ const replacementId=Math.max(receipt.hostId,receipt.originId)+1;
+ replacement.waterEntityId=replacementId;
+ original.causalFacts={version:1,nextEntityId:replacementId+1,water:[]};
+ original.arrivalHospitality.shelters=[receipt];
+ original.simTime=original.seasonElapsed=s.simTime;
+ const raw=encode(original);
+ assert.equal(encode(decode(raw)),raw);
+ const tampered=JSON.parse(raw);
+ tampered.arrivalHospitality.shelters[0].originId=replacementId;
+ assert.equal(decode(JSON.stringify(tampered)),null);
+ delete tampered.arrivalHospitality.shelters[0].hostId;
+ delete tampered.arrivalHospitality.shelters[0].originId;
+ const legacy=JSON.stringify(tampered);
+ assert.equal(encode(decode(legacy)),legacy);
 });
 
 test('arrival housing counts permanent residents and temporary evacuees, excluding closed houses',async()=>{

@@ -44,7 +44,10 @@ export function recordArrivalShelter(s,house,guest,served){
  if(guest.floodShelter!==host||!differentBanks(s,origin,host)||
   journal.shelters?.some(row=>row.host===host||row.origin===origin)||
   !s.citizens.some(c=>c.home===host&&!c.floodShelter&&['home','resting'].includes(c.phase)))return;
- (journal.shelters??=[]).push({host,origin,at:s.simTime});
+ const source=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===origin);
+ if(!source)return;
+ const ids=isStrictSumer(s)?{hostId:ensureHouseEntityId(s,house),originId:ensureHouseEntityId(s,source)}:{};
+ (journal.shelters??=[]).push({host,origin,at:s.simTime,...ids});
 }
 
 export function arrivalHospitalityView(s){
@@ -353,7 +356,8 @@ export function validateArrivalHospitality(s){
  const hosts=new Set(),origins=new Set();
  previous=0;
  for(const row of shelters){
-  if(!row||Object.keys(row).length!==3||!differentBanks(s,row.origin,row.host)||
+  if(!row||(row.hostId===undefined)!==(row.originId===undefined)||
+   Object.keys(row).length!==(row.hostId===undefined?3:5)||!differentBanks(s,row.origin,row.host)||
    hosts.has(row.host)||origins.has(row.origin)||!Number.isFinite(row.at)||row.at<previous||row.at>s.simTime)return false;
   hosts.add(row.host);origins.add(row.origin);previous=row.at;
  }

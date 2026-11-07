@@ -204,7 +204,9 @@ export function validateCausalFacts(s){
  const blessingCup=s.blessingDiscovery?.cup;
  const welcomes=s.arrivalHospitality?.welcomes;
  const linkedWelcomes=Array.isArray(welcomes)?welcomes.filter(w=>w?.homeId!==undefined):[];
- if(ledger===undefined)return blessingCup===undefined&&firstCup?.breweryId===undefined&&!memorials.length&&!linkedWelcomes.length&&dream?.homeId===undefined&&!targets.length&&s.buildings.every(b=>b.causalEntityId===undefined&&b.waterEntityId===undefined&&b.householdInitiative?.sourceId===undefined&&b.householdInitiative?.firstNeighborAid===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined&&b.humanWaterProject?.witnessHomePlaces===undefined);
+ const shelters=s.arrivalHospitality?.shelters;
+ const linkedShelters=Array.isArray(shelters)?shelters.filter(row=>row?.hostId!==undefined||row?.originId!==undefined):[];
+ if(ledger===undefined)return blessingCup===undefined&&firstCup?.breweryId===undefined&&!memorials.length&&!linkedWelcomes.length&&!linkedShelters.length&&dream?.homeId===undefined&&!targets.length&&s.buildings.every(b=>b.causalEntityId===undefined&&b.waterEntityId===undefined&&b.householdInitiative?.sourceId===undefined&&b.householdInitiative?.firstNeighborAid===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined&&b.humanWaterProject?.witnessHomePlaces===undefined);
  if(!isStrictSumer(s)||!ledger||ledger.version!==1||!id(ledger.nextEntityId)||!Array.isArray(ledger.water)||ledger.water.length>LIMIT||
   [ledger.neighborWater,ledger.neighborFood,ledger.waterWitnesses].some(rows=>rows!==undefined&&(!Array.isArray(rows)||rows.length>LIMIT)))return false;
  const entity=n=>id(n)&&n<ledger.nextEntityId;
@@ -234,6 +236,8 @@ export function validateCausalFacts(s){
  if(dream?.homeId!==undefined&&(!entity(dream.homeId)||!entityMatches(dream.homeId,'house',dream.home)))return false;
  if(memorials.some(m=>!entity(m.homeId)||!entityMatches(m.homeId,'house',m.home)))return false;
  if(linkedWelcomes.some(w=>!entity(w.homeId)||!entityMatches(w.homeId,'house',w.home)))return false;
+ if(linkedShelters.some(row=>!entity(row.hostId)||!entity(row.originId)||
+  !entityMatches(row.hostId,'house',row.host)||!entityMatches(row.originId,'house',row.origin)))return false;
  if(targets.some(t=>!entity(t.homeId)||!entityMatches(t.homeId,'house',t.home)))return false;
  for(const b of s.buildings){
   const project=b.householdInitiative;

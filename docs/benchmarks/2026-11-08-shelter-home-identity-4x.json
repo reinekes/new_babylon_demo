@@ -1,0 +1,28 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledEvacueeArrival": true,
+  "servedHouseholds": 2,
+  "byteEqualReload": true,
+  "gameplayEqualOutsideIdentity": true,
+  "receipts": [
+    {
+      "host": "8,8",
+      "origin": "18,2",
+      "at": 690.125,
+      "hostId": 1,
+      "originId": 2
+    },
+    {
+      "host": "9,9",
+      "origin": "19,2",
+      "at": 690.125,
+      "hostId": 3,
+      "originId": 4
+    }
+  ],
+  "samples": 120,
+  "medianCpuMs": 4.801166999999623,
+  "p95CpuMs": 26.55495800000017
+}
