@@ -1,0 +1,11 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "evacuated": 8,
+  "speed": 4,
+  "steps": 77,
+  "medianCpuMs": 2.234540999999979,
+  "p95CpuMs": 7.6780419999999765,
+  "reloadByteIdentical": true,
+  "returnedAfterRecession": true
+}

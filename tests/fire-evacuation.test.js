@@ -67,3 +67,25 @@ test('a closed gate keeps the family sheltered with access to household supplies
  for(let i=0;i<220&&family.some(c=>c.fireShelter);i++)advance();
  assert.ok(family.every(c=>!c.fireShelter&&c.home===source));
 });
+
+test('a flood at the original address does not displace a family already in a dry fire shelter',()=>{
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const source=s.buildings.find(b=>b.x===9&&b.y===9),family=s.citizens.filter(c=>c.home==='9,9');
+ Object.assign(source,{x:11,y:8});s.buildings[0].level=3;s.capacity+=8;
+ for(const c of family)Object.assign(c,{home:'11,8',x:11.5,y:8.5});
+ const kiln={type:'kiln',x:10,y:9,level:1};s.buildings.push(kiln);
+ initializeKilns(s);initializeProductionAccounting(s);syncCitizens(s);
+ Object.assign(kiln.firing,{hot:4,time:IGNITION_CHECK});kiln.kilnFire=true;
+ assert.ok(evacuateFireHome(s,kiln,'11,8').ok);
+ for(let i=0;i<150&&!family.every(c=>supplyHome(c,{arrived:true})==='8,8');i++)advanceTime(s,.1);
+ assert.ok(family.every(c=>supplyHome(c,{arrived:true})==='8,8'));
+ Object.assign(s,{year:4,tick:12,riverFlood:{year:4,along:6,bank:-1}});
+ advanceTime(s,.1);
+ assert.ok(family.every(c=>c.fireShelter?.host==='8,8'&&!c.floodShelter));
+ assert.ok(setKilnBanked(s,kiln,true).ok);
+ for(let i=0;i<30;i++)advanceTime(s,.1);
+ assert.ok(family.every(c=>supplyHome(c,{arrived:true})==='8,8'));
+ s.season=1;
+ for(let i=0;i<150&&family.some(c=>c.fireShelter);i++)advanceTime(s,.1);
+ assert.ok(family.every(c=>!c.fireShelter&&c.home==='11,8'));
+});

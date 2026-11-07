@@ -1,0 +1,16 @@
+[
+  {
+    "id": "waiting",
+    "view": "2d",
+    "url": "?id=waiting&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d family remains sheltered during river flood"
+  },
+  {
+    "id": "waiting",
+    "view": "3d",
+    "url": "?id=waiting&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d family remains sheltered during river flood"
+  }
+]

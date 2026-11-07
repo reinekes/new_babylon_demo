@@ -598,7 +598,11 @@ export function evacuateFireHome(s,kiln,home){
 function advanceFireShelter(s,c,dt,ctx){
  const shelter=c.fireShelter;
  if(!shelter)return false;
- const goingHome=shelter.returning||!ctx.buildings.get(shelter.kiln)?.kilnFire;
+ const homeFlooded=ctx.network.navigation.flooded?.has(c.home);
+ if(homeFlooded&&shelter.returning){
+  delete shelter.returning;c.route=[];c.routeIndex=0;ctx.foodCitizens=null;
+ }
+ const goingHome=!homeFlooded&&(shelter.returning||!ctx.buildings.get(shelter.kiln)?.kilnFire);
  if(goingHome&&!shelter.returning||!c.route.length){
   const {route,routeIndex}=c;
   startTrip(s,c,goingHome?c.home:shelter.host,'toHome',ctx);
@@ -640,10 +644,11 @@ function advanceFloodShelter(s,c,dt,ctx){
   }
   return false;
  }
+ if(c.fireShelter&&!flooded.has(c.fireShelter.host)&&!floodedSegment(flooded,c,c))return false;
  if(c.floodShelter&&!ctx.buildings.has(c.floodShelter)){delete c.floodShelter;ctx.foodCitizens=null;}
  if(!c.floodShelter){
-  const home=ctx.buildings.get(c.home);
-  if(!floodedSegment(flooded,c,c)&&!(home&&flooded.has(`${home.x},${home.y}`)))return false;
+  const refuge=c.fireShelter?.host||c.home;
+  if(!floodedSegment(flooded,c,c)&&!flooded.has(refuge))return false;
   const cache=caches.get(s);
   if(!cache.evacuation){
    const normal=createWalkingNetwork(s,cache.streets);
