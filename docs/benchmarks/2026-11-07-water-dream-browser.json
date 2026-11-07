@@ -1,0 +1,20 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Real app with test-only UI entry points. Sent from a pre-dawn city, then separately opened a dawn save produced by the 4x run.",
+  "runs": [
+    {
+      "id": "dream",
+      "view": "2d",
+      "url": "?id=dream&view=2d&dawn",
+      "mode": "2d",
+      "result": "PASS 2d dream payment, waiting save, dawn fixture and construction"
+    },
+    {
+      "id": "dream",
+      "view": "3d",
+      "url": "?id=dream&view=3d&dawn",
+      "mode": "3d",
+      "result": "PASS 3d dream payment, waiting save, dawn fixture and construction"
+    }
+  ]
+}

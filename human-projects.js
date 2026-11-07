@@ -7,8 +7,14 @@ import {networkFor} from './workforce.js';
 import {stockStores} from './inventory.js';
 import {waterDemand,waterSummary} from './water.js';
 import {supplyHome} from './households.js';
+import {worldWidth,worldHeight} from './world.js';
+import {DAY_SECONDS} from './city-life.js';
 
 const projectType='waterpoint';
+export const WATER_DREAM_COST=3;
+const dawnOffset=DAY_SECONDS*22/24;
+const nextDawn=time=>(Math.floor((time-dawnOffset)/DAY_SECONDS)+1)*DAY_SECONDS+dawnOffset;
+const validParticipants=(ids,organizerId)=>Array.isArray(ids)&&ids.length<=3&&new Set(ids).size===ids.length&&!ids.includes(organizerId);
 function awaitingWaterProject(s,b){
  return s.buildings.some(site=>{
   const p=site.humanWaterProject;
@@ -57,15 +63,17 @@ export function waterProjectOrganizerReason(s,organizer){
 export function waterProjectProposal(s,organizerId,requesterId,x,y,participantIds=[]){
  const refuse=reason=>({ok:false,reason});
  if(!isStrictSumer(s))return refuse('Инициатива доступна в Южном Шумере');
+ if(!Number.isInteger(x)||!Number.isInteger(y))return refuse('Выберите клетку у воды');
  if(s.buildings.some(b=>b.humanWaterProject&&b.construction?.kind==='new'))return refuse('Один водозабор уже строится по инициативе жителей');
  const organizer=s.citizens.find(c=>c.id===organizerId),requester=s.citizens.find(c=>c.id===requesterId);
  const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===requester?.home);
- if(!home||requester.floodShelter)return refuse('Нужен населённый двор, которому не хватает воды');
+ if(!home||requester.age<16||requester.floodShelter)return refuse('Нужен населённый двор, которому не хватает воды');
  const water=waterSummary(s,home);
  if(water.stock>=water.demand)return refuse('У двора есть запас воды на день');
+ if(awaitingWaterProject(s,home))return refuse('Двор уже ждёт доставку из своего проекта');
  const organizerReason=waterProjectOrganizerReason(s,organizer);
  if(organizerReason)return refuse(organizerReason);
- if(!Array.isArray(participantIds)||participantIds.length>3||new Set(participantIds).size!==participantIds.length||participantIds.includes(organizerId))return refuse('Выберите до трёх разных помощников');
+ if(!validParticipants(participantIds,organizerId))return refuse('Выберите до трёх разных помощников');
  const participants=participantIds.map(id=>s.citizens.find(c=>c.id===id));
  for(const c of participants){
   const reason=waterProjectOrganizerReason(s,c);
@@ -94,6 +102,35 @@ export function approveWaterProject(s,organizerId,requesterId,x,y,participantIds
  return {ok:true,key:offer.key};
 }
 
+export function sendWaterProjectDream(s,organizerId,requesterId,x,y,participantIds){
+ if(s.waterProjectDream)return {ok:false,reason:'Город уже ждёт решения по общему сну'};
+ if(!participantIds?.length)return {ok:false,reason:'Выберите хотя бы одного помощника для общего сна'};
+ const offer=waterProjectProposal(s,organizerId,requesterId,x,y,participantIds);
+ if(!offer.ok)return offer;
+ if(s.resources.faith<WATER_DREAM_COST)return {ok:false,reason:`Для общего сна нужно ${WATER_DREAM_COST} веры`};
+ const {home,startedAt:sentAt}=offer.project;
+ s.resources.faith-=WATER_DREAM_COST;
+ s.waterProjectDream={organizerId,requesterId,participantIds:[...participantIds],home,x,y,sentAt,readyAt:nextDawn(sentAt)};
+ return {ok:true};
+}
+
+export function acceptWaterProjectDream(s){
+ const dream=s.waterProjectDream;
+ if(!dream)return {ok:false,reason:'У города нет общего сна'};
+ if(s.simTime<dream.readyAt)return {ok:false,reason:'Жители обсудят сон на рассвете'};
+ const requester=s.citizens.find(c=>c.id===dream.requesterId);
+ if(requester?.home!==dream.home)return {ok:false,reason:'Проситель больше не живёт в этом дворе'};
+ const result=approveWaterProject(s,dream.organizerId,dream.requesterId,dream.x,dream.y,dream.participantIds);
+ if(result.ok)delete s.waterProjectDream;
+ return result;
+}
+
+export function discardWaterProjectDream(s){
+ if(!s.waterProjectDream)return {ok:false,reason:'У города нет общего сна'};
+ delete s.waterProjectDream;
+ return {ok:true};
+}
+
 export function confirmProjectWater(s,c,station,home,amount){
  if(!station||!Number.isFinite(amount)||amount<=1e-7)return;
  const b=s.buildings.find(b=>b.type===projectType&&buildingKey(b)===station&&isOperational(b));
@@ -109,6 +146,14 @@ export function confirmProjectWater(s,c,station,home,amount){
 }
 export function validateHumanProjects(s){
  const id=n=>Number.isSafeInteger(n)&&n>=0&&n<s.demography.nextId;
+ const dream=s.waterProjectDream;
+ if(dream!==undefined&&(!dream||!isStrictSumer(s)||!id(dream.organizerId)||!id(dream.requesterId)||
+  dream.organizerId===dream.requesterId||!validParticipants(dream.participantIds,dream.organizerId)||
+  !dream.participantIds.length||!dream.participantIds.every(id)||dream.participantIds.includes(dream.requesterId)||
+  typeof dream.home!=='string'||!/^\d+,\d+$/.test(dream.home)||
+  !Number.isInteger(dream.x)||dream.x<0||dream.x>=worldWidth(s)||!Number.isInteger(dream.y)||dream.y<0||dream.y>=worldHeight(s)||
+  !Number.isFinite(dream.sentAt)||dream.sentAt<0||dream.sentAt>s.simTime||dream.readyAt!==nextDawn(dream.sentAt)))return false;
+
  return s.buildings.every(b=>{
   const p=b.humanWaterProject;
   if(p===undefined)return true;

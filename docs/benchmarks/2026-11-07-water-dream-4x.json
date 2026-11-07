@@ -1,0 +1,15 @@
+{
+  "buildings": 130,
+  "population": 222,
+  "initialPopulation": 222,
+  "helperId": 16,
+  "helperWorked": true,
+  "completed": true,
+  "reloadByteIdentical": true,
+  "steps": 270,
+  "cpuMedianMs": 2.328375000000051,
+  "cpuP95Ms": 6.758417000000009,
+  "dawn": 55,
+  "faithSpent": 3,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}
