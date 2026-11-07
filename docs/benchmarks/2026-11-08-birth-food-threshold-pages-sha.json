@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-07T20:36:27.707243+00:00",
+  "commit": "f8d09b774cbde644d78f83ad884cd8b259166224",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "50721698175b72352b93d12940b69ce7ec2792864c278273260fc07472fc46a4",
+      "actual": "50721698175b72352b93d12940b69ce7ec2792864c278273260fc07472fc46a4",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "3cffde29ca5927f5d26ef48e48ba10064558f1ed4425b59a12420798dafbf090",
+      "actual": "3cffde29ca5927f5d26ef48e48ba10064558f1ed4425b59a12420798dafbf090",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "cd646fec6cc2c2e6c73a80d56469bf16bdc68f407604578d24e267c171b3a2cf",
+      "actual": "cd646fec6cc2c2e6c73a80d56469bf16bdc68f407604578d24e267c171b3a2cf",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "a8ae7d67853db74b555ae09807c5aff7da026602023542752cd32f7c04848062",
+      "actual": "a8ae7d67853db74b555ae09807c5aff7da026602023542752cd32f7c04848062",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-birth-food-threshold-4x.json",
+      "status": 200,
+      "expected": "c564cbe6574f08f53bc46f2ba622177331e7b1a0bc4ae31963548083d86ea893",
+      "actual": "c564cbe6574f08f53bc46f2ba622177331e7b1a0bc4ae31963548083d86ea893",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-birth-food-threshold-browser.json",
+      "status": 200,
+      "expected": "ac0de46cc4bfa8216b30ea40e94ccdee50a0e0f55067e1ef40fb914a2fbe9042",
+      "actual": "ac0de46cc4bfa8216b30ea40e94ccdee50a0e0f55067e1ef40fb914a2fbe9042",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e16fc8a84ba0a3deaed5727b08439db7fd914916f97e08e5d4e24f72c48485a3",
+      "actual": "e16fc8a84ba0a3deaed5727b08439db7fd914916f97e08e5d4e24f72c48485a3",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "529cf13a3283c07217e01e826d61e40665d04d0adaafa5c229648e46a7387496",
+      "actual": "529cf13a3283c07217e01e826d61e40665d04d0adaafa5c229648e46a7387496",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "82c50e3b2862d5c9c45831d2d3084c3d5e3e54d74f8a5f632d317da214d076ee",
+      "actual": "82c50e3b2862d5c9c45831d2d3084c3d5e3e54d74f8a5f632d317da214d076ee",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
