@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T23:32:22.878593+00:00",
+  "commit": "e47e7ad3c2b58659fcf5e870358a031cf81cfcb1",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "e8b12b1aba83e04780ac1fda45257fb0cef741ee7fdd9df001c77ac401f79b9e",
+      "actual": "e8b12b1aba83e04780ac1fda45257fb0cef741ee7fdd9df001c77ac401f79b9e",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "e03fbb479f3b5c4c7dccf7a1675d4d6df2aa4d284ec6697505306c29d00b9bb8",
+      "actual": "e03fbb479f3b5c4c7dccf7a1675d4d6df2aa4d284ec6697505306c29d00b9bb8",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "d62f2852a5c2cf7160838957fcc56a4af86cf7ca624c20e53b1b3dc54827236c",
+      "actual": "d62f2852a5c2cf7160838957fcc56a4af86cf7ca624c20e53b1b3dc54827236c",
+      "match": true
+    },
+    {
+      "path": "docs/NEW_PLAYER_PLAYTEST.md",
+      "status": 200,
+      "expected": "ba7fbb956894edf3a7eefb1c6f73790eac40fcbdda851762f15e374822e65365",
+      "actual": "ba7fbb956894edf3a7eefb1c6f73790eac40fcbdda851762f15e374822e65365",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-playtest-intro-rules-4x.json",
+      "status": 200,
+      "expected": "8b7b3134d27045e253292c3baa09a66826119dfee87273c65764ff285d7859fd",
+      "actual": "8b7b3134d27045e253292c3baa09a66826119dfee87273c65764ff285d7859fd",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-playtest-intro-rules-browser.json",
+      "status": 200,
+      "expected": "b27285fe6e5fbad9341688946784e4471fe83705ae0956ecb7a353696d77829d",
+      "actual": "b27285fe6e5fbad9341688946784e4471fe83705ae0956ecb7a353696d77829d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a05a6f91a1dc11eff75133fe5978ff3041ccdd9a40fd7cba9e5ae561ef2f1c18",
+      "actual": "a05a6f91a1dc11eff75133fe5978ff3041ccdd9a40fd7cba9e5ae561ef2f1c18",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fa51f55ead33adf59d66c0f97d226493436b8663c517b53bc0aca1a0278ba25c",
+      "actual": "fa51f55ead33adf59d66c0f97d226493436b8663c517b53bc0aca1a0278ba25c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "565d6f975a81492ee17d3aa08617ee59959d0b6ffba8164cd041e450abac2978",
+      "actual": "565d6f975a81492ee17d3aa08617ee59959d0b6ffba8164cd041e450abac2978",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a17d1629d2dccd76aed5fb2b9dfb0b75124347fa140bc0c1adf75168b1952710",
+      "actual": "a17d1629d2dccd76aed5fb2b9dfb0b75124347fa140bc0c1adf75168b1952710",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
