@@ -90,7 +90,7 @@ test('an arrival route uses a connected map edge and a dry house with vacancies'
 });
 
 test('arrival offer limits the group to water surplus and reachable food outside seed reserves',async()=>{
- const {arrivalOffer}=await import('../arrival-hospitality.js');
+ const {arrivalOffer,arrivalQuote}=await import('../arrival-hospitality.js');
  const {syncInventory}=await import('../inventory.js');
  const {networkFor}=await import('../workforce.js');
  const s=createNewCity({mode:'awakening',seed:1}),network=networkFor(s);
@@ -99,6 +99,12 @@ test('arrival offer limits the group to water surplus and reachable food outside
  home.level=2;
  for(const b of s.buildings)if(b.type==='house')b.water=0;
  home.water=s.citizens.filter(c=>c.home===key).reduce((n,c)=>n+(c.age<16?.5:1),0)+2;
+ assert.match(arrivalQuote(s,{...network,components:new Map()}).reason,/сухого пути/);
+ assert.match(arrivalQuote({...s,buildings:[]},network).reason,/Нет свободного места/);
+ const savedWater=home.water;
+ home.water=0;
+ assert.match(arrivalQuote(s,network).reason,/воды/);
+ home.water=savedWater;
  const offers=arrivalOffer(s,network);
  assert.ok(offers);
  assert.equal(offers.home,key);
@@ -108,6 +114,7 @@ test('arrival offer limits the group to water surplus and reachable food outside
  s.buildings.push({type:'field',x:0,y:0,level:1});
  s.resources.food=4;syncInventory(s);
  assert.equal(arrivalOffer(s,network),null,'the seed reserve cannot become a travel ration');
+ assert.match(arrivalQuote(s,network).reason,/пайка/);
 });
 
 test('reserving the arrival ration debits supplies once and survives a reload',async()=>{

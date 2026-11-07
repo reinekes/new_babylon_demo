@@ -92,9 +92,11 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
  for(const port of network.ports){
   const home=buildingKey(port.building),vacant=vacancies.get(home);
   if(!vacant)continue;
+  const reachable=entries.get(network.components.get(port.key));
+  if(!reachable)continue;
   const beds=limit(port,vacant);
   if(!beds||best&&beds<best.beds)continue;
-  for(const entry of entries.get(network.components.get(port.key))||[]){
+  for(const entry of reachable){
    const distance=Math.hypot(port.x-entry.x,port.y-entry.y);
    if(!best||beds>best.beds||distance<best.distance)best={home,beds,entry,port,distance};
   }
@@ -104,7 +106,7 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
  return route?{home:best.home,beds:best.beds,route}:null;
 }
 
-export function arrivalOffer(s,network,{custom}={}){
+export function arrivalQuote(s,network,{custom}={}){
  const extra=customWater(custom);
  const homes=new Map(s.buildings.filter(b=>b.type==='house').map(b=>[buildingKey(b),b]));
  const food=foodAvailability(s,{reconcile:false}),storesByComponent=new Map(),waterNeeds=new Map();
@@ -121,15 +123,30 @@ export function arrivalOffer(s,network,{custom}={}){
  const provisions=new Map([...storesByComponent].map(([component,stores])=>[
   component,Math.floor([...stores.values()].reduce((n,amount)=>n+amount,0))
  ]));
+ let reachable=false,waterReady=false,provisioned=false;
  const offer=arrivalRoute(s,network,(port,beds)=>{
   const key=buildingKey(port.building);
   const surplus=(homes.get(key)?.water||0)-(waterNeeds.get(key)||0);
-  return Math.max(0,Math.min(beds,Math.floor(surplus-extra),provisions.get(network.components.get(port.key))||0));
+  reachable=true;
+  const supplied=Math.max(0,Math.min(beds,Math.floor(surplus-extra)));
+  const count=Math.min(supplied,provisions.get(network.components.get(port.key))||0);
+  waterReady||=supplied>0;
+  provisioned||=count>0;
+  return count;
  });
- if(!offer)return null;
+ if(!offer){
+  const reason=!arrivalHousing(s).length?'Нет свободного места в сухом доме.':
+   !reachable||provisioned?'Нет сухого пути от границы долины к свободному дому.':
+   !waterReady?(extra?'В доступных домах не хватает воды для группы и возлияния.':'В доступных домах не хватает воды для группы.'):
+   'На доступных складах не хватает пайка для группы.';
+  return {offer:null,reason};
+ }
  const component=network.components.get(offer.route.at(-1).key);
- return {...offer,homeRef:homes.get(offer.home),food:offer.beds,water:offer.beds+extra,eligibleStores:new Set(storesByComponent.get(component).keys())};
+ return {offer:{...offer,homeRef:homes.get(offer.home),food:offer.beds,water:offer.beds+extra,
+  eligibleStores:new Set(storesByComponent.get(component).keys())},reason:''};
 }
+
+export const arrivalOffer=(s,network,options)=>arrivalQuote(s,network,options).offer;
 
 export function arrivalKnowledgeReason(s){
  if(!s.arrivalHospitality)return '';
