@@ -935,7 +935,7 @@ export function visibleCitizens(s){
  if(s.externalVisits)people.push(...visitorsView(s));
  const group=s.arrivalGroup;
  if(group)people.push({id:1000010,name:`Переселенцы · ${group.count}`,age:30,sex:'m',lifeStage:'adult',kind:'person',visitor:true,
-  x:group.x,y:group.y,phase:'guest',walking:group.routeIndex<group.route.length,step:s.simTime*4,robe:'#b37b51',carrying:true,cargo:{food:group.count}});
+  x:group.x,y:group.y,phase:'guest',walking:!group.waiting&&group.routeIndex<group.route.length,step:s.simTime*4,robe:'#b37b51',carrying:true,cargo:{food:group.count}});
  return people;
 }
 export function workforceStats(s){

@@ -354,7 +354,7 @@ test('a paid arrival keeps the original courtyard identity and loads an older ad
 
 test('a paid group waits at a real gate, keeps its reserve on reload and settles once after reopening',async()=>{
  const {arrivalOffer,advanceArrivalGroup}=await import('../arrival-hospitality.js');
- const {networkFor}=await import('../workforce.js');
+ const {networkFor,visibleCitizens}=await import('../workforce.js');
  const {advanceTime,miracle}=await import('../engine.js');
  const s=createNewCity({mode:'awakening',seed:1});
  for(let y=4;y<=10;y++)for(let x=4;x<=8;x++){
@@ -391,7 +391,12 @@ test('a paid group waits at a real gate, keeps its reserve on reload and settles
  assert.match(cityToolsHTML(copy),/Ждут открытия пути/);
  assert.equal(advanceArrivalGroup(copy,60,networkFor(copy)),false);
  assert.equal(encode(copy),waiting);
+ const traveler=()=>visibleCitizens(copy).find(c=>c.id===1000010);
+ assert.equal(traveler().walking,false);
+ assert.deepEqual(traveler().cargo,{food:offer.beds});
  copy.buildings.find(b=>b.type==='cityGate').rotation=0;
+ assert.equal(advanceArrivalGroup(copy,.05,networkFor(copy)),false);
+ assert.equal(traveler().walking,true);
  for(let i=0;i<400&&copy.arrivalGroup;i++){copy.event=null;advanceTime(copy,.25);}
  assert.equal(copy.arrivalGroup,undefined);
  assert.deepEqual(copy.citizens.slice(0,ids.length).map(c=>c.id),ids);
