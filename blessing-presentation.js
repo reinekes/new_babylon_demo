@@ -29,9 +29,10 @@ export function createBlessingPresentation(root,{cue,focus,onOpening}={}){
  root.append(panel);
  const caption=panel.querySelector('p'),guests=panel.querySelector('[data-blessing-guests]'),shadows=panel.querySelectorAll('.blessing-shadow');
  const focusButton=panel.querySelector('[data-blessing-focus]');
- let seen=null,pending=false,elapsed=null,phase=null,stopCue,city;
+ const title=panel.querySelector('h2'),step=panel.querySelector('.earth-scene-step');
+ let seen=null,pending=false,elapsed=null,phase=null,stopCue,city,outcome=null;
  function silence(){stopCue?.();stopCue=null;}
- function skip(){silence();elapsed=null;phase=null;city=null;panel.hidden=true;}
+ function skip(){silence();elapsed=null;phase=null;city=null;outcome=null;panel.hidden=true;}
  panel.querySelector('button').onclick=skip;
  const courtyard=s=>s?.buildings?.find(building=>blessingCupAt(s,building));
  focusButton.onclick=()=>{
@@ -42,15 +43,34 @@ export function createBlessingPresentation(root,{cue,focus,onOpening}={}){
  return {
   get active(){return elapsed!==null;},
   skip,
+  cast(s,result){
+   skip();city=s;outcome=result;elapsed=0;
+   panel.dataset.kind='cast';panel.dataset.phase='light';
+   panel.setAttribute('aria-label','Сцена применения Благословения');
+   step.textContent='Дар применён';title.textContent='Благословение';
+   caption.textContent=`Довольство +${Math.round(result.happiness)} · Новых жителей · ${result.newResidents}`;
+   guests.hidden=true;
+   shadows.forEach(shadow=>shadow.setAttribute('hidden',''));
+   stopCue=cue?.('blessing');
+  },
   reset(s){skip();seen=s.blessingDiscovery?.qualifiedAt??null;pending=s.blessingDiscovery?.openingPending===true;},
   tick(s,dt,{visible=true,allowOpening=true}={}){
    const qualified=s.blessingDiscovery?.qualifiedAt??null;
    if(qualified!==null&&qualified!==seen){seen=qualified;pending=true;}
-   if(!visible||!allowOpening){panel.hidden=true;silence();return;}
-   if(elapsed===null&&pending){elapsed=0;pending=false;onOpening?.(s);}
+   if(!visible||!outcome&&!allowOpening){panel.hidden=true;silence();return;}
+   if(elapsed===null&&pending){
+    elapsed=0;pending=false;panel.dataset.kind='opening';
+    panel.setAttribute('aria-label','Сцена открытия Благословения');
+    step.textContent='Открытие дара';title.textContent='Одно место за столом';onOpening?.(s);
+   }
    if(elapsed===null)return;
-   if(elapsed>=28000){skip();return;}
+   if(elapsed>=(outcome?7000:28000)){skip();return;}
    panel.hidden=false;city=s;
+   if(outcome){
+    focusButton.hidden=!focus||!courtyard(s);
+    elapsed+=dt;
+    return;
+   }
    const next=phases.findLast(item=>item.at<=elapsed);
    if(next!==phase){
     phase=next;

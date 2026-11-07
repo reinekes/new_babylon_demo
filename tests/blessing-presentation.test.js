@@ -91,3 +91,26 @@ test('a saved opening that has not started plays after reload and is consumed on
  assert.ok(root.querySelector('section').hidden);
  window.close();
 });
+
+test('the cast reports the committed outcome, skips and does not replay on reload',()=>{
+ const {window}=new JSDOM('<main></main>');
+ const root=window.document.querySelector('main'),cues=[];
+ const city={population:12,happiness:100};
+ const scene=createBlessingPresentation(root,{cue:id=>{cues.push(id);return ()=>cues.push('stop');}});
+ scene.reset(city);
+ scene.cast(city,{newResidents:0,happiness:5});
+ scene.tick(city,250);
+ const panel=root.querySelector('section');
+ assert.equal(panel.dataset.kind,'cast');
+ assert.match(panel.textContent,/Довольство \+5/);
+ assert.match(panel.textContent,/Новых жителей · 0/);
+ assert.deepEqual(cues,['blessing']);
+ panel.querySelector('button').click();
+ assert.equal(panel.hidden,true);
+ assert.deepEqual(cues,['blessing','stop']);
+ scene.reset(structuredClone(city));
+ scene.tick(city,250);
+ assert.equal(panel.hidden,true);
+ assert.deepEqual(city,{population:12,happiness:100});
+ window.close();
+});
