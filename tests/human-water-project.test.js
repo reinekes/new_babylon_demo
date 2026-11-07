@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,decode,encode,advanceTime} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
-import {approveWaterProject,waterProjectProposal,sendWaterProjectDream,acceptWaterProjectDream} from '../human-projects.js';
+import {approveWaterProject,waterProjectProposal,sendWaterProjectDream,acceptWaterProjectDream,discardWaterProjectDream} from '../human-projects.js';
 import {assignWorkplace,setCitizenRole} from '../management.js';
 import {syncCitizens,invalidateAssignments} from '../workforce.js';
 import {buildingKey} from '../definitions.js';
@@ -266,4 +266,23 @@ test('a water project and its paid dream refuse before spending when materials a
  assert.ok(offer.reachableHomes.has(organizer.home));
  assert.ok(!offer.eligibleStores.has(buildingKey(remote)));
  assert.equal(encode(s),supplied);
+});
+
+test('an existing water dream stays read-only after the nameless ending',async()=>{
+ const {recordNamelessEnding}=await import('../godhood.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const house=s.buildings.findLast(b=>b.type==='house'),requester=s.citizens.find(c=>c.home===buildingKey(house));
+ const [organizer,helper]=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ house.water=0;s.resources.faith=10;
+ const args=[organizer.id,requester.id,12,7,[helper.id]];
+ assert.ok(sendWaterProjectDream(s,...args).ok);
+ Object.assign(s.godhood,{mode:'awakening',stage:'unseen',recognitionAt:0,believerIds:[]});
+ assert.ok(recordNamelessEnding(s).ok);
+ const raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),raw);
+ assert.match(discardWaterProjectDream(loaded).reason??'',/наблюдение/);
+ assert.match(acceptWaterProjectDream(loaded).reason??'',/наблюдение/);
+ assert.match(waterProjectProposal(loaded,...args).reason??'',/наблюдение/);
+ assert.equal(encode(loaded),raw);
 });

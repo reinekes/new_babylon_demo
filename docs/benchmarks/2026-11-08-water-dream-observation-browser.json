@@ -1,0 +1,16 @@
+[
+  {
+    "id": "observation",
+    "view": "2d",
+    "url": "?id=observation&view=2d",
+    "mode": "2d",
+    "result": "PASS dream remains visible and read-only"
+  },
+  {
+    "id": "observation",
+    "view": "3d",
+    "url": "?id=observation&view=3d",
+    "mode": "3d",
+    "result": "PASS dream remains visible and read-only"
+  }
+]

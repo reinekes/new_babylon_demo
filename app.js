@@ -1,3 +1,4 @@
+import {cityCommandReason} from './city-command-lock.js';
 import {blessingCupAt} from './blessing-discovery.js';
 import {cultSign} from './cult-sign.js';
 import {artisanOutput,COPPER_PRODUCTS,setCopperProduct} from './artisan.js';
@@ -522,11 +523,11 @@ function waterRequestCard(request,{city=false}={}){
 function waterDreamPanel(home){
  const dream=state.waterProjectDream;
  if(!dream||home&&(dream.home!==buildingKey(home)||dream.homeId!==undefined&&dream.homeId!==home.waterEntityId))return '';
- const reason=waterDreamHomeReason(state,dream);
+ const lock=cityCommandReason(state),reason=lock||waterDreamHomeReason(state,dream);
  const ready=state.simTime>=dream.readyAt;
  const status=reason||(ready?'Наступил рассвет. Проверь готовность жителей и согласуй стройку.':
   home?'Жители обсудят образ водозабора на рассвете.':'Закрой обзор снабжения, чтобы время дошло до рассвета.');
- return `<section class="food-forecast" data-water-dream><h3>Общий сон · двор ${esc(dream.home)}</h3><p>${[dream.requesterId,dream.organizerId,...dream.participantIds].map(id=>resident(id)).join(', ')} · водозабор на участке ${dream.x}, ${dream.y}</p><p>${status}</p>${ready&&!reason?`${costs(BUILDINGS.waterpoint,false)}<button type="button" data-water-dream-accept>Согласовать стройку</button>`:''} <button type="button" data-water-dream-discard>Отложить замысел</button><p role="alert" data-water-dream-error></p></section>`;
+ return `<section class="food-forecast" data-water-dream><h3>Общий сон · двор ${esc(dream.home)}</h3><p>${[dream.requesterId,dream.organizerId,...dream.participantIds].map(id=>resident(id)).join(', ')} · водозабор на участке ${dream.x}, ${dream.y}</p><p>${status}</p>${ready&&!reason?`${costs(BUILDINGS.waterpoint,false)}<button type="button" data-water-dream-accept>Согласовать стройку</button>`:''} <button type="button" data-water-dream-discard${lock?' disabled':''}>Отложить замысел</button><p role="alert" data-water-dream-error></p></section>`;
 }
 function bindWaterDream(root){
  const dream=root.querySelector('[data-water-dream]');

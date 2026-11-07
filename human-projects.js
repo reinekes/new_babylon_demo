@@ -92,6 +92,8 @@ export function waterProjectOrganizerReason(s,organizer){
 export function waterProjectProposal(s,organizerId,requesterId,x,y,participantIds=[]){
  const refuse=reason=>({ok:false,reason});
  if(!isStrictSumer(s))return refuse('Инициатива доступна в Южном Шумере');
+ const lock=cityCommandReason(s);
+ if(lock)return refuse(lock);
  if(!Number.isInteger(x)||!Number.isInteger(y))return refuse('Выберите клетку у воды');
  if(s.buildings.some(b=>b.humanWaterProject&&b.construction?.kind==='new'))return refuse('Один водозабор уже строится по инициативе жителей');
  const organizer=s.citizens.find(c=>c.id===organizerId),requester=s.citizens.find(c=>c.id===requesterId);
@@ -160,6 +162,8 @@ export function waterDreamHomeReason(s,dream){
 }
 
 export function acceptWaterProjectDream(s){
+ const lock=cityCommandReason(s);
+ if(lock)return {ok:false,reason:lock};
  const dream=s.waterProjectDream;
  if(!dream)return {ok:false,reason:'У города нет общего сна'};
  if(s.simTime<dream.readyAt)return {ok:false,reason:'Жители обсудят сон на рассвете'};
@@ -171,6 +175,8 @@ export function acceptWaterProjectDream(s){
 }
 
 export function discardWaterProjectDream(s){
+ const lock=cityCommandReason(s);
+ if(lock)return {ok:false,reason:lock};
  if(!s.waterProjectDream)return {ok:false,reason:'У города нет общего сна'};
  delete s.waterProjectDream;
  return {ok:true};
