@@ -91,3 +91,22 @@ test('a water carrier draws from the local reserve and delivers the same physica
  station.waterReserve=13;
  assert.equal(validateWater(s),false);
 });
+
+test('a common waterpoint serves the original courtyard before closer shortages without duplicating a trip',()=>{
+ const original={...home,waterEntityId:1};
+ const near={type:'house',x:10,y:8,level:1};
+ const project={home:'8,8',homeId:1,requesterId:1};
+ const station={type:'waterpoint',x:11,y:8,level:1,humanWaterProject:project};
+ const s=city([original,near,station]),[resident]=s.citizens;
+ const port=generateStreets(s.buildings,s).ports.find(p=>p.building===station);
+ const courier={...resident,id:2,home:'10,8',work:'11,8',role:'watercarrier',phase:'working',x:port.x,y:port.y};
+ s.citizens.push(courier);
+ original.water=near.water=0;
+ advanceWater(s,.1);
+ assert.equal(courier.waterTrip.target,'8,8');
+ assert.equal(resident.waterTrip,undefined);
+ advance(s,40);
+ assert.ok(project.delivery);
+ assert.ok(original.waterDelivered>0);
+ assert.ok(near.waterDelivered>0);
+});

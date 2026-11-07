@@ -239,6 +239,19 @@ export function advanceWater(s,dt){
  const needy=new Set(targets.map(buildingKey)),orphans=targets.filter(b=>b.type==='house'&&!adults.has(buildingKey(b)));
  const wanted=b=>b&&needy.has(buildingKey(b))&&!assigned.has(buildingKey(b));
  const dispatch=(c,b,station=null,origin=null)=>{if(begin(s,c,b,station,nav,origin)){assigned.add(buildingKey(b));return true;}return false;};
+ const firstDeliveries=new Map();
+ for(const station of s.buildings){
+  const project=station.humanWaterProject,home=houses.get(project?.home);
+  if(project&&!project.delivery&&isOperational(station)&&wanted(home)&&
+   (project.homeId===undefined||project.homeId===home.waterEntityId))firstDeliveries.set(buildingKey(station),home);
+ }
+ if(firstDeliveries.size){
+  const suppliedHomes=new Set(s.citizens.map(c=>supplyHome(c,{arrived:true})));
+  for(const c of s.citizens){
+   const home=firstDeliveries.get(c.work);
+   if(wanted(home)&&suppliedHomes.has(buildingKey(home))&&c.phase==='working'&&eligible(c)&&!mourning.has(c.id))dispatch(c,home,c.work);
+  }
+ }
  for(const c of s.citizens){if(!['home','working'].includes(c.phase)||!eligible(c)||mourning.has(c.id))continue;
   const work=buildings.get(c.work),home=houses.get(c.home);
   if(work?.type==='waterpoint'&&isOperational(work)&&c.phase==='working'){
