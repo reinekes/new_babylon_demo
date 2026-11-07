@@ -1,6 +1,6 @@
 import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
-import {bindWaterProject,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
+import {bindWaterProject,ensureHouseEntityId,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
 import {BUILDINGS,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
@@ -133,17 +133,25 @@ export function sendWaterProjectDream(s,organizerId,requesterId,x,y,participantI
  if(!offer.ok)return offer;
  if(s.resources.faith<WATER_DREAM_COST)return {ok:false,reason:`Для общего сна нужно ${WATER_DREAM_COST} веры`};
  const {home,startedAt:sentAt}=offer.project;
+ const courtyard=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===home);
+ const homeId=ensureHouseEntityId(s,courtyard);
  s.resources.faith-=WATER_DREAM_COST;
- s.waterProjectDream={organizerId,requesterId,participantIds:[...participantIds],home,x,y,sentAt,readyAt:nextDawn(sentAt)};
+ s.waterProjectDream={organizerId,requesterId,participantIds:[...participantIds],home,homeId,x,y,sentAt,readyAt:nextDawn(sentAt)};
  return {ok:true};
+}
+
+export function waterDreamHomeReason(s,dream){
+ if(dream.homeId!==undefined&&!s.buildings.some(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===dream.home&&b.waterEntityId===dream.homeId))return 'Первоначальный двор снесён или заменён';
+ if(!s.citizens.some(c=>c.id===dream.requesterId&&c.home===dream.home))return 'Проситель больше не живёт в этом дворе';
+ return '';
 }
 
 export function acceptWaterProjectDream(s){
  const dream=s.waterProjectDream;
  if(!dream)return {ok:false,reason:'У города нет общего сна'};
  if(s.simTime<dream.readyAt)return {ok:false,reason:'Жители обсудят сон на рассвете'};
- const requester=s.citizens.find(c=>c.id===dream.requesterId);
- if(requester?.home!==dream.home)return {ok:false,reason:'Проситель больше не живёт в этом дворе'};
+ const reason=waterDreamHomeReason(s,dream);
+ if(reason)return {ok:false,reason};
  const result=approveWaterProject(s,dream.organizerId,dream.requesterId,dream.x,dream.y,dream.participantIds);
  if(result.ok)delete s.waterProjectDream;
  return result;

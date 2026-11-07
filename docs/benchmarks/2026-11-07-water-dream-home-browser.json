@@ -1,0 +1,30 @@
+[
+  {
+    "id": "dawn",
+    "view": "2d",
+    "url": "?id=dawn&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d dawn supply and house panels"
+  },
+  {
+    "id": "dawn",
+    "view": "3d",
+    "url": "?id=dawn&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d dawn supply and house panels"
+  },
+  {
+    "id": "replacement",
+    "view": "2d",
+    "url": "?id=replacement&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d replacement supply and house panels"
+  },
+  {
+    "id": "replacement",
+    "view": "3d",
+    "url": "?id=replacement&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d replacement supply and house panels"
+  }
+]

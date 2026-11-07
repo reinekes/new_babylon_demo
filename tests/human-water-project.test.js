@@ -194,3 +194,31 @@ test('a shared dream charges once and prepares a water project for confirmation 
  assert.equal(s.resources.faith,7);
  assert.equal(acceptWaterProjectDream(s).ok,false);
 });
+
+test('a shared dream cannot start construction for a replacement courtyard',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const original=s.buildings.findLast(b=>b.type==='house');
+ const requester=s.citizens.find(c=>c.home===buildingKey(original));
+ const [organizer,helper]=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ original.water=0;
+ s.resources.faith=10;
+ assert.ok(sendWaterProjectDream(s,organizer.id,requester.id,12,7,[helper.id]).ok);
+ const replacement={...original};
+ delete replacement.waterEntityId;
+ s.buildings[s.buildings.indexOf(original)]=replacement;
+ const raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),raw);
+ loaded.simTime=loaded.waterProjectDream.readyAt;
+ const before=encode(loaded);
+ assert.match(acceptWaterProjectDream(loaded).reason??'',/снесён или заменён/);
+ assert.equal(encode(loaded),before);
+ const legacy=JSON.parse(raw);
+ delete legacy.waterProjectDream.homeId;
+ delete legacy.causalFacts;
+ const legacyRaw=JSON.stringify(legacy),old=decode(legacyRaw);
+ assert.ok(old);
+ assert.equal(encode(old),legacyRaw);
+ old.simTime=old.waterProjectDream.readyAt;
+ assert.ok(acceptWaterProjectDream(old).ok);
+});
