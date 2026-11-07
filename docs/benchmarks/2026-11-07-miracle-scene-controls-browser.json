@@ -1,0 +1,1082 @@
+{
+  "browser": "Chrome",
+  "quality": "low",
+  "viewport": [
+    390,
+    640
+  ],
+  "check": "caption, visible prop bounds and elementFromPoint on skip",
+  "beforeFailures": [
+    {
+      "id": "richCatch",
+      "view": "3d",
+      "url": "?id=richCatch&view=3d",
+      "mode": "3d",
+      "result": "FAIL skip covered by tile-detail"
+    },
+    {
+      "id": "abundance",
+      "view": "3d",
+      "url": "?id=abundance&view=3d",
+      "mode": "3d",
+      "result": "FAIL skip covered by "
+    },
+    {
+      "id": "peace",
+      "view": "3d",
+      "url": "?id=peace&view=3d",
+      "mode": "3d",
+      "result": "FAIL skip covered by "
+    },
+    {
+      "id": "shaping",
+      "view": "3d",
+      "url": "?id=shaping&view=3d",
+      "mode": "3d",
+      "result": "FAIL skip covered by "
+    },
+    {
+      "id": "cat",
+      "view": "3d",
+      "url": "?id=cat&view=3d",
+      "mode": "3d",
+      "result": "FAIL skip hit blocked by cat-discovery-guide"
+    }
+  ],
+  "cast": [
+    {
+      "id": "rain",
+      "view": "3d",
+      "url": "?id=rain&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "shadow": {
+            "caption": "По ячменю прошла тень облака.",
+            "propVisible": false,
+            "skipWidth": 104
+          },
+          "rain": {
+            "caption": "Дождь пошёл над долиной.",
+            "propVisible": false,
+            "skipWidth": 104
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "richCatch",
+      "view": "3d",
+      "url": "?id=richCatch&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "ripple": {
+            "caption": "Круг по воде пошёл против течения.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "school": {
+            "caption": "Стайка повернула разом.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "silt": {
+            "caption": "Мутная вода скрыла рыб. Следующие уловы станут тяжелее.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "fertility",
+      "view": "3d",
+      "url": "?id=fertility&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "breath": {
+            "caption": "Земля словно делает вдох.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "abundance",
+      "view": "3d",
+      "url": "?id=abundance&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "empty": {
+            "caption": "У выбранного хранилища стоит пустая корзина.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "fill": {
+            "caption": "В тишине слышно, как сыплется зерно.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "accepted": {
+            "caption": "Хранилище приняло 45 еды.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "grain": {
+            "caption": "Одно зерно скатывается с края. Хранитель поднимает его.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "inspiration",
+      "view": "3d",
+      "url": "?id=inspiration&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "dust": {
+            "caption": "На руках и инструментах видна светлая глиняная пыль.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "cut": {
+            "caption": "Край пласта отделяется под рукой добытчика.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "bundle": {
+            "caption": "Тростник ложится плотной связкой. Работа дворов продолжается.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "haste",
+      "view": "3d",
+      "url": "?id=haste&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "gust": {
+            "caption": "Вдоль пути проходит низкая полоса ветра.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "cloth": {
+            "caption": "Свободный край ткани тянется вперёд. Носильщики продолжают свой путь.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "sunlight",
+      "view": "3d",
+      "url": "?id=sunlight&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "beam": {
+            "caption": "Узкая полоса света раскрывается на глиняной стене.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "cloud": {
+            "caption": "Облако проходит. Полоса остаётся.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "reflection": {
+            "caption": "Самый яркий отблеск — на посвящённом сосуде №60.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "revelation",
+      "view": "3d",
+      "url": "?id=revelation&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "tablet": {
+            "caption": "Хранитель кладёт перед собой влажную табличку.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "grooves": {
+            "caption": "Свет на мгновение проступает в бороздах.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "work": {
+            "caption": "Табличка сохранена в памяти города. Получено 12 престижа.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "healing",
+      "view": "3d",
+      "url": "?id=healing&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "В пыли проступает дорога.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "На краю долины видны путники с тюками.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Они идут к подготовленному дому.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Место у очага ждёт их прибытия.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "peace",
+      "view": "3d",
+      "url": "?id=peace&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "По тени двора проходит едва заметная волна.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Тростник на миг замирает.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "У тех, кому помогли, появляется время выдохнуть.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "stars",
+      "view": "3d",
+      "url": "?id=stars&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "В чаше на миг темнеет вода.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "От отражений тянутся тонкие линии к отмеченным местам.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "В обзоре города видны причины и условия прогноза.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "shaping",
+      "view": "3d",
+      "url": "?id=shaping&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "Пыль оседает тяжёлыми комьями.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Глина ложится слоями у двора.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Из слоёв выступают волокна, рядом складываются связки тростника.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "На верхнем коме остаётся отпечаток ладони.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "relicAwakening",
+      "view": "3d",
+      "url": "?id=relicAwakening&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "Круги на воде сходятся к центру.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Из глубины поднимается тихий свет.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Отражение скользит против течения. Над долиной собираются облака.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "earthMemory",
+      "view": "3d",
+      "url": "?id=earthMemory&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "В глине снова проступают следы.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "У сохранившихся мест видны образы прежних занятий.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Следы меркнут. Живые участники сохраняют поддержку.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    },
+    {
+      "id": "inannaProtection",
+      "view": "3d",
+      "url": "?id=inannaProtection&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "На знаке порога гаснет свет.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Вдоль крыш хранилищ проходит тонкий отблеск.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Мыши остаются в городе. Три сезона они портят вдвое меньше еды.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "paidSaveUnchanged": true
+      }
+    }
+  ],
+  "opening": [
+    {
+      "id": "rain",
+      "view": "3d",
+      "url": "?id=rain&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "waiting": {
+            "caption": "После жатвы земледелец поставил чашу у края поля.",
+            "propVisible": true,
+            "skipWidth": 104
+          },
+          "drop": {
+            "caption": "Первая капля упала в чашу.",
+            "propVisible": true,
+            "skipWidth": 104
+          },
+          "shadow": {
+            "caption": "По ячменю прошла тень облака.",
+            "propVisible": true,
+            "skipWidth": 104
+          },
+          "rain": {
+            "caption": "Дар открыт · первый призыв бесплатный.",
+            "propVisible": true,
+            "skipWidth": 104
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "catch",
+      "view": "3d",
+      "url": "?id=catch&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "unload": {
+            "caption": "Рыбак принёс десятый улов. Сеть поднялась над водой.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "share": {
+            "caption": "Два жилых двора получили долю улова.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "reflection": {
+            "caption": "Под водой сеть всё ещё раскрыта. Рыбы собираются в её тени.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "still": {
+            "caption": "Рыбак замер и смотрит на отражение. Богатый улов открыт.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "earth",
+      "view": "3d",
+      "url": "?id=earth&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "field-one": {
+            "caption": "Первое поле отдало ячмень. Склад принял зерно.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "field-two": {
+            "caption": "Со второго поля принесли ещё часть урожая.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "field-three": {
+            "caption": "Третье поле завершило общий труд.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "sheaf": {
+            "caption": "Земледелец связал сноп. Последний колос он оставил на семена.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "bow": {
+            "caption": "Колос наклонился, хотя воздух над полем был неподвижен.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "garden": {
+            "caption": "На влажной земле проступили листья будущего сада. Дыхание земли открыто.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "creator",
+      "view": "3d",
+      "url": "?id=creator&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "brick": {
+            "caption": "На циновке лежит пласт влажной глины.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "hand": {
+            "caption": "Мастер прижимает ладонь к влажной глине и убирает руку.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "echo": {
+            "caption": "Рядом проступает второй отпечаток, чуть больше первого.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "lesson": {
+            "caption": "Ученик повторяет движение. Добытчики возвращаются к своим инструментам.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "wind",
+      "view": "3d",
+      "url": "?id=wind&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "load": {
+            "caption": "У двора носильщик ставит корзину, чтобы перевести дыхание.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "trail": {
+            "caption": "Пыль продолжает путь по улице, словно ношу подхватил ветер.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "receive": {
+            "caption": "У места приёмки человек оборачивается на тихий шорох.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "abundance",
+      "view": "3d",
+      "url": "?id=abundance&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "first": {
+            "caption": "Первый дом получил свою долю зерна.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "second": {
+            "caption": "Еда дошла до второго дома. Семена остались в резерве.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "third": {
+            "caption": "Третья семья приняла свою долю.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "measure": {
+            "caption": "Хранитель показывает опустевшую меру для раздачи.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "grains": {
+            "caption": "Последние зёрна на миг складываются в рисунок чаши.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "sunlight",
+      "view": "3d",
+      "url": "?id=sunlight&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "meal": {
+            "caption": "Общая трапеза закончилась. Люди расходятся по домам.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "clean": {
+            "caption": "Жрец остаётся убрать святилище. Снаружи гаснет дневной свет.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "beam": {
+            "caption": "Узкая полоса света раскрывается на глиняной стене.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "witness": {
+            "caption": "Жрец зовёт одного свидетеля. Свет следует за их руками.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "threshold": {
+            "caption": "Уходящий свидетель на миг видит тот же свет у порога своего дома.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "revelation",
+      "view": "3d",
+      "url": "?id=revelation&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "first": {
+            "caption": "У очага осталась чаша. Семья помнит помощь, которая дошла до дома.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "second": {
+            "caption": "Мастер кладёт кусок глины. Он помнит руки, завершившие стройку.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "third": {
+            "caption": "Последний свидетель приносит образ добытой еды. Так он запомнил этот день.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "shadow": {
+            "caption": "Три разные тени на миг сходятся на влажной глине.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "separate": {
+            "caption": "Хранитель называет бога Слышащим три рассказа. Каждый уносит свою вещь.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "shaping",
+      "view": "3d",
+      "url": "?id=shaping&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "Мастер сминает влажную глину ладонью.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Стенки макета оседают.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Глина поднимается в форму маленького дома с открытой дверью.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Крупица глины катится вверх по ладони.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "arrival",
+      "view": "3d",
+      "url": "?id=arrival&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "У тёплого очага расстилают вторую циновку.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Дым над двором на миг складывается в знак чаши.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "У края долины путники замечают дым.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Вдалеке отвечает слабый огонёк.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "peace",
+      "view": "3d",
+      "url": "?id=peace&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "Человек держит чашу обеими руками.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Рядом ложится ладонь соседа. Вода постепенно успокаивается.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Соседи садятся у стены. Проход остаётся свободным.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "stars",
+      "view": "3d",
+      "url": "?id=stars&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "В ночном дворе наблюдатель склоняется над чашей.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "У края остаётся неглубокая отметка.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "Вода затихает. В отражении проступают новые точки.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Отражения ложатся на землю у дворов и полей.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "depth",
+      "view": "3d",
+      "url": "?id=depth&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "Доставленную реликвию кладут во влажную чашу.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Вода поднимается по её стенкам.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "На стене храма дрожит тень водного свода.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Тень исчезает. На реликвии остаётся влага.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "land",
+      "view": "3d",
+      "url": "?id=land&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "Принятая храмом Печать касается мягкой земли.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "На глине проступает узор старого двора.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "В узоре угадываются знакомые жесты.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Живой участник повторяет последний жест. Память остаётся в городе.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    },
+    {
+      "id": "inanna",
+      "view": "3d",
+      "url": "?id=inanna&view=3d",
+      "mode": "3d",
+      "result": {
+        "phases": {
+          "0": {
+            "caption": "У порога встретились жрец, жители и приглашённый гость.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "1": {
+            "caption": "Последнему гостю освобождают проход.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "2": {
+            "caption": "На стене на миг проступает тень зверя.",
+            "propVisible": true,
+            "skipWidth": 81
+          },
+          "3": {
+            "caption": "Община сохранила открытый проход. Открылся Покров Инанны.",
+            "propVisible": true,
+            "skipWidth": 81
+          }
+        },
+        "viewport": [
+          390,
+          640
+        ],
+        "quality": "low",
+        "saved": true
+      }
+    }
+  ],
+  "cat": [
+    {
+      "id": "cat",
+      "view": "3d",
+      "url": "?id=cat&view=3d",
+      "mode": "3d",
+      "result": {
+        "quality": "low",
+        "viewport": [
+          390,
+          640
+        ],
+        "skipWidth": 105,
+        "skipPreservedCatFaithTime": true
+      }
+    }
+  ]
+}
