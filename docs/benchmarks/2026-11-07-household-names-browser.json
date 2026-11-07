@@ -1,0 +1,34 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Actual delivery and recovery saves with the recipient moved into an empty house before loading. Test-only entry opens the normal family tab.",
+  "runs": [
+    {
+      "id": "water",
+      "view": "2d",
+      "url": "?id=water&view=2d",
+      "mode": "2d",
+      "result": "PASS 2d water personal testimony visible after move and load"
+    },
+    {
+      "id": "water",
+      "view": "3d",
+      "url": "?id=water&view=3d",
+      "mode": "3d",
+      "result": "PASS 3d water personal testimony visible after move and load"
+    },
+    {
+      "id": "care",
+      "view": "2d",
+      "url": "?id=care&view=2d",
+      "mode": "2d",
+      "result": "PASS 2d care personal testimony visible after move and load"
+    },
+    {
+      "id": "care",
+      "view": "3d",
+      "url": "?id=care&view=3d",
+      "mode": "3d",
+      "result": "PASS 3d care personal testimony visible after move and load"
+    }
+  ]
+}

@@ -28,11 +28,23 @@ export function recordProjectWaterFact(s,station,home,delivery){
  if(ledger.water.length>LIMIT)ledger.water.shift();
 }
 
-export function waterNameEvidence(s){
- const receipts=s.causalFacts?.waterWitnesses,first=receipts?.[0];
+function distinctCourtyardPair(receipts){
+ const first=receipts?.[0];
  if(!first)return null;
  const second=receipts.find(receipt=>receipt.homeId!==first.homeId&&receipt.home!==first.home);
  return second?[first,second]:null;
+}
+
+function trimNameReceipts(receipts){
+ if(receipts.length<=LIMIT)return;
+ const evidence=distinctCourtyardPair(receipts);
+ // Keep the first receipt while it waits for a different courtyard.
+ const oldest=receipts.findIndex((receipt,index)=>index>0&&!evidence?.includes(receipt));
+ receipts.splice(oldest,1);
+}
+
+export function waterNameEvidence(s){
+ return distinctCourtyardPair(s.causalFacts?.waterWitnesses);
 }
 
 export function recordProjectWaterWitness(s,station,home,delivery){
@@ -40,33 +52,39 @@ export function recordProjectWaterWitness(s,station,home,delivery){
  if(!ledger||!station.waterEntityId||!project.homeId||project.home===homeKey||home.type!=='house')return;
  const witnessed=project.witnessHomeIds;
  if(witnessed?.length>=WITNESSES_PER_PROJECT||witnessed?.includes(home.waterEntityId))return;
- if(!s.citizens.some(c=>supplyHome(c,{arrived:true})===homeKey))return;
+ const recipient=s.citizens.find(c=>supplyHome(c,{arrived:true})===homeKey);
+ if(!recipient)return;
  home.waterEntityId??=ledger.nextEntityId++;
  (project.witnessHomeIds??=[]).push(home.waterEntityId);
  const facts=ledger.waterWitnesses??=[];
- facts.push({stationId:station.waterEntityId,station:buildingKey(station),homeId:home.waterEntityId,home:homeKey,...delivery});
- if(facts.length>LIMIT){
-  const evidence=waterNameEvidence(s);
-  // Keep the first receipt while it waits for a different courtyard.
-  const oldest=facts.findIndex((receipt,index)=>index>0&&!evidence?.includes(receipt));
-  facts.splice(oldest,1);
- }
+ facts.push({stationId:station.waterEntityId,station:buildingKey(station),homeId:home.waterEntityId,home:homeKey,recipientId:recipient.id,...delivery});
+ trimNameReceipts(facts);
 }
 
 export function healingNameEvidence(s){
- const care=s.causalFacts?.healing;
- return care?.length===2?care:null;
+ return distinctCourtyardPair(s.causalFacts?.healing);
+}
+
+export function householdNameEvidence(s,residents){
+ const ledger=s.causalFacts;
+ if(!ledger||!residents.length)return {water:null,healing:null};
+ const ids=new Set(residents.map(c=>c.id));
+ const requested=ledger.water.findLast(f=>ids.has(f.requesterId));
+ const witnessed=ledger.waterWitnesses?.findLast(f=>ids.has(f.recipientId));
+ const water=witnessed&&(!requested||witnessed.time>requested.time)?witnessed:requested;
+ const healing=ledger.healing?.findLast(f=>ids.has(f.patientId));
+ return {water:water||null,healing:healing||null};
 }
 
 export function recordHealingNameEvidence(s,healer,patient){
  if(healer.calling!=='healer'||patient.health<60)return;
- const first=s.causalFacts?.healing?.[0];
- if(healingNameEvidence(s)||first?.home===patient.home||first?.patientId===patient.id)return;
+ if(s.causalFacts?.healing?.some(f=>f.patientId===patient.id))return;
  const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===patient.home);
- if(!home||first&&first.homeId===home.waterEntityId)return;
- const ledger=causalLedger(s);
+ if(!home)return;
+ const ledger=causalLedger(s),care=ledger.healing??=[];
  home.waterEntityId??=ledger.nextEntityId++;
- (ledger.healing??=[]).push({homeId:home.waterEntityId,home:patient.home,healerId:healer.id,patientId:patient.id,time:s.simTime});
+ care.push({homeId:home.waterEntityId,home:patient.home,healerId:healer.id,patientId:patient.id,time:s.simTime});
+ trimNameReceipts(care);
 }
 
 export function recordNeighborWaterFact(s,c,home,trip,amount){
@@ -151,7 +169,8 @@ export function validateCausalFacts(s){
   if(!fact||!entity(fact.stationId)||!entity(fact.homeId)||fact.stationId===fact.homeId||fact.station===fact.home||
    typeof fact.station!=='string'||!keyPattern.test(fact.station)||typeof fact.home!=='string'||!keyPattern.test(fact.home)||
    !entityMatches(fact.stationId,'waterpoint',fact.station)||!entityMatches(fact.homeId,'house',fact.home)||
-   !citizen(fact.courierId)||!Number.isFinite(fact.time)||fact.time<previousTime||fact.time>s.simTime||
+   !citizen(fact.courierId)||fact.recipientId!==undefined&&!citizen(fact.recipientId)||
+   !Number.isFinite(fact.time)||fact.time<previousTime||fact.time>s.simTime||
    !Number.isFinite(fact.amount)||fact.amount<=0||fact.amount>12)return false;
   const origin=ledger.water.find(row=>row.stationId===fact.stationId);
   if(origin&&(origin.homeId===fact.homeId||origin.home===fact.home))return false;
@@ -169,15 +188,15 @@ export function validateCausalFacts(s){
  }
  const healing=ledger.healing;
  if(healing!==undefined){
-  if(!Array.isArray(healing)||healing.length<1||healing.length>2)return false;
-  const homes=new Set(),addresses=new Set(),patients=new Set();
+  if(!Array.isArray(healing)||healing.length<1||healing.length>LIMIT)return false;
+  const patients=new Set();
   let previousHealingTime=0;
   for(const fact of healing){
    if(!fact||Object.keys(fact).length!==5||!entity(fact.homeId)||typeof fact.home!=='string'||!keyPattern.test(fact.home)||
     !entityMatches(fact.homeId,'house',fact.home)||!citizen(fact.healerId)||!citizen(fact.patientId)||fact.healerId===fact.patientId||
-    homes.has(fact.homeId)||addresses.has(fact.home)||patients.has(fact.patientId)||
+    patients.has(fact.patientId)||
     !Number.isFinite(fact.time)||fact.time<previousHealingTime||fact.time>s.simTime)return false;
-   homes.add(fact.homeId);addresses.add(fact.home);patients.add(fact.patientId);previousHealingTime=fact.time;
+   patients.add(fact.patientId);previousHealingTime=fact.time;
   }
  }
  const aidedPairs=new Set();

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createGame,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {buildingKey,housingOf} from '../definitions.js';
-import {bindWaterProject,recordNeighborFoodFact,recordNeighborWaterFact,waterNameEvidence} from '../causal-facts.js';
+import {bindWaterProject,recordNeighborFoodFact,recordNeighborWaterFact,householdNameEvidence,waterNameEvidence} from '../causal-facts.js';
 import {confirmProjectWater} from '../human-projects.js';
 
 test('delivery evidence survives demolition and distinguishes a replacement on the same tile',()=>{
@@ -128,6 +128,17 @@ test('a second occupied courtyard records an actual project delivery once and ke
  confirmProjectWater(s,courier,buildingKey(station),neighbor,2);
  assert.equal(s.causalFacts.waterWitnesses.length,1);
  const [receipt]=s.causalFacts.waterWitnesses;
+ const recipient=s.citizens.find(c=>c.id===receipt.recipientId);
+ assert.equal(recipient.home,buildingKey(neighbor));
+ assert.deepEqual(householdNameEvidence(s,[recipient]).water,receipt);
+ assert.equal(householdNameEvidence(s,[requester]).water,null);
+ const legacy=JSON.parse(encode(s));
+ delete legacy.causalFacts.waterWitnesses[0].recipientId;
+ const old=decode(JSON.stringify(legacy));
+ assert.ok(old);
+ assert.equal(householdNameEvidence(old,[recipient]).water,null);
+ legacy.causalFacts.waterWitnesses[0].recipientId=s.demography.nextId;
+ assert.equal(decode(JSON.stringify(legacy)),null);
  delete s.causalFacts.waterWitnesses;
  assert.equal(decode(encode(s)),null);
  s.causalFacts.waterWitnesses=[receipt];

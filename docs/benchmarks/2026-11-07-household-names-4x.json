@@ -1,0 +1,36 @@
+{
+  "buildings": 130,
+  "population": 242,
+  "initialPopulation": 200,
+  "helperId": 9,
+  "helperWorked": true,
+  "completed": true,
+  "reloadByteIdentical": true,
+  "steps": 1033,
+  "cpuMedianMs": 1.9692499999998745,
+  "cpuP95Ms": 6.182374999999865,
+  "waterNameEvidence": [
+    {
+      "stationId": 1,
+      "station": "12,7",
+      "homeId": 3,
+      "home": "11,7",
+      "recipientId": 102,
+      "courierId": 9,
+      "time": 62.85,
+      "amount": 7.5
+    },
+    {
+      "stationId": 1,
+      "station": "12,7",
+      "homeId": 4,
+      "home": "10,6",
+      "recipientId": 73,
+      "courierId": 9,
+      "time": 129,
+      "amount": 6
+    }
+  ],
+  "loadedCargo": true,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}
