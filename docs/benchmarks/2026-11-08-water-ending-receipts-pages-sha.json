@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T20:53:25.296077+00:00",
+  "commit": "91b0beeafb34560f11858210f7ac86fc76fd4233",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "135321375dc7ef526ccadf71393d913bde11833b1cde624b950bacbebd60ec00",
+      "actual": "135321375dc7ef526ccadf71393d913bde11833b1cde624b950bacbebd60ec00",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "10b0042004e0e78a67965847ef62d50e54609fe436259cc33e9dbcb926fa5cf5",
+      "actual": "10b0042004e0e78a67965847ef62d50e54609fe436259cc33e9dbcb926fa5cf5",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "236e0998dd876fda639489308dc259e4b07238bbac622a0490cdd53532feb683",
+      "actual": "236e0998dd876fda639489308dc259e4b07238bbac622a0490cdd53532feb683",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0fd6887187a2795227e66b52605892135af03adeff45d1ba4eb73e98dae4ca8b",
+      "actual": "0fd6887187a2795227e66b52605892135af03adeff45d1ba4eb73e98dae4ca8b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-ending-receipts-4x.json",
+      "status": 200,
+      "expected": "b81a740505cd0b0dbfcfe8435b99e85eb456437e12137a6c3f22af97256f323a",
+      "actual": "b81a740505cd0b0dbfcfe8435b99e85eb456437e12137a6c3f22af97256f323a",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1b6ae0b0b8402dfea22aaa42d13c4f90af5180838a4a3328c3ffb70b5226765f",
+      "actual": "1b6ae0b0b8402dfea22aaa42d13c4f90af5180838a4a3328c3ffb70b5226765f",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "ae5848fdfa982e9daa9db2d58fc4674b29b9ffa31aac547a587f35672b69ade8",
+      "actual": "ae5848fdfa982e9daa9db2d58fc4674b29b9ffa31aac547a587f35672b69ade8",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
