@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fire",
+    "view": "2d",
+    "url": "?id=fire&view=2d",
+    "mode": "2d",
+    "result": "PASS quoted and cast one arrival"
+  },
+  {
+    "id": "fire",
+    "view": "3d",
+    "url": "?id=fire&view=3d",
+    "mode": "3d",
+    "result": "PASS quoted and cast one arrival"
+  }
+]

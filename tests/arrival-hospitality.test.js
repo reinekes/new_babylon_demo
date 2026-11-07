@@ -226,3 +226,27 @@ test('the hospitality name requires different hosts at different occupied courty
  assert.equal(s.arrivalHospitality.welcomes.length,80);
  assert.deepEqual(hospitalityNameEvidence(s),earned);
 });
+
+test('the Call reserves only water left after families sheltering from fire are supplied',async()=>{
+ const {arrivalOffer,reserveArrival}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {waterDemand}=await import('../water.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ const home=s.buildings.find(b=>b.type==='house'),key=`${home.x},${home.y}`;
+ const residentWater=s.citizens.filter(c=>c.home===key).reduce((n,c)=>n+waterDemand(c),0);
+ const guest=s.citizens.find(c=>c.home!==key&&c.age>=16);
+ const guestWater=waterDemand(guest);
+ for(const b of s.buildings)if(b.type==='house')b.water=0;
+ home.level=3;
+ home.water=residentWater+guestWater+1;
+ guest.fireShelter={host:key,kiln:'2,2'};
+ const network=networkFor(s);
+ assert.equal(arrivalOffer(s,network)?.beds,1,'water is reserved for the guest even while travelling to shelter');
+ guest.fireShelter.returning=true;
+ assert.equal(arrivalOffer(s,network)?.beds,2,'the guest will again draw water at their home');
+ delete guest.fireShelter.returning;
+ assert.equal(reserveArrival(s,network,{home:key,count:2}),false,'a stale two-person offer must be refused');
+ assert.equal(home.water,residentWater+guestWater+1);
+ assert.equal(reserveArrival(s,network,{home:key,count:1}),true);
+ assert.equal(home.water,residentWater+guestWater);
+});

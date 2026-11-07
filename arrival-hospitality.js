@@ -2,6 +2,7 @@ import {ensureHouseEntityId} from './causal-facts.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {buildingKey,capacityOf,isOperational} from './definitions.js';
 import {foodAvailability,reserveStock} from './inventory.js';
+import {supplyHome} from './households.js';
 import {navigationSegmentClear,nearestWalkingNode,shortestWalkingPath} from './navigation.js';
 import {floodedSegment,floodMapView} from './river-flood.js';
 import {waterDemand} from './water.js';
@@ -93,7 +94,7 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
 export function arrivalOffer(s,network){
  const food=foodAvailability(s,{reconcile:false}),storesByComponent=new Map(),waterNeeds=new Map();
  for(const c of s.citizens){
-  const home=c.floodShelter||c.home;
+  const home=supplyHome(c);
   waterNeeds.set(home,(waterNeeds.get(home)||0)+waterDemand(c));
  }
  for(const port of network.ports){
