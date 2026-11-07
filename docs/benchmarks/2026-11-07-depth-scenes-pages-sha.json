@@ -1,0 +1,107 @@
+{
+  "at": "2026-11-07T00:12:47.174346+00:00",
+  "commit": "9280fdf3f57e7dda2e03f2fb259bbcb0b12fb29f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "17c6736566f1aafc0ec4890d9cd11206970053adcb3cd66452fea1b4c4da7b14",
+      "actual": "17c6736566f1aafc0ec4890d9cd11206970053adcb3cd66452fea1b4c4da7b14",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "24824c115d300ad30673f1d4345d508503d9aaacc572629a35d1aef343dc960e",
+      "actual": "24824c115d300ad30673f1d4345d508503d9aaacc572629a35d1aef343dc960e",
+      "match": true
+    },
+    {
+      "path": "depth-presentation.css",
+      "status": 200,
+      "expected": "1fba446f76b42d4cc7b43f621f8629b6e0b76b235bc9cf22b7cfd83b151bf1bf",
+      "actual": "1fba446f76b42d4cc7b43f621f8629b6e0b76b235bc9cf22b7cfd83b151bf1bf",
+      "match": true
+    },
+    {
+      "path": "depth-presentation.js",
+      "status": 200,
+      "expected": "c197db748966e54aa3ece63378bc12afdac3ecbe22d2cd393117ae6e55614bb8",
+      "actual": "c197db748966e54aa3ece63378bc12afdac3ecbe22d2cd393117ae6e55614bb8",
+      "match": true
+    },
+    {
+      "path": "depth-supply.js",
+      "status": 200,
+      "expected": "212c0d208cc16b4d9887c10eeb405aa52ab0dbd3d68f44e0a35db5f72e61d35d",
+      "actual": "212c0d208cc16b4d9887c10eeb405aa52ab0dbd3d68f44e0a35db5f72e61d35d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-depth-scenes-4x.json",
+      "status": 200,
+      "expected": "71028c7c349c1f87c60c33bc54063a7614dfd27426ac3174910c15355a9d70f6",
+      "actual": "71028c7c349c1f87c60c33bc54063a7614dfd27426ac3174910c15355a9d70f6",
+      "match": true
+    },
+    {
+      "path": "godhood.js",
+      "status": 200,
+      "expected": "967fad8621d5bf2f761852b1353ebf9519e045359b5d2b6c8e111845cf8c60e2",
+      "actual": "967fad8621d5bf2f761852b1353ebf9519e045359b5d2b6c8e111845cf8c60e2",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e93df5246378a2a4e66d1217456e20cc2f39179bc5d92516496960ace78513a2",
+      "actual": "e93df5246378a2a4e66d1217456e20cc2f39179bc5d92516496960ace78513a2",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "50dc8924b6b30ab1f72d44d5c97a8d06062bad7f355e300b23269ad248938f36",
+      "actual": "50dc8924b6b30ab1f72d44d5c97a8d06062bad7f355e300b23269ad248938f36",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0d5f3d1dd8dc8609c2e0a61394ea917b89895c0307c693b07ca78d8f28eb4e5c",
+      "actual": "0d5f3d1dd8dc8609c2e0a61394ea917b89895c0307c693b07ca78d8f28eb4e5c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "972bc02c446393d2ba4a6e9e4e6a3cd770d8760946c4a27bc80b96dfaf81673c",
+      "actual": "972bc02c446393d2ba4a6e9e4e6a3cd770d8760946c4a27bc80b96dfaf81673c",
+      "match": true
+    },
+    {
+      "path": "star-presentation.js",
+      "status": 200,
+      "expected": "3e20dd9ede8a810cc21e066a520076ed3949e5fe2c7f16b79a15c08233e65a6e",
+      "actual": "3e20dd9ede8a810cc21e066a520076ed3949e5fe2c7f16b79a15c08233e65a6e",
+      "match": true
+    },
+    {
+      "path": "tests/depth-presentation.test.js",
+      "status": 200,
+      "expected": "24bb94c5e3637e98ca3f7eb99b62d970892c095343d7b1500d84115ab24239e9",
+      "actual": "24bb94c5e3637e98ca3f7eb99b62d970892c095343d7b1500d84115ab24239e9",
+      "match": true
+    },
+    {
+      "path": "tests/depth-supply.test.js",
+      "status": 200,
+      "expected": "4abd2d7624c527f93bbebe2364609f7fd44ed1016a739175ebc65d9dd842b892",
+      "actual": "4abd2d7624c527f93bbebe2364609f7fd44ed1016a739175ebc65d9dd842b892",
+      "match": true
+    }
+  ],
+  "matched": 14,
+  "total": 14
+}
