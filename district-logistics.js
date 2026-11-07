@@ -1,3 +1,4 @@
+import {isStrictSumer} from './scenario-profiles.js';
 import {harvestNameEvidence} from './causal-facts.js';
 import {supplyHome} from './households.js';
 import {findShapingBatch,loadShapingBatch} from './shaping-batch.js';
@@ -107,7 +108,18 @@ export function districtPickup(s,c){
  const pass=createDistrictPass(s),q=pass.jobsById.get(c.districtJob);if(!q||q.remaining<=eps||!connectedStores(s,q.source,q.target,pass))return 0;const target=store(s,q.target,pass);if(!target)return 0;if(q.targetKind==='votive'){
  if(!isVotiveTemple(target)||q.remaining!==1)return 0;
  q.remaining=0;c.cargo={pottery:1};c.store=q.target;invalidateAssignments(s);return 1;
-}const key=entry(q.target,q.resource),n=Math.min(12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const source=store(s,q.source,pass),fromStock=central(s,source,pass),beforeOutput=source?.workshopStock?.output?.food||0,actual=q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c}):takeBuildingOutput(source,q.resource,n);q.remaining-=actual;if(q.remaining<eps)q.remaining=0;c.cargo={[q.resource]:actual};if(!fromStock&&!q.shapingBatch)markWindCargo(s,c,actual);if(!q.shapingBatch&&!fromStock&&source?.type===q.resource)markCreatorCargo(s,c,q.resource,actual);if(q.resource==='food'&&!fromStock){pickupFishingOutput(s,source,c,actual,beforeOutput);pickupFieldGrain(source,c,actual,beforeOutput);if(source?.fishOutput)appendFish(c,'fishCargo',takeFish(source,'fishOutput',actual,beforeOutput),0);}c.store=q.target;invalidateAssignments(s);return actual;
+}
+ const source=store(s,q.source,pass),fromStock=central(s,source,pass);
+ const eligible=isStrictSumer(s)&&c.role==='carrier'&&['food','clay','reed'].includes(q.resource);
+ const surplus=k=>exportable(s,q.source,k,pass)-(pass.queued.get(entry(q.source,k))||0);
+ const issue=eligible&&fromStock&&c.basketCondition===undefined&&surplus('basket')>=1;
+ const repair=eligible&&fromStock&&c.basketCondition===0&&surplus('reed')>=2;
+ const basket=eligible&&(c.basketCondition>0||issue||repair);
+ const key=entry(q.target,q.resource),n=Math.min(basket?16:12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>12+eps){
+  if(issue)takeStock(s,q.source,'basket',1);
+  if(repair)takeStock(s,q.source,'reed',2);
+  c.basketCondition=(issue||repair?6:c.basketCondition)-1;
+ }q.remaining-=actual;if(q.remaining<eps)q.remaining=0;c.cargo={[q.resource]:actual};if(!fromStock&&!q.shapingBatch)markWindCargo(s,c,actual);if(!q.shapingBatch&&!fromStock&&source?.type===q.resource)markCreatorCargo(s,c,q.resource,actual);if(q.resource==='food'&&!fromStock){pickupFishingOutput(s,source,c,actual,beforeOutput);pickupFieldGrain(source,c,actual,beforeOutput);if(source?.fishOutput)appendFish(c,'fishCargo',takeFish(source,'fishOutput',actual,beforeOutput),0);}c.store=q.target;invalidateAssignments(s);return actual;
 }
 export function districtReport(s){
  initializeDistricts(s);const pass=createDistrictPass(s),jobs=s.district.jobs.map(q=>{const inTransit=transferCarried(s,q,pass),carriers=pass.owners.get(q.id)||[],done=q.remaining+inTransit<=eps;return {...q,inTransit,status:done?(q.delivered>eps?'done':'cancelled'):!connectedStores(s,q.source,q.target,pass)||carriers.some(c=>c.phase==='blocked')?'blocked':inTransit>eps?'carrying':carriers.length?'active':q.targetKind!=='votive'&&exportable(s,q.source,q.resource,pass)<=eps?'blocked':'waiting'};});

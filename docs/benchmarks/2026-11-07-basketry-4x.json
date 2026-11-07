@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "stages": [
+    "idle",
+    "weavingBasket"
+  ],
+  "received": 1,
+  "enhancedLoad": 16,
+  "routeDelivered": 20,
+  "steps": 800,
+  "medianCPUms": 2.188374999999951,
+  "p95CPUms": 6.128709000000072,
+  "exactSave": true
+}

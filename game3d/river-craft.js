@@ -4,12 +4,12 @@ import {loadModel} from './asset-loading.js';
 import {TILE} from '../district3d/terrain.js';
 import {bridgeSpanAt,riverLocal} from '../world.js';
 import {WATER_HEIGHT} from './water.js';
-import {cargoLayout,GOODS_KINDS} from './goods.js';
+import {cargoLayout} from './goods.js';
 
 export const RIVER_CRAFT_MODEL='river-cargo-boat.glb';
 const CARGO_SCALE=.60;
 export function riverCraftCargo(stock){
- const layout=cargoLayout(stock,{columns:2,layers:1,maxKinds:GOODS_KINDS.length}),center=(layout.at(-1)?.z||0)/2;
+ const layout=cargoLayout(stock,{columns:2,layers:1,maxKinds:16}),center=(layout.at(-1)?.z||0)/2;
  return layout.map(p=>({...p,x:p.x*CARGO_SCALE,y:.20+p.y*CARGO_SCALE,z:(p.z-center)*CARGO_SCALE}));
 }
 export function riverCraftPose(s,c,time=0){

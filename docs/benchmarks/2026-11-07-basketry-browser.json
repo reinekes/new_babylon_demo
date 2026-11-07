@@ -1,0 +1,16 @@
+[
+  {
+    "id": "basket",
+    "view": "2d",
+    "url": "?id=basket&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d basketry stage and reed readout"
+  },
+  {
+    "id": "basket",
+    "view": "3d",
+    "url": "?id=basket&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d basketry stage and reed readout"
+  }
+]
