@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T22:53:29.929975+00:00",
+  "commit": "c809bd1c82d2d0ffb507c2907c8f1a3aab54c938",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a8c3ba689d162a5417df5b55b4c34102a52380e417d9311f6322b3f1a2a3c6f2",
+      "actual": "a8c3ba689d162a5417df5b55b4c34102a52380e417d9311f6322b3f1a2a3c6f2",
+      "match": true
+    },
+    {
+      "path": "blessing-presentation.js",
+      "status": 200,
+      "expected": "1de12ffe356b8a513aa8c2d09e89e8047e94872f925184b9b07abf3f525775ea",
+      "actual": "1de12ffe356b8a513aa8c2d09e89e8047e94872f925184b9b07abf3f525775ea",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0610111318204bb69be6b7ca774833ee2f88ad2a5ec47bbf5f05d4326e467212",
+      "actual": "0610111318204bb69be6b7ca774833ee2f88ad2a5ec47bbf5f05d4326e467212",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-guest-consent-4x.json",
+      "status": 200,
+      "expected": "c6a11bbc0b6f27c2af0516a0601dd8f47e94863df2cf881b80f63fe041dab2d6",
+      "actual": "c6a11bbc0b6f27c2af0516a0601dd8f47e94863df2cf881b80f63fe041dab2d6",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-guest-consent-browser.json",
+      "status": 200,
+      "expected": "45a3e34616ea4c5e8758c881fd99080c38f8791ad60d177bca3ebd7832df8157",
+      "actual": "45a3e34616ea4c5e8758c881fd99080c38f8791ad60d177bca3ebd7832df8157",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "08d9ff7d9b7f2a9aadcc24659aa5669df3896445e406ad15910e121775fefe07",
+      "actual": "08d9ff7d9b7f2a9aadcc24659aa5669df3896445e406ad15910e121775fefe07",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "991bb02c8c49d593383f58c0c728be2e1328ae3bc920d4a60905a7ac74e670a9",
+      "actual": "991bb02c8c49d593383f58c0c728be2e1328ae3bc920d4a60905a7ac74e670a9",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "41a8214e542710f46f2464b9db0c3c7eb926ef08aa36b89dfc330ce4cb0c70e0",
+      "actual": "41a8214e542710f46f2464b9db0c3c7eb926ef08aa36b89dfc330ce4cb0c70e0",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9b9949ca41469abd5187b916c7d999746111fb651bae3bb13fa1ef6299c19685",
+      "actual": "9b9949ca41469abd5187b916c7d999746111fb651bae3bb13fa1ef6299c19685",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-presentation.test.js",
+      "status": 200,
+      "expected": "05c5732a24358cdbc8823d875d3cbaae264fae6d81dd3e7c482a555208c8bccd",
+      "actual": "05c5732a24358cdbc8823d875d3cbaae264fae6d81dd3e7c482a555208c8bccd",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
