@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 242,
+  "actors": 2,
+  "samples": 170,
+  "medianCpuMs": 1.3802919999999403,
+  "p95CpuMs": 6.389041999999904,
+  "sameSaveAsControl": true,
+  "byteExactReload": true
+}
