@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-07T17:24:36.580564+00:00",
+  "commit": "bffd5ff3d7001d13ad1c583e09dca5678ba66530",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "b06e936593e61a9583d22315ce9b63ac79adfac5186825b7e9af280bdd3e7599",
+      "actual": "b06e936593e61a9583d22315ce9b63ac79adfac5186825b7e9af280bdd3e7599",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "expected": "b940248c042681e4bf24e05f87cb3620ac0f342cf36ca21acc14ceab4e109a61",
+      "actual": "b940248c042681e4bf24e05f87cb3620ac0f342cf36ca21acc14ceab4e109a61",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "ad5d6e70efaee06aec4ee6e81afe6473f38c11662df5f6bf53c8b4bf44177113",
+      "actual": "ad5d6e70efaee06aec4ee6e81afe6473f38c11662df5f6bf53c8b4bf44177113",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-audio-fallback-4x.json",
+      "status": 200,
+      "expected": "5c94ea63aae50722c45b5b04cb33c8a798a4168cc76aba21b63fae5dabf7ad4a",
+      "actual": "5c94ea63aae50722c45b5b04cb33c8a798a4168cc76aba21b63fae5dabf7ad4a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-audio-fallback-browser.json",
+      "status": 200,
+      "expected": "04cf46a615354ac82ef47f5f9253dbee06f3fd51a6961435149449224932eff0",
+      "actual": "04cf46a615354ac82ef47f5f9253dbee06f3fd51a6961435149449224932eff0",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "20c098260fe186e44e1df975aea5d907df46f1e994ebc8f044a5269b2cad8ca6",
+      "actual": "20c098260fe186e44e1df975aea5d907df46f1e994ebc8f044a5269b2cad8ca6",
+      "match": true
+    },
+    {
+      "path": "tests/city-audio.test.js",
+      "status": 200,
+      "expected": "f5baf07614244ff18e5a46abf33260578a00655e4920c094d94415fa78b09cb6",
+      "actual": "f5baf07614244ff18e5a46abf33260578a00655e4920c094d94415fa78b09cb6",
+      "match": true
+    },
+    {
+      "path": "work-audio.js",
+      "status": 200,
+      "expected": "81a486602b525776d8441b161db15e89c792613a5ce618fbf3e27cc3dc852a13",
+      "actual": "81a486602b525776d8441b161db15e89c792613a5ce618fbf3e27cc3dc852a13",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
