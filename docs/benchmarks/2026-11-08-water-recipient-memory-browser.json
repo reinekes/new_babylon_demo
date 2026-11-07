@@ -1,0 +1,30 @@
+[
+  {
+    "id": "living",
+    "view": "2d",
+    "url": "?id=living&view=2d",
+    "mode": "2d",
+    "result": "PASS living ending availability"
+  },
+  {
+    "id": "living",
+    "view": "3d",
+    "url": "?id=living&view=3d",
+    "mode": "3d",
+    "result": "PASS living ending availability"
+  },
+  {
+    "id": "gone",
+    "view": "2d",
+    "url": "?id=gone&view=2d",
+    "mode": "2d",
+    "result": "PASS gone ending availability"
+  },
+  {
+    "id": "gone",
+    "view": "3d",
+    "url": "?id=gone&view=3d",
+    "mode": "3d",
+    "result": "PASS gone ending availability"
+  }
+]

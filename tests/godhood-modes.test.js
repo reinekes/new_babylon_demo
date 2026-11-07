@@ -66,6 +66,9 @@ test('a nameless ending is voluntary, waits for living memories and persists in 
  s.causalFacts={healing:[{patientId:patient.id,healerId:first}]};
  assert.match(namelessEndingReason(s),/память/);
  assert.equal(recordNamelessEnding(s).ok,false);
+ s.causalFacts={water:[{requesterId:first,organizerId:first,courierId:first,recipientId:patient.id}]};
+ assert.match(namelessEndingReason(s),/память/);
+ assert.equal(recordNamelessEnding(s).ok,false);
  delete s.causalFacts;
  assert.equal(namelessEndingReason(s),'');
  const people=s.citizens.map(c=>c.id);

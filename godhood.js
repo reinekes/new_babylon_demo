@@ -158,7 +158,7 @@ export function namelessEndingReason(s){
  const memories=[
   [help?.helperId,help?.recipientId],
   ...(s.lifeAnalytics?.people||[]).filter(c=>c.waterStory).map(c=>[c.id]),
-  ...(facts?.water||[]).map(f=>[f.requesterId,f.organizerId,f.courierId]),
+  ...(facts?.water||[]).map(f=>[f.requesterId,f.organizerId,f.courierId,f.recipientId]),
   ...(facts?.waterWitnesses||[]).map(f=>[f.recipientId,f.courierId]),
   ...(facts?.healing||[]).map(f=>[f.patientId,f.healerId]),
   ...(facts?.harvest||[]).map(f=>[f.recipientId,f.farmerId]),
