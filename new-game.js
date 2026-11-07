@@ -38,6 +38,7 @@ export function createNewCity({mode,seed}={}){
   state.revelationEvidence=newRevelationEvidence();
   state.starObservations=newStarObservations();
   state.depthSupply=newDepthSupply();
+  state.landMemoryChapter=1;
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);

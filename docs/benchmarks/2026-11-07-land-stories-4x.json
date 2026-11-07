@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 296,
+  "storyKinds": [
+    "building",
+    "food"
+  ],
+  "sealDelivered": true,
+  "saveByteEqual": true,
+  "samples": 198,
+  "medianStepCpuMs": 6.960708000000068,
+  "p95StepCpuMs": 32.21079200000008
+}
