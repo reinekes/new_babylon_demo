@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-07T21:11:27.410985+00:00",
+  "commit": "27a3014953e2b7696d4f700e41392a91e5510b87",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "81e3dc54584708590919e84919a960a9b4ce079d42520d852736118fa62c9686",
+      "actual": "81e3dc54584708590919e84919a960a9b4ce079d42520d852736118fa62c9686",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "76e84891a5a005a712653c2418e211da7cc476f04a3ac66772a504019a7cdeaa",
+      "actual": "76e84891a5a005a712653c2418e211da7cc476f04a3ac66772a504019a7cdeaa",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "6963e76f9957b550fe6c873a9d54d3b9f7406b1a46c07feb31f27cc129ae0e91",
+      "actual": "6963e76f9957b550fe6c873a9d54d3b9f7406b1a46c07feb31f27cc129ae0e91",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "ce3e8000afd60133a1fbc672bf3805121d5611a480f1db0caaadb98d41c4d2c3",
+      "actual": "ce3e8000afd60133a1fbc672bf3805121d5611a480f1db0caaadb98d41c4d2c3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-refugee-event-beds-4x.json",
+      "status": 200,
+      "expected": "93508893a92e8c7ee0fb92091fee56a4a3f35f8c58981e2356afd9ebb844e0a5",
+      "actual": "93508893a92e8c7ee0fb92091fee56a4a3f35f8c58981e2356afd9ebb844e0a5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-refugee-event-beds-browser.json",
+      "status": 200,
+      "expected": "975b20ca44af504bd54a40d86800facddd2ddcb38333795ee5e4d9f41cac6d18",
+      "actual": "975b20ca44af504bd54a40d86800facddd2ddcb38333795ee5e4d9f41cac6d18",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "ca70ad73a832e80bf75e6d29a7d938036c899734d5998481161149b6ccf89be4",
+      "actual": "ca70ad73a832e80bf75e6d29a7d938036c899734d5998481161149b6ccf89be4",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "666fb8bf3c7d876bf473b94f0af47aef8fdfd42e76fe6fa26c9e87e7227710df",
+      "actual": "666fb8bf3c7d876bf473b94f0af47aef8fdfd42e76fe6fa26c9e87e7227710df",
+      "match": true
+    },
+    {
+      "path": "tests/city-events.test.js",
+      "status": 200,
+      "expected": "54488cc0ff1aafead11fbfbd2f2ac8756e5d66c40b596037635cd6888d3f8b5e",
+      "actual": "54488cc0ff1aafead11fbfbd2f2ac8756e5d66c40b596037635cd6888d3f8b5e",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
