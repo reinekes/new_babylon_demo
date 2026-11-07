@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T10:05:33.734421+00:00",
+  "commit": "190ea8712a172bc96b66ec5bd1e56ea5834f154d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3e1c3479c41057a0440e258260fbbe7474da22af6e6c5bf9b81c0bdc0a5519de",
+      "actual": "3e1c3479c41057a0440e258260fbbe7474da22af6e6c5bf9b81c0bdc0a5519de",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "09f0822897372f1324648afd74932d4c83ea3ce4726d7c255e4ea7da96e0b793",
+      "actual": "09f0822897372f1324648afd74932d4c83ea3ce4726d7c255e4ea7da96e0b793",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-kiln-fire-forecast-4x.json",
+      "status": 200,
+      "expected": "219388716218b05df5ef1158d689e5c55636162936c37cf3631e2f756bcd3a00",
+      "actual": "219388716218b05df5ef1158d689e5c55636162936c37cf3631e2f756bcd3a00",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-kiln-fire-forecast-browser.json",
+      "status": 200,
+      "expected": "cdf0535bda4bc99f632fc1f511222f9e9ef414ce5bf08452e3b28c767cef9183",
+      "actual": "cdf0535bda4bc99f632fc1f511222f9e9ef414ce5bf08452e3b28c767cef9183",
+      "match": true
+    },
+    {
+      "path": "fire-forecast.js",
+      "status": 200,
+      "expected": "189aa1fd2f13b5ba8a8098bf2310c9efd6cbecc742854db4a4588e623d5b5939",
+      "actual": "189aa1fd2f13b5ba8a8098bf2310c9efd6cbecc742854db4a4588e623d5b5939",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2ba4aabdaf2e8d65a4e1e4b0aa9341742dfccbdf8e6e24c8036caa2b2694c8ea",
+      "actual": "2ba4aabdaf2e8d65a4e1e4b0aa9341742dfccbdf8e6e24c8036caa2b2694c8ea",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c4890c0b04c062067d87d6e79ebbc56c1c3a8e7d3b6a2f8697dd94fe97a84c23",
+      "actual": "c4890c0b04c062067d87d6e79ebbc56c1c3a8e7d3b6a2f8697dd94fe97a84c23",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f3625fef04b0813824e641be5eec438dd6fed7ae6cab4b20195053bbc7847704",
+      "actual": "f3625fef04b0813824e641be5eec438dd6fed7ae6cab4b20195053bbc7847704",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "622c5277fc9c2cf49568e63f5197823005ea129b7041d4e3f3aec2ab249aa604",
+      "actual": "622c5277fc9c2cf49568e63f5197823005ea129b7041d4e3f3aec2ab249aa604",
+      "match": true
+    },
+    {
+      "path": "tests/fire-forecast.test.js",
+      "status": 200,
+      "expected": "2607268228ce2f9d6e73f8156dc134a331f0c5b5310e61d415919ed73d16004f",
+      "actual": "2607268228ce2f9d6e73f8156dc134a331f0c5b5310e61d415919ed73d16004f",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "5aa04f9f5c5e42d5953256874d4494281d5ae5a4e21d17d0991ea595797cea79",
+      "actual": "5aa04f9f5c5e42d5953256874d4494281d5ae5a4e21d17d0991ea595797cea79",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
