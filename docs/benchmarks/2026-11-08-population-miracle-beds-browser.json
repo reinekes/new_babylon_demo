@@ -1,0 +1,16 @@
+[
+  {
+    "id": "shelter",
+    "view": "2d",
+    "url": "?id=shelter&view=2d",
+    "mode": "2d",
+    "result": "PASS no free housing, no charge"
+  },
+  {
+    "id": "shelter",
+    "view": "3d",
+    "url": "?id=shelter&view=3d",
+    "mode": "3d",
+    "result": "PASS no free housing, no charge"
+  }
+]

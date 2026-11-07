@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "initialPopulation": 222,
+  "population": 245,
+  "castCost": 20,
+  "castArrivals": 3,
+  "byteIdenticalReload": true,
+  "duplicateRejected": true,
+  "steps": 320,
+  "medianCpuMs": 1.6508339999999748,
+  "p95CpuMs": 7.600750000000062
+}

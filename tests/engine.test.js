@@ -19,3 +19,19 @@ test('starvation reaches defeat without negative resources',()=>{const s=createG
 test('save round trip and rejects malformed or incompatible state',()=>{const s=createGame({start:'established'});assert.deepEqual(decode(encode(s)),s);for(const raw of ['{}','nope',JSON.stringify({...s,version:900}),JSON.stringify({...s,population:-5}),JSON.stringify({...s,buildings:[{type:'house',x:999,y:0}] }),JSON.stringify({...s,resources:{...s.resources,faith:null}})])assert.equal(decode(raw),null);});
 test('viable strategy reaches ten-year victory with real costs',()=>{const s=createGame({start:'established'});const place=(s,type)=>{const cells=[];for(let y=type==='ziggurat'?0:3;y<(type==='ziggurat'?31:16);y++)for(let x=type==='ziggurat'?0:4;x<(type==='ziggurat'?39:16);x++)if(type!=='field'||irrigationFor(s).irrigated.has(`${x},${y}`))cells.push({x,y,d:Math.abs(x-9)+Math.abs(y-9)});cells.sort((a,b)=>a.d-b.d);for(const p of cells)if(build(s,type,p.x,p.y).ok)return;};assignWorkplace(s,0,'12,8');assignWorkplace(s,1,'12,8');assert.ok(build(s,'canal',12,7).ok);assert.ok(build(s,'canal',11,7).ok);assert.ok(build(s,'canal',10,7).ok);assert.ok(build(s,'fishing',11,10).ok);assert.ok(build(s,'reed',11,12).ok);place(s,'field');place(s,'house');place(s,'market');for(let i=0;i<64&&!s.won&&!s.lost;i++){settle(s);if(s.trade.caravan){for(const k of ['food','clay','reed']){const surplus=Math.floor(s.resources[k]-(k==='food'?100:160));if(surplus>0)trade(s,k,'sell',Math.min(surplus,Math.floor(s.trade.caravan.silver/s.trade.caravan.prices[k].sell)));}for(const k of ['firedBrick','brick','reed','clay']){const amount=Math.min(Math.max(0,Math.ceil((k==='firedBrick'?40:k==='brick'?80:k==='reed'?90:160)-s.resources[k])),s.trade.caravan.stock[k],Math.floor(s.trade.silver/s.trade.caravan.prices[k].buy));if(amount>0)trade(s,k,'buy',amount);}}if(s.drought&&s.resources.faith>=15&&!s.cooldowns.rain)miracle(s,'rain');if(s.population>=s.capacity-3&&s.capacity<48&&s.resources.clay>=12&&s.resources.reed>=8)place(s,'house');if(s.resources.clay>50&&s.resources.reed>25&&s.buildings.filter(b=>b.type==='shrine').length<4)place(s,'shrine');if(s.resources.clay>60&&s.resources.reed>40&&s.buildings.filter(b=>b.type==='field').length<5)place(s,'field');if((s.happiness<80||s.population<30)&&s.resources.faith>=20&&!s.cooldowns.bless)miracle(s,'bless');if(s.resources.clay>=160&&s.resources.reed>=90&&s.resources.faith>=80&&s.resources.prestige>=50&&!s.buildings.some(b=>b.type==='ziggurat'))place(s,'ziggurat');advanceCalendarSeason(s);if(s.season===1&&!s.event)advanceTime(s,20);}assert.equal(s.lost,false);assert.equal(s.won,true);assert.ok(s.year>=10);assert.ok(s.population>=30);assert.ok(goals(s).at(-1).done);});
 test('save rejects contradictory defeat and terminal flags',()=>{const s=createGame({start:'established'});s.population=0;assert.equal(decode(encode(s)),null);s.population=12;s.lost=true;assert.equal(decode(encode(s)),null);});
+
+test('population miracles check unreserved housing before charging at maximum happiness',()=>{
+ for(const id of ['bless','healing']){
+  const s=createGame({start:'established'}),home=s.citizens.at(-1).home;
+  for(const guest of s.citizens.filter(c=>c.home!==home).slice(0,4))guest.floodShelter=home;
+  s.resources.faith=1000;s.happiness=100;
+  for(const c of s.citizens)c.mood=100;
+  const raw=encode(s),ids=s.citizens.map(c=>c.id);
+  assert.match(miracle(s,id).reason??'',/свободное жильё/);
+  assert.equal(encode(s),raw);
+  s.happiness=95;
+  assert.ok(miracle(s,id).ok);
+  assert.equal(s.happiness,100);
+  assert.deepEqual(s.citizens.map(c=>c.id),ids);
+ }
+});

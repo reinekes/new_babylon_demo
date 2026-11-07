@@ -211,12 +211,24 @@ export function yieldSummary(s,b){
  const output=Object.entries(def.output).map(([k,n])=>`${(n*outputMultiplier(b)).toFixed(n<1?2:1)} ${RESOURCE_NAMES[k]}`).join(' + ');
  return `${b.type==='field'?(Number.isInteger(b.x)?fieldWater(s,b).label:'Приречная земля или полив из канала')+' · ':''}${output} за рейс работника · 2 рабочих места${b.type==='garden'?` · +${2+2*level} довольства`:''}`;
 }
+function freeArrivalBeds(s){
+ const vacant=arrivalHousing(s).reduce((total,row)=>total+row.beds,0);
+ const pending=Math.max(0,s.population-s.citizens.length);
+ return Math.max(0,vacant-pending);
+}
+export function populationMiracleQuote(s,id){
+ const limit=id==='bless'?3:id==='healing'&&!s.arrivalHospitality?6:0;
+ if(!limit)return null;
+ const count=Math.min(limit,freeArrivalBeds(s));
+ return {count,reason:!count&&s.happiness>=100?'Довольство уже максимальное. Для новых жителей нужно свободное жильё.':''};
+}
 export function miracle(s,id,target){
  if((s.miracleCelebration||['cat','fertility'].includes(id))&&miracleCelebrationReason(s))return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};const lock=miracleKnowledgeReason(s,id)||miracleLockReason(s,id);if(lock)return {ok:false,reason:lock};
  const m=MIRACLES[id],price=miraclePrice(s,id);if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<price)return {ok:false,reason:`Нужно ${price} веры`};if(id==='cat'&&catReason(s))return {ok:false,reason:catReason(s)};if(id==='abundance'&&!s.abundanceGift&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
  if(s.funeral&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
- if(['bless','healing'].includes(id)&&s.population>=s.capacity&&s.happiness>=100)return {ok:false,reason:'Город уже счастлив; для новых жителей нужны дома'};
+ const populationQuote=populationMiracleQuote(s,id);
+ if(populationQuote?.reason)return {ok:false,reason:populationQuote.reason};
  if(['cat','fertility'].includes(id)){const reason=miracleCelebrationTargetReason(s,id==='fertility'?target:null);if(reason)return {ok:false,reason};}
  const fishingYard=id==='richCatch'?richCatchTarget(s,target):null;
  if(id==='richCatch'&&!fishingYard)return {ok:false,reason:'Выбери действующий рыбацкий двор на карте'};
@@ -260,7 +272,7 @@ export function miracle(s,id,target){
  if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
  if(fishingYard)startRichCatch(s,fishingYard);
  if(id==='abundance'&&!s.abundanceGift)s.resources.food=Math.min(storage(s),s.resources.food+ABUNDANCE_LIMIT);
- if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));if(id==='bless'||!s.arrivalHospitality)s.population+=Math.max(0,Math.min(id==='bless'?3:6,s.capacity-s.population));}
+ if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=populationQuote?.count??0;}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
  if(id==='sunlight'){affectResidents(s,{mood:7});s.happiness=Math.min(100,s.happiness+10);}
  if(id==='revelation'){if(!s.revelationEvidence)s.resources.faith+=20;s.resources.prestige+=12;}
@@ -380,7 +392,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,(45-s.seasonElapsed)/calendarRateFor(s))>0;}
-export const refugeeArrivalCount=s=>Math.min(6,arrivalHousing(s).reduce((total,row)=>total+row.beds,0));
+export const refugeeArrivalCount=s=>Math.min(6,freeArrivalBeds(s));
 export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&!refugeeArrivalCount(s))return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
  if(choice==='accept'&&s.godhood?.namelessEndingAt!==undefined)return {ok:false,reason:'История завершена: доступно наблюдение'};
