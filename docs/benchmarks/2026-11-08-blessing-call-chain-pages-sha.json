@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T22:04:46.157688+00:00",
+  "commit": "1c525d284a35eae88693bdb5a5c98debb977f226",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a85024f84b1f4e892cf333f121e3a9f7330fa5ffea356c5dd95b601ba9233bc7",
+      "actual": "a85024f84b1f4e892cf333f121e3a9f7330fa5ffea356c5dd95b601ba9233bc7",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-call-chain-4x.json",
+      "status": 200,
+      "expected": "d321b1fba52bd909283458fde8b8c0982cb761a41789097880760e0c04f4477b",
+      "actual": "d321b1fba52bd909283458fde8b8c0982cb761a41789097880760e0c04f4477b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-call-chain-browser.json",
+      "status": 200,
+      "expected": "70eb1f73cdcd0fcbd13b1d10cdc90b09146157be71e4e9cf965a7f9b3d50c4f8",
+      "actual": "70eb1f73cdcd0fcbd13b1d10cdc90b09146157be71e4e9cf965a7f9b3d50c4f8",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "e0887feba5ee4f941036819613d29a24da884309f7a97c786ad39df3f4da569c",
+      "actual": "e0887feba5ee4f941036819613d29a24da884309f7a97c786ad39df3f4da569c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "cd57d5761982f37474b84f1e2ab457c7baf4f7f4edab0129a1fb44942c412a4f",
+      "actual": "cd57d5761982f37474b84f1e2ab457c7baf4f7f4edab0129a1fb44942c412a4f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0eb02fe068b71e496f1e4a06667617d2a029826ce3402b1d3883dee56a81785c",
+      "actual": "0eb02fe068b71e496f1e4a06667617d2a029826ce3402b1d3883dee56a81785c",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
