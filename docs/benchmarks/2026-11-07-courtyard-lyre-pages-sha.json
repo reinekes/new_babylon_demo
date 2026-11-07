@@ -1,0 +1,149 @@
+{
+  "at": "2026-11-07T16:25:47.421786+00:00",
+  "commit": "d708073239bfc2b286bddd9dab02909873081cec",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4c2acfbedca348ba53388353b42a0fa806cfd54e55587851b9dedea23f68d35a",
+      "actual": "4c2acfbedca348ba53388353b42a0fa806cfd54e55587851b9dedea23f68d35a",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "0ace84a0d1337f11d38d38cd277c8c12420ea46a94c44444efad464cb020a0b0",
+      "actual": "0ace84a0d1337f11d38d38cd277c8c12420ea46a94c44444efad464cb020a0b0",
+      "match": true
+    },
+    {
+      "path": "city-audio.js",
+      "status": 200,
+      "expected": "fe482032c92d05b81c87bb79c11b05731a2f399d1f51745cc81741db956d564f",
+      "actual": "fe482032c92d05b81c87bb79c11b05731a2f399d1f51745cc81741db956d564f",
+      "match": true
+    },
+    {
+      "path": "definitions.js",
+      "status": 200,
+      "expected": "0c4b0463554c299cbc028a3a33475c97c0e8ad766f5511e9492982f128752177",
+      "actual": "0c4b0463554c299cbc028a3a33475c97c0e8ad766f5511e9492982f128752177",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "b3c73ceca7f66dff61103f72a446a6a9b0043ee0a9e3ba73a0276b4499ee9056",
+      "actual": "b3c73ceca7f66dff61103f72a446a6a9b0043ee0a9e3ba73a0276b4499ee9056",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-courtyard-lyre-4x.json",
+      "status": 200,
+      "expected": "350c9aae871ece9a1cc2ffe2390aab5a6bdeb99475a5995fc5c262e8642b0feb",
+      "actual": "350c9aae871ece9a1cc2ffe2390aab5a6bdeb99475a5995fc5c262e8642b0feb",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-courtyard-lyre-browser.json",
+      "status": 200,
+      "expected": "5f705aca5fb80df35cbe7a59f783cdca03f201fdbf3ab6380dd9b6def4edbab8",
+      "actual": "5f705aca5fb80df35cbe7a59f783cdca03f201fdbf3ab6380dd9b6def4edbab8",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "4b64a81b7e07630eda25ff9e1f77bde0129eb9328ef82c7f488c1c4bb5ce8138",
+      "actual": "4b64a81b7e07630eda25ff9e1f77bde0129eb9328ef82c7f488c1c4bb5ce8138",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "71cd96ed00bb991135cab6dd300087706c03e5749480d21799fa7ec6ce416f85",
+      "actual": "71cd96ed00bb991135cab6dd300087706c03e5749480d21799fa7ec6ce416f85",
+      "match": true
+    },
+    {
+      "path": "game3d/music-courtyard.js",
+      "status": 200,
+      "expected": "7087ddc1cc4b6eac28a5ae586a2e4dece92fe6ebb226188603c9230272eda3b2",
+      "actual": "7087ddc1cc4b6eac28a5ae586a2e4dece92fe6ebb226188603c9230272eda3b2",
+      "match": true
+    },
+    {
+      "path": "game3d/work-poses.js",
+      "status": 200,
+      "expected": "c2e59a41b0dfc9ea487b32dc63f3a9ec21c8397a8413e0e9a9415d0f2de29275",
+      "actual": "c2e59a41b0dfc9ea487b32dc63f3a9ec21c8397a8413e0e9a9415d0f2de29275",
+      "match": true
+    },
+    {
+      "path": "game3d/workstations.js",
+      "status": 200,
+      "expected": "f630cac4dfecd12e4f02d64fceef6946e81b1d097e105750ffcab0e99efec2d0",
+      "actual": "f630cac4dfecd12e4f02d64fceef6946e81b1d097e105750ffcab0e99efec2d0",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "b779731e55a046c3ec9df807e006c0c2e60f8cc672533a110d70d3fe550b92e8",
+      "actual": "b779731e55a046c3ec9df807e006c0c2e60f8cc672533a110d70d3fe550b92e8",
+      "match": true
+    },
+    {
+      "path": "music-audio.js",
+      "status": 200,
+      "expected": "2733909788901faf1bb903b5bda0f552e33fd9d437dd76410d0a2761e81f882a",
+      "actual": "2733909788901faf1bb903b5bda0f552e33fd9d437dd76410d0a2761e81f882a",
+      "match": true
+    },
+    {
+      "path": "music.js",
+      "status": 200,
+      "expected": "2afd8da56d6c18c03b693817bbefee33aa4996f0172c3d7d8afe38e12a5011f8",
+      "actual": "2afd8da56d6c18c03b693817bbefee33aa4996f0172c3d7d8afe38e12a5011f8",
+      "match": true
+    },
+    {
+      "path": "professions.js",
+      "status": 200,
+      "expected": "f739df9e541f5c9b1689846bca24605bac93784fdd6b4f2b7312add25a80bf2d",
+      "actual": "f739df9e541f5c9b1689846bca24605bac93784fdd6b4f2b7312add25a80bf2d",
+      "match": true
+    },
+    {
+      "path": "tests/music-audio.test.js",
+      "status": 200,
+      "expected": "83ba6f26cfd0685312ef33b2bd13631a6bd656e28eec0ea5b6969003068b3e7f",
+      "actual": "83ba6f26cfd0685312ef33b2bd13631a6bd656e28eec0ea5b6969003068b3e7f",
+      "match": true
+    },
+    {
+      "path": "tests/music-sacred-unlocks.test.js",
+      "status": 200,
+      "expected": "93504163b526135161bcc6c3a0f3b2481f0aadce77230dd5c1cb97245eb1ffd4",
+      "actual": "93504163b526135161bcc6c3a0f3b2481f0aadce77230dd5c1cb97245eb1ffd4",
+      "match": true
+    },
+    {
+      "path": "tests/music-workstation.test.js",
+      "status": 200,
+      "expected": "4c4b9ea4925b34b0421b2c9e9618f5b3d1786c88dceeef4175f6ed6b29828fd6",
+      "actual": "4c4b9ea4925b34b0421b2c9e9618f5b3d1786c88dceeef4175f6ed6b29828fd6",
+      "match": true
+    },
+    {
+      "path": "work-audio.js",
+      "status": 200,
+      "expected": "62b45037e7bc8d8f30dbddb4fe43840f5bdbf018ea3db947ddd2683fab9a98ea",
+      "actual": "62b45037e7bc8d8f30dbddb4fe43840f5bdbf018ea3db947ddd2683fab9a98ea",
+      "match": true
+    }
+  ],
+  "matched": 20,
+  "total": 20
+}

@@ -275,25 +275,6 @@ sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GAMEPLAY_IDEAS_20
 ### Готово когда
 Показанная обеспеченность соответствует реально проверяемому дому и сезону.
 
-## audio-musician-ensemble | Живые музыканты и ансамбль
-group: audio
-status: planned
-priority: P2
-depends: -
-sources: docs/UNFINISHED_DISCUSSIONS_AUDIT_2026-10-27.md; docs/GAMEPLAY_IDEAS_2026-10-26.md; docs/GODHOOD_GAME_DESIGN_2026-10-20.md
-
-### Описание
-Только варианты: быкоголовая лира, арфа, трубки с оговорками уверенности, погремушки/хлопушки, пространственное совместное пение.
-
-### Что уже есть
-Восемь MP3, песни, праздник и литофон уже работают.
-
-### Следующий шаг
-Выбрать один исторически подтверждённый инструмент.
-
-### Готово когда
-Есть исполнитель, источник звука и рабочие дистанции; существующий литофон не заменён молча.
-
 ## reliability-desktop-release | Выбор десктопной сборки
 group: reliability
 status: decision
