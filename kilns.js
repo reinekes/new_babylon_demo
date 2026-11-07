@@ -1,3 +1,4 @@
+import {kilnFireRisk} from './fire-forecast.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {recordBuildingProduction} from './building-production-history.js';
@@ -5,7 +6,7 @@ import {isOperational,outputMultiplier} from './definitions.js';
 export const KILN_RECIPE=Object.freeze({brick:4,reed:3});
 export const KILN_WEAR_LIMIT=8;
 export const kilnNeedsRepair=b=>b?.kilnWear===KILN_WEAR_LIMIT;
-export const FIRING_SECONDS=20,COOLING_SECONDS=8;
+export const FIRING_SECONDS=20,COOLING_SECONDS=8,IGNITION_CHECK=10;
 const fields=['brick','reed','hot','time','ready'];
 const empty=()=>({brick:0,reed:0,hot:0,time:0,ready:0});
 function valid(v){return v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===fields.length&&fields.every(k=>Number.isFinite(v[k])&&v[k]>=0)&&v.brick<=4&&v.reed<=3&&[0,4].includes(v.hot)&&[0,4].includes(v.ready)&&!(v.hot&&v.ready)&&v.time<FIRING_SECONDS+COOLING_SECONDS&&(!v.time||v.hot>0)&&(!v.hot&&!v.ready||v.brick===0&&v.reed===0);}
@@ -25,6 +26,7 @@ export function setKilnBanked(s,b,banked){
  const batch=b.firing;
  if(!batch.hot||batch.time>=FIRING_SECONDS)return {ok:false,reason:'Можно остановить только горящий обжиг'};
  Object.assign(batch,{brick:batch.hot,hot:0,time:0});
+ delete b.kilnFire;
  b.kilnBanked=true;
  return {ok:true};
 }
@@ -35,6 +37,25 @@ export function repairKiln(b){
  v.brick--;b.kilnWear=0;
  return true;
 }
-export function advanceKilns(s,dt){if(!Number.isFinite(dt)||dt<=0)return;for(const b of s.buildings||[]){const v=b.firing;if(b.type!=='kiln'||!isOperational(b)||!valid(v)||!v.hot)continue;v.time=Math.min(28,v.time+dt*outputMultiplier(b));if(v.time>=28){v.ready=v.hot;v.hot=0;v.time=0;if(b.kilnWear!==undefined)b.kilnWear++;recordBuildingProduction(s,b,'firedBrick',v.ready);}}}
+export function advanceKilns(s,dt){
+ if(!Number.isFinite(dt)||dt<=0)return;
+ for(const b of s.buildings||[]){
+  const batch=b.firing;
+  if(b.type!=='kiln'||!isOperational(b)||!valid(batch)||!batch.hot||b.kilnFire)continue;
+  const next=batch.time+dt*outputMultiplier(b);
+  if(batch.time<IGNITION_CHECK&&next>=IGNITION_CHECK&&isStrictSumer(s)&&kilnFireRisk(s,b)){
+   batch.time=IGNITION_CHECK;
+   b.kilnFire=true;
+   if(s.news){s.news.unshift({title:'Очаг у кирпичной печи',text:'Останови обжиг или используй запас воды соседей в обзоре города.',kind:'bad',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
+   continue;
+  }
+  batch.time=next;
+  if(batch.time>=FIRING_SECONDS+COOLING_SECONDS){
+   batch.ready=batch.hot;batch.hot=0;batch.time=0;
+   if(b.kilnWear!==undefined)b.kilnWear++;
+   recordBuildingProduction(s,b,'firedBrick',batch.ready);
+  }
+ }
+}
 export function collectFired(b){if(b?.type!=='kiln'||!isOperational(b)||!valid(b.firing))return 0;const n=b.firing.ready;b.firing.ready=0;return n;}
-export function validateKilns(s){return Array.isArray(s.buildings)&&s.buildings.every(b=>b.type==='kiln'?valid(b.firing)&&(b.kilnBanked===undefined||b.kilnBanked===true&&isStrictSumer(s)&&!b.firing.hot&&!b.firing.ready)&&(b.kilnWear===undefined||Number.isInteger(b.kilnWear)&&b.kilnWear>=0&&b.kilnWear<=KILN_WEAR_LIMIT&&!(b.firing.hot&&kilnNeedsRepair(b))):!Object.hasOwn(b,'kilnBanked')&&!Object.hasOwn(b,'firing')&&!Object.hasOwn(b,'kilnWear'));}
+export function validateKilns(s){return Array.isArray(s.buildings)&&s.buildings.every(b=>b.type==='kiln'?valid(b.firing)&&(b.kilnFire===undefined||b.kilnFire===true&&isStrictSumer(s)&&b.firing.hot>0&&b.firing.time===IGNITION_CHECK)&&(b.kilnBanked===undefined||b.kilnBanked===true&&isStrictSumer(s)&&!b.firing.hot&&!b.firing.ready)&&(b.kilnWear===undefined||Number.isInteger(b.kilnWear)&&b.kilnWear>=0&&b.kilnWear<=KILN_WEAR_LIMIT&&!(b.firing.hot&&kilnNeedsRepair(b))):!Object.hasOwn(b,'kilnFire')&&!Object.hasOwn(b,'kilnBanked')&&!Object.hasOwn(b,'firing')&&!Object.hasOwn(b,'kilnWear'));}

@@ -49,3 +49,33 @@ test('banking a lit kiln restores the unfired batch but neither spent fuel nor o
  assert.equal(collectFired(b),4);
  assert.equal(collectFired(b),0);
 });
+
+test('a high-risk firing stops at a local fire until neighbors contribute reachable surplus',async()=>{
+ const {createGame}=await import('../engine.js');
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {weatherAt}=await import('../environment.js');
+ const {waterDemand}=await import('../water.js');
+ const {extinguishKilnFire}=await import('../fire-forecast.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const kiln={type:'kiln',x:10,y:9,level:1};
+ s.buildings.push(kiln);
+ initializeKilns(s);
+ Object.assign(kiln.firing,{brick:4,reed:3});
+ s.drought=1;
+ for(let i=0;i<2000&&weatherAt(s).type!=='wind';i++)s.simTime++;
+ assert.equal(weatherAt(s).type,'wind');
+ for(const b of s.buildings.filter(b=>b.type==='house'))b.water=0;
+ assert.equal(startFiring(kiln),4);
+ advanceKilns(s,60);
+ assert.equal(kiln.kilnFire,true);
+ assert.equal(kiln.firing.ready,0);
+ assert.equal(extinguishKilnFire(s,kiln).ok,false);
+ const home=s.buildings.find(b=>b.type==='house'&&b.x===9&&b.y===9);
+ const daily=s.citizens.filter(c=>c.home==='9,9').reduce((n,c)=>n+waterDemand(c),0);
+ home.water=daily+2;
+ assert.ok(extinguishKilnFire(s,kiln).ok);
+ assert.equal(home.water,daily);
+ assert.equal(extinguishKilnFire(s,kiln).ok,false);
+ advanceKilns(s,28);
+ assert.equal(collectFired(kiln),4);
+});

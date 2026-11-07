@@ -143,7 +143,7 @@ function fireForecastHTML(s){
  const {dry,wind,sites,banked}=forecast;
  const labels={low:'Низкий риск',watch:'Под наблюдением',high:'Высокий риск'};
  const stopped=banked.map(key=>`<li>${focus(key,`Печь · ${key}`)} · Обжиг остановлен. <button type="button" data-city-resume-kiln="${escape(key)}">Разрешить обжиг</button></li>`).join('');
- const rows=sites.map(site=>`<li>${focus(site.key,`Печь · ${site.key}`)} · <b>${labels[site.level]}</b><br>${site.homes.length?`Жилые дворы рядом · ${site.homes.map(key=>focus(key,key)).join(' ')}. Вода сверх суточной потребности · ${number(site.reserve)}.`:'Рядом нет жилых дворов.'} <button type="button" data-city-bank-kiln="${escape(site.key)}">Остановить обжиг</button></li>`).join('');
+ const rows=sites.map(site=>`<li>${focus(site.key,`Печь · ${site.key}`)} · <b>${site.fire?'Очаг у печи · обжиг приостановлен':labels[site.level]}</b><br>${site.homes.length?`Жилые дворы рядом · ${site.homes.map(key=>focus(key,key)).join(' ')}. Доступная вода сверх суточной потребности · ${number(site.reserve)}.`:'Рядом нет жилых дворов.'} <button type="button" data-city-bank-kiln="${escape(site.key)}">Остановить обжиг</button> ${site.fire?`<button type="button" data-city-extinguish-kiln="${escape(site.key)}"${site.canExtinguish?'':' disabled'}>Потушить · 2 воды</button>`:''}</li>`).join('');
  return `<article class="city-tools-row" data-fire-forecast><h3>Риск пожара у печей</h3><p>${dry?'Сухо':'Без сухости'} · ${wind?'ветрено':'без сильного ветра'}. ${sites.length?'Оценка при текущем обжиге.':'Сейчас печи не горят.'}</p>${rows||stopped?`<ul>${rows}${stopped}</ul>`:''}<small>Оставляй проход между печью и двором. Вода для тушения считается сверх запаса на питьё. Остановка сохраняет сырец. Для нового обжига нужен свежий тростник.</small></article>`;
 }
 function workshopsHTML(s,model,expanded){
@@ -332,6 +332,7 @@ export function renderCityTools(root,s,options={}){
   root.addEventListener('click',event=>{
    const button=event.target.closest?.('button');if(!button||!root.contains(button))return;
    if(button.dataset.testAction!==undefined){const data={...ctl.testOptions};for(const k of ['event','resource','building','citizen','count']){const input=root.querySelector(`[data-test-${k}]`);if(input)data[k]=k==='count'?Number(input.value):input.value;}ctl.options.onTestAction?.(button.dataset.testAction,data);ctl.refresh();return;}
+   if(button.dataset.cityExtinguishKiln!==undefined){ctl.options.onKilnExtinguish?.(button.dataset.cityExtinguishKiln);ctl.refresh();return;}
    if(button.dataset.cityBankKiln!==undefined||button.dataset.cityResumeKiln!==undefined){ctl.options.onKilnBank?.(button.dataset.cityBankKiln??button.dataset.cityResumeKiln,button.dataset.cityBankKiln!==undefined);ctl.refresh();return;}
    if(button.hasAttribute('data-city-repair')){ctl.options.onRepair?.();ctl.refresh();return;}
    if(button.hasAttribute('data-city-unload')){ctl.options.onUnload?.();ctl.refresh();return;}

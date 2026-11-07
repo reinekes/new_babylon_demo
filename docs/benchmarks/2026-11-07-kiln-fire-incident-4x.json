@@ -1,0 +1,12 @@
+{
+  "buildings": 129,
+  "population": 200,
+  "speed": 4,
+  "steps": 245,
+  "medianCpuMs": 2.019416999999976,
+  "p95CpuMs": 5.51558399999999,
+  "waterSpent": 2,
+  "completed": true,
+  "bankedFallback": true,
+  "reloadByteIdentical": true
+}
