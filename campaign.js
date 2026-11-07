@@ -1,3 +1,6 @@
+import {waterNameEvidence} from './causal-facts.js';
+import {earnedResultNames} from './divinity.js';
+import {familyMemorialsAt} from './life-analytics.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {homeMealFood} from './households.js';
@@ -7,6 +10,53 @@ import {waterSummary} from './water.js';
 import {worldWidth,worldHeight} from './world.js';
 
 const usesCampaign=s=>isStrictSumer(s)&&s.godhood?.mode==='awakening';
+
+const CHAPTERS=[
+ {title:'Неуслышанный',condition:'Дождись, пока первый житель откликнется на знак или поможет соседям.'},
+ {title:'I · Чаша у порога',condition:'Добейся подтверждённого результата для двух независимых дворов.'},
+ {title:'II · Имя двора',condition:'Доставь воду из общего водозабора в разные дворы и дай укрытие соседям при разливе.'},
+ {title:'III · Покровитель квартала',condition:'Передай семейную память следующему поколению и исполни обет снабжения.'},
+ {title:'IV · Бог города',condition:'Прими дар паломника и дождись, пока хранитель внесёт его в память храма.'},
+ {title:'V · Имя за рекой',condition:'Гость принёс дар, и его сохранили в храмовой памяти.'}
+];
+
+function inheritedMemory(s){
+ const people=s.lifeAnalytics?.people||[];
+ if(people.some(p=>p.waterStory))return true;
+ const followers=new Set(s.godhood.believerIds);
+ const descendants=s.citizens.filter(c=>c.parents?.some(id=>followers.has(id)));
+ if(!descendants.length)return false;
+ const homes=new Map(s.buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>[buildingKey(b),b]));
+ return descendants.some(c=>{
+  const home=homes.get(c.home);
+  return home&&familyMemorialsAt(s,home).some(p=>c.parents.includes(p.id)&&followers.has(p.id));
+ });
+}
+
+export function advanceCampaignChapter(s){
+ if(!usesCampaign(s)||s.lost||s.godhood.namelessEndingAt!==undefined)return false;
+ const start=s.campaignChapter||0;
+ let rank=start;
+ if(rank===0&&Number.isFinite(s.godhood.recognitionAt))rank++;
+ if(rank===1&&earnedResultNames(s).length)rank++;
+ if(rank===2&&s.causalFacts?.water?.length&&waterNameEvidence(s)&&s.arrivalHospitality?.shelters?.length)rank++;
+ if(rank===3&&s.supplyVows?.history?.some(v=>v.outcome==='fulfilled')&&inheritedMemory(s))rank++;
+ if(rank===4&&s.votiveOfferings?.some(item=>item.visitorKind==='pilgrim'&&Number.isSafeInteger(item.receivedTick)&&item.memory))rank++;
+ if(rank===start)return false;
+ s.campaignChapter=rank;
+ return true;
+}
+
+export function campaignChapterView(s){
+ if(!usesCampaign(s))return null;
+ const rank=s.campaignChapter||0;
+ return {rank,title:CHAPTERS[rank].title,condition:CHAPTERS[rank].condition};
+}
+
+export function validateCampaignChapter(s){
+ const rank=s.campaignChapter;
+ return rank===undefined||usesCampaign(s)&&Number.isSafeInteger(rank)&&rank>=1&&rank<CHAPTERS.length&&Number.isFinite(s.godhood.recognitionAt);
+}
 
 export function hearthEndingOffer(s){
  if(!usesCampaign(s)||s.hearthEnding||s.lost||s.event||s.funeral||cityCommandReason(s))return null;

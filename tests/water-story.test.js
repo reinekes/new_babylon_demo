@@ -25,7 +25,11 @@ test('a child hears the first water story at dinner and keeps the source after t
  assert.deepEqual(heard.fact,personalMemory(s,choice.helperId).fact);
  assert.match(lifeAnalyticsHTML(s,{tab:'family',selectedId:child.id}),/Услышал за семейным ужином/);
  assert.equal(hearthEndingOffer(s),null);
+ assert.equal(s.campaignChapter,1);
  const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ const invalidChapter=structuredClone(s);
+ invalidChapter.campaignChapter=6;
+ assert.equal(decode(encode(invalidChapter)),null);
  const teller=s.citizens.find(c=>c.id===choice.helperId);teller.age=85;
  for(let i=0;i<200&&!s.lifeAnalytics.people.find(p=>p.id===choice.helperId).diedTick;i++){s.event=null;advanceTime(s,.5);}
  assert.ok(s.lifeAnalytics.people.find(p=>p.id===choice.helperId).diedTick);
@@ -65,4 +69,39 @@ test('a child hears the first water story at dinner and keeps the source after t
  assert.ok(secondHand.heardAt>heard.heardAt);
  const after=decode(encode(restored));assert.ok(after);
  assert.deepEqual(personalMemory(after,next.id),secondHand);
+});
+
+test('campaign chapters require causal milestones in order and survive loss of a live witness',async()=>{
+ const {advanceCampaignChapter,campaignChapterView}=await import('../campaign.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ const witness=s.citizens[0];
+ assert.equal(campaignChapterView(s).rank,0);
+ assert.equal(advanceCampaignChapter(s),false);
+ Object.assign(s.godhood,{stage:'recognized',recognitionAt:0,witnessId:witness.id,believerIds:[witness.id]});
+ assert.ok(advanceCampaignChapter(s));
+ assert.equal(campaignChapterView(s).rank,1);
+ const first={home:'1,1',homeId:1,time:0};
+ s.causalFacts={waterWitnesses:[first,{...first,time:1}]};
+ assert.equal(advanceCampaignChapter(s),false);
+ s.causalFacts.waterWitnesses.push({home:'2,2',homeId:2,time:2});
+ assert.ok(advanceCampaignChapter(s));
+ assert.equal(campaignChapterView(s).rank,2);
+ s.causalFacts.water=[first];
+ assert.equal(advanceCampaignChapter(s),false);
+ s.arrivalHospitality.shelters=[{origin:'1,1',host:'2,2',at:3}];
+ assert.ok(advanceCampaignChapter(s));
+ assert.equal(campaignChapterView(s).rank,3);
+ s.supplyVows={history:[{outcome:'fulfilled'}]};
+ s.lifeAnalytics.people[0].waterStory={time:2};
+ assert.ok(advanceCampaignChapter(s));
+ assert.equal(campaignChapterView(s).rank,4);
+ s.votiveOfferings=[{visitorKind:'pilgrim',receivedTick:0}];
+ assert.equal(advanceCampaignChapter(s),false);
+ s.votiveOfferings[0].memory={keeperId:witness.id};
+ assert.ok(advanceCampaignChapter(s));
+ assert.equal(campaignChapterView(s).rank,5);
+ delete s.causalFacts;
+ s.godhood.stage='unseen';
+ assert.equal(advanceCampaignChapter(s),false);
+ assert.equal(campaignChapterView(s).rank,5);
 });

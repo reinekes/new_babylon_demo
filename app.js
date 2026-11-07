@@ -1,4 +1,4 @@
-import {hearthEndingOffer,recordHearthEnding} from './campaign.js';
+import {campaignChapterView,hearthEndingOffer,recordHearthEnding} from './campaign.js';
 import {createInannaPresentation} from './inanna-presentation.js';
 import {createLandPresentation} from './land-presentation.js';
 import {landMemoryCastQuote,landMemoryStories} from './land-memory.js';
@@ -1040,12 +1040,13 @@ function update(){
 
  const signature=`${state.news.length}|${state.news[0]?.title}|${state.tick}`;
  if(signature!==newsSignature){newsSignature=signature;const linkedText=residentTextRenderer(state);$('news').innerHTML=state.news.map(n=>`<article class="news-item ${['good','bad','miracle','year','build','info'].includes(n.kind)?n.kind:'info'}"><small>ГОД ${n.year} · ${SEASONS[n.season].toUpperCase()}</small><h3>${linkedText(n.title)}</h3><p>${linkedText(n.text.replace('Приведи кошку или назначь сторожа.','Назначь сторожа: жители пока защищают запасы своими силами.'))}</p></article>`).join('');}
- const g=goals(state),hearth=hearthEndingOffer(state);
+ const g=goals(state),hearth=hearthEndingOffer(state),chapter=campaignChapterView(state);
  const campaign=state.hearthEnding?'<button type="button" data-hearth-ending>Бог очагов · завершено</button>'
   :hearth?'<button type="button" data-hearth-ending>Открыть финал «Бог очагов»</button>'
   :isStrictSumer(state)&&gameMode(state)==='awakening'&&state.godhood.namelessEndingAt===undefined
    ?'<small>Бог очагов · сохрани рассказ о первой помощи в семье после смерти рассказчика. Двору нужны еда на ужин и вода на день.</small>':'';
- setHTML($('goals'),g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign);
+ const chapterHTML=chapter?`<section class="goal" data-campaign-chapter="${chapter.rank}"><div><b>${esc(chapter.title)}</b><p>${esc(chapter.condition)}</p></div></section>`:'';
+ setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign);
  const hearthButton=$('goals').querySelector('[data-hearth-ending]');
  if(hearthButton)hearthButton.onclick=showHearthEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;

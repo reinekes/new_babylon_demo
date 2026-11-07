@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "view": "2d",
+    "url": "?id=1&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d chapter 1 and next step, byte-identical save"
+  },
+  {
+    "id": "1",
+    "view": "3d",
+    "url": "?id=1&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d chapter 1 and next step, byte-identical save"
+  },
+  {
+    "id": "2",
+    "view": "2d",
+    "url": "?id=2&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d chapter 2 and next step, byte-identical save"
+  },
+  {
+    "id": "2",
+    "view": "3d",
+    "url": "?id=2&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d chapter 2 and next step, byte-identical save"
+  }
+]

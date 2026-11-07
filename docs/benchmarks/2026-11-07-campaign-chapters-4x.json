@@ -1,0 +1,27 @@
+{
+  "measurement": "Node simulation CPU, 4× calendar rate, no renderer",
+  "results": [
+    {
+      "name": "hearth-ending-city",
+      "rank": 1,
+      "buildings": 129,
+      "initialPopulation": 221,
+      "population": 221,
+      "steps": 300,
+      "cpuMedianMs": 1.8046249999999873,
+      "cpuP95Ms": 5.989874999999984,
+      "reloadByteIdentical": true
+    },
+    {
+      "name": "craft-name-after",
+      "rank": 2,
+      "buildings": 130,
+      "initialPopulation": 222,
+      "population": 242,
+      "steps": 300,
+      "cpuMedianMs": 1.5095410000001266,
+      "cpuP95Ms": 6.211915999999974,
+      "reloadByteIdentical": true
+    }
+  ]
+}
