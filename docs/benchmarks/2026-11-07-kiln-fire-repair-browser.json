@@ -1,0 +1,30 @@
+[
+  {
+    "id": "active",
+    "view": "2d",
+    "url": "?id=active&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d active fire countdown and repair status"
+  },
+  {
+    "id": "active",
+    "view": "3d",
+    "url": "?id=active&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d active fire countdown and repair status"
+  },
+  {
+    "id": "damaged",
+    "view": "2d",
+    "url": "?id=damaged&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d damaged fire countdown and repair status"
+  },
+  {
+    "id": "damaged",
+    "view": "3d",
+    "url": "?id=damaged&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d damaged fire countdown and repair status"
+  }
+]

@@ -79,3 +79,26 @@ test('a high-risk firing stops at a local fire until neighbors contribute reacha
  advanceKilns(s,28);
  assert.equal(collectFired(kiln),4);
 });
+
+test('a neglected fire stops the batch and requires the normal kiln repair',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {IGNITION_CHECK}=await import('../kilns.js');
+ const s=fixture(),b=s.buildings[0];
+ s.scenario=strictScenario();
+ Object.assign(b.firing,{hot:4,time:IGNITION_CHECK});
+ b.kilnFire=true;
+ advanceKilns(s,45);
+ assert.equal(b.kilnFire,true);
+ assert.ok(validateKilns(s));
+ advanceKilns(s,15);
+ assert.equal(b.kilnFire,undefined);
+ assert.equal(b.kilnFireElapsed,undefined);
+ assert.equal(b.kilnBanked,true);
+ assert.equal(b.kilnWear,KILN_WEAR_LIMIT);
+ assert.deepEqual(b.firing,{brick:4,reed:0,hot:0,time:0,ready:0});
+ assert.equal(collectFired(b),0);
+ assert.ok(repairKiln(b));
+ assert.equal(b.firing.brick,3);
+ assert.equal(startFiring(b),0);
+ assert.ok(validateKilns(s));
+});

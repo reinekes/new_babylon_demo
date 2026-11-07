@@ -1,0 +1,11 @@
+{
+  "buildings": 129,
+  "population": 219,
+  "speed": 4,
+  "steps": 529,
+  "medianCpuMs": 2.0207920000000286,
+  "p95CpuMs": 5.923832999999945,
+  "repairBricks": 1,
+  "retainedIds": 200,
+  "reloadByteIdentical": true
+}

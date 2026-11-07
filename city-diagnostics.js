@@ -1,3 +1,4 @@
+import {kilnNeedsRepair} from './kilns.js';
 import {sickleBlunt} from './agriculture.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {buildingDefinition} from './building-presentation.js';
@@ -49,6 +50,7 @@ function productionReason(s,b,workers,connected,hasHomes,isDay){
  }
  if(b.brickmaking?.wet)return reason('drying','Сушка на дворе','Дождь приостанавливает сушку',key);
  if(b.kilnFire)return reason('kilnFire','Очаг у печи','Останови обжиг или используй воду соседей',key);
+ if(b.kilnBanked&&kilnNeedsRepair(b))return reason('kilnRepair','Печь требует ремонта','Печник использует один сырцовый кирпич',key);
  if(b.kilnBanked)return reason('kilnBanked','Обжиг остановлен','Возобнови обжиг в обзоре кварталов',key);
  if(b.firing?.hot)return reason('firing',b.firing.time<20?'Обжиг':'Остывание','Загруженная печь продолжает цикл ночью',key);
  if(artisan&&['drying','firing','cooling'].includes(artisan.stage))return reason(artisan.stage==='drying'?'drying':'firing',{drying:'Сушка керамики',firing:'Обжиг керамики',cooling:'Остывание керамики'}[artisan.stage],artisan.stage==='drying'?'Дождь приостанавливает сушку':'Загруженная партия продолжает цикл ночью',key);

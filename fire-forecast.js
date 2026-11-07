@@ -1,6 +1,6 @@
 import {buildingKey,isOperational} from './definitions.js';
 import {weatherAt} from './environment.js';
-import {FIRING_SECONDS} from './kilns.js';
+import {FIRING_SECONDS,FIRE_RESPONSE_SECONDS,kilnNeedsRepair} from './kilns.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {waterDemand,waterpointCanReach} from './water.js';
@@ -48,6 +48,7 @@ export function extinguishKilnFire(s,kiln){
   if(remaining<=1e-8)break;
  }
  delete kiln.kilnFire;
+ delete kiln.kilnFireElapsed;
  return {ok:true};
 }
 export function fireForecast(s){
@@ -60,8 +61,8 @@ export function fireForecast(s){
   if(!kiln.firing?.hot||kiln.firing.time>=FIRING_SECONDS)continue;
   const homes=exposedHomes(s,kiln),reserve=totalWater(reachableWater(s,kiln,homes)),fire=kiln.kilnFire===true;
   const level=!homes.length||!dry&&!wind?'low':dry&&wind&&reserve+1e-8<MIN_RESPONSE_WATER?'high':'watch';
-  sites.push({key:buildingKey(kiln),homes:homes.map(({home})=>buildingKey(home)),reserve,level,fire,
+  sites.push({key:buildingKey(kiln),homes:homes.map(({home})=>buildingKey(home)),reserve,level,fire,remaining:fire?Math.max(0,FIRE_RESPONSE_SECONDS-(kiln.kilnFireElapsed||0)):null,
    canExtinguish:fire&&reserve+1e-8>=MIN_RESPONSE_WATER});
  }
- return {dry,wind,sites,banked:kilns.filter(b=>b.kilnBanked).map(buildingKey)};
+ return {dry,wind,sites,banked:kilns.filter(b=>b.kilnBanked).map(b=>({key:buildingKey(b),repair:kilnNeedsRepair(b)}))};
 }
