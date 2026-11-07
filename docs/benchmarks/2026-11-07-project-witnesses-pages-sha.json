@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T04:16:50.251751+00:00",
+  "commit": "1cbab1d238d1e543e8ac23dceeb66c091a0bae6f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ade3f9c082d11f13943c91cc91ebf78393430d0124f2631549a2f40562481c2b",
+      "actual": "ade3f9c082d11f13943c91cc91ebf78393430d0124f2631549a2f40562481c2b",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "bf82dcc421db3f328eb6e05ad34bf5bfc2743b9a1d5cf550fc5046876dab50cb",
+      "actual": "bf82dcc421db3f328eb6e05ad34bf5bfc2743b9a1d5cf550fc5046876dab50cb",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "9448c84011303f4a53c8435980d4e352c38193b2889ac89e6fb3d289e260b5a5",
+      "actual": "9448c84011303f4a53c8435980d4e352c38193b2889ac89e6fb3d289e260b5a5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-project-witnesses-4x.json",
+      "status": 200,
+      "expected": "38f80c010ad60a912337a6b35ebc2d09ac28b4d1b45367fcc12ff08dc9bae678",
+      "actual": "38f80c010ad60a912337a6b35ebc2d09ac28b4d1b45367fcc12ff08dc9bae678",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-project-witnesses-browser.json",
+      "status": 200,
+      "expected": "4ca1987e2d0dd0c261c4cf5a373afdcf7df1cc7ff4e68bc8c0eb59f3175bbc2c",
+      "actual": "4ca1987e2d0dd0c261c4cf5a373afdcf7df1cc7ff4e68bc8c0eb59f3175bbc2c",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "84cb86f62ef825daad816981bb5bbbd2637b00defee6573170e085d0c089f968",
+      "actual": "84cb86f62ef825daad816981bb5bbbd2637b00defee6573170e085d0c089f968",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2e1e275301e96335bd2d231c2a3a3773e19221ea6ae15105d251ad29de220da9",
+      "actual": "2e1e275301e96335bd2d231c2a3a3773e19221ea6ae15105d251ad29de220da9",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3e09a0603f6a62b63a8f46b9d0e247a909f9ce02cf1032dbba12787a4c64bc97",
+      "actual": "3e09a0603f6a62b63a8f46b9d0e247a909f9ce02cf1032dbba12787a4c64bc97",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "b8238821739d64588ccb7456d87b402d83379a1f753ab93795aabdac3c816551",
+      "actual": "b8238821739d64588ccb7456d87b402d83379a1f753ab93795aabdac3c816551",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8e4e8b150218eb2be350b362e2e7ba7ef035000f5262a106246109123171f1bb",
+      "actual": "8e4e8b150218eb2be350b362e2e7ba7ef035000f5262a106246109123171f1bb",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "6f1030884571d946b636987a3d5d87735a3e968e72bff387e1d86fd160da1af8",
+      "actual": "6f1030884571d946b636987a3d5d87735a3e968e72bff387e1d86fd160da1af8",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
