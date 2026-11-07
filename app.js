@@ -752,7 +752,9 @@ function householdInitiativePanel(b,h){
   const project=site.householdInitiative,active=site.construction?.kind==='new';
   const working=active?state.citizens.filter(c=>c.site===buildingKey(site)&&project.members.includes(c.id)):[];
   const team=working.map(c=>`${esc(displayName(state,c.id))} · ${c.siteDuty==='builder'?'строит':'доставляет материалы'}`).join('<br>');
-  return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${active?'Идёт стройка':project.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}</p>`;
+  const aid=project.firstNeighborAid;
+  const witness=aid?`<br><span data-household-first-aid>Первая помощь соседей · ${foodAmount(aid.amount)} ${aid.resource==='water'?'воды':'еды'} · ${resident(aid.courierId)}</span>`:'';
+  return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${active?'Идёт стройка':project.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}${witness}</p>`;
  }).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
 }

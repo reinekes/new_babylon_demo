@@ -121,3 +121,32 @@ test('a family building a small courtyard takes part through the normal site que
  const raw=encode(s);
  assert.equal(encode(decode(raw)),raw);
 });
+
+test('the first accepted neighbor delivery is remembered by a settled small courtyard',async()=>{
+ const {recordNeighborFoodFact}=await import('../causal-facts.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const source=s.buildings.find(h=>buildingKey(h)===s.citizens[0].home);
+ const offer=householdInitiative(s,source);
+ const result=approveHouseholdInitiative(s,source,offer);
+ assert.ok(result.ok,result.reason);
+ const home=s.buildings.find(h=>buildingKey(h)===result.key),project=home.householdInitiative;
+ for(let i=0;i<900&&!project.settled;i++){s.event=null;advanceTime(s,.25);}
+ assert.ok(project.settled);
+ const courier=s.citizens.find(c=>c.home&&c.home!==result.key&&!project.members.includes(c.id));
+ assert.ok(courier);
+ const origin=s.buildings.find(b=>buildingKey(b)===courier.home);
+ courier.pantryTarget=result.key;
+ recordNeighborFoodFact(s,courier,home,0);
+ assert.equal(project.firstNeighborAid,undefined);
+ recordNeighborFoodFact(s,courier,home,2);
+ const fact={resource:'food',homeId:home.waterEntityId,originId:origin.waterEntityId,origin:courier.home,courierId:courier.id,amount:2,time:s.simTime};
+ assert.deepEqual(project.firstNeighborAid,fact);
+ recordNeighborFoodFact(s,courier,home,1);
+ assert.deepEqual(project.firstNeighborAid,fact);
+ delete courier.pantryTarget;
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const invalid=JSON.parse(raw);
+ invalid.buildings.find(b=>b.householdInitiative).householdInitiative.firstNeighborAid.originId=home.waterEntityId;
+ assert.equal(decode(JSON.stringify(invalid)),null);
+});

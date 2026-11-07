@@ -1,0 +1,21 @@
+{
+  "speed": 4,
+  "buildings": 130,
+  "initialPopulation": 218,
+  "population": 245,
+  "source": "6,4",
+  "site": "5,4",
+  "fact": {
+    "resource": "water",
+    "homeId": 3,
+    "originId": 2,
+    "origin": "4,6",
+    "courierId": 4,
+    "amount": 6,
+    "time": 154.125
+  },
+  "loadedAid": true,
+  "byteExact": true,
+  "medianCpuMs": 1.3313329999999723,
+  "p95CpuMs": 6.42516599999999
+}

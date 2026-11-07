@@ -1,0 +1,16 @@
+[
+  {
+    "id": "check",
+    "view": "2d",
+    "url": "?id=check&view=2d",
+    "mode": "2d",
+    "result": "PASS first neighbor delivery and courier link in both courtyard cards"
+  },
+  {
+    "id": "check",
+    "view": "3d",
+    "url": "?id=check&view=3d",
+    "mode": "3d",
+    "result": "PASS first neighbor delivery and courier link in both courtyard cards"
+  }
+]
