@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-07T17:09:00.954986+00:00",
+  "commit": "4f881f4341b715c20609f4dfa42e2e80e4c89895",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "6f6a5c430886d534f44930791981f1fc842d6d3bdfe4e715d88bbe5cba0900ad",
+      "actual": "6f6a5c430886d534f44930791981f1fc842d6d3bdfe4e715d88bbe5cba0900ad",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "3af63bdd6fd68291f023ce7715ed2cd055cfc77aae79b5afbf9882c5cc3e537e",
+      "actual": "3af63bdd6fd68291f023ce7715ed2cd055cfc77aae79b5afbf9882c5cc3e537e",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "c50dc7d976652b869ce421eb2c2f0e192d80d48ed997ace8a3d38f9b4c246dd7",
+      "actual": "c50dc7d976652b869ce421eb2c2f0e192d80d48ed997ace8a3d38f9b4c246dd7",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "d8b6c9396a5bd3df65a722ccae30daeee7074e8ba64f2631eb089fc57c3545cd",
+      "actual": "d8b6c9396a5bd3df65a722ccae30daeee7074e8ba64f2631eb089fc57c3545cd",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-cult-neighbors-4x.json",
+      "status": 200,
+      "expected": "455b40715f955b323e1ef06a14b51f1db28bda9db743eb8610d35b9942ee1257",
+      "actual": "455b40715f955b323e1ef06a14b51f1db28bda9db743eb8610d35b9942ee1257",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-cult-neighbors-browser.json",
+      "status": 200,
+      "expected": "31ee4ec0a531620c7c463d102180384239c60451b3910a048d94583e8b059105",
+      "actual": "31ee4ec0a531620c7c463d102180384239c60451b3910a048d94583e8b059105",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "c7445c75d5d4c9aa55f68b04600be9d2cc25466455292acb6a357e5e2da9df7b",
+      "actual": "c7445c75d5d4c9aa55f68b04600be9d2cc25466455292acb6a357e5e2da9df7b",
+      "match": true
+    },
+    {
+      "path": "tests/household-games.test.js",
+      "status": 200,
+      "expected": "71fbe4b6e589b4ff7a469df4784adf4b907fbf0c891c4756adb565328cbc5e12",
+      "actual": "71fbe4b6e589b4ff7a469df4784adf4b907fbf0c891c4756adb565328cbc5e12",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "43d702c05e8dec11205abdce4d1530ed76f032441f71440d726480cf6a3a206d",
+      "actual": "43d702c05e8dec11205abdce4d1530ed76f032441f71440d726480cf6a3a206d",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
