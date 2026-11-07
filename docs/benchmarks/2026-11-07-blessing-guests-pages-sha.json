@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-07T18:51:19.257678+00:00",
+  "commit": "25a1f118c1fbf1d391283ea28be1663dac712238",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "963ee148c884906108435df6d221a88d40e32513cffc551ad197e1f2408c93b0",
+      "actual": "963ee148c884906108435df6d221a88d40e32513cffc551ad197e1f2408c93b0",
+      "match": true
+    },
+    {
+      "path": "blessing-presentation.js",
+      "status": 200,
+      "expected": "d534ca5526e096accc9785c2e049ceeb8ecc25a77bb74a94324139dcd2c6a085",
+      "actual": "d534ca5526e096accc9785c2e049ceeb8ecc25a77bb74a94324139dcd2c6a085",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "980e5ec41bde692563ea7e6da32d3520afb057bb55d0261aedff4204e3709b89",
+      "actual": "980e5ec41bde692563ea7e6da32d3520afb057bb55d0261aedff4204e3709b89",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-blessing-guests-4x.json",
+      "status": 200,
+      "expected": "f80ccb0e36619669575df37e6bf49a2238043e77f88354a2d38fd7b0c12e8dab",
+      "actual": "f80ccb0e36619669575df37e6bf49a2238043e77f88354a2d38fd7b0c12e8dab",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-blessing-guests-browser.json",
+      "status": 200,
+      "expected": "166597c292a61a0fcbdfb6fe3e9290a1f3d66097725e5b9a6b3b7eb66079f014",
+      "actual": "166597c292a61a0fcbdfb6fe3e9290a1f3d66097725e5b9a6b3b7eb66079f014",
+      "match": true
+    },
+    {
+      "path": "earth-presentation.css",
+      "status": 200,
+      "expected": "936a03a5c8ff0d3e0769d7287f4bd79865f9ecfc86f2ad90d6c60919b325bf61",
+      "actual": "936a03a5c8ff0d3e0769d7287f4bd79865f9ecfc86f2ad90d6c60919b325bf61",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "307209813e9e5058b97e2939457e807e649d4ecd739dff9c5bd93b9f64561a06",
+      "actual": "307209813e9e5058b97e2939457e807e649d4ecd739dff9c5bd93b9f64561a06",
+      "match": true
+    },
+    {
+      "path": "miracle-celebration.js",
+      "status": 200,
+      "expected": "864c9f049f3b8541bbc21360592de629b271f271e93dd16ea5316ca853e019f0",
+      "actual": "864c9f049f3b8541bbc21360592de629b271f271e93dd16ea5316ca853e019f0",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-presentation.test.js",
+      "status": 200,
+      "expected": "142e8abf3ebe86030a43b33ffe93fc94bd171a7616d48b909e44d7862127dda0",
+      "actual": "142e8abf3ebe86030a43b33ffe93fc94bd171a7616d48b909e44d7862127dda0",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
