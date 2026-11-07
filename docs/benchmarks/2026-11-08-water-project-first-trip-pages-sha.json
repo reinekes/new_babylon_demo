@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T20:14:39.257105+00:00",
+  "commit": "426a1b0ec5c82dce3bf6c769c82ba9913cef04f9",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4c469ff7ae56bfdbb54949eaa3ccb595f5da9cf1f852150991753bb6c5939dfb",
+      "actual": "4c469ff7ae56bfdbb54949eaa3ccb595f5da9cf1f852150991753bb6c5939dfb",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "b16641fdf5867b7aac1c45d93b712b7d0b1b4fefea35a754dbeb2c9fc6b0fec2",
+      "actual": "b16641fdf5867b7aac1c45d93b712b7d0b1b4fefea35a754dbeb2c9fc6b0fec2",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-project-first-trip-4x.json",
+      "status": 200,
+      "expected": "9a35b681707eeb63cb8bf61f71d13f74c5f9cd4e2c0d4f13e94bab7fd57cd9db",
+      "actual": "9a35b681707eeb63cb8bf61f71d13f74c5f9cd4e2c0d4f13e94bab7fd57cd9db",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f4462bbff907e9ce4405ce928669c34a4f2360cd19ae643ab31da536b1b1292f",
+      "actual": "f4462bbff907e9ce4405ce928669c34a4f2360cd19ae643ab31da536b1b1292f",
+      "match": true
+    },
+    {
+      "path": "tests/water.test.js",
+      "status": 200,
+      "expected": "402d5cdc6e76cb46e48e56cc569a8a0eae526fe3c705e80a8f0c04c896bec0fa",
+      "actual": "402d5cdc6e76cb46e48e56cc569a8a0eae526fe3c705e80a8f0c04c896bec0fa",
+      "match": true
+    },
+    {
+      "path": "water.js",
+      "status": 200,
+      "expected": "f900272144cefb48ad2ac104e05b6465872cbd455307686869f95c65d23758c0",
+      "actual": "f900272144cefb48ad2ac104e05b6465872cbd455307686869f95c65d23758c0",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
