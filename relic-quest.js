@@ -1,3 +1,4 @@
+import {cityCommandReason} from './city-command-lock.js';
 import {landSearchReason} from './land-memory.js';
 import {depthSearchReason} from './depth-supply.js';
 import {relicControlActive,relicCommandReason} from './city-command-lock.js';
@@ -64,6 +65,7 @@ export function initializeRelicQuest(s,{reconcileUnusedSite=false}={}){
 const searchPoint=q=>({x:q.artifact.location==='ground'?q.artifact.x:q.site.x,y:q.artifact.location==='ground'?q.artifact.y:q.site.y});
 export function relicSiteReserved(s,x,y){return entries(s).some(({id,q})=>id==='land'&&q&&q.artifact.location==='ground'&&Math.hypot(q.artifact.x-x,q.artifact.y-y)<.8);}
 export function relicStartReason(s,id,questId='oasis'){
+ if(s.godhood?.namelessEndingAt!==undefined)return cityCommandReason(s);
  if(s.miracleCelebration)return 'Дождись завершения встречи чуда';
  const choice=selected(s,questId),q=choice?.q;if(!q)return questId==='land'?'В этой долине нет доступной сухопутной реликвии':'В этой долине нет доступного оазиса';if(q.phase==='completed')return 'Артефакт уже хранится в храме';if(relicControlActive(s))return 'Ты уже ведёшь человека';if(s.lost||s.funeral||s.festival||s.event)return 'Дождись завершения события, праздника или прощания';
  const history=questId==='oasis'?depthSearchReason(s):landSearchReason(s);if(history)return history;

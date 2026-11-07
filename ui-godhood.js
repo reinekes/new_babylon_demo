@@ -1,6 +1,6 @@
 import {isStrictSumer} from './scenario-profiles.js';
 import {catDiscoveryHTML} from './ui-cat-discovery.js';
-import {godhoodView,gameMode,builderLevel,builderExperience,firstBuilderInspiration,firstWaterHelpChoices,knowsPresence} from './godhood.js';
+import {godhoodView,gameMode,builderLevel,builderExperience,firstBuilderInspiration,firstWaterHelpChoices,knowsPresence,namelessEndingReason} from './godhood.js';
 import {relicControlActive,RELIC_FAITH_COST} from './relic-quest.js';
 import {BUILDINGS,buildingKey,citizenName,isOperational} from './definitions.js';
 import {canStaffBuilding} from './professions.js';
@@ -14,7 +14,8 @@ function awakeningBaseHTML(s){
  const c=s.citizens.find(c=>c.id===v.witnessId),link=c?residentLinkHTML(s,c):'',first=c&&firstBuilderInspiration(s,c,'builder');
  const recovery=isStrictSumer(s)&&v.recognitionAt!==null;
  if(v.stage==='unseen'){
-  if(recovery)return '<span class="eyebrow">ЗАБЫТЫЙ БОГ</span><h3>Город живёт дальше</h3><p>Никто из живых больше не признаёт твоё присутствие. Подай знак взрослому у его двора. Связь вернётся, когда он откликнется.</p><button data-first-sign>Подать знак у дома</button><small>Знак бесплатен. Вера снова поступит от обычных молитв.</small>';
+  if(v.namelessEndingAt!==undefined)return '<span class="eyebrow">ИСТОРИЯ ЗАВЕРШЕНА</span><h3>Город жил дальше без этого имени</h3><p>Дворы продолжают жить. Можно наблюдать за городом или начать новую историю.</p><button data-nameless-new>Новая история</button>';
+  if(recovery)return `<span class="eyebrow">ЗАБЫТЫЙ БОГ</span><h3>Город живёт дальше</h3><p>Никто из живых больше не признаёт твоё присутствие. Подай знак взрослому у его двора. Связь вернётся, когда он откликнется.</p><button data-first-sign>Подать знак у дома</button><small>Знак бесплатен. Вера снова поступит от обычных молитв.</small>${namelessEndingReason(s)?'':'<button data-nameless-ending>Открыть финал</button>'}`;
   const offers=firstWaterHelpChoices(s).map(choice=>`<button type="button" data-first-water-helper="${choice.helperId}" data-first-water-recipient="${choice.recipientId}">${citizenName(choice.helperId)} принесёт воду во двор ${citizenName(choice.recipientId)}</button>`).join('');
   return `<span class="eyebrow">ПРОБУЖДЕНИЕ · ${Math.floor(s.resources.faith)} ВЕРЫ</span><h3>Пусть кто-то заметит тебя</h3><p>Позови свободного взрослого к источнику. Он должен сам дойти до воды.</p><button data-first-sign>Подать первый знак</button>${offers?`<small>Или помоги соседнему двору водой. Вера появится после доставки.</small>${offers}`:''}<small>Первый шаг бесплатен.</small>`;
  }
@@ -39,9 +40,9 @@ function nextAwakeningStep(s,master){
 
 }
 export function gameModeLabel(s){return {awakening:'Пробуждение',mature:'Взрослый бог',legacy:'Прежняя история'}[gameMode(s)];}
-export function createGodhoodControls({root,getState,onSign,onWaterHelp,onInspire,onFocus,onBuild,onWork,onRelics,onFisher,onCat,onCatFocus,document=globalThis.document}={}){
+export function createGodhoodControls({root,getState,onSign,onNamelessEnding,onNamelessNew,onWaterHelp,onInspire,onFocus,onBuild,onWork,onRelics,onFisher,onCat,onCatFocus,document=globalThis.document}={}){
  const hud=document.createElement('section');hud.className='godhood-hud';hud.setAttribute('aria-label','Пробуждение бога');root.append(hud);let collapsed=false,lastState,wasForgotten=false;
- hud.addEventListener('click',e=>{const b=e.target.closest?.('button');if(!b||b.disabled)return;if(b.hasAttribute('data-cat-fisher'))onFisher?.(Number(b.dataset.catFisher));if(b.hasAttribute('data-cat-cast'))onCat?.();if(b.hasAttribute('data-cat-focus'))onCatFocus?.();if(b.hasAttribute('data-first-sign'))onSign?.();if(b.hasAttribute('data-first-water-helper'))onWaterHelp?.(Number(b.dataset.firstWaterHelper),Number(b.dataset.firstWaterRecipient));if(b.hasAttribute('data-first-builder'))onInspire?.(Number(b.dataset.firstBuilder));if(b.hasAttribute('data-focus-witness'))onFocus?.();if(b.hasAttribute('data-awakening-build'))onBuild?.(b.dataset.awakeningBuild);if(b.hasAttribute('data-awakening-work'))onWork?.();if(b.hasAttribute('data-awakening-relics'))onRelics?.();if(b.hasAttribute('data-hide-awakening')){collapsed=true;refresh();}if(b.hasAttribute('data-show-awakening')){collapsed=false;refresh();}});
+ hud.addEventListener('click',e=>{const b=e.target.closest?.('button');if(!b||b.disabled)return;if(b.hasAttribute('data-cat-fisher'))onFisher?.(Number(b.dataset.catFisher));if(b.hasAttribute('data-cat-cast'))onCat?.();if(b.hasAttribute('data-cat-focus'))onCatFocus?.();if(b.hasAttribute('data-first-sign'))onSign?.();if(b.hasAttribute('data-nameless-ending'))onNamelessEnding?.();if(b.hasAttribute('data-nameless-new'))onNamelessNew?.();if(b.hasAttribute('data-first-water-helper'))onWaterHelp?.(Number(b.dataset.firstWaterHelper),Number(b.dataset.firstWaterRecipient));if(b.hasAttribute('data-first-builder'))onInspire?.(Number(b.dataset.firstBuilder));if(b.hasAttribute('data-focus-witness'))onFocus?.();if(b.hasAttribute('data-awakening-build'))onBuild?.(b.dataset.awakeningBuild);if(b.hasAttribute('data-awakening-work'))onWork?.();if(b.hasAttribute('data-awakening-relics'))onRelics?.();if(b.hasAttribute('data-hide-awakening')){collapsed=true;refresh();}if(b.hasAttribute('data-show-awakening')){collapsed=false;refresh();}});
  function refresh(){const s=getState(),forgotten=isStrictSumer(s)&&s.godhood?.mode==='awakening'&&s.godhood.stage==='unseen'&&s.godhood.recognitionAt!==null;if(lastState!==s||forgotten&&!wasForgotten){lastState=s;collapsed=false;}wasForgotten=forgotten;hud.hidden=gameMode(s)!=='awakening'||relicControlActive(s);const html=collapsed?'<button data-show-awakening>◌ Путь пробуждения</button>':awakeningHTML(s);if(hud.innerHTML!==html)hud.innerHTML=html;}
  refresh();return {refresh,dispose:()=>hud.remove()};
 }

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "finale",
+    "view": "2d",
+    "url": "?id=finale&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d reversible preview, saved observation, new story chooser"
+  },
+  {
+    "id": "finale",
+    "view": "3d",
+    "url": "?id=finale&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d reversible preview, saved observation, new story chooser"
+  }
+]

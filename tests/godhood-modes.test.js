@@ -52,3 +52,34 @@ test('a forgotten strict city recovers at an occupied home without the source or
  assert.equal(s.resources.faith,0);
  assert.equal(beginFirstSign(s,c.id).ok,false);
 });
+
+test('a nameless ending is voluntary, waits for living memories and persists in a living city',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {namelessEndingReason,recordNamelessEnding}=await import('../godhood.js');
+ const {cityCommandReason}=await import('../city-command-lock.js');
+ let s=createGame({mode:'awakening',scenario:strictScenario()});
+ assert.ok(namelessEndingReason(s));
+ const first=recognize(s);
+ assert.ok(namelessEndingReason(s));
+ removeWitness(s,first);advanceGodhood(s,.1);
+ const patient=s.citizens[0];
+ s.causalFacts={healing:[{patientId:patient.id,healerId:first}]};
+ assert.match(namelessEndingReason(s),/память/);
+ assert.equal(recordNamelessEnding(s).ok,false);
+ delete s.causalFacts;
+ assert.equal(namelessEndingReason(s),'');
+ const people=s.citizens.map(c=>c.id);
+ assert.ok(recordNamelessEnding(s).ok);
+ assert.equal(s.lost,false);
+ assert.deepEqual(s.citizens.map(c=>c.id),people);
+ assert.match(cityCommandReason(s),/наблюдение/);
+ assert.equal(beginFirstSign(s).ok,false);
+ const raw=encode(s);s=decode(raw);
+ assert.ok(s);assert.equal(encode(s),raw);
+ const before=s.simTime;
+ s.event={id:'festival',title:'Ночь огней',text:'Люди собрались вместе'};
+ advanceTime(s,.5);
+ assert.equal(s.event,null);
+ assert.ok(s.simTime>before);
+ assert.equal(recordNamelessEnding(s).ok,false);
+});

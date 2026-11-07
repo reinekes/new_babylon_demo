@@ -1,3 +1,4 @@
+import {cityCommandReason} from './city-command-lock.js';
 import {validateInannaDiscovery} from './inanna-discovery.js';
 import {landMemoryCastQuote,validateLandMemory} from './land-memory.js';
 import {validateDepthSupply} from './depth-supply.js';
@@ -154,7 +155,7 @@ export function canBuild(s,type,x,y,placementOnly=false,rotation=0,{householdIni
 export const canPlace=(s,type,x,y,rotation=0)=>canBuild(s,type,x,y,true,rotation);
 export function build(s,type,x,y,rotation=0,{eligibleStores,humanWaterProject,householdInitiative}={}){const reason=canBuild(s,type,x,y,false,rotation,{householdInitiative});if(reason)return {ok:false,reason};const creatorAllocations={};const sources=reserveStock(s,BUILDINGS[type],{eligibleStores,creatorAllocations});if(!sources)return {ok:false,reason:'Не хватает материалов'};s.resources.faith-=BUILDINGS[type].faith||0;s.buildings.push({type,x,y,level:1,rotation,...humanWaterProject?{humanWaterProject}:{},...householdInitiative?{starterHut:true,householdInitiative}:{},...(newFootprint(type)>1?{footprint:newFootprint(type)}:{}),construction:{...createOrder(BUILDINGS[type]),sources,allocations:structuredClone(sources),...(Object.keys(creatorAllocations).length?{creatorAllocations}:{}),order:nextOrder(s)}});initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeArtisans(s);initializeCrops(s);s.capacity=housingOf(s);syncCitizens(s);initializeWater(s);log(s,`Заложено: ${buildingDefinition(s,type).name}`,'Материалы зарезервированы. Жители доставят их и возведут здание.','build');check(s);return {ok:true};}
 
-export function canUpgrade(s,b){if(s.miracleCelebration)return miracleCelebrationReason(s);if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(isCityFortification(b.type)||['canal','levee'].includes(b.type))return 'У сооружения один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
+export function canUpgrade(s,b){if(s.godhood?.namelessEndingAt!==undefined)return cityCommandReason(s);if(s.miracleCelebration)return miracleCelebrationReason(s);if(relicControlActive(s))return relicCommandReason(s);if(!b)return 'Выбери здание';const key=buildingKey(b);if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';const knowledge=buildingKnowledgeReason(s,b.type,levelOf(b)+1);if(knowledge)return knowledge;if(isCityFortification(b.type)||['canal','levee'].includes(b.type))return 'У сооружения один уровень';if(b.construction)return 'Строительство уже идёт';if(s.event||s.lost)return 'Сначала заверши событие';if(levelOf(b)>=3)return 'Достигнут третий уровень';const cost=upgradeCost(b);if(MATERIALS.some(k=>(s.resources[k]||0)<(cost[k]||0)))return 'Нужно: '+Object.entries(cost).map(([k,n])=>`${n} ${RESOURCE_NAMES[k]}`).join(', ');return '';}
 export function upgrade(s,x,y){const b=buildingAt(s,x,y),reason=canUpgrade(s,b);if(reason)return {ok:false,reason};const cost=upgradeCost(b);const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};b.construction={...createOrder(cost,levelOf(b)+1,'upgrade'),sources,allocations:structuredClone(sources),order:nextOrder(s)};s.capacity=housingOf(s);syncCitizens(s);log(s,`Улучшение: ${buildingDefinition(s,b.type).name}`,'Строители доставят материалы. Прежний уровень работает до завершения.','build');check(s);return {ok:true};}
 export function repairFloodDamage(s,b){
  if(!isStrictSumer(s)||!b?.floodDamage||!['house','road'].includes(b.type)||!constructionEntities(s).includes(b))return {ok:false,reason:'Выбери повреждённый дом или дорогу'};
@@ -347,6 +348,7 @@ function settleSeason(s){
 export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
+ if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
@@ -358,11 +360,13 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
   const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
   if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
+ if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,(45-s.seasonElapsed)/calendarRateFor(s))>0;}
 export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&s.population>=s.capacity)return 'Нет свободного жилья';return '';}
 export function resolveEvent(s,choice){
+ if(choice==='accept'&&s.godhood?.namelessEndingAt!==undefined)return {ok:false,reason:'История завершена: доступно наблюдение'};
  if(s.miracleCelebration)return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};
  if(!s.event||!['accept','skip'].includes(choice))return {ok:false,reason:'Нет такого решения'};

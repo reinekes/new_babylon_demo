@@ -1,5 +1,5 @@
 import {DAY_SECONDS} from './city-life.js';
-import {cityCommandReason} from './city-command-lock.js';
+import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
 import {BUILDINGS,buildingKey,capacityOf,isOperational} from './definitions.js';
 import {build,canBuild} from './engine.js';
 import {stockStores} from './inventory.js';
@@ -62,6 +62,8 @@ export function householdInitiative(s,source){
 }
 
 export function approveHouseholdInitiative(s,source,offer){
+ const reason=cityCommandReason(s);
+ if(reason)return refuse(reason);
  const now=householdInitiative(s,source);
  if(!now.ok)return now;
  if(!offer?.ok||offer.x!==now.x||offer.y!==now.y||offer.source!==now.source||offer.members.join()!==now.members.join())return refuse('Условия изменились. Открой предложение заново');
@@ -95,7 +97,7 @@ export function autonomousHousingBoundary(s){
 
 export function advanceAutonomousHousing(s){
  const policy=s.householdBuildingPolicy;
- if(!policy?.enabled||!isStrictSumer(s)||s.event||s.funeral||s.lost||cityCommandReason(s))return;
+ if(!policy?.enabled||!isStrictSumer(s)||s.event||s.funeral||s.lost||cityActivityReason(s))return;
  const day=housingDay(s);
  if(policy.lastDay===day)return;
  policy.lastDay=day;

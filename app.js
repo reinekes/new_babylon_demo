@@ -59,7 +59,7 @@ import {runSeasonJump,seasonJumpReason} from './season-jump.js';
 import {festivalBlessingFrame} from './festival-blessing.js';
 import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
 import {cityEventDefinition} from './city-events.js';
-import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
+import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,namelessEndingReason,recordNamelessEnding,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
 import {modeChooserHTML,createGodhoodControls,gameModeLabel} from './ui-godhood.js';
 import {relicControlActive,relicQuestView,relicQuestViews} from './relic-quest.js';
 import {createRelicControls,relicStartHTML} from './ui-relic-control.js';
@@ -283,7 +283,7 @@ document.addEventListener('click',event=>{if(!relicControlActive(state))return;c
 
 createPanelControls({onResize:()=>renderer.resize()});
 const modeBadge=document.createElement('span');modeBadge.className='game-mode-label';document.querySelector('.game3d-options,.panel-dock')?.append(modeBadge);
-const godhoodUI=createGodhoodControls({root:$('city').parentNode,getState:()=>state,onSign:()=>{const r=beginFirstSign(state);if(mutate(r,r.recovery?'Житель откликнулся и идёт к месту знака':'Человек услышал зов и идёт к источнику')){paused=false;const c=state.citizens.find(c=>c.id===r.citizenId);if(c)renderer.focusOn(c.x,c.y);save();update();}},onWaterHelp:(helper,recipient)=>{const r=beginFirstWaterHelp(state,helper,recipient);if(mutate(r,'Житель отправился за водой для соседей')){paused=false;const c=state.citizens.find(c=>c.id===helper);if(c)renderer.focusOn(c.x,c.y);save();update();}},onInspire:id=>{const r=inspireCitizen(state,id,'builder');mutate(r,r.success?'Первый строитель вдохновлён. Заложи простой двор: после двух завершённых работ он достигнет II уровня.':'Вдохновение не удалось');},onFocus:()=>{const c=state.citizens.find(c=>c.id===state.godhood?.witnessId);if(c)renderer.focusOn(c.x,c.y);},onBuild:type=>{if(selection!==type)choose(type);},onWork:()=>showCityOverview('workshops'),onRelics:()=>showRelicIntro(),onFisher:id=>{const r=inspireCitizen(state,id,'fisher');mutate(r,r.success?'Рыбак принял призвание. Дождись его подношения у хранилища.':'Вдохновение пока не принято · потрачена 1 вера');},onCat:()=>{const el=$('miracle-cat'),details=el?.closest('details');if(details){if(document.body.dataset.urukPanel!=='miracles')urukUI?.open('miracles');details.open=true;details.scrollIntoView({block:'nearest'});el.focus();}},onCatFocus:()=>{const p=state.catDiscovery?.trace;if(p)renderer.focusOn(p.x,p.y);}});
+const godhoodUI=createGodhoodControls({root:$('city').parentNode,getState:()=>state,onNamelessEnding:showNamelessEnding,onNamelessNew:askReset,onSign:()=>{const r=beginFirstSign(state);if(mutate(r,r.recovery?'Житель откликнулся и идёт к месту знака':'Человек услышал зов и идёт к источнику')){paused=false;const c=state.citizens.find(c=>c.id===r.citizenId);if(c)renderer.focusOn(c.x,c.y);save();update();}},onWaterHelp:(helper,recipient)=>{const r=beginFirstWaterHelp(state,helper,recipient);if(mutate(r,'Житель отправился за водой для соседей')){paused=false;const c=state.citizens.find(c=>c.id===helper);if(c)renderer.focusOn(c.x,c.y);save();update();}},onInspire:id=>{const r=inspireCitizen(state,id,'builder');mutate(r,r.success?'Первый строитель вдохновлён. Заложи простой двор: после двух завершённых работ он достигнет II уровня.':'Вдохновение не удалось');},onFocus:()=>{const c=state.citizens.find(c=>c.id===state.godhood?.witnessId);if(c)renderer.focusOn(c.x,c.y);},onBuild:type=>{if(selection!==type)choose(type);},onWork:()=>showCityOverview('workshops'),onRelics:()=>showRelicIntro(),onFisher:id=>{const r=inspireCitizen(state,id,'fisher');mutate(r,r.success?'Рыбак принял призвание. Дождись его подношения у хранилища.':'Вдохновение пока не принято · потрачена 1 вера');},onCat:()=>{const el=$('miracle-cat'),details=el?.closest('details');if(details){if(document.body.dataset.urukPanel!=='miracles')urukUI?.open('miracles');details.open=true;details.scrollIntoView({block:'nearest'});el.focus();}},onCatFocus:()=>{const p=state.catDiscovery?.trace;if(p)renderer.focusOn(p.x,p.y);}});
 const resident=value=>residentLinkHTML(state,value);
 bindResidentLinks(document,{getState:()=>state,onLiving:c=>{if(dialog.open)closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);},onArchived:id=>showLifeAnalytics(id)});
 function toast(text){setHTML($('toast'),residentTextHTML(state,text));$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3500);}
@@ -1084,14 +1084,23 @@ function intro(){
  const introTitle=$('dialog-content').querySelector('h2');introTitle.tabIndex=-1;introTitle.focus({preventScroll:true});dialog.scrollTop=0;
  $('start-game').onclick=()=>{closeDialog();paused=false;save();update();checkDialogs();};
 }
+function showNamelessEnding(){
+ const reason=namelessEndingReason(state);
+ if(reason){toast(reason);return;}
+ openDialog('nameless-ending',`<span class="eyebrow">ФИНАЛ ИСТОРИИ</span><h2>Город жил дальше без этого имени</h2><p>Последователей больше нет, и среди живых никто не хранит свидетельство об имени «${esc(state.name)}». Дворы, ремесло и семьи продолжают свою жизнь.</p><p>После завершения можно наблюдать за этим городом или начать новую историю. Этот город останется в сохранениях.</p><div class="dialog-actions"><button class="primary" id="nameless-observe">Завершить и наблюдать</button><button id="nameless-new">Завершить и начать новую историю</button><button id="nameless-back">Вернуться к знаку</button></div>`);
+ $('nameless-back').onclick=closeDialog;
+ const finish=()=>{const result=recordNamelessEnding(state);if(!mutate(result,'Финал записан в летопись'))return false;closeDialog();return true;};
+ $('nameless-observe').onclick=()=>{if(finish()){paused=false;update();}};
+ $('nameless-new').onclick=()=>{if(finish())askReset();};
+}
 function checkDialogs(){
  if(relicControlActive(state))return;
  if(dialog.open||state.funeral&&!state.event)return;
- if(state.lost||state.won&&!state.continued){
+ if(state.lost||state.godhood?.namelessEndingAt===undefined&&state.won&&!state.continued){
   openDialog('end',`<span class="eyebrow">${state.lost?'ИСТОРИЯ ОСТАЛАСЬ В ГЛИНЕ':'ТВОЯ ПЕРВАЯ ЛЕГЕНДА'}</span><span class="dialog-emblem">${state.lost?'☾':'▲'}</span><h2>${state.lost?'В долине погасли огни.':'Город коснулся неба.'}</h2><p>${state.lost?'Люди покинули город. У новой истории может быть другое начало.':`Долина знает тебя как «${esc(state.name)}». Через руки твоих жителей прошло ${state.deliveries} доставок.`}</p><div class="dialog-stats"><div><strong>${state.year}</strong><small>ГОД ИСТОРИИ</small></div><div><strong>${state.population}</strong><small>ЖИТЕЛЕЙ</small></div><div><strong>${state.miracleCount}</strong><small>ЧУДЕС</small></div></div><div class="dialog-actions">${state.lost?'':'<button class="primary" id="continue-game">Продолжить историю</button>'}<button class="secondary" id="end-new">Новая долина</button></div>`);
   if($('continue-game'))$('continue-game').onclick=()=>{state.continued=true;closeDialog();save();update();checkDialogs();};$('end-new').onclick=askReset;return;
  }
- if(state.event){
+ if(state.event&&state.godhood?.namelessEndingAt===undefined){
   const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
   const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':ev.text;
   const eventCost=festival?`<div class="event-costs" role="group" aria-label="Цена праздника">${[['prestige','престижа'],['food','еды'],['beer','пива']].map(([kind,name])=>`<span>${resourceIcon(kind)}<span><b>${FESTIVAL_COST[kind]}</b> ${name}</span></span>`).join('')}</div>`:'';
@@ -1261,7 +1270,7 @@ function ceremonyPresentation(){
 }
 function frame(now){
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
- const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event;
+ const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event&&state.godhood?.namelessEndingAt===undefined;
  if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
  syncCeremonySpeed();ceremonyPresentation();rainPresentation.tick(state,now,!presentationPaused&&!ceremonyActive(state)&&!earthPresentation.active&&!catchPresentation.active&&!creatorPresentation.active);
  const storyVisible=!seasonJumping&&!document.hidden&&!photo.active&&!windowBlocks&&!rainPresentation.active;

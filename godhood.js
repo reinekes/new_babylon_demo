@@ -1,3 +1,4 @@
+import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
 import {recordCraftNameEvidence} from './causal-facts.js';
 import {advanceStarObservations,starKnowledgeReason} from './star-observations.js';
@@ -97,6 +98,7 @@ export function buildingKnowledgeReason(s,type,level=1){
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){
+ if(s.godhood?.namelessEndingAt!==undefined)return cityCommandReason(s);
  if(id==='inannaProtection'&&s.inannaDiscovery)return '';
  if(id==='relicAwakening'&&s.depthSupply||id==='earthMemory'&&s.landMemoryChapter===1)return '';
  if(id==='stars'&&s.starObservations)return starKnowledgeReason(s);
@@ -143,6 +145,38 @@ function reconcileWitness(s){
  if(!isAwakening(s)||s.godhood.stage!=='recognized')return;
  if(!s.citizens.some(c=>s.godhood.believerIds.includes(c.id)))loseSign(s);
 }
+export function namelessEndingReason(s){
+ const g=s.godhood;
+ if(!isStrictSumer(s)||!isAwakening(s)||g.recognitionAt===null||g.stage!=='unseen'||g.namelessEndingAt!==undefined||s.lost||!s.citizens.length)return 'Для этого финала нужен живой город, утративший связь с богом';
+ const lock=cityCommandReason(s);
+ if(lock||s.event||s.funeral)return lock||'Дождись завершения события';
+ const living=new Set(s.citizens.map(c=>c.id));
+ if(g.believerIds.some(id=>living.has(id)))return 'В городе ещё есть последователи';
+ const help=g.firstWaterHelp,facts=s.causalFacts;
+ const memories=[
+  [help?.helperId,help?.recipientId],
+  ...(s.lifeAnalytics?.people||[]).filter(c=>c.waterStory).map(c=>[c.id]),
+  ...(facts?.water||[]).map(f=>[f.requesterId,f.organizerId,f.courierId]),
+  ...(facts?.waterWitnesses||[]).map(f=>[f.recipientId,f.courierId]),
+  ...(facts?.healing||[]).map(f=>[f.patientId,f.healerId]),
+  ...(facts?.harvest||[]).map(f=>[f.recipientId,f.farmerId]),
+  ...(facts?.craft||[]).map(f=>[f.pupilId,f.mentorId]),
+  ...(s.arrivalHospitality?.welcomes||[]).map(f=>[f.host,...f.members]),
+  ...(s.supplyVows?.history||[]).flatMap(v=>v.targets.map(t=>[...t.residents,t.delivery?.witness])),
+  ...(s.supplyVows?.active?.targets||[]).map(t=>[...t.residents,t.delivery?.witness])
+ ];
+ return memories.some(ids=>ids.some(id=>living.has(id)))?'У жителей ещё есть память об этом имени':'';
+}
+
+export function recordNamelessEnding(s){
+ const reason=namelessEndingReason(s);
+ if(reason)return {ok:false,reason};
+ s.godhood.namelessEndingAt=s.simTime;
+ s.news.unshift({title:'Город жил дальше без этого имени',text:'Последователей и живых носителей памяти больше нет. Дворы продолжают жить.',kind:'info',year:s.year,season:s.season,tick:s.tick});
+ s.news=s.news.slice(0,80);
+ return {ok:true};
+}
+
 const samePoint=(a,b)=>a&&b&&Math.hypot(a.x-b.x,a.y-b.y)<1e-6;
 function clearSignSegment(s,c,a,b,first=false){
  // Founders begin inside their own home; the first step is its real doorway.
@@ -168,7 +202,8 @@ function homeSignRoute(s,c){
 }
 export function beginFirstSign(s,id){
  reconcileWitness(s);const g=s.godhood;if(!isAwakening(s)||g.stage!=='unseen')return {ok:false,reason:'Первый знак уже подан'};
- if(s.lost||s.funeral||s.event)return {ok:false,reason:'Дождись завершения события'};
+ const lock=cityCommandReason(s);
+ if(lock||s.lost||s.funeral||s.event)return {ok:false,reason:lock||'Дождись завершения события'};
  const recovery=isRecoverySign(s);
  let chosen=null,route=null;
  for(const c of s.citizens){
@@ -264,6 +299,9 @@ export function validateGodhood(s){
  if(!g||typeof g!=='object'||Array.isArray(g)||g.version!==1||!['awakening','mature'].includes(g.mode)||!['unseen','sign','help','recognized'].includes(g.stage)||!Array.isArray(g.believerIds)||new Set(g.believerIds).size!==g.believerIds.length||g.believerIds.some(n=>!id(n))||typeof g.firstBuilderGift!=='boolean'||!Array.isArray(g.completedProjects)||g.completedProjects.length>10000||new Set(g.completedProjects).size!==g.completedProjects.length||g.completedProjects.some(v=>!validProjectStamp(v,s)))return false;
  if(g.witnessId!==null&&!id(g.witnessId)||g.recognitionAt!==null&&(!Number.isFinite(g.recognitionAt)||g.recognitionAt<0||g.recognitionAt>(s.simTime||0)+.1))return false;
  if(g.signTarget!==null&&!point(g.signTarget)||g.signOrigin!==null&&!point(g.signOrigin))return false;
+ if(g.namelessEndingAt!==undefined&&(!isStrictSumer(s)||g.mode!=='awakening'||g.stage!=='unseen'||g.recognitionAt===null||
+  !Number.isFinite(g.namelessEndingAt)||g.namelessEndingAt<g.recognitionAt||g.namelessEndingAt>s.simTime||
+  s.citizens.some(c=>g.believerIds.includes(c.id))))return false;
  const cycle=n=>Number.isSafeInteger(n)&&n>=-1&&n<=mealCycle(s.simTime);
  if(g.lastPrayerCycle!==undefined&&(!isStrictSumer(s)||g.mode!=='awakening'||g.recognitionAt===null||!cycle(g.lastPrayerCycle)))return false;
  if(g.smallWaterResponse!==undefined){
