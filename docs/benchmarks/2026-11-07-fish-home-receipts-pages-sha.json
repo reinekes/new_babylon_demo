@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-07T07:33:23.810265+00:00",
+  "commit": "57b828beebe1b5100831e7631442d706e6912f01",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "5971ba99a251d26d6bc14f12da7e7e1c0c0730547a682eb2df85b1d269c4e75f",
+      "actual": "5971ba99a251d26d6bc14f12da7e7e1c0c0730547a682eb2df85b1d269c4e75f",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "3d2b134dac79b8a8e4abdfbc1d59cb228a4baac8bf214c12e34545d97492e808",
+      "actual": "3d2b134dac79b8a8e4abdfbc1d59cb228a4baac8bf214c12e34545d97492e808",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fish-home-receipts-4x.json",
+      "status": 200,
+      "expected": "61e83465d9c90bd9a9bd32eb4b83430f76685b1e034f954859c33ba6f68a0f29",
+      "actual": "61e83465d9c90bd9a9bd32eb4b83430f76685b1e034f954859c33ba6f68a0f29",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-fish-home-receipts-browser.json",
+      "status": 200,
+      "expected": "fe5fb076b9cd6fd2b426206f7f4fc3f871e5977d5a564b353da066b1ad9f5704",
+      "actual": "fe5fb076b9cd6fd2b426206f7f4fc3f871e5977d5a564b353da066b1ad9f5704",
+      "match": true
+    },
+    {
+      "path": "fish-provenance.js",
+      "status": 200,
+      "expected": "8e10103443eda86ca5e757e563f76e0b72165b7668ad4dffd44f2f1495447523",
+      "actual": "8e10103443eda86ca5e757e563f76e0b72165b7668ad4dffd44f2f1495447523",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "f99c38b86f7af3436cecb607b711951e949377fe58fa71b8b110c0d819994d49",
+      "actual": "f99c38b86f7af3436cecb607b711951e949377fe58fa71b8b110c0d819994d49",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "c0e38981b5e0262aa35bfeb31d4c6be49cec2059950fc8fc175085d6abf37574",
+      "actual": "c0e38981b5e0262aa35bfeb31d4c6be49cec2059950fc8fc175085d6abf37574",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "16023728f349c6a4b90d607b30a5e1a8021bc98b00c86a7fc172e0d70bcec7a2",
+      "actual": "16023728f349c6a4b90d607b30a5e1a8021bc98b00c86a7fc172e0d70bcec7a2",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "e3df3e09525dc09cf511666463c09a38c1b8a85fd0781ca329121d41657acde6",
+      "actual": "e3df3e09525dc09cf511666463c09a38c1b8a85fd0781ca329121d41657acde6",
+      "match": true
+    },
+    {
+      "path": "tests/fish-provenance.test.js",
+      "status": 200,
+      "expected": "e113907b5ce0b7173ca430cd9fe1d1d31c0eaaa5429fbbe7c1e27143c4b379be",
+      "actual": "e113907b5ce0b7173ca430cd9fe1d1d31c0eaaa5429fbbe7c1e27143c4b379be",
+      "match": true
+    },
+    {
+      "path": "ui-city-tools.js",
+      "status": 200,
+      "expected": "99254dbf801430988f29ab371c01566aeca58fb451320a79ee6e55cc55a573a4",
+      "actual": "99254dbf801430988f29ab371c01566aeca58fb451320a79ee6e55cc55a573a4",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "a612b24d75d22c917fa2379ef311fa06acea1e37b5aabc14bfb967dd0be7f2d4",
+      "actual": "a612b24d75d22c917fa2379ef311fa06acea1e37b5aabc14bfb967dd0be7f2d4",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
