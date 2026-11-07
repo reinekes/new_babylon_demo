@@ -75,13 +75,17 @@ export function waterProjectOrganizerReason(s,organizer){
  if(!organizer||organizer.age<16||!['auto','builder'].includes(organizer.role)||!canLeadConstruction(s,organizer,{type:projectType,level:1}))return 'Нужен взрослый организатор, который может строить';
  if(organizer.floodShelter||organizer.fireShelter)return 'Житель ещё не вернулся домой после эвакуации';
  if(organizer.guardPost||organizer.manualGathering)return 'Житель занят охраной или ручным сбором';
+ if(organizer.school)return 'Житель занят учёбой';
+ if(organizer.commonMealTarget||['toEveningGame','eveningGuest'].includes(organizer.phase))return 'Житель уже участвует во встрече соседей';
+ if(organizer.memorialMove)return 'Житель переносит семейную память';
+ if(organizer.pendingRole)return 'Житель заканчивает дела перед сменой работы';
  if(organizer.hunger>=30)return 'Организатор голоден и пока откладывает стройку';
  if(organizer.health<60||organizer.clinic)return 'Организатор сначала восстанавливает здоровье';
  const organizerHome=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===organizer.home);
  if(!organizerHome)return 'Организатору нужен дом';
  const ownWater=waterSummary(s,organizerHome);
  if(ownWater.stock<ownWater.demand)return 'Организатор сначала снабжает водой свой двор';
- if(organizer.site||organizer.workplace||organizer.waterTrip||organizer.pantryTrip||organizer.districtJob||organizer.saleJob||organizer.tradeJob||
+ if(organizer.site||organizer.workplace||organizer.waterTrip||organizer.pantryTrip||organizer.districtJob||organizer.saleJob||organizer.tradeJob||organizer.craftSite||organizer.seedField||organizer.clothingTarget!==undefined||
   Object.values(organizer.cargo||{}).some(n=>n>0)||Object.values(organizer.buildCargo||{}).some(n=>n>0))return 'Организатор занят текущей работой или доставкой';
  return null;
 }
