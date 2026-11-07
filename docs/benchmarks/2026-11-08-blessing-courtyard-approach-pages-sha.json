@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-07T22:49:12.902306+00:00",
+  "commit": "acd4f6c1b712a151e0cebd578b082cbdbde0dbb9",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0ca1ebe14d8f076505251eccf181d8adebf2bc3060733c54929389fae80336da",
+      "actual": "0ca1ebe14d8f076505251eccf181d8adebf2bc3060733c54929389fae80336da",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "3ece5cc4d99fadf3bd568ecb5c8955efa33b09635ccf44a63cc2a87a06bebd52",
+      "actual": "3ece5cc4d99fadf3bd568ecb5c8955efa33b09635ccf44a63cc2a87a06bebd52",
+      "match": true
+    },
+    {
+      "path": "blessing-presentation.js",
+      "status": 200,
+      "expected": "94c87c2d585c46c14de9ffc4424f0c20fbf77ae667ecb2a4818831df1bba9315",
+      "actual": "94c87c2d585c46c14de9ffc4424f0c20fbf77ae667ecb2a4818831df1bba9315",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "97ee25606ae463424490be650024a418eff220ac6f8e3a95678bc32e423bf233",
+      "actual": "97ee25606ae463424490be650024a418eff220ac6f8e3a95678bc32e423bf233",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-courtyard-approach-4x.json",
+      "status": 200,
+      "expected": "173e7a5baa85a682c0caa07f2fd73ec03c0443c6bcafa139ab7072bc48c5e6cc",
+      "actual": "173e7a5baa85a682c0caa07f2fd73ec03c0443c6bcafa139ab7072bc48c5e6cc",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-blessing-courtyard-approach-browser.json",
+      "status": 200,
+      "expected": "45a3e34616ea4c5e8758c881fd99080c38f8791ad60d177bca3ebd7832df8157",
+      "actual": "45a3e34616ea4c5e8758c881fd99080c38f8791ad60d177bca3ebd7832df8157",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "22162a255cc02e3cff25b8d252feb17489f1887ebb96023f9460939700b0fb12",
+      "actual": "22162a255cc02e3cff25b8d252feb17489f1887ebb96023f9460939700b0fb12",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "4a04c5ac0f1917f1c768849bf12437d76b6761aefdf4981d44355d1b7ebc68e2",
+      "actual": "4a04c5ac0f1917f1c768849bf12437d76b6761aefdf4981d44355d1b7ebc68e2",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "expected": "0ec39f53cd24794cd6733759f699fba96a923c496b29400a8bfaf95eb51925f9",
+      "actual": "0ec39f53cd24794cd6733759f699fba96a923c496b29400a8bfaf95eb51925f9",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "452d62a3893c04c59fb790e707b58ed7e2d6b386d1a0b31a856c5efef8726570",
+      "actual": "452d62a3893c04c59fb790e707b58ed7e2d6b386d1a0b31a856c5efef8726570",
+      "match": true
+    },
+    {
+      "path": "renderer.js",
+      "status": 200,
+      "expected": "ed745a7d9256c06a46da71877c64537188881bee855c5ef18506bf0a2d673ce4",
+      "actual": "ed745a7d9256c06a46da71877c64537188881bee855c5ef18506bf0a2d673ce4",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "08e03407c582b15812373a4b782a6d598a2c4e33968363ee16f2f11ba4448cb2",
+      "actual": "08e03407c582b15812373a4b782a6d598a2c4e33968363ee16f2f11ba4448cb2",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "392114123aa42695b93d0260d950dd463ae391fad1d4bc36bbd4fa92c45d0825",
+      "actual": "392114123aa42695b93d0260d950dd463ae391fad1d4bc36bbd4fa92c45d0825",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "29650549709188f35c84d7d683d271a3be5cd46e2f8ffa256b0d3101f087f6a9",
+      "actual": "29650549709188f35c84d7d683d271a3be5cd46e2f8ffa256b0d3101f087f6a9",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-presentation.test.js",
+      "status": 200,
+      "expected": "031f48fa87d0ecacb8f70e5030ef2868d8c938a8bd01c95a8c03ae67661ede6f",
+      "actual": "031f48fa87d0ecacb8f70e5030ef2868d8c938a8bd01c95a8c03ae67661ede6f",
+      "match": true
+    }
+  ],
+  "matched": 15,
+  "total": 15
+}
