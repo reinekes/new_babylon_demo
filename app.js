@@ -1,4 +1,4 @@
-import {campaignChapterView,hearthEndingOffer,recordHearthEnding} from './campaign.js';
+import {campaignChapterView,hearthEndingOffer,recordHearthEnding,waterEndingOffer,recordWaterEnding} from './campaign.js';
 import {createInannaPresentation} from './inanna-presentation.js';
 import {createLandPresentation} from './land-presentation.js';
 import {landMemoryCastQuote,landMemoryStories} from './land-memory.js';
@@ -1045,10 +1045,15 @@ function update(){
   :hearth?'<button type="button" data-hearth-ending>Открыть финал «Бог очагов»</button>'
   :isStrictSumer(state)&&gameMode(state)==='awakening'&&state.godhood.namelessEndingAt===undefined
    ?'<small>Бог очагов · сохрани рассказ о первой помощи в семье после смерти рассказчика. Двору нужны еда на ужин и вода на день.</small>':'';
+ const waterEnding=state.waterEnding?'<button type="button" data-water-ending>Бог общей воды · завершено</button>'
+  :waterEndingOffer(state)?'<button type="button" data-water-ending>Открыть финал «Бог общей воды»</button>'
+  :chapter&&state.godhood.namelessEndingAt===undefined?'<small>Бог общей воды · укрой соседей при разливе и доставь воду двум дворам из одного общего водозабора.</small>':'';
  const chapterHTML=chapter?`<section class="goal" data-campaign-chapter="${chapter.rank}"><div><b>${esc(chapter.title)}</b><p>${esc(chapter.condition)}</p></div></section>`:'';
- setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign);
+ setHTML($('goals'),chapterHTML+g.map(v=>`<div class="goal ${v.done?'done':''}"><span>${v.done?'✓':'○'}</span>${v.label}</div>`).join('')+campaign+waterEnding);
  const hearthButton=$('goals').querySelector('[data-hearth-ending]');
  if(hearthButton)hearthButton.onclick=showHearthEnding;
+ const waterButton=$('goals').querySelector('[data-water-ending]');
+ if(waterButton)waterButton.onclick=showWaterEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
   if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'&&!richCatchTarget(state,lastMiracleTarget)?'Выбери действующий рыбацкий двор на карте':'');
@@ -1102,6 +1107,16 @@ function showHearthEnding(){
  if($('hearth-continue'))$('hearth-continue').onclick=()=>{
   const result=recordHearthEnding(state);
   if(mutate(result,'Финал «Бог очагов» записан в летопись')){closeDialog();paused=false;update();}
+ };
+}
+function showWaterEnding(){
+ const ending=state.waterEnding,story=ending||waterEndingOffer(state);
+ if(!story){toast('Условия финала изменились. Проверь водозабор и дворы.');return;}
+ openDialog('water-ending',`<span class="eyebrow">ИСТОРИЯ ДВУХ БЕРЕГОВ</span><h2>Бог общей воды</h2><p>Во время разлива двор ${esc(story.shelter.host)} укрыл соседей из двора ${esc(story.shelter.origin)}. После спада воды общий водозабор ${esc(story.station)} остаётся в строю.</p><ul>${story.deliveries.map(row=>`<li>Двор ${esc(row.home)} · ${foodAmount(row.amount)} воды · доставил ${resident(row.courierId)}</li>`).join('')}</ul><div class="dialog-actions">${ending?'<button class="primary" id="water-ending-back">Вернуться в город</button>':'<button class="primary" id="water-ending-continue">Записать финал и продолжить</button><button id="water-ending-back">Вернуться в город</button>'}</div>`);
+ $('water-ending-back').onclick=closeDialog;
+ if($('water-ending-continue'))$('water-ending-continue').onclick=()=>{
+  const result=recordWaterEnding(state);
+  if(mutate(result,'Финал «Бог общей воды» записан в летопись')){closeDialog();paused=false;update();}
  };
 }
 function showNamelessEnding(){

@@ -54,6 +54,9 @@ function bankRoute(s,nav,origin){
 function roadRoute(nav,from,to){
  const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key,nav.flooded):null);}return nav.roads.get(id);
 }
+export function waterpointCanReach(s,station,home){
+ return !!roadRoute(navigation(s),station,home);
+}
 const targetStock=b=>b.type==='house'?b.water:(b.type==='cowshed'?b.dairy?.water:isArtisan(b)?b.artisan?.water:b.brickmaking?.water)||0;
 function targetCapacity(s,b){return b.type==='cowshed'?12:b.type==='house'?Math.max(2,s.citizens.filter(c=>supplyHome(c)===buildingKey(b)).reduce((n,c)=>n+waterDemand(c),0)*3):b.type==='brewery'?3:2;}
 export function waterSummary(s,b){

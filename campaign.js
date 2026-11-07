@@ -1,3 +1,4 @@
+import {floodPhase} from './river-flood.js';
 import {waterNameEvidence} from './causal-facts.js';
 import {earnedResultNames} from './divinity.js';
 import {familyMemorialsAt} from './life-analytics.js';
@@ -6,7 +7,7 @@ import {buildingKey,isOperational} from './definitions.js';
 import {homeMealFood} from './households.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {mealRation} from './wellbeing.js';
-import {waterSummary} from './water.js';
+import {waterpointCanReach,waterSummary} from './water.js';
 import {worldWidth,worldHeight} from './world.js';
 
 const usesCampaign=s=>isStrictSumer(s)&&s.godhood?.mode==='awakening';
@@ -96,4 +97,52 @@ export function validateHearthEnding(s){
  if(x>=worldWidth(s)||y>=worldHeight(s))return false;
  const listener=s.lifeAnalytics?.people.find(p=>p.id===ending.listenerId),teller=s.lifeAnalytics?.people.find(p=>p.id===ending.tellerId);
  return !!listener?.waterStory&&!!teller&&teller.diedTick!==null&&listener.waterStory.tellerId===teller.id&&ending.at>=listener.waterStory.time;
+}
+
+export function waterEndingOffer(s){
+ if(!usesCampaign(s)||s.waterEnding||s.lost||s.event||s.funeral||cityCommandReason(s)||floodPhase(s)==='active')return null;
+ const shelter=s.arrivalHospitality?.shelters?.[0],facts=s.causalFacts;
+ if(!shelter||!facts?.waterWitnesses?.length)return null;
+ const occupied=new Set(s.citizens.filter(c=>!c.floodShelter).map(c=>c.home));
+ const live=new Map(s.buildings.filter(b=>b.waterEntityId&&isOperational(b)&&!b.floodDamage).map(b=>[b.waterEntityId,b]));
+ const receipts=[...facts.water,...facts.waterWitnesses];
+ for(const first of receipts){
+  const station=live.get(first.stationId);
+  if(station?.type!=='waterpoint'||!live.has(first.homeId)||!occupied.has(first.home)||!waterpointCanReach(s,first.station,first.home))continue;
+  const second=receipts.find(row=>row.stationId===first.stationId&&row.homeId!==first.homeId&&row.home!==first.home&&live.has(row.homeId)&&occupied.has(row.home)&&waterpointCanReach(s,row.station,row.home));
+  if(!second)continue;
+  const deliveries=[first,second].map(({home,homeId,courierId,time,amount})=>({home,homeId,courierId,time,amount}));
+  return {station:first.station,stationId:first.stationId,shelter:{...shelter},deliveries};
+ }
+ return null;
+}
+
+export function recordWaterEnding(s){
+ const offer=waterEndingOffer(s);
+ if(!offer)return {ok:false,reason:'Нужны помощь при разливе и подтверждённые доставки из действующего общего водозабора'};
+ s.waterEnding={...offer,at:s.simTime};
+ s.news.unshift({title:'Бог общей воды',text:'Дворы пережили разлив, помогая друг другу. Общий водозабор принят в летопись.',kind:'good',year:s.year,season:s.season,tick:s.tick});
+ s.news=s.news.slice(0,80);
+ return {ok:true};
+}
+
+export function validateWaterEnding(s){
+ const ending=s.waterEnding;
+ if(ending===undefined)return true;
+ const entity=id=>Number.isSafeInteger(id)&&id>=1&&id<s.causalFacts?.nextEntityId;
+ const point=key=>{
+  if(typeof key!=='string'||!/^\d+,\d+$/.test(key))return false;
+  const [x,y]=key.split(',').map(Number);
+  return x<worldWidth(s)&&y<worldHeight(s);
+ };
+ if(!usesCampaign(s)||!ending||Object.keys(ending).length!==5||!Number.isFinite(ending.at)||ending.at<0||ending.at>s.simTime||
+  !entity(ending.stationId)||!point(ending.station)||!Array.isArray(ending.deliveries)||ending.deliveries.length!==2)return false;
+ const shelter=ending.shelter;
+ if(!shelter||Object.keys(shelter).length!==3||shelter.at>ending.at||
+  !s.arrivalHospitality?.shelters?.some(row=>row.at===shelter.at&&row.origin===shelter.origin&&row.host===shelter.host))return false;
+ const valid=row=>row&&Object.keys(row).length===5&&entity(row.homeId)&&row.homeId!==ending.stationId&&point(row.home)&&row.home!==ending.station&&
+  Number.isSafeInteger(row.courierId)&&row.courierId>=0&&row.courierId<s.demography.nextId&&
+  Number.isFinite(row.time)&&row.time>=0&&row.time<=ending.at&&Number.isFinite(row.amount)&&row.amount>0&&row.amount<=12;
+ const [a,b]=ending.deliveries;
+ return valid(a)&&valid(b)&&a.homeId!==b.homeId&&a.home!==b.home;
 }
