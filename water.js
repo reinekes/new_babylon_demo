@@ -16,6 +16,11 @@ import {generateStreets} from './city-life.js';
 
 // Water remains in vessels and homes, never in the city's abstract material stock.
 export const WATER_DAY=60;
+export const WATERPOINT_CAPACITY=12;
+export function depthWaterpointTarget(s,target){
+ if(!s.depthSupply||!Number.isInteger(target?.x)||!Number.isInteger(target?.y))return null;
+ return s.buildings.find(b=>b.type==='waterpoint'&&b.x===target.x&&b.y===target.y&&isOperational(b))||null;
+}
 export const waterBusy=c=>!!c.waterTrip;
 // A broken vessel/death spills water; it cannot teleport into a house or store.
 export function recoverWater(s,c){const amount=c.waterTrip?.load||0;if(c.waterTrip)finish(s,c);return amount;}
@@ -69,10 +74,22 @@ function need(s,b){
  const v=waterSummary(s,b);return v.demand>0&&v.stock<v.demand?Math.max(0,v.capacity-v.stock):0;
 }
 function begin(s,c,b,station,nav,from=null){
- const origin=station||from||buildingKey(b),source=bankRoute(s,nav,origin),out=origin!==buildingKey(b)?roadRoute(nav,origin,buildingKey(b)):null;
- if(!source||origin!==buildingKey(b)&&!out)return false;
- const load=Math.min(station?12:6,Math.max(0,targetCapacity(s,b)-targetStock(b)));
+ const target=buildingKey(b),origin=station||from||target;
+ const out=origin!==target?roadRoute(nav,origin,target):null;
+ if(origin!==target&&!out)return false;
+ const load=Math.min(station?WATERPOINT_CAPACITY:6,Math.max(0,targetCapacity(s,b)-targetStock(b)));
  if(load<=eps)return false;
+ const intake=station&&nav.ports.get(station);
+ const reserve=intake?.building.waterReserve||0;
+ if(reserve>eps&&out&&Math.hypot(c.x-intake.x,c.y-intake.y)<=.8){
+  const amount=Math.min(load,reserve);
+  intake.building.waterReserve=reserve-amount;
+  c.waterTrip={target,station,origin,load:amount,amount,phase:'deliver',route:[point(c),...out.map(point)],index:1,elapsed:0};
+  c.phase='waterTrip';
+  return true;
+ }
+ const source=bankRoute(s,nav,origin);
+ if(!source)return false;
  // Couriers start at their actual home/work port. No resource is credited here.
  if(Math.hypot(c.x-source[0].x,c.y-source[0].y)>.8)return false;
  c.waterTrip={target:buildingKey(b),station:station||null,origin,load:0,amount:load,phase:'source',route:[point(c),...source.map(point)],index:1,elapsed:0};c.phase='waterTrip';return true;
@@ -191,7 +208,8 @@ export function advanceWater(s,dt){
 }
 export function validateWater(s){
  const finite=(v,max=1e9)=>Number.isFinite(v)&&v>=0&&v<=max;
- if(!s.buildings.every(b=>b.type==='house'?finite(b.water)&&finite(b.waterDelivered):b.water===undefined))return false;
+ if(!s.buildings.every(b=>(b.type==='house'?finite(b.water)&&finite(b.waterDelivered):b.water===undefined)&&
+  (b.waterReserve===undefined||s.depthSupply&&b.type==='waterpoint'&&isOperational(b)&&finite(b.waterReserve,WATERPOINT_CAPACITY))))return false;
  return s.citizens.every(c=>{if(!finite(c.thirst,100)||c.phase==='waterTrip'&&!c.waterTrip)return false;const t=c.waterTrip;if(!t)return true;
   return c.age>=16&&c.phase==='waterTrip'&&typeof t.target==='string'&&s.buildings.some(b=>buildingKey(b)===t.target&&['house','brickyard','pottery','brewery','cowshed'].includes(b.type))&&(t.station===null||s.buildings.some(b=>buildingKey(b)===t.station&&b.type==='waterpoint'))&&typeof t.origin==='string'&&(t.neighborRecorded===undefined||t.neighborRecorded===true&&t.station===null&&t.origin!==t.target&&['deliver','return'].includes(t.phase))&&finite(t.load,12)&&finite(t.amount,12)&&t.amount>0&&t.load<=t.amount&&['source','fill','deliver','return'].includes(t.phase)&&finite(t.elapsed,2.01)&&Array.isArray(t.route)&&t.route.length>0&&t.route.length<worldWidth(s)*worldHeight(s)*4&&t.route.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=-.5&&p.x<=worldWidth(s)-.5&&p.y>=-.5&&p.y<=worldHeight(s)-.5)&&Number.isInteger(t.index)&&t.index>=1&&t.index<=t.route.length&&!c.pantryTrip&&!c.craftSite&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
  });

@@ -75,7 +75,7 @@ import {upgradeCost,legacyUpgradeCost} from './masonry.js';
 export {upgradeCost} from './masonry.js';
 import {initializeKilns,validateKilns} from './kilns.js';
 import {initializeBricks,validateBricks} from './bricks.js';
-import {initializeWater,validateWater} from './water.js';
+import {depthWaterpointTarget,initializeWater,validateWater,WATERPOINT_CAPACITY} from './water.js';
 import {initializeTextiles,validateTextiles} from './textiles.js';
 import {syncInventory,validateInventory,stockStores,reserveStock,takeStock} from './inventory.js';
 import {initializeDistricts,validateDistricts} from './district-logistics.js';
@@ -241,6 +241,8 @@ export function miracle(s,id,target){
   if(advice.note)s.revelationEvidence.advice=advice.note;
  }
  const depthCanal=id==='relicAwakening'?depthCanalTarget(s,target):null;
+ const depthIntake=id==='relicAwakening'?depthWaterpointTarget(s,target):null;
+ if(depthIntake)depthIntake.waterReserve=WATERPOINT_CAPACITY;
  if(depthCanal)s.depthSupply.pressure={x:depthCanal.x,y:depthCanal.y,tick:s.tick};
  s.resources.faith-=price;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}
@@ -262,7 +264,7 @@ export function miracle(s,id,target){
  }
  else if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
- applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
+ applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }
 function check(s){
  s.capacity=housingOf(s);

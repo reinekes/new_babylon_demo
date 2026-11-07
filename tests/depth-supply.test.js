@@ -50,3 +50,19 @@ test('delivering the oasis relic opens Depths without a builder rank in the new 
  assert.equal(s.resources.faith,55);
  assert.equal(s.rain,2);
 });
+
+test('Depths fills only the selected operational intake without crediting a home',async()=>{
+ const {miracle}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ const intake={type:'waterpoint',x:1,y:1,level:1,waterReserve:5};
+ const other={...intake,x:2};
+ s.buildings.push(intake,other);
+ s.relicQuest.phase='completed';
+ s.resources.faith=100;
+ const home=s.buildings.find(b=>b.type==='house'),before=home.water;
+ assert.ok(miracle(s,'relicAwakening',intake).ok);
+ assert.equal(s.resources.faith,55);
+ assert.equal(intake.waterReserve,12);
+ assert.equal(other.waterReserve,5);
+ assert.equal(home.water,before);
+});

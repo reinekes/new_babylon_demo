@@ -71,3 +71,23 @@ test('a closure during filling cannot credit a household from the river',()=>{
  advance(s,30);
  assert.ok(h.waterDelivered>delivered);
 });
+
+test('a water carrier draws from the local reserve and delivers the same physical load',()=>{
+ const station={type:'waterpoint',x:11,y:8,level:1,waterReserve:12};
+ const s=city([{...home},station]),[house]=s.buildings,[c]=s.citizens;
+ s.depthSupply={};
+ const port=generateStreets(s.buildings,s).ports.find(p=>p.building===station);
+ Object.assign(c,{work:'11,8',role:'watercarrier',phase:'working',x:port.x,y:port.y});
+ house.water=0;
+ advanceWater(s,.1);
+ assert.equal(c.waterTrip.phase,'deliver');
+ assert.equal(c.waterTrip.load,3);
+ assert.equal(station.waterReserve,9);
+ assert.equal(house.water,0);
+ assert.ok(validateWater(s));
+ advance(s,25);
+ assert.equal(house.waterDelivered,5);
+ assert.equal(station.waterReserve,9);
+ station.waterReserve=13;
+ assert.equal(validateWater(s),false);
+});

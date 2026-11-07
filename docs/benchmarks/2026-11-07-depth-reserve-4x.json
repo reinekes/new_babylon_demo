@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 135,
+  "citizens": 296,
+  "load": 9,
+  "accepted": 9,
+  "saveByteEqual": true,
+  "samples": 16,
+  "medianStepCpuMs": 28.4357500000001,
+  "p95StepCpuMs": 305.55654100000004
+}

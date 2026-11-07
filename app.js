@@ -85,7 +85,7 @@ import {resourceLabel,DISPLAY_RESOURCE_NAMES} from './resource-display.js';
 import {PROFESSION_NAMES,hasWorkplace} from './professions.js';
 import {renderStaffing,selectedProfession,citizenProfessionName,professionOptionsHTML} from './ui-professions.js';
 import {renderCityTools} from './ui-city-tools.js';
-import {waterSummary} from './water.js';
+import {depthWaterpointTarget,waterSummary,WATERPOINT_CAPACITY} from './water.js';
 import {RESOURCE_GROUPS,seasonBalance} from './season-balance.js';
 import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
 import {uiIcon} from './ui-icons.js';
@@ -566,7 +566,7 @@ function updateDetail(){
  }
  if(b.type==='tailor'&&(!q||q.kind==='upgrade')){$('building-controls').insertAdjacentHTML('afterbegin','<button id="inspire-tailor">Вдохновить мастера одежды</button>');$('inspire-tailor').onclick=()=>showManagement('residents');}
  if(['shrine','ziggurat'].includes(b.type)&&(!q||q.kind==='upgrade')){const students=state.citizens.filter(c=>c.school===buildingKey(b));$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>Обучение лекарей · ${students.length}</b><p>${students.map(c=>`${resident(c)} · ${Math.floor(c.medicine.study/STUDY_SECONDS*100)}% · ${c.phase==='studying'?'учится':'в пути'}`).join('<br>')||'Ученики приходят после успешного вдохновения профессией «Лекарь».'}</p></div>`);}
- if(b.type==='waterpoint'&&(!q||q.kind==='upgrade'))$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>Вода кварталу</b><p>Водоносы набирают воду у берега и несут в дома, кирпичные, гончарные и пивоваренные дворы.</p><small>Нужны жители с профессией «Водонос». Вода хранится у получателей; общий склад её не хранит.</small></div>`);
+ if(b.type==='waterpoint'&&(!q||q.kind==='upgrade'))$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>Вода кварталу</b>${state.depthSupply?`<p>Местный запас · ${Number((b.waterReserve||0).toFixed(1))} / ${WATERPOINT_CAPACITY}</p>`:''}<p>Водоносы набирают воду у берега и несут в дома, кирпичные, гончарные и пивоваренные дворы.</p><small>Нужны жители с профессией «Водонос». Вода хранится у получателей; общий склад её не хранит.</small></div>`);
  if(b.type==='musicHouse'&&!q){const p=musicPerformance(state,b);$('building-controls').insertAdjacentHTML('afterbegin',`<div class="music-hint">${p.playing?`Играет ${resident(p.musician)}`:'Музыка молчит: назначь взрослого, вдохнови музыкантом и дождись его на месте днём.'}<br>Тихий звук слышен рядом с двором, если включён звук игры. Каменные лепестки — художественный инструмент.</div>`);}
  if(b.type==='healer'&&(!q||q.kind==='upgrade')){const doctors=state.citizens.filter(c=>c.work===buildingKey(b)),doctor=doctors[0],patients=state.citizens.filter(c=>c.clinic===buildingKey(b));$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>${!doctors.length?'Нужен обученный лекарь: вдохнови жителя и дождись учёбы в храме':!isWorkday(state.simTime)?'Ночь · лекарь отдыхает':!doctors.some(c=>c.phase==='working')?'Лекарь идёт на работу':availableFood(state)<=0||state.resources.reed<=0?'Лечение приостановлено: нужна еда и тростник':'Лекарь принимает'}</b>${doctor?`<p>${resident(doctor)} · лекарь уровня ${medicalLevel(doctor)}/5</p>${medicalReadout(doctor)}`:''}<p>Пациенты: ${patients.length} / ${1+levelOf(b)}<br>${patients.map(c=>`${resident(c)} · ${Math.round(c.health)}% → ${c.careGoal||85}% · ${c.phase==='treatment'?'лечится':'в пути'}`).join('<br>')||'Нет пациентов'}</p><small>На 10 здоровья: ${Number((.4*healingCost(doctor||{})).toFixed(2))} еды + ${Number((.2*healingCost(doctor||{})).toFixed(2))} тростника. Мастерство ускоряет лечение, экономит припасы и повышает предел здоровья. Уровень растёт каждый год с практикой, до пятого.</small><button id="inspire-healer">Вдохновить лекаря</button></div>`);$('inspire-healer').onclick=()=>showManagement('residents');}
  if(['market','harbor'].includes(b.type)&&(!q||q.kind==='upgrade')){$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>${esc(state.trade.caravan?.market===buildingKey(b)?marketStatus(state)||'Торговля открыта · товары разгружены':b.type==='harbor'?'Пристань ждёт следующую грузовую лодку':'Рынок ждёт следующий караван')}</b>${deliveryOverview(buildingKey(b))}<button class="market-open-trade" id="market-open-trade">Открыть торговлю</button></div>`);$('market-open-trade').onclick=showTrade;bindSaleCancellations($('building-controls'));}
@@ -881,7 +881,8 @@ function updateDepthTargetPreview(card){
  preview.hidden=!state.depthSupply;
  if(preview.hidden)return;
  const canal=depthCanalTarget(state,lastMiracleTarget);
- const message=canal?'Дождь и +1 доля воды в выбранной сети до конца сезона.':'Без выбранного канала чудо вызовет дождь. Выбери канал с водой на карте, чтобы добавить подпор.';
+ const intake=depthWaterpointTarget(state,lastMiracleTarget);
+ const message=canal?'Дождь и +1 доля воды в выбранной сети до конца сезона.':intake?`Дождь и пополнение запаса водозабора до ${WATERPOINT_CAPACITY}. Воду доставят водоносы.`:'Выбери канал с водой для подпора или водозабор для пополнения запаса. Без цели пойдёт дождь.';
  if(preview.textContent!==message)preview.textContent=message;
 }
 function makeMiracleCard(id,m){
