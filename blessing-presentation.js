@@ -5,6 +5,10 @@ import {navigationSegmentClear} from './navigation.js';
 import {floodedSegment} from './river-flood.js';
 
 const noApproach=[];
+// A resident can decline the invitation until basic needs and other errands are settled.
+const acceptsBlessingInvitation=(c,time)=>freeCeremonyGuest(c,time)&&
+ (c.hunger??0)<25&&(c.thirst??0)<30&&!c.manualGathering&&!c.commonMealTarget;
+
 export function planBlessingApproach(s,home,network){
  const port=network.ports.find(row=>row.building===home);
  if(!port)return noApproach;
@@ -16,7 +20,7 @@ export function planBlessingApproach(s,home,network){
  const places=[-.34,.34,.65].map(offset=>({x:port.x-dy/norm*offset,y:port.y+dx/norm*offset}));
  const routes=[];
  for(const c of s.citizens){
-  if(c.home!==s.blessingDiscovery.cup.home||!freeCeremonyGuest(c,s.simTime)||Math.hypot(c.x-home.x,c.y-home.y)>1.4)continue;
+  if(c.home!==s.blessingDiscovery.cup.home||!acceptsBlessingInvitation(c,s.simTime)||Math.hypot(c.x-home.x,c.y-home.y)>1.4)continue;
   const from=Math.hypot(c.x-home.x,c.y-home.y)<.2?{x:port.x,y:port.y}:{x:c.x,y:c.y};
   const i=places.findIndex(to=>Math.hypot(from.x-to.x,from.y-to.y)>.1&&clear(from,to));
   if(i<0)continue;
@@ -32,7 +36,7 @@ export function showBlessingApproach(people,s,approach){
  const actors=[];
  for(const sample of approach){
   const c=s.citizens.find(person=>person.id===sample.id);
-  if(!c||!freeCeremonyGuest(c,s.simTime)||people.some(person=>person.id===sample.id))continue;
+  if(!c||!acceptsBlessingInvitation(c,s.simTime)||people.some(person=>person.id===sample.id))continue;
   actors.push({...c,...sample,kind:'person',phase:'blessingGuest',miracleContact:sample});
  }
  return actors.length?[...people,...actors]:people;
@@ -131,14 +135,14 @@ export function createBlessingPresentation(root,{cue,focus,onOpening,approachNet
    if(routes.length){
     routes=home?routes.filter(route=>{
      const c=s.citizens.find(person=>person.id===route.id);
-     return c?.home===s.blessingDiscovery.cup.home&&freeCeremonyGuest(c,s.simTime)&&c.x===route.originX&&c.y===route.originY;
+     return c?.home===s.blessingDiscovery.cup.home&&acceptsBlessingInvitation(c,s.simTime)&&c.x===route.originX&&c.y===route.originY;
     }):noApproach;
     const progress=Math.min(1,(elapsed-approachStarted)/4500,(28000-elapsed)/5500),returning=elapsed>22500;
     approach=routes.map(({id,from,to})=>({id,x:from.x+(to.x-from.x)*progress,y:from.y+(to.y-from.y)*progress,
      yaw:Math.atan2(to.x-from.x,to.y-from.y)+(returning?Math.PI:0),step:elapsed/100,walking:progress<1}));
    }else approach=noApproach;
    const present=home&&phase.id!=='mat'?s.citizens.filter(c=>c.home===s.blessingDiscovery.cup.home&&
-    Math.hypot(c.x-home.x,c.y-home.y)<=1.4&&freeCeremonyGuest(c,s.simTime)&&(!approachNetwork||routes.some(route=>route.id===c.id))).slice(0,shadows.length):[];
+    Math.hypot(c.x-home.x,c.y-home.y)<=1.4&&acceptsBlessingInvitation(c,s.simTime)&&(!approachNetwork||routes.some(route=>route.id===c.id))).slice(0,shadows.length):[];
    const names=present.length?`Во дворе · ${present.map(c=>displayName(s,c)).join(', ')}`:'';
    if(guests.textContent!==names)guests.textContent=names;
    guests.hidden=!names;

@@ -123,6 +123,16 @@ test('the courtyard approach moves only free guests and clears on skip',()=>{
  const network={ports:[{building:home,x:4,y:5.5}]};
  const scene=createBlessingPresentation(window.document.querySelector('main'),{approachNetwork:()=>network});
  scene.reset(s);
+ guest.hunger=25;
+ const hungry=JSON.stringify(s);
+ scene.tick(s,500);
+ assert.deepEqual(scene.approach,[]);
+ assert.equal(JSON.stringify(s),hungry);
+ guest.hunger=24;
+ guest.thirst=30;
+ scene.tick(s,500);
+ assert.deepEqual(scene.approach,[]);
+ guest.thirst=29;
  const raw=JSON.stringify(s);
  scene.tick(s,3500);
  scene.tick(s,100);
