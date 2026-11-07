@@ -1,3 +1,4 @@
+import {ensureHouseEntityId} from './causal-facts.js';
 import {DAY_SECONDS} from './city-life.js';
 import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
 import {BUILDINGS,buildingKey,capacityOf,isOperational} from './definitions.js';
@@ -13,6 +14,11 @@ const homeKey=/^\d+,\d+$/;
 function components(s){
  const network=networkFor(s);
  return new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),network.components.get(p.key)]));
+}
+
+export function householdInitiativeFrom(project,home){
+ return !!project&&home.type==='house'&&project.source===buildingKey(home)&&
+  (project.sourceId===undefined||project.sourceId===home.waterEntityId);
 }
 
 export function householdInitiative(s,source){
@@ -67,17 +73,19 @@ export function approveHouseholdInitiative(s,source,offer){
  const now=householdInitiative(s,source);
  if(!now.ok)return now;
  if(!offer?.ok||offer.x!==now.x||offer.y!==now.y||offer.source!==now.source||offer.members.join()!==now.members.join())return refuse('Условия изменились. Открой предложение заново');
- return startHouseholdInitiative(s,now);
+ return startHouseholdInitiative(s,source,now);
 }
 
-function startHouseholdInitiative(s,offer,autonomous=false){
+function startHouseholdInitiative(s,source,offer,autonomous=false){
  const project={source:offer.source,members:offer.members,startedAt:s.simTime,...autonomous?{autonomous:true}:{}};
  const result=build(s,'house',offer.x,offer.y,0,{eligibleStores:offer.eligibleStores,householdInitiative:project});
- if(result.ok&&autonomous){
+ if(!result.ok)return result;
+ project.sourceId=ensureHouseEntityId(s,source);
+ if(autonomous){
   s.news.unshift({title:'Семья начала строить малый двор',text:`Семья из двора ${offer.source} зарезервировала материалы для участка ${offer.x}, ${offer.y}.`,kind:'build',year:s.year,season:s.season,tick:s.tick});
   s.news=s.news.slice(0,80);
  }
- return result.ok?{ok:true,key:buildingKey(offer)}:result;
+ return {ok:true,key:buildingKey(offer)};
 }
 
 export function setAutonomousHousing(s,enabled){
@@ -106,7 +114,7 @@ export function advanceAutonomousHousing(s){
  for(const home of s.buildings){
   if(home.type!=='house'||!isOperational(home))continue;
   const offer=householdInitiative(s,home);
-  if(offer.ok&&startHouseholdInitiative(s,offer,true).ok)return;
+  if(offer.ok&&startHouseholdInitiative(s,home,offer,true).ok)return;
  }
 }
 

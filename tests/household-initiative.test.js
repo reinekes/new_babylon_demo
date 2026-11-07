@@ -76,3 +76,27 @@ test('autonomous housing is off by default and opt-in starts one reserved projec
  assert.equal(s.householdBuildingPolicy.enabled,false);
  assert.ok(decode(encode(s)));
 });
+
+test('new family projects retain their original courtyard through rebuilding and loading',async()=>{
+ const {householdInitiativeFrom}=await import('../household-initiative.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const source=s.buildings.find(h=>buildingKey(h)===s.citizens[0].home);
+ assert.ok(approveHouseholdInitiative(s,source,householdInitiative(s,source)).ok);
+ const site=s.buildings.find(b=>b.householdInitiative),project=site.householdInitiative;
+ assert.ok(Number.isSafeInteger(project.sourceId));
+ assert.equal(project.sourceId,source.waterEntityId);
+ assert.ok(householdInitiativeFrom(project,source));
+ const replacement={...source};
+ delete replacement.waterEntityId;
+ s.buildings[s.buildings.indexOf(source)]=replacement;
+ assert.ok(!householdInitiativeFrom(project,replacement));
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const legacy=JSON.parse(raw);
+ delete legacy.causalFacts;
+ const oldProject=legacy.buildings.find(b=>b.householdInitiative).householdInitiative;
+ delete oldProject.sourceId;
+ assert.ok(householdInitiativeFrom(oldProject,replacement));
+ const oldSave=JSON.stringify(legacy);
+ assert.equal(encode(decode(oldSave)),oldSave);
+});

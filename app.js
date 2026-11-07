@@ -28,7 +28,7 @@ import {richCatchTarget} from './rich-catch.js';
 import {createRainPresentation} from './rain-presentation.js';
 import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
-import {approveHouseholdInitiative,householdInitiative,setAutonomousHousing} from './household-initiative.js';
+import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
 import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,vowTargetRebuilt,VOW_FAILURE_TEXT} from './supply-vow.js';
@@ -713,7 +713,7 @@ function showHouseholdInitiative(b){
 }
 function householdInitiativePanel(b,h){
  if(!isStrictSumer(state))return '';
- const related=state.buildings.filter(site=>site.householdInitiative?.source===buildingKey(b)||site===b&&site.householdInitiative);
+ const related=state.buildings.filter(site=>site.householdInitiative&&(site===b||householdInitiativeFrom(site.householdInitiative,b)));
  return related.map(site=>`<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${site.construction?.kind==='new'?'Идёт стройка':site.householdInitiative.settled?'Семья переехала':'Дом готов · семья ещё не переехала'}${site.householdInitiative.autonomous?' · семья начала сама':''}</p>`).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
 }

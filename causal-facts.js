@@ -176,7 +176,7 @@ function recordNeighborAid(s,c,home,amount,kind){
 export function validateCausalFacts(s){
  const ledger=s.causalFacts,live=new Map();
  const vows=s.supplyVows,targets=[...(vows?.history||[]),...(vows?.active?[vows.active]:[])].flatMap(v=>v.targets).filter(t=>t.homeId!==undefined);
- if(ledger===undefined)return !targets.length&&s.buildings.every(b=>b.waterEntityId===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined);
+ if(ledger===undefined)return !targets.length&&s.buildings.every(b=>b.waterEntityId===undefined&&b.householdInitiative?.sourceId===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined);
  if(!isStrictSumer(s)||!ledger||ledger.version!==1||!id(ledger.nextEntityId)||!Array.isArray(ledger.water)||ledger.water.length>LIMIT||
   [ledger.neighborWater,ledger.neighborFood,ledger.waterWitnesses].some(rows=>rows!==undefined&&(!Array.isArray(rows)||rows.length>LIMIT)))return false;
  const entity=n=>id(n)&&n<ledger.nextEntityId;
@@ -198,6 +198,10 @@ export function validateCausalFacts(s){
   kinds.set(uid,signature);return true;
  };
  if(targets.some(t=>!entity(t.homeId)||!entityMatches(t.homeId,'house',t.home)))return false;
+ for(const b of s.buildings){
+  const project=b.householdInitiative;
+  if(project?.sourceId!==undefined&&(!entity(project.sourceId)||!entityMatches(project.sourceId,'house',project.source)))return false;
+ }
  for(const b of live.values()){
   const p=b.humanWaterProject;
   if(p?.homeId!==undefined&&!entityMatches(p.homeId,'house',p.home))return false;
