@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T23:11:35.519634+00:00",
+  "commit": "ebbaea8147bc579df88499236c723e3bafb7c095",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "ee53698c90972212785d64814dc24ce101b9820cf2fe2503c68214fd6deceab6",
+      "actual": "ee53698c90972212785d64814dc24ce101b9820cf2fe2503c68214fd6deceab6",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0b03217b1a8274da7e287a0f904b373db50b4234ffa41eb6e9f0ec15ccfb3bd4",
+      "actual": "0b03217b1a8274da7e287a0f904b373db50b4234ffa41eb6e9f0ec15ccfb3bd4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-cast-history-4x.json",
+      "status": 200,
+      "expected": "ec4d413a0988c3c063240cc712ce178d5578cd3aba209739945ac99f19a87291",
+      "actual": "ec4d413a0988c3c063240cc712ce178d5578cd3aba209739945ac99f19a87291",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-cast-history-browser.json",
+      "status": 200,
+      "expected": "c61bd46d0a20f5d4c8d690afe432cbdaad5080e4cac2c76e6d0e28930e62c6c1",
+      "actual": "c61bd46d0a20f5d4c8d690afe432cbdaad5080e4cac2c76e6d0e28930e62c6c1",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "0942ad3420f637f00d9be8ca6852bed97d207a86945a149f36482d00833c70be",
+      "actual": "0942ad3420f637f00d9be8ca6852bed97d207a86945a149f36482d00833c70be",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "ea98b045586e667fd2b8946ff9db3eb93491167a6e66d596cb4f02f2df638abc",
+      "actual": "ea98b045586e667fd2b8946ff9db3eb93491167a6e66d596cb4f02f2df638abc",
+      "match": true
+    },
+    {
+      "path": "miracle-history.js",
+      "status": 200,
+      "expected": "f3cad758db464bca63b8d33d79479a799e793b853335c92ccacfdd12064bb666",
+      "actual": "f3cad758db464bca63b8d33d79479a799e793b853335c92ccacfdd12064bb666",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "85284588b69762596294398c90481e084976bbbff7b10f79d914a62ae0442b18",
+      "actual": "85284588b69762596294398c90481e084976bbbff7b10f79d914a62ae0442b18",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "37016d2b8aad95c71fb7b79ec76d8b427366d9e55de6b5374fe0dbc14d5ed011",
+      "actual": "37016d2b8aad95c71fb7b79ec76d8b427366d9e55de6b5374fe0dbc14d5ed011",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a78b2994912d4c4a65a228cda80a44a591859fa1ff8a2cb280ed418d2a2cf1e1",
+      "actual": "a78b2994912d4c4a65a228cda80a44a591859fa1ff8a2cb280ed418d2a2cf1e1",
+      "match": true
+    },
+    {
+      "path": "tests/irrigated-harvest.test.js",
+      "status": 200,
+      "expected": "d1fe873eff219f2bfdc719bad4e04b97e2f69c7232d710c8add409f6c0b6e4dd",
+      "actual": "d1fe873eff219f2bfdc719bad4e04b97e2f69c7232d710c8add409f6c0b6e4dd",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
