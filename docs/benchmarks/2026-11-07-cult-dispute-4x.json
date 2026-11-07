@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "initialPopulation": 295,
+  "population": 295,
+  "parties": {
+    "host": 16,
+    "guest": 289
+  },
+  "home": "2,2",
+  "oneTime": true,
+  "faithUnchangedOnResolution": true,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 4.803832999999997,
+  "p95CpuMs": 11.884041000000025
+}

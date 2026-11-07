@@ -278,3 +278,44 @@ test('an arrival agreement reserves one additional water and follows the family 
  assert.ok(welcome.members.every(id=>s.citizens.some(c=>c.id===id&&c.faith<50)));
  const complete=encode(s);assert.equal(encode(decode(complete)),complete);
 });
+
+test('a household water dispute has a one-time outcome tied to the people who were present',async()=>{
+ const {reserveArrival,arrivalCustomDispute,resolveArrivalCustomDispute}=await import('../arrival-hospitality.js');
+ const {advanceTime}=await import('../engine.js');
+ const {housingOf}=await import('../definitions.js');
+ const {networkFor}=await import('../workforce.js');
+ let s=createNewCity({mode:'awakening',seed:1});
+ let house=s.buildings.find(b=>b.type==='house');
+ const home=`${house.x},${house.y}`;
+ for(const b of s.buildings)if(b.type==='house')b.water=0;
+ house.level=3;s.capacity=housingOf(s);house.water=12;
+ assert.ok(reserveArrival(s,networkFor(s),{home,count:6,custom:'libation'}));
+ for(let i=0;i<400&&s.arrivalGroup;i++){s.event=null;advanceTime(s,.25);}
+ let welcome=s.arrivalHospitality.welcomes.at(-1);
+ const host=s.citizens.find(c=>c.id===welcome.host),guest=s.citizens.find(c=>c.id===welcome.members[0]);
+ for(const c of [host,guest]){c.phase='home';c.mood=70;}
+ house.water=0;
+ assert.deepEqual(arrivalCustomDispute(s,house,welcome),{host:host.id,guest:guest.id});
+ guest.phase='working';
+ assert.equal(resolveArrivalCustomDispute(s,house,welcome,'queue',guest.id).ok,false);
+ guest.phase='home';
+ const faith=[host.faith,guest.faith];
+ const alternative=decode(encode(s));assert.ok(alternative);
+ const otherHouse=alternative.buildings.find(b=>`${b.x},${b.y}`===home);
+ const otherWelcome=alternative.arrivalHospitality.welcomes.at(-1);
+ assert.ok(resolveArrivalCustomDispute(alternative,otherHouse,otherWelcome,'pause',guest.id).ok);
+ assert.equal(otherHouse.water,0);
+ assert.deepEqual([host.id,guest.id].map(id=>alternative.citizens.find(c=>c.id===id).mood),[72,68]);
+ assert.equal(resolveArrivalCustomDispute(s,house,welcome,'queue',guest.id).ok,true);
+ assert.equal(resolveArrivalCustomDispute(s,house,welcome,'pause',guest.id).ok,false);
+ assert.equal(house.water,0);
+ assert.deepEqual([host.faith,guest.faith],faith);
+ assert.deepEqual([host.mood,guest.mood],[73,73]);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ house=s.buildings.find(b=>`${b.x},${b.y}`===home);
+ welcome=s.arrivalHospitality.welcomes.at(-1);
+ assert.deepEqual(welcome.dispute,{choice:'queue',guest:guest.id,at:s.simTime});
+ assert.equal(resolveArrivalCustomDispute(s,house,welcome,'queue',guest.id).ok,false);
+ const corrupt=JSON.parse(raw);corrupt.arrivalHospitality.welcomes.at(-1).dispute.guest=host.id;
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+});

@@ -1,3 +1,5 @@
+import {cityCommandReason} from './city-command-lock.js';
+import {affectResidents} from './wellbeing.js';
 import {ensureHouseEntityId} from './causal-facts.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {buildingKey,capacityOf,isOperational} from './definitions.js';
@@ -5,7 +7,7 @@ import {foodAvailability,reserveStock} from './inventory.js';
 import {supplyHome} from './households.js';
 import {navigationSegmentClear,nearestWalkingNode,shortestWalkingPath} from './navigation.js';
 import {floodedSegment,floodMapView} from './river-flood.js';
-import {waterDemand} from './water.js';
+import {waterDemand,waterSummary} from './water.js';
 import {isDryPoint,signedRiverDistance,worldHeight,worldWidth} from './world.js';
 
 const kinds=['artisan','envoy','pilgrim'];
@@ -190,6 +192,32 @@ export function arrivalWelcomeHouse(s,welcome){
   (welcome.homeId===undefined||welcome.homeId===b.waterEntityId));
 }
 
+const disputeChoices=['queue','pause'];
+
+export function arrivalCustomDispute(s,house,welcome){
+ if(welcome?.custom!=='libation'||welcome.host===null||welcome.dispute||!isOperational(house)||
+  arrivalWelcomeHouse(s,welcome)!==house||!s.arrivalHospitality.welcomes.includes(welcome))return null;
+ const available=c=>c.age>=16&&c.home===welcome.home&&!c.fireShelter&&!c.floodShelter&&
+  ['home','resting'].includes(c.phase)&&!c.clinic;
+ const host=s.citizens.find(c=>c.id===welcome.host&&available(c));
+ const guest=s.citizens.find(c=>welcome.members.includes(c.id)&&available(c));
+ if(!host||!guest)return null;
+ const water=waterSummary(s,house);
+ return water.stock<water.demand?{host:host.id,guest:guest.id}:null;
+}
+
+export function resolveArrivalCustomDispute(s,house,welcome,choice,guestId){
+ const reason=cityCommandReason(s);
+ if(reason)return {ok:false,reason};
+ if(!disputeChoices.includes(choice))return {ok:false,reason:'Выбери решение для семей'};
+ const parties=arrivalCustomDispute(s,house,welcome);
+ if(!parties||parties.guest!==guestId)return {ok:false,reason:'Условия изменились. Для разговора нужны обе стороны и нехватка воды'};
+ welcome.dispute={choice,guest:parties.guest,at:s.simTime};
+ if(choice==='queue')affectResidents(s,{mood:3},[parties.host,parties.guest]);
+ else{affectResidents(s,{mood:2},[parties.host]);affectResidents(s,{mood:-2},[parties.guest]);}
+ return {ok:true};
+}
+
 export function lastArrivalWelcome(s,home,residents){
  const ids=residents&&new Set(residents.map(c=>c.id));
  return s.arrivalHospitality?.welcomes?.findLast(row=>row.home===home&&(row.homeId===undefined||arrivalWelcomeHouse(s,row))&&
@@ -269,10 +297,14 @@ export function validateArrivalHospitality(s){
   if(!Array.isArray(welcomes)||!welcomes.length||welcomes.length>80)return false;
   let lastTime=0,lastId=-1;
   for(const row of welcomes){
-   if(!row||Object.keys(row).length!==4+Number(row.homeId!==undefined)+Number(row.custom!==undefined)||row.custom!==undefined&&row.custom!=='libation'||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
+   if(!row||Object.keys(row).length!==4+Number(row.homeId!==undefined)+Number(row.custom!==undefined)+Number(row.dispute!==undefined)||row.custom!==undefined&&row.custom!=='libation'||!cell(s,row.home)||!Number.isFinite(row.at)||row.at<lastTime||row.at>s.simTime||
     !Array.isArray(row.members)||!row.members.length||row.members.length>6||
     !row.members.every((id,i)=>Number.isSafeInteger(id)&&id>lastId&&id<s.demography.nextId&&(!i||id===row.members[i-1]+1))||
     row.host!==null&&(!Number.isSafeInteger(row.host)||row.host<0||row.host>=row.members[0]))return false;
+   const dispute=row.dispute;
+   if(dispute!==undefined&&(!dispute||row.custom!=='libation'||row.host===null||Object.keys(dispute).length!==3||
+    !disputeChoices.includes(dispute.choice)||!row.members.includes(dispute.guest)||
+    !Number.isFinite(dispute.at)||dispute.at<row.at||dispute.at>s.simTime))return false;
    lastTime=row.at;lastId=row.members.at(-1);
   }
  }
