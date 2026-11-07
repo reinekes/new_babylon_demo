@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-07T15:12:36.224294+00:00",
+  "commit": "922cd3262e479a49a922a73954157903317652b7",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "bb1c7452db984be90341f45569e64abdf4b998db49f65e76518bdc8b33afb38e",
+      "actual": "bb1c7452db984be90341f45569e64abdf4b998db49f65e76518bdc8b33afb38e",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "0ccb5c8a48ef3fd6867b3316698e312f44913ca8fe7baab8e80dc9680119547a",
+      "actual": "0ccb5c8a48ef3fd6867b3316698e312f44913ca8fe7baab8e80dc9680119547a",
+      "match": true
+    },
+    {
+      "path": "docs/ART_REVIEW_2026-11-06.md",
+      "status": 200,
+      "expected": "4858d2180c79b56f4d38f4dd405d358f7635136bc65c0160d8f3d7cfda504a1f",
+      "actual": "4858d2180c79b56f4d38f4dd405d358f7635136bc65c0160d8f3d7cfda504a1f",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-resident-facing-4x.json",
+      "status": 200,
+      "expected": "63f02e9bc4673b352a6872ae1464ed8fd9a136ea9d7eb2c958bec091913907a3",
+      "actual": "63f02e9bc4673b352a6872ae1464ed8fd9a136ea9d7eb2c958bec091913907a3",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "c1237041f8721b84c26000cf6d69df96c3818e300ae8c00d45752e702f2ff702",
+      "actual": "c1237041f8721b84c26000cf6d69df96c3818e300ae8c00d45752e702f2ff702",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/10-potter-facing-on-pause.jpg",
+      "status": 200,
+      "expected": "beb501e4d7d6a03f31c7d19a1208e4c9eed34a39803827213d109bd3cac28672",
+      "actual": "beb501e4d7d6a03f31c7d19a1208e4c9eed34a39803827213d109bd3cac28672",
+      "match": true
+    },
+    {
+      "path": "docs/screenshots/2026-11-06-art-review/11-child-toy-side.jpg",
+      "status": 200,
+      "expected": "c050cbb2d59dacc68cd3c10a662132b4b4605c6986aa7003c8a93cf84d8cfc94",
+      "actual": "c050cbb2d59dacc68cd3c10a662132b4b4605c6986aa7003c8a93cf84d8cfc94",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "ff23e9dcd3df7dff968c32e7972af164a7e12c3dc402d4d08e12ca56294d8d18",
+      "actual": "ff23e9dcd3df7dff968c32e7972af164a7e12c3dc402d4d08e12ca56294d8d18",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "66a7cfb5986bb908e7316fd9e5c80e14afd99a12bba2357ff0d30c7c12cbd672",
+      "actual": "66a7cfb5986bb908e7316fd9e5c80e14afd99a12bba2357ff0d30c7c12cbd672",
+      "match": true
+    },
+    {
+      "path": "tests/game3d-actors.test.js",
+      "status": 200,
+      "expected": "5d74af0d910fe6445bb7ffe442c0c54755398baf65f7b5d2c48baa5b48fe6c3a",
+      "actual": "5d74af0d910fe6445bb7ffe442c0c54755398baf65f7b5d2c48baa5b48fe6c3a",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
