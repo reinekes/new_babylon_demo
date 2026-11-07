@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T05:51:32.091622+00:00",
+  "commit": "fd9e82b0a70d8fa24c35e4eaa0cea93005c2b722",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "4ddbdd3e5b8485334f0f8be38fc876511c624121968a3933fbfcfc0070d9bb0f",
+      "actual": "4ddbdd3e5b8485334f0f8be38fc876511c624121968a3933fbfcfc0070d9bb0f",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "6320e3a25d6257ff3b57d00213f6d62aef04eafa6ad0f1833d039958717af861",
+      "actual": "6320e3a25d6257ff3b57d00213f6d62aef04eafa6ad0f1833d039958717af861",
+      "match": true
+    },
+    {
+      "path": "canal-maintenance.js",
+      "status": 200,
+      "expected": "b643eb87b2e467e53e6c8eafea2bfde564c02d9dceca4d0b24309b795aeb6b15",
+      "actual": "b643eb87b2e467e53e6c8eafea2bfde564c02d9dceca4d0b24309b795aeb6b15",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-specialization-4x.json",
+      "status": 200,
+      "expected": "4b2f16cbd42fa62f83c159591ba97a4422686d40aa1573df73228b68ef23b79c",
+      "actual": "4b2f16cbd42fa62f83c159591ba97a4422686d40aa1573df73228b68ef23b79c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-water-specialization-browser.json",
+      "status": 200,
+      "expected": "6b0d8e808988a11d12e36edd72e231e2b56df701c6d17633546a928ec84150e4",
+      "actual": "6b0d8e808988a11d12e36edd72e231e2b56df701c6d17633546a928ec84150e4",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9542930932d96cf836ba751000528303cad196415565164f7b08267031b538a8",
+      "actual": "9542930932d96cf836ba751000528303cad196415565164f7b08267031b538a8",
+      "match": true
+    },
+    {
+      "path": "irrigation.js",
+      "status": 200,
+      "expected": "1261101b91caf26ec31af932b9a2f254dd7c28c6e22cfffdd86daae930128630",
+      "actual": "1261101b91caf26ec31af932b9a2f254dd7c28c6e22cfffdd86daae930128630",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "ebe0108ab0cc85cbdf2e2195a3bb835ff778fc1eb721e350da51ca7858385d5f",
+      "actual": "ebe0108ab0cc85cbdf2e2195a3bb835ff778fc1eb721e350da51ca7858385d5f",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "238ea58afed74b4c4058ded1ba34645e97789db385075215110f33bd1f23b49e",
+      "actual": "238ea58afed74b4c4058ded1ba34645e97789db385075215110f33bd1f23b49e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "7d44d6d1c63cd7ce550bca3d588a2dbd9d403a3b6f3cc367032374b5da7262c3",
+      "actual": "7d44d6d1c63cd7ce550bca3d588a2dbd9d403a3b6f3cc367032374b5da7262c3",
+      "match": true
+    },
+    {
+      "path": "tests/irrigation.test.js",
+      "status": 200,
+      "expected": "57343f635812c38269faebcae7a92dee237b78c9198db46e84505c7dd2973181",
+      "actual": "57343f635812c38269faebcae7a92dee237b78c9198db46e84505c7dd2973181",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
