@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 296,
+  "replacementNoStory": true,
+  "witnessPreserved": true,
+  "saveByteEqual": true,
+  "samples": 100,
+  "medianStepCpuMs": 4.249250000000075,
+  "p95StepCpuMs": 11.066834000000085
+}

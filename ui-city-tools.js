@@ -225,11 +225,11 @@ function shapingBatchesHTML(s){
 
 function landMemoryHTML(s){
  if(s.landMemoryChapter!==1)return '';
- const labels={building:'Завершённая стройка',food:'Добытая и доставленная еда',waterStory:'Переданный семейный рассказ о воде',memorial:'Семейная память'};
+ const labels={building:'Завершённая стройка',food:'Добытая еда',waterStory:'Переданный семейный рассказ о воде',memorial:'Семейная память'};
  const stories=landMemoryStories(s);
  const status=s.landRelicQuest?.phase==='completed'?'Печать земли хранится в храме.':s.landRelicQuest?.attempts?'Поиск Печати уже начинался.':
   landSearchReason(s)||'Истории сохранены. Поиск Печати доступен в карточке свободного жителя.';
- return `<section class="management-row" data-land-memory><h3>История «Память земли»</h3><p>Подтверждённые истории · ${Math.min(stories.length,LAND_STORIES_REQUIRED)} из ${LAND_STORIES_REQUIRED}.</p>${stories.map(row=>`<p>${labels[row.kind]} · ${escape(displayName(s,row.citizenId))}</p>`).join('')}<p>${status}</p></section>`;
+ return `<section class="management-row" data-land-memory><h3>История «Память земли»</h3><p>Подтверждённые истории · ${Math.min(stories.length,LAND_STORIES_REQUIRED)} из ${LAND_STORIES_REQUIRED}.</p>${stories.map(row=>`<p>${labels[row.kind]} · ${escape(displayName(s,row.citizenId))}${row.place?` · ${focus(buildingKey(row.place),'Показать место')}`:''}${row.livingIds.length?` · Живые участники: ${row.livingIds.map(id=>escape(displayName(s,id))).join(', ')}`:''}</p>`).join('')}<p>${status}</p></section>`;
 }
 
 function depthSupplyHTML(s){

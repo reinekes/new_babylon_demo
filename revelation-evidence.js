@@ -1,3 +1,4 @@
+import {bindLandMemoryPlace} from './land-memory.js';
 import {validateRevelationAdvice} from './revelation-advice.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {worldHeight,worldWidth} from './world.js';
@@ -8,7 +9,8 @@ export const newRevelationEvidence=()=>({version:1});
 export function recordRevelationFact(s,kind,c,place){
  const evidence=s.revelationEvidence;
  if(!evidence||evidence[kind]||!kinds.includes(kind))return;
- evidence[kind]={citizenId:c.id,x:place.x,y:place.y,time:s.simTime};
+ const anchor=bindLandMemoryPlace(s,kind,place);
+ evidence[kind]={citizenId:c.id,x:place.x,y:place.y,time:s.simTime,...anchor?{anchor}:{}};
 }
 
 const MAX_TRAINING_MASTERS=4;
@@ -90,8 +92,9 @@ export function validateRevelationEvidence(s){
   if(kind==='opening')return Object.keys(fact).length===2&&(
    evidence.apprenticeship?.time<=fact.time||hasAllStories(evidence)&&kinds.every(kind=>evidence[kind].time<=fact.time));
   if(kind==='apprenticeship'&&(!validPupils(s,fact,2)||fact.pupils.length!==2))return false;
+  if(fact.anchor!==undefined&&!['building','food'].includes(kind))return false;
   const scale=kind==='building'?2:1,minimum=kind==='building'?-.5:0;
-  return (kind==='apprenticeship'?Object.keys(fact).length===5:kinds.includes(kind)&&Object.keys(fact).length===4)&&
+  return (kind==='apprenticeship'?Object.keys(fact).length===5:kinds.includes(kind)&&Object.keys(fact).length===4+Number(fact.anchor!==undefined))&&
    Number.isInteger(fact.x*scale)&&typeof fact.x==='number'&&fact.x>=minimum&&fact.x<worldWidth(s)&&
    Number.isInteger(fact.y*scale)&&typeof fact.y==='number'&&fact.y>=minimum&&fact.y<worldHeight(s);
  });
