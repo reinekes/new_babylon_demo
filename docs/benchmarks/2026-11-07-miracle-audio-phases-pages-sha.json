@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T17:33:28.316645+00:00",
+  "commit": "a5d1c3a3522a44d91494652b1814eb85b704e993",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "fcf369c3c90395fc158e319597aa23dec2791c19ca1827aba28b0bc57420e1b7",
+      "actual": "fcf369c3c90395fc158e319597aa23dec2791c19ca1827aba28b0bc57420e1b7",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-audio-phases-4x.json",
+      "status": 200,
+      "expected": "99cc0b1449d6d79ece223ffed99fac86d68816f2c645acb2b9cb93a3816f6225",
+      "actual": "99cc0b1449d6d79ece223ffed99fac86d68816f2c645acb2b9cb93a3816f6225",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-audio-phases.json",
+      "status": 200,
+      "expected": "4a6e37b836973c637d74c341ab2e2593e355000792e513af2432d41219ae515b",
+      "actual": "4a6e37b836973c637d74c341ab2e2593e355000792e513af2432d41219ae515b",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "9691d60f24f2faf251f57f837632ec23a55de8d57a0e342b141d958439d70b65",
+      "actual": "9691d60f24f2faf251f57f837632ec23a55de8d57a0e342b141d958439d70b65",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "ce013ec6c1cc5e390ec589cc1e80c13ff7c993f9e3ee13f39a3e4992ded820cd",
+      "actual": "ce013ec6c1cc5e390ec589cc1e80c13ff7c993f9e3ee13f39a3e4992ded820cd",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a2161f9fff1cfbadabb5075ddcd0663c498b0b7178904cdf153dceb22cd4dc26",
+      "actual": "a2161f9fff1cfbadabb5075ddcd0663c498b0b7178904cdf153dceb22cd4dc26",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
