@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T16:57:38.143259+00:00",
+  "commit": "d28069c49cec92e708855be87f071b05f92cfee6",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "16836ed86880104c0bec212614735f4b82039313ae9333025ae7bb39a2d585e3",
+      "actual": "16836ed86880104c0bec212614735f4b82039313ae9333025ae7bb39a2d585e3",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "32db34a2f8d30497740461e8f509a92d41178767e762f7d1b0157a77463f553f",
+      "actual": "32db34a2f8d30497740461e8f509a92d41178767e762f7d1b0157a77463f553f",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "3eae86cb7b02714079ae1fca9e1e9f69baf6cff30be32212d7d7f3e605a92ad6",
+      "actual": "3eae86cb7b02714079ae1fca9e1e9f69baf6cff30be32212d7d7f3e605a92ad6",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-cult-dispute-4x.json",
+      "status": 200,
+      "expected": "6d1516603363e45fd7f3a865d2552eb26175bc6a2254ae1f879d9c60440c394b",
+      "actual": "6d1516603363e45fd7f3a865d2552eb26175bc6a2254ae1f879d9c60440c394b",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-cult-dispute-browser.json",
+      "status": 200,
+      "expected": "5537d78975ef2df46311b3624f7b2aa9164cc1935b344def7d17921ab37e2c94",
+      "actual": "5537d78975ef2df46311b3624f7b2aa9164cc1935b344def7d17921ab37e2c94",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3f1644f31e316bdf9e6ed8f209e01c4fd20b826a5e52c05f57b8faacbac6b5fb",
+      "actual": "3f1644f31e316bdf9e6ed8f209e01c4fd20b826a5e52c05f57b8faacbac6b5fb",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "866570c06d84ed47e03f98330d50510cf68d257908dae925fc60ce78d0d5e697",
+      "actual": "866570c06d84ed47e03f98330d50510cf68d257908dae925fc60ce78d0d5e697",
+      "match": true
+    }
+  ],
+  "matched": 7,
+  "total": 7
+}
