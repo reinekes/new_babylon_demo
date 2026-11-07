@@ -721,15 +721,18 @@ function waterProjectHousehold(b){
  const received=witnesses.filter(f=>f.homeId===b.waterEntityId).reverse().map(f=>
   `<p data-project-water-witness><b>Двор получил воду из общего водозабора · ${esc(f.station)}</b><br>${resident(f.courierId)} · ${foodAmount(f.amount)} воды</p>`).join('');
  const status=archive+received+projects.map(site=>{
-  const p=site.humanWaterProject,organizer=state.citizens.find(c=>c.id===p.organizerId);
-  const helpers=(p.participantIds||[]).map(id=>{
+  const p=site.humanWaterProject,building=site.construction?.kind==='new',key=buildingKey(site);
+  const member=(id,role)=>{
    const c=state.citizens.find(c=>c.id===id);
-   const status=!c?'выбыл':site.construction?.kind!=='new'?'стройка завершена':c.site===buildingKey(site)?'на стройке':waterProjectOrganizerReason(state,c)||'ожидает свободного места на стройке';
-   return `Помощник · ${resident(id)} · ${esc(status)}<br>`;
-  }).join('');
+   const status=!c?'выбыл':!building?'стройка завершена':c.site===key?
+    phases[c.phase]||'назначен на стройку':waterProjectOrganizerReason(state,c)||'ожидает свободного места на стройке';
+   return `${role} · ${resident(id)} · ${esc(status)}<br>`;
+  };
+  const helpers=(p.participantIds||[]).map(id=>member(id,'Помощник')).join('');
   const served=(p.witnessHomeIds||[]).length;
   const witnessSummary=served?`<br>Доставки подтверждены в других дворах · ${served}`:'';
-  return `<p><b>Водозабор · ${site.x}, ${site.y}</b><br>${organizer?`Организатор · ${esc(organizer.name)}<br>`:''}${helpers}${p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:site.construction?.kind==='new'?'Идёт строительство':'Построен · ожидается первая доставка'}${witnessSummary}</p>`;
+  const delivery=p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:building?'Идёт строительство':'Построен · ожидается первая доставка';
+  return `<section data-water-project-progress><p><b>Водозабор · ${site.x}, ${site.y}</b><br>${member(p.organizerId,'Организатор')}${helpers}${delivery}${witnessSummary}</p>${building?siteStatus(site):''}</section>`;
  }).join('');
  const request=householdWaterRequest(state,b);
  if(!request)return status;

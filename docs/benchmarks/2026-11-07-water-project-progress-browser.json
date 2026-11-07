@@ -1,0 +1,30 @@
+[
+  {
+    "id": "cargo",
+    "view": "2d",
+    "url": "?id=cargo&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d construction progress, material in transit and crew"
+  },
+  {
+    "id": "cargo",
+    "view": "3d",
+    "url": "?id=cargo&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d construction progress, material in transit and crew"
+  },
+  {
+    "id": "complete",
+    "view": "2d",
+    "url": "?id=complete&view=2d",
+    "mode": "2d",
+    "result": "PASS 2d completed project and witnesses"
+  },
+  {
+    "id": "complete",
+    "view": "3d",
+    "url": "?id=complete&view=3d",
+    "mode": "3d",
+    "result": "PASS 3d completed project and witnesses"
+  }
+]
