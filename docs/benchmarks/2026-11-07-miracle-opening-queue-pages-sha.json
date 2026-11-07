@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-07T17:39:56.608630+00:00",
+  "commit": "1b22551af3181a3aca46cfad420d3cd4dae60457",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7bb23a0a5694229363cb43f3338a18695ec38a148b8c6b5cf2a2d342c69bf3c0",
+      "actual": "7bb23a0a5694229363cb43f3338a18695ec38a148b8c6b5cf2a2d342c69bf3c0",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "0a698afaba78828eedc1dcfb6b2fff323eb480f7888f5917f900e9389bf78bfb",
+      "actual": "0a698afaba78828eedc1dcfb6b2fff323eb480f7888f5917f900e9389bf78bfb",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "e8ce005522666dde8593e40025cf00d3d8f2541356784f2d0b73d11ef4db55c9",
+      "actual": "e8ce005522666dde8593e40025cf00d3d8f2541356784f2d0b73d11ef4db55c9",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-opening-queue-4x.json",
+      "status": 200,
+      "expected": "00c960012b68ae7ed3ce69812b762f148f3ae444718c9bcfe3f5aa5b27242558",
+      "actual": "00c960012b68ae7ed3ce69812b762f148f3ae444718c9bcfe3f5aa5b27242558",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-opening-queue-browser.json",
+      "status": 200,
+      "expected": "449792433dfa403534790e329c7d6061332816b1283a48aab93f3fc10e774200",
+      "actual": "449792433dfa403534790e329c7d6061332816b1283a48aab93f3fc10e774200",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "4b50630e84277ee6f25610014ed64b7ca642a875eece478a40639032c2bae424",
+      "actual": "4b50630e84277ee6f25610014ed64b7ca642a875eece478a40639032c2bae424",
+      "match": true
+    }
+  ],
+  "matched": 6,
+  "total": 6
+}
