@@ -1,0 +1,20 @@
+{
+  "buildings": 131,
+  "population": 251,
+  "initialPopulation": 242,
+  "forecast": [
+    {
+      "x": 13,
+      "y": 6,
+      "current": 3,
+      "next": 2,
+      "queued": false
+    }
+  ],
+  "cleaned": true,
+  "reloadByteIdentical": true,
+  "steps": 458,
+  "cpuMedianMs": 2.4577500000000043,
+  "cpuP95Ms": 7.43954199999996,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

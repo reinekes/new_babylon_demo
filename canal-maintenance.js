@@ -3,12 +3,13 @@ import {isStrictSumer} from './scenario-profiles.js';
 
 export const canalMaintenanceEnabled=isStrictSumer;
 export const canalShares=b=>b.silt>=.95?0:b.silt>=.75?1:b.silt>=.5?2:3;
+export const nextCanalSilt=b=>Math.min(1,((b.silt||0)*100+12)/100);
 export const needsCanalCleaning=b=>b?.type==='canal'&&isOperational(b)&&b.canalCleaning===true&&(b.silt||0)>0;
 
 export function depositCanalSilt(state,wet){
  if(!canalMaintenanceEnabled(state))return;
  for(const [key,canal] of wet.cells)if(wet.wet.has(key)||wet.outlets?.has(key)){
-  canal.silt=Math.min(1,((canal.silt||0)*100+12)/100);
+  canal.silt=nextCanalSilt(canal);
  }
 }
 

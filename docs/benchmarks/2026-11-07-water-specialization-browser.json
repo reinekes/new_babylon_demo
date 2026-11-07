@@ -1,0 +1,20 @@
+{
+  "browser": "Chrome 157",
+  "fixture": "Earned water title and a wet canal at 48% silt. Normal game links and cleanup controls tested, including queued forecast.",
+  "runs": [
+    {
+      "id": "water",
+      "view": "2d",
+      "url": "?id=water&view=2d&earned",
+      "mode": "2d",
+      "result": "PASS 2d unlocked forecast 3→2, normal canal card, saved cleaning order"
+    },
+    {
+      "id": "water",
+      "view": "3d",
+      "url": "?id=water&view=3d&earned",
+      "mode": "3d",
+      "result": "PASS 3d unlocked forecast 3→2, normal canal card, saved cleaning order"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import {terrain,signedRiverDistance} from './world.js';
 import {isOperational} from './definitions.js';
 import {allocateCanalWater} from './canal-flow.js';
-import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
+import {canalMaintenanceEnabled,canalShares,nextCanalSilt} from './canal-maintenance.js';
 export const CARDINAL=[[1,0],[0,1],[-1,0],[0,-1]];
 const cache=new WeakMap(),crossingCache=new WeakMap(),key=(x,y)=>`${x},${y}`;
 // Derived topology only: water is never a second stock saved alongside buildings.
@@ -78,6 +78,17 @@ export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
  const irrigated=new Set(flow?flow.routes.keys():reachableFields.keys());
  const result={signature,cells,wet,arms,irrigated,reachableFields,flow,fields,heads,adjacent,drained,outlets,intakeLimits,depthWave};variants.set(lowRiver,result);return result;
 }
+export function canalSiltingForecast(s){
+ if(!canalMaintenanceEnabled(s))return [];
+ const {cells,wet,outlets}=irrigationFor(s),risks=[];
+ for(const [id,b] of cells){
+  if(!wet.has(id)&&!outlets.has(id))continue;
+  const current=canalShares(b),next=canalShares({silt:nextCanalSilt(b)});
+  if(next<current)risks.push({x:b.x,y:b.y,current,next,queued:b.canalCleaning===true});
+ }
+ return risks.sort((a,b)=>a.next-b.next||a.y-b.y||a.x-b.x);
+}
+
 export function fieldWater(s,b,options){
  const network=irrigationFor(s,options),id=key(b.x,b.y),natural=terrain(b.x,b.y,s)==='fertile';
  let canal=network.irrigated.has(id);

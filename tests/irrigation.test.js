@@ -76,3 +76,22 @@ test('lake membership changes invalidate derived irrigation without changing sav
  s.world.lakes[0].cells.splice(1);const after=irrigationFor(s);assert.notEqual(after,wet);assert.equal(after.wet.has('6,5'),false);assert.ok(after.wet.has('13,6'),'the unchanged river source remains wet');assert.ok(canBuild(s,'field',7,5));
  s.world.lakes[0].cells.push({x:4,y:3});assert.ok(irrigationFor(s).wet.has('6,5'));assert.deepEqual(decode(encode(s)).world,s.world);
 });
+
+test('the next silt forecast flags an active canal before it loses a share',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {canalSiltingForecast}=await import('../irrigation.js');
+ const {canalShares,depositCanalSilt}=await import('../canal-maintenance.js');
+ const {queueCanalCleaning}=await import('../management.js');
+ const s=createGame({start:'established',scenario:strictScenario()});
+ const intake={...canal(13,6),silt:.48},dry={...canal(3,3),silt:.9};
+ s.buildings.push(intake,dry);
+ const before=encode(s);
+ const prediction=canalSiltingForecast(s);
+ assert.deepEqual(prediction,[{x:13,y:6,current:3,next:2,queued:false}]);
+ assert.equal(encode(s),before);
+ depositCanalSilt(s,irrigationFor(s));
+ assert.equal(canalShares(intake),prediction[0].next);
+ intake.silt=.48;
+ assert.ok(queueCanalCleaning(s,'13,6').ok);
+ assert.deepEqual(canalSiltingForecast(s),[{...prediction[0],queued:true}]);
+});

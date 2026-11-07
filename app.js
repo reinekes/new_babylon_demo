@@ -42,7 +42,7 @@ import {isStrictSumer} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
-import {depthCanalTarget,irrigationFor,fieldWater} from './irrigation.js';
+import {canalSiltingForecast,depthCanalTarget,irrigationFor,fieldWater} from './irrigation.js';
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {miraclePrice} from './miracle-discovery.js';
@@ -1090,9 +1090,14 @@ function checkDialogs(){
   for(const choice of ['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(result.ok){closeDialog();if(choice==='accept'&&ev.id==='festival'){paused=false;showFestival();}save();update();checkDialogs();}else toast(result.reason);};
  }
 }
+function canalSpecializationHTML(){
+ const risks=canalSiltingForecast(state);
+ if(!risks.length)return '<p data-canal-specialization>На действующих каналах ближайшее заиление не уменьшит пропускную способность.</p>';
+ return `<section data-canal-specialization><h4>Где расчистить русло заранее</h4><p>Если канал останется в работе, при следующем сезонном заилении он может пропустить меньше воды.</p><ul>${risks.slice(0,3).map(r=>`<li>Канал ${r.x}, ${r.y} · доли воды ${r.current} → ${r.next}${r.queued?' · расчистка заказана':''} <button type="button" data-canal-specialization-target="${r.x},${r.y}">Открыть канал</button></li>`).join('')}</ul>${risks.length>3?`<p>Другие участки под риском · ${risks.length-3}</p>`:''}</section>`;
+}
 function pantheon(){
  const evidence=waterNameEvidence(state);
- const localName=evidence?`<section class="food-forecast" data-water-result-name><h3>Напоивший дворы</h3><p>Так жители назвали бога после подтверждённых доставок в два двора.</p><ul>${evidence.map(f=>`<li>Двор ${esc(f.home)} · водозабор ${esc(f.station)} · ${foodAmount(f.amount)} воды · принёс ${resident(f.courierId)}</li>`).join('')}</ul></section>`:'';
+ const localName=evidence?`<section class="food-forecast" data-water-result-name><h3>Напоивший дворы</h3><p>Так жители назвали бога после подтверждённых доставок в два двора.</p><ul>${evidence.map(f=>`<li>Двор ${esc(f.home)} · водозабор ${esc(f.station)} · ${foodAmount(f.amount)} воды · принёс ${resident(f.courierId)}</li>`).join('')}</ul>${canalSpecializationHTML()}</section>`:'';
  const care=healingNameEvidence(state);
  const healingName=care?`<section class="food-forecast" data-healing-result-name><h3>Вернувший силы</h3><p>Так жители назвали бога после того, как вдохновлённый лекарь помог больным из двух дворов выйти из тяжёлого состояния.</p><ul>${care.map(f=>`<li>Двор ${esc(f.home)} · ${resident(f.healerId)} помог жителю ${resident(f.patientId)}</li>`).join('')}</ul></section>`:'';
  const grain=harvestNameEvidence(state);
@@ -1104,6 +1109,14 @@ function pantheon(){
  const craft=craftNameEvidence(state);
  const craftName=craft?`<section class="food-forecast" data-craft-result-name><h3>Передавший мастерство</h3><p>Двое учеников из разных дворов стали строителями III уровня после совместного труда.</p><ul>${craft.map(f=>`<li>Двор ${esc(f.home)} · стройка ${esc(f.site.join(', '))} · ${resident(f.mentorId)} обучил жителя ${resident(f.pupilId)}</li>`).join('')}</ul></section>`:'';
  openDialog('pantheon',`<span class="eyebrow">ИМЕНА РОЖДАЮТСЯ ИЗ ДЕЯНИЙ</span><span class="dialog-emblem">✺</span><h2>${esc(state.name)}</h2><p>Чудеса и успешное вдохновение развивают божественные имена. Чудо даёт +2 славы; успешное вдохновение — +3 славы и ремесленное деяние, отказ — −1 славы (не ниже нуля). Близкие по силе домены могут дать смешанное имя. Потери дают скорбные и смертельные имена; большие потери от голода — жестокие.</p>${localName}${healingName}${harvestName}${vowName}${guestName}${craftName}<div class="domain-list">${Object.entries(DIVINE_NAMES).map(([domain,names])=>`<section><h3>${DOMAIN_NAMES[domain]} <small>${state.divinity.domains[domain]} деяний</small></h3>${names.map(name=>`<span class="divine-name ${state.divinity.names.includes(name)?'earned':''}">${state.divinity.names.includes(name)?'✓':'○'} ${name}</span>`).join('')}</section>`).join('')}</div>${state.divinity.names.some(n=>!Object.values(DIVINE_NAMES).flat().includes(n))?`<p>Особые имена: ${state.divinity.names.filter(n=>!Object.values(DIVINE_NAMES).flat().includes(n)).map(esc).join(' · ')}</p>`:''}<div class="dialog-actions"><button class="primary" id="close-pantheon">Вернуться в город</button></div>`);$('close-pantheon').onclick=closeDialog;
+ dialog.querySelectorAll('[data-canal-specialization-target]').forEach(button=>button.onclick=()=>{
+  const [x,y]=button.dataset.canalSpecializationTarget.split(',').map(Number),canal=buildingAt(state,x,y);
+  if(canal?.type!=='canal')return;
+  closeDialog();
+  if(selection)choose(selection);
+  roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();
+  inspected={x,y};renderer.focusOn(x,y);detail('canal',false,canal);
+ });
 }
 function resetCityPresentation(){
  rainPresentation.reset(state);
