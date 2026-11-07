@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-07T04:54:18.231827+00:00",
+  "commit": "6cd31def84721e11261bff3ba102f683fc38b938",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d7d75545195294825d39930cd5bf8c47626b7386c73be7bf33a6f8736e9c7ec0",
+      "actual": "d7d75545195294825d39930cd5bf8c47626b7386c73be7bf33a6f8736e9c7ec0",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "c9ce03cc7e6bff8a70f2246d0f6e815165c3fae894e41d7e1080cb1bd205ba98",
+      "actual": "c9ce03cc7e6bff8a70f2246d0f6e815165c3fae894e41d7e1080cb1bd205ba98",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "4e9b7324cd0c10ce257140bdd1d486a74a74cc83e82250a46f2d7a2cab799344",
+      "actual": "4e9b7324cd0c10ce257140bdd1d486a74a74cc83e82250a46f2d7a2cab799344",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-household-names-4x.json",
+      "status": 200,
+      "expected": "cbaf59894d8ac54543aa80126e5684ef5f3325eadfa636c7d1635c2bc65229df",
+      "actual": "cbaf59894d8ac54543aa80126e5684ef5f3325eadfa636c7d1635c2bc65229df",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-household-names-browser.json",
+      "status": 200,
+      "expected": "98c99fe7b773a333c0df329428fdb37e8ee7383d055986e67acaa6f42176c802",
+      "actual": "98c99fe7b773a333c0df329428fdb37e8ee7383d055986e67acaa6f42176c802",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "fdef258cb791d3023ae9b2bd29c22be14bb8f421de9a0b22cc79690de18eb089",
+      "actual": "fdef258cb791d3023ae9b2bd29c22be14bb8f421de9a0b22cc79690de18eb089",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3218c7c6d55809014bfbc8f1e716862710d1a4e0ddc9ef88d75bf898a27db03c",
+      "actual": "3218c7c6d55809014bfbc8f1e716862710d1a4e0ddc9ef88d75bf898a27db03c",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "cbb052eaefbba0885e99134fc40273ef7b69cc0e9af5fd425c8aebb8d075fe05",
+      "actual": "cbb052eaefbba0885e99134fc40273ef7b69cc0e9af5fd425c8aebb8d075fe05",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "58d59d89f1ced203ff8b14683786177f0b2c4caa9fa82c5150980a558c7cd64d",
+      "actual": "58d59d89f1ced203ff8b14683786177f0b2c4caa9fa82c5150980a558c7cd64d",
+      "match": true
+    },
+    {
+      "path": "tests/healer.test.js",
+      "status": 200,
+      "expected": "41ec753f916a7e7fbac4c88be8eba7da3703220201c7169a17bd998b7854e341",
+      "actual": "41ec753f916a7e7fbac4c88be8eba7da3703220201c7169a17bd998b7854e341",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "2780658a41e686614c461236e539e6fdf5e2d5246ba1f17a678c1cd20c6db46c",
+      "actual": "2780658a41e686614c461236e539e6fdf5e2d5246ba1f17a678c1cd20c6db46c",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
