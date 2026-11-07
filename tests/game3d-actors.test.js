@@ -316,6 +316,14 @@ test('real workplace joints visibly cycle by trade, freeze on pause and children
  try{
   scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,5,-10),scene);view=await createGameActors(B,scene,{});
   const s=createGame({start:'established'}),c={...s.citizens.find(c=>c.age>=16),id:434,phase:'working',x:7,y:10,cargo:{},buildCargo:{}};s.citizens=[c];
+  c.activity={kind:'pottery',stage:'working',target:{x:7,y:9}};
+  view.update(s,.1,{paused:true});scene.render();
+  const firstRoot=view.rootFor({citizenId:c.id});
+  const initialYaw=firstRoot.rotation.y;
+  assert.ok(Math.cos(initialYaw)<-.99,'a resident loaded on pause already faces the work');
+  c.activity.target={x:8,y:10};
+  view.update(s,.1,{paused:true});scene.render();
+  assert.equal(firstRoot.rotation.y,initialYaw,'a paused pose keeps its existing orientation');
   const poses=[];
   for(const kind of ['building','farming','pottery','weaving','brewing','healing']){
    c.activity={kind,task:'sowing',stage:'working',target:{x:7,y:9}};view.update(s,.1);scene.render();

@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "initialPopulation": 200,
+  "population": 200,
+  "steps": 150,
+  "simulationCpu": {
+    "medianMs": 2.188166000000024,
+    "p95Ms": 6.4629580000000715
+  },
+  "viewPositionsCpu": {
+    "medianMs": 0.23283300000002782,
+    "p95Ms": 0.3944169999999758
+  },
+  "stateMatchesControl": true,
+  "reloadByteIdentical": true
+}

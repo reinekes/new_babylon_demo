@@ -353,7 +353,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(!paused||a.yaw===null){a.yaw=(c.miracleContact||c.funeralContact||c.eventContact).yaw;a.root.rotation.y=a.yaw;}
   }else{
    if(c.festivalContact&&!paused){const center=c.festivalContact.center,dx=center.x-shownX,dy=center.y-shownY;a.yaw=Math.hypot(dx,dy)>.001?Math.atan2(dx,dy):c.festivalContact.yaw;}
-   if(c.activity?.target&&distance<.001&&!paused&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){const target=a.workContact?.target||c.activity.target;a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);}
+   if(c.activity?.target&&distance<.001&&(!paused||a.yaw===null)&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){
+    const firstFacing=a.yaw===null,target=a.workContact?.target||c.activity.target;
+    a.yaw=Math.atan2(target.x-viewPosition.x,target.y-viewPosition.y);
+    if(firstFacing)a.root.rotation.y=a.yaw;
+   }
    if(distance>.00001&&!paused&&!c.festivalContact){a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
    else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   }
