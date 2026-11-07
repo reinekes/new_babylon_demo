@@ -1,0 +1,44 @@
+{
+  "at": "2026-11-07T18:04:15.174607+00:00",
+  "commit": "296e57aafbb9acc6b5979740e57f9ec607f3aa62",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9594ac247aab2a375b243b9591062fe3cedc56ed5da35386b1e2a808c4c089f1",
+      "actual": "9594ac247aab2a375b243b9591062fe3cedc56ed5da35386b1e2a808c4c089f1",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-scene-controls-4x.json",
+      "status": 200,
+      "expected": "786b00d5be7b652a984947cfa1ce001d35206f2b4e8828cfa3f4933322aa8df3",
+      "actual": "786b00d5be7b652a984947cfa1ce001d35206f2b4e8828cfa3f4933322aa8df3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-07-miracle-scene-controls-browser.json",
+      "status": 200,
+      "expected": "47e88dd06b999447748684a1f125bf428d3e0393c9ad46dd6ee28e6099ba332d",
+      "actual": "47e88dd06b999447748684a1f125bf428d3e0393c9ad46dd6ee28e6099ba332d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "91df25cf73e7e1629a29c969428533d6ea0b8c93aa96bdf7aebb7e606a4c2de2",
+      "actual": "91df25cf73e7e1629a29c969428533d6ea0b8c93aa96bdf7aebb7e606a4c2de2",
+      "match": true
+    },
+    {
+      "path": "style.css",
+      "status": 200,
+      "expected": "77ad2fd9d17e56a1fdd12e20328a19214758ca8c4a32008fefc32fa305d8275a",
+      "actual": "77ad2fd9d17e56a1fdd12e20328a19214758ca8c4a32008fefc32fa305d8275a",
+      "match": true
+    }
+  ],
+  "matched": 5,
+  "total": 5
+}
