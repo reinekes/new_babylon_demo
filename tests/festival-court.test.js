@@ -157,3 +157,30 @@ test('late guests do not reshuffle existing torchbearers or their street positio
  for(const a of guests.slice(6))a.stage='dancing';
  assert.deepEqual(views(),before,'later arrivals cannot shift the existing patrol');
 });
+
+test('a replacement brewery cannot inherit the first-cup event of a demolished brewery',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const {demolish}=await import('../management.js');
+ const {workArtisan,initializeArtisans}=await import('../artisan.js');
+ const {collectReadyOutputs}=await import('../building-inventory.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=brewingCity();s.scenario=strictScenario();
+ const original=s.buildings.find(b=>b.type==='brewery');
+ workArtisan(original,15,s);collectReadyOutputs(s);
+ assert.equal(s.firstBeerFeast.status,'pending');
+ const originalId=s.firstBeerFeast.breweryId;
+ assert.ok(Number.isSafeInteger(originalId));
+ const pending=encode(s);assert.equal(encode(decode(pending)),pending);
+ const corrupt=JSON.parse(pending);corrupt.firstBeerFeast.breweryId++;
+ assert.equal(decode(JSON.stringify(corrupt)),null);
+ assert.ok(demolish(s,original.x,original.y).ok);
+ const replacement={type:'brewery',x:original.x,y:original.y,level:1};
+ s.buildings.push(replacement);initializeArtisans(s);syncCitizens(s);
+ assert.equal(s.firstBeerFeast.status,'skipped');
+ assert.equal(s.firstBeerFeast.breweryId,originalId);
+ assert.notEqual(replacement.causalEntityId,originalId);
+ for(let i=0;i<120;i++){s.event=null;advanceTime(s,.1);}
+ assert.equal(s.festival,null);
+ assert.equal(s.firstBeerFeast.status,'skipped');
+ const raw=encode(s);assert.equal(encode(decode(raw)),raw);
+});

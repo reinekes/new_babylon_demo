@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "originalId": 1,
+  "firstBeerStatus": "skipped",
+  "replacementInherited": false,
+  "steps": 800,
+  "medianCPUms": 2.5451670000002196,
+  "p95CPUms": 9.052790999999843,
+  "exactSave": true
+}

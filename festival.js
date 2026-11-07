@@ -1,3 +1,5 @@
+import {ensureBreweryEntityId} from './causal-facts.js';
+import {isStrictSumer} from './scenario-profiles.js';
 import {recordSunlightFeast} from './sunlight-gathering.js';
 import {dedicationFeastReason,rememberDedicationFeast,votiveOrder} from './votive-offerings.js';
 import {relicCommandReason} from './city-command-lock.js';
@@ -31,12 +33,20 @@ export function initializeFestival(s,{legacy=false}={}){
 export function noteFirstBeer(s,b){
  initializeFestival(s);const q=s.firstBeerFeast;if(q.status!=='unbrewed'||!completedBrewery(b))return false;
  Object.assign(q,{status:'pending',brewery:buildingKey(b),producedAt:s.simTime});
+ if(isStrictSumer(s))q.breweryId=ensureBreweryEntityId(s,b);
  s.news??=[];s.news.unshift({title:'Первая партия пива выпущена',text:`Пивоварня (${b.x+1}, ${b.y+1}) впервые сварила пиво. Одну настоящую кружку принесут на небольшой пир у пивоварни: взрослые соберутся, когда освободятся. Если сейчас идёт другое событие, праздник дождётся его окончания.`,kind:'good',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);return true;
+}
+export function retireFirstBeerVenue(s,b){
+ const q=s.firstBeerFeast;
+ if(q?.status!=='pending'||q.breweryId===undefined||b.causalEntityId!==q.breweryId)return;
+ q.status='skipped';
+ s.news.unshift({title:'Первый пивной пир отменён',text:'Пивоварню первой партии снесли. Запись о выпуске осталась в летописи.',kind:'build',year:s.year,season:s.season,tick:s.tick});
+ s.news=s.news.slice(0,80);
 }
 function beginFirstBeer(s){
  const pending=s.firstBeerFeast;
  if(pending?.status!=='pending'||s.festival||s.funeral||s.lost||s.event||relicCommandReason(s))return false;
- const breweries=s.buildings.filter(readyBrewery).sort((a,b)=>(buildingKey(a)===pending.brewery?-1:buildingKey(b)===pending.brewery?1:0));
+ const breweries=s.buildings.filter(b=>readyBrewery(b)&&(pending.breweryId===undefined||pending.breweryId===b.causalEntityId)).sort((a,b)=>(buildingKey(a)===pending.brewery?-1:buildingKey(b)===pending.brewery?1:0));
  for(const b of breweries){
   const venue=buildingKey(b),destination=port(s,venue);if(!destination||!s.citizens.some(c=>eligibleFor(c,{occasion:'firstBeer',temple:venue})&&canCarry(c,{occasion:'firstBeer',temple:venue})&&['home','working','resting'].includes(c.phase)&&route(s,c,venue)))continue;
   let source=null,local=false;
@@ -201,10 +211,10 @@ export function festivalSummary(s,options={}){
 export function festivalView(s){const q=s.festival;if(!q)return null;const b=s.buildings.find(b=>buildingKey(b)===q.temple),court=festivalCourtLayout(s,networkFor(s),q.temple)?.center;return {occasion:occasion(q),title:festivalTitle(q),stage:q.stage,temple:q.temple,x:b?.x,y:b?.y,court:court?{...court}:null,consumed:q.consumed,participants:q.actors.filter(a=>a.kind==='guest').map(a=>a.id),dancing:q.actors.filter(a=>a.stage==='dancing').map(a=>a.id),carriers:q.actors.filter(a=>a.kind==='carrier').map(a=>({id:a.id,load:a.load,material:a.material})),elapsed:elapsedFestival(s,q)};}
 export function validateFirstBeerFeast(s){
  const q=s.firstBeerFeast;if(q===undefined)return true;
- if(!q||typeof q!=='object'||Array.isArray(q)||Object.keys(q).length!==4||q.version!==1||!['unbrewed','pending','done','skipped','legacy'].includes(q.status)||!['version','status','brewery','producedAt'].every(k=>k in q))return false;
- if(['unbrewed','legacy'].includes(q.status))return q.brewery===null&&q.producedAt===null&&!firstBeer(s.festival);
+ if(!q||typeof q!=='object'||Array.isArray(q)||Object.keys(q).length!==4+Number(q.breweryId!==undefined)||q.version!==1||!['unbrewed','pending','done','skipped','legacy'].includes(q.status)||!['version','status','brewery','producedAt'].every(k=>k in q))return false;
+ if(['unbrewed','legacy'].includes(q.status))return q.breweryId===undefined&&q.brewery===null&&q.producedAt===null&&!firstBeer(s.festival);
  if(typeof q.brewery!=='string'||!/^\d+,\d+$/.test(q.brewery)||!Number.isFinite(q.producedAt)||q.producedAt<0||q.producedAt>s.simTime)return false;
- return !firstBeer(s.festival)||(s.festival.consumed?q.status==='done':q.status==='pending');
+ return !firstBeer(s.festival)||(q.breweryId===undefined||s.festival.temple===q.brewery)&&(s.festival.consumed?q.status==='done':q.status==='pending');
 }
 export function validateFestival(s){
  if(!validateFirstBeerFeast(s))return false;const q=s.festival;if(q===null||q===undefined)return !s.citizens?.some(c=>c.phase==='festival');const cost=costFor(q);
