@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T03:39:26.464383+00:00",
+  "commit": "08ab575ead76c392cf68c83ae4c904714595ea8f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "671fd8fe88163f0913d762d8d1e25f63a46ad6ca0143fca1d1506993fa044595",
+      "actual": "671fd8fe88163f0913d762d8d1e25f63a46ad6ca0143fca1d1506993fa044595",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-shaping-batch-archive-4x.json",
+      "status": 200,
+      "expected": "d922384045f61b07da013f307bbd425dbda62d6478437c66990b0d8689aa8a06",
+      "actual": "d922384045f61b07da013f307bbd425dbda62d6478437c66990b0d8689aa8a06",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2bced614e9fc7a8fd1ad2fe1ab19abf7fdb8347b51ba2bcb9c5c03cfd0a358ae",
+      "actual": "2bced614e9fc7a8fd1ad2fe1ab19abf7fdb8347b51ba2bcb9c5c03cfd0a358ae",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "e26553e031ee3d1b2d2d0de9e0a03684ad12223811fc410f96ca732f191aaa5a",
+      "actual": "e26553e031ee3d1b2d2d0de9e0a03684ad12223811fc410f96ca732f191aaa5a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "0fae37b6f13cc2809b6094f418f21d6d3ac0263e96c6f5f78ef895c599942e00",
+      "actual": "0fae37b6f13cc2809b6094f418f21d6d3ac0263e96c6f5f78ef895c599942e00",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "6208b8d250399b4ca297119b53d8408bd9ec5886da69ca9c30b37a265f606e75",
+      "actual": "6208b8d250399b4ca297119b53d8408bd9ec5886da69ca9c30b37a265f606e75",
+      "match": true
+    },
+    {
+      "path": "shaping-batch.js",
+      "status": 200,
+      "expected": "0f77fa7aaa92a61e172e60c8a09e0660377d4460ae24d004507f74930efcad5d",
+      "actual": "0f77fa7aaa92a61e172e60c8a09e0660377d4460ae24d004507f74930efcad5d",
+      "match": true
+    },
+    {
+      "path": "tests/shaping-batch.test.js",
+      "status": 200,
+      "expected": "a762421fdafeec32ca786e38400082790266eb02fc57d9f487af609c441c57ca",
+      "actual": "a762421fdafeec32ca786e38400082790266eb02fc57d9f487af609c441c57ca",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
