@@ -35,3 +35,16 @@ test('a stale route control cannot cancel a new route with a recycled group numb
  assert.ok(cancelRoadRoute(loaded,replacement.group,activeOrder).ok);
  assert.equal(cancelRoadRoute(loaded,replacement.group,activeOrder).ok,false);
 });
+
+test('a saved route cannot assign one order number to two segments',()=>{
+ const s=createGame({start:'established'}),roads=ensureRoads(s);
+ s.resources.clay=1000;s.resources.reed=1000;
+ const route=upgradeRoadRoute(s,roads[0].id,roads.at(-1).id,2);
+ assert.ok(route.ok&&route.count>1);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const damaged=JSON.parse(raw);
+ const [first,second]=damaged.roads.filter(r=>r.construction?.routeOrder===route.group);
+ second.construction.order=first.construction.order;
+ assert.equal(decode(JSON.stringify(damaged)),null);
+});

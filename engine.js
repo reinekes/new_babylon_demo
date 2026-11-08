@@ -593,6 +593,7 @@ export function decode(raw){
 
   }
   if(s.nextConstructionOrder!==undefined&&!integer(s.nextConstructionOrder,1,MAX_CONSTRUCTION_ORDER+1))return null;
+  const constructionOrders=new Set();
   for(const b of constructionEntities(s)){
    if(b.boatTender!==undefined&&(b.boatTender!==true||!isStrictSumer(s)||b.type!=='harbor'||!isComplete(b)))return null;
    if(b.boatWear!==undefined&&(b.boatWear!==true||!isStrictSumer(s)||b.type!=='harbor'||!isComplete(b)))return null;
@@ -606,6 +607,10 @@ export function decode(raw){
    if(!['new','upgrade','repair','boat'].includes(q.kind)||!integer(q.target,1,3)||q.target!==(q.kind==='new'?1:q.kind==='upgrade'?b.level+1:b.level)||q.kind==='new'&&b.level!==1||!finite(q.work,0,workRequired(b)))return null;
    if(q.routeOrder!==undefined&&(b.type!=='road'||!integer(q.routeOrder,0,1e9)))return null;
    if(q.priority!==undefined&&!integer(q.priority,0,2)||q.order!==undefined&&!integer(q.order,0,1e9))return null;
+   if(s.nextConstructionOrder!==undefined&&q.order!==undefined){
+    if(constructionOrders.has(q.order))return null;
+    constructionOrders.add(q.order);
+   }
    const cost=q.joinery?(q.kind==='upgrade'?joineryUpgradeCost(b):joineryBoatCost(q.kind)):q.kind==='boat'?boatTenderCost:q.kind==='repair'?(b.type==='harbor'?boatRepairCost:floodRepairCost(b)):b.type==='road'?roadUpgradeCost(b):q.kind==='new'?BUILDINGS[b.type]:q.legacyMasonry?legacyUpgradeCost(b):upgradeCost(b);
    if(!q.required||!q.remaining||!q.delivered||[q.required,q.remaining,q.delivered].some(v=>Object.keys(v).some(k=>!MATERIALS.includes(k))))return null;
    if([q.remaining,q.delivered].some(v=>Object.keys(v).length!==Object.keys(q.required).length||Object.keys(v).some(k=>!(k in q.required))))return null;
