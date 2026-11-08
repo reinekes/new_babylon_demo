@@ -1,0 +1,76 @@
+{
+  "water": {
+    "buildings": 130,
+    "population": 242,
+    "initialPopulation": 200,
+    "helperId": 9,
+    "helperWorked": true,
+    "completed": true,
+    "reloadByteIdentical": true,
+    "steps": 722,
+    "cpuMedianMs": 8.647249999999985,
+    "cpuP95Ms": 34.21950000000106,
+    "places": [
+      "11,7",
+      "4,7"
+    ],
+    "witnesses": [
+      {
+        "stationId": 1,
+        "station": "12,7",
+        "homeId": 3,
+        "home": "11,7",
+        "recipientId": 102,
+        "courierId": 9,
+        "time": 62.85,
+        "amount": 7.5
+      },
+      {
+        "stationId": 1,
+        "station": "12,7",
+        "homeId": 4,
+        "home": "4,7",
+        "recipientId": 81,
+        "courierId": 9,
+        "time": 90.125,
+        "amount": 6
+      }
+    ],
+    "loadedCargo": true,
+    "receipt": {
+      "stationId": 1,
+      "homeId": 2,
+      "station": "12,7",
+      "home": "8,8",
+      "organizerId": 8,
+      "requesterId": 0,
+      "courierId": 9,
+      "time": 67.875,
+      "amount": 6,
+      "recipientId": 6
+    },
+    "automaticFirstTrip": true,
+    "waiting": "На водозабор нужно назначить водоноса",
+    "measurement": "Node simulation CPU, 4x calendar rate, no renderer",
+    "speed": 4,
+    "projectedClay": 20,
+    "reservedClay": 12,
+    "quoteReadOnly": true
+  },
+  "household": {
+    "speed": 4,
+    "projectedClay": 20,
+    "evacuationReason": true,
+    "refusalWasReadOnly": true,
+    "steps": 1019,
+    "buildings": 130,
+    "population": 245,
+    "retainedIds": 218,
+    "site": "5,4",
+    "complete": true,
+    "settled": true,
+    "byteExact": true,
+    "medianCpuMs": 3.284125000000131,
+    "p95CpuMs": 26.898708000000624
+  }
+}

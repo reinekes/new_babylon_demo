@@ -338,3 +338,21 @@ test('a placement draft cannot commit for a moved requester or a replacement cou
  assert.match(approveWaterProject(s,...args,replacement).reason,/Проситель больше не живёт/);
  assert.equal(encode(s),before);
 });
+
+test('the proposal sees city materials that have yet to be reconciled to the connected store',async()=>{
+ const {syncInventory}=await import('../inventory.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const house=s.buildings.findLast(b=>b.type==='house'),requester=s.citizens.find(c=>c.home===buildingKey(house));
+ const organizer=s.citizens.find(c=>c.age>=16&&c.home!==requester.home);
+ house.water=0;
+ assert.ok(setCitizenRole(s,organizer.id,'builder').ok);
+ s.resources.clay=0;
+ syncInventory(s);
+ s.resources.clay=20;
+ const before=JSON.stringify(s),offer=waterProjectProposal(s,organizer.id,requester.id,12,7);
+ assert.ok(offer.ok,offer.reason);
+ assert.equal(offer.availableStock.clay,20);
+ assert.equal(JSON.stringify(s),before);
+ assert.ok(approveWaterProject(s,organizer.id,requester.id,12,7).ok);
+ assert.equal(s.resources.clay,8);
+});

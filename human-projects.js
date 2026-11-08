@@ -7,7 +7,7 @@ import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
 import {canLeadConstruction,isAwakening} from './godhood.js';
 import {networkFor} from './workforce.js';
-import {stockStores} from './inventory.js';
+import {projectedStoreStock,stockStores} from './inventory.js';
 import {dispatchNeighborWater,waterDemand,waterpointCanReach,waterSummary} from './water.js';
 import {supplyHome} from './households.js';
 import {worldWidth,worldHeight} from './world.js';
@@ -142,11 +142,14 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  const component=waterProjectConnection(s,site),group=component(buildingKey(site));
  if(group===undefined||component(buildingKey(home))!==group||component(organizer.home)!==group)return refuse('Нет прохода между водозабором, двором и организатором');
  if(participants.some(c=>component(c.home)!==group))return refuse('Помощник не может пройти от своего двора к водозабору');
- const stores=stockStores(s).filter(b=>component(buildingKey(b))===group);
+ const allStores=stockStores(s),stores=allStores.filter(b=>component(buildingKey(b))===group);
  if(!stores.length)return refuse('На этом берегу нет доступного склада');
  const cost=BUILDINGS[projectType];
  const availableStock=Object.fromEntries(MATERIALS.filter(k=>cost[k]>0)
-  .map(k=>[k,stores.reduce((sum,b)=>sum+(b.stock?.[k]||0),0)]));
+  .map(k=>{
+   const projected=projectedStoreStock(s,k,allStores);
+   return [k,stores.reduce((sum,b)=>sum+projected.get(buildingKey(b)),0)];
+  }));
  const missing=Object.keys(availableStock).filter(k=>availableStock[k]<cost[k]);
  if(missing.length)return refuse(`На доступных складах не хватает: ${missing.map(k=>RESOURCE_NAMES[k]).join(', ')}`);
  const eligibleStores=new Set(stores.map(buildingKey));

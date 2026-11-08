@@ -5,7 +5,7 @@ import {MONTH_NAMES} from './calendar.js';
 import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
 import {BUILDINGS,buildingKey,capacityOf,isOperational} from './definitions.js';
 import {build,canBuild} from './engine.js';
-import {stockStores} from './inventory.js';
+import {projectedStoreStock,stockStores} from './inventory.js';
 import {floodFootprint,floodPhase} from './river-flood.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {networkFor} from './workforce.js';
@@ -104,6 +104,8 @@ export function householdInitiative(s,source){
  const family=connectedFamilies.find(group=>!s.buildings.some(b=>canMoveInto(b,group)));
  if(!family)return refuse('Семья может занять свободный дом в этом квартале');
  const flooded=floodPhase(s)==='active'?floodFootprint(s,s.riverFlood):null;
+ const allStores=stockStores(s),materials=['clay','reed'];
+ const stock=Object.fromEntries(materials.map(k=>[k,projectedStoreStock(s,k,allStores)]));
  let reason='Рядом нет свободного участка с проходом к семье и складу';
  for(let ring=1;ring<=3;ring++)for(let dx=-ring;dx<=ring;dx++){
   const dy=ring-Math.abs(dx);
@@ -115,9 +117,9 @@ export function householdInitiative(s,source){
    const site={type:'house',x,y,level:1,starterHut:true};
    const preview=components({...s,buildings:[...s.buildings,site],roads:[...s.roads]}),group=preview.get(key);
    if(group===undefined||family.some(c=>preview.get(c.home)!==group))continue;
-   const stores=stockStores(s).filter(b=>preview.get(buildingKey(b))===group);
+   const stores=allStores.filter(b=>preview.get(buildingKey(b))===group);
    if(!stores.length)continue;
-   if(['clay','reed'].some(k=>stores.reduce((sum,b)=>sum+(b.stock?.[k]||0),0)+1e-8<BUILDINGS.house[k])){
+   if(materials.some(k=>stores.reduce((sum,b)=>sum+stock[k].get(buildingKey(b)),0)<BUILDINGS.house[k])){
     reason='На доступных складах мало глины или тростника';
     continue;
    }

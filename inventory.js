@@ -66,23 +66,29 @@ export function takeStock(s,key,k,n,{fishTo,fishKey='fishCargo',giftTo,giftKey='
  if(b.creatorStock){const local=takeCreatorStock(b,k,taken);if(creatorTo)markCreatorCargo(s,creatorTo,k,local,true);}
  b.stock[k]-=taken;s.resources[k]-=taken;return taken;
 }
+// Apply the warehouse order used by syncInventory without writing stock or provenance.
+export function projectedStoreStock(s,resource,stores=stockStores(s)){
+ const stored=stores.reduce((total,b)=>total+(b.stock?.[resource]||0),0);
+ const city=amount(s.resources[resource]);
+ let adjustment=(s.inventory?city:Math.max(city,stored))-stored;
+ const result=new Map();
+ for(const b of stores){
+  const local=b.stock?.[resource]||0,change=Math.max(-local,adjustment);
+  adjustment-=change;
+  result.set(keyOf(b),local+change);
+ }
+ return result;
+}
 export function foodAvailability(s,{reconcile=true}={}){
  if(reconcile)syncInventory(s);
  const stores=stockStores(s);
- let cityFood=amount(s.resources.food),adjustment=0;
- if(!reconcile){
-  // Match syncInventory's store order without touching stock or provenance.
-  const stored=stores.reduce((total,b)=>total+(b.stock?.food||0),0);
-  if(!s.inventory)cityFood=Math.max(cityFood,stored);
-  adjustment=cityFood-stored;
- }
+ const projected=reconcile?null:projectedStoreStock(s,'food',stores);
+ const cityFood=!reconcile&&!s.inventory?Math.max(amount(s.resources.food),stores.reduce((n,b)=>n+(b.stock?.food||0),0)):amount(s.resources.food);
  let target=0;
  if(s.foodPlan?.protectSeeds!==false){for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));target=Math.min(cityFood,Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0)));}
  const result=new Map();
  for(const b of stores){
-  const stored=b.stock?.food||0,change=Math.max(-stored,adjustment);
-  adjustment-=change;
-  const available=stored+change,protectedFood=Math.min(available,target);
+  const available=projected?.get(keyOf(b))??(b.stock?.food||0),protectedFood=Math.min(available,target);
   result.set(keyOf(b),available-protectedFood);
   target-=protectedFood;
  }
