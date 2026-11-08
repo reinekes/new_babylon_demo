@@ -1,3 +1,4 @@
+import {displayName} from './citizen-epithets.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
 import {bindWaterProject,ensureHouseEntityId,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
@@ -89,6 +90,23 @@ export function waterProjectOrganizerReason(s,organizer){
   Object.values(organizer.cargo||{}).some(n=>n>0)||Object.values(organizer.buildCargo||{}).some(n=>n>0))return 'Организатор занят текущей работой или доставкой';
  return null;
 }
+const requesterShelterReason=c=>c?.floodShelter||c?.fireShelter?'Проситель ещё не вернулся домой после эвакуации':'';
+
+function waterProjectHelperReason(s,participants){
+ for(const c of participants){
+  const reason=waterProjectOrganizerReason(s,c);
+  if(reason)return c?displayName(s,c)+' · '+reason:'Помощник больше не живёт в городе';
+ }
+ return '';
+}
+
+export function waterDreamCrewReason(s,dream){
+ const resident=id=>s.citizens.find(c=>c.id===id);
+ return requesterShelterReason(resident(dream.requesterId))||
+  waterProjectOrganizerReason(s,resident(dream.organizerId))||
+  waterProjectHelperReason(s,dream.participantIds.map(resident));
+}
+
 export function waterProjectProposal(s,organizerId,requesterId,x,y,participantIds=[],sourceHome){
  const refuse=reason=>({ok:false,reason});
  if(!isStrictSumer(s))return refuse('Инициатива доступна в Южном Шумере');
@@ -101,7 +119,8 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  if(sourceHome&&!s.buildings.includes(sourceHome))return refuse('Первоначальный двор снесён или заменён');
  if(sourceHome&&home!==sourceHome)return refuse('Проситель больше не живёт в этом дворе');
  if(!home||requester.age<16)return refuse('Нужен населённый двор, которому не хватает воды');
- if(requester.floodShelter||requester.fireShelter)return refuse('Проситель ещё не вернулся домой после эвакуации');
+ const shelterReason=requesterShelterReason(requester);
+ if(shelterReason)return refuse(shelterReason);
  const water=waterSummary(s,home);
  if(water.stock>=water.demand)return refuse('У двора есть запас воды на день');
  if(awaitingWaterProject(s,home))return refuse('Двор уже ждёт доставку из своего проекта');
@@ -109,10 +128,8 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  if(organizerReason)return refuse(organizerReason);
  if(!validParticipants(participantIds,organizerId))return refuse('Выберите до трёх разных помощников');
  const participants=participantIds.map(id=>s.citizens.find(c=>c.id===id));
- for(const c of participants){
-  const reason=waterProjectOrganizerReason(s,c);
-  if(reason)return refuse(c?c.name+' · '+reason:'Помощник больше не живёт в городе');
- }
+ const helperReason=waterProjectHelperReason(s,participants);
+ if(helperReason)return refuse(helperReason);
 
  const reason=canBuild(s,projectType,x,y);
  if(reason)return refuse(reason);

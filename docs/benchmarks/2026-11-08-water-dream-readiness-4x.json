@@ -1,0 +1,17 @@
+{
+  "buildings": 130,
+  "population": 222,
+  "initialPopulation": 222,
+  "helperId": 16,
+  "blockedBeforeSpending": true,
+  "reason": "Шуба 2 Строитель · Организатор голоден и пока откладывает стройку",
+  "helperWorked": true,
+  "completed": true,
+  "reloadByteIdentical": true,
+  "steps": 270,
+  "cpuMedianMs": 2.4192910000001575,
+  "cpuP95Ms": 7.406875000000127,
+  "dawn": 55,
+  "faithSpent": 3,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}
