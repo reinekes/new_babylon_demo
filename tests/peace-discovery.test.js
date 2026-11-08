@@ -54,7 +54,8 @@ test('Peace applies only to the quoted neighborhood after real care, preserving 
  const {miracle}=await import('../engine.js');
  const {peaceQuote,recordCompletedCare}=await import('../peace-discovery.js');
  const s=createNewCity({mode:'awakening',seed:137});
- s.godhood.stage='recognized';s.resources.faith=100;
+ Object.assign(s.godhood,{stage:'recognized',witnessId:0,believerIds:[0],recognitionAt:0});
+ s.resources.faith=100;s.simTime=s.seasonElapsed=1;
  const home=s.buildings.find(b=>b.type==='house');
  const target={x:home.x,y:home.y};
  assert.match(miracle(s,'peace',target).reason,/уход|трапез/);
@@ -78,4 +79,9 @@ test('Peace applies only to the quoted neighborhood after real care, preserving 
   assert.deepEqual(c.cargo,cargo);
  }
  assert.deepEqual(s.peaceDiscovery.lastCast.ids,quote.ids);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const wrongDate=JSON.parse(raw);
+ wrongDate.miracleHistory.paid.peace.at=.5;
+ assert.equal(decode(JSON.stringify(wrongDate)),null);
 });

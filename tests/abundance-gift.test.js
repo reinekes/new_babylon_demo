@@ -21,6 +21,7 @@ function fixture(){
 
 test('a selected warehouse accepts only its quoted room and the receipt survives loading',()=>{
  const {s,b}=fixture(),target={x:b.x,y:b.y};
+ s.simTime=s.seasonElapsed=1;
  assert.equal(putStock(s,'10,9','food',33),33);
  const before=encode(s),total=s.resources.food,other=s.buildings.find(b=>b.type==='shrine'),otherFood=other.stock.food;
  assert.equal(abundanceQuote(s,target).amount,27);
@@ -33,6 +34,9 @@ test('a selected warehouse accepts only its quoted room and the receipt survives
  assert.deepEqual(s.abundanceGift.last,{store:'10,9',amount:27,at:s.simTime});
  const raw=encode(s);
  assert.equal(encode(decode(raw)),raw);
+ const wrongDate=JSON.parse(raw);
+ wrongDate.miracleHistory.paid.abundance.at=.5;
+ assert.equal(decode(JSON.stringify(wrongDate)),null);
  const forged=JSON.parse(raw);
  forged.abundanceGift.last.amount=46;
  assert.equal(decode(JSON.stringify(forged)),null);

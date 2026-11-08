@@ -27,8 +27,12 @@ export function validateMiracleHistory(s){
   row.population!==undefined||row.at!==trialTimes[id]))return false;
  if(paid.some(([id,row])=>!Object.hasOwn(MIRACLES,id)||!object(row)||
   !Number.isSafeInteger(row.faithSpent)||row.faithSpent<=0||row.population!==undefined&&!validPopulationOutcome(id,row.population)))return false;
- const paidRain=history.paid.rain;
- if(paidRain&&s.rainDiscovery&&paidRain.at!==s.rainDiscovery.lastPaidAt)return false;
+ const effectDates=[
+  ['rain',s.rainDiscovery,s.rainDiscovery?.lastPaidAt],
+  ['abundance',s.abundanceGift,s.abundanceGift?.last?.at],
+  ['peace',s.peaceDiscovery,s.peaceDiscovery?.lastCast?.at]
+ ];
+ if(effectDates.some(([id,effect,at])=>effect&&history.paid[id]&&history.paid[id].at!==at))return false;
  const records=[...trials,...paid].map(([,row])=>row).sort((a,b)=>a.number-b.number);
  return records.length>0&&records.every((row,i)=>Object.keys(row).length===3+Number(row.population!==undefined)&&
   Number.isSafeInteger(row.number)&&row.number>0&&row.number<=s.miracleCount&&

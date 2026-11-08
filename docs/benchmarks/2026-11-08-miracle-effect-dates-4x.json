@@ -1,0 +1,32 @@
+{
+  "abundance": {
+    "speed": 4,
+    "wrongDateRejected": true,
+    "legacyWithoutHistoryByteEqual": true,
+    "buildings": 132,
+    "startingCitizens": 265,
+    "endCitizens": 265,
+    "gift": 27,
+    "cost": 25,
+    "fullRejectedWithoutMutation": true,
+    "byteEqualReload": true,
+    "samples": 240,
+    "medianMs": 4.823041999999987,
+    "p95Ms": 24.3951669999999
+  },
+  "peace": {
+    "speed": 4,
+    "wrongDateRejected": true,
+    "legacyWithoutHistoryByteEqual": true,
+    "buildings": 134,
+    "citizens": 289,
+    "recipients": 12,
+    "controlledCareEvidence": true,
+    "castCpuMs": 64.775375,
+    "samples": 120,
+    "medianStepCpuMs": 8.40279099999998,
+    "p95StepCpuMs": 29.61341699999997,
+    "byteEqualReload": false,
+    "maxStockRoundoff": 1.1368683772161603E-13
+  }
+}
