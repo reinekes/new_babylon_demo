@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T01:50:23.933988+00:00",
+  "commit": "9bca6bcb394d8f42411873deb574e4d76cfbf2d0",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d5fbfca0222dba4d9351486f3fecfb87e6da74fa49ace10d456d240958edcab3",
+      "actual": "d5fbfca0222dba4d9351486f3fecfb87e6da74fa49ace10d456d240958edcab3",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "dc6703a32c69bbb6d6ad87b6b2433e38e782a87a84b4c9dca08456fc6c485c8a",
+      "actual": "dc6703a32c69bbb6d6ad87b6b2433e38e782a87a84b4c9dca08456fc6c485c8a",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "551fe1a467846961b5ba2b62bfb0cb8c918026b450200f280192ac09fac311e3",
+      "actual": "551fe1a467846961b5ba2b62bfb0cb8c918026b450200f280192ac09fac311e3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-craft-ending-lesson-4x.json",
+      "status": 200,
+      "expected": "8f0ba2ec508d3cbca1f33af9c6548404c9754ab5c7902fc217481bf1929ea490",
+      "actual": "8f0ba2ec508d3cbca1f33af9c6548404c9754ab5c7902fc217481bf1929ea490",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "3059f2dfe5a51075edb0db2be871dfe95005bc0235493ed8b1f622b4ed53ae0e",
+      "actual": "3059f2dfe5a51075edb0db2be871dfe95005bc0235493ed8b1f622b4ed53ae0e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "486ba20e2fc6d700811a3287dbff6494bde97067ecb7d1f1060a44d3ffeb3988",
+      "actual": "486ba20e2fc6d700811a3287dbff6494bde97067ecb7d1f1060a44d3ffeb3988",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "68a727c49a6bf85f4bdde8b8bb0931b043a70a5c136eb42ebb8971a180236375",
+      "actual": "68a727c49a6bf85f4bdde8b8bb0931b043a70a5c136eb42ebb8971a180236375",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a5176e078bcedc57dc0ac19cfc8cfca9a792d5c4f286992d7470ab939dae70f3",
+      "actual": "a5176e078bcedc57dc0ac19cfc8cfca9a792d5c4f286992d7470ab939dae70f3",
+      "match": true
+    },
+    {
+      "path": "tests/builder-apprenticeship.test.js",
+      "status": 200,
+      "expected": "44ff92adc5e5c9752eec7b52e29a2363e6f0819acdeacd62a7506fe4b1de2166",
+      "actual": "44ff92adc5e5c9752eec7b52e29a2363e6f0819acdeacd62a7506fe4b1de2166",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
