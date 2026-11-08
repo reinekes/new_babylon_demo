@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 236,
+  "isolatedChildKeptHome": true,
+  "movedAfterBridge": [
+    172,
+    177,
+    200
+  ],
+  "reloadByteEqual": true,
+  "samples": 1379,
+  "medianStepCpuMs": 2.5484999999998763,
+  "p95StepCpuMs": 9.338958000000275
+}

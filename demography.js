@@ -1,4 +1,4 @@
-import {householdInitiativeReserved,householdMovingFamily,householdMoveActivityReason} from './household-initiative.js';
+import {householdInitiativeReserved,householdMovingFamily,householdMoveActivityReason,householdMoveSiteReason} from './household-initiative.js';
 import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {prepareMemorialMove} from './life-analytics.js';
 import {mournResidents} from './wellbeing.js';
@@ -45,10 +45,11 @@ export function advanceGenerations(s,recover=()=>{}){
   const reserved=reservedHomes.get(a.id)||reservedHomes.get(partner.id);
   if(!reserved&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
-  const component=housingNetwork.components.get(housingPorts.get(a.home));
-  if(component===undefined||family.some(c=>housingNetwork.components.get(housingPorts.get(c.home))!==component))continue;
-  const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
-  if(reserved&&!available(reserved))continue;
+  const districtAt=home=>housingNetwork.components.get(housingPorts.get(home));
+  const component=districtAt(a.home);
+  if(!reserved&&(component===undefined||family.some(c=>districtAt(c.home)!==component)))continue;
+  const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&districtAt(buildingKey(b))===component;
+  if(reserved&&householdMoveSiteReason(s,reserved,family,districtAt))continue;
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
   if(!house||householdMoveActivityReason(s,family))continue;
   const destination=buildingKey(house);for(const c of family){

@@ -303,6 +303,7 @@ test('a family with a reserved courtyard waits for it when another home becomes 
 
 test('a courtyard move waits until the whole family has a connected route',async()=>{
  const {advanceGenerations}=await import('../demography.js');
+ const {householdMoveSiteReason}=await import('../household-initiative.js');
  const {networkFor,syncCitizens}=await import('../workforce.js');
  const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
  const [first,partner]=s.citizens,child=s.citizens.find(c=>c.age<16);
@@ -318,11 +319,18 @@ test('a courtyard move waits until the whole family has a connected route',async
  syncCitizens(s);
  const net=networkFor(s),component=b=>net.components.get(net.ports.find(p=>p.building===b).key);
  assert.notEqual(component(source),component(isolated));
+ const family=[first,partner,child],before=encode(s);
+ assert.match(householdMoveSiteReason(s,target,family),/нет сухого пути/);
+ assert.equal(encode(s),before);
+ s.arrivalGroup={home:buildingKey(target),count:2};
+ assert.match(householdMoveSiteReason(s,target,family),/мест/);
+ delete s.arrivalGroup;
  advanceGenerations(s);
  assert.equal(target.householdInitiative.settled,undefined);
  assert.equal(child.home,buildingKey(isolated));
  s.buildings.push({type:'bridge',x:14,y:8,level:1});
  syncCitizens(s);
+ assert.equal(householdMoveSiteReason(s,target,family),'');
  advanceGenerations(s);
  assert.equal(target.householdInitiative.settled,true);
  assert.equal(child.home,buildingKey(target));

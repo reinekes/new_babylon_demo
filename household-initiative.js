@@ -12,8 +12,8 @@ import {networkFor} from './workforce.js';
 const refuse=reason=>({ok:false,reason});
 const homeKey=/^\d+,\d+$/;
 
-function components(s){
- const network=networkFor(s);
+function components(s,options){
+ const network=networkFor(s,options);
  return new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),network.components.get(p.key)]));
 }
 
@@ -47,6 +47,18 @@ export function householdMoveActivityReason(s,family){
    Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return 'Семья ждёт окончания работы или доставки';
  }
  return '';
+}
+
+export function householdMoveSiteReason(s,house,family,districtAt){
+ const key=buildingKey(house);
+ if(s.citizens.some(c=>c.home===key))return 'В доме пока есть жильцы';
+ if(capacityOf(house)-reservedArrivalBeds(s,key)<family.length)return 'В доме пока недостаточно свободных мест для семьи';
+ if(!districtAt){
+  const districts=components(s,{materializeRoads:false});
+  districtAt=home=>districts.get(home);
+ }
+ const district=districtAt(key);
+ return district===undefined||family.some(c=>districtAt(c.home)!==district)?'До дома пока нет сухого пути для всей семьи':'';
 }
 
 export function householdInitiative(s,source){

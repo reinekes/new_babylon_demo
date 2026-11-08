@@ -1,0 +1,16 @@
+[
+  {
+    "id": "route",
+    "view": "2d",
+    "url": "?id=route&view=2d",
+    "mode": "2d",
+    "result": "PASS closed route reason in both courtyard cards"
+  },
+  {
+    "id": "route",
+    "view": "3d",
+    "url": "?id=route&view=3d",
+    "mode": "3d",
+    "result": "PASS closed route reason in both courtyard cards"
+  }
+]
