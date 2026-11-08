@@ -1,0 +1,19 @@
+{
+  "speed": 4,
+  "waitingReloadByteEqual": true,
+  "giftPortion": 2,
+  "ordinaryPortion": 4,
+  "deliveredOnce": true,
+  "buildings": 134,
+  "citizens": 289,
+  "count": 6,
+  "controlledHomeWater": true,
+  "foodDebit": 6,
+  "reservationCpuMs": 26.42425,
+  "samples": 24,
+  "medianStepCpuMs": 9.384415999999987,
+  "p95StepCpuMs": 32.395417000000066,
+  "byteEqualReload": true,
+  "maxStockRoundoff": 0,
+  "settled": true
+}

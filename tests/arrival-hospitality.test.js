@@ -501,3 +501,40 @@ test('arrival welcome records an adult present at the courtyard',async()=>{
  createArrivalFamily(s,home,2);
  assert.equal(s.arrivalHospitality.welcomes.at(-1).host,null);
 });
+
+test('mixed travel rations keep their gift portion through reload and settle exactly once',async()=>{
+ const {reserveArrival,advanceArrivalGroup}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {advanceTime}=await import('../engine.js');
+ const {giftAmount}=await import('../abundance-origin.js');
+ let s=createNewCity({mode:'awakening',seed:1});
+ for(const b of s.buildings)if(b.type==='house')b.water=8;
+ const store=s.buildings.find(b=>b.stock?.food>=6);
+ assert.ok(store);
+ store.giftStock=[-1,1];
+ const total=s.resources.food;
+ const network=networkFor(s);
+ assert.ok(reserveArrival(s,network));
+ const {home,count,giftReserve}=s.arrivalGroup;
+ assert.equal(count,2);
+ assert.equal(giftAmount(Object.values(giftReserve)[0]),1);
+ assert.equal(s.resources.food,total-count);
+ assert.equal(advanceArrivalGroup(s,1,{...network,nodes:new Map(),components:new Map()}),false);
+ assert.equal(s.arrivalGroup.waiting,'route');
+ const raw=encode(s);
+ const tampered=JSON.parse(raw);
+ tampered.arrivalGroup.giftReserve[Object.keys(giftReserve)[0]]=[count+1];
+ assert.equal(decode(JSON.stringify(tampered)),null);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ const house=s.buildings.find(b=>`${b.x},${b.y}`===home);
+ for(let i=0;i<400&&s.arrivalGroup;i++){s.event=null;advanceTime(s,.1);}
+ assert.equal(s.arrivalGroup,undefined);
+ assert.equal(giftAmount(house.giftHome),1);
+ const pantry=house.pantryDelivered;
+ advanceTime(s,.1);
+ assert.equal(house.pantryDelivered,pantry);
+ assert.equal(giftAmount(house.giftHome),1);
+ assert.equal(encode(decode(encode(s))),encode(s));
+});
