@@ -1079,7 +1079,11 @@ function makeMiracleCard(id,m){
   agreement.innerHTML='<input type="checkbox" value="libation"> Оставить воду для семейного возлияния (+1 вода)';
   agreement.hidden=true;
   agreement.querySelector('input').onchange=()=>update();
-  el.before(agreement);
+  const preview=document.createElement('p');
+  preview.dataset.arrivalPreview='';
+  preview.setAttribute('aria-live','polite');
+  preview.hidden=true;
+  el.before(agreement,preview);
  }
  el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;
   let target=lastMiracleTarget;

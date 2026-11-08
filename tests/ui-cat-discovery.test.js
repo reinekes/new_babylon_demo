@@ -43,3 +43,19 @@ test('an existing fishery guides completion or delivery instead of asking for a 
  const {s,c}=fixture(),b={type:'fishing',x:16,y:7,level:1,construction:{kind:'new'}};s.buildings.push(b);const {dom,root,controls}=domFor(s);let guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/Дострой/);assert.equal(guide.querySelector('[data-awakening-build="fishing"]'),null);
  delete b.construction;controls.refresh();guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/хижина готова/i);assert.ok(guide.querySelector('[data-awakening-work]'));c.work='16,7';controls.refresh();guide=root.querySelector('.cat-discovery-guide');assert.match(guide.textContent,/дождись.*приёмки/i);assert.equal(guide.querySelector('[data-awakening-build="fishing"]'),null);controls.dispose();dom.window.close();
 });
+
+test('arrival card previews the courtyard and exact provisions, then clears the unavailable offer',()=>{
+ const {s}=fixture();
+ const dom=new JSDOM('<details><small class="miracle-summary-status"></small><div class="miracle-facts"><span></span></div><p class="miracle-unavailable"></p><p data-arrival-preview hidden></p><button class="miracle-cast"></button></details>');
+ const details=dom.window.document.querySelector('details'),preview=details.querySelector('[data-arrival-preview]');
+ const offer={home:'8,9',beds:3,food:3,water:4,homeRef:{x:8,y:9}};
+ const before=JSON.stringify(s);
+ catalog.updateMiracleCard(details,s,'healing','',null,offer);
+ assert.equal(preview.hidden,false);
+ assert.match(preview.textContent,/8, 9.*еда 3.*вода 4.*1 на возлияние/);
+ assert.equal(JSON.stringify(s),before);
+ catalog.updateMiracleCard(details,s,'healing','Нужен сухой путь');
+ assert.equal(preview.hidden,true);
+ assert.equal(preview.textContent,'');
+ dom.window.close();
+});

@@ -66,6 +66,16 @@ export function updateMiracleCard(details,s,id,reason='',gift=null,arrival=null)
  if(id==='healing'){
   if(arrival){el.dataset.arrivalCount=arrival.beds;el.dataset.arrivalHome=arrival.home;}
   else{delete el.dataset.arrivalCount;delete el.dataset.arrivalHome;}
+  const preview=details.querySelector('[data-arrival-preview]');
+  if(preview){
+   preview.hidden=!arrival;
+   let text='';
+   if(arrival){
+    const extra=arrival.water-arrival.beds;
+    text=`Принимающий двор · ${arrival.homeRef.x}, ${arrival.homeRef.y}. Резерв: еда ${arrival.food}, вода ${arrival.water}${extra>0?` (из них ${extra} на возлияние)`:''}.`;
+   }
+   if(preview.textContent!==text)preview.textContent=text;
+  }
  }
  el.dataset.castNumber=previousMiracleCastNumber(s,id);
  el.dataset.castPrice=price;

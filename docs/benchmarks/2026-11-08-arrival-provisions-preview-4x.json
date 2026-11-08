@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "initialPopulation": 289,
+  "population": 295,
+  "arrivals": 6,
+  "home": "2,2",
+  "food": 6,
+  "water": 7,
+  "customWater": 1,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 15.677833999999962,
+  "p95CpuMs": 56.34720800000002
+}
