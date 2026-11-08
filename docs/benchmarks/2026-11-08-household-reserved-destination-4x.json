@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "familyWaitedForReservedHome": true,
+  "spare": "3,1",
+  "steps": 1019,
+  "buildings": 131,
+  "population": 237,
+  "retainedIds": 218,
+  "site": "5,4",
+  "complete": true,
+  "settled": true,
+  "byteExact": true,
+  "medianCpuMs": 1.2310419999998885,
+  "p95CpuMs": 5.831290999999965
+}

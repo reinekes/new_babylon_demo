@@ -276,3 +276,27 @@ test('a small courtyard proposal explains evacuation, an existing project and fa
  for(const c of s.citizens.slice(-3))Object.assign(c,{age:10,parents:[first.id,partner.id]});
  assert.match(householdInitiative(s,source).reason,/четыре места/);
 });
+
+test('a family with a reserved courtyard waits for it when another home becomes free',async()=>{
+ const {advanceGenerations}=await import('../demography.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [first,partner]=s.citizens,source=s.buildings.find(b=>buildingKey(b)===first.home);
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ const result=approveHouseholdInitiative(s,source,offer);
+ assert.ok(result.ok,result.reason);
+ const project=s.buildings.find(b=>buildingKey(b)===result.key);
+ const spare={type:'house',x:10,y:9,level:1};
+ s.buildings.push(spare);s.capacity+=capacityOf(spare);syncCitizens(s);
+ const originalHomes=[first.home,partner.home];
+ advanceGenerations(s);
+ assert.deepEqual([first.home,partner.home],originalHomes);
+ assert.ok(project.construction);
+ for(let i=0;i<1000&&!project.householdInitiative.settled;i++){s.event=null;advanceTime(s,.25);}
+ assert.equal(project.householdInitiative.settled,true);
+ assert.equal(first.home,result.key);
+ assert.equal(partner.home,result.key);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+});

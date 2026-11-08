@@ -33,16 +33,22 @@ export function advanceGenerations(s,recover=()=>{}){
  for(const a of singles){if(a.partner!==null)continue;const partner=singles.find(c=>c!==a&&c.partner===null&&c.sex!==a.sex&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
  // Housing needs reachability, not a route. Topology is stable throughout this pass.
  let housingNetwork,housingPorts;
+ const reservedHomes=new Map();
+ for(const b of s.buildings){
+  const project=b.householdInitiative,first=project?.members[0];
+  if(!reservedHomes.has(first)&&householdInitiativeReserved(project,living.get(first)))reservedHomes.set(first,b);
+ }
  if(!s.funeral)for(const a of s.citizens.filter(c=>c.sex==='f'&&c.partner!==null)){
   const partner=living.get(a.partner);if(!partner)continue;
   const family=[a,partner,...s.citizens.filter(c=>c.age<16&&c.parents.includes(a.id))],current=homes.get(a.home)||[];
-  if(a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
+  const awaiting=b=>householdInitiativeReserved(b.householdInitiative,living.get(b.householdInitiative?.members[0]));
+  const reserved=reservedHomes.get(a.id)||reservedHomes.get(partner.id);
+  if(!reserved&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
   const component=housingNetwork.components.get(housingPorts.get(a.home));
   if(component===undefined||component!==housingNetwork.components.get(housingPorts.get(partner.home)))continue;
   const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
-  const awaiting=b=>householdInitiativeReserved(b.householdInitiative,living.get(b.householdInitiative?.members[0]));
-  const reserved=s.buildings.find(b=>available(b)&&awaiting(b)&&[a.id,partner.id].includes(b.householdInitiative.members[0]));
+  if(reserved&&!available(reserved))continue;
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
   if(!house||family.some(c=>shelterHome(c)||s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
   const destination=buildingKey(house);for(const c of family){
