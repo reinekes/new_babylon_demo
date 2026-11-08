@@ -1,0 +1,21 @@
+{
+  "speed": 4,
+  "controlledFloodWait": true,
+  "riverFloodNetwork": true,
+  "waitingReloadByteEqual": true,
+  "giftPortion": 2,
+  "ordinaryPortion": 4,
+  "deliveredOnce": true,
+  "buildings": 134,
+  "citizens": 289,
+  "count": 6,
+  "controlledHomeWater": true,
+  "foodDebit": 6,
+  "reservationCpuMs": 11.83012500000001,
+  "samples": 24,
+  "medianStepCpuMs": 3.0291249999999934,
+  "p95StepCpuMs": 11.690999999999974,
+  "byteEqualReload": true,
+  "maxStockRoundoff": 0,
+  "settled": true
+}

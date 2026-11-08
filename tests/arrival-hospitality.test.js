@@ -538,3 +538,24 @@ test('mixed travel rations keep their gift portion through reload and settle exa
  assert.equal(giftAmount(house.giftHome),1);
  assert.equal(encode(decode(encode(s))),encode(s));
 });
+
+test('a reserved group distinguishes a flooded courtyard from an ordinary blocked route',async()=>{
+ const {reserveArrival,advanceArrivalGroup,arrivalTransitLabel}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ let s=createNewCity({mode:'awakening',seed:1});
+ for(const b of s.buildings)if(b.type==='house')b.water=8;
+ const network=networkFor(s);
+ assert.ok(reserveArrival(s,network));
+ const g=s.arrivalGroup;
+ const {x,y}=g;
+ const flooded={...network,nodes:new Map(),navigation:{...network.navigation,flooded:new Set([g.home])}};
+ assert.equal(advanceArrivalGroup(s,1,flooded),false);
+ assert.equal(g.waiting,'flood');
+ assert.match(arrivalTransitLabel(g),/разлив/);
+ assert.deepEqual([g.x,g.y],[x,y]);
+ const raw=encode(s);s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ assert.equal(advanceArrivalGroup(s,60,networkFor(s)),true);
+ assert.equal(s.arrivalGroup.waiting,undefined);
+});

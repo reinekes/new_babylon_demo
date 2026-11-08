@@ -268,14 +268,14 @@ export function lastArrivalWelcome(s,home,residents){
 }
 
 export function arrivalTransitLabel(group){
- const status={route:'Ждут открытия пути',housing:'Ждут места в принимающем дворе'}[group.waiting]||'Группа в пути';
+ const status={route:'Ждут открытия пути',housing:'Ждут места в принимающем дворе',flood:'Ждут спада воды после разлива'}[group.waiting]||'Группа в пути';
  return `${status} · ${group.count} чел.`;
 }
 
 export function advanceArrivalGroup(s,dt,network){
  const g=s.arrivalGroup;
  if(!g)return false;
- const wait=reason=>{g.waiting=reason;return false;};
+ const wait=reason=>{g.waiting=network.navigation.flooded?.has(g.home)?'flood':reason;return false;};
  const target=network.ports.find(p=>matchesArrivalHome(g,p.building));
  const component=target&&network.components.get(target.key);
  if(component===undefined||!network.nodes.has(target.key))return wait('route');
@@ -311,7 +311,7 @@ function matchesArrivalHome(group,house){
 function validArrivalGroup(s){
  const g=s.arrivalGroup;
  if(g===undefined)return true;
- if(!g||!s.arrivalHospitality||g.waiting!==undefined&&!['route','housing'].includes(g.waiting)||!Number.isInteger(g.count)||g.count<1||g.count>6||g.custom!==undefined&&g.custom!=='libation'||g.water!==g.count+customWater(g.custom)||
+ if(!g||!s.arrivalHospitality||g.waiting!==undefined&&!['route','housing','flood'].includes(g.waiting)||!Number.isInteger(g.count)||g.count<1||g.count>6||g.custom!==undefined&&g.custom!=='libation'||g.water!==g.count+customWater(g.custom)||
   g.homeId!==undefined&&(!isStrictSumer(s)||!Number.isSafeInteger(g.homeId)||g.homeId<1)||
   !s.buildings.some(b=>matchesArrivalHome(g,b)&&capacityOf(b)>=g.count)||
   !g.provisions||typeof g.provisions!=='object'||Array.isArray(g.provisions)||
