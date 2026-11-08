@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T02:32:26.487529+00:00",
+  "commit": "9071ce4f18b85d90d21a978d69e62a93fe209864",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0ad6615bb7ccf6cbe095111f9d4868ce1ffde285a6990406982dcd534ad11cc0",
+      "actual": "0ad6615bb7ccf6cbe095111f9d4868ce1ffde285a6990406982dcd534ad11cc0",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "edd999b6df88fdcd446df10179232d0e527c3d1d52c2509fc78b6dbd087d718e",
+      "actual": "edd999b6df88fdcd446df10179232d0e527c3d1d52c2509fc78b6dbd087d718e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-household-reserved-destination-4x.json",
+      "status": 200,
+      "expected": "52b9c2c0941b49c40c3e6a5dc02b4a1a29901275da2a4394204ccf0e9a1becc3",
+      "actual": "52b9c2c0941b49c40c3e6a5dc02b4a1a29901275da2a4394204ccf0e9a1becc3",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "1c4d397d22ce32b9ba9eb236ebff7efd312d82e7c904f1122f8c119597b20c86",
+      "actual": "1c4d397d22ce32b9ba9eb236ebff7efd312d82e7c904f1122f8c119597b20c86",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "d7acf01ef3e4bcf10559b62f719c1d53cff71207e58e0870eadc9e177e348a95",
+      "actual": "d7acf01ef3e4bcf10559b62f719c1d53cff71207e58e0870eadc9e177e348a95",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "6eb202cf691678534983252a62b7d597e55e98ec8eed92381681633a79054935",
+      "actual": "6eb202cf691678534983252a62b7d597e55e98ec8eed92381681633a79054935",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "93705b8715e239eba1dce582fd829ac6ebdd51204bbe160415749fd5f2a5730f",
+      "actual": "93705b8715e239eba1dce582fd829ac6ebdd51204bbe160415749fd5f2a5730f",
+      "match": true
+    },
+    {
+      "path": "tests/household-initiative.test.js",
+      "status": 200,
+      "expected": "f09669cd34898144385658f49201821112f47164467f0cdfc840b542b8be200d",
+      "actual": "f09669cd34898144385658f49201821112f47164467f0cdfc840b542b8be200d",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
