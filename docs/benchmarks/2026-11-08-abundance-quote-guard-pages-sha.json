@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-08T01:00:12.622010+00:00",
+  "commit": "08c6e91617d7becb0e805ddc05c2ae26c469175f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d1e07343d574473836c15651fcf1e5e3b6d8071c8b41f53197f28074a6eb806f",
+      "actual": "d1e07343d574473836c15651fcf1e5e3b6d8071c8b41f53197f28074a6eb806f",
+      "match": true
+    },
+    {
+      "path": "abundance-gift.js",
+      "status": 200,
+      "expected": "f272594e184916e0a88db20ac8ad2b85632f2b745d4829b2e4ab767a6364514d",
+      "actual": "f272594e184916e0a88db20ac8ad2b85632f2b745d4829b2e4ab767a6364514d",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "822fd0424f846c7eeacdc793120262b69745e1bd531988d446551ae1f52a427c",
+      "actual": "822fd0424f846c7eeacdc793120262b69745e1bd531988d446551ae1f52a427c",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "1f32d95d6b54d98d2fc25c14a834e05418d5e511e490b886c765c8a613dc5b2c",
+      "actual": "1f32d95d6b54d98d2fc25c14a834e05418d5e511e490b886c765c8a613dc5b2c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-abundance-quote-guard-4x.json",
+      "status": 200,
+      "expected": "2c6a6dd2beb4a1d0894f10a66eb9a3a9fd5591e2583e1c18e4f225637a992875",
+      "actual": "2c6a6dd2beb4a1d0894f10a66eb9a3a9fd5591e2583e1c18e4f225637a992875",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-abundance-quote-guard-browser.json",
+      "status": 200,
+      "expected": "c61b077a41f31ed883a96a8158751eef2c54fd8f50fe1b0b38f9586e82c88b46",
+      "actual": "c61b077a41f31ed883a96a8158751eef2c54fd8f50fe1b0b38f9586e82c88b46",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "dba655e9829ed3518534f1f25fc71e81971e93c33cc31f2733e250e3ddf19a70",
+      "actual": "dba655e9829ed3518534f1f25fc71e81971e93c33cc31f2733e250e3ddf19a70",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "4e26819ed877f4d69fe91736bde0b5151074fab2255b753c03311d84ef2a0e2d",
+      "actual": "4e26819ed877f4d69fe91736bde0b5151074fab2255b753c03311d84ef2a0e2d",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f51a03a120a1d2fbf52dec58d8af9ff90dad453e5f961d5fd0029bbbaadd28e5",
+      "actual": "f51a03a120a1d2fbf52dec58d8af9ff90dad453e5f961d5fd0029bbbaadd28e5",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "67c19f9883dfecaa6bbb235a478fbbd3b7acf89798595d275973006116b57a57",
+      "actual": "67c19f9883dfecaa6bbb235a478fbbd3b7acf89798595d275973006116b57a57",
+      "match": true
+    },
+    {
+      "path": "tests/abundance-gift.test.js",
+      "status": 200,
+      "expected": "9fc8c6c6f34d4bbd870ef2f42765b3e20821cd0c541f1bb3f9fb958ecc111ddd",
+      "actual": "9fc8c6c6f34d4bbd870ef2f42765b3e20821cd0c541f1bb3f9fb958ecc111ddd",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
