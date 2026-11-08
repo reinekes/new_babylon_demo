@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T00:09:04.849987+00:00",
+  "commit": "b6e9238b7bb6b833ac6709c5d50818c9acf9eea8",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9b0b1b796707d65898a6d2736ca6e838d2ad7710f77bf16dd5f936428d1b0567",
+      "actual": "9b0b1b796707d65898a6d2736ca6e838d2ad7710f77bf16dd5f936428d1b0567",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "daed9f5c25f7d66a2773c248dc4af18857e05a4b88a4fbf4893b2671a20f41d1",
+      "actual": "daed9f5c25f7d66a2773c248dc4af18857e05a4b88a4fbf4893b2671a20f41d1",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "783027f8aa52800087ac447e7bfd3e0ed85528acab297f5038dd30e597b43a30",
+      "actual": "783027f8aa52800087ac447e7bfd3e0ed85528acab297f5038dd30e597b43a30",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-birth-flood-shelter-4x.json",
+      "status": 200,
+      "expected": "88be7fb52a30e1389844a034fd79903f3eef3f22f7367fddb232bf422973e8cb",
+      "actual": "88be7fb52a30e1389844a034fd79903f3eef3f22f7367fddb232bf422973e8cb",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "18bc65f266f342e3d9304223333e63d0de610018a4c528a7fd8b64e1e6c5b36c",
+      "actual": "18bc65f266f342e3d9304223333e63d0de610018a4c528a7fd8b64e1e6c5b36c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fc1edf4593ce3558c7a2abf768188c6f06edc203fcd91bf855cb39f57cb7002e",
+      "actual": "fc1edf4593ce3558c7a2abf768188c6f06edc203fcd91bf855cb39f57cb7002e",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "30e50bff7c9b6a2e00b77842f3a5defa41cf382baac347f73be52d39f847bc3e",
+      "actual": "30e50bff7c9b6a2e00b77842f3a5defa41cf382baac347f73be52d39f847bc3e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "891b5563f66a0b777fb2fed0572a072e02fe05625003998da515e9939a3b9129",
+      "actual": "891b5563f66a0b777fb2fed0572a072e02fe05625003998da515e9939a3b9129",
+      "match": true
+    },
+    {
+      "path": "tests/generations.test.js",
+      "status": 200,
+      "expected": "371d4fecf689c5058d8179854e42a26a4764b04422307b310c9578a4f8a4e858",
+      "actual": "371d4fecf689c5058d8179854e42a26a4764b04422307b310c9578a4f8a4e858",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
