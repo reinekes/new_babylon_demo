@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-08T03:28:33.591105+00:00",
+  "commit": "3379c7c628eb52b1795cf85f0e792726fe6f7c5f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3ae6f93996b6bb0ffcbe6fa610d39bb18e1f605d2e60fafaf25e4180ce3e5619",
+      "actual": "3ae6f93996b6bb0ffcbe6fa610d39bb18e1f605d2e60fafaf25e4180ce3e5619",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "28993756873db708cad40d47886c303b32b5f86767eec4dffb637367517c1896",
+      "actual": "28993756873db708cad40d47886c303b32b5f86767eec4dffb637367517c1896",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-rich-catch-receipt-4x.json",
+      "status": 200,
+      "expected": "b3fb62640e4c200e5fa59d0ff5d1604d5ebe518e41b37f5a5e0c5214033aeca7",
+      "actual": "b3fb62640e4c200e5fa59d0ff5d1604d5ebe518e41b37f5a5e0c5214033aeca7",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-rich-catch-receipt-browser.json",
+      "status": 200,
+      "expected": "81678a18578d8aaee00bf21c05af0377f59a6f727d47278b6f64409105b73778",
+      "actual": "81678a18578d8aaee00bf21c05af0377f59a6f727d47278b6f64409105b73778",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "013515afa3717ca0bbe8d97b3ba0b26e26d8c33a562cba435981fea11d3754ed",
+      "actual": "013515afa3717ca0bbe8d97b3ba0b26e26d8c33a562cba435981fea11d3754ed",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "05f1a014ae7096221825ac13af5472553bf5d6641d59dafb588535c5c869d26c",
+      "actual": "05f1a014ae7096221825ac13af5472553bf5d6641d59dafb588535c5c869d26c",
+      "match": true
+    },
+    {
+      "path": "miracle-history.js",
+      "status": 200,
+      "expected": "9426f9cb772deb7542e49845dfc8c18b7d720bedd34252ea32790c837d075869",
+      "actual": "9426f9cb772deb7542e49845dfc8c18b7d720bedd34252ea32790c837d075869",
+      "match": true
+    },
+    {
+      "path": "rich-catch.js",
+      "status": 200,
+      "expected": "0bf99593136ee6d9957e68e289602ac38fd94c6904808c7c618a783a911bf18c",
+      "actual": "0bf99593136ee6d9957e68e289602ac38fd94c6904808c7c618a783a911bf18c",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "9bb41f18b18b637aa7777b0d3003edbc46c0522dbe3efda30d8247a29b6942be",
+      "actual": "9bb41f18b18b637aa7777b0d3003edbc46c0522dbe3efda30d8247a29b6942be",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "2f47bbdb098b19a4d91f8e536e6cb5bb7abb19e13a9c337b56fe991c614ac252",
+      "actual": "2f47bbdb098b19a4d91f8e536e6cb5bb7abb19e13a9c337b56fe991c614ac252",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "095aac8944ce434acd2cf436f04646034374ee6aefd355ed9632fc238af62ba2",
+      "actual": "095aac8944ce434acd2cf436f04646034374ee6aefd355ed9632fc238af62ba2",
+      "match": true
+    },
+    {
+      "path": "tests/rich-catch.test.js",
+      "status": 200,
+      "expected": "d9796b61b6e4ac0f3134634fdcc0ab1a3d1900f9002b0bdb66bc4c1b491fbf52",
+      "actual": "d9796b61b6e4ac0f3134634fdcc0ab1a3d1900f9002b0bdb66bc4c1b491fbf52",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "ebaa9f4dfd1d24d48aeb1fe54dc154d2f19d965786664ac515ff62229928563a",
+      "actual": "ebaa9f4dfd1d24d48aeb1fe54dc154d2f19d965786664ac515ff62229928563a",
+      "match": true
+    }
+  ],
+  "matched": 13,
+  "total": 13
+}
