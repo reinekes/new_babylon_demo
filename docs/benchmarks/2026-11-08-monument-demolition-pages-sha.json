@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T01:36:31.564559+00:00",
+  "commit": "5dcc29b385e40defbe1110439e4df188ada53b6c",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7ad600c12ca18537cfb3dd65dfa2eb38eed414560b1eb4eaf9f827baed1d1c28",
+      "actual": "7ad600c12ca18537cfb3dd65dfa2eb38eed414560b1eb4eaf9f827baed1d1c28",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "88e9d9cdf54cbb69291d414bf5fd9eb1c05b984a2afebbd2fc26034d0711fc17",
+      "actual": "88e9d9cdf54cbb69291d414bf5fd9eb1c05b984a2afebbd2fc26034d0711fc17",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-monument-demolition-4x.json",
+      "status": 200,
+      "expected": "9ef8696b548393e925b879728ca81b05590e4b1e31129ea9a1f25195fb738dc0",
+      "actual": "9ef8696b548393e925b879728ca81b05590e4b1e31129ea9a1f25195fb738dc0",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "eb7b4b1ed8cafa9b3eac4bedf819b6f1a58db3fb57d02be829467e0b6d729e45",
+      "actual": "eb7b4b1ed8cafa9b3eac4bedf819b6f1a58db3fb57d02be829467e0b6d729e45",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "20e27a895eca62be812182c0636713b68a3f1f886d7f32012fbcf1e2998e5a48",
+      "actual": "20e27a895eca62be812182c0636713b68a3f1f886d7f32012fbcf1e2998e5a48",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "48ba050421b93a215c4968aef7eaeda2ee2d11f50efc1049ea395888cf828138",
+      "actual": "48ba050421b93a215c4968aef7eaeda2ee2d11f50efc1049ea395888cf828138",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "32582dfd1fdd1858034888d119234537b271e92fca2761056f5dc2862d889905",
+      "actual": "32582dfd1fdd1858034888d119234537b271e92fca2761056f5dc2862d889905",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8c99451168793575fe674c6e30afd7f23a10cc1aa9560ad2f3a62e1efcd2cb00",
+      "actual": "8c99451168793575fe674c6e30afd7f23a10cc1aa9560ad2f3a62e1efcd2cb00",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "88101fcc498b5e2a335b519873dcf67ba9da8db01b4e8a3685aa3791fe228468",
+      "actual": "88101fcc498b5e2a335b519873dcf67ba9da8db01b4e8a3685aa3791fe228468",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
