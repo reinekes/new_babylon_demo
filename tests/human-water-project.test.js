@@ -286,3 +286,28 @@ test('an existing water dream stays read-only after the nameless ending',async()
  assert.match(waterProjectProposal(loaded,...args).reason??'',/наблюдение/);
  assert.equal(encode(loaded),raw);
 });
+
+test('a placement draft cannot commit for a moved requester or a replacement courtyard',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const source=s.buildings.findLast(b=>b.type==='house');
+ const requester=s.citizens.find(c=>c.home===buildingKey(source));
+ const [organizer,helper]=s.citizens.filter(c=>c.age>=16&&c.home!==requester.home);
+ source.water=0;
+ assert.ok(setCitizenRole(s,organizer.id,'builder').ok);
+ assert.ok(setCitizenRole(s,helper.id,'builder').ok);
+ const args=[organizer.id,requester.id,12,7,[helper.id]];
+ assert.ok(waterProjectProposal(s,...args,source).ok);
+ const replacement={...source};
+ s.buildings[s.buildings.indexOf(source)]=replacement;
+ let before=encode(s);
+ for(const action of [waterProjectProposal,approveWaterProject,sendWaterProjectDream]){
+  assert.match(action(s,...args,source).reason,/Первоначальный двор/);
+  assert.equal(encode(s),before);
+ }
+ assert.ok(waterProjectProposal(s,...args,replacement).ok);
+ const other=s.buildings.find(b=>b.type==='house'&&b!==replacement);
+ requester.home=buildingKey(other);
+ before=encode(s);
+ assert.match(approveWaterProject(s,...args,replacement).reason,/Проситель больше не живёт/);
+ assert.equal(encode(s),before);
+});

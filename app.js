@@ -686,7 +686,7 @@ function medicalMemoryHTML(p){
  return [p.medicalRecovery?`Вышел из тяжёлого состояния после лечения у ${resident(p.medicalRecovery.id)}`:'',p.medicalAid?`Помог выйти из тяжёлого состояния: ${resident(p.medicalAid.id)}`:''].filter(Boolean).map(line=>`<small>${line}</small>`).join('');
 }
 function confirmWaterProjectPlacement({x,y}){
- const {organizerId,requesterId}=waterProjectDraft,offer=waterProjectProposal(state,organizerId,requesterId,x,y);
+ const {organizerId,requesterId,sourceHome}=waterProjectDraft,offer=waterProjectProposal(state,organizerId,requesterId,x,y,[],sourceHome);
  if(!offer.ok){toast(offer.reason);return;}
  const organizer=state.citizens.find(c=>c.id===organizerId);
  const helpers=state.citizens.filter(c=>c.id!==organizerId&&offer.reachableHomes.has(c.home)&&!waterProjectOrganizerReason(state,c));
@@ -698,13 +698,13 @@ function confirmWaterProjectPlacement({x,y}){
  const selectedHelpers=()=>[...($('water-project-helpers')?.selectedOptions||[])].map(option=>Number(option.value));
  const sendDream=$('send-water-project-dream');
  if(sendDream)sendDream.onclick=()=>{
-  const result=sendWaterProjectDream(state,organizerId,requesterId,x,y,selectedHelpers());
+  const result=sendWaterProjectDream(state,organizerId,requesterId,x,y,selectedHelpers(),sourceHome);
   if(!result.ok){$('water-project-error').textContent=result.reason;return;}
   closeDialog();choose('waterpoint');mutate(result,'Жители обсудят общий сон на рассвете');
  };
  $('approve-water-project').onclick=()=>{
   const participantIds=selectedHelpers();
-  const result=approveWaterProject(state,organizerId,requesterId,x,y,participantIds);
+  const result=approveWaterProject(state,organizerId,requesterId,x,y,participantIds,sourceHome);
   if(!result.ok){$('water-project-error').textContent=result.reason;return;}
   closeDialog();
   choose('waterpoint');save();update();toast('Жители начали проект водозабора');checkDialogs();
@@ -843,7 +843,7 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
    if(selection==='waterpoint')choose('waterpoint');
    choose('waterpoint');
    if(selection!=='waterpoint')return;
-   waterProjectDraft={requesterId:request.requesterId,organizerId:Number(organizer.value)};
+   waterProjectDraft={requesterId:request.requesterId,organizerId:Number(organizer.value),sourceHome:b};
    $('map-hint').textContent='Водозабор для двора · выбери место у воды · Escape — отмена';
   };
  }

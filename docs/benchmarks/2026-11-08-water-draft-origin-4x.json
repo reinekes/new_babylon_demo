@@ -1,0 +1,41 @@
+{
+  "staleDraftRejectedWithoutPayment": true,
+  "buildings": 130,
+  "population": 242,
+  "initialPopulation": 200,
+  "helperId": 9,
+  "helperWorked": true,
+  "completed": true,
+  "reloadByteIdentical": true,
+  "steps": 722,
+  "cpuMedianMs": 4.129208000000062,
+  "cpuP95Ms": 24.49908400000004,
+  "places": [
+    "11,7",
+    "4,7"
+  ],
+  "witnesses": [
+    {
+      "stationId": 1,
+      "station": "12,7",
+      "homeId": 3,
+      "home": "11,7",
+      "recipientId": 102,
+      "courierId": 9,
+      "time": 62.85,
+      "amount": 7.5
+    },
+    {
+      "stationId": 1,
+      "station": "12,7",
+      "homeId": 4,
+      "home": "4,7",
+      "recipientId": 81,
+      "courierId": 9,
+      "time": 90.125,
+      "amount": 6
+    }
+  ],
+  "loadedCargo": true,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}

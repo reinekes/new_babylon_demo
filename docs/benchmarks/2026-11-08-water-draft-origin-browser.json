@@ -1,0 +1,16 @@
+[
+  {
+    "id": "checks",
+    "view": "2d",
+    "url": "?id=checks&view=2d",
+    "mode": "2d",
+    "result": "PASS stale direct approval and dream refused, fresh project saved"
+  },
+  {
+    "id": "checks",
+    "view": "3d",
+    "url": "?id=checks&view=3d",
+    "mode": "3d",
+    "result": "PASS stale direct approval and dream refused, fresh project saved"
+  }
+]
