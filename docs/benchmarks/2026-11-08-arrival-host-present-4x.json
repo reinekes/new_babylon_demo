@@ -1,0 +1,30 @@
+{
+  "speed": 4,
+  "fedWithoutHosts": true,
+  "absentHostsCredited": 0,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledEvacueeArrival": true,
+  "servedHouseholds": 2,
+  "byteEqualReload": true,
+  "gameplayEqualOutsideIdentity": true,
+  "receipts": [
+    {
+      "host": "8,8",
+      "origin": "18,2",
+      "at": 690.125,
+      "hostId": 1,
+      "originId": 2
+    },
+    {
+      "host": "9,9",
+      "origin": "19,2",
+      "at": 690.125,
+      "hostId": 3,
+      "originId": 4
+    }
+  ],
+  "samples": 120,
+  "medianCpuMs": 6.154167000000598,
+  "p95CpuMs": 31.758374999999887
+}

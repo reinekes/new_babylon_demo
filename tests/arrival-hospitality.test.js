@@ -31,6 +31,11 @@ test('only a served and arrived evacuee from the opposite bank records a hosting
  recordArrivalShelter(s,b,visitor,.8);assert.equal(arrivalHospitalityView(s).shelters,0);
  visitor.routeIndex=1;
  recordArrivalShelter(s,b,visitor,0);assert.equal(arrivalHospitalityView(s).shelters,0);
+ const residents=s.citizens.filter(c=>c.home===host.home);
+ for(const c of residents)c.fireShelter={host:'10,6'};
+ recordArrivalShelter(s,b,visitor,.8);
+ assert.equal(arrivalHospitalityView(s).shelters,0,'an absent host cannot welcome the guest');
+ for(const c of residents)delete c.fireShelter;
  const {advanceWellbeing}=await import('../wellbeing.js');
  s.simTime=35;b.pantry=20;b.pantryDelivered=20;
  const prior=b.pantry;

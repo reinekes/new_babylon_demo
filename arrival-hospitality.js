@@ -44,7 +44,7 @@ export function recordArrivalShelter(s,house,guest,served){
  const host=buildingKey(house),origin=guest.home;
  if(guest.floodShelter!==host||!differentBanks(s,origin,host)||
   journal.shelters?.some(row=>row.host===host||row.origin===origin)||
-  !s.citizens.some(c=>c.home===host&&!c.floodShelter&&['home','resting'].includes(c.phase)))return;
+  !s.citizens.some(c=>c.home===host&&!shelterHome(c)&&['home','resting'].includes(c.phase)))return;
  const source=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===origin);
  if(!source)return;
  const ids=isStrictSumer(s)?{hostId:ensureHouseEntityId(s,house),originId:ensureHouseEntityId(s,source)}:{};
