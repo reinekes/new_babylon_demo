@@ -257,3 +257,22 @@ test('a spare house for one couple does not block a larger family in the same co
  assert.deepEqual(offer.members,[2,3,child.id]);
  assert.equal(encode(s),before);
 });
+
+test('a small courtyard proposal explains evacuation, an existing project and family size',async()=>{
+ const {cancelConstruction}=await import('../management.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [first,partner]=s.citizens,source=s.buildings.find(b=>buildingKey(b)===first.home);
+ const otherHome=s.buildings.find(b=>b.type==='house'&&b!==source);
+ partner.home=buildingKey(otherHome);
+ for(const c of s.citizens.slice(2))c.partner=null;
+ partner.fireShelter={host:first.home};
+ assert.match(householdInitiative(s,source).reason,/укрытия/);
+ delete partner.fireShelter;
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ assert.ok(approveHouseholdInitiative(s,source,offer).ok);
+ assert.match(householdInitiative(s,source).reason,/уже есть/);
+ assert.ok(cancelConstruction(s,offer.x,offer.y).ok);
+ for(const c of s.citizens.slice(-3))Object.assign(c,{age:10,parents:[first.id,partner.id]});
+ assert.match(householdInitiative(s,source).reason,/четыре места/);
+});

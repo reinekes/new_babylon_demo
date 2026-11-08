@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "evacuationReason": true,
+  "refusalWasReadOnly": true,
+  "steps": 1019,
+  "buildings": 130,
+  "population": 245,
+  "retainedIds": 218,
+  "site": "5,4",
+  "complete": true,
+  "settled": true,
+  "byteExact": true,
+  "medianCpuMs": 1.2960000000000491,
+  "p95CpuMs": 6.2821669999999585
+}

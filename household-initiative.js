@@ -37,18 +37,22 @@ export function householdInitiative(s,source){
  const inProgress=new Set(s.buildings.flatMap(b=>householdInitiativeReserved(b.householdInitiative,byId.get(b.householdInitiative?.members[0]))?b.householdInitiative.members:[]));
  const families=residents.flatMap(c=>{
   const partner=byId.get(c.partner);
-  if(c.age<16||!partner||partner.age<16||c.floodShelter||partner.floodShelter||c.fireShelter||partner.fireShelter)return [];
+  if(c.age<16||!partner||partner.age<16)return [];
   const split=c.home!==partner.home;
   const crowded=residents.some(other=>other!==c&&other!==partner&&other.partner!==null&&byId.get(other.partner)?.home===sourceKey);
   if(!split&&(!crowded||c.id>partner.id))return [];
   const mother=c.sex==='f'?c:partner;
-  const family=[c,partner,...s.citizens.filter(child=>child.age<16&&child.parents.includes(mother.id))];
-  if(family.length>4||family.some(member=>member.floodShelter||member.fireShelter||inProgress.has(member.id)))return [];
-  return [family];
+  return [[c,partner,...s.citizens.filter(child=>child.age<16&&child.parents.includes(mother.id))]];
  });
  if(!families.length)return refuse('Новый двор нужен паре, которая живёт порознь или делит дом с другой семьёй');
+ const fitting=families.filter(family=>family.length<=4);
+ if(!fitting.length)return refuse('В малом дворе четыре места, а семье нужно больше');
+ const unreserved=fitting.filter(family=>family.every(member=>!inProgress.has(member.id)));
+ if(!unreserved.length)return refuse('У семьи уже есть проект малого двора');
+ const available=unreserved.filter(family=>family.every(member=>!member.floodShelter&&!member.fireShelter));
+ if(!available.length)return refuse('Семья ещё не вернулась из укрытия');
  const current=components({...s,roads:[...s.roads]}),district=current.get(sourceKey);
- const connectedFamilies=families.filter(group=>district!==undefined&&group.every(c=>current.get(c.home)===district));
+ const connectedFamilies=available.filter(group=>district!==undefined&&group.every(c=>current.get(c.home)===district));
  if(!connectedFamilies.length)return refuse('Между домами семьи нет сухого пути');
  const canMoveInto=(b,family)=>{
   const key=buildingKey(b);
