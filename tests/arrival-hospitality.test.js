@@ -486,3 +486,18 @@ test('the Call records its opening independently of housing and presentation',as
  const legacy=JSON.stringify(broken);
  assert.equal(encode(decode(legacy)),legacy);
 });
+
+test('arrival welcome records an adult present at the courtyard',async()=>{
+ const {createArrivalFamily}=await import('../arrival-hospitality.js');
+ const s=createNewCity({mode:'awakening',seed:1}),[away,evacuated,present]=s.citizens;
+ const home=away.home;
+ Object.assign(away,{phase:'working',age:25});
+ Object.assign(evacuated,{home,phase:'resting',age:28,fireShelter:{host:'10,6'}});
+ Object.assign(present,{home,phase:'home',age:30});
+ for(const c of s.citizens.slice(3))if(c.home===home)c.phase='working';
+ createArrivalFamily(s,home,2);
+ assert.equal(s.arrivalHospitality.welcomes.at(-1).host,present.id);
+ present.phase='toHome';
+ createArrivalFamily(s,home,2);
+ assert.equal(s.arrivalHospitality.welcomes.at(-1).host,null);
+});

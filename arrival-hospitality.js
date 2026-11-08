@@ -44,7 +44,7 @@ export function recordArrivalShelter(s,house,guest,served){
  const host=buildingKey(house),origin=guest.home;
  if(guest.floodShelter!==host||!differentBanks(s,origin,host)||
   journal.shelters?.some(row=>row.host===host||row.origin===origin)||
-  !s.citizens.some(c=>c.home===host&&!shelterHome(c)&&['home','resting'].includes(c.phase)))return;
+  !s.citizens.some(c=>atUnshelteredHome(c,host)))return;
  const source=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===origin);
  if(!source)return;
  const ids=isStrictSumer(s)?{hostId:ensureHouseEntityId(s,house),originId:ensureHouseEntityId(s,source)}:{};
@@ -59,6 +59,7 @@ export function arrivalHospitalityView(s){
 }
 
 export const shelterHome=c=>c.floodShelter||c.fireShelter?.host;
+const atUnshelteredHome=(c,home)=>c.home===home&&!shelterHome(c)&&['home','resting'].includes(c.phase);
 
 export function arrivalHousing(s,{includeReserved=false}={}){
  const flood=floodMapView(s);
@@ -200,7 +201,7 @@ export function hospitalityNameEvidence(s){
 
 export function createArrivalFamily(s,home,count,custom){
  const first=s.demography.nextId;
- const host=s.citizens.find(c=>c.home===home&&!c.floodShelter&&c.age>=16)?.id??null;
+ const host=s.citizens.find(c=>c.age>=16&&atUnshelteredHome(c,home))?.id??null;
  const family=Array.from({length:count},(_,i)=>({
   id:first+i,home,age:i===0?30:i===1?28:i+3,sex:i%2?'f':'m',
   parents:i<2?[]:[first,first+1],partner:i<2&&count>1?first+1-i:null,generation:i<2?1:2,faith:20
