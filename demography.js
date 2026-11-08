@@ -54,9 +54,9 @@ export function advanceGenerations(s,recover=()=>{}){
  }
  const newborns=[];
  for(const b of s.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new')){
-  const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50&&!c.fireShelter);
+  const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50&&!shelterHome(c));
   for(const a of adults){if(a.partner!==null)continue;const partner=adults.find(c=>c!==a&&c.sex!==a.sex&&c.partner===null&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
-  const pair=adults.find(c=>{const partner=living.get(c.partner);return c.sex==='f'&&c.age<45&&partner?.home===home&&!partner.fireShelter;});
+  const pair=adults.find(c=>{const partner=living.get(c.partner);return c.sex==='f'&&c.age<45&&partner?.home===home&&!shelterHome(partner);});
   if(!pair||residents.length>=capacityOf(b)-reservedArrivalBeds(s,home)||s.happiness<65||s.hungry||!birthFoodStatus(s).enough||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
   const father=living.get(pair.partner),id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};
   newborns.push(baby);residents.push(baby);d.lastBirth[home]=s.tick;d.births++;news(s,'В семье родился ребёнок',`${citizenName(id)} · родители: ${citizenName(pair.id)} и ${citizenName(father.id)}. Поколение ${baby.generation}.`);

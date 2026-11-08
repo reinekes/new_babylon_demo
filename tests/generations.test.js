@@ -91,3 +91,21 @@ test('permanent family relocation waits until flood evacuation ends',()=>{
  advanceGenerations(s);
  assert.ok(s.citizens.some(c=>c.home===destination));
 });
+
+test('birth waits for either parent to return from flood shelter',()=>{
+ for(const parentIndex of [0,1]){
+  const s=createGame({start:'established'});
+  const home='9,9',parents=s.citizens.filter(c=>c.home===home&&c.age>=16);
+  assert.equal(parents.length,2);
+  s.resources.food=1000;
+  s.demography.rngState=1;
+  parents[parentIndex].floodShelter='8,8';
+  const nextId=s.demography.nextId;
+  assert.equal(advanceGenerations(s).newborns.length,0);
+  assert.equal(s.demography.nextId,nextId);
+  delete parents[parentIndex].floodShelter;
+  const [child]=advanceGenerations(s).newborns;
+  assert.equal(child?.home,home);
+  assert.deepEqual(new Set(child.parents),new Set(parents.map(c=>c.id)));
+ }
+});

@@ -1,0 +1,19 @@
+{
+  "speed": 4,
+  "birthWhileSheltered": false,
+  "birthAfterReturn": true,
+  "buildings": 129,
+  "initialPopulation": 200,
+  "population": 200,
+  "locked": [
+    "9,9",
+    "8,8"
+  ],
+  "reservedAtLoad": 1,
+  "reservedAfterFlood": 0,
+  "identitiesPreserved": true,
+  "reloadByteIdentical": true,
+  "steps": 101,
+  "medianCpuMs": 7.171333000000004,
+  "p95CpuMs": 35.28120899999999
+}
