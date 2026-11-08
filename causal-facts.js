@@ -113,13 +113,20 @@ export function craftNameEvidence(s){
  return distinctCourtyardPair(s.causalFacts?.craft);
 }
 
+export const matchesCraftEndingLesson=(ending,lesson)=>!!ending&&ending.pupilId===lesson.pupilId&&
+ ending.mentorId===lesson.mentorId&&ending.trainedAt===lesson.time&&
+ ending.site[0]===lesson.site[0]&&ending.site[1]===lesson.site[1];
+
 export function recordCraftNameEvidence(s,site,{mentor,pupil}){
  if(!isStrictSumer(s)||!site?.construction||!Number.isFinite(site.x)||!Number.isFinite(site.y))return;
  const lesson={mentorId:mentor.id,pupilId:pupil.id,site:[site.x,site.y],time:s.simTime};
  if(pupil.generation>mentor.generation){
   const successors=causalLedger(s).craftSuccession??=[];
   if(!successors.some(f=>f.pupilId===pupil.id))successors.push(lesson);
-  if(successors.length>LIMIT)successors.shift();
+  if(successors.length>LIMIT){
+   const oldest=successors.findIndex(f=>!matchesCraftEndingLesson(s.craftEnding,f));
+   successors.splice(oldest,1);
+  }
  }
  const first=s.causalFacts?.craft?.[0];
  if(craftNameEvidence(s)||first?.home===pupil.home||first?.pupilId===pupil.id)return;

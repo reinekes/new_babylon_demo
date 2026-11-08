@@ -110,7 +110,7 @@ test('the craft forecast suggests compatible unassigned builders on connected la
 test('a younger pupil who reaches mastery after the name is earned can qualify for the craft ending',async()=>{
  const {createNewCity}=await import('../new-game.js');
  const {recordCraftNameEvidence}=await import('../causal-facts.js');
- const {craftEndingOffer,recordCraftEnding}=await import('../campaign.js');
+ const {craftEndingOffer,recordCraftEnding,validateCraftEnding}=await import('../campaign.js');
  const s=createNewCity({mode:'awakening',seed:137});
  const [mentor,first,second,pupil]=s.citizens.filter(c=>c.age>=16);
  const site={x:5,y:5,construction:{kind:'new'}};
@@ -128,5 +128,16 @@ test('a younger pupil who reaches mastery after the name is earned can qualify f
  s.trade.deliveries[0].delivered=12;
  assert.equal(craftEndingOffer(s)?.pupilId,pupil.id);
  assert.ok(recordCraftEnding(s).ok);
+ s.lifeAnalytics.people.find(c=>c.id===pupil.id).generation=2;
+ assert.ok(validateCraftEnding(s));
+ const siteAtEnding=s.craftEnding.site;
+ s.craftEnding.site=[6,6];
+ assert.equal(validateCraftEnding(s),false);
+ s.craftEnding.site=siteAtEnding;
+ const receipt=s.causalFacts.craftSuccession[0];
+ for(let i=0;i<33;i++)recordCraftNameEvidence(s,site,{mentor,pupil:{...pupil,id:100+i}});
+ assert.equal(s.causalFacts.craftSuccession.length,32);
+ assert.ok(s.causalFacts.craftSuccession.includes(receipt));
+ assert.ok(validateCraftEnding(s));
  assert.equal(recordCraftEnding(s).ok,false);
 });

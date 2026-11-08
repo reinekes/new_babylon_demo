@@ -1,7 +1,7 @@
 import {vowNameEvidence} from './supply-vow.js';
 import {isMemoryKeeper,isVotiveTemple} from './votive-offerings.js';
 import {floodPhase} from './river-flood.js';
-import {matchesProjectWaterReceipt,waterNameEvidence} from './causal-facts.js';
+import {matchesCraftEndingLesson,matchesProjectWaterReceipt,waterNameEvidence} from './causal-facts.js';
 import {earnedResultNames,RESULT_NAMES} from './divinity.js';
 import {familyMemorialsAt} from './life-analytics.js';
 import {cityCommandReason} from './city-command-lock.js';
@@ -173,7 +173,7 @@ export function craftEndingOffer(s){
 export function recordCraftEnding(s){
  const offer=craftEndingOffer(s);
  if(!offer)return {ok:false,reason:'Нужны работающий ученик следующего поколения и полученный лес по исполненному договору'};
- s.craftEnding={...offer,at:s.simTime};
+ s.craftEnding={...offer,at:s.simTime,version:1};
  s.news.unshift({title:'Бог мастерства',text:'Ученик продолжил дело наставника. Город выполнил договор и принял лес.',kind:'good',year:s.year,season:s.season,tick:s.tick});
  s.news=s.news.slice(0,80);
  return {ok:true};
@@ -182,12 +182,16 @@ export function recordCraftEnding(s){
 export function validateCraftEnding(s){
  const ending=s.craftEnding;
  if(ending===undefined)return true;
- if(!usesCampaign(s)||!ending||Object.keys(ending).length!==6||!Number.isSafeInteger(ending.visit)||
+ if(!usesCampaign(s)||!ending||Object.keys(ending).length!==(ending.version===undefined?6:7)||
+  ending.version!==undefined&&ending.version!==1||!Number.isSafeInteger(ending.visit)||
   !Number.isFinite(ending.at)||ending.at>s.simTime||!Number.isFinite(ending.trainedAt)||ending.trainedAt<0||ending.trainedAt>ending.at||
   !Array.isArray(ending.site)||ending.site.length!==2||!ending.site.every((n,i)=>Number.isFinite(n)&&n>=-.5&&n<=(i===0?worldWidth(s):worldHeight(s))-.5))return false;
  const people=s.lifeAnalytics?.people||[];
  const pupil=people.find(c=>c.id===ending.pupilId),mentor=people.find(c=>c.id===ending.mentorId);
- return !!pupil&&!!mentor&&pupil.generation>mentor.generation&&!!completedTimberContract(s,ending.visit);
+ const archive=s.causalFacts;
+ const lessonExists=rows=>rows?.some(lesson=>matchesCraftEndingLesson(ending,lesson));
+ return !!pupil&&!!mentor&&pupil.generation>mentor.generation&&!!completedTimberContract(s,ending.visit)&&
+  (ending.version===undefined||!!(lessonExists(archive?.craftSuccession)||lessonExists(archive?.craft)));
 }
 
 export function cityEndingOffer(s){

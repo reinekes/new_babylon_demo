@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 131,
+  "citizens": 251,
+  "substitutedLessonRejected": true,
+  "missingLessonRejected": true,
+  "legacyWithoutLessonLoaded": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 2.7651669999999626,
+  "p95StepCpuMs": 8.12141600000001
+}
