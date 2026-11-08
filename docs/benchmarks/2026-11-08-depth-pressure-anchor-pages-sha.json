@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-08T01:10:57.873151+00:00",
+  "commit": "51aff38a2839a204ca3fd4687c209f0c0bcc1a98",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a9532bc3469ad3243dfb3346535e99ccf783ae866b4ff193d8edee19fe50eeab",
+      "actual": "a9532bc3469ad3243dfb3346535e99ccf783ae866b4ff193d8edee19fe50eeab",
+      "match": true
+    },
+    {
+      "path": "depth-supply.js",
+      "status": 200,
+      "expected": "387cc34bea44a1b5ece6f16446aedb6bb443280d61e15ba8e9cd5dd613393624",
+      "actual": "387cc34bea44a1b5ece6f16446aedb6bb443280d61e15ba8e9cd5dd613393624",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "d7254207734640f6aff7307913e6a2fedda8e40468681bf2f563b0dc65a9f2d5",
+      "actual": "d7254207734640f6aff7307913e6a2fedda8e40468681bf2f563b0dc65a9f2d5",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-depth-pressure-anchor-4x.json",
+      "status": 200,
+      "expected": "6183edd405823659cbcf141a80c0f5c1fb78daebed6727d12827b69cbbe492fd",
+      "actual": "6183edd405823659cbcf141a80c0f5c1fb78daebed6727d12827b69cbbe492fd",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "315ec875a91f2399801e8ad5306850c9353b4d487423b178ee6e7106245b606b",
+      "actual": "315ec875a91f2399801e8ad5306850c9353b4d487423b178ee6e7106245b606b",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2d976f56526a24ad7b5a2a2df4c67762043d2fcef90cfb646e4e188a8871aea4",
+      "actual": "2d976f56526a24ad7b5a2a2df4c67762043d2fcef90cfb646e4e188a8871aea4",
+      "match": true
+    },
+    {
+      "path": "management.js",
+      "status": 200,
+      "expected": "e289b7da82bbfa67df707bfa1c1e48c2a8b7ad0dc87d4e5b20cee54fdb7d2b5a",
+      "actual": "e289b7da82bbfa67df707bfa1c1e48c2a8b7ad0dc87d4e5b20cee54fdb7d2b5a",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "095864345f72907ee77e451d77e7a9c24258d7648e00cef240228a801dd5dce3",
+      "actual": "095864345f72907ee77e451d77e7a9c24258d7648e00cef240228a801dd5dce3",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "92952e35582293ad09aae9c6e23308df20f31129f240decd9445951c5c3cebfe",
+      "actual": "92952e35582293ad09aae9c6e23308df20f31129f240decd9445951c5c3cebfe",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "30f7908cbfa9070601be6fcd7decf769511dfc5a0751bef255434bdb692212f1",
+      "actual": "30f7908cbfa9070601be6fcd7decf769511dfc5a0751bef255434bdb692212f1",
+      "match": true
+    },
+    {
+      "path": "tests/depth-supply.test.js",
+      "status": 200,
+      "expected": "f3f6d000cdebc9364b6bc9a6f7e4e7c14afc59ab3a892cd499a946be5cae8f0c",
+      "actual": "f3f6d000cdebc9364b6bc9a6f7e4e7c14afc59ab3a892cd499a946be5cae8f0c",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
