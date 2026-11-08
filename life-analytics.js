@@ -90,11 +90,14 @@ export function familyMemorialsAt(s,home){
  });
 }
 
+const isMemorialRelative=(record,person)=>!!record&&(
+ record.partner===person.id||record.parents.includes(person.id)||person.parents?.includes(record.id));
+
 export function prepareMemorialMove(s,c,destination){
  if(!isStrictSumer(s)||c.phase!=='home'||c.age<16||c.memorialMove||c.commonMealTarget||c.clinic||c.school||c.floodShelter||c.districtJob||c.saleJob||c.tradeJob||c.waterTrip||c.pantryTrip||c.craftSite||c.seedField||c.clothingTarget!==undefined||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return false;
  const origin=s.buildings.find(b=>buildingKey(b)===c.home),target=buildingKey(destination);
  if(!origin||target===c.home||destination.type!=='house'||!isOperational(destination))return false;
- const record=familyMemorialsAt(s,origin).find(p=>(p.partner===c.id||p.parents.includes(c.id)||c.parents?.includes(p.id))&&!s.citizens.some(other=>other.memorialMove?.id===p.id));
+ const record=familyMemorialsAt(s,origin).find(p=>isMemorialRelative(p,c)&&!s.citizens.some(other=>other.memorialMove?.id===p.id));
  if(!record)return false;
  const sourceId=ensureHouseEntityId(s,origin),targetId=ensureHouseEntityId(s,destination);
  record.memorial.homeId=sourceId;
@@ -110,7 +113,7 @@ export function finishMemorialMove(s,c){
  const originMatches=move.sourceId===undefined||record?.memorial?.homeId===move.sourceId&&
   s.buildings.some(b=>b.type==='house'&&b.waterEntityId===move.sourceId&&buildingKey(b)===move.source);
  const targetMatches=move.targetId===undefined||destination?.waterEntityId===move.targetId;
- if(destination&&originMatches&&targetMatches&&c.home===move.target&&record?.memorial?.home===move.source){
+ if(destination&&originMatches&&targetMatches&&isMemorialRelative(record,c)&&c.home===move.target&&record?.memorial?.home===move.source){
   record.memorial.home=move.target;
   if(move.targetId!==undefined)record.memorial.homeId=move.targetId;
   record.memorial.built=destination.built?{...destination.built}:null;
@@ -160,13 +163,14 @@ export function validateLifeAnalytics(s){
  const carried=new Set();
  for(const c of s.citizens||[]){
   const m=c.memorialMove;if(m===undefined)continue;
-  if(!m||!isStrictSumer(s)||c.age<16||!integer(m.id)||carried.has(m.id)||ids.get(m.id)?.memorial?.home!==m.source||m.target!==c.home||m.target===m.source||!['toHome','blocked'].includes(c.phase))return false;
+  const record=ids.get(m?.id);
+  if(!m||!record?.memorial||!isStrictSumer(s)||c.age<16||!integer(m.id)||carried.has(m.id)||!isMemorialRelative(record,c)||record.memorial.home!==m.source||m.target!==c.home||m.target===m.source||!['toHome','blocked'].includes(c.phase))return false;
   const linked=m.sourceId!==undefined||m.targetId!==undefined;
   if(linked&&(!integer(m.sourceId)||m.sourceId===0||!integer(m.targetId)||m.targetId===0||m.sourceId===m.targetId||
-   ids.get(m.id).memorial.homeId!==m.sourceId||
+   record.memorial.homeId!==m.sourceId||
    !s.buildings.some(b=>b.type==='house'&&b.waterEntityId===m.sourceId&&buildingKey(b)===m.source)||
    !s.buildings.some(b=>b.type==='house'&&b.waterEntityId===m.targetId&&buildingKey(b)===m.target)))return false;
-  if(!linked&&ids.get(m.id).memorial.homeId!==undefined)return false;
+  if(!linked&&record.memorial.homeId!==undefined)return false;
   carried.add(m.id);
  }
  let previous=-1,previousRow=null;for(const h of a.history){if(!h||!integer(h.tick)||h.tick<a.startedTick||h.tick>tick(s)||h.tick<=previous||!['population','children','adults','elders','births','deaths'].every(k=>integer(h[k]))||h.children+h.adults+h.elders!==h.population||!h.causes||!Object.keys(LIFE_CAUSE_NAMES).every(k=>integer(h.causes[k]))||Object.values(h.causes).reduce((a,b)=>a+b,0)!==h.deaths||!['health','mood','hunger','thirst','faith'].every(k=>h[k]===null||finite(h[k],0,100)))return false;if(previousRow&&(h.births<previousRow.births||h.deaths<previousRow.deaths||Object.keys(LIFE_CAUSE_NAMES).some(k=>h.causes[k]<previousRow.causes[k])))return false;previous=h.tick;previousRow=h;}
