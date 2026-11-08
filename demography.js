@@ -46,7 +46,7 @@ export function advanceGenerations(s,recover=()=>{}){
   if(!reserved&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
   const component=housingNetwork.components.get(housingPorts.get(a.home));
-  if(component===undefined||component!==housingNetwork.components.get(housingPorts.get(partner.home)))continue;
+  if(component===undefined||family.some(c=>housingNetwork.components.get(housingPorts.get(c.home))!==component))continue;
   const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
   if(reserved&&!available(reserved))continue;
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));

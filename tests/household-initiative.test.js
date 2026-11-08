@@ -300,3 +300,30 @@ test('a family with a reserved courtyard waits for it when another home becomes 
  const raw=encode(s);
  assert.equal(encode(decode(raw)),raw);
 });
+
+test('a courtyard move waits until the whole family has a connected route',async()=>{
+ const {advanceGenerations}=await import('../demography.js');
+ const {networkFor,syncCitizens}=await import('../workforce.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [first,partner]=s.citizens,child=s.citizens.find(c=>c.age<16);
+ const source=s.buildings.find(b=>buildingKey(b)===first.home);
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ child.parents=[first.id,partner.id];
+ const target={type:'house',x:offer.x,y:offer.y,level:1,starterHut:true,
+  householdInitiative:{source:first.home,members:[first.id,partner.id,child.id],startedAt:s.simTime}};
+ const isolated={type:'house',x:24,y:13,level:1};
+ s.buildings.push(target,isolated);s.capacity+=capacityOf(target)+capacityOf(isolated);
+ Object.assign(child,{home:buildingKey(isolated),x:isolated.x,y:isolated.y});
+ syncCitizens(s);
+ const net=networkFor(s),component=b=>net.components.get(net.ports.find(p=>p.building===b).key);
+ assert.notEqual(component(source),component(isolated));
+ advanceGenerations(s);
+ assert.equal(target.householdInitiative.settled,undefined);
+ assert.equal(child.home,buildingKey(isolated));
+ s.buildings.push({type:'bridge',x:14,y:8,level:1});
+ syncCitizens(s);
+ advanceGenerations(s);
+ assert.equal(target.householdInitiative.settled,true);
+ assert.equal(child.home,buildingKey(target));
+});
