@@ -1,12 +1,19 @@
 import {isOperational} from './definitions.js';
+import {floodMapView} from './river-flood.js';
 import {richCatchView} from './fish-provenance.js';
 import {isShore,worldWidth,worldHeight} from './world.js';
 
 const CHARGES=6, BONUS=.5;
 const shoresByWorld=new WeakMap();
 
-export function richCatchTarget(s,target){
- return target&&s.buildings.find(b=>b.type==='fishing'&&b.x===target.x&&b.y===target.y&&isOperational(b)&&!b.floodDamage);
+export function richCatchQuote(s,target){
+ const yard=target&&s.buildings.find(b=>b.type==='fishing'&&b.x===target.x&&b.y===target.y&&isOperational(b)&&!b.floodDamage);
+ if(!yard)return {yard:null,reason:'Выбери действующий рыбацкий двор на карте'};
+ const flood=floodMapView(s);
+ if(flood?.phase==='active'&&flood.tiles.some(tile=>tile.x===yard.x&&tile.y===yard.y)){
+  return {yard:null,reason:'Рыбацкий двор затоплен. Дождись спада воды после разлива'};
+ }
+ return {yard,reason:''};
 }
 
 export function richCatchMapReason(s){

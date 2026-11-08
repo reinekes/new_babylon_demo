@@ -18,7 +18,7 @@ import {validateAbundanceOrigin} from './abundance-origin.js';
 import {ABUNDANCE_LIMIT,receiveAbundance,validateAbundanceGift} from './abundance-gift.js';
 import {validateWindDelivery} from './wind-delivery.js';
 import {validateCreatorMaterials,advanceCreatorEvidence} from './creator-materials.js';
-import {richCatchTarget,startRichCatch,expireRichCatch,validateRichCatch} from './rich-catch.js';
+import {richCatchQuote,startRichCatch,expireRichCatch,validateRichCatch} from './rich-catch.js';
 import {validateFishProvenance} from './fish-provenance.js';
 import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
 import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js';
@@ -231,8 +231,8 @@ export function miracle(s,id,target){
  const populationQuote=populationMiracleQuote(s,id);
  if(populationQuote?.reason)return {ok:false,reason:populationQuote.reason};
  if(['cat','fertility'].includes(id)){const reason=miracleCelebrationTargetReason(s,id==='fertility'?target:null);if(reason)return {ok:false,reason};}
- const fishingYard=id==='richCatch'?richCatchTarget(s,target):null;
- if(id==='richCatch'&&!fishingYard)return {ok:false,reason:'Выбери действующий рыбацкий двор на карте'};
+ const fishing=id==='richCatch'?richCatchQuote(s,target):null;
+ if(fishing?.reason)return {ok:false,reason:fishing.reason};
  if(id==='fertility'&&!startMiracleCelebration(s,id,{center:target}))return {ok:false,reason:'Нет безопасного места для церемонии'};
  if(id==='cat'&&!bringCat(s))return {ok:false,reason:'Нет безопасного двора для кошки'};
  if(id==='cat'&&usesCatDiscovery(s)&&s.catDiscovery.trial==='ready'){s.catDiscovery.trial='spent';s.catDiscovery.usedAt=s.simTime;}
@@ -272,7 +272,7 @@ export function miracle(s,id,target){
  const oldName=s.name;registerMiracle(s,m.domain,peace?{ids:peace.ids,mood:PEACE_MOOD}:land?{ids:land.ids}:undefined);
  if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
  if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
- if(fishingYard)startRichCatch(s,fishingYard);
+ if(fishing)startRichCatch(s,fishing.yard);
  if(id==='abundance'&&!s.abundanceGift)s.resources.food=Math.min(storage(s),s.resources.food+ABUNDANCE_LIMIT);
  if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=populationQuote?.count??0;}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;

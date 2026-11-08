@@ -101,3 +101,21 @@ test('a closed fishing ground preserves all charges until a real catch after reo
  assert.equal(richCatchCharges(s,yard),5);
  assert.ok(s.simTime>=60&&s.tick===1);
 });
+
+test('Rich Catch refuses a fishing yard during active inundation before spending faith',async()=>{
+ const {floodFootprint}=await import('../river-flood.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:{...strictScenario(),miracles:CAT_DISCOVERY_RULES}});
+ const yard={type:'fishing',x:11,y:9,level:1};
+ s.buildings.push(yard);
+ s.richCatchEvidence={version:1,homes:['8,8','9,9'],fisher:s.citizens[0].id};
+ Object.assign(s,{year:4,season:0,tick:12,simTime:540,riverFlood:{year:4,along:5,bank:-1}});
+ s.resources.faith=40;
+ assert.ok(floodFootprint(s,s.riverFlood).has('11,9'));
+ const before=encode(s);
+ assert.match(miracle(s,'richCatch',yard).reason,/разлив/);
+ assert.equal(encode(s),before);
+ delete s.riverFlood;
+ assert.ok(miracle(s,'richCatch',yard).ok);
+ assert.equal(s.resources.faith,22);
+ assert.equal(richCatchCharges(s,yard),6);
+});
