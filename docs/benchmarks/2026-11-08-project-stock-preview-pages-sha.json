@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-08T04:22:08.145862+00:00",
+  "commit": "04fd8fdd81bb0fedc569f5a40c1d21d181303997",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f870a714c5f397823207153e9897348a049305cc6f841224288a199e60dc0fc4",
+      "actual": "f870a714c5f397823207153e9897348a049305cc6f841224288a199e60dc0fc4",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-project-stock-preview-4x.json",
+      "status": 200,
+      "expected": "4dde0b18c5d3bba04bda5f4b5da41325ec9caf87e18b8b27aa3dc021aa27efd1",
+      "actual": "4dde0b18c5d3bba04bda5f4b5da41325ec9caf87e18b8b27aa3dc021aa27efd1",
+      "match": true
+    },
+    {
+      "path": "household-initiative.js",
+      "status": 200,
+      "expected": "517bcd1715e998c5bee4782a7d077d0f03c67cc5806a7b8065bff4d1f7ce5671",
+      "actual": "517bcd1715e998c5bee4782a7d077d0f03c67cc5806a7b8065bff4d1f7ce5671",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "0a87acb4239c3894645cc4e2901638c55a216a9332e50fd80fd2100d0e7d284d",
+      "actual": "0a87acb4239c3894645cc4e2901638c55a216a9332e50fd80fd2100d0e7d284d",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0b6c6e9221860d0f157086da98436ee3984a616241cbe8d5db1ec1b4544bf516",
+      "actual": "0b6c6e9221860d0f157086da98436ee3984a616241cbe8d5db1ec1b4544bf516",
+      "match": true
+    },
+    {
+      "path": "inventory.js",
+      "status": 200,
+      "expected": "f6f075f160ce9deb3ed830c8fd4d703ce5dbf07c1909dbee3be842e91bf4f696",
+      "actual": "f6f075f160ce9deb3ed830c8fd4d703ce5dbf07c1909dbee3be842e91bf4f696",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fdc568019506b4c8f343f145c0354a22235102d24cd60ad8db8c387548373660",
+      "actual": "fdc568019506b4c8f343f145c0354a22235102d24cd60ad8db8c387548373660",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "05f2a5b5c739e6be7c2f6e9e07da9c6d2378f809447818eaee63f1a76ac11898",
+      "actual": "05f2a5b5c739e6be7c2f6e9e07da9c6d2378f809447818eaee63f1a76ac11898",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "4b8a9dd121fcfe00384876a9ff122d8515aaf3adc81d33d63fb2a0419bcc8a5e",
+      "actual": "4b8a9dd121fcfe00384876a9ff122d8515aaf3adc81d33d63fb2a0419bcc8a5e",
+      "match": true
+    },
+    {
+      "path": "tests/human-water-project.test.js",
+      "status": 200,
+      "expected": "30ee414451b639b59184b0fcb340366d793f622d0d8d99c4612511dbcd22c51d",
+      "actual": "30ee414451b639b59184b0fcb340366d793f622d0d8d99c4612511dbcd22c51d",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
