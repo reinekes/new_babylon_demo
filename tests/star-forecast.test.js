@@ -62,3 +62,25 @@ test('a demolished building retires its forecast and old address records do not 
  assert.deepEqual(s.starObservations.forecast.targets,[]);
  assert.deepEqual(starForecastView(s),[]);
 });
+
+test('a repeated improvement does not inherit its cancelled order forecast or erase the food warning',async()=>{
+ const {upgrade}=await import('../engine.js');
+ const {cancelConstruction}=await import('../management.js');
+ const {recordStarForecast,starForecastView}=await import('../star-forecast.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ s.godhood.mode='mature';s.resources.brick=100;
+ const home=s.buildings.find(b=>b.type==='house'),{x,y}=home;
+ for(const b of s.buildings.filter(b=>b.type==='house'))b.pantry=b.pantryDelivered=100;
+ home.pantry=0;
+ const first=upgrade(s,x,y);assert.ok(first.ok,first.reason);
+ const order=home.construction.order;
+ recordStarForecast(s);
+ const legacy=structuredClone(s.starObservations.forecast);
+ assert.deepEqual(starForecastView(s).map(r=>r.kind),['food','construction']);
+ assert.ok(cancelConstruction(s,x,y).ok);
+ assert.deepEqual(s.starObservations.forecast.targets.map(r=>r.kind),['food']);
+ s.starObservations.forecast=legacy;
+ const second=upgrade(s,x,y);assert.ok(second.ok,second.reason);
+ assert.equal(home.construction.order,order);
+ assert.deepEqual(starForecastView(s).map(r=>r.kind),['food']);
+});

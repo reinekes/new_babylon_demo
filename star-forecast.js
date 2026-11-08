@@ -50,11 +50,11 @@ export function recordStarForecast(s){
  s.starObservations.forecast={tick:s.tick,targets};
 }
 
-export function retireStarForecastAt(s,x,y){
+export function retireStarForecastAt(s,x,y,kind){
  const record=s.starObservations?.forecast;
- if(record?.targets.some(target=>target.x===x&&target.y===y)){
-  record.targets=record.targets.filter(target=>target.x!==x||target.y!==y);
- }
+ if(!record)return;
+ const targets=record.targets.filter(target=>target.x!==x||target.y!==y||kind!==undefined&&target.kind!==kind);
+ if(targets.length!==record.targets.length)record.targets=targets;
 }
 
 export function starForecastView(s){

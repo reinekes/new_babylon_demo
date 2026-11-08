@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "orderReused": 276,
+  "oldOrderForecastCleared": true,
+  "foodForecastPreserved": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 4.13270799999998,
+  "p95StepCpuMs": 10.951374999999985
+}
