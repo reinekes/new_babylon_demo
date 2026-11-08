@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T00:04:51.105926+00:00",
+  "commit": "57ffc96f9b33302d596aec11c88951ea3a102fa0",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "246b231dd0b4cdaadb505eb5a89b9e25790065cd91e48d5198c1462843a5b28c",
+      "actual": "246b231dd0b4cdaadb505eb5a89b9e25790065cd91e48d5198c1462843a5b28c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "44606789b02fe4beb05f98de50db62424ba371134b30398b962b49b46ae6022f",
+      "actual": "44606789b02fe4beb05f98de50db62424ba371134b30398b962b49b46ae6022f",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "9140d8425eb63d2f724de1d9eaa2e77ddf42ab1381c1bde27884edeb32e89941",
+      "actual": "9140d8425eb63d2f724de1d9eaa2e77ddf42ab1381c1bde27884edeb32e89941",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-household-aid-origin-4x.json",
+      "status": 200,
+      "expected": "83885d46bc803089df03aa9b33e2fe8f7a27da4fbbfa23942972d4364817a699",
+      "actual": "83885d46bc803089df03aa9b33e2fe8f7a27da4fbbfa23942972d4364817a699",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-household-aid-origin-browser.json",
+      "status": 200,
+      "expected": "04a7bb733c43a4696bca10b5e4ff15c1aaa477285a4052281a5d26a7daae7055",
+      "actual": "04a7bb733c43a4696bca10b5e4ff15c1aaa477285a4052281a5d26a7daae7055",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e934f5ed7d70429ecc70ea057e2b44a2b25a1bddeeeb802a9bf14216aa971526",
+      "actual": "e934f5ed7d70429ecc70ea057e2b44a2b25a1bddeeeb802a9bf14216aa971526",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "fe2fab25c944e852967977aa3481e78d63b5453d19aff2dec751f9e5a29afc1e",
+      "actual": "fe2fab25c944e852967977aa3481e78d63b5453d19aff2dec751f9e5a29afc1e",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "74c719881e57730f64141cc7e71eb57ebd379df38ebf3f3df0ab22bd1b66f565",
+      "actual": "74c719881e57730f64141cc7e71eb57ebd379df38ebf3f3df0ab22bd1b66f565",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "84e1dd76bd25e849a4bd043e66b6648c568d999935d2e2a7561a76ac3390a2c6",
+      "actual": "84e1dd76bd25e849a4bd043e66b6648c568d999935d2e2a7561a76ac3390a2c6",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
