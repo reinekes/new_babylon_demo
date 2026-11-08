@@ -1,0 +1,20 @@
+{
+  "speed": 4,
+  "readOnlyOffer": true,
+  "selectedFamily": [
+    174,
+    179,
+    200
+  ],
+  "spareBeds": 2,
+  "steps": 1019,
+  "buildings": 131,
+  "population": 246,
+  "retainedIds": 218,
+  "site": "6,3",
+  "complete": true,
+  "settled": true,
+  "byteExact": true,
+  "medianCpuMs": 1.2182080000000042,
+  "p95CpuMs": 6.099375000000009
+}

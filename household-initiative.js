@@ -48,16 +48,17 @@ export function householdInitiative(s,source){
  });
  if(!families.length)return refuse('Новый двор нужен паре, которая живёт порознь или делит дом с другой семьёй');
  const current=components({...s,roads:[...s.roads]}),district=current.get(sourceKey);
- const family=families.find(group=>district!==undefined&&group.every(c=>current.get(c.home)===district));
- if(!family)return refuse('Между домами семьи нет сухого пути');
- const canMoveInto=b=>{
+ const connectedFamilies=families.filter(group=>district!==undefined&&group.every(c=>current.get(c.home)===district));
+ if(!connectedFamilies.length)return refuse('Между домами семьи нет сухого пути');
+ const canMoveInto=(b,family)=>{
   const key=buildingKey(b);
   const project=b.householdInitiative;
   return current.get(key)===district&&!occupied.has(key)&&
    !householdInitiativeReserved(project,byId.get(project?.members[0]))&&
    capacityOf(b)-reservedArrivalBeds(s,key)>=family.length;
  };
- if(s.buildings.some(canMoveInto))return refuse('Семья может занять свободный дом в этом квартале');
+ const family=connectedFamilies.find(group=>!s.buildings.some(b=>canMoveInto(b,group)));
+ if(!family)return refuse('Семья может занять свободный дом в этом квартале');
  const flooded=floodPhase(s)==='active'?floodFootprint(s,s.riverFlood):null;
  let reason='Рядом нет свободного участка с проходом к семье и складу';
  for(let ring=1;ring<=3;ring++)for(let dx=-ring;dx<=ring;dx++){

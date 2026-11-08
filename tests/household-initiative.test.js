@@ -241,3 +241,19 @@ test('a finished courtyard waiting for its family does not take new arrivals',as
  syncCitizens(s);
  assert.equal(s.citizens.at(-1).home,key);
 });
+
+test('a spare house for one couple does not block a larger family in the same courtyard',()=>{
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const source=s.buildings.find(b=>buildingKey(b)===s.citizens[0].home);
+ const first=householdInitiative(s,source);
+ assert.ok(first.ok,first.reason);
+ const child=s.citizens.find(c=>c.age<16);
+ child.parents=[2,3];
+ const spare={type:'house',x:first.x,y:first.y,level:1,starterHut:true};
+ s.buildings.push(spare);
+ s.arrivalGroup={home:buildingKey(spare),count:2};
+ const before=encode(s),offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ assert.deepEqual(offer.members,[2,3,child.id]);
+ assert.equal(encode(s),before);
+});
