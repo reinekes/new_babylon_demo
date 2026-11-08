@@ -100,11 +100,16 @@ function waterProjectHelperReason(s,participants){
  return '';
 }
 
-export function waterDreamCrewReason(s,dream){
- const resident=id=>s.citizens.find(c=>c.id===id);
- return requesterShelterReason(resident(dream.requesterId))||
-  waterProjectOrganizerReason(s,resident(dream.organizerId))||
-  waterProjectHelperReason(s,dream.participantIds.map(resident));
+const projectConnections=new WeakMap();
+function waterProjectConnection(s,site){
+ const base=networkFor(s,{materializeRoads:false}),key=buildingKey(site),cached=projectConnections.get(s);
+ if(cached?.base===base&&cached.key===key)return cached.component;
+ const preview={...s,buildings:[...s.buildings,site]};
+ const network=networkFor(preview,{materializeRoads:false});
+ const ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key]));
+ const component=home=>network.components.get(ports.get(home));
+ projectConnections.set(s,{base,key,component});
+ return component;
 }
 
 export function waterProjectProposal(s,organizerId,requesterId,x,y,participantIds=[],sourceHome){
@@ -133,9 +138,8 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
 
  const reason=canBuild(s,projectType,x,y);
  if(reason)return refuse(reason);
- const site={type:projectType,x,y,level:1},preview={...s,buildings:[...s.buildings,site],roads:[...s.roads]};
- const network=networkFor(preview),ports=new Map(network.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key]));
- const component=key=>network.components.get(ports.get(key)),group=component(buildingKey(site));
+ const site={type:projectType,x,y,level:1};
+ const component=waterProjectConnection(s,site),group=component(buildingKey(site));
  if(group===undefined||component(buildingKey(home))!==group||component(organizer.home)!==group)return refuse('Нет прохода между водозабором, двором и организатором');
  if(participants.some(c=>component(c.home)!==group))return refuse('Помощник не может пройти от своего двора к водозабору');
  const stores=stockStores(s).filter(b=>component(buildingKey(b))===group);
@@ -152,6 +156,10 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
 
 export function approveWaterProject(s,organizerId,requesterId,x,y,participantIds=[],sourceHome){
  const offer=waterProjectProposal(s,organizerId,requesterId,x,y,participantIds,sourceHome);
+ return startWaterProject(s,x,y,offer);
+}
+
+function startWaterProject(s,x,y,offer){
  if(!offer.ok)return offer;
  const result=build(s,projectType,x,y,0,{eligibleStores:offer.eligibleStores,humanWaterProject:offer.project});
  if(!result.ok)return result;
@@ -180,7 +188,7 @@ export function waterDreamHomeReason(s,dream){
  return '';
 }
 
-export function acceptWaterProjectDream(s){
+export function waterDreamProposal(s){
  const lock=cityCommandReason(s);
  if(lock)return {ok:false,reason:lock};
  const dream=s.waterProjectDream;
@@ -188,7 +196,14 @@ export function acceptWaterProjectDream(s){
  if(s.simTime<dream.readyAt)return {ok:false,reason:'Жители обсудят сон на рассвете'};
  const reason=waterDreamHomeReason(s,dream);
  if(reason)return {ok:false,reason};
- const result=approveWaterProject(s,dream.organizerId,dream.requesterId,dream.x,dream.y,dream.participantIds);
+ return waterProjectProposal(s,dream.organizerId,dream.requesterId,dream.x,dream.y,dream.participantIds);
+}
+
+export function acceptWaterProjectDream(s){
+ const offer=waterDreamProposal(s);
+ if(!offer.ok)return offer;
+ const {x,y}=s.waterProjectDream;
+ const result=startWaterProject(s,x,y,offer);
  if(result.ok)delete s.waterProjectDream;
  return result;
 }

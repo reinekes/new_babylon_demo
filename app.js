@@ -38,7 +38,7 @@ import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,householdInitiativeReserved,householdMovingFamily,householdMoveWaitingStatus,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
-import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterDreamCrewReason,waterDreamHomeReason,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
+import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterDreamProposal,waterDreamHomeReason,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,vowTargetRebuilt,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
 import {setCommonMeals} from './common-meal.js';
@@ -525,8 +525,8 @@ function waterDreamPanel(home){
  const dream=state.waterProjectDream;
  if(!dream||home&&(dream.home!==buildingKey(home)||dream.homeId!==undefined&&dream.homeId!==home.waterEntityId))return '';
  const ready=state.simTime>=dream.readyAt,lock=cityCommandReason(state);
- const reason=lock||waterDreamHomeReason(state,dream)||(ready?waterDreamCrewReason(state,dream):'');
- const status=reason||(ready?'Наступил рассвет. Проверь готовность жителей и согласуй стройку.':
+ const reason=lock||(ready?waterDreamProposal(state).reason:waterDreamHomeReason(state,dream));
+ const status=reason||(ready?'Наступил рассвет. Жители готовы согласовать стройку.':
   home?'Жители обсудят образ водозабора на рассвете.':'Закрой обзор снабжения, чтобы время дошло до рассвета.');
  return `<section class="food-forecast" data-water-dream><h3>Общий сон · двор ${esc(dream.home)}</h3><p>${[dream.requesterId,dream.organizerId,...dream.participantIds].map(id=>resident(id)).join(', ')} · водозабор на участке ${dream.x}, ${dream.y}</p><p>${esc(status)}</p>${ready&&!reason?`${costs(BUILDINGS.waterpoint,false)}<button type="button" data-water-dream-accept>Согласовать стройку</button>`:''} <button type="button" data-water-dream-discard${lock?' disabled':''}>Отложить замысел</button><p role="alert" data-water-dream-error></p></section>`;
 }

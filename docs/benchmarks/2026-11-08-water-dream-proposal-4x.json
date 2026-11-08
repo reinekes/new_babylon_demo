@@ -1,0 +1,18 @@
+{
+  "buildings": 130,
+  "population": 222,
+  "initialPopulation": 222,
+  "helperId": 16,
+  "blockedBeforeSpending": true,
+  "quoteMedianMs": 0.10354200000006131,
+  "reason": "Эта клетка уже занята",
+  "helperWorked": true,
+  "completed": true,
+  "reloadByteIdentical": true,
+  "steps": 270,
+  "cpuMedianMs": 2.450417000000016,
+  "cpuP95Ms": 7.67358299999978,
+  "dawn": 55,
+  "faithSpent": 3,
+  "measurement": "Node simulation CPU, 4x calendar rate, no renderer"
+}
