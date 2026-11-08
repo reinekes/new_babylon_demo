@@ -232,6 +232,10 @@ function currentMonumentLife(s){
  const b=activeMonument(s),life=s.monumentLife;
  return b&&life&&buildingKey(b)===life.temple&&(b.built?.order??null)===life.buildOrder?life:null;
 }
+export function retireMonumentLife(s,b){
+ const life=s.monumentLife;
+ if(b.type==='ziggurat'&&life?.temple===buildingKey(b)&&(b.built?.order??null)===life.buildOrder)delete s.monumentLife;
+}
 export function advanceMonumentLife(s){
  if(!usesCampaign(s)||s.godhood.namelessEndingAt!==undefined||currentMonumentLife(s))return false;
  const b=activeMonument(s);

@@ -199,3 +199,25 @@ test('a departed pilgrim needs a later actual visit by the same partner to earn 
  assert.equal(recordForeignEnding(s).ok,false);
  assert.equal(s.won,false);
 });
+
+test('demolition retires the chapter of a legacy monument without a completion order',async()=>{
+ const {advanceMonumentLife,monumentLifeView}=await import('../campaign.js');
+ const {demolish}=await import('../management.js');
+ let s=createNewCity({mode:'awakening',seed:137});
+ const monument={type:'ziggurat',x:6,y:6,level:1};
+ s.buildings.push(monument);
+ assert.ok(advanceMonumentLife(s));
+ const raw=encode(s);
+ s=decode(raw);
+ assert.ok(s);
+ assert.equal(encode(s),raw);
+ assert.equal(s.monumentLife.buildOrder,null);
+ assert.ok(demolish(s,6,6).ok);
+ assert.equal(s.monumentLife,undefined);
+ assert.equal(monumentLifeView(s),null);
+ const removed=encode(s);
+ assert.equal(encode(decode(removed)),removed);
+ s.buildings.push({...monument});
+ assert.ok(advanceMonumentLife(s));
+ assert.deepEqual(monumentLifeView(s),{temple:'6,6',dedication:false,vow:false});
+});

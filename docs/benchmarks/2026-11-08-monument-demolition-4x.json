@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "legacyChapterRetired": true,
+  "replacementChapterStarted": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 4.001374999999939,
+  "p95StepCpuMs": 9.481959000000018
+}
