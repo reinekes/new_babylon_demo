@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T02:01:21.659348+00:00",
+  "commit": "63e852d13b73f558ceb59b3fbdb5221fecf22713",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "640327a038201a08373c1758ff064b1b5433fcbd8547af1718d948190b3d7a12",
+      "actual": "640327a038201a08373c1758ff064b1b5433fcbd8547af1718d948190b3d7a12",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "a294777646c6e915e314d82af80c77413c2d98f6b935bc28198437c61a37e9ae",
+      "actual": "a294777646c6e915e314d82af80c77413c2d98f6b935bc28198437c61a37e9ae",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-hearth-ending-fire-shelter-4x.json",
+      "status": 200,
+      "expected": "fb7e46ce5bda2c5b32675561fa3577ba59c53e31cee86a5203dd72c16f65700f",
+      "actual": "fb7e46ce5bda2c5b32675561fa3577ba59c53e31cee86a5203dd72c16f65700f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "9ee13038b665eadbe3be81f0946587c7ccd339b1bbf3ff8a3e09375e67959370",
+      "actual": "9ee13038b665eadbe3be81f0946587c7ccd339b1bbf3ff8a3e09375e67959370",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "a75b72dedd3fc0474bad78aea6d22826f7b400edd9ba31fe51d1e7327029459e",
+      "actual": "a75b72dedd3fc0474bad78aea6d22826f7b400edd9ba31fe51d1e7327029459e",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "9b3eff40be2007c6a80b7cf83d78dffbe6660de14324f6c939ab3b2c4fc6c8bc",
+      "actual": "9b3eff40be2007c6a80b7cf83d78dffbe6660de14324f6c939ab3b2c4fc6c8bc",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "cb9d437afa69073bfc23377baea772d822bf33fd0e4f83aaff93f0e693aa27d7",
+      "actual": "cb9d437afa69073bfc23377baea772d822bf33fd0e4f83aaff93f0e693aa27d7",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "18aae4f0cdcb960bd1b7db748c709874ebb3e00c176da821cf9b65e38e3fa786",
+      "actual": "18aae4f0cdcb960bd1b7db748c709874ebb3e00c176da821cf9b65e38e3fa786",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
