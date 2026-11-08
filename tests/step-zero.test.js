@@ -12,3 +12,25 @@ test('route priority changes as one group; completed sections keep their upgrade
 test('level III requires finished level II and charges the higher material price',()=>{const s=createGame({start:'established'}),roads=ensureRoads(s);assert.match(planRoadRoute(s,roads[0].id,roads.at(-1).id,3).reason,/уровня II/);const route=planRoadRoute(s,roads[0].id,roads.at(-1).id).roads;for(const r of route)r.level=2;s.resources.stone=100;s.resources.clay=1000;s.resources.reed=1000;const plan=planRoadRoute(s,roads[0].id,roads.at(-1).id,3);assert.equal(plan.cost.stone,plan.pending.length*2);assert.ok(upgradeRoadRoute(s,roads[0].id,roads.at(-1).id,3).ok);assert.ok(decode(encode(s)));});
 
 test('an invalid group cannot cancel unrelated road work',async()=>{const {cancelRoadRoute}=await import('../management.js');const {upgradeRoad}=await import('../roads.js');const s=createGame({start:'established'}),r=ensureRoads(s)[0];upgradeRoad(s,r);const raw=encode(s);for(const id of [undefined,null,-1,'1'])assert.equal(cancelRoadRoute(s,id).ok,false);assert.equal(encode(s),raw);});
+
+test('a stale route control cannot cancel a new route with a recycled group number',async()=>{
+ const {cancelRoadRoute}=await import('../management.js');
+ const s=createGame({start:'established'}),roads=ensureRoads(s);
+ s.resources.clay=1000;s.resources.reed=1000;
+ const order=()=>upgradeRoadRoute(s,roads[0].id,roads.at(-1).id,2);
+ const original=order();
+ assert.ok(original.ok);
+ const oldOrder=s.roads.find(r=>r.construction?.routeOrder===original.group).construction;
+ assert.ok(cancelRoadRoute(s,original.group,oldOrder).ok);
+ const replacement=order();
+ assert.ok(replacement.ok);
+ assert.equal(replacement.group,original.group);
+ const raw=encode(s);
+ assert.equal(cancelRoadRoute(s,original.group,oldOrder).ok,false);
+ assert.equal(encode(s),raw);
+ const loaded=decode(raw);
+ assert.ok(loaded);
+ const activeOrder=loaded.roads.find(r=>r.construction?.routeOrder===replacement.group).construction;
+ assert.ok(cancelRoadRoute(loaded,replacement.group,activeOrder).ok);
+ assert.equal(cancelRoadRoute(loaded,replacement.group,activeOrder).ok,false);
+});
