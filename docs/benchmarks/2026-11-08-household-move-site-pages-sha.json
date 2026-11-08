@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-08T02:53:27.169769+00:00",
+  "commit": "ffb35e306ceac1e7aa537c21edd79f5d0c521723",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "e24c12319035e978835fd848e2311f476411f503a5c9a6cf94e4d730a20c4c80",
+      "actual": "e24c12319035e978835fd848e2311f476411f503a5c9a6cf94e4d730a20c4c80",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "74f316eacc516cdd2c292bd0ac9633798e1abe1601e8d8d5b7ea99e8b7ebbc1e",
+      "actual": "74f316eacc516cdd2c292bd0ac9633798e1abe1601e8d8d5b7ea99e8b7ebbc1e",
+      "match": true
+    },
+    {
+      "path": "demography.js",
+      "status": 200,
+      "expected": "e1ade73276a858222a41dcdd33dbc9befe2cfe8f575f27ee594fb5941cac4bbf",
+      "actual": "e1ade73276a858222a41dcdd33dbc9befe2cfe8f575f27ee594fb5941cac4bbf",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-household-move-site-4x.json",
+      "status": 200,
+      "expected": "aee1a3b897fbd5404365e56a008a22eee90c4e5bca601b13febbaf22c923f7d3",
+      "actual": "aee1a3b897fbd5404365e56a008a22eee90c4e5bca601b13febbaf22c923f7d3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-household-move-site-browser.json",
+      "status": 200,
+      "expected": "0fd6371d8ca3f90c31f44d37d62ab28fc09dee823d628865b56fb5f996bef515",
+      "actual": "0fd6371d8ca3f90c31f44d37d62ab28fc09dee823d628865b56fb5f996bef515",
+      "match": true
+    },
+    {
+      "path": "household-initiative.js",
+      "status": 200,
+      "expected": "619ca5def1196d6a4356dcdcdce9b5959800933a527ad81caef06043f7609fc5",
+      "actual": "619ca5def1196d6a4356dcdcdce9b5959800933a527ad81caef06043f7609fc5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "245aa688a68d511eb5a104fd4103d613b85174fd218e5e0e15f01cee3d92ba54",
+      "actual": "245aa688a68d511eb5a104fd4103d613b85174fd218e5e0e15f01cee3d92ba54",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f8088c4065f275597d424f8c875647ad3c16138f1a7cbd9fb9b59192a07475e0",
+      "actual": "f8088c4065f275597d424f8c875647ad3c16138f1a7cbd9fb9b59192a07475e0",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f0899dc94a792d4a8323568baab3d1e32c02effb14b131aad819262b45d4bc2c",
+      "actual": "f0899dc94a792d4a8323568baab3d1e32c02effb14b131aad819262b45d4bc2c",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "16b14689857fc79b55c92c127715c08fc2906fdfc14f8a264654d24df5f5fe41",
+      "actual": "16b14689857fc79b55c92c127715c08fc2906fdfc14f8a264654d24df5f5fe41",
+      "match": true
+    },
+    {
+      "path": "tests/household-initiative.test.js",
+      "status": 200,
+      "expected": "681ef69c7d8840c5d73f15385093255e3bc432618921f50fcf174dc0906c580a",
+      "actual": "681ef69c7d8840c5d73f15385093255e3bc432618921f50fcf174dc0906c580a",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
