@@ -1,0 +1,19 @@
+{
+  "speed": 4,
+  "buildings": 133,
+  "citizens": 289,
+  "legacyCompletedRecords": 60,
+  "retainedCompletedRecords": 32,
+  "newBatchId": 61,
+  "controlledModelPrerequisites": true,
+  "inTransit": true,
+  "grounded": true,
+  "delivered": {
+    "clay": 60,
+    "reed": 40
+  },
+  "byteEqualReload": true,
+  "samples": 885,
+  "medianCpuMs": 14.313250000001062,
+  "p95CpuMs": 46.098541999999725
+}

@@ -6,6 +6,7 @@ import {isDryPoint,worldHeight,worldWidth} from './world.js';
 
 export const SHAPING_MATERIALS=Object.freeze({clay:60,reed:40});
 const YARDS=new Set(['brickyard','pottery','kiln']);
+const COMPLETED_BATCH_LIMIT=32;
 const active=batch=>Object.entries(SHAPING_MATERIALS).some(([key,total])=>batch.delivered[key]<total-1e-8);
 export const findShapingBatch=(s,id)=>s.shapingBatches?.rows.find(row=>row.id===id);
 
@@ -23,6 +24,16 @@ export function shapingBatchQuote(s,point,{connected=()=>false}={}){
  return {ok:true,yard};
 }
 
+function trimCompletedBatches(s,ledger){
+ if(ledger.rows.length<=COMPLETED_BATCH_LIMIT)return;
+ const referenced=new Set(s.buildings.map(b=>b.shapingBatchId));
+ for(const job of s.district?.jobs||[])referenced.add(job.shapingBatch);
+ const unreferenced=ledger.rows.filter(batch=>!active(batch)&&!referenced.has(batch.id));
+ if(unreferenced.length<=COMPLETED_BATCH_LIMIT)return;
+ const removed=new Set(unreferenced.slice(0,-COMPLETED_BATCH_LIMIT));
+ ledger.rows=ledger.rows.filter(batch=>!removed.has(batch));
+}
+
 export function createShapingBatch(s,point,options){
  const quote=shapingBatchQuote(s,point,options);
  if(!quote.ok)return quote;
@@ -30,6 +41,7 @@ export function createShapingBatch(s,point,options){
  const batch={id:ledger.nextId++,x:yard.x,y:yard.y,grounded:false,remaining:{...SHAPING_MATERIALS},delivered:{clay:0,reed:0}};
  ledger.rows.push(batch);
  yard.shapingBatchId=batch.id;
+ trimCompletedBatches(s,ledger);
  return {ok:true,batch};
 }
 

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createNewCity} from '../new-game.js';
 import {decode,encode} from '../engine.js';
+import {validateDistricts} from '../district-logistics.js';
 import {createShapingBatch,groundShapingBatch,shapingBatchQuote} from '../shaping-batch.js';
 
 test('a single batch keeps its identity and material after losing its yard',()=>{
@@ -45,4 +46,35 @@ test('partial warehouse acceptance and recovery conserve each material',async()=
  assert.deepEqual(batch.remaining,{clay:57,reed:40});
  assert.deepEqual(batch.delivered,{clay:3,reed:0});
  assert.ok(validateShapingBatches(s));
+});
+
+test('new batches bound the completed archive and retain live logistics references',()=>{
+ const s=createNewCity({mode:'awakening',seed:1});
+ const yard={type:'brickyard',x:7,y:9,level:1};
+ s.buildings.push(yard);
+ const connected=()=>true;
+ const create=()=>createShapingBatch(s,yard,{connected}).batch;
+ const completed=()=>{
+  const batch=create();
+  batch.remaining={clay:0,reed:0};
+  batch.delivered={clay:60,reed:40};
+  return batch;
+ };
+ const retained=completed();
+ const store=s.buildings[0];
+ s.district.jobs.push({
+  id:s.district.nextId++,shapingBatch:retained.id,automatic:true,
+  source:`${yard.x},${yard.y}`,target:`${store.x},${store.y}`,
+  resource:'clay',amount:12,remaining:0,delivered:12,cancelled:0
+ });
+ const firstUnreferenced=completed();
+ for(let i=0;i<40;i++)completed();
+ const latest=create();
+ assert.equal(latest.id,43);
+ assert.equal(s.shapingBatches.rows.length,34);
+ assert.ok(s.shapingBatches.rows.includes(retained));
+ assert.ok(!s.shapingBatches.rows.includes(firstUnreferenced));
+ assert.ok(s.shapingBatches.rows.includes(latest));
+ assert.equal(yard.shapingBatchId,latest.id);
+ assert.ok(validateDistricts(s));
 });
