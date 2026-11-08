@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 133,
+  "citizens": 242,
+  "duplicateRecipientRejected": true,
+  "independentVowsValidated": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 2.5219579999999837,
+  "p95StepCpuMs": 7.8324159999999665
+}

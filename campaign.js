@@ -221,8 +221,13 @@ export function validateCityEnding(s){
   !Number.isSafeInteger(ending.keeperId)||ending.keeperId<0||ending.keeperId>=s.demography.nextId||
   !Array.isArray(ending.vows)||ending.vows.length!==2||ending.vows[0]?.home===ending.vows[1]?.home)return false;
  const offering=s.votiveOfferings?.find(item=>item.id===ending.offeringId&&item.temple===ending.temple);
- return !!offering?.memory&&ending.vows.every(row=>row&&Object.keys(row).length===2&&s.supplyVows?.history?.some(
-  vow=>vow.id===row.id&&vow.outcome==='fulfilled'&&vow.ended<=ending.at&&vow.targets.some(target=>target.home===row.home&&target.delivery)));
+ if(!offering?.memory)return false;
+ const recipients=ending.vows.map(row=>{
+  if(!row||Object.keys(row).length!==2)return undefined;
+  const vow=s.supplyVows?.history?.find(v=>v.id===row.id&&v.outcome==='fulfilled'&&v.ended<=ending.at);
+  return vow?.targets.find(target=>target.home===row.home)?.delivery?.recipient;
+ });
+ return recipients.every(Number.isSafeInteger)&&recipients[0]!==recipients[1];
 }
 
 function activeMonument(s){

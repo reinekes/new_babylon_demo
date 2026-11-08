@@ -148,7 +148,7 @@ test('the shared water ending requires shelter, two supplied homes and the same 
 });
 
 test('the city ending can be recorded without a monument and post-monument goals need new work',async()=>{
- const {cityEndingOffer,recordCityEnding,advanceMonumentLife,monumentLifeView}=await import('../campaign.js');
+ const {cityEndingOffer,recordCityEnding,validateCityEnding,advanceMonumentLife,monumentLifeView}=await import('../campaign.js');
  const s=createNewCity({mode:'awakening',seed:137}),keeper=s.citizens[0];
  const temple={type:'shrine',x:5,y:5,level:1};
  s.buildings.push(temple);
@@ -161,6 +161,11 @@ test('the city ending can be recorded without a monument and post-monument goals
  ]}]};
  assert.ok(cityEndingOffer(s));
  assert.ok(recordCityEnding(s).ok);
+ assert.ok(validateCityEnding(s));
+ const second=s.supplyVows.history[0].targets[1].delivery;
+ second.recipient=1;
+ assert.equal(validateCityEnding(s),false);
+ second.recipient=2;
  assert.equal(s.won,false);
  assert.equal(recordCityEnding(s).ok,false);
  assert.equal(monumentLifeView(s),null);
