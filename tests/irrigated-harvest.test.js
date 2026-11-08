@@ -86,6 +86,9 @@ test('new Awakening locks rain until an irrigated harvest, then grants exactly o
   paid:{rain:{number:2,at:91,faithSpent:15}}});
  const committed=encode(spent);
  assert.equal(encode(decode(committed)),committed);
+ const wrongPaidDate=JSON.parse(committed);
+ wrongPaidDate.miracleHistory.paid.rain.at=90.5;
+ assert.equal(decode(JSON.stringify(wrongPaidDate)),null);
  const invalid=JSON.parse(committed);
  invalid.miracleHistory.trials.rain.at=89;
  assert.equal(decode(JSON.stringify(invalid)),null);

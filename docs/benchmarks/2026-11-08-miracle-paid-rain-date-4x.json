@@ -1,0 +1,21 @@
+{
+  "speed": 4,
+  "invalidPaidDateRejected": true,
+  "legacyWithoutHistoryByteEqual": true,
+  "buildings": 129,
+  "population": 258,
+  "trial": {
+    "number": 1,
+    "at": 129.25,
+    "faithSpent": 0
+  },
+  "paid": {
+    "number": 2,
+    "at": 180,
+    "faithSpent": 15
+  },
+  "byteExactReload": true,
+  "steps": 406,
+  "medianCpuMs": 4.117165999999997,
+  "p95CpuMs": 22.38458300000002
+}
