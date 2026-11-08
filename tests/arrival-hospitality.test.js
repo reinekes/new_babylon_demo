@@ -429,7 +429,9 @@ test('a paid group waits at a real gate, keeps its reserve on reload and settles
  for(const invalidRoute of [
   g=>{g.x+=3;},
   g=>{g.routeIndex=g.route.length;},
-  g=>{g.route=[];g.routeIndex=0;}
+  g=>{g.route=[];g.routeIndex=0;},
+  g=>{g.route.splice(1,0,g.route[1],g.route[0]);},
+  g=>{g.route[0]='0'+g.route[0];}
  ]){
   const invalid=JSON.parse(waiting);
   invalidRoute(invalid.arrivalGroup);

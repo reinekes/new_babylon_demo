@@ -335,13 +335,15 @@ function validArrivalGroup(s){
  if(!sources.every(([key,lot])=>lot&&Object.keys(lot).length===1&&Number.isFinite(lot.food)&&lot.food>0&&
   s.buildings.some(b=>buildingKey(b)===key&&b.stock))||
   Math.abs(sources.reduce((n,[,lot])=>n+lot.food,0)-g.count)>1e-7)return false;
+ const seen=new Set();
  const validRoute=g.route.every((key,i)=>{
-  if(typeof key!=='string'||!/^\d+,\d+$/.test(key))return false;
+  if(typeof key!=='string'||!/^(?:0|[1-9]\d*),(?:0|[1-9]\d*)$/.test(key)||seen.has(key))return false;
   const [x,y]=key.split(',').map(Number);
   if(x>worldWidth(s)||y>worldHeight(s))return false;
+  seen.add(key);
   if(!i)return true;
   const [a,b]=g.route[i-1].split(',').map(Number);
-  return key!==g.route[i-1]&&Math.abs(x-a)<=1&&Math.abs(y-b)<=1;
+  return Math.abs(x-a)<=1&&Math.abs(y-b)<=1;
  });
  if(!validRoute)return false;
  const point=key=>key.split(',').map(value=>Number(value)-.5);
