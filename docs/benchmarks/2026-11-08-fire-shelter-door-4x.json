@@ -1,0 +1,13 @@
+{
+  "speed": 4,
+  "buildings": 130,
+  "citizens": 221,
+  "actualEvacuation": true,
+  "shelteredReloadByteEqual": true,
+  "returnedResidents": 2,
+  "endingRecordedAfterReturn": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 2.17595799999998,
+  "p95StepCpuMs": 7.24716699999999
+}

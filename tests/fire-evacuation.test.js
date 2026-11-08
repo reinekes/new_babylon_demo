@@ -89,3 +89,27 @@ test('a flood at the original address does not displace a family already in a dr
  for(let i=0;i<150&&family.some(c=>c.fireShelter);i++)advanceTime(s,.1);
  assert.ok(family.every(c=>!c.fireShelter&&c.home==='11,8'));
 });
+
+test('fire evacuation and return work from indoor positions preserved in saves',()=>{
+ let s=createGame({start:'established',scenario:strictScenario()});
+ const kiln={type:'kiln',x:10,y:9,level:1},source='9,9',host='8,8';
+ s.buildings.push(kiln);
+ s.buildings.find(b=>b.type==='house'&&b.x===8).level=3;
+ s.capacity+=8;
+ initializeKilns(s);syncCitizens(s);
+ Object.assign(kiln.firing,{hot:4,time:IGNITION_CHECK});
+ kiln.kilnFire=true;
+ const family=()=>s.citizens.filter(c=>c.home===source);
+ for(const c of family())Object.assign(c,{x:9,y:9});
+ assert.ok(evacuateFireHome(s,kiln,source).ok);
+ for(let i=0;i<80&&!family().every(c=>supplyHome(c,{arrived:true})===host);i++)advanceTime(s,.1);
+ assert.ok(family().every(c=>supplyHome(c,{arrived:true})===host));
+
+ // A save may also locate sheltered residents inside the host house.
+ for(const c of family())Object.assign(c,{x:8,y:8,route:[],routeIndex:0});
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ assert.ok(setKilnBanked(s,s.buildings.find(b=>b.type==='kiln'),true).ok);
+ for(let i=0;i<120&&family().some(c=>c.fireShelter);i++)advanceTime(s,.1);
+ assert.ok(family().every(c=>!c.fireShelter&&c.home===source));
+ assert.ok(decode(encode(s)));
+});

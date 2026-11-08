@@ -586,6 +586,20 @@ function waitForHomeMeal(s,c,ctx){
  if(waiting&&c.phase==='home'&&hasCargo(c))c.phase='resting';
  return waiting;
 }
+// Saved indoor positions use the house's street access point for evacuation.
+function fireShelterDoor(c,ctx,host){
+ for(const key of [c.home,host]){
+  const house=ctx.buildings.get(key);
+  if(house?.type==='house'&&Math.abs(c.x-house.x)<.47&&Math.abs(c.y-house.y)<.47)return ctx.ports.get(key);
+ }
+}
+function fireShelterTrip(s,c,target,ctx,door){
+ if(!door)return startTrip(s,c,target,'toHome',ctx);
+ const {x,y}=c;
+ c.x=door.x;c.y=door.y;
+ startTrip(s,c,target,'toHome',ctx);
+ if(!c.route.length)Object.assign(c,{x,y});
+}
 export function evacuateFireHome(s,kiln,home){
  const reason=cityCommandReason(s);
  if(reason)return {ok:false,reason};
@@ -604,11 +618,12 @@ export function evacuateFireHome(s,kiln,home){
    fires.every(fire=>Math.max(Math.abs(fire.x-b.x),Math.abs(fire.y-b.y))>1);
  });
  for(const {home:host} of safe){
-  const routes=family.map(c=>{const traveler={...c};startTrip(s,traveler,host,'toHome',ctx);return traveler;});
+  const routes=family.map(c=>{const traveler={...c};fireShelterTrip(s,traveler,host,ctx,fireShelterDoor(c,ctx,host));return traveler;});
   if(routes.some(c=>c.phase==='blocked'))continue;
   family.forEach((c,i)=>{
    c.fireShelter={host,kiln:buildingKey(kiln)};
-   c.phase='blocked';c.route=routes[i].route;c.routeIndex=routes[i].routeIndex;
+   const {x,y,route,routeIndex}=routes[i];
+   Object.assign(c,{x,y,phase:'blocked',route,routeIndex});
   });
   ctx.foodCitizens=null;invalidateAssignments(s);
   return {ok:true};
@@ -623,9 +638,10 @@ function advanceFireShelter(s,c,dt,ctx){
   delete shelter.returning;c.route=[];c.routeIndex=0;ctx.foodCitizens=null;
  }
  const goingHome=!homeFlooded&&(shelter.returning||!ctx.buildings.get(shelter.kiln)?.kilnFire);
- if(goingHome&&!shelter.returning||!c.route.length){
+ const door=fireShelterDoor(c,ctx,shelter.host);
+ if(goingHome&&!shelter.returning||!c.route.length||door){
   const {route,routeIndex}=c;
-  startTrip(s,c,goingHome?c.home:shelter.host,'toHome',ctx);
+  fireShelterTrip(s,c,goingHome?c.home:shelter.host,ctx,door);
   c.phase='blocked';
   if(!c.route.length){c.route=route;c.routeIndex=routeIndex;return true;}
   if(goingHome)shelter.returning=true;
