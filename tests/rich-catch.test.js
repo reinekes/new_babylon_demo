@@ -119,3 +119,27 @@ test('Rich Catch refuses a fishing yard during active inundation before spending
  assert.equal(s.resources.faith,22);
  assert.equal(richCatchCharges(s,yard),6);
 });
+
+test('Rich Catch refuses a replaced yard before payment and records the confirmed grant',()=>{
+ const s=createNewCity({mode:'awakening'}),old={type:'fishing',x:10,y:8,level:1};
+ s.resources.faith=40;
+ s.richCatchEvidence={version:1,homes:['1,2','2,2'],fisher:s.citizens[0].id};
+ s.buildings.push(old);
+ const target={x:old.x,y:old.y,expectedYard:old};
+ const yard={...old};
+ s.buildings[s.buildings.indexOf(old)]=yard;
+ const before=encode(s);
+ assert.match(miracle(s,'richCatch',target).reason,/проверь/i);
+ assert.equal(encode(s),before);
+ const cast=miracle(s,'richCatch',{...target,expectedYard:yard});
+ assert.ok(cast.ok);
+ assert.deepEqual(cast.receipt.fishing,{x:yard.x,y:yard.y,charges:6});
+ assert.deepEqual(s.miracleHistory.paid.richCatch.fishing,cast.receipt.fishing);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const damaged=JSON.parse(raw);
+ damaged.miracleHistory.paid.richCatch.fishing.x++;
+ assert.equal(decode(JSON.stringify(damaged)),null);
+ delete damaged.miracleHistory.paid.richCatch.fishing;
+ assert.ok(decode(JSON.stringify(damaged)));
+});

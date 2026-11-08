@@ -1,0 +1,16 @@
+[
+  {
+    "id": "catch",
+    "view": "2d",
+    "url": "?id=catch&view=2d",
+    "mode": "2d",
+    "result": "PASS preview, stale yard refused, six charges saved and shown"
+  },
+  {
+    "id": "catch",
+    "view": "3d",
+    "url": "?id=catch&view=3d",
+    "mode": "3d",
+    "result": "PASS preview, stale yard refused, six charges saved and shown"
+  }
+]

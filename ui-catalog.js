@@ -48,6 +48,7 @@ export function updateMiracleCard(details,s,id,reason='',gift=null,arrival=null)
   if(outcome?.happiness>0)entries.push(`Довольство +${outcome.happiness.toLocaleString('ru-RU',{maximumFractionDigits:2})}`);
   if(outcome?.newResidents>0)entries.push(`Заселилось: ${outcome.newResidents} чел.`);
   if(outcome?.reserved>0)entries.push(`Места зарезервированы: ${outcome.reserved} чел.`);
+  if(paid?.fishing)entries.push(`Рыбацкий двор · ${paid.fishing.x}, ${paid.fishing.y}. Выдано усиленных уловов: ${paid.fishing.charges}`);
   const text=entries.join('. ');
   history.hidden=!text;
   if(history.textContent!==text)history.textContent=text;

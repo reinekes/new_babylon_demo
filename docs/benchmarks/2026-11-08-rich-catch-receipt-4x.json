@@ -1,0 +1,19 @@
+{
+  "speed": 4,
+  "replacedYardRefused": true,
+  "receiptSaved": true,
+  "floodRefusedWithoutPayment": true,
+  "buildings": 129,
+  "population": 221,
+  "retainedIds": 200,
+  "observed": [
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "cooldown": 1,
+  "medianCpuMs": 2.3573330000001533,
+  "p95CpuMs": 8.948875000000044
+}

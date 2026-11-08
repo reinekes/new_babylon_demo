@@ -3,12 +3,14 @@ import {floodMapView} from './river-flood.js';
 import {richCatchView} from './fish-provenance.js';
 import {isShore,worldWidth,worldHeight} from './world.js';
 
-const CHARGES=6, BONUS=.5;
+export const RICH_CATCH_CHARGES=6;
+const BONUS=.5;
 const shoresByWorld=new WeakMap();
 
 export function richCatchQuote(s,target){
  const yard=target&&s.buildings.find(b=>b.type==='fishing'&&b.x===target.x&&b.y===target.y&&isOperational(b)&&!b.floodDamage);
  if(!yard)return {yard:null,reason:'Выбери действующий рыбацкий двор на карте'};
+ if(target.expectedYard!==undefined&&target.expectedYard!==yard)return {yard:null,reason:'Рыбацкий двор изменился. Проверь выбранное место перед применением'};
  const flood=floodMapView(s);
  if(flood?.phase==='active'&&flood.tiles.some(tile=>tile.x===yard.x&&tile.y===yard.y)){
   return {yard:null,reason:'Рыбацкий двор затоплен. Дождись спада воды после разлива'};
@@ -49,7 +51,8 @@ export function foodYieldMultiplier(s,b,{includeRichCatch=true}={}){
 }
 
 export function startRichCatch(s,b){
- b.richCatch={tick:s.tick,charges:CHARGES};
+ b.richCatch={tick:s.tick,charges:RICH_CATCH_CHARGES};
+ return {x:b.x,y:b.y,charges:RICH_CATCH_CHARGES};
 }
 
 export function useRichCatch(s,b,amount){
@@ -68,7 +71,7 @@ export function expireRichCatch(s){
 export function validateRichCatch(s){
  const active=s.buildings.filter(b=>b.richCatch!==undefined);
  if(!active.length)return true;
- const [b]=active,q=b.richCatch;
+ const [b]=active,q=b.richCatch,receipt=s.miracleHistory?.paid?.richCatch?.fishing;
  return active.length===1&&richCatchView(s)?.qualified&&s.cooldowns.richCatch===2&&b.type==='fishing'&&
-  !!q&&Object.keys(q).length===2&&q.tick===s.tick&&Number.isInteger(q.charges)&&q.charges>=1&&q.charges<=CHARGES;
+  (!receipt||receipt.x===b.x&&receipt.y===b.y)&&!!q&&Object.keys(q).length===2&&q.tick===s.tick&&Number.isInteger(q.charges)&&q.charges>=1&&q.charges<=RICH_CATCH_CHARGES;
 }

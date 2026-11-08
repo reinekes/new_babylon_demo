@@ -276,7 +276,7 @@ export function miracle(s,id,target){
  const oldName=s.name;registerMiracle(s,m.domain,peace?{ids:peace.ids,mood:PEACE_MOOD}:land?{ids:land.ids}:undefined);
  if(id==='cat'){const first=s.pests.cats.length===1;log(s,'Бог привёл кошку',first?'Первая кошка пришла по твоей воле и охраняет хранилище.':'Ещё одна кошка охотится у незащищённого хранилища.','good');}
  if(id==='rain'){recordRainCast(s);if(s.drought){if(!s.memories.includes('rain'))s.memories.push('rain');log(s,'Дождь победил засуху','Поля ожили. Люди запомнят, как ты вернул воду.','good');}s.drought=0;s.rain=2;}
- if(fishing)startRichCatch(s,fishing.yard);
+ const fishingReceipt=fishing?startRichCatch(s,fishing.yard):null;
  if(id==='abundance'&&!s.abundanceGift)s.resources.food=Math.min(storage(s),s.resources.food+ABUNDANCE_LIMIT);
  if(id==='bless'||id==='healing'){affectResidents(s,{mood:id==='bless'?12:7});s.happiness=Math.min(100,s.happiness+(id==='bless'?15:10));s.population+=populationQuote?.count??0;}
  if(['fertility','inspiration','haste','sunlight'].includes(id))s.buffs[id]=3;
@@ -292,7 +292,7 @@ export function miracle(s,id,target){
  else if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
  applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':land?`Поддержаны живые участники историй · ${land.ids.length} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);
- const receipt={faithSpent:price};
+ const receipt={faithSpent:price,...fishingReceipt?{fishing:fishingReceipt}:{}};
  if(id==='bless'||id==='healing')receipt.population={newResidents:s.population-populationBefore,
   happiness:s.happiness-happinessBefore,reserved:id==='healing'?s.arrivalGroup?.count??0:0};
  recordMiracleCast(s,id,receipt);

@@ -32,7 +32,7 @@ import {createWindPresentation} from './wind-presentation.js';
 import {createCreatorPresentation} from './creator-presentation.js';
 import {createRichCatchPresentation} from './rich-catch-presentation.js';
 import {createEarthPresentation} from './earth-presentation.js';
-import {richCatchQuote} from './rich-catch.js';
+import {richCatchQuote,RICH_CATCH_CHARGES} from './rich-catch.js';
 import {createRainPresentation} from './rain-presentation.js';
 import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
@@ -146,7 +146,7 @@ let encyclopediaUI=null,encyclopediaRequest=0;
 let seasonJumping=false;
 let urukUI=null;
 let waterProjectDraft=null;
-let quotedArrivalHome,quotedAbundance;
+let quotedArrivalHome,quotedAbundance,quotedFishingYard;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
 const ceremonySpeed=createCeremonySpeedControl();
 function setSpeed(value){speed=value;for(const button of document.querySelectorAll('[data-speed]')){const active=Number(button.dataset.speed)===speed;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}}
@@ -1061,7 +1061,7 @@ function updateDepthTargetPreview(card){
 }
 function makeMiracleCard(id,m){
  const details=document.createElement('details');details.className='miracle-disclosure'+(m.unlockBuilding||m.unlockQuest?' is-sacred':'');details.dataset.miracle=id;
- details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p><p data-miracle-history hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}${id==='relicAwakening'?'<p data-depth-quote hidden></p>':''}${id==='earthMemory'?'<p data-land-cast hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
+ details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p><p data-miracle-history hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='richCatch'?'<p data-rich-catch-quote aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}${id==='relicAwakening'?'<p data-depth-quote hidden></p>':''}${id==='earthMemory'?'<p data-land-cast hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
  details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing'||id==='peace'||id==='earthMemory')update();});
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
  details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
@@ -1082,9 +1082,11 @@ function makeMiracleCard(id,m){
   el.before(agreement);
  }
  el.onclick=()=>{const branch=details.querySelector('[data-revelation-branch] select')?.value;
-  const target=id==='abundance'&&quotedAbundance?{...lastMiracleTarget,...quotedAbundance}:lastMiracleTarget;
+  let target=lastMiracleTarget;
+  if(id==='abundance'&&quotedAbundance)target={...target,...quotedAbundance};
+  if(id==='richCatch'&&quotedFishingYard)target={...target,expectedYard:quotedFishingYard};
   const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome,homeRef:quotedArrivalHome,custom:el.dataset.arrivalCustom}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:target);if(result.ok){details.open=false;blessingPresentation.skip();inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
- else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchQuote(state,lastMiracleTarget).yard);}
+ else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchQuote(state,result.receipt.fishing).yard);}
  else if(id==='inannaProtection'&&state.inannaDiscovery){
   rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
   const gate=inannaGateFor(state),stores=state.buildings.filter(isPestStore);
@@ -1175,9 +1177,16 @@ function update(){
  if(foreignButton)foreignButton.onclick=showForeignEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
-  if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'?richCatchQuote(state,lastMiracleTarget).reason:state.happiness>=100?populationMiracleQuote(state,id)?.reason||'':'');
+  if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;let fishing;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'?(fishing=richCatchQuote(state,lastMiracleTarget)).reason:state.happiness>=100?populationMiracleQuote(state,id)?.reason||'':'');
   if(id==='abundance')quotedAbundance=gift?.store?{expectedStore:gift.store,expectedAmount:gift.amount}:undefined;
   const card=el.closest('details'),branch=card.querySelector('[data-revelation-branch]');
+  if(id==='richCatch'){
+   quotedFishingYard=fishing?.yard;
+   const preview=card.querySelector('[data-rich-catch-quote]');
+   preview.hidden=!quotedFishingYard;
+   const text=quotedFishingYard?`Рыбацкий двор · ${fishing.yard.x}, ${fishing.yard.y}. Усиленных уловов: ${RICH_CATCH_CHARGES}.`:'';
+   if(preview.textContent!==text)preview.textContent=text;
+  }
   if(branch)branch.hidden=!state.revelationEvidence;
   const advice=branch&&!branch.hidden&&card.open&&!reason?revelationAdviceQuote(state,branch.querySelector('select').value):null;
   const shaping=id==='shaping'&&state.shapingProjects&&!reason&&card.open?
