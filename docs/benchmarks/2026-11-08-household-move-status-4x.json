@@ -1,0 +1,16 @@
+{
+  "speed": 4,
+  "treatmentReason": "Семья ждёт окончания лечения",
+  "moveWaitedForTreatment": true,
+  "treatmentReloadByteEqual": true,
+  "steps": 1019,
+  "buildings": 131,
+  "population": 245,
+  "retainedIds": 218,
+  "site": "5,4",
+  "complete": true,
+  "settled": true,
+  "byteExact": true,
+  "medianCpuMs": 1.222291000000041,
+  "p95CpuMs": 5.767082999999957
+}

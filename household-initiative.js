@@ -1,4 +1,4 @@
-import {reservedArrivalBeds} from './arrival-hospitality.js';
+import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {ensureHouseEntityId} from './causal-facts.js';
 import {DAY_SECONDS} from './city-life.js';
 import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
@@ -29,6 +29,26 @@ export function householdAwaitingFamily(s,building){
  return !!project&&householdInitiativeReserved(project,s.citizens.find(c=>c.id===project.members[0]));
 }
 
+export function householdMovingFamily(s,first,partner){
+ const mother=first.sex==='f'?first:partner;
+ return [first,partner,...s.citizens.filter(child=>child.age<16&&child.parents.includes(mother.id))];
+}
+
+export function householdMoveActivityReason(s,family){
+ for(const c of family){
+  if(shelterHome(c))return 'Семья ещё не вернулась из укрытия';
+  if(c.clinic)return 'Семья ждёт окончания лечения';
+  if(c.school)return 'Семья ждёт окончания учёбы';
+  if(c.phase==='toManualGathering'||c.phase==='manualGathering')return 'Семья ждёт окончания ручного сбора';
+  if(c.phase==='festival')return 'Семья ждёт окончания работы на празднике';
+  if(c.commonMealTarget||c.phase==='toEveningGame'||c.phase==='eveningGuest')return 'Семья ждёт окончания встречи';
+  if(c.memorialMove)return 'Семья переносит семейную память';
+  if(c.clothingTarget!==undefined||s.citizens.some(p=>p.clothingTarget===c.id)||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||
+   Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return 'Семья ждёт окончания работы или доставки';
+ }
+ return '';
+}
+
 export function householdInitiative(s,source){
  if(!isStrictSumer(s)||source?.type!=='house'||!isOperational(source)||!s.buildings.includes(source))return refuse('Нужен жилой двор Южного Шумера');
  const sourceKey=buildingKey(source),residents=s.citizens.filter(c=>c.home===sourceKey);
@@ -41,8 +61,7 @@ export function householdInitiative(s,source){
   const split=c.home!==partner.home;
   const crowded=residents.some(other=>other!==c&&other!==partner&&other.partner!==null&&byId.get(other.partner)?.home===sourceKey);
   if(!split&&(!crowded||c.id>partner.id))return [];
-  const mother=c.sex==='f'?c:partner;
-  return [[c,partner,...s.citizens.filter(child=>child.age<16&&child.parents.includes(mother.id))]];
+  return [householdMovingFamily(s,c,partner)];
  });
  if(!families.length)return refuse('Новый двор нужен паре, которая живёт порознь или делит дом с другой семьёй');
  const fitting=families.filter(family=>family.length<=4);

@@ -1,4 +1,4 @@
-import {householdInitiativeReserved} from './household-initiative.js';
+import {householdInitiativeReserved,householdMovingFamily,householdMoveActivityReason} from './household-initiative.js';
 import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {prepareMemorialMove} from './life-analytics.js';
 import {mournResidents} from './wellbeing.js';
@@ -40,7 +40,7 @@ export function advanceGenerations(s,recover=()=>{}){
  }
  if(!s.funeral)for(const a of s.citizens.filter(c=>c.sex==='f'&&c.partner!==null)){
   const partner=living.get(a.partner);if(!partner)continue;
-  const family=[a,partner,...s.citizens.filter(c=>c.age<16&&c.parents.includes(a.id))],current=homes.get(a.home)||[];
+  const family=householdMovingFamily(s,a,partner),current=homes.get(a.home)||[];
   const awaiting=b=>householdInitiativeReserved(b.householdInitiative,living.get(b.householdInitiative?.members[0]));
   const reserved=reservedHomes.get(a.id)||reservedHomes.get(partner.id);
   if(!reserved&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
@@ -50,11 +50,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
   if(reserved&&!available(reserved))continue;
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
-  if(!house||family.some(c=>shelterHome(c)||c.clinic||c.school||c.commonMealTarget||
-   ['toManualGathering','manualGathering','festival','toEveningGame','eveningGuest'].includes(c.phase)||
-   s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||
-   c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||
-   Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+  if(!house||householdMoveActivityReason(s,family))continue;
   const destination=buildingKey(house);for(const c of family){
    const source=housingNetwork.ports.find(p=>p.key===housingPorts.get(c.home));
    if(source&&Math.hypot(c.x-source.x,c.y-source.y)<.05)prepareMemorialMove(s,c,house);
