@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T00:18:47.786380+00:00",
+  "commit": "9c8927d4f30d8016cf7a84498ede1b79ef9b628d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "f0018c2f55ef9e19a950266b72eb77f75b821fdd008b601d2a47e14b5cb44667",
+      "actual": "f0018c2f55ef9e19a950266b72eb77f75b821fdd008b601d2a47e14b5cb44667",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "fdaefbe9b87f84e84cfbc123458ef516e2b41291f374405d9d100d56e52ecf4f",
+      "actual": "fdaefbe9b87f84e84cfbc123458ef516e2b41291f374405d9d100d56e52ecf4f",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "f5a7f19f5e54e420b1dc553fe1c519c6a85a8e1ffdff6da1255acee36c2ef336",
+      "actual": "f5a7f19f5e54e420b1dc553fe1c519c6a85a8e1ffdff6da1255acee36c2ef336",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-arrival-host-present-4x.json",
+      "status": 200,
+      "expected": "1bca126545cc1d198cb5d134f20bdeb5d313556cd02a12d7b1a1326d9e2d6f95",
+      "actual": "1bca126545cc1d198cb5d134f20bdeb5d313556cd02a12d7b1a1326d9e2d6f95",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "73db6a61fe3691bf65d3c313d4d51db5968567f33d4119fca6cdcf33d4c84dc2",
+      "actual": "73db6a61fe3691bf65d3c313d4d51db5968567f33d4119fca6cdcf33d4c84dc2",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "defe3b0b9dc4e21fa7420f8bd5327056f35b0db4bfd1d7d38dc4bd1dcd04b02a",
+      "actual": "defe3b0b9dc4e21fa7420f8bd5327056f35b0db4bfd1d7d38dc4bd1dcd04b02a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "9d6bb0822fc4cc079169fd58f4ad03c33fa1c95c83491e736dbb8a4ea88d0f2a",
+      "actual": "9d6bb0822fc4cc079169fd58f4ad03c33fa1c95c83491e736dbb8a4ea88d0f2a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "f2873f9a7f86b9bcdf4472a6061484e176d6c6890125c112a9b7eef4b423cde4",
+      "actual": "f2873f9a7f86b9bcdf4472a6061484e176d6c6890125c112a9b7eef4b423cde4",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "add3876fdefff8af47d9df6ef34c7a2fb79facb898923ad6e02f4b7cbc6bcf1e",
+      "actual": "add3876fdefff8af47d9df6ef34c7a2fb79facb898923ad6e02f4b7cbc6bcf1e",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
