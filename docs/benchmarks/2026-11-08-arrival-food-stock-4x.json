@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "emptyCityRefusedWithoutMutation": true,
+  "buildings": 134,
+  "initialPopulation": 289,
+  "population": 295,
+  "arrivals": 6,
+  "home": "2,2",
+  "food": 6,
+  "water": 7,
+  "customWater": 1,
+  "reloadByteIdentical": true,
+  "medianCpuMs": 17.699707999999987,
+  "p95CpuMs": 62.03883399999995
+}

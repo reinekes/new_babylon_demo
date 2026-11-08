@@ -68,9 +68,25 @@ export function takeStock(s,key,k,n,{fishTo,fishKey='fishCargo',giftTo,giftKey='
 }
 export function foodAvailability(s,{reconcile=true}={}){
  if(reconcile)syncInventory(s);
+ const stores=stockStores(s);
+ let cityFood=amount(s.resources.food),adjustment=0;
+ if(!reconcile){
+  // Match syncInventory's store order without touching stock or provenance.
+  const stored=stores.reduce((total,b)=>total+(b.stock?.food||0),0);
+  if(!s.inventory)cityFood=Math.max(cityFood,stored);
+  adjustment=cityFood-stored;
+ }
  let target=0;
- if(s.foodPlan?.protectSeeds!==false){for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));target=Math.min(s.resources.food,Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0)));}
- const result=new Map();for(const b of stockStores(s)){const stored=b.stock?.food||0,protectedFood=Math.min(stored,target);result.set(keyOf(b),Math.max(0,stored-protectedFood));target-=protectedFood;}return result;
+ if(s.foodPlan?.protectSeeds!==false){for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));target=Math.min(cityFood,Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0)));}
+ const result=new Map();
+ for(const b of stores){
+  const stored=b.stock?.food||0,change=Math.max(-stored,adjustment);
+  adjustment-=change;
+  const available=stored+change,protectedFood=Math.min(available,target);
+  result.set(keyOf(b),available-protectedFood);
+  target-=protectedFood;
+ }
+ return result;
 }
 export const foodAvailableAt=(s,key)=>foodAvailability(s).get(key)||0;
 

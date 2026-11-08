@@ -1,0 +1,16 @@
+[
+  {
+    "id": "libation",
+    "view": "2d",
+    "url": "?id=libation&view=2d",
+    "mode": "2d",
+    "result": "PASS empty city refused, restored stock matched reserve. Принимающий двор · 2, 2. Резерв: еда 6, вода 7 (из них 1 на возлияние)."
+  },
+  {
+    "id": "libation",
+    "view": "3d",
+    "url": "?id=libation&view=3d",
+    "mode": "3d",
+    "result": "PASS empty city refused, restored stock matched reserve. Принимающий двор · 2, 2. Резерв: еда 6, вода 7 (из них 1 на возлияние)."
+  }
+]

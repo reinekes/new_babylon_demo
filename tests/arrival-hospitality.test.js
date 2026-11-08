@@ -590,3 +590,27 @@ test('cross-bank hospitality retains an alternate pairing through reload',async(
   assert.equal(encode(decode(encode(s))),encode(s));
  }
 });
+
+test('arrival previews match the current city food without mutating warehouse records',async()=>{
+ const {arrivalQuote,reserveArrival}=await import('../arrival-hospitality.js');
+ const {networkFor}=await import('../workforce.js');
+ const {syncInventory}=await import('../inventory.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ for(const b of s.buildings)if(b.type==='house')b.water=12;
+ const network=networkFor(s);
+ assert.ok(arrivalQuote(s,network).offer);
+ s.resources.food=0;
+ const before=JSON.stringify(s);
+ assert.match(arrivalQuote(s,network).reason,/пайка/);
+ assert.equal(JSON.stringify(s),before);
+ assert.equal(reserveArrival(s,network),false);
+ assert.equal(JSON.stringify(s),before);
+ syncInventory(s);
+ s.resources.food=100;
+ const funded=JSON.stringify(s);
+ const offer=arrivalQuote(s,network).offer;
+ assert.ok(offer);
+ assert.equal(JSON.stringify(s),funded);
+ assert.ok(reserveArrival(s,network,{home:offer.home,count:offer.beds,homeRef:offer.homeRef}));
+ assert.equal(s.resources.food,100-offer.food);
+});
