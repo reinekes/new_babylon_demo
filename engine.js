@@ -227,6 +227,12 @@ export function populationMiracleQuote(s,id){
  const count=Math.min(limit,freeArrivalBeds(s));
  return {count,reason:!count&&s.happiness>=100?'Довольство уже максимальное. Для новых жителей нужно свободное жильё.':''};
 }
+export function depthCastQuote(s,target){
+ const canal=depthCanalTarget(s,target);
+ if(canal)return {kind:'canal',building:canal};
+ const intake=depthWaterpointTarget(s,target);
+ return intake?{kind:'intake',building:intake}:{kind:'rain',building:null};
+}
 export function miracle(s,id,target){
  if((s.miracleCelebration||['cat','fertility'].includes(id))&&miracleCelebrationReason(s))return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};const lock=miracleKnowledgeReason(s,id)||miracleLockReason(s,id);if(lock)return {ok:false,reason:lock};
@@ -262,8 +268,12 @@ export function miracle(s,id,target){
   if(!advice.ok)return advice;
   if(advice.note)s.revelationEvidence.advice=advice.note;
  }
- const depthCanal=id==='relicAwakening'?depthCanalTarget(s,target):null;
- const depthIntake=id==='relicAwakening'?depthWaterpointTarget(s,target):null;
+ const depth=id==='relicAwakening'&&s.depthSupply?depthCastQuote(s,target):null;
+ if(depth&&target?.expectedDepthTarget!==undefined&&target.expectedDepthTarget!==depth.building){
+  return {ok:false,reason:'Цель чуда изменилась. Проверь выбранное место перед применением'};
+ }
+ const depthCanal=depth?.kind==='canal'?depth.building:null;
+ const depthIntake=depth?.kind==='intake'?depth.building:null;
  if(id==='earthMemory'&&s.landMemoryCast)return {ok:false,reason:'Дождись последнего сезонного отклика'};
  const land=id==='earthMemory'&&s.landMemoryChapter===1?landMemoryCastQuote(s):null;
  if(land&&!land.ids.length)return {ok:false,reason:'У сохранённых историй пока нет живых участников'};
@@ -293,6 +303,10 @@ export function miracle(s,id,target){
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
  applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':land?`Поддержаны живые участники историй · ${land.ids.length} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);
  const receipt={faithSpent:price,...fishingReceipt?{fishing:fishingReceipt}:{}};
+ if(depth){
+  receipt.depth={kind:depth.kind};
+  if(depth.building)Object.assign(receipt.depth,{x:depth.building.x,y:depth.building.y});
+ }
  if(id==='bless'||id==='healing')receipt.population={newResidents:s.population-populationBefore,
   happiness:s.happiness-happinessBefore,reserved:id==='healing'?s.arrivalGroup?.count??0:0};
  recordMiracleCast(s,id,receipt);

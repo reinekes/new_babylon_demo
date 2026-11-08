@@ -1,0 +1,16 @@
+[
+  {
+    "id": "depth",
+    "view": "2d",
+    "url": "?id=depth&view=2d",
+    "mode": "2d",
+    "result": "PASS canal preview, stale target refused, pressure committed and shown"
+  },
+  {
+    "id": "depth",
+    "view": "3d",
+    "url": "?id=depth&view=3d",
+    "mode": "3d",
+    "result": "PASS canal preview, stale target refused, pressure committed and shown"
+  }
+]

@@ -51,7 +51,7 @@ import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
-import {canalSiltingForecast,depthCanalTarget,irrigationFor,fieldWater} from './irrigation.js';
+import {canalSiltingForecast,irrigationFor,fieldWater} from './irrigation.js';
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {miraclePrice} from './miracle-discovery.js';
@@ -98,7 +98,7 @@ import {resourceLabel,DISPLAY_RESOURCE_NAMES} from './resource-display.js';
 import {PROFESSION_NAMES,hasWorkplace} from './professions.js';
 import {renderStaffing,selectedProfession,citizenProfessionName,professionOptionsHTML} from './ui-professions.js';
 import {birthFoodHTML,renderCityTools} from './ui-city-tools.js';
-import {depthWaterpointTarget,waterSummary,WATERPOINT_CAPACITY} from './water.js';
+import {waterSummary,WATERPOINT_CAPACITY} from './water.js';
 import {RESOURCE_GROUPS,seasonBalance} from './season-balance.js';
 import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
 import {uiIcon} from './ui-icons.js';
@@ -120,7 +120,7 @@ import {weatherAt} from './environment.js';
 import {builderConsent,setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
-import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,isOperational,levelOf,outputMultiplier} from './definitions.js';
@@ -146,7 +146,7 @@ let encyclopediaUI=null,encyclopediaRequest=0;
 let seasonJumping=false;
 let urukUI=null;
 let waterProjectDraft=null;
-let quotedArrivalHome,quotedAbundance,quotedFishingYard;
+let quotedArrivalHome,quotedAbundance,quotedFishingYard,quotedDepthTarget;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
 const ceremonySpeed=createCeremonySpeedControl();
 function setSpeed(value){speed=value;for(const button of document.querySelectorAll('[data-speed]')){const active=Number(button.dataset.speed)===speed;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}}
@@ -1053,10 +1053,10 @@ function updateDepthTargetPreview(card){
  const preview=card?.querySelector('[data-depth-quote]');
  if(!preview)return;
  preview.hidden=!state.depthSupply;
- if(preview.hidden)return;
- const canal=depthCanalTarget(state,lastMiracleTarget);
- const intake=depthWaterpointTarget(state,lastMiracleTarget);
- const message=canal?'Дождь и +1 доля воды в выбранной сети до конца сезона.':intake?`Дождь и пополнение запаса водозабора до ${WATERPOINT_CAPACITY}. Воду доставят водоносы.`:'Выбери канал с водой для подпора или водозабор для пополнения запаса. Без цели пойдёт дождь.';
+ if(preview.hidden){quotedDepthTarget=undefined;return;}
+ const {kind,building}=depthCastQuote(state,lastMiracleTarget);
+ quotedDepthTarget=building;
+ const message=kind==='canal'?'Дождь и +1 доля воды в выбранной сети до конца сезона.':kind==='intake'?`Дождь и пополнение запаса водозабора до ${WATERPOINT_CAPACITY}. Воду доставят водоносы.`:'Выбери канал с водой для подпора или водозабор для пополнения запаса. Без цели пойдёт дождь.';
  if(preview.textContent!==message)preview.textContent=message;
 }
 function makeMiracleCard(id,m){
@@ -1085,6 +1085,7 @@ function makeMiracleCard(id,m){
   let target=lastMiracleTarget;
   if(id==='abundance'&&quotedAbundance)target={...target,...quotedAbundance};
   if(id==='richCatch'&&quotedFishingYard)target={...target,expectedYard:quotedFishingYard};
+  if(id==='relicAwakening'&&quotedDepthTarget!==undefined)target={...target,expectedDepthTarget:quotedDepthTarget};
   const result=miracle(state,id,id==='revelation'&&state.revelationEvidence?{branch}:id==='healing'&&state.arrivalHospitality?{count:Number(el.dataset.arrivalCount),home:el.dataset.arrivalHome,homeRef:quotedArrivalHome,custom:el.dataset.arrivalCustom}:id==='peace'&&state.peaceDiscovery?{...lastMiracleTarget,ids:JSON.parse(el.dataset.peaceIds||'[]')}:target);if(result.ok){details.open=false;blessingPresentation.skip();inannaPresentation.skip();landPresentation.skip();depthPresentation.skip();starPresentation.skip();peacePresentation.skip();arrivalPresentation.skip();windPresentation.skip();abundancePresentation.skip();sunlightPresentation.skip();revelationPresentation.skip();shapingPresentation.skip();if(id==='rain'){creatorPresentation.skip();catchPresentation.skip();rainPresentation.cast(state,lastMiracleTarget,performance.now());}
  else if(id==='richCatch'){creatorPresentation.skip();rainPresentation.skip();earthPresentation.skip();catchPresentation.cast(state,richCatchQuote(state,result.receipt.fishing).yard);}
  else if(id==='inannaProtection'&&state.inannaDiscovery){
@@ -1104,8 +1105,8 @@ function makeMiracleCard(id,m){
  }
  else if(id==='relicAwakening'&&state.depthSupply){
   rainPresentation.skip();earthPresentation.skip();catchPresentation.skip();creatorPresentation.skip();
-  const intake=depthWaterpointTarget(state,lastMiracleTarget);
-  const wave=intake?{point:intake}:depthCanalTarget(state,lastMiracleTarget)?irrigationFor(state).depthWave:null;
+  const depth=result.receipt.depth;
+  const wave=depth.kind==='intake'?{point:depth}:depth.kind==='canal'?irrigationFor(state).depthWave:null;
   if(wave)renderer.focusOn(wave.point.x,wave.point.y);
   depthPresentation.cast(wave);
  }

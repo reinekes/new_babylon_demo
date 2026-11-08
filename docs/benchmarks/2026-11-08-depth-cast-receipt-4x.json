@@ -1,0 +1,29 @@
+{
+  "canal": {
+    "speed": 4,
+    "staleRefused": true,
+    "changedReceiptRejected": true,
+    "legacyReceiptAccepted": true,
+    "buildings": 140,
+    "citizens": 296,
+    "connectedEdges": 1,
+    "blockedAndIndependentExcluded": true,
+    "saveByteEqual": true,
+    "expired": true,
+    "samples": 243,
+    "medianStepCpuMs": 12.684000000000196,
+    "p95StepCpuMs": 49.2221669999999
+  },
+  "intake": {
+    "speed": 4,
+    "intakeReceipt": true,
+    "buildings": 135,
+    "citizens": 296,
+    "load": 9,
+    "accepted": 9,
+    "saveByteEqual": true,
+    "samples": 16,
+    "medianStepCpuMs": 13.24629200000004,
+    "p95StepCpuMs": 110.76658399999997
+  }
+}

@@ -82,8 +82,14 @@ test('demolishing a depth anchor retires its pressure and a replacement cannot r
    canal={type:'canal',x,y,level:1};s.buildings.push(canal);
   }
  }
- assert.ok(depthCanalTarget(s,canal));
- assert.ok(miracle(s,'relicAwakening',canal).ok);
+ assert.equal(depthCanalTarget(s,canal),canal);
+ const replacement={...canal};
+ s.buildings[s.buildings.indexOf(canal)]=replacement;
+ const raw=encode(s);
+ assert.match(miracle(s,'relicAwakening',{...canal,expectedDepthTarget:canal}).reason,/Проверь/);
+ assert.equal(encode(s),raw);
+ canal=replacement;
+ assert.ok(miracle(s,'relicAwakening',{...canal,expectedDepthTarget:canal}).ok);
  assert.equal(irrigationFor(s).depthWave?.point,canal);
  const pressure=s.depthSupply.pressure;
  const {x,y}=canal;
@@ -95,4 +101,28 @@ test('demolishing a depth anchor retires its pressure and a replacement cannot r
  assert.equal(irrigationFor(s).depthWave,null);
  assert.equal(s.resources.faith,55);
  assert.ok(encode(s));
+});
+
+test('Depths refuses a changed preview before paying and returns the committed effect',async()=>{
+ const {miracle}=await import('../engine.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ s.relicQuest.phase='completed';
+ s.resources.faith=100;
+ const intake={type:'waterpoint',x:1,y:1,level:1,waterReserve:5};
+ const target={x:1,y:1,expectedDepthTarget:intake};
+ const replacement={...intake};
+ s.buildings.push(replacement);
+ const before=encode(s);
+ assert.match(miracle(s,'relicAwakening',target).reason,/Проверь/);
+ assert.equal(encode(s),before);
+ s.buildings.pop();
+ const dry=encode(s);
+ assert.match(miracle(s,'relicAwakening',target).reason,/Проверь/);
+ assert.equal(encode(s),dry);
+ s.buildings.push(replacement);
+ assert.match(miracle(s,'relicAwakening',{...target,expectedDepthTarget:null}).reason,/Проверь/);
+ const cast=miracle(s,'relicAwakening',{...target,expectedDepthTarget:replacement});
+ assert.ok(cast.ok);
+ assert.deepEqual(cast.receipt.depth,{kind:'intake',x:1,y:1});
+ assert.deepEqual(s.miracleHistory.paid.relicAwakening.depth,cast.receipt.depth);
 });

@@ -10,7 +10,8 @@ export const riverIsLow=s=>lowWaterYear(s)&&s.season===1;
 export function depthCanalTarget(s,target){
  if(!s.depthSupply||!canalMaintenanceEnabled(s)||!Number.isInteger(target?.x)||!Number.isInteger(target?.y))return null;
  const network=irrigationFor(s),id=key(target.x,target.y);
- return network.wet.has(id)?network.cells.get(id):null;
+ if(!network.wet.has(id))return null;
+ return s.buildings.find(b=>b.type==='canal'&&b.x===target.x&&b.y===target.y&&isOperational(b))||null;
 }
 export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
  const pressure=s.depthSupply?.pressure;
