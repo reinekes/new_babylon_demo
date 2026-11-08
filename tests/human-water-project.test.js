@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,decode,encode,advanceTime} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
-import {approveWaterProject,waterProjectProposal,sendWaterProjectDream,acceptWaterProjectDream,discardWaterProjectDream,waterDreamProposal} from '../human-projects.js';
+import {approveWaterProject,waterProjectProposal,sendWaterProjectDream,acceptWaterProjectDream,discardWaterProjectDream,waterDreamProposal,waterProjectDeliveryWait} from '../human-projects.js';
 import {assignWorkplace,setCitizenRole} from '../management.js';
 import {syncCitizens,invalidateAssignments} from '../workforce.js';
 import {buildingKey} from '../definitions.js';
@@ -36,15 +36,26 @@ test('a dry household and a ready organizer can approve exactly one real waterpo
  assert.equal(project.construction,undefined);
  assert.equal(project.humanWaterProject.organizerId,organizer.id);
  assert.equal(project.humanWaterProject.delivery,undefined);
+ const waitingHome=s.buildings.find(b=>buildingKey(b)===requester.home);
+ waitingHome.water=waitingHome.waterDelivered;
+ assert.match(waterProjectDeliveryWait(s,project,waitingHome),/запас воды/);
+ waitingHome.water=0;
+ assert.match(waterProjectDeliveryWait(s,project,waitingHome),/назначить водоноса/);
  assert.ok(decode(encode(s)));
  const courier=s.citizens.find(c=>c.id===organizer.id);
  assert.ok(setCitizenRole(s,courier.id,'watercarrier').ok);
  assert.ok(assignWorkplace(s,courier.id,result.key).ok);
  for(let i=0;i<400&&s.citizens.find(c=>c.id===courier.id).phase!=='working';i++){s.event=null;advanceTime(s,.2);}
  s.buildings.find(b=>buildingKey(b)===requester.home).water=0;
+ let observed=false;
  for(let i=0;i<900&&!project.humanWaterProject.delivery;i++){
   s.event=null;advanceTime(s,.2);
+  if(courier.waterTrip?.station===result.key&&courier.waterTrip.target===requester.home){
+   assert.match(waterProjectDeliveryWait(s,project,waitingHome),/рейс/);
+   observed=true;
+  }
  }
+ assert.ok(observed);
  const delivery=project.humanWaterProject.delivery;
 
  assert.ok(delivery);

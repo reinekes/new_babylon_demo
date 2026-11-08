@@ -8,7 +8,7 @@ import {build,canBuild} from './engine.js';
 import {canLeadConstruction,isAwakening} from './godhood.js';
 import {networkFor} from './workforce.js';
 import {stockStores} from './inventory.js';
-import {dispatchNeighborWater,waterDemand,waterSummary} from './water.js';
+import {dispatchNeighborWater,waterDemand,waterpointCanReach,waterSummary} from './water.js';
 import {supplyHome} from './households.js';
 import {worldWidth,worldHeight} from './world.js';
 import {DAY_SECONDS} from './city-life.js';
@@ -214,6 +214,18 @@ export function discardWaterProjectDream(s){
  if(!s.waterProjectDream)return {ok:false,reason:'У города нет общего сна'};
  delete s.waterProjectDream;
  return {ok:true};
+}
+
+export function waterProjectDeliveryWait(s,station,home){
+ const source=buildingKey(station),target=buildingKey(home);
+ if(s.citizens.some(c=>c.waterTrip?.station===source&&c.waterTrip.target===target))return 'Первый рейс из водозабора назначен';
+ if(!s.citizens.some(c=>supplyHome(c,{arrived:true})===target))return 'Во дворе пока некому принять воду';
+ const water=waterSummary(s,home);
+ if(water.stock>=water.demand)return 'Во дворе есть запас воды на день';
+ if(!waterpointCanReach(s,source,target))return 'До двора пока нет сухого пути';
+ if(!s.citizens.some(c=>c.work===source))return 'На водозабор нужно назначить водоноса';
+ if(water.couriers)return 'Вода уже направлена во двор из другого источника';
+ return 'Водонос ждёт возможности отправиться в первый рейс';
 }
 
 export function confirmProjectWater(s,c,station,home,amount){

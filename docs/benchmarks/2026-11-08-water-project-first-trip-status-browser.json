@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ready",
+    "view": "2d",
+    "url": "?id=ready&view=2d",
+    "mode": "2d",
+    "result": "PASS ready shows the current readiness"
+  },
+  {
+    "id": "ready",
+    "view": "3d",
+    "url": "?id=ready&view=3d",
+    "mode": "3d",
+    "result": "PASS ready shows the current readiness"
+  },
+  {
+    "id": "blocked",
+    "view": "2d",
+    "url": "?id=blocked&view=2d",
+    "mode": "2d",
+    "result": "PASS blocked shows the current readiness"
+  },
+  {
+    "id": "blocked",
+    "view": "3d",
+    "url": "?id=blocked&view=3d",
+    "mode": "3d",
+    "result": "PASS blocked shows the current readiness"
+  }
+]

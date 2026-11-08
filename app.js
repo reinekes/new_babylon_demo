@@ -38,7 +38,7 @@ import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
 import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,householdInitiativeReserved,householdMovingFamily,householdMoveWaitingStatus,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
-import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterDreamProposal,waterDreamHomeReason,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
+import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterDreamProposal,waterDreamHomeReason,waterProjectDeliveryWait,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,vowTargetRebuilt,VOW_FAILURE_TEXT} from './supply-vow.js';
 import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
 import {setCommonMeals} from './common-meal.js';
@@ -733,7 +733,7 @@ function waterProjectHousehold(b){
   const helpers=(p.participantIds||[]).map(id=>member(id,'Помощник')).join('');
   const served=(p.witnessHomeIds||[]).length;
   const witnessSummary=served?`<br>Доставки подтверждены в других дворах · ${served}`:'';
-  const delivery=p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:building?'Идёт строительство':'Построен · ожидается первая доставка';
+  const delivery=p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:building?'Идёт строительство':'Построен · '+waterProjectDeliveryWait(state,site,b);
   return `<section data-water-project-progress><p><b>Водозабор · ${site.x}, ${site.y}</b><br>${member(p.organizerId,'Организатор')}${helpers}${delivery}${witnessSummary}</p>${building?siteStatus(site):''}</section>`;
  }).join('');
  const request=householdWaterRequest(state,b);
