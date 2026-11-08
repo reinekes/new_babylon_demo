@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T01:55:12.983538+00:00",
+  "commit": "6d93596197f3f60b57c9e2ddda87aa3ff5fef6ac",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "c3475d1862c41485e3bbd93be5fd1552833238a4cc100c70ebc3e4f2a9c0e2e3",
+      "actual": "c3475d1862c41485e3bbd93be5fd1552833238a4cc100c70ebc3e4f2a9c0e2e3",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "f34e8f18eba3e4c323f91ff69eccd46979d3815953e20608b5491c2c1e2dae92",
+      "actual": "f34e8f18eba3e4c323f91ff69eccd46979d3815953e20608b5491c2c1e2dae92",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-foreign-ending-partner-4x.json",
+      "status": 200,
+      "expected": "b26f806cab80338554800b0fd18be696a14f5d3cfd4e5a4710904b04e77a4f74",
+      "actual": "b26f806cab80338554800b0fd18be696a14f5d3cfd4e5a4710904b04e77a4f74",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0161ff962de3d3a5492791aba4be6e2ee83a4e87282fe83b19fac5f38815e28e",
+      "actual": "0161ff962de3d3a5492791aba4be6e2ee83a4e87282fe83b19fac5f38815e28e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "81fc62289dd86d3c52076d96fef0f13ec75eb5642f6a221ca4e662532d3e0bab",
+      "actual": "81fc62289dd86d3c52076d96fef0f13ec75eb5642f6a221ca4e662532d3e0bab",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1aae6f84299f6d77a1cd88b4257e1351e9d9c8edeb2c1fb0fbab2ffae903f8c0",
+      "actual": "1aae6f84299f6d77a1cd88b4257e1351e9d9c8edeb2c1fb0fbab2ffae903f8c0",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "e1127080454e2b437d1085b413477923e8e3db706f3d0610c6df497f0dd3bc3d",
+      "actual": "e1127080454e2b437d1085b413477923e8e3db706f3d0610c6df497f0dd3bc3d",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "a963bf71cd72eb6bf72f54e38fcb4fe9a583bd514517800888d6ce198455428e",
+      "actual": "a963bf71cd72eb6bf72f54e38fcb4fe9a583bd514517800888d6ce198455428e",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
