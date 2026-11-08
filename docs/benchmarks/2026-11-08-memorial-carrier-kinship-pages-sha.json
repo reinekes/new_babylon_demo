@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T03:57:56.429353+00:00",
+  "commit": "db6617b5b3fa2fc546860a7a9f55abf4f2331adf",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "75002c3b6eacbb9db5ec737413bfdcb5e2b682fbb17e86dd08a580b9ec4b9396",
+      "actual": "75002c3b6eacbb9db5ec737413bfdcb5e2b682fbb17e86dd08a580b9ec4b9396",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-memorial-carrier-kinship-4x.json",
+      "status": 200,
+      "expected": "375f925a9405a6914d678eb62e41ff42dad686ac6266c0408ce1fb4636c66312",
+      "actual": "375f925a9405a6914d678eb62e41ff42dad686ac6266c0408ce1fb4636c66312",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a01ba413ba2b8377ef8d6febfa2c521dc5fddf711d5aa21062fc3e5ae288e1d6",
+      "actual": "a01ba413ba2b8377ef8d6febfa2c521dc5fddf711d5aa21062fc3e5ae288e1d6",
+      "match": true
+    },
+    {
+      "path": "life-analytics.js",
+      "status": 200,
+      "expected": "eb3c1f1671c79f9092c5f1cfdd01ed6c3c9143e2ba83de7c228acd930bc482f8",
+      "actual": "eb3c1f1671c79f9092c5f1cfdd01ed6c3c9143e2ba83de7c228acd930bc482f8",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "3e72a4d16a4da7679fb99ac5ff7ff33d59bf4dfdc1d53e33efb06cdb20617f4b",
+      "actual": "3e72a4d16a4da7679fb99ac5ff7ff33d59bf4dfdc1d53e33efb06cdb20617f4b",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "f31916a05e989c8966a594d7fc2ffa578cb1c0ec3f421371787314c4133c7829",
+      "actual": "f31916a05e989c8966a594d7fc2ffa578cb1c0ec3f421371787314c4133c7829",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "29f0486dc14086e402fdc08646e849a5c765d723b70a70acd2807cab0a4e1baa",
+      "actual": "29f0486dc14086e402fdc08646e849a5c765d723b70a70acd2807cab0a4e1baa",
+      "match": true
+    },
+    {
+      "path": "tests/family-memorial.test.js",
+      "status": 200,
+      "expected": "fdead820b0f4ea2767016681cb329b4c56ff22207b4fcc21de05478c2e58eb23",
+      "actual": "fdead820b0f4ea2767016681cb329b4c56ff22207b4fcc21de05478c2e58eb23",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
