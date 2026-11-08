@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-08T01:05:31.004961+00:00",
+  "commit": "ac9fa6298039a9ceb175290d8e02c037ae4bab66",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "98d94c9783ca9b42dc6310e66160c1aee93a86fca545c46e43b18ad1b1a2d2a8",
+      "actual": "98d94c9783ca9b42dc6310e66160c1aee93a86fca545c46e43b18ad1b1a2d2a8",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "5c1e46a1b3eb65297a4c9dc12e2cf7384a7c9138216da205e7f3a3ba44dba6b3",
+      "actual": "5c1e46a1b3eb65297a4c9dc12e2cf7384a7c9138216da205e7f3a3ba44dba6b3",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "dfe7d5c485cce2cc24bd41b3c0bab0f41db0a025aadd0c9ea8952463e8fe7dd3",
+      "actual": "dfe7d5c485cce2cc24bd41b3c0bab0f41db0a025aadd0c9ea8952463e8fe7dd3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-rich-catch-flood-4x.json",
+      "status": 200,
+      "expected": "ee34d2cf8b0266c4d22ebad23cbcb722078bf14f3fb5685066afa3e87ffcfa83",
+      "actual": "ee34d2cf8b0266c4d22ebad23cbcb722078bf14f3fb5685066afa3e87ffcfa83",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-rich-catch-flood-browser.json",
+      "status": 200,
+      "expected": "65c82dd93f659c6a49cb4b6bd11544495b6dec53259a910de6b982669f484297",
+      "actual": "65c82dd93f659c6a49cb4b6bd11544495b6dec53259a910de6b982669f484297",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "b6173e373fe58355341be8b2c40257091046a474e251fa5c87bc4e4fa74c96a8",
+      "actual": "b6173e373fe58355341be8b2c40257091046a474e251fa5c87bc4e4fa74c96a8",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "2a1adc35fa72ad41bfe9e5855248dc2240ed19429eb685edb7b4ebfaefbd4a07",
+      "actual": "2a1adc35fa72ad41bfe9e5855248dc2240ed19429eb685edb7b4ebfaefbd4a07",
+      "match": true
+    },
+    {
+      "path": "rich-catch.js",
+      "status": 200,
+      "expected": "dce934f9dba7ff134da5a23ed937f6a9f9fd3051c76a71a2939163d91e46d576",
+      "actual": "dce934f9dba7ff134da5a23ed937f6a9f9fd3051c76a71a2939163d91e46d576",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "bdc1dddad2d3394f4d4ee6d376c13d3e1fefbe3aceacb1600484e179712e2f70",
+      "actual": "bdc1dddad2d3394f4d4ee6d376c13d3e1fefbe3aceacb1600484e179712e2f70",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "67d679bf7094acc5c31c55f269afd51ce5d0695d3e0b931d782a89fab7a7bce0",
+      "actual": "67d679bf7094acc5c31c55f269afd51ce5d0695d3e0b931d782a89fab7a7bce0",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "a44a5069cbbdad0689e6367c9a9919196d59a24c0fac1e81ce083d99f997887f",
+      "actual": "a44a5069cbbdad0689e6367c9a9919196d59a24c0fac1e81ce083d99f997887f",
+      "match": true
+    },
+    {
+      "path": "tests/rich-catch.test.js",
+      "status": 200,
+      "expected": "c9603482a56a49e86a25398b53a3dcc09b409a7c0411c39ffa3381eee387618c",
+      "actual": "c9603482a56a49e86a25398b53a3dcc09b409a7c0411c39ffa3381eee387618c",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
