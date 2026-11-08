@@ -221,3 +221,43 @@ test('demolition retires the chapter of a legacy monument without a completion o
  assert.ok(advanceMonumentLife(s));
  assert.deepEqual(monumentLifeView(s),{temple:'6,6',dedication:false,vow:false});
 });
+
+test('only a vow first accepted after monument opening counts, including after extension and reload',async()=>{
+ const {advanceMonumentLife,monumentLifeView}=await import('../campaign.js');
+ const {acceptSupplyVow,extendSupplyVow,recordVowDelivery}=await import('../supply-vow.js');
+ let s=createNewCity({mode:'awakening',seed:137});
+ const resident=s.citizens[0],key=resident.home;
+ s.resources.faith=20;
+ const getHouse=()=>s.buildings.find(b=>b.type==='house'&&key===b.x+','+b.y);
+ const accept=()=>{
+  const home=getHouse();home.pantry=home.pantryDelivered=0;
+  const result=acceptSupplyVow(s,[key]);assert.ok(result.ok,result.reason);
+ };
+ const deliver=()=>{
+  const home=getHouse();
+  home.pantry=home.pantryDelivered=s.supplyVows.active.targets[0].required;
+  recordVowDelivery(s,home,s.citizens[0],home.pantry);
+ };
+ accept();
+ s.buildings.push({type:'ziggurat',x:6,y:6,level:1});
+ assert.ok(advanceMonumentLife(s));
+ advanceTime(s,1);
+ assert.ok(extendSupplyVow(s).ok);
+ deliver();
+ assert.equal(monumentLifeView(s).vow,false);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ assert.equal(monumentLifeView(s).vow,false);
+ const legacy=JSON.parse(raw);
+ delete legacy.monumentLife.nextVowId;
+ legacy.monumentLife.openedAt=legacy.simTime/2;
+ const oldRaw=JSON.stringify(legacy),old=decode(oldRaw);
+ assert.ok(old);
+ assert.equal(encode(old),oldRaw);
+ assert.equal(monumentLifeView(old).vow,false);
+ legacy.monumentLife.nextVowId=999;
+ assert.equal(decode(JSON.stringify(legacy)),null);
+ accept();
+ assert.ok(extendSupplyVow(s).ok);
+ deliver();
+ assert.equal(monumentLifeView(s).vow,true);
+});

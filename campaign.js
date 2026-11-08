@@ -240,7 +240,8 @@ export function advanceMonumentLife(s){
  if(!usesCampaign(s)||s.godhood.namelessEndingAt!==undefined||currentMonumentLife(s))return false;
  const b=activeMonument(s);
  if(!b)return false;
- s.monumentLife={temple:buildingKey(b),buildOrder:b.built?.order??null,openedAt:s.simTime,nextOfferingId:s.district.nextId};
+ s.monumentLife={temple:buildingKey(b),buildOrder:b.built?.order??null,openedAt:s.simTime,nextOfferingId:s.district.nextId,
+  nextVowId:(s.supplyVows?.history.length??0)+(s.supplyVows?.active?2:1)};
  return true;
 }
 
@@ -250,16 +251,22 @@ export function monumentLifeView(s){
  if(!life)return null;
  return {temple:life.temple,
   dedication:!!s.votiveOfferings?.some(item=>item.id>=life.nextOfferingId&&item.temple===life.temple&&item.memory),
-  vow:!!s.supplyVows?.history?.some(v=>v.outcome==='fulfilled'&&v.start>=life.openedAt)};
+  vow:!!s.supplyVows?.history?.some((v,i,history)=>{
+   if(v.outcome!=='fulfilled')return false;
+   const original=v.previous==null?v:history[i-1];
+   return original?.start>=life.openedAt&&(life.nextVowId===undefined||original.id>=life.nextVowId);
+  })};
 }
 
 export function validateMonumentLife(s){
  const life=s.monumentLife;
  if(life===undefined)return true;
- if(!usesCampaign(s)||!life||Object.keys(life).length!==4||typeof life.temple!=='string'||!/^\d+,\d+$/.test(life.temple)||
+ if(!usesCampaign(s)||!life||Object.keys(life).length!==(life.nextVowId===undefined?4:5)||typeof life.temple!=='string'||!/^\d+,\d+$/.test(life.temple)||
   !Number.isFinite(life.openedAt)||life.openedAt<0||life.openedAt>s.simTime||
   !Number.isSafeInteger(life.nextOfferingId)||life.nextOfferingId<1||life.nextOfferingId>s.district?.nextId||
   life.buildOrder!==null&&(!Number.isSafeInteger(life.buildOrder)||life.buildOrder<0))return false;
+ if(life.nextVowId!==undefined&&(!Number.isSafeInteger(life.nextVowId)||life.nextVowId<1||
+  life.nextVowId>(s.supplyVows?.history.length??0)+(s.supplyVows?.active?2:1)))return false;
  const [x,y]=life.temple.split(',').map(Number);
  return x<worldWidth(s)&&y<worldHeight(s);
 }

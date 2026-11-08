@@ -1,0 +1,11 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "oldVowExcluded": true,
+  "newExtendedVowAccepted": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 3.907707999999957,
+  "p95StepCpuMs": 9.67533400000002
+}
