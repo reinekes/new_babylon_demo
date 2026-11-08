@@ -1,0 +1,30 @@
+[
+  {
+    "id": "live",
+    "view": "2d",
+    "url": "?id=live&view=2d",
+    "mode": "2d",
+    "result": "PASS donor identity, navigation and immutable save"
+  },
+  {
+    "id": "live",
+    "view": "3d",
+    "url": "?id=live&view=3d",
+    "mode": "3d",
+    "result": "PASS donor identity, navigation and immutable save"
+  },
+  {
+    "id": "replaced",
+    "view": "2d",
+    "url": "?id=replaced&view=2d",
+    "mode": "2d",
+    "result": "PASS donor identity, navigation and immutable save"
+  },
+  {
+    "id": "replaced",
+    "view": "3d",
+    "url": "?id=replaced&view=3d",
+    "mode": "3d",
+    "result": "PASS donor identity, navigation and immutable save"
+  }
+]

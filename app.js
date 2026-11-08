@@ -771,7 +771,11 @@ function householdInitiativePanel(b,h){
   const status=active?'Идёт стройка':project.settled?'Семья переехала':reserved?'Дом готов · семья ещё не переехала':
    state.citizens.some(c=>c.home===buildingKey(site))?'Поселилась другая семья':'Дом готов · доступен другим семьям';
   const aid=project.firstNeighborAid;
-  const witness=aid?`<br><span data-household-first-aid>Первая помощь соседей · ${foodAmount(aid.amount)} ${aid.resource==='water'?'воды':'еды'} · ${resident(aid.courierId)}</span>`:'';
+  const origin=aid&&state.buildings.find(home=>home.type==='house'&&home.waterEntityId===aid.originId&&buildingKey(home)===aid.origin);
+  const originText=!aid?'':origin
+   ?` · <button type="button" class="resident-link" data-household-aid-origin="${esc(aid.origin)}" data-household-aid-origin-id="${aid.originId}">Двор соседа · ${esc(aid.origin)}</button>`
+   :` · Прежний двор соседа · ${esc(aid.origin)}`;
+  const witness=aid?`<br><span data-household-first-aid>Первая помощь соседей · ${foodAmount(aid.amount)} ${aid.resource==='water'?'воды':'еды'} · ${resident(aid.courierId)}${originText}</span>`:'';
   return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${status}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}${witness}</p>`;
  }).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
@@ -824,6 +828,10 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
   if(mutate(resolveArrivalCustomDispute(state,b,welcome,button.dataset.resolveArrivalDispute,Number(button.dataset.arrivalGuest)),'Стороны договорились'))renderHousehold(b);
  };
  panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{householdTab=el.dataset.houseTab;renderHousehold(b);});
+ for(const button of panel.querySelectorAll('[data-household-aid-origin]'))button.onclick=()=>{
+  const key=button.dataset.householdAidOrigin,[x,y]=key.split(',').map(Number),origin=buildingAt(state,x,y);
+  if(origin?.type==='house'&&origin.waterEntityId===Number(button.dataset.householdAidOriginId))showSupplyHome(key,'family');
+ };
  const initiative=panel.querySelector('[data-household-initiative]');
  if(initiative)initiative.onclick=()=>showHouseholdInitiative(b);
  const organizer=panel.querySelector('[data-water-organizer]');
