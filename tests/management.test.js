@@ -65,3 +65,41 @@ test('a new house clears an obsolete birth cooldown from a legacy save',()=>{
  assert.equal(loaded.demography.lastBirth['8,8'],0);
  assert.ok(decode(encode(loaded)));
 });
+
+test('stale removal confirmations preserve replacement buildings and reservations',()=>{
+ const s=stocked();
+ assert.ok(build(s,'house',10,9).ok);
+ const original=s.buildings.at(-1),first={building:original,order:original.construction,level:original.level};
+ assert.ok(management.cancelConstruction(s,10,9,first).ok);
+ assert.ok(build(s,'house',10,9).ok);
+ const replacement=s.buildings.at(-1),before=encode(s);
+ assert.equal(management.cancelConstruction(s,10,9,first).ok,false);
+ assert.equal(encode(s),before);
+ assert.equal(encode(decode(before)),before);
+ const clay=s.buildings.find(b=>b.type==='clay'),{x,y}=clay;
+ const demolition={building:clay,order:clay.construction,level:clay.level};
+ assert.ok(management.demolish(s,x,y,demolition).ok);
+ const newClay={...clay};
+ s.buildings.push(newClay);
+ const rebuilt=encode(s);
+ assert.equal(management.demolish(s,x,y,demolition).ok,false);
+ assert.equal(encode(s),rebuilt);
+ assert.ok(s.buildings.includes(replacement));
+});
+
+test('demolition confirmation expires if a new upgrade changes the refund',()=>{
+ const s=stocked(),b=s.buildings.find(b=>b.type==='clay');
+ const demolition={building:b,order:b.construction,level:b.level};
+ s.resources.brick=100;
+ assert.ok(upgrade(s,b.x,b.y).ok);
+ const before=encode(s);
+ assert.equal(management.demolish(s,b.x,b.y,demolition).ok,false);
+ assert.equal(encode(s),before);
+ const first={building:b,order:b.construction,level:b.level};
+ assert.ok(management.cancelConstruction(s,b.x,b.y,first).ok);
+ assert.ok(upgrade(s,b.x,b.y).ok);
+ assert.equal(b.construction.order,first.order.order);
+ const second=encode(s);
+ assert.equal(management.cancelConstruction(s,b.x,b.y,first).ok,false);
+ assert.equal(encode(s),second);
+});

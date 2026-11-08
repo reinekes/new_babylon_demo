@@ -87,8 +87,12 @@ function refundOrder(s,b){
  for(const c of s.citizens)if(c.site===key)c.buildCargo={};
  delete b.construction;return refund;
 }
-export function cancelConstruction(s,x,y){
- const b=find(s,x,y),reason=blocked(s);if(reason)return {ok:false,reason};if(!b?.construction)return {ok:false,reason:'Здесь нет незавершённой стройки'};
+function removalChanged(b,expected){
+ return expected&&(b!==expected.building||b.construction!==expected.order||b.level!==expected.level);
+}
+const staleRemoval=()=>({ok:false,reason:'Постройка или заказ изменились. Открой подтверждение заново.'});
+export function cancelConstruction(s,x,y,expected){
+ const b=find(s,x,y),reason=blocked(s);if(reason)return {ok:false,reason};if(removalChanged(b,expected))return staleRemoval();if(!b?.construction)return {ok:false,reason:'Здесь нет незавершённой стройки'};
  const fresh=b.construction.kind==='new';if(fresh)rememberApproaches(s,b);
  const refund=refundOrder(s,b);if(fresh)s.buildings=s.buildings.filter(v=>v!==b);
  s.capacity=housingOf(s);rerouteCitizens(s);note(s,`Отменено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Зарезервированная цена полностью возвращена, включая доставленные материалы и груз в пути.');return {ok:true,refund};
@@ -181,8 +185,9 @@ export function canDemolish(s,b){
  }
  return '';
 }
-export function demolish(s,x,y){
- const b=find(s,x,y),reason=canDemolish(s,b);if(reason)return {ok:false,reason};
+export function demolish(s,x,y,expected){
+ const b=find(s,x,y);if(removalChanged(b,expected))return staleRemoval();
+ const reason=canDemolish(s,b);if(reason)return {ok:false,reason};
  const homes=relocations(s,b),refund=demolitionRefund(b),transfer=b.starterHut?foundingStockTransfer(s,b):null;
  const workshopBatches=workshopDemolitionStock(b);
  const workshopTarget=workshopBatches.length?localRefundStore(s,b):null;

@@ -1,0 +1,10 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "staleCommandsPreservedCity": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 3.6265409999999747,
+  "p95StepCpuMs": 9.722166000000016
+}
