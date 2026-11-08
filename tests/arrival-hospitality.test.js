@@ -198,6 +198,7 @@ test('the Call charges only for the displayed group and requires blessing and ho
  assert.equal(cast.receipt.faithSpent,45);
  assert.equal(cast.receipt.population.reserved,beds);
  assert.equal(cast.receipt.population.newResidents,0);
+ assert.deepEqual(s.miracleHistory.paid.healing.population,cast.receipt.population);
  assert.equal(s.arrivalGroup.count,beds);
  assert.equal(s.resources.faith,55);
  assert.equal(s.population,population);

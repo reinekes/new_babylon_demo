@@ -291,7 +291,7 @@ export function miracle(s,id,target){
  const receipt={faithSpent:price};
  if(id==='bless'||id==='healing')receipt.population={newResidents:s.population-populationBefore,
   happiness:s.happiness-happinessBefore,reserved:id==='healing'?s.arrivalGroup?.count??0:0};
- recordMiracleCast(s,id,price);
+ recordMiracleCast(s,id,receipt);
  return {ok:true,receipt};
 }
 function check(s){

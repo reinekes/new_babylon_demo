@@ -1,0 +1,16 @@
+[
+  {
+    "id": "receipt",
+    "view": "2d",
+    "url": "?id=receipt&view=2d",
+    "mode": "2d",
+    "result": "PASS paid Call receipt distinguishes six reserved residents"
+  },
+  {
+    "id": "receipt",
+    "view": "3d",
+    "url": "?id=receipt&view=3d",
+    "mode": "3d",
+    "result": "PASS paid Call receipt distinguishes six reserved residents"
+  }
+]

@@ -32,6 +32,11 @@ test('miracle card updates every price and accessibility label between trial, pa
  assert.equal(history.hidden,false);
  assert.match(history.textContent,/Бесплатная проба использована/);
  assert.match(history.textContent,/Последнее платное применение · 12 веры/);
+ s.miracleHistory.paid.healing={number:5,at:101,faithSpent:45,population:{happiness:5,newResidents:0,reserved:6}};
+ catalog.updateMiracleCard(details,s,'healing','');
+ assert.match(history.textContent,/Довольство \+5/);
+ assert.match(history.textContent,/Места зарезервированы: 6/);
+ assert.doesNotMatch(history.textContent,/Заселилось/);
  catalog.updateMiracleCard(details,createGame(),'cat','');assert.equal(details.querySelector('button').disabled,false);assert.equal(details.querySelector('.miracle-facts span').textContent,'12 веры');assert.equal(history.hidden,true);assert.equal(history.textContent,'');dom.window.close();
 });
 test('an existing fishery guides completion or delivery instead of asking for a duplicate hut',()=>{

@@ -37,3 +37,19 @@ test('population miracles check unreserved housing before charging at maximum ha
   assert.deepEqual(s.citizens.map(c=>c.id),ids);
  }
 });
+
+test('population miracle history preserves the confirmed outcome and reads earlier receipts',()=>{
+ const s=createGame({start:'established'});
+ s.resources.faith=100;s.happiness=95;
+ const cast=miracle(s,'bless');
+ assert.ok(cast.ok);
+ assert.deepEqual(s.miracleHistory.paid.bless.population,cast.receipt.population);
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const invalid=JSON.parse(raw);
+ invalid.miracleHistory.paid.bless.population.reserved=1;
+ assert.equal(decode(JSON.stringify(invalid)),null);
+ delete invalid.miracleHistory.paid.bless.population;
+ const earlier=JSON.stringify(invalid);
+ assert.equal(encode(decode(earlier)),earlier);
+});

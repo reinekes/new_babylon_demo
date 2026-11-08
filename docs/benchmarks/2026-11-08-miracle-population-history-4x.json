@@ -1,0 +1,27 @@
+{
+  "speed": 4,
+  "reservedSaveByteEqual": true,
+  "classicSaveByteEqual": true,
+  "callOutcome": {
+    "newResidents": 0,
+    "happiness": 2.0420817775238618,
+    "reserved": 6
+  },
+  "blessingOutcome": {
+    "newResidents": 3,
+    "happiness": 5,
+    "reserved": 0
+  },
+  "buildings": 134,
+  "citizens": 289,
+  "count": 6,
+  "controlledHomeWater": true,
+  "foodDebit": 6,
+  "reservationCpuMs": 37.05566599999999,
+  "samples": 120,
+  "medianStepCpuMs": 3.419583000000017,
+  "p95StepCpuMs": 11.255416999999966,
+  "byteEqualReload": true,
+  "maxStockRoundoff": 0,
+  "settled": true
+}
