@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T03:21:53.349582+00:00",
+  "commit": "54621e9df664e15cf4015e672891d485af0eb836",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "5c9d2684d1db522b1d7946b78111e6d51b983b952913de864be26ee064982c1e",
+      "actual": "5c9d2684d1db522b1d7946b78111e6d51b983b952913de864be26ee064982c1e",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-construction-order-integrity-4x.json",
+      "status": 200,
+      "expected": "02bd7f47949e41013044f62210dee6d573b6360c63cf2756c94e7c095b371c29",
+      "actual": "02bd7f47949e41013044f62210dee6d573b6360c63cf2756c94e7c095b371c29",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "1773912aa5e4369fd7f9ac9d0ede675b3d6ab552297cdc24beb2969cb7887bdf",
+      "actual": "1773912aa5e4369fd7f9ac9d0ede675b3d6ab552297cdc24beb2969cb7887bdf",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "b527941543e5fd122d45f446082ba78983d592aaf4afbc752495823639106611",
+      "actual": "b527941543e5fd122d45f446082ba78983d592aaf4afbc752495823639106611",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "48f5f3450971dcd8f684235033379cbd4adee568bd2708d4f53653e91e04bb27",
+      "actual": "48f5f3450971dcd8f684235033379cbd4adee568bd2708d4f53653e91e04bb27",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "d9040ebdbc0abc27d365d94252118ba762c81dcb004e266c6808c33b1bc0ed73",
+      "actual": "d9040ebdbc0abc27d365d94252118ba762c81dcb004e266c6808c33b1bc0ed73",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "084a377e668df6754d92a8b5344d7a7049238f5ad30eb93d528ced56ffb22ecd",
+      "actual": "084a377e668df6754d92a8b5344d7a7049238f5ad30eb93d528ced56ffb22ecd",
+      "match": true
+    },
+    {
+      "path": "tests/step-zero.test.js",
+      "status": 200,
+      "expected": "d570192a8fcb9ad13a99f280a8462df4400ec19db9cf36f40d694bdced4749f6",
+      "actual": "d570192a8fcb9ad13a99f280a8462df4400ec19db9cf36f40d694bdced4749f6",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
