@@ -59,4 +59,14 @@ export function finishConstruction(s){
 }
 
 export function orderedSites(s){return constructionEntities(s).map((b,index)=>({b,index})).filter(({b})=>b.construction).sort((a,b)=>(b.b.construction.priority??1)-(a.b.construction.priority??1)||(a.b.construction.order??a.index)-(b.b.construction.order??b.index)).map(({b})=>b);}
-export const nextOrder=s=>Math.max(-1,...constructionEntities(s).map((b,i)=>b.construction?.order??i))+1;
+export const MAX_CONSTRUCTION_ORDER=1e9;
+export function nextOrder(s,count=1){
+ let order=s.nextConstructionOrder;
+ if(order===undefined){
+  order=0;
+  for(const [i,b] of constructionEntities(s).entries()){
+   order=Math.max(order,(b.construction?.order??i)+1,(b.construction?.routeOrder??-1)+1);
+  }
+ }
+ return order+count-1<=MAX_CONSTRUCTION_ORDER?order:null;
+}

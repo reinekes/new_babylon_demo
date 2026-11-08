@@ -22,6 +22,7 @@ test('a stale route control cannot cancel a new route with a recycled group numb
  assert.ok(original.ok);
  const oldOrder=s.roads.find(r=>r.construction?.routeOrder===original.group).construction;
  assert.ok(cancelRoadRoute(s,original.group,oldOrder).ok);
+ delete s.nextConstructionOrder; // An old save could reuse the cancelled number.
  const replacement=order();
  assert.ok(replacement.ok);
  assert.equal(replacement.group,original.group);

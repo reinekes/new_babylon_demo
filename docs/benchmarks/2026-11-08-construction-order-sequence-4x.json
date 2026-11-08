@@ -1,0 +1,12 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 289,
+  "segments": 2,
+  "replacementGroup": 278,
+  "staleOrderRejected": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 10.20895900000005,
+  "p95StepCpuMs": 38.03212499999995
+}

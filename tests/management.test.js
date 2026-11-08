@@ -97,9 +97,24 @@ test('demolition confirmation expires if a new upgrade changes the refund',()=>{
  assert.equal(encode(s),before);
  const first={building:b,order:b.construction,level:b.level};
  assert.ok(management.cancelConstruction(s,b.x,b.y,first).ok);
+ delete s.nextConstructionOrder; // An old save could reuse the cancelled number.
  assert.ok(upgrade(s,b.x,b.y).ok);
  assert.equal(b.construction.order,first.order.order);
  const second=encode(s);
  assert.equal(management.cancelConstruction(s,b.x,b.y,first).ok,false);
  assert.equal(encode(s),second);
+});
+
+test('construction order numbers advance across cancellation and reload',()=>{
+ let s=stocked();
+ assert.ok(build(s,'house',10,9).ok);
+ const original=s.buildings.find(b=>b.x===10&&b.y===9).construction.order;
+ assert.ok(management.cancelConstruction(s,10,9).ok);
+ const raw=encode(s);s=decode(raw);assert.ok(s);assert.equal(encode(s),raw);
+ assert.ok(build(s,'house',10,9).ok);
+ const replacement=s.buildings.find(b=>b.x===10&&b.y===9).construction.order;
+ assert.ok(replacement>original);
+ const malformed=JSON.parse(encode(s));
+ malformed.nextConstructionOrder=replacement;
+ assert.equal(decode(JSON.stringify(malformed)),null);
 });

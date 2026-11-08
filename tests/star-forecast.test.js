@@ -80,6 +80,7 @@ test('a repeated improvement does not inherit its cancelled order forecast or er
  assert.ok(cancelConstruction(s,x,y).ok);
  assert.deepEqual(s.starObservations.forecast.targets.map(r=>r.kind),['food']);
  s.starObservations.forecast=legacy;
+ delete s.nextConstructionOrder; // An old save could reuse the cancelled number.
  const second=upgrade(s,x,y);assert.ok(second.ok,second.reason);
  assert.equal(home.construction.order,order);
  assert.deepEqual(starForecastView(s).map(r=>r.kind),['food']);
