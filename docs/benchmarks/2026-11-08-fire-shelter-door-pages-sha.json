@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T02:06:38.840046+00:00",
+  "commit": "15d5a850ddd20e6a48dee563f7aad80db4632fbb",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "17e8f4c39b78270aee5de99aebb9c1c58a7ee4d3b8677f74bcdac8f0c52346c3",
+      "actual": "17e8f4c39b78270aee5de99aebb9c1c58a7ee4d3b8677f74bcdac8f0c52346c3",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-fire-shelter-door-4x.json",
+      "status": 200,
+      "expected": "9f786d8225d070f2a66834b00d7586e58530911cdde0c2d4ef661cf670eae475",
+      "actual": "9f786d8225d070f2a66834b00d7586e58530911cdde0c2d4ef661cf670eae475",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "be5c184938001a811c880082d054c87fedce5f8a3dd2b88bb6270b5dcbd421ff",
+      "actual": "be5c184938001a811c880082d054c87fedce5f8a3dd2b88bb6270b5dcbd421ff",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "6198c32ab383e89b6d3ab60b266dc656e0c23c674a2364c8d4711dddee3c9d27",
+      "actual": "6198c32ab383e89b6d3ab60b266dc656e0c23c674a2364c8d4711dddee3c9d27",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "a41c50a06733dd21d7c14d430403f8501357937c7bf17bc2e412398d2a147c20",
+      "actual": "a41c50a06733dd21d7c14d430403f8501357937c7bf17bc2e412398d2a147c20",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "abfe1e8b61c5dcc1a7126a20e073eb5f8cbf4ec0fb4522f748ee5ab2711bf7ab",
+      "actual": "abfe1e8b61c5dcc1a7126a20e073eb5f8cbf4ec0fb4522f748ee5ab2711bf7ab",
+      "match": true
+    },
+    {
+      "path": "tests/fire-evacuation.test.js",
+      "status": 200,
+      "expected": "50b922cc490ece986e4345ca773b75f84cd475a76675e37c07df2db1c1384cc1",
+      "actual": "50b922cc490ece986e4345ca773b75f84cd475a76675e37c07df2db1c1384cc1",
+      "match": true
+    },
+    {
+      "path": "workforce.js",
+      "status": 200,
+      "expected": "7aeca66e2d3f3796b70677dc658808bd2db44a903c2c6b199c2024056488e442",
+      "actual": "7aeca66e2d3f3796b70677dc658808bd2db44a903c2c6b199c2024056488e442",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
