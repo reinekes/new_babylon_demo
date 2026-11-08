@@ -43,6 +43,16 @@ test('a child hears the first water story at dinner and keeps the source after t
  assert.equal(hearthEndingOffer(familyCity),null);
  home.water=home.waterDelivered;
  assert.equal(hearthEndingOffer(familyCity)?.listenerId,child.id);
+ const familyAtHome=familyCity.citizens.filter(c=>c.home===listener.home&&c!==listener);
+ assert.ok(familyAtHome.length);
+ const shelter={host:familyCity.citizens.find(c=>c.id===choice.recipientId).home};
+ listener.fireShelter=shelter;
+ assert.equal(hearthEndingOffer(familyCity),null);
+ delete listener.fireShelter;
+ for(const member of familyAtHome)member.fireShelter=shelter;
+ assert.equal(hearthEndingOffer(familyCity),null);
+ for(const member of familyAtHome)delete member.fireShelter;
+ assert.equal(hearthEndingOffer(familyCity)?.listenerId,child.id);
  assert.equal(recordHearthEnding(familyCity).ok,true);
  assert.equal(recordHearthEnding(familyCity).ok,false);
  const final=encode(familyCity);

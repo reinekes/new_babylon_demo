@@ -70,10 +70,10 @@ export function hearthEndingOffer(s){
  for(const p of people){
   if(!p.waterStory||!dead.has(p.waterStory.tellerId))continue;
   const listener=residents.get(p.id);
-  if(!listener||listener.floodShelter)continue;
+  if(!listener||listener.floodShelter||listener.fireShelter)continue;
   const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===listener.home);
   if(!home)continue;
-  const family=s.citizens.filter(c=>c.home===listener.home&&!c.floodShelter);
+  const family=s.citizens.filter(c=>c.home===listener.home&&!c.floodShelter&&!c.fireShelter);
   const water=waterSummary(s,home);
   if(family.length<2||homeMealFood(home)+1e-7<family.reduce((n,c)=>n+mealRation(c),0)||water.stock+1e-7<water.demand)continue;
   return {listenerId:p.id,tellerId:p.waterStory.tellerId,home:listener.home};
