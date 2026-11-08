@@ -179,3 +179,21 @@ test('a sale cancellation and a later buyback preserve gift origin',async()=>{
  assert.equal(delivery.giftFood,undefined);
  assert.equal(encode(decode(encode(s))),encode(s));
 });
+
+test('a stale abundance quote cannot pay for a different warehouse or amount',()=>{
+ const {s,b}=fixture(),target={x:b.x,y:b.y};
+ const quote=()=>{const {store,amount}=abundanceQuote(s,target);return {...target,expectedStore:store,expectedAmount:amount};};
+ const original=quote();
+ s.buildings[s.buildings.indexOf(b)]={...b};
+ let before=encode(s);
+ assert.match(miracle(s,'abundance',original).reason,/Условия дара изменились/);
+ assert.equal(encode(s),before);
+ const stale=quote();
+ putStock(s,'10,9','food',33);
+ before=encode(s);
+ assert.match(miracle(s,'abundance',stale).reason,/Условия дара изменились/);
+ assert.equal(encode(s),before);
+ assert.ok(miracle(s,'abundance',quote()).ok);
+ assert.equal(s.abundanceGift.last.amount,27);
+ assert.equal(s.resources.faith,75);
+});

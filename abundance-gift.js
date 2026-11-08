@@ -28,6 +28,10 @@ export function abundanceQuote(s,target){
 export function receiveAbundance(s,target){
  const {store,amount,reason}=abundanceQuote(s,target);
  if(reason)return {ok:false,reason};
+ if(target.expectedStore!==undefined&&target.expectedStore!==store||
+  target.expectedAmount!==undefined&&(!Number.isFinite(target.expectedAmount)||Math.abs(target.expectedAmount-amount)>1e-8)){
+  return {ok:false,reason:'Условия дара изменились. Проверь выбранный склад и объём'};
+ }
  const key=buildingKey(store),accepted=putStock(s,key,'food',amount,{gift:[amount]});
  if(accepted<=0)return {ok:false,reason:'Выбранное хранилище заполнено'};
  s.abundanceGift.last={store:key,amount:accepted,at:s.simTime};

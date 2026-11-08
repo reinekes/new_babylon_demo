@@ -1,0 +1,16 @@
+[
+  {
+    "id": "quote",
+    "view": "2d",
+    "url": "?id=quote&view=2d",
+    "mode": "2d",
+    "result": "PASS stale store and amount refused, fresh amount saved"
+  },
+  {
+    "id": "quote",
+    "view": "3d",
+    "url": "?id=quote&view=3d",
+    "mode": "3d",
+    "result": "PASS stale store and amount refused, fresh amount saved"
+  }
+]

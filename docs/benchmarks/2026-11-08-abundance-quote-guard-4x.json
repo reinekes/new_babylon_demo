@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "staleStoreRejected": true,
+  "staleAmountRejected": true,
+  "buildings": 132,
+  "startingCitizens": 265,
+  "endCitizens": 265,
+  "gift": 27,
+  "cost": 25,
+  "fullRejectedWithoutMutation": true,
+  "byteEqualReload": true,
+  "samples": 240,
+  "medianMs": 1.9454580000000306,
+  "p95Ms": 7.663708000000042
+}
