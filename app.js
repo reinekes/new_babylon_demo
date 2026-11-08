@@ -533,13 +533,14 @@ function waterDreamPanel(home){
 function bindWaterDream(root){
  const dream=root.querySelector('[data-water-dream]');
  if(!dream)return;
+ const expected=state.waterProjectDream;
  const accept=dream.querySelector('[data-water-dream-accept]');
  if(accept)accept.onclick=()=>{
-  const result=acceptWaterProjectDream(state);
+  const result=acceptWaterProjectDream(state,expected);
   if(!result.ok){dream.querySelector('[data-water-dream-error]').textContent=result.reason;return;}
   mutate(result,'Жители согласовали водозабор');
  };
- dream.querySelector('[data-water-dream-discard]').onclick=()=>mutate(discardWaterProjectDream(state),'Жители отложили замысел');
+ dream.querySelector('[data-water-dream-discard]').onclick=()=>mutate(discardWaterProjectDream(state,expected),'Жители отложили замысел');
 }
 function renderSupply(){
  if(modalKind!=='supply')return;if($('supply-content').contains(document.activeElement)&&['INPUT','SELECT'].includes(document.activeElement.tagName))return;const report=supplyOverview(state),w=foodWarnings(state,foodForecast(state)),byKey=new Map(report.houses.map(h=>[h.key,h])),houses=w.houses.filter(h=>supplyFilter==='all'||h.hungry||h.atRisk);

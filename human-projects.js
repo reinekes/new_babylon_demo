@@ -202,7 +202,14 @@ export function waterDreamProposal(s){
  return waterProjectProposal(s,dream.organizerId,dream.requesterId,dream.x,dream.y,dream.participantIds);
 }
 
-export function acceptWaterProjectDream(s){
+function changedWaterDream(s,expected){
+ return expected!==undefined&&s.waterProjectDream!==expected?
+  {ok:false,reason:'Замысел изменился. Открой карточку общего сна заново'}:null;
+}
+
+export function acceptWaterProjectDream(s,expected){
+ const changed=changedWaterDream(s,expected);
+ if(changed)return changed;
  const offer=waterDreamProposal(s);
  if(!offer.ok)return offer;
  const {x,y}=s.waterProjectDream;
@@ -211,7 +218,9 @@ export function acceptWaterProjectDream(s){
  return result;
 }
 
-export function discardWaterProjectDream(s){
+export function discardWaterProjectDream(s,expected){
+ const changed=changedWaterDream(s,expected);
+ if(changed)return changed;
  const lock=cityCommandReason(s);
  if(lock)return {ok:false,reason:lock};
  if(!s.waterProjectDream)return {ok:false,reason:'У города нет общего сна'};

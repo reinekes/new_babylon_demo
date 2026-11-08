@@ -231,9 +231,17 @@ test('a shared dream charges once and prepares a water project for confirmation 
  assert.equal(encode(s),occupied);
  s.buildings.pop();
  assert.ok(waterDreamProposal(s).ok);
- assert.ok(acceptWaterProjectDream(s).ok);
+ const oldDream=s.waterProjectDream;
+ assert.ok(discardWaterProjectDream(s,oldDream).ok);
+ assert.ok(sendWaterProjectDream(s,organizer.id,requester.id,12,7,[helper.id]).ok);
+ s.simTime=s.waterProjectDream.readyAt;
+ const replacement=encode(s);
+ assert.match(acceptWaterProjectDream(s,oldDream).reason??'',/замысел изменился/i);
+ assert.match(discardWaterProjectDream(s,oldDream).reason??'',/замысел изменился/i);
+ assert.equal(encode(s),replacement);
+ assert.ok(acceptWaterProjectDream(s,s.waterProjectDream).ok);
  assert.equal(s.waterProjectDream,undefined);
- assert.equal(s.resources.faith,7);
+ assert.equal(s.resources.faith,4);
  assert.equal(acceptWaterProjectDream(s).ok,false);
 });
 
