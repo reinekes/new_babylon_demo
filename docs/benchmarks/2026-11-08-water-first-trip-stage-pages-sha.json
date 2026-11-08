@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T04:33:34.851797+00:00",
+  "commit": "be45d1c5b340f6cb40fbc8507e8cb193632abe7b",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d3dd2a4ef1f4295d3e93a9fc8337a8a9043cc9926e34403ea4f52d07dd30a996",
+      "actual": "d3dd2a4ef1f4295d3e93a9fc8337a8a9043cc9926e34403ea4f52d07dd30a996",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-first-trip-stage-4x.json",
+      "status": 200,
+      "expected": "234e122e4bd8cc37aca8a91c246f51d9ee4d020413d2ef06bc327e9ae0ca8075",
+      "actual": "234e122e4bd8cc37aca8a91c246f51d9ee4d020413d2ef06bc327e9ae0ca8075",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-first-trip-stage-browser.json",
+      "status": 200,
+      "expected": "186c04237f6c4c7ef0b1f74db5e424211af4374e0236ec44074ddb5eaa5533c1",
+      "actual": "186c04237f6c4c7ef0b1f74db5e424211af4374e0236ec44074ddb5eaa5533c1",
+      "match": true
+    },
+    {
+      "path": "human-projects.js",
+      "status": 200,
+      "expected": "8bb4014e47ef0ecf72837e8a8dafdc70310da76444347856246848d23f46cb54",
+      "actual": "8bb4014e47ef0ecf72837e8a8dafdc70310da76444347856246848d23f46cb54",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "7984cfb2b8ae34f31e4fe4f5ccb7ecd308197b75caee50cbe38c0775070c1835",
+      "actual": "7984cfb2b8ae34f31e4fe4f5ccb7ecd308197b75caee50cbe38c0775070c1835",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "63fd15ab000ec157377cb9fc1a2e35f3f0df9e25cf2ed116cd1e3695f1cda24a",
+      "actual": "63fd15ab000ec157377cb9fc1a2e35f3f0df9e25cf2ed116cd1e3695f1cda24a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "759a61edd83980e796e8855f95265e08ca9609595e0d839987dd5fd58ad8468e",
+      "actual": "759a61edd83980e796e8855f95265e08ca9609595e0d839987dd5fd58ad8468e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "aef4f371691cb0dbfe00a47cb8cd6dfa547cb94b196a0eefe001cddba7510e38",
+      "actual": "aef4f371691cb0dbfe00a47cb8cd6dfa547cb94b196a0eefe001cddba7510e38",
+      "match": true
+    },
+    {
+      "path": "tests/human-water-project.test.js",
+      "status": 200,
+      "expected": "f9bc43737e9cf6b2edf09482da812e2620a25d83c9b612a18a3e6d792ca2ed36",
+      "actual": "f9bc43737e9cf6b2edf09482da812e2620a25d83c9b612a18a3e6d792ca2ed36",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
