@@ -1,6 +1,7 @@
 import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {ensureHouseEntityId} from './causal-facts.js';
 import {DAY_SECONDS} from './city-life.js';
+import {MONTH_NAMES} from './calendar.js';
 import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
 import {BUILDINGS,buildingKey,capacityOf,isOperational} from './definitions.js';
 import {build,canBuild} from './engine.js';
@@ -59,6 +60,14 @@ export function householdMoveSiteReason(s,house,family,districtAt){
  }
  const district=districtAt(key);
  return district===undefined||family.some(c=>districtAt(c.home)!==district)?'До дома пока нет сухого пути для всей семьи':'';
+}
+
+export function householdMoveWaitingStatus(s,house,family){
+ if(s.funeral)return 'Семья ждёт окончания похорон';
+ const reason=householdMoveActivityReason(s,family)||householdMoveSiteReason(s,house,family);
+ if(reason)return reason;
+ const nextSeason=(s.season+1)%4,year=s.year+Number(nextSeason===0);
+ return `Семья готова · проверка переезда: ${MONTH_NAMES[nextSeason*3]}, день 1, год ${year}`;
 }
 
 export function householdInitiative(s,source){

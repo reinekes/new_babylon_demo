@@ -362,3 +362,20 @@ test('a reserved move waits for active treatment, study, gathering and festival 
  assert.equal(first.home,buildingKey(target));
  assert.equal(target.householdInitiative.settled,true);
 });
+
+test('a ready courtyard names its next seasonal review and explains funeral delay',async()=>{
+ const {householdMoveWaitingStatus,householdMovingFamily}=await import('../household-initiative.js');
+ const {MONTH_NAMES}=await import('../calendar.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [first,partner]=s.citizens,source=s.buildings.find(b=>buildingKey(b)===first.home);
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ const target={type:'house',x:offer.x,y:offer.y,level:1,starterHut:true};
+ s.buildings.push(target);
+ const family=householdMovingFamily(s,first,partner);
+ assert.match(householdMoveWaitingStatus(s,target,family),new RegExp(MONTH_NAMES[3]));
+ s.season=3;
+ assert.match(householdMoveWaitingStatus(s,target,family),new RegExp(MONTH_NAMES[0]+'.*год 2'));
+ s.funeral={scope:'family'};
+ assert.match(householdMoveWaitingStatus(s,target,family),/похорон/);
+});

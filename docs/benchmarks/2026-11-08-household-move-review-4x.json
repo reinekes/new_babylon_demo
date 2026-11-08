@@ -1,0 +1,17 @@
+{
+  "speed": 4,
+  "buildings": 132,
+  "citizens": 236,
+  "review": "Семья готова · проверка переезда: Бара-заг-гар, день 1, год 2",
+  "reviewTick": 4,
+  "settledOnReview": true,
+  "movedAfterBridge": [
+    172,
+    177,
+    200
+  ],
+  "reloadByteEqual": true,
+  "samples": 1379,
+  "medianStepCpuMs": 2.5368749999997817,
+  "p95StepCpuMs": 8.2420410000002
+}

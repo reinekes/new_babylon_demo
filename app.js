@@ -36,7 +36,7 @@ import {richCatchQuote} from './rich-catch.js';
 import {createRainPresentation} from './rain-presentation.js';
 import {harborCargoMultiplier} from './river-trade.js';
 import {tradeSealReady} from './scribes.js';
-import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,householdInitiativeReserved,householdMovingFamily,householdMoveActivityReason,householdMoveSiteReason,setAutonomousHousing} from './household-initiative.js';
+import {approveHouseholdInitiative,householdInitiative,householdInitiativeFrom,householdInitiativeReserved,householdMovingFamily,householdMoveWaitingStatus,setAutonomousHousing} from './household-initiative.js';
 import {craftNameEvidence,harvestNameEvidence,healingNameEvidence,householdNameEvidence,waterNameEvidence} from './causal-facts.js';
 import {answerWaterRequest,smallWaterResponseReason,acceptWaterProjectDream,approveWaterProject,cityWaterRequest,discardWaterProjectDream,householdWaterRequest,sendWaterProjectDream,WATER_DREAM_COST,waterDreamCrewReason,waterDreamHomeReason,waterProjectOrganizerReason,waterProjectProposal} from './human-projects.js';
 import {acceptSupplyVow,extendSupplyVow,householdVowEvidence,vowNameEvidence,vowTargetRebuilt,VOW_FAILURE_TEXT} from './supply-vow.js';
@@ -771,7 +771,7 @@ function householdInitiativePanel(b,h){
   const reserved=householdInitiativeReserved(project,first);
   const partner=reserved&&state.citizens.find(c=>c.id===project.members[1]);
   const family=!active&&partner?householdMovingFamily(state,first,partner):null;
-  const waiting=family&&(householdMoveActivityReason(state,family)||householdMoveSiteReason(state,site,family));
+  const waiting=family&&householdMoveWaitingStatus(state,site,family);
   const status=active?'Идёт стройка':project.settled?'Семья переехала':reserved?'Дом готов · '+(waiting||'семья ещё не переехала'):
    state.citizens.some(c=>c.home===buildingKey(site))?'Поселилась другая семья':'Дом готов · доступен другим семьям';
   const aid=project.firstNeighborAid;

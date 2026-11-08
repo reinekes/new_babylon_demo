@@ -1,0 +1,16 @@
+[
+  {
+    "id": "review",
+    "view": "2d",
+    "url": "?id=review&view=2d",
+    "mode": "2d",
+    "result": "PASS seasonal review date in both courtyard cards"
+  },
+  {
+    "id": "review",
+    "view": "3d",
+    "url": "?id=review&view=3d",
+    "mode": "3d",
+    "result": "PASS seasonal review date in both courtyard cards"
+  }
+]
