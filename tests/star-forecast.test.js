@@ -39,3 +39,26 @@ test('a growing field without canal water is forecast, then rain resolves the ri
  s.rain=1;
  assert.ok(!starForecastView(s).some(row=>row.kind==='water'));
 });
+
+test('a demolished building retires its forecast and old address records do not attach to new orders',async()=>{
+ const {build}=await import('../engine.js');
+ const {demolish}=await import('../management.js');
+ const {buildingKey}=await import('../definitions.js');
+ const {recordStarForecast,starForecastView}=await import('../star-forecast.js');
+ const s=createNewCity({mode:'awakening',seed:1});
+ s.godhood.mode='mature';
+ const home=s.buildings.filter(b=>b.type==='house').at(-1);
+ for(const b of s.buildings.filter(b=>b.type==='house'))b.pantry=b.pantryDelivered=100;
+ home.pantry=0;
+ recordStarForecast(s);
+ assert.deepEqual(starForecastView(s).map(row=>row.key),[buildingKey(home)]);
+ const legacy=structuredClone(s.starObservations.forecast);
+ const result=demolish(s,home.x,home.y);
+ assert.ok(result.ok,result.reason);
+ assert.deepEqual(s.starObservations.forecast.targets,[]);
+ s.starObservations.forecast=legacy;
+ const built=build(s,'house',home.x,home.y);
+ assert.ok(built.ok,built.reason);
+ assert.deepEqual(s.starObservations.forecast.targets,[]);
+ assert.deepEqual(starForecastView(s),[]);
+});

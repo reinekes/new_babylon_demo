@@ -1,0 +1,19 @@
+{
+  "speed": 4,
+  "demolitionRetiredForecast": true,
+  "oldAddressRetiredOnBuild": true,
+  "replacementReloadByteEqual": true,
+  "buildings": 134,
+  "citizens": 289,
+  "controlledPantries": true,
+  "kinds": [
+    "food"
+  ],
+  "castCpuMs": 40.031791999999996,
+  "samples": 120,
+  "medianStepCpuMs": 9.653458999999998,
+  "p95StepCpuMs": 18.960124999999948,
+  "medianForecastCpuMs": 0.01679199999989578,
+  "journalEqualReload": true,
+  "resolvedFoodHidden": true
+}

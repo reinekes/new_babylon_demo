@@ -1,3 +1,4 @@
+import {retireStarForecastAt} from './star-forecast.js';
 import {retireDepthPressure} from './depth-supply.js';
 import {reservedArrivalBeds} from './arrival-hospitality.js';
 import {householdAwaitingFamily} from './household-initiative.js';
@@ -217,6 +218,7 @@ export function demolish(s,x,y){
  for(const c of s.citizens){if(homes.has(c.id))c.home=homes.get(c.id);if(c.work===buildingKey(b))c.work=null;if(c.store===buildingKey(b))c.store=null;}
  if(b.type==='house')delete s.demography?.lastBirth?.[buildingKey(b)];
  if(b.type==='canal')retireDepthPressure(s,b.x,b.y);
+ retireStarForecastAt(s,b.x,b.y);
  retireFirstBeerVenue(s,b);
  groundShapingBatch(s,b);
  s.buildings=s.buildings.filter(v=>v!==b);discardFishingOutput(s,b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
