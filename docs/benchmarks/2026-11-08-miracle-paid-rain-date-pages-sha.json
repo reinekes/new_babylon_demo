@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T00:48:34.237667+00:00",
+  "commit": "d48d1e46171d13040d96f6297eb3c65e65e9fd2d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3f059abe078c9b7a8647809da2a673637dda884df33d7a4898d6e0717ce9ad6e",
+      "actual": "3f059abe078c9b7a8647809da2a673637dda884df33d7a4898d6e0717ce9ad6e",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "df4b03c7f3138f049601bca4a0925c8caa86bfedf460e6c8e14db0ccfb887d5d",
+      "actual": "df4b03c7f3138f049601bca4a0925c8caa86bfedf460e6c8e14db0ccfb887d5d",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-paid-rain-date-4x.json",
+      "status": 200,
+      "expected": "7690c645355534e62b27eb8c211f475c487dedd606023f668a1c0847fd61a40f",
+      "actual": "7690c645355534e62b27eb8c211f475c487dedd606023f668a1c0847fd61a40f",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "af83917a07248a5c4f4af3c6525cf86e2abad974e07dd3e6f309d2185afe99bc",
+      "actual": "af83917a07248a5c4f4af3c6525cf86e2abad974e07dd3e6f309d2185afe99bc",
+      "match": true
+    },
+    {
+      "path": "miracle-history.js",
+      "status": 200,
+      "expected": "f145463b451a4f3595a894dc6fefa2814c6210bc87038bb9b098e91f7e0d1856",
+      "actual": "f145463b451a4f3595a894dc6fefa2814c6210bc87038bb9b098e91f7e0d1856",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "68f85e60669c7546c0df50f92c3ac98417d05a8bc368e4199f4028cf3ea39e8a",
+      "actual": "68f85e60669c7546c0df50f92c3ac98417d05a8bc368e4199f4028cf3ea39e8a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "44a8f2138d256f04599048c1a4c67c67380fb7eaee291ae5835f1920f21e413e",
+      "actual": "44a8f2138d256f04599048c1a4c67c67380fb7eaee291ae5835f1920f21e413e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "9fcbc55ff3871d9bc27906ff518a938940629fc9a24206a937c989cc6e938fd4",
+      "actual": "9fcbc55ff3871d9bc27906ff518a938940629fc9a24206a937c989cc6e938fd4",
+      "match": true
+    },
+    {
+      "path": "tests/irrigated-harvest.test.js",
+      "status": 200,
+      "expected": "f5f6c63204a555141892738a4a744c438222dcad59ee0964ce3175d31080a639",
+      "actual": "f5f6c63204a555141892738a4a744c438222dcad59ee0964ce3175d31080a639",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
