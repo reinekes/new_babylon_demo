@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 129,
+  "population": 237,
+  "originalOrder": 5,
+  "replacementOrder": 6,
+  "sameInstant": true,
+  "duplicateRejected": true,
+  "legacyWithoutCounterByteEqual": true,
+  "steps": 800,
+  "medianCPUms": 8.086667000001398,
+  "p95CPUms": 34.19237500000054,
+  "exactSave": true
+}

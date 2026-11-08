@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
+import {stampBuildingCompletion} from '../building-chronology.js';
 import {buildingKey,housingOf} from '../definitions.js';
 import {bindWaterProject,recordNeighborFoodFact,recordNeighborWaterFact,householdNameEvidence,waterNameEvidence} from '../causal-facts.js';
 import {confirmProjectWater} from '../human-projects.js';
@@ -179,7 +180,8 @@ test('a second occupied courtyard records an actual project delivery once and ke
 test('the water name needs two distinct courtyards and keeps its first witnesses when the archive fills',()=>{
  const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
  const [origin,first]=s.buildings.filter(b=>b.type==='house');
- const second={...first,x:10,y:8};
+ const second={...first,x:10,y:8,built:undefined};
+ stampBuildingCompletion(s,second);
  s.buildings.push(second);
  s.capacity=housingOf(s);
  const requester=s.citizens.find(c=>c.home===buildingKey(origin));
@@ -225,7 +227,8 @@ test('the water name needs two distinct courtyards and keeps its first witnesses
 test('a rebuilt house cannot consume the second witness slot at the same address',()=>{
  const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
  const [origin,first]=s.buildings.filter(b=>b.type==='house');
- const second={...first,x:10,y:8};
+ const second={...first,x:10,y:8,built:undefined};
+ stampBuildingCompletion(s,second);
  s.buildings.push(second);s.capacity=housingOf(s);
  const requester=s.citizens.find(c=>c.home===buildingKey(origin));
  const courier=s.citizens.find(c=>c.home===buildingKey(first));
@@ -233,8 +236,9 @@ test('a rebuilt house cannot consume the second witness slot at the same address
  const station={type:'waterpoint',x:12,y:7,level:1,humanWaterProject:{organizerId:courier.id,requesterId:requester.id,home:buildingKey(origin),startedAt:0}};
  s.buildings.push(station);bindWaterProject(s,station,origin);
  confirmProjectWater(s,courier,buildingKey(station),first,3);
- const replacement={...first};
+ const replacement={...first,built:undefined};
  delete replacement.waterEntityId;
+ stampBuildingCompletion(s,replacement);
  s.buildings[s.buildings.indexOf(first)]=replacement;
  const legacy=JSON.parse(encode(s));
  delete legacy.buildings.find(b=>b.humanWaterProject).humanWaterProject.witnessHomePlaces;

@@ -85,3 +85,16 @@ test('the first post-upgrade completion skips orders preserved only in archived 
  stampBuildingCompletion(s,house);
  assert.equal(house.built.order,10);
 });
+
+test('a save with a completion counter rejects duplicate numbers on standing buildings',()=>{
+ const s=createGame({start:'established'});
+ const raw=encode(s);
+ assert.equal(encode(decode(raw)),raw);
+ const damaged=JSON.parse(raw);
+ damaged.buildings[1].built.order=damaged.buildings[0].built.order;
+ assert.equal(decode(JSON.stringify(damaged)),null);
+ const legacy=JSON.parse(raw);
+ delete legacy.nextBuildingOrder;
+ const older=JSON.stringify(legacy);
+ assert.equal(encode(decode(older)),older);
+});

@@ -34,6 +34,15 @@ export function validateBuildingChronology(s){
  const now={year:s.year,season:s.season,elapsed:s.seasonElapsed||0};if(!validDate(now))return false;
  const next=s.nextBuildingOrder;
  if(next!==undefined&&(!Number.isSafeInteger(next)||next<1||(s.lifeAnalytics?.people||[]).some(p=>p.memorial?.built?.order>=next)))return false;
- return (s.buildings||[]).every(b=>b.built===undefined||buildingChronology(b).known&&moment(b.built)<=moment(now)&&
-  b.construction?.kind!=='new'&&(next===undefined||b.built.order<next));
+ const orders=new Set();
+ const currentMoment=moment(now);
+ for(const b of s.buildings||[]){
+  if(b.built===undefined)continue;
+  if(!buildingChronology(b).known||moment(b.built)>currentMoment||b.construction?.kind==='new')return false;
+  if(next===undefined)continue;
+  const {order}=b.built;
+  if(order>=next||orders.has(order))return false;
+  orders.add(order);
+ }
+ return true;
 }
