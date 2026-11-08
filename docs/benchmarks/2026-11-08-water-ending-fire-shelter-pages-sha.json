@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T02:11:00.612980+00:00",
+  "commit": "72c5ed2725edc0f19f3cf0a8bc28403b63700a24",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0fa69c2b8abfdacd4f2072a03724cb073e6701ae0c7d640b5d74a30dce0ea16d",
+      "actual": "0fa69c2b8abfdacd4f2072a03724cb073e6701ae0c7d640b5d74a30dce0ea16d",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "d3065379c1877760bc729bb66c539efd6a5447b74457188d298e067bf0e35593",
+      "actual": "d3065379c1877760bc729bb66c539efd6a5447b74457188d298e067bf0e35593",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-water-ending-fire-shelter-4x.json",
+      "status": 200,
+      "expected": "8a9e496843322d11f7e7160caf3b722b1b30886196e3106ba3a6b08cfca3ad57",
+      "actual": "8a9e496843322d11f7e7160caf3b722b1b30886196e3106ba3a6b08cfca3ad57",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "50082c32e59eb58a74163d2e7955da41d5f484f737e2acc498b7b702ed4e65f5",
+      "actual": "50082c32e59eb58a74163d2e7955da41d5f484f737e2acc498b7b702ed4e65f5",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "f357223279e01059deedcec8d8c86f31d16bbb1a024f5abb6fd24c1005bf0b99",
+      "actual": "f357223279e01059deedcec8d8c86f31d16bbb1a024f5abb6fd24c1005bf0b99",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "e386f15845c7f29af33c64629f781bc984c16cb9b47f8190326fc2a23e6e6ea3",
+      "actual": "e386f15845c7f29af33c64629f781bc984c16cb9b47f8190326fc2a23e6e6ea3",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0929035d2471dcf5f88eb371f1fb7d6b366151238c691832d73c4da239604ecd",
+      "actual": "0929035d2471dcf5f88eb371f1fb7d6b366151238c691832d73c4da239604ecd",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "c2316ad0293a9e720a65667db02bf9999f9528c62cc0c4a4f7b0583055d62161",
+      "actual": "c2316ad0293a9e720a65667db02bf9999f9528c62cc0c4a4f7b0583055d62161",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
