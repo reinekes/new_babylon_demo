@@ -327,3 +327,27 @@ test('a courtyard move waits until the whole family has a connected route',async
  assert.equal(target.householdInitiative.settled,true);
  assert.equal(child.home,buildingKey(target));
 });
+
+test('a reserved move waits for active treatment, study, gathering and festival work',async()=>{
+ const {advanceGenerations}=await import('../demography.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const [first,partner]=s.citizens,source=s.buildings.find(b=>buildingKey(b)===first.home);
+ const offer=householdInitiative(s,source);
+ assert.ok(offer.ok,offer.reason);
+ const target={type:'house',x:offer.x,y:offer.y,level:1,starterHut:true,
+  householdInitiative:{source:first.home,members:[first.id,partner.id],startedAt:s.simTime}};
+ s.buildings.push(target);s.capacity+=capacityOf(target);syncCitizens(s);
+ const oldHome=first.home;
+ for(const [key,value] of [['clinic','9,8'],['school','9,8'],['phase','toManualGathering'],['phase','manualGathering'],['phase','festival'],['phase','toEveningGame'],['commonMealTarget','9,8']]){
+  const previous=first[key];
+  first[key]=value;
+  advanceGenerations(s);
+  assert.equal(first.home,oldHome,key);
+  assert.equal(target.householdInitiative.settled,undefined,key);
+  if(previous===undefined)delete first[key];else first[key]=previous;
+ }
+ advanceGenerations(s);
+ assert.equal(first.home,buildingKey(target));
+ assert.equal(target.householdInitiative.settled,true);
+});

@@ -1,0 +1,15 @@
+{
+  "speed": 4,
+  "moveWaitedForTreatment": true,
+  "treatmentReloadByteEqual": true,
+  "steps": 1019,
+  "buildings": 131,
+  "population": 245,
+  "retainedIds": 218,
+  "site": "5,4",
+  "complete": true,
+  "settled": true,
+  "byteExact": true,
+  "medianCpuMs": 1.20962499999996,
+  "p95CpuMs": 5.790750000000003
+}

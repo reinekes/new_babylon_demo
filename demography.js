@@ -50,7 +50,11 @@ export function advanceGenerations(s,recover=()=>{}){
   const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&housingNetwork.components.get(housingPorts.get(buildingKey(b)))===component;
   if(reserved&&!available(reserved))continue;
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
-  if(!house||family.some(c=>shelterHome(c)||s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+  if(!house||family.some(c=>shelterHome(c)||c.clinic||c.school||c.commonMealTarget||
+   ['toManualGathering','manualGathering','festival','toEveningGame','eveningGuest'].includes(c.phase)||
+   s.citizens.some(p=>p.clothingTarget===c.id)||c.memorialMove||c.clothingTarget!==undefined||
+   c.waterTrip||c.craftSite||c.seedField||c.pantryTrip||
+   Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
   const destination=buildingKey(house);for(const c of family){
    const source=housingNetwork.ports.find(p=>p.key===housingPorts.get(c.home));
    if(source&&Math.hypot(c.x-source.x,c.y-source.y)<.05)prepareMemorialMove(s,c,house);
