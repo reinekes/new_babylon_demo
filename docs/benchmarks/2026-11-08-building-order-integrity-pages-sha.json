@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-08T03:52:23.691914+00:00",
+  "commit": "47bba6a38344587d6d6eedc3235dc322f08971e9",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "d2bdd0ff849446301e63d86787b38ff642170e97e301c7a0b2f0f00e8c5121de",
+      "actual": "d2bdd0ff849446301e63d86787b38ff642170e97e301c7a0b2f0f00e8c5121de",
+      "match": true
+    },
+    {
+      "path": "building-chronology.js",
+      "status": 200,
+      "expected": "c8af0a5985a1b55238e5d028999d4b2312cc2014c8537dbcfa852c3175d1c363",
+      "actual": "c8af0a5985a1b55238e5d028999d4b2312cc2014c8537dbcfa852c3175d1c363",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-building-order-integrity-4x.json",
+      "status": 200,
+      "expected": "1a8fd7fe390af8f1ef0750450e8c0cd68ebbe1e8322850ec911071e476806c46",
+      "actual": "1a8fd7fe390af8f1ef0750450e8c0cd68ebbe1e8322850ec911071e476806c46",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "a55449069e7b6f63f3ab031cd50f7d3ce3e6d52fa04fa2b7e9444ffeff1806c0",
+      "actual": "a55449069e7b6f63f3ab031cd50f7d3ce3e6d52fa04fa2b7e9444ffeff1806c0",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "09bf93d4a20841d2917e2b7b858afb1dab940c9e43a13b4d840032d70e97108f",
+      "actual": "09bf93d4a20841d2917e2b7b858afb1dab940c9e43a13b4d840032d70e97108f",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "ed5fb2a70652d91a7b526dfd94a29bbcb116cf9b605cb989e26799a8a2f82e39",
+      "actual": "ed5fb2a70652d91a7b526dfd94a29bbcb116cf9b605cb989e26799a8a2f82e39",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "0ead0e6d48e1c0f8e47f0dff44f56b6f50bca959275869ce4085ceb497d524e2",
+      "actual": "0ead0e6d48e1c0f8e47f0dff44f56b6f50bca959275869ce4085ceb497d524e2",
+      "match": true
+    },
+    {
+      "path": "tests/building-annual-chronology.test.js",
+      "status": 200,
+      "expected": "f88e776be529d0ca27be13aa6eeee7f27fb2fbf84099420fb2e550af12396bf7",
+      "actual": "f88e776be529d0ca27be13aa6eeee7f27fb2fbf84099420fb2e550af12396bf7",
+      "match": true
+    },
+    {
+      "path": "tests/project-water-facts.test.js",
+      "status": 200,
+      "expected": "4847110862164a082cd0b1b7289270e75b2f8bda355600a041ff2194b2305897",
+      "actual": "4847110862164a082cd0b1b7289270e75b2f8bda355600a041ff2194b2305897",
+      "match": true
+    }
+  ],
+  "matched": 9,
+  "total": 9
+}
