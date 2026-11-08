@@ -1,0 +1,93 @@
+{
+  "at": "2026-11-08T03:44:49.641251+00:00",
+  "commit": "33a3a8dd11340770e514a7e572a2056df2c5285f",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "7450ca5311e0108be9e31e455b718446816c01733bd09519b18034f2bf45855c",
+      "actual": "7450ca5311e0108be9e31e455b718446816c01733bd09519b18034f2bf45855c",
+      "match": true
+    },
+    {
+      "path": "app.js",
+      "status": 200,
+      "expected": "4c372150760befb79d236b0ccf5fe4775ac5715bbf184e6fd229312a20377ba0",
+      "actual": "4c372150760befb79d236b0ccf5fe4775ac5715bbf184e6fd229312a20377ba0",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-confirmation-4x.json",
+      "status": 200,
+      "expected": "29b1d4f635231e2935fb953a59514629e987c4964ad7366fbd288c1030afd843",
+      "actual": "29b1d4f635231e2935fb953a59514629e987c4964ad7366fbd288c1030afd843",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-confirmation-browser.json",
+      "status": 200,
+      "expected": "782b6a709a7825a35030f04dc83b24cf281a30287431d297f525e5aaa07399b1",
+      "actual": "782b6a709a7825a35030f04dc83b24cf281a30287431d297f525e5aaa07399b1",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "0537eb770f711a65b1d1320e37a780030936afeb87fba6ccd74e10e36204a2df",
+      "actual": "0537eb770f711a65b1d1320e37a780030936afeb87fba6ccd74e10e36204a2df",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e6520726bd48dc33ba194c4822c102b838315acfe907ef5886a7c3e984d089bc",
+      "actual": "e6520726bd48dc33ba194c4822c102b838315acfe907ef5886a7c3e984d089bc",
+      "match": true
+    },
+    {
+      "path": "miracle-history.js",
+      "status": 200,
+      "expected": "026b1903c2b0031498cbdb30d7494ad0e865b4c845508604da184b174cc6fd1d",
+      "actual": "026b1903c2b0031498cbdb30d7494ad0e865b4c845508604da184b174cc6fd1d",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "cb2a0454e5adfba537a11774aab0bd779b9ccae88522c6cccf01cd8c313d313a",
+      "actual": "cb2a0454e5adfba537a11774aab0bd779b9ccae88522c6cccf01cd8c313d313a",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "8a559fbb179ff07d96d2525cef6f0a2e484c3b1f5eaad98822a9dd5f0f107f4f",
+      "actual": "8a559fbb179ff07d96d2525cef6f0a2e484c3b1f5eaad98822a9dd5f0f107f4f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "b753d307625dd8f13d02429a04f24742ffa36c162e226dc3d56d45ce2d123018",
+      "actual": "b753d307625dd8f13d02429a04f24742ffa36c162e226dc3d56d45ce2d123018",
+      "match": true
+    },
+    {
+      "path": "tests/engine.test.js",
+      "status": 200,
+      "expected": "1c5ca324d1cb9df191c2bfa67e084580b633e7502715e9c4303f45a975528ed4",
+      "actual": "1c5ca324d1cb9df191c2bfa67e084580b633e7502715e9c4303f45a975528ed4",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "73ff51c5fc62a14e2da8f186aeac2bec8d8c72952edcfe842d9be7708f132bc7",
+      "actual": "73ff51c5fc62a14e2da8f186aeac2bec8d8c72952edcfe842d9be7708f132bc7",
+      "match": true
+    }
+  ],
+  "matched": 12,
+  "total": 12
+}
