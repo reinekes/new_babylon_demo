@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-08T01:16:33.079463+00:00",
+  "commit": "c6a8f47d4d37f3dccdfff6f393b9fe3c3fad63da",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "0c141def351d137ed3f41149ab7b5c9051ab780262b543bacac2a3a1895b1361",
+      "actual": "0c141def351d137ed3f41149ab7b5c9051ab780262b543bacac2a3a1895b1361",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "1d00064494133478aaf9cb84a8893103fa0619522617c6b4bdab26d73df9045c",
+      "actual": "1d00064494133478aaf9cb84a8893103fa0619522617c6b4bdab26d73df9045c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-miracle-effect-dates-4x.json",
+      "status": 200,
+      "expected": "282d575f79599525b1b7df60975385f4986f1029d2a500a8fffd123c419719fd",
+      "actual": "282d575f79599525b1b7df60975385f4986f1029d2a500a8fffd123c419719fd",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "92ddd3bbcf77ab817ed0c43879dabf6d5ccab0b97a3956d5a77fc63353d940dd",
+      "actual": "92ddd3bbcf77ab817ed0c43879dabf6d5ccab0b97a3956d5a77fc63353d940dd",
+      "match": true
+    },
+    {
+      "path": "miracle-history.js",
+      "status": 200,
+      "expected": "c24ab452201f60a75aa00e3869bb6b79201a1973dd58e09e336102d9f1981285",
+      "actual": "c24ab452201f60a75aa00e3869bb6b79201a1973dd58e09e336102d9f1981285",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "478e1a7c5b3029343f117246f7a03193472d35fbdd361de0244fcdc917080c25",
+      "actual": "478e1a7c5b3029343f117246f7a03193472d35fbdd361de0244fcdc917080c25",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "ece81adf357cfbaee9995c3bfd4aebca163e84679457cb223f77630ab4524ed8",
+      "actual": "ece81adf357cfbaee9995c3bfd4aebca163e84679457cb223f77630ab4524ed8",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "eef95065dfe4a29bfbf5cd19c320734d1d4a351e9192a4b44419b691caaa0391",
+      "actual": "eef95065dfe4a29bfbf5cd19c320734d1d4a351e9192a4b44419b691caaa0391",
+      "match": true
+    },
+    {
+      "path": "tests/abundance-gift.test.js",
+      "status": 200,
+      "expected": "d8f7d699d70c8b522f4a0cfe11f25684d28dee023af781cf364805a9125ba550",
+      "actual": "d8f7d699d70c8b522f4a0cfe11f25684d28dee023af781cf364805a9125ba550",
+      "match": true
+    },
+    {
+      "path": "tests/peace-discovery.test.js",
+      "status": 200,
+      "expected": "0fd6e6c5d6e591eb9966608f0cdb91a11e9446767201169029ac0e8dfb70f7ec",
+      "actual": "0fd6e6c5d6e591eb9966608f0cdb91a11e9446767201169029ac0e8dfb70f7ec",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
