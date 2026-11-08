@@ -66,3 +66,33 @@ test('Depths fills only the selected operational intake without crediting a home
  assert.equal(other.waterReserve,5);
  assert.equal(home.water,before);
 });
+
+test('demolishing a depth anchor retires its pressure and a replacement cannot revive it',async()=>{
+ const {build,canBuild,miracle,encode}=await import('../engine.js');
+ const {demolish}=await import('../management.js');
+ const {depthCanalTarget,irrigationFor}=await import('../irrigation.js');
+ const {terrain}=await import('../world.js');
+ const s=createNewCity({mode:'awakening',seed:137});
+ s.godhood.mode='mature';
+ s.relicQuest.phase='completed';
+ s.resources.faith=100;
+ let canal;
+ for(let y=1;y<63&&!canal;y++)for(let x=1;x<63&&!canal;x++){
+  if(!canBuild(s,'canal',x,y)&&[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>terrain(x+dx,y+dy,s)==='water')){
+   canal={type:'canal',x,y,level:1};s.buildings.push(canal);
+  }
+ }
+ assert.ok(depthCanalTarget(s,canal));
+ assert.ok(miracle(s,'relicAwakening',canal).ok);
+ assert.equal(irrigationFor(s).depthWave?.point,canal);
+ const pressure=s.depthSupply.pressure;
+ const {x,y}=canal;
+ assert.ok(demolish(s,x,y).ok);
+ assert.equal(s.depthSupply.pressure,undefined);
+ s.depthSupply.pressure=pressure; // A pre-fix save could retain pressure without its canal.
+ assert.ok(build(s,'canal',x,y).ok);
+ assert.equal(s.depthSupply.pressure,undefined);
+ assert.equal(irrigationFor(s).depthWave,null);
+ assert.equal(s.resources.faith,55);
+ assert.ok(encode(s));
+});

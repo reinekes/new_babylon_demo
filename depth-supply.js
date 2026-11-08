@@ -6,6 +6,11 @@ import {worldHeight,worldWidth} from './world.js';
 export const DEPTH_HOMES_REQUIRED=3;
 export const newDepthSupply=()=>({version:1,homes:[]});
 
+export function retireDepthPressure(s,x,y){
+ const pressure=s.depthSupply?.pressure;
+ if(pressure?.x===x&&pressure.y===y)delete s.depthSupply.pressure;
+}
+
 export function recordDepthSupply(s,c,b,amount){
  const homes=s.depthSupply?.homes;
  if(!homes||homes.length>=DEPTH_HOMES_REQUIRED||b.type!=='house'||!isOperational(b)||!(amount>1e-8)||

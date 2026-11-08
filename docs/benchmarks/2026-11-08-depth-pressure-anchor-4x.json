@@ -1,0 +1,24 @@
+{
+  "speed": 4,
+  "nonAnchorDemolitionPreservedPressure": true,
+  "anchorDemolitionRetiredPressure": true,
+  "legacyOrphanClearedOnBuild": true,
+  "buildings": 138,
+  "citizens": 296,
+  "anchor": {
+    "x": 16,
+    "y": 6
+  },
+  "unaffectedIntake": {
+    "x": 28,
+    "y": 6
+  },
+  "extraIrrigatedFields": 1,
+  "expiry": true,
+  "saveByteEqual": true,
+  "rejectsFuturePressure": true,
+  "legacyNoPressure": true,
+  "samples": 243,
+  "medianStepCpuMs": 3.351500000000101,
+  "p95StepCpuMs": 10.276749999999993
+}
