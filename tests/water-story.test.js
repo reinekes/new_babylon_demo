@@ -180,7 +180,7 @@ test('the city ending can be recorded without a monument and post-monument goals
 });
 
 test('a departed pilgrim needs a later actual visit by the same partner to earn the foreign ending',async()=>{
- const {advanceForeignName,foreignEndingOffer,recordForeignEnding}=await import('../campaign.js');
+ const {advanceForeignName,foreignEndingOffer,recordForeignEnding,validateForeignName}=await import('../campaign.js');
  const s=createNewCity({mode:'awakening',seed:137}),witness=s.citizens[0];
  Object.assign(s.godhood,{stage:'recognized',recognitionAt:0,witnessId:witness.id,believerIds:[witness.id]});
  s.name='Услышанный у воды';s.divinity.names.push(s.name);
@@ -201,6 +201,13 @@ test('a departed pilgrim needs a later actual visit by the same partner to earn 
  assert.equal(foreignEndingOffer(s)?.reportedVisit,3);
  assert.equal(s.foreignName.name,'Услышанный у воды');
  assert.ok(recordForeignEnding(s).ok);
+ assert.ok(validateForeignName(s));
+ s.trade.caravan.name='Другой партнёр';
+ assert.equal(validateForeignName(s),false);
+ s.trade.caravan=null;
+ assert.ok(validateForeignName(s));
+ s.externalVisits.pilgrim.partner='Другой партнёр';
+ assert.equal(validateForeignName(s),false);
  assert.equal(recordForeignEnding(s).ok,false);
  assert.equal(s.won,false);
 });

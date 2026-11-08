@@ -1,0 +1,14 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "citizens": 382,
+  "partner": "Купцы Урука",
+  "sentVisit": 7,
+  "reportedVisit": 10,
+  "wrongPartnersRejected": true,
+  "legacyReloadByteEqual": true,
+  "reloadByteEqual": true,
+  "samples": 120,
+  "medianStepCpuMs": 5.105374999999981,
+  "p95StepCpuMs": 12.044875000000047
+}

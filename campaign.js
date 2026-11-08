@@ -292,14 +292,14 @@ export function advanceForeignName(s){
  if(!guest||caravan?.phase!=='trading'||caravan.name!==guest.partner||!Number.isSafeInteger(visit)||visit<1)return false;
  const witness=s.foreignName;
  if(witness){
-  if(witness.reportedAt!==null||visit<=witness.sentVisit)return false;
+  if(witness.reportedAt!==null||visit<=witness.sentVisit||witness.partner!==undefined&&witness.partner!==caravan.name)return false;
   witness.reportedVisit=visit;
   witness.reportedAt=s.simTime;
   return true;
  }
  const item=pilgrimDedication(s);
  if(!item||s.godhood.recognitionAt===null||!s.divinity.names.includes(s.name))return false;
- s.foreignName={name:s.name,offeringId:item.id,sentVisit:visit,sentAt:s.simTime,reportedVisit:null,reportedAt:null,endingAt:null};
+ s.foreignName={name:s.name,offeringId:item.id,partner:caravan.name,sentVisit:visit,sentAt:s.simTime,reportedVisit:null,reportedAt:null,endingAt:null};
  return true;
 }
 
@@ -323,9 +323,13 @@ export function validateForeignName(s){
  if(witness===undefined)return true;
  const visit=n=>Number.isSafeInteger(n)&&n>=1&&n<=s.trade?.visits;
  const time=n=>Number.isFinite(n)&&n>=0&&n<=s.simTime;
- if(!usesCampaign(s)||!witness||Object.keys(witness).length!==7||
+ if(!usesCampaign(s)||!witness||Object.keys(witness).length!==(witness.partner===undefined?7:8)||
   typeof witness.name!=='string'||!s.divinity.names.includes(witness.name)||pilgrimDedication(s)?.id!==witness.offeringId||
   !visit(witness.sentVisit)||!time(witness.sentAt)||s.godhood.recognitionAt===null||witness.sentAt<s.godhood.recognitionAt)return false;
+ const partner=s.externalVisits.pilgrim.partner;
+ if(witness.partner!==undefined&&witness.partner!==partner)return false;
+ const {caravan,visits}=s.trade;
+ if(caravan&&(visits===witness.sentVisit||visits===witness.reportedVisit)&&caravan.name!==partner)return false;
  if(witness.reportedAt===null)return witness.reportedVisit===null&&witness.endingAt===null;
  return visit(witness.reportedVisit)&&witness.reportedVisit>witness.sentVisit&&time(witness.reportedAt)&&witness.reportedAt>=witness.sentAt&&
   (witness.endingAt===null||time(witness.endingAt)&&witness.endingAt>=witness.reportedAt);
