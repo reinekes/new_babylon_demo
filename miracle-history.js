@@ -2,6 +2,11 @@ import {MIRACLES} from './definitions.js';
 import {RICH_CATCH_CHARGES} from './rich-catch.js';
 import {worldHeight,worldWidth} from './world.js';
 
+export function previousMiracleCastNumber(s,id){
+ const history=s.miracleHistory;
+ return Math.max(history?.paid[id]?.number??0,history?.trials[id]?.number??0);
+}
+
 export function recordMiracleCast(s,id,{faithSpent,population,fishing,depth}){
  const history=s.miracleHistory??={version:1,trials:{},paid:{}};
  const records=faithSpent===0?history.trials:history.paid;

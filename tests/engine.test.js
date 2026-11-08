@@ -53,3 +53,22 @@ test('population miracle history preserves the confirmed outcome and reads earli
  const earlier=JSON.stringify(invalid);
  assert.equal(encode(decode(earlier)),earlier);
 });
+
+test('a confirmed miracle cannot replay after cooldown and reload',()=>{
+ let s=createGame({start:'established'});
+ s.resources.faith=100;
+ const first={previousCast:0,price:15};
+ assert.ok(miracle(s,'rain',undefined,first).ok);
+ for(let i=0;i<2;i++){advanceCalendarSeason(s);settle(s);}
+ assert.equal(s.cooldowns.rain,0);
+ const saved=encode(s);
+ s=decode(saved);
+ assert.ok(s);
+ assert.match(miracle(s,'rain',undefined,first).reason??'',/подтверждение/i);
+ assert.equal(encode(s),saved);
+ const previousCast=s.miracleHistory.paid.rain.number;
+ assert.match(miracle(s,'rain',undefined,{previousCast,price:0}).reason??'',/цена/i);
+ assert.equal(encode(s),saved);
+ assert.ok(miracle(s,'rain',undefined,{previousCast,price:15}).ok);
+ assert.equal(s.miracleHistory.paid.rain.number,previousCast+1);
+});

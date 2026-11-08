@@ -1,0 +1,16 @@
+[
+  {
+    "id": "confirmation",
+    "view": "2d",
+    "url": "?id=confirmation&view=2d",
+    "mode": "2d",
+    "result": "PASS free trial, stale command and price refused, fresh paid cast accepted"
+  },
+  {
+    "id": "confirmation",
+    "view": "3d",
+    "url": "?id=confirmation&view=3d",
+    "mode": "3d",
+    "result": "PASS free trial, stale command and price refused, fresh paid cast accepted"
+  }
+]

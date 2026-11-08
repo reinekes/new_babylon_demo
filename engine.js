@@ -24,7 +24,7 @@ import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
 import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js';
 import {advanceBlessingDiscovery,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
-import {recordMiracleCast,validateMiracleHistory} from './miracle-history.js';
+import {previousMiracleCastNumber,recordMiracleCast,validateMiracleHistory} from './miracle-history.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
 import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
@@ -233,7 +233,11 @@ export function depthCastQuote(s,target){
  const intake=depthWaterpointTarget(s,target);
  return intake?{kind:'intake',building:intake}:{kind:'rain',building:null};
 }
-export function miracle(s,id,target){
+export function miracle(s,id,target,confirmation){
+ if(confirmation!==undefined){
+  if(confirmation?.previousCast!==previousMiracleCastNumber(s,id))return {ok:false,reason:'Подтверждение устарело. Открой карточку чуда заново'};
+  if(confirmation.price!==miraclePrice(s,id))return {ok:false,reason:'Цена чуда изменилась. Проверь карточку перед применением'};
+ }
  if((s.miracleCelebration||['cat','fertility'].includes(id))&&miracleCelebrationReason(s))return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};const lock=miracleKnowledgeReason(s,id)||miracleLockReason(s,id);if(lock)return {ok:false,reason:lock};
  const m=MIRACLES[id],price=miraclePrice(s,id);if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<price)return {ok:false,reason:`Нужно ${price} веры`};if(id==='cat'&&catReason(s))return {ok:false,reason:catReason(s)};if(id==='abundance'&&!s.abundanceGift&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};

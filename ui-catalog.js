@@ -1,5 +1,6 @@
 import {ABUNDANCE_LIMIT} from './abundance-gift.js';
 import {miraclePrice} from './miracle-discovery.js';
+import {previousMiracleCastNumber} from './miracle-history.js';
 import {miracleKnowledgeReason} from './godhood.js';
 import {DOMAIN_NAMES} from './divinity.js';
 import {buildingDefinition} from './building-presentation.js';
@@ -66,6 +67,8 @@ export function updateMiracleCard(details,s,id,reason='',gift=null,arrival=null)
   if(arrival){el.dataset.arrivalCount=arrival.beds;el.dataset.arrivalHome=arrival.home;}
   else{delete el.dataset.arrivalCount;delete el.dataset.arrivalHome;}
  }
+ el.dataset.castNumber=previousMiracleCastNumber(s,id);
+ el.dataset.castPrice=price;
  el.disabled=!!reason;el.textContent=`${arrival?`Позвать ${arrival.beds} чел.`:id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
  el.title=`${m.name} · ${price} веры. ${desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
