@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T01:45:52.398299+00:00",
+  "commit": "84e352af7c2646ab4df7152f388fe0d49625f27d",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "42f6226208418a7ddbb6270ebb95f814a4379100f10e900e5356efc52a5f45b0",
+      "actual": "42f6226208418a7ddbb6270ebb95f814a4379100f10e900e5356efc52a5f45b0",
+      "match": true
+    },
+    {
+      "path": "campaign.js",
+      "status": 200,
+      "expected": "2c07e872a2fc93113bf1621563cb4faae9f4bc5b6ed0242d230f6fedb08c603c",
+      "actual": "2c07e872a2fc93113bf1621563cb4faae9f4bc5b6ed0242d230f6fedb08c603c",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-city-ending-recipients-4x.json",
+      "status": 200,
+      "expected": "90ac16f31a973117fdfdcbed77bdf27d40024f57e7eef606b8a2199429bd5bc5",
+      "actual": "90ac16f31a973117fdfdcbed77bdf27d40024f57e7eef606b8a2199429bd5bc5",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0f6b2d857d88a6735d7338d2052edd7e4711a05ede7183fd534e9730029ba854",
+      "actual": "0f6b2d857d88a6735d7338d2052edd7e4711a05ede7183fd534e9730029ba854",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "668cfc33f0899c6628a696570ec928cddd4f3043046f053f3befd6e8584fb1c3",
+      "actual": "668cfc33f0899c6628a696570ec928cddd4f3043046f053f3befd6e8584fb1c3",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "cd763163dcb9b4a165decaa88f9f580ab84ac8c4c7120997c603527f883f6a36",
+      "actual": "cd763163dcb9b4a165decaa88f9f580ab84ac8c4c7120997c603527f883f6a36",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "5b56f0c98a97da9bd63348b83d365e517dc344a7dea96f4d68cfd137950b4341",
+      "actual": "5b56f0c98a97da9bd63348b83d365e517dc344a7dea96f4d68cfd137950b4341",
+      "match": true
+    },
+    {
+      "path": "tests/water-story.test.js",
+      "status": 200,
+      "expected": "bc294284e5109b166502858245aebbeb3fa3e2e351b4f715764ce0b0e0f9cb0a",
+      "actual": "bc294284e5109b166502858245aebbeb3fa3e2e351b4f715764ce0b0e0f9cb0a",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
