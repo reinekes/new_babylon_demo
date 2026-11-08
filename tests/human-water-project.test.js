@@ -41,6 +41,12 @@ test('a dry household and a ready organizer can approve exactly one real waterpo
  assert.match(waterProjectDeliveryWait(s,project,waitingHome),/запас воды/);
  waitingHome.water=0;
  assert.match(waterProjectDeliveryWait(s,project,waitingHome),/назначить водоноса/);
+ const missed=s.citizens.find(c=>c.id===organizer.id);
+ missed.work=result.key;
+ missed.waterTrip={station:result.key,target:buildingKey(waitingHome),phase:'return',load:0};
+ assert.match(waterProjectDeliveryWait(s,project,waitingHome),/возвращается.*не подтверждена/);
+ delete missed.waterTrip;
+ missed.work=null;
  assert.ok(decode(encode(s)));
  const courier=s.citizens.find(c=>c.id===organizer.id);
  assert.ok(setCitizenRole(s,courier.id,'watercarrier').ok);
@@ -51,7 +57,11 @@ test('a dry household and a ready organizer can approve exactly one real waterpo
  for(let i=0;i<900&&!project.humanWaterProject.delivery;i++){
   s.event=null;advanceTime(s,.2);
   if(courier.waterTrip?.station===result.key&&courier.waterTrip.target===requester.home){
-   assert.match(waterProjectDeliveryWait(s,project,waitingHome),/рейс/);
+   const trip=courier.waterTrip;
+   const status=waterProjectDeliveryWait(s,project,waitingHome);
+   if(trip.phase==='deliver'&&trip.load>0)assert.match(status,/несёт.*воды/);
+   else if(trip.phase==='return')assert.match(status,/возвращается.*не подтверждена/);
+   else if(['source','fill'].includes(trip.phase))assert.match(status,/набирает воду/);
    observed=true;
   }
  }

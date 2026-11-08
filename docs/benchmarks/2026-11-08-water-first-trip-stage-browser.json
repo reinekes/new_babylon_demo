@@ -1,0 +1,16 @@
+[
+  {
+    "id": "loaded",
+    "view": "2d",
+    "url": "?id=loaded&view=2d",
+    "mode": "2d",
+    "result": "PASS loaded shows the current readiness"
+  },
+  {
+    "id": "loaded",
+    "view": "3d",
+    "url": "?id=loaded&view=3d",
+    "mode": "3d",
+    "result": "PASS loaded shows the current readiness"
+  }
+]

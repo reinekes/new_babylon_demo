@@ -230,13 +230,21 @@ export function discardWaterProjectDream(s,expected){
 
 export function waterProjectDeliveryWait(s,station,home){
  const source=buildingKey(station),target=buildingKey(home);
- if(s.citizens.some(c=>c.waterTrip?.station===source&&c.waterTrip.target===target))return 'Первый рейс из водозабора назначен';
+ const trips=s.citizens.flatMap(c=>c.waterTrip?.target===target?[c.waterTrip]:[]);
+ const incoming=trip=>trip.phase==='source'||trip.phase==='fill'||trip.phase==='deliver'&&trip.load>1e-7;
+ const first=trips.find(trip=>trip.station===source&&incoming(trip));
+ if(first){
+  if(first.phase!=='deliver')return 'Первый рейс · водонос идёт за водой или набирает воду';
+  const load=first.load.toLocaleString('ru',{maximumFractionDigits:2});
+  return `Первый рейс · водонос несёт ${load} воды`;
+ }
+ if(trips.some(trip=>trip.station===source&&trip.phase==='return'))return 'Водонос возвращается, первая приёмка не подтверждена';
  if(!s.citizens.some(c=>supplyHome(c,{arrived:true})===target))return 'Во дворе пока некому принять воду';
  const water=waterSummary(s,home);
  if(water.stock>=water.demand)return 'Во дворе есть запас воды на день';
  if(!waterpointCanReach(s,source,target))return 'До двора пока нет сухого пути';
  if(!s.citizens.some(c=>c.work===source))return 'На водозабор нужно назначить водоноса';
- if(water.couriers)return 'Вода уже направлена во двор из другого источника';
+ if(trips.some(incoming))return 'Вода уже направлена во двор из другого источника';
  return 'Водонос ждёт возможности отправиться в первый рейс';
 }
 
