@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-08T00:38:21.735250+00:00",
+  "commit": "469fbce1562086c27bdd42ffa53c5f9de8431e40",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "3d4b3e699f7c158d5b964140934eb4b872175af2791ec38ae60d3da7aac2df14",
+      "actual": "3d4b3e699f7c158d5b964140934eb4b872175af2791ec38ae60d3da7aac2df14",
+      "match": true
+    },
+    {
+      "path": "arrival-hospitality.js",
+      "status": 200,
+      "expected": "663a65e0303f4c79242cbfc218e0f208648850ef3cdd3e90ce42128bfbf0eeb9",
+      "actual": "663a65e0303f4c79242cbfc218e0f208648850ef3cdd3e90ce42128bfbf0eeb9",
+      "match": true
+    },
+    {
+      "path": "causal-facts.js",
+      "status": 200,
+      "expected": "2a013f703f860176a3aadc5cec18735a99d133d616375548d4fbd76fbde68713",
+      "actual": "2a013f703f860176a3aadc5cec18735a99d133d616375548d4fbd76fbde68713",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "cd6349b421d04226a96e69f538d1b9a48e1ebbfcfc46e1e88a45d6c5d1ca7d4a",
+      "actual": "cd6349b421d04226a96e69f538d1b9a48e1ebbfcfc46e1e88a45d6c5d1ca7d4a",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-arrival-shelter-pairing-4x.json",
+      "status": 200,
+      "expected": "4c4c49e026b9170e72bec370a6802dfc2ce4805c1021e8291a0f1298e0101078",
+      "actual": "4c4c49e026b9170e72bec370a6802dfc2ce4805c1021e8291a0f1298e0101078",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e0501af01d23f927294711d21248c17240e19237a2da74a4121be471ff4fe4ed",
+      "actual": "e0501af01d23f927294711d21248c17240e19237a2da74a4121be471ff4fe4ed",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "5197234e57322a0c63fb7745195083cec22221c1667c9c4a61c494bdb355fd85",
+      "actual": "5197234e57322a0c63fb7745195083cec22221c1667c9c4a61c494bdb355fd85",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "169d51e35d056e3b51043ff26362bb84967e9cfefbfa3e60f8ce06b3437c496a",
+      "actual": "169d51e35d056e3b51043ff26362bb84967e9cfefbfa3e60f8ce06b3437c496a",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "12889fb15569326c6b4fac1705fa7abdf94e03c8fe9f63bc216d346e630d984e",
+      "actual": "12889fb15569326c6b4fac1705fa7abdf94e03c8fe9f63bc216d346e630d984e",
+      "match": true
+    },
+    {
+      "path": "tests/arrival-hospitality.test.js",
+      "status": 200,
+      "expected": "9628b4db7d2956bf8d3153d402788d95661eb4960ab8a4a25710d320c0479de2",
+      "actual": "9628b4db7d2956bf8d3153d402788d95661eb4960ab8a4a25710d320c0479de2",
+      "match": true
+    }
+  ],
+  "matched": 10,
+  "total": 10
+}
