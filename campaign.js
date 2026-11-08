@@ -105,7 +105,7 @@ export function waterEndingOffer(s){
  if(!usesCampaign(s)||s.waterEnding||s.lost||s.event||s.funeral||cityCommandReason(s)||floodPhase(s)==='active')return null;
  const shelter=s.arrivalHospitality?.shelters?.[0],facts=s.causalFacts;
  if(!shelter||!facts?.waterWitnesses?.length)return null;
- const occupied=new Set(s.citizens.filter(c=>!c.floodShelter).map(c=>c.home));
+ const occupied=new Set(s.citizens.filter(c=>!c.floodShelter&&!c.fireShelter).map(c=>c.home));
  const live=new Map(s.buildings.filter(b=>b.waterEntityId&&isOperational(b)&&!b.floodDamage).map(b=>[b.waterEntityId,b]));
  const receipts=[...facts.water,...facts.waterWitnesses];
  for(const first of receipts){

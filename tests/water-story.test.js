@@ -140,6 +140,16 @@ test('the shared water ending requires shelter, two supplied homes and the same 
  receipts[1].stationId=4;
  assert.equal(waterEndingOffer(s),null);
  receipts[1].stationId=1;
+ const family=s.citizens.filter(c=>c.home===receipts[1].home);
+ assert.ok(family.length>1);
+ const shelter={host:receipts[0].home};
+ family[0].fireShelter=shelter;
+ assert.ok(waterEndingOffer(s));
+ for(const c of family)c.fireShelter=shelter;
+ assert.equal(waterEndingOffer(s),null);
+ delete family[0].fireShelter;
+ assert.ok(waterEndingOffer(s));
+ for(const c of family)delete c.fireShelter;
  assert.ok(recordWaterEnding(s).ok);
  assert.deepEqual(s.waterEnding.deliveries.map(row=>row.home),receipts.map(row=>row.home));
  assert.ok(validateWaterEnding(s));
