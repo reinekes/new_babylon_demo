@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-08T04:39:51.201789+00:00",
+  "commit": "6f384108d21e66634d1ce2dbc296596b39b576af",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "72f3090d6615c79bef063562558bde6fcdfd1b95494b2a5f9d26cbaa02755742",
+      "actual": "72f3090d6615c79bef063562558bde6fcdfd1b95494b2a5f9d26cbaa02755742",
+      "match": true
+    },
+    {
+      "path": "docs/NEW_PLAYER_PLAYTEST.md",
+      "status": 200,
+      "expected": "673b04cdc1dec61efaebfc044f8ea5e56978a5f9153733eab6d05a997c3777bd",
+      "actual": "673b04cdc1dec61efaebfc044f8ea5e56978a5f9153733eab6d05a997c3777bd",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-playtest-save-regression-4x.json",
+      "status": 200,
+      "expected": "0698a208954c7ffe7072f555ad508824d62e5c19a9d0ef4b9e1050c4353a2a95",
+      "actual": "0698a208954c7ffe7072f555ad508824d62e5c19a9d0ef4b9e1050c4353a2a95",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-08-playtest-save-regression-browser.json",
+      "status": 200,
+      "expected": "e64b2e3ce3f3029e40a88a101e476efbcc297e5243702d9306c2efa61fb500c6",
+      "actual": "e64b2e3ce3f3029e40a88a101e476efbcc297e5243702d9306c2efa61fb500c6",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "72aec02a55dda925f792f37dc7cfd7029a78e9ce7a95dd66588f373351201d29",
+      "actual": "72aec02a55dda925f792f37dc7cfd7029a78e9ce7a95dd66588f373351201d29",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "cdfd7f262dd6cfa63a43c1b55a61ad76aec1f232a9966855fbd213817fe90c70",
+      "actual": "cdfd7f262dd6cfa63a43c1b55a61ad76aec1f232a9966855fbd213817fe90c70",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "8136d74d1028f4ebab46fd949c4b3e9ac12bd8d3bfb76578d1e1c5ffeedc815c",
+      "actual": "8136d74d1028f4ebab46fd949c4b3e9ac12bd8d3bfb76578d1e1c5ffeedc815c",
+      "match": true
+    },
+    {
+      "path": "tests/playtest-saves.test.js",
+      "status": 200,
+      "expected": "c7f06d9c626a405b210c56cfe7aa3b95e829cf44fb943776af1cf8b1cd73790a",
+      "actual": "c7f06d9c626a405b210c56cfe7aa3b95e829cf44fb943776af1cf8b1cd73790a",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
