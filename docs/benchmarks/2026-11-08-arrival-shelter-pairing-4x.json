@@ -1,0 +1,30 @@
+{
+  "speed": 4,
+  "buildings": 134,
+  "populationBefore": 289,
+  "populationAfter": 295,
+  "visits": 0,
+  "controlledArrivedEvacueeMeals": 3,
+  "pairs": [
+    {
+      "host": "8,8",
+      "origin": "19,2",
+      "at": 705.125,
+      "hostId": 1,
+      "originId": 5
+    },
+    {
+      "host": "9,9",
+      "origin": "18,2",
+      "at": 705.125,
+      "hostId": 2,
+      "originId": 4
+    }
+  ],
+  "alternateReload": true,
+  "paidReload": true,
+  "settledReload": true,
+  "steps": 24,
+  "medianCpuMs": 4.329916999999966,
+  "p95CpuMs": 15.944917000000032
+}

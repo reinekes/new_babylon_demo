@@ -205,7 +205,8 @@ export function validateCausalFacts(s){
  const welcomes=s.arrivalHospitality?.welcomes;
  const linkedWelcomes=Array.isArray(welcomes)?welcomes.filter(w=>w?.homeId!==undefined):[];
  const shelters=s.arrivalHospitality?.shelters;
- const linkedShelters=Array.isArray(shelters)?shelters.filter(row=>row?.hostId!==undefined||row?.originId!==undefined):[];
+ const linkedShelters=[...(Array.isArray(shelters)?shelters:[]),s.arrivalHospitality?.shelterAlternate]
+  .filter(row=>row?.hostId!==undefined||row?.originId!==undefined);
  if(ledger===undefined)return blessingCup===undefined&&firstCup?.breweryId===undefined&&!memorials.length&&!linkedWelcomes.length&&!linkedShelters.length&&dream?.homeId===undefined&&!targets.length&&s.buildings.every(b=>b.causalEntityId===undefined&&b.waterEntityId===undefined&&b.householdInitiative?.sourceId===undefined&&b.householdInitiative?.firstNeighborAid===undefined&&b.humanWaterProject?.homeId===undefined&&b.humanWaterProject?.witnessHomeIds===undefined&&b.humanWaterProject?.witnessHomePlaces===undefined);
  if(!isStrictSumer(s)||!ledger||ledger.version!==1||!id(ledger.nextEntityId)||!Array.isArray(ledger.water)||ledger.water.length>LIMIT||
   [ledger.neighborWater,ledger.neighborFood,ledger.waterWitnesses].some(rows=>rows!==undefined&&(!Array.isArray(rows)||rows.length>LIMIT)))return false;

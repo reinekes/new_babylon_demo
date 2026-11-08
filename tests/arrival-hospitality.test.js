@@ -559,3 +559,33 @@ test('a reserved group distinguishes a flooded courtyard from an ordinary blocke
  assert.equal(advanceArrivalGroup(s,60,networkFor(s)),true);
  assert.equal(s.arrivalGroup.waiting,undefined);
 });
+
+test('cross-bank hospitality retains an alternate pairing through reload',async()=>{
+ const {recordArrivalShelter}=await import('../arrival-hospitality.js');
+ const {signedRiverDistance,terrain}=await import('../world.js');
+ const {initializeBuildingInventory}=await import('../building-inventory.js');
+ const {initializeWater}=await import('../water.js');
+ const {buildingKey,housingOf}=await import('../definitions.js');
+ for(const shared of ['host','origin']){
+  let s=createNewCity({mode:'awakening',seed:1});
+  const hosts=s.buildings.filter(b=>b.type==='house').slice(0,2).map(buildingKey),origins=[];
+  for(let x=0;x<64&&origins.length<2;x++)for(let y=0;y<64&&origins.length<2;y++){
+   if(signedRiverDistance(x,y,s)<=3||terrain(x,y,s)==='water')continue;
+   const b={type:'house',x,y,level:1};
+   s.buildings.push(b);origins.push(buildingKey(b));
+  }
+  s.capacity=housingOf(s);initializeWater(s);initializeBuildingInventory(s);
+  const serve=(host,origin)=>recordArrivalShelter(s,s.buildings.find(b=>buildingKey(b)===hosts[host]),
+   {home:origins[origin],floodShelter:hosts[host],route:[],routeIndex:0},1);
+  serve(0,0);
+  const alternatives=shared==='host'?[[0,1],[1,0]]:[[1,0],[0,1]];
+  serve(...alternatives[0]);
+  assert.equal(arrivalHospitalityView(s).shelters,1);
+  const raw=encode(s);s=decode(raw);
+  assert.ok(s);assert.equal(encode(s),raw);
+  serve(...alternatives[1]);
+  assert.equal(arrivalHospitalityView(s).shelters,2);
+  assert.deepEqual(s.arrivalHospitality.shelters.map(r=>[r.host,r.origin]),alternatives.map(([host,origin])=>[hosts[host],origins[origin]]));
+  assert.equal(encode(decode(encode(s))),encode(s));
+ }
+});

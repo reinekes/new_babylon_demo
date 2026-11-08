@@ -37,18 +37,30 @@ function differentBanks(s,from,to){
  return a&&b&&signedRiverDistance(...a,s)*signedRiverDistance(...b,s)<0;
 }
 
+const separateShelters=(a,b)=>a.host!==b.host&&a.origin!==b.origin;
+
 export function recordArrivalShelter(s,house,guest,served){
  const journal=s.arrivalHospitality;
  if(!journal||!(served>1e-9)||journal.shelters?.length>=needed||
   house.type!=='house'||!isOperational(house)||!guest.floodShelter||guest.routeIndex<guest.route.length)return;
  const host=buildingKey(house),origin=guest.home;
  if(guest.floodShelter!==host||!differentBanks(s,origin,host)||
-  journal.shelters?.some(row=>row.host===host||row.origin===origin)||
   !s.citizens.some(c=>atUnshelteredHome(c,host)))return;
  const source=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===origin);
  if(!source)return;
+ const first=journal.shelters?.[0],alternate=journal.shelterAlternate;
+ const pair={host,origin};
+ if(first?.host===host&&first.origin===origin)return;
+ const prior=!first||separateShelters(first,pair)?first:
+  alternate&&separateShelters(alternate,pair)?alternate:null;
+ if(prior===null&&alternate)return;
  const ids=isStrictSumer(s)?{hostId:ensureHouseEntityId(s,house),originId:ensureHouseEntityId(s,source)}:{};
- (journal.shelters??=[]).push({host,origin,at:s.simTime,...ids});
+ const receipt={...pair,at:s.simTime,...ids};
+ if(prior===null)journal.shelterAlternate=receipt;
+ else if(prior){
+  journal.shelters=[prior,receipt];
+  delete journal.shelterAlternate;
+ }else journal.shelters=[receipt];
 }
 
 export function arrivalHospitalityView(s){
@@ -346,7 +358,7 @@ export function validateArrivalHospitality(s){
  if(!validArrivalGroup(s))return false;
  const journal=s.arrivalHospitality;
  if(journal===undefined)return true;
- if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.welcomes!==undefined)+Number(journal.sceneSeen!==undefined)+Number(journal.openedAt!==undefined)||journal.version!==1||
+ if(!usesCatDiscovery(s)||!journal||Object.keys(journal).length!==2+Number(journal.shelters!==undefined)+Number(journal.shelterAlternate!==undefined)+Number(journal.welcomes!==undefined)+Number(journal.sceneSeen!==undefined)+Number(journal.openedAt!==undefined)||journal.version!==1||
   (journal.sceneSeen!==undefined&&journal.sceneSeen!==true)||
   !Array.isArray(journal.receipts)||journal.receipts.length>kinds.length)return false;
  const seen=new Set();
@@ -381,15 +393,15 @@ export function validateArrivalHospitality(s){
   if(!Number.isFinite(openedAt)||!Number.isFinite(blessingAt)||!Number.isFinite(recognizedAt)||
    openedAt<Math.max(hospitalityAt,blessingAt,recognizedAt)||openedAt>s.simTime)return false;
  }
- if(shelters===undefined)return true;
+ const alternate=journal.shelterAlternate;
+ if(shelters===undefined)return alternate===undefined;
  if(!Array.isArray(shelters)||!shelters.length||shelters.length>needed)return false;
- const hosts=new Set(),origins=new Set();
- previous=0;
- for(const row of shelters){
-  if(!row||(row.hostId===undefined)!==(row.originId===undefined)||
-   Object.keys(row).length!==(row.hostId===undefined?3:5)||!differentBanks(s,row.origin,row.host)||
-   hosts.has(row.host)||origins.has(row.origin)||!Number.isFinite(row.at)||row.at<previous||row.at>s.simTime)return false;
-  hosts.add(row.host);origins.add(row.origin);previous=row.at;
- }
- return true;
+ const validShelter=(row,earliest)=>row&&(row.hostId===undefined)===(row.originId===undefined)&&
+  Object.keys(row).length===(row.hostId===undefined?3:5)&&differentBanks(s,row.origin,row.host)&&
+  Number.isFinite(row.at)&&row.at>=earliest&&row.at<=s.simTime;
+ if(!shelters.every((row,i)=>validShelter(row,shelters[i-1]?.at??0)))return false;
+ const [first,second]=shelters;
+ if(second&&!separateShelters(first,second))return false;
+ return alternate===undefined||!second&&!!validShelter(alternate,first.at)&&
+  (first.host===alternate.host)!==(first.origin===alternate.origin);
 }
