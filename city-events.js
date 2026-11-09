@@ -32,8 +32,8 @@ export function applyCityEvent(s,id,choice){
  for(const [key,amount]of Object.entries(d.gain))s.resources[key]=Math.min(1e9,(s.resources[key]||0)+amount);
  if(d.residents)affectResidents(s,d.residents);
  if(d.residents?.health)for(const person of s.citizens)person.health=Math.min(100,person.health+d.residents.health);
- if(id==='wellRepair'&&fearTension(s)>0){
-  const crew=waterThreatQuote(s)?.people;
+ if(fearTension(s)>0){
+  const crew=cityThreatQuote(s)?.people;
   if(crew?.length){
    s.fearCrisis.tension=fearTension(s)-1;
    affectResidents(s,{faith:4},crew.map(person=>person.id));
@@ -43,33 +43,46 @@ export function applyCityEvent(s,id,choice){
 }
 
 export const fearTension=s=>s.fearCrisis?.tension??Number(!!s.fearCrisis?.last);
-const THREAT_REED=6;
 const THREAT_MOOD=12;
 const THREAT_FAITH=8;
-export function waterThreatQuote(s){
- if(!s.fearCrisis||s.event?.id!=='wellRepair')return null;
- for(const station of s.buildings){
-  if(station.type!=='waterpoint'||!isOperational(station)||station.floodDamage)continue;
-  const people=s.citizens.filter(c=>c.work===buildingKey(station)&&c.role==='watercarrier'&&c.age>=16&&
-   c.health>=60&&!c.clinic&&!c.floodShelter&&!c.fireShelter);
+const THREAT_LIMIT=3;
+const THREAT_CHOICES=Object.freeze({
+ wellRepair:{type:'waterpoint',label:'Водозабор',resource:'reed',cost:6,benefit:'Здоровье бригады +3.'},
+ harvestThanks:{type:'field',label:'Поле',resource:'beer',cost:2,benefit:'Престиж города +6.'}
+});
+
+export const threatSiteLabel=kind=>kind==='harvestThanks'?'поле':'водозабор';
+export function cityThreatQuote(s){
+ const kind=s.event?.id;
+ const choice=Object.hasOwn(THREAT_CHOICES,kind)?THREAT_CHOICES[kind]:null;
+ if(!s.fearCrisis||!choice)return null;
+ for(const site of s.buildings){
+  if(site.type!==choice.type||!isOperational(site)||site.floodDamage)continue;
+  const key=buildingKey(site);
+  const people=s.citizens.filter(c=>c.work===key&&c.age>=16&&c.health>=60&&
+   !c.clinic&&!c.floodShelter&&!c.fireShelter&&(kind!=='wellRepair'||c.role==='watercarrier'));
   if(!people.length)continue;
-  const reason=s.resources.reed<THREAT_REED?`Нужно ${THREAT_REED} тростника`:'';
-  return {station,people,reason,text:`Водозабор ${station.x}, ${station.y} · бригада ${people.length} чел. Цена: ${THREAT_REED} тростника. Здоровье +3, настроение −${THREAT_MOOD}, личная вера −${THREAT_FAITH} у бригады.`};
+  const resource=choice.resource==='beer'?'пива':'тростника';
+  const reason=fearTension(s)>=THREAT_LIMIT?'Бригада отказывается подчиниться. Сначала поддержи общину.':
+   s.resources[choice.resource]<choice.cost?`Нужно ${choice.cost} ${resource}`:'';
+  const text=`${choice.label} ${site.x}, ${site.y} · бригада ${people.length} чел. Цена: ${choice.cost} ${resource}. ${choice.benefit} Настроение −${THREAT_MOOD}, личная вера −${THREAT_FAITH} у бригады.`;
+  return {site,people,choice,kind,reason,text};
  }
- return {reason:'У действующих водозаборов нет доступной бригады'};
+ return {reason:'У действующих хозяйств нет доступной бригады'};
 }
 
-export function applyWaterThreat(s){
- const quote=waterThreatQuote(s);
+export function applyCityThreat(s){
+ const quote=cityThreatQuote(s);
  if(!quote||quote.reason)return {ok:false,reason:quote?.reason||'Нет такого решения'};
  syncInventory(s);
- s.resources.reed-=THREAT_REED;
- const {station,people}=quote;
+ const {site,people,choice,kind}=quote;
+ s.resources[choice.resource]-=choice.cost;
  const ids=people.map(c=>c.id);
  affectResidents(s,{mood:-THREAT_MOOD,faith:-THREAT_FAITH},ids);
- for(const person of people)person.health=Math.min(100,person.health+3);
+ if(kind==='wellRepair')for(const person of people)person.health=Math.min(100,person.health+3);
+ else s.resources.prestige=Math.min(1e9,s.resources.prestige+6);
  s.fearCrisis.tension=fearTension(s)+1;
- s.fearCrisis.last={at:s.simTime,x:station.x,y:station.y,people:ids};
+ s.fearCrisis.last={at:s.simTime,x:site.x,y:site.y,people:ids,...kind==='harvestThanks'?{kind}:{}};
  syncInventory(s);
  return {ok:true};
 }
@@ -81,7 +94,7 @@ export function validateFearCrisis(s){
   Object.keys(crisis).length!==1+Number(crisis.last!==undefined)+Number(crisis.tension!==undefined))return false;
  if(crisis.tension!==undefined&&(!crisis.last||!Number.isSafeInteger(crisis.tension)||crisis.tension<0))return false;
  const last=crisis.last;
- return last===undefined||!!last&&Object.keys(last).length===4&&Number.isFinite(last.at)&&last.at>=0&&last.at<=s.simTime&&
+ return last===undefined||!!last&&Object.keys(last).length===4+Number(last.kind!==undefined)&&(last.kind===undefined||last.kind==='harvestThanks')&&Number.isFinite(last.at)&&last.at>=0&&last.at<=s.simTime&&
   Number.isInteger(last.x)&&last.x>=0&&last.x<worldWidth(s)&&Number.isInteger(last.y)&&last.y>=0&&last.y<worldHeight(s)&&
   Array.isArray(last.people)&&last.people.length>0&&new Set(last.people).size===last.people.length&&
   last.people.every(id=>Number.isSafeInteger(id)&&id>=0&&id<s.demography.nextId);

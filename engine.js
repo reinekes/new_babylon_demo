@@ -55,7 +55,7 @@ import {legacyScenario,validateScenario,isStrictSumer} from './scenario-profiles
 import {validateManualGathering} from './manual-gathering.js';
 import {startMiracleCelebration,advanceMiracleCelebration,validateMiracleCelebration,miracleCelebrationReason,miracleCelebrationTargetReason} from './miracle-celebration.js';
 import {ceremonyActive} from './ceremony-time.js';
-import {cityEventDefinition,createCityEvent,isAdditionalCityEvent,cityEventReason,applyCityEvent,applyWaterThreat,validateFearCrisis} from './city-events.js';
+import {cityEventDefinition,createCityEvent,isAdditionalCityEvent,cityEventReason,applyCityEvent,applyCityThreat,validateFearCrisis} from './city-events.js';
 import {initializeGodhood,validateGodhood,buildingKnowledgeReason,miracleKnowledgeReason} from './godhood.js';
 import {initializeRelicQuest,validateRelicQuest,relicControlActive,relicCommandReason,deferRelicEvent,relicSiteReserved,interruptRelicForFuneral} from './relic-quest.js';
 import {initializeSacredUnlocks,syncSacredUnlocks,validateSacredUnlocks,miracleLockReason,applySacredMiracle} from './sacred-unlocks.js';
@@ -435,7 +435,7 @@ export function resolveEvent(s,choice){
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};
  if(!s.event||!['accept','skip','threat'].includes(choice))return {ok:false,reason:'Нет такого решения'};
  if(choice==='accept'&&s.event.id==='festival'){const event=s.event;s.event=null;const result=orderFestival(s);if(!result.ok){s.event=event;return result;}log(s,event.title,'Жители готовят угощение и вечерний сбор у храма.','good');syncCitizens(s);check(s);return result;}
- if(choice==='threat'){const result=applyWaterThreat(s);if(!result.ok)return result;}
+ if(choice==='threat'){const result=applyCityThreat(s);if(!result.ok)return result;}
  else if(isAdditionalCityEvent(s.event.id)){const result=applyCityEvent(s,s.event.id,choice);if(!result.ok)return result;}
  else if(choice==='accept'){
   const reason=eventReason(s);if(reason)return {ok:false,reason};const id=s.event.id;s.resources.food-=id==='caravan'?35:20;

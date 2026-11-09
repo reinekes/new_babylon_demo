@@ -74,3 +74,34 @@ test('threats accumulate tension and voluntary support for a real crew reduces i
  const saved=encode(town);
  assert.equal(encode(decode(saved)),saved);
 });
+
+test('harvest pressure needs field workers and crews refuse at the city tension limit',()=>{
+ let town=createNewCity({mode:'awakening',seed:137});
+ const field={type:'field',x:12,y:8,level:1};
+ town.buildings.push(field);
+ const workerId=town.citizens.find(c=>c.age>=16).id;
+ const prepare=()=>{
+  town.event=createCityEvent(town,'harvestThanks');
+  town.resources.food=100;town.resources.beer=20;
+  Object.assign(town.citizens.find(c=>c.id===workerId),{work:buildingKey(field),role:'production',calling:'farmer',health:80});
+ };
+ for(let i=0;i<3;i++){
+  prepare();
+  const prestige=town.resources.prestige,faith=town.resources.faith;
+  assert.ok(resolveEvent(town,'threat').ok);
+  assert.equal(town.resources.prestige,prestige+6);
+  assert.equal(town.resources.faith,faith);
+  assert.equal(town.resources.beer,18);
+ }
+ assert.equal(town.fearCrisis.last.kind,'harvestThanks');
+ prepare();
+ const saved=encode(town);
+ town=decode(saved);
+ assert.equal(encode(town),saved);
+ assert.match(resolveEvent(town,'threat').reason,/отказывается/);
+ assert.equal(encode(town),saved);
+ assert.ok(resolveEvent(town,'accept').ok);
+ assert.equal(town.fearCrisis.tension,2);
+ prepare();
+ assert.ok(resolveEvent(town,'threat').ok);
+});

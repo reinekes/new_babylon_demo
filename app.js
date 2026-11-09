@@ -67,7 +67,7 @@ import {createSaveLibraryUI} from './ui-saves.js';
 import {runSeasonJump,seasonJumpReason} from './season-jump.js';
 import {festivalBlessingFrame} from './festival-blessing.js';
 import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
-import {cityEventDefinition,fearTension,waterThreatQuote} from './city-events.js';
+import {cityEventDefinition,fearTension,cityThreatQuote,threatSiteLabel} from './city-events.js';
 import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,namelessEndingReason,recordNamelessEnding,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
 import {modeChooserHTML,createGodhoodControls,gameModeLabel} from './ui-godhood.js';
 import {relicControlActive,relicQuestView,relicQuestViews} from './relic-quest.js';
@@ -1174,7 +1174,7 @@ function update(){
  const fearBadge=$('fear-reputation');
  if(fearBadge){
   fearBadge.hidden=!threatMemory;
-  if(threatMemory)fearBadge.textContent=`Грозный приказ · водозабор ${threatMemory.x}, ${threatMemory.y} · подчинились ${threatMemory.people.length} чел. · напряжение ${fearTension(state)}`;
+  if(threatMemory)fearBadge.textContent=`Грозный приказ · ${threatSiteLabel(threatMemory.kind)} ${threatMemory.x}, ${threatMemory.y} · подчинились ${threatMemory.people.length} чел. · напряжение ${fearTension(state)}`;
  }
  $('god-name').textContent=state.name;$('god-rating').textContent=`Слава ${state.divinity.rating} · вдохновлено ${state.divinity.inspirationSuccesses} · вера людей ${Math.round(beliefMultiplier(state)*60)}%`;setHTML($('god-description'),MOURNING_NAMES.includes(state.name)?'Город помнит тех, кого потерял.<br>Люди называют бога по судьбе своих близких.':Object.values(state.divinity.domains).some(v=>v>0)?'Твоё имя рождается из деяний.<br>Деяния остаются в памяти людей.':'Люди строят город.<br>Ты выбираешь, каким богом стать.');
  $('god-level').textContent=count(state,'ziggurat')?'III · БОГ ВЕЛИКОГО ГОРОДА':state.population>=24?'II · ПОКРОВИТЕЛЬ ГОРОДА':'I · ДУХ ПОСЕЛЕНИЯ';$('pantheon').textContent=`Заслуженные имена · ${new Set([...state.divinity.names,...earnedResultNames(state)]).size}`;
@@ -1351,8 +1351,8 @@ function checkDialogs(){
  }
  if(state.event&&state.godhood?.namelessEndingAt===undefined){
   const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
-  const threat=waterThreatQuote(state);
-  const threatDetails=threat?`<p class="warning-note" data-water-threat-details>${esc(threat.text||threat.reason)}</p>`:'';
+  const threat=cityThreatQuote(state);
+  const threatDetails=threat?`<p class="warning-note" data-water-threat-details>${esc([threat.text,threat.reason].filter(Boolean).join(' '))}</p>`:'';
   const reconciliation=threat?.people&&fearTension(state)>0?'<p data-water-reconciliation>Поддержка общины снижает напряжение на 1 и даёт бригаде +4 личной веры.</p>':'';
   const threatButton=threat?`<button class="secondary" id="event-threat" ${threat.reason?'disabled':''}>Принудить бригаду</button>`:'';
   const arrivals=ev.id==='refugees'?refugeeArrivalCount(state):null;
