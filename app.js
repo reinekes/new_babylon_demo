@@ -796,7 +796,14 @@ function householdInitiativePanel(b,h){
    ?` · <button type="button" class="resident-link" data-household-aid-origin="${esc(aid.origin)}" data-household-aid-origin-id="${aid.originId}">Двор соседа · ${esc(aid.origin)}</button>`
    :` · Прежний двор соседа · ${esc(aid.origin)}`;
   const witness=aid?`<br><span data-household-first-aid>Первая помощь соседей · ${foodAmount(aid.amount)} ${aid.resource==='water'?'воды':'еды'} · ${resident(aid.courierId)}${originText}</span>`:'';
-  return `<p><b>Малый двор · ${site.x}, ${site.y}</b><br>${status}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}${witness}</p>`;
+  const title=`Малый двор · ${site.x}, ${site.y}`;
+  const destination=site===b?title:`<button type="button" class="resident-link" data-household-project-home="${buildingKey(site)}">${title}</button>`;
+  const source=site===b&&project.sourceId!==undefined&&state.buildings.find(home=>
+   home.type==='house'&&home.waterEntityId===project.sourceId&&buildingKey(home)===project.source);
+  const sourceText=site!==b?'':source
+   ?`<br><button type="button" class="resident-link" data-household-project-home="${esc(project.source)}">Исходный двор · ${esc(project.source)}</button>`
+   :`<br>Исходный двор · ${esc(project.source)}`;
+  return `<p><b>${destination}</b>${sourceText}<br>${status}${project.autonomous?' · семья начала сама':''}${team?`<br>На семейной стройке<br>${team}`:''}${witness}</p>`;
  }).join('')+
   (h.residents.some(c=>c.partner!==null)?'<button data-household-initiative>Предложение нового двора</button>':'');
 }
@@ -857,6 +864,13 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
   inspected={x,y};
   detail(station.type,false,station);
  };
+ for(const button of panel.querySelectorAll('[data-household-project-home]')){
+  const key=button.dataset.householdProjectHome;
+  const target=state.buildings.find(home=>home.type==='house'&&buildingKey(home)===key);
+  button.onclick=()=>{
+   if(target&&state.buildings.includes(target))showSupplyHome(key,'family');
+  };
+ }
  for(const button of panel.querySelectorAll('[data-household-aid-origin]'))button.onclick=()=>{
   const key=button.dataset.householdAidOrigin,[x,y]=key.split(',').map(Number),origin=buildingAt(state,x,y);
   if(origin?.type==='house'&&origin.waterEntityId===Number(button.dataset.householdAidOriginId))showSupplyHome(key,'family');
