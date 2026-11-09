@@ -106,3 +106,23 @@ test('neighbor food is recorded only when the receiving household accepts the ca
  assert.ok(saved);
  assert.deepEqual(saved.causalFacts,s.causalFacts);
 });
+
+test('the supply overview projects warehouse food and milk without writing city state',async()=>{
+ const {s,patient}=clinicCity();
+ const {supplyOverview}=await import('../supply.js');
+ const {syncInventory}=await import('../inventory.js');
+ const store=s.buildings.find(b=>b.type==='shrine');
+ assert.ok(store.stock.food>0);
+ s.resources.food=0;
+ s.resources.milk=12;
+ s.roads=[];
+ const before=JSON.stringify(s);
+ const view=supplyOverview(s);
+ const home=view.houses.find(h=>h.key===patient.home);
+ assert.ok(home.reachable);
+ assert.equal(home.localFood,6);
+ assert.equal(JSON.stringify(s)===before,true,'opening the overview must leave stock and roads untouched');
+ const control=structuredClone(s);
+ syncInventory(control);
+ assert.deepEqual(view,supplyOverview(control));
+});
