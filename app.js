@@ -100,7 +100,7 @@ import {renderStaffing,selectedProfession,citizenProfessionName,professionOption
 import {birthFoodHTML,renderCityTools} from './ui-city-tools.js';
 import {waterSummary,WATERPOINT_CAPACITY} from './water.js';
 import {seasonBalance} from './season-balance.js';
-import {createResourceBar} from './ui-resource-bar.js?v=compact-ledger-20261109-1';
+import {createResourceBar} from './ui-resource-bar.js?v=ordered-ledger-20261109-1';
 import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
 import {uiIcon} from './ui-icons.js';
 import {clothingStatus} from './clothing.js';

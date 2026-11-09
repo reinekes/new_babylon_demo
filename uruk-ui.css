@@ -275,13 +275,49 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 .uruk-ui .resourcebar #resources .resource-icon svg {width:17px;height:17px}
 .uruk-ui .resourcebar #resources .resource small {display:none}
 .uruk-ui .resource-help {flex:none;width:26px;height:28px;padding:0;border:1px solid #98774f;border-radius:50%;background:#392f24;color:#f2d9aa;font-weight:600}
-.uruk-ui.uruk-resources-open .resourcebar #resources {flex:1 0 100%;display:grid!important;gap:12px;overflow:visible;padding:0 25px 0 0}
-.uruk-ui.uruk-resources-open .resourcebar #resources .resource-frame {display:block!important;border-left:0!important;padding:0!important}
-.uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-label {display:block;margin-bottom:4px;color:#dec395}
-.uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-items {flex-wrap:wrap}
-.uruk-ui.uruk-resources-open .resourcebar #resources .resource {display:flex!important;flex-wrap:wrap;justify-content:flex-start;padding:4px 7px}
-.uruk-ui.uruk-resources-open .resourcebar #resources .resource small {display:block}
-.uruk-ui.uruk-resources-open .resource-help {position:absolute;top:7px;right:41px}
+.resource-ledger-title {display:none}
+.uruk-ui .uruk-resource-toggle img:last-child {display:none}
+.uruk-ui.uruk-resources-open .uruk-resource-toggle img:first-child {display:none}
+.uruk-ui.uruk-resources-open .uruk-resource-toggle img:last-child {display:block}
+.uruk-ui.uruk-resources-open .resourcebar {padding:15px 16px;gap:0}
+.uruk-ui.uruk-resources-open .resourcebar #resources {
+ flex:1 0 100%;display:grid!important;gap:12px;overflow:visible;padding:0
+}
+.uruk-ui.uruk-resources-open .resource-ledger-title {
+ display:block;margin:0;padding-right:76px;line-height:1.35
+}
+.resource-ledger-title h2 {margin:0;font-size:19px}
+.resource-ledger-title p {margin:3px 0 0;color:#c7b28e;font-size:11px}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource-frame {
+ display:block!important;border-left:0!important;padding:0!important
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-label {
+ display:block;margin:0 0 5px;padding-bottom:4px;border-bottom:1px solid #8b694455;color:#dec395
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-items {
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px;align-items:stretch
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource {
+ display:grid!important;grid-template-columns:19px minmax(0,1fr) 6ch 7ch;
+ gap:6px;min-height:32px;padding:3px 6px;text-align:left;background:#9a794211
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource:hover {background:#9a794236}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource .resource-value {display:contents!important}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource small {
+ display:block;grid-column:2;grid-row:1;overflow-wrap:anywhere
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource strong {
+ grid-column:3;grid-row:1;text-align:right;font-size:15px!important
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource .season-delta {
+ grid-column:4;grid-row:1;padding-left:5px;border-left:1px solid #8b694455;text-align:right;
+ font-size:11px;line-height:1.2;white-space:nowrap
+}
+.uruk-ui.uruk-resources-open .resourcebar #resources .season-delta.balanced {opacity:.55}
+.uruk-ui.uruk-resources-open .resource-help {position:absolute;top:8px;right:41px}
+@media(max-width:560px) {
+ .uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-items {grid-template-columns:minmax(0,1fr)}
+}
 .resource-info {position:fixed;z-index:65;width:min(290px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto;padding:13px 15px;background:#2f2921;color:#f3e5cb;border:1px solid #9b784d;border-radius:6px;box-shadow:0 8px 22px #0008}
 .resource-info h3,.resource-info h4,.resource-info p,.resource-info dl {margin:0}
 .resource-info h3 {display:flex;align-items:center;gap:7px;font-size:17px}

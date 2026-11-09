@@ -65,7 +65,7 @@ export function createResourceBar(root){
  return {render(state,balance,capacity,seeds){
   const {resources}=state;
   model={resources,balance,seeds};
-  setHTML(root,RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name}</span><div class="resource-group-items">${group.keys.filter(id=>!strictOnly.has(id)||isStrictSumer(state)).map(id=>
+  setHTML(root,'<header class="resource-ledger-title"><h2>Запасы города</h2><p>Текущий запас · баланс за сезон</p></header>'+RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name}</span><div class="resource-group-items">${group.keys.filter(id=>!strictOnly.has(id)||isStrictSumer(state)).map(id=>
    `<button type="button" class="resource${pinned.has(id)?' resource-pinned':widePinned.has(id)?' resource-wide':''}" data-resource="${id}" aria-controls="resource-info" aria-expanded="false"><span class="resource-icon" aria-hidden="true">${resourceIcon(id,{decorative:true})}</span><span class="resource-value"><strong></strong><em class="season-delta"></em></span><small>${resourceLabel(id)}</small></button>`
   ).join('')}</div></section>`).join(''));
   for(const button of root.querySelectorAll('[data-resource]')){
@@ -73,10 +73,11 @@ export function createResourceBar(root){
    const value=button.querySelector('strong'),trend=button.querySelector('em');
    if(value.textContent!==count){
     value.textContent=count;
-    button.setAttribute('aria-label',`${resourceLabel(id)} · ${count}`);
    }
    value.classList.toggle('overflow',MATERIALS.includes(id)&&resources[id]>capacity);
-   if(trend.textContent!==delta)trend.textContent=delta;
+   const displayDelta=delta==='0'?'—':delta;
+   if(trend.textContent!==displayDelta)trend.textContent=displayDelta;
+   button.setAttribute('aria-label',`${resourceLabel(id)} · запас ${count} · баланс за сезон ${delta}`);
    trend.className=`season-delta ${balance[id].net>.05?'surplus':balance[id].net<-.05?'deficit':'balanced'}`;
   }
   if(key)show(key,locked);
