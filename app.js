@@ -642,6 +642,16 @@ function updateDetail(){
  }
  if(b.type==='tailor'&&(!q||q.kind==='upgrade')){$('building-controls').insertAdjacentHTML('afterbegin','<button id="inspire-tailor">Вдохновить мастера одежды</button>');$('inspire-tailor').onclick=()=>showManagement('residents');}
  if(['shrine','ziggurat'].includes(b.type)&&(!q||q.kind==='upgrade')){const students=state.citizens.filter(c=>c.school===buildingKey(b));$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>Обучение лекарей · ${students.length}</b><p>${students.map(c=>`${resident(c)} · ${Math.floor(c.medicine.study/STUDY_SECONDS*100)}% · ${c.phase==='studying'?'учится':'в пути'}`).join('<br>')||'Ученики приходят после успешного вдохновения профессией «Лекарь».'}</p></div>`);}
+ if(b.humanWaterProject){
+  const project=b.humanWaterProject;
+  const origin=state.buildings.find(home=>home.type==='house'&&buildingKey(home)===project.home&&
+   (project.homeId===undefined||project.homeId===home.waterEntityId));
+  $('building-controls').insertAdjacentHTML('afterbegin',waterProjectProgress(b,origin,true));
+  const originLink=$('building-controls').querySelector('[data-water-project-origin]');
+  if(originLink)originLink.onclick=()=>{
+   if(state.buildings.includes(origin))showSupplyHome(project.home,'water');
+  };
+ }
  if(b.type==='waterpoint'&&(!q||q.kind==='upgrade'))$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>Вода кварталу</b>${state.depthSupply?`<p>Местный запас · ${Number((b.waterReserve||0).toFixed(1))} / ${WATERPOINT_CAPACITY}</p>`:''}<p>Водоносы набирают воду у берега и несут в дома, кирпичные, гончарные и пивоваренные дворы.</p><small>Нужны жители с профессией «Водонос». Вода хранится у получателей; общий склад её не хранит.</small></div>`);
  if(b.type==='musicHouse'&&!q){const p=musicPerformance(state,b);$('building-controls').insertAdjacentHTML('afterbegin',`<div class="music-hint">${p.playing?`Играет ${resident(p.musician)} · литофон${p.lyrist?`<br>${resident(p.lyrist)} · лира`:""}`:'Музыка молчит: назначь взрослого, вдохнови музыкантом и дождись его на месте днём.'}<br>Тихий звук слышен рядом с двором, если включён звук игры. Каменные лепестки — художественный инструмент.</div>`);}
  if(b.type==='healer'&&(!q||q.kind==='upgrade')){const doctors=state.citizens.filter(c=>c.work===buildingKey(b)),doctor=doctors[0],patients=state.citizens.filter(c=>c.clinic===buildingKey(b));$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>${!doctors.length?'Нужен обученный лекарь: вдохнови жителя и дождись учёбы в храме':!isWorkday(state.simTime)?'Ночь · лекарь отдыхает':!doctors.some(c=>c.phase==='working')?'Лекарь идёт на работу':availableFood(state)<=0||state.resources.reed<=0?'Лечение приостановлено: нужна еда и тростник':'Лекарь принимает'}</b>${doctor?`<p>${resident(doctor)} · лекарь уровня ${medicalLevel(doctor)}/5</p>${medicalReadout(doctor)}`:''}<p>Пациенты: ${patients.length} / ${1+levelOf(b)}<br>${patients.map(c=>`${resident(c)} · ${Math.round(c.health)}% → ${c.careGoal||85}% · ${c.phase==='treatment'?'лечится':'в пути'}`).join('<br>')||'Нет пациентов'}</p><small>На 10 здоровья: ${Number((.4*healingCost(doctor||{})).toFixed(2))} еды + ${Number((.2*healingCost(doctor||{})).toFixed(2))} тростника. Мастерство ускоряет лечение, экономит припасы и повышает предел здоровья. Уровень растёт каждый год с практикой, до пятого.</small><button id="inspire-healer">Вдохновить лекаря</button></div>`);$('inspire-healer').onclick=()=>showManagement('residents');}
@@ -711,6 +721,24 @@ function confirmWaterProjectPlacement({x,y}){
   choose('waterpoint');save();update();toast('Жители начали проект водозабора');checkDialogs();
  };
 }
+function waterProjectProgress(site,home,atStation=false){
+ const p=site.humanWaterProject,building=site.construction?.kind==='new',key=buildingKey(site);
+ const member=(id,role)=>{
+  const c=state.citizens.find(c=>c.id===id);
+  const status=!c?'выбыл':!building?'стройка завершена':c.site===key?
+   phases[c.phase]||'назначен на стройку':waterProjectOrganizerReason(state,c)||'ожидает свободного места на стройке';
+  return `${role} · ${resident(id)} · ${esc(status)}<br>`;
+ };
+ const helpers=(p.participantIds||[]).map(id=>member(id,'Помощник')).join('');
+ const served=(p.witnessHomeIds||[]).length;
+ const witnessPlaces=(p.witnessHomePlaces||[]).filter(Boolean).map(esc);
+ const witnessSummary=served?`<br>Доставки подтверждены в других дворах · ${served}${witnessPlaces.length?` (${witnessPlaces.join('; ')})`:''}`:'';
+ const delivery=p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:building?'Идёт строительство':home?'Построен · '+waterProjectDeliveryWait(state,site,home):'Первоначальный двор снесён или заменён';
+ const title=atStation
+  ?`Проект жителей · ${home?`<button type="button" class="resident-link" data-water-project-origin>Двор ${esc(p.home)}</button>`:`двор ${esc(p.home)}`}`
+  :`<button type="button" class="resident-link" data-water-project-station="${key}" data-water-project-station-id="${site.waterEntityId??''}">Водозабор · ${site.x}, ${site.y}</button>`;
+ return `<section data-water-project-progress><p><b>${title}</b><br>${member(p.organizerId,'Организатор')}${helpers}${delivery}${witnessSummary}</p>${building&&!atStation?siteStatus(site):''}</section>`;
+}
 function waterProjectHousehold(b){
  if(!isStrictSumer(state))return '';
  const projects=state.buildings.filter(site=>{
@@ -723,20 +751,7 @@ function waterProjectHousehold(b){
  const witnesses=state.causalFacts?.waterWitnesses||[];
  const received=witnesses.filter(f=>f.homeId===b.waterEntityId).reverse().map(f=>
   `<p data-project-water-witness><b>Двор получил воду из общего водозабора · ${esc(f.station)}</b><br>${resident(f.courierId)} · ${foodAmount(f.amount)} воды</p>`).join('');
- const status=archive+received+projects.map(site=>{
-  const p=site.humanWaterProject,building=site.construction?.kind==='new',key=buildingKey(site);
-  const member=(id,role)=>{
-   const c=state.citizens.find(c=>c.id===id);
-   const status=!c?'выбыл':!building?'стройка завершена':c.site===key?
-    phases[c.phase]||'назначен на стройку':waterProjectOrganizerReason(state,c)||'ожидает свободного места на стройке';
-   return `${role} · ${resident(id)} · ${esc(status)}<br>`;
-  };
-  const helpers=(p.participantIds||[]).map(id=>member(id,'Помощник')).join('');
-  const served=(p.witnessHomeIds||[]).length;
-  const witnessSummary=served?`<br>Доставки подтверждены в других дворах · ${served}`:'';
-  const delivery=p.delivery?`Первая доставка во двор · ${foodAmount(p.delivery.amount)} воды`:building?'Идёт строительство':'Построен · '+waterProjectDeliveryWait(state,site,b);
-  return `<section data-water-project-progress><p><b>Водозабор · ${site.x}, ${site.y}</b><br>${member(p.organizerId,'Организатор')}${helpers}${delivery}${witnessSummary}</p>${building?siteStatus(site):''}</section>`;
- }).join('');
+ const status=archive+received+projects.map(site=>waterProjectProgress(site,b)).join('');
  const request=householdWaterRequest(state,b);
  if(!request)return status;
  const response=gameMode(state)==='awakening'&&state.godhood.stage==='recognized'&&state.resources.faith<1
@@ -833,6 +848,15 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
   if(mutate(resolveArrivalCustomDispute(state,b,welcome,button.dataset.resolveArrivalDispute,Number(button.dataset.arrivalGuest)),'Стороны договорились'))renderHousehold(b);
  };
  panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{householdTab=el.dataset.houseTab;renderHousehold(b);});
+ for(const button of panel.querySelectorAll('[data-water-project-station]'))button.onclick=()=>{
+  const station=state.buildings.find(site=>site.type==='waterpoint'&&site.humanWaterProject&&
+   buildingKey(site)===button.dataset.waterProjectStation&&String(site.waterEntityId??'')===button.dataset.waterProjectStationId);
+  if(!station)return;
+  const {x,y}=station;
+  renderer.focusOn(x,y);
+  inspected={x,y};
+  detail(station.type,false,station);
+ };
  for(const button of panel.querySelectorAll('[data-household-aid-origin]'))button.onclick=()=>{
   const key=button.dataset.householdAidOrigin,[x,y]=key.split(',').map(Number),origin=buildingAt(state,x,y);
   if(origin?.type==='house'&&origin.waterEntityId===Number(button.dataset.householdAidOriginId))showSupplyHome(key,'family');
