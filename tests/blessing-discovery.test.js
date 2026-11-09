@@ -82,3 +82,37 @@ test('evacuated families do not qualify an empty origin and shelters need suppli
  host.water+=moved.reduce((n,c)=>n+waterDemand(c),0);
  assert.equal(blessingDiscoveryView(s).homes,2);
 });
+
+test('new Awakening blesses existing residents while version-one cities can still gain residents',async()=>{
+ const {miracle}=await import('../engine.js');
+ for(const legacy of [false,true]){
+  const s=createNewCity({mode:'awakening',seed:137});
+  if(legacy)s.blessingDiscovery.version=1;
+  const stored=encode(s);
+  assert.equal(encode(decode(stored)),stored);
+  const town=decode(stored);
+  const builder=town.citizens.find(person=>person.age>=16);
+  Object.assign(builder,{role:'builder',calling:'builder',mood:70});
+  town.godhood.stage='recognized';
+  town.godhood.believerIds=[builder.id];
+  town.resources.faith=100;
+  town.happiness=70;
+  assert.ok(town.capacity>town.population);
+  const population=town.population;
+  const cast=miracle(town,'bless');
+  assert.ok(cast.ok,cast.reason);
+  assert.equal(town.happiness,85);
+  assert.ok(builder.mood>70);
+  assert.equal(town.resources.faith,80);
+  assert.equal(town.population-population,cast.receipt.population.newResidents);
+  if(legacy)assert.ok(cast.receipt.population.newResidents>0);
+  else {
+   assert.equal(cast.receipt.population.newResidents,0);
+   town.happiness=100;
+   town.cooldowns.bless=0;
+   for(const person of town.citizens)person.mood=100;
+   assert.match(miracle(town,'bless').reason,/уже максимальны/);
+   assert.equal(town.resources.faith,80);
+  }
+ }
+});

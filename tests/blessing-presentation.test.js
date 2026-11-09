@@ -112,6 +112,9 @@ test('the cast reports the committed outcome, skips and does not replay on reloa
  scene.tick(city,250);
  assert.equal(panel.hidden,true);
  assert.deepEqual(city,{population:12,happiness:100});
+ scene.cast({...city,blessingDiscovery:{version:2}},{newResidents:0,happiness:5});
+ assert.match(panel.textContent,/Довольство \+5 · Семьи получили поддержку/);
+ assert.doesNotMatch(panel.textContent,/Новых жителей/);
  window.close();
 });
 

@@ -8,7 +8,10 @@ import {waterDemand} from './water.js';
 const HOMES_REQUIRED=3;
 const HELP_REQUIRED=2;
 
-export const newBlessingDiscovery=()=>({version:1,qualifiedAt:null});
+const FAMILY_SUPPORT_VERSION=2;
+export const FAMILY_BLESSING_DESCRIPTION='Повышает довольство города до 15 пунктов и улучшает настроение жителей. Новых жителей приводит «Зов».';
+export const newBlessingDiscovery=()=>({version:FAMILY_SUPPORT_VERSION,qualifiedAt:null});
+export const blessingSupportsFamilies=s=>s.blessingDiscovery?.version===FAMILY_SUPPORT_VERSION;
 
 function aidCount(s){
  return (s.causalFacts?.neighborWater?.length||0)+(s.causalFacts?.neighborFood?.length||0);
@@ -63,7 +66,7 @@ export function blessingCupAt(s,home){
 export function validateBlessingDiscovery(s){
  const milestone=s.blessingDiscovery;
  if(milestone===undefined)return true;
- return usesCatDiscovery(s)&&!!milestone&&Object.keys(milestone).length===2+Number(milestone.cup!==undefined)+Number(milestone.openingPending!==undefined)&&milestone.version===1&&
+ return usesCatDiscovery(s)&&!!milestone&&Object.keys(milestone).length===2+Number(milestone.cup!==undefined)+Number(milestone.openingPending!==undefined)&&[1,FAMILY_SUPPORT_VERSION].includes(milestone.version)&&
   (milestone.openingPending===undefined||milestone.openingPending===true&&!!milestone.cup)&&
   (milestone.cup===undefined||milestone.qualifiedAt!==null&&milestone.cup&&Object.keys(milestone.cup).length===2&&
    Number.isSafeInteger(milestone.cup.homeId)&&milestone.cup.homeId>0&&/^\d+,\d+$/.test(milestone.cup.home))&&

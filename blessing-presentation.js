@@ -1,4 +1,4 @@
-import {blessingCupAt} from './blessing-discovery.js';
+import {blessingCupAt,blessingSupportsFamilies} from './blessing-discovery.js';
 import {displayName} from './citizen-epithets.js';
 import {freeCeremonyGuest} from './miracle-celebration.js';
 import {navigationSegmentClear} from './navigation.js';
@@ -89,7 +89,9 @@ export function createBlessingPresentation(root,{cue,focus,onOpening,approachNet
    panel.dataset.kind='cast';panel.dataset.phase='light';
    panel.setAttribute('aria-label','Сцена применения Благословения');
    step.textContent='Дар применён';title.textContent='Благословение';
-   caption.textContent=`Довольство +${Math.round(result.happiness)} · Новых жителей · ${result.newResidents}`;
+   caption.textContent=blessingSupportsFamilies(s)?
+    (result.happiness>0?`Довольство +${Math.round(result.happiness)} · Семьи получили поддержку`:'Настроение жителей улучшилось'):
+    `Довольство +${Math.round(result.happiness)} · Новых жителей · ${result.newResidents}`;
    guests.hidden=true;
    shadows.forEach(shadow=>shadow.setAttribute('hidden',''));
    stopCue=cue?.('blessing');

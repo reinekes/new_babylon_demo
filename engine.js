@@ -22,7 +22,7 @@ import {richCatchQuote,startRichCatch,expireRichCatch,validateRichCatch} from '.
 import {validateFishProvenance} from './fish-provenance.js';
 import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
 import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js';
-import {advanceBlessingDiscovery,validateBlessingDiscovery} from './blessing-discovery.js';
+import {FAMILY_BLESSING_DESCRIPTION,advanceBlessingDiscovery,blessingSupportsFamilies,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
 import {previousMiracleCastNumber,recordMiracleCast,validateMiracleHistory} from './miracle-history.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
@@ -222,6 +222,10 @@ function freeArrivalBeds(s){
  return Math.max(0,vacant-pending);
 }
 export function populationMiracleQuote(s,id){
+ if(id==='bless'&&blessingSupportsFamilies(s)){
+  const full=s.happiness>=100&&s.citizens.every(person=>(person.mood??75)>=100);
+  return {count:0,reason:full?'Довольство и настроение жителей уже максимальны.':''};
+ }
  const limit=id==='bless'?3:id==='healing'&&!s.arrivalHospitality?6:0;
  if(!limit)return null;
  const count=Math.min(limit,freeArrivalBeds(s));
@@ -305,7 +309,7 @@ export function miracle(s,id,target,confirmation){
  }
  else if(id==='peace'){affectResidents(s,{mood:22});s.happiness=Math.min(100,s.happiness+25);}
  if(id==='shaping'&&!s.shapingProjects){s.resources.clay+=60;s.resources.reed+=40;}
- applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':land?`Поддержаны живые участники историй · ${land.ids.length} чел.`:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);
+ applySacredMiracle(s,id);log(s,m.name,id==='revelation'&&s.revelationEvidence?'Получено 12 престижа.':id==='shaping'&&s.shapingProjects?'У двора сложена партия из 60 глины и 40 тростника.':id==='healing'&&s.arrivalGroup?`Из-за края долины вышла группа · ${s.arrivalGroup.count} чел.`:peace?`Поддержаны жители квартала · ${peace.ids.length} чел.`:depthCanal?'Дождь и дополнительная доля воды в выбранной сети каналов до конца сезона.':depthIntake?'Дождь и полный запас воды в выбранном водозаборе. Водоносы доставят воду.':land?`Поддержаны живые участники историй · ${land.ids.length} чел.`:id==='bless'&&blessingSupportsFamilies(s)?FAMILY_BLESSING_DESCRIPTION:m.desc,'miracle');if(s.name!==oldName)log(s,`Новое имя: ${s.name}`,'Люди называют тебя по твоим деяниям. Все заслуженные имена остаются в пантеоне.','good');syncCitizens(s);syncLifeAnalytics(s);check(s);
  const receipt={faithSpent:price,...fishingReceipt?{fishing:fishingReceipt}:{}};
  if(depth){
   receipt.depth={kind:depth.kind};

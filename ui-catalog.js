@@ -1,3 +1,4 @@
+import {FAMILY_BLESSING_DESCRIPTION,blessingSupportsFamilies} from './blessing-discovery.js';
 import {ABUNDANCE_LIMIT} from './abundance-gift.js';
 import {miraclePrice} from './miracle-discovery.js';
 import {previousMiracleCastNumber} from './miracle-history.js';
@@ -37,7 +38,7 @@ export function updateBuildingCardName(card,state){
 // Reused cards must update every visible/accessible price when switching saves.
 export function updateMiracleCard(details,s,id,reason='',gift=null,arrival=null){
  const m=MIRACLES[id],price=miraclePrice(s,id),el=details.querySelector('.miracle-cast'),first=price===0;
- const desc=id==='stars'&&s.starObservations?'+18 престижа. До трёх прогнозов по хозяйству в обзоре города до смены сезона.':id==='peace'&&s.peaceDiscovery?'Поддерживает жителей выбранного квартала и поднимает им настроение.':id==='healing'&&s.arrivalHospitality?'Приглашает путников. Жители войдут в город после прибытия в подготовленный дом.':id==='shaping'&&s.shapingProjects?'Создаёт штабель из 60 глины и 40 тростника у выбранного ремесленного двора. Носильщики доставят материалы на склады.':id==='revelation'&&s.revelationEvidence?'Совет о следующем шаге выбранной ветви и +12 престижа.':id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
+ const desc=id==='bless'&&blessingSupportsFamilies(s)?FAMILY_BLESSING_DESCRIPTION:id==='stars'&&s.starObservations?'+18 престижа. До трёх прогнозов по хозяйству в обзоре города до смены сезона.':id==='peace'&&s.peaceDiscovery?'Поддерживает жителей выбранного квартала и поднимает им настроение.':id==='healing'&&s.arrivalHospitality?'Приглашает путников. Жители войдут в город после прибытия в подготовленный дом.':id==='shaping'&&s.shapingProjects?'Создаёт штабель из 60 глины и 40 тростника у выбранного ремесленного двора. Носильщики доставят материалы на склады.':id==='revelation'&&s.revelationEvidence?'Совет о следующем шаге выбранной ветви и +12 престижа.':id==='fertility'&&s.richCatchEvidence?'Урожай полей и садов ×1,6 на три сезона. В выбранном месте расцветает волшебный сад.':id==='abundance'&&s.abundanceGift?'До 45 еды в выбранное хранилище. Укажи его на карте перед применением.':m.desc;
  const description=details.querySelector('.miracle-description');if(description)description.textContent=desc;
  const history=details.querySelector('[data-miracle-history]');
  if(history){
