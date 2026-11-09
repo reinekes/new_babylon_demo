@@ -1,7 +1,8 @@
 import {showBlessingApproach} from '../blessing-presentation.js';
 import {showRainObserver} from '../rain-presentation.js';
 import {createActorShadowFilter} from './shadow-casters.js';
-import {residentPoseInterval,residentPoseSlot} from './resident-pose-schedule.js';
+import {residentScreenHeight,residentPoseIntervalForPixels,residentPoseSlot,useResidentGeometryLOD} from './resident-pose-schedule.js';
+import {createResidentGeometryLOD} from './resident-geometry-lod.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
 import {festivalView} from '../festival.js';
 import {createFestivalCourt} from './festival-court.js';
@@ -75,7 +76,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  try{
   // Keep source containers outside the scene: only their independent clones render.
   const load=name=>loadModel(B,scene,'assets/art-courtyard/models/',`${name}.glb?v=source-walk-cloth-20261026-1`,scene,undefined,'.glb');
-  const human=async(name,native=false)=>{const asset=await load(name);if(!['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip))){asset.dispose();throw Error('Civilian clips missing: '+name);}const meta=[...(asset.transformNodes||[]),...(asset.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident).find(Boolean);asset.sourceWalk=meta?.sourceWalk===true;asset.nativeResident=native&&(asset.sourceWalk||asset.skeletons.some(s=>s.bones.length===41));asset.residentVariant=name.replace(/^(?:human-native-|source-walk-)/,'');asset.walkMetres=meta?.strideMetres;return asset;};
+  const human=async(name,native=false)=>{const asset=await load(name);if(!['Walk_Loop','Idle_Loop'].every(clip=>asset.animationGroups.some(g=>g.name===clip))){asset.dispose();throw Error('Civilian clips missing: '+name);}const meta=[...(asset.transformNodes||[]),...(asset.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident).find(Boolean);asset.modelName=name;asset.sourceWalk=meta?.sourceWalk===true;asset.nativeResident=native&&(asset.sourceWalk||asset.skeletons.some(s=>s.bones.length===41));asset.residentVariant=name.replace(/^(?:human-native-|source-walk-)/,'');asset.walkMetres=meta?.strideMetres;return asset;};
   const sourceHuman=async variant=>{try{return await human('source-walk-'+variant,true);}catch(error){console.warn('Source walking resident unavailable; using previous model.',error);return human('human-native-'+variant,true);}};
   const resident=async()=>{try{return await sourceHuman('male');}catch(error){console.warn('Native civilian unavailable; using previous resident.',error);try{return await human('sumer-people');}catch{return human('resident');}}};
   const ageSource=async(age)=>{try{return await sourceHuman(age);}catch{return human('sumer-'+age);}};
@@ -91,10 +92,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(disposed){asset.dispose();return;}
    const meta=[...(asset.transformNodes||[]),...(asset.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident).find(Boolean);
    if(!meta?.sourceWalk||!['Walk_Loop','Idle_Loop'].every(name=>asset.animationGroups.some(g=>g.name===name))){asset.dispose();throw Error('Historical resident walking skin unavailable');}
-   asset.sourceWalk=true;asset.nativeResident=true;asset.residentVariant='historical-man';asset.walkMetres=meta.strideMetres;historicalSource=asset;containers.push(asset);
+   asset.modelName='historical-man';asset.sourceWalk=true;asset.nativeResident=true;asset.residentVariant='historical-man';asset.walkMetres=meta.strideMetres;historicalSource=asset;containers.push(asset);
   }).catch(error=>{historicalFailed=true;if(!disposed)console.warn('Robed specialist unavailable; retaining native walking resident.',error);});
   return historicalPromise;
  }
+ const geometryLOD=createResidentGeometryLOD();
  const wildlife=createWildlife(B,scene,meshes);
  let goats=null,imported=null,ambient=null,jackals=null;
  const loadFauna=async()=>{const values=await Promise.all([
@@ -120,6 +122,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   for(const x of [-.07,.07])for(const z of [-.04,.04])box(`${kind}-clay-ram-leg`,toy,clay,x,.025,z,.035,.07,.035);
   return toy;
  }
+ function cloneResidentMaterial(material,name,prepare){
+  // Babylon scans the whole scene for every PBR setter during clone. No mesh
+  // uses the new material yet, so there are no draw caches to invalidate.
+  const block=scene._forceBlockMaterialDirtyMechanism?.bind(scene),previous=scene.blockMaterialDirtyMechanism;
+  block?.(true);
+  try{const copy=material.clone(name);prepare(copy);return copy;}
+  finally{block?.(previous);}
+ }
  function instantiate(source,name,metadata){
   const copy=source.instantiateModelsToScene(n=>`${name}-${n}`,false,{doNotInstantiate:true});
   const root=new B.TransformNode(name,scene),model=new B.TransformNode(`${name}-model`,scene);model.parent=root;root.metadata=metadata;
@@ -140,9 +150,19 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(metadata.citizenId!==undefined){root.metadata.nativeResident=a.nativeResident;root.metadata.sourceWalk=a.sourceWalk;root.metadata.residentVariant=source.residentVariant;root.metadata.nativeStrideMetres=a.walkMetres;}
   // Clone recolored surfaces per resident; shared source materials stay immutable.
   if(metadata.citizenId!==undefined){
-   const cloned=new Map();a.cloth=[];a.skin=[];a.hair=[];a.upperCloth=new Set();
-   for(const m of model.getChildMeshes())if(m.material&&/undyed|wool|cloth|skin|hair/i.test(m.material.name)){
-    let cloth=cloned.get(m.material);if(!cloth){cloth=m.material.clone(`citizen-${/skin/i.test(m.material.name)?'skin':/hair/i.test(m.material.name)?'hair':'cloth'}-${metadata.citizenId}-${cloned.size}`);cloned.set(m.material,cloth);a.materials.push(cloth);(/skin/i.test(m.material.name)?a.skin:/hair/i.test(m.material.name)?a.hair:a.cloth).push(cloth);if(a.sourceWalk&&/undyed linen/i.test(m.material.name))a.upperCloth.add(cloth);}m.material=cloth;if(a.nativeResident&&!/skin|hair/i.test(cloth.name)&&m.isVerticesDataPresent(B.VertexBuffer.UVKind))cloth.albedoTexture=materials.linen?.albedoTexture||null;
+   const surfaces=model.getChildMeshes(),cloned=new Map();a.cloth=[];a.skin=[];a.hair=[];a.upperCloth=new Set();
+   a.lodParts=geometryLOD.parts(source,surfaces);a.geometryReduced=false;
+   for(const m of surfaces)if(m.material&&/undyed|wool|cloth|skin|hair/i.test(m.material.name)){
+    const original=m.material;let cloth=cloned.get(original);
+    if(!cloth){
+     const kind=/skin/i.test(original.name)?'skin':/hair/i.test(original.name)?'hair':'cloth';
+     cloth=cloneResidentMaterial(original,`citizen-${kind}-${metadata.citizenId}-${cloned.size}`,copy=>{
+      if(a.nativeResident&&kind==='cloth'&&surfaces.some(surface=>surface.material===original&&surface.isVerticesDataPresent(B.VertexBuffer.UVKind)))copy.albedoTexture=materials.linen?.albedoTexture||null;
+     });
+     cloned.set(original,cloth);a.materials.push(cloth);a[kind].push(cloth);
+     if(a.sourceWalk&&/undyed linen/i.test(original.name))a.upperCloth.add(cloth);
+    }
+    m.material=cloth;
    }
    a.load=new B.TransformNode(`${name}-carried`,scene);a.load.parent=root;a.load.position.set(0,1,.37);
    a.details=new B.TransformNode(`${name}-details`,scene);a.details.parent=root;
@@ -601,6 +621,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Rebuild each update: a building may keep its ID while changing its type.
   const buildingTypes=new Map();for(const b of state.buildings||[]){const key=b.id||`${b.x},${b.y}`;if(!buildingTypes.has(key))buildingTypes.set(key,b.type);}
   if(visible.some(usesHistoricalMan))requestHistoricalResident();
+  let geometrySwitches=0;
   for(const c of visible){
    seen.add(c.id);let a=people.get(c.id),continuity=null;
    const anatomy=residentAnatomy(c.age),historical=historicalSource&&usesHistoricalMan(c)&&(!paused||!a||a.anatomy==='historical-man'),variant=historical?'historical-man':anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;
@@ -608,8 +629,16 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // route sample, facing and gait phase when optional detail becomes ready.
    if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,eventContactActive:a.eventContactActive,ceremonyJoin:a.ceremonyJoin,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
-   releaseSleepingRig(a,true);a.root.setEnabled(true);appearance(a,c,state,buildingTypes);a.state=state;
-   const interval=residentPoseInterval(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale,!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.id===focusId));
+   releaseSleepingRig(a,true);a.root.setEnabled(true);
+   const important=!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.eventContact||c.festivalContact||c.swimming||c.id===focusId);
+   const pixels=residentScreenHeight(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale);
+   // A custom garment is cut from the full torso mesh; keep that source intact.
+   const reduced=useResidentGeometryLOD(pixels,a.geometryReduced,important||!!professionClothing(c));
+   if(a.lodParts.length&&reduced!==a.geometryReduced&&(!reduced||geometrySwitches<6)){
+    geometryLOD.apply(a.lodParts,reduced);a.geometryReduced=reduced;geometrySwitches++;
+   }
+   appearance(a,c,state,buildingTypes);a.state=state;
+   const interval=important?0:residentPoseIntervalForPixels(pixels);
    const reaction=rainReaction?.id===c.id?rainReaction.phase:null;
    a.rainChanged=a.rainReaction!==reaction;
    a.rainReaction=reaction;
@@ -638,6 +667,6 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
   wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();geometryLOD.dispose();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
  return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

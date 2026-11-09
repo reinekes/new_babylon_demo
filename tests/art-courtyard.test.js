@@ -27,7 +27,7 @@ test('courtyard uses self-contained actual skinned models and named clips with b
 test('art courtyard never reads or writes a game save and keeps a clear trial label',()=>{
  const html=readFileSync(new URL('../courtyard.html',import.meta.url),'utf8'),js=readFileSync(new URL('../courtyard/app.js',import.meta.url),'utf8');
  assert.match(html,/Художественная проба/);assert.doesNotMatch(js,/localStorage|sessionStorage|indexedDB/);
- assert.match(html,/babylonjs-loaders-9\.31\.0/);assert.match(js,/instantiateModelsToScene/);
+ assert.match(html,/babylon-runtime-9\.31\.0\.js/);assert.match(js,/instantiateModelsToScene/);
 });
 
 test('published asset manifest matches every licensed file and crowd remains one skinned draw',()=>{

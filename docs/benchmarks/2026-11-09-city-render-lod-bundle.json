@@ -1,0 +1,2699 @@
+{
+  "release": "city-render-lod-bundle-20261109-1",
+  "baseline": "40fff92",
+  "fixture": {
+    "seed": 137,
+    "speed": 4,
+    "windowCSS": [
+      1280,
+      720
+    ],
+    "dpr": 2,
+    "highQuality": true,
+    "shadows": true,
+    "browser": "Headless Chrome",
+    "gpu": "Apple M5, ANGLE Metal",
+    "initialPopulation": 200,
+    "buildings": 129,
+    "referenceSimTime": 35,
+    "tradeGPUFixtureSimTime": 60,
+    "note": "The trade fixture entered with orders already accepted. WebGL2 elapsed timer queried once every eight frames. Separate from the 80-second rAF series."
+  },
+  "sha256": {
+    "assets/vendor/babylon-runtime-9.31.0.js": "368a759ce93c3ec5e959b11cd0a17c94a64cd432af387f777c57d9572206f09c",
+    "game3d/resident-lod-indices.js": "68e271371e1ed680e374fef0e06f114539bf2a738d51f703616770db26fa03c1",
+    "game3d/actors.js": "9705e31b38e37d61238a86bd68384e208069362073d10cdd6f746d4efbb24023",
+    "district3d/terrain.js": "4cc070940618287501509c035a83d3348c904b357bba67a1efbd0922385a73a8"
+  },
+  "reference80s": [
+    {
+      "route": "base/index.html?large&trade&wide&ms=80000",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 4221.399999976158,
+        "resources": [
+          {
+            "name": "babylon-9.31.0.js",
+            "bytes": 8627936,
+            "ms": 67.40000003576279
+          },
+          {
+            "name": "babylonjs-loaders-9.31.0.min.js",
+            "bytes": 849596,
+            "ms": 3.400000035762787
+          }
+        ],
+        "ready": 11215.800000011921,
+        "canvas": 1920,
+        "title": "Новый Вавилон — имена богов",
+        "lodMeshes": 0,
+        "lodIndices": 0,
+        "gpuTimer": true,
+        "gpuSamples": 0,
+        "gpuFrameMs": {
+          "mean": null
+        },
+        "initialIdentities": 200,
+        "roundTrip": true,
+        "trade": {
+          "proof": {
+            "transport": "land",
+            "history": "strict",
+            "ecologyMode": "legacy",
+            "ecologyCounts": {
+              "goat": 7,
+              "gazelle": 12,
+              "jackal": 4,
+              "fish": 36,
+              "orange-bird": 2,
+              "goose": 2,
+              "fox": 2,
+              "boar": 2,
+              "lioness": 2,
+              "dog": 2,
+              "duck": 2,
+              "donkey": 2,
+              "bull": 2,
+              "sheep-kenchoo": 2,
+              "sky-birds": 2
+            },
+            "ecologyLegacy": true,
+            "portSetup": "market-and-harbor",
+            "initialPopulation": 200,
+            "buildings": 129,
+            "seed": 137,
+            "supply": {
+              "initialFood": 8720,
+              "pantryFood": 6720,
+              "centralFood": 2000,
+              "waterFilledToCapacity": true
+            },
+            "harbor": {
+              "x": 14,
+              "y": 8
+            },
+            "phases": [],
+            "orders": [],
+            "skippedEvents": [],
+            "ceremonies": [],
+            "roadWork": {
+              "id": "road:10,9|9,9",
+              "fromLevel": 1,
+              "startedAt": 35,
+              "a": {
+                "x": 8.5,
+                "y": 8.5,
+                "key": "9,9"
+              },
+              "b": {
+                "x": 9.5,
+                "y": 8.5,
+                "key": "10,9"
+              },
+              "cost": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "maxWork": 11.964053333333345,
+              "workers": [
+                {
+                  "id": 6,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 7,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 8,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                },
+                {
+                  "id": 9,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                }
+              ],
+              "delivered": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "completedAt": 62.48224999999895
+            },
+            "measurementStart": {
+              "population": 200,
+              "buildings": 129,
+              "simTime": 35,
+              "tick": 0
+            }
+          },
+          "deliveries": [],
+          "sales": []
+        },
+        "population": 200,
+        "buildings": 129,
+        "tick": 0,
+        "simTime": 74.65674999999847,
+        "fps": 26.74725406517488,
+        "frame": {
+          "p95": 66.70000000000073,
+          "max": 949.9000000000015,
+          "mean": 37.37202241943008
+        },
+        "stats": {
+          "terrain": {
+            "p95": 2.399999976158142,
+            "max": 133.80000001192093,
+            "mean": 4.864752566753204
+          },
+          "actors": {
+            "p95": 6.200000047683716,
+            "max": 43,
+            "mean": 4.634126984104723
+          },
+          "animate": {
+            "p95": 2.599999964237213,
+            "max": 4.899999976158142,
+            "mean": 1.5717553690868933
+          },
+          "candidates": {
+            "p95": 8.199999988079071,
+            "max": 12.5,
+            "mean": 7.020541549591568
+          },
+          "render": {
+            "p95": 26.80000001192093,
+            "max": 850.3000000119209,
+            "mean": 23.0825863682311
+          }
+        },
+        "hidden": false,
+        "active": 1766,
+        "save": true
+      },
+      "errors": []
+    },
+    {
+      "route": "small/index.html?large&trade&wide&ms=80000",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 3469.899999976158,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 22.5
+          }
+        ],
+        "ready": 8720,
+        "canvas": [
+          1920,
+          855
+        ],
+        "title": "Новый Вавилон — имена богов",
+        "lodMeshes": 46,
+        "lodIndices": 83124,
+        "gpuTimer": true,
+        "gpuSamples": 0,
+        "gpuFrameMs": null,
+        "initialIdentities": 200,
+        "roundTrip": true,
+        "trade": {
+          "proof": {
+            "transport": "land",
+            "history": "strict",
+            "ecologyMode": "legacy",
+            "ecologyCounts": {
+              "goat": 7,
+              "gazelle": 12,
+              "jackal": 4,
+              "fish": 36,
+              "orange-bird": 2,
+              "goose": 2,
+              "fox": 2,
+              "boar": 2,
+              "lioness": 2,
+              "dog": 2,
+              "duck": 2,
+              "donkey": 2,
+              "bull": 2,
+              "sheep-kenchoo": 2,
+              "sky-birds": 2
+            },
+            "ecologyLegacy": true,
+            "portSetup": "market-and-harbor",
+            "initialPopulation": 200,
+            "buildings": 129,
+            "seed": 137,
+            "supply": {
+              "initialFood": 8720,
+              "pantryFood": 6720,
+              "centralFood": 2000,
+              "waterFilledToCapacity": true
+            },
+            "harbor": {
+              "x": 14,
+              "y": 8
+            },
+            "phases": [],
+            "orders": [],
+            "skippedEvents": [],
+            "ceremonies": [],
+            "roadWork": {
+              "id": "road:10,9|9,9",
+              "fromLevel": 1,
+              "startedAt": 35,
+              "a": {
+                "x": 8.5,
+                "y": 8.5,
+                "key": "9,9"
+              },
+              "b": {
+                "x": 9.5,
+                "y": 8.5,
+                "key": "10,9"
+              },
+              "cost": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "maxWork": 11.99967999999999,
+              "workers": [
+                {
+                  "id": 6,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 7,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 8,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                },
+                {
+                  "id": 9,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                }
+              ],
+              "delivered": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "completedAt": 62.490649999998965
+            },
+            "measurementStart": {
+              "population": 200,
+              "buildings": 129,
+              "simTime": 35,
+              "tick": 0
+            }
+          },
+          "deliveries": [],
+          "sales": []
+        },
+        "population": 200,
+        "buildings": 129,
+        "tick": 0,
+        "simTime": 74.7568499999981,
+        "fps": 32.866999209253024,
+        "frame": {
+          "p95": 49.899999999999636,
+          "max": 783.2000000000044,
+          "mean": 30.418129988597506
+        },
+        "stats": {
+          "terrain": {
+            "p95": 1.9000000357627869,
+            "max": 106.39999997615814,
+            "mean": 4.0269376901417155
+          },
+          "actors": {
+            "p95": 3.800000011920929,
+            "max": 34.80000001192093,
+            "mean": 3.0534574461472435
+          },
+          "animate": {
+            "p95": 2.400000035762787,
+            "max": 5.400000035762787,
+            "mean": 1.4648936163283046
+          },
+          "candidates": {
+            "p95": 6.800000011920929,
+            "max": 8.099999964237213,
+            "mean": 6.198898176155916
+          },
+          "render": {
+            "p95": 21.700000047683716,
+            "max": 695.5999999642372,
+            "mean": 19.36052431560215
+          }
+        },
+        "hidden": false,
+        "active": 1764,
+        "save": true
+      },
+      "errors": []
+    },
+    {
+      "route": "small/index.html?large&trade&ms=80000",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 3464.5,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 19.30000001192093
+          }
+        ],
+        "ready": 9019,
+        "canvas": [
+          1920,
+          855
+        ],
+        "title": "Новый Вавилон — имена богов",
+        "lodMeshes": 0,
+        "lodIndices": 0,
+        "gpuTimer": true,
+        "gpuSamples": 0,
+        "gpuFrameMs": null,
+        "initialIdentities": 200,
+        "roundTrip": true,
+        "trade": {
+          "proof": {
+            "transport": "land",
+            "history": "strict",
+            "ecologyMode": "legacy",
+            "ecologyCounts": {
+              "goat": 7,
+              "gazelle": 12,
+              "jackal": 4,
+              "fish": 36,
+              "orange-bird": 2,
+              "goose": 2,
+              "fox": 2,
+              "boar": 2,
+              "lioness": 2,
+              "dog": 2,
+              "duck": 2,
+              "donkey": 2,
+              "bull": 2,
+              "sheep-kenchoo": 2,
+              "sky-birds": 2
+            },
+            "ecologyLegacy": true,
+            "portSetup": "market-and-harbor",
+            "initialPopulation": 200,
+            "buildings": 129,
+            "seed": 137,
+            "supply": {
+              "initialFood": 8720,
+              "pantryFood": 6720,
+              "centralFood": 2000,
+              "waterFilledToCapacity": true
+            },
+            "harbor": {
+              "x": 14,
+              "y": 8
+            },
+            "phases": [],
+            "orders": [],
+            "skippedEvents": [],
+            "ceremonies": [],
+            "roadWork": {
+              "id": "road:10,9|9,9",
+              "fromLevel": 1,
+              "startedAt": 35,
+              "a": {
+                "x": 8.5,
+                "y": 8.5,
+                "key": "9,9"
+              },
+              "b": {
+                "x": 9.5,
+                "y": 8.5,
+                "key": "10,9"
+              },
+              "cost": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "maxWork": 11.928426666666665,
+              "workers": [
+                {
+                  "id": 6,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 7,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 8,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                },
+                {
+                  "id": 9,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                }
+              ],
+              "delivered": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "completedAt": 62.45729999999909
+            },
+            "measurementStart": {
+              "population": 200,
+              "buildings": 129,
+              "simTime": 35,
+              "tick": 0
+            }
+          },
+          "deliveries": [],
+          "sales": []
+        },
+        "population": 200,
+        "buildings": 129,
+        "tick": 0,
+        "simTime": 74.79004999999675,
+        "fps": 43.07253229502106,
+        "frame": {
+          "p95": 33.40000000000873,
+          "max": 666.5999999999985,
+          "mean": 23.21250362634155
+        },
+        "stats": {
+          "terrain": {
+            "p95": 2.099999964237213,
+            "max": 109.59999996423721,
+            "mean": 3.568590486426503
+          },
+          "actors": {
+            "p95": 3.900000035762787,
+            "max": 52.89999997615814,
+            "mean": 3.1397041768492513
+          },
+          "animate": {
+            "p95": 3,
+            "max": 43.59999996423721,
+            "mean": 1.9662122974332137
+          },
+          "candidates": {
+            "p95": 3.100000023841858,
+            "max": 4,
+            "mean": 2.755626449383052
+          },
+          "render": {
+            "p95": 14.899999976158142,
+            "max": 571.5,
+            "mean": 12.242314385617554
+          }
+        },
+        "hidden": false,
+        "active": 306,
+        "save": true
+      },
+      "errors": []
+    }
+  ],
+  "trade50sGPU": [
+    {
+      "route": "no-lod-trade/index.html?large&trade&wide&measuregpu&ms=50000",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 4436.100000023842,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 22.80000001192093
+          }
+        ],
+        "ready": 11159.300000011921,
+        "canvas": [
+          1920,
+          855
+        ],
+        "title": "Новый Вавилон — имена богов",
+        "lodMeshes": 0,
+        "lodIndices": 0,
+        "gpuTimer": true,
+        "gpuSamples": 113,
+        "gpuFrameMs": {
+          "p95": 18.349916,
+          "max": 19.841375,
+          "mean": 12.814222619469023
+        },
+        "initialIdentities": 217,
+        "roundTrip": true,
+        "trade": {
+          "proof": {
+            "transport": "land",
+            "history": "strict",
+            "ecologyMode": "legacy",
+            "ecologyCounts": {
+              "goat": 7,
+              "gazelle": 12,
+              "jackal": 4,
+              "fish": 36,
+              "orange-bird": 2,
+              "goose": 2,
+              "fox": 2,
+              "boar": 2,
+              "lioness": 2,
+              "dog": 2,
+              "duck": 2,
+              "donkey": 2,
+              "bull": 2,
+              "sheep-kenchoo": 2,
+              "sky-birds": 2
+            },
+            "ecologyLegacy": true,
+            "portSetup": "market-and-harbor",
+            "initialPopulation": 200,
+            "buildings": 129,
+            "seed": 137,
+            "supply": {
+              "initialFood": 8720,
+              "pantryFood": 6720,
+              "centralFood": 2000,
+              "waterFilledToCapacity": true
+            },
+            "harbor": {
+              "x": 14,
+              "y": 8
+            },
+            "phases": [
+              {
+                "phase": "caravan:1:waitingMarket",
+                "transport": "land",
+                "time": 45,
+                "x": null,
+                "y": null
+              },
+              {
+                "phase": "caravan:1:arriving",
+                "transport": "land",
+                "time": 45.25,
+                "x": 0.7749999999999999,
+                "y": 10.5
+              },
+              {
+                "phase": "caravan:1:unloading",
+                "transport": "land",
+                "time": 54.5,
+                "x": 10.5,
+                "y": 9.5
+              },
+              {
+                "phase": "caravan:1:trading",
+                "transport": "land",
+                "time": 58.5,
+                "x": 10.5,
+                "y": 9.5
+              }
+            ],
+            "orders": [
+              {
+                "visit": "caravan:1",
+                "transport": "land",
+                "buy": true,
+                "sell": true,
+                "time": 58.5
+              }
+            ],
+            "skippedEvents": [],
+            "ceremonies": [],
+            "roadWork": {
+              "id": "road:10,9|9,9",
+              "fromLevel": 1,
+              "startedAt": 60,
+              "a": {
+                "x": 8.5,
+                "y": 8.5,
+                "key": "9,9"
+              },
+              "b": {
+                "x": 9.5,
+                "y": 8.5,
+                "key": "10,9"
+              },
+              "cost": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "maxWork": 11.99878117869229,
+              "workers": [
+                {
+                  "id": 6,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 7,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 12,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                },
+                {
+                  "id": 80,
+                  "home": "12,7",
+                  "role": "builder",
+                  "x": 12.5,
+                  "y": 7.5
+                }
+              ],
+              "delivered": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "completedAt": 68.61629999999995
+            },
+            "measurementStart": {
+              "population": 217,
+              "buildings": 129,
+              "simTime": 60,
+              "tick": 1
+            }
+          },
+          "deliveries": [
+            {
+              "id": 1,
+              "market": "10,9",
+              "resource": "stone",
+              "amount": 2,
+              "remaining": 0,
+              "delivered": 2
+            }
+          ],
+          "sales": [
+            {
+              "sources": {
+                "9,8": {
+                  "wood": 0
+                }
+              },
+              "allocations": {
+                "9,8": {
+                  "wood": 2
+                }
+              },
+              "id": 2,
+              "market": "10,9",
+              "caravanId": "caravan:1",
+              "resource": "wood",
+              "amount": 2,
+              "remaining": 0,
+              "loaded": 2,
+              "cancelled": 0,
+              "unitPrice": 6
+            }
+          ]
+        },
+        "population": 217,
+        "buildings": 129,
+        "tick": 1,
+        "simTime": 84.39895000000031,
+        "fps": 19.532264184857503,
+        "frame": {
+          "p95": 166.59999999999854,
+          "max": 899.8999999999978,
+          "mean": 51.17382413087932
+        },
+        "stats": {
+          "terrain": {
+            "p95": 105,
+            "max": 505.5,
+            "mean": 10.804494381742408
+          },
+          "actors": {
+            "p95": 9.5,
+            "max": 168.39999997615814,
+            "mean": 6.225638406573813
+          },
+          "animate": {
+            "p95": 8.5,
+            "max": 15.5,
+            "mean": 4.203575077047144
+          },
+          "candidates": {
+            "p95": 8,
+            "max": 11.599999964237213,
+            "mean": 7.171195096331549
+          },
+          "render": {
+            "p95": 34.90000003576279,
+            "max": 705.6000000238419,
+            "mean": 27.693462718616832
+          }
+        },
+        "hidden": false,
+        "active": 1951,
+        "save": true
+      },
+      "errors": []
+    },
+    {
+      "route": "small-trade/index.html?large&trade&wide&measuregpu&ms=50000",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 4437.299999952316,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 20.80000001192093
+          }
+        ],
+        "ready": 12298.5,
+        "canvas": [
+          1920,
+          855
+        ],
+        "title": "Новый Вавилон — имена богов",
+        "lodMeshes": 278,
+        "lodIndices": 504453,
+        "gpuTimer": true,
+        "gpuSamples": 108,
+        "gpuFrameMs": {
+          "p95": 19.603124,
+          "max": 21.698625,
+          "mean": 13.23722864814815
+        },
+        "initialIdentities": 217,
+        "roundTrip": true,
+        "trade": {
+          "proof": {
+            "transport": "land",
+            "history": "strict",
+            "ecologyMode": "legacy",
+            "ecologyCounts": {
+              "goat": 7,
+              "gazelle": 12,
+              "jackal": 4,
+              "fish": 36,
+              "orange-bird": 2,
+              "goose": 2,
+              "fox": 2,
+              "boar": 2,
+              "lioness": 2,
+              "dog": 2,
+              "duck": 2,
+              "donkey": 2,
+              "bull": 2,
+              "sheep-kenchoo": 2,
+              "sky-birds": 2
+            },
+            "ecologyLegacy": true,
+            "portSetup": "market-and-harbor",
+            "initialPopulation": 200,
+            "buildings": 129,
+            "seed": 137,
+            "supply": {
+              "initialFood": 8720,
+              "pantryFood": 6720,
+              "centralFood": 2000,
+              "waterFilledToCapacity": true
+            },
+            "harbor": {
+              "x": 14,
+              "y": 8
+            },
+            "phases": [
+              {
+                "phase": "caravan:1:waitingMarket",
+                "transport": "land",
+                "time": 45,
+                "x": null,
+                "y": null
+              },
+              {
+                "phase": "caravan:1:arriving",
+                "transport": "land",
+                "time": 45.25,
+                "x": 0.7749999999999999,
+                "y": 10.5
+              },
+              {
+                "phase": "caravan:1:unloading",
+                "transport": "land",
+                "time": 54.5,
+                "x": 10.5,
+                "y": 9.5
+              },
+              {
+                "phase": "caravan:1:trading",
+                "transport": "land",
+                "time": 58.5,
+                "x": 10.5,
+                "y": 9.5
+              }
+            ],
+            "orders": [
+              {
+                "visit": "caravan:1",
+                "transport": "land",
+                "buy": true,
+                "sell": true,
+                "time": 58.5
+              }
+            ],
+            "skippedEvents": [],
+            "ceremonies": [],
+            "roadWork": {
+              "id": "road:10,9|9,9",
+              "fromLevel": 1,
+              "startedAt": 60,
+              "a": {
+                "x": 8.5,
+                "y": 8.5,
+                "key": "9,9"
+              },
+              "b": {
+                "x": 9.5,
+                "y": 8.5,
+                "key": "10,9"
+              },
+              "cost": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "maxWork": 11.981397178692296,
+              "workers": [
+                {
+                  "id": 6,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 7,
+                  "home": "8,8",
+                  "role": "carrier",
+                  "x": 8.5,
+                  "y": 8.5
+                },
+                {
+                  "id": 12,
+                  "home": "9,9",
+                  "role": "builder",
+                  "x": 9.5,
+                  "y": 9.5
+                },
+                {
+                  "id": 80,
+                  "home": "12,7",
+                  "role": "builder",
+                  "x": 12.5,
+                  "y": 7.5
+                }
+              ],
+              "delivered": {
+                "food": 0,
+                "clay": 3,
+                "reed": 1,
+                "wood": 0,
+                "stone": 0,
+                "hides": 0,
+                "wool": 0,
+                "cloth": 0,
+                "clothing": 0,
+                "brick": 0,
+                "firedBrick": 0,
+                "pottery": 0,
+                "beer": 0,
+                "milk": 0,
+                "flax": 0,
+                "basket": 0,
+                "mat": 0,
+                "copper": 0,
+                "axe": 0,
+                "blade": 0,
+                "chisel": 0,
+                "timber": 0,
+                "joinery": 0
+              },
+              "completedAt": 68.60804999999992
+            },
+            "measurementStart": {
+              "population": 217,
+              "buildings": 129,
+              "simTime": 60,
+              "tick": 1
+            }
+          },
+          "deliveries": [
+            {
+              "id": 1,
+              "market": "10,9",
+              "resource": "stone",
+              "amount": 2,
+              "remaining": 0,
+              "delivered": 2
+            }
+          ],
+          "sales": [
+            {
+              "sources": {
+                "9,8": {
+                  "wood": 0
+                }
+              },
+              "allocations": {
+                "9,8": {
+                  "wood": 2
+                }
+              },
+              "id": 2,
+              "market": "10,9",
+              "caravanId": "caravan:1",
+              "resource": "wood",
+              "amount": 2,
+              "remaining": 0,
+              "loaded": 2,
+              "cancelled": 0,
+              "unitPrice": 6
+            }
+          ]
+        },
+        "population": 217,
+        "buildings": 129,
+        "tick": 1,
+        "simTime": 84.12410000000051,
+        "fps": 18.538865693109855,
+        "frame": {
+          "p95": 166.60000000000218,
+          "max": 1333.2999999999993,
+          "mean": 53.913038793103404
+        },
+        "stats": {
+          "terrain": {
+            "p95": 107,
+            "max": 1243.699999988079,
+            "mean": 12.214316469347516
+          },
+          "actors": {
+            "p95": 9.900000035762787,
+            "max": 161,
+            "mean": 6.43810548996643
+          },
+          "animate": {
+            "p95": 8.699999988079071,
+            "max": 21.399999976158142,
+            "mean": 4.50710441209015
+          },
+          "candidates": {
+            "p95": 8.300000011920929,
+            "max": 14.300000011920929,
+            "mean": 7.272874059795178
+          },
+          "render": {
+            "p95": 35.39999997615814,
+            "max": 791.8000000119209,
+            "mean": 28.93724434785104
+          }
+        },
+        "hidden": false,
+        "active": 1964,
+        "save": true
+      },
+      "errors": []
+    }
+  ],
+  "coldStartup": [
+    {
+      "route": "base/index.html?slow",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 11806.5,
+        "resources": [
+          {
+            "name": "babylon-9.31.0.js",
+            "bytes": 8627936,
+            "ms": 5846.799999952316
+          },
+          {
+            "name": "babylonjs-loaders-9.31.0.min.js",
+            "bytes": 849596,
+            "ms": 619.8000000119209
+          }
+        ],
+        "ready": 12089.899999976158,
+        "canvas": 1920,
+        "title": "Новый Вавилон — имена богов"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/index.html?slow",
+      "info": {
+        "mode": "3d",
+        "quality": "high",
+        "glb": true,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "appReady": 7333.099999964237,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 2729.899999976158
+          }
+        ],
+        "ready": 7581.5,
+        "canvas": [
+          1920,
+          855
+        ],
+        "title": "Новый Вавилон — имена богов"
+      },
+      "errors": []
+    }
+  ],
+  "entryPoints": [
+    {
+      "route": "small/index.html?view=2d",
+      "info": {
+        "appReady": 749.1000000238419,
+        "resources": [],
+        "ready": 1609.199999988079,
+        "canvas": [
+          2560,
+          1140
+        ],
+        "title": "Новый Вавилон — имена богов"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/district3d.html",
+      "info": {
+        "glb": true,
+        "resources": [
+          {
+            "name": "babylon-runtime-9.31.0.js",
+            "bytes": 3964363,
+            "ms": 21.399999976158142
+          }
+        ],
+        "ready": 2060.199999988079,
+        "canvas": [
+          1920,
+          1080
+        ],
+        "title": "Новый Вавилон · Живой 3D-квартал"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/courtyard.html?stress=1",
+      "info": {
+        "glb": true,
+        "resources": [
+          {
+            "name": "babylon-runtime-9.31.0.js",
+            "bytes": 3964363,
+            "ms": 18.700000047683716
+          }
+        ],
+        "ready": 1684.2999999523163,
+        "canvas": [
+          1280,
+          720
+        ],
+        "title": "Новый Вавилон · Художественная проба"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/goat-studio.html",
+      "info": {
+        "glb": true,
+        "resources": [
+          {
+            "name": "babylon-runtime-9.31.0.js",
+            "bytes": 3964363,
+            "ms": 15.5
+          }
+        ],
+        "ready": 1605.7000000476837,
+        "canvas": [
+          1280,
+          720
+        ],
+        "title": "Две козы · мастерская Нового Вавилона"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/crop-studio.html",
+      "info": {
+        "glb": true,
+        "resources": [
+          {
+            "name": "babylon-runtime-9.31.0.js",
+            "bytes": 3964363,
+            "ms": 14.700000047683716
+          }
+        ],
+        "ready": 1605.5,
+        "canvas": [
+          1280,
+          720
+        ],
+        "title": "Новый Вавилон — образцы культур"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/tools/history-check/index.html",
+      "info": {
+        "glb": true,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 24.19999998807907
+          }
+        ],
+        "ready": 24261.80000001192,
+        "canvas": [
+          1280,
+          555
+        ],
+        "title": "Приёмка исторической архитектуры · Новый Вавилон"
+      },
+      "errors": []
+    },
+    {
+      "route": "small/tools/history-check/transport.html",
+      "info": {
+        "glb": true,
+        "resources": [
+          {
+            "name": "runtime.js",
+            "bytes": 3964363,
+            "ms": 24.299999952316284
+          }
+        ],
+        "ready": 1604.300000011921,
+        "canvas": [
+          1280,
+          553
+        ],
+        "title": "Sumer transport QA"
+      },
+      "errors": []
+    }
+  ],
+  "preliminaryWithMissingShaderIncludes": {
+    "reference80s": [
+      {
+        "route": "no-lod/index.html?large&trade&wide&ms=80000",
+        "info": {
+          "mode": "3d",
+          "quality": "high",
+          "glb": true,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "appReady": 3812.399999976158,
+          "resources": [
+            {
+              "name": "runtime.js",
+              "bytes": 3964348,
+              "ms": 18.399999976158142
+            }
+          ],
+          "ready": 9830.399999976158,
+          "canvas": 1920,
+          "title": "Новый Вавилон — имена богов",
+          "lodMeshes": 0,
+          "lodIndices": 0,
+          "gpuTimer": true,
+          "gpuSamples": 0,
+          "gpuFrameMs": {
+            "mean": null
+          },
+          "initialIdentities": 200,
+          "roundTrip": true,
+          "trade": {
+            "proof": {
+              "transport": "land",
+              "history": "strict",
+              "ecologyMode": "legacy",
+              "ecologyCounts": {
+                "goat": 7,
+                "gazelle": 12,
+                "jackal": 4,
+                "fish": 36,
+                "orange-bird": 2,
+                "goose": 2,
+                "fox": 2,
+                "boar": 2,
+                "lioness": 2,
+                "dog": 2,
+                "duck": 2,
+                "donkey": 2,
+                "bull": 2,
+                "sheep-kenchoo": 2,
+                "sky-birds": 2
+              },
+              "ecologyLegacy": true,
+              "portSetup": "market-and-harbor",
+              "initialPopulation": 200,
+              "buildings": 129,
+              "seed": 137,
+              "supply": {
+                "initialFood": 8720,
+                "pantryFood": 6720,
+                "centralFood": 2000,
+                "waterFilledToCapacity": true
+              },
+              "harbor": {
+                "x": 14,
+                "y": 8
+              },
+              "phases": [],
+              "orders": [],
+              "skippedEvents": [],
+              "ceremonies": [],
+              "roadWork": {
+                "id": "road:10,9|9,9",
+                "fromLevel": 1,
+                "startedAt": 35,
+                "a": {
+                  "x": 8.5,
+                  "y": 8.5,
+                  "key": "9,9"
+                },
+                "b": {
+                  "x": 9.5,
+                  "y": 8.5,
+                  "key": "10,9"
+                },
+                "cost": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "maxWork": 11.946239999999985,
+                "workers": [
+                  {
+                    "id": 6,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 7,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 8,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  },
+                  {
+                    "id": 9,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  }
+                ],
+                "delivered": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "completedAt": 62.47384999999889
+              },
+              "measurementStart": {
+                "population": 200,
+                "buildings": 129,
+                "simTime": 35,
+                "tick": 0
+              }
+            },
+            "deliveries": [],
+            "sales": []
+          },
+          "population": 200,
+          "buildings": 129,
+          "tick": 0,
+          "simTime": 74.51504999999774,
+          "fps": 30.406224156592366,
+          "frame": {
+            "p95": 50,
+            "max": 850,
+            "mean": 32.88011503697612
+          },
+          "stats": {
+            "terrain": {
+              "p95": 2.899999976158142,
+              "max": 495.5,
+              "mean": 4.497700205940975
+            },
+            "actors": {
+              "p95": 4.599999964237213,
+              "max": 60.5,
+              "mean": 3.451786447379134
+            },
+            "animate": {
+              "p95": 2.199999988079071,
+              "max": 16.5,
+              "mean": 1.3322792613286012
+            },
+            "candidates": {
+              "p95": 7.699999988079071,
+              "max": 11.899999976158142,
+              "mean": 6.5516632443336
+            },
+            "render": {
+              "p95": 23.5,
+              "max": 764.8000000119209,
+              "mean": 20.353018480673953
+            }
+          },
+          "hidden": false,
+          "active": 1766,
+          "save": true
+        },
+        "errors": []
+      },
+      {
+        "route": "small/index.html?large&trade&wide&ms=80000",
+        "info": {
+          "mode": "3d",
+          "quality": "high",
+          "glb": true,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "appReady": 3574.900000035763,
+          "resources": [
+            {
+              "name": "runtime.js",
+              "bytes": 3964348,
+              "ms": 20.899999976158142
+            }
+          ],
+          "ready": 9433.800000011921,
+          "canvas": 1920,
+          "title": "Новый Вавилон — имена богов",
+          "lodMeshes": 46,
+          "lodIndices": 83124,
+          "gpuTimer": true,
+          "gpuSamples": 0,
+          "gpuFrameMs": {
+            "mean": null
+          },
+          "initialIdentities": 200,
+          "roundTrip": true,
+          "trade": {
+            "proof": {
+              "transport": "land",
+              "history": "strict",
+              "ecologyMode": "legacy",
+              "ecologyCounts": {
+                "goat": 7,
+                "gazelle": 12,
+                "jackal": 4,
+                "fish": 36,
+                "orange-bird": 2,
+                "goose": 2,
+                "fox": 2,
+                "boar": 2,
+                "lioness": 2,
+                "dog": 2,
+                "duck": 2,
+                "donkey": 2,
+                "bull": 2,
+                "sheep-kenchoo": 2,
+                "sky-birds": 2
+              },
+              "ecologyLegacy": true,
+              "portSetup": "market-and-harbor",
+              "initialPopulation": 200,
+              "buildings": 129,
+              "seed": 137,
+              "supply": {
+                "initialFood": 8720,
+                "pantryFood": 6720,
+                "centralFood": 2000,
+                "waterFilledToCapacity": true
+              },
+              "harbor": {
+                "x": 14,
+                "y": 8
+              },
+              "phases": [],
+              "orders": [],
+              "skippedEvents": [],
+              "ceremonies": [],
+              "roadWork": {
+                "id": "road:10,9|9,9",
+                "fromLevel": 1,
+                "startedAt": 35,
+                "a": {
+                  "x": 8.5,
+                  "y": 8.5,
+                  "key": "9,9"
+                },
+                "b": {
+                  "x": 9.5,
+                  "y": 8.5,
+                  "key": "10,9"
+                },
+                "cost": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "maxWork": 11.963946666666663,
+                "workers": [
+                  {
+                    "id": 6,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 7,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 8,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  },
+                  {
+                    "id": 9,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  }
+                ],
+                "delivered": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "completedAt": 62.47389999999899
+              },
+              "measurementStart": {
+                "population": 200,
+                "buildings": 129,
+                "simTime": 35,
+                "tick": 0
+              }
+            },
+            "deliveries": [],
+            "sales": []
+          },
+          "population": 200,
+          "buildings": 129,
+          "tick": 0,
+          "simTime": 74.50679999999748,
+          "fps": 32.218169098540876,
+          "frame": {
+            "p95": 50,
+            "max": 850,
+            "mean": 31.025009693679703
+          },
+          "stats": {
+            "terrain": {
+              "p95": 3,
+              "max": 110.60000002384186,
+              "mean": 4.124496123818464
+            },
+            "actors": {
+              "p95": 4.200000047683716,
+              "max": 237.80000001192093,
+              "mean": 3.2494573648123777
+            },
+            "animate": {
+              "p95": 2.300000011920929,
+              "max": 16.30000001192093,
+              "mean": 1.3678294575260592
+            },
+            "candidates": {
+              "p95": 7,
+              "max": 16.799999952316284,
+              "mean": 6.27019379825093
+            },
+            "render": {
+              "p95": 22.30000001192093,
+              "max": 751.9000000357628,
+              "mean": 19.388178294596745
+            }
+          },
+          "hidden": false,
+          "active": 1762,
+          "save": true
+        },
+        "errors": []
+      },
+      {
+        "route": "small/index.html?large&trade&ms=80000",
+        "info": {
+          "mode": "3d",
+          "quality": "high",
+          "glb": true,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "appReady": 3496.900000035763,
+          "resources": [
+            {
+              "name": "runtime.js",
+              "bytes": 3964348,
+              "ms": 18.599999964237213
+            }
+          ],
+          "ready": 10266.400000035763,
+          "canvas": 1920,
+          "title": "Новый Вавилон — имена богов",
+          "lodMeshes": 0,
+          "lodIndices": 0,
+          "gpuTimer": true,
+          "gpuSamples": 0,
+          "gpuFrameMs": {
+            "mean": null
+          },
+          "initialIdentities": 200,
+          "roundTrip": true,
+          "trade": {
+            "proof": {
+              "transport": "land",
+              "history": "strict",
+              "ecologyMode": "legacy",
+              "ecologyCounts": {
+                "goat": 7,
+                "gazelle": 12,
+                "jackal": 4,
+                "fish": 36,
+                "orange-bird": 2,
+                "goose": 2,
+                "fox": 2,
+                "boar": 2,
+                "lioness": 2,
+                "dog": 2,
+                "duck": 2,
+                "donkey": 2,
+                "bull": 2,
+                "sheep-kenchoo": 2,
+                "sky-birds": 2
+              },
+              "ecologyLegacy": true,
+              "portSetup": "market-and-harbor",
+              "initialPopulation": 200,
+              "buildings": 129,
+              "seed": 137,
+              "supply": {
+                "initialFood": 8720,
+                "pantryFood": 6720,
+                "centralFood": 2000,
+                "waterFilledToCapacity": true
+              },
+              "harbor": {
+                "x": 14,
+                "y": 8
+              },
+              "phases": [],
+              "orders": [],
+              "skippedEvents": [],
+              "ceremonies": [],
+              "roadWork": {
+                "id": "road:10,9|9,9",
+                "fromLevel": 1,
+                "startedAt": 35,
+                "a": {
+                  "x": 8.5,
+                  "y": 8.5,
+                  "key": "9,9"
+                },
+                "b": {
+                  "x": 9.5,
+                  "y": 8.5,
+                  "key": "10,9"
+                },
+                "cost": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "maxWork": 11.92842666666665,
+                "workers": [
+                  {
+                    "id": 6,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 7,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 8,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  },
+                  {
+                    "id": 9,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  }
+                ],
+                "delivered": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "completedAt": 62.4488499999991
+              },
+              "measurementStart": {
+                "population": 200,
+                "buildings": 129,
+                "simTime": 35,
+                "tick": 0
+              }
+            },
+            "deliveries": [],
+            "sales": []
+          },
+          "population": 200,
+          "buildings": 129,
+          "tick": 0,
+          "simTime": 74.35669999999685,
+          "fps": 42.656604339378646,
+          "frame": {
+            "p95": 33.40000000000873,
+            "max": 1150,
+            "mean": 23.43687756297586
+          },
+          "stats": {
+            "terrain": {
+              "p95": 1.7000000476837158,
+              "max": 1112.8999999761581,
+              "mean": 3.829282576727134
+            },
+            "actors": {
+              "p95": 3.899999976158142,
+              "max": 37.39999997615814,
+              "mean": 3.1005856518864108
+            },
+            "animate": {
+              "p95": 3,
+              "max": 6.699999988079071,
+              "mean": 1.9420790627795117
+            },
+            "candidates": {
+              "p95": 3.199999988079071,
+              "max": 6.100000023841858,
+              "mean": 2.770746706101067
+            },
+            "render": {
+              "p95": 15.5,
+              "max": 581.0999999642372,
+              "mean": 12.367584187411982
+            }
+          },
+          "hidden": false,
+          "active": 306,
+          "save": true
+        },
+        "errors": []
+      }
+    ],
+    "trade50sGPU": [
+      {
+        "route": "no-lod-trade/index.html?large&trade&wide&ms=50000",
+        "info": {
+          "mode": "3d",
+          "quality": "high",
+          "glb": true,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "appReady": 4371.600000023842,
+          "resources": [
+            {
+              "name": "runtime.js",
+              "bytes": 3964348,
+              "ms": 23.299999952316284
+            }
+          ],
+          "ready": 10884.699999988079,
+          "canvas": 1920,
+          "title": "Новый Вавилон — имена богов",
+          "lodMeshes": 0,
+          "lodIndices": 0,
+          "gpuTimer": true,
+          "gpuSamples": 663,
+          "gpuFrameMs": {
+            "p95": 18.43425,
+            "max": 22.723291,
+            "mean": 12.109578546003018
+          },
+          "initialIdentities": 217,
+          "roundTrip": true,
+          "trade": {
+            "proof": {
+              "transport": "land",
+              "history": "strict",
+              "ecologyMode": "legacy",
+              "ecologyCounts": {
+                "goat": 7,
+                "gazelle": 12,
+                "jackal": 4,
+                "fish": 36,
+                "orange-bird": 2,
+                "goose": 2,
+                "fox": 2,
+                "boar": 2,
+                "lioness": 2,
+                "dog": 2,
+                "duck": 2,
+                "donkey": 2,
+                "bull": 2,
+                "sheep-kenchoo": 2,
+                "sky-birds": 2
+              },
+              "ecologyLegacy": true,
+              "portSetup": "market-and-harbor",
+              "initialPopulation": 200,
+              "buildings": 129,
+              "seed": 137,
+              "supply": {
+                "initialFood": 8720,
+                "pantryFood": 6720,
+                "centralFood": 2000,
+                "waterFilledToCapacity": true
+              },
+              "harbor": {
+                "x": 14,
+                "y": 8
+              },
+              "phases": [
+                {
+                  "phase": "caravan:1:waitingMarket",
+                  "transport": "land",
+                  "time": 45,
+                  "x": null,
+                  "y": null
+                },
+                {
+                  "phase": "caravan:1:arriving",
+                  "transport": "land",
+                  "time": 45.25,
+                  "x": 0.7749999999999999,
+                  "y": 10.5
+                },
+                {
+                  "phase": "caravan:1:unloading",
+                  "transport": "land",
+                  "time": 54.5,
+                  "x": 10.5,
+                  "y": 9.5
+                },
+                {
+                  "phase": "caravan:1:trading",
+                  "transport": "land",
+                  "time": 58.5,
+                  "x": 10.5,
+                  "y": 9.5
+                }
+              ],
+              "orders": [
+                {
+                  "visit": "caravan:1",
+                  "transport": "land",
+                  "buy": true,
+                  "sell": true,
+                  "time": 58.5
+                }
+              ],
+              "skippedEvents": [],
+              "ceremonies": [],
+              "roadWork": {
+                "id": "road:10,9|9,9",
+                "fromLevel": 1,
+                "startedAt": 60,
+                "a": {
+                  "x": 8.5,
+                  "y": 8.5,
+                  "key": "9,9"
+                },
+                "b": {
+                  "x": 9.5,
+                  "y": 8.5,
+                  "key": "10,9"
+                },
+                "cost": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "maxWork": 11.85737717869229,
+                "workers": [
+                  {
+                    "id": 6,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 7,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 12,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  },
+                  {
+                    "id": 80,
+                    "home": "12,7",
+                    "role": "builder",
+                    "x": 12.5,
+                    "y": 7.5
+                  }
+                ],
+                "delivered": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "completedAt": 68.55794999999995
+              },
+              "measurementStart": {
+                "population": 217,
+                "buildings": 129,
+                "simTime": 60,
+                "tick": 1
+              }
+            },
+            "deliveries": [
+              {
+                "id": 1,
+                "market": "10,9",
+                "resource": "stone",
+                "amount": 2,
+                "remaining": 0,
+                "delivered": 2
+              }
+            ],
+            "sales": [
+              {
+                "sources": {
+                  "9,8": {
+                    "wood": 0
+                  }
+                },
+                "allocations": {
+                  "9,8": {
+                    "wood": 2
+                  }
+                },
+                "id": 2,
+                "market": "10,9",
+                "caravanId": "caravan:1",
+                "resource": "wood",
+                "amount": 2,
+                "remaining": 0,
+                "loaded": 2,
+                "cancelled": 0,
+                "unitPrice": 6
+              }
+            ]
+          },
+          "population": 217,
+          "buildings": 129,
+          "tick": 1,
+          "simTime": 84.74064999999993,
+          "fps": 20.293010296305912,
+          "frame": {
+            "p95": 166.59999999999854,
+            "max": 750,
+            "mean": 49.24350393700784
+          },
+          "stats": {
+            "terrain": {
+              "p95": 107,
+              "max": 137.60000002384186,
+              "mean": 10.271681416527008
+            },
+            "actors": {
+              "p95": 8.900000035762787,
+              "max": 139.10000002384186,
+              "mean": 5.975417895830486
+            },
+            "animate": {
+              "p95": 8.5,
+              "max": 13.099999964237213,
+              "mean": 4.254080628633734
+            },
+            "candidates": {
+              "p95": 7.800000011920929,
+              "max": 9.400000035762787,
+              "mean": 6.988692231996455
+            },
+            "render": {
+              "p95": 34,
+              "max": 716.8000000119209,
+              "mean": 27.196951818384136
+            }
+          },
+          "hidden": false,
+          "active": 1953,
+          "save": true
+        },
+        "errors": []
+      },
+      {
+        "route": "small-trade/index.html?large&trade&wide&ms=50000",
+        "info": {
+          "mode": "3d",
+          "quality": "high",
+          "glb": true,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "appReady": 4348.899999976158,
+          "resources": [
+            {
+              "name": "runtime.js",
+              "bytes": 3964348,
+              "ms": 20.80000001192093
+            }
+          ],
+          "ready": 11074.299999952316,
+          "canvas": 1920,
+          "title": "Новый Вавилон — имена богов",
+          "lodMeshes": 269,
+          "lodIndices": 488055,
+          "gpuTimer": true,
+          "gpuSamples": 675,
+          "gpuFrameMs": {
+            "p95": 18.316166,
+            "max": 21.622625,
+            "mean": 11.427185626666663
+          },
+          "initialIdentities": 217,
+          "roundTrip": true,
+          "trade": {
+            "proof": {
+              "transport": "land",
+              "history": "strict",
+              "ecologyMode": "legacy",
+              "ecologyCounts": {
+                "goat": 7,
+                "gazelle": 12,
+                "jackal": 4,
+                "fish": 36,
+                "orange-bird": 2,
+                "goose": 2,
+                "fox": 2,
+                "boar": 2,
+                "lioness": 2,
+                "dog": 2,
+                "duck": 2,
+                "donkey": 2,
+                "bull": 2,
+                "sheep-kenchoo": 2,
+                "sky-birds": 2
+              },
+              "ecologyLegacy": true,
+              "portSetup": "market-and-harbor",
+              "initialPopulation": 200,
+              "buildings": 129,
+              "seed": 137,
+              "supply": {
+                "initialFood": 8720,
+                "pantryFood": 6720,
+                "centralFood": 2000,
+                "waterFilledToCapacity": true
+              },
+              "harbor": {
+                "x": 14,
+                "y": 8
+              },
+              "phases": [
+                {
+                  "phase": "caravan:1:waitingMarket",
+                  "transport": "land",
+                  "time": 45,
+                  "x": null,
+                  "y": null
+                },
+                {
+                  "phase": "caravan:1:arriving",
+                  "transport": "land",
+                  "time": 45.25,
+                  "x": 0.7749999999999999,
+                  "y": 10.5
+                },
+                {
+                  "phase": "caravan:1:unloading",
+                  "transport": "land",
+                  "time": 54.5,
+                  "x": 10.5,
+                  "y": 9.5
+                },
+                {
+                  "phase": "caravan:1:trading",
+                  "transport": "land",
+                  "time": 58.5,
+                  "x": 10.5,
+                  "y": 9.5
+                }
+              ],
+              "orders": [
+                {
+                  "visit": "caravan:1",
+                  "transport": "land",
+                  "buy": true,
+                  "sell": true,
+                  "time": 58.5
+                }
+              ],
+              "skippedEvents": [],
+              "ceremonies": [],
+              "roadWork": {
+                "id": "road:10,9|9,9",
+                "fromLevel": 1,
+                "startedAt": 60,
+                "a": {
+                  "x": 8.5,
+                  "y": 8.5,
+                  "key": "9,9"
+                },
+                "b": {
+                  "x": 9.5,
+                  "y": 8.5,
+                  "key": "10,9"
+                },
+                "cost": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "maxWork": 11.928185178692303,
+                "workers": [
+                  {
+                    "id": 6,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 7,
+                    "home": "8,8",
+                    "role": "carrier",
+                    "x": 8.5,
+                    "y": 8.5
+                  },
+                  {
+                    "id": 12,
+                    "home": "9,9",
+                    "role": "builder",
+                    "x": 9.5,
+                    "y": 9.5
+                  },
+                  {
+                    "id": 80,
+                    "home": "12,7",
+                    "role": "builder",
+                    "x": 12.5,
+                    "y": 7.5
+                  }
+                ],
+                "delivered": {
+                  "food": 0,
+                  "clay": 3,
+                  "reed": 1,
+                  "wood": 0,
+                  "stone": 0,
+                  "hides": 0,
+                  "wool": 0,
+                  "cloth": 0,
+                  "clothing": 0,
+                  "brick": 0,
+                  "firedBrick": 0,
+                  "pottery": 0,
+                  "beer": 0,
+                  "milk": 0,
+                  "flax": 0,
+                  "basket": 0,
+                  "mat": 0,
+                  "copper": 0,
+                  "axe": 0,
+                  "blade": 0,
+                  "chisel": 0,
+                  "timber": 0,
+                  "joinery": 0
+                },
+                "completedAt": 68.58294999999997
+              },
+              "measurementStart": {
+                "population": 217,
+                "buildings": 129,
+                "simTime": 60,
+                "tick": 1
+              }
+            },
+            "deliveries": [
+              {
+                "id": 1,
+                "market": "10,9",
+                "resource": "stone",
+                "amount": 2,
+                "remaining": 0,
+                "delivered": 2
+              }
+            ],
+            "sales": [
+              {
+                "sources": {
+                  "9,8": {
+                    "wood": 0
+                  }
+                },
+                "allocations": {
+                  "9,8": {
+                    "wood": 2
+                  }
+                },
+                "id": 2,
+                "market": "10,9",
+                "caravanId": "caravan:1",
+                "resource": "wood",
+                "amount": 2,
+                "remaining": 0,
+                "loaded": 2,
+                "cancelled": 0,
+                "unitPrice": 6
+              }
+            ]
+          },
+          "population": 217,
+          "buildings": 129,
+          "tick": 1,
+          "simTime": 84.69065000000046,
+          "fps": 19.498707411497346,
+          "frame": {
+            "p95": 150.10000000000218,
+            "max": 816.5999999999985,
+            "mean": 51.261680327868824
+          },
+          "stats": {
+            "terrain": {
+              "p95": 104.19999998807907,
+              "max": 128.5999999642372,
+              "mean": 10.478403276772436
+            },
+            "actors": {
+              "p95": 9.299999952316284,
+              "max": 147.69999998807907,
+              "mean": 6.194063459167461
+            },
+            "animate": {
+              "p95": 8.300000011920929,
+              "max": 17.80000001192093,
+              "mean": 4.170214945059594
+            },
+            "candidates": {
+              "p95": 8.099999964237213,
+              "max": 11.600000023841858,
+              "mean": 7.290583417810949
+            },
+            "render": {
+              "p95": 34.799999952316284,
+              "max": 764.5,
+              "mean": 28.481064482867534
+            }
+          },
+          "hidden": false,
+          "active": 1961,
+          "save": true
+        },
+        "errors": []
+      }
+    ]
+  }
+}

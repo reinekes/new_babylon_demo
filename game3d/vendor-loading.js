@@ -1,6 +1,6 @@
 // The 2D route never needs the WebGL engine or its GLB import plugins.
 const pending=new WeakMap();
-const engineURL=new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url).href;
+const engineURL=new URL('../assets/vendor/babylon-runtime-9.31.0.js',import.meta.url).href;
 const loadersURL=new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url).href;
 const hasPlugins=B=>!!B?.SceneLoader?.IsPluginForExtensionAvailable?.('.glb');
 function script(document,src){

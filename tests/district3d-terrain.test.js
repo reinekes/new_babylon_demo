@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {river} from '../world.js';
+import {river,signedRiverDistance} from '../world.js';
 import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain,indexNearbyRoads} from '../district3d/terrain.js';
 const context={console,setTimeout,clearTimeout,performance,window:{URL:globalThis.URL,addEventListener(){},removeEventListener(){}},navigator:{userAgent:"node"}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),context);
@@ -87,4 +87,15 @@ test('road-only grass refresh reuses shore/building alpha rather than scanning e
 test('grass road-mask static alpha invalidates after building coordinates or lake shape change',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','grass','reed','stone'].map(k=>[k,new B.PBRMaterial(k,scene)])),s={buildings:[{type:'house',x:8,y:8},{type:'shrine',x:9,y:8}],roads:[],world:{lakes:[]}},view=createDistrictTerrain(B,scene,s,materials);let fresh;
  try{for(const change of [()=>s.buildings[0].x=12,()=>s.world.lakes=[{cells:[{x:13,y:8}]}],()=>s.world.lakes=[]]){change();const before=JSON.stringify(s),mask=view.refreshRoadMask(s);fresh=createDistrictTerrain(B,scene,s,materials);const expected=fresh.meshes.find(m=>m.name==='soft-riparian-grass');assert.deepEqual(mask.mesh.getVerticesData('color'),expected.getVerticesData('color'));assert.deepEqual(mask.mesh.getIndices(),expected.getIndices());assert.equal(JSON.stringify(s),before);fresh.dispose();fresh=null;}}finally{view.dispose();fresh?.dispose();scene.dispose();engine.dispose();}
+});
+
+test('lake cell rejection preserves the exact signed shore distance',()=>{
+ const state={world:{lakes:[{cells:[{x:27,y:7},{x:27,y:8},{x:28,y:8}]},{cells:[{x:7,y:18},{x:8,y:18}]}]}};
+ for(let y=-2;y<32;y+=.25)for(let x=-2;x<34;x+=.25){
+  const distances=state.world.lakes.flatMap(l=>l.cells.map(c=>{
+   const dx=Math.abs(x-c.x)-.5,dy=Math.abs(y-c.y)-.5;
+   return Math.hypot(Math.max(dx,0),Math.max(dy,0))+Math.min(Math.max(dx,dy),0);
+  }));
+  assert.equal(shoreDistance(x,y,state),Math.min(Math.abs(signedRiverDistance(x,y,state))-1.1,...distances));
+ }
 });

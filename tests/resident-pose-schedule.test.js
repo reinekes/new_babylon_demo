@@ -14,3 +14,12 @@ test('small-character skeleton sampling uses real seconds, staggered slots and n
  assert.ok(new Set(slots).size<=16);assert.notEqual(residentPoseSlot(.04,1/15,1),residentPoseSlot(.04,1/15,9));
  assert.equal(residentPoseSlot(.04,0,1),null);assert.equal(JSON.stringify(before),copy);
 });
+test('geometry detail has screen-size hysteresis and never simplifies an important resident',async()=>{
+ const {useResidentGeometryLOD}=await import('../game3d/resident-pose-schedule.js');
+ assert.equal(useResidentGeometryLOD(10,false,false),true);
+ assert.equal(useResidentGeometryLOD(13,false,false),false);
+ assert.equal(useResidentGeometryLOD(13,true,false),true);
+ assert.equal(useResidentGeometryLOD(17,true,false),false);
+ assert.equal(useResidentGeometryLOD(3,true,true),false);
+ assert.equal(useResidentGeometryLOD(Infinity,true,false),false);
+});

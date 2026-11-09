@@ -1,0 +1,2 @@
+# Preserve whitespace in the upstream shader strings of the generated bundle.
+assets/vendor/babylon-runtime-9.31.0.js -diff linguist-generated=true

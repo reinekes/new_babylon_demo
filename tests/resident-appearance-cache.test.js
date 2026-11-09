@@ -99,3 +99,16 @@ test('replacement city with reused citizen IDs refreshes appearance on the same 
  const refreshed=colors(root);frame(loaded,{paused:true});unchanged(root,refreshed);assert.equal(JSON.stringify(loaded),before);
  loaded.citizens[0].clothing=25;loaded.citizens[0].calling='auto';const changed=JSON.stringify(loaded);frame(loaded,{paused:true});tint(cloth(root).albedoColor,'#9b927b');assert.equal(garment(root),undefined);assert.equal(JSON.stringify(loaded),changed);
 }));
+
+test('far geometry shares the real resident rig and restores the original mesh when inspected',async()=>studio(({state,c,frame})=>{
+ const root=frame(),skin=root.getChildMeshes().find(m=>/native civilian skin/i.test(m.name));
+ const {geometry,skeleton,material}=skin,full=skin.getTotalIndices(),before=JSON.stringify(state);
+ const camera={fov:Math.PI/4,position:{x:0,y:3,z:500}},options={camera,viewportHeight:720};
+ assert.equal(frame(state,options),root);
+ assert.ok(skin.getTotalIndices()<full*.5);
+ assert.equal(skin.skeleton,skeleton);assert.equal(skin.material,material);
+ assert.equal(frame(state,{...options,focusId:c.id}),root);
+ assert.equal(skin.geometry,geometry);assert.equal(skin.getTotalIndices(),full);
+ assert.equal(skin.subMeshes[0].indexCount,full,'the full range is rendered after returning from LOD');
+ assert.equal(JSON.stringify(state),before);
+}));

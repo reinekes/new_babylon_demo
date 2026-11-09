@@ -24,7 +24,7 @@ import {createRelicScene} from './relic-scene.js';
 import {createSacredEffects} from './sacred-effects.js';
 import {newFootprint} from '../footprints.js';
 
-export const GAME3D_RELEASE='city4x-screen-budget-20261103-1';
+export const GAME3D_RELEASE='city-render-lod-bundle-20261109-1';
 // Keep atmospheric visibility comparable when viewing an enlarged valley.
 export const valleyFogDensity=radius=>.0018*Math.min(1,240/Math.max(1,radius));
 export function worldCell(point,state){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<worldWidth(state)&&y<worldHeight(state)?{x,y}:null;}

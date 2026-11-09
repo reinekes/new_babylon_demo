@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
 import {createGameRenderer} from '../game3d/renderer.js';
-const turn=()=>new Promise(resolve=>setTimeout(resolve,0));
 function fixture(){
  const scripts=[],events=[],globalObject={},document={body:{dataset:{}},querySelector(){return null;},createElement(tag){return {tagName:tag,dataset:{},removed:false,setAttribute(){},remove(){this.removed=true;}};},head:{append(script){events.push('script');scripts.push(script);}}};
  let plugin=false;const B={Engine:{IsSupported:false},SceneLoader:{IsPluginForExtensionAvailable(extension){return extension==='.glb'&&plugin;}}};
@@ -13,14 +13,16 @@ function globals(document,location){const saved={document:globalThis.document,lo
 test('main HTML leaves 3D vendors to the mode-specific loader',()=>{
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.doesNotMatch(html,/<script\b[^>]*src=["']assets\/vendor\/babylon/i);
 });
-test('concurrent callers load the engine once before the GLB plugins and reuse the result',async()=>{
- const load=await loader(),f=fixture(),a=load(f),b=load(f);assert.equal(f.scripts.length,1);assert.match(f.scripts[0].src,/babylon-9\.31\.0\.js$/);
- f.engineReady();f.scripts[0].onload();await turn();assert.equal(f.scripts.length,2);assert.match(f.scripts[1].src,/babylonjs-loaders-9\.31\.0\.min\.js$/);
- f.pluginsReady();f.scripts[1].onload();assert.equal(await a,f.B);assert.equal(await b,f.B);assert.equal(await load(f),f.B);assert.equal(f.scripts.length,2);
+test('concurrent callers load one runtime with the GLB plugin and reuse it',async()=>{
+ const load=await loader(),f=fixture(),a=load(f),b=load(f);
+ assert.equal(f.scripts.length,1);assert.match(f.scripts[0].src,/babylon-runtime-9\.31\.0\.js$/);
+ f.engineReady();f.pluginsReady();f.scripts[0].onload();
+ assert.equal(await a,f.B);assert.equal(await b,f.B);assert.equal(await load(f),f.B);
+ assert.equal(f.scripts.length,1);
 });
 test('failed plugin script is removed and a later call retries without downloading the engine again',async()=>{
- const load=await loader(),f=fixture(),a=load(f);f.engineReady();f.scripts[0].onload();await turn();const rejected=assert.rejects(a,/babylonjs-loaders/);f.scripts[1].onerror();await rejected;assert.equal(f.scripts[1].removed,true);
- const retry=load(f);assert.equal(f.scripts.length,3);assert.match(f.scripts[2].src,/babylonjs-loaders/);f.pluginsReady();f.scripts[2].onload();assert.equal(await retry,f.B);
+ const load=await loader(),f=fixture();f.engineReady();const a=load(f);const rejected=assert.rejects(a,/babylonjs-loaders/);f.scripts[0].onerror();await rejected;assert.equal(f.scripts[0].removed,true);
+ const retry=load(f);assert.equal(f.scripts.length,2);assert.match(f.scripts[1].src,/babylonjs-loaders/);f.pluginsReady();f.scripts[1].onload();assert.equal(await retry,f.B);
 });
 test('an already available Babylon engine and GLB plugin append no script',async()=>{
  const load=await loader(),f=fixture();f.engineReady();f.pluginsReady();assert.equal(await load(f),f.B);assert.equal(f.scripts.length,0);
@@ -44,4 +46,12 @@ test('historical acceptance pages await the same engine/plugin readiness as the 
   assert.match(html,/import\s*\{loadBabylonVendors\}\s*from\s*['"]\.\/game3d\/vendor-loading\.js['"]/);
   assert.match(html,/const B=await loadBabylonVendors\(\)/);
  }
+});
+
+test('the modular runtime registers the scene shader includes before its first render',()=>{
+ const scope={};
+ runInNewContext(readFileSync(new URL('../assets/vendor/babylon-runtime-9.31.0.js',import.meta.url),'utf8'),scope);
+ assert.ok(scope.BABYLON.SceneLoader.IsPluginForExtensionAvailable('.glb'));
+ const includes=scope.BABYLON.Effect.IncludesShadersStore;
+ for(const name of ['helperFunctions','imageProcessingDeclaration','imageProcessingFunctions'])assert.ok(includes[name],name);
 });

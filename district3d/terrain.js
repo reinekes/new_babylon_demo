@@ -14,15 +14,20 @@ export function shoreDistance(x,y,s) {
   let d=Math.abs(signedRiverDistance(x,y,s))-1.1;
   for(const lake of s?.world?.lakes||[])for(const c of lake.cells){
     const qx=Math.abs(x-c.x)-.5,qy=Math.abs(y-c.y)-.5;
-    d=Math.min(d,Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0));
+    const lower=Math.max(qx,qy);
+    if(lower>d)continue;
+    d=Math.min(d,lower<=0?lower:Math.hypot(Math.max(qx,0),Math.max(qy,0)));
   }
   return d;
 }
 export function surfaceElevation(x,y,s) {
-  const d=shoreDistance(x,y,s);
+  return surfaceElevationFromShore(x,y,s,shoreDistance(x,y,s));
+}
+function surfaceElevationFromShore(x,y,s,d){
   if(d<.22)return -.88+.88*smooth((d+.35)/.57);
   // Only the uninhabited edges rise; all occupied tiles retain a level foundation.
   const edge=Math.min(x+.5,worldWidth(s)-.5-x,y+.5,worldHeight(s)-.5-y);
+  if(edge>=3.4)return 0;
   const dune=smooth((3.4-edge)/3.4)*(.18+.30*Math.sin(x*.52+y*.26)**2);
   const nearBuilding=(s?.buildings||[]).some(b=>Math.abs(b.x-x)<1.2&&Math.abs(b.y-y)<1.2);
   return nearBuilding?0:dune;
@@ -56,7 +61,7 @@ function terrainRowXs(y,dense,min,max,s){
  // Keep both sets there so adjacent strips share segments, not T-junctions.
  return unique([...sections.outer,...(dense?sections.inner:[]),...bank,min,max].filter(x=>x>=min&&x<=max));
 }
-function alluvialHeight(x,y,s){const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));return surfaceElevation(x,y,s)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);}
+function alluvialHeight(x,y,s){const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));return surfaceElevationFromShore(x,y,s,d)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);}
 export function alluvialNormal(x,y,s){const e=.02,dx=(alluvialHeight(x+e,y,s)-alluvialHeight(x-e,y,s))/(2*e*TILE),dz=(alluvialHeight(x,y+e,s)-alluvialHeight(x,y-e,s))/(2*e*TILE),length=Math.hypot(dx,1,dz);return [-dx/length,1/length,-dz/length];}
 function terrainVertex(g,x,y,s,scenery){
  const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));
