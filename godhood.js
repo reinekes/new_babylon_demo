@@ -1,3 +1,4 @@
+import {blessingUsesTrial} from './blessing-discovery.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
 import {recordCraftNameEvidence} from './causal-facts.js';
@@ -102,6 +103,7 @@ export function miracleKnowledgeReason(s,id){
  if(s.godhood?.namelessEndingAt!==undefined)return cityCommandReason(s);
  if(id==='inannaProtection'&&s.inannaDiscovery)return '';
  if(id==='relicAwakening'&&s.depthSupply||id==='earthMemory'&&s.landMemoryChapter===1)return '';
+ if(id==='bless'&&blessingUsesTrial(s))return s.blessingDiscovery.qualifiedAt!==null?'':'Нужны две подтверждённые доставки помощи и три снабжённых двора';
  if(id==='stars'&&s.starObservations)return starKnowledgeReason(s);
  if(id==='peace'&&s.peaceDiscovery)return peaceKnowledgeReason(s);
  if(id==='healing'&&s.arrivalHospitality)return arrivalKnowledgeReason(s);

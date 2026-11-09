@@ -1,3 +1,4 @@
+import {blessingTrialReady} from './blessing-discovery.js';
 import {REVELATION_PRICE} from './revelation-advice.js';
 import {rainTrialReady} from './rain-discovery.js';
 import {footprintSize} from './footprints.js';
@@ -55,7 +56,7 @@ export function validateCatDiscovery(s){
  return time(q.openedAt)&&Math.abs(q.openedAt-dawnAfter(q.eyesAt))<1e-7&&(q.trial==='ready'&&q.usedAt===null||q.trial==='spent'&&time(q.usedAt)&&q.usedAt>=q.openedAt);
 }
 
-export function miraclePrice(s,id){if(id==='revelation'&&s.revelationEvidence)return REVELATION_PRICE;if(id==='rain'&&rainTrialReady(s))return 0;return id==='cat'&&usesCatDiscovery(s)&&s.catDiscovery?.phase==='opened'&&s.catDiscovery.trial==='ready'?0:MIRACLES[id]?.cost;}
+export function miraclePrice(s,id){if(id==='revelation'&&s.revelationEvidence)return REVELATION_PRICE;if(id==='rain'&&rainTrialReady(s)||id==='bless'&&blessingTrialReady(s))return 0;return id==='cat'&&usesCatDiscovery(s)&&s.catDiscovery?.phase==='opened'&&s.catDiscovery.trial==='ready'?0:MIRACLES[id]?.cost;}
 
 // Presentation reads a saved deed; it never opens the gift or spawns an animal.
 export function catDiscoveryView(s){

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createNewCity} from '../new-game.js';
-import {advanceTime,decode,encode} from '../engine.js';
+import {advanceTime,decode,encode,miracle} from '../engine.js';
 import {recordNeighborWaterFact} from '../causal-facts.js';
 import {buildingKey} from '../definitions.js';
 import {blessingCupAt} from '../blessing-discovery.js';
@@ -11,6 +11,7 @@ test('new Awakening remembers the neighborhood milestone only after two deliveri
  const s=createNewCity({mode:'awakening',seed:137});
  const [a,b,c]=s.buildings.filter(h=>h.type==='house'&&s.citizens.some(p=>p.home===buildingKey(h)));
  assert.ok(c);
+ assert.match(miracle(s,'bless').reason,/доставки/);
  const helper=s.citizens.find(p=>p.home===buildingKey(a));
  const help=home=>recordNeighborWaterFact(s,helper,home,{station:null,origin:helper.home,target:buildingKey(home)},2);
  for(const home of s.buildings){home.pantry=home.pantryDelivered=0;home.water=100;home.waterDelivered=100;}
@@ -29,6 +30,22 @@ test('new Awakening remembers the neighborhood milestone only after two deliveri
  assert.equal(qualified,s.simTime);
  assert.deepEqual(s.blessingDiscovery.cup,{home:buildingKey(c),homeId:c.waterEntityId});
  assert.equal(blessingCupAt(s,c),true);
+ s.happiness=70;
+ s.resources.faith=0;
+ const population=s.population;
+ const trial=miracle(s,'bless');
+ assert.ok(trial.ok,trial.reason);
+ assert.equal(trial.receipt.faithSpent,0);
+ assert.equal(s.population,population);
+ assert.equal(s.miracleHistory.trials.bless.at,s.simTime);
+ const afterTrial=encode(s);
+ assert.equal(encode(decode(afterTrial)),afterTrial);
+ const loadedTrial=decode(afterTrial);
+ loadedTrial.cooldowns.bless=0;
+ assert.match(miracle(loadedTrial,'bless').reason,/20 веры/);
+ const invalid=JSON.parse(afterTrial);
+ delete invalid.miracleHistory.trials.bless;
+ assert.equal(decode(JSON.stringify(invalid)),null);
  assert.equal(s.blessingDiscovery.openingPending,true);
 
  c.pantry=0;
@@ -87,7 +104,7 @@ test('new Awakening blesses existing residents while version-one cities can stil
  const {miracle}=await import('../engine.js');
  for(const legacy of [false,true]){
   const s=createNewCity({mode:'awakening',seed:137});
-  if(legacy)s.blessingDiscovery.version=1;
+  s.blessingDiscovery.version=legacy?1:2;
   const stored=encode(s);
   assert.equal(encode(decode(stored)),stored);
   const town=decode(stored);
@@ -115,4 +132,21 @@ test('new Awakening blesses existing residents while version-one cities can stil
    assert.equal(town.resources.faith,80);
   }
  }
+});
+
+test('saved Blessing receipts must respect the population rule of their city',()=>{
+ const town=createNewCity({mode:'awakening',seed:137});
+ town.blessingDiscovery.version=2;
+ town.miracleCount=1;
+ const population={newResidents:0,happiness:15,reserved:0};
+ town.miracleHistory={version:1,trials:{},paid:{bless:{number:1,at:0,faithSpent:20,population}}};
+ const supported=encode(town);
+ assert.equal(encode(decode(supported)),supported);
+
+ population.newResidents=3;
+ assert.equal(decode(encode(town)),null);
+
+ town.blessingDiscovery.version=1;
+ const legacy=encode(town);
+ assert.equal(encode(decode(legacy)),legacy);
 });

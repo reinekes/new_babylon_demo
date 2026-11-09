@@ -22,7 +22,7 @@ import {richCatchQuote,startRichCatch,expireRichCatch,validateRichCatch} from '.
 import {validateFishProvenance} from './fish-provenance.js';
 import {advanceFieldGrain,validateFieldGrain} from './field-grain.js';
 import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js';
-import {FAMILY_BLESSING_DESCRIPTION,advanceBlessingDiscovery,blessingSupportsFamilies,validateBlessingDiscovery} from './blessing-discovery.js';
+import {FAMILY_BLESSING_DESCRIPTION,advanceBlessingDiscovery,blessingSupportsFamilies,blessingTrialReady,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
 import {previousMiracleCastNumber,recordMiracleCast,validateMiracleHistory} from './miracle-history.js';
 import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
@@ -288,6 +288,7 @@ export function miracle(s,id,target,confirmation){
  if(land)s.landMemoryCast=land;
  if(depthIntake)depthIntake.waterReserve=WATERPOINT_CAPACITY;
  if(depthCanal)s.depthSupply.pressure={x:depthCanal.x,y:depthCanal.y,tick:s.tick};
+ if(id==='bless'&&blessingTrialReady(s))s.blessingDiscovery.trialUsedAt=s.simTime;
  const populationBefore=s.population,happinessBefore=s.happiness;
  s.resources.faith-=price;s.cooldowns[id]=m.cooldown;s.miracleCount++;
  if(!s.memories.includes('first')){s.memories.push('first');log(s,'Первое чудо','Люди запомнят этот день. У святилища зажгли огни.','good');}

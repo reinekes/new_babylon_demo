@@ -1,3 +1,4 @@
+import {blessingSupportsFamilies} from './blessing-discovery.js';
 import {MIRACLES} from './definitions.js';
 import {RICH_CATCH_CHARGES} from './rich-catch.js';
 import {worldHeight,worldWidth} from './world.js';
@@ -15,10 +16,11 @@ export function recordMiracleCast(s,id,{faithSpent,population,fishing,depth}){
 
 const object=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 
-function validPopulationOutcome(id,outcome){
+function validPopulationOutcome(s,id,outcome){
  if(!object(outcome)||Object.keys(outcome).length!==3||!['bless','healing'].includes(id))return false;
  const {newResidents,happiness,reserved}=outcome,blessing=id==='bless';
- return Number.isSafeInteger(newResidents)&&newResidents>=0&&newResidents<=(blessing?3:6)&&
+ const maxNewResidents=blessing?(blessingSupportsFamilies(s)?0:3):6;
+ return Number.isSafeInteger(newResidents)&&newResidents>=0&&newResidents<=maxNewResidents&&
   Number.isFinite(happiness)&&happiness>=0&&happiness<=(blessing?15:10)+1e-9&&
   Number.isSafeInteger(reserved)&&reserved>=0&&reserved<=(blessing?0:6)&&!(newResidents&&reserved);
 }
@@ -44,11 +46,11 @@ export function validateMiracleHistory(s){
  if(!object(history)||history.version!==1||Object.keys(history).length!==3||
   !object(history.trials)||!object(history.paid))return false;
  const trials=Object.entries(history.trials),paid=Object.entries(history.paid);
- const trialTimes={cat:s.catDiscovery?.usedAt,rain:s.rainDiscovery?.trialUsedAt};
+ const trialTimes={cat:s.catDiscovery?.usedAt,rain:s.rainDiscovery?.trialUsedAt,bless:s.blessingDiscovery?.trialUsedAt};
  if(trials.some(([id,row])=>!Object.hasOwn(trialTimes,id)||!object(row)||row.faithSpent!==0||
-  row.population!==undefined||row.fishing!==undefined||row.depth!==undefined||row.at!==trialTimes[id]))return false;
+  (id==='bless'?!validPopulationOutcome(s,id,row.population):row.population!==undefined)||row.fishing!==undefined||row.depth!==undefined||row.at!==trialTimes[id]))return false;
  if(paid.some(([id,row])=>!Object.hasOwn(MIRACLES,id)||!object(row)||
-  !Number.isSafeInteger(row.faithSpent)||row.faithSpent<=0||row.population!==undefined&&!validPopulationOutcome(id,row.population)||row.fishing!==undefined&&!validFishingOutcome(s,id,row.fishing)||
+  !Number.isSafeInteger(row.faithSpent)||row.faithSpent<=0||row.population!==undefined&&!validPopulationOutcome(s,id,row.population)||row.fishing!==undefined&&!validFishingOutcome(s,id,row.fishing)||
   row.depth!==undefined&&!validDepthOutcome(s,id,row.depth)))return false;
  const effectDates=[
   ['rain',s.rainDiscovery,s.rainDiscovery?.lastPaidAt],
