@@ -7,6 +7,7 @@ import {setHTML} from './ui-render.js';
 
 const strictOnly=new Set(['flax','basket','mat','copper','axe','blade','chisel','timber','joinery']);
 const pinned=new Set(['food','clay','reed','wood','stone','brick','cloth','clothing','pottery','beer','faith','prestige']);
+const widePinned=new Set(['hides','wool','flax','copper','timber','firedBrick','milk','basket']);
 const amount=new Intl.NumberFormat('ru',{maximumFractionDigits:1});
 const signed=value=>Math.abs(value)<.05?'0':(value>0?'+':'−')+amount.format(Math.abs(value));
 const forecastNote='Оценка учитывает работников, местные запасы, дороги, питание, посев и износ одежды. Торговля, стройки и чудеса в расчёт не входят.';
@@ -65,7 +66,7 @@ export function createResourceBar(root){
   const {resources}=state;
   model={resources,balance,seeds};
   setHTML(root,RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name}</span><div class="resource-group-items">${group.keys.filter(id=>!strictOnly.has(id)||isStrictSumer(state)).map(id=>
-   `<button type="button" class="resource${pinned.has(id)?' resource-pinned':''}" data-resource="${id}" aria-controls="resource-info" aria-expanded="false"><span class="resource-icon" aria-hidden="true">${resourceIcon(id,{decorative:true})}</span><span class="resource-value"><strong></strong><em class="season-delta"></em></span><small>${resourceLabel(id)}</small></button>`
+   `<button type="button" class="resource${pinned.has(id)?' resource-pinned':widePinned.has(id)?' resource-wide':''}" data-resource="${id}" aria-controls="resource-info" aria-expanded="false"><span class="resource-icon" aria-hidden="true">${resourceIcon(id,{decorative:true})}</span><span class="resource-value"><strong></strong><em class="season-delta"></em></span><small>${resourceLabel(id)}</small></button>`
   ).join('')}</div></section>`).join(''));
   for(const button of root.querySelectorAll('[data-resource]')){
    const id=button.dataset.resource,count=String(Math.floor(resources[id])),delta=signed(balance[id].net);

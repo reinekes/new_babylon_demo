@@ -298,7 +298,16 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
  .uruk-ui .resourcebar #resources .resource-frame + .resource-frame {padding-left:4px!important}
  .uruk-ui .resourcebar #resources .resource {padding:3px}
 }
-.uruk-ui:not(.uruk-resources-open) .resourcebar #resources {flex:1 1 0}
+.uruk-ui:not(.uruk-resources-open) .resourcebar #resources {
+ flex:0 1 auto;width:max-content;justify-content:flex-start;
+}
+.uruk-ui .resourcebar #resources .resource-group-items {justify-content:flex-start}
+@media(min-width:1450px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource.resource-wide {display:flex!important}
+}
+@media(min-width:1650px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar {left:330px;right:250px;max-width:none;margin:0;gap:5px}
+}
 @media(min-width:1001px) and (max-width:1649px) {
  .uruk-ui:not(.uruk-resources-open) .resourcebar {left:310px;right:195px;gap:4px;padding:0 6px}
 }
