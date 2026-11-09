@@ -67,7 +67,7 @@ import {createSaveLibraryUI} from './ui-saves.js';
 import {runSeasonJump,seasonJumpReason} from './season-jump.js';
 import {festivalBlessingFrame} from './festival-blessing.js';
 import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
-import {cityEventDefinition} from './city-events.js';
+import {cityEventDefinition,waterThreatQuote} from './city-events.js';
 import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,namelessEndingReason,recordNamelessEnding,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
 import {modeChooserHTML,createGodhoodControls,gameModeLabel} from './ui-godhood.js';
 import {relicControlActive,relicQuestView,relicQuestViews} from './relic-quest.js';
@@ -1170,6 +1170,12 @@ function update(){
  $('labor-note').textContent=state.funeral&&state.funeral.scope!=='family'?'Траурная процессия. Назначения и все грузы сохранены; работа продолжится после возвращения.':stats.disconnected?`Нет пути к ${stats.disconnected} рабочим зданиям. Нужен мост или склад на этом берегу.`:`Строители: ${stats.builders} · носильщики: ${stats.carriers??0} · площадки: ${stats.sites} · рынок: ${marketPorters} · склады: ${quarterPorters}. Собирают: ${stats.working} · несут груз: ${stats.carrying}. Ресурсы поступают только после доставки.`;
  $('date').title='1 год города = 2 года возраста. Дети работают с 16 лет.';const calendar=calendarAt(state);$('date').textContent=`Год ${state.year} · ${SEASONS[state.season]} · ${calendar.monthName}`;$('season-icon').textContent=['❀','☀','❧','❄'][state.season];
  setHTML($('season-track'),monthTrackHTML(state));if(!seasonJumping)monthNotice.update(state);
+ const threatMemory=state.fearCrisis?.last;
+ const fearBadge=$('fear-reputation');
+ if(fearBadge){
+  fearBadge.hidden=!threatMemory;
+  if(threatMemory)fearBadge.textContent=`Грозный приказ · водозабор ${threatMemory.x}, ${threatMemory.y} · подчинились ${threatMemory.people.length} чел.`;
+ }
  $('god-name').textContent=state.name;$('god-rating').textContent=`Слава ${state.divinity.rating} · вдохновлено ${state.divinity.inspirationSuccesses} · вера людей ${Math.round(beliefMultiplier(state)*60)}%`;setHTML($('god-description'),MOURNING_NAMES.includes(state.name)?'Город помнит тех, кого потерял.<br>Люди называют бога по судьбе своих близких.':Object.values(state.divinity.domains).some(v=>v>0)?'Твоё имя рождается из деяний.<br>Деяния остаются в памяти людей.':'Люди строят город.<br>Ты выбираешь, каким богом стать.');
  $('god-level').textContent=count(state,'ziggurat')?'III · БОГ ВЕЛИКОГО ГОРОДА':state.population>=24?'II · ПОКРОВИТЕЛЬ ГОРОДА':'I · ДУХ ПОСЕЛЕНИЯ';$('pantheon').textContent=`Заслуженные имена · ${new Set([...state.divinity.names,...earnedResultNames(state)]).size}`;
  const weather=weatherAt(state);$('weather').textContent=state.drought?`☀ Засуха · ${state.drought} сез.`:state.rain?`☂ Благодатный дождь · ${state.rain} сез.`:({sunny:'☀ Ясно',cloudy:'☁ Облачно',rain:'☂ Дождь',wind:'≋ Ветер'}[weather.type]);$('weather').classList.toggle('drought',!!state.drought);
@@ -1345,12 +1351,15 @@ function checkDialogs(){
  }
  if(state.event&&state.godhood?.namelessEndingAt===undefined){
   const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
+  const threat=waterThreatQuote(state);
+  const threatDetails=threat?`<p class="warning-note" data-water-threat-details>${esc(threat.text||threat.reason)}</p>`:'';
+  const threatButton=threat?`<button class="secondary" id="event-threat" ${threat.reason?'disabled':''}>Принудить бригаду</button>`:'';
   const arrivals=ev.id==='refugees'?refugeeArrivalCount(state):null;
   const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':
    arrivals===null?ev.text:arrivals?`Можно принять жителей: ${arrivals}. Приём стоит 20 еды.`:'Сейчас нет свободных мест для новых жителей.';
   const eventCost=festival?`<div class="event-costs" role="group" aria-label="Цена праздника">${[['prestige','престижа'],['food','еды'],['beer','пива']].map(([kind,name])=>`<span>${resourceIcon(kind)}<span><b>${FESTIVAL_COST[kind]}</b> ${name}</span></span>`).join('')}</div>`:'';
-  openDialog('event',`${ev.id==='festival'?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:''}<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span><h2>${esc(ev.title)}</h2><p>${esc(description)}</p>${eventCost}${reason?`<p class="warning-note">${reason}</p>`:''}<div class="dialog-actions"><button class="primary" id="event-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button class="secondary" id="event-skip">${esc(definition?.skipLabel||'Отказаться')}</button></div><p class="keyboard-note">Время на паузе. Ресурсы сверху остаются видны.</p>`);
-  for(const choice of ['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(result.ok){closeDialog();if(choice==='accept'&&ev.id==='festival'){paused=false;showFestival();}save();update();checkDialogs();}else toast(result.reason);};
+  openDialog('event',`${ev.id==='festival'?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:''}<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span><h2>${esc(ev.title)}</h2><p>${esc(description)}</p>${eventCost}${threatDetails}${reason?`<p class="warning-note">${reason}</p>`:''}<div class="dialog-actions"><button class="primary" id="event-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button class="secondary" id="event-skip">${esc(definition?.skipLabel||'Отказаться')}</button>${threatButton}</div><p class="keyboard-note">Время на паузе. Ресурсы сверху остаются видны.</p>`);
+  for(const choice of threat?['accept','skip','threat']:['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(result.ok){closeDialog();if(choice==='accept'&&ev.id==='festival'){paused=false;showFestival();}save();update();checkDialogs();}else toast(result.reason);};
  }
 }
 function canalSpecializationHTML(){

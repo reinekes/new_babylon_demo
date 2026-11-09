@@ -26,6 +26,7 @@ export function createNewCity({mode,seed}={}){
  state.demography.birthFoodRule=COURTYARD_BIRTH_FOOD;
  state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
  if(mode==='awakening'){
+  state.fearCrisis={version:1};
   state.rainDiscovery=newRainDiscovery();
   state.blessingDiscovery=newBlessingDiscovery();
   state.arrivalHospitality=newArrivalHospitality();
