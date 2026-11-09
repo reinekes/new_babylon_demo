@@ -1,0 +1,177 @@
+{
+  "at": "2026-11-09T16:58:25.690134+00:00",
+  "commit": "b7a2b8b6afd748bba2d15f1ff4fb0fa003bfece7",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "479625f7b90d1100e149651771f18b33e466ff703fbd1396452de2686ef84884",
+      "actual": "479625f7b90d1100e149651771f18b33e466ff703fbd1396452de2686ef84884",
+      "match": true
+    },
+    {
+      "path": "assets/vendor/babylon-runtime-9.31.0.js",
+      "status": 200,
+      "expected": "368a759ce93c3ec5e959b11cd0a17c94a64cd432af387f777c57d9572206f09c",
+      "actual": "368a759ce93c3ec5e959b11cd0a17c94a64cd432af387f777c57d9572206f09c",
+      "match": true
+    },
+    {
+      "path": "courtyard.html",
+      "status": 200,
+      "expected": "ec40712aad73384984462f030144fc0914a44df6bdf01d5115456d566f6d0dc7",
+      "actual": "ec40712aad73384984462f030144fc0914a44df6bdf01d5115456d566f6d0dc7",
+      "match": true
+    },
+    {
+      "path": "crop-studio.html",
+      "status": 200,
+      "expected": "99e53eb35df5c8b74c9dea35e4aad5bdf32b0cbecc2fe5d1105150f18914d99a",
+      "actual": "99e53eb35df5c8b74c9dea35e4aad5bdf32b0cbecc2fe5d1105150f18914d99a",
+      "match": true
+    },
+    {
+      "path": "district3d.html",
+      "status": 200,
+      "expected": "e5e283aa11e498a4df54ec62a16c4730e4e813db7228a42979c7148c19cdf366",
+      "actual": "e5e283aa11e498a4df54ec62a16c4730e4e813db7228a42979c7148c19cdf366",
+      "match": true
+    },
+    {
+      "path": "district3d/terrain.js",
+      "status": 200,
+      "expected": "4cc070940618287501509c035a83d3348c904b357bba67a1efbd0922385a73a8",
+      "actual": "4cc070940618287501509c035a83d3348c904b357bba67a1efbd0922385a73a8",
+      "match": true
+    },
+    {
+      "path": "docs/PERF_RELEASE_2026-11-09.md",
+      "status": 200,
+      "expected": "cbf8cbc7d36e88ba08764fde47ec89aaa175328ce8c119d1f8d7363187d91c77",
+      "actual": "cbf8cbc7d36e88ba08764fde47ec89aaa175328ce8c119d1f8d7363187d91c77",
+      "match": true
+    },
+    {
+      "path": "docs/benchmarks/2026-11-09-city-render-lod-bundle.json",
+      "status": 200,
+      "expected": "4c4fd429af6457fa61097a944e97b22d90b1d73d2f52dfdeb710124d70b7094f",
+      "actual": "4c4fd429af6457fa61097a944e97b22d90b1d73d2f52dfdeb710124d70b7094f",
+      "match": true
+    },
+    {
+      "path": "docs/model-index.json",
+      "status": 200,
+      "expected": "45c78b50fda9c4c0938bccf4326b2def6b6dfe81169a3afc1dc6da8d96af6db1",
+      "actual": "45c78b50fda9c4c0938bccf4326b2def6b6dfe81169a3afc1dc6da8d96af6db1",
+      "match": true
+    },
+    {
+      "path": "game3d/actors.js",
+      "status": 200,
+      "expected": "9705e31b38e37d61238a86bd68384e208069362073d10cdd6f746d4efbb24023",
+      "actual": "9705e31b38e37d61238a86bd68384e208069362073d10cdd6f746d4efbb24023",
+      "match": true
+    },
+    {
+      "path": "game3d/renderer.js",
+      "status": 200,
+      "expected": "5e4d38a742bfeda0273e5cf6abbc86ab920d1fdcb2fb3eb792524baf0f8f727a",
+      "actual": "5e4d38a742bfeda0273e5cf6abbc86ab920d1fdcb2fb3eb792524baf0f8f727a",
+      "match": true
+    },
+    {
+      "path": "game3d/resident-geometry-lod.js",
+      "status": 200,
+      "expected": "defe4f84801fa538cf81622d24202179a4c57066def3720bb4ea4f2ed83e20b8",
+      "actual": "defe4f84801fa538cf81622d24202179a4c57066def3720bb4ea4f2ed83e20b8",
+      "match": true
+    },
+    {
+      "path": "game3d/resident-lod-indices.js",
+      "status": 200,
+      "expected": "68e271371e1ed680e374fef0e06f114539bf2a738d51f703616770db26fa03c1",
+      "actual": "68e271371e1ed680e374fef0e06f114539bf2a738d51f703616770db26fa03c1",
+      "match": true
+    },
+    {
+      "path": "game3d/resident-pose-schedule.js",
+      "status": 200,
+      "expected": "5a00e294c11ff1f4f492ae45f8876db1947bac2b5fff23e56b7f5fcb9245dc9f",
+      "actual": "5a00e294c11ff1f4f492ae45f8876db1947bac2b5fff23e56b7f5fcb9245dc9f",
+      "match": true
+    },
+    {
+      "path": "game3d/vendor-loading.js",
+      "status": 200,
+      "expected": "997a9ca01f4ef51959b4544dfbf1d0857194a4ad48854255382ee7c8ce404836",
+      "actual": "997a9ca01f4ef51959b4544dfbf1d0857194a4ad48854255382ee7c8ce404836",
+      "match": true
+    },
+    {
+      "path": "goat-studio.html",
+      "status": 200,
+      "expected": "27810afb9062183dfdac92d239aa5440bfb9076347f06ed59a25a5d70b4c6901",
+      "actual": "27810afb9062183dfdac92d239aa5440bfb9076347f06ed59a25a5d70b4c6901",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "e83d6208bae16b42d21cb129abab31aa552a1466a2e56c41a21842b2d22e34e1",
+      "actual": "e83d6208bae16b42d21cb129abab31aa552a1466a2e56c41a21842b2d22e34e1",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "466435bf6dc436b21fad21d25e79e4693c9acbe87cb84eb4f9f7e8bff2b61bfc",
+      "actual": "466435bf6dc436b21fad21d25e79e4693c9acbe87cb84eb4f9f7e8bff2b61bfc",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1a21e2f4ac5b5cf08200d4b28da9e239838e97d11968defc8c58170b64693872",
+      "actual": "1a21e2f4ac5b5cf08200d4b28da9e239838e97d11968defc8c58170b64693872",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "e4098e8df5429a71bee838170d64c8d111fe0e742cc7e5bd85c51a40cdb96619",
+      "actual": "e4098e8df5429a71bee838170d64c8d111fe0e742cc7e5bd85c51a40cdb96619",
+      "match": true
+    },
+    {
+      "path": "scripts/babylon-runtime/README.md",
+      "status": 200,
+      "expected": "0b533f95eae155d73afcd9006f03b6b7fbe4ceaa04d84596dda94f2f9a6793cc",
+      "actual": "0b533f95eae155d73afcd9006f03b6b7fbe4ceaa04d84596dda94f2f9a6793cc",
+      "match": true
+    },
+    {
+      "path": "scripts/babylon-runtime/entry.mjs",
+      "status": 200,
+      "expected": "24b48d3317c8c3615a2802f643c4934885d5aaa4e01dbc23e3f21b0cd93054cc",
+      "actual": "24b48d3317c8c3615a2802f643c4934885d5aaa4e01dbc23e3f21b0cd93054cc",
+      "match": true
+    },
+    {
+      "path": "scripts/babylon-runtime/package.json",
+      "status": 200,
+      "expected": "e969ab0fff08be06538a5b8875ad67d1a620efb4e612891020c76790a1035975",
+      "actual": "e969ab0fff08be06538a5b8875ad67d1a620efb4e612891020c76790a1035975",
+      "match": true
+    },
+    {
+      "path": "scripts/babylon-runtime/resident-lod.mjs",
+      "status": 200,
+      "expected": "507039a5985beece47c0ac5a44289d9063565896f256affeaad7c12df408f22b",
+      "actual": "507039a5985beece47c0ac5a44289d9063565896f256affeaad7c12df408f22b",
+      "match": true
+    }
+  ],
+  "matched": 24,
+  "total": 24
+}
