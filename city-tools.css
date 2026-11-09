@@ -53,3 +53,13 @@
 .city-tools .city-tools-person{padding:9px 11px}.city-tools .city-tools-person-heading{gap:7px}.city-tools .city-tools-name{font-size:14px!important;overflow-wrap:anywhere}.city-tools .city-tools-person-info{margin:2px 0 4px;font-size:10px}.city-tools-person-vitals{font-size:10px;gap:4px 12px}.city-tools-person-more{margin-top:7px;border-top:1px solid #d7cfba88;padding-top:5px}.city-tools-person-more>summary{font-size:10px;color:#53704e;cursor:pointer;padding:3px 0;min-height:22px;box-sizing:border-box}.city-tools-person-more>summary:focus-visible{outline:2px solid #7c5d32;outline-offset:2px}.city-tools-person-more .city-tools-person-controls{margin-top:5px;padding-top:5px;border-top:0}.city-tools-person-more .city-tools-field select{padding:6px;min-height:34px}.city-tools-person-more .city-tools-inspire{padding:6px 4px;min-height:34px}.city-tools .city-tools-person-actions{font-size:10px}.city-tools .city-tools-person-actions>button{min-height:22px}
 @media(max-width:850px){.city-tools .city-tools-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.city-tools .city-tools-person{padding:9px}.city-tools .city-tools-filters select{min-height:38px}.city-tools-person-more>summary{min-height:28px}.city-tools .city-tools-person-actions>button{min-height:28px}}
 @media(max-width:480px){.city-tools h2{font-size:23px}.city-tools-row{padding:10px}.city-tools-row-head{align-items:start}.city-tools-clock{font-size:10px}.city-tools-summary{padding:10px}.city-tools-person-controls{grid-template-columns:1fr}.city-tools-person-actions{max-width:35%;gap:5px 8px}.city-tools-person-info{font-size:10px}.city-tools .city-tools-field select,.city-tools .city-tools-inspire{min-height:42px}.city-tools .city-tools-release{min-height:36px}.city-tools-building-name{font-size:13px}.building-inventory-item{padding:4px 5px}}
+
+.city-tools-profession > h3 {font-size:14px;letter-spacing:.025em}
+.city-tools-profession > h3 > small {background:#514534;color:#f3dfba}
+.city-tools .city-tools-profession .city-tools-person {padding:12px}
+.city-tools .city-tools-person-heading {display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:10px}
+.resident-portrait {display:block;width:48px;height:48px;border-radius:6px;background:#3d392d;border:1px solid #92754d}
+.city-tools .city-tools-person-identity {min-width:0}
+.uruk-ui dialog .city-tools-person-identity .city-tools-name {padding:0;min-height:28px;border:0!important;background:none!important;text-align:left;font-size:16px!important;white-space:normal;line-height:1.2}
+.city-tools .city-tools-person-actions {display:grid;justify-items:start;max-width:none}
+.city-tools .city-tools-person-vitals {margin-top:9px;font-size:11px}

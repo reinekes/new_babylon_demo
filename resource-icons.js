@@ -20,4 +20,4 @@ const drawings={
  prestige:'<path d="m7 13-3 9 7-3 2-6m4 0 3 9-7-3-2-6"/><circle cx="12" cy="9" r="7"/><path d="m12 5 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>'
 };
 const names={milk:'Молоко',pottery:'Керамика',beer:'Пиво',firedBrick:'Обожжённый кирпич',water:'Вода',brick:'Сырцовый кирпич',wool:'Шерсть',cloth:'Ткань',clothing:'Одежда',food:'Еда',wood:'Дерево',stone:'Камень',hides:'Шкуры',grain:'Зерно',clay:'Глина',reed:'Тростник',faith:'Вера',prestige:'Престиж'};
-export function resourceIcon(kind){return `<svg class="resource-svg resource-${kind}" viewBox="0 0 24 24" role="img" aria-label="${names[kind]||kind}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><title>${names[kind]||kind}</title>${drawings[kind]||''}</svg>`;}
+export function resourceIcon(kind,{decorative=false}={}){return `<svg class="resource-svg resource-${kind}" viewBox="0 0 24 24" ${decorative?'aria-hidden="true"':`role="img" aria-label="${names[kind]||kind}"`} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${decorative?'':`<title>${names[kind]||kind}</title>`}${drawings[kind]||''}</svg>`;}

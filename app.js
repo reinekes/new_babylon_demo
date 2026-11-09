@@ -99,7 +99,8 @@ import {PROFESSION_NAMES,hasWorkplace} from './professions.js';
 import {renderStaffing,selectedProfession,citizenProfessionName,professionOptionsHTML} from './ui-professions.js';
 import {birthFoodHTML,renderCityTools} from './ui-city-tools.js';
 import {waterSummary,WATERPOINT_CAPACITY} from './water.js';
-import {RESOURCE_GROUPS,seasonBalance} from './season-balance.js';
+import {seasonBalance} from './season-balance.js';
+import {createResourceBar} from './ui-resource-bar.js';
 import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
 import {uiIcon} from './ui-icons.js';
 import {clothingStatus} from './clothing.js';
@@ -1176,9 +1177,9 @@ function update(){
  $('test-resources').disabled=false;$('test-resources').title='Открыть вкладку тестирования: события, ресурсы, улучшения и похороны';
  document.body.classList.toggle('relic-control-active',relicControlActive(state));for(const el of document.querySelectorAll('.build-panel,#miracles,.time-controls [data-speed],#next-season,#day-cycle,#open-photo'))el.inert=relicControlActive(state);relicUI.refresh();
  renderFoodWarnings();
- const r=state.resources,stats=workforceStats(state),marketPorters=state.citizens.filter(c=>c.tradeJob||c.saleJob).length,quarterPorters=state.citizens.filter(c=>c.districtJob).length,res=Object.fromEntries(Object.entries(RESOURCE_NAMES).map(([k,n])=>[k,['',n.toUpperCase()]]));
+ const r=state.resources,stats=workforceStats(state),marketPorters=state.citizens.filter(c=>c.tradeJob||c.saleJob).length,quarterPorters=state.citizens.filter(c=>c.districtJob).length;
  const balance=seasonBalance(state);
- setHTML($('resources'),RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name} <small>≈ за сезон</small></span><div class="resource-group-items">${group.keys.filter(k=>!['flax','basket','mat','copper','axe','blade','chisel','timber','joinery'].includes(k)||isStrictSumer(state)).map(k=>{const name=RESOURCE_NAMES[k].toUpperCase(),v=balance[k],delta=Math.abs(v.net)<.05?'0':`${v.net>0?'+':'−'}${Math.abs(v.net).toFixed(1).replace('.0','')}`,tip=`${name}: ${rounded(r[k])}. Прогноз на текущий сезон: поступления ≈${v.income.toFixed(1)}, расход ≈${v.outgo.toFixed(1)}, баланс ${delta}. Учитывает работников, путь до склада, местное сырьё, питание, посев и износ одежды. Торговля, стройки и чудеса не включены; фактические рейсы могут отличаться.`;return `<div class="resource" data-resource="${k}" title="${tip}"><span class="resource-icon">${resourceIcon(k)}</span><div><span class="resource-value"><strong class="${MATERIALS.includes(k)&&r[k]>storage(state)?'overflow':''}">${Math.floor(r[k])}</strong><em class="season-delta ${v.net>.05?'surplus':v.net<-.05?'deficit':'balanced'}" aria-label="Прогноз ${label(k)}: ${delta} за сезон">${delta}</em></span><small>${k==='brick'?'СЫРЕЦ':k==='firedBrick'?'ОБОЖЖЁННЫЙ':name}${k==='food'?` · семена ${foodAmount(seedReserve(state))}`:''}</small></div></div>`;}).join('')}</div></section>`).join(''));
+ resourceBar.render(state,balance,storage(state),seedReserve(state));
  $('population').title=`Дети: ${state.citizens.filter(c=>c.age<16).length} · взрослые: ${state.citizens.filter(c=>c.age>=16&&c.age<55).length} · пожилые: ${state.citizens.filter(c=>c.age>=55).length}`;$('population').textContent=`${state.population} / ${state.capacity}`;$('happiness').textContent=`☀ ${Math.round(state.happiness)}%`;$('happiness').style.color=state.happiness<40?'#aa654a':'';
  const efficiency=workers(state);const funeralLabels={gathering:'Жители собираются',procession:'Процессия с факелами',collecting:'Возвращаются за умершими',farewell:'Прощание с умершими',receding:'Процессия отходит',jackals:'Шакалы уносят погребальные свёртки',returning:'Жители возвращаются домой'};$('mourning-notice').hidden=!state.funeral;if(state.funeral)$('mourning-notice').textContent=`${funeralLabels[state.funeral.stage]} · погибло ${state.funeral.deceased.length}. Календарь и хозяйство стоят до окончания церемонии.`;const ground=!state.buildings.some(b=>b.type==='granary'&&(!b.construction||b.construction.kind==='upgrade'));$('ground-storage-note').hidden=!ground;$('ground-storage-note').textContent=state.buildings.some(b=>b.starterHut)?'Запасы и припасы хранятся внутри домов':'Без амбара · запасы на земле у разгрузки';$('workers').textContent=`${stats.employed+stats.builders+(stats.carriers??0)+(stats.manualGatherers??0)+marketPorters+quarterPorters} / ${state.population}`;$('labor-meter').style.width=`${efficiency*100}%`;
  $('labor-note').textContent=state.funeral&&state.funeral.scope!=='family'?'Траурная процессия. Назначения и все грузы сохранены; работа продолжится после возвращения.':stats.disconnected?`Нет пути к ${stats.disconnected} рабочим зданиям. Нужен мост или склад на этом берегу.`:`Строители: ${stats.builders} · носильщики: ${stats.carriers??0} · площадки: ${stats.sites} · рынок: ${marketPorters} · склады: ${quarterPorters}. Собирают: ${stats.working} · несут груз: ${stats.carrying}. Ресурсы поступают только после доставки.`;
@@ -1602,6 +1603,7 @@ function frame(now){
  requestAnimationFrame(frame);
 }
 urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});
+const resourceBar=createResourceBar($('resources'));
 update();requestAnimationFrame(frame);
 if(!loaded)chooseNewMode();else{toast(legacyRaw?'Город обновлён: дворы, ремёсла, обзор кварталов и фоторежим. Прежние запасы, семьи, грузы и оплаченные стройки сохранены.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}
 if(corrupt)setTimeout(()=>toast('Сохранение повреждено или несовместимо. Начата новая история.'),500);

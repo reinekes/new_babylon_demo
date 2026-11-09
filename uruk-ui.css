@@ -261,3 +261,44 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 .staff-preparation button{margin:6px 6px 4px 0}
 .person-work-link{color:inherit;font-weight:600;text-underline-offset:3px}
 .uruk-ui .person-work-link{color:#f3cd91}
+
+/* Compact grouped ledger. The expanded view uses the same resource buttons. */
+.uruk-ui .resourcebar #resources {display:flex!important;align-items:center;gap:8px;min-width:0;overflow:auto;scrollbar-width:thin;padding:4px 2px}
+.uruk-ui .resourcebar #resources .resource-frame {display:flex!important;align-items:center;flex:none;border-radius:4px}
+.uruk-ui .resourcebar #resources .resource-frame + .resource-frame {border-left:1px solid #94744e88!important;padding-left:8px!important}
+.uruk-ui .resourcebar #resources .resource-group-items {display:flex!important;align-items:center;gap:2px}
+.uruk-ui .resourcebar #resources .resource {display:none!important}
+.uruk-ui .resourcebar #resources .resource.resource-pinned {display:flex!important}
+.uruk-ui .resourcebar #resources .resource {flex:none;align-items:center;justify-content:center;gap:4px;padding:3px 5px;min-height:30px;border:1px solid transparent;border-radius:4px;background:transparent;color:inherit}
+.uruk-ui .resourcebar #resources .resource:is(:hover,[aria-expanded=true]),.resource-help:hover {background:#6b523348;border-color:#99774b88}
+.uruk-ui .resourcebar #resources .resource strong {font-size:15px!important;font-variant-numeric:tabular-nums}
+.uruk-ui .resourcebar #resources .resource-icon svg {width:17px;height:17px}
+.uruk-ui .resourcebar #resources .resource small {display:none}
+.uruk-ui .resource-help {flex:none;width:26px;height:28px;padding:0;border:1px solid #98774f;border-radius:50%;background:#392f24;color:#f2d9aa;font-weight:600}
+.uruk-ui.uruk-resources-open .resourcebar #resources {flex:1 0 100%;display:grid!important;gap:12px;overflow:visible;padding:0 25px 0 0}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource-frame {display:block!important;border-left:0!important;padding:0!important}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-label {display:block;margin-bottom:4px;color:#dec395}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource-group-items {flex-wrap:wrap}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource {display:flex!important;flex-wrap:wrap;justify-content:flex-start;padding:4px 7px}
+.uruk-ui.uruk-resources-open .resourcebar #resources .resource small {display:block}
+.uruk-ui.uruk-resources-open .resource-help {position:absolute;top:7px;right:41px}
+.resource-info {position:fixed;z-index:65;width:min(290px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto;padding:13px 15px;background:#2f2921;color:#f3e5cb;border:1px solid #9b784d;border-radius:6px;box-shadow:0 8px 22px #0008}
+.resource-info h3,.resource-info h4,.resource-info p,.resource-info dl {margin:0}
+.resource-info h3 {display:flex;align-items:center;gap:7px;font-size:17px}
+.resource-info h3 svg {width:19px;height:19px;color:#d6b27c}
+.resource-info h4 {margin-top:10px;padding-top:7px;border-top:1px solid #8b694466;font-size:12px}
+.resource-info dl {margin-top:5px}
+.resource-info dl div {display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.resource-info dd {margin:0;font-variant-numeric:tabular-nums;font-weight:600}
+.resource-info p {margin-top:8px;color:#d2bfa0;font-size:11px;line-height:1.45}
+.uruk-ui:is(.photo-mode,.map-only) .resource-info {display:none}
+.uruk-ui .resourcebar #resources .resource-frame .resource-group-items {height:auto}
+.uruk-ui.uruk-resources-open .resourcebar #resources {grid-template-columns:minmax(0,1fr)}
+@media(max-width:650px) {
+ .uruk-ui .resourcebar #resources .resource-frame + .resource-frame {padding-left:4px!important}
+ .uruk-ui .resourcebar #resources .resource {padding:3px}
+}
+.uruk-ui:not(.uruk-resources-open) .resourcebar #resources {flex:1 1 0}
+@media(min-width:1001px) and (max-width:1649px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar {left:310px;right:195px;gap:4px;padding:0 6px}
+}
