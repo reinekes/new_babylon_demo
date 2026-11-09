@@ -44,3 +44,33 @@ test('voluntary support is available and earlier cities cannot use threats',()=>
  assert.equal(town.citizens[0].health,83);
  assert.equal(town.fearCrisis.last,undefined);
 });
+
+test('threats accumulate tension and voluntary support for a real crew reduces it',()=>{
+ let town=createNewCity({mode:'awakening',seed:137});
+ const station={type:'waterpoint',x:12,y:7,level:1};
+ town.buildings.push(station);
+ const carrierId=town.citizens.find(c=>c.age>=16).id;
+ const prepare=()=>{
+  town.event=createCityEvent(town,'wellRepair');
+  town.resources.food=100;town.resources.reed=100;
+  Object.assign(town.citizens.find(c=>c.id===carrierId),{work:'12,7',role:'watercarrier',calling:'watercarrier',health:80});
+ };
+ prepare();
+ assert.ok(resolveEvent(town,'threat').ok);
+ assert.equal(town.fearCrisis.tension,1);
+ prepare();
+ assert.ok(resolveEvent(town,'threat').ok);
+ assert.equal(town.fearCrisis.tension,2);
+ const raw=encode(town);
+ town=decode(raw);
+ assert.equal(encode(town),raw);
+ prepare();
+ assert.ok(resolveEvent(town,'accept').ok);
+ assert.equal(town.fearCrisis.tension,1);
+ assert.deepEqual(town.fearCrisis.last.people,[carrierId]);
+ prepare();
+ assert.ok(resolveEvent(town,'accept').ok);
+ assert.equal(town.fearCrisis.tension,0);
+ const saved=encode(town);
+ assert.equal(encode(decode(saved)),saved);
+});

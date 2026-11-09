@@ -32,9 +32,17 @@ export function applyCityEvent(s,id,choice){
  for(const [key,amount]of Object.entries(d.gain))s.resources[key]=Math.min(1e9,(s.resources[key]||0)+amount);
  if(d.residents)affectResidents(s,d.residents);
  if(d.residents?.health)for(const person of s.citizens)person.health=Math.min(100,person.health+d.residents.health);
+ if(id==='wellRepair'&&fearTension(s)>0){
+  const crew=waterThreatQuote(s)?.people;
+  if(crew?.length){
+   s.fearCrisis.tension=fearTension(s)-1;
+   affectResidents(s,{faith:4},crew.map(person=>person.id));
+  }
+ }
  syncInventory(s);return {ok:true};
 }
 
+export const fearTension=s=>s.fearCrisis?.tension??Number(!!s.fearCrisis?.last);
 const THREAT_REED=6;
 const THREAT_MOOD=12;
 const THREAT_FAITH=8;
@@ -60,6 +68,7 @@ export function applyWaterThreat(s){
  const ids=people.map(c=>c.id);
  affectResidents(s,{mood:-THREAT_MOOD,faith:-THREAT_FAITH},ids);
  for(const person of people)person.health=Math.min(100,person.health+3);
+ s.fearCrisis.tension=fearTension(s)+1;
  s.fearCrisis.last={at:s.simTime,x:station.x,y:station.y,people:ids};
  syncInventory(s);
  return {ok:true};
@@ -68,7 +77,9 @@ export function applyWaterThreat(s){
 export function validateFearCrisis(s){
  const crisis=s.fearCrisis;
  if(crisis===undefined)return true;
- if(!usesCatDiscovery(s)||!crisis||crisis.version!==1||Object.keys(crisis).length!==1+Number(crisis.last!==undefined))return false;
+ if(!usesCatDiscovery(s)||!crisis||crisis.version!==1||
+  Object.keys(crisis).length!==1+Number(crisis.last!==undefined)+Number(crisis.tension!==undefined))return false;
+ if(crisis.tension!==undefined&&(!crisis.last||!Number.isSafeInteger(crisis.tension)||crisis.tension<0))return false;
  const last=crisis.last;
  return last===undefined||!!last&&Object.keys(last).length===4&&Number.isFinite(last.at)&&last.at>=0&&last.at<=s.simTime&&
   Number.isInteger(last.x)&&last.x>=0&&last.x<worldWidth(s)&&Number.isInteger(last.y)&&last.y>=0&&last.y<worldHeight(s)&&
