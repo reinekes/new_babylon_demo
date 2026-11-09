@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-09T07:40:54.125947+00:00",
+  "commit": "ff63ef7ba453e42bf9dbddd0664d56cc458edcd6",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "a7eec5f7283796e9f5ed05585f245220d7ee48517dfa954cce951c27aeb71499",
+      "actual": "a7eec5f7283796e9f5ed05585f245220d7ee48517dfa954cce951c27aeb71499",
+      "match": true
+    },
+    {
+      "path": "docs/2026-11-09-work-summary.md",
+      "status": 200,
+      "expected": "aecff9f3d505672befda9f0ca59d8ca5fbd836c2a4fa1b8c8d26286ce138f8d0",
+      "actual": "aecff9f3d505672befda9f0ca59d8ca5fbd836c2a4fa1b8c8d26286ce138f8d0",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "d5cc7e5aae5816136b4fea7fe6862b6a815271ac6ec7f64d8da90b11b79ea252",
+      "actual": "d5cc7e5aae5816136b4fea7fe6862b6a815271ac6ec7f64d8da90b11b79ea252",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "798b8259af10d54017b60e6541d75ac9e8756eeda0447f30cf65daecbe618cc9",
+      "actual": "798b8259af10d54017b60e6541d75ac9e8756eeda0447f30cf65daecbe618cc9",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "1efdc46381bade66250f06ff865dc0c43ef2453fa541fa4a137a39cfffc6b47e",
+      "actual": "1efdc46381bade66250f06ff865dc0c43ef2453fa541fa4a137a39cfffc6b47e",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "1d2379f506e042ed570521969292ef56abeffc2844332351c58617520ec102d5",
+      "actual": "1d2379f506e042ed570521969292ef56abeffc2844332351c58617520ec102d5",
+      "match": true
+    },
+    {
+      "path": "supply.js",
+      "status": 200,
+      "expected": "98b2b6ede4682d44293187e17a43daa72405fa1ba67c217d16bf1b267353f451",
+      "actual": "98b2b6ede4682d44293187e17a43daa72405fa1ba67c217d16bf1b267353f451",
+      "match": true
+    },
+    {
+      "path": "tests/household-priority.test.js",
+      "status": 200,
+      "expected": "b53da275bf406ccea8652c3a2128592a77325dec5a212fc018a98f08e54ba034",
+      "actual": "b53da275bf406ccea8652c3a2128592a77325dec5a212fc018a98f08e54ba034",
+      "match": true
+    }
+  ],
+  "matched": 8,
+  "total": 8
+}
