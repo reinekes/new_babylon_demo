@@ -1,14 +1,22 @@
 import {householdInitiativeReserved,householdMovingFamily,householdMoveActivityReason,householdMoveSiteReason} from './household-initiative.js';
 import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {prepareMemorialMove} from './life-analytics.js';
-import {mournResidents} from './wellbeing.js';
-import {totalFood} from './households.js';
+import {mealRation,mournResidents} from './wellbeing.js';
+import {homeMealFood,supplyHome,totalFood} from './households.js';
 import {networkFor} from './workforce.js';
 import {buildingKey,capacityOf,citizenName} from './definitions.js';
 export const lifeStage=c=>c.age<16?'child':c.age<55?'adult':'elder';
 export const canWork=c=>c.age===undefined||c.age>=16;
 export const foodDemand=s=>s.citizens.reduce((n,c)=>n+(c.age<16?.3:.6),0);
-export function birthFoodStatus(s){
+export const COURTYARD_BIRTH_FOOD='courtyard-v1';
+export const usesCourtyardBirthFood=s=>s.demography?.birthFoodRule===COURTYARD_BIRTH_FOOD;
+export function birthFoodStatus(s,home){
+ if(home&&usesCourtyardBirthFood(s)){
+  const key=buildingKey(home);
+  const available=homeMealFood(home);
+  const needed=s.citizens.reduce((total,c)=>supplyHome(c,{arrived:true})===key?total+mealRation(c):total,mealRation({age:0}));
+  return {available,needed,enough:available+1e-7>=needed};
+ }
  const available=totalFood(s),needed=foodDemand(s)*2+.6;
  return {available,needed,enough:available>=needed};
 }
@@ -64,11 +72,11 @@ export function advanceGenerations(s,recover=()=>{}){
   const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50&&!shelterHome(c));
   for(const a of adults){if(a.partner!==null)continue;const partner=adults.find(c=>c!==a&&c.sex!==a.sex&&c.partner===null&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
   const pair=adults.find(c=>{const partner=living.get(c.partner);return c.sex==='f'&&c.age<45&&partner?.home===home&&!shelterHome(partner);});
-  if(!pair||residents.length>=capacityOf(b)-reservedArrivalBeds(s,home)||s.happiness<65||s.hungry||!birthFoodStatus(s).enough||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
+  if(!pair||residents.length>=capacityOf(b)-reservedArrivalBeds(s,home)||s.happiness<65||s.hungry||!birthFoodStatus(s,b).enough||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
   const father=living.get(pair.partner),id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};
   newborns.push(baby);residents.push(baby);d.lastBirth[home]=s.tick;d.births++;news(s,'В семье родился ребёнок',`${citizenName(id)} · родители: ${citizenName(pair.id)} и ${citizenName(father.id)}. Поколение ${baby.generation}.`);
  }
  s.citizens.push(...newborns);s.population=s.citizens.length;return {deceased,grown,newborns};
 }
-export function validateDemography(s){const d=s.demography,int=(n,max=1e9)=>Number.isSafeInteger(n)&&n>=0&&n<=max;if(!d||!int(d.nextId,1e6)||!int(d.rngState,4294967295)||!int(d.births)||!int(d.naturalDeaths)||d.naturalDeaths>s.deaths||!d.lastBirth||typeof d.lastBirth!=='object'||Array.isArray(d.lastBirth)||Object.entries(d.lastBirth).some(([k,v])=>!/^\d+,\d+$/.test(k)||!int(v,s.tick)))return false;
+export function validateDemography(s){const d=s.demography,int=(n,max=1e9)=>Number.isSafeInteger(n)&&n>=0&&n<=max;if(!d||d.birthFoodRule!==undefined&&!usesCourtyardBirthFood(s)||!int(d.nextId,1e6)||!int(d.rngState,4294967295)||!int(d.births)||!int(d.naturalDeaths)||d.naturalDeaths>s.deaths||!d.lastBirth||typeof d.lastBirth!=='object'||Array.isArray(d.lastBirth)||Object.entries(d.lastBirth).some(([k,v])=>!/^\d+,\d+$/.test(k)||!int(v,s.tick)))return false;
  const ids=new Map(s.citizens.map(c=>[c.id,c]));return s.citizens.every(c=>int(c.id)&&c.id<d.nextId&&Number.isFinite(c.age)&&c.age>=0&&c.age<=100&&['m','f'].includes(c.sex)&&int(c.generation)&&c.generation>=1&&Array.isArray(c.parents)&&[0,2].includes(c.parents.length)&&new Set(c.parents).size===c.parents.length&&c.parents.every(id=>int(id)&&id<c.id)&& (c.partner===null||int(c.partner)&&c.partner!==c.id&&ids.get(c.partner)?.partner===c.id)&& (canWork(c)||!c.work&&!c.site&&!c.tradeJob&&!c.saleJob&&!Object.values(c.cargo).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0)));}

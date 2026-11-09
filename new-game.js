@@ -1,3 +1,4 @@
+import {COURTYARD_BIRTH_FOOD} from './demography.js';
 import {newInannaDiscovery} from './inanna-discovery.js';
 import {newDepthSupply} from './depth-supply.js';
 import {newStarObservations} from './star-observations.js';
@@ -22,6 +23,7 @@ import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
 // Only a newly chosen Awakening enrolls in the fisherman discovery story.
 export function createNewCity({mode,seed}={}){
  const state=createGame({mode,seed,scenario:{...strictScenario(),...(mode==='awakening'?{miracles:CAT_DISCOVERY_RULES}:{})}});
+ state.demography.birthFoodRule=COURTYARD_BIRTH_FOOD;
  state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
  if(mode==='awakening'){
   state.rainDiscovery=newRainDiscovery();

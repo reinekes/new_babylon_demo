@@ -109,3 +109,33 @@ test('birth waits for either parent to return from flood shelter',()=>{
   assert.deepEqual(new Set(child.parents),new Set(parents.map(c=>c.id)));
  }
 });
+
+test('new cities use delivered courtyard food for births and older towns use the city total',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ const {buildingKey}=await import('../definitions.js');
+ const base=createNewCity({mode:'mature',seed:137});
+ for(const c of base.citizens)Object.assign(c,{age:24,partner:null});
+ const parent=base.citizens[0],partner=base.citizens.find(c=>c.home===parent.home&&c.sex!==parent.sex);
+ parent.partner=partner.id;partner.partner=parent.id;
+ for(const b of base.buildings)if(b.type==='house'){b.pantry=0;b.householdStock={...b.householdStock,milk:0};}
+ base.resources.food=1000;
+ base.demography.rngState=1;
+ const encoded=encode(base);
+ const empty=decode(encoded);
+ assert.equal(encode(empty),encoded);
+ assert.equal(advanceGenerations(empty).newborns.length,0);
+ const supplied=decode(encoded);
+ const houses=supplied.buildings.filter(b=>b.type==='house');
+ for(const home of houses){
+  const threshold=birthFoodStatus(supplied,home).needed;
+  home.pantry=threshold;
+  assert.equal(birthFoodStatus(supplied,home).enough,true);
+  home.pantry=20;
+ }
+ const birth=advanceGenerations(supplied).newborns[0];
+ assert.ok(birth);
+ assert.ok(houses.some(home=>buildingKey(home)===birth.home));
+ const old=decode(encoded);
+ delete old.demography.birthFoodRule;
+ assert.ok(advanceGenerations(old).newborns.length>0);
+});

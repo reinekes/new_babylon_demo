@@ -1,4 +1,4 @@
-import {birthFoodStatus} from './demography.js';
+import {birthFoodStatus,usesCourtyardBirthFood} from './demography.js';
 import {residentLinkHTML} from './ui-resident-links.js';
 import {inannaMeetingReason} from './miracle-celebration.js';
 import {INANNA_GUARD_DAYS} from './inanna-discovery.js';
@@ -68,9 +68,11 @@ export function sortedCityCitizens(s,filter={}){
   return diff||name(a).localeCompare(name(b),'ru')||a.id-b.id;
  });
 }
-export function birthFoodHTML(s){
- const {available,needed,enough}=birthFoodStatus(s),amount=n=>Number(n.toFixed(1));
- return `<p class="city-tools-muted" data-birth-food>Еда для рождения · городской запас ≈ ${amount(available)} ед. · порог ≈ ${amount(needed)} ед. · ${enough?'порог достигнут':'еды меньше порога'}</p>`;
+export function birthFoodHTML(s,home){
+ const local=usesCourtyardBirthFood(s);
+ if(local&&!home)return '<p class="city-tools-muted" data-birth-food>Еда для рождения проверяется в каждом дворе. Запас и порог видны в карточке дома.</p>';
+ const {available,needed,enough}=birthFoodStatus(s,home),amount=n=>Number(n.toFixed(2));
+ return `<p class="city-tools-muted" data-birth-food>Еда для рождения · ${local?'запас двора':'городской запас'} ≈ ${amount(available)} ед. · порог ≈ ${amount(needed)} ед. · ${enough?'порог достигнут':'еды меньше порога'}</p>`;
 }
 function citizensHTML(s,model,filter,page,desiredInspirations,expandedCitizens){
  const people=sortedCityCitizens(s,filter),pages=Math.max(1,Math.ceil(people.length/PAGE_SIZE)),current=Math.min(page,pages-1),roles=[...new Set(['auto','production','carrier','builder','healer','tailor','watercarrier',...(s.citizens||[]).map(c=>professionRole(c.calling)===c.role?c.calling:c.role||'auto')])];
