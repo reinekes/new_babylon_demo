@@ -1,0 +1,86 @@
+{
+  "at": "2026-11-09T09:18:39.151184+00:00",
+  "commit": "19dd5752100082486729aa3942c4e523fbebe565",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "92dd9160567082ab24e4ecd31d675695cb5c6fd1ac688215bc63868c3fda4576",
+      "actual": "92dd9160567082ab24e4ecd31d675695cb5c6fd1ac688215bc63868c3fda4576",
+      "match": true
+    },
+    {
+      "path": "blessing-discovery.js",
+      "status": 200,
+      "expected": "0648c2158db28efdcb4bd69b2dc919ac169b595731e43137ce9429e8ab005338",
+      "actual": "0648c2158db28efdcb4bd69b2dc919ac169b595731e43137ce9429e8ab005338",
+      "match": true
+    },
+    {
+      "path": "blessing-presentation.js",
+      "status": 200,
+      "expected": "b9ddd3e330415e2fc033e9f8f5386fac397df2faf8f89b0e38b8469c36d39027",
+      "actual": "b9ddd3e330415e2fc033e9f8f5386fac397df2faf8f89b0e38b8469c36d39027",
+      "match": true
+    },
+    {
+      "path": "engine.js",
+      "status": 200,
+      "expected": "27aeb4044bc011bf27ad9895cfc4b29b1adff6d34498e991f91b37ddacb07af0",
+      "actual": "27aeb4044bc011bf27ad9895cfc4b29b1adff6d34498e991f91b37ddacb07af0",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "expected": "0cfb8ba9c93dcb8a81521b4336b1c89a93dce66d6a76cc0384290909abc1eb6e",
+      "actual": "0cfb8ba9c93dcb8a81521b4336b1c89a93dce66d6a76cc0384290909abc1eb6e",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "81e6b4f8a889b08e3d0ab1a77593ea9fc3faeb6258881677b124943c920a21b0",
+      "actual": "81e6b4f8a889b08e3d0ab1a77593ea9fc3faeb6258881677b124943c920a21b0",
+      "match": true
+    },
+    {
+      "path": "roadmap/plan.md",
+      "status": 200,
+      "expected": "36b37bb633fb485c954a63dee1eed9b63daedb6f4b639c4c37c7e81c5398e355",
+      "actual": "36b37bb633fb485c954a63dee1eed9b63daedb6f4b639c4c37c7e81c5398e355",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "01f9e023959f9b27b92ec1195978acac41b1cfc604ad71386e68f63cd0251d3e",
+      "actual": "01f9e023959f9b27b92ec1195978acac41b1cfc604ad71386e68f63cd0251d3e",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-discovery.test.js",
+      "status": 200,
+      "expected": "ecd9978ec0f9c99225044cf6d792bc96596c22390f5572d44f07097e305edd8c",
+      "actual": "ecd9978ec0f9c99225044cf6d792bc96596c22390f5572d44f07097e305edd8c",
+      "match": true
+    },
+    {
+      "path": "tests/blessing-presentation.test.js",
+      "status": 200,
+      "expected": "3f78e19070361b5274db98ca08c9efc81412b0d6baf7038593a309fac6e399ab",
+      "actual": "3f78e19070361b5274db98ca08c9efc81412b0d6baf7038593a309fac6e399ab",
+      "match": true
+    },
+    {
+      "path": "ui-catalog.js",
+      "status": 200,
+      "expected": "36b6fc320d6e33fc961341bcba7b3185dc1ac895532100845cf450d0d11c22b5",
+      "actual": "36b6fc320d6e33fc961341bcba7b3185dc1ac895532100845cf450d0d11c22b5",
+      "match": true
+    }
+  ],
+  "matched": 11,
+  "total": 11
+}
