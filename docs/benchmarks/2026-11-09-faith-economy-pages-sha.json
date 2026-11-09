@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-09T09:42:25.582019+00:00",
+  "commit": "5fda967c89578f0ed934c36e59d43c9866d32117",
+  "base": "https://reinekes.github.io/new_babylon_demo/",
+  "files": [
+    {
+      "path": "GAME_DESIGN.md",
+      "status": 200,
+      "expected": "9685c10bbbcaa69a54d662422bfc2d3b6e780b6c2b683d5b3cfa977e96c24725",
+      "actual": "9685c10bbbcaa69a54d662422bfc2d3b6e780b6c2b683d5b3cfa977e96c24725",
+      "match": true
+    },
+    {
+      "path": "docs/2026-11-09-faith-economy-decision.md",
+      "status": 200,
+      "expected": "4434f0e3735bb01989175905b40574ca548be244e7f113f27afd193366296ea3",
+      "actual": "4434f0e3735bb01989175905b40574ca548be244e7f113f27afd193366296ea3",
+      "match": true
+    },
+    {
+      "path": "roadmap/index.html",
+      "status": 200,
+      "expected": "da7e140f547ce6e05cb530df6d3df3b48f495e0fe83c5e3e4ae100fe430ec89f",
+      "actual": "da7e140f547ce6e05cb530df6d3df3b48f495e0fe83c5e3e4ae100fe430ec89f",
+      "match": true
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "status": 200,
+      "expected": "2d0ae73c8d7ca1ec5db915b4a6801be10f8705a0eb9f6bf733e9656c85da376f",
+      "actual": "2d0ae73c8d7ca1ec5db915b4a6801be10f8705a0eb9f6bf733e9656c85da376f",
+      "match": true
+    }
+  ],
+  "matched": 4,
+  "total": 4
+}
