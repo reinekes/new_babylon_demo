@@ -478,6 +478,30 @@ function bindDistrict(root){bindStorePolicy(root);const form=root.querySelector(
 let supplyFilter='all';
 function showSupply(filter='all'){supplyFilter=['all','risk'].includes(filter)?filter:'all';openDialog('supply',`<button class="management-close" id="close-supply" aria-label="Вернуться в город">×</button><span class="eyebrow">ПРОДУКТЫ И ДОСТАВКА</span><h2>Снабжение семей</h2><div id="supply-content"></div>`);$('close-supply').onclick=closeDialog;renderSupply();}
 function showSupplyHome(key,tab='food'){const b=state.buildings.find(b=>b.type==='house'&&(buildingKey(b)===key||`${b.x},${b.y}`===key));if(!b)return false;const {x,y}=b;closeDialog();if(selection)choose(selection);roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();inspected={x,y};householdTab=tab;renderer.focusOn(x,y);detail('house',false,b);$('city').scrollIntoView({block:'center'});return true;}
+function openDistrictBuilding(key,tab,group){
+ if(tab){
+  if(!showSupplyHome(key,tab))return;
+ }else{
+  const store=state.buildings.find(b=>buildingKey(b)===key);
+  if(!store)return;
+  closeDialog();
+  renderer.focusOn(store.x,store.y);
+  inspected={x:store.x,y:store.y};
+  detail(store.type,false,store);
+ }
+ const panel=$('tile-detail');
+ const back=document.createElement('button');
+ back.type='button';
+ back.className='city-vital-back';
+ back.textContent='← Назад к кварталу';
+ panel.querySelector('.map-card-heading').after(back);
+ back.onclick=()=>{
+  inspected=null;
+  panel.hidden=true;
+  showCityOverview('homes',undefined,group);
+  $('city-tools-root').querySelector('[data-city-tab="districts"].city-tools-link')?.focus();
+ };
+}
 function openVitalHome(key,tab,residentId,registerView){
  if(!['food','water'].includes(tab)||!showSupplyHome(key,tab))return;
  const back=document.createElement('button');
@@ -1076,12 +1100,12 @@ function refreshLifeAnalytics(selectedId){
  const root=$('life-analytics-root');if(modalKind!=='life'||!root)return;
  renderLifeAnalytics(root,state,{supplyReport:supplyOverview(state),...(selectedId!==undefined?{selectedId}:{}),onFocus:key=>{const b=state.buildings.find(v=>buildingKey(v)===key);if(!b)return;closeDialog();renderer.focusOn(b.x,b.y);inspected={x:b.x,y:b.y};detail(b.type,false,b);}});
 }
-function showCityOverview(tab='districts',residentView){
- openDialog('citytools',`<button class="management-close" id="close-citytools" aria-label="Вернуться в город">×</button><div id="city-tools-root"></div>`);$('close-citytools').onclick=closeDialog;refreshCityOverview(tab,residentView);
+function showCityOverview(tab='districts',residentView,group){
+ openDialog('citytools',`<button class="management-close" id="close-citytools" aria-label="Вернуться в город">×</button><div id="city-tools-root"></div>`);$('close-citytools').onclick=closeDialog;refreshCityOverview(tab,residentView,group);
 }
-function refreshCityOverview(tab,residentView){
+function refreshCityOverview(tab,residentView,group){
  const root=$('city-tools-root');if(modalKind!=='citytools'||!root||root.contains(document.activeElement)&&['SELECT','INPUT'].includes(document.activeElement.tagName))return;
- renderCityTools(root,state,{...(tab?{tab}:{}),onVitalHome:openVitalHome,onDistrictHome:showSupplyHome,residentView,audioStatus:cityAudio.status,onInannaMeeting:()=>{const result=startInannaMeeting(state);if(!result.ok){toast(result.reason);return;}closeDialog();paused=false;syncCeremonySpeed();const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);save();update();},onFireEvacuate:(kiln,home)=>mutate(evacuateFireHome(state,state.buildings.find(b=>buildingKey(b)===kiln),home),'Семья направилась в укрытие'),onKilnExtinguish:key=>mutate(extinguishKilnFire(state,state.buildings.find(b=>buildingKey(b)===key)),'Соседи понесли воду к печи'),onKilnBank:(key,banked)=>mutate(setKilnBanked(state,state.buildings.find(b=>buildingKey(b)===key),banked),banked?'Обжиг остановлен':'Обжиг разрешён'),onAutoHousing:enabled=>mutate(setAutonomousHousing(state,enabled),enabled?'Самостоятельная стройка разрешена':'Самостоятельная стройка выключена'),mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onUnload:()=>mutate(callUnloadWorkers(state),'Объявлен призыв на разгрузку'),onRepair:()=>mutate(callRepairWorkers(state),'Объявлен призыв на расчистку каналов'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const road=state.roads.find(r=>r.id===key);if(road){closeDialog();renderer.focusOn(road.x,road.y);roadDetail(road);return;}const b=state.buildings.find(b=>buildingKey(b)===key);if(!b)return;const {x,y}=b;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
+ renderCityTools(root,state,{...(tab?{tab}:{}),onVitalHome:openVitalHome,onDistrictBuilding:openDistrictBuilding,residentView,group,audioStatus:cityAudio.status,onInannaMeeting:()=>{const result=startInannaMeeting(state);if(!result.ok){toast(result.reason);return;}closeDialog();paused=false;syncCeremonySpeed();const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);save();update();},onFireEvacuate:(kiln,home)=>mutate(evacuateFireHome(state,state.buildings.find(b=>buildingKey(b)===kiln),home),'Семья направилась в укрытие'),onKilnExtinguish:key=>mutate(extinguishKilnFire(state,state.buildings.find(b=>buildingKey(b)===key)),'Соседи понесли воду к печи'),onKilnBank:(key,banked)=>mutate(setKilnBanked(state,state.buildings.find(b=>buildingKey(b)===key),banked),banked?'Обжиг остановлен':'Обжиг разрешён'),onAutoHousing:enabled=>mutate(setAutonomousHousing(state,enabled),enabled?'Самостоятельная стройка разрешена':'Самостоятельная стройка выключена'),mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onUnload:()=>mutate(callUnloadWorkers(state),'Объявлен призыв на разгрузку'),onRepair:()=>mutate(callRepairWorkers(state),'Объявлен призыв на расчистку каналов'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const road=state.roads.find(r=>r.id===key);if(road){closeDialog();renderer.focusOn(road.x,road.y);roadDetail(road);return;}const b=state.buildings.find(b=>buildingKey(b)===key);if(!b)return;const {x,y}=b;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
 }
 function handleTestAction(action,data){
  if(action==='cat-scene'||action==='earth-scene'){

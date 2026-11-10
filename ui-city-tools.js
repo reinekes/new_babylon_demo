@@ -246,9 +246,9 @@ function homesHTML(model,group){
    const [tab,label]=districtActions[r.code]||['family','Открыть дом'];
    return `<li><strong>${escape(r.label)}</strong><p>${escape(r.detail)}</p><button type="button" class="city-tools-link" data-district-home="${escape(h.key)}" data-district-tab="${tab}">${label} →</button></li>`;
   }).join('');
-  return `<article class="city-tools-row"><div class="city-tools-row-head"><div class="city-tools-building-name">${uiIcon('house')}${focus(h.key,`Дом · ${h.x}, ${h.y}`)}</div><button type="button" class="city-tools-link" data-city-home="${escape(h.key)}">Жители · ${h.population}</button></div><div class="city-tools-metrics"><span>Еда ${number(h.food)} / ${number(h.demand)} на ужин</span><span>Вода ${number(h.water)} / ${number(h.waterDemand)} в день</span></div><ul class="city-district-issues">${reasons}</ul>${buildingInventoryHTML(h.inventory,{house:true,compactStorage:true})}</article>`;
+  return `<article class="city-tools-row"><div class="city-tools-row-head"><div class="city-tools-building-name">${uiIcon('house')}<button type="button" class="city-tools-link" data-district-home="${escape(h.key)}" data-district-tab="family">Дом · ${h.x}, ${h.y}</button></div><button type="button" class="city-tools-link" data-city-home="${escape(h.key)}">Жители · ${h.population}</button></div><div class="city-tools-metrics"><span>Еда ${number(h.food)} / ${number(h.demand)} на ужин</span><span>Вода ${number(h.water)} / ${number(h.waterDemand)} в день</span></div><ul class="city-district-issues">${reasons}</ul>${buildingInventoryHTML(h.inventory,{house:true,compactStorage:true})}</article>`;
  }).join('');
- return `<div class="city-district-intro"><button type="button" class="city-tools-link" data-city-tab="districts">← Все кварталы</button><h3>${escape(district?.label||'Проблемные дворы')}</h3>${store?focus(store,'Показать склад квартала →'):''}</div><div class="city-tools-list city-tools-card-grid city-district-homes">${cards||empty('Сейчас все семьи этого квартала обеспечены.')}</div>`;
+ return `<div class="city-district-intro"><button type="button" class="city-tools-link" data-city-tab="districts">← Все кварталы</button><h3>${escape(district?.label||'Проблемные дворы')}</h3>${store?`<button type="button" class="city-tools-link" data-district-store="${escape(store)}">Показать склад квартала →</button>`:''}</div><div class="city-tools-list city-tools-card-grid city-district-homes">${cards||empty('Сейчас все семьи этого квартала обеспечены.')}</div>`;
 }
 
 function housingPolicyHTML(s){
@@ -480,7 +480,8 @@ export function renderCityTools(root,s,options={}){
    if(button.hasAttribute('data-city-unload')){ctl.options.onUnload?.();ctl.refresh();return;}
    if(button.hasAttribute('data-city-harvest')){ctl.options.onHarvest?.();ctl.refresh();return;}
    if(button.dataset.cityInannaMeeting!==undefined){ctl.options.onInannaMeeting?.();return;}
-   if(button.dataset.districtHome!==undefined){ctl.options.onDistrictHome?.(button.dataset.districtHome,button.dataset.districtTab);return;}
+   if(button.dataset.districtHome!==undefined){ctl.options.onDistrictBuilding?.(button.dataset.districtHome,button.dataset.districtTab,ctl.group);return;}
+   if(button.dataset.districtStore!==undefined){ctl.options.onDistrictBuilding?.(button.dataset.districtStore,null,ctl.group);return;}
    if(button.dataset.vitalHome!==undefined){ctl.options.onVitalHome?.(button.dataset.vitalHome,button.dataset.vitalTab,Number(button.dataset.vitalResident),{filter:{...ctl.filter}});return;}
    if(button.dataset.cityFocus!==undefined){ctl.options.onFocus?.(button.dataset.cityFocus);return;}
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
