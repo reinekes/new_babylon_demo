@@ -63,3 +63,62 @@
 .uruk-ui dialog .city-tools-person-identity .city-tools-name {padding:0;min-height:28px;border:0!important;background:none!important;text-align:left;font-size:16px!important;white-space:normal;line-height:1.2}
 .city-tools .city-tools-person-actions {display:grid;justify-items:start;max-width:none}
 .city-tools .city-tools-person-vitals {margin-top:9px;font-size:11px}
+
+/* Residents and buildings share a toolbar, bounded results and page controls. */
+.city-register,.city-building-register {display:grid;gap:14px;align-items:start;min-width:0}
+.city-register {grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr)}
+.city-building-register {grid-template-columns:170px minmax(0,1fr)}
+.city-register-list,.city-building-workspace {min-width:0}
+.city-register-toolbar {display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.city-register-toolbar .city-register-search {flex:1 1 220px;min-width:0;padding:7px 10px;font-size:13px}
+.city-register-toolbar .city-tools-field > span {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.city-register-toolbar .city-register-filters > div {display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.city-register-filters[open] {flex-basis:100%}
+.city-register-filters summary,.city-register-note summary {cursor:pointer}
+.city-register-note {margin-top:10px;font-size:12px}
+.city-register-scroll {max-height:clamp(180px,49dvh,630px);overflow:auto;border:1px solid #8e6d4266;border-radius:4px}
+.city-register table {width:100%;border-collapse:separate;border-spacing:0;text-align:left;font-size:12px}
+.city-register th,.city-register td {padding:4px 8px;border-bottom:1px solid #8e6d423e}
+.city-register th {position:sticky;top:0;z-index:1;background:#382e24;color:#ddc29a;font-weight:600}
+.city-register td:first-child {width:34%;padding:0}
+.uruk-ui dialog .city-register [data-city-inspect] {display:flex;align-items:center;gap:7px;width:100%;padding:4px 8px;text-align:left;border:0!important;background:transparent!important}
+.city-register [data-city-inspect] span {overflow-wrap:anywhere}
+.city-register [data-city-inspect] .resident-portrait {width:27px;height:27px;flex:none}
+.city-register tr.is-selected {background:#244260 var(--uruk-lapis);background-size:320px;color:#fff0d1}
+.city-register tr:not(.is-selected):hover {background:#b28a4a20}
+.city-register-pagination {margin:6px 0 0}
+.city-register-inspector {min-width:0;padding:14px;border:1px solid #8e6d4266;border-radius:4px;background:#332d24}
+.city-register-inspector header {display:flex;align-items:center;gap:12px}
+.city-register-inspector header .resident-portrait {width:72px;height:72px;flex:none}
+.city-register-inspector h3 {margin:0;font-size:22px;overflow-wrap:anywhere}
+.city-register-inspector header span {font-size:12px}
+.city-register-inspector dl {margin:10px 0}
+.city-register-inspector dl div {display:flex;justify-content:space-between;border-bottom:1px solid #8e6d424d;padding:4px 0}
+.city-register-inspector dd {margin:0;font-variant-numeric:tabular-nums}
+.city-register-actions {display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.uruk-ui dialog .city-register-map {padding:4px 10px;background:#244260 var(--uruk-lapis)!important}
+.city-building-directory {display:grid;gap:3px}
+.uruk-ui dialog .city-building-directory button {display:flex;align-items:center;justify-content:space-between;gap:6px;text-align:left;padding:5px 9px;font-size:12px}
+.city-building-attention {display:flex;align-items:center;gap:5px;font-size:12px}
+.uruk-ui dialog .city-building-attention input {min-height:0}
+.uruk-ui dialog .city-building-rows .city-tools-workshop {padding:0;border:0!important;border-bottom:1px solid #8e6d4255!important;border-radius:0;background:transparent!important}
+.city-building-rows .city-tools-building-summary {display:grid;grid-template-columns:minmax(110px,2fr) minmax(70px,1fr) 43px 65px minmax(72px,1fr) 12px;gap:6px;padding:7px 9px}
+.city-building-rows .city-tools-building-summary::after {content:"";width:6px;height:6px;justify-self:center;align-self:center;border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg)}
+.city-building-rows details[open] > summary::after {transform:rotate(225deg)}
+.city-building-rows .city-tools-building-summary .city-tools-building-name {font-size:13px}
+.city-building-rows details[open] > summary {background:#244260 var(--uruk-lapis);background-size:320px}
+.city-register-building-status {font-size:11px;overflow-wrap:anywhere}
+.city-building-rows .city-tools-building-body {padding:8px 12px 12px}
+.city-building-rows .city-tools-workers .resident-portrait {width:28px;height:28px;flex:none}
+@media(max-width:850px) {
+ .city-register {grid-template-columns:minmax(0,1fr)}
+ .city-register-scroll {max-height:35dvh}
+ .city-building-register {grid-template-columns:minmax(0,1fr)}
+ .city-building-directory {display:flex;overflow:auto;padding:3px;gap:5px}
+ .city-building-directory button {flex:none;white-space:nowrap}
+}
+@media(max-width:540px) {
+ .city-register .city-register-work,.city-building-rows .city-tools-building-year,.city-building-rows .city-tools-building-level {display:none}
+ .city-building-rows .city-tools-building-summary {grid-template-columns:minmax(0,1fr) 45px minmax(58px,.6fr) 10px}
+ .city-register td,.city-register th {padding-inline:4px}
+}

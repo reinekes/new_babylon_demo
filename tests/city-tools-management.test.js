@@ -25,7 +25,7 @@ test('work cards expose the real inventories, building icon, staffing label and 
  const s=town();for(const c of s.citizens){c.work=null;delete c.workplace;}
  Object.assign(s.citizens[0],{role:'production',calling:'brewer'});Object.assign(s.citizens[1],{role:'production',calling:'potter'});
  const b=s.buildings.at(-1);b.artisan={stage:'idle',clay:3,reed:1,food:0,pottery:0,water:2,ready:0,elapsed:0,vesselUses:0};
- const html=cityToolsHTML(s,{tab:'workshops'}),card=html.match(/<article[^>]*data-city-building="6,8"[\s\S]*?<\/article>/)?.[0];
+ const html=cityToolsHTML(s,{tab:'workshops',expandedBuildings:new Set(['6,8'])}),card=html.match(/<article[^>]*data-city-building="6,8"[\s\S]*?<\/article>/)?.[0];
  assert.ok(card);assert.match(card,/ui-icon/);assert.match(card,/Нет работников/);assert.match(card,/data-staffing="empty"/);
  assert.match(card,/data-city-assign="6,8"/);assert.ok(card.indexOf(`value="${s.citizens[1].id}"`)<card.indexOf(`value="${s.citizens[0].id}"`));
  assert.match(card,/Сырьё/);assert.match(card,/Готовая продукция/);assert.match(card,/resource-clay/);assert.match(card,/>3</);
@@ -33,7 +33,7 @@ test('work cards expose the real inventories, building icon, staffing label and 
 
 test('people have separate work and inspiration controls, with disabled work for children and explicit faith cost',()=>{
  const s=town();s.citizens[0].age=10;
- const html=cityToolsHTML(s,{tab:'citizens'});
+ const html=cityToolsHTML(s,{tab:'citizens',selectedId:0});
  assert.match(html,/data-city-role="0"[^>]*disabled/);assert.match(html,/data-city-inspiration="0"/);assert.match(html,/data-city-inspire="0"/);
  assert.match(html,/Вдохновить · 1 вера/);assert.match(html,/Шанс 70%/);assert.match(html,/resource-faith/);
 });
@@ -59,7 +59,7 @@ test('quick assignment routes building key and citizen ID to the existing safe a
 
 test('inventories and inline controls remain pure for frozen legacy state',()=>{
  const s=town(),before=JSON.stringify(s);function freeze(v){if(v&&typeof v==='object'){Object.freeze(v);for(const value of Object.values(v))freeze(value);}}freeze(s);
- cityToolsHTML(s,{tab:'citizens'});cityToolsHTML(s,{tab:'workshops'});cityToolsHTML(s,{tab:'homes',group:cityDiagnostics(s).neighborhoods[0].key});assert.equal(JSON.stringify(s),before);
+ cityToolsHTML(s,{tab:'citizens',selectedId:0});cityToolsHTML(s,{tab:'workshops'});cityToolsHTML(s,{tab:'homes',group:cityDiagnostics(s).neighborhoods[0].key});assert.equal(JSON.stringify(s),before);
 });
 
 test('meal diagnostics count actual milk at home, in reachable storage and in a carrier load',()=>{

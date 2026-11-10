@@ -22,9 +22,9 @@ test('districts separate housing from storage groups without residents',()=>{
 });
 test('compact residents sort independently of state order and keep controls in stable disclosures',()=>{
  const s=town();s.citizens[0].hunger=90;s.citizens[1].hunger=10;
- const before=JSON.stringify(s),html=cityToolsHTML(s,{tab:'citizens',filter:{sort:'hunger'},expandedCitizens:new Set([s.citizens[1].id])});
+ const before=JSON.stringify(s),html=cityToolsHTML(s,{tab:'citizens',filter:{sort:'hunger'},selectedId:1,expandedCitizens:new Set([s.citizens[1].id])});
  assert.match(html,/data-city-filter="sort"/);assert.match(html,/data-city-person-disclosure="1" open/);
- assert.ok(html.indexOf('data-city-citizen="0"')<html.indexOf('data-city-citizen="1"'));
+ assert.ok(html.indexOf('data-city-inspect="0"')<html.indexOf('data-city-inspect="1"'));
  assert.match(html,/Настроить и подробнее/);assert.equal(JSON.stringify(s),before);
 });
 test('resident disclosure state and filters survive refresh without changing IDs or cargo',()=>{

@@ -1,3 +1,4 @@
+import {buildingInventory} from './building-inventory.js';
 import {residentPortrait} from './ui-resident-portrait.js';
 import {birthFoodStatus,usesCourtyardBirthFood} from './demography.js';
 import {residentLinkHTML} from './ui-resident-links.js';
@@ -75,32 +76,48 @@ export function birthFoodHTML(s,home){
  const {available,needed,enough}=birthFoodStatus(s,home),amount=n=>Number(n.toFixed(2));
  return `<p class="city-tools-muted" data-birth-food>Еда для рождения · ${local?'запас двора':'городской запас'} ≈ ${amount(available)} ед. · порог ≈ ${amount(needed)} ед. · ${enough?'порог достигнут':'еды меньше порога'}</p>`;
 }
-function residentCard(s,c,desiredInspirations,expandedCitizens){
- return `<article class="city-tools-row city-tools-person"><div class="city-tools-person-heading">${residentPortrait(c)}<div class="city-tools-person-identity"><button type="button" class="city-tools-name" data-city-citizen="${c.id}">${escape(displayName(s,c))}</button><span class="city-tools-person-info">${Math.floor(c.age??20)} лет · ${escape(citizenProfessionName(c))}</span></div><div class="city-tools-person-actions">${c.home?focus(c.home,'Дом'):''}${(c.workplace||c.work||c.site||c.guardPost)?focus(c.workplace||c.work||c.site||c.guardPost,c.site?'Стройка':'Работа'):''}</div></div><div class="city-tools-metrics city-tools-person-vitals"><span class="${c.health<60?'is-warning':''}">Здоровье <b>${number(c.health??100)}%</b></span><span class="${c.hunger>=30?'is-warning':''}">Голод <b>${number(c.hunger)}%</b></span></div><details class="city-tools-person-more" data-city-person-disclosure="${c.id}"${expandedCitizens.has(c.id)?' open':''}><summary>Настроить и подробнее</summary>${personControls(s,c,desiredInspirations.get(c.id))}${citizenEpithetHTML(s,c)}</details></article>`;
+const workKey=c=>c.workplace||c.work||c.site||c.guardPost;
+const searchMatch=(query,fields)=>query.trim().toLocaleLowerCase('ru').split(/\s+/).every(word=>fields.join(' ').toLocaleLowerCase('ru').includes(word));
+const searchField=(id,value,placeholder)=>`<input type="search" class="city-register-search" data-city-search="${id}" value="${escape(value)}" placeholder="${placeholder}" aria-label="${placeholder}">`;
+function registerPage(total,page,kind){
+ const pages=Math.max(1,Math.ceil(total/PAGE_SIZE)),current=Math.min(page,pages-1),start=current*PAGE_SIZE,end=Math.min(start+PAGE_SIZE,total);
+ const footer=`<nav class="city-tools-pagination city-register-pagination" aria-label="Страницы ${kind}"><button type="button" data-city-page="${current-1}"${current===0?' disabled':''} aria-label="Предыдущая страница">←</button><span>${total?start+1:0}–${end} из ${total}</span><button type="button" data-city-page="${current+1}"${current===pages-1?' disabled':''} aria-label="Следующая страница">→</button></nav>`;
+ return {start,end,footer};
 }
-function citizensHTML(s,filter,page,desiredInspirations,expandedCitizens){
- const people=sortedCityCitizens(s,filter),pages=Math.max(1,Math.ceil(people.length/PAGE_SIZE)),current=Math.min(page,pages-1),roles=[...new Set(['auto','production','carrier','builder','healer','tailor','watercarrier',...(s.citizens||[]).map(c=>professionRole(c.calling)===c.role?c.calling:c.role||'auto')])];
- const groups=new Map();
- for(const c of people){const label=(c.age??20)<16?'Дети':citizenProfessionName(c)==='Авто'?'Без специальности':citizenProfessionName(c);if(!groups.has(label))groups.set(label,[]);groups.get(label).push(c);}
- const ordered=[...groups].sort(([a],[b])=>a.localeCompare(b,'ru'));
- const visible=new Set(ordered.flatMap(([,members])=>members).slice(current*PAGE_SIZE,(current+1)*PAGE_SIZE));
- const sections=ordered.map(([label,members])=>{const cards=members.filter(c=>visible.has(c)).map(c=>residentCard(s,c,desiredInspirations,expandedCitizens));return cards.length?`<section class="city-tools-category city-tools-profession"><h3>${escape(label)} <small>${members.length}</small></h3><div class="city-tools-list city-tools-card-grid">${cards.join('')}</div></section>`:'';}).join('');
- return `${birthFoodHTML(s)}<div class="city-tools-filters">${select('role','Профессия',filter.role||'all',[['all','Все профессии'],...roles.map(r=>[r,CITY_ROLE_NAMES[r]||r])])}${select('age','Возраст',filter.age||'all',[['all','Все возрасты'],['adult','Взрослые · 16+'],['child','Дети · до 16']])}${select('trouble','Состояние',filter.trouble||'all',[['all','Все жители'],['hunger','Недоедание'],['health','Здоровье ниже 60%'],['family','Семье нужна помощь']])}${select('sort','Внутри профессии',filter.sort||'name',[['name','По имени'],['age','Старшие сначала'],['health','Сначала нужна помощь'],['hunger','Сначала голодные']])}</div>${filter.home?`<div class="city-tools-note">Дом ${escape(filter.home)} <button type="button" class="city-tools-link" data-city-clear-home>Все дома</button></div>`:''}<div class="city-tools-count">Найдено: ${people.length} · ${current*PAGE_SIZE+Number(people.length>0)}–${Math.min((current+1)*PAGE_SIZE,people.length)}</div>${sections||empty('По этим фильтрам жителей нет.')}${pages>1?`<nav class="city-tools-pagination" aria-label="Страницы жителей"><button type="button" data-city-page="${current-1}"${current===0?' disabled':''}>← Назад</button><span>${current+1} / ${pages}</span><button type="button" data-city-page="${current+1}"${current===pages-1?' disabled':''}>Дальше →</button></nav>`:''}`;
+function residentInspector(s,c,desiredInspirations,expandedCitizens){
+ if(!c)return `<aside class="city-register-inspector">${empty('Выбери жителя в списке.')}</aside>`;
+ return `<aside class="city-register-inspector" aria-label="Карточка жителя"><header>${residentPortrait(c)}<div><h3>${escape(displayName(s,c))}</h3><span>${escape(citizenProfessionName(c))} · ${Math.floor(c.age??20)} лет</span></div></header><dl><div><dt>Здоровье</dt><dd>${number(c.health??100)}%</dd></div><div><dt>Голод</dt><dd>${number(c.hunger)}%</dd></div></dl><div class="city-register-actions">${c.home?focus(c.home,'Дом'):''}${workKey(c)?focus(workKey(c),c.site?'Стройка':'Работа'):''}<button type="button" class="city-register-map" data-city-citizen="${c.id}">Показать на карте</button></div><details class="city-tools-person-more" data-city-person-disclosure="${c.id}"${expandedCitizens.has(c.id)?' open':''}><summary>Настроить и подробнее</summary>${personControls(s,c,desiredInspirations.get(c.id))}${citizenEpithetHTML(s,c)}</details></aside>`;
+}
+function citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens){
+ const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b]));
+ const workplace=c=>{const b=buildings.get(workKey(c));return b?buildingDefinition(s,b.type)?.name||b.type:workKey(c)||'—';};
+ const people=sortedCityCitizens(s,filter).filter(c=>searchMatch(filter.query||'',[displayName(s,c),citizenProfessionName(c),c.home,workKey(c),workplace(c)]));
+ const roles=[...new Set(['auto','production','carrier','builder','healer','tailor','watercarrier',...(s.citizens||[]).map(c=>professionRole(c.calling)===c.role?c.calling:c.role||'auto')])];
+ const {start,end,footer}=registerPage(people.length,page,'жителей'),rows=people.slice(start,end);
+ const selected=rows.find(c=>c.id===selectedId)||rows.find(c=>expandedCitizens.has(c.id))||rows[0];
+ const table=rows.map(c=>{
+  const needsCare=(c.health??100)<60,hungry=(c.hunger||0)>=30;
+  const status=needsCare?'Нужно лечение':hungry?'Голод':(c.age??20)<16?'Ребёнок':'В порядке';
+  return `<tr class="${c===selected?'is-selected':''}"><td><button type="button" data-city-inspect="${c.id}" aria-pressed="${c===selected}">${residentPortrait(c)}<span>${escape(displayName(s,c))}</span></button></td><td>${escape(citizenProfessionName(c))}</td><td class="city-register-work">${escape(workplace(c))}</td><td class="${needsCare||hungry?'is-warning':''}">${status}</td></tr>`;
+ }).join('');
+ return `<div class="city-register-toolbar">${searchField('citizens',filter.query||'','Имя, профессия, дом…')}${select('role','Профессия',filter.role||'all',[['all','Все профессии'],...roles.map(r=>[r,CITY_ROLE_NAMES[r]||r])])}<details class="city-register-filters" data-city-extra-filters${filter.moreOpen?' open':''}><summary>Фильтры</summary><div>${select('age','Возраст',filter.age||'all',[['all','Все возрасты'],['adult','Взрослые · 16+'],['child','Дети · до 16']])}${select('trouble','Состояние',filter.trouble||'all',[['all','Все жители'],['hunger','Недоедание'],['health','Здоровье ниже 60%'],['family','Семье нужна помощь']])}${select('sort','Порядок',filter.sort||'name',[['name','По имени'],['profession','По профессии'],['age','Старшие сначала'],['health','Сначала нужна помощь'],['hunger','Сначала голодные']])}</div></details></div>${filter.home?`<div class="city-tools-note">Дом ${escape(filter.home)} <button type="button" class="city-tools-link" data-city-clear-home>Все дома</button></div>`:''}<div class="city-register"><div class="city-register-list"><div class="city-register-scroll" data-city-scroll="citizens">${table?`<table aria-label="Реестр жителей"><thead><tr><th scope="col">Имя</th><th scope="col">Профессия</th><th scope="col" class="city-register-work">Работа</th><th scope="col">Состояние</th></tr></thead><tbody>${table}</tbody></table>`:empty('По этим фильтрам жителей нет.')}</div>${footer}</div>${residentInspector(s,selected,desiredInspirations,expandedCitizens)}</div><details class="city-register-note"><summary>Условия рождения</summary>${birthFoodHTML(s)}</details>`;
 }
 function staffingHTML(s,w){
  if(!w.staffing)return '';
  const b=s.buildings.find(b=>`${b.x},${b.y}`===w.key||b.id===w.key),staff=w.staffing,candidates=staffingCandidates(s.citizens||[],b),fixed=new Set(w.fixed);
- return `<div class="city-tools-staffing"><div class="city-tools-staffing-label"><b>${escape(staff.label)} · ${staff.count}/${staff.capacity}</b><small>По призванию: ${staff.matching}/${staff.capacity}</small></div>${w.assigned.length?`<ul class="city-tools-workers">${w.assigned.map(id=>{const c=s.citizens.find(c=>c.id===id);return `<li><button type="button" class="city-tools-link" data-city-citizen="${id}">${escape(displayName(s,id))}</button><span>${escape(citizenProfessionName(c))}${professionMatchesTask(c,w.type)?' · +20%':''}</span>${fixed.has(id)?`<button type="button" class="city-tools-release" data-city-release="${id}" aria-label="Освободить: ${escape(displayName(s,id))}">Освободить</button>`:'<small>авто</small>'}</li>`;}).join('')}</ul>`:''}<label class="city-tools-field city-tools-assign"><span>Быстро назначить</span><select data-city-assign="${escape(w.key)}" aria-label="Назначить работника: ${escape(w.name)}"${w.fixed.length>=staff.capacity||!candidates.length?' disabled':''}><option value="">${w.fixed.length>=staff.capacity?'Постоянные места заняты':candidates.length?'Выбрать жителя':'Нет подходящего взрослого'}</option>${candidates.map(c=>`<option value="${c.id}">${escape(displayName(s,c))} · ${escape(citizenProfessionName(c))}${professionMatchesTask(c,w.type)?' · призвание +20%':''}${c.workplace?' · сменит место':''}</option>`).join('')}</select></label></div>`;
+ return `<div class="city-tools-staffing"><div class="city-tools-staffing-label"><b>${escape(staff.label)} · ${staff.count}/${staff.capacity}</b><small>По призванию: ${staff.matching}/${staff.capacity}</small></div>${w.assigned.length?`<ul class="city-tools-workers">${w.assigned.map(id=>{const c=s.citizens.find(c=>c.id===id);return `<li>${residentPortrait(c)}<button type="button" class="city-tools-link" data-city-citizen="${id}">${escape(displayName(s,id))}</button><span>${escape(citizenProfessionName(c))}${professionMatchesTask(c,w.type)?' · +20%':''}</span>${fixed.has(id)?`<button type="button" class="city-tools-release" data-city-release="${id}" aria-label="Освободить: ${escape(displayName(s,id))}">Освободить</button>`:'<small>авто</small>'}</li>`;}).join('')}</ul>`:''}<label class="city-tools-field city-tools-assign"><span>Быстро назначить</span><select data-city-assign="${escape(w.key)}" aria-label="Назначить работника: ${escape(w.name)}"${w.fixed.length>=staff.capacity||!candidates.length?' disabled':''}><option value="">${w.fixed.length>=staff.capacity?'Постоянные места заняты':candidates.length?'Выбрать жителя':'Нет подходящего взрослого'}</option>${candidates.map(c=>`<option value="${c.id}">${escape(displayName(s,c))} · ${escape(citizenProfessionName(c))}${professionMatchesTask(c,w.type)?' · призвание +20%':''}${c.workplace?' · сменит место':''}</option>`).join('')}</select></label></div>`;
 }
 function workshopCard(s,w,b,expanded){
- const date=buildingChronology(b),slots=w.staffing?`${w.staffing.count}/${w.staffing.capacity} мест`:`${w.builders.length} строит.`,color=w.staffing?.state||'construction';
- return `<article class="city-tools-row city-tools-workshop" data-city-building="${escape(w.key)}" data-staffing="${color}"><details data-city-disclosure="${escape(w.key)}"${expanded.has(w.key)?' open':''}><summary class="city-tools-building-summary"><span class="city-tools-building-name">${uiIcon(w.type)}<span>${escape(w.name)}</span></span><span class="city-tools-building-year">${escape(date.label)}</span><span class="city-tools-building-level">Ур. ${b?.level||1}</span><span class="city-tools-building-slots" aria-label="${escape(w.staffing?.label||'Строительство')}: ${escape(slots)}"><i aria-hidden="true"></i>${escape(slots)}</span></summary><div class="city-tools-building-body"><div class="city-tools-row-head">${focus(w.key,'Показать на карте')}${tag(`Клетка ${w.x}, ${w.y}`)}</div><div class="city-tools-production ${w.status==='attention'?'is-warning':''}">${focus(w.reason.target,w.reason.label)}<span>${escape(w.reason.detail)}</span></div>${w.reason.code==='construction'?`<p class="city-tools-note">Строителей: ${w.builders.length} · носильщиков: ${w.carriers.length}. Год будет записан после завершения.</p>`:''}${staffingHTML(s,w)}${buildingInventoryHTML(w.inventory,{production:!!Object.keys(BUILDINGS[w.type]?.output||{}).filter(k=>!['faith','prestige'].includes(k)).length})}${buildingProductionHistoryHTML(s,b)}</div></details></article>`;
+ const date=buildingChronology(b),open=expanded.has(w.key);
+ const slots=w.staffing?`${w.staffing.count} / ${w.staffing.capacity}`:b?.construction?`${w.builders.length} строит.`:'—',color=w.staffing?.state||(b?.construction?'construction':'ready');
+ return `<article class="city-tools-row city-tools-workshop" data-city-building="${escape(w.key)}" data-staffing="${color}"><details data-city-disclosure="${escape(w.key)}"${expanded.has(w.key)?' open':''}><summary class="city-tools-building-summary"><span class="city-tools-building-name">${uiIcon(w.type)}<span>${escape(w.name)}</span></span><span class="city-tools-building-year">${escape(date.label)}</span><span class="city-tools-building-level">Ур. ${b?.level||1}</span><span class="city-tools-building-slots" aria-label="${escape(w.staffing?.label||w.reason.label)}: ${escape(slots)}"><i aria-hidden="true"></i>${escape(slots)}</span><span class="city-register-building-status${w.status==='attention'?' is-warning':''}">${escape(w.reason.label)}</span></summary>${open?`<div class="city-tools-building-body"><div class="city-tools-row-head">${focus(w.key,'Показать на карте')}${tag(`Клетка ${w.x}, ${w.y}`)}</div><div class="city-tools-production ${w.status==='attention'?'is-warning':''}">${focus(w.reason.target,w.reason.label)}<span>${escape(w.reason.detail)}</span></div>${w.reason.code==='construction'?`<p class="city-tools-note">Строителей: ${w.builders.length} · носильщиков: ${w.carriers.length}. Год будет записан после завершения.</p>`:''}${staffingHTML(s,w)}${buildingInventoryHTML(w.inventory||buildingInventory(s,b),{production:!!Object.keys(BUILDINGS[w.type]?.output||{}).filter(k=>!['faith','prestige'].includes(k)).length})}${buildingProductionHistoryHTML(s,b)}</div>`:''}</details></article>`;
 }
 export const CITY_WORK_CATEGORIES=[
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Сырьё',types:['clay','reed','logging','quarry','sheepfold']},
  {id:'production',name:'Производство',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard','kiln','brickyard','weaver','tailor']},
- {id:'services',name:'Снабжение и услуги',types:['waterpoint','depot','granary','market','healer','musicHouse','house','bridge','canal','levee','harbor']},
+ {id:'services',name:'Снабжение и услуги',types:['waterpoint','depot','granary','market','healer','musicHouse','bridge','canal','levee','harbor']},
+ {id:'housing',name:'Жильё',types:['house']},
  {id:'sacred',name:'Культ',types:['shrine','ziggurat','ishtarGate']}
 ];
 function harvestCallHTML(s){
@@ -164,11 +181,25 @@ function fireForecastHTML(s){
  const rows=sites.map(site=>`<li>${focus(site.key,`Печь · ${site.key}`)} · <b>${site.fire?`Очаг у печи · до повреждения ${Math.ceil(site.remaining)} игр. сек.`:labels[site.level]}</b><br>${site.homes.length?`Жилые дворы рядом · ${site.homes.map(key=>focus(key,key)+(site.fire&&!s.citizens.some(c=>c.home===key&&c.fireShelter)?` <button type="button" data-city-fire-evacuate="${escape(key)}" data-kiln="${escape(site.key)}">Укрыть семью</button>`:'' )).join(' ')}. Доступная вода сверх суточной потребности · ${number(site.reserve)}.`:'Рядом нет жилых дворов.'} <button type="button" data-city-bank-kiln="${escape(site.key)}">Остановить обжиг</button> ${site.fire?`<button type="button" data-city-extinguish-kiln="${escape(site.key)}"${site.canExtinguish?'':' disabled'}>Отправить воду к печи</button>${site.inTransit>0?` <small>Несут к печи · ${number(site.inTransit)} воды.</small>`:''}`:''}</li>`).join('');
  return `<article class="city-tools-row" data-fire-forecast><h3>Риск пожара у печей</h3><p>${dry?'Сухо':'Без сухости'} · ${wind?'ветрено':'без сильного ветра'}. ${sites.length?'Оценка при текущем обжиге.':'Сейчас печи не горят.'}</p>${evacuees.length?`<p>В укрытии · ${sheltered} чел. Идут или ждут прохода · ${evacuees.length-sheltered} чел.</p>`:''}${rows||stopped?`<ul>${rows}${stopped}</ul>`:''}<small>Оставляй проход между печью и двором. Вода для тушения считается сверх запаса на питьё. Остановка сохраняет сырец. Для нового обжига нужен свежий тростник.</small></article>`;
 }
-function workshopsHTML(s,model,expanded){
- const buildings=new Map(s.buildings.map(b=>[b.id||`${b.x},${b.y}`,b])),groups=new Map();
- for(const w of model.workshops){if(!groups.has(w.type))groups.set(w.type,[]);groups.get(w.type).push(w);}
- const categories=CITY_WORK_CATEGORIES.map(c=>({...c,types:[...c.types]})),unknown=[...groups.keys()].filter(t=>!categories.some(c=>c.types.includes(t)));categories.find(c=>c.id==='services').types.push(...unknown);
- return `${floodHTML(s)}${floodRepairsHTML(s)}${lowWaterHTML(s)}${harvestCallHTML(s)}${unloadCallHTML(s)}${repairCallHTML(s)}<p class="city-tools-note">Здания сгруппированы по делу; одинаковые рядом, новые первыми. Раскрой строку для назначения, запасов и выпуска.</p><div class="city-tools-staffing-legend"><span data-staffing="empty">Нет людей</span><span data-staffing="partial">Не хватает</span><span data-staffing="full">Места заняты</span><span data-staffing="matched">По призванию</span></div>${categories.map(c=>{const count=c.types.reduce((n,t)=>n+(groups.get(t)?.length||0),0);return `<section class="city-tools-category" data-city-work-category="${c.id}"><h3>${c.name} <small>${count}</small></h3><div class="city-tools-workshop-groups city-tools-card-grid">${c.types.filter(t=>groups.has(t)).map(type=>`<section class="city-tools-workshop-group" aria-label="${escape(buildingDefinition(s,type)?.name||type)}" data-city-building-group="${escape(type)}">${groups.get(type).sort((a,b)=>compareBuildingsNewest(buildings.get(a.key),buildings.get(b.key))).map(w=>workshopCard(s,w,buildings.get(w.key),expanded)).join('')}</section>`).join('')||empty('Пока нет зданий этой группы.')}</div></section>`;}).join('')}`;
+function workshopsHTML(s,model,expanded,filter,page){
+ const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b]));
+ const known=new Map(model.workshops.map(w=>[w.key,w])),people=new Map(s.citizens.map(c=>[c.id,c]));
+ const categories=[...CITY_WORK_CATEGORIES,{id:'other',name:'Прочие здания',types:[]}];
+ const groups=new Map(categories.map(c=>[c.id,[]]));
+ for(const [key,b] of buildings){
+  const w=known.get(key)||{key,x:b.x,y:b.y,type:b.type,name:buildingDefinition(s,b.type)?.name||b.type,reason:{label:'Готово',detail:'',target:null},status:'process',builders:[]};
+  const category=categories.find(c=>c.types.includes(b.type))||categories.at(-1);
+  groups.get(category.id).push(w);
+ }
+ const category=categories.find(c=>c.id===filter.category),all=categories.flatMap(c=>groups.get(c.id));
+ const matches=(category?groups.get(category.id):all).filter(w=>(!filter.attention||w.status==='attention')&&searchMatch(filter.query||'',[w.name,w.key,`${w.x}, ${w.y}`,...((w.assigned?.length?w.assigned:w.workers)||[]).map(id=>displayName(s,people.get(id)))]));
+ matches.sort((a,b)=>a.name.localeCompare(b.name,'ru')||compareBuildingsNewest(buildings.get(a.key),buildings.get(b.key)));
+ const {start,end,footer}=registerPage(matches.length,page,'зданий'),byType=new Map();
+ for(const w of matches.slice(start,end)){if(!byType.has(w.type))byType.set(w.type,[]);byType.get(w.type).push(w);}
+ const categoriesHTML=[{id:'all',name:'Все здания'},...categories].map(c=>`<button type="button" data-city-work-category="${c.id}" aria-pressed="${c.id===(category?.id||'all')}"><span>${c.name}</span><b>${c.id==='all'?all.length:groups.get(c.id).length}</b></button>`).join('');
+ const cards=[...byType].map(([type,items])=>`<section data-city-building-group="${escape(type)}" aria-label="${escape(items[0].name)}">${items.map(w=>workshopCard(s,w,buildings.get(w.key),expanded)).join('')}</section>`).join('');
+ const orders=floodHTML(s)+floodRepairsHTML(s)+lowWaterHTML(s)+harvestCallHTML(s)+unloadCallHTML(s)+repairCallHTML(s);
+ return `<div class="city-building-register"><nav class="city-building-directory" aria-label="Категории зданий">${categoriesHTML}</nav><div class="city-building-workspace"><div class="city-register-toolbar">${searchField('buildings',filter.query||'','Здание, координаты, работник…')}<label class="city-building-attention"><input type="checkbox" data-city-building-attention${filter.attention?' checked':''}> Только с проблемами</label></div><div class="city-register-scroll city-building-rows" data-city-scroll="buildings">${cards||empty('По этим фильтрам зданий нет.')}</div>${footer}${orders?`<details class="city-register-note" data-city-operations${filter.operationsOpen?' open':''}><summary>Городские работы и предупреждения</summary>${orders}</details>`:''}</div></div>`;
 }
 function homesHTML(model,group){const keys=new Set(model.neighborhoods.find(n=>n.key===group)?.homeKeys||[]);return `<button type="button" class="city-tools-link" data-city-tab="districts">← Все кварталы</button><div class="city-tools-list city-tools-card-grid">${model.homes.filter(h=>keys.has(h.key)&&h.reasons.length).map(h=>`<article class="city-tools-row"><div class="city-tools-row-head"><div class="city-tools-building-name">${uiIcon('house')}${focus(h.key,`Дом · ${h.x}, ${h.y}`)}</div><button type="button" class="city-tools-link" data-city-home="${escape(h.key)}">Жители · ${h.population}</button></div><div class="city-tools-metrics"><span>Еда ${number(h.food)} / ${number(h.demand)} на ужин</span><span>Вода ${number(h.water)} / ${number(h.waterDemand)} в день</span></div><div class="city-tools-reasons">${h.reasons.map(r=>tag(r.label,true)).join('')}</div>${buildingInventoryHTML(h.inventory,{house:true})}</article>`).join('')||empty('Сейчас все семьи этого квартала обеспечены.')}</div>`;}
 
@@ -323,9 +354,9 @@ function creatorMaterialsHTML(s){
 }
 
 /** HTML-only entry point for snapshots/tests. No listeners or simulation changes. */
-export function cityToolsHTML(s,{tab='districts',filter={},page=0,group=null,model=cityDiagnostics(s),desiredInspirations=new Map(),expandedBuildings=new Set(),expandedCitizens=new Set(),testOptions={}}={}){
+export function cityToolsHTML(s,{tab='districts',filter={},page=0,selectedId=null,buildingFilter={},group=null,model=cityDiagnostics(s),desiredInspirations=new Map(),expandedBuildings=new Set(),expandedCitizens=new Set(),testOptions={}}={}){
  const total=model.totals;
- return `<section class="city-tools" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>Жизнь кварталов</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['workshops','Работа'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,testOptions):tab==='citizens'?citizensHTML(s,filter,page,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings):tab==='homes'?homesHTML(model,group):fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+revelationEvidenceHTML(s)+housingPolicyHTML(s)+neighborhoodsHTML(model)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
+ return `<section class="city-tools" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>Жизнь кварталов</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['workshops','Здания'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}${id==='citizens'?` <small>${total.population}</small>`:id==='workshops'?` <small>${s.buildings.length}</small>`:''}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,testOptions):tab==='citizens'?citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings,buildingFilter,page):tab==='homes'?homesHTML(model,group):fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+revelationEvidenceHTML(s)+housingPolicyHTML(s)+neighborhoodsHTML(model)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
 }
 
 /** Mount in an existing panel root. Refresh on the app's throttled UI tick.
@@ -334,15 +365,54 @@ export function cityToolsHTML(s,{tab='districts',filter={},page=0,group=null,mod
 export function renderCityTools(root,s,options={}){
  let ctl=controllers.get(root);
  if(!ctl){
-  ctl={s,options,tab:'districts',filter:{role:'all',age:'all',trouble:'all'},page:0,group:null,desiredInspirations:new Map(),expandedBuildings:new Set(),expandedCitizens:new Set(),testOptions:{}};controllers.set(root,ctl);
-  ctl.draw=()=>{const active=root.ownerDocument?.activeElement,inside=active&&root.contains(active),attributes=['data-city-filter','data-city-role','data-city-inspiration','data-city-assign','data-city-citizen'],attribute=inside?attributes.find(k=>active.hasAttribute?.(k)):null,value=attribute?active.getAttribute(attribute):null,summary=inside&&active.matches?.('summary')?{attribute:active.parentElement?.dataset.cityPersonDisclosure!==undefined?'data-city-person-disclosure':'data-city-disclosure',value:active.parentElement?.dataset.cityPersonDisclosure??active.parentElement?.dataset.cityDisclosure}:null;const changed=setHTML(root,cityToolsHTML(ctl.s,{tab:ctl.tab,filter:ctl.filter,page:ctl.page,group:ctl.group,model:ctl.model,desiredInspirations:ctl.desiredInspirations,expandedBuildings:ctl.expandedBuildings,expandedCitizens:ctl.expandedCitizens,testOptions:{...ctl.testOptions,audioStatus:ctl.options.audioStatus,mapUpgrade:ctl.options.mapUpgrade}}));if(changed&&attribute){[...(root.querySelectorAll?.(`[${attribute}]`)||[])].find(e=>e.getAttribute(attribute)===value)?.focus({preventScroll:true});}else if(changed&&summary){[...(root.querySelectorAll?.(`details[${summary.attribute}]`)||[])].find(d=>(d.getAttribute?.(summary.attribute)??d.dataset?.[summary.attribute==='data-city-person-disclosure'?'cityPersonDisclosure':'cityDisclosure'])===summary.value)?.querySelector('summary')?.focus({preventScroll:true});}return changed;};
+  ctl={s,options,tab:'districts',filter:{role:'all',age:'all',trouble:'all'},page:0,selectedId:null,buildingFilter:{},group:null,desiredInspirations:new Map(),expandedBuildings:new Set(),expandedCitizens:new Set(),testOptions:{}};controllers.set(root,ctl);
+  ctl.draw=({resetScroll=false}={})=>{
+   const active=root.ownerDocument?.activeElement,inside=active&&root.contains(active);
+   const attributes=['data-city-search','data-city-filter','data-city-role','data-city-inspiration','data-city-assign','data-city-inspect','data-city-citizen','data-city-work-category','data-city-building-attention','data-city-tab','data-city-page'];
+   const attribute=inside?attributes.find(key=>active.hasAttribute(key)):null,value=attribute?active.getAttribute(attribute):null;
+   const caret=attribute==='data-city-search'?[active.selectionStart,active.selectionEnd]:null;
+   const summary=inside&&active.matches('summary')?active.parentElement:null;
+   const summaryKeys=['data-city-person-disclosure','data-city-disclosure','data-city-operations','data-city-extra-filters'];
+   const summaryKey=summaryKeys.find(key=>summary?.hasAttribute(key)),summaryValue=summaryKey?summary.getAttribute(summaryKey):null;
+   const scroll=root.querySelector?.('[data-city-scroll]'),previousTop=scroll?.scrollTop||0;
+   const changed=setHTML(root,cityToolsHTML(ctl.s,{tab:ctl.tab,filter:ctl.filter,buildingFilter:ctl.buildingFilter,page:ctl.page,selectedId:ctl.selectedId,group:ctl.group,model:ctl.model,desiredInspirations:ctl.desiredInspirations,expandedBuildings:ctl.expandedBuildings,expandedCitizens:ctl.expandedCitizens,testOptions:{...ctl.testOptions,audioStatus:ctl.options.audioStatus,mapUpgrade:ctl.options.mapUpgrade}}));
+   if(changed&&attribute){
+    const replacement=[...(root.querySelectorAll?.(`[${attribute}]`)||[])].find(e=>e.getAttribute(attribute)===value);
+    replacement?.focus({preventScroll:true});
+    if(replacement&&caret&&caret[0]!==null)replacement.setSelectionRange(...caret);
+   }else if(changed&&summaryKey){
+    [...(root.querySelectorAll?.(`details[${summaryKey}]`)||[])].find(d=>d.getAttribute(summaryKey)===summaryValue)?.querySelector('summary')?.focus({preventScroll:true});
+   }
+   const next=root.querySelector?.('[data-city-scroll]');
+   if(next&&(changed||resetScroll))next.scrollTop=resetScroll?0:previousTop;
+   return changed;
+  };
   ctl.refresh=()=>{ctl.model=cityDiagnostics(ctl.s);ctl.draw();};
-  root.addEventListener('toggle',event=>{const d=event.target;if(!root.contains(d))return;const person=d.dataset?.cityPersonDisclosure,key=person===undefined?d.dataset?.cityDisclosure:Number(person),expanded=person===undefined?ctl.expandedBuildings:ctl.expandedCitizens;if(key===undefined)return;if(d.open)expanded.add(key);else expanded.delete(key);},true);
+  root.addEventListener('toggle',event=>{
+   const d=event.target;if(!root.contains(d))return;
+   if(d.matches?.('[data-city-operations]')){ctl.buildingFilter.operationsOpen=d.open;return;}
+   if(d.matches?.('[data-city-extra-filters]')){ctl.filter.moreOpen=d.open;return;}
+   const person=d.dataset?.cityPersonDisclosure,key=person===undefined?d.dataset?.cityDisclosure:Number(person);
+   if(key===undefined)return;
+   const expanded=person===undefined?ctl.expandedBuildings:ctl.expandedCitizens;
+   if(expanded.has(key)===d.open)return;
+   if(d.open){expanded.clear();expanded.add(key);}else expanded.delete(key);
+   if(person===undefined)ctl.draw();
+  },true);
+  function updateSearch(event){
+   const field=event.target;if(!field.dataset?.citySearch||event.isComposing)return;
+   const filter=field.dataset.citySearch==='citizens'?ctl.filter:ctl.buildingFilter;
+   if((filter.query||'')===field.value)return;
+   filter.query=field.value;ctl.page=0;ctl.draw({resetScroll:true});
+  }
+  root.addEventListener('input',updateSearch);
+  root.addEventListener('compositionend',updateSearch);
   root.addEventListener('change',event=>{
    const field=event.target.closest?.('select,input');if(!field||!root.contains(field))return;
    if(field.hasAttribute('data-city-auto-housing')){ctl.options.onAutoHousing?.(field.checked);field.blur?.();ctl.refresh();return;}
    const testField=['event','resource','building','citizen','count'].find(k=>field.hasAttribute?.(`data-test-${k}`));if(testField){ctl.testOptions[testField]=testField==='count'?Number(field.value):field.value;return;}
-   if(field.dataset.cityFilter!==undefined){ctl.filter={...ctl.filter,[field.dataset.cityFilter]:field.value};ctl.page=0;ctl.draw();return;}
+   if(field.hasAttribute('data-city-building-attention')){ctl.buildingFilter.attention=field.checked;ctl.page=0;ctl.draw({resetScroll:true});return;}
+   if(field.dataset.cityFilter!==undefined){ctl.filter={...ctl.filter,[field.dataset.cityFilter]:field.value};ctl.page=0;ctl.draw({resetScroll:true});return;}
    if(field.dataset.cityInspiration!==undefined){ctl.desiredInspirations.set(Number(field.dataset.cityInspiration),field.value);field.blur?.();ctl.draw();return;}
    field.blur?.();
    if(field.dataset.cityRole!==undefined)ctl.options.onRole?.(Number(field.dataset.cityRole),field.value);
@@ -364,13 +434,15 @@ export function renderCityTools(root,s,options={}){
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
    if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id));ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}
    if(button.dataset.cityRelease!==undefined){ctl.options.onRelease?.(Number(button.dataset.cityRelease));ctl.refresh();return;}
+   if(button.dataset.cityInspect!==undefined){ctl.selectedId=Number(button.dataset.cityInspect);ctl.draw();return;}
+   if(button.dataset.cityWorkCategory!==undefined){ctl.buildingFilter.category=button.dataset.cityWorkCategory;ctl.page=0;ctl.draw({resetScroll:true});return;}
    if(button.dataset.cityTab!==undefined){ctl.tab=button.dataset.cityTab;ctl.page=0;}
    else if(button.dataset.cityHomes!==undefined){ctl.tab='homes';ctl.group=button.dataset.cityHomes;}
    else if(button.dataset.cityHome!==undefined){ctl.tab='citizens';ctl.filter.home=button.dataset.cityHome;ctl.page=0;}
    else if(button.hasAttribute('data-city-clear-home')){delete ctl.filter.home;ctl.page=0;}
    else if(button.dataset.cityPage!==undefined)ctl.page=Math.max(0,Number(button.dataset.cityPage)||0);
    else return;
-   ctl.draw();
+   ctl.draw({resetScroll:true});
   });
  }
  ctl.s=s;ctl.options=options;ctl.model=cityDiagnostics(s);if(options.tab)ctl.tab=options.tab;if(options.filter)ctl.filter={...ctl.filter,...options.filter};if(options.group!==undefined)ctl.group=options.group;ctl.draw();return ctl.model;
