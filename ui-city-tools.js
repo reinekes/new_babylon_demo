@@ -93,7 +93,7 @@ export function registerPortrait(c){
 }
 function registerVital(id,label,value,warning,reason,action,link){
  const v=Math.max(0,Math.min(100,Number(value)||0));
- return `<div class="city-vital-row${warning?' is-warning':''}"><dt><details class="city-vital-help" data-city-vital-help="${id}"><summary aria-describedby="${id}">${label}<span aria-hidden="true">?</span></summary></details></dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span><div class="city-vital-tip" id="${id}"><b>${label}</b><p>${escape(reason)}</p><p><strong>Что делать:</strong> ${escape(action)}</p>${link?`<button type="button" class="city-vital-link" data-vital-home="${escape(link.home)}" data-vital-tab="${link.tab}">${link.label} →</button>`:''}</div></dd></div>`;
+ return `<div class="city-vital-row${warning?' is-warning':''}"><dt><details class="city-vital-help" data-city-vital-help="${id}"><summary aria-describedby="${id}">${label}<span aria-hidden="true">?</span></summary></details></dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span><div class="city-vital-tip" id="${id}"><b>${label}</b><p>${escape(reason)}</p><p><strong>Что делать:</strong> ${escape(action)}</p>${link?`<button type="button" class="city-vital-link" data-vital-home="${escape(link.home)}" data-vital-tab="${link.tab}" data-vital-resident="${link.id}">${link.label} →</button>`:''}</div></dd></div>`;
 }
 export function residentVitalsHTML(c,s,scope='register'){
  const homeKey=supplyHome(c,{arrived:true});
@@ -109,17 +109,21 @@ export function residentVitalsHTML(c,s,scope='register'){
   ['faith','Вера',c.faith??60,0,'Это личная вера жителя. Недоедание снижает её, сытый ужин помогает восстановлению.','Начни с запасов еды во дворе.'],
   ['clothing','Состояние одежды',c.clothing??100,26,'Одежда постепенно изнашивается. При остатке 25% или меньше ветхая одежда ухудшает здоровье и настроение.','Проверь, есть ли готовая одежда на доступном складе. Взрослые приносят замену себе и детям.']
  ];
- return `<dl class="city-resident-vitals">${stats.map(([key,label,value,threshold,reason,action])=>registerVital(`vital-${scope}-${c.id}-${key}`,label,value,value<threshold,reason,action,home&&['food','water'].includes(key)?{home:homeKey,tab:key,label:key==='food'?'Открыть еду во дворе':'Открыть воду во дворе'}:null)).join('')}</dl>`;
+ return `<dl class="city-resident-vitals">${stats.map(([key,label,value,threshold,reason,action])=>registerVital(`vital-${scope}-${c.id}-${key}`,label,value,value<threshold,reason,action,home&&['food','water'].includes(key)?{id:c.id,home:homeKey,tab:key,label:key==='food'?'Открыть еду во дворе':'Открыть воду во дворе'}:null)).join('')}</dl>`;
 }
 function residentInspector(s,c,desiredInspirations,expandedCitizens,workplace){
  if(!c)return `<aside class="city-register-inspector">${empty('Выбери жителя в списке.')}</aside>`;
  const work=workKey(c),home=c.home;
  return `<aside class="city-register-inspector" aria-label="Карточка жителя"><header>${registerPortrait(c)}<div><span class="city-register-kicker">Карточка жителя</span><h3>${escape(displayName(s,c))}</h3><span class="city-register-identity">${escape(citizenProfessionName(c))} · ${Math.floor(c.age??20)} лет</span></div></header><div class="city-register-address"><div>${uiIcon('house')}<span>Дом</span>${home?focus(home,'Показать двор'):'<small>Нет дома</small>'}</div><div>${uiIcon('pottery')}<span>Работа</span>${work?focus(work,workplace(c)):'<small>Не назначена</small>'}</div></div><button type="button" class="city-register-map" data-city-citizen="${c.id}">Показать на карте</button><h4>Состояние</h4>${residentVitalsHTML(c,s)}<details class="city-tools-person-more" data-city-person-disclosure="${c.id}"${expandedCitizens.has(c.id)?' open':''}><summary>Настроить и подробнее</summary>${personControls(s,c,desiredInspirations.get(c.id))}${citizenEpithetHTML(s,c)}</details></aside>`;
 }
-function citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens){
+function residentRegisterRows(s,filter){
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b]));
  const workplace=c=>{const b=buildings.get(workKey(c));return b?buildingDefinition(s,b.type)?.name||b.type:workKey(c)||'—';};
  const people=sortedCityCitizens(s,filter).filter(c=>searchMatch(filter.query||'',[displayName(s,c),citizenProfessionName(c),c.home,workKey(c),workplace(c)]));
+ return {people,workplace};
+}
+function citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens){
+ const {people,workplace}=residentRegisterRows(s,filter);
  const roles=[...new Set(['auto','production','carrier','builder','healer','tailor','watercarrier',...(s.citizens||[]).map(c=>professionRole(c.calling)===c.role?c.calling:c.role||'auto')])];
  const {start,end,footer}=registerPage(people.length,page,'жителей'),rows=people.slice(start,end);
  const selected=rows.find(c=>c.id===selectedId)||rows.find(c=>expandedCitizens.has(c.id))||rows[0];
@@ -386,7 +390,7 @@ function creatorMaterialsHTML(s){
 /** HTML-only entry point for snapshots/tests. No listeners or simulation changes. */
 export function cityToolsHTML(s,{tab='districts',filter={},page=0,selectedId=null,buildingFilter={},group=null,model=cityDiagnostics(s),desiredInspirations=new Map(),expandedBuildings=new Set(),expandedCitizens=new Set(),testOptions={}}={}){
  const total=model.totals;
- return `<section class="city-tools" data-city-view="${tab}" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>${tab==='citizens'?'Реестр жителей':tab==='workshops'?'Здания города':'Жизнь кварталов'}</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['workshops','Здания'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}${id==='citizens'?` <small>${total.population}</small>`:id==='workshops'?` <small>${s.buildings.length}</small>`:''}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,testOptions):tab==='citizens'?citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings,buildingFilter,page):tab==='homes'?homesHTML(model,group):neighborhoodsHTML(model)+fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+revelationEvidenceHTML(s)+housingPolicyHTML(s)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
+ return `<section class="city-tools${tab==='testing'?'':' city-tools-register'}" data-city-view="${tab}" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>${tab==='citizens'?'Реестр жителей':tab==='workshops'?'Здания города':'Кварталы'}</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['workshops','Здания'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}${id==='citizens'?` <small>${total.population}</small>`:id==='workshops'?` <small>${s.buildings.length}</small>`:''}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,testOptions):tab==='citizens'?citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings,buildingFilter,page):tab==='homes'?homesHTML(model,group):neighborhoodsHTML(model)+fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+revelationEvidenceHTML(s)+housingPolicyHTML(s)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
 }
 
 /** Mount in an existing panel root. Refresh on the app's throttled UI tick.
@@ -462,7 +466,7 @@ export function renderCityTools(root,s,options={}){
    if(button.hasAttribute('data-city-unload')){ctl.options.onUnload?.();ctl.refresh();return;}
    if(button.hasAttribute('data-city-harvest')){ctl.options.onHarvest?.();ctl.refresh();return;}
    if(button.dataset.cityInannaMeeting!==undefined){ctl.options.onInannaMeeting?.();return;}
-   if(button.dataset.vitalHome!==undefined){ctl.options.onVitalHome?.(button.dataset.vitalHome,button.dataset.vitalTab);return;}
+   if(button.dataset.vitalHome!==undefined){ctl.options.onVitalHome?.(button.dataset.vitalHome,button.dataset.vitalTab,Number(button.dataset.vitalResident),{filter:{...ctl.filter}});return;}
    if(button.dataset.cityFocus!==undefined){ctl.options.onFocus?.(button.dataset.cityFocus);return;}
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
    if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id));ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}
@@ -478,5 +482,15 @@ export function renderCityTools(root,s,options={}){
    ctl.draw({resetScroll:true});
   });
  }
- ctl.s=s;ctl.options=options;ctl.model=cityDiagnostics(s);if(options.tab)ctl.tab=options.tab;if(options.filter)ctl.filter={...ctl.filter,...options.filter};if(options.group!==undefined)ctl.group=options.group;ctl.draw();return ctl.model;
+ ctl.s=s;ctl.options=options;ctl.model=cityDiagnostics(s);if(options.tab)ctl.tab=options.tab;if(options.residentView){
+  const {id,filter}=options.residentView;
+  ctl.selectedId=id;
+  ctl.filter={...filter};
+  let index=residentRegisterRows(s,ctl.filter).people.findIndex(c=>c.id===id);
+  if(index<0){
+   ctl.filter={};
+   index=residentRegisterRows(s,ctl.filter).people.findIndex(c=>c.id===id);
+  }
+  ctl.page=Math.floor(Math.max(0,index)/PAGE_SIZE);
+ }if(options.filter)ctl.filter={...ctl.filter,...options.filter};if(options.group!==undefined)ctl.group=options.group;ctl.draw();return ctl.model;
 }

@@ -124,21 +124,21 @@
 }
 
 /* The two registers share one binding: basalt, brass rules and lapis selection. */
-.uruk-ui dialog .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) {
+.uruk-ui dialog .city-tools-register {
  --ct-ink:#f6e7cb;--ct-muted:#cbb797;--ct-line:#70583d;--ct-gold:#dab077;--ct-warning:#ffad8f;
  --register-columns:minmax(0,2.4fr) minmax(85px,.85fr) minmax(110px,1.15fr) 14px;
  color:var(--ct-ink);background:#28221b var(--uruk-stone);background-size:520px;
  border:1px solid #96724b;box-shadow:inset 0 0 0 3px #191510,0 12px 28px #0006;
  padding:0 12px 12px;border-radius:5px;font-size:13px;
 }
-.city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-summary,
-.city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-legend {display:none}
-.city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-heading {padding:13px 100px 10px 8px}
-.city-tools:is([data-city-view=citizens],[data-city-view=workshops]) h2 {font-size:clamp(23px,2.5vw,36px);color:#f3d8ac}
-.city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-tabs {margin:0 0 12px;padding:0 7px 8px;gap:6px;border-bottom:1px solid #a57e50}
-.uruk-ui dialog .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-tabs button {flex:0 1 168px;min-width:0;padding:6px 10px!important;min-height:34px;border:1px solid #8c6949!important;font:600 13px var(--serif,Georgia,serif)}
+.city-tools-register .city-tools-summary,
+.city-tools-register .city-tools-legend {display:none}
+.city-tools-register .city-tools-heading {padding:13px 100px 10px 8px}
+.city-tools-register h2 {font-size:clamp(23px,2.5vw,36px);color:#f3d8ac}
+.city-tools-register .city-tools-tabs {margin:0 0 12px;padding:0 7px 8px;gap:6px;border-bottom:1px solid #a57e50}
+.uruk-ui dialog .city-tools-register .city-tools-tabs button {flex:0 1 168px;min-width:0;padding:6px 10px!important;min-height:34px;border:1px solid #8c6949!important;font:600 13px var(--serif,Georgia,serif)}
 .city-tools-tabs button small {margin-left:4px;color:#e9c493;font-variant-numeric:tabular-nums}
-.city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-content {border:0;padding:0}
+.city-tools-register .city-tools-content {border:0;padding:0}
 .city-register {grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr);gap:12px}
 .city-register-toolbar {margin-bottom:10px}
 .city-register-toolbar .city-register-search {font-size:14px}
@@ -214,10 +214,10 @@
  .uruk-ui dialog .city-building-directory button {grid-template-columns:18px auto auto}
 }
 @media(max-width:540px){
- .uruk-ui dialog .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) {padding-inline:6px;--register-columns:minmax(0,1fr) 49px minmax(61px,.65fr) 8px}
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-heading {padding-right:38px}
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-clock {display:none}
- .uruk-ui dialog .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-tabs button {padding-inline:3px!important;font-size:11px;flex:1}
+ .uruk-ui dialog .city-tools-register {padding-inline:6px;--register-columns:minmax(0,1fr) 49px minmax(61px,.65fr) 8px}
+ .city-tools-register .city-tools-heading {padding-right:38px}
+ .city-tools-register .city-tools-clock {display:none}
+ .uruk-ui dialog .city-tools-register .city-tools-tabs button {padding-inline:3px!important;font-size:11px;flex:1}
  .city-register th,.city-register td {padding-inline:4px;font-size:12px}
  .city-register th:first-child {width:41%}
  .city-building-column-head,.city-building-rows .city-tools-workshop details>summary.city-tools-building-summary {gap:4px;padding-inline:5px}
@@ -227,16 +227,16 @@
  .city-building-rows .city-tools-building-name small {font-size:10px}
 }
 
-.uruk-ui dialog:has(.city-tools:is([data-city-view=citizens],[data-city-view=workshops]))::backdrop {background:#100d0a57}
+.uruk-ui dialog:has(.city-tools-register)::backdrop {background:#100d0a57}
 .uruk-ui dialog .city-register-inspector button.city-register-map {background:#23435f var(--uruk-lapis)!important}
 .city-building-rows .city-tools-workshop details>summary::after {color:#edc894}
 .city-building-rows .city-tools-building-body .building-inventory {width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
 @media(min-width:1050px){
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) {display:grid;grid-template-columns:minmax(0,1fr) minmax(480px,1.55fr);align-items:center}
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-heading {padding:12px 8px}
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-clock {display:none}
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-tabs {margin:0;padding:0 55px 0 0;border:0}
- .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-content {grid-column:1/-1;border-top:1px solid #a57e50!important;padding-top:12px}
+ .city-tools-register {display:grid;grid-template-columns:minmax(0,1fr) minmax(480px,1.55fr);align-items:center}
+ .city-tools-register .city-tools-heading {padding:12px 8px}
+ .city-tools-register .city-tools-clock {display:none}
+ .city-tools-register .city-tools-tabs {margin:0;padding:0 55px 0 0;border:0}
+ .city-tools-register .city-tools-content {grid-column:1/-1;border-top:1px solid #a57e50!important;padding-top:12px}
 }
 
 /* The same portrait, brass rules and lapis accent, sized for a map overlay. */
@@ -305,15 +305,6 @@
  .city-vital-row:has(.city-vital-help[open]) meter {width:28%;margin-left:auto}
  .city-vital-row:has(.city-vital-help[open]) .city-vital-tip {position:static;width:100%;box-shadow:none}
 }
-.uruk-ui dialog .city-tools:is([data-city-view=districts],[data-city-view=homes]) {
- --ct-ink:#f6e7cb;--ct-muted:#cbb797;--ct-gold:#dab077;--ct-warning:#ffad8f;
- color:var(--ct-ink);background:#28221b var(--uruk-stone);background-size:520px;
- border:1px solid #96724b;box-shadow:inset 0 0 0 3px #191510,0 12px 28px #0006;
- padding:12px;border-radius:5px;
-}
-.city-tools:is([data-city-view=districts],[data-city-view=homes]) .city-tools-heading {padding:0 42px 9px 0}
-.city-tools:is([data-city-view=districts],[data-city-view=homes]) .city-tools-summary {padding:5px 9px}
-.city-tools:is([data-city-view=districts],[data-city-view=homes]) .city-tools-tabs {margin:8px 0;padding-bottom:8px}
 .city-district-intro h3,.city-tools [data-city-district-section]>h3 {font:400 19px var(--serif,Georgia,serif);color:#f1d1a3}
 .city-district-intro h3 {margin:0}
 .city-district-intro p {font-size:12px;margin:4px 0 0}
@@ -329,3 +320,12 @@
  font:600 12px/1.3 system-ui,sans-serif;cursor:pointer;
 }
 .uruk-ui :is(dialog,#tile-detail) .city-vital-tip .city-vital-link:hover {border-color:#d5b47d}
+
+.city-tools [data-city-district-section] .city-tools-card-grid {gap:8px}
+.city-tools [data-city-district-section] .city-tools-row {padding:10px 12px}
+.city-district-intro {padding:8px 10px;border-bottom:1px solid #8b6b45}
+.uruk-ui #tile-detail .city-vital-back {
+ display:block;margin:0 0 10px;padding:6px 10px;min-height:32px;
+ border:1px solid #7599b2;border-radius:3px;background:#244260 var(--uruk-lapis);
+ background-size:320px;color:#fff0d1;cursor:pointer;
+}

@@ -369,7 +369,7 @@ function votivePanel(b){
 function siteStatus(b){const q=b.construction,p=constructionProgress(b),people=state.citizens.filter(c=>c.site===buildingKey(b)),pair=builderTeachingPair(state,people.filter(c=>c.siteDuty==='builder'&&c.phase==='constructing'));return `<div class="site-progress"><span>${p.stage} · ${Math.floor(p.ratio*100)}%</span><progress max="1" value="${p.ratio}" aria-label="Готовность стройки"></progress></div><div class="material-table"><span>Материал</span><span>Нужно</span><span>Доставлено</span><span>В пути</span>${Object.entries(q.required).filter(([,v])=>v>0).map(([k,v])=>`<span class="material-name">${resourceIcon(k)}${label(k)}</span><span>${rounded(v)}</span><span>${rounded(q.delivered[k]||0)}</span><span>${rounded(people.reduce((n,c)=>n+(c.buildCargo?.[k]||0),0))}</span>`).join('')}</div><small class="site-workers">${people.length?people.map(c=>`${resident(c)} · ${c.siteDuty==='carrier'?'носильщик':'строитель'}`).join(' · '):'Ожидание: нет свободных работников или доступного пути.'}</small>${pair?`<p class="site-apprenticeship">${resident(pair.mentor)} обучает ${resident(pair.pupil)} · часть труда уходит на обучение.</p>`:''}${q.revelationTraining?.map(row=>`<p>Свидетельства стройки · ${resident(row.citizenId)} · ${row.pupils.length} из 2 учеников.</p>`).join('')||''}`;}
 function mutate(result,message){if(!result.ok){toast(result.reason||'Действие недоступно');return false;}save();update();toast(message);return true;}
 function bindManagement(root){
- root.querySelectorAll('[data-vital-home]').forEach(el=>el.onclick=()=>openVitalHome(el.dataset.vitalHome,el.dataset.vitalTab));
+ root.querySelectorAll('[data-vital-home]').forEach(el=>el.onclick=()=>openVitalHome(el.dataset.vitalHome,el.dataset.vitalTab,Number(el.dataset.vitalResident)));
  for(const button of root.querySelectorAll('[data-dedication-feast]'))button.onclick=()=>{
   const result=orderFestival(state,{dedicationId:Number(button.dataset.dedicationFeast)});
   if(mutate(result,result.warning||'Храмовая кухня заказала угощение')){paused=false;save();showFestival();}
@@ -478,8 +478,27 @@ function bindDistrict(root){bindStorePolicy(root);const form=root.querySelector(
 let supplyFilter='all';
 function showSupply(filter='all'){supplyFilter=['all','risk'].includes(filter)?filter:'all';openDialog('supply',`<button class="management-close" id="close-supply" aria-label="Вернуться в город">×</button><span class="eyebrow">ПРОДУКТЫ И ДОСТАВКА</span><h2>Снабжение семей</h2><div id="supply-content"></div>`);$('close-supply').onclick=closeDialog;renderSupply();}
 function showSupplyHome(key,tab='food'){const b=state.buildings.find(b=>b.type==='house'&&(buildingKey(b)===key||`${b.x},${b.y}`===key));if(!b)return false;const {x,y}=b;closeDialog();if(selection)choose(selection);roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();inspected={x,y};householdTab=tab;renderer.focusOn(x,y);detail('house',false,b);$('city').scrollIntoView({block:'center'});return true;}
-function openVitalHome(key,tab){
+function openVitalHome(key,tab,residentId,registerView){
  if(!['food','water'].includes(tab)||!showSupplyHome(key,tab))return;
+ const back=document.createElement('button');
+ back.type='button';
+ back.className='city-vital-back';
+ back.textContent='← Назад к жителю';
+ $('household-panel').before(back);
+ back.onclick=()=>{
+  const citizen=state.citizens.find(c=>c.id===residentId);
+  if(!citizen){back.remove();toast('Житель больше не живёт в городе');return;}
+  if(registerView){
+   inspected=null;
+   $('tile-detail').hidden=true;
+   showCityOverview('citizens',{...registerView,id:residentId});
+   $('city-tools-root').querySelector(`[data-city-inspect="${residentId}"]`)?.focus();
+  }else{
+   renderer.focusOn(citizen.x,citizen.y);
+   personDetail(citizen);
+   $('tile-detail').querySelector(`[data-city-vital-help$="-${tab}"] summary`)?.focus();
+  }
+ };
  requestAnimationFrame(()=>{if(!$('tile-detail').hidden)$('household-panel')?.querySelector(`[data-house-tab=${tab}][aria-selected=true]`)?.focus({preventScroll:true});});
 }
 function renderFoodWarnings(){const w=foodWarnings(state),bar=$('food-warnings');bar.hidden=!w.alerts.length;setHTML(bar,w.alerts.map(a=>`<button class="food-warning ${a.severity}" data-food-warning="${a.id}" title="${esc(a.text)}">${a.severity==='danger'?'!':'△'} ${esc(a.title)} <span>→</span></button>`).join(''));bar.querySelectorAll('[data-food-warning]').forEach(el=>el.onclick=()=>showSupply(el.dataset.foodWarning==='families'?'risk':'all'));$('open-supply').textContent=w.alerts.length?`Снабжение · ! ${w.alerts.length}`:'Снабжение';$('open-supply').classList.toggle('needs-attention',!!w.alerts.length);}
@@ -1044,12 +1063,12 @@ function refreshLifeAnalytics(selectedId){
  const root=$('life-analytics-root');if(modalKind!=='life'||!root)return;
  renderLifeAnalytics(root,state,{supplyReport:supplyOverview(state),...(selectedId!==undefined?{selectedId}:{}),onFocus:key=>{const b=state.buildings.find(v=>buildingKey(v)===key);if(!b)return;closeDialog();renderer.focusOn(b.x,b.y);inspected={x:b.x,y:b.y};detail(b.type,false,b);}});
 }
-function showCityOverview(tab='districts'){
- openDialog('citytools',`<button class="management-close" id="close-citytools" aria-label="Вернуться в город">×</button><div id="city-tools-root"></div>`);$('close-citytools').onclick=closeDialog;refreshCityOverview(tab);
+function showCityOverview(tab='districts',residentView){
+ openDialog('citytools',`<button class="management-close" id="close-citytools" aria-label="Вернуться в город">×</button><div id="city-tools-root"></div>`);$('close-citytools').onclick=closeDialog;refreshCityOverview(tab,residentView);
 }
-function refreshCityOverview(tab){
+function refreshCityOverview(tab,residentView){
  const root=$('city-tools-root');if(modalKind!=='citytools'||!root||root.contains(document.activeElement)&&['SELECT','INPUT'].includes(document.activeElement.tagName))return;
- renderCityTools(root,state,{...(tab?{tab}:{}),onVitalHome:openVitalHome,audioStatus:cityAudio.status,onInannaMeeting:()=>{const result=startInannaMeeting(state);if(!result.ok){toast(result.reason);return;}closeDialog();paused=false;syncCeremonySpeed();const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);save();update();},onFireEvacuate:(kiln,home)=>mutate(evacuateFireHome(state,state.buildings.find(b=>buildingKey(b)===kiln),home),'Семья направилась в укрытие'),onKilnExtinguish:key=>mutate(extinguishKilnFire(state,state.buildings.find(b=>buildingKey(b)===key)),'Соседи понесли воду к печи'),onKilnBank:(key,banked)=>mutate(setKilnBanked(state,state.buildings.find(b=>buildingKey(b)===key),banked),banked?'Обжиг остановлен':'Обжиг разрешён'),onAutoHousing:enabled=>mutate(setAutonomousHousing(state,enabled),enabled?'Самостоятельная стройка разрешена':'Самостоятельная стройка выключена'),mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onUnload:()=>mutate(callUnloadWorkers(state),'Объявлен призыв на разгрузку'),onRepair:()=>mutate(callRepairWorkers(state),'Объявлен призыв на расчистку каналов'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const road=state.roads.find(r=>r.id===key);if(road){closeDialog();renderer.focusOn(road.x,road.y);roadDetail(road);return;}const b=state.buildings.find(b=>buildingKey(b)===key);if(!b)return;const {x,y}=b;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
+ renderCityTools(root,state,{...(tab?{tab}:{}),onVitalHome:openVitalHome,residentView,audioStatus:cityAudio.status,onInannaMeeting:()=>{const result=startInannaMeeting(state);if(!result.ok){toast(result.reason);return;}closeDialog();paused=false;syncCeremonySpeed();const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);save();update();},onFireEvacuate:(kiln,home)=>mutate(evacuateFireHome(state,state.buildings.find(b=>buildingKey(b)===kiln),home),'Семья направилась в укрытие'),onKilnExtinguish:key=>mutate(extinguishKilnFire(state,state.buildings.find(b=>buildingKey(b)===key)),'Соседи понесли воду к печи'),onKilnBank:(key,banked)=>mutate(setKilnBanked(state,state.buildings.find(b=>buildingKey(b)===key),banked),banked?'Обжиг остановлен':'Обжиг разрешён'),onAutoHousing:enabled=>mutate(setAutonomousHousing(state,enabled),enabled?'Самостоятельная стройка разрешена':'Самостоятельная стройка выключена'),mapUpgrade:testMapUpgrade,onTestAction:handleTestAction,onHarvest:()=>mutate(callHarvestWorkers(state),'Объявлен призыв на жатву'),onUnload:()=>mutate(callUnloadWorkers(state),'Объявлен призыв на разгрузку'),onRepair:()=>mutate(callRepairWorkers(state),'Объявлен призыв на расчистку каналов'),onRole:(id,role)=>mutate(setCitizenRole(state,id,role),'Работа жителя изменена; взятый груз будет доставлен'),onInspire:(id,profession)=>{const result=inspireCitizen(state,id,profession);mutate(result,result.success?'Житель обрёл новое призвание':'Вдохновение пока не пришло · потрачена 1 вера');},onAssign:(id,key)=>mutate(assignWorkplace(state,id,key),'Житель закреплён за зданием'),onRelease:id=>mutate(assignWorkplace(state,id,''),'Житель вернулся к автоматическому распределению'),onFocus:key=>{const road=state.roads.find(r=>r.id===key);if(road){closeDialog();renderer.focusOn(road.x,road.y);roadDetail(road);return;}const b=state.buildings.find(b=>buildingKey(b)===key);if(!b)return;const {x,y}=b;closeDialog();renderer.focusOn(x,y);inspected={x,y};detail(b.type,false,b);},onCitizen:id=>{const c=state.citizens.find(c=>c.id===id);if(!c)return;closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);}});
 }
 function handleTestAction(action,data){
  if(action==='cat-scene'||action==='earth-scene'){
