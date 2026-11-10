@@ -91,12 +91,13 @@ export function registerPortrait(c){
  const i=(c.sex==='f'?8:0)+choices[Math.abs(Math.imul(c.id,2654435761))%choices.length];
  return `<span class="resident-portrait city-painted-portrait" aria-hidden="true" style="--portrait-x:${i%4*100/3}%;--portrait-y:${Math.floor(i/4)*100/3}%"></span>`;
 }
-function registerVital(id,label,value,warning,reason,action){
+function registerVital(id,label,value,warning,reason,action,link){
  const v=Math.max(0,Math.min(100,Number(value)||0));
- return `<div class="city-vital-row${warning?' is-warning':''}"><dt><details class="city-vital-help" data-city-vital-help="${id}"><summary aria-describedby="${id}">${label}<span aria-hidden="true">?</span></summary></details></dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span><div class="city-vital-tip" id="${id}"><b>${label}</b><p>${escape(reason)}</p><p><strong>Что делать:</strong> ${escape(action)}</p></div></dd></div>`;
+ return `<div class="city-vital-row${warning?' is-warning':''}"><dt><details class="city-vital-help" data-city-vital-help="${id}"><summary aria-describedby="${id}">${label}<span aria-hidden="true">?</span></summary></details></dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span><div class="city-vital-tip" id="${id}"><b>${label}</b><p>${escape(reason)}</p><p><strong>Что делать:</strong> ${escape(action)}</p>${link?`<button type="button" class="city-vital-link" data-vital-home="${escape(link.home)}" data-vital-tab="${link.tab}">${link.label} →</button>`:''}</div></dd></div>`;
 }
 export function residentVitalsHTML(c,s,scope='register'){
- const home=s?.buildings.find(b=>buildingKey(b)===supplyHome(c,{arrived:true})),lastMeal=c.lastMealQuality??1;
+ const homeKey=supplyHome(c,{arrived:true});
+ const home=s?.buildings.find(b=>b.type==='house'&&buildingKey(b)===homeKey),lastMeal=c.lastMealQuality??1;
  const food=home?homeMealFood(home):null,hungry=(c.hunger??0)>=30,thirsty=(c.thirst??0)>30,worn=(c.clothing??100)<=25;
  const pressures=[hungry?'сильный голод':'',thirsty?'жажда':'',worn?'ветхая одежда':''].filter(Boolean);
  const current=pressures.length?`Сейчас заметны: ${pressures.join(', ')}. `:'';
@@ -108,7 +109,7 @@ export function residentVitalsHTML(c,s,scope='register'){
   ['faith','Вера',c.faith??60,0,'Это личная вера жителя. Недоедание снижает её, сытый ужин помогает восстановлению.','Начни с запасов еды во дворе.'],
   ['clothing','Состояние одежды',c.clothing??100,26,'Одежда постепенно изнашивается. При остатке 25% или меньше ветхая одежда ухудшает здоровье и настроение.','Проверь, есть ли готовая одежда на доступном складе. Взрослые приносят замену себе и детям.']
  ];
- return `<dl class="city-resident-vitals">${stats.map(([key,label,value,threshold,reason,action])=>registerVital(`vital-${scope}-${c.id}-${key}`,label,value,value<threshold,reason,action)).join('')}</dl>`;
+ return `<dl class="city-resident-vitals">${stats.map(([key,label,value,threshold,reason,action])=>registerVital(`vital-${scope}-${c.id}-${key}`,label,value,value<threshold,reason,action,home&&['food','water'].includes(key)?{home:homeKey,tab:key,label:key==='food'?'Открыть еду во дворе':'Открыть воду во дворе'}:null)).join('')}</dl>`;
 }
 function residentInspector(s,c,desiredInspirations,expandedCitizens,workplace){
  if(!c)return `<aside class="city-register-inspector">${empty('Выбери жителя в списке.')}</aside>`;
@@ -397,7 +398,7 @@ export function renderCityTools(root,s,options={}){
   ctl={s,options,tab:'districts',filter:{role:'all',age:'all',trouble:'all'},page:0,selectedId:null,buildingFilter:{},group:null,desiredInspirations:new Map(),expandedBuildings:new Set(),expandedCitizens:new Set(),testOptions:{}};controllers.set(root,ctl);
   ctl.draw=({resetScroll=false}={})=>{
    const active=root.ownerDocument?.activeElement,inside=active&&root.contains(active);
-   const attributes=['data-city-search','data-city-filter','data-city-role','data-city-inspiration','data-city-assign','data-city-inspect','data-city-citizen','data-city-work-category','data-city-building-attention','data-city-tab','data-city-page'];
+   const attributes=['data-city-search','data-city-filter','data-city-role','data-city-inspiration','data-city-assign','data-city-inspect','data-vital-tab','data-city-citizen','data-city-work-category','data-city-building-attention','data-city-tab','data-city-page'];
    const attribute=inside?attributes.find(key=>active.hasAttribute(key)):null,value=attribute?active.getAttribute(attribute):null;
    const caret=attribute==='data-city-search'?[active.selectionStart,active.selectionEnd]:null;
    const summary=inside&&active.matches('summary')?active.parentElement:null;
@@ -461,6 +462,7 @@ export function renderCityTools(root,s,options={}){
    if(button.hasAttribute('data-city-unload')){ctl.options.onUnload?.();ctl.refresh();return;}
    if(button.hasAttribute('data-city-harvest')){ctl.options.onHarvest?.();ctl.refresh();return;}
    if(button.dataset.cityInannaMeeting!==undefined){ctl.options.onInannaMeeting?.();return;}
+   if(button.dataset.vitalHome!==undefined){ctl.options.onVitalHome?.(button.dataset.vitalHome,button.dataset.vitalTab);return;}
    if(button.dataset.cityFocus!==undefined){ctl.options.onFocus?.(button.dataset.cityFocus);return;}
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
    if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id));ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}

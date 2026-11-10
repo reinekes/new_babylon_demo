@@ -322,3 +322,10 @@
 .uruk-ui dialog .city-tools [data-city-district-section] .city-tools-row {background:#33291f;border-color:#8d6a43}
 .city-tools [data-city-district-section] .city-tools-metrics {padding:7px 0;border-block:1px solid #9b775247;font-size:12px}
 .uruk-ui dialog .city-tools [data-city-district-section] .city-tools-households {color:#ffba9b!important}
+.city-vital-row:has(.city-vital-link:focus) .city-vital-tip {display:block}
+.uruk-ui :is(dialog,#tile-detail) .city-vital-tip .city-vital-link {
+ margin-top:8px;padding:5px 9px;min-height:30px;border:1px solid #7599b2;
+ border-radius:3px;background:#244260 var(--uruk-lapis);background-size:320px;color:#fff0d1;
+ font:600 12px/1.3 system-ui,sans-serif;cursor:pointer;
+}
+.uruk-ui :is(dialog,#tile-detail) .city-vital-tip .city-vital-link:hover {border-color:#d5b47d}
