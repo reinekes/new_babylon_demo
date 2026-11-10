@@ -96,7 +96,19 @@ export function drawBuilding(r, b, state, t) {
     poly([[-23,-25],[0,-37],[24,-24],[1,-12]],'#bdaa76');
     line([[-18,-24],[1,-14],[18,-24]],'#d4c28e',1);
   }
-  if(b.type==='sheepfold') {
+  if(b.type==='sheepfold'||b.type==='cowshed'&&b.footprint===2) {
+    if(b.footprint===2){
+      const points=[[b.x-.5,b.y-.5],[b.x+1.5,b.y-.5],[b.x+1.5,b.y+1.5],[b.x-.5,b.y+1.5]].map(([x,y])=>r.point(x,y));
+      r.polygon(points.map(p=>[p.x,p.y]),'#a8ac75');
+      for(let i=0;i<4;i++){
+        const a=points[i],d=points[(i+1)%4];
+        r.line([[a.x,a.y-6*q],[d.x,d.y-6*q]],'#a08b55',1.6*q);
+        for(let j=0;j<8;j++){
+          const f=j/8,x=a.x+(d.x-a.x)*f,y=a.y+(d.y-a.y)*f;
+          r.line([[x,y],[x,y-9*q]],'#8f7951',1.4*q);
+        }
+      }
+    }
     poly([[0,-14],[28,0],[0,14],[-28,0]],'#a8ac75');
     // Low reed rails leave the flock visible inside its own plot.
     const fence=(a,z,d,e)=>{line([[a,z-6],[d,e-6]],'#a08b55',1.6);line([[a,z-3],[d,e-3]],'#c7b879',1.1);for(let i=0;i<=4;i++){const f=i/4,u=a+(d-a)*f,v=z+(e-z)*f;line([[u,v],[u,v-9]],'#8f7951',1.4);}};

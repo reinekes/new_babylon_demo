@@ -538,6 +538,24 @@ function arrival(s,c,ctx){
  }
  c.phase='working';c.workElapsed=0;if(c.role==='auto'&&!c.workplace&&s.district?.jobs.some(q=>q.remaining>1e-7))invalidateAssignments(s);
 }
+// Interrupt work only when the resident can take a real route and has no
+// material order in hand. Existing pantry logistics retain stock provenance.
+function criticalFoodTrip(s,c,ctx){
+ if(!isStrictSumer(s)||(c.hunger??0)<70||!['working','constructing','toWork','returnWork'].includes(c.phase)||
+  !canWork(c)||c.guardPost||c.clinic||c.school||c.manualGathering||c.pantryTrip||c.craftSite||
+  c.clothingTarget!==undefined||c.districtJob||c.tradeJob||c.saleJob||c.seedField||hasCargo(c)||hasBuildCargo(c))return false;
+ const home=ctx.buildings.get(c.home);
+ if(!home)return false;
+ const hasMeal=homeMealFood(home)+1e-7>=ration(c)*4/3;
+ const store=hasMeal?null:closestStock(s,ctx,c.home,'food');
+ if(!hasMeal&&(!store||s.citizens.some(p=>p.pantryTrip&&(p.pantryTarget||p.home)===c.home)))return false;
+ const draft={...c};
+ startTrip(s,draft,hasMeal?c.home:store,hasMeal?'toHome':'toPantrySupply',ctx);
+ if(draft.phase==='blocked')return false;
+ c.route=draft.route;c.routeIndex=draft.routeIndex;c.phase=draft.phase;
+ if(store){c.store=store;c.pantryTrip=true;c.pantryFood=0;}
+ return true;
+}
 // A household's next meal takes precedence over elective care/study. This also
 // permits a late returning worker to fetch dinner, keeping their other load.
 function urgentHouseholdSupply(s,c,ctx){
@@ -580,7 +598,7 @@ function waitForHomeMeal(s,c,ctx){
  // resident with a portion at home also rests until dinner instead of making
  // an optional long refill that repeatedly misses the eating window.
  const dining=isDinnerTime(s.simTime)&&(c.mealDay!==mealCycle(s.simTime)||c.mealEaten+1e-7<portion);
- const waiting=dining||c.hunger>=70&&c.missedMeals>0&&food+1e-7>=portion;
+ const waiting=dining||c.hunger>=70&&(c.missedMeals>0||isStrictSumer(s))&&food+1e-7>=portion;
  // Working loads are retained at home in the established resting phase;
  // wellbeing deliberately refuses to dine in a cargo-bearing home phase.
  if(waiting&&c.phase==='home'&&hasCargo(c))c.phase='resting';
@@ -762,7 +780,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
   if(c.phase!=='toCommonMeal'||!commonMealWindow(s.simTime)||!isMealDepot(ctx.buildings.get(c.commonMealTarget)))returnFromCommonMeal(s,c,ctx);
  }
  if(c.districtJob&&!hasCargo(c)&&['home','resting'].includes(c.phase)){const b=ctx.buildings.get(c.home),hungry=homeMealFood(b)+1e-7<houseDemand(s,ctx,c.home)*4/3;if(hungry||!isWorkday(s.simTime)){delete c.districtJob;c.store=closestStore(s,ctx,c.home);invalidateAssignments(s);}}
- if(waitForHomeMeal(s,c,ctx))return;
+ if(criticalFoodTrip(s,c,ctx)||waitForHomeMeal(s,c,ctx))return;
  if(!urgentHouseholdSupply(s,c,ctx))neighborHouseholdSupply(s,c,ctx);
  const day=isWorkday(s.simTime);if(c.health>=(c.careGoal||85)){delete c.recovering;delete c.careGoal;}
  if(c.clinic){const clinic=ctx.buildings.get(c.clinic);if(!day||!clinic||!isComplete(clinic)||c.health>=(c.careGoal||85)){delete c.clinic;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}else if(c.phase==='treatment')return;else if(c.phase==='blocked'){startTrip(s,c,c.clinic,'toHealer',ctx);if(c.phase==='blocked')return;}}

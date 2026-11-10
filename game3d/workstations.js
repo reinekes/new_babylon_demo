@@ -7,14 +7,15 @@ import {lyreLayout,musicCourtyardLayout} from './music-courtyard.js';
 const equipment={musicHouse:'lithophone',cowshed:'dairy',pottery:'wheel',brewery:'vat',weaver:'loom',tailor:'table',brickyard:'mould',kiln:'kiln',clay:'clay',reed:'reed',garden:'mortar',sheepfold:'fleece'};
 export function workstationWorldPoint(b,[x,height,z]){
  const angle=((b.rotation||0)%4)*Math.PI/2,c=Math.cos(angle),s=Math.sin(angle),snap=n=>Math.abs(n)<1e-12?0:n;
- return {x:b.x+snap(x*c+z*s)/6,y:b.y+snap(-x*s+z*c)/6,height};
+ const center=(footprintSize(b)-1)*3;
+ return {x:b.x+(center+snap((x-center)*c+(z-center)*s))/6,y:b.y+(center+snap(-(x-center)*s+(z-center)*c))/6,height};
 }
 export function workstationBuilding(b,state){
  if(!state||!equipment[b.type]&&!b.construction&&b.type!=='field')return b;
  // Same ordered dry corners as generateStreets, without rebuilding its whole graph.
  const n=footprintSize(b),port=[[b.x+n-.5,b.y+n-.5],[b.x-.5,b.y+n-.5],[b.x+n-.5,b.y-.5],[b.x-.5,b.y-.5]].map(([x,y])=>({x,y})).find(p=>isDryPoint(state,p.x,p.y)&&!(state.buildings||[]).some(v=>insideFootprint(v,p.x,p.y)));
  if(!port)return b;
- const angle=(b.rotation||0)*Math.PI/2,dx=port.x-b.x,dz=port.y-b.y,c=Math.cos(angle),s=Math.sin(angle);
+ const angle=(b.rotation||0)*Math.PI/2,dx=port.x-b.x-(n-1)/2,dz=port.y-b.y-(n-1)/2,c=Math.cos(angle),s=Math.sin(angle);
  return {...b,workCorner:[Math.sign(dx*c-dz*s)||1,Math.sign(dx*s+dz*c)||1]};
 }
 export function workstationLayout(b){

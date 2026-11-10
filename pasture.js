@@ -1,5 +1,5 @@
 import {isOperational} from './definitions.js';
-import {footprintCells} from './footprints.js';
+import {footprintCells,footprintSize} from './footprints.js';
 import {terrain,signedRiverDistance} from './world.js';
 import {floodFootprint,floodPhase} from './river-flood.js';
 
@@ -17,7 +17,8 @@ export function pastureCredits(s,season){
  const flooded=floodPhase(s)==='active'?floodFootprint(s,s.riverFlood):null;
  for(const b of herds){
   const tiles=[],bank=Math.sign(signedRiverDistance(b.x,b.y,s));
-  for(let y=b.y-2;y<=b.y+2;y++)for(let x=b.x-2;x<=b.x+2;x++){
+  const edge=footprintSize(b)+1;
+  for(let y=b.y-2;y<=b.y+edge;y++)for(let x=b.x-2;x<=b.x+edge;x++){
    const key=`${x},${y}`;
    if(!used.has(key)&&!flooded?.has(key)&&terrain(x,y,s)==='fertile'&&Math.sign(signedRiverDistance(x,y,s))===bank)tiles.push(key);
   }

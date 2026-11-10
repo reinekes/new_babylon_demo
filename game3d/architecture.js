@@ -91,8 +91,12 @@ export function createArchitecture(B,scene,b,m,state){
  case 'coppersmith':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);basin(1.4,.35,1.4,1.3);bench(-.8,1.1,1.6);break
  case 'dairyStore':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);jar(1.4,.35,1.1);jar(1.8,1.35,.85);bench(-.8,1.1,1.6);break
  case 'brewery':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);for(let i=0;i<6;i++)jar(-1.7+(i%3)*.95,.1+Math.floor(i/3)*1.35,1.05);basin(1.8,.45,.7,1.3);beam([1.6,.8,.1],[2,1.25,-.1]);break;
- case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);break;
- case 'depot':ground();room(-1.55,-.25,1.7,4.3,2.45);room(.6,-1.65,2.5,1.5,2.7);cloth(.9,.5,2.8,2.5,1.9,m.reed);stack(.3,.2,14);for(let i=0;i<4;i++)block(.2+i*.52,.32,1.8,.45,.6,.55,m.wood);jar(1.9,-1.5,.85,2.8);break;
+ case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);
+  if(isStrictSumer(state)){cloth(-.6,1.2,3.8,2.4,2.25,m.reed);bench(-.45,1.25,2);block(-.55,.93,1.25,.42,.06,.3,m.raw);for(const x of [.55,1.15])block(x,.2,1.5,.48,.37,.55,m.linen,.23);}
+  break;
+ case 'depot':ground();room(-1.55,-.25,1.7,4.3,2.45);room(.6,-1.65,2.5,1.5,2.7);cloth(.9,.5,2.8,2.5,1.9,m.reed);stack(.3,.2,14);for(let i=0;i<4;i++)block(.2+i*.52,.32,1.8,.45,.6,.55,m.wood);jar(1.9,-1.5,.85,2.8);
+  if(b.commonMeals){bench(.7,.45,2);bench(.7,1.3,2);for(const x of [.15,.8,1.4])cylinder(x,.91,.45,.15,.1,m.fired,.19);cylinder(1.85,.2,1.65,.35,.36,m.fired);}
+  break;
  case 'shrine':if(isReedShrine(state,b)){reedSanctuary();break;}ground();block(0,.25,0,5.2,.5,4.8,m.fired);room(0,-.8,3.5,2.8,3.3);for(const x of [-1.75,-1.05,1.05,1.75]){block(x,1.6,.8,.26,3.2,.43,m.raw);block(x,3.3,.8,.37,.15,.52,m.trim);}for(let i=0;i<4;i++)block(0,.08+i*.12,2.4-i*.26,1.6,.17,.55,m.fired);block(0,.72,1.45,1.1,.65,.55,m.stone);jar(-1.25,1.65,.6);jar(1.3,1.6,.65);break;
  case 'ziggurat':{
   const large=b.footprint===2,s=large?2.04:1,ox=large?3:0,oz=large?3:0;
@@ -135,8 +139,24 @@ export function createArchitecture(B,scene,b,m,state){
  case 'linenYard':
  case 'weaver':ground();room(-1.5,-.4,1.7,3.8,2);cloth(.65,.05,3,3.6,2.25,m.reed);loom(.3,-.9);loom(.5,1.1);for(let i=0;i<5;i++)cylinder(1.8,.28,-1.4+i*.66,.24,.52,m.linen,.18);break;
  case 'tailor':ground();room(0,-1.55,4.3,1.65,2.35);cloth(-.5,.55,3.3,2,2.05);bench(-.7,.5,2.5);for(let i=0;i<3;i++)block(-1.4+i*.65,.86,.5,.55,.06,.58,m.linen);for(let i=0;i<4;i++){beam([1.65,.1,-.5+i*.65],[1.65,1.7,-.5+i*.65]);block(1.65,1.27,-.5+i*.65,.6,.8,.07,m.linen);}break;
- case 'cowshed':ground();fence(0,0,5,5);cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
- case 'sheepfold':ground();fence(0,0,5,5);cloth(-1,-1.3,2.8,2,1.55,m.reed);basin(1.8,-1,.6,2);for(let i=0;i<6;i++)block(-1.9+i*.65,-.01,1.3,.54,.15,1.4,m.reed,.1);break;
+ case 'cowshed':
+  if(b.footprint===2){
+   block(3,.025,3,11,.05,11,m.soil);
+   fence(3,3,11,11);
+   cloth(4.9,5.5,4.1,3,2,m.reed);
+   basin(6.8,.15,.6,3);
+   for(let i=0;i<5;i++)block(1.5+i*1.25,.085,5.6,1,.13,1.45,m.reed,.13*(i%2));
+  }else{ground();fence(0,0,5,5);}
+  cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
+ case 'sheepfold':
+  if(b.footprint===2){
+   block(3,.025,3,11,.05,11,m.soil);
+   fence(3,3,11,11);
+   cloth(4.9,5.5,4.1,3,2,m.reed);
+   basin(6.8,.15,.6,3);
+   for(let i=0;i<5;i++)block(1.5+i*1.25,.085,5.6,1,.13,1.45,m.reed,.13*(i%2));
+  }else{ground();fence(0,0,5,5);}
+  cloth(-1,-1.3,2.8,2,1.55,m.reed);basin(1.8,-1,.6,2);for(let i=0;i<6;i++)block(-1.9+i*.65,-.01,1.3,.54,.15,1.4,m.reed,.1);break;
  case 'cityWall':block(0,1.05,0,5.70,2.1,5.70,m.raw);block(0,2.17,0,5.68,.14,5.68,m.plaster);break;
  case 'cityGate':{
   const scale=b.footprint===2?2:1,centre=(scale-1)*3;
@@ -148,7 +168,9 @@ export function createArchitecture(B,scene,b,m,state){
   block(centre,3.08,centre,.58*scale,.34,3.75*scale,m.wood);break;
  }
  case 'levee':block(0,.22,0,5.7,.44,5.7,m.raw);block(0,.61,0,4.7,.4,4.7,m.raw);block(0,.92,0,3.55,.22,3.55,m.plaster);break;
- case 'harbor':for(let i=0;i<17;i++)block(0,.35,-2.55+i*.32,5.2,.15,.29,m.wood);for(const x of [-2.3,2.3])for(const z of [-2.3,0,2.3])cylinder(x,.3,z,.13,1.55);cloth(-1.2,-1.3,2.4,1.8,2.1,m.reed);stack(-1.9,-1.7,7);jar(-.5,-1.2,.7,.45);for(let i=0;i<4;i++)beam([.3+i*.42,.6,.4],[.3+i*.42,.6,2.2],.12,m.reed);break;
+ case 'harbor':for(let i=0;i<17;i++)block(0,.35,-2.55+i*.32,5.2,.15,.29,m.wood);for(const x of [-2.3,2.3])for(const z of [-2.3,0,2.3])cylinder(x,.3,z,.13,1.55);cloth(-1.2,-1.3,2.4,1.8,2.1,m.reed);stack(-1.9,-1.7,7);jar(-.5,-1.2,.7,.45);for(let i=0;i<4;i++)beam([.3+i*.42,.6,.4],[.3+i*.42,.6,2.2],.12,m.reed);
+  if(isStrictSumer(state)){for(const z of [.45,1.18,1.88])jar(-1.72,z,.42,.44);block(-.72,.52,1.65,.9,.3,.53,m.linen,.17);}
+  break;
  case 'market':ground();cloth(0,-1.55,4.5,1.6,2.15);cloth(-1.6,.8,1.65,2.6,1.9,m.reed);cloth(1.65,.8,1.5,2.6,2.35);bench(0,-1.55,3.8);for(let i=0;i<6;i++)jar(-1.5+i*.6,-1.55,.4,.85);for(let i=0;i<3;i++)block(1.65,.3,.1+i*.75,.8,.5,.6,m.reed);break;
  case 'clay':ground();basin(.8,.7,3,2.7);room(-1.65,-1.6,1.7,1.5,1.45);cloth(-1.5,.3,1.9,1.5,1.5,m.reed);for(let i=0;i<4;i++)jar(-2+i*.45,1.9,.5);break;
  case 'quarry':ground();for(let i=0;i<7;i++){const mesh=block(.2+i%3*.85,.25+Math.floor(i/3)*.25,-1.4+Math.floor(i/3)*1.1,.85,.7,.9,m.stone,i*.39);mesh.rotation.z=.11;}cloth(-1.5,-1.5,1.7,1.8,1.5,m.reed);bench(-1.2,1.5);beam([.4,.1,1.6],[1.9,1.6,1.6],.075);break;

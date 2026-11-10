@@ -110,3 +110,23 @@ test('a common waterpoint serves the original courtyard before closer shortages 
  assert.ok(original.waterDelivered>0);
  assert.ok(near.waterDelivered>0);
 });
+
+test('an exhausted household water supply interrupts strict-profile work without discarding cargo',()=>{
+ const yard={type:'brickyard',x:9,y:8,level:1,brickmaking:{clay:4,reed:1,water:2,wet:0,drying:0,ready:0}};
+ const s=city([{...home},yard]),c=s.citizens[0];
+ s.scenario={version:1,history:'sumer-iii-v1',miracles:'classic-v1'};
+ const port=generateStreets(s.buildings,s).ports.find(p=>p.building===yard);
+ Object.assign(c,{work:'9,8',phase:'working',x:port.x,y:port.y,thirst:80,cargo:{clay:2}});
+ s.buildings[0].water=0;
+ advanceWater(s,.1);
+ assert.equal(c.waterTrip,undefined);
+ assert.equal(c.cargo.clay,2);
+ c.cargo={};
+ advanceWater(s,.1);
+ assert.equal(c.phase,'waterTrip');
+ assert.equal(c.waterTrip.target,'8,8');
+ assert.equal(c.waterTrip.origin,'9,8');
+ advance(s,30);
+ assert.ok(s.buildings[0].waterDelivered>2);
+ assert.ok(validateWater(s));
+});

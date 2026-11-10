@@ -8,7 +8,7 @@ import {isStrictSumer} from './scenario-profiles.js';
 import {manualGatheringActivity} from './manual-gathering.js';
 import {miracleCelebrationView} from './miracle-celebration.js';
 import {miracleGardenPlan} from './miracle-garden-plan.js';
-import {footprintSize} from './footprints.js';
+import {footprintCells,footprintSize,newFootprint} from './footprints.js';
 import {roadTopologyRevision} from './roads.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
@@ -58,7 +58,7 @@ export class Renderer{
  box(x,y,w,d,h,top='#d9bd81',left='#b99460',right='#c5a36b'){this.polygon([[x-w,y-h],[x,y+d-h],[x,y+d],[x-w,y]],left);this.polygon([[x,y+d-h],[x+w,y-h],[x+w,y],[x,y+d]],right);this.polygon([[x,y-d-h],[x+w,y-h],[x,y+d-h],[x-w,y-h]],top);}
  palm(x,y,size=1,t=0){const c=this.ctx;const s=this.s*size;const sway=this.reduce?0:Math.sin(t*.5+x)*1.5*s;c.strokeStyle='#8c7950';c.lineWidth=3*s;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x-4*s,y-17*s,x+sway,y-32*s);c.stroke();const tx=x+sway,ty=y-32*s;for(let k=0;k<7;k++){const a=k*Math.PI*2/7;const len=(14+(k%2)*4)*s;c.beginPath();c.moveTo(tx,ty);c.quadraticCurveTo(tx+Math.cos(a)*len*.75,ty+Math.sin(a)*len*.5-6*s,tx+Math.cos(a)*len,ty+Math.sin(a)*len*.5+5*s);c.quadraticCurveTo(tx+Math.cos(a+.2)*len*.5,ty+Math.sin(a)*len*.3+2*s,tx,ty);c.fillStyle=k%2?'#6c8a54':'#7e995f';c.fill();}c.fillStyle='#b29a51';c.beginPath();c.arc(tx,ty+3*s,3*s,0,7);c.fill();}
  building(b,state,t){
-  if(!spriteTypes.has(b.type)||b.construction){drawBuilding(this,b,state,t);return;}
+  if(!spriteTypes.has(b.type)||b.construction||footprintSize(b)>1){drawBuilding(this,b,state,t);return;}
   const dx=(this.canvas?.width/this.w)||1,dy=(this.canvas?.height/this.h)||dx,q=this.s,scale=`${q}/${dx}/${dy}`;
   if(this.spriteScale!==scale){this.spriteScale=scale;this.buildingSprites=new Map();this.spriteBytes=0;}
   const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${houseVariant(b)}:${Number(blessingCupAt(state,b))}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
@@ -409,7 +409,7 @@ export class Renderer{
  }
  for(const b of [...s.buildings,...s.roads||[]])if(b.construction&&this.inView(b.x,b.y,150))drawConstructionLabel(this,b);
  const p=this.point(8.5,4.7);c.textAlign='center';c.fillStyle='#5e7057';c.font=`${Math.max(9,13*this.s)}px Georgia`;c.fillText('Э Р И Д У',p.x,p.y-12*this.s);c.fillStyle='#7c8b70';c.font=`${Math.max(7,9*this.s)}px Arial`;c.fillText(`${s.population} жителей · ${s.name}`,p.x,p.y+3*this.s);
- if(this.hover&&!this.photoMode){const {x,y}=this.hover;const reason=selection?canBuild(s,selection,x,y):'';this.tile(x,y,selection?(reason?'#bd65433b':'#edf0b86b'):'#fff7cf38',selection?(reason?'#a8573e':'#79905c'):'#f6edd1');if(selection&&!reason){c.globalAlpha=.55;this.building({x,y,type:selection},s,t);c.globalAlpha=1;}}
+ if(this.hover&&!this.photoMode){const {x,y}=this.hover;const reason=selection?canBuild(s,selection,x,y):'';const draft={x,y,type:selection,footprint:newFootprint(selection)};for(const cell of footprintCells(draft))this.tile(cell.x,cell.y,selection?(reason?'#bd65433b':'#edf0b86b'):'#fff7cf38',selection?(reason?'#a8573e':'#79905c'):'#f6edd1');if(selection&&!reason){c.globalAlpha=.55;this.building(draft,s,t);c.globalAlpha=1;}}
  this.effects=this.effects.filter(e=>time-e.start<4000);for(const e of this.effects){const actualAge=(time-e.start)/1000,age=this.reduce?.6:actualAge,alpha=Math.max(0,1-actualAge/4);if(e.id==='rain'){c.strokeStyle=`rgba(210,233,220,${alpha*.8})`;c.lineWidth=1;for(let k=0;k<100;k++){const xx=hash(k,1)*w,yy=(hash(k,2)*h+age*180)%h;c.beginPath();c.moveTo(xx,yy);c.lineTo(xx-6,yy+15);c.stroke();}}else if(e.id==='richCatch'&&e.at){
   const pos=this.point(e.at.x,e.at.y);c.strokeStyle=`rgba(146,218,233,${alpha})`;c.lineWidth=2;
   c.beginPath();c.ellipse(pos.x,pos.y,(.5+age)*this.s,(.25+age*.5)*this.s,0,0,Math.PI*2);c.stroke();

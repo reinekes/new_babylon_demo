@@ -7,7 +7,7 @@ export function dairyHerd(state){
  for(const b of state.buildings||[]){if(b.type!=='cowshed'||!isOperational(b)||!b.dairy)continue;
   const count=Math.min(12,b.dairy.cows+b.dairy.calves);
   const milking=dairyMilkingCow(workstationBuilding(b,state));
-  for(let i=0;i<count;i++){const calf=i>=b.dairy.cows,slot=i%5,positions=[[milking.x,milking.z],[-1.3,-1.2],[.8,-1.2],[-1.45,.8],[-.45,1.55]],p=positions[slot],world=workstationWorldPoint(b,[p[0],0,p[1]]);result.push({id:`dairy-${buildingKey(b)}-${i}`,building:b,index:i,calf,scale:calf?.43:.75,anchor:{x:world.x,y:world.y},yaw:(i===0?milking.yaw:(i%2?-.5:.5)*Math.PI)+(b.rotation||0)*Math.PI/2});}
+  for(let i=0;i<count;i++){const calf=i>=b.dairy.cows,slot=i%5,positions=[[milking.x,milking.z],[-1.3,-1.2],[.8,-1.2],[-1.45,.8],[-.45,1.55]],outer=[[0,0],[4.1,.2],[5.8,2.4],[.6,4.8],[3.5,5.2]],p=(b.footprint===2&&slot?outer:positions)[slot],world=workstationWorldPoint(b,[p[0],0,p[1]]);result.push({id:`dairy-${buildingKey(b)}-${i}`,building:b,index:i,calf,scale:calf?.43:.75,anchor:{x:world.x,y:world.y},yaw:(i===0?milking.yaw:(i%2?-.5:.5)*Math.PI)+(b.rotation||0)*Math.PI/2});}
  }
  return result;
 }

@@ -1,3 +1,4 @@
+import {isStrictSumer} from './scenario-profiles.js';
 import {log} from './engine.js';
 import {recordDepthSupply} from './depth-supply.js';
 import {recordCreatorUse} from './creator-materials.js';
@@ -231,6 +232,16 @@ export function advanceWater(s,dt){
  if(s.funeral&&s.funeral.scope!=='family')return;
  const nav=navigation(s),mourning=new Set(s.funeral?.actors.map(a=>a.id)||[]),day=((8+s.simTime*.4)%24+24)%24;
  for(const c of s.citizens)if(c.waterTrip&&!mourning.has(c.id))advanceTrip(s,c,dt,nav);
+ if(isStrictSumer(s)){
+  const assigned=new Set(s.citizens.filter(c=>c.waterTrip).map(c=>c.waterTrip.target));
+  for(const c of s.citizens){
+   if(c.thirst<30||!['home','working','resting'].includes(c.phase)||!eligible(c)||c.guardPost||c.manualGathering||mourning.has(c.id))continue;
+   const home=houses.get(c.home);
+   if(!home||!isOperational(home)||home.water>=waterDemand(c)||assigned.has(c.home))continue;
+   const origin=c.phase==='working'?c.work:c.home;
+   if(origin&&begin(s,c,home,null,nav,origin))assigned.add(c.home);
+  }
+ }
  if(day<6||day>=19)return changes.delete(s);
  // Build household demand once per step: never rescan every resident per courier.
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),daily=new Map(),adults=new Set(),assigned=new Set();
