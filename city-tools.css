@@ -287,3 +287,38 @@
 .uruk-ui #tile-detail:has(>.map-card-heading) .house-tabs button {border:1px solid #806044;border-radius:3px;background:#30271e;color:#ead5b3}
 .uruk-ui #tile-detail:has(>.map-card-heading) .house-tabs button[aria-selected=true] {background:#244260 var(--uruk-lapis);background-size:320px;border-color:#7a9ab3;color:#fff0d1}
 .uruk-ui #tile-detail:has(>.map-card-heading) .house-meal {color:#c5d6a6}
+
+.city-child-portrait {background-image:url('assets/ui/uruk-children.webp');background-size:200% 200%}
+.city-resident-vitals .city-vital-row {position:relative}
+.city-vital-help summary {display:flex;align-items:center;gap:5px;cursor:help;list-style:none}
+.city-vital-help summary::-webkit-details-marker {display:none}
+.city-vital-help summary span {display:grid;place-items:center;width:14px;height:14px;flex:none;border:1px solid #b18a5d;border-radius:50%;color:#f3ca89;font:600 10px/1 sans-serif}
+.city-vital-help summary:focus-visible {outline:2px solid #e8c38c;outline-offset:3px}
+.city-resident-vitals .city-vital-tip {display:none;position:absolute;z-index:4;top:100%;left:0;right:0;padding:10px 12px;text-align:left;color:#f5e1be;background:#2b2219;border:1px solid #bd9460;border-radius:4px;box-shadow:0 7px 18px #0008}
+.city-resident-vitals .city-vital-row:nth-child(n+4) .city-vital-tip {top:auto;bottom:100%}
+.city-resident-vitals .city-vital-tip p {font:12px/1.5 system-ui,sans-serif;margin:4px 0 0;color:#e7d0aa}
+.city-vital-row:has(.city-vital-help[open]) .city-vital-tip,.city-vital-row:has(summary:focus-visible) .city-vital-tip {display:block}
+@media(hover:hover){.city-vital-row:hover .city-vital-tip {display:block}}
+@media(hover:none){
+ .city-vital-row:has(.city-vital-help[open]) {flex-wrap:wrap}
+ .city-vital-row:has(.city-vital-help[open]) dd {display:contents}
+ .city-vital-row:has(.city-vital-help[open]) meter {width:28%;margin-left:auto}
+ .city-vital-row:has(.city-vital-help[open]) .city-vital-tip {position:static;width:100%;box-shadow:none}
+}
+.uruk-ui dialog .city-tools:is([data-city-view=districts],[data-city-view=homes]) {
+ --ct-ink:#f6e7cb;--ct-muted:#cbb797;--ct-gold:#dab077;--ct-warning:#ffad8f;
+ color:var(--ct-ink);background:#28221b var(--uruk-stone);background-size:520px;
+ border:1px solid #96724b;box-shadow:inset 0 0 0 3px #191510,0 12px 28px #0006;
+ padding:12px;border-radius:5px;
+}
+.city-tools:is([data-city-view=districts],[data-city-view=homes]) .city-tools-heading {padding:0 42px 9px 0}
+.city-tools:is([data-city-view=districts],[data-city-view=homes]) .city-tools-summary {padding:5px 9px}
+.city-tools:is([data-city-view=districts],[data-city-view=homes]) .city-tools-tabs {margin:8px 0;padding-bottom:8px}
+.city-district-intro h3,.city-tools [data-city-district-section]>h3 {font:400 19px var(--serif,Georgia,serif);color:#f1d1a3}
+.city-district-intro h3 {margin:0}
+.city-district-intro p {font-size:12px;margin:4px 0 0}
+.city-district-name {display:flex;align-items:center;gap:7px;font:600 14px var(--serif,Georgia,serif)}
+.city-district-name .ui-icon {width:20px;height:20px;color:#dab077}
+.uruk-ui dialog .city-tools [data-city-district-section] .city-tools-row {background:#33291f;border-color:#8d6a43}
+.city-tools [data-city-district-section] .city-tools-metrics {padding:7px 0;border-block:1px solid #9b775247;font-size:12px}
+.uruk-ui dialog .city-tools [data-city-district-section] .city-tools-households {color:#ffba9b!important}

@@ -81,3 +81,13 @@ test('the shared resident readout uses live thirst, hunger and clothing without 
  assert.equal(c.thirst,64);
  dom.window.close();
 });
+
+test('resident help distinguishes the previous meal from food available at home now',()=>{
+ const c={id:17,home:'2,3',lastMealQuality:.4,hunger:52,thirst:48,clothing:10};
+ const s={buildings:[{type:'house',x:2,y:3,pantry:2,householdStock:{milk:2},water:4}]};
+ const dom=new JSDOM(residentVitalsHTML(c,s,'map')),doc=dom.window.document;
+ assert.match(doc.getElementById('vital-map-17-food').textContent,/40% порции.*3 ед\. еды.*путь до склада/);
+ assert.match(doc.getElementById('vital-map-17-health').textContent,/сильный голод, жажда, ветхая одежда/);
+ assert.match(doc.getElementById('vital-map-17-water').textContent,/4 ед\. воды/);
+ dom.window.close();
+});
