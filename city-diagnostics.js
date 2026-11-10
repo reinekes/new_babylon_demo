@@ -98,11 +98,11 @@ export function cityDiagnostics(s){
   if(residents.length&&!connected.length)reasons.push(reason('path','Нет пути к складу','Общий запас не доступен этому дому',key));
   const deliverable=homeFoodInTransit(s,key,{deliverable:true}),foodNeeded=pantry+1e-7<demand,canFetch=residents.some(c=>adult(c)&&!c.clinic&&!c.school)||couriers.some(c=>c.phase!=='blocked');
   h.foodStatus='ready';
-  if(h.hungry)reasons.push(reason('food','Недоедание',accessibleFood>0?'Еда есть на доступном складе: нужна доставка домой':'На доступных складах нет свободной еды',key));
+  if(h.hungry)reasons.push(reason('food','Недоедание',accessibleFood>0?'Еда есть на доступном складе: нужна доставка домой':(connected.length?'На доступных складах нет свободной еды':'У двора нет пути к складу'),key));
   if(foodNeeded){
    if(pantry+deliverable+1e-7>=demand){h.foodStatus='delivery';reasons.push(reason('delivery','Еда в пути','Припасы ещё не доставлены домой',key));}
    else if(accessibleFood>1e-7){h.foodStatus=canFetch?'delivery':'helper';reasons.push(reason(canFetch?'delivery':'helper',canFetch?'Ждёт доставку еды':'Некому принести еду',canFetch?'На доступном складе есть еда; нужен рейс домой':'Нет взрослого без лечения или учёбы; нужна помощь семье',key));}
-   else{h.foodStatus='shortage';if(!h.hungry)reasons.push(reason('food','Не хватает домашней еды','На доступных складах нет свободной еды',key));}
+   else{h.foodStatus='shortage';if(!h.hungry)reasons.push(reason('food','Не хватает домашней еды',(connected.length?'На доступных складах нет свободной еды':'У двора нет пути к складу'),key));}
   }
   if(water+waterInTransit<waterNeed||residents.some(c=>c.thirst>30))reasons.push(reason('water','Нужна вода','Вода хранится в доме; нужен рейс к берегу',key));
   if(h.ill)reasons.push(reason('health','Нужно лечение',`Здоровье ниже 60%: ${h.ill}`,key));

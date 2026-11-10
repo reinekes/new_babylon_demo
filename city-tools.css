@@ -365,3 +365,19 @@
  .uruk-ui #tile-detail .map-card-career .inspiration-controls {grid-template-columns:minmax(0,1fr)}
  .map-card-career .inspire-button {justify-self:start}
 }
+
+.map-card-vitals>summary,.map-card-career>summary {cursor:pointer;color:#f3d8ad;font:600 15px var(--serif,Georgia,serif)}
+.map-card-career[open]>summary {margin-bottom:8px}
+.uruk-ui #tile-detail .map-card-career select {max-width:none}
+.uruk-ui #tile-detail .map-card-warnings {margin:4px 0 8px;color:#ffb999;font-weight:600}
+.city-district-homes {margin-top:10px}
+.city-district-issues {display:grid;gap:8px;list-style:none;padding:0;margin:10px 0 0}
+.city-district-issues li {border-left:2px solid #ab7650;padding-left:8px}
+.city-district-issues p {margin:2px 0 4px}
+@media(max-width:650px){
+ .uruk-ui #tile-detail:has(>[data-map-card=resident]) {max-height:60%;overscroll-behavior:contain}
+ .map-card-vitals,.map-card-career {margin:6px 0;padding:8px;border:1px solid #876644;border-radius:3px}
+ .map-card-heading[data-map-card=resident] .resident-portrait {width:52px;height:52px}
+ .uruk-ui #tile-detail:has(>[data-map-card=resident]) .map-card-status {margin:6px 0;padding:5px 8px}
+ .uruk-ui #tile-detail:has(>[data-map-card=resident]) .map-card-cargo {margin:6px 0;padding:5px 8px}
+}

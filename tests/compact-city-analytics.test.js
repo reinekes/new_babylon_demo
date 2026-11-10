@@ -47,3 +47,14 @@ test('analytics work and wellbeing numbers are derived from actual residents wit
  assert.equal(m.distributions.faith.reduce((n,r)=>n+r.count,0),s.citizens.length);assert.equal(m.distributions.health[0].count,1);
  for(const tab of ['work','wellbeing','faith'])lifeAnalyticsHTML(s,{tab,model:m});assert.equal(JSON.stringify(s),before);
 });
+
+test('problem homes explain supply failures and link to the matching house tabs',()=>{
+ const s=town(),home=s.buildings.find(b=>b.type==='house'&&s.citizens.some(c=>c.home===`${b.x},${b.y}`));
+ home.water=0;
+ const model=cityDiagnostics(s),key=`${home.x},${home.y}`;
+ const district=model.neighborhoods.find(n=>n.homeKeys.includes(key));
+ const html=cityToolsHTML(s,{tab:'homes',group:district.key,model});
+ assert.match(html,/Вода хранится в доме/);
+ assert.ok(html.includes(`data-district-home="${key}" data-district-tab="water"`));
+ assert.match(html,/data-district-tab="food"/);
+});
