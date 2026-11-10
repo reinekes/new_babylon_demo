@@ -329,3 +329,39 @@
  border:1px solid #7599b2;border-radius:3px;background:#244260 var(--uruk-lapis);
  background-size:320px;color:#fff0d1;cursor:pointer;
 }
+
+.uruk-ui #tile-detail .map-card-cargo {
+ display:block;margin:10px 0;padding:7px 10px;border:1px solid #866644;
+ border-radius:3px;background:#33291f;color:#ecd0a2;font-size:12px;
+}
+.map-card-career {
+ margin:10px 0;padding:10px;border:1px solid #876644;border-radius:4px;background:#32281f;
+}
+.uruk-ui #tile-detail .map-card-career h4 {margin:0 0 8px;color:#f3d8ad;font:600 16px var(--serif,Georgia,serif)}
+.uruk-ui #tile-detail .map-card-career .inspiration-controls {
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;margin:0;padding:0;border:0;align-items:end;
+}
+.map-card-career .control-label {display:grid;gap:4px;min-width:0}
+.map-card-career .control-label select {width:100%;min-width:0}
+.map-card-career .inspiration-controls>small,.map-card-career .inspiration-controls>.control-label:not(:first-child) {grid-column:1/-1}
+.uruk-ui #tile-detail .map-card-action-reason {color:#f5bd9b}
+.map-card-personal {display:grid;gap:6px}
+.uruk-ui #tile-detail .map-card-personal :is(#person-life,summary) {
+ width:100%;padding:8px 10px;border:1px solid #866644;border-radius:3px;background:#33291f;color:#f2d6a8;
+ text-align:left;font:600 13px/1.4 system-ui,sans-serif;
+}
+.uruk-ui #tile-detail .map-card-personal #person-life {
+ display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:8px;background:#244260 var(--uruk-lapis);background-size:320px;border-color:#7392a8;
+}
+.map-card-personal #person-life .ui-icon {width:17px;height:17px}
+.map-card-personal .map-card-more {margin:0;padding:0;border:0}
+.map-card-personal .map-card-more[open] {padding-bottom:8px}
+.map-card-personal .relic-start {margin:8px 0 0;padding:0;border:0}
+.map-card-personal .relic-start h4 {display:none}
+.map-card-personal .relic-start-target {display:grid;justify-items:start;gap:5px;padding:9px;border:1px solid #795d3d;border-radius:3px;margin-top:6px}
+.uruk-ui #tile-detail .map-card-personal .relic-start-target button {background:#3f3125;border:1px solid #9e794f;color:#f1d8ae}
+.uruk-ui #tile-detail .map-card-personal .relic-start-target button:disabled {opacity:.65}
+@media(max-width:390px){
+ .uruk-ui #tile-detail .map-card-career .inspiration-controls {grid-template-columns:minmax(0,1fr)}
+ .map-card-career .inspire-button {justify-self:start}
+}
