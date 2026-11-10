@@ -2,7 +2,7 @@ import test from 'node:test';
 import {JSDOM} from 'jsdom';
 import assert from 'node:assert/strict';
 import {createGame} from '../engine.js';
-import {cityToolsHTML,renderCityTools} from '../ui-city-tools.js';
+import {cityToolsHTML,renderCityTools,residentVitalsHTML} from '../ui-city-tools.js';
 import {buildingInventoryHTML} from '../ui-building-inventory.js';
 import {RESOURCE_GROUPS} from '../season-balance.js';
 
@@ -69,5 +69,15 @@ test('a live refresh keeps keyboard focus on the same building summary',()=>{
  s.buildings.push({type:'pottery',x:6,y:8,level:1});renderCityTools(root,s);
  const active=dom.window.document.activeElement;
  assert.equal(active.tagName,'SUMMARY');assert.equal(active.parentElement.dataset.cityDisclosure,key);
+ dom.window.close();
+});
+
+test('the shared resident readout uses live thirst, hunger and clothing without changing the resident',()=>{
+ const c={health:83,hunger:42,thirst:64,mood:49,faith:70,clothing:18};
+ const dom=new JSDOM(residentVitalsHTML(c));
+ const meters=[...dom.window.document.querySelectorAll('meter')];
+ assert.deepEqual(meters.map(m=>m.value),[83,58,36,49,70,18]);
+ assert.deepEqual(meters.filter(m=>m.closest('.is-warning')).map(m=>m.getAttribute('aria-label')),['Сытость','Утоление жажды','Состояние одежды']);
+ assert.equal(c.thirst,64);
  dom.window.close();
 });

@@ -84,7 +84,7 @@ function registerPage(total,page,kind){
  const footer=`<nav class="city-tools-pagination city-register-pagination" aria-label="Страницы ${kind}"><button type="button" data-city-page="${current-1}"${current===0?' disabled':''} aria-label="Предыдущая страница">←</button><span>${total?start+1:0}–${end} из ${total}</span><button type="button" data-city-page="${current+1}"${current===pages-1?' disabled':''} aria-label="Следующая страница">→</button></nav>`;
  return {start,end,footer};
 }
-function registerPortrait(c){
+export function registerPortrait(c){
  if((c.age??20)<16)return residentPortrait(c);
  const older=(c.age??20)>=56, variants=older?[3,7]:[0,1,2,4,5,6,7], young=[0,1,2,4,5,6];
  const choices=c.sex==='f'&&!older?young:variants;
@@ -95,10 +95,20 @@ function registerVital(label,value,warning=false){
  const v=Math.max(0,Math.min(100,Number(value)||0));
  return `<div${warning?' class="is-warning"':''}><dt>${label}</dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span></dd></div>`;
 }
+export function residentVitalsHTML(c){
+ return `<dl class="city-resident-vitals">${[
+  ['Здоровье',c.health??100,60],
+  ['Сытость',100-(c.hunger??0),70],
+  ['Утоление жажды',100-(c.thirst??0),70],
+  ['Настроение',c.mood??75,35],
+  ['Вера',c.faith??60,0],
+  ['Состояние одежды',c.clothing??100,26]
+ ].map(([label,value,threshold])=>registerVital(label,value,value<threshold)).join('')}</dl>`;
+}
 function residentInspector(s,c,desiredInspirations,expandedCitizens,workplace){
  if(!c)return `<aside class="city-register-inspector">${empty('Выбери жителя в списке.')}</aside>`;
  const work=workKey(c),home=c.home;
- return `<aside class="city-register-inspector" aria-label="Карточка жителя"><header>${registerPortrait(c)}<div><span class="city-register-kicker">Карточка жителя</span><h3>${escape(displayName(s,c))}</h3><span class="city-register-identity">${escape(citizenProfessionName(c))} · ${Math.floor(c.age??20)} лет</span></div></header><div class="city-register-address"><div>${uiIcon('house')}<span>Дом</span>${home?focus(home,'Показать двор'):'<small>Нет дома</small>'}</div><div>${uiIcon('pottery')}<span>Работа</span>${work?focus(work,workplace(c)):'<small>Не назначена</small>'}</div></div><button type="button" class="city-register-map" data-city-citizen="${c.id}">Показать на карте</button><h4>Состояние</h4><dl>${registerVital('Здоровье',c.health??100,(c.health??100)<60)}${registerVital('Сытость',100-(c.hunger||0),(c.hunger||0)>=30)}</dl><details class="city-tools-person-more" data-city-person-disclosure="${c.id}"${expandedCitizens.has(c.id)?' open':''}><summary>Настроить и подробнее</summary>${personControls(s,c,desiredInspirations.get(c.id))}${citizenEpithetHTML(s,c)}</details></aside>`;
+ return `<aside class="city-register-inspector" aria-label="Карточка жителя"><header>${registerPortrait(c)}<div><span class="city-register-kicker">Карточка жителя</span><h3>${escape(displayName(s,c))}</h3><span class="city-register-identity">${escape(citizenProfessionName(c))} · ${Math.floor(c.age??20)} лет</span></div></header><div class="city-register-address"><div>${uiIcon('house')}<span>Дом</span>${home?focus(home,'Показать двор'):'<small>Нет дома</small>'}</div><div>${uiIcon('pottery')}<span>Работа</span>${work?focus(work,workplace(c)):'<small>Не назначена</small>'}</div></div><button type="button" class="city-register-map" data-city-citizen="${c.id}">Показать на карте</button><h4>Состояние</h4>${residentVitalsHTML(c)}<details class="city-tools-person-more" data-city-person-disclosure="${c.id}"${expandedCitizens.has(c.id)?' open':''}><summary>Настроить и подробнее</summary>${personControls(s,c,desiredInspirations.get(c.id))}${citizenEpithetHTML(s,c)}</details></aside>`;
 }
 function citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens){
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b]));

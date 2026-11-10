@@ -18,8 +18,8 @@ function group(title,values,capacities,kind,{showEmpty=false}={}){
 }
 
 /** A view of physically separate buffers. It never creates or moves stock. */
-export function buildingInventoryHTML(inventory,{house=false,production=false,transitLabels={}}={}){
+export function buildingInventoryHTML(inventory,{house=false,production=false,compactStorage=false,transitLabels={}}={}){
  if(!inventory)return '';
  const capacity=inventory.capacities||{};
- return `<div class="building-inventory" aria-label="Местные запасы">${group('Склад',inventory.storage,capacity.storage,'storage')}${group(house?'Домашние припасы':'Сырьё',inventory.input,capacity.input,'input',{showEmpty:house})}${group('В работе',inventory.inProcess,null,'in-process')}${group('Готовая продукция',inventory.output,capacity.output,'output',{showEmpty:production})}${group(transitLabels.input||'Сырьё в пути',positive(inventory.inTransit?.input),null,'input-transit')}${group(transitLabels.output||'Готовое в пути',positive(inventory.inTransit?.output),null,'output-transit')}</div>`;
+ return `<div class="building-inventory" aria-label="Местные запасы">${group('Склад',compactStorage?positive(inventory.storage):inventory.storage,capacity.storage,'storage')}${group(house?'Домашние припасы':'Сырьё',inventory.input,capacity.input,'input',{showEmpty:house})}${group('В работе',inventory.inProcess,null,'in-process')}${group('Готовая продукция',inventory.output,capacity.output,'output',{showEmpty:production})}${group(transitLabels.input||'Сырьё в пути',positive(inventory.inTransit?.input),null,'input-transit')}${group(transitLabels.output||'Готовое в пути',positive(inventory.inTransit?.output),null,'output-transit')}</div>`;
 }

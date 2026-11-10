@@ -238,3 +238,52 @@
  .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-tabs {margin:0;padding:0 55px 0 0;border:0}
  .city-tools:is([data-city-view=citizens],[data-city-view=workshops]) .city-tools-content {grid-column:1/-1;border-top:1px solid #a57e50!important;padding-top:12px}
 }
+
+/* The same portrait, brass rules and lapis accent, sized for a map overlay. */
+.uruk-ui #tile-detail:has(>.map-card-heading) {
+ width:min(420px,calc(100% - 24px));max-width:none;max-height:calc(100% - 34px);
+ padding:15px;box-shadow:inset 0 0 0 3px #16120e,0 14px 42px #0009;
+ scrollbar-color:#9d784d #241e17;
+}
+.uruk-ui #tile-detail .detail-close:has(+.map-card-heading) {z-index:2;color:#f2d8a9}
+.map-card-heading {display:flex;align-items:center;gap:12px;padding:0 24px 11px 0;border-bottom:1px solid #97754a}
+.map-card-heading>div {min-width:0}
+.map-card-heading .resident-portrait,.map-card-emblem {width:82px;height:82px;flex:none;border-radius:4px}
+.map-card-emblem {display:grid;place-items:center;border:1px solid #98724c;background:#34291e var(--uruk-clay);background-size:250px}
+.map-card-emblem .ui-icon {width:37px;height:37px;color:#ffe0a5;filter:drop-shadow(0 1px 2px #231307)}
+.uruk-ui #tile-detail .map-card-heading h3 {font:400 26px/1.08 var(--serif,Georgia,serif);color:#f6ddb1;margin:4px 0;overflow-wrap:anywhere}
+.uruk-ui #tile-detail .map-card-heading .eyebrow {color:#e6b979;letter-spacing:.13em}
+.uruk-ui #tile-detail .map-card-address {font-size:12px;margin:4px 0 0;line-height:1.35}
+.map-card-status,.map-card-production {display:block;margin:10px 0;padding:8px 10px;border:1px solid #66839a;border-radius:3px;background:#244260 var(--uruk-lapis);background-size:360px;font-size:12px}
+.uruk-ui #tile-detail .map-card-production {color:#fff0d1}
+.map-card-links {display:grid;gap:4px;padding-bottom:8px;border-bottom:1px solid #765a3b}
+.map-card-links>div {display:grid;grid-template-columns:18px 48px minmax(0,1fr);align-items:center;gap:6px}
+.map-card-links .ui-icon {width:16px;height:16px;color:#d5a86e}
+.uruk-ui #tile-detail .map-card-links a {color:#f4cf91;text-underline-offset:3px}
+.map-card-vitals {padding:7px 0 0}
+.uruk-ui #tile-detail .map-card-vitals h4 {font:600 16px var(--serif,Georgia,serif);color:#f3d8ad;margin:4px 0}
+.city-resident-vitals {margin:4px 0 8px;font-variant-numeric:tabular-nums}
+.city-resident-vitals>div,.map-card-work-rate {display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #84674765;padding:4px 0;font-size:12px}
+.city-resident-vitals dd {display:grid;grid-template-columns:minmax(40px,1fr) 38px;gap:5px;align-items:center;width:52%;margin:0;text-align:right}
+.city-resident-vitals meter {width:100%;height:13px;accent-color:#88ad63}
+.city-resident-vitals meter::-webkit-meter-bar {background:#1d1914;border:1px solid #795d3e;border-radius:2px}
+.city-resident-vitals meter::-webkit-meter-optimum-value {background:#86a867}
+.city-resident-vitals .is-warning meter::-webkit-meter-optimum-value {background:#cc7552}
+.uruk-ui #tile-detail .map-card-vitals .is-warning :is(dt,span) {color:#ffb397}
+.map-card-vitals>small {display:block;margin-top:5px}
+.map-card-more {margin-top:10px;padding-top:8px;border-top:1px solid #8b6b47}
+.map-card-more summary {cursor:pointer;color:#efc891}
+.uruk-ui #tile-detail:has(>.map-card-heading) :is(.staffing-panel,.building-inventory,.building-production-history) {max-width:none;border-color:#866644}
+.uruk-ui #tile-detail:has(>.map-card-heading) :is(.building-inventory-group h4,.building-production-history h4) {color:#f2d5a6}
+.uruk-ui #tile-detail:has(>.map-card-heading) .building-inventory-item {border-color:#98734b70}
+@media(max-width:650px){
+ .uruk-ui #tile-detail:has(>.map-card-heading) {left:10px;max-height:calc(100% - 25px);padding:11px}
+ .map-card-heading .resident-portrait,.map-card-emblem {width:64px;height:64px}
+}
+.uruk-ui #tile-detail:has(>.map-card-heading) .resident-link {color:#f0c78c}
+.uruk-ui #tile-detail:has(>.map-card-heading) .resident-link:hover {color:#fff0ce}
+.uruk-ui #tile-detail .map-card-heading h3 .resident-link {color:inherit;font:inherit;text-align:left}
+.uruk-ui #tile-detail:has(>.map-card-heading) .house-tabs {gap:4px}
+.uruk-ui #tile-detail:has(>.map-card-heading) .house-tabs button {border:1px solid #806044;border-radius:3px;background:#30271e;color:#ead5b3}
+.uruk-ui #tile-detail:has(>.map-card-heading) .house-tabs button[aria-selected=true] {background:#244260 var(--uruk-lapis);background-size:320px;border-color:#7a9ab3;color:#fff0d1}
+.uruk-ui #tile-detail:has(>.map-card-heading) .house-meal {color:#c5d6a6}
