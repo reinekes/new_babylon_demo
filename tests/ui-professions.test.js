@@ -16,7 +16,7 @@ test('healer staffing excludes children and untrained apprentices while preservi
 test('city overview displays specialized professions and filters them while keeping the general production filter',()=>{
  const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age>=16);Object.assign(c,{role:'production',calling:'potter'});
  assert.deepEqual(filterCitizens(s,{role:'potter'}).map(p=>p.id),[c.id]);assert.ok(filterCitizens(s,{role:'production'}).includes(c));
- const html=cityToolsHTML(s,{tab:'citizens',filter:{role:'potter'}});assert.match(html,/Гончар/);assert.match(html,/Найдено: 1/);assert.match(html,new RegExp(`data-city-citizen="${c.id}"`));
+ const html=cityToolsHTML(s,{tab:'citizens',filter:{role:'potter'}});assert.match(html,/Гончар/);assert.match(html,/1–1 из 1/);assert.match(html,new RegExp(`data-city-citizen="${c.id}"`));
 });
 test('the building card can prepare an adult for its recommended speciality',async()=>{
  const {renderStaffing}=await import('../ui-professions.js'),{createGame}=await import('../engine.js');

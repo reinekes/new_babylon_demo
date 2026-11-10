@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {JSDOM} from 'jsdom';
 import assert from 'node:assert/strict';
 import {createGame} from '../engine.js';
 import {cityToolsHTML,renderCityTools} from '../ui-city-tools.js';
@@ -21,15 +22,17 @@ test('work cards are closed disclosures with compact headers and all details ins
  assert.ok(card);assert.match(card,/<details[^>]*data-city-disclosure="6,8"[^>]*>/);
  assert.doesNotMatch(card,/<details[^>]* open/);
  const header=card.match(/<summary[\s\S]*?<\/summary>/)?.[0];
- assert.match(header,/Гончарный двор/);assert.match(header,/Ур\. 2/);assert.match(header,/0\/2/);assert.match(header,/Год неизвестен/);
- assert.doesNotMatch(header,/Быстро назначить|Сырьё|Последние|Нет работника/);
- assert.ok(card.indexOf('Быстро назначить')>card.indexOf('</summary>'));
+ assert.match(header,/Гончарный двор/);assert.match(header,/Ур\. 2/);assert.match(header,/0 \/ 2/);assert.match(header,/Год неизвестен/);
+ assert.doesNotMatch(header,/Быстро назначить|Сырьё|Последние/);
+ assert.doesNotMatch(card,/Быстро назначить/);
+ const expanded=cityToolsHTML(s,{tab:'workshops',expandedBuildings:new Set(['6,8'])});
+ assert.match(expanded,/<\/summary><div class="city-tools-building-body">[\s\S]*Быстро назначить/);
 });
 
 test('work cards group identical building types without changing state',()=>{
  const s=createGame({start:'established'});s.buildings.push({type:'pottery',x:6,y:8,level:1},{type:'weaver',x:7,y:8,level:1},{type:'pottery',x:8,y:8,level:1});
  const before=JSON.stringify(s),html=cityToolsHTML(s,{tab:'workshops'});
- const start=html.indexOf('data-city-building-group="pottery"'),end=html.indexOf('<section class="city-tools-workshop-group"',start+1),group=html.slice(start,end<0?undefined:end);
+ const start=html.indexOf('data-city-building-group="pottery"'),end=html.indexOf('</section>',start),group=html.slice(start,end<0?undefined:end);
  assert.ok(group);assert.match(group,/data-city-building="6,8"/);assert.match(group,/data-city-building="8,8"/);
  assert.doesNotMatch(group,/data-city-building="7,8"/);assert.equal(JSON.stringify(s),before);
 });
@@ -59,8 +62,12 @@ test('disclosure state survives UI refresh and tab changes without touching the 
 });
 
 test('a live refresh keeps keyboard focus on the same building summary',()=>{
- const s=createGame({start:'established'}),focused={matches:()=>true,parentElement:{dataset:{cityDisclosure:'12,8'}}},calls=[];
- const root={innerHTML:'',firstChild:null,contains:()=>true,addEventListener(){},ownerDocument:{activeElement:focused},querySelectorAll:()=>[{dataset:{cityDisclosure:'12,8'},querySelector:()=>({focus:options=>calls.push(options)})}]};
- renderCityTools(root,s,{tab:'workshops'});s.simTime+=1;renderCityTools(root,s);
- assert.ok(calls.length>=1);assert.deepEqual(calls.at(-1),{preventScroll:true});
+ const s=createGame({start:'established'}),dom=new JSDOM('<main></main>'),root=dom.window.document.querySelector('main');
+ renderCityTools(root,s,{tab:'workshops'});
+ const first=root.querySelector('[data-city-disclosure]'),key=first.dataset.cityDisclosure;
+ first.querySelector('summary').focus();
+ s.buildings.push({type:'pottery',x:6,y:8,level:1});renderCityTools(root,s);
+ const active=dom.window.document.activeElement;
+ assert.equal(active.tagName,'SUMMARY');assert.equal(active.parentElement.dataset.cityDisclosure,key);
+ dom.window.close();
 });

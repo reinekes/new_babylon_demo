@@ -60,7 +60,7 @@ test('portable HTML and real-plan ZIP roundtrip retain remaining dependencies an
   const api=dom.window.Roadmap,state=api.getData();
   assert.equal(state.tasks.length,(fs.readFileSync(new URL('../plan.md',import.meta.url),'utf8').match(/^## /gm)||[]).length);assert.equal(state.history.length,13);
   assert.ok(state.releases.filter(x=>x.type==='release').length>=44);
-  const transfer=api.createTransfer(state,['perf-city-4x'],{date:'2026-11-04',note:'Проверка передачи UTF-8: город и жители'});
+  const transfer=api.createTransfer(state,['ux-new-player-playtest'],{date:'2026-11-04',note:'Проверка передачи UTF-8: город и жители'});
   const folder=mkdtempSync(join(tmpdir(),'babylon-roadmap-'));
   try{
     const path=join(folder,'update.zip');writeFileSync(path,api.zip(transfer.files));
@@ -72,7 +72,7 @@ with zipfile.ZipFile(sys.argv[1]) as z:
  plan=z.read('plan.md').decode();report=z.read('reports/2026-11-04.md').decode()
  tasks=[m.task_from_record(r,'roadmap/plan.md') for r in m.parse_records(plan)]
  records=m.parse_records(report);assert len(records)==1
- done=m.split_field(records[0]['fields']['completed']);assert done==['perf-city-4x']
+ done=m.split_field(records[0]['fields']['completed']);assert done==['ux-new-player-playtest']
  assert len(tasks)==int(sys.argv[3]) and 'город и жители' in report
  m.validate_tasks(tasks,done+json.loads(sys.argv[4]),pathlib.Path(sys.argv[2]).resolve().parent.parent)
  print(f'ZIP roundtrip PASS: {len(tasks)} remaining, 1 archived, dependencies valid')`,path,resolve('roadmap/build.py'),String(state.tasks.length-1),JSON.stringify(state.completedIds)],{encoding:'utf8'});
