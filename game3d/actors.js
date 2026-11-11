@@ -25,7 +25,7 @@ import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {createGameGoats} from './goats.js';
 import {createImportedFauna} from './imported-fauna.js';
-import {createAmbientFauna} from './ambient-fauna.js';
+import {createAmbientFauna,courtyardFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
 import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity,RESIDENT_STANCE} from './resident-motion.js';
 import {usesHistoricalMan} from './historical-resident.js';
@@ -50,7 +50,7 @@ export function actorViewFrame(state){
  if(miracle)for(const participant of miracle.participants){const c=visible.get(participant.id)||(state.citizens||[]).find(c=>c.id===participant.id);if(c)visible.set(c.id,{...c,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,swimming:false,eventContact:null,festivalContact:null,funeralContact:null,miracleContact:participant});}
  return {citizens:[...visible.values()],pettingPairs:miracle?[]:pettingPairs};
 }
-export const cityAnimalVisible=animal=>!['bird','mouse','rat'].includes(animal.kind);
+export const cityAnimalVisible=(animal,huntedMice)=>animal.kind==='mouse'?!!huntedMice?.has(animal.id):!['bird','rat','pestCatch'].includes(animal.kind);
 export function actorViewCitizens(state){return actorViewFrame(state).citizens;}
 export function residentVisual(c,state,buildingTypes=state.buildings||[]){
  const look=residentAppearance(c,buildingTypes);
@@ -665,7 +665,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
   imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed,ploughPoses:teams});
   const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
-  wildlife.update(state,[...fauna.filter(c=>cityAnimalVisible(c)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
+  const protectedSites=new Set((state.pests?.cats||[]).map(cat=>cat.site));
+  const huntedMice=new Set((state.pests?.sites||[]).filter(q=>q.mice>0&&protectedSites.has(q.key)&&!(q.flash&&q.clock-q.flash.time<2))
+   .map(q=>`mouse:${q.key}:${q.mice-1}`));
+  wildlife.update(state,[...courtyardFauna(state),...fauna.filter(c=>cityAnimalVisible(c,huntedMice)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)).map(c=>c.kind==='mouse'?{...c,decorative:true}:c),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
  }
  function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();geometryLOD.dispose();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
  return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||wildlife.rootFor(selection);}};

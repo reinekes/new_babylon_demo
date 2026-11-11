@@ -2,7 +2,8 @@ import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
-import {worldWidth,worldHeight} from '../world.js';
+import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength} from '../world.js';
+import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 import {createPloughTeams} from './plough-teams.js';
@@ -30,6 +31,33 @@ export function ambientAnchor(state,species,index=0,occupied=[]){
  for(let ring=0;ring<32;ring++)for(let j=0;j<16;j++){const angle=(j+index*.73+id*1.37)*Math.PI/8,r=.9+ring*.28,x=seed.x+Math.cos(angle)*r,y=seed.y+Math.sin(angle)*r;if(ambientDryPoint(state,x,y,.3)&&occupied.every(p=>Math.hypot(p.x-x,p.y-y)>2.2)&&(!['fox','boar','lioness'].includes(species)||!(state.buildings||[]).some(b=>Math.hypot(b.x-x,b.y-y)<3)))return {x,y};}
  return null;
 }
+const courtyardPlans=new WeakMap();
+export function courtyardFauna(state){
+ let plan=courtyardPlans.get(state);
+ if(plan?.buildings!==state.buildings||plan?.count!==state.buildings.length){
+  const routes=[],home=state.buildings.find(b=>b.type==='house');
+  const add=(kind,anchor,reach,speed,pause)=>{
+   if(!anchor)return;
+   const end=[[reach,0],[0,reach],[-reach,0],[0,-reach]].map(([dx,dy])=>({x:anchor.x+dx,y:anchor.y+dy}))
+    .find(p=>ambientClearSegment(state,anchor,p));
+   routes.push({kind,route:end?[anchor,end,anchor]:[anchor],speed,pause});
+  };
+  if(home){
+   add('pig',ambientAnchor(state,'pig'),.55,.22,2.5);
+   const along=riverLocal(home.x,home.y,state).along;
+   const shore=[0,2,-2,4,-4].flatMap(delta=>[1.65,-1.65].map(offset=>riverPoint(
+    Math.max(2,Math.min(riverLength(state)-3,along+delta)),state,offset
+   ))).find(p=>ambientDryPoint(state,p.x,p.y,.22));
+   add('turtle',shore,.25,.08,3.5);
+  }
+  plan={buildings:state.buildings,count:state.buildings.length,routes};courtyardPlans.set(state,plan);
+ }
+ return plan.routes.map(({kind,route,speed,pause})=>{
+  const motion=loopMotion(route,state.simTime||0,speed,pause);
+  return {id:`ambient-${kind}`,kind,decorative:true,...motion,behavior:motion.walking?'walking':'looking'};
+ });
+}
+
 export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const farmMaterials=new Map(),assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb'));
  const entries=Object.entries(AMBIENT_MODELS);if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);

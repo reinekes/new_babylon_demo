@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "9705e31b38e37d61238a86bd68384e208069362073d10cdd6f746d4efbb24023"
+      "sha256": "519ae030a81ea9aa4164cee7f327265d8010258f7af60ad13c08510afa82e724"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "e8e2256be5ccc1debadb864035af475cfa3c21e3c624a240dfb4741e87d60827"
+      "sha256": "357c222bd64cbf4e6827c5f092d4f05972504f3c448e0f9ee3795831162adfef"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -151,7 +151,7 @@
         {
           "model": "ambient-bull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 17,
+          "line": 18,
           "kind": "literal"
         }
       ]
@@ -184,7 +184,7 @@
         {
           "model": "ambient-dog.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 14,
+          "line": 15,
           "kind": "literal"
         }
       ]
@@ -228,7 +228,7 @@
         {
           "model": "ambient-donkey.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 16,
+          "line": 17,
           "kind": "literal"
         },
         {
@@ -267,7 +267,7 @@
         {
           "model": "ambient-duck.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 15,
+          "line": 16,
           "kind": "literal"
         }
       ]
@@ -300,7 +300,7 @@
         {
           "model": "ambient-sheep-kenchoo.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 18,
+          "line": 19,
           "kind": "literal"
         }
       ]
@@ -890,7 +890,7 @@
         {
           "model": "imported-boar.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 12,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -922,7 +922,7 @@
         {
           "model": "imported-fox.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 11,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -979,7 +979,7 @@
         {
           "model": "imported-lioness.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -1010,7 +1010,7 @@
         {
           "model": "imported-orange-bird.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 10,
+          "line": 11,
           "kind": "literal"
         }
       ]

@@ -12,6 +12,7 @@ const species={
  cat:{height:.31,length:.58,width:.105,depth:.105,neck:.07,head:.125,muzzle:.065,leg:.29,color:'#a79c7a',light:'#d6cdb4',stride:.53,cat:true},
  jackal:{height:.53,length:.96,width:.22,depth:.28,neck:.20,head:.21,muzzle:.32,leg:.50,color:'#a38965',light:'#cfbc93',stride:.85,jackal:true},
  bird:{height:.23,length:.38,width:.16,depth:.24,neck:.15,head:.13,muzzle:.10,leg:.20,color:'#928d77',light:'#c8c4aa',stride:.29,bird:true},
+ pig:{height:.39,length:.88,width:.25,depth:.26,neck:.05,head:.19,muzzle:.13,leg:.37,color:'#a67c6d',light:'#cb9a87',stride:.56,pig:true},
  mouse:{height:.095,length:.22,width:.075,depth:.12,neck:.025,head:.095,muzzle:.07,leg:.08,color:'#9b8a73',light:'#cabaa2',stride:.17,mouse:true}
 };
 
@@ -52,7 +53,21 @@ export function createWildlife(B,scene,meshes=[]){
   for(const side of [-1,1])for(let i=0;i<5;i++)ball('fish:scale',body,belly,side*W*(.91-Math.abs(i-2)*.08),.005,-.16+i*.065,.009,.036,.011);
   return {root,body,tail,d,lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:[...String(c.id)].reduce((n,ch)=>n+ch.charCodeAt(0),0)*.37};
  }
- function build(c){if(c.kind==='fish')return buildFish(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(.55);if(d.cat)root.scaling.setAll(.85);
+ function buildTurtle(c){
+  const root=node(`wildlife-${c.id}`),body=node(`${c.id}-shell-pivot`,root);
+  const shell=material('turtle-shell','#53513b'),edge=material('turtle-shell-edge','#827959'),skin=material('turtle-skin','#666949');
+  ball('turtle:shell-edge',body,edge,0,.11,0,.38,.10,.54);
+  ball('turtle:carapace',body,shell,0,.16,-.015,.36,.18,.50);
+  const head=ball('turtle:head',body,skin,0,.095,.285,.115,.083,.16);
+  for(const side of [-1,1])ball('turtle:eye',head,black,side*.39,.19,.29,.14,.15,.15);
+  const feet=[];
+  for(const side of [-1,1])for(const end of [-1,1]){
+   const foot=ball('turtle:foot',body,skin,side*.18,.035,end*.155,.15,.055,.09);
+   feet.push({foot,side,end});
+  }
+  return {root,body,feet,d:{turtle:true,stride:.18},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
+ }
+ function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
   const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
   if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
@@ -63,17 +78,21 @@ export function createWildlife(B,scene,meshes=[]){
   // One skin runs from the chest inside the torso through the neck to the muzzle.
   // No pointed neck cap intersects a second pointed face (the old visible back hole).
   part(`${kind}:face`,head,fur,name=>loft(name,[[-.12,-.08,W*.56,D*.59],[0,.015,W*.57,D*.61],[.09,N*.60,W*.43,D*.49],[.16,N+.045,H*.62,H*.68],[.235,N+.04,H*.70,H*.68],[.30,N+.005,H*.52,H*.46],[.33+M*.55,N-.018,H*.33,H*.28],[.35+M,N-.025,H*.24,H*.22]]));
-  if(d.cat){head.scaling.z=.64;head.position.z=L*.23;}
+  if(d.cat||d.mouse||d.pig){head.scaling.z=d.mouse?.37:d.pig?.73:.64;head.position.z=L*.23;}
+  if(d.pig){
+   ball('pig:snout',head,pale,0,N-.025,.46,.18,.10,.07);
+   for(const side of [-1,1])ball('pig:nostril',head,black,side*.039,N-.025,.495,.023,.023,.014);
+  }
   ball(`${kind}:chin`,head,pale,0,N-H*.24,.29+M*.26,H*.80,H*.40,H*.80);
-  if(!d.bird)ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*(d.cat?.24:.40),H*(d.cat?.17:.24),H*(d.cat?.14:.20));
-  else tube(`${kind}:beak`,head,horn,[[0,N+.02,.28],[0,N,.36],[0,N-.018,.42]],.045);
+  if(!d.bird&&!d.pig)ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*(d.cat?.24:.40),H*(d.cat?.17:.24),H*(d.cat?.14:.20));
+  else if(d.bird)tube(`${kind}:beak`,head,horn,[[0,N+.02,.28],[0,N,.36],[0,N-.018,.42]],.045);
   const ears=[];for(const side of [-1,1]){
    if(d.cat||d.jackal)ball(`${kind}:iris`,head,material(`${kind}-iris`,d.cat?'#979b72':'#b49155'),side*H*.62,N+H*.23,.275,H*.23,H*.22,H*.22);
    ball(`${kind}:eye`,head,black,side*H*.67,N+H*.23,.284,H*(d.cat?.055:.14),H*.15,H*.14);
    ball(`${kind}:eye-glint`,head,glint,side*H*.70,N+H*.27,.294,H*.045,H*.045,H*.045);
    const ear=node(`${c.id}-ear-${side}`,head,side*H*.66,N+H*.49,.17);
    if(!d.bird){
-    const earSize=d.cat?.095:d.jackal?.15:d.mouse?.10:kind==='goat'?.17:.22;
+    const earSize=d.cat?.095:d.jackal?.15:d.mouse?.10:d.pig?.12:kind==='goat'?.17:.22;
     const leaf=part(`${kind}:ear`,ear,fur,name=>loft(name,[[0,0,.015,.01],[.005,earSize*.35,earSize*.26,.025],[.015,earSize*.72,earSize*.20,.018],[.028,earSize,.002,.002]]));
     ear.rotation.z=side*(d.cat||d.jackal?-.17:d.mouse?-.7:-.90);ears.push({node:ear,base:ear.rotation.z,side});leaf.rotation.y=side*.32;
     const inner=ball(`${kind}:ear-inner`,ear,pale,0,earSize*.48,.025,earSize*.27,earSize*.60,.012);inner.rotation.x=.1;
@@ -84,6 +103,7 @@ export function createWildlife(B,scene,meshes=[]){
    ball(`${kind}:muzzle-pad`,head,pale,side*H*.23,N-.03,.325+M*.65,H*.46,H*.32,H*.48);
    for(let i=0;i<3;i++)tube(`${kind}:whisker-${side}-${i}`,head,pale,[[side*H*.27,N-.015,.34+M*.60],[side*(H*.55+.035),N+(i-1)*.022,.35+M*.59],[side*(H*.8+.055),N+(i-1)*.035,.32+M*.57]],d.mouse?.0015:.0024,.12);
   }
+  if(d.pig)tube('pig:curled-tail',body,pale,[[0,.055,-L*.49],[0,.09,-L*.57],[.03,.14,-L*.61],[.072,.135,-L*.62],[.075,.10,-L*.62]],.022,.4);
   if(kind==='goat')tube(`${kind}:beard`,head,pale,[[0,N-.035,.34],[0,N-.11,.33],[0,N-.19,.31]],.025);
   // Jackal saddle is pigment in its coat; there is no raised dark back plate.
   // Tabby markings belong to the shared coat texture; raised dark meshes
@@ -103,7 +123,7 @@ export function createWildlife(B,scene,meshes=[]){
   }
   const tail=node(`${c.id}-tail`,body,0,D*.33,-L*.48),tailJoints=[];
   const tailLength=d.cat?.48:d.jackal?.49:d.mouse?.25:d.bird?.20:.12;
-  let previous=tail;for(let i=0;i<3;i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.024:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
+  let previous=tail;for(let i=0;i<(d.pig?0:3);i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.024:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
   const wings=[];if(d.bird)for(const side of [-1,1]){const wing=node(`${c.id}-wing-${side}`,body,side*W*.60,.015,-.02);wing.rotation.z=side*.12;
    const cover=ball(`${kind}:wing-cover`,wing,pale,side*.08,0,-.015,.12,.16,.34);cover.rotation.z=side*.3;
    for(let i=0;i<6;i++){const feather=part(`${kind}:flight-feather-${i}`,wing,fur,name=>loft(name,[[-.23-i*.014,0,.002,.002],[-.15,0,.027,.012],[.01,0,.035,.018],[.10-i*.008,0,.015,.012],[.14-i*.01,0,.002,.002]]),side*(.035+i*.027),0,-i*.006);feather.rotation.y=-side*(.15+i*.09);}
@@ -113,7 +133,7 @@ export function createWildlife(B,scene,meshes=[]){
  function remove(a){for(const m of a.root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}a.root.dispose();}
  function update(state,animals,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,dt));paused=paused||!dt||!speed;if(!paused)time+=dt*speed;
-  seen.clear();for(const c of animals){if(c.kind==='sheep')continue;seen.add(c.id);let a=actors.get(c.id);if(a&&a.root.metadata.animalKind!==c.kind){remove(a);actors.delete(c.id);a=null;}let fresh=false;if(!a){a=build(c);actors.set(c.id,a);fresh=true;}
+  seen.clear();for(const c of animals){if(c.kind==='sheep')continue;seen.add(c.id);let a=actors.get(c.id);if(a&&a.root.metadata.animalKind!==c.kind){remove(a);actors.delete(c.id);a=null;}let fresh=false;if(!a){a=build(c);a.root.metadata??={animalKind:c.kind};if(c.decorative){delete a.root.metadata.animalId;for(const mesh of a.root.getChildMeshes())mesh.isPickable=false;}actors.set(c.id,a);fresh=true;}
    const {d}=a,dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
    // Include the dorsal fin and its small animated roll, not just the body centre.
    a.root.position.set(c.x*6,d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
@@ -135,6 +155,10 @@ export function createWildlife(B,scene,meshes=[]){
     a.tail.rotation.set(0,0,0);if(a.tailJoints)for(const joint of a.tailJoints)joint.rotation.set(0,0,0);
     if(a.wings)for(const wing of a.wings)wing.node.rotation.set(0,0,wing.side*.12);
     a.move=0;continue;
+   }
+   if(d.turtle){
+    for(const {foot,side,end} of a.feet)foot.rotation.y=Math.sin(a.gait+side*end*Math.PI/2)*.48*a.move;
+    continue;
    }
    if(d.fish){
     a.body.position.y=Math.sin(t*1.4)*.012;a.body.rotation.z=Math.sin(t*1.6)*.055;

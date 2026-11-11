@@ -25,3 +25,24 @@ test('paused load re-centres sky birds over a larger saved world without adding 
  const engine=new B.NullEngine(),scene=new B.Scene(engine),first=createGame({start:'established'}),second=structuredClone(first);Object.assign(second.world,{width:64,height:64});const view=await createAmbientFauna(B,scene,[],{loadAsset:async file=>source(scene,file)});
  try{view.update(first,0,{paused:true});const birds=view.roots().filter(r=>r.metadata.ambientSpecies==='sky-birds'),positions=birds.map(r=>r.position.clone()),count=view.roots().length;view.update(second,0,{paused:true});assert.equal(view.roots().length,count);for(const [i,bird]of birds.entries()){assert.equal(bird.position.x-positions[i].x,72);assert.equal(bird.position.z-positions[i].z,96);}const frozen=birds.map(r=>r.position.asArray());view.update(second,.1,{paused:true});assert.deepEqual(birds.map(r=>r.position.asArray()),frozen);}finally{view.dispose();scene.dispose();engine.dispose();}
 });
+
+test('yard pigs and shore turtles follow dry decorative routes without touching save state',async()=>{
+ const {courtyardFauna,ambientDryPoint}=await import('../game3d/ambient-fauna.js');
+ for(const seed of [1,4,9,96]){
+  const state=createGame({seed}),before=JSON.stringify(state);
+  const positions=new Map();
+  for(let t=0;t<25;t+=.5){
+   state.simTime=t;const snapshot=JSON.stringify(state),animals=courtyardFauna(state);
+   assert.equal(JSON.stringify(state),snapshot);
+   assert.deepEqual(animals.map(a=>a.kind),['pig','turtle']);
+   for(const a of animals){
+    assert.ok(a.decorative&&ambientDryPoint(state,a.x,a.y));
+    const seen=positions.get(a.kind)||new Set();
+    seen.add(`${a.x},${a.y}`);positions.set(a.kind,seen);
+   }
+  }
+  assert.ok([...positions.values()].every(p=>p.size>1));
+  state.simTime=0;
+  assert.equal(JSON.stringify(state),before);
+ }
+});
