@@ -13,3 +13,34 @@ export function supplyOverview(s){
  return {...h,localFood,reachable,key:buildingKey(b),homeId:b.waterEntityId,x:b.x,y:b.y,demand,dinners:demand?h.food/demand:0,shortfall:Math.max(0,demand-h.food),reason};});
  return {houses,demand:houses.reduce((n,h)=>n+h.demand,0),atHome:houses.reduce((n,h)=>n+h.food,0),inTransit:houses.reduce((n,h)=>n+h.inTransit,0),hungry:houses.reduce((n,h)=>n+h.hungry,0),short:houses.filter(h=>h.shortfall>1e-7).length};
 }
+
+export function householdSupplyRoute(s,key,resource){
+ const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===key&&b.construction?.kind!=='new');
+ if(!home)return null;
+ const points=(courier,route,index)=>[{x:courier.x,y:courier.y},...route.slice(index)];
+ const water=resource==='water';
+ const courier=water?s.citizens.find(c=>c.waterTrip?.target===key):homeFoodCouriers(s,key).find(c=>c.phase!=='blocked');
+ if(courier){
+  const trip=water?courier.waterTrip:null,job=!water&&s.district?.jobs.find(q=>q.id===courier.districtJob);
+  const source=water?trip.station:job?.source||courier.store;
+  const loaded=water?trip.load:carriedMealFood(courier);
+  return {home,source,courier:courier.id,points:points(courier,trip?.route||courier.route||[],trip?.index??courier.routeIndex??0),
+   status:loaded>0?(water?'Несёт воду во двор':'Несёт еду во двор'):(water?'Идёт за водой':'Идёт за едой')};
+ }
+ const net=networkFor(s,{materializeRoads:false}),ctx={network:net};
+ const ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key])),target=ports.get(key);
+ const food=water?null:foodAvailability(s,{reconcile:false});
+ const candidates=water?s.buildings.filter(b=>b.type==='waterpoint'&&b.construction?.kind!=='new'):
+  stockStores(s).filter(b=>(food.get(buildingKey(b))||0)>0);
+ let best=null;
+ for(const source of candidates){
+  const id=buildingKey(source),from=ports.get(id);
+  if(!from||!target||from===target)continue;
+  const route=routeBetween(s,from,target,ctx);
+  if(route&&(!best||route.length<best.points.length))best={home,source:id,points:route,status:water?'Доступный путь от водозабора. Рейса сейчас нет.':'Доступный путь от склада с едой. Рейса сейчас нет.'};
+ }
+ if(best)return best;
+ const reason=water?(candidates.length?'Пути от готовых водозаборов нет. Жители могут идти к доступному берегу.':'Готового водозабора нет. Жители могут идти к доступному берегу.'):
+  supplyOverview(s).houses.find(h=>h.key===key)?.reason||'Рейс не назначен';
+ return {home,source:null,points:[],status:reason};
+}

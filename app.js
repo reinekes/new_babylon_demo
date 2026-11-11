@@ -109,7 +109,7 @@ import {stockStores,storeCapacity,storeStock} from './inventory.js';
 import {districtReport,storeMinimum,setStoreMinimum,setStoreExports,requestTransfer,cancelTransfer} from './district-logistics.js';
 import {foodForecast,foodWarnings,seedReserve,availableFood,setSeedProtection} from './food-planning.js';
 import {pestReport,isPestStore,catReason} from './pests.js';
-import {supplyOverview} from './supply.js';
+import {householdSupplyRoute,supplyOverview} from './supply.js';
 import {medicalLevel,healingSpeed,healingQuality,healingCost,STUDY_SECONDS} from './education.js';
 import {workRate,isDinnerTime,beliefMultiplier} from './wellbeing.js';
 import {household} from './households.js';
@@ -478,7 +478,33 @@ function cargoAmount(cargo){if(typeof cargo==='number')return foodAmount(cargo);
 function bindDistrict(root){bindStorePolicy(root);const form=root.querySelector('#district-transfer');if(form){form.oninput=()=>{for(const key of ['source','target','resource','amount'])transferDraft[key]=form.elements[key].value;};form.onchange=form.oninput;form.onsubmit=e=>{e.preventDefault();form.oninput();if(mutate(requestTransfer(state,transferDraft.source,transferDraft.target,transferDraft.resource,Number(transferDraft.amount)),'Заказ перевозки создан')){document.activeElement?.blur();renderSupply();}};}root.querySelectorAll('[data-cancel-transfer]').forEach(el=>el.onclick=()=>{mutate(cancelTransfer(state,el.dataset.cancelTransfer),'Перевозка отменена');el.blur();renderSupply();});}
 let supplyFilter='all';
 function showSupply(filter='all'){supplyFilter=['all','risk'].includes(filter)?filter:'all';openDialog('supply',`<button class="management-close" id="close-supply" aria-label="Вернуться в город">×</button><span class="eyebrow">ПРОДУКТЫ И ДОСТАВКА</span><h2>Снабжение семей</h2><div id="supply-content"></div>`);$('close-supply').onclick=closeDialog;renderSupply();}
-function showSupplyHome(key,tab='food'){const b=state.buildings.find(b=>b.type==='house'&&(buildingKey(b)===key||`${b.x},${b.y}`===key));if(!b)return false;const {x,y}=b;closeDialog();if(selection)choose(selection);roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();inspected={x,y};householdTab=tab;renderer.focusOn(x,y);detail('house',false,b);$('city').scrollIntoView({block:'center'});return true;}
+let shownSupplyRoute=null;
+function clearSupplyRoute(){
+ if(!shownSupplyRoute)return;
+ shownSupplyRoute=null;
+ renderer.setSupplyRoute?.(null);
+ renderer.supplyRoute=null;
+}
+function openHouseholdRoute(key,resource){
+ if(!showSupplyHome(key,resource))return;
+ const house=state.buildings.find(b=>b.type==='house'&&b.x===inspected.x&&b.y===inspected.y);
+ if(house)showHouseholdRoute(house,resource);
+}
+function showHouseholdRoute(b,resource){
+ const key=buildingKey(b),route=householdSupplyRoute(state,key,resource);
+ if(!route)return;
+ const source=route.source&&state.buildings.find(b=>buildingKey(b)===route.source);
+ const start=route.points[0],end=route.points.at(-1);
+ if(start&&end){
+  renderer.focusOn((start.x+end.x)/2,(start.y+end.y)/2);
+  renderer.zoomBy?.(-Math.max(0,Math.log(Math.hypot(end.x-start.x,end.y-start.y)/4)));
+ }
+ shownSupplyRoute={key,resource,route,source};
+ renderer.supplyRoute=route.points;
+ renderer.setSupplyRoute?.(route.points);
+ renderHousehold(b);
+}
+function showSupplyHome(key,tab='food'){clearSupplyRoute();const b=state.buildings.find(b=>b.type==='house'&&(buildingKey(b)===key||`${b.x},${b.y}`===key));if(!b)return false;const {x,y}=b;closeDialog();if(selection)choose(selection);roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();inspected={x,y};householdTab=tab;renderer.focusOn(x,y);detail('house',false,b);$('city').scrollIntoView({block:'center'});return true;}
 function openDistrictBuilding(key,tab,group){
  if(tab){
   if(!showSupplyHome(key,tab))return;
@@ -597,9 +623,10 @@ function bindWaterDream(root){
 function renderSupply(){
  if(modalKind!=='supply')return;if($('supply-content').contains(document.activeElement)&&['INPUT','SELECT'].includes(document.activeElement.tagName))return;const report=supplyOverview(state),w=foodWarnings(state,foodForecast(state)),byKey=new Map(report.houses.map(h=>[h.key,h])),houses=w.houses.filter(h=>supplyFilter==='all'||h.hungry||h.atRisk);
  const summary=w.alerts.length?`<section class="supply-alerts" aria-label="Предупреждения">${w.alerts.filter(a=>supplyFilter==='all'||a.id==='families').map(a=>`<article class="supply-alert ${a.severity}"><b>${esc(a.title)}</b><p>${esc(a.text)}</p></article>`).join('')}</section>`:'<p class="supply-safe">Признаков недоедания, риска до жатвы и нехватки семян сейчас нет.</p>';
- setHTML($('supply-content'),`${summary}${waterDreamPanel()}${waterRequestCard(cityWaterRequest(state),{city:true})}${supplyVowPanel(report)}${supplyFilter==='all'?forecastPanel(w.forecast):''}<div class="supply-filters" role="group" aria-label="Семьи"><button data-supply-filter="all" aria-pressed="${supplyFilter==='all'}">Все семьи · ${w.houses.length}</button><button data-supply-filter="risk" aria-pressed="${supplyFilter==='risk'}">Нужна помощь · ${w.riskFamilies.length}</button></div><p>Общий запас: <b>${foodAmount(state.resources.food)}</b> · в домах: <b>${foodAmount(report.atHome)}</b> · несут домой: <b>${foodAmount(report.inTransit)}</b><br>Нужно на полный ужин всему городу: ${foodAmount(report.demand)}. Недоедающих жителей: ${w.hungry}.</p><small>Прогноз без будущих поставок. К вечеру проверяем домашний запас с учётом несомой еды, ночью — оставшуюся часть ужина. Недоедание отмечается также по прошлому неполному ужину.</small><div class="supply-family-grid">${houses.length?houses.map(h=>{const diagnostic=byKey.get(h.key),status=h.hungry?`Недоедают ${h.hungry}${h.hungryChildren?` · дети ${h.hungryChildren}`:''}`:h.atRisk?'Риск остаться без ужина':h.blockedDelivery?'Доставка заблокирована':h.awaitingDelivery?'Еда в пути':h.need<=1e-7?'Семья уже поужинала':h.shortfall>1e-7?'Нужно пополнить домашний запас':'Запас на ужин есть';return `<article class="management-row supply-family ${h.severe?'danger':h.hungry||h.atRisk?'warning':''}"><h3>Дом ${h.x}, ${h.y} · ${h.residents.length} жителей</h3><b>${status}</b>${h.hungry?`<p>Недоедают: ${h.hungryResidents.map(c=>`${resident(c)} (${c.age<16?'ребёнок · ':''}голод ${Math.round(c.hunger||0)}%)`).join(', ')}.</p>`:''}<p>${esc(h.need<=1e-7?'Семья уже поужинала':h.food+1e-7>=h.need?'Домашней еды хватает на оставшийся ужин':diagnostic?.reason||'')}<br>Дома ${foodAmount(h.food)} · несут домой ${foodAmount(h.inTransit)}<br>${isDinnerTime(state.simTime)?'Осталось съесть в этот ужин':'На ближайший ужин'}: ${foodAmount(h.need)}${h.shortfall>1e-7?` · не хватает дома и в пути ${foodAmount(h.shortfall)}`:''}</p><button data-supply-home="${h.key}">Показать дом и еду</button>${vowHouseButton(diagnostic)}</article>`;}).join(''):'<p class="supply-safe">Семей, которым сейчас нужна помощь, нет.</p>'}</div>${supplyFilter==='risk'?forecastPanel(w.forecast):''}${districtPanel()}<section class="clothing-summary"><h3>Одежда города</h3><p>На складах: ${foodAmount(state.resources.clothing)} · изношенная одежда у ${state.citizens.filter(c=>c.clothing<=25).length} жителей · несут домой: ${state.citizens.reduce((n,c)=>n+(c.clothingLoad||0),0)}.</p><small>Мастер одежды превращает 2 ткани в 1 одеяние. Взрослые забирают замену для себя и детей из доступного местного склада.</small></section>`);
+ setHTML($('supply-content'),`${summary}${waterDreamPanel()}${waterRequestCard(cityWaterRequest(state),{city:true})}${supplyVowPanel(report)}${supplyFilter==='all'?forecastPanel(w.forecast):''}<div class="supply-filters" role="group" aria-label="Семьи"><button data-supply-filter="all" aria-pressed="${supplyFilter==='all'}">Все семьи · ${w.houses.length}</button><button data-supply-filter="risk" aria-pressed="${supplyFilter==='risk'}">Нужна помощь · ${w.riskFamilies.length}</button></div><p>Общий запас: <b>${foodAmount(state.resources.food)}</b> · в домах: <b>${foodAmount(report.atHome)}</b> · несут домой: <b>${foodAmount(report.inTransit)}</b><br>Нужно на полный ужин всему городу: ${foodAmount(report.demand)}. Недоедающих жителей: ${w.hungry}.</p><small>Прогноз без будущих поставок. К вечеру проверяем домашний запас с учётом несомой еды, ночью — оставшуюся часть ужина. Недоедание отмечается также по прошлому неполному ужину.</small><div class="supply-family-grid">${houses.length?houses.map(h=>{const diagnostic=byKey.get(h.key),status=h.hungry?`Недоедают ${h.hungry}${h.hungryChildren?` · дети ${h.hungryChildren}`:''}`:h.atRisk?'Риск остаться без ужина':h.blockedDelivery?'Доставка заблокирована':h.awaitingDelivery?'Еда в пути':h.need<=1e-7?'Семья уже поужинала':h.shortfall>1e-7?'Нужно пополнить домашний запас':'Запас на ужин есть';return `<article class="management-row supply-family ${h.severe?'danger':h.hungry||h.atRisk?'warning':''}"><h3>Дом ${h.x}, ${h.y} · ${h.residents.length} жителей</h3><b>${status}</b>${h.hungry?`<p>Недоедают: ${h.hungryResidents.map(c=>`${resident(c)} (${c.age<16?'ребёнок · ':''}голод ${Math.round(c.hunger||0)}%)`).join(', ')}.</p>`:''}<p>${esc(h.need<=1e-7?'Семья уже поужинала':h.food+1e-7>=h.need?'Домашней еды хватает на оставшийся ужин':diagnostic?.reason||'')}<br>Дома ${foodAmount(h.food)} · несут домой ${foodAmount(h.inTransit)}<br>${isDinnerTime(state.simTime)?'Осталось съесть в этот ужин':'На ближайший ужин'}: ${foodAmount(h.need)}${h.shortfall>1e-7?` · не хватает дома и в пути ${foodAmount(h.shortfall)}`:''}</p><button data-supply-home="${h.key}">Показать дом и еду</button><button type="button" data-supply-route="${esc(h.key)}">Путь еды</button>${vowHouseButton(diagnostic)}</article>`;}).join(''):'<p class="supply-safe">Семей, которым сейчас нужна помощь, нет.</p>'}</div>${supplyFilter==='risk'?forecastPanel(w.forecast):''}${districtPanel()}<section class="clothing-summary"><h3>Одежда города</h3><p>На складах: ${foodAmount(state.resources.clothing)} · изношенная одежда у ${state.citizens.filter(c=>c.clothing<=25).length} жителей · несут домой: ${state.citizens.reduce((n,c)=>n+(c.clothingLoad||0),0)}.</p><small>Мастер одежды превращает 2 ткани в 1 одеяние. Взрослые забирают замену для себя и детей из доступного местного склада.</small></section>`);
  const waterRequest=$('supply-content').querySelector('[data-water-request-home]');
  if(waterRequest)waterRequest.onclick=()=>showSupplyHome(waterRequest.dataset.waterRequestHome,'water');
+ $('supply-content').querySelectorAll('[data-supply-route]').forEach(el=>el.onclick=()=>openHouseholdRoute(el.dataset.supplyRoute,'food'));
  bindWaterDream($('supply-content'));bindSupplyVow($('supply-content'));bindDistrict($('supply-content'));bindFoodPlan($('supply-content'));$('supply-content').querySelectorAll('[data-supply-home]').forEach(el=>el.onclick=()=>showSupplyHome(el.dataset.supplyHome));$('supply-content').querySelectorAll('[data-supply-filter]').forEach(el=>el.onclick=()=>{supplyFilter=el.dataset.supplyFilter;renderSupply();});
 }
 
@@ -901,14 +928,25 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
  const furnishing=isStrictSumer(state)?`<p data-home-weave>Циновка · ${mats>=1?'есть':'ожидается'}<br>Навес · ${mats>=2?'есть':'ожидается'}${b.floodDamage?' · доставка после ремонта дома':''}</p>`:'';
  const content=householdTab==='water'?`<div class="house-food"><b>Вода дома: ${foodAmount(w.stock)} / ${foodAmount(w.capacity)}</b><p>В пути: ${foodAmount(w.inTransit)} · принесено: ${foodAmount(w.delivered)}<br>Потребность за день: ${foodAmount(w.demand)} · страдают от жажды: ${w.thirsty}</p><small>Водонос снабжает квартал; при задержке взрослые сами идут к доступному берегу. Вода не заменяет полив полей.</small>${waterDreamPanel(b)}${waterProjectHousehold(b)}</div>`:householdTab==='family'?`<p class="house-occupancy">Живут ${h.residents.length} / ${h.capacity} · свободно ${h.free}</p><p class="house-gathering">Дома ${h.atHome} / ${h.residents.length}${h.dining?` · ужинают ${h.dining}`:''}${h.hungry?` · недоедают ${h.hungry}`:''}<br>Семейный ужин с 20:00, после возвращения домой.</p>${usesCourtyardBirthFood(state)?birthFoodHTML(state,b):''}${furnishing}${careText}${welcomeText}${arrivalDisputeHTML(b,welcome,h.residents)}${householdNamesHTML(h.residents)}${memoryText}${blessingCup}${householdInitiativePanel(b,h)}${eveningGamePanel(b)}${h.residents.length?`${adult.length?`<h4>Взрослые и родители · ${adult.length}</h4>${adult.map(row).join('')}`:''}${h.children.length?`<h4>Дети · ${h.children.length}</h4>${h.children.map(row).join('')}`:''}`:'<p>Дом пока пуст. Здесь может поселиться новая семья.</p>'}`:`<div class="house-food"><p>${esc(diagnostic?.reason||'')}</p><b>${rounded(h.food)} еды в доме</b><p>Принесено со склада за всё время: ${rounded(h.delivered)}<br>Несут домой: ${rounded(h.inTransit)}<br>Нужно на ужин: ${rounded(h.demand*4/3)}${h.demand?` · запас на ${rounded(h.food/(h.demand*4/3))} ужина`:''}<br>${isDinnerTime(state.simTime)?'Этот':'Прошлый'} ужин: съедено ${rounded(h.residents.reduce((n,c)=>n+(c.mealEaten||0),0))}<br>Дома ${h.atHome} / ${h.residents.length} · недоедают ${h.hungry}</p><small>В 20:00 семья ест только домашние продукты. Еду со склада нужно принести: запас на складе не заменяет ужин. Дети получают половину взрослой порции. Вверху показаны общие запасы, без еды в домах.</small></div>`;
  const selectedOrganizer=panel.querySelector('[data-water-organizer]')?.value;
- if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}</div>`)){
+ const resource=householdTab==='food'||householdTab==='water'?householdTab:null;
+ const shown=shownSupplyRoute?.key===buildingKey(b)&&shownSupplyRoute.resource===resource?shownSupplyRoute:null;
+ const routeControls=resource?`<section class="house-food" aria-label="Путь снабжения"><button type="button" data-house-supply-route>${shown?'Обновить путь':'Показать путь доставки'}</button>
+ ${shown?` <button type="button" data-hide-house-route>Скрыть</button><p>${esc(shown.route.status)}${shown.route.courier!==undefined?` · ${esc(displayName(state,shown.route.courier))}`:''}</p>${shown.source?`<button type="button" data-open-route-source>Открыть источник · ${esc(buildingDefinition(state,shown.source.type)?.name||'Склад')} ${esc(buildingKey(shown.source))}</button>`:''}`:''}</section>`:'';
+
+ if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}${routeControls}</div>`)){
+ panel.querySelector('[data-house-supply-route]')?.addEventListener('click',()=>showHouseholdRoute(b,resource));
+ panel.querySelector('[data-hide-house-route]')?.addEventListener('click',()=>{clearSupplyRoute();renderHousehold(b);});
+ panel.querySelector('[data-open-route-source]')?.addEventListener('click',()=>{
+  const source=shown.source;clearSupplyRoute();renderer.focusOn(source.x,source.y);
+  inspected={x:source.x,y:source.y};detail(source.type,false,source);
+ });
  bindWaterDream(panel);
  const smallResponse=panel.querySelector('[data-small-water-response]');
  if(smallResponse)smallResponse.onclick=()=>{if(mutate(answerWaterRequest(state,b),'Сосед отправился за водой'))renderHousehold(b);};
  for(const button of panel.querySelectorAll('[data-resolve-arrival-dispute]'))button.onclick=()=>{
   if(mutate(resolveArrivalCustomDispute(state,b,welcome,button.dataset.resolveArrivalDispute,Number(button.dataset.arrivalGuest)),'Стороны договорились'))renderHousehold(b);
  };
- panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{householdTab=el.dataset.houseTab;renderHousehold(b);});
+ panel.querySelectorAll('[data-house-tab]').forEach(el=>el.onclick=()=>{clearSupplyRoute();householdTab=el.dataset.houseTab;renderHousehold(b);});
  for(const button of panel.querySelectorAll('[data-water-project-station]'))button.onclick=()=>{
   const station=state.buildings.find(site=>site.type==='waterpoint'&&site.humanWaterProject&&
    buildingKey(site)===button.dataset.waterProjectStation&&String(site.waterEntityId??'')===button.dataset.waterProjectStationId);
@@ -1250,7 +1288,7 @@ function showCivicOrder(){
  <section class="food-forecast"><h3>Глиняная табличка</h3>
  ${law?`<p>Записал ${esc(law.name)} · год ${law.year}.</p><ol><li>Если двору не хватает зерна, он может попросить общину о помощи.</li><li>Доверяющие своду ждут помощь на день дольше. Из связанного склада заказывают две меры зерна, если есть свободный запас.</li></ol>`:'<p>Вдохнови взрослого призванием «Законодатель» в карточке жителя. Он сможет записать свод за 1 глину.</p>'}
  ${authors.filter(c=>c.id!==law?.author).map(c=>{const reason=civicLawReason(state,c.id);return `<p>${esc(displayName(state,c))} · <button type="button" data-publish-law="${c.id}"${reason?' disabled':''}>Записать свод · 1 глина</button>${reason?` <small>${esc(reason)}</small>`:''}</p>`;}).join('')}</section>
- <section class="food-forecast"><h3>Просьбы дворов</h3>${incident?`<p>${esc(incident.name)} просит зерно для двора ${esc(incident.home)}.</p>${incident.guard!==undefined?`<p>${esc(incident.name)} и ${esc(incident.guardName)} спорят у склада ${esc(incident.source)}.</p><button type="button" id="reconcile-civic">Примирить стороны</button>`:''}<div class="dialog-actions"><button type="button" class="primary" id="send-civic-aid"${civicAidPending(state)?' disabled':''}>${civicAidPending(state)?'Помощь в пути':'Заказать доставку зерна'}</button><button type="button" id="open-civic-home">Открыть двор</button></div>`:'<p>Открытых просьб пока нет.</p>'}</section>
+ <section class="food-forecast"><h3>Просьбы дворов</h3>${incident?`<p>${esc(incident.name)} просит зерно для двора ${esc(incident.home)}.</p>${incident.guard!==undefined?`<p>${esc(incident.name)} и ${esc(incident.guardName)} спорят у склада ${esc(incident.source)}.</p><button type="button" id="reconcile-civic">Примирить стороны</button>`:''}<div class="dialog-actions"><button type="button" class="primary" id="send-civic-aid"${civicAidPending(state)?' disabled':''}>${civicAidPending(state)?'Помощь в пути':'Заказать доставку зерна'}</button><button type="button" id="open-civic-home">Путь помощи</button></div>`:'<p>Открытых просьб пока нет.</p>'}</section>
  <section class="food-forecast"><h3>Записи о поступках</h3>${civic.history.length?`<ul>${civic.history.slice(0,10).map(q=>`<li>${outcomes[q.outcome]} · ${esc(q.name)} · двор ${esc(q.home)} · год ${q.year}${q.source?` · склад ${esc(q.source)}`:''}${q.guardName?` · ${esc(q.guardName)}`:''}${q.amount?` · ${q.amount} ед.`:''}</li>`).join('')}</ul>`:'<p>Записей пока нет.</p>'}
  ${civic.years.length?`<h3>Имена лет</h3><ul>${civic.years.map(q=>`<li>${q.year} · ${esc(q.title)}</li>`).join('')}</ul>`:''}</section>`);
  $('close-civic-order').onclick=closeDialog;
@@ -1260,7 +1298,7 @@ function showCivicOrder(){
  if(incident){
   $('reconcile-civic')?.addEventListener('click',()=>{if(mutate(reconcileCivicConflict(state),'Спор закрыт'))showCivicOrder();});
   $('send-civic-aid').onclick=()=>{if(mutate(sendCivicAid(state),'Носильщики получили заказ'))showCivicOrder();};
-  $('open-civic-home').onclick=()=>{closeDialog();openDistrictBuilding(incident.home,'food');};
+  $('open-civic-home').onclick=()=>openHouseholdRoute(incident.home,'food');
  }
 }
 for(const id of ['open-civic-order','civic-story'])$(id)?.addEventListener('click',showCivicOrder);
@@ -1673,6 +1711,7 @@ function ceremonyPresentation(){
  const text=festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);ceremonyControls.hidden=!text;skipCatScene.hidden=miracleScene?.kind!=='cat'||!usesCatDiscovery(state);ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
 }
 function frame(now){
+ if(shownSupplyRoute&&($('tile-detail').hidden||inspectedPerson!==null||!inspected||inspected.x!==shownSupplyRoute.route.home.x||inspected.y!==shownSupplyRoute.route.home.y))clearSupplyRoute();
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event&&state.godhood?.namelessEndingAt===undefined;
  if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}

@@ -174,7 +174,15 @@ export class GameRenderer3D{
   this.skyHorizon?.update(state,this.camera,this.lightMode,this.landscape?.waterMaterial);
   this.houseLights??=createHouseLights(B,this.scene,{lamps:this.lamps});this.houseLights.update(state,n,this.camera.target);
  }
+ setSupplyRoute(points){
+  this.supplyLine?.dispose();this.supplyLine=null;
+  if(!points||points.length<2)return;
+  const B=this.B;
+  this.supplyLine=B.MeshBuilder.CreateLines('household-supply-route',{points:points.map(p=>new B.Vector3(p.x*6,visualSurfaceElevation(p.x,p.y,this.state)+.42,p.y*6))},this.scene);
+  this.supplyLine.isPickable=false;this.supplyLine.color=new B.Color3(.48,.96,.94);
+ }
  updateSelection(){
+  this.supplyLine?.setEnabled(!this.photoMode);
   if(this.photoMode){this.reach.clear();this.reachNote.hidden=true;this.buildings.highlight([]);this.buildings.clearPreview();this.marker.setEnabled(false);for(const m of this.routeMarkers||[])m.setEnabled(false);return;}for(const m of this.routeMarkers||[])m.setEnabled(true);
   const B=this.B,p=previewFor(this.state,this.selection,this.hover,this.placementRotation||0),size=newFootprint(this.selection);this.marker.setEnabled(!!p||!!this.hover&&!!this.roadMode||!!this.keyboardHover&&!!this.hover);if(this.marker.isEnabled()){const at=p||this.hover,n=this.selection?size:1;this.marker.scaling.set(n,1,n);this.marker.position.set((at.x+(n-1)/2)*6,.10,(at.y+(n-1)/2)*6);this.marker.material.emissiveColor=B.Color3.FromHexString(p&&!p.allowed?'#e27857':'#dcdda0');this.marker.material.diffuseColor=this.marker.material.emissiveColor;if(p)this.canvas.title=p.allowed?'Нажми, чтобы заложить строительство':p.reason;}
   if(p)this.buildings.preview({type:this.selection,x:p.x,y:p.y,level:1,rotation:this.placementRotation||0,...(size>1?{footprint:size}:{})},this.state,{allowed:p.allowed});else this.buildings.clearPreview();

@@ -89,3 +89,15 @@ test('a dispute can be reconciled through the trusted tablet',()=>{
  assert.equal(state.civicOrder.history[0].outcome,'reconciled');
  assert.equal(guard.health,100);
 });
+
+test('household route previews use actual paths and preserve the save',async()=>{
+ const {householdSupplyRoute}=await import('../supply.js');
+ const {state,person,home}=hungryTown(),key=buildingKey(home);
+ const before=encode(state),preview=householdSupplyRoute(state,key,'food');
+ assert.ok(preview.points.length>1);assert.ok(preview.source);
+ assert.equal(encode(state),before);
+ person.waterTrip={target:key,station:null,load:2,index:1,route:[{x:8,y:7},{x:8,y:8}]};
+ const water=householdSupplyRoute(state,key,'water');
+ assert.equal(water.courier,person.id);assert.deepEqual(water.points.at(-1),{x:8,y:8});
+ assert.match(water.status,/Несёт воду/);
+});
