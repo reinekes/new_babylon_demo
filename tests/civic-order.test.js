@@ -101,3 +101,44 @@ test('household route previews use actual paths and preserve the save',async()=>
  assert.equal(water.courier,person.id);assert.deepEqual(water.points.at(-1),{x:8,y:8});
  assert.match(water.status,/Несёт воду/);
 });
+
+test('restitution uses a real shipment, survives reload and cannot be credited twice',async()=>{
+ const {civicCaseKey,civicRestitution,orderCivicRestitution}=await import('../civic-order.js');
+ const {cancelTransfer,districtPickup,syncDistrictJobs}=await import('../district-logistics.js');
+ const {state,person}=hungryTown();
+ advanceCivicOrder(state);state.simTime=120;advanceCivicOrder(state);
+ const theft=state.civicOrder.history[0],key=civicCaseKey(theft);
+ const author=state.citizens.find(c=>c!==person&&c.age>=16);
+ assert.equal(orderCivicRestitution(state,key).ok,false);
+ author.calling='lawmaker';assert.ok(publishCivicLaw(state,author.id).ok);
+ assert.equal(orderCivicRestitution(state,key).ok,false);
+ state.buildings.push({type:'granary',x:10,y:8,level:1,stock:{food:10}});
+ state.resources.food+=10;syncInventory(state);
+ const before=totalFood(state),first=orderCivicRestitution(state,key);
+ assert.ok(first.ok,first.reason);
+ assert.equal(orderCivicRestitution(state,key).ok,false);
+ assert.equal(civicRestitution(state,theft).paid,0);
+ assert.ok(cancelTransfer(state,first.id).ok);
+ const retry=orderCivicRestitution(state,key);
+ assert.ok(retry.ok,retry.reason);
+ const job=state.district.jobs.find(q=>q.id===retry.id);
+ assert.equal(job.amount,theft.amount);
+ assert.equal(job.target,theft.source);
+ assert.notEqual(job.source,job.target);
+ assert.equal(totalFood(state),before);
+ state.seasonElapsed=20;state.calendarOffset=100;
+ assert.ok(decode(encode(state)));
+ const porter=state.citizens.find(c=>c!==person&&c!==author&&c.age>=16);
+ Object.assign(porter,{phase:'toDistrictSupply',districtJob:job.id,store:job.source,work:null,site:null,cargo:{}});
+ assert.equal(districtPickup(state,porter),job.amount);
+ assert.equal(civicRestitution(state,theft).paid,0);
+ assert.equal(totalFood(state),before);
+ Object.assign(porter,{phase:'unloading',x:9,y:8,route:[],routeIndex:0,action:0});
+ for(let i=0;i<50&&!civicRestitution(state,theft).complete;i++){state.event=null;advanceTime(state,.1);}
+ assert.equal(civicRestitution(state,theft).paid,theft.amount);
+ assert.equal(orderCivicRestitution(state,key).ok,false);
+ for(let i=0;i<20;i++)state.district.jobs.push({...job,id:state.district.nextId++});
+ state.district.lastScan=-1;syncDistrictJobs(state);
+ assert.ok(state.district.jobs.includes(job));
+ assert.ok(decode(encode(state)));
+});

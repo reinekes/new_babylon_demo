@@ -67,6 +67,36 @@ export function sendCivicAid(s){
  }
  return {ok:false,reason:'Нужен связанный склад со свободным зерном и местом в дворе'};
 }
+export const civicCaseKey=q=>`${q.person}:${q.endedDay}`;
+export function civicRestitution(s,q){
+ const job=q.restitution&&s.district?.jobs.find(job=>job.id===q.restitution.job);
+ const paid=(q.restitution?.paid||0)+(job?.delivered||0);
+ const active=!!job&&(job.remaining+transferCarried(s,job)>1e-7);
+ return {paid,active,complete:paid+1e-7>=q.amount};
+}
+export function orderCivicRestitution(s,key){
+ const blocked=ready(s);if(blocked)return {ok:false,reason:blocked};
+ const civic=s.civicOrder,q=civic?.history.find(q=>q.outcome==='theft'&&civicCaseKey(q)===key);
+ if(!q)return {ok:false,reason:'Запись о краже не найдена'};
+ const progress=civicRestitution(s,q);
+ if(progress.complete||progress.active)return {ok:false,reason:progress.complete?'Зерно уже возмещено':'Возмещение уже заказано'};
+ const author=s.citizens.find(c=>c.id===civic.law?.author&&c.age>=16&&c.calling==='lawmaker');
+ if(!author)return {ok:false,reason:'Нужен действующий законодатель со сводом'};
+ const stores=stockStores(s).filter(b=>b.type!=='house'&&!b.recoveryOnly);
+ if(!stores.some(b=>buildingKey(b)===q.source))return {ok:false,reason:'По адресу из дела нет действующего склада'};
+ const amount=q.amount-progress.paid;
+ let reason='Нужен другой склад со свободным зерном';
+ for(const donor of stores){
+  const from=buildingKey(donor);
+  if(from===q.source)continue;
+  const result=requestTransfer(s,from,q.source,'food',amount,{automatic:true});
+  if(!result.ok){reason=result.reason;continue;}
+  q.restitution={job:result.id,paid:progress.paid,author:author.id,name:name(author)};
+  notice(s,'Назначено возмещение',`${name(author)} распорядился доставить зерно со склада ${from} на склад ${q.source}.`);
+  return result;
+ }
+ return {ok:false,reason};
+}
 export function reconcileCivicConflict(s){
  const blocked=ready(s);if(blocked)return {ok:false,reason:blocked};
  const incident=s.civicOrder?.case;
@@ -159,12 +189,21 @@ export function validateCivicOrder(s){
  const number=(n,max=1e9)=>Number.isSafeInteger(n)&&n>=0&&n<=max;
  const text=(v,max=120)=>typeof v==='string'&&v.length>0&&v.length<=max;
  const key=v=>typeof v==='string'&&/^\d{1,3},\d{1,3}$/.test(v);
+ const restitutionJobs=new Set();
+ const restitution=q=>{
+  const r=q.restitution;if(r===undefined)return true;
+  if(!r||q.outcome!=='theft'||!number(r.author)||!text(r.name)||!number(r.job)||restitutionJobs.has(r.job)||!Number.isFinite(r.paid)||r.paid<0||r.paid>=q.amount)return false;
+  const job=s.district?.jobs.find(j=>j.id===r.job);
+  if(!job||!job.automatic||job.target!==q.source||job.resource!=='food'||job.targetKind||Math.abs(job.amount+r.paid-q.amount)>1e-6)return false;
+  restitutionJobs.add(r.job);
+  return true;
+ };
  const incident=q=>q&&number(q.person)&&text(q.name)&&key(q.home)&&number(q.day,dayOf(s))&&(q.aid===undefined||number(q.aid))
   &&(q.guard===undefined||number(q.guard)&&q.guard!==q.person&&text(q.guardName)&&key(q.source)&&number(q.disputeDay,dayOf(s))&&q.disputeDay>=q.day);
  return !!civic&&(civic.lastDay===-1||number(civic.lastDay,dayOf(s)))
   &&(civic.law===null||civic.law&&number(civic.law.author)&&text(civic.law.name)&&number(civic.law.year,s.year)&&number(civic.law.day,dayOf(s)))
   &&(civic.case===null||incident(civic.case))
-  &&Array.isArray(civic.history)&&civic.history.length<=40&&civic.history.every(q=>incident(q)&&number(q.year,s.year)&&number(q.endedDay,dayOf(s))&&q.endedDay>=q.day
-   &&(['help','closed','reconciled'].includes(q.outcome)||['assault','killing'].includes(q.outcome)&&q.guard!==undefined||q.outcome==='theft'&&key(q.source)&&q.amount>0&&q.amount<=measure))
+  &&Array.isArray(civic.history)&&civic.history.length<=40&&civic.history.every(q=>incident(q)&&number(q.year,s.year)&&number(q.endedDay,dayOf(s))&&q.endedDay>=q.day&&restitution(q)
+   &&(['help','closed','reconciled'].includes(q.outcome)||['assault','killing'].includes(q.outcome)&&q.guard!==undefined||q.outcome==='theft'&&key(q.source)&&Number.isFinite(q.amount)&&q.amount>0&&q.amount<=measure))
   &&Array.isArray(civic.years)&&civic.years.length<=40&&civic.years.every((q,i)=>q&&number(q.year,s.year-1)&&text(q.title)&&(!i||q.year<civic.years[i-1].year));
 }

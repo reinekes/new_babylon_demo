@@ -57,8 +57,9 @@ export function cancelTransfer(s,id){const reason=relicCommandReason(s)||blocked
 export function syncDistrictJobs(s){
  initializeDistricts(s);if(blocked(s))return;const scan=Math.floor(s.simTime||0);if(s.district.lastScan===scan)return;s.district.lastScan=scan;collectReadyOutputs(s);const pass=createDistrictPass(s);
  // Keep user orders and every owned ID. Only obsolete automatic history is compacted.
- const completed=s.district.jobs.filter(q=>q.automatic&&!pass.owners.has(q.id)&&q.remaining+transferCarried(s,q,pass)<=eps),recent=new Set(completed.slice(-16).map(q=>q.id));
- if(completed.length>16)s.district.jobs=s.district.jobs.filter(q=>!q.automatic||pass.owners.has(q.id)||q.remaining+transferCarried(s,q,pass)>eps||recent.has(q.id));
+ const civicJobs=new Set(s.civicOrder?.history.flatMap(q=>q.restitution?[q.restitution.job]:[]));
+ const completed=s.district.jobs.filter(q=>!civicJobs.has(q.id)&&q.automatic&&!pass.owners.has(q.id)&&q.remaining+transferCarried(s,q,pass)<=eps),recent=new Set(completed.slice(-16).map(q=>q.id));
+ if(completed.length>16)s.district.jobs=s.district.jobs.filter(q=>civicJobs.has(q.id)||!q.automatic||pass.owners.has(q.id)||q.remaining+transferCarried(s,q,pass)>eps||recent.has(q.id));
  // A maker or family shopper can fill a buffer before the porter arrives.
  for(const q of s.district.jobs){const b=store(s,q.target,pass);if(!b||q.targetKind==='votive'||central(s,b,pass)&&q.targetKind!=='input'||q.remaining<=eps)continue;const key=entry(q.target,q.resource),load=transferCarried(s,q,pass),other=(pass.incoming.get(key)||0)-q.remaining-load,allowed=Math.max(0,logisticsRoom(s,b,q.resource,q.targetKind,pass)-load-other),cancelled=Math.max(0,q.remaining-allowed);if(cancelled>eps){q.remaining-=cancelled;q.cancelled+=cancelled;add(pass.incoming,key,-cancelled);add(pass.queued,entry(q.source,q.resource),-cancelled);if(q.remaining+load<=eps)pass.active--;invalidateAssignments(s);}}
  for(const batch of s.shapingBatches?.rows||[]){
