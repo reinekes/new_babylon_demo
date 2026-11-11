@@ -27,3 +27,31 @@ test('early procedural sky replaces deferred sky assets while keeping licensed g
  const view=await createAmbientFauna(B,scene,[],{includeSkyBirds:false,loadAsset:async file=>{loads.push(file);const c=new B.AssetContainer(scene),r=new B.TransformNode(file,scene),m=B.MeshBuilder.CreateBox('test-animal',{size:.2},scene);m.parent=r;c.rootNodes=[r];c.transformNodes=[r];c.meshes=[m];c.removeAllFromScene();return c;}});
  try{view.update(createGame(),.1);assert.equal(loads.length,9);assert.ok(loads.includes('imported-orange-bird.glb'));assert.ok(!loads.some(n=>n.includes('sky-bird')));assert.ok(view.roots().every(r=>!r.metadata.ambientSpecies.includes('sky')));assert.equal(view.roots().filter(r=>r.metadata.ambientSpecies==='orange-bird').length,2);}finally{view.dispose();scene.dispose();e.dispose();}
 });
+
+test('a flock lands on separate dry spots, rests on the simulation clock and takes off continuously',async()=>{
+ const {birdFlockPlan,birdLandingSites,shoreBirdPose}=await import('../game3d/bird-flocks.js');
+ const {isDryPoint}=await import('../world.js');
+ for(const seed of [1,4,9,96]){
+  const state=createGame({seed}),before=JSON.stringify(state),[flock]=birdFlockPlan(state,'low');
+  const sites=birdLandingSites(state,flock);
+  assert.equal(sites.length,flock.count);
+  assert.equal(new Set(sites.map(site=>site.x+','+site.z)).size,flock.count);
+  for(const [index,site] of sites.entries()){
+   const position={x:site.x/6,y:site.z/6};
+   assert.ok(isDryPoint(state,position.x,position.y)&&sceneryClear(state,position,.22));
+   const at=time=>shoreBirdPose(flock,site,time,index);
+   assert.equal(at(38).phase,'landing');
+   assert.equal(at(45).phase,'resting');
+   assert.equal(at(52).phase,'takeoff');
+   assert.equal(at(60).phase,'flight');
+   assert.equal(at(45).y,site.y);
+   assert.equal(at(45).fold,1);
+   assert.ok(at(52).y>site.y&&at(52).fold<1);
+   for(const t of [34,42,49,57,100]){
+    const a=at(t-.001),b=at(t+.001);
+    assert.ok(Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)<.02);
+   }
+  }
+  assert.equal(JSON.stringify(state),before);
+ }
+});
