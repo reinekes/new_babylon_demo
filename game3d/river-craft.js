@@ -36,7 +36,7 @@ export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={})
  function material(name,hex){const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.95;m.metallic=0;ownedMaterials.push(m);return m;}
  const linen=material('river-craft-unbleached-furled-linen','#a18b60');
  function build(c,sumer){
-  root=new B.TransformNode('actual-trade-caravan',scene);lastYaw=0;
+  root=new B.TransformNode(c.id==='local-ferry'?'local-ferry':'actual-trade-caravan',scene);lastYaw=0;
   if(sumer){
    bitumen??=material('sumer-river-bitumen','#352b20');bitumen.backFaceCulling=false;bitumen.twoSidedLighting=true;
    for(const mesh of createSumerRiverHull(B,scene,{...materials,bitumen})){mesh.parent=root;register(mesh);}detail=true;return;
@@ -52,7 +52,7 @@ export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={})
  function update(s,c,time=s.simTime||0){if(disposed)return;const sumer=isStrictSumer(s),pose=riverCraftPose(s,c,time),key=pose?(sumer?'sumer:':'legacy:')+(c.id||'current-river-visit'):null;
   if(key!==identity||(!sumer&&asset&&root&&!detail)){clear();identity=key;if(pose)build(c,sumer);}
   if(!pose)return;if(!root)build(c,sumer);if(!sumer)start();
-  const sig=JSON.stringify(c.stock||{});if(sig!==cargoSignature){clearCargo();cargoSignature=sig;for(const p of riverCraftCargo(c.stock)){const source=goods.sources.get(p.kind);if(!source)continue;const m=source.createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(CARGO_SCALE);m.position.set(p.x,p.y,p.z);m.metadata={goods:{...p},riverCargo:true};cargo.push(register(m));}}
+  const sig=JSON.stringify(c.stock||{});if(sig!==cargoSignature){clearCargo();cargoSignature=sig;for(const p of riverCraftCargo(c.stock)){const source=goods.sources.get(p.kind);if(!source)continue;const m=source.createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(c.id==='local-ferry'?.85:CARGO_SCALE);m.position.set(p.x,p.y+(c.id==='local-ferry'?.20:0),p.z);m.metadata={goods:{...p},riverCargo:true};cargo.push(register(m));}}
   if((c.route||[])[c.routeIndex||0]||!root.metadata)lastYaw=pose.yaw;
   root.position.set(pose.x,pose.y,pose.z);root.rotation.set(0,lastYaw,pose.roll);if(rig)rig.setEnabled(!pose.lowered);furled?.setEnabled(pose.lowered);
   root.metadata={riverCraft:true,tradeId:c.id,detailLoaded:detail,loweredRig:pose.lowered,stockSignature:sig,draft:pose.draft,historicalProfile:sumer?'sumer-iii-v1':'legacy-v1',sourceArtisticAdaptation:sumer?'Ur-inspired bitumen/reed vessel; game interpretation':'Gislinge 12th-century hull'};

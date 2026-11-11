@@ -1,3 +1,4 @@
+import {DRIED_FISH_CAPACITY,launchLocalFerry,localFerryVessel,releaseDriedFish,riverStoreView,startFishDrying} from './river-stores.js';
 import {civicAidPending,civicCaseKey,civicCityEpithet,civicRestitution,civicLawReason,orderCivicRestitution,publishCivicLaw,reconcileCivicConflict,sendCivicAid} from './civic-order.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {blessingCupAt} from './blessing-discovery.js';
@@ -52,7 +53,7 @@ import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
 import {AUTUMN_CROPS,fieldRestYear} from './crop-calendar.js';
 import {soilCareEnabled,nextFieldSalt} from './field-soil.js';
-import {canalSiltingForecast,irrigationFor,fieldWater} from './irrigation.js';
+import {canalSiltingForecast,canalWaterAllocation,irrigationFor,fieldWater,fieldWaterAllocation,setFieldWaterPriority} from './irrigation.js';
 import {canalMaintenanceEnabled,canalShares} from './canal-maintenance.js';
 import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {miraclePrice} from './miracle-discovery.js';
@@ -490,10 +491,7 @@ function openHouseholdRoute(key,resource){
  const house=state.buildings.find(b=>b.type==='house'&&b.x===inspected.x&&b.y===inspected.y);
  if(house)showHouseholdRoute(house,resource);
 }
-function showHouseholdRoute(b,resource){
- const key=buildingKey(b),route=householdSupplyRoute(state,key,resource);
- if(!route)return;
- const source=route.source&&state.buildings.find(b=>buildingKey(b)===route.source);
+function drawSupplyRoute(key,resource,route,source=null){
  const start=route.points[0],end=route.points.at(-1);
  if(start&&end){
   renderer.focusOn((start.x+end.x)/2,(start.y+end.y)/2);
@@ -502,6 +500,12 @@ function showHouseholdRoute(b,resource){
  shownSupplyRoute={key,resource,route,source};
  renderer.supplyRoute=route.points;
  renderer.setSupplyRoute?.(route.points);
+}
+function showHouseholdRoute(b,resource){
+ const key=buildingKey(b),route=householdSupplyRoute(state,key,resource);
+ if(!route)return;
+ const source=route.source&&state.buildings.find(b=>buildingKey(b)===route.source);
+ drawSupplyRoute(key,resource,route,source);
  renderHousehold(b);
 }
 function showSupplyHome(key,tab='food'){clearSupplyRoute();const b=state.buildings.find(b=>b.type==='house'&&(buildingKey(b)===key||`${b.x},${b.y}`===key));if(!b)return false;const {x,y}=b;closeDialog();if(selection)choose(selection);roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();inspected={x,y};householdTab=tab;renderer.focusOn(x,y);detail('house',false,b);$('city').scrollIntoView({block:'center'});return true;}
@@ -688,6 +692,28 @@ function updateDetail(){
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Почва</h4><p>Засоление ${salt}% · ${diagnosis}. ${water.drained?'Дренаж отводит воду.':'Для дренажа нужен соседний отвод, связанный с водоёмом.'}</p><button id="field-rest" type="button">${rest?'Отменить отдых':'Оставить поле под паром'} · год ${year}</button></section>`);
   $('field-rest').onclick=()=>{ $('field-rest').blur();mutate(setFieldRest(state,key,!rest),rest?'Отдых поля отменён':'Запланирован отдых поля'); };
  }
+ if(b.type==='field'&&isOperational(b)&&canalMaintenanceEnabled(state)){
+  const key=buildingKey(b),allocation=fieldWaterAllocation(state,b);
+  const shown=shownSupplyRoute?.resource==='irrigation'&&shownSupplyRoute.key===key;
+  const signature=allocation.path.join('|');
+  if(shown&&signature!==shownSupplyRoute.route.signature)clearSupplyRoute();
+  const visible=shown&&!!shownSupplyRoute;
+  const changes=[allocation.gained.length?`Получат долю: ${allocation.gained.join(' · ')}.`:'',allocation.lost.length?`Уступят долю: ${allocation.lost.join(' · ')}.`:''].filter(Boolean).join(' ');
+  const status=allocation.path.length?'Поле получает долю из канала.':allocation.connected?'Полю сейчас не хватает доли из канала.':'Нет действующего канала рядом.';
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel water-logistics-panel"><h4>Распределение полива</h4><p>${status}</p>
+  ${allocation.path.length?`<small>Путь воды: ${allocation.path.map(id=>`<button type="button" class="resident-link" data-water-cell="${id}">${id}</button>`).join(' → ')}</small><button type="button" class="management-button" id="field-water-route" aria-pressed="${visible}">${visible?'Скрыть путь воды':'Показать путь воды'}</button>`:''}
+  ${allocation.connected||allocation.selected?`<p>${changes||'При переключении список орошаемых полей сохранится.'}</p><button class="management-button" id="field-water-priority" type="button" aria-pressed="${allocation.selected}">${allocation.selected?'Снять приоритет полива':'Дать этому полю приоритет'}</button>`:''}</section>`);
+  $('field-water-route')?.addEventListener('click',()=>{
+   if(visible)clearSupplyRoute();
+   else{
+    const points=allocation.path.map(cell=>{const [x,y]=cell.split(',').map(Number);return {x,y};});
+    points.push({x:b.x,y:b.y});
+    drawSupplyRoute(key,'irrigation',{home:b,points,signature});
+   }
+   updateDetail();
+  });
+  $('field-water-priority')?.addEventListener('click',()=>mutate(setFieldWaterPriority(state,b),'Распределение полива обновлено'));
+ }
  if(['clay','quarry'].includes(b.type)&&isStrictSumer(state)){
   const stone=b.type==='quarry',remaining=stone?stoneRemaining(state,b.x,b.y):clayRemaining(state,b.x,b.y);
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${stone?STONE_CAPACITY:CLAY_CAPACITY}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
@@ -716,12 +742,19 @@ function updateDetail(){
   const worker=state.citizens.find(c=>c.work===buildingKey(b));
   const silt=Math.round((b.silt||0)*100);
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Состояние русла</h4><p>Ил ${silt}% · пропускная способность ${canalShares(b)} из 3 долей</p>${b.canalCleaning?`<small>${worker?`Работник · ${resident(worker)}`:'Наряд ждёт свободного взрослого и доступной дороги'}</small>`:`<button id="clean-canal" type="button" ${silt?'':'disabled'}>Заказать расчистку</button>`}</section>`);
+  const allocation=canalWaterAllocation(state,b);
+  if(allocation)$('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel water-logistics-panel"><h4>Поток на участке</h4><p>${allocation.fields.length} из ${allocation.capacity} долей заняты</p><small>${allocation.fields.length?`Вода идёт к полям ${allocation.fields.map(id=>`<button type="button" class="resident-link" data-water-cell="${id}">${id}</button>`).join(' · ')}`:'Поля через этот участок сейчас не получают воду.'}</small></section>`);
   const outlet=irrigationFor(state).outlets.has(buildingKey(b));
   $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><p>${b.drain?(outlet?'Дренаж соединён с водоёмом':'Дренаж ждёт выхода к водоёму'):'Канал подаёт воду полям. Отвод дренажа работает отдельно.'}</p><button id="canal-drain" type="button">${b.drain?'Вернуть канал к поливу':'Использовать как дренаж'}</button></section>`);
   $('canal-drain').onclick=()=>{ $('canal-drain').blur();mutate(setCanalDrain(state,buildingKey(b),!b.drain),b.drain?'Канал возвращён к поливу':'Участок отведён под дренаж'); };
   const clean=$('clean-canal');
   if(clean)clean.onclick=()=>{clean.blur();mutate(queueCanalCleaning(state,buildingKey(b)),'Назначена расчистка канала');};
  }
+ for(const button of $('building-controls').querySelectorAll('[data-water-cell]'))button.onclick=()=>{
+  const [x,y]=button.dataset.waterCell.split(',').map(Number),target=buildingAt(state,x,y);
+  if(!target)return;
+  inspected={x,y};renderer.focusOn(x,y);detail(target.type,false,target);
+ };
  if(b.type==='tailor'&&(!q||q.kind==='upgrade')){$('building-controls').insertAdjacentHTML('afterbegin','<button id="inspire-tailor">Вдохновить мастера одежды</button>');$('inspire-tailor').onclick=()=>showManagement('residents');}
  if(['shrine','ziggurat'].includes(b.type)&&(!q||q.kind==='upgrade')){const students=state.citizens.filter(c=>c.school===buildingKey(b));$('building-controls').insertAdjacentHTML('afterbegin',`<div class="market-readout"><b>Обучение лекарей · ${students.length}</b><p>${students.map(c=>`${resident(c)} · ${Math.floor(c.medicine.study/STUDY_SECONDS*100)}% · ${c.phase==='studying'?'учится':'в пути'}`).join('<br>')||'Ученики приходят после успешного вдохновения профессией «Лекарь».'}</p></div>`);}
  if(b.humanWaterProject){
@@ -747,6 +780,22 @@ function updateDetail(){
    if($('build-harbor-tender'))$('build-harbor-tender').onclick=()=>mutate(buildHarborTender(state,b),'Постройка лодки заказана');
   }
   if($('repair-harbor-boat'))$('repair-harbor-boat').onclick=()=>mutate(repairHarborBoat(state,b),'Обслуживание лодок заказано');
+ }
+ if(b.type==='harbor'&&isOperational(b)&&isStrictSumer(state)){
+  const river=riverStoreView(state,b),controls=$('building-controls'),destinations=river.destinations;
+  controls.insertAdjacentHTML('afterbegin',`<section class="staffing-panel water-logistics-panel"><h4>Сушёная рыба и местная переправа</h4>
+   <p>Запас на пристани <b>${foodAmount(river.dried)} / ${DRIED_FISH_CAPACITY}</b></p>
+   ${river.batch?`<p>На сушке ${foodAmount(river.batch.amount)} · ещё ${Math.ceil(river.batch.remaining)} с</p>`:'<button type="button" class="management-button" id="dry-fish">Высушить 2 меры свежего улова</button>'}
+   ${river.dried>0?'<button type="button" class="management-button" id="release-dried-fish">Передать рыбу в пищевой запас</button>':''}
+   ${river.ferry?`<p>В пути ${foodAmount(river.ferry.amount)} · ${esc(river.ferry.from)} → ${esc(river.ferry.to)}</p><button type="button" class="management-button" id="show-local-ferry">Показать лодку</button>`:''}
+   ${river.ferry?'':b.boatTender&&!b.boatWear&&!state.localFerry&&river.dried>0&&destinations.length?`<form id="local-ferry-form"><label>Принимающая пристань <select name="dock">${destinations.map(to=>`<option value="${buildingKey(to)}">Пристань ${to.x}, ${to.y}</option>`).join('')}</select></label><button type="submit" class="management-button">Отправить лодку · до 6 мер</button></form>`:'<small>Для местного рейса нужны сушёный улов, исправная перегрузочная лодка и свободное место на другой пристани.</small>'}</section>`);
+  $('show-local-ferry')?.addEventListener('click',()=>{
+   const vessel=localFerryVessel(state);
+   if(vessel)renderer.focusOn(vessel.x,vessel.y);
+  });
+  $('dry-fish')?.addEventListener('click',()=>mutate(startFishDrying(state,b),'Свежий улов отправлен на сушку'));
+  $('release-dried-fish')?.addEventListener('click',()=>mutate(releaseDriedFish(state,b),'Рыба передана в пищевой запас'));
+  $('local-ferry-form')?.addEventListener('submit',event=>{event.preventDefault();const key=event.currentTarget.elements.dock.value;document.activeElement?.blur();mutate(launchLocalFerry(state,b,key),'Лодка с сушёной рыбой отправилась');});
  }
  if(!q&&isStrictSumer(state)&&b.type==='harbor'){
   const repair=b.boatWear?'repair':null,actions=[...repair?[repair]:[],...b.boatTender?[]:['boat']];

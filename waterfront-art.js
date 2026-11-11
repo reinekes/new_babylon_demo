@@ -33,7 +33,8 @@ export function drawHarbor(r,b,state){
 export function drawTradeBoat(r,e){
  const q=r.s,p=r.point(e.x,e.y),c=r.ctx,t=r.state?.simTime||0,moving=['arriving','departing'].includes(e.phase),bob=r.reduce?0:Math.sin(t*1.8)*.45*q;
  const along=riverLocal(e.x,e.y,r.state).along,next=e.route?.slice(e.routeIndex||0).find(p=>Math.hypot(p.x-e.x,p.y-e.y)>.001),last=e.route?.at(-2),direction=Math.sign(next?riverLocal(next.x,next.y,r.state).along-along:last?along-riverLocal(last.x,last.y,r.state).along:riverFlowSign(r.state))||riverFlowSign(r.state),forward=riverPoint(along+.2*direction,r.state),back=riverPoint(along-.2*direction,r.state),a=r.point(forward.x,forward.y),b=r.point(back.x,back.y);
- c.save();c.translate(p.x,p.y+bob);c.rotate(Math.atan2(a.y-b.y,a.x-b.x));
+ c.save();c.translate(p.x,p.y+bob);const localHeading=e.id==='local-ferry'&&next?r.point(next.x,next.y):null;
+ c.rotate(localHeading?Math.atan2(localHeading.y-p.y,localHeading.x-p.x):Math.atan2(a.y-b.y,a.x-b.x));
  // Reflection and a quiet wake, limited to one actual vessel.
  c.fillStyle='#204b4535';c.beginPath();c.ellipse(1*q,5*q,25*q,7*q,0,0,7);c.fill();
  if(moving)for(let i=0;i<3;i++)r.line([[(-24-i*4)*q,(4+i*2)*q],[(-31-i*4)*q,(2+i*2)*q]],'#c3ddd099',.8*q);

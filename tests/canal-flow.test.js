@@ -85,3 +85,22 @@ test('Depths pressure lends a share to one connected intake during low water, th
  s.tick++;
  assert.equal(low().flow.routes.size,1);
 });
+
+test('a preferred field receives a scarce share and its neighbor is identified before the switch',async()=>{
+ const {canalWaterAllocation,fieldWaterAllocation,setFieldWaterPriority}=await import('../irrigation.js');
+ const s=createGame({start:'established',mode:'mature',scenario:strictScenario()});
+ const intake={type:'canal',x:13,y:6,level:1,silt:.8};
+ for(const [x,y] of [[12,6],[11,6],[11,5],[11,7]])s.buildings.push({type:'canal',x,y,level:1});
+ const a={type:'field',x:10,y:5,level:1},b={type:'field',x:10,y:7,level:1};
+ s.buildings.push(intake,a,b);
+ advanceTime(s,.1);
+ assert.deepEqual(canalWaterAllocation(s,intake),{capacity:1,fields:['10,5']});
+ const preview=fieldWaterAllocation(s,b);
+ assert.deepEqual(preview.lost,['10,5']);assert.deepEqual(preview.gained,['10,7']);
+ assert.ok(setFieldWaterPriority(s,b).ok);
+ assert.equal(fieldWater(s,a).canal,false);assert.equal(fieldWater(s,b).canal,true);
+ assert.deepEqual(canalWaterAllocation(s,intake),{capacity:1,fields:['10,7']});
+ const raw=encode(s);assert.equal(encode(decode(raw)),raw);
+ assert.ok(setFieldWaterPriority(s,b).ok);
+ assert.equal(fieldWater(s,a).canal,true);
+});

@@ -66,6 +66,11 @@ export function acceptFishingCargo(s,c,n,beforeCargo,{qualifies=false}={}){
  for(const piece of pieces){if(!piece.id)continue;const row=q.pending.find(r=>r.id===piece.id);if(!row)continue;if(qualifies)row.accepted+=piece.amount;else invalid.add(row.id);}
  removeReceipts(q,invalid);finish(q,s);
 }
+export function dryFishingOutput(s,b,n,beforeOutput){
+ if(!s.catFishing||!b.catFishingSiteId)return;
+ const q=s.catFishing,parts=take(q,output(b),n,beforeOutput);
+ removeReceipts(q,new Set(parts.filter(r=>r.id).map(r=>r.id)));
+}
 export function discardFishingCargo(s,c){if(usesCatDiscovery(s)&&s.catFishing)discard(s.catFishing,cargo(c));}
 export function discardFishingOutput(s,b){if(usesCatDiscovery(s)&&s.catFishing&&b?.catFishingSiteId)discard(s.catFishing,output(b));}
 function discard(q,key){removeReceipts(q,new Set((q.flows[key]||[]).filter(r=>r.id).map(r=>r.id)));delete q.flows[key];}

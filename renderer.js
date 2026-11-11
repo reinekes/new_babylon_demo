@@ -1,3 +1,4 @@
+import {localFerryVessel} from './river-stores.js';
 import {showBlessingApproach} from './blessing-presentation.js';
 import {blessingCupAt} from './blessing-discovery.js';
 import {showRainObserver} from './rain-presentation.js';
@@ -373,8 +374,10 @@ export class Renderer{
  if(flood)for(const {x,y} of flood.tiles)if(this.inView(x,y,50))this.tile(x,y,flood.phase==='active'?'#4b9fa5a6':'#4b9fa54a','#28737d75');
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});
  const catTrace=catDiscoveryView(s);if(catTrace)drawCatDiscoveryGround(this,catTrace);
- const vessel=s.trade?.caravan,underBridge=vessel?.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,s).y-riverLocal(vessel.x,vessel.y,s).along)<.65);
- if(underBridge&&this.inView(vessel.x,vessel.y,150))this.caravan(vessel);
+ const vessels=[s.trade?.caravan,localFerryVessel(s)].filter(v=>v&&Number.isFinite(v.x)&&Number.isFinite(v.y));
+ const underBridge=v=>v.transport==='river'&&s.buildings.some(b=>b.type==='bridge'&&b.construction?.kind!=='new'&&Math.abs(bridgeSpanAt(b,s).y-riverLocal(v.x,v.y,s).along)<.65);
+ const bridgeVessels=new Set(vessels.filter(underBridge));
+ for(const v of bridgeVessels)if(this.inView(v.x,v.y,150))this.caravan(v);
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
  const people=this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed}),teams=ploughTeams(s,people);
  const drivers=new Map(teams.map(team=>[team.driverId,team]));
@@ -387,7 +390,7 @@ export class Renderer{
  const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpanAt(b,s);for(let across=span.left;across<span.right;across+=.5)entities.push({...worldFromRiver(across+.25,span.y+.13,s),across,along:span.y+.13,kind:'bridgeRail',end:Math.min(across+.5,span.right)});}
  const lamps=[...this.streets.nodes.values()].filter((p,i)=>i%4===0||this.streets.graph.get(p.key).size>=3).map(p=>({...p,kind:'lamp'}));
- entities.push(...lamps);if(!underBridge&&s.trade?.caravan&&Number.isFinite(s.trade.caravan.x)&&Number.isFinite(s.trade.caravan.y))entities.push({...s.trade.caravan,kind:'caravan'});
+ entities.push(...lamps,...vessels.filter(v=>!bridgeVessels.has(v)).map(v=>({...v,kind:'caravan'})));
  for(const e of sortScene(entities)){
   if(!this.inView(e.x,e.y,150))continue;
   if(e.kind==='person'&&s.funeral?.actors.some(a=>a.id===e.id)&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;

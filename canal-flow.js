@@ -1,7 +1,7 @@
 // Each watered field consumes one share along an unbroken route back to a
 // river intake. Recomputing paths against residual capacity lets a second
 // intake supply a field even when its nearest branch has filled.
-export function allocateCanalWater({adjacent,heads,capacity,fields,intakeLimits=new Map()}){
+export function allocateCanalWater({adjacent,heads,capacity,fields,intakeLimits=new Map(),priority=null}){
  const residual=new Map(capacity),intakes=new Set(heads),intakeRemaining=new Map(intakeLimits);
  const routes=new Map(),distance=new Map(),frontier=[...intakes].sort();
  for(const id of frontier)distance.set(id,0);
@@ -14,7 +14,7 @@ export function allocateCanalWater({adjacent,heads,capacity,fields,intakeLimits=
   }
  }
  const nearest=entries=>Math.min(...entries.map(id=>distance.get(id)??Infinity));
- const order=[...fields].sort(([a,left],[b,right])=>nearest(left)-nearest(right)||a.localeCompare(b));
+ const order=[...fields].sort(([a,left],[b,right])=>Number(b===priority)-Number(a===priority)||nearest(left)-nearest(right)||a.localeCompare(b));
  for(const [field,entries] of order){
   const queue=entries.filter(id=>(residual.get(id)||0)>=1).sort(),parent=new Map(queue.map(id=>[id,null]));
   let head=null;

@@ -1,5 +1,6 @@
 import {terrain,signedRiverDistance} from './world.js';
-import {isOperational} from './definitions.js';
+import {buildingKey,isOperational} from './definitions.js';
+import {cityCommandReason} from './city-command-lock.js';
 import {allocateCanalWater} from './canal-flow.js';
 import {canalMaintenanceEnabled,canalShares,nextCanalSilt} from './canal-maintenance.js';
 export const CARDINAL=[[1,0],[0,1],[-1,0],[0,-1]];
@@ -16,7 +17,8 @@ export function depthCanalTarget(s,target){
 export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
  const pressure=s.depthSupply?.pressure;
  const anchor=pressure&&pressure.tick===s.tick?key(pressure.x,pressure.y):'';
- const limited=canalMaintenanceEnabled(s),canals=s.buildings.filter(b=>b.type==='canal'),fields=new Set(s.buildings.filter(b=>b.type==='field'&&(!limited||isOperational(b))).map(b=>key(b.x,b.y))),lakes=(s.world?.lakes||[]).map(l=>l.cells.map(c=>key(c.x,c.y)).join(';')).join('|'),signature=canals.map(b=>`${b.x},${b.y}:${isOperational(b)?1:0}:${limited?canalShares(b):'-'}:${b.drain?1:0}`).join('|')+';'+[...fields].join('|')+';lakes:'+lakes+';river:'+JSON.stringify(s.world?.river)+';low:'+lowRiver+';depth:'+anchor;
+ const priority=s.buildings.find(b=>b.waterPriority===true),preferred=priority?buildingKey(priority):null;
+ const limited=canalMaintenanceEnabled(s),canals=s.buildings.filter(b=>b.type==='canal'),fields=new Set(s.buildings.filter(b=>b.type==='field'&&(!limited||isOperational(b))).map(b=>key(b.x,b.y))),lakes=(s.world?.lakes||[]).map(l=>l.cells.map(c=>key(c.x,c.y)).join(';')).join('|'),signature=canals.map(b=>`${b.x},${b.y}:${isOperational(b)?1:0}:${limited?canalShares(b):'-'}:${b.drain?1:0}`).join('|')+';'+[...fields].join('|')+';lakes:'+lakes+';river:'+JSON.stringify(s.world?.river)+';low:'+lowRiver+';depth:'+anchor+';priority:'+preferred;
  let variants=cache.get(s);if(!variants){variants=new Map();cache.set(s,variants);}
  const old=variants.get(lowRiver);if(old?.signature===signature)return old;
  const cells=new Map(canals.filter(isOperational).map(b=>[key(b.x,b.y),b])),wet=new Set(),arms=new Map();
@@ -75,9 +77,34 @@ export function irrigationFor(s,{lowRiver=riverIsLow(s)}={}){
    reachableFields.get(field).push(id);
   }
  }
- const flow=limited?allocateCanalWater({adjacent,heads,capacity,intakeLimits,fields:new Map([...reachableFields].filter(([id])=>fields.has(id)))}):null;
+ const flowInputs={adjacent,heads,capacity,intakeLimits,fields:new Map([...reachableFields].filter(([id])=>fields.has(id)))};
+ const flow=limited?allocateCanalWater({...flowInputs,priority:preferred}):null;
  const irrigated=new Set(flow?flow.routes.keys():reachableFields.keys());
- const result={signature,cells,wet,arms,irrigated,reachableFields,flow,fields,heads,adjacent,drained,outlets,intakeLimits,depthWave};variants.set(lowRiver,result);return result;
+ const result={signature,cells,wet,arms,irrigated,reachableFields,flow,flowInputs,preferred,fields,heads,adjacent,drained,outlets,intakeLimits,depthWave};variants.set(lowRiver,result);return result;
+}
+export function setFieldWaterPriority(s,b){
+ const reason=cityCommandReason(s)||(s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':'');
+ if(reason)return {ok:false,reason};
+ if(!canalMaintenanceEnabled(s)||b?.type!=='field'||!isOperational(b)||!s.buildings.includes(b))return {ok:false,reason:'Нужно готовое поле Южного Шумера'};
+ const selected=b.waterPriority===true;
+ for(const field of s.buildings)if(field.waterPriority===true)delete field.waterPriority;
+ if(!selected)b.waterPriority=true;
+ return {ok:true};
+}
+export function fieldWaterAllocation(s,b){
+ const {flow,flowInputs,preferred,reachableFields}=irrigationFor(s),id=buildingKey(b);
+ if(!flow)return null;
+ const selected=preferred===id,connected=reachableFields.has(id);
+ const next=connected?allocateCanalWater({...flowInputs,priority:selected?null:id}):flow;
+ const changes=(before,after)=>[...before.keys()].filter(field=>!after.has(field));
+ return {selected,connected,path:flow.routes.get(id)||[],lost:changes(flow.routes,next.routes),gained:changes(next.routes,flow.routes)};
+}
+export function canalWaterAllocation(s,b){
+ const {flow,flowInputs}=irrigationFor(s),id=buildingKey(b);
+ if(!flow||b.drain)return null;
+ const capacity=Math.min(flowInputs.capacity.get(id)||0,flowInputs.intakeLimits.get(id)??Infinity);
+ const fields=[...flow.routes].filter(([,route])=>route.includes(id)).map(([field])=>field);
+ return {capacity,fields};
 }
 export function canalSiltingForecast(s){
  if(!canalMaintenanceEnabled(s))return [];

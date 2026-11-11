@@ -22,7 +22,12 @@ export function clearCanalSilt(canal,work){
 }
 
 export function validateCanalMaintenance(state){
+ let preferred=false;
  return state.buildings.every(b=>{
+  if(b.waterPriority!==undefined){
+   if(preferred||b.waterPriority!==true||!canalMaintenanceEnabled(state)||b.type!=='field'||!isOperational(b))return false;
+   preferred=true;
+  }
   if(b.drain!==undefined&&(!canalMaintenanceEnabled(state)||b.type!=='canal'||!isOperational(b)||b.drain!==true))return false;
   if(b.silt===undefined&&b.canalCleaning===undefined)return true;
   return canalMaintenanceEnabled(state)&&b.type==='canal'&&isOperational(b)

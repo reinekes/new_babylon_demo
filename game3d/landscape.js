@@ -1,3 +1,4 @@
+import {localFerryVessel} from '../river-stores.js';
 import {floodMapView} from '../river-flood.js';
 import {createPalmRenderGroups} from './palm-render-groups.js';
 import {orchardMaturity,orchardPalms} from '../orchard-layout.js';
@@ -274,9 +275,13 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  function updateStocks(s){const stocks=groundStocks(s,streetNetwork,signature),next=JSON.stringify(stocks);if(next===stockSignature)return;stockSignature=next;remove(stockMeshes);if(stocks)cargo(stocks.stock,stockMeshes,null,{x:stocks.x*TILE,y:surfaceElevation(stocks.x,stocks.y,s),z:stocks.y*TILE});}
  const caravanView=options.deferOptional?createLazyFeature(()=>createTradeCaravan(B,scene,meshes,materials,goods,{...options,initialState:currentState}),{required:(_s,c)=>!!c,onError:error=>console.warn('Caravan detail unavailable',error)}):await createTradeCaravan(B,scene,meshes,materials,goods,{...options,initialState:currentState});
  const riverCraftView=createTradeRiverCraft(B,scene,meshes,materials,goods,options);
+ let ferryView;
  function updateTrader(c,time){
   caravanView.update(currentState,c?.river?null:c,time);
   riverCraftView.update(currentState,c?.river?{...c,transport:'river'}:null,time);
+  const ferry=localFerryVessel(currentState);
+  if(ferry)ferryView??=createTradeRiverCraft(B,scene,meshes,materials,goods,options);
+  ferryView?.update(currentState,ferry,time);
  }
  const drops=[];for(let i=0;i<90;i++){const m=box('weather-rain',0,0,0,.018,.8,.018,rainMaterial, drops);m.receiveShadows=false;m.setEnabled(false);}
  function updatePalmWind(time,wind){palmRenderGroups.updateWind(time,wind);
@@ -331,5 +336,5 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(let i=meshes.length-1;i>=0;i--)if(meshes[i].isDisposed?.())meshes.splice(i,1);
  }
  let night=0;update(initialState,initialState.simTime||0);
- return {get waterMaterial(){return waterView.material;},meshes,update,setPalmBatching(enabled){batchPalms=enabled!==false;updatePalmGroups();updatePalmWind(currentState.simTime||0,weatherAt(currentState).type==='wind');},setRoadBatching(enabled){batchRoads=enabled!==false;updateRoadGroups();catGroundHeights.clear();},setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;roadRenderGroups.dispose();palmRenderGroups.dispose();catDiscovery.dispose();caravanView.dispose();riverCraftView.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
+ return {get waterMaterial(){return waterView.material;},meshes,update,setPalmBatching(enabled){batchPalms=enabled!==false;updatePalmGroups();updatePalmWind(currentState.simTime||0,weatherAt(currentState).type==='wind');},setRoadBatching(enabled){batchRoads=enabled!==false;updateRoadGroups();catGroundHeights.clear();},setQuality(tier){natureDetails.setQuality(tier);valleyVegetation.setQuality(tier);},light(n){night=n;base?.light(n);waterView.light(n);},dispose(){if(disposed)return;disposed=true;roadRenderGroups.dispose();palmRenderGroups.dispose();catDiscovery.dispose();caravanView.dispose();riverCraftView.dispose();ferryView?.dispose();base?.dispose();waterView.dispose();natureDetails.dispose();valleyVegetation.dispose();for(const m of [...meshes])if(!m.isDisposed?.())m.dispose();meshes.length=0;roadBatches.clear();for(const r of workFeatureRoots)r.dispose();for(const c of palmContainers)c.dispose();for(const m of ownedMaterials)m.dispose(false,false);}};
 }

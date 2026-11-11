@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "5cbf39fc5b514061b144e8a299433c10cb18ff565c58af49ee75dfb4455ca94a"
+      "sha256": "d7fe016f5e57c3fb5b9fd30c2e2befc328a30766bf552c0aa41d8cd5c8283457"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -69,7 +69,7 @@
     },
     {
       "file": "game3d/river-craft.js",
-      "sha256": "1f1be60f1d3ada3b656a9c5182fe9754e07c98ba50a08ccfb5830502250167f9"
+      "sha256": "c14d216951aeb8635c1847640dd471177ec25e0d9d6c05ec47e0804f300a5812"
     },
     {
       "file": "game3d/sacred-models.js",
@@ -495,7 +495,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 153,
+          "line": 154,
           "kind": "literal"
         }
       ]
