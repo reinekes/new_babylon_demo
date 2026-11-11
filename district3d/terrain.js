@@ -196,7 +196,10 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   const grassStaticSignature=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,(s.buildings||[]).map(b=>[b.x,b.y])]);
   const grassGroundAlpha=(x,y)=>{
     const d=shoreDistance(x,y,state);
-    let alpha=smooth((d-.22)/.38)*(1-smooth((d-2.7)/1.3));
+    // The grass cover sits above two terrain meshes with different tessellation.
+    // Let the shared soil carry their seam, and blend the cover back on both sides.
+    const edge=Math.min(x+.5,worldWidth(state)-.5-x,y+.5,worldHeight(state)-.5-y);
+    let alpha=smooth((d-.22)/.38)*(1-smooth((d-2.7)/1.3))*smooth(Math.abs(edge)/2);
     for(const b of state.buildings||[]){
       const qx=Math.abs(x-b.x)-.56,qy=Math.abs(y-b.y)-.56;
       const distance=Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0);

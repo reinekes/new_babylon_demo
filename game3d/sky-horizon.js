@@ -65,6 +65,9 @@ export function createSkyHorizon(B,scene,{soil}={}){
  void main(){vec3 d=normalize(ray);float elevation=clamp(d.y,0.0,1.0);vec3 zenith=mix(vec3(.30,.52,.67),vec3(.018,.028,.065),night);vec3 color=mix(horizonColor,zenith,pow(elevation,.45));float sunset=pow(max(0.0,dot(d,normalize(vec3(sunDirection.x,0.,sunDirection.z)))),8.0)*exp(-elevation*7.0)*warm;color+=vec3(.25,.075,.012)*sunset;
  float sd=dot(d,sunDirection),md=dot(d,moonDirection);float sun=smoothstep(.99978,.99986,sd)*smoothstep(-.025,.025,d.y);float halo=pow(max(0.0,sd),150.0)*.32;vec3 sunColor=mix(vec3(1.,.84,.42),vec3(1.,.34,.08),warm);color+=sunColor*(sun*2.0+halo)*(1.-night);
  float moon=smoothstep(.99975,.99984,md)*smoothstep(-.025,.02,d.y);float crater=.86+.09*sin(d.x*1700.)*sin(d.z*1400.);color=mix(color,vec3(.77,.84,.93)*crater,moon*night);color+=vec3(.14,.19,.28)*pow(max(0.0,md),260.)*night;
+ // The distant land and river are fully fogged at the horizon. Fade the
+ // directional sky colours into that same fog before joining the terrain.
+ color=mix(horizonColor,color,smoothstep(0.0,.045,elevation));
  gl_FragColor=applyImageProcessing(vec4(color,1.));}`;
  const skyMat=new B.ShaderMaterial('valley-sky-material',scene,{vertex:'valleySky',fragment:'valleySky'},{attributes:['position'],uniforms:['worldViewProjection','sunDirection','moonDirection','horizonColor','night','warm',...atmosphereUniforms],defines:atmosphereDefines(scene)});skyMat.backFaceCulling=false;skyMat.disableDepthWrite=true;skyMat.fogEnabled=false;owned.push(skyMat);
  const dome=B.MeshBuilder.CreateSphere('valley-sky-dome',{diameter:2,segments:16},scene);dome.material=skyMat;dome.isPickable=false;dome.alwaysSelectAsActiveMesh=true;dome.infiniteDistance=false;meshes.push(dome);

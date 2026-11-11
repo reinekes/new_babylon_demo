@@ -91,16 +91,53 @@ export class GameRenderer3D{
  }
  bindInput(){
   const c=this.canvas;this.inputHandlers=[];const on=(name,fn)=>{c.addEventListener(name,fn);this.inputHandlers.push([name,fn]);};
-  this.unbindMap=bindMapControls(c,{camera:this.camera,groundAt:(x,y)=>this.groundPoint(x,y),onHover:(x,y)=>{this.hover=x===null?null:this.pick(x,y);this.keyboardHover=false;},onClick:(x,y)=>{const cell=this.pick(x,y,true);if(cell)this.selectPoint(cell,this.onSelect);},isPhoto:()=>this.photoMode});
+  this.unbindMap=bindMapControls(c,{camera:this.camera,groundAt:(x,y)=>this.groundPoint(x,y),onHover:(x,y)=>{this.hover=x===null?null:this.pick(x,y);this.keyboardHover=false;},onNavigate:()=>{this.mapOverview=false;this._zoom=104/this.camera.radius;},onClick:(x,y,touch)=>{const cell=this.pick(x,y,true,touch);if(cell)this.selectPoint(cell,this.onSelect);},isPhoto:()=>this.photoMode});
   on('keydown',e=>{if(this.photoMode)return;const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(moves[e.key]){e.preventDefault();const p=this.hover||{x:9,y:9},d=moves[e.key];this.hover={x:Math.max(0,Math.min(worldWidth(this.state)-1,p.x+d[0])),y:Math.max(0,Math.min(worldHeight(this.state)-1,p.y+d[1]))};this.keyboardHover=true;}if(e.key==='Enter'){e.preventDefault();this.hover||={x:9,y:9};this.selectPoint(this.hover,this.onSelect);}if(this.hover)c.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});
  }
  groundPoint(clientX,clientY){const r=this.canvas.getBoundingClientRect(),B=this.B,ray=this.scene.createPickingRay(clientX-r.left,clientY-r.top,B.Matrix.Identity(),this.camera),d=ray.intersectsPlane(new B.Plane(0,1,0,0));return d!==null&&d>=0?ray.origin.add(ray.direction.scale(d)):null;}
- pick(clientX,clientY,entity=false){
-  if(!this.state)return null;const rect=this.canvas.getBoundingClientRect(),x=clientX-rect.left,y=clientY-rect.top;if(x<0||y<0||x>rect.width||y>rect.height)return null;
-  const B=this.B,ray=this.scene.createPickingRay(x,y,B.Matrix.Identity(),this.camera);
-  if(entity&&!this.selection&&!this.roadMode){const hit=this.scene.pickWithRay(ray,m=>m.isPickable&&m.isEnabled()&&!!pickedEntity(m));if(hit?.hit){if(!this.roadDrawMode){const deposit=pickResourceDeposit(this.state,ray,{maxDistance:Number.isFinite(hit.distance)?hit.distance:0});if(deposit)return deposit;}const meta=pickedEntity(hit.pickedMesh);if(meta?.tile)return {...meta.tile};if(meta?.citizenId!==undefined){const c=this.state.citizens.find(v=>v.id===meta.citizenId);if(c)return {...worldCell({x:c.x*6,z:c.y*6},this.state),citizenId:c.id};}if(meta?.animalId)return {...worldCell(hit.pickedPoint,this.state),animalId:meta.animalId,animalKind:meta.animalKind};}}
-  if(entity&&!this.selection&&!this.roadMode&&!this.roadDrawMode){const deposit=pickResourceDeposit(this.state,ray);if(deposit)return deposit;}
+ pick(clientX,clientY,entity=false,touch=false){
+  if(!this.state)return null;
+  const rect=this.canvas.getBoundingClientRect(),x=clientX-rect.left,y=clientY-rect.top;
+  if(x<0||y<0||x>rect.width||y>rect.height)return null;
+  const B=this.B,identity=B.Matrix.Identity(),rayAt=(px,py)=>this.scene.createPickingRay(px,py,identity,this.camera),ray=rayAt(x,y);
+  if(entity&&!this.selection&&!this.roadMode){
+   const hitAt=ray=>this.scene.pickWithRay(ray,m=>m.isPickable&&m.isEnabled()&&!!pickedEntity(m));
+   const hit=hitAt(ray);
+   if(!this.roadDrawMode){
+    const deposit=pickResourceDeposit(this.state,ray,hit?.hit?{maxDistance:Number.isFinite(hit.distance)?hit.distance:0}:undefined);
+    if(deposit)return deposit;
+   }
+   const meta=hit?.hit?pickedEntity(hit.pickedMesh):null;
+   if(meta?.tile)return {...meta.tile};
+   if(meta?.animalId)return {...worldCell(hit.pickedPoint,this.state),animalId:meta.animalId,animalKind:meta.animalKind};
+   const citizen=meta?.citizenId!==undefined?this.state.citizens.find(c=>c.id===meta.citizenId):
+    touch&&!meta&&!this.roadDrawMode?this.nearbyTouchCitizen(x,y,rect,identity,rayAt,hitAt):null;
+   if(citizen)return {...worldCell({x:citizen.x*6,z:citizen.y*6},this.state),citizenId:citizen.id};
+  }
   const d=ray.intersectsPlane(new B.Plane(0,1,0,0));return d!==null&&d>=0?worldCell(ray.origin.add(ray.direction.scale(d)),this.state):null;
+ }
+ nearbyTouchCitizen(x,y,rect,identity,rayAt,hitAt){
+  const B=this.B,viewport=this.camera.viewport.toGlobal(rect.width,rect.height),transform=this.scene.getTransformMatrix();
+  const candidates=[];
+  for(const citizen of this.state.citizens){
+   const root=this.actors.rootFor({citizenId:citizen.id});
+   if(!root?.isEnabled())continue;
+   const position=root.getAbsolutePosition();
+   const center=B.Vector3.Project(position,identity,transform,viewport);
+   const upper=B.Vector3.Project(new B.Vector3(position.x,position.y+1.7*root.scaling.y,position.z),identity,transform,viewport);
+   if(center.z<0||center.z>1)continue;
+   for(const height of [.35,.6,.85]){
+    const point=B.Vector3.Lerp(center,upper,height),distance=Math.hypot(point.x-x,point.y-y);
+    if(distance<=12)candidates.push({citizen,point,distance});
+   }
+  }
+  candidates.sort((a,b)=>a.distance-b.distance);
+  for(const {citizen,point} of candidates){
+   // Confirm the visible figure at its projected position, including occlusion.
+   const hit=hitAt(rayAt(point.x,point.y));
+   if(hit?.hit&&pickedEntity(hit.pickedMesh)?.citizenId===citizen.id)return citizen;
+  }
+  return null;
  }
  setRoadMode(enabled){this.roadMode=!!enabled;if(!enabled)this.roadDrawMode=false;}
  roadNear(point){return roadNear(this.state,point);}

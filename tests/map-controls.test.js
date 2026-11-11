@@ -16,3 +16,27 @@ test('lost pointer capture cancels orbit, and subsequent left clicks still selec
  const f=fixture();f.fire('pointerdown',1,100,100,1);f.fire('pointermove',1,120,110,1);assert.ok(f.camera.alpha<1);f.fire('lostpointercapture',1,120,110,1);const alpha=f.camera.alpha;f.fire('pointermove',1,150,110,1);assert.equal(f.camera.alpha,alpha);
  f.fire('pointerdown',1,100,100);f.fire('pointerup',1,100,100);assert.equal(f.clicks.length,1);
 });
+
+test('a small pinch from the mobile valley overview follows the camera limits',()=>{
+ const f=fixture();f.camera.radius=1100;f.camera.upperRadiusLimit=1400;
+ f.fire('pointerdown',1,140,400);f.fire('pointerdown',2,240,400);
+ f.fire('pointermove',2,244,400);
+ assert.equal(f.camera.radius,1100*100/104);
+});
+
+test('the remaining finger keeps panning after a pinch and cannot select a tile',()=>{
+ const f=fixture(),touch={pointerType:'touch'};
+ f.fire('pointerdown',1,140,400,0,touch);f.fire('pointerdown',2,240,400,0,touch);
+ f.fire('pointermove',2,260,400,0,touch);
+ f.fire('pointerup',2,260,400,0,touch);
+ f.fire('lostpointercapture',2,260,400,0,touch);
+ const x=f.camera.target.x;
+ f.fire('pointermove',1,163,400,0,touch);
+ assert.ok(f.camera.target.x<x);
+ f.fire('pointerup',1,163,400,0,touch);
+ assert.deepEqual(f.clicks,[]);
+ f.fire('pointerdown',1,140,400,0,touch);
+ f.fire('pointermove',1,148,400,0,touch);
+ f.fire('pointerup',1,148,400,0,touch);
+ assert.deepEqual(f.clicks,[[140,400]]);
+});
