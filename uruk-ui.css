@@ -106,7 +106,7 @@ body.uruk-ui{--paper:#25231f;--ink:#f0e5ce;--muted:#baa98f;--line:#766048;--teal
 .uruk-ui .miracle-explanation .miracle-facts{color:#d4b88c;border-color:#8e6f4655;font-size:11px}
 .uruk-ui .miracle-explanation .miracle-unavailable{color:#daa385}
 .uruk-ui .story-panel{left:auto;right:24px;width:360px;background:#2a2721 var(--uruk-stone);background-size:510px}
-.uruk-ui .god-card{background:transparent;border:0;padding:12px 0 22px;color:#f1dfc0}
+.uruk-ui .god-card{background:transparent;border:0;max-height:none;padding:12px 0 22px;color:#f1dfc0}
 .uruk-ui .god-card h2{font-size:27px;color:#f4e3c4;line-height:1.3}
 .uruk-ui .god-sun{color:#bd935b}
 .uruk-ui .god-card :is(p,.god-rating,.god-level,.eyebrow){color:#c8b18b}
@@ -388,3 +388,29 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
  .uruk-ui .miraclebar .miracle-card small {font-size:10px;line-height:1.25}
  .uruk-ui .miraclebar .miracle-symbol {flex:none}
 }
+
+@media(max-width:650px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar {flex-wrap:nowrap}
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources {flex:1 1 0;width:auto}
+}
+
+.uruk-ui dialog[data-kind$="-ending"] {width:min(550px,calc(100vw - 20px))}
+.uruk-ui dialog[data-kind$="-ending"] .dialog-inner {text-align:left}
+.uruk-ui dialog[data-kind$="-ending"] :is(p,li) {font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+.uruk-ui dialog[data-kind$="-ending"] ul {
+ display:grid;gap:6px;padding:10px 12px 10px 28px;
+ border:1px solid #8b694466;background:#362b21;
+}
+.uruk-ui dialog[data-kind$="-ending"] .resident-link {
+ background:transparent!important;border:0!important;min-height:0;padding:0;
+ color:#f3ce92!important;text-decoration:underline;text-underline-offset:2px;
+}
+.uruk-ui dialog[data-kind$="-ending"] .dialog-actions {
+ justify-content:flex-start;gap:8px;padding-top:14px;border-top:1px solid #8b694466;
+}
+.uruk-ui dialog[data-kind$="-ending"] .dialog-actions button {min-height:42px}
+@media(max-width:650px) {
+ .uruk-ui dialog[data-kind$="-ending"] .dialog-actions {display:grid;grid-template-columns:minmax(0,1fr)}
+}
+
+.uruk-ui:has(:is(.earth-scene,.rain-scene):not([hidden])) :is(#toast,.game3d-detail-status) {clip-path:inset(50%)}

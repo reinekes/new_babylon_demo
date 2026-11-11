@@ -94,7 +94,7 @@ export function registerPortrait(c){
 }
 function registerVital(id,label,value,warning,reason,action,link){
  const v=Math.max(0,Math.min(100,Number(value)||0));
- return `<div class="city-vital-row${warning?' is-warning':''}"><dt><details class="city-vital-help" data-city-vital-help="${id}"><summary aria-describedby="${id}">${label}<span aria-hidden="true">?</span></summary></details></dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span><div class="city-vital-tip" id="${id}"><b>${label}</b><p>${escape(reason)}</p><p><strong>Что делать:</strong> ${escape(action)}</p>${link?`<button type="button" class="city-vital-link" data-vital-home="${escape(link.home)}" data-vital-tab="${link.tab}" data-vital-resident="${link.id}">${link.label} →</button>`:''}</div></dd></div>`;
+ return `<div class="city-vital-row${warning?' is-warning':''}"><dt><span>${label}</span><details class="city-vital-help" data-city-vital-help="${id}"><summary aria-label="Подсказка · ${label}" aria-controls="${id}">?</summary></details></dt><dd><meter min="0" max="100" value="${v}" aria-label="${label}"></meter><span>${number(v)}%</span><div class="city-vital-tip" id="${id}"><b>${label}</b><p>${escape(reason)}</p><p><strong>Что делать:</strong> ${escape(action)}</p>${link?`<button type="button" class="city-vital-link" data-vital-home="${escape(link.home)}" data-vital-tab="${link.tab}" data-vital-resident="${link.id}">${link.label} →</button>`:''}</div></dd></div>`;
 }
 export function residentVitalsHTML(c,s,scope='register'){
  const homeKey=supplyHome(c,{arrived:true});

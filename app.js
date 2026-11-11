@@ -1354,7 +1354,20 @@ function update(){
  setHTML($('delivery-log'),state.lastDelivery?`${resident(state.lastDelivery.citizen)} ${state.lastDelivery.source==='market'?'доставил покупку':'доставил'}: ${esc(resourceText(state.lastDelivery.cargo))}`:'Ресурсы поступают, когда груз доходит до склада');
  $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateDetail();renderManagement();renderSupply();refreshCityOverview();refreshLifeAnalytics();renderFestival();for(const el of document.querySelectorAll('[data-cost]'))setHTML(el,costs(BUILDINGS[el.dataset.cost]));$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',state.trade.caravan?.phase==='trading');$('open-trade').title=marketStatus(state);
 }
-function openDialog(kind,html){if(switchingCity)citySwitchRevision++;savesUI?.destroy();savesUI=null;encyclopediaUI?.destroy();encyclopediaUI=null;encyclopediaRequest++;modalKind=kind;dialog.dataset.kind=kind;$('dialog-content').innerHTML=`<div class="dialog-inner">${html}</div>`;if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('dialog-content').scrollTop=0;last=performance.now();}
+function openDialog(kind,html){
+ if(switchingCity)citySwitchRevision++;
+ savesUI?.destroy();savesUI=null;encyclopediaUI?.destroy();encyclopediaUI=null;encyclopediaRequest++;
+ modalKind=kind;dialog.dataset.kind=kind;
+ $('dialog-content').innerHTML=`<div class="dialog-inner">${html}</div>`;
+ const endingTitle=kind.endsWith('-ending')?dialog.querySelector('h2'):null;
+ if(endingTitle){
+  endingTitle.id='ending-title';endingTitle.tabIndex=-1;
+  dialog.setAttribute('aria-labelledby',endingTitle.id);
+ }else dialog.removeAttribute('aria-labelledby');
+ if(!dialog.open)dialog.showModal();
+ endingTitle?.focus({preventScroll:true});
+ dialog.scrollTop=0;$('dialog-content').scrollTop=0;last=performance.now();
+}
 function closeDialog(){if(switchingCity)citySwitchRevision++;savesUI?.destroy();savesUI=null;encyclopediaUI?.destroy();encyclopediaUI=null;encyclopediaRequest++;dialog.close();modalKind=null;delete dialog.dataset.kind;delete dialog.dataset.replace;last=performance.now();}
 function intro(){
  const barley=state.cropCalendar===AUTUMN_CROPS
@@ -1603,7 +1616,7 @@ async function jumpSeason(){
 $('next-season').setAttribute('aria-label','Следующий сезон');$('next-season').onclick=jumpSeason;
 $('day-cycle').onclick=()=>{const clock=lightingAt(state.simTime),target=isWorkday(state.simTime)?20.25:6,seconds=((target-clock.hour+24)%24)*DAY_SECONDS/24+.05;advanceTime(state,seconds);renderer.lightMode='auto';save();update();checkDialogs();};
 $('zoom-in').onclick=()=>renderer.zoomBy?renderer.zoomBy(.2):renderer.zoom=Math.min(3,renderer.zoom+.2);$('zoom-out').onclick=()=>renderer.zoomBy?renderer.zoomBy(-.2):renderer.zoom=Math.max(.3,renderer.zoom-.2);$('home').onclick=()=>renderer.home();$('overview').onclick=()=>renderer.overview();
-dialog.addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='mode'&&dialog.dataset.replace==='true'){closeDialog();return;}if(['help','reset','pantheon','construction','residents','confirmation','water-project','household-initiative','trade','supply','citytools','festival','life','relicIntro','encyclopedia','saves'].includes(modalKind)){closeDialog();checkDialogs();}});
+dialog.addEventListener('cancel',e=>{e.preventDefault();if(modalKind==='mode'&&dialog.dataset.replace==='true'){closeDialog();return;}if(modalKind?.endsWith('-ending')||['help','reset','pantheon','construction','residents','confirmation','water-project','household-initiative','trade','supply','citytools','festival','life','relicIntro','encyclopedia','saves'].includes(modalKind)){closeDialog();checkDialogs();}});
 document.addEventListener('keydown',e=>{if(seasonJumping){e.preventDefault();return;}if(relicControlActive(state)){if(e.code==='Space'&&!['INPUT','SELECT','BUTTON'].includes(e.target.tagName)){e.preventDefault();paused=!paused;save();update();}return;}if(photo.active||dialog.open||['INPUT','TEXTAREA','SELECT','SUMMARY'].includes(e.target.tagName))return;if(e.code==='KeyR'&&selection){e.preventDefault();rotatePlacement(e.shiftKey?-1:1);return;}if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();paused=!paused;save();update();}if(e.key==='Escape'){if(testMapUpgrade){testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');toast('Тестовое улучшение закончено');return;}if(roadMode){clearRoadRoute();$('tile-detail').hidden=true;roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');}if(selection)choose(selection);else{inspected=null;$('tile-detail').hidden=true;}}if(/^[1-9]$/.test(e.key))choose(Object.keys(BUILDINGS)[Number(e.key)-1]);});
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
 let shownEvent=null,shownFeast=null,shownMiracle=null,lastBeerStatus=state.firstBeerFeast?.status;
