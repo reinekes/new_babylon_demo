@@ -347,3 +347,44 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 @media(min-width:1001px) and (max-width:1649px) {
  .uruk-ui:not(.uruk-resources-open) .resourcebar {left:310px;right:195px;gap:4px;padding:0 6px}
 }
+
+/* Common surface and readable controls for the city panels. */
+.uruk-ui .uruk-menu .header-actions [hidden] {display:none!important}
+.uruk-ui #tile-detail :is(input:not([type=checkbox]),select) {
+ background:#3b3227;color:#f0dfbf;border:1px solid #9d794e;border-radius:3px;
+}
+.uruk-ui :is(dialog,#tile-detail,.uruk-menu) :is(button,summary,a,input,select):focus-visible {
+ outline:2px solid #f6ca83;outline-offset:2px;
+}
+.uruk-ui .save-import:focus-within {outline:2px solid #f6ca83;outline-offset:2px}
+.uruk-ui .save-import input[type=file] {min-width:0;width:100%;height:100%}
+.uruk-ui dialog[data-kind=supply] :is(.food-forecast,.food-shortage,.water-dream) {text-align:left}
+.uruk-ui dialog[data-kind=supply] .food-forecast p {margin-block:6px}
+.uruk-ui dialog[data-kind=help] .guide-section,
+.uruk-ui dialog[data-kind=relicIntro] .relic-candidate {
+ text-align:left;background:#33291f;border:1px solid #82613f;border-radius:4px;padding:9px 11px;margin:7px 0;
+}
+.uruk-ui dialog[data-kind=help] .guide-section summary,
+.uruk-ui dialog[data-kind=relicIntro] .relic-candidate summary {cursor:pointer;color:#f2d6a8;font-weight:600}
+.uruk-ui dialog[data-kind=relicIntro] .relic-candidate summary .resident-portrait {
+ display:inline-block;width:30px;height:30px;vertical-align:middle;margin:0 8px;
+}
+.uruk-ui dialog[data-kind=relicIntro] .relic-candidate .relic-start {margin:7px 0 0;padding:8px;text-align:left}
+.uruk-ui dialog[data-kind=relicIntro] .relic-candidate .relic-start h4 {display:none}
+@media(max-width:450px){
+ .uruk-ui dialog[data-kind=help] .intro-art {max-height:150px;object-fit:cover}
+ .uruk-ui dialog .city-tools-register .city-tools-tabs {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .uruk-ui dialog .city-tools-register .city-tools-tabs button {font-size:12px}
+}
+
+@media(max-width:700px){
+ .uruk-ui .miraclebar {padding-top:35px!important}
+ .uruk-ui .miraclebar .miracle-disclosure>.miracle-card {
+  display:flex;flex-direction:row;justify-content:flex-start;align-items:center;text-align:left;
+  padding:8px;gap:6px;min-height:62px;
+ }
+ .uruk-ui .miraclebar .miracle-card>span:last-child {display:block;min-width:0}
+ .uruk-ui .miraclebar .miracle-card strong {font-size:12px;overflow-wrap:anywhere}
+ .uruk-ui .miraclebar .miracle-card small {font-size:10px;line-height:1.25}
+ .uruk-ui .miraclebar .miracle-symbol {flex:none}
+}

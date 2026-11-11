@@ -8,6 +8,10 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  dock.innerHTML=[['build','hammer','Строить'],['people','users','Жители'],['city','buildings','Город'],['miracles','sun','Чудеса'],['menu','list','Меню']].map(([id,image,title])=>`<button type="button" data-uruk-action="${id}"${['build','miracles','menu'].includes(id)?' aria-expanded="false"':''}>${icon(image)}<span>${title}</span></button>`).join('')+'<div class="uruk-transport"></div>';
  body.append(dock);dock.querySelector('.uruk-transport').append(d.querySelector('.time-controls'));
  const menu=d.createElement('section');menu.className='uruk-menu';menu.setAttribute('aria-label','Меню города');menu.innerHTML='<div class="uruk-drawer-heading"><span>ГОРОД И ЕГО ИСТОРИЯ</span><h2>Меню</h2></div>';menu.append(d.querySelector('.management-nav'),d.querySelector('.header-actions'));const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');if(viewOptions)menu.append(viewOptions);body.append(menu);
+ // The management grid already contains these two destinations.
+ for(const id of ['open-saves','open-encyclopedia'])if($(id))$(id).hidden=true;
+ if($('help'))$('help').textContent='Как играть';
+ if($('reset'))$('reset').textContent='Новая игра';
  for(const [key,panel,title]of [['build',d.querySelector('.build-panel'),'Закрыть строительство'],['miracles',d.querySelector('.miraclebar'),'Закрыть чудеса'],['story',d.querySelector('.story-panel'),'Закрыть историю'],['menu',menu,'Закрыть меню']]){
   const closeButton=d.createElement('button');closeButton.type='button';closeButton.className='uruk-close';closeButton.dataset.urukClose=key;closeButton.setAttribute('aria-label',title);closeButton.innerHTML=icon('x');panel.prepend(closeButton);panel.dataset.urukDrawer=key;
  }
