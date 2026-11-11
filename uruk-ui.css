@@ -414,3 +414,8 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 }
 
 .uruk-ui:has(:is(.earth-scene,.rain-scene):not([hidden])) :is(#toast,.game3d-detail-status) {clip-path:inset(50%)}
+
+.uruk-ui dialog[data-kind="civic-order"] .dialog-inner {text-align:left}
+.uruk-ui dialog[data-kind="civic-order"] .dialog-actions {justify-content:flex-start}
+.uruk-ui dialog[data-kind="civic-order"] :is(ol,ul) {padding-inline-start:1.35em;line-height:1.55}
+.uruk-ui dialog[data-kind="civic-order"] li+li {margin-top:5px}

@@ -1,3 +1,4 @@
+import {advanceCivicOrder,civicDayBoundary,finishCivicYear,validateCivicOrder} from './civic-order.js';
 import {advanceCampaignChapter,campaignChapterView,validateCampaignChapter,validateHearthEnding,validateWaterEnding,validateCraftEnding,advanceMonumentLife,validateCityEnding,validateMonumentLife,advanceForeignName,validateForeignName} from './campaign.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {validateInannaDiscovery} from './inanna-discovery.js';
@@ -399,6 +400,8 @@ function settleSeason(s){
  }
  s.drought=Math.max(0,s.drought-1);s.rain=Math.max(0,s.rain-1);for(const k of Object.keys(s.buffs))s.buffs[k]=Math.max(0,s.buffs[k]-1);
  if(s.season===0){
+  const rememberedYear=finishCivicYear(s,s.year-1);
+  if(rememberedYear)log(s,rememberedYear,`Так жители запомнили ${s.year-1}-й год.`,'year');
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');
   if(s.year===3||(!s.droughtSeen&&s.year>=4)){s.drought=3;s.droughtSeen=true;affectResidents(s,{faith:-8,mood:-7});log(s,'На долину опустилась засуха','Нужен полив ячменя: соедини поля с рекой каналами или призови Небесный дождь.','bad');}
   else if(!s.funeral&&s.year%5===0)s.event={id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'};
@@ -407,6 +410,17 @@ function settleSeason(s){
  }
  if(!s.event&&!s.funeral&&!s.festival&&s.tick>=6&&s.season===2){const events=['riverGift','potterVisit','wellRepair','harvestThanks','storyteller'];s.event=createCityEvent(s,events[(s.year-2)%events.length]);}
  syncCitizens(s);snapshotLifeAnalytics(s);check(s);
+}
+function recordCivicDeath(s,citizen){
+ if(s.funeral||recoverCitizenCargo(s,citizen.id)===false)return false;
+ const deceased={id:citizen.id,name:citizenName(citizen.id),x:citizen.x,y:citizen.y};
+ mournResidents(s,[citizen.id]);
+ recordLifeDeath(s,citizen,'violence');
+ s.citizens=s.citizens.filter(c=>c.id!==citizen.id);s.population=s.citizens.length;s.deaths++;
+ syncCitizens(s);
+ startFuneral(s,[deceased],{family:true});
+ snapshotLifeAnalytics(s);
+ return true;
 }
 export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
@@ -420,7 +434,8 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
   advanceSupplyVow(s);
   advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;
-  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  advanceCivicOrder(s,citizen=>recordCivicDeath(s,citizen));
   if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
  if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
@@ -672,7 +687,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
+  if(!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateCampaignChapter(s)||!validateHearthEnding(s)||!validateWaterEnding(s)||!validateCraftEnding(s)||!validateCityEnding(s)||!validateMonumentLife(s)||!validateForeignName(s)||!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}

@@ -1,3 +1,4 @@
+import {newCivicOrder} from './civic-order.js';
 import {COURTYARD_BIRTH_FOOD} from './demography.js';
 import {newInannaDiscovery} from './inanna-discovery.js';
 import {newDepthSupply} from './depth-supply.js';
@@ -26,6 +27,7 @@ export function createNewCity({mode,seed}={}){
  state.demography.birthFoodRule=COURTYARD_BIRTH_FOOD;
  state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
  if(mode==='awakening'){
+  state.civicOrder=newCivicOrder();
   state.fearCrisis={version:1};
   state.rainDiscovery=newRainDiscovery();
   state.blessingDiscovery=newBlessingDiscovery();

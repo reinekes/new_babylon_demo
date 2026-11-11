@@ -5,9 +5,9 @@ import {buildingKey} from './definitions.js';
 import {PROFESSION_NAMES,PROFESSION_IDS,professionForBuilding,professionRole,professionMatchesTask,staffingCandidates,canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js';
 import {builderConsent,inspirationReason,inspirationSuccessChance} from './management.js';
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const groups=[['Основные',['auto','builder','carrier','production']],['Пища и хозяйство',['farmer','gardener','shepherd','dairyman','fisher','hunter','watercarrier']],['Добыча',['lumberjack','clayworker','reedcutter','quarrier']],['Ремёсла',['potter','brewer','weaver','tailor','brickmaker','kilnworker']],['Службы и культура',['healer','musician','priest','scribe']]];
-export function professionOptionsHTML(selected,{recommended,ids=PROFESSION_IDS}={}){
- const allowed=new Set(ids),option=id=>`<option value="${id}"${id===selected?' selected':''}>${escape(PROFESSION_NAMES[id])}</option>`,group=(label,items)=>items.length?`<optgroup label="${label}">${items.map(option).join('')}</optgroup>`:'';
+const groups=[['Основные',['auto','builder','carrier','production']],['Пища и хозяйство',['farmer','gardener','shepherd','dairyman','fisher','hunter','watercarrier']],['Добыча',['lumberjack','clayworker','reedcutter','quarrier']],['Ремёсла',['potter','brewer','weaver','tailor','brickmaker','kilnworker']],['Службы и культура',['healer','musician','priest','scribe','lawmaker']]];
+export function professionOptionsHTML(selected,{recommended,ids=PROFESSION_IDS,lawmaker=false}={}){
+ const allowed=new Set(ids.filter(id=>id!=='lawmaker'||lawmaker)),option=id=>`<option value="${id}"${id===selected?' selected':''}>${escape(PROFESSION_NAMES[id])}</option>`,group=(label,items)=>items.length?`<optgroup label="${label}">${items.map(option).join('')}</optgroup>`:'';
  const primary=allowed.has(recommended)?group('Для этой постройки',[recommended]):'';
  return primary+groups.map(([label,items])=>group(label,items.filter(id=>allowed.has(id)&&id!==recommended))).join('');
 }

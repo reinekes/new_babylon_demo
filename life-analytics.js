@@ -6,7 +6,7 @@ import {displayName,syncCitizenEpithets} from './citizen-epithets.js';
 import {PROFESSION_NAMES,professionRole} from './professions.js';
 
 export const LIFE_HISTORY_LIMIT=160;
-export const LIFE_CAUSE_NAMES={oldAge:'Старость',starvation:'Голод',unknown:'Причина неизвестна'};
+export const LIFE_CAUSE_NAMES={oldAge:'Старость',starvation:'Голод',violence:'Гибель в столкновении',unknown:'Причина неизвестна'};
 const integer=n=>Number.isSafeInteger(n)&&n>=0;
 const finite=(n,min=0,max=1e12)=>Number.isFinite(n)&&n>=min&&n<=max;
 const tick=s=>s.tick||0;
@@ -173,7 +173,7 @@ export function validateLifeAnalytics(s){
   if(!linked&&record.memorial.homeId!==undefined)return false;
   carried.add(m.id);
  }
- let previous=-1,previousRow=null;for(const h of a.history){if(!h||!integer(h.tick)||h.tick<a.startedTick||h.tick>tick(s)||h.tick<=previous||!['population','children','adults','elders','births','deaths'].every(k=>integer(h[k]))||h.children+h.adults+h.elders!==h.population||!h.causes||!Object.keys(LIFE_CAUSE_NAMES).every(k=>integer(h.causes[k]))||Object.values(h.causes).reduce((a,b)=>a+b,0)!==h.deaths||!['health','mood','hunger','thirst','faith'].every(k=>h[k]===null||finite(h[k],0,100)))return false;if(previousRow&&(h.births<previousRow.births||h.deaths<previousRow.deaths||Object.keys(LIFE_CAUSE_NAMES).some(k=>h.causes[k]<previousRow.causes[k])))return false;previous=h.tick;previousRow=h;}
+ let previous=-1,previousRow=null;for(const h of a.history){if(!h||!integer(h.tick)||h.tick<a.startedTick||h.tick>tick(s)||h.tick<=previous||!['population','children','adults','elders','births','deaths'].every(k=>integer(h[k]))||h.children+h.adults+h.elders!==h.population||!h.causes||!Object.keys(LIFE_CAUSE_NAMES).every(k=>integer(k==='violence'?h.causes[k]??0:h.causes[k]))||Object.values(h.causes).reduce((a,b)=>a+b,0)!==h.deaths||!['health','mood','hunger','thirst','faith'].every(k=>h[k]===null||finite(h[k],0,100)))return false;if(previousRow&&(h.births<previousRow.births||h.deaths<previousRow.deaths||Object.keys(LIFE_CAUSE_NAMES).some(k=>(h.causes[k]??0)<(previousRow.causes[k]??0))))return false;previous=h.tick;previousRow=h;}
  return true;
 }
 
@@ -182,7 +182,7 @@ export function lifeAnalytics(s){
  const people=stored.map(p=>{const c=byId.get(p.id),home=c&&homes.get(c.home),work=c&&buildings.get(c.workplace||c.work),naming={...p,...c,name:p.name};return {...p,...epithetRecord(c||p),baseName:p.name,name:displayName(s,naming),...(c?{age:c.age,parents:[...(c.parents||[])],partner:c.partner??null,home:c.home}:{}),alive:!!c,role:c?.role||null,calling:c?.calling||null,professionLabel:c?PROFESSION_NAMES[c.calling&&professionRole(c.calling)===c.role?c.calling:c.role||'auto']||c.role:null,workplace:c?.workplace||c?.work||null,workLabel:work?BUILDINGS[work.type]?.name||work.type:null,phase:c?.phase||null,hunger:c?.hunger??null,health:c?.health??null,mood:c?.mood??null,faith:c?.faith??null,thirst:c?.thirst??null,mealEaten:c?.mealEaten??null,mealRequired:c?mealRation(c):null,homeFood:home?(home.pantry||0):null,homeWater:home?.water??null,workRate:c&&c.age>=16?workRate(c,c.siteDuty||buildings.get(c.work)?.type||c.role):null,missedMeals:c?.missedMeals??null};});
  const ages={children:0,adults:0,elders:0},buckets=Array.from({length:9},(_,i)=>({label:i===8?'80+':`${i*10}–${i*10+9}`,count:0})),causes={oldAge:0,starvation:0,unknown:0};
  for(const c of live){ages[c.age<16?'children':c.age<55?'adults':'elders']++;buckets[Math.min(8,Math.floor((c.age||0)/10))].count++;}
- for(const p of people)if(p.diedTick!==null&&Object.hasOwn(causes,p.cause))causes[p.cause]++;
+ for(const p of people)if(p.diedTick!==null&&Object.hasOwn(LIFE_CAUSE_NAMES,p.cause))causes[p.cause]=(causes[p.cause]||0)+1;
  const average=Object.fromEntries(['age','health','mood','hunger','thirst','faith'].map(k=>{const values=live.map(c=>c[k]).filter(Number.isFinite);return[k,values.length?values.reduce((a,b)=>a+b,0)/values.length:null];}));
  const distribution=(key,limits,labels)=>labels.map((label,i)=>({label,count:live.filter(c=>Number.isFinite(c[key])&&c[key]>=(limits[i-1]??-Infinity)&&c[key]<(limits[i]??Infinity)).length}));
  const distributions={health:distribution('health',[60,85],['Ниже 60%','60–84%','85–100%']),hunger:distribution('hunger',[10,30],['Меньше 10%','10–29%','30% и выше']),thirst:distribution('thirst',[10,30],['Меньше 10%','10–29%','30% и выше']),faith:distribution('faith',[25,50,75],['Меньше 25%','25–49%','50–74%','75–100%'])};

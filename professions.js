@@ -14,7 +14,7 @@ export const PROFESSIONS=Object.freeze({
  musician:entry('Музыкант','production',['musicHouse']),
  fisher:entry('Рыбак','production',['fishing']),hunter:entry('Охотник','production',['hunting']),
  brickmaker:entry('Формовщик кирпича','production',['brickyard']),kilnworker:entry('Обжигальщик','production',['kiln']),
- priest:entry('Жрец','production',['shrine','ziggurat']),scribe:entry('Писец','production',['granary'])
+ priest:entry('Жрец','production',['shrine','ziggurat']),scribe:entry('Писец','production',['granary']),lawmaker:entry('Законодатель','auto')
 });
 export const PROFESSION_IDS=Object.freeze(Object.keys(PROFESSIONS));
 export const PROFESSION_NAMES=Object.freeze(Object.fromEntries(Object.entries(PROFESSIONS).map(([id,p])=>[id,p.name])));
