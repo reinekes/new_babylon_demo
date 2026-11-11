@@ -8,26 +8,6 @@ updated: 2026-11-11
 
 Новый этап «Законы и память города». Порядок работы начинается с нужды и поступков жителей, затем связывает их с законами, последствиями конфликтов и летописью.
 
-## civic-water | Видимый поток и распределение полива
-group: economy
-status: planned
-priority: P2
-depends: civic-supply-map
-sources: canal-flow.js; https://www.metmuseum.org/art/collection/search/324586
-
-### Готово когда
-На двух ветвях видно ограничение потока и результат перераспределения, включая поле, которое уступило свою долю.
-
-## civic-river-stores | Сушёный улов и местная переправа
-group: economy
-status: planned
-priority: P3
-depends: civic-water
-sources: river-trade.js; https://cdli.earth/artifacts/318897
-
-### Готово когда
-Сушёная рыба хранится отдельно, а пробная лодка доставляет один груз между причалами с сохранением груза в пути.
-
 ## ux-new-player-playtest | Наблюдаемый плейтест новых игроков
 group: ux
 status: planned
