@@ -65,6 +65,42 @@ export function courtyardFauna(state){
  });
 }
 
+function createFeedingRipple(B,scene,id){
+ const rings=Array.from({length:2},(_,index)=>{
+  const mesh=B.MeshBuilder.CreateTorus(id+'-feeding-ripple-'+index,{diameter:1,thickness:.035,tessellation:24},scene);
+  const material=new B.StandardMaterial(mesh.name,scene);
+  material.disableLighting=true;
+  material.emissiveColor=new B.Color3(.73,.82,.75);
+  mesh.material=material;
+  mesh.isPickable=false;
+  mesh.setEnabled(false);
+  return mesh;
+ });
+ let start=-Infinity,contact=false;
+ return {
+  update(clock,beak){
+   const touching=beak&&beak.y<=WATER_HEIGHT+.025;
+   if(touching&&!contact){
+    start=clock;
+    for(const mesh of rings)mesh.position.set(beak.x,WATER_HEIGHT+.013,beak.z);
+   }
+   contact=!!touching;
+   for(const [index,mesh] of rings.entries()){
+    const age=clock-start-index*.19;
+    const visible=age>=0&&age<.95;
+    mesh.setEnabled(visible);
+    if(!visible)continue;
+    const progress=age/.95;
+    const size=.095+.63*progress;
+    mesh.scaling.set(size,.08,size);
+    mesh.material.alpha=.44*Math.min(1,age/.07)*(1-progress)**2;
+   }
+  },
+  reset(){start=-Infinity;contact=false;for(const mesh of rings)mesh.setEnabled(false);},
+  dispose(){for(const mesh of rings)mesh.dispose(false,true);}
+ };
+}
+
 export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const farmMaterials=new Map(),assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb'));
  const groundModels=options.includeShoreBirds
@@ -87,8 +123,10 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(id+'-')?g.name.slice(id.length+1):g.name,g);}
   if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
   const rig=shore&&species!=='seagull'?createMallardRig(B,root,species,id):null;
-  let wake;
+  let wake,ripple,beak;
   if(rig){
+   beak=root.getChildTransformNodes().find(node=>/duck Mouth|Beak_nub/.test(node.name));
+   if(beak)ripple=createFeedingRipple(B,scene,id);
    const sides=[-1,1];
    wake=B.MeshBuilder.CreateLineSystem(id+'-wake',{
     lines:sides.map(side=>[[.09,-.12],[.12,-.22],[.18,-.38],[.31,-.65]]
@@ -98,7 +136,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    },scene);
    wake.parent=root;wake.isPickable=false;wake.isVisible=false;
   }
-  return register({root,model,groups,rig,wake,skeletons:copy.skeletons,farm,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
+  return register({root,model,groups,rig,wake,ripple,beak,skeletons:copy.skeletons,farm,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
  function originalSky(index,shared){const root=new B.TransformNode(`ambient-sky-${index}`,scene);root.metadata={ambientId:`ambient-sky-${index}`,ambientSpecies:'sky-bird',sourceMotion:'original procedural wing flaps'};const body=shared.body.createInstance(`ambient-sky-${index}-body`),left=shared.wing.createInstance(`ambient-sky-${index}-left`),right=shared.wing.createInstance(`ambient-sky-${index}-right`);for(const m of [body,left,right])m.parent=root;body.scaling.set(.20,.13,.48);left.position.x=-.1;right.position.x=.1;right.rotation.z=Math.PI;return register({root,model:root,species:'original-sky',index,phase:index*.8,groups:new Map(),wings:[left,right],enabled:true});}
  const templates=[];let skyMaterial;
  if(options.includeSkyBirds!==false&&!assets.has('sky-birds')){
@@ -115,6 +153,9 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    a.root.rotation.y=p.yaw;
    a.model.rotation.set(p.pitch,0,p.roll);
    poseMallardRig(B,a.rig,p);
+   const feeding=p.phase==='feeding'&&a.beak;
+   if(feeding)a.beak.computeWorldMatrix(true);
+   a.ripple?.update(clock,feeding?a.beak.getAbsolutePosition():null);
    a.root.metadata.shorePhase=p.phase;
    a.root.metadata.clip=p.phase==='feeding'?'Feed':p.phase==='swimming'?'Swim':'Walk';
    a.wake.isVisible=p.floating>.38;
@@ -159,7 +200,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const phase=name==='Walk'?a.walkPhase:((t-a.clipClock+a.phase)%duration)/duration;g.goToFrame(g.from+phase*(g.to-g.from));
   Object.assign(a.root.metadata,{clip:name,gaitPhase:a.walkPhase});
  }
- function removeActor(a){farmMaterials.get(a.root)?.dispose();farmMaterials.delete(a.root);for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);}
+ function removeActor(a){a.ripple?.dispose();farmMaterials.get(a.root)?.dispose();farmMaterials.delete(a.root);for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);}
  function update(state,dt=1/60,{paused=false,speed=1,ploughPoses}={}){
   if(disposed)return;
   ploughs?.update(state,ploughPoses);
@@ -175,6 +216,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    route=mallardRoute(state,p=>ambientDryPoint(state,p.x,p.y,-Infinity));
    for(const a of actors)if(a.rig){
     a.root.metadata.shoreFocus=route?.focus;
+    a.ripple?.reset();
     if(a.clip){for(const g of a.groups.values()){g.reset();g.stop();}a.clip=null;}
    }
   }

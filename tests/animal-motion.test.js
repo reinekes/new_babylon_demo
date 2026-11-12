@@ -17,7 +17,7 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   assert.equal(female.metadata.clip,'Walk');
   assert.ok(female.isEnabled()&&ambientDryPoint(state,female.position.x/6,female.position.z/6));
   assert.ok(B.Vector3.Distance(female.position,mallard.position)>.8);
-  const femaleSkin=skin(female),pair=[mallard,female],shorePhases=pair.map(()=>new Set()),returned=new Set(),dipped=new Set();
+  const femaleSkin=skin(female),pair=[mallard,female],shorePhases=pair.map(()=>new Set()),returned=new Set(),dipped=new Set(),ripples=new Set();
   for(const bird of pair){
    const mesh=bird.getChildMeshes().find(m=>m.skeleton),vertices=mesh.getPositionData(true,true),matrix=mesh.computeWorldMatrix(true);
    let low=Infinity,high=-Infinity;
@@ -43,6 +43,12 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
      beak.computeWorldMatrix(true);
      if(beak.getAbsolutePosition().y<=WATER_HEIGHT+.025)dipped.add(bird);
     }
+    const ripple=scene.getMeshByName(bird.name+'-feeding-ripple-0');
+    if(ripple.isEnabled()&&ripple.material.alpha>0){
+     assert.ok(dipped.has(bird));
+     assert.ok(Math.abs(ripple.position.y-WATER_HEIGHT)<.02);
+     ripples.add(bird);
+    }
     if(phase==='swimming'||phase==='feeding'){
      assert.ok(waterDepth(bird.position.x/6,bird.position.z/6,state)>.15);
      assert.ok(bird.position.y<WATER_HEIGHT-.08);
@@ -54,6 +60,7 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   }
   assert.equal(returned.size,2);
   assert.equal(dipped.size,2);
+  assert.equal(ripples.size,2);
   for(const phases of shorePhases)for(const phase of ['walking','wading','feeding','swimming'])assert.ok(phases.has(phase),phase);
   assert.ok(skin(female).some((value,index)=>Math.abs(value-femaleSkin[index])>.001));
   assert.ok(B.Vector3.Distance(seagull.position,firstFlight)>1);
