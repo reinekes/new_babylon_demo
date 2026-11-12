@@ -1410,12 +1410,13 @@ function civicMemoryHTML(id){
  const entries=state.civicOrder?.history.filter(q=>q.person===id||q.guard===id||q.restitution?.author===id).slice(0,5)||[];
  return entries.length?`<section><b>Записи общины</b><ul>${entries.map(q=>`<li><button type="button" class="resident-link" data-civic-memory="${civicCaseKey(q)}">${civicOutcomes[q.outcome]} · год ${q.year}</button></li>`).join('')}</ul></section>`:'';
 }
-function showCivicOrder(selected){
+function showCivicOrder(selected,year){
  const civic=state.civicOrder;
  if(!civic)return;
  const law=civic.law,incident=civic.case,authors=state.citizens.filter(c=>c.age>=16&&c.calling==='lawmaker');
  const title=civicCityEpithet(state);
  const selectedEntry=civic.history.find(q=>civicCaseKey(q)===selected);
+ const selectedYear=civic.years.find(q=>q.year===year);
  const entries=selectedEntry?[selectedEntry]:civic.history.slice(0,10);
  const storeButton=key=>key&&state.buildings.some(b=>buildingKey(b)===key)?`<button type="button" data-civic-store="${esc(key)}">Склад ${esc(key)}</button>`:'';
  const routeButton=id=>state.district?.jobs.some(job=>job.id===id&&job.delivered+(job.cancelled||0)<job.amount-1e-7)?`<button type="button" data-civic-job="${id}">Маршрут груза</button>`:'';
@@ -1427,17 +1428,27 @@ function showCivicOrder(selected){
  openDialog('civic-order',`<button type="button" class="management-close" id="close-civic-order" aria-label="Закрыть свод законов">×</button>
  <span class="eyebrow">ОБЩИНА И ЛЕТОПИСЬ</span><h2>${esc(title||'Законы города')}</h2>
  <details class="food-forecast"><summary>Судебные дела в эпоху III династии Ура</summary><p>Таблички конца III тысячелетия до н. э. сохраняют записи отдельных тяжб и судебных решений. Царские сборники законов составляют отдельный вид источников. Просьбы дворов, игровой штраф и порядок возмещения придуманы для этой долины. <a href="https://cdli.earth/articles/cdln/2015-6" target="_blank" rel="noopener">Исследование судебной таблички Ур III</a></p></details>
- <section class="food-forecast"><h3>Просьбы дворов</h3>${incident?`<p>${resident(incident.person)} просит зерно для двора ${esc(incident.home)}.</p>${incident.guard!==undefined?`<p>${resident(incident.person)} и ${resident(incident.guard)} спорят у склада ${esc(incident.source)}.</p><button type="button" id="reconcile-civic">Примирить стороны</button>`:''}<div class="dialog-actions"><button type="button" class="primary" id="send-civic-aid"${civicAidPending(state)?' disabled':''}>${civicAidPending(state)?'Помощь в пути':'Заказать доставку зерна'}</button><button type="button" id="open-civic-home">Путь помощи</button>${routeButton(incident.aid)}</div>`:'<p>Открытых просьб пока нет.</p>'}</section>
+ ${selectedYear?yearSummary(selectedYear):''}
+ <section class="food-forecast"><h3>Просьбы дворов</h3>${incident?`<p>${resident(incident.person)} просит зерно для двора ${esc(incident.home)}.</p>${incident.guard!==undefined?`<p>${resident(incident.person)} и ${resident(incident.guard)} спорят у склада ${storeButton(incident.source)||esc(incident.source)}.</p><button type="button" id="reconcile-civic">Примирить стороны</button>`:''}<div class="dialog-actions"><button type="button" class="primary" id="send-civic-aid"${civicAidPending(state)?' disabled':''}>${civicAidPending(state)?'Помощь в пути':'Заказать доставку зерна'}</button><button type="button" id="open-civic-home">Путь помощи</button>${storeButton(state.district?.jobs.find(job=>job.id===incident.aid)?.source)}${routeButton(incident.aid)}</div>`:'<p>Открытых просьб пока нет.</p>'}</section>
  <section class="food-forecast"><h3>Глиняная табличка</h3>
  ${law?`<p>Записал ${esc(law.name)} · год ${law.year}.</p><ol><li>Если двору не хватает зерна, он может попросить общину о помощи.</li><li>Доверяющие своду ждут помощь на день дольше. Из связанного склада заказывают две меры зерна, если есть свободный запас.</li><li>Записанную кражу можно возместить из свободного запаса другого склада.</li></ol>`:'<p>Вдохнови взрослого призванием «Законодатель» в карточке жителя. Он сможет записать свод за 1 глину.</p>'}
  ${authors.filter(c=>c.id!==law?.author).map(c=>{const reason=civicLawReason(state,c.id);return `<p>${esc(displayName(state,c))} · <button type="button" data-publish-law="${c.id}"${reason?' disabled':''}>Записать свод · 1 глина</button>${reason?` <small>${esc(reason)}</small>`:''}</p>`;}).join('')}</section>
 
  <section class="food-forecast"><h3>${selectedEntry?'Запись общины':'Записи о поступках'}</h3>${entries.length?`<ul>${entries.map(caseHTML).join('')}</ul>`:'<p>Записей пока нет.</p>'}
  ${selectedEntry?'<button type="button" id="all-civic-cases">Все записи</button>':''}
- ${civic.years.length?`<h3>Имена лет</h3><ul>${civic.years.map(q=>{
- const events=civic.history.filter(entry=>entry.year===q.year).slice(0,3);
- return `<li><b>${q.year} · ${esc(q.title)}</b>${events.length?`<ul>${events.map(entry=>`<li>${esc(civicOutcomes[entry.outcome])} · ${resident(entry.person)} · <button type="button" data-civic-year-home="${esc(entry.home)}">Двор ${esc(entry.home)}</button></li>`).join('')}</ul>`:''}</li>`;
- }).join('')}</ul>`:''}</section>`);
+ ${!selectedYear&&civic.years.length?`<h3>Имена лет</h3><ul>${civic.years.map(q=>`<li><button type="button" class="resident-link" data-civic-year="${q.year}">${q.year} · ${esc(q.title)}</button></li>`).join('')}</ul>`:''}</section>`);
+ function yearSummary(q){
+  const events=civic.history.filter(entry=>entry.year===q.year);
+  const outcome=q.title.includes('кровь')?'killing':q.title.includes('уносили')?'theft':q.title.includes('помощь')?'help':null;
+  const cause=events.find(entry=>entry.outcome===outcome);
+  const ordered=(cause?[cause,...events.filter(entry=>entry!==cause)]:events).slice(0,3);
+  const lawCause=!outcome&&civic.law?.year===q.year?civic.law:null;
+  return `<section class="food-forecast"><span class="eyebrow">ИТОГ ${q.year}-ГО ГОДА</span><h3>${esc(q.title)}</h3>
+  ${lawCause?`<p>Причина имени: ${resident(lawCause.author)} записал свод законов.</p>`:!cause?`<p>Имя сохранено в летописи. Первичная запись больше недоступна.</p>`:''}
+  ${ordered.length?`<ol>${ordered.map(entry=>`<li>${entry===cause?'<b>Причина имени:</b> ':''}${esc(civicOutcomes[entry.outcome])} · ${resident(entry.person)} · <button type="button" data-civic-year-home="${esc(entry.home)}">Двор ${esc(entry.home)}</button></li>`).join('')}</ol>`:''}
+  <p><a href="https://cdli.earth/articles/cdlj/2013-1" target="_blank" rel="noopener">Имена лет в Ур III</a> · выбор по событиям дворов — правило игры.</p>
+  <button type="button" id="all-civic-cases">Все записи</button></section>`;
+ }
  $('close-civic-order').onclick=closeDialog;
  function inspectCivicBuilding(b){
   closeDialog();clearSupplyRoute();if(selection)choose(selection);
@@ -1454,6 +1465,7 @@ function showCivicOrder(selected){
   inspectCivicBuilding(route.home);drawSupplyRoute(buildingKey(route.home),'civic',route,route.source);
  };
 
+ for(const button of dialog.querySelectorAll('[data-civic-year]'))button.onclick=()=>showCivicOrder(undefined,Number(button.dataset.civicYear));
  $('all-civic-cases')?.addEventListener('click',()=>showCivicOrder());
  for(const button of dialog.querySelectorAll('[data-civic-year-home]')){
   button.disabled=!state.buildings.some(b=>b.type==='house'&&buildingKey(b)===button.dataset.civicYearHome);
@@ -1473,7 +1485,17 @@ function showCivicOrder(selected){
 }
 for(const id of ['open-civic-order','civic-story'])$(id)?.addEventListener('click',showCivicOrder);
 
+$('civic-year-review')?.addEventListener('click',()=>showCivicOrder(undefined,state.civicOrder?.years[0]?.year));
 function update(){
+ const yearReview=$('civic-year-review'),lastYear=state.civicOrder?.years[0];
+ if(yearReview){
+  yearReview.hidden=!lastYear;
+  if(lastYear){
+   const label=`Итог ${lastYear.year}-го года`;
+   if(yearReview.textContent!==label)yearReview.textContent=label;
+   yearReview.title=lastYear.title;
+  }
+ }
  urukUI?.refresh(state);
  const civicMenu=$('open-civic-order'),civicStory=$('civic-story');
  if(civicMenu&&civicStory){
