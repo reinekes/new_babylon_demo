@@ -6,7 +6,7 @@ import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength} from '../world
 import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
-import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-swim-20261112';
+import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-feed-20261112';
 import {WATER_HEIGHT} from './water.js';
 import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
@@ -116,10 +116,10 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    a.model.rotation.set(p.pitch,0,p.roll);
    poseMallardRig(B,a.rig,p);
    a.root.metadata.shorePhase=p.phase;
-   a.root.metadata.clip=p.phase==='swimming'?'Swim':'Walk';
+   a.root.metadata.clip=p.phase==='feeding'?'Feed':p.phase==='swimming'?'Swim':'Walk';
    a.wake.isVisible=p.floating>.38;
    a.wake.position.y=WATER_HEIGHT+.012-p.y;
-   a.wake.scaling.z=.62+.38*p.floating;
+   a.wake.scaling.z=(.62+.38*p.floating)*(1-.45*p.dip);
    return;
   }
   if(a.wake){a.wake.isVisible=false;a.model.rotation.setAll(0);}

@@ -9,6 +9,8 @@ const clamp=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{const t=clamp(x);return t*t*(3-2*t);};
 const mix=(a,b,t)=>a+(b-a)*t;
 const samples=96;
+const feedingDuration=2;
+const feedingDelay=.9;
 
 // Follow a curved strip of shoreline. Validate the entire loop before using it.
 export function mallardRoute(state,isClear){
@@ -36,14 +38,20 @@ export function mallardRoute(state,isClear){
   }
   if(route.length===samples+1){
    const middle=riverPoint(along,state,side*1.19),water=riverPoint(along,state);
-   return {route,time,distance,focus:{x:middle.x,z:middle.y,angle:Math.atan2(water.y-middle.y,water.x-middle.x)}};
+   const feedingAt=route.find(point=>point.depth>.25)?.time;
+   return {route,time,distance,feedingAt,focus:{x:middle.x,z:middle.y,angle:Math.atan2(water.y-middle.y,water.x-middle.x)}};
   }
  }
  return null;
 }
 
 export function mallardPose(plan,clock){
- const t=((clock%plan.time)+plan.time)%plan.time;
+ const cycle=plan.time+(plan.feedingAt===undefined?0:feedingDelay);
+ const elapsed=((clock%cycle)+cycle)%cycle;
+ const progress=plan.feedingAt===undefined?0:clamp((elapsed-plan.feedingAt)/feedingDuration);
+ const t=elapsed-feedingDelay*smooth(progress);
+ const dip=Math.sin(Math.PI*progress)**2;
+ const feeding=progress>0&&progress<1;
  const {route}=plan;
  let low=0,high=samples;
  while(high-low>1){const mid=(low+high)>>1;if(route[mid].time<=t)low=mid;else high=mid;}
@@ -58,12 +66,16 @@ export function mallardPose(plan,clock){
   x:mix(a.x,b.x,f)*TILE,z:mix(a.z,b.z,f)*TILE,
   y:mix(mix(a.y,b.y,f),WATER_HEIGHT-.18,floating)+bob,
   yaw:Math.atan2(mix(b.x-prev.x,next.x-a.x,f),mix(b.z-prev.z,next.z-a.z,f)),
-  pitch:mix(.035*Math.sin(gait*TAU*2),.025*Math.sin(paddle*TAU*2),floating),
+  pitch:mix(.035*Math.sin(gait*TAU*2),.025*Math.sin(paddle*TAU*2),floating)+.15*dip,
   roll:mix(.075*Math.sin(gait*TAU),.028*Math.sin(paddle*TAU),floating),
-  floating,gait,paddle,phase:depth>.195?'swimming':depth>.012?'wading':'walking'
+  floating,gait,paddle,dip,phase:feeding?'feeding':depth>.195?'swimming':depth>.012?'wading':'walking'
  };
 }
 
+const necks={
+ mallard:['duck_Neck1_bone_017','duck_Head_bone_020'],
+ 'mallard-female':['duck Neck','duck Head']
+};
 const joints={
  mallard:[
   ['duck_l_Femur_bone_010','duck_l_Tibia_bone_011','duck_l_Metatarsus_bone_00','duck_l_Ankle_bone_012'],
@@ -79,16 +91,24 @@ const joints={
 // models have different bone orientations but share the same gait timing.
 export function createMallardRig(B,root,species,id){
  const nodes=new Map(root.getChildTransformNodes().map(node=>[node.name.slice(id.length+1),node]));
- return joints[species].map(leg=>leg.map(name=>{
+ const joint=name=>{
   const node=nodes.get(name);
   if(!node?.rotationQuaternion)return null;
-  const axis=B.Vector3.TransformNormal(B.Axis.X,node.computeWorldMatrix(true).clone().invert()).normalize();
-  return {node,axis,rest:node.rotationQuaternion.clone(),rotation:B.Quaternion.Identity()};
- }));
+  const world=node.computeWorldMatrix(true);
+  const axis=B.Vector3.TransformNormal(B.Axis.X,world.clone().invert()).normalize();
+  return {node,axis,handedness:Math.sign(world.determinant()),rest:node.rotationQuaternion.clone(),rotation:B.Quaternion.Identity()};
+ };
+ return {legs:joints[species].map(leg=>leg.map(joint)),neck:necks[species].map(joint)};
 }
 
 export function poseMallardRig(B,rig,p){
- for(let side=0;side<rig.length;side++){
+ const rotate=(joint,angle)=>{
+  if(!joint)return;
+  B.Quaternion.RotationAxisToRef(joint.axis,angle,joint.rotation);
+  joint.rest.multiplyToRef(joint.rotation,joint.node.rotationQuaternion);
+ };
+ for(const [index,joint] of rig.neck.entries())if(joint)rotate(joint,joint.handedness*p.dip*(index===0?.64:.32));
+ for(let side=0;side<rig.legs.length;side++){
   const gait=(p.gait+side*.5)%1,paddle=(p.paddle+side*.5)%1;
   const swing=clamp((gait-.58)/.42),lift=Math.sin(swing*Math.PI);
   const stride=gait<.58?mix(-.43,.43,gait/.58):mix(.43,-.43,smooth(swing));
@@ -96,10 +116,8 @@ export function poseMallardRig(B,rig,p){
   const stroke=paddle<.46?mix(-.46,.58,paddle/.46):mix(.58,-.46,smooth(recovery));
   const walk=[stride,-.58*lift,.35*lift-.35*stride,.21*lift];
   const swim=[.18+stroke,-.22-.58*fold,.1+.45*fold,-.3*fold];
-  for(const [index,joint] of rig[side].entries()){
-   if(!joint)continue;
-   B.Quaternion.RotationAxisToRef(joint.axis,mix(walk[index],swim[index],p.floating),joint.rotation);
-   joint.rest.multiplyToRef(joint.rotation,joint.node.rotationQuaternion);
+  for(const [index,joint] of rig.legs[side].entries()){
+   rotate(joint,mix(walk[index],swim[index]*(1-.55*p.dip),p.floating));
   }
  }
 }

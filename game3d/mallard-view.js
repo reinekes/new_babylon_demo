@@ -44,6 +44,6 @@ if(renderer.mode==='3d'){
   pause.onclick=()=>{paused=!paused;pause.textContent=paused?'Продолжить':'Пауза';};
   focus.disabled=pause.disabled=false;
   paused=false;
-  status.textContent='Селезень и самка · прогулка и плавание';
+  status.textContent='Селезень и самка · прогулка, кормление и плавание';
  }else status.textContent='Кряквы на этом берегу недоступны.';
 }else status.textContent='Для просмотра берега нужен WebGL.';
