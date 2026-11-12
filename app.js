@@ -501,11 +501,32 @@ function drawSupplyRoute(key,resource,route,source=null){
  renderer.supplyRoute=route.points;
  renderer.setSupplyRoute?.(route.points);
 }
+function updateRationScene(){
+ const scene=shownSupplyRoute;
+ if(!scene?.following||scene.resource!=='food'||scene.delivered)return;
+ const home=state.buildings.find(b=>buildingKey(b)===scene.key);
+ if(!home)return;
+ const receipt=home.lastRation;
+ if(receipt&&receipt!==scene.startReceipt){
+  scene.delivered=receipt;
+  scene.route={...scene.route,status:'Доставка завершена',amount:0,courier:receipt.carrier,points:[]};
+  renderer.setSupplyRoute?.(null);
+  renderer.supplyRoute=null;
+  return;
+ }
+ const route=householdSupplyRoute(state,scene.key,'food');
+ if(!route)return;
+ scene.route=route;
+ scene.source=route.source&&state.buildings.find(b=>buildingKey(b)===route.source);
+ renderer.supplyRoute=route.points;
+ renderer.setSupplyRoute?.(route.points);
+}
 function showHouseholdRoute(b,resource){
  const key=buildingKey(b),route=householdSupplyRoute(state,key,resource);
  if(!route)return;
  const source=route.source&&state.buildings.find(b=>buildingKey(b)===route.source);
  drawSupplyRoute(key,resource,route,source);
+ if(resource==='food'){shownSupplyRoute.following=true;shownSupplyRoute.startReceipt=b.lastRation;}
  renderHousehold(b);
 }
 function showSupplyHome(key,tab='food'){clearSupplyRoute();const b=state.buildings.find(b=>b.type==='house'&&(buildingKey(b)===key||`${b.x},${b.y}`===key));if(!b)return false;const {x,y}=b;closeDialog();if(selection)choose(selection);roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');clearRoadRoute();inspected={x,y};householdTab=tab;renderer.focusOn(x,y);detail('house',false,b);$('city').scrollIntoView({block:'center'});return true;}
@@ -995,11 +1016,17 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
  const resource=householdTab==='food'||householdTab==='water'?householdTab:null;
  const shown=shownSupplyRoute?.key===buildingKey(b)&&shownSupplyRoute.resource===resource?shownSupplyRoute:null;
  const receipt=b.lastRation,rationOpen=panel.querySelector('[data-home-ration]')?.open;
+ const liveRation=shown?.following&&resource==='food'?shown:null;
+ const rationStage=liveRation?.delivered
+  ?h.dining?'Семья ужинает':'Еда доставлена во двор'
+  :liveRation?.route.amount>0?'Еда получена и в пути'
+  :liveRation?.route.courier!==undefined?'Носильщик идёт за едой':'Склад и путь к двору';
+ const rationScene=liveRation?`<section class="house-food" aria-label="Рейс за едой"><b>${rationStage}</b>${liveRation.delivered?`<p>${resident(liveRation.delivered.carrier)} принёс ${foodAmount(liveRation.delivered.amount)} ед. еды.</p>`:''}<p>Склад → выдача → дорога → запас двора → ужин</p></section>`:'';
  const rationNote=resource==='food'?`<details class="house-food" data-home-ration><summary>Выдача еды и ужин</summary>${receipt?`<p>Последняя доставка · ${Math.floor(receipt.time/60)+1}-й день города · ${foodAmount(receipt.amount)} ед. еды · ${resident(receipt.carrier)}${receipt.source?` · отправление ${esc(receipt.source)}`:''}.</p>`:'<p>Первая доставка появится здесь после прибытия груза.</p>'}<p>Ужин семьи идёт с 20:00 до 06:00. Домашний запас ${foodAmount(h.food)} ед.</p><p>Табличка Ур III записывает пайки гонцов. В этой долине запись показывает доставку во двор. <a href="https://cdli.earth/cdli-tablet/549" target="_blank" rel="noopener">Табличка в CDLI</a></p></details>`:'';
  const routeControls=resource?`<section class="house-food" aria-label="Путь снабжения"><button type="button" data-house-supply-route>${shown?'Обновить путь':'Показать путь доставки'}</button>
  ${shown?` <button type="button" data-hide-house-route>Скрыть</button><p>${esc(shown.route.status)}${shown.route.amount>0?` · ${foodAmount(shown.route.amount)} ед.`:''}${shown.route.courier!==undefined?` · ${esc(displayName(state,shown.route.courier))}`:''}</p>${shown.source?`<button type="button" data-open-route-source>Открыть источник · ${esc(buildingDefinition(state,shown.source.type)?.name||'Склад')} ${esc(buildingKey(shown.source))}</button>`:''}`:''}</section>`:'';
 
- if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}${routeControls}${rationNote}</div>`)){
+ if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}${routeControls}${rationScene}${rationNote}</div>`)){
  if(rationOpen&&panel.querySelector('[data-home-ration]'))panel.querySelector('[data-home-ration]').open=true;
  panel.querySelector('[data-house-supply-route]')?.addEventListener('click',()=>showHouseholdRoute(b,resource));
  panel.querySelector('[data-hide-house-route]')?.addEventListener('click',()=>{clearSupplyRoute();renderHousehold(b);});
@@ -1517,7 +1544,7 @@ function update(){
  $('day-cycle').setAttribute('aria-label',`${clock.label} ${clockText(state.simTime)}. ${calendar.monthName}, день ${calendar.day}. Дождаться ${isWorkday(state.simTime)?'ужина':'утра'}. Время и хозяйство действительно продвинутся.`);$('day-cycle').disabled=state.lost&&!state.funeral||!!state.event||ceremonyActive(state);
  $('street-life').textContent=state.funeral?'Все жители провожают умерших · работы и доставки приостановлены':`Строят ${stats.builders} · доставляют на стройки ${stats.carriers??0} · с рынка ${marketPorters} · между складами ${quarterPorters} · на работе ${stats.working} · с грузом ${stats.carrying} · дома ${stats.atHome}`;
  setHTML($('delivery-log'),state.lastDelivery?`${resident(state.lastDelivery.citizen)} ${state.lastDelivery.source==='market'?'доставил покупку':'доставил'}: ${esc(resourceText(state.lastDelivery.cargo))}`:'Ресурсы поступают, когда груз доходит до склада');
- $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateDetail();renderManagement();renderSupply();refreshCityOverview();refreshLifeAnalytics();renderFestival();for(const el of document.querySelectorAll('[data-cost]'))setHTML(el,costs(BUILDINGS[el.dataset.cost]));$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',state.trade.caravan?.phase==='trading');$('open-trade').title=marketStatus(state);
+ $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateRationScene();updateDetail();renderManagement();renderSupply();refreshCityOverview();refreshLifeAnalytics();renderFestival();for(const el of document.querySelectorAll('[data-cost]'))setHTML(el,costs(BUILDINGS[el.dataset.cost]));$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',state.trade.caravan?.phase==='trading');$('open-trade').title=marketStatus(state);
 }
 function openDialog(kind,html){
  if(switchingCity)citySwitchRevision++;
