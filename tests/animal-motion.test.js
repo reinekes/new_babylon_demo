@@ -11,6 +11,10 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   assert.ok(!view.roots().some(r=>r.metadata.ambientSpecies==='kingfisher'));
   const pig=view.roots().find(r=>r.metadata.ambientSpecies==='yard-pig');
   assert.ok(view.hasYardPig&&pig.isEnabled());
+  const companion=view.roots().find(r=>r.metadata.ambientId==='ambient-yard-pig-1');
+  assert.ok(companion.isEnabled()&&ambientDryPoint(state,companion.position.x/6,companion.position.z/6));
+  assert.ok(B.Vector3.Distance(pig.position,companion.position)>1.8);
+  assert.equal(companion.metadata.clip,'Animation');
   assert.equal(pig.metadata.clip,'Animation');
   assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
   const pigPosition=pig.position.clone(),pigPose=snap(pig);
