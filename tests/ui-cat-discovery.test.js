@@ -60,7 +60,7 @@ test('arrival card previews the courtyard and exact provisions, then clears the 
  dom.window.close();
 });
 test('the optional fishing story stays closed until chosen and keeps its state when faith changes',()=>{
- const {s}=fixture();s.resources.faith=1;
+ const {s,c}=fixture();s.resources.faith=1;
  const dom=new JSDOM('<main></main>'),root=dom.window.document.querySelector('main'),builds=[];
  const controls=createGodhoodControls({root,getState:()=>s,document:dom.window.document,onBuild:type=>builds.push(type)});
  let side=root.querySelector('[data-awakening-side-story]');
@@ -68,6 +68,11 @@ test('the optional fishing story stays closed until chosen and keeps its state w
  assert.ok(root.querySelector('[data-first-builder]'));
  side.open=true;s.resources.faith=0;controls.refresh();
  side=root.querySelector('[data-awakening-side-story]');assert.equal(side.open,true);
+ assert.equal(side.querySelector('[data-awakening-build="fishing"]').disabled,true);
+ Object.assign(c,{role:'builder',calling:'builder',builderSkill:{projects:0,level:1}});
+ controls.refresh();
+ side=root.querySelector('[data-awakening-side-story]');
+ assert.equal(side.open,true);
  side.querySelector('[data-awakening-build="fishing"]').click();assert.deepEqual(builds,['fishing']);
  s.catDiscovery.phase='offering';controls.refresh();
  side=root.querySelector('[data-awakening-side-story]');assert.equal(side.open,true);assert.ok(side.querySelector('[data-cat-focus]'));
