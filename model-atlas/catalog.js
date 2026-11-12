@@ -88,7 +88,7 @@ export function makeCatalog(index, profile) {
   };
   rows.push(row('animals','Змея','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'snakes'})));
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
-  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Водяная черепаха','Игровая геометрия']});
+  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия']});
   for (const [species,[title,label]] of Object.entries(wildlife)) {
     rows.push(row(species==='bird'?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));
   }

@@ -55,17 +55,35 @@ export function createWildlife(B,scene,meshes=[]){
  }
  function buildTurtle(c){
   const root=node(`wildlife-${c.id}`),body=node(`${c.id}-shell-pivot`,root);
-  const shell=material('turtle-shell','#53513b'),edge=material('turtle-shell-edge','#827959'),skin=material('turtle-skin','#666949');
-  ball('turtle:shell-edge',body,edge,0,.11,0,.38,.10,.54);
-  ball('turtle:carapace',body,shell,0,.16,-.015,.36,.18,.50);
-  const head=ball('turtle:head',body,skin,0,.095,.285,.115,.083,.16);
-  for(const side of [-1,1])ball('turtle:eye',head,black,side*.39,.19,.29,.14,.15,.15);
+  const shell=material('turtle-shell','#51513a'),edge=material('turtle-shell-edge','#77745a'),skin=material('turtle-skin','#68694f');
+  ball('turtle:shell-edge',body,edge,0,.105,-.025,.385,.051,.49);
+  ball('turtle:carapace',body,shell,0,.12,-.035,.353,.104,.465);
+  ball('turtle:plastron',body,edge,0,.08,-.032,.307,.066,.402);
+  const head=node(c.id+'-neck',body,0,.092,.14);
+  part('turtle:neck-and-head',head,skin,name=>loft(name,[
+   [-.025,0,.036,.034],[.025,.002,.033,.026],[.075,.008,.027,.023],
+   [.124,.014,.033,.029],[.153,.016,.028,.023],[.172,.014,.016,.014],
+   [.197,.013,.009,.009],[.204,.012,.007,.007]
+  ]));
+  for(const side of [-1,1]){
+   ball('turtle:eye',head,black,side*.025,.036,.143,.012,.013,.012);
+   ball('turtle:nostril',head,black,side*.004,.014,.204,.003,.004,.003);
+  }
+  tube('turtle:tail',body,skin,[[0,.086,-.207],[.006,.069,-.268],[.012,.055,-.302]],.022);
   const feet=[];
   for(const side of [-1,1])for(const end of [-1,1]){
-   const foot=ball('turtle:foot',body,skin,side*.18,.035,end*.155,.15,.055,.09);
+   const foot=node(c.id+'-limb-'+side+'-'+end,body,side*.111,.073,end*.134);
+   const leg=ball('turtle:leg',foot,skin,side*.038,-.015,0,.124,.051,.069);
+   leg.rotation.z=-side*.32;
+   const web=ball('turtle:web',foot,skin,side*.096,-.044,.017,.081,.031,.085);
+   web.rotation.y=side*.36;
+   for(let digit=-1;digit<=1;digit++){
+    const claw=ball('turtle:claw',foot,edge,side*.095+digit*.017,-.046,.052-Math.abs(digit)*.009,.007,.008,.025);
+    claw.rotation.y=side*.32+digit*.21;
+   }
    feet.push({foot,side,end});
   }
-  return {root,body,feet,d:{turtle:true,stride:.18},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
+  return {root,body,head,feet,d:{turtle:true,stride:.18},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
  }
  function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
   const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
@@ -157,7 +175,13 @@ export function createWildlife(B,scene,meshes=[]){
     a.move=0;continue;
    }
    if(d.turtle){
-    for(const {foot,side,end} of a.feet)foot.rotation.y=Math.sin(a.gait+side*end*Math.PI/2)*.48*a.move;
+    for(const {foot,side,end} of a.feet){
+     const step=Math.sin(a.gait+side*end*Math.PI/2);
+     foot.rotation.y=step*.43*a.move;
+     foot.position.y=.073+Math.max(0,step)*.018*a.move;
+    }
+    a.head.rotation.y=Math.sin(t*.9)*.16*(1-a.move);
+    a.head.position.z=.14+Math.sin(t*1.7)*.012;
     continue;
    }
    if(d.fish){
