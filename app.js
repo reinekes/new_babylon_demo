@@ -670,10 +670,17 @@ const buildingHistory={
  house:['Дворы и дома Ура','Раскопки сохранили планы домов и нижние части стен. Высота помещений и облик крыш в игре реконструированы.','https://www.bisi.ac.uk/wp-content/uploads/Ur.pdf'],
  field:['Посев и жатва','Хозяйственные документы III тысячелетия до н. э. учитывают труд и урожай. Игровой календарь сжимает работы в несколько дней.','https://isac.uchicago.edu/sites/default/files/uploads/shared/docs/Publications/nn232.pdf'],
  harbor:['Гавань Абу-Тбейры','Раскопки показывают связь поселения второй половины III тысячелетия до н. э. с водными путями. Размеры пристани и рейсы долины реконструированы для игры.','https://www.uniroma1.it/en/node/40643'],
+ cowshed:['Доение в Телль-эль-Убейде','Храмовый фриз середины III тысячелетия до н. э. изображает доение. Устройство двора и количество молока выбраны для игры.','https://openresearch-repository.anu.edu.au/entities/anuarchivesitem/25795d6e-0710-48b1-8470-1b00f142f9ae/full'],
+ sheepfold:['Стада в учёте Ур III','В конце III тысячелетия до н. э. писцы различали взрослых животных и молодняк. Размеры загона, нормы выпаса и сроки роста выбраны для игры.','https://cdli.earth/articles/cdlb/2014-5'],
+ boat:['Лодочник с шестом из Ура','Фрагмент рельефа начала III тысячелетия до н. э. показывает человека с поднятым шестом. Музей допускает, что он ведёт лодку. Груз и ход лодок в долине смоделированы для игры.','https://collections.penn.museum/collections/object/151248'],
+ festival:['Лира из Ура','Лира с головой быка найдена в царском некрополе Ура и датируется примерно 2450 г. до н. э. Порядок «Ночи огней» и мелодия созданы для игры.','https://www.pennmuseum.org/collections/object/9347'],
  shrine:['Кирпич Ур-Наммы','Надпись из Ниппура, около 2112–2095 гг. до н. э., упоминает строительство храма Энлиля. Вид и развитие игрового святилища условны.','https://www.metmuseum.org/art/collection/search/324915']
 };
 function buildingHistoryHTML(type){
- const note=buildingHistory[type];
+ if(type==='harbor')return historyNoteHTML(buildingHistory.harbor)+historyNoteHTML(buildingHistory.boat);
+ return historyNoteHTML(buildingHistory[type]);
+}
+function historyNoteHTML(note){
  if(!note)return '';
  const [title,body,url]=note;
  return `<details class="map-card-more"><summary>${title}</summary><p>${body}</p><a href="${url}" target="_blank" rel="noopener">Исторический источник</a></details>`;
@@ -1247,7 +1254,7 @@ function updateTradeRow(k){
  for(const side of ['buy','sell']){const b=row.querySelector(`[data-trade="${side}"]`),reason=tradeReason(state,k,side,amount);b.disabled=!!reason;b.title=reason||`${side==='buy'?'Купить':'Продать'} ${amount} ${RESOURCE_NAMES[k]}`;b.textContent=`${side==='buy'?'Купить':'Продать'} · ${Number.isSafeInteger(amount)&&amount>0?amount*c.prices[k][side]:'—'} серебра`;}
  const buyReason=tradeReason(state,k,'buy',amount),sellReason=tradeReason(state,k,'sell',amount);row.querySelector('.trade-reason').textContent=[buyReason&&`Покупка: ${buyReason}`,sellReason&&`Продажа: ${sellReason}`].filter(Boolean).join(' · ');
 }
-function showFestival(){openDialog('festival',`<button class="management-close" id="close-festival" aria-label="Вернуться в город">×</button><span class="eyebrow">ОБЩИННЫЕ ПРАЗДНИКИ</span><h2 id="festival-title">Ночь огней</h2><img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация общинного праздника"><div id="festival-content"></div>`);$('close-festival').onclick=closeDialog;renderFestival();}
+function showFestival(){openDialog('festival',`<button class="management-close" id="close-festival" aria-label="Вернуться в город">×</button><span class="eyebrow">ОБЩИННЫЕ ПРАЗДНИКИ</span><h2 id="festival-title">Ночь огней</h2><img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация общинного праздника"><div id="festival-content"></div>${buildingHistoryHTML('festival')}`);$('close-festival').onclick=closeDialog;renderFestival();}
 function renderFestival(){
  if(modalKind!=='festival'||!$('festival-content'))return;
  const f=festivalSummary(state,{paused}),first=f.occasion==='firstBeer',cost=f.cost||{food:12,beer:6,prestige:15},venue=f.venueLabel||(first?'У пивоварни':'У храма');
