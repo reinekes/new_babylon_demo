@@ -23,6 +23,7 @@ group('goat-authored goat','spare','Сохранённая авторская п
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
 group('ambient-bull','active','Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.','game3d/ambient-fauna.js|dairyHerd');
 group('ambient-dog ambient-duck ambient-sheep-kenchoo imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
+group('ambient-yard-pig','active','Домашняя свинья у двора с исходной анимацией на месте.','game3d/ambient-fauna.js|YARD_PIG_MODEL');
 group('shore-mallard','active','Селезень кряквы у берега.','game3d/ambient-fauna.js|SHORE_MODELS');
 group('shore-mallard-female','active','Самка кряквы у берега. Добавлен клип покоя.','game3d/ambient-fauna.js|SHORE_MODELS');
 group('shore-seagull','active','Чайка в полёте над водой.','game3d/ambient-fauna.js|SHORE_MODELS');

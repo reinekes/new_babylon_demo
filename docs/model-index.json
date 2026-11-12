@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 69,
-    "active": 52,
+    "total": 70,
+    "active": 53,
     "fallback": 9,
     "optional": 4,
     "spare": 4
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "6cd969cccc6a086ca1e154350adf5e3fce532a42072f4f35bb83c24bf62de0f1"
+      "sha256": "f1c6d36aeb9b96a600bb41e98f211c31d69726b864c85b12996b74b8d933a238"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "1d223dc07859eab9a2d05785449a73c207fbf97275441b3630dd94e09503e449"
+      "sha256": "0992e63f8f78d941c8e543226e2deaaa739401d43f4888704955e866a28a5ebc"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -301,6 +301,37 @@
           "model": "ambient-sheep-kenchoo.glb",
           "file": "game3d/ambient-fauna.js",
           "line": 21,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "ambient-yard-pig.glb",
+      "status": "active",
+      "purpose": "Домашняя свинья у двора с исходной анимацией на месте.",
+      "classificationEvidence": "game3d/ambient-fauna.js|YARD_PIG_MODEL",
+      "bytes": 2094196,
+      "sha256": "4887fe358b56da91e364c1828bc56a3f356403fdc05ff6c371ec7630a3ba6c72",
+      "version": "4887fe358b56",
+      "triangles": 9816,
+      "meshes": 1,
+      "bones": 25,
+      "clips": [
+        "Animation"
+      ],
+      "sources": [
+        {
+          "author": "kenchoo (https://sketchfab.com/kenchoo)",
+          "license": "CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+          "source": "https://sketchfab.com/3d-models/black-pig-4fc11b4aede6413d896f5a18a8f7be1e",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "ambient-yard-pig.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 41,
           "kind": "literal"
         }
       ]

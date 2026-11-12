@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 30755,
-      "sha256": "bd9bdd2a5221f5104710f7fa9a564061598e4f298f66f675ea81e18f1d309803"
+      "bytes": 30998,
+      "sha256": "8368ee6e6b69bc3706b5a28554ff5cfdf1fabbf3181d6b93f7a1b5e10cefaaf0"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 31066,
-      "sha256": "ff30daa12730b0d66d634f1a053ff95845bd26be37cee2de78f82a57e5b5706d"
+      "bytes": 31328,
+      "sha256": "3a6d95e60cd42f6aa8189deb546d31c2722fd90816fd235e5f85f401b47cccad"
     },
     {
       "file": "festival-candle-report.json",
@@ -320,6 +320,17 @@
       "clips": [
         "Walk_Loop",
         "Idle_Loop"
+      ]
+    },
+    {
+      "file": "models/ambient-yard-pig.glb",
+      "bytes": 2094196,
+      "sha256": "4887fe358b56da91e364c1828bc56a3f356403fdc05ff6c371ec7630a3ba6c72",
+      "triangles": 9816,
+      "meshes": 1,
+      "bones": 25,
+      "clips": [
+        "Animation"
       ]
     },
     {

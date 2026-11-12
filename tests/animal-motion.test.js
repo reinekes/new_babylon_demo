@@ -6,9 +6,14 @@ const snap=r=>JSON.stringify([r,...r.getDescendants()].map(n=>[n.position?.asArr
 test('real GLBs parse, every terrestrial species walks with deforming skin, pause and dry routes hold at 4×',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine);scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,3,-6),scene);const state=createGame({start:'established'}),saved=JSON.stringify(state),meshes=[];let view;
  try{
-  view=await createAmbientFauna(B,scene,meshes,{warn:(...a)=>{throw Error(a.join(' '));},includeRestrictedBirds:false,includeShoreBirds:true,loadAsset:async file=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>{p.skipMaterials=true;});return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');}});
+  view=await createAmbientFauna(B,scene,meshes,{warn:(...a)=>{throw Error(a.join(' '));},includeRestrictedBirds:false,includeShoreBirds:true,includeYardPig:true,loadAsset:async file=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>{p.skipMaterials=true;});return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');}});
   view.update(state,.05,{speed:4});for(const m of meshes)m.alwaysSelectAsActiveMesh=true;scene.render();const roots=view.roots().filter(r=>AMBIENT_MODELS[r.metadata.ambientSpecies]);assert.equal(roots.length,16);
   assert.ok(!view.roots().some(r=>r.metadata.ambientSpecies==='kingfisher'));
+  const pig=view.roots().find(r=>r.metadata.ambientSpecies==='yard-pig');
+  assert.ok(view.hasYardPig&&pig.isEnabled());
+  assert.equal(pig.metadata.clip,'Animation');
+  assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
+  const pigPosition=pig.position.clone(),pigPose=snap(pig);
   const mallard=view.roots().find(r=>r.metadata.ambientSpecies==='mallard');
   assert.equal(mallard.metadata.clip,'Walk');
   assert.ok(mallard.isEnabled()&&ambientDryPoint(state,mallard.position.x/6,mallard.position.z/6));
@@ -59,6 +64,8 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}
    for(const r of roots){const p={x:r.position.x/6,y:r.position.z/6};assert.ok(ambientDryPoint(state,p.x,p.y));assert.ok(ambientClearSegment(state,before.get(r),p));if(r.metadata.clip==='Walk')moving.add(r.metadata.ambientSpecies);if(snap(r)!==start.get(r))deforming.add(r.metadata.ambientSpecies);}
   }
+  assert.ok(pig.position.equals(pigPosition));
+  assert.notEqual(snap(pig),pigPose);
   assert.equal(returned.size,2);
   assert.equal(dipped.size,2);
   assert.equal(ripples.size,2);

@@ -27,6 +27,7 @@ const names = {
   'goat-authored':'Коза, исходная авторская модель','goat':'Коза, прежний GLB',
   'ambient-bull':'Бык и основа модели вола','ambient-donkey':'Вьючный осёл',
   'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца, фоновая модель','sheep':'Овца из овчарни',
+  'ambient-yard-pig':'Домашняя свинья',
   'imported-boar':'Кабан','imported-fox':'Лиса','imported-lioness':'Львица',
   'gazelle-downloaded':'Газель','jackal':'Шакал','cat-walk':'Кошка, ходьба','cat-sitting':'Кошка, сидит',
   'shore-mallard-female':'Кряква · самка',
@@ -87,7 +88,7 @@ export function makeCatalog(index, profile) {
   };
   rows.push(row('animals','Змея','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'snakes'})));
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
-  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Игровая геометрия'],turtle:['Водяная черепаха','Игровая геометрия']});
+  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Водяная черепаха','Игровая геометрия']});
   for (const [species,[title,label]] of Object.entries(wildlife)) {
     rows.push(row(species==='bird'?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));
   }

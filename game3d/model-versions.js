@@ -23,6 +23,7 @@ export const MODEL_VERSIONS=Object.freeze({
  "human-native-female.glb": "04bc74c6cfc6",
  "human-native-male.glb": "3b4129dc7572",
  "historical-man.glb": "77a56ff3693f",
+ "ambient-yard-pig.glb": "4887fe358b56",
  "imported-boar.glb": "15710d8d8121",
  "imported-fox.glb": "f72eb437960d",
  "imported-goose.glb": "efa137a7461e",
