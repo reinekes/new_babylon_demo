@@ -1349,6 +1349,7 @@ function showCivicOrder(selected){
  };
  openDialog('civic-order',`<button type="button" class="management-close" id="close-civic-order" aria-label="Закрыть свод законов">×</button>
  <span class="eyebrow">ОБЩИНА И ЛЕТОПИСЬ</span><h2>${esc(title||'Законы города')}</h2>
+ <details class="food-forecast"><summary>Судебные дела в эпоху III династии Ура</summary><p>Таблички конца III тысячелетия до н. э. сохраняют записи отдельных тяжб и судебных решений. Царские сборники законов составляют отдельный вид источников. Просьбы дворов, игровой штраф и порядок возмещения придуманы для этой долины. <a href="https://cdli.earth/articles/cdln/2015-6" target="_blank" rel="noopener">Исследование судебной таблички Ур III</a></p></details>
  <section class="food-forecast"><h3>Глиняная табличка</h3>
  ${law?`<p>Записал ${esc(law.name)} · год ${law.year}.</p><ol><li>Если двору не хватает зерна, он может попросить общину о помощи.</li><li>Доверяющие своду ждут помощь на день дольше. Из связанного склада заказывают две меры зерна, если есть свободный запас.</li><li>Записанную кражу можно возместить из свободного запаса другого склада.</li></ol>`:'<p>Вдохнови взрослого призванием «Законодатель» в карточке жителя. Он сможет записать свод за 1 глину.</p>'}
  ${authors.filter(c=>c.id!==law?.author).map(c=>{const reason=civicLawReason(state,c.id);return `<p>${esc(displayName(state,c))} · <button type="button" data-publish-law="${c.id}"${reason?' disabled':''}>Записать свод · 1 глина</button>${reason?` <small>${esc(reason)}</small>`:''}</p>`;}).join('')}</section>
