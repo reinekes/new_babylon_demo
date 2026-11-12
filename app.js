@@ -734,11 +734,24 @@ function updateDetail(){
   const signature=allocation.path.join('|');
   if(shown&&signature!==shownSupplyRoute.route.signature)clearSupplyRoute();
   const visible=shown&&!!shownSupplyRoute;
-  const changes=[allocation.gained.length?`Получат долю: ${allocation.gained.join(' · ')}.`:'',allocation.lost.length?`Уступят долю: ${allocation.lost.join(' · ')}.`:''].filter(Boolean).join(' ');
+  const fieldLinks=ids=>ids.map(id=>`<button type="button" class="resident-link" data-water-field="${id}">Поле ${id}</button>`).join(' · ');
+  const changes=[allocation.gained.length?`Получат долю: ${fieldLinks(allocation.gained)}.`:'',
+   allocation.lost.length?`Уступят долю: ${fieldLinks(allocation.lost)}.`:''].filter(Boolean).join(' ');
+  const dispute=allocation.lost.some(id=>id!==key)||allocation.gained.some(id=>id!==key);
+  const crop=b.crop;
+  const grain=crop?`<p>Обмолочено ${rounded(crop.threshed)} ед. · осталось в поле ${rounded(crop.remaining)} ед.</p>`:'';
+  const aid=dispute&&state.civicOrder?`<button type="button" class="management-button" id="field-civic-aid">${state.civicOrder.case?'Открыть просьбу двора':'Открыть дела общины'}</button>`:'';
   const status=allocation.path.length?'Поле получает долю из канала.':allocation.connected?'Полю сейчас не хватает доли из канала.':'Нет действующего канала рядом.';
-  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel water-logistics-panel"><h4>Распределение полива</h4><p>${status}</p>
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel water-logistics-panel"><h4>Распределение полива</h4><p>${status}</p>${grain}
   ${allocation.path.length?`<small>Путь воды: ${allocation.path.map(id=>`<button type="button" class="resident-link" data-water-cell="${id}">${id}</button>`).join(' → ')}</small><button type="button" class="management-button" id="field-water-route" aria-pressed="${visible}">${visible?'Скрыть путь воды':'Показать путь воды'}</button>`:''}
-  ${allocation.connected||allocation.selected?`<p>${changes||'При переключении список орошаемых полей сохранится.'}</p><button class="management-button" id="field-water-priority" type="button" aria-pressed="${allocation.selected}">${allocation.selected?'Снять приоритет полива':'Дать этому полю приоритет'}</button>`:''}</section>`);
+  ${allocation.connected||allocation.selected?`<p>${changes||'При переключении список орошаемых полей сохранится.'}</p><button class="management-button" id="field-water-priority" type="button" aria-pressed="${allocation.selected}">${allocation.selected?'Снять приоритет полива':'Дать этому полю приоритет'}</button>`:''}${aid}</section>`);
+  for(const button of $('building-controls').querySelectorAll('[data-water-field]'))button.onclick=()=>{
+   const field=state.buildings.find(item=>item.type==='field'&&buildingKey(item)===button.dataset.waterField);
+   if(!field)return;
+   clearSupplyRoute();renderer.focusOn(field.x,field.y);
+   inspected={x:field.x,y:field.y};detail(field.type,false,field);
+  };
+  $('field-civic-aid')?.addEventListener('click',()=>showCivicOrder());
   $('field-water-route')?.addEventListener('click',()=>{
    if(visible)clearSupplyRoute();
    else{
