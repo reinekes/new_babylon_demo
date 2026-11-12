@@ -56,7 +56,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const districtAt=home=>housingNetwork.components.get(housingPorts.get(home));
   const component=districtAt(a.home);
   if(!reserved&&(component===undefined||family.some(c=>districtAt(c.home)!==component)))continue;
-  const available=b=>b.type==='house'&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&districtAt(buildingKey(b))===component;
+  const available=b=>b.type==='house'&&!b.reedCamp&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&districtAt(buildingKey(b))===component;
   if(reserved&&householdMoveSiteReason(s,reserved,family,districtAt))continue;
   const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
   if(!house||householdMoveActivityReason(s,family))continue;
@@ -68,7 +68,7 @@ export function advanceGenerations(s,recover=()=>{}){
   news(s,'Семья обрела дом',`${citizenName(a.id)} и ${citizenName(partner.id)} поселились в доме ${destination}.`);
  }
  const newborns=[];
- for(const b of s.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new')){
+ for(const b of s.buildings.filter(b=>b.type==='house'&&!b.reedCamp&&b.construction?.kind!=='new')){
   const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50&&!shelterHome(c));
   for(const a of adults){if(a.partner!==null)continue;const partner=adults.find(c=>c!==a&&c.sex!==a.sex&&c.partner===null&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
   const pair=adults.find(c=>{const partner=living.get(c.partner);return c.sex==='f'&&c.age<45&&partner?.home===home&&!shelterHome(partner);});

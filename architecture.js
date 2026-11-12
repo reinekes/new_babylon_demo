@@ -14,6 +14,16 @@ import {seed} from './city-life.js';
 // Details and windows therefore occlude residents exactly like the main walls.
 export function drawBuilding(r, b, state, t) {
   if(isStrictSumer(state)&&['shrine','ziggurat','ishtarGate'].includes(b.type)){drawSumerSacred(r,b,state);return;}
+  if(b.reedCamp){
+    const p=r.point(b.x,b.y),q=r.s;
+    const draw=(points,fill)=>r.polygon(points.map(([x,y])=>[p.x+x*q,p.y+y*q]),fill);
+    draw([[-24,6],[2,18],[27,5],[2,-7]],'#6c5237');
+    draw([[-22,5],[-10,-18],[14,-7],[2,17]],'#be9c63');
+    draw([[14,-7],[25,4],[2,17]],'#634731');
+    draw([[13,-3],[19,6],[6,13]],'#33271f');
+    for(let i=0;i<5;i++)r.line([[p.x+(-9+i*4.6)*q,p.y+(-17+i*2.1)*q],[p.x+(-21+i*4.6)*q,p.y+(5+i*2.1)*q]],'#8e6d46',q);
+    return;
+  }
   if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
   if(['pottery','brewery','bakery','dairyStore','coppersmith'].includes(b.type)){drawArtisan(r,b,state,t);return;}
   if(b.type==='harbor'){drawHarbor(r,b,state);return;}

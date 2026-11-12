@@ -89,7 +89,7 @@ import {CROP_NAMES,fieldCropKind} from './game3d/crop-varieties.js';
 import {personalMemoryHTML,renderLifeAnalytics} from './ui-life-analytics.js';
 import {canRotateBuilding,nextRotation} from './placement.js';
 import {calendarAt,MONTH_NAMES,monthTrackHTML,simulationSeconds,clockText,useThreeDayCalendar} from './calendar.js';
-import {grantTestResources,triggerTestEvent,triggerTestMiracleScene,instantTestUpgrade,killTestCitizens,testToolsReason} from './test-tools.js';
+import {grantTestResources,triggerTestEvent,triggerTestMiracleScene,instantTestUpgrade,killTestCitizens,addTestCitizens,testToolsReason} from './test-tools.js';
 import {FESTIVAL_COST,festivalReason,orderFestival,cancelFestival,festivalSummary,festivalView} from './festival.js';
 import {createCityAudio} from './city-audio.js';
 import {cityAudioListener} from './music-audio.js';
@@ -140,7 +140,7 @@ let roadDrawFrom=null,roadDrawTo=null;
 let inspectedDeposit=null,inspectedPerson=null,roadMode=false,householdTab='family',routeFrom=null,routeTo=null,routeTarget=2,routeCache=null;
 const desiredRoles=new Map();
 const entityAt=(x,y)=>state.buildings.find(b=>b.x===x&&b.y===y)||(state.roads||[]).find(b=>b.x===x&&b.y===y);
-const entityName=b=>b.type==='road'?'Участок дороги':buildingDefinition(state,b.type).name;
+const entityName=b=>b.type==='road'?'Участок дороги':buildingPresentation(state,b).name;
 let state=useThreeDayCalendar(createNewCity()),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
 try{const raw=localStorage.getItem(key);if(raw){const saved=decode(raw);if(saved){state=useThreeDayCalendar(saved);loaded=true;if(JSON.parse(raw).version<22)legacyRaw=raw;}else corrupt=true;}}catch{storageOK=false;}
 const saveLibrary=createSaveLibrary();
@@ -1205,8 +1205,8 @@ function handleTestAction(action,data){
   closeDialog();paused=false;syncCeremonySpeed();const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);renderer.addEffect(kind,p);save();update();return;
  }
  if(action==='map-upgrade'){const reason=testToolsReason(state);if(reason){toast(reason);return;}testMapUpgrade=!testMapUpgrade;selection=null;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');document.body.classList.remove('is-building');$('map-hint').textContent=testMapUpgrade?'Тест: выбери здание для мгновенного улучшения · Esc — выйти':'Выбери здание или жителя';document.body.classList.toggle('test-map-upgrade',testMapUpgrade);if(testMapUpgrade){closeDialog();toast('Тест: кликай здания для мгновенного улучшения. Esc — закончить.');}return;}
- const result=action==='resources'?grantTestResources(state,data.resource||'all'):action==='event'?triggerTestEvent(state,data.event):action==='upgrade'?instantTestUpgrade(state,data.building):action==='kill'?killTestCitizens(state,data.citizen===''?[]:[Number(data.citizen)]):action==='kill-many'?killTestCitizens(state,Number(data.count)):{ok:false,reason:'Нет такого действия'};
- if(!mutate(result,action==='resources'?'Тест: ресурсы добавлены':action==='upgrade'?'Тест: здание улучшено':action==='event'?'Тестовое событие вызвано':'Начались настоящие похороны'))return;
+ const result=action==='add-citizens'?addTestCitizens(state,Number(data['add-count'])):action==='resources'?grantTestResources(state,data.resource||'all'):action==='event'?triggerTestEvent(state,data.event):action==='upgrade'?instantTestUpgrade(state,data.building):action==='kill'?killTestCitizens(state,data.citizen===''?[]:[Number(data.citizen)]):action==='kill-many'?killTestCitizens(state,Number(data.count)):{ok:false,reason:'Нет такого действия'};
+ if(!mutate(result,action==='add-citizens'?`Добавлено жителей: ${result.count} · в шалашах: ${result.sheltered}`:action==='resources'?'Тест: ресурсы добавлены':action==='upgrade'?'Тест: здание улучшено':action==='event'?'Тестовое событие вызвано':'Начались настоящие похороны'))return;
  if(action==='event'){closeDialog();checkDialogs();}else if(action==='kill'||action==='kill-many'){closeDialog();paused=false;const p=state.funeral?.gather;if(p)renderer.focusOn(p.x,p.y);save();update();}
 }
 function showManagement(kind){openDialog(kind,`<button class="management-close" id="close-management" aria-label="Вернуться в город">×</button><span class="eyebrow">УПРАВЛЕНИЕ ГОРОДОМ</span><h2>${kind==='construction'?'Стройки':'Жители'}</h2><p>${kind==='construction'?'Высокий приоритет обслуживается первым. Уже взятые грузы заканчивают прежнюю доставку.':'Выбери профессию и вдохнови жителя за 1 веру. Обычные профессии: 40% для взрослых и 70% для детей. Лекарь: 20% и 40%, затем обучение в храме; призвание даёт +20% к выбранной работе. Дети трудятся с 16 лет; вера тратится при любом исходе. С грузом он сначала закончит доставку.'}</p><div id="management-list"></div>`);$('close-management').onclick=closeDialog;renderManagement();}

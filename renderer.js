@@ -59,7 +59,7 @@ export class Renderer{
  box(x,y,w,d,h,top='#d9bd81',left='#b99460',right='#c5a36b'){this.polygon([[x-w,y-h],[x,y+d-h],[x,y+d],[x-w,y]],left);this.polygon([[x,y+d-h],[x+w,y-h],[x+w,y],[x,y+d]],right);this.polygon([[x,y-d-h],[x+w,y-h],[x,y+d-h],[x-w,y-h]],top);}
  palm(x,y,size=1,t=0){const c=this.ctx;const s=this.s*size;const sway=this.reduce?0:Math.sin(t*.5+x)*1.5*s;c.strokeStyle='#8c7950';c.lineWidth=3*s;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x-4*s,y-17*s,x+sway,y-32*s);c.stroke();const tx=x+sway,ty=y-32*s;for(let k=0;k<7;k++){const a=k*Math.PI*2/7;const len=(14+(k%2)*4)*s;c.beginPath();c.moveTo(tx,ty);c.quadraticCurveTo(tx+Math.cos(a)*len*.75,ty+Math.sin(a)*len*.5-6*s,tx+Math.cos(a)*len,ty+Math.sin(a)*len*.5+5*s);c.quadraticCurveTo(tx+Math.cos(a+.2)*len*.5,ty+Math.sin(a)*len*.3+2*s,tx,ty);c.fillStyle=k%2?'#6c8a54':'#7e995f';c.fill();}c.fillStyle='#b29a51';c.beginPath();c.arc(tx,ty+3*s,3*s,0,7);c.fill();}
  building(b,state,t){
-  if(!spriteTypes.has(b.type)||b.construction||footprintSize(b)>1){drawBuilding(this,b,state,t);return;}
+  if(b.reedCamp||!spriteTypes.has(b.type)||b.construction||footprintSize(b)>1){drawBuilding(this,b,state,t);return;}
   const dx=(this.canvas?.width/this.w)||1,dy=(this.canvas?.height/this.h)||dx,q=this.s,scale=`${q}/${dx}/${dy}`;
   if(this.spriteScale!==scale){this.spriteScale=scale;this.buildingSprites=new Map();this.spriteBytes=0;}
   const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${houseVariant(b)}:${Number(blessingCupAt(state,b))}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';

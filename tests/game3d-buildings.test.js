@@ -256,3 +256,13 @@ test('starter hut templates remain through upgrade, then become ordinary II geom
   b.level=2;delete b.construction;t.layer.sync(state);assert.ok(t.layer.meshes.some(m=>m.name.includes('game-house-courtyard-2')));assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-hut')));assert.equal(gameBuildingSignature(b),gameBuildingSignature({...b,starterHut:undefined}));
  }finally{t.dispose();}
 });
+
+test('reed camp renders a distinct pickable shelter without house lamps',async()=>{
+ const t=await setup();try{
+  const shelter={...house(1,8,8,'shelter'),reedCamp:true};
+  t.layer.sync({buildings:[shelter],citizens:[]});
+  const parts=t.layer.meshes.filter(mesh=>mesh.metadata.buildingKey==='shelter');
+  assert.equal(parts.filter(mesh=>mesh.name.endsWith('camp-woven-roof')&&mesh.isPickable).length,2);
+  assert.ok(parts.every(mesh=>!mesh.metadata.homeLamp));
+ }finally{t.dispose();}
+});

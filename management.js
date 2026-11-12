@@ -49,7 +49,7 @@ const upgradePrice=(b,level)=>({...level===2?(b.type==='house'?{wood:4,hides:2}:
 function note(s,title,text){s.news.unshift({title,text,kind:'build',tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
 export function cancellationRefund(b){const q=b?.construction;return q?{...q.required,faith:q.kind==='new'?(BUILDINGS[b.type]?.faith||0):0}:{clay:0,reed:0,faith:0};}
 export function demolitionRefund(b){
- if(!b||!isComplete(b))return {clay:0,reed:0};
+ if(!b||b.reedCamp||!isComplete(b))return {clay:0,reed:0};
  const total=Object.fromEntries(MATERIALS.map(k=>[k,BUILDINGS[b.type][k]||0]));
  total.joinery+=(b.joineryLevels?.length||0)*2;
  if(b.legacyFiringLevel)total.firedBrick=0;
@@ -160,7 +160,7 @@ export function canDemolish(s,b){
  if(group&&(group.home===key||Object.hasOwn(group.provisions,key)))return 'Здесь зарезервированы жильё или припасы для переселенцев';
  if(s.votiveOfferings?.some(v=>v.temple===key&&v.receivedTick!==null))return 'Храм хранит именные посвящения';if(protectsGuestBuilding(s,key))return 'Здание используется приглашённым мастером';if(s.festival&&(s.festival.temple===key||s.festival.allocations[key]))return 'Сначала заверши или отмени праздник: здесь зарезервировано угощение';if(!b.starterHut)syncInventory(s);if(Object.values(b.stock||{}).some(n=>n>1e-7)&&!foundingStockTransfer(s,b))return 'Сначала перенеси запасы в другой склад';if((s.district?.jobs||[]).some(q=>q.delivered+q.cancelled<q.amount&&(q.target===key||q.source===key&&!q.shapingBatch)&&(!q.automatic||s.citizens.some(c=>c.districtJob===q.id&&Object.values(c.cargo||{}).some(n=>n>0)))))return 'Склад участвует в переносе грузов';if(constructionEntities(s).some(v=>v.construction&&[v.construction.sources,v.construction.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0)))||(s.trade?.sales||[]).some(q=>q.loaded+q.cancelled<q.amount&&[q.sources,q.allocations].some(a=>Object.values(a?.[key]||{}).some(n=>n>0))))return 'Склад хранит зарезервированные материалы';
  const future={...s,buildings:s.buildings.filter(v=>v!==b)};
- if(housingOf(future)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
+ if(future.buildings.reduce((n,home)=>n+capacityOf(home),0)<s.population||!relocations(s,b))return 'Нет доступного жилья для переселения жителей';
  if(['shrine','granary','depot'].includes(b.type)&&s.buildings.filter(v=>isComplete(v)&&['shrine','granary','depot'].includes(v.type)).length<=1)return 'Нельзя снести последнее готовое хранилище';
  if(storageOf(future)<storageOf(s)&&MATERIALS.some(k=>storageOf(future)<(s.resources[k]||0)))return 'Сначала освободи еду: оставшихся амбаров недостаточно';
  if(['bridge','shrine','granary','depot'].includes(b.type)){

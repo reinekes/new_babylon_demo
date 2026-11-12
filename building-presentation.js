@@ -17,6 +17,7 @@ export function buildingDefinition(state,type){
  return BUILDINGS[type];
 }
 export function buildingPresentation(state,b){
+ if(b?.reedCamp)return {...BUILDINGS.house,name:'Тростниковый шалаш',desc:'Временное укрытие на восемь человек. Жители приносят еду и воду как в обычный двор. Здоровье снижается, пока нет места в доступном доме.'};
  if(isReedShrine(state,b))return reedShrine;
  const def=buildingDefinition(state,b?.type);
  if(b?.type!=='house'||!b.starterHut||levelOf(b)!==1)return def;

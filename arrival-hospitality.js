@@ -79,7 +79,7 @@ export function arrivalHousing(s,{includeReserved=false}={}){
  const vacancies=new Map(),group=s.arrivalGroup;
  for(const b of s.buildings){
   const beds=capacityOf(b),home=buildingKey(b);
-  if(beds&&!flooded.has(home)&&(includeReserved&&group?.home===home||!householdAwaitingFamily(s,b)))vacancies.set(home,beds);
+  if(beds&&!b.reedCamp&&!flooded.has(home)&&(includeReserved&&group?.home===home||!householdAwaitingFamily(s,b)))vacancies.set(home,beds);
  }
  for(const c of s.citizens){
   if(vacancies.has(c.home))vacancies.set(c.home,vacancies.get(c.home)-1);

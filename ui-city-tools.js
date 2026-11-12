@@ -100,10 +100,10 @@ export function residentVitalsHTML(c,s,scope='register'){
  const homeKey=supplyHome(c,{arrived:true});
  const home=s?.buildings.find(b=>b.type==='house'&&buildingKey(b)===homeKey),lastMeal=c.lastMealQuality??1;
  const food=home?homeMealFood(home):null,hungry=(c.hunger??0)>=30,thirsty=(c.thirst??0)>30,worn=(c.clothing??100)<=25;
- const pressures=[hungry?'сильный голод':'',thirsty?'жажда':'',worn?'ветхая одежда':''].filter(Boolean);
+ const pressures=[hungry?'сильный голод':'',thirsty?'жажда':'',worn?'ветхая одежда':'',home?.reedCamp?'жизнь в тростниковом шалаше':''].filter(Boolean);
  const current=pressures.length?`Сейчас заметны: ${pressures.join(', ')}. `:'';
  const stats=[
-  ['health','Здоровье',c.health??100,60,current+'Здоровье снижают недоедание, сильная жажда и ветхая одежда.','Проверь еду и воду дома, запас одежды на складе. Если жителю всё ещё плохо, проверь доступность лечебницы.'],
+  ['health','Здоровье',c.health??100,60,current+'Здоровье снижают недоедание, сильная жажда и ветхая одежда.',home?.reedCamp?'Дострой или освободи место в доступном доме. Пока житель в шалаше, проверяй доставку еды и воды.':'Проверь еду и воду дома, запас одежды на складе. Если жителю всё ещё плохо, проверь доступность лечебницы.'],
   ['food','Сытость',100-(c.hunger??0),70,`Последний ужин: ${Math.round(lastMeal*100)}% порции.${home?` Сейчас у двора ${number(food)} ед. еды.`:''} Голод растёт, когда житель не съедает свою порцию.`,'Открой дом → «Еда»: проверь запас, носильщиков и путь до склада. Еду нужно доставить во двор. При сильном голоде взрослый может прервать работу.'],
   ['water','Утоление жажды',100-(c.thirst??0),70,home?`В запасе двора ${number(home.water)} ед. воды. При нехватке воды растёт жажда.`:'Жажда растёт, если жителю не хватает доступной воды.','Открой дом → «Вода»: проверь запас, ближайший водозабор и доставку. При жажде взрослый может уйти с работы за водой.'],
   ['mood','Настроение',c.mood??75,35,current+'Настроение может падать из-за недоедания, жажды, ветхой одежды и утраты близких.','Наладь снабжение двора и замену одежды. Семейный ужин и благоустроенный двор помогают восстановиться.'],
@@ -222,7 +222,7 @@ function workshopsHTML(s,model,expanded,filter,page){
  const categories=[...CITY_WORK_CATEGORIES,{id:'other',name:'Прочие здания',types:[]}];
  const groups=new Map(categories.map(c=>[c.id,[]]));
  for(const [key,b] of buildings){
-  const w=known.get(key)||{key,x:b.x,y:b.y,type:b.type,name:buildingDefinition(s,b.type)?.name||b.type,reason:{label:'Готово',detail:'',target:null},status:'process',builders:[]};
+  const w=known.get(key)||{key,x:b.x,y:b.y,type:b.type,name:b.reedCamp?'Тростниковый шалаш':buildingDefinition(s,b.type)?.name||b.type,reason:{label:'Готово',detail:'',target:null},status:'process',builders:[]};
   const category=categories.find(c=>c.types.includes(b.type))||categories.at(-1);
   groups.get(category.id).push(w);
  }
@@ -460,7 +460,7 @@ export function renderCityTools(root,s,options={}){
   root.addEventListener('change',event=>{
    const field=event.target.closest?.('select,input');if(!field||!root.contains(field))return;
    if(field.hasAttribute('data-city-auto-housing')){ctl.options.onAutoHousing?.(field.checked);field.blur?.();ctl.refresh();return;}
-   const testField=['event','resource','building','citizen','count'].find(k=>field.hasAttribute?.(`data-test-${k}`));if(testField){ctl.testOptions[testField]=testField==='count'?Number(field.value):field.value;return;}
+   const testField=['event','resource','building','citizen','count','add-count'].find(k=>field.hasAttribute?.(`data-test-${k}`));if(testField){ctl.testOptions[testField]=['count','add-count'].includes(testField)?Number(field.value):field.value;return;}
    if(field.hasAttribute('data-city-building-attention')){ctl.buildingFilter.attention=field.checked;ctl.page=0;ctl.draw({resetScroll:true});return;}
    if(field.dataset.cityFilter!==undefined){ctl.filter={...ctl.filter,[field.dataset.cityFilter]:field.value};ctl.page=0;ctl.draw({resetScroll:true});return;}
    if(field.dataset.cityInspiration!==undefined){ctl.desiredInspirations.set(Number(field.dataset.cityInspiration),field.value);field.blur?.();ctl.draw();return;}
@@ -472,7 +472,7 @@ export function renderCityTools(root,s,options={}){
   });
   root.addEventListener('click',event=>{
    const button=event.target.closest?.('button');if(!button||!root.contains(button))return;
-   if(button.dataset.testAction!==undefined){const data={...ctl.testOptions};for(const k of ['event','resource','building','citizen','count']){const input=root.querySelector(`[data-test-${k}]`);if(input)data[k]=k==='count'?Number(input.value):input.value;}ctl.options.onTestAction?.(button.dataset.testAction,data);ctl.refresh();return;}
+   if(button.dataset.testAction!==undefined){const data={...ctl.testOptions};for(const k of ['event','resource','building','citizen','count','add-count']){const input=root.querySelector(`[data-test-${k}]`);if(input)data[k]=['count','add-count'].includes(k)?Number(input.value):input.value;}ctl.options.onTestAction?.(button.dataset.testAction,data);ctl.refresh();return;}
    if(button.dataset.cityFireEvacuate!==undefined){ctl.options.onFireEvacuate?.(button.dataset.kiln,button.dataset.cityFireEvacuate);ctl.refresh();return;}
    if(button.dataset.cityExtinguishKiln!==undefined){ctl.options.onKilnExtinguish?.(button.dataset.cityExtinguishKiln);ctl.refresh();return;}
    if(button.dataset.cityBankKiln!==undefined||button.dataset.cityResumeKiln!==undefined){ctl.options.onKilnBank?.(button.dataset.cityBankKiln??button.dataset.cityResumeKiln,button.dataset.cityBankKiln!==undefined);ctl.refresh();return;}

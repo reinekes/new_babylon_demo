@@ -22,11 +22,11 @@ const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
 const HOME_ASSET='assets/art-courtyard/models/adobe-courtyard.glb';
 const tier=b=>Math.max(1,Math.min(3,b.level||1));
 const progress=b=>b.construction?Math.floor(Math.max(0,Math.min(1,constructionProgress(b).ratio))*12):12;
-const isHouse=b=>b.type==='house'&&b.construction?.kind!=='new';
+const isHouse=b=>!b.reedCamp&&b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -114,6 +114,18 @@ export async function createGameBuildings(B,scene,materials,options={}){
   const root=new B.TransformNode(`game-template-${key}`,scene);let sources=[];
   if(b.construction?.kind==='new'){
    sources=createConstructionSite(B,scene,b,materialSet,state);for(const mesh of sources)mesh.parent=root;
+  }else if(b.reedCamp){
+   const part=(name,dimensions,position,material,angle=0)=>{
+    const [width,height,depth]=dimensions,mesh=B.MeshBuilder.CreateBox(name,{width,height,depth},scene);
+    mesh.position.set(...position);mesh.rotation.z=angle;mesh.material=material;mesh.parent=root;sources.push(mesh);
+   };
+   part('camp-mat',[3.3,.05,3.1],[0,.06,0],raw);
+   for(const side of [-1,1]){
+    part('camp-woven-roof',[2.25,.09,3.25],[side*.8,.84,0],materials.reed||trim,-side*.72);
+    for(let i=0;i<5;i++)part('camp-reed-lashing',[.07,.09,3.34],[side*(.22+i*.3),1.39-i*.26,0],fired);
+   }
+   part('camp-back',[.8,.8,.06],[0,.43,-1.45],shade);
+   part('camp-ridge',[.14,.14,3.46],[0,1.59,0],raw);
   }else if(isHouse(b)){
    sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade},state);for(const mesh of sources)mesh.parent=root;
   }else{
@@ -151,7 +163,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   }
   // Supplied stepped sanctuaries have real stair flights; the former flat-roof
   // ladder would pass through their terraces at the obsolete roof height.
-  if(!sacredModels.sources(b,state))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
+  if(!b.reedCamp&&!sacredModels.sources(b,state))for(const mesh of createRoofAccess(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.construction&&b.construction.kind!=='new')for(const mesh of createConstructionSite(B,scene,b,materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field')sources=sources.filter(mesh=>clipField(mesh,b,state));
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
@@ -161,7 +173,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b,state)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
-  for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}
+  if(!b.reedCamp)for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}
   for(const source of sources){source.isVisible=false;source.isPickable=false;source.checkCollisions=false;source.receiveShadows=true;source.computeWorldMatrix(true);}
   t={root,sources,users:1};templates.set(key,t);return t;
  }

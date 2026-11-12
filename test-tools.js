@@ -1,5 +1,5 @@
 import {buildingDefinition} from './building-presentation.js';
-import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,levelOf} from './definitions.js';
+import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,levelOf,capacityOf,isOperational} from './definitions.js';
 import {stockStores,syncInventory,putStock} from './inventory.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {syncCitizens,recoverCitizenCargo,networkFor} from './workforce.js';
@@ -12,6 +12,9 @@ import {startFuneral} from './funerals.js';
 import {CITY_EVENTS,createCityEvent} from './city-events.js';
 import {startMiracleCelebration,miracleCelebrationTargetReason} from './miracle-celebration.js';
 import {isPestStore,pestActors} from './pests.js';
+import {arrivalHousing} from './arrival-hospitality.js';
+import {footprintCells} from './footprints.js';
+import {signedRiverDistance,terrain,worldWidth,worldHeight} from './world.js';
 
 export const TEST_EVENTS=CITY_EVENTS;
 export function testToolsReason(state){
@@ -72,9 +75,48 @@ export function grantTestResources(state,key='all'){
  return {ok:true,added};
 }
 
+export function addTestCitizens(state,count){
+ const reason=testToolsReason(state);if(reason)return denied(reason);
+ if(!Number.isSafeInteger(count)||count<1||count>300)return denied('Введи целое число от 1 до 300');
+ if((state.demography?.nextId||0)+count>1e6)return denied('Достигнут предел номеров жителей');
+ const homes=state.buildings.filter(b=>b.type==='house'&&isOperational(b));
+ const camps=homes.filter(b=>b.reedCamp);
+ const vacantHomes=arrivalHousing(state).reduce((n,h)=>n+h.beds,0);
+ const flooded=networkFor(state,{materializeRoads:false}).navigation.flooded;
+ const vacantCamps=camps.reduce((n,b)=>n+(flooded?.has(buildingKey(b))?0:Math.max(0,capacityOf(b)-state.citizens.filter(c=>c.home===buildingKey(b)).length)),0);
+ const needed=Math.max(0,Math.ceil((count-vacantHomes-vacantCamps)/capacityOf({type:'house',level:1})));
+ const additions=[];
+ if(needed){
+  const anchor=homes.find(b=>!b.reedCamp)||homes[0]||state.buildings[0];
+  if(!anchor)return denied('Нет места для лагеря');
+  const bank=Math.sign(signedRiverDistance(anchor.x,anchor.y,state));
+  const occupied=new Set(state.buildings.flatMap(footprintCells).map(buildingKey));
+  for(const road of state.roadAnchors||[])occupied.add(buildingKey(road));
+  const candidates=[];
+  for(let y=0;y<worldHeight(state);y++)for(let x=0;x<worldWidth(state);x++){
+   const key=buildingKey({x,y});
+   if(occupied.has(key)||flooded?.has(key)||terrain(x,y,state)==='water'||Math.sign(signedRiverDistance(x,y,state))!==bank)continue;
+   candidates.push({type:'house',level:1,x,y,reedCamp:true});
+  }
+  candidates.sort((a,b)=>Math.hypot(a.x-anchor.x,a.y-anchor.y)-Math.hypot(b.x-anchor.x,b.y-anchor.y));
+  if(candidates.length<needed)return denied('На этом берегу не хватает свободного места для лагеря');
+  additions.push(...candidates.slice(0,needed));
+ }
+ state.buildings.push(...additions);
+ const before=state.population;
+ state.population+=count;
+ syncCitizens(state);
+ snapshotLifeAnalytics(state);
+ const added=state.population-before, campKeys=new Set(state.buildings.filter(b=>b.reedCamp).map(buildingKey));
+ const sheltered=state.citizens.filter(c=>campKeys.has(c.home)).length;
+ note(state,`Добавлено жителей: ${added}. Сейчас в тростниковых шалашах: ${sheltered}.`);
+ return {ok:true,count:added,sheltered};
+}
+
 export function instantTestUpgrade(state,key){
  const reason=testToolsReason(state);if(reason)return denied(reason);
  const building=state.buildings.find(b=>buildingKey(b)===key);if(!building||!BUILDINGS[building.type])return denied('Выбери здание на карте или в списке');
+ if(building.reedCamp)return denied('Тростниковый шалаш — временное укрытие');
  if(building.construction)return denied('Сначала заверши текущую стройку: тест не меняет её грузы');
  if(building.type==='canal')return denied('Канал имеет один уровень');
  if(levelOf(building)>=3)return denied('Достигнут третий уровень');

@@ -165,7 +165,7 @@ export function syncCitizens(s){
  if(cache.synced===signature)return;
  // Population is a count; stable IDs are never reused after a death.
  while(s.citizens.length>s.population){const c=s.citizens.at(-1);if(recoverCitizenCargo(s,c.id)===false){s.population=s.citizens.length;break;}s.citizens.pop();}
- const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
+ const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)).sort((a,b)=>Number(!!a.reedCamp)-Number(!!b.reedCamp)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
  for(const c of s.citizens){if(!available.get(c.home))continue;homes[c.id]=c.home;available.set(c.home,available.get(c.home)-1);}
  const reservations=new Map();
  if(s.arrivalGroup)reservations.set(s.arrivalGroup.home,s.arrivalGroup.count);
@@ -186,6 +186,18 @@ export function syncCitizens(s){
   if(flooded)for(const home of available.keys())if(flooded.has(home))available.set(home,0);
   const free=[...available.values()].reduce((n,beds)=>n+beds,0);
   s.population=Math.min(s.population,s.citizens.length+free);
+ }
+ // Camp residents keep their shelter until a reachable permanent bed is free.
+ const camps=new Set(s.buildings.filter(b=>b.reedCamp).map(buildingKey));
+ if(camps.size)for(const c of s.citizens){
+  if(!camps.has(homes[c.id])||!['home','resting'].includes(c.phase)||shelterHome(c)||c.rehousing||c.pantryTrip||c.clothingTarget!==undefined||c.seedField||c.craftSite||waterBusy(c)||hasCargo(c)||hasBuildCargo(c))continue;
+  const origin=ctx.ports.get(c.home);
+  const destination=[...available].find(([key,beds])=>beds>0&&!camps.has(key)&&!householdAwaitingFamily(s,ctx.buildings.get(key))&&origin&&routeBetween(s,origin.key,ctx.ports.get(key)?.key,ctx))?.[0];
+  if(!destination)continue;
+  available.set(c.home,(available.get(c.home)||0)+Number(!flooded?.has(c.home)));
+  available.set(destination,available.get(destination)-1);
+  c.home=homes[c.id]=destination;
+  c.rehousing=true;
  }
  let nextId=Math.max(s.demography?.nextId||0,1+Math.max(-1,...s.citizens.map(c=>c.id)));
  while(s.citizens.length<s.population)s.citizens.push({id:nextId++});
