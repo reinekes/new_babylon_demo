@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../">
+<title>Атлас 3D · Новый Вавилон</title>
+<link rel="stylesheet" href="assets/ui/fonts.css">
+<link rel="stylesheet" href="model-atlas/style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <a class="back" href="./">← Новый Вавилон</a>
+    <h1>Атлас 3D-моделей</h1>
+    <p>Здания по уровням, жители, животные, птицы и предметы из проекта.</p>
+    <p id="totals" class="muted" aria-live="polite">Читаем игровой каталог…</p>
+  </div>
+</header>
+<main class="wrap">
+  <div class="filters">
+    <label>Поиск <input id="search" type="search" placeholder="Дом, гусь, кувшин или имя GLB"></label>
+    <label>Раздел <select id="group"><option value="">Все разделы</option></select></label>
+    <label>Профиль зданий <select id="profile"><option value="strict">Южный Шумер</option><option value="legacy">Прежняя ветка</option></select></label>
+  </div>
+  <p class="muted">Нажмите на превью, чтобы повернуть модель, приблизить её или выбрать анимацию. «Файл GLB» показывает базовый объект. Костюмы, груз и рабочие позы могут добавляться игровым кодом.</p>
+  <p id="results" aria-live="polite"></p>
+  <div id="catalog"></div>
+  <details class="notes">
+    <summary>Каких моделей не хватает</summary>
+    <ol>
+      <li><b>Гусь у берега.</b> В проекте уже есть запасной GLB. Сначала проверить его анатомию и лицензию, затем решить, подключать ли его или заменить. Для сцены нужны отдельные позы ходьбы, плавания и посадки.</li>
+      <li><b>Овца и ягнёнок, корова и телёнок.</b> Эти животные есть. Полезнее добавить различимые возрастные варианты и движения стада, чем заводить ещё один фоновый вид.</li>
+      <li><b>Люди за работой.</b> Начать с хвата мешка, помола на ручной зернотёрке, доения и гребка. Для этого пригодятся реквизит и анимации на существующих скелетах.</li>
+    </ol>
+    <p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9200365/">Исследование скота Ура</a> · <a href="https://www.editricesapienza.it/sites/default/files/5885_Abu_Tbeirah_interno_eBook_OA.pdf">Находки Абу-Тбейры</a></p>
+  </details>
+</main>
+<div id="preview-parking" aria-hidden="true"><canvas id="model-canvas"></canvas></div>
+<dialog id="viewer" aria-labelledby="model-title">
+  <div class="viewer-head"><h2 id="model-title"></h2><form method="dialog"><button aria-label="Закрыть модель">Закрыть ×</button></form></div>
+  <div id="stage"></div>
+  <div class="viewer-controls">
+    <p id="model-status" role="status"></p>
+    <label id="clip-label" hidden>Анимация <select id="clip"></select></label>
+    <button id="rotate" type="button" aria-pressed="false">Автовращение</button>
+  </div>
+  <p id="model-detail" class="muted"></p>
+  <p id="model-sources"></p>
+</dialog>
+<script type="module" src="model-atlas/app.js"></script>
+</body>
+</html>
