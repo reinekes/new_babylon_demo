@@ -85,7 +85,39 @@ export function createWildlife(B,scene,meshes=[]){
   }
   return {root,body,head,feet,d:{turtle:true,stride:.18},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
  }
- function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
+ function buildEgret(c){
+  const root=node(`wildlife-${c.id}`),body=node(`${c.id}-body`,root,0,.43,0);
+  const white=material('egret-feathers','#f2eee1'),wing=material('egret-wing','#dedcd0');
+  const bill=material('egret-bill','#252828'),foot=material('egret-foot','#bba138');
+  ball('egret:body',body,white,0,0,-.036,.144,.164,.335);
+  for(const side of [-1,1]){
+   const cover=ball('egret:wing',body,wing,side*.055,-.008,-.079,.067,.119,.284);
+   cover.rotation.x=-.14;
+   for(let i=0;i<3;i++){
+    const feather=ball('egret:folded-feather',body,white,side*(.055+i*.008),-.021-i*.018,-.122,.035,.038,.235);
+    feather.rotation.x=-.15;
+   }
+   const leg=node(`${c.id}-leg-${side}`,root,side*.035,0,-.025);
+   tube('egret:leg',leg,bill,[[0,.385,0],[0,.222,-.04],[0,.009,0]],.010,.67);
+   for(const digit of [-1,0,1])tube(`egret:toe-${digit}`,leg,foot,[[0,.01,0],[digit*.02,.009,.029],[digit*.027,.006,.047]],.005,.45);
+  }
+  const neck=node(`${c.id}-neck`,body,0,.04,.069);
+  part('egret:s-neck',neck,white,name=>{
+   const controls=[[0,-.04,-.032],[0,.037,.014],[0,.09,.052],[0,.153,.028],[0,.216,-.009],[0,.273,.024],[0,.31,.048]];
+   const points=controls.map(p=>v(...p)),path=[];
+   for(let i=0;i<points.length-1;i++){
+    for(let step=0;step<5;step++)path.push(B.Vector3.CatmullRom(points[Math.max(0,i-1)],points[i],points[i+1],points[Math.min(i+2,points.length-1)],step/5));
+   }
+   path.push(points.at(-1));
+   return B.MeshBuilder.CreateTube(name,{path,tessellation:16,cap:B.Mesh.CAP_ALL,
+    radiusFunction:i=>.043-.021*i/(path.length-1)},scene);
+  });
+  ball('egret:head',neck,white,0,.315,.065,.059,.056,.099);
+  part('egret:bill',neck,bill,name=>loft(name,[[0,0,.019,.013],[.043,-.004,.012,.008],[.118,-.011,.001,.001]]),0,.302,.103);
+  for(const side of [-1,1])ball('egret:eye',neck,black,side*.024,.324,.09,.009,.009,.009);
+  return {root,body,neck,d:{egret:true,stride:.4},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
+ }
+ function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);if(c.kind==='egret')return buildEgret(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
   const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
   if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
@@ -173,6 +205,16 @@ export function createWildlife(B,scene,meshes=[]){
     a.tail.rotation.set(0,0,0);if(a.tailJoints)for(const joint of a.tailJoints)joint.rotation.set(0,0,0);
     if(a.wings)for(const wing of a.wings)wing.node.rotation.set(0,0,wing.side*.12);
     a.move=0;continue;
+   }
+   if(d.egret){
+    a.root.rotation.y=c.yaw??0;
+    const phase=t%12;
+    const strike=Math.max(0,Math.min(1,(phase-8.2)/.19,(9.25-phase)/.65));
+    const waterAboveFoot=WATER_HEIGHT-a.root.position.y;
+    const contactAngle=Math.acos(Math.max(-1,Math.min(1,(waterAboveFoot-.47)/Math.hypot(.291,.221))))-Math.atan2(.221,.291);
+    a.neck.rotation.x=contactAngle*strike+Math.sin(t*1.4)*.027*(1-strike);
+    a.neck.rotation.y=Math.sin(t*.7)*.13*(1-strike);
+    continue;
    }
    if(d.turtle){
     for(const {foot,side,end} of a.feet){

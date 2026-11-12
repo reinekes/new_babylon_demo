@@ -94,9 +94,9 @@ export function makeCatalog(index, profile) {
   };
   rows.push(row('animals','Змея','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'snakes'})));
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
-  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия']});
+  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия'],egret:['Малая белая цапля','Игровая геометрия']});
   for (const [species,[title,label]] of Object.entries(wildlife)) {
-    rows.push(row(species==='bird'?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));
+    rows.push(row(['bird','egret'].includes(species)?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));
   }
   for (const [key,title] of Object.entries({flax:'Лён',lentil:'Чечевица',pea:'Горох',chickpea:'Нут',onion:'Лук'})) {
     rows.push(row('plants',title,'Процедурное растение поля или двора',model('crop','Игровая геометрия',{key})));

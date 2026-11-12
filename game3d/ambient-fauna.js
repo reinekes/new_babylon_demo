@@ -2,12 +2,12 @@ import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
-import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength} from '../world.js';
+import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength,onBridge} from '../world.js';
 import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-scan-20261112';
-import {WATER_HEIGHT} from './water.js';
+import {WATER_HEIGHT,waterDepth} from './water.js';
 import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
  'orange-bird':{file:'imported-orange-bird.glb',count:3,stride:.14,pace:.18},
@@ -50,6 +50,7 @@ export function courtyardFauna(state,time=state.simTime||0){
     .find(p=>ambientClearSegment(state,anchor,p));
    routes.push({kind,route:end?[anchor,end,anchor]:[anchor],speed,pause});
   };
+  let egret;
   if(home){
    add('pig',ambientAnchor(state,'pig'),.55,.22,2.5);
    const along=riverLocal(home.x,home.y,state).along;
@@ -57,13 +58,28 @@ export function courtyardFauna(state,time=state.simTime||0){
     Math.max(2,Math.min(riverLength(state)-3,along+delta)),state,offset
    ))).find(p=>ambientDryPoint(state,p.x,p.y,.22));
    add('turtle',shore,.25,.08,3.5);
+   for(const shift of [6,-6,9,-9,3,-3]){
+    const bank=along+shift;
+    if(bank<2||bank>riverLength(state)-3)continue;
+    const point=[1.11,-1.11,1.08,-1.08].map(offset=>riverPoint(bank,state,offset)).find(p=>{
+     const depth=waterDepth(p.x,p.y,state);
+     return depth>.13&&depth<.24&&ambientDryPoint(state,p.x,p.y,-Infinity)&&!onBridge(state.buildings,p.x,p.y,state);
+    });
+    if(point){
+     const river=riverPoint(bank,state);
+     egret={...point,yaw:Math.atan2(river.x-point.x,river.y-point.y)};
+     break;
+    }
+   }
   }
-  plan={buildings:state.buildings,count:state.buildings.length,routes};courtyardPlans.set(state,plan);
+  plan={buildings:state.buildings,count:state.buildings.length,routes,egret};courtyardPlans.set(state,plan);
  }
- return plan.routes.map(({kind,route,speed,pause})=>{
+ const animals=plan.routes.map(({kind,route,speed,pause})=>{
   const motion=loopMotion(route,time,speed,pause);
   return {id:`ambient-${kind}`,kind,decorative:true,...motion,behavior:motion.walking?'walking':'looking'};
  });
+ if(plan.egret)animals.push({id:'ambient-egret',kind:'egret',decorative:true,...plan.egret});
+ return animals;
 }
 
 function createFeedingRipple(B,scene,id){

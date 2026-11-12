@@ -27,6 +27,7 @@ test('paused load re-centres sky birds over a larger saved world without adding 
 });
 
 test('yard pigs and shore turtles follow dry decorative routes without touching save state',async()=>{
+ const {waterDepth}=await import('../game3d/water.js');
  const {courtyardFauna,ambientDryPoint}=await import('../game3d/ambient-fauna.js');
  for(const seed of [1,4,9,96]){
   const state=createGame({seed}),before=JSON.stringify(state);
@@ -34,8 +35,12 @@ test('yard pigs and shore turtles follow dry decorative routes without touching 
   for(let t=0;t<25;t+=.5){
    state.simTime=t;const snapshot=JSON.stringify(state),animals=courtyardFauna(state);
    assert.equal(JSON.stringify(state),snapshot);
-   assert.deepEqual(animals.map(a=>a.kind),['pig','turtle']);
+   assert.deepEqual(animals.filter(a=>a.kind!=='egret').map(a=>a.kind),['pig','turtle']);
    for(const a of animals){
+    if(a.kind==='egret'){
+     assert.ok(a.decorative&&waterDepth(a.x,a.y,state)>.13&&waterDepth(a.x,a.y,state)<.24);
+     continue;
+    }
     assert.ok(a.decorative&&ambientDryPoint(state,a.x,a.y));
     const seen=positions.get(a.kind)||new Set();
     seen.add(`${a.x},${a.y}`);positions.set(a.kind,seen);
