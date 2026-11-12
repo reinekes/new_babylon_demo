@@ -1,4 +1,4 @@
-import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js';
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=valley-seam-herds-20261112';
 import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
@@ -34,9 +34,9 @@ export function ambientDryPoint(state,x,y,margin=.18){
 export function ambientClearSegment(state,a,b){const n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/.06));for(let i=0;i<=n;i++)if(!ambientDryPoint(state,a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false;return true;}
 export function ambientAnchor(state,species,index=0,occupied=[]){
  const kinds=Object.keys(AMBIENT_MODELS),id=kinds.indexOf(species),houses=(state.buildings||[]).filter(b=>b.type==='house'),home=houses[(Math.max(0,id)*2+index*3)%Math.max(1,houses.length)]||{x:8,y:8};
- const wild={goose:{x:27,y:10},duck:{x:29,y:21},fox:{x:4,y:24},boar:{x:28,y:17},lioness:{x:34,y:27},bull:{x:22,y:12},'sheep-kenchoo':{x:5,y:15},donkey:{x:home.x+2,y:home.y+2}};
+ const wild={goose:{x:27,y:10},duck:{x:29,y:21},fox:{x:4,y:24},boar:{x:28,y:17},lioness:{x:34,y:27},onager:{x:31,y:19},bull:{x:22,y:12},'sheep-kenchoo':{x:5,y:15},donkey:{x:home.x+2,y:home.y+2}};
  const wildBase=wild[species],base=wildBase&&species!=='donkey'?{x:wildBase.x*worldWidth(state)/40,y:wildBase.y*worldHeight(state)/32}:wildBase||home,seed={x:base.x+(index%2)*4.5-Math.floor(index/2)*2,y:base.y+Math.floor(index/2)*4-(index%2)*2};
- for(let ring=0;ring<32;ring++)for(let j=0;j<16;j++){const angle=(j+index*.73+id*1.37)*Math.PI/8,r=.9+ring*.28,x=seed.x+Math.cos(angle)*r,y=seed.y+Math.sin(angle)*r;if(ambientDryPoint(state,x,y,.3)&&occupied.every(p=>Math.hypot(p.x-x,p.y-y)>2.2)&&(!['fox','boar','lioness'].includes(species)||!(state.buildings||[]).some(b=>Math.hypot(b.x-x,b.y-y)<3)))return {x,y};}
+ for(let ring=0;ring<32;ring++)for(let j=0;j<16;j++){const angle=(j+index*.73+id*1.37)*Math.PI/8,r=.9+ring*.28,x=seed.x+Math.cos(angle)*r,y=seed.y+Math.sin(angle)*r;if(ambientDryPoint(state,x,y,.3)&&occupied.every(p=>Math.hypot(p.x-x,p.y-y)>2.2)&&(!['fox','boar','lioness','onager'].includes(species)||!(state.buildings||[]).some(b=>Math.hypot(b.x-x,b.y-y)<3)))return {x,y};}
  return null;
 }
 const YARD_PIG_MODEL={file:"ambient-yard-pig.glb",scale:.12};
@@ -77,7 +77,7 @@ export function courtyardFauna(state,time=state.simTime||0){
    ))).find(p=>ambientDryPoint(state,p.x,p.y,.22));
    add('turtle',shore,.25,.08,3.5);
    otterPool=findOtterPool(state,along);
-   const steppeland=ambientAnchor(state,'lioness',1);
+   const steppeland=ambientAnchor(state,'onager');
    regional=planRegionalFauna(state,along,ambientDryPoint,ambientClearSegment,steppeland);
    for(const shift of [6,-6,9,-9,3,-3]){
     const bank=along+shift;

@@ -2,7 +2,7 @@ import {worldWidth,worldHeight,riverPoint,riverLocal,riverFlowSign,riverLength,i
 import {surfaceElevation,TILE} from '../district3d/terrain.js';
 import {sceneryClear} from './nature.js';
 
-export const BIRD_FLOCK_BUDGETS=Object.freeze({low:4,balanced:8,high:10});
+export const BIRD_FLOCK_BUDGETS=Object.freeze({low:5,balanced:10,high:10});
 // A display-only plan: the first flock crosses the inhabited part of the valley,
 // while a second follows the nearest reach of river. No animals enter the ledger.
 export function birdFlockPlan(state,tier='balanced'){
@@ -28,7 +28,7 @@ export function birdLandingSites(state,flock){
  const side=home.across<riverLocal(bank.x,bank.y,state).across?-1:1;
  for(const distance of [0,2,-2,4,-4,7,-7]){
   for(const offset of [2.15,2.65]){
-   const sites=Array.from({length:flock.count},(_,i)=>riverPoint(along+distance+(i-2)*.30,state,side*(offset+i%2*.20)));
+   const sites=Array.from({length:flock.count},(_,i)=>riverPoint(along+distance+(i-(flock.count-1)/2)*.30,state,side*(offset+i%2*.20)));
    if(sites.every(p=>isDryPoint(state,p.x,p.y)&&sceneryClear(state,p,.22))){
     return sites.map(p=>({x:p.x*TILE,y:surfaceElevation(p.x,p.y,state)+.105,z:p.y*TILE}));
    }

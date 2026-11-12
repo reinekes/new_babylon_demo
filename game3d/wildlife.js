@@ -1,4 +1,4 @@
-import {createOnager,poseOnager} from './onager.js';
+import {createOnager,onagerDistanceGeometry,poseOnager} from './onager.js?v=valley-seam-herds-20261112';
 import {createPelican,posePelican} from './pelican.js';
 import {regionalBirds,createRegionalBird,createRegionalFrog,poseRegionalBird} from './regional-wildlife.js';
 import {onBridge} from '../world.js';
@@ -174,9 +174,35 @@ export function createWildlife(B,scene,meshes=[]){
   mesh.scaling.z=1.23;
   return mesh;
  }
+ const onagerHelpers={node,ball,tube,material,skin,black,hoof};
+ function buildOnager(c){
+  const root=node('wildlife-'+c.id);
+  root.scaling.setAll(c.scale??1);
+  const distant=part('onager-distance',root,material('onager-skin','#ffffff'),name=>{
+   const mesh=new B.Mesh(name,scene);
+   onagerDistanceGeometry(B).applyToMesh(mesh);
+   return mesh;
+  });
+  return {root,distant,detail:null,d:{onager:true,stride:1.1},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
+ }
+ function updateOnagerDetail(a,c){
+  const camera=scene.activeCamera;
+  const position=camera?.globalPosition||camera?.position;
+  const radius=a.detail?.root.isEnabled()?76:68;
+  const near=!position||B.Vector3.DistanceSquared(position,a.root.position)<radius*radius;
+  if(near&&!a.detail){
+   const detail=createOnager({...c,id:c.id+'-detail'},onagerHelpers);
+   detail.root.parent=a.root;
+   for(const mesh of detail.root.getChildMeshes())mesh.isPickable=false;
+   a.detail=detail;
+  }
+  a.distant.setEnabled(!near);
+  a.detail?.root.setEnabled(near);
+  return near;
+ }
  function build(c){
   const helpers={node,ball,tube,material,skin,black,hoof};
-  if(c.kind==='onager')return createOnager(c,helpers);
+  if(c.kind==='onager')return buildOnager(c);
   if(c.kind==='white-pelican')return createPelican(c,helpers);
   if(Object.hasOwn(regionalBirds,c.kind))return createRegionalBird(c,regionalBirds[c.kind],helpers);
   if(c.kind==='savigny-tree-frog')return createRegionalFrog(c,helpers);if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);if(c.kind==='egret')return buildEgret(c);if(c.kind==='otter')return buildOtter(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
@@ -250,13 +276,24 @@ export function createWildlife(B,scene,meshes=[]){
    // Include the dorsal fin and its small animated roll, not just the body centre.
    a.root.position.set(c.x*6,Number.isFinite(c.elevation)&&(d.otter||d.regional||d.frog||d.pelican)?c.elevation:d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    a.lastX=c.x;a.lastY=c.y;
-   if(paused&&!fresh)continue;
+   const newDetail=d.onager&&!a.detail;
+   const nearOnager=d.onager&&updateOnagerDetail(a,c);
+   if(paused&&!fresh&&!(newDetail&&nearOnager))continue;
    const delta=fresh?1:1-Math.exp(-dt*9);blend=delta;
    if(distance>.00001&&distance<3){a.yaw=Math.atan2(dx,dz);a.gait+=distance/d.stride*Math.PI*2;}
    a.root.metadata.gait=a.gait;
    if(a.yaw!==null&&Number.isFinite(a.yaw)){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*delta;}
    a.move=ease(a.move,distance>.00001&&distance<3?1:0);
    const t=time+a.idPhase;
+   if(d.onager){
+    if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
+    if(nearOnager){
+     a.detail.move=a.move;
+     a.detail.gait=a.gait;
+     poseOnager(a.detail,c,t,ease);
+    }
+    continue;
+   }
    if(c.dead||c.behavior==='dead'){
     // The simulation owns corpse lifetime and coordinates. Only the pose changes here.
     const progress=Number.isFinite(c.deathProgress)?Math.max(0,Math.min(1,c.deathProgress)):1;
@@ -267,11 +304,6 @@ export function createWildlife(B,scene,meshes=[]){
     a.tail.rotation.set(0,0,0);if(a.tailJoints)for(const joint of a.tailJoints)joint.rotation.set(0,0,0);
     if(a.wings)for(const wing of a.wings)wing.node.rotation.set(0,0,wing.side*.12);
     a.move=0;continue;
-   }
-   if(d.onager){
-    if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
-    poseOnager(a,c,t,ease);
-    continue;
    }
    if(d.pelican){
     if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;

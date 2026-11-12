@@ -3,6 +3,21 @@ import {calendarAt,calendarRateFor,MONTH_SECONDS} from '../calendar.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT,waterDepth} from './water.js';
 
+const herdFormation=[[0,0],[-.38,-.44],[.37,-.51],[-.24,-.92],[.32,-1.02]];
+function onagerRoutes(state,center,clearSegment){
+ if(!center)return [];
+ const directions=[[1,0],[0,1],[-1,0],[0,-1]];
+ const centers=[center,...directions.map(([x,y])=>({x:center.x+x*1.25,y:center.y+y*1.25}))];
+ for(const site of centers)for(const [dx,dy] of directions){
+  const routes=herdFormation.map(([side,back])=>{
+   const start={x:site.x+dx*back-dy*side,y:site.y+dy*back+dx*side};
+   return [start,{x:start.x+dx*1.45,y:start.y+dy*1.45}];
+  });
+  if(routes.every(([a,b])=>clearSegment(state,a,b)))return routes;
+ }
+ return [];
+}
+
 export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
  const length=riverLength(state);
  const spots=(shift,offset)=>[shift,-shift,shift+3,-shift-3,0,3,-3].map(delta=>along+delta)
@@ -16,10 +31,8 @@ export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
  const ibis=pool(7,1.05,.46,.025,.105);
  const frog=bank(-3,1.66,.20);
  const frogEnd=frog&&riverPoint(frog.bank+.16,state,1.66);
- const onagerEnd=steppeland&&[[1.3,0],[0,1.3],[-1.3,0],[0,-1.3]].map(([dx,dy])=>({x:steppeland.x+dx,y:steppeland.y+dy}))
-  .find(p=>clearSegment(state,steppeland,p));
  return {ibis,frog:frog&&(frogEnd&&clearSegment(state,frog.point,frogEnd)?[frog.point,frogEnd]:[frog.point]),
-  onager:steppeland&&(onagerEnd?[steppeland,onagerEnd,steppeland]:[steppeland]),
+  onagers:onagerRoutes(state,steppeland,clearSegment),
   pelican:pool(5,-.27,1.25,.22,.40),cormorant:pool(-6,.47,.83,.19,.40),
   kingfisher:pool(-3,.28,.70,.09,.42),harrier:bank(9,2.3,.30)};
 }
@@ -93,6 +106,9 @@ export function regionalFauna(state,plan,time){
   add('savigny-tree-frog',{x,y,hop,yaw:Math.atan2(b.x-a.x,b.y-a.y)+(phase<6?0:Math.PI),
    elevation:surfaceElevation(x,y,state)+hop*.14});
  }
- if(plan.onager)add('onager',onagerPose(plan.onager,time));
+ for(const [index,route] of plan.onagers.entries()){
+  animals.push({id:index?'ambient-onager-'+index:'ambient-onager',kind:'onager',decorative:true,
+   scale:[1,.94,1.04,.9,.98][index],...onagerPose(route,time+index*.38)});
+ }
  return animals;
 }

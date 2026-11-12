@@ -6,7 +6,10 @@ export const RIVER_HALF_WIDTH=1.145;
 export const RIVER_STEPS_PER_TILE=4;
 export const SCENERY_MARGIN=36;
 export const RIVER_CROSS_SECTION=Array.from({length:25},(_,i)=>(i/24*2-1)*RIVER_HALF_WIDTH);
-export const RIVER_BANK_SECTION=[-1.65,-1.4,-1.25,...RIVER_CROSS_SECTION,1.25,1.4,1.65];
+// End the bank's wet and fertile gradients before the long, coarse plain triangles.
+export const RIVER_SHOULDER=4.3;
+export const RIVER_BANK_SECTION=[-RIVER_SHOULDER,-3.15,-2.25,-1.85,-1.65,-1.4,-1.25,
+ ...RIVER_CROSS_SECTION,1.25,1.4,1.65,1.85,2.25,3.15,RIVER_SHOULDER];
 export const riverStepsPerTile=s=>s?.world?.generationVersion===2?2:RIVER_STEPS_PER_TILE;
 export function riverRows(scenery=false,s){
  const length=riverLength(s),steps=riverStepsPerTile(s),main=Array.from({length:length*steps+1},(_,i)=>-.5+i/steps);

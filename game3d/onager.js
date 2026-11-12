@@ -77,3 +77,33 @@ export function poseOnager(a,c,time,ease){
   leg.foot.rotation.x=-pose.hip-pose.knee;
  }
 }
+
+// One vertex-coloured instance per distant animal. At this scale the outline
+// and group motion are visible, but the individual joints are sub-pixel.
+export function onagerDistanceGeometry(B){
+ const data=[];
+ const sphere=(color,x,y,z,sx,sy,sz,angle=0)=>{
+  const shape=B.VertexData.CreateSphere({diameter:1,segments:4});
+  const matrix=B.Matrix.Compose(new B.Vector3(sx,sy,sz),B.Quaternion.RotationAxis(B.Axis.X,angle),new B.Vector3(x,y,z));
+  shape.transform(matrix);
+  const {r,g,b}=B.Color3.FromHexString(color).toLinearSpace();
+  shape.colors=Array.from({length:shape.positions.length/3},()=>[r,g,b,1]).flat();
+  data.push(shape);
+ };
+ sphere(coat[0],0,1.06,-.08,.47,.56,1.54);
+ sphere(coat[1],0,.92,-.07,.40,.31,1.26);
+ sphere(coat[0],0,1.29,.48,.31,.72,.32,.50);
+ sphere(coat[0],0,1.49,.75,.19,.25,.40,.38);
+ sphere(coat[2],0,1.38,.93,.14,.14,.23);
+ sphere(coat[3],0,1.42,-.78,.07,.52,.085,-.14);
+ for(const side of [-1,1]){
+  sphere(coat[0],side*.068,1.67,.64,.055,.22,.065,-.19);
+  for(const end of [-1,1]){
+   const z=end*.47,x=side*.14;
+   sphere(coat[0],x,.69,z,.105,.68,.15,end*.14);
+   sphere(coat[1],x,.28,z+end*.015,.065,.51,.078);
+   sphere(coat[3],x,.055,z+.025,.10,.11,.12);
+  }
+ }
+ return data[0].merge(data.slice(1));
+}

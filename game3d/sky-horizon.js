@@ -1,12 +1,11 @@
 import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere,linearFogColor} from './atmosphere.js';
 import {lightingAt} from '../city-life.js';
-import {worldWidth,worldHeight,riverLength,riverAcrossSize,river,riverLocal,worldFromRiver} from '../world.js';
-import {surfaceElevation,shoreDistance,alluvialNormal,TILE} from '../district3d/terrain.js';
-import {RIVER_BANK_SECTION,RIVER_CROSS_SECTION,riverRows,SCENERY_MARGIN} from '../district3d/river-profile.js';
+import {worldWidth,worldHeight,riverLength,riverAcrossSize,river,worldFromRiver} from '../world.js';
+import {alluvialHeight,alluvialColor,alluvialNormal,sceneryColumns,TILE} from '../district3d/terrain.js';
+import {RIVER_BANK_SECTION,RIVER_CROSS_SECTION,RIVER_SHOULDER,riverRows,SCENERY_MARGIN} from '../district3d/river-profile.js';
 
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
 const smooth=n=>{n=clamp(n);return n*n*(3-2*n);};
-const noise=(x,y)=>{const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;return n-Math.floor(n);};
 const normalize=(x,y,z)=>{const n=Math.hypot(x,y,z);return {x:x/n,y:y/n,z:z/n};};
 
 // Presentation only: the existing simulation clock owns pause, speed and day length.
@@ -23,10 +22,7 @@ export function celestialAt(seconds=0,mode='auto'){
 }
 
 function sample(x,y,s){
- const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));
- const h=surfaceElevation(x,y,s)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);
- const local=riverLocal(x,y,s),fertile=smooth((4.3-Math.abs(local.across-river(local.along,s)))/3),fleck=noise(x*1.3,y*1.3)*.055,wet=1-smooth((d+.05)/.7);
- return {position:[x*TILE,h,y*TILE],normal:alluvialNormal(x,y,s),color:[.92-fertile*.20-wet*.20+fleck,.83-fertile*.09-wet*.17+fleck,.64-fertile*.12-wet*.12+fleck,1]};
+ return {position:[x*TILE,alluvialHeight(x,y,s),y*TILE],normal:alluvialNormal(x,y,s),color:alluvialColor(x,y,s)};
 }
 
 export function horizonGeometry(s){
@@ -35,7 +31,7 @@ export function horizonGeometry(s){
  s={buildings:[],world:{...s?.world,lakes:[]}};
  const length=riverLength(s),width=riverAcrossSize(s),min=-.5-SCENERY_MARGIN,max=width-.5+SCENERY_MARGIN,end=length-.5+SCENERY_MARGIN;
  const middle={across:(width-1)/2,along:(length-1)/2},points=new Map(),add=(across,along)=>{const p=worldFromRiver(across,along,s);points.set(`${p.x},${p.y}`,{...sample(p.x,p.y,s),across,along});};
- const columns=[-36.5,-24.5,-12.5,-6.5,-2.5,-.5,width-.5,width+1.5,width+5.5,width+11.5,width+23.5,width+35.5];
+ const columns=sceneryColumns(width);
  for(const along of [min,end])for(const across of [...columns,...RIVER_BANK_SECTION.map(x=>river(along,s)+x)].filter(x=>x>=min&&x<=max))add(Math.round(across*1e9)/1e9,along);
  for(const along of riverRows(true,s)){add(min,along);add(max,along);}
  const rim=[...points.values()].sort((a,b)=>Math.atan2(a.along-middle.along,a.across-middle.across)-Math.atan2(b.along-middle.along,b.across-middle.across));
@@ -43,7 +39,7 @@ export function horizonGeometry(s){
  for(const scale of scales)for(const p of rim){
   let across=middle.across+(p.across-middle.across)*scale,along=middle.along+(p.along-middle.along)*scale;
   // Continue both river mouths through the distant plain, keeping a narrow bed.
-  if(scale!==1&&(p.along===min||p.along===end)){const oldCenter=river(p.along,s),center=river(along,s),offset=p.across-oldCenter,bank=1.7;
+  if(scale!==1&&(p.along===min||p.along===end)){const oldCenter=river(p.along,s),center=river(along,s),offset=p.across-oldCenter,bank=RIVER_SHOULDER;
    if(offset<-bank){const t=(p.across-min)/(oldCenter-bank-min),left=middle.across+(min-middle.across)*scale;across=left+(center-bank-left)*t;}
    else if(offset>bank){const t=(p.across-oldCenter-bank)/(max-oldCenter-bank),right=middle.across+(max-middle.across)*scale;across=center+bank+(right-center-bank)*t;}
    else across=center+offset;

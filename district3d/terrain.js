@@ -49,10 +49,13 @@ export function indexNearbyRoads(edges){
 }
 
 const unique=values=>[...new Set(values.map(x=>Math.round(x*1e9)/1e9))].sort((a,b)=>a-b);
+export function sceneryColumns(size){
+ return [-36.5,-24.5,-12.5,-6.5,-4.5,-2.5,-1.5,-.5,size-.5,size+.5,size+1.5,size+3.5,size+5.5,size+11.5,size+23.5,size+35.5];
+}
 const sectionCache=new Map();
 function sectionCoordinates(s){
  const size=riverAcrossSize(s),steps=riverStepsPerTile(s),key=`${size}/${steps}`;
- if(!sectionCache.has(key))sectionCache.set(key,{inner:Array.from({length:size*steps+1},(_,i)=>-.5+i/steps),outer:[-36.5,-24.5,-12.5,-6.5,-2.5,-.5,size-.5,size+1.5,size+5.5,size+11.5,size+23.5,size+35.5]});
+ if(!sectionCache.has(key))sectionCache.set(key,{inner:Array.from({length:size*steps+1},(_,i)=>-.5+i/steps),outer:sceneryColumns(size)});
  return sectionCache.get(key);
 }
 function terrainRowXs(y,dense,min,max,s){
@@ -61,15 +64,31 @@ function terrainRowXs(y,dense,min,max,s){
  // Keep both sets there so adjacent strips share segments, not T-junctions.
  return unique([...sections.outer,...(dense?sections.inner:[]),...bank,min,max].filter(x=>x>=min&&x<=max));
 }
-function alluvialHeight(x,y,s){const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));return surfaceElevationFromShore(x,y,s,d)+smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2);}
+// Keep the near crest and river bed at the rim, then flatten the dry crest
+// into broad relief that the coarser exterior grid can actually represent.
+export function alluvialHeight(x,y,s,d=shoreDistance(x,y,s)){
+ const near=surfaceElevationFromShore(x,y,s,d);
+ const outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));
+ if(!outside||d<.22)return near;
+ const plain=.20+.48*(.5+.5*Math.sin(x*.037+y*.026)*Math.sin(y*.044-x*.021));
+ const blend=smooth(outside/7)*smooth((d-.22)/1.25);
+ return near+(plain-near)*blend;
+}
 export function alluvialNormal(x,y,s){const e=.02,dx=(alluvialHeight(x+e,y,s)-alluvialHeight(x-e,y,s))/(2*e*TILE),dz=(alluvialHeight(x,y+e,s)-alluvialHeight(x,y-e,s))/(2*e*TILE),length=Math.hypot(dx,1,dz);return [-dx/length,1/length,-dz/length];}
+export function alluvialColor(x,y,s,d=shoreDistance(x,y,s)){
+ const fertile=smooth((4.3-Math.abs(signedRiverDistance(x,y,s)))/3),wet=1-smooth((d+.05)/.7);
+ // Fine grain comes from the shared soil texture. Vertex colour carries only
+ // broad variation so long exterior triangles do not turn grain into stripes.
+ const tone=.024+.012*Math.sin(x*.14+y*.08)*Math.sin(y*.13-x*.055);
+ return [.92-fertile*.20-wet*.20+tone,.83-fertile*.09-wet*.17+tone,.64-fertile*.12-wet*.12+tone,1];
+}
 function terrainVertex(g,x,y,s,scenery){
- const d=shoreDistance(x,y,s),outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));
- // At the common rim the height/color/UV are identical, then the distant plain
- // gains dunes gradually. The continued river is carved through those dunes.
- const h=surfaceElevation(x,y,s)+(scenery?smooth(outside/8)*smooth((d-.35)/2)*(1+2.5*Math.sin(x*.09+y*.055)**2):0);
- const fertile=smooth((4.3-Math.abs(signedRiverDistance(x,y,s)))/3),fleck=noise(x*1.3,y*1.3)*.055,wet=1-smooth((d+.05)/.7);
- g.positions.push(x*TILE,h,y*TILE);g.normals??=[];g.normals.push(...alluvialNormal(x,y,s));g.colors.push(.92-fertile*.20-wet*.20+fleck,.83-fertile*.09-wet*.17+fleck,.64-fertile*.12-wet*.12+fleck,1);
+ const d=shoreDistance(x,y,s);
+ const h=scenery?alluvialHeight(x,y,s,d):surfaceElevationFromShore(x,y,s,d);
+ g.positions.push(x*TILE,h,y*TILE);
+ g.normals??=[];
+ g.normals.push(...alluvialNormal(x,y,s));
+ g.colors.push(...alluvialColor(x,y,s,d));
 }
 function stripGeometry(g,rows,xs,s,scenery){
  let previous=null;const triangle=(a,b,c)=>riverAxis(s)==='x'?g.indices.push(a,c,b):g.indices.push(a,b,c);
