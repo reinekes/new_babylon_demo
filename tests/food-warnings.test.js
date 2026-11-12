@@ -43,3 +43,18 @@ test('a single evening shortage opens the affected home even with plentiful ware
  assert.equal(w.alerts.find(a=>a.id==='families').homeKey,`${home.x},${home.y}`);
  assert.ok(!w.alerts.some(a=>a.id==='food'));
 });
+
+test('household dinner reports full, partial and missed portions separately from the next reserve',async()=>{
+ const {householdDinner,advanceWellbeing}=await import('../wellbeing.js');
+ const residents=[{age:30},{age:8}].map(c=>({...c,hunger:0,health:100,mood:75,faith:60,mealDay:0,mealEvaluated:-1,missedMeals:0,prayerTotal:0}));
+ const s={simTime:55,citizens:residents,buildings:[],resources:{faith:0}};
+ for(const [portion,percent] of [[1,100],[.9375,94],[0,0]]){
+  for(const c of residents){c.mealEvaluated=-1;c.mealEaten=mealRation(c)*portion;}
+  advanceWellbeing(s,.1);
+  const report=householdDinner(s.simTime,residents,.6);
+  assert.equal(report.lastPercent,percent);
+  assert.equal(report.reserve,.6);
+  assert.ok(Math.abs(report.need-1.2)<1e-7);
+ }
+ assert.equal(householdDinner(0,residents,0).lastPercent,null);
+});

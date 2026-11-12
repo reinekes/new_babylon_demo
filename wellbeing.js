@@ -14,6 +14,21 @@ export const hourOf=t=>((8+t*.4)%24+24)%24;
 export const mealCycle=t=>Math.floor((t-30+1e-7)/60);
 export const mealRation=c=>ration(c)*4/3;
 export const isDinnerTime=t=>hourOf(t)>=20||hourOf(t)<6;
+export function householdDinner(time,residents,food){
+ const day=mealCycle(time),inProgress=isDinnerTime(time),lastDay=day-Number(inProgress);
+ let lastNeed=0,lastEaten=0,need=0,remaining=0;
+ for(const c of residents){
+  const portion=mealRation(c);
+  need+=portion;
+  if(lastDay>=0&&c.mealEvaluated===lastDay){
+   lastNeed+=portion;
+   lastEaten+=portion*c.lastMealQuality;
+  }
+  if(inProgress)remaining+=Math.max(0,portion-(c.mealDay===day?c.mealEaten:0));
+ }
+ return {lastPercent:lastNeed?Math.round(lastEaten/lastNeed*100):null,
+  need,reserve:Math.max(0,food-remaining),remaining};
+}
 export function initializeWellbeing(s){const day=mealCycle(s.simTime||0);for(const c of s.citizens){c.hunger??=0;c.health??=100;c.mood??=75;c.faith??=60;c.mealDay??=day;c.mealEaten??=mealRation(c);c.mealEvaluated??=day;c.missedMeals??=0;c.lastMealQuality??=1;c.familyMeal??=false;c.diningUntil??=0;c.prayerTotal??=0;}}
 export const workRate=(c,task=c.siteDuty||c.role)=>Math.max(.15,Math.min(1.2,(.5+(c.mood??75)/150)*(.4+.6*(c.health??100)/100)*(1-.6*(c.hunger||0)/100)))*(professionMatchesTask(c,task)?1.2:1);
 export const beliefMultiplier=s=>s.citizens.length?s.citizens.reduce((n,c)=>n+(c.faith??60),0)/(s.citizens.length*60):0;
