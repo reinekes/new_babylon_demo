@@ -51,10 +51,16 @@ export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
  }
  houses.sort((a,b)=>Number(b.severe)-Number(a.severe)||b.hungry-a.hungry||Number(b.atRisk)-Number(a.atRisk)||b.shortfall-a.shortfall||a.y-b.y||a.x-b.x);
  const hungry=houses.reduce((n,h)=>n+h.hungry,0),riskFamilies=houses.filter(h=>h.hungry||h.atRisk),target=forecast.target,seeds={target,protected:forecast.protected,missing:Math.max(0,target-Math.min(s.resources.food,target)),unprotected:target>1e-7&&!forecast.protected},alerts=[];
+ const dinnerRisks=houses.filter(h=>h.atRisk);
+ const dinner={houseCount:dinnerRisks.length,status:'covered'};
+ if(!houses.length)dinner.status='empty';
+ else if(dinnerRisks.length)dinner.status='risk';
+ else if(houses.some(h=>h.shortfall>1e-7))dinner.status='pending';
+ else if(houses.some(h=>h.awaitingDelivery))dinner.status='inTransit';
  if(!s.lost&&s.citizens.length){
-  if(forecast.balance < -1e-7)alerts.push({id:'food',severity:forecast.ready<Math.min(forecast.demand,s.citizens.reduce((n,c)=>n+mealRation(c),0))-1e-7?'danger':'warning',title:'Риск голода до жатвы',text:`По прогнозу недостаёт ${Math.ceil(-forecast.balance)} еды. ${forecast.unthreshed>0?'Обмолоти снопы и доставь еду на склад.':'Нужны новые поставки еды: промыслы или торговля.'}`});
+  if(forecast.balance < -1e-7)alerts.push({id:'food',severity:'warning',title:'До жатвы нужны поставки',text:`Без новых поставок до жатвы не хватит около ${Math.ceil(-forecast.balance)} ед. еды. ${forecast.unthreshed>0?'Обмолоти снопы и доставь еду на склад.':'Пополняй запасы уловом, другим промыслом или торговлей.'}`});
   if(seeds.missing>1e-7||seeds.unprotected)alerts.push({id:'seeds',severity:seeds.missing>1e-7&&s.buildings.some(b=>b.type==='field'&&s.season===fieldCalendar(s,b).sow)?'danger':'warning',title:seeds.missing>1e-7?'Не хватает семян':'Семена не защищены',text:seeds.missing>1e-7?`Для посева не хватает ${Math.ceil(seeds.missing*10)/10} еды на семена. Пополни общий запас.`:'Резерв открыт для еды и продажи. Защити семена перед следующим посевом.'});
-  if(riskFamilies.length)alerts.push({id:'families',severity:houses.some(h=>h.severe)?'danger':'warning',title:hungry?`Недоедают жители: ${hungry}`:`Без ужина рискуют остаться семьи: ${riskFamilies.length}`,text:hungry?`Семей с недоеданием: ${houses.filter(h=>h.hungry).length}. Проверь домашнюю еду и доставку.`:'Домашней еды и груза в пути недостаточно. Проверь путь к складу и взрослых поставщиков.'});
+  if(riskFamilies.length)alerts.push({id:'families',homeKey:riskFamilies.length===1?riskFamilies[0].key:null,severity:houses.some(h=>h.severe)?'danger':'warning',title:hungry?`Недоедают жители: ${hungry}`:`Без ужина рискуют остаться семьи: ${riskFamilies.length}`,text:hungry?`Семей с недоеданием: ${houses.filter(h=>h.hungry).length}. Проверь домашнюю еду и доставку.`:'Домашней еды и груза в пути недостаточно. Проверь путь к складу и взрослых поставщиков.'});
  }
- return {forecast,seeds,houses,hungry,riskFamilies,alerts};
+ return {forecast,seeds,houses,hungry,riskFamilies,dinner,alerts};
 }

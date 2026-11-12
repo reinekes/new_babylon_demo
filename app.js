@@ -580,7 +580,18 @@ function openVitalHome(key,tab,residentId,registerView){
  };
  requestAnimationFrame(()=>{if(!$('tile-detail').hidden)$('household-panel')?.querySelector(`[data-house-tab=${tab}][aria-selected=true]`)?.focus({preventScroll:true});});
 }
-function renderFoodWarnings(){const w=foodWarnings(state),bar=$('food-warnings');bar.hidden=!w.alerts.length;setHTML(bar,w.alerts.map(a=>`<button class="food-warning ${a.severity}" data-food-warning="${a.id}" title="${esc(a.text)}">${a.severity==='danger'?'!':'△'} ${esc(a.title)} <span>→</span></button>`).join(''));bar.querySelectorAll('[data-food-warning]').forEach(el=>el.onclick=()=>showSupply(el.dataset.foodWarning==='families'?'risk':'all'));$('open-supply').textContent=w.alerts.length?`Снабжение · ! ${w.alerts.length}`:'Снабжение';$('open-supply').classList.toggle('needs-attention',!!w.alerts.length);}
+function renderFoodWarnings(){
+ const w=foodWarnings(state),bar=$('food-warnings');
+ bar.hidden=!w.alerts.length;
+ setHTML(bar,w.alerts.map(a=>`<button class="food-warning ${a.severity}" data-food-warning="${a.id}" title="${esc(a.text)}">${a.severity==='danger'?'!':'△'} ${esc(a.title)} <span>→</span></button>`).join(''));
+ for(const button of bar.querySelectorAll('[data-food-warning]'))button.onclick=()=>{
+  const alert=w.alerts.find(a=>a.id===button.dataset.foodWarning);
+  if(alert?.homeKey&&showSupplyHome(alert.homeKey))return;
+  showSupply(alert?.id==='families'?'risk':'all');
+ };
+ $('open-supply').textContent=w.alerts.length?`Снабжение · ! ${w.alerts.length}`:'Снабжение';
+ $('open-supply').classList.toggle('needs-attention',!!w.alerts.length);
+}
 const vowOutcomes={fulfilled:'Исполнен',partial:'Исполнен частично',broken:'Нарушен',renegotiated:'Срок пересогласован'};
 const vowDraft=new Set();
 let vowDraftCity=null;
@@ -648,7 +659,20 @@ function bindWaterDream(root){
 }
 function renderSupply(){
  if(modalKind!=='supply')return;if($('supply-content').contains(document.activeElement)&&['INPUT','SELECT'].includes(document.activeElement.tagName))return;const report=supplyOverview(state),w=foodWarnings(state,foodForecast(state)),byKey=new Map(report.houses.map(h=>[h.key,h])),houses=w.houses.filter(h=>supplyFilter==='all'||h.hungry||h.atRisk);
- const horizons=`<section class="food-forecast" aria-label="Еда сегодня и до жатвы"><p><b>Ближайший ужин</b> · ${w.riskFamilies.length} семей нуждаются в проверке. <button type="button" data-supply-filter="risk">Проверить семьи</button></p><p><b>До жатвы</b> · ${Math.ceil(w.forecast.secondsToHarvest/60)} игр. дн. · ${w.forecast.balance<0?`дефицит ${foodAmount(-w.forecast.balance)}`:`запас ${foodAmount(w.forecast.balance)}`} ед. еды по прогнозу. <button type="button" data-supply-filter="all">Показать расчёт</button></p></section>`;
+ const dinnerStatus={
+  covered:'Еды хватает во всех дворах.',
+  inTransit:'Еды хватит, если груз в пути дойдёт до дворов.',
+  pending:'Часть дворов ещё ждёт пополнения.',
+  risk:`Дворов под угрозой: ${w.dinner.houseCount}.`,
+  empty:'Нет заселённых дворов.'
+ }[w.dinner.status];
+ const harvestStatus=w.forecast.balance<0
+  ?`Без новых поставок не хватит ${foodAmount(-w.forecast.balance)} ед. еды.`
+  :`Готового запаса хватит, останется около ${foodAmount(w.forecast.balance)} ед. еды.`;
+ const horizons=`<section class="food-forecast" aria-label="Еда сегодня и до жатвы">
+  <p><b>${isDinnerTime(state.simTime)?'Текущий ужин':'Ближайший ужин'}</b> · ${dinnerStatus} ${w.riskFamilies.length?'<button type="button" data-supply-filter="risk">Проверить дворы</button>':''}</p>
+  <p><b>До жатвы</b> · ${Math.ceil(w.forecast.secondsToHarvest/60)} игр. дн. · ${harvestStatus} <button type="button" data-supply-filter="all">Показать расчёт</button></p>
+ </section>`;
  const summary=w.alerts.length?`<section class="supply-alerts" aria-label="Предупреждения">${w.alerts.filter(a=>supplyFilter==='all'||a.id==='families').map(a=>`<article class="supply-alert ${a.severity}"><b>${esc(a.title)}</b><p>${esc(a.text)}</p></article>`).join('')}</section>`:'<p class="supply-safe">Признаков недоедания, риска до жатвы и нехватки семян сейчас нет.</p>';
  setHTML($('supply-content'),`${horizons}${summary}${waterDreamPanel()}${waterRequestCard(cityWaterRequest(state),{city:true})}${supplyVowPanel(report)}${supplyFilter==='all'?forecastPanel(w.forecast):''}<div class="supply-filters" role="group" aria-label="Семьи"><button data-supply-filter="all" aria-pressed="${supplyFilter==='all'}">Все семьи · ${w.houses.length}</button><button data-supply-filter="risk" aria-pressed="${supplyFilter==='risk'}">Нужна помощь · ${w.riskFamilies.length}</button></div><p>Общий запас: <b>${foodAmount(state.resources.food)}</b> · в домах: <b>${foodAmount(report.atHome)}</b> · несут домой: <b>${foodAmount(report.inTransit)}</b><br>Нужно на полный ужин всему городу: ${foodAmount(report.demand)}. Недоедающих жителей: ${w.hungry}.</p><small>Прогноз без будущих поставок. К вечеру проверяем домашний запас с учётом несомой еды, ночью — оставшуюся часть ужина. Недоедание отмечается также по прошлому неполному ужину.</small><div class="supply-family-grid">${houses.length?houses.map(h=>{const diagnostic=byKey.get(h.key),status=h.hungry?`Недоедают ${h.hungry}${h.hungryChildren?` · дети ${h.hungryChildren}`:''}`:h.atRisk?'Риск остаться без ужина':h.blockedDelivery?'Доставка заблокирована':h.awaitingDelivery?'Еда в пути':h.need<=1e-7?'Семья уже поужинала':h.shortfall>1e-7?'Нужно пополнить домашний запас':'Запас на ужин есть';return `<article class="management-row supply-family ${h.severe?'danger':h.hungry||h.atRisk?'warning':''}"><h3>Дом ${h.x}, ${h.y} · ${h.residents.length} жителей</h3><b>${status}</b>${h.hungry?`<p>Недоедают: ${h.hungryResidents.map(c=>`${resident(c)} (${c.age<16?'ребёнок · ':''}голод ${Math.round(c.hunger||0)}%)`).join(', ')}.</p>`:''}<p>${esc(h.need<=1e-7?'Семья уже поужинала':h.food+1e-7>=h.need?'Домашней еды хватает на оставшийся ужин':diagnostic?.reason||'')}<br>Дома ${foodAmount(h.food)} · несут домой ${foodAmount(h.inTransit)}<br>${isDinnerTime(state.simTime)?'Осталось съесть в этот ужин':'На ближайший ужин'}: ${foodAmount(h.need)}${h.shortfall>1e-7?` · не хватает дома и в пути ${foodAmount(h.shortfall)}`:''}</p><button data-supply-home="${h.key}">Показать дом и еду</button><button type="button" data-supply-route="${esc(h.key)}">Путь еды</button>${vowHouseButton(diagnostic)}</article>`;}).join(''):'<p class="supply-safe">Семей, которым сейчас нужна помощь, нет.</p>'}</div>${supplyFilter==='risk'?forecastPanel(w.forecast):''}${districtPanel()}<section class="clothing-summary"><h3>Одежда города</h3><p>На складах: ${foodAmount(state.resources.clothing)} · изношенная одежда у ${state.citizens.filter(c=>c.clothing<=25).length} жителей · несут домой: ${state.citizens.reduce((n,c)=>n+(c.clothingLoad||0),0)}.</p><small>Мастер одежды превращает 2 ткани в 1 одеяние. Взрослые забирают замену для себя и детей из доступного местного склада.</small></section>`);
  const waterRequest=$('supply-content').querySelector('[data-water-request-home]');

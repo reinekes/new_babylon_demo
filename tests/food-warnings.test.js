@@ -18,3 +18,28 @@ import {setCitizenRole} from '../management.js';
 test('real missed family dinner creates warnings and feeding over following dinners clears them after reload',()=>{
  const s=createGame({start:'established'});s.resources.food=2;for(const c of s.citizens)setCitizenRole(s,c.id,'builder');for(let i=0;i<600;i++){s.event=null;advanceCalendar(s,.1);}assert.ok(read(s).hungry>0);const loaded=decode(encode(s));assert.ok(loaded);assert.equal(read(loaded).hungry,read(s).hungry);loaded.resources.food=200;for(const b of loaded.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;}for(let i=0;i<1200;i++){loaded.event=null;advanceCalendar(loaded,.1);}assert.equal(read(loaded).hungry,0);assert.ok(!read(loaded).alerts.some(a=>a.id==='families'));
 });
+
+test('a covered dinner stays distinct from the shortfall if new supplies stop',()=>{
+ const s=createGame({start:'established'});
+ s.simTime=27;
+ s.resources.food=5;
+ for(const home of s.buildings.filter(b=>b.type==='house'))home.pantry=8;
+ const w=read(s);
+ assert.equal(w.dinner.status,'covered');
+ const harvest=w.alerts.find(a=>a.id==='food');
+ assert.match(harvest.text,/без новых поставок/i);
+ assert.equal(harvest.severity,'warning');
+});
+
+test('a single evening shortage opens the affected home even with plentiful warehouse food',()=>{
+ const s=supplied(createGame({start:'established'}));
+ s.simTime=27;
+ s.resources.food=200;
+ const home=s.buildings.find(b=>b.type==='house');
+ home.pantry=0;
+ const w=read(s);
+ assert.equal(w.dinner.status,'risk');
+ assert.equal(w.dinner.houseCount,1);
+ assert.equal(w.alerts.find(a=>a.id==='families').homeKey,`${home.x},${home.y}`);
+ assert.ok(!w.alerts.some(a=>a.id==='food'));
+});
