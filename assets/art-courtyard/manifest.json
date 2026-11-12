@@ -4,8 +4,8 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 30230,
-      "sha256": "34365e0bf9ad468b072855aa2ff40ed88dee251b9b46f49941164370c0c9bb7b"
+      "bytes": 30461,
+      "sha256": "45231e0b2652c537b32e83316e01d33b68856ea94f91c012156d5a5d1839618f"
     },
     {
       "file": "CREDITS.html",
@@ -599,6 +599,14 @@
         "StopWalk",
         "Walk"
       ]
+    },
+    {
+      "file": "models/shore-mallard.glb",
+      "bytes": 2592180,
+      "sha256": "6f7174d94cab33025c8ee053df196bc323ba5a85a825091155fd29b9c7d240e1",
+      "triangles": 5336,
+      "meshes": 1,
+      "bones": 27
     },
     {
       "file": "models/shore-seagull.glb",
