@@ -177,6 +177,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
 function festivalProgress(s,q,{paused=false}={}){
  const status=(code,text)=>({code,text});
  if(!q)return status('none','Закажи праздник: угощение зарезервируется на складах, а жители сами доставят его к месту сбора.');
+ if(paused&&q.stage==='celebrating')return status('paused','Пир приостановлен. Продолжи, чтобы гости вернулись к празднику.');
  if(paused)return status('paused','Игра на паузе. Запусти время: носильщики доставят угощение автоматически, вручную наполнять храм не нужно.');
  if(s.event)return status('event','Заверши текущее событие, чтобы жители продолжили подготовку.');
  if(q.stage==='celebrating')return status('celebrating',`Идёт праздник. До конца обряда: ${Math.max(0,Math.ceil(FESTIVAL_SECONDS-elapsedFestival(s,q)))} с; городское время остановлено.`);

@@ -49,7 +49,7 @@
     },
     {
       "file": "game3d/goats.js",
-      "sha256": "631a9c844e8bcf85c83ec3b8f8bb9c9dad0e86487243948b0900ce73f9d9cd0c"
+      "sha256": "8c15f91dad6f96357b69c22d56677828ca267eee82133d2e8c59dd3819d10942"
     },
     {
       "file": "game3d/imported-fauna.js",
@@ -629,9 +629,9 @@
       "status": "active",
       "purpose": "Основная коза симуляции; исходный Idle, добавленная проектом ходьба.",
       "classificationEvidence": "game3d/actors.js|variants:['downloaded']",
-      "bytes": 8930492,
-      "sha256": "873294979c9adc2cb9baa568c4dd7dd971f5ccc426d3ca3b7d9f4079d62cdbae",
-      "version": "873294979c9a",
+      "bytes": 8930460,
+      "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
+      "version": "bae9407ee425",
       "triangles": 41346,
       "meshes": 5,
       "bones": 34,

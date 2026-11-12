@@ -39,3 +39,18 @@ test('adaptation embeds <=1k PNG/JPEG textures while alpha and normal maps remai
  }
  const root=adapted.g.nodes.at(-1);assert.equal(root.extras.forward_gltf,'+Z');assert.deepEqual(adapted.g.scenes[0].nodes,[adapted.g.nodes.length-1]);assert.ok(root.scale.every(s=>s>0&&s<1));
 });
+
+test('the four knees flex at separate points in a walking cycle',()=>{
+ const walk=adapted.g.animations.find(a=>a.name==='Walk');
+ const peaks=[25,31,37,43].map(node=>{
+  const channel=walk.channels.find(ch=>ch.target.node===node&&ch.target.path==='rotation');
+  const values=adapted.accessor(walk.samplers[channel.sampler].output);
+  const base=values.slice(0,4);
+  const distance=Array.from({length:values.length/4-1},(_,frame)=>{
+   const rotation=values.slice(frame*4,frame*4+4);
+   return 1-Math.abs(rotation.reduce((dot,v,i)=>dot+v*base[i],0));
+  });
+  return distance.indexOf(Math.max(...distance));
+ });
+ assert.equal(new Set(peaks).size,4);
+});

@@ -237,8 +237,8 @@
     },
     {
       "file": "models/goat-downloaded.glb",
-      "bytes": 8930492,
-      "sha256": "873294979c9adc2cb9baa568c4dd7dd971f5ccc426d3ca3b7d9f4079d62cdbae",
+      "bytes": 8930460,
+      "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
       "triangles": 41346,
       "meshes": 5,
       "bones": 34,

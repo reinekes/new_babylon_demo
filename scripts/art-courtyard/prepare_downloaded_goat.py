@@ -33,12 +33,27 @@ def prepare():
         values=np.asarray(values,dtype='<f4').reshape(-1,WIDTH[kind]);vi=len(chunks);chunks.append(values.tobytes())
         g['bufferViews'].append({'buffer':0,'byteLength':values.nbytes})
         ai=len(g['accessors']);g['accessors'].append({'bufferView':vi,'componentType':5126,'count':len(values),'type':kind,'min':values.min(axis=0).tolist(),'max':values.max(axis=0).tolist()});return ai
-    image_report=[]
-    for im in g.get('images',[]):
-        vi=im['bufferView'];image=Image.open(io.BytesIO(chunks[vi]));before=image.size
-        image.thumbnail((1024,1024),Image.Resampling.LANCZOS)
-        output=io.BytesIO();image.save(output,format='PNG',optimize=True);chunks[vi]=output.getvalue();im['mimeType']='image/png'
-        image_report.append({'source':list(before),'adapted':list(image.size)})
+    # Reuse the checked-in textures when the source is identical. Different
+    # Pillow versions otherwise re-encode unchanged artwork at different sizes.
+    cached=TARGET.read_bytes() if TARGET.exists() else None
+    cached_length=struct.unpack_from('<I',cached,12)[0] if cached else 0
+    cached_doc=json.loads(cached[20:20+cached_length]) if cached else {}
+    cached_report=cached_doc.get('asset',{}).get('extras',{}).get('new_babylon_adaptation',{})
+    reuse=cached_report.get('source_sha256')==hashlib.sha256(raw).hexdigest()
+    if reuse:
+        for im,previous in zip(g.get('images',[]),cached_doc['images'],strict=True):
+            view=cached_doc['bufferViews'][previous['bufferView']]
+            start=28+cached_length+view.get('byteOffset',0)
+            chunks[im['bufferView']]=cached[start:start+view['byteLength']]
+            im['mimeType']=previous['mimeType']
+        image_report=cached_report['images']
+    else:
+        image_report=[]
+        for im in g.get('images',[]):
+            vi=im['bufferView'];image=Image.open(io.BytesIO(chunks[vi]));before=image.size
+            image.thumbnail((1024,1024),Image.Resampling.LANCZOS)
+            output=io.BytesIO();image.save(output,format='PNG',optimize=True);chunks[vi]=output.getvalue();im['mimeType']='image/png'
+            image_report.append({'source':list(before),'adapted':list(image.size)})
     source=copy.deepcopy(g['animations'][0]);source['name']='SourceRigAction'
     source['extras']={'provenance':'Original GerardoA400 rigAction; sampler/accessor values unchanged','semantic':'Stationary head look-around with front-leg flex; no verified walking stride'}
     idle=copy.deepcopy(source);idle['name']='Idle'
@@ -89,12 +104,20 @@ def prepare():
         for t in times:
             phase=2*math.pi*t/duration;frame={k:v.copy() for k,v in pose.items()}
             if name=='Walk':
-                # Diagonal pairs; rear .001, front .002. Mild in-place skeletal cycle.
-                for hip,knee,offset in [(23,25,0),(35,37,0),(41,43,math.pi),(29,31,math.pi)]:
-                    wave=math.sin(phase+offset);frame[(hip,'rotation')]=turn(hip,.65*wave)
-                    frame[(knee,'rotation')]=turn(knee,-.20*max(0,wave))
-                frame[(16,'translation')][2]+=.025*(1-math.cos(phase*2))
-                frame[(21,'rotation')]=turn(21,.025*math.sin(phase))
+                # A four-beat walk: each hoof has a longer stance than swing.
+                for hip,knee,offset,flex in [(29,31,0,-.29),(23,25,.75,.34),(35,37,.5,-.29),(41,43,.25,.34)]:
+                    cycle=(t/duration+offset)%1
+                    stance=.65
+                    if cycle<stance:
+                        reach=1-2*cycle/stance
+                        lift=0
+                    else:
+                        swing=(cycle-stance)/(1-stance)
+                        reach=-math.cos(math.pi*swing)
+                        lift=math.sin(math.pi*swing)**2
+                    frame[(hip,'rotation')]=turn(hip,-.32*reach)
+                    frame[(knee,'rotation')]=turn(knee,flex*lift)
+                frame[(21,'rotation')]=turn(21,.018*math.sin(phase))
                 ground_contact(frame)
             elif name=='Graze':
                 # Standing browse/head dip, not a claim of historical or source-authored motion.
@@ -107,7 +130,7 @@ def prepare():
                 frame[(22,'rotation')]=turn(22,.09+.012*math.sin(phase))
                 frame[(16,'translation')][2]+=.008*math.sin(phase)
             for key in values:values[key].append(frame[key])
-        ai=append(times,'SCALAR');anim={'name':name,'channels':[],'samplers':[],'extras':{'provenance':'New Babylon procedural skeletal adaptation, 2026-10-22; original author did not supply this motion','semantic':{'Walk':'in-place diagonal-pair walk; measured stride about 0.39 metres','Graze':'standing browse with neck/head dip','Rest':'standing drowse; not lying down'}[name]}}
+        ai=append(times,'SCALAR');anim={'name':name,'channels':[],'samplers':[],'extras':{'provenance':'New Babylon procedural skeletal adaptation, 2026-10-22; original author did not supply this motion','semantic':{'Walk':'in-place four-beat walk with separate hoof contacts','Graze':'standing browse with neck/head dip','Rest':'standing drowse; not lying down'}[name]}}
         for key,v in values.items():
             i,p=key;oi=append(v,'VEC4' if p=='rotation' else 'VEC3');si=len(anim['samplers']);anim['samplers'].append({'input':ai,'output':oi,'interpolation':'LINEAR'});anim['channels'].append({'sampler':si,'target':{'node':i,'path':p}})
         authored.append(anim)
@@ -117,7 +140,7 @@ def prepare():
     scale=.30;root_index=len(nodes)
     nodes.append({'name':'DownloadedGoatMetres','children':g['scenes'][g.get('scene',0)]['nodes'],'scale':[scale]*3,'translation':[-float((lo[0]+hi[0])/2)*scale,-float(lo[1])*scale,-float((lo[2]+hi[2])/2)*scale], 'extras':{'forward_gltf':'+Z','metres_per_source_unit':scale}})
     g['scenes'][g.get('scene',0)]['nodes']=[root_index]
-    report={'source_sha256':hashlib.sha256(raw).hexdigest(),'license':'CC-BY-4.0','source':g['asset']['extras']['source'],'author':g['asset']['extras']['author'],'source_clip_duration_seconds':float(max(read(s['input'])[-1,0] for s in source['samplers'])),'source_clip_semantic':'Stationary head look-around; root horizontal travel absent; not verified as walking','source_bounds':{'min':lo.tolist(),'max':hi.tolist()},'metres_bounds_size':((hi-lo)*scale).tolist(),'forward_gltf':'+Z','scale':scale,'triangles':sum(g['accessors'][p['indices']]['count']//3 for m in g['meshes'] for p in m['primitives']),'bones':len(g['skins'][0]['joints']),'images':image_report,'walk_stride_metres_estimate':.39,'walk_stride_note':'Forward-kinematic toe excursion 0.370-0.401 metres; hips +/-0.65 radians; per-frame skinned-hoof ground correction; new clip, not source root displacement','clips':{'Idle':'Source rigAction verbatim','SourceRigAction':'Source rigAction verbatim','Walk':'New Babylon procedural addition','Graze':'New Babylon procedural addition','Rest':'New Babylon procedural standing drowse addition'}}
+    report={'source_sha256':hashlib.sha256(raw).hexdigest(),'license':'CC-BY-4.0','source':g['asset']['extras']['source'],'author':g['asset']['extras']['author'],'source_clip_duration_seconds':float(max(read(s['input'])[-1,0] for s in source['samplers'])),'source_clip_semantic':'Stationary head look-around; root horizontal travel absent; not verified as walking','source_bounds':{'min':lo.tolist(),'max':hi.tolist()},'metres_bounds_size':((hi-lo)*scale).tolist(),'forward_gltf':'+Z','scale':scale,'triangles':sum(g['accessors'][p['indices']]['count']//3 for m in g['meshes'] for p in m['primitives']),'bones':len(g['skins'][0]['joints']),'images':image_report,'walk_stride_metres_estimate':.30,'walk_stride_note':'Four staggered hoof contacts; hips +/-0.32 radians; per-frame skinned-hoof ground correction; distance calibrated to the stance sweep','clips':{'Idle':'Source rigAction verbatim','SourceRigAction':'Source rigAction verbatim','Walk':'New Babylon procedural addition','Graze':'New Babylon procedural addition','Rest':'New Babylon procedural standing drowse addition'}}
     g['asset']['extras']['new_babylon_adaptation']=report
     out=bytearray()
     for v,c in zip(g['bufferViews'],chunks):

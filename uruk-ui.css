@@ -421,3 +421,72 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 .uruk-ui dialog[data-kind="civic-order"] li+li {margin-top:5px}
 
 .uruk-ui .build-lock-reason:not([hidden]) {display:block;color:#ffd0a3;font-size:12px;line-height:1.4;margin-top:5px}
+
+/* Pair every staffing and ceremony control with a readable surface. */
+.uruk-ui :is(.tile-detail,.city-tools) .staffing-panel {
+ color:#f2dfbd;
+}
+.uruk-ui :is(.tile-detail,.city-tools) .staffing-panel :is(h4,summary,.control-label) {
+ color:#f6e3bf;
+}
+.uruk-ui :is(.staffing-panel,.city-tools-staffing) .control-label {
+ display:grid;gap:5px;margin:9px 0;
+}
+.uruk-ui :is(.staffing-panel,.city-tools-staffing,.inspiration-controls) select {
+ width:100%;min-width:0;max-width:100%;min-height:40px;
+ background:#352c22;color:#fff0d3;border-color:#a78458;
+ color-scheme:dark;font-size:13px;
+}
+.uruk-ui :is(.staffing-panel,.city-tools-staffing,.inspiration-controls) :is(option,optgroup) {
+ background:#352c22;color:#fff0d3;
+}
+.uruk-ui .tile-detail .staffing-panel button,
+.uruk-ui .ceremony-notice>button {
+ min-height:36px;padding:6px 10px;font:inherit;
+ background:#403329;color:#fff0d3;border:1px solid #a8845a;border-radius:3px;
+}
+.uruk-ui .tile-detail .staffing-panel button.resident-link {
+ color:#f5cc90;background:transparent;border:0;min-height:28px;padding:0;
+}
+.uruk-ui .tile-detail .staffing-panel button[data-staff-inspire] {
+ background:#244260;border-color:#7e9fb9;
+}
+.uruk-ui :is(.staffing-panel,.city-tools-staffing,.inspiration-controls) :is(button,select):disabled,
+.uruk-ui dialog[data-kind=festival] button:disabled {
+ opacity:1;color:#c8b79b;background:#322c24;border-color:#76654e;
+}
+.uruk-ui :is(.staffing-panel,.city-tools-staffing,.inspiration-controls,.ceremony-notice) :is(button,select):focus-visible {
+ outline:2px solid #f3c98c;outline-offset:2px;
+}
+.uruk-ui :is(.staffing-panel,.city-tools-staffing) small,
+.uruk-ui dialog[data-kind=festival] :is(.festival-reason,.festival-progress,.warning-note) {
+ color:#ead7b4;font-size:13px;line-height:1.55;
+}
+.uruk-ui dialog[data-kind=festival] .warning-note {
+ background:#492d25;color:#ffd9c0;border-color:#ab7056;
+}
+.uruk-ui dialog[data-kind=festival] #festival-content>button {margin:4px 5px 4px 0}
+.uruk-ui .ceremony-notice {
+ display:flex;flex-wrap:wrap;justify-content:center;gap:6px;
+ width:max-content;max-width:calc(100% - 24px);bottom:64px;padding:7px;
+ background:#2e261e;color:#fff0d3;border-color:#b18a60;font-size:13px;
+}
+.uruk-ui .ceremony-notice[hidden] {display:none}
+.uruk-ui .ceremony-notice>button+button {margin:0}
+@media(max-width:650px){
+ .uruk-ui .ceremony-notice {bottom:48px}
+ .uruk-ui .ceremony-notice>button {max-width:100%;white-space:normal}
+}
+
+.uruk-ui dialog[data-kind=festival].festival-live .festival-art {height:clamp(72px,17dvh,140px);object-fit:cover}
+
+.uruk-ui #building-controls :is(h4,#upgrade-reason,.production-recipe) {color:#ead7b4}
+.uruk-ui #building-controls :is(.upgrade-button,.management-button) {
+ background:#403329;color:#fff0d3;border-color:#a8845a;
+}
+.uruk-ui #building-controls .danger {
+ background:#482e27;color:#ffd9c0;border-color:#a5725d;
+}
+.uruk-ui #building-controls :is(.upgrade-button,.management-button):disabled {
+ opacity:1;background:#322c24;color:#c8b79b;border-color:#76654e;
+}

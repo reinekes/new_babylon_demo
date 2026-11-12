@@ -16,7 +16,7 @@ export const MODEL_VERSIONS=Object.freeze({
  "gazelle-downloaded.glb": "cb33e303498e",
  "goat-authored-lod.glb": "c2d8562fa2e8",
  "goat-authored.glb": "af8de5e848bc",
- "goat-downloaded.glb": "873294979c9a",
+ "goat-downloaded.glb": "bae9407ee425",
  "goat.glb": "27805596b278",
  "human-native-adolescent.glb": "25eeb9a345c1",
  "human-native-child.glb": "424ffc52f765",

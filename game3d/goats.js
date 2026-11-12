@@ -1,13 +1,13 @@
 import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
-export const GOAT_MODELS={authored:{file:'goat-authored-lod.glb',stride:.34},downloaded:{file:'goat-downloaded.glb',stride:.39}};
+export const GOAT_MODELS={authored:{file:'goat-authored-lod.glb',stride:.34},downloaded:{file:'goat-downloaded.glb',stride:.30}};
 export function goatVariant(id){let h=2166136261;for(const c of String(id)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0)%2?'authored':'downloaded';}
-export function goatAction(c,distance=0){if(c.dead||c.behavior==='dead')return 'Rest';if(distance>.00001&&distance<3)return 'Walk';return ['grazing','drinking'].includes(c.behavior)?'Graze':c.behavior==='resting'?'Rest':'Idle';}
+export function goatAction(c,distance=0){if(c.dead||c.behavior==='dead')return 'Rest';if(c.walking!==false&&distance<3&&(c.walking||distance>.00001))return 'Walk';return ['grazing','drinking'].includes(c.behavior)?'Graze':c.behavior==='resting'?'Rest':'Idle';}
 // Asset containers are loaded once; each animal owns its skeleton and clips,
 // while material/geometry resources stay shared. No saved fields are added.
 export async function createGameGoats(B,scene,meshes=[],options={}){
- const sources=new Map(),actors=new Map(),warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=two-goats-20261022-1`,scene,undefined,'.glb'));
+ const sources=new Map(),actors=new Map(),warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=goat-walk-20261112-2`,scene,undefined,'.glb'));
  const results=await Promise.allSettled(Object.entries(GOAT_MODELS).filter(([variant])=>!options.variants||options.variants.includes(variant)).map(async([variant,config])=>{const asset=await load(config.file),names=new Set(asset.animationGroups.map(g=>g.name));const missing=['Idle','Walk','Graze','Rest'].filter(n=>!names.has(n));if(missing.length){asset.dispose();throw Error(`${variant}: missing clips ${missing.join(', ')}`);}return {variant,asset};}));
  for(const r of results)if(r.status==='fulfilled')sources.set(r.value.variant,r.value.asset);else warn('Goat model unavailable; using another available model.',r.reason);
  if(!sources.size)throw Error('No goat model could be loaded');let disposed=false;
