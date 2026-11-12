@@ -1,3 +1,4 @@
+import {createShellLamp} from './shell-lamp.js';
 import {loadModel} from './asset-loading.js';
 
 // A small supplied wax model is optional detail, requested only for the feast.
@@ -5,8 +6,8 @@ import {loadModel} from './asset-loading.js';
 export function createFestivalCandles(B,scene,meshes=[],{loadAsset}={}){
  const holders=new Map(),materials=[];let source=null,promise=null,disposed=false;
  const material=(name,color)=>{const m=new B.StandardMaterial(name,scene);m.diffuseColor=B.Color3.FromHexString(color);m.emissiveColor=m.diffuseColor;m.disableLighting=true;m.specularColor=B.Color3.Black();materials.push(m);return m;};
- let wax,amber,core;
- const track=(mesh,root,mat,caster=true)=>{mesh.parent=root;mesh.material=mat;mesh.isPickable=false;mesh.receiveShadows=false;if(caster)meshes.push(mesh);return mesh;};
+ let wax,amber,core,lamp,currentStyle;
+ const track=(mesh,root,mat,caster=true)=>{mesh.parent=root;if(mat)mesh.material=mat;mesh.isPickable=false;mesh.receiveShadows=false;if(caster)meshes.push(mesh);return mesh;};
  function untrack(mesh){const i=meshes.indexOf(mesh);if(i>=0)meshes.splice(i,1);}
  function attach(a){
   if(!source||a.imported)return;
@@ -15,25 +16,38 @@ export function createFestivalCandles(B,scene,meshes=[],{loadAsset}={}){
   for(const m of mount.getChildMeshes()){m.isPickable=false;m.receiveShadows=false;m.metadata={...(m.metadata||{}),importedCandle:true};meshes.push(m);}
   untrack(a.fallback);a.fallback.dispose();a.fallback=null;a.imported=true;
  }
- function start(){if(promise||disposed)return;promise=Promise.resolve().then(()=>loadAsset?loadAsset():loadModel(B,scene,'assets/art-courtyard/models/','festival-candle.glb',scene,undefined,'.glb')).then(container=>{if(disposed){container.dispose();return;}source=container;for(const a of holders.values())attach(a);}).catch(error=>{if(!disposed)console.warn('Festival candle detail unavailable; using a small wax candle.',error);});}
- function make(id){
+ function start(){if(promise||disposed)return;promise=Promise.resolve().then(()=>loadAsset?loadAsset():loadModel(B,scene,'assets/art-courtyard/models/','festival-candle.glb',scene,undefined,'.glb')).then(container=>{if(disposed){container.dispose();return;}source=container;if(!currentStyle)for(const a of holders.values())attach(a);}).catch(error=>{if(!disposed)console.warn('Festival candle detail unavailable; using a small wax candle.',error);});}
+ function make(id,shell){
   if(!wax){wax=material('festival-candle-fallback-wax','#e7d3a8');amber=material('festival-candle-flame-amber','#ffae43');core=material('festival-candle-flame-core','#fff1b0');}
   const root=new B.TransformNode(`festival-candle-${id}`,scene);root.metadata={festivalCandle:true,citizenId:id};
-  const fallback=track(B.MeshBuilder.CreateCylinder('festival-candle-wax',{height:.4,diameter:.17,tessellation:8},scene),root,wax);fallback.position.y=.10;
-  const fire=new B.TransformNode(`festival-candle-fire-${id}`,scene);fire.parent=root;fire.position.y=.30;
+  let fallback;
+  if(shell){
+   if(!lamp)lamp=createShellLamp(B,scene);
+   fallback=track(lamp.createInstance('festival-shell-lamp'),root);
+   fallback.isVisible=true;
+  }else{
+   fallback=track(B.MeshBuilder.CreateCylinder('festival-candle-wax',{height:.4,diameter:.17,tessellation:8},scene),root,wax);
+   fallback.position.y=.10;
+  }
+  const fire=new B.TransformNode(`festival-candle-fire-${id}`,scene);fire.parent=root;fire.position.set(shell ? .202 : 0,shell ? .107 : .30,0);
   const outer=track(B.MeshBuilder.CreateCylinder('festival-candle-outer-flame',{height:.16,diameterBottom:.06,diameterTop:0,tessellation:6},scene),fire,amber,false);outer.position.y=.06;
   const inner=track(B.MeshBuilder.CreateCylinder('festival-candle-inner-flame',{height:.10,diameterBottom:.035,diameterTop:0,tessellation:6},scene),fire,core,false);inner.position.y=.04;
-  const light=holders.size<3?new B.PointLight(`festival-candle-light-${id}`,new B.Vector3(0,.40,0),scene):null;if(light){light.parent=root;light.diffuse=B.Color3.FromHexString('#ffbc74');light.range=2.5;light.intensity=.38;}
-  const a={id,root,fallback,fire,light,imported:false};holders.set(id,a);attach(a);return a;
+  const light=holders.size<3?new B.PointLight(`festival-candle-light-${id}`,new B.Vector3(fire.position.x,fire.position.y+.10,0),scene):null;if(light){light.parent=root;light.diffuse=B.Color3.FromHexString('#ffbc74');light.range=2.5;light.intensity=.38;}
+  const a={id,root,fallback,fire,light,imported:false};holders.set(id,a);if(!shell)attach(a);return a;
  }
  function remove(a){for(const m of a.root.getChildMeshes())untrack(m);a.light?.dispose();a.root.dispose();holders.delete(a.id);}
- function update(people,time,grips){
-  if(disposed)return;if(people.length)start();const seen=new Set();
-  for(const p of people){seen.add(p.id);const a=holders.get(p.id)||make(p.id),grip=grips.get(p.id);a.root.setEnabled(!!grip);if(grip)a.root.position.copyFrom(grip);
+ function update(people,time,grips,{shell=false}={}){
+  if(disposed)return;
+  if(currentStyle!==shell){
+   for(const a of holders.values())remove(a);
+   currentStyle=shell;
+  }
+  if(people.length&&!shell)start();const seen=new Set();
+  for(const p of people){seen.add(p.id);const a=holders.get(p.id)||make(p.id,shell),grip=grips.get(p.id);a.root.setEnabled(!!grip);if(grip)a.root.position.copyFrom(grip);
    const pulse=.94+.06*Math.sin(time*11+p.id);a.fire.scaling.set(1,pulse,1);a.fire.rotation.z=.07*Math.sin(time*9+p.id);if(a.light)a.light.intensity=.38*pulse;
   }
   for(const [id,a]of holders)if(!seen.has(id))remove(a);
  }
- function dispose(){if(disposed)return;disposed=true;for(const a of [...holders.values()])remove(a);source?.dispose();source=null;for(const m of materials)m.dispose();}
+ function dispose(){if(disposed)return;disposed=true;for(const a of [...holders.values()])remove(a);source?.dispose();source=null;lamp?.dispose(false,true);lamp=null;for(const m of materials)m.dispose();}
  return {update,dispose,rootFor:id=>holders.get(id)?.root,get ready(){return promise;}};
 }

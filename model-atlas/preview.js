@@ -1,3 +1,4 @@
+import { createShellLamp } from '../game3d/shell-lamp.js';
 import { loadBabylonVendors } from '../game3d/vendor-loading.js';
 import { loadModel } from '../game3d/asset-loading.js';
 import { createGameBuildings } from '../game3d/buildings.js';
@@ -7,7 +8,7 @@ import { createAmbientFauna } from '../game3d/ambient-fauna.js';
 import { cropPlantGeometry,createBotanicalMaterial,botanicalMesh } from '../game3d/crop-varieties.js';
 import { createNatureDetails } from '../game3d/nature-details.js';
 import { createBirdFlocks } from '../game3d/bird-flocks.js';
-import { createGoodsSources } from '../game3d/goods.js';
+import { createGoodsSources } from '../game3d/goods.js?v=sumer-props-20261112';
 import { createSumerRiverHull } from '../game3d/sumer-river-hull.js';
 import { canalNetworkGeometry } from '../game3d/canal-network.js';
 import { wornRoadGeometry } from '../game3d/water.js';
@@ -103,6 +104,10 @@ async function makeModel(B,scene,item,profile) {
       mesh.setEnabled(matches);
       found||=matches;
     }
+    return;
+  }
+  if (item.kind==='lamp') {
+    createShellLamp(B,scene).isVisible=true;
     return;
   }
   if (item.kind==='goods') {

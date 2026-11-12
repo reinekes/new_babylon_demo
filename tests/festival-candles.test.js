@@ -28,3 +28,39 @@ test('a late asset response after cancellation or disposal cannot resurrect cand
  const layer=createFestivalCandles(B,scene,[],{loadAsset:()=>new Promise(r=>resolve=r)});
  try{layer.update([{id:1}],0,new Map([[1,new B.Vector3(0,1,0)]]));await Promise.resolve();layer.dispose();resolve({dispose(){disposed++;}});await layer.ready;assert.equal(disposed,1);assert.equal(scene.meshes.length,0);assert.equal(scene.lights.length,0);}finally{layer.dispose();scene.dispose();engine.dispose();}
 });
+
+test('strict festival uses a shared shell lamp and places flames at the wick',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),casters=[];
+ let requests=0;
+ const layer=createFestivalCandles(B,scene,casters,{loadAsset:()=>{requests++;}});
+ try{
+  scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,2,-4),scene);
+  const people=[1,2,3,4,5].map(id=>({id}));
+  const grips=new Map(people.map(({id})=>[id,new B.Vector3(id,2,0)]));
+  layer.update(people,1,grips,{shell:true});
+  scene.render();
+  assert.equal(layer.ready,null);
+  assert.equal(requests,0);
+  assert.equal(casters.length,5);
+  assert.equal(scene.lights.length,3);
+  const source=scene.getMeshByName('shell-lamp-source');
+  assert.ok(source.isVerticesDataPresent(B.VertexBuffer.ColorKind));
+  for(const lamp of casters){
+   assert.ok(source.instances.includes(lamp));
+   assert.equal(lamp.isVisible,true);
+   assert.ok(!lamp.isPickable);
+  }
+  const root=layer.rootFor(1),fire=root.getChildTransformNodes().find(n=>n.name.includes('-fire-'));
+  assert.ok(fire.position.x>.19);
+  assert.ok(fire.position.y<.12);
+  layer.update([],2,grips,{shell:true});
+  assert.equal(casters.length,0);
+  assert.equal(scene.lights.length,0);
+ }finally{
+  layer.dispose();
+  assert.equal(scene.meshes.length,0);
+  assert.equal(scene.materials.length,0);
+  scene.dispose();
+  engine.dispose();
+ }
+});

@@ -37,7 +37,7 @@ group('valley-barley crop-emmer','active','Детали зрелых полей;
 group('valley-dry-grass-1 valley-dry-grass-2 valley-dry-grass-3 valley-reed-1 valley-reed-2 valley-reed-3 miracle-green-grass-1 miracle-green-grass-2 miracle-green-grass-3','active','Растительность обычной долины; зелёная трава также в чудесном саду.','game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS');
 group('miracle-birch-1 miracle-cactus-1 miracle-cactus-2 miracle-daisy-1 miracle-daisy-2 miracle-lilac-1 miracle-lilac-2 miracle-snowdrop-1 miracle-snowdrop-2','active','Только временный чудесный сад; фантазия, не обычная историческая флора.','game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS');
 group('sacred-ishtar-gate sacred-shrine-3 sacred-ziggurat-1 sacred-ziggurat-3','active','Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.','game3d/sacred-models.js|SACRED_MODELS');
-group('festival-candle','active','Свеча Ночи огней; загрузка по потребности, процедурный резерв. Историческая условность.','game3d/festival-candles.js|festival-candle.glb');
+group('festival-candle','active','Свеча Ночи огней в прежней ветке; в режиме Южного Шумера используется светильник из раковины.','game3d/festival-candles.js|festival-candle.glb');
 
 export function readGlb(bytes){
  if(bytes.length<20||bytes.toString('ascii',0,4)!=='glTF'||bytes.readUInt32LE(4)!==2||bytes.readUInt32LE(8)!==bytes.length)throw Error('Invalid GLB header');

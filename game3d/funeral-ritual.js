@@ -1,3 +1,4 @@
+import {isStrictSumer} from '../scenario-profiles.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {createFestivalCandles} from './festival-candles.js';
 // Funeral props are presentation-only. Stable deceased IDs own one shrouded bier;
@@ -38,7 +39,7 @@ export function createFuneralRitual(B,scene,meshes){
    if(mouth){const dx=(animal.faceX-animal.x),dz=(animal.faceY-animal.y),length=Math.hypot(dx,dz)||1,forward=new B.Vector3(dx/length,0,dz/length),centre=mouth.add(forward.scale(.80)),local=B.Vector3.TransformCoordinates(centre,a.root.computeWorldMatrix(true).clone().invert());a.bundle.position.copyFrom(local);a.bundle.position.y-=.18;a.bundle.rotation.y=Math.atan2(forward.x,forward.z)-b.yaw;}
   }
   for(const [id,a]of biers)if(!seen.has(id)){disposeRoot(a.root);biers.delete(id);}
-  candles.update((view?.participants||[]).filter(p=>p.candle),state.festival?.elapsed||0,torchGrips);
+  candles.update((view?.participants||[]).filter(p=>p.candle),state.festival?.elapsed||0,torchGrips,{shell:isStrictSumer(state)});
   const flames=new Set();for(const p of view?.participants||[]){if(!p.torch||p.candle)continue;flames.add(p.id);const a=torchFor(p.id),grip=torchGrips.get(p.id);a.root.setEnabled(!!grip);if(grip)a.root.position.copyFrom(grip);
    const flicker=.91+.09*Math.sin(time*19+p.id*2.1)+.045*Math.sin(time*31+p.id);a.fire.scaling.set(.96+.08*Math.sin(time*13+p.id),flicker,1);a.fire.rotation.z=.06*Math.sin(time*11+p.id);a.tongue.rotation.z=.20*Math.sin(time*17+p.id);if(a.light)a.light.intensity=.40*flicker;
   }

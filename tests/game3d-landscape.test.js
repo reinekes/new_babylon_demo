@@ -205,7 +205,10 @@ test('goods are detailed shared rectangular geometry resting on exact support pl
   assert.equal(layout.length,GOODS_KINDS.length*3);assert.equal(JSON.stringify(stock),before);assert.deepEqual(cargoLayout({faith:100,prestige:100}),[]);
   for(const [kind,src]of goods.sources){src.computeWorldMatrix(true);const bounds=src.getBoundingInfo().boundingBox;
    assert.ok(Math.abs(bounds.minimum.y)<1e-6,`${kind} bottom rests on ground`);assert.ok(bounds.maximum.y<=GOODS_HEIGHT+1e-6);assert.ok(src.getTotalVertices()>24,`${kind} includes physical details`);assert.equal(src.isEnabled(),false);
-   if(!['milk','water','beer','pottery'].includes(kind)){assert.ok(bounds.maximum.x-bounds.minimum.x>.6);assert.ok(bounds.maximum.z-bounds.minimum.z>.5);assert.ok(src.getIndices().length%36===0,`${kind} consists of straight rectangular goods, never round sacks`);}
+   if(['copper','axe','blade','chisel'].includes(kind)){
+    assert.ok(src.isVerticesDataPresent(B.VertexBuffer.ColorKind),`${kind} bakes distinct material colors`);
+    assert.equal(src.subMeshes.length,1,`${kind} keeps one shared draw range`);
+   }else if(!['milk','water','beer','pottery'].includes(kind)){assert.ok(bounds.maximum.x-bounds.minimum.x>.6);assert.ok(bounds.maximum.z-bounds.minimum.z>.5);assert.ok(src.getIndices().length%36===0,`${kind} consists of straight rectangular goods, never round sacks`);}
    const parcel=src.createInstance('support-test');parcel.setEnabled(true);
    for(const p of layout.filter(p=>p.kind===kind)){parcel.position.set(p.x,p.y,p.z);parcel.computeWorldMatrix(true);const b=parcel.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-p.layer*GOODS_HEIGHT)<1e-6);if(p.layer)assert.ok(layout.some(q=>q.kind===kind&&q.x===p.x&&q.z===p.z&&q.layer===p.layer-1));}
    assert.equal(parcel.sourceMesh,src);parcel.dispose();
