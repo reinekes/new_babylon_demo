@@ -58,3 +58,21 @@ test('household dinner reports full, partial and missed portions separately from
  }
  assert.equal(householdDinner(0,residents,0).lastPercent,null);
 });
+
+test('map warning distinguishes a slight shortfall, a missed dinner and a mixture',()=>{
+ const s=supplied(createGame({start:'established'}));
+ s.simTime=55;
+ const [a,b]=s.citizens;
+ const warning=()=>read(s).alerts.find(alert=>alert.id==='families');
+ assert.equal(warning(),undefined);
+ Object.assign(a,{mealDay:0,mealEvaluated:0,lastMealQuality:.9375,missedMeals:1});
+ assert.match(warning().title,/небольшой недобор/i);
+ assert.equal(warning().homeKey,a.home);
+ Object.assign(b,{mealDay:0,mealEvaluated:0,lastMealQuality:0,missedMeals:1,hunger:100});
+ assert.match(warning().title,/пропустили ужин/i);
+ assert.match(warning().title,/недобор/i);
+ assert.equal(warning().severity,'danger');
+ a.lastMealQuality=1;a.missedMeals=0;
+ assert.match(warning().title,/пропустили ужин/i);
+ assert.doesNotMatch(warning().title,/недобор/i);
+});

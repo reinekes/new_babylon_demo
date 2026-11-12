@@ -60,7 +60,28 @@ export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
  if(!s.lost&&s.citizens.length){
   if(forecast.balance < -1e-7)alerts.push({id:'food',severity:'warning',title:'До жатвы нужны поставки',text:`Без новых поставок до жатвы не хватит около ${Math.ceil(-forecast.balance)} ед. еды. ${forecast.unthreshed>0?'Обмолоти снопы и доставь еду на склад.':'Пополняй запасы уловом, другим промыслом или торговлей.'}`});
   if(seeds.missing>1e-7||seeds.unprotected)alerts.push({id:'seeds',severity:seeds.missing>1e-7&&s.buildings.some(b=>b.type==='field'&&s.season===fieldCalendar(s,b).sow)?'danger':'warning',title:seeds.missing>1e-7?'Не хватает семян':'Семена не защищены',text:seeds.missing>1e-7?`Для посева не хватает ${Math.ceil(seeds.missing*10)/10} еды на семена. Пополни общий запас.`:'Резерв открыт для еды и продажи. Защити семена перед следующим посевом.'});
-  if(riskFamilies.length)alerts.push({id:'families',homeKey:riskFamilies.length===1?riskFamilies[0].key:null,severity:houses.some(h=>h.severe)?'danger':'warning',title:hungry?`Недоедают жители: ${hungry}`:`Без ужина рискуют остаться семьи: ${riskFamilies.length}`,text:hungry?`Семей с недоеданием: ${houses.filter(h=>h.hungry).length}. Проверь домашнюю еду и доставку.`:'Домашней еды и груза в пути недостаточно. Проверь путь к складу и взрослых поставщиков.'});
+  if(riskFamilies.length){
+   const lastDinner=day-Number(night);
+   let slight=0,partial=0,missed=0;
+   for(const home of riskFamilies)for(const c of home.hungryResidents){
+    if(lastDinner<0||c.mealEvaluated!==lastDinner||!(c.missedMeals>0))continue;
+    if(c.lastMealQuality<=1e-7)missed++;
+    else if(c.lastMealQuality>=.9&&c.lastMealQuality<.95)slight++;
+    else if(c.lastMealQuality<.9)partial++;
+   }
+   const messages=[];
+   if(missed)messages.push(`Пропустили ужин: ${missed}`);
+   if(partial)messages.push(`Неполная порция: ${partial}`);
+   if(slight)messages.push(`Небольшой недобор: ${slight}`);
+   const other=hungry-missed-partial-slight;
+   if(other)messages.push(`Недоедают жители: ${other}`);
+   const title=messages.join(' · ')||`Без ужина рискуют остаться семьи: ${riskFamilies.length}`;
+   const text=hungry
+    ?'Итоги прошлого ужина и запасы на следующий видны во вкладке «Еда» двора.'
+    :'Домашней еды и груза в пути недостаточно. Проверь путь к складу и взрослых поставщиков.';
+   alerts.push({id:'families',homeKey:riskFamilies.length===1?riskFamilies[0].key:null,
+    severity:missed||houses.some(h=>h.severe)?'danger':'warning',title,text});
+  }
  }
  return {forecast,seeds,houses,hungry,riskFamilies,dinner,alerts};
 }
