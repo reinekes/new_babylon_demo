@@ -18,6 +18,10 @@ export const AMBIENT_MODELS=Object.freeze({
  bull:{file:'ambient-bull.glb',count:1,stride:1.23,pace:.46},
  'sheep-kenchoo':{file:'ambient-sheep-kenchoo.glb',count:1,stride:.19,pace:.2}
 });
+const SHORE_PAIR={
+ kingfisher:{file:'shore-kingfisher.glb',role:'male',scale:.10},
+ seagull:{file:'shore-seagull.glb',role:'female',scale:.07}
+};
 // Ambient actors are deliberately absent from saves, hunting, stocks and selection.
 export function ambientDryPoint(state,x,y,margin=.18){
  if(!Number.isFinite(x)||!Number.isFinite(y)||x<1||y<1||x>worldWidth(state)-2||y>worldHeight(state)-2||shoreDistance(x,y,state)<margin)return false;
@@ -60,7 +64,10 @@ export function courtyardFauna(state){
 
 export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const farmMaterials=new Map(),assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb'));
- const entries=Object.entries(AMBIENT_MODELS);if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
+ const groundModels=options.includeShorePair
+  ?Object.entries(AMBIENT_MODELS).filter(([kind])=>kind!=='orange-bird')
+  :Object.entries(AMBIENT_MODELS);
+ const entries=[...groundModels,...(options.includeShorePair?Object.entries(SHORE_PAIR):[])];if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
  const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
  const ploughs=assets.has('bull')?createPloughTeams(B,scene,assets.get('bull'),meshes):null;
@@ -68,6 +75,12 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function register(a){a.owned=a.root.getChildMeshes();for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
  function imported(species,index,farm=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=farm?farm.id:`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
   root.metadata={ambientId:id,ambientSpecies:species,...(farm?{dairyBuilding:farm.building.id||`${farm.building.x},${farm.building.y}`,calf:farm.calf}:{}),sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
+  const shore=SHORE_PAIR[species];
+  if(shore){
+   model.scaling.setAll(shore.scale);
+   root.metadata.shoreRole=shore.role;
+   root.metadata.sourceMotion='source clip';
+  }
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(id+'-')?g.name.slice(id.length+1):g.name,g);}
   if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
   return register({root,model,groups,skeletons:copy.skeletons,farm,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
@@ -76,7 +89,32 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  if(options.includeSkyBirds!==false&&!assets.has('sky-birds')){
   skyMaterial=new B.StandardMaterial('ambient-sky-ochre',scene);skyMaterial.diffuseColor=new B.Color3(.27,.23,.18);const body=B.MeshBuilder.CreateSphere('ambient-sky-template-body',{diameter:1,segments:6},scene),wing=B.MeshBuilder.CreateBox('ambient-sky-template-wing',{width:.65,height:.026,depth:.17},scene);body.material=wing.material=skyMaterial;body.isVisible=wing.isVisible=false;body.isPickable=wing.isPickable=false;templates.push(body,wing);for(let i=0;i<2;i++)originalSky(i,{body,wing});
  }else if(options.includeSkyBirds!==false)for(let i=0;i<2;i++)imported('sky-birds',i);
- for(const [species,c]of Object.entries(AMBIENT_MODELS))for(let i=0;i<2;i++)imported(species,i);
+ for(const [species]of groundModels)for(let i=0;i<2;i++)imported(species,i);
+ if(options.includeShorePair)for(const species of Object.keys(SHORE_PAIR))imported(species,0);
+ function shorePose(a,state){
+  const home=state.buildings.find(b=>b.type==='house')??{x:8,y:8};
+  const center=Math.max(4,Math.min(riverLength(state)-5,riverLocal(home.x,home.y,state).along));
+  if(a.species==='kingfisher'){
+   const middle=riverPoint(center,state);
+   const side=riverLocal(home.x,home.y,state).across>riverLocal(middle.x,middle.y,state).across?1:-1;
+   const point=[0,1,-1,2,-2,3,-3].flatMap(delta=>[1.4,1.8,2.2,2.6].map(offset=>
+    riverPoint(center+delta,state,side*offset)
+   )).find(p=>ambientDryPoint(state,p.x,p.y,.22));
+   a.root.setEnabled(!!point);
+   if(point){
+    const water=riverPoint(riverLocal(point.x,point.y,state).along,state);
+    a.root.position.set(point.x*6,surfaceElevation(point.x,point.y,state)+.02,point.y*6);
+    a.root.rotation.y=Math.atan2(water.x-point.x,water.y-point.y);
+   }
+   return;
+  }
+  const path=t=>riverPoint(center+3*Math.sin(t),state,.65*Math.cos(t));
+  const t=clock*.15,point=path(t),next=path(t+.001);
+  a.root.position.set(point.x*6,5+.45*Math.sin(t*2),point.y*6);
+  a.root.rotation.y=Math.atan2(next.x-point.x,next.y-point.y);
+  a.root.rotation.z=.12;
+ }
+
  function seek(a,state){const p=ambientAnchor(state,a.species,a.index,actors.filter(other=>other!==a&&other.anchor&&other.enabled).map(other=>other.anchor));a.anchor=p;a.target=null;a.enabled=!!p;a.root.setEnabled(!!p);if(p)a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);}
  function animate(a,t,walking=false){
   const name=a.groups.has('Walk')?(walking?'Walk':'Idle'):a.groups.keys().next().value,g=a.groups.get(name);if(!g)return;
@@ -90,12 +128,18 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   if(disposed)return;
   ploughs?.update(state,ploughPoses);
   const stateChanged=state!==lastState;if(stateChanged){lastState=state;for(const a of actors){if(['sky-birds','original-sky'].includes(a.species)){a.skyPlaced=false;continue;}if(!a.farm){a.anchor=null;a.target=null;a.enabled=false;a.restUntil=clock;a.routeAttempt=0;}}}
-  const farms=new Map(dairyHerd(state).map(f=>[f.id,f]));for(const a of [...actors]){if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
-  for(const species of Object.keys(AMBIENT_MODELS)){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>a.species===species).length;i<desired;i++)imported(species,i);}
+  const farms=new Map(dairyHerd(state).map(f=>[f.id,f]));for(const a of [...actors]){if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}if(SHORE_PAIR[a.species])continue;const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
+  for(const [species]of groundModels){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>a.species===species).length;i<desired;i++)imported(species,i);}
   for(const f of farms.values())if(!actors.some(a=>a.farm?.id===f.id))imported('cow',f.index,f);
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=options.includeSkyBirds===false?0:ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(4,speed)):1;const advancing=!paused&&dt>0&&speed>0;if(advancing)clock+=dt*speed;
-  for(const a of actors){if(a.farm){a.farm=farms.get(a.farm.id);const p=dairyPose(a.farm,clock);a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);a.root.rotation.y=p.yaw;a.root.metadata.herdAnimal=true;if(advancing)a.walkPhase=(a.walkPhase+dt*speed*.035)%1;animate(a,clock,p.walking);continue;}const sky=a.species==='sky-birds'||a.species==='original-sky';
+  for(const a of actors){
+   if(SHORE_PAIR[a.species]){
+    if(stateChanged||advancing&&a.species==='seagull')shorePose(a,state);
+    if(stateChanged||advancing)animate(a,clock);
+    continue;
+   }
+   if(a.farm){a.farm=farms.get(a.farm.id);const p=dairyPose(a.farm,clock);a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);a.root.rotation.y=p.yaw;a.root.metadata.herdAnimal=true;if(advancing)a.walkPhase=(a.walkPhase+dt*speed*.035)%1;animate(a,clock,p.walking);continue;}const sky=a.species==='sky-birds'||a.species==='original-sky';
    if(sky){if(!advancing&&a.skyPlaced)continue;const p=skyFlightPose(clock*.045,a.index,{state});a.root.position.set(p.x,p.y,p.z);a.root.rotation.y=p.yaw;a.root.rotation.z=p.bank;a.skyPlaced=true;if(a.wings){a.wings[0].rotation.z=.55*Math.sin(clock*7+a.phase);a.wings[1].rotation.z=Math.PI-.55*Math.sin(clock*7+a.phase);}animate(a,clock);continue;}
    if(!a.anchor)seek(a,state);
    if(stateChanged)animate(a,clock);if(!advancing)continue;

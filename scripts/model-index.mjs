@@ -23,6 +23,7 @@ group('goat-authored goat','spare','Сохранённая авторская п
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
 group('ambient-bull','active','Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.','game3d/ambient-fauna.js|dairyHerd');
 group('ambient-dog ambient-duck ambient-sheep-kenchoo imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
+group('shore-kingfisher shore-seagull','active','Два временных варианта береговой фауны: зимородок на берегу и чайка в полёте. Самец и самка — подписи для сравнения.','game3d/ambient-fauna.js|SHORE_PAIR');
 group('imported-goose imported-sky-birds','spare','Сохранённый импорт; ни одного имени в текущих runtime-путях загрузки.','assets/art-courtyard/ATTRIBUTION.md|Imported city fauna');
 group('sky-bird-single','optional','API декоративного полёта; main отключает includeSkyBirds. Небесные стаи main процедурные.','game3d/actors.js|includeSkyBirds:false');
 group('jackal','active','Шакалы похоронного обряда; художественная адаптация Wolf.','game3d/jackals.js|JACKAL_MODEL');
@@ -54,6 +55,7 @@ function provenance(extras,path='asset.extras'){
 }
 function documentedSources(file){
  const evidence=ART+'/ATTRIBUTION.md';
+ if(file==='shore-kingfisher.glb')return [{author:'Gobkit / Alsomind Tech Co., Ltd.',source:'https://gobkit.com/api/free',license:'CC0-1.0',evidence:evidence+'#shore-birds'}];
  if(file.startsWith('resident'))return [{author:'Innerscene / MakeHuman-MPFB; Sam brisk walk',source:'https://www.innerscene.com/tools/library/3d-parts/human-base-mesh-with-editable-53-bone-rig-8e7c8ab1',license:'CC0-1.0',evidence:evidence+'#resident--cc0-10'},{author:'Innerscene — Sam brisk walk',source:'https://www.innerscene.com/tools/library/3d-parts/brisk-walk-sam-3d-person-animated-bed03fa4',license:'CC0-1.0',evidence:evidence+'#resident--cc0-10'}];
  if(file==='sheep.glb')return [{author:'p0ss; texture basis titus tscharntke',source:'https://opengameart.org/content/sheep-rigged-textured-and-animated',license:'CC-BY-SA-3.0',evidence:evidence+'#sheep--cc-by-sa-30'}];
  if(file==='date-palm.glb')return [{author:'Innerscene; bark Poly Haven',source:'https://www.innerscene.com/tools/library/3d-parts/mature-date-palm-tree-af8bdc6f',license:'CC0-1.0',evidence:evidence+'#date-palm--cc0-10'}];

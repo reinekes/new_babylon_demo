@@ -102,7 +102,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const loadFauna=async()=>{const values=await Promise.all([
   (includeFauna?createGameGoats(B,scene,meshes,{variants:['downloaded']}):Promise.resolve(null)).catch(error=>{console.warn('Downloaded goats unavailable; herd remains in simulation.',error);return null;}),
   (includeFauna?createImportedFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
-  (includeFauna?createAmbientFauna(B,scene,meshes,{includeSkyBirds:false}):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;}),
+  (includeFauna?createAmbientFauna(B,scene,meshes,{includeSkyBirds:false,includeShorePair:true}):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;}),
   (includeFuneralFauna?createJackals(B,scene,null,meshes):Promise.resolve(null)).catch(error=>{console.warn('Jackals unavailable; using legacy fauna.',error);return null;})]);if(disposed){for(const v of values)v?.dispose();return;}[goats,imported,ambient,jackals]=values;};
  let faunaReady=Promise.resolve();if(!deferFauna)await loadFauna();else faunaReady=new Promise(resolve=>setTimeout(resolve,150)).then(()=>{if(!disposed)return loadFauna();});
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);

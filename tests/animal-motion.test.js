@@ -6,16 +6,25 @@ const snap=r=>JSON.stringify([r,...r.getDescendants()].map(n=>[n.position?.asArr
 test('real GLBs parse, every terrestrial species walks with deforming skin, pause and dry routes hold at 4×',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine);scene.activeCamera=new B.FreeCamera('camera',new B.Vector3(0,3,-6),scene);const state=createGame({start:'established'}),saved=JSON.stringify(state),meshes=[];let view;
  try{
-  view=await createAmbientFauna(B,scene,meshes,{warn:(...a)=>{throw Error(a.join(' '));},includeRestrictedBirds:false,loadAsset:async file=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>{p.skipMaterials=true;});return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');}});
-  view.update(state,.05,{speed:4});for(const m of meshes)m.alwaysSelectAsActiveMesh=true;scene.render();const roots=view.roots().filter(r=>AMBIENT_MODELS[r.metadata.ambientSpecies]);assert.equal(roots.length,18);const start=new Map(roots.map(r=>[r,snap(r)])),positions=new Map(roots.map(r=>[r,skin(r)])),skinChanged=new Set(),moving=new Set(),deforming=new Set();
+  view=await createAmbientFauna(B,scene,meshes,{warn:(...a)=>{throw Error(a.join(' '));},includeRestrictedBirds:false,includeShorePair:true,loadAsset:async file=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>{p.skipMaterials=true;});return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');}});
+  view.update(state,.05,{speed:4});for(const m of meshes)m.alwaysSelectAsActiveMesh=true;scene.render();const roots=view.roots().filter(r=>AMBIENT_MODELS[r.metadata.ambientSpecies]);assert.equal(roots.length,16);
+  const kingfisher=view.roots().find(r=>r.metadata.ambientSpecies==='kingfisher');
+  const seagull=view.roots().find(r=>r.metadata.ambientSpecies==='seagull');
+  assert.equal(kingfisher.metadata.shoreRole,'male');
+  assert.equal(seagull.metadata.shoreRole,'female');
+  assert.equal(kingfisher.metadata.clip,'idle');
+  assert.equal(seagull.metadata.clip,'flap');
+  assert.ok(kingfisher.isEnabled()&&ambientDryPoint(state,kingfisher.position.x/6,kingfisher.position.z/6));
+  const firstFlight=seagull.position.clone();const start=new Map(roots.map(r=>[r,snap(r)])),positions=new Map(roots.map(r=>[r,skin(r)])),skinChanged=new Set(),moving=new Set(),deforming=new Set();
   for(let i=0;i<160;i++){
    const before=new Map(roots.map(r=>[r,{x:r.position.x/6,y:r.position.z/6}]));view.update(state,.05,{speed:4});scene.render();
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}
    for(const r of roots){const p={x:r.position.x/6,y:r.position.z/6};assert.ok(ambientDryPoint(state,p.x,p.y));assert.ok(ambientClearSegment(state,before.get(r),p));if(r.metadata.clip==='Walk')moving.add(r.metadata.ambientSpecies);if(snap(r)!==start.get(r))deforming.add(r.metadata.ambientSpecies);}
   }
-  for(const species of Object.keys(AMBIENT_MODELS)){assert.ok(moving.has(species)||species==='orange-bird',species+' must select Walk');assert.ok(deforming.has(species),species+' skin must change');assert.ok(skinChanged.has(species),species+' actual CPU skinned/morphed vertex positions must change independent of root translation');}
+  assert.ok(B.Vector3.Distance(seagull.position,firstFlight)>1);
+  for(const species of new Set(roots.map(r=>r.metadata.ambientSpecies))){assert.ok(moving.has(species),species+' must select Walk');assert.ok(deforming.has(species),species+' skin must change');assert.ok(skinChanged.has(species),species+' actual CPU skinned/morphed vertex positions must change independent of root translation');}
   for(const r of roots){let bottom=Infinity;for(const m of r.getChildMeshes()){if(!m.getTotalVertices())continue;const p=m.getPositionData(true,true),world=m.computeWorldMatrix(true);for(let j=0;j<p.length;j+=3){const v=B.Vector3.TransformCoordinates(new B.Vector3(p[j],p[j+1],p[j+2]),world);bottom=Math.min(bottom,v.y);}}const ground=surfaceElevation(r.position.x/6,r.position.z/6,state);assert.ok(Math.abs(bottom-ground)<.025,r.metadata.ambientSpecies+' must be grounded, got '+(bottom-ground));}
-  const frozen=roots.map(snap);for(let i=0;i<8;i++){view.update(state,.05,{paused:true,speed:4});scene.render();}assert.deepEqual(roots.map(snap),frozen);assert.equal(JSON.stringify(state),saved);
+  const visible=[...roots,kingfisher,seagull],frozen=visible.map(snap);for(let i=0;i<8;i++){view.update(state,.05,{paused:true,speed:4});scene.render();}assert.deepEqual(visible.map(snap),frozen);assert.equal(JSON.stringify(state),saved);
   const ducks=roots.filter(r=>r.metadata.ambientSpecies==='duck');assert.notEqual(ducks[0].getChildMeshes().find(m=>m.skeleton).skeleton,ducks[1].getChildMeshes().find(m=>m.skeleton).skeleton);
   for(const r of roots){assert.equal(r.metadata.animalId,undefined);assert.ok(r.getChildMeshes().every(m=>!m.isPickable));const species=r.metadata.ambientSpecies;if(packed.has(species)){const m=r.getChildMeshes().find(m=>m.morphTargetManager);assert.ok(m);assert.ok(m.morphTargetManager.numTargets>=5);const p=m.getVerticesData('position'),target=m.morphTargetManager.getTarget(0).getPositions();assert.ok(target.some((v,i)=>Math.abs(v-p[i])>.001),species+' morph must move actual vertices');}}
   view.dispose();assert.equal(meshes.length,0);assert.equal(scene.meshes.length,0);

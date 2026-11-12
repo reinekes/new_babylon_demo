@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=sumer-props-20261112';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=shore-pair-20261112';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -201,7 +201,7 @@ function render() {
   }
 }
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json',import.meta.url));
+  const response=await fetch(new URL('../docs/model-index.json?v=shore-pair-20261112',import.meta.url));
   if(!response.ok) throw Error(`HTTP ${response.status}`);
   index=await response.json();
   const rows=makeCatalog(index,'strict');
@@ -214,6 +214,13 @@ async function start() {
     group.value='';
     render();
   });
+  const file=new URLSearchParams(location.search).get('model');
+  const selected=rows.find(row=>row.previews[0].entry?.file===file);
+  if(selected){
+    usage=usageOf(selected);
+    search.value=file;
+  }
   render();
+  if(selected)await open(selected.previews[0],profile.value,selected.title);
 }
 start().catch(error=>{byId('totals').textContent=`Каталог недоступен. Откройте страницу через HTTP. ${error.message}`;});

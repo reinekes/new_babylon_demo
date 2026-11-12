@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 66,
-    "active": 49,
+    "total": 68,
+    "active": 51,
     "fallback": 9,
     "optional": 4,
     "spare": 4
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "519ae030a81ea9aa4164cee7f327265d8010258f7af60ad13c08510afa82e724"
+      "sha256": "e2542ae2d093c3e792b2439f3bc1d713b72925939de32bf72d874b609fdf88ee"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "357c222bd64cbf4e6827c5f092d4f05972504f3c448e0f9ee3795831162adfef"
+      "sha256": "b93d1034169106a96b99feca66a0182f2e63d6eb71f88f414841c8d3f9872662"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -1706,6 +1706,73 @@
           "file": "game3d/actors.js",
           "line": 62,
           "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "shore-kingfisher.glb",
+      "status": "active",
+      "purpose": "Два временных варианта береговой фауны: зимородок на берегу и чайка в полёте. Самец и самка — подписи для сравнения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|SHORE_PAIR",
+      "bytes": 89316,
+      "sha256": "7f68024c0286f73e701a4b77d909f6b62b681de7130bb0919fba3c1ec0fb2439",
+      "version": "7f68024c0286",
+      "triangles": 436,
+      "meshes": 1,
+      "bones": 16,
+      "clips": [
+        "idle",
+        "attack",
+        "dead",
+        "walk"
+      ],
+      "sources": [
+        {
+          "author": "Gobkit / Alsomind Tech Co., Ltd.",
+          "source": "https://gobkit.com/api/free",
+          "license": "CC0-1.0",
+          "evidence": "assets/art-courtyard/ATTRIBUTION.md#shore-birds"
+        }
+      ],
+      "references": [
+        {
+          "model": "shore-kingfisher.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 22,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "shore-seagull.glb",
+      "status": "active",
+      "purpose": "Два временных варианта береговой фауны: зимородок на берегу и чайка в полёте. Самец и самка — подписи для сравнения.",
+      "classificationEvidence": "game3d/ambient-fauna.js|SHORE_PAIR",
+      "bytes": 516392,
+      "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+      "version": "7e4f1a707aa4",
+      "triangles": 1174,
+      "meshes": 14,
+      "bones": 11,
+      "clips": [
+        "flap",
+        "planer",
+        "planer 2"
+      ],
+      "sources": [
+        {
+          "author": "The lighthouse keeper (https://sketchfab.com/geminga)",
+          "license": "CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)",
+          "source": "https://sketchfab.com/3d-models/flying-seagull-07dde3ea7d9048588d3c4edfd37ac20d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "shore-seagull.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 23,
+          "kind": "literal"
         }
       ]
     },
