@@ -27,7 +27,6 @@ export const MODEL_VERSIONS=Object.freeze({
  "imported-fox.glb": "f72eb437960d",
  "imported-goose.glb": "efa137a7461e",
  "imported-lioness.glb": "0a5491a85f5e",
- "shore-kingfisher.glb": "7f68024c0286",
  "shore-seagull.glb": "7e4f1a707aa4",
  "imported-orange-bird.glb": "ead5b61ed9b5",
  "imported-sky-birds.glb": "edd15834eabf",

@@ -144,5 +144,4 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 
 ## Shore birds
 
-- `shore-kingfisher.glb` is the unchanged Kingfisher GLB by Gobkit / Alsomind Tech Co., Ltd. [Source](https://gobkit.com/api/free) · [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
 - `shore-seagull.glb` is the unchanged Flying Seagull GLB by The lighthouse keeper (geminga). [Source](https://sketchfab.com/3d-models/flying-seagull-07dde3ea7d9048588d3c4edfd37ac20d) · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
