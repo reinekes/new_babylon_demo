@@ -92,6 +92,11 @@ export function makeCatalog(index, profile) {
       {author:'Бычья голова для лиры, Метрополитен-музей',source:'https://www.metmuseum.org/art/collection/search/324023'}
     ]
   })));
+  rows.push(row('mythology','Змеи Нингишзиды','Переплетённые змеи на сосуде для возлияний',model('vessel','Игровая реконструкция',{
+    species:'ningishzida',studio:true,sources:[
+      {author:'Сосуд Гудеа, Лувр',source:'https://collections.louvre.fr/en/ark:/53355/cl010143800'}
+    ]
+  })));
   const wildlife = {
     fish:['Рыба','Игровая геометрия'], mouse:['Мышь','Игровая геометрия'],
     rat:['Крыса','Игровая геометрия'], goat:['Коза','Резервная геометрия'],
