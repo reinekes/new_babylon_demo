@@ -500,10 +500,10 @@ function arrival(s,c,ctx){
  if(c.phase==='toRest'){c.phase='resting';return;}
  if(c.phase==='toPantrySupply'){
   const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),inTransit=s.citizens.filter(p=>p.pantryTrip&&(p.pantryTarget||p.home)===target).reduce((n,p)=>n+(p.pantryFood||0),0),amount=b?Math.min(6,Math.max(0,houseDemand(s,ctx,target)*8/3-(b.pantry||0)-inTransit),foodAvailableAt(s,c.store)):0;
-  if(amount>1e-8){c.pantryFood=takeStock(s,c.store,'food',amount,{fishTo:c,fishKey:'fishPantry',giftTo:c,giftKey:'giftPantry'});startTrip(s,c,target,'toPantryHome',ctx);}else{delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);}return;
+  if(amount>1e-8){c.pantryFood=takeStock(s,c.store,'food',amount,{fishTo:c,fishKey:'fishPantry',giftTo:c,giftKey:'giftPantry'});if(c.pantryFood>0)c.pantryOrigin=c.store;startTrip(s,c,target,'toPantryHome',ctx);}else{delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryTarget;startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);}return;
  }
  if(c.phase==='toPantryHome'){
-  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordHomeRation(s,b,c,amount);recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
+  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordHomeRation(s,b,c,amount,c.pantryOrigin??null);recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
    const gift=moveGiftFood(c,'giftPantry',b,'giftHome',amount,amount,b.pantry-amount);
    recordAbundanceHome(s,b,c,ctx.buildings.get(c.store),amount,gift);
    if(c.fishPantry)recordHomeFish(s,b,takeFishEvidence(c,'fishPantry',amount,amount),c);
@@ -513,7 +513,7 @@ function arrival(s,c,ctx){
    if(c.fishPantry)appendFish(store,'fishStock',takeFishEvidence(c,'fishPantry',accepted,amount),(store?.stock?.food||0)-accepted);
   }
   delete c.fishPantry;delete c.giftPantry;
-  delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;if(target!==c.home)startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);else c.phase=hasCargo(c)?'resting':'home';return;
+  delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryTarget;if(target!==c.home)startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);else c.phase=hasCargo(c)?'resting':'home';return;
  }
  if(c.phase==='toSaleSupply'){
   const q=s.trade?.sales?.find(q=>q.id===c.saleJob),market=ctx.buildings.get(c.saleMarket);if(q&&market&&isWorkday(s.simTime)){const food=q.sources?.[c.store]?.food;const amount=q.sources?takeReserved(s,q.sources,c.store,q.resource,Math.min(q.remaining,4+2*(market.level||1))):Math.min(q.remaining,4+2*(market.level||1));if(q.giftReserve?.[c.store]){moveGiftFood(q.giftReserve,c.store,c,'giftCargo',amount,food,0);if(!Object.keys(q.giftReserve).length)delete q.giftReserve;}q.remaining-=amount;c.cargo={[q.resource]:amount};if(amount>0){startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);return;}}
@@ -1096,7 +1096,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  delete c.giftSeed;
  if(c.pantryFood)restore('food',c.pantryFood,'fishPantry');
  delete c.fishCargo;delete c.fishPantry;delete c.giftCargo;delete c.giftPantry;delete c.inspiredFishReturn;delete c.creatorCargo;delete c.windCargo;delete c.windRoute;
- delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;delete c.districtJob;
+ delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryTarget;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;
 }

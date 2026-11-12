@@ -110,7 +110,7 @@ import {stockStores,storeCapacity,storeStock} from './inventory.js';
 import {districtReport,storeMinimum,setStoreMinimum,setStoreExports,requestTransfer,cancelTransfer} from './district-logistics.js';
 import {foodForecast,foodWarnings,seedReserve,availableFood,setSeedProtection} from './food-planning.js';
 import {pestReport,isPestStore,catReason} from './pests.js';
-import {householdSupplyRoute,supplyOverview} from './supply.js';
+import {districtSupplyRoute,householdSupplyRoute,supplyOverview} from './supply.js';
 import {medicalLevel,healingSpeed,healingQuality,healingCost,STUDY_SECONDS} from './education.js';
 import {workRate,isDinnerTime,beliefMultiplier} from './wellbeing.js';
 import {household} from './households.js';
@@ -1021,13 +1021,15 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
   ?h.dining?'Семья ужинает':'Еда доставлена во двор'
   :liveRation?.route.amount>0?'Еда получена и в пути'
   :liveRation?.route.courier!==undefined?'Носильщик идёт за едой':'Склад и путь к двору';
- const rationScene=liveRation?`<section class="house-food" aria-label="Рейс за едой"><b>${rationStage}</b>${liveRation.delivered?`<p>${resident(liveRation.delivered.carrier)} принёс ${foodAmount(liveRation.delivered.amount)} ед. еды.</p>`:''}<p>Склад → выдача → дорога → запас двора → ужин</p></section>`:'';
+ const liveCarrier=liveRation&&!liveRation.delivered&&state.citizens.find(c=>c.id===liveRation.route.courier);
+ const rationScene=liveRation?`<section class="house-food" aria-label="Рейс за едой"><b>${rationStage}</b>${liveRation.delivered?`<p>${resident(liveRation.delivered.carrier)} принёс ${foodAmount(liveRation.delivered.amount)} ед. еды.</p>`:''}<p>Склад → выдача → дорога → запас двора → ужин</p>${liveCarrier?'<button type="button" data-focus-ration-carrier>Показать носильщика</button>':''}</section>`:'';
  const rationNote=resource==='food'?`<details class="house-food" data-home-ration><summary>Выдача еды и ужин</summary>${receipt?`<p>Последняя доставка · ${Math.floor(receipt.time/60)+1}-й день города · ${foodAmount(receipt.amount)} ед. еды · ${resident(receipt.carrier)}${receipt.source?` · отправление ${esc(receipt.source)}`:''}.</p>`:'<p>Первая доставка появится здесь после прибытия груза.</p>'}<p>Ужин семьи идёт с 20:00 до 06:00. Домашний запас ${foodAmount(h.food)} ед.</p><p>Табличка Ур III записывает пайки гонцов. В этой долине запись показывает доставку во двор. <a href="https://cdli.earth/cdli-tablet/549" target="_blank" rel="noopener">Табличка в CDLI</a></p></details>`:'';
  const routeControls=resource?`<section class="house-food" aria-label="Путь снабжения"><button type="button" data-house-supply-route>${shown?'Обновить путь':'Показать путь доставки'}</button>
  ${shown?` <button type="button" data-hide-house-route>Скрыть</button><p>${esc(shown.route.status)}${shown.route.amount>0?` · ${foodAmount(shown.route.amount)} ед.`:''}${shown.route.courier!==undefined?` · ${esc(displayName(state,shown.route.courier))}`:''}</p>${shown.source?`<button type="button" data-open-route-source>Открыть источник · ${esc(buildingDefinition(state,shown.source.type)?.name||'Склад')} ${esc(buildingKey(shown.source))}</button>`:''}`:''}</section>`:'';
 
  if(setHTML(panel,`<div class="house-tabs" role="tablist" aria-label="Дом"><button role="tab" data-house-tab="family" aria-selected="${householdTab==='family'}">Семья · ${h.residents.length}</button><button role="tab" data-house-tab="food" aria-selected="${householdTab==='food'}">Еда · ${rounded(h.food)}</button><button role="tab" data-house-tab="water" aria-selected="${householdTab==='water'}">Вода · ${rounded(w.stock)}</button></div><div role="tabpanel">${content}${routeControls}${rationScene}${rationNote}</div>`)){
  if(rationOpen&&panel.querySelector('[data-home-ration]'))panel.querySelector('[data-home-ration]').open=true;
+ panel.querySelector('[data-focus-ration-carrier]')?.addEventListener('click',()=>renderer.focusOn(liveCarrier.x,liveCarrier.y));
  panel.querySelector('[data-house-supply-route]')?.addEventListener('click',()=>showHouseholdRoute(b,resource));
  panel.querySelector('[data-hide-house-route]')?.addEventListener('click',()=>{clearSupplyRoute();renderHousehold(b);});
  panel.querySelector('[data-open-route-source]')?.addEventListener('click',()=>{
@@ -1415,15 +1417,17 @@ function showCivicOrder(selected){
  const title=civicCityEpithet(state);
  const selectedEntry=civic.history.find(q=>civicCaseKey(q)===selected);
  const entries=selectedEntry?[selectedEntry]:civic.history.slice(0,10);
+ const storeButton=key=>key&&state.buildings.some(b=>buildingKey(b)===key)?`<button type="button" data-civic-store="${esc(key)}">Склад ${esc(key)}</button>`:'';
+ const routeButton=id=>state.district?.jobs.some(job=>job.id===id&&job.delivered+(job.cancelled||0)<job.amount-1e-7)?`<button type="button" data-civic-job="${id}">Маршрут груза</button>`:'';
  const caseHTML=q=>{
   const progress=q.outcome==='theft'?civicRestitution(state,q):null;
-  return `<li><b>${civicOutcomes[q.outcome]}</b> · ${resident(q.person)} · двор ${esc(q.home)} · год ${q.year}${q.source?` · склад ${esc(q.source)}`:''}${q.guardName?` · ${esc(q.guardName)}`:''}${q.amount?` · ${foodAmount(q.amount)} ед. зерна`:''}
-  ${progress?`<p>${q.restitution?`Решение записал ${esc(q.restitution.name)}. `:''}${progress.complete?'Возмещение доставлено.':progress.active?'Перевозка заказана.':'Ожидает возмещения.'} Возмещено ${foodAmount(progress.paid)} из ${foodAmount(q.amount)}.</p>${!progress.complete&&!progress.active?(authors.some(c=>c.id===law?.author)?`<button type="button" data-civic-restitution="${civicCaseKey(q)}">Назначить возмещение зерном</button>`:'<small>Нужен действующий законодатель со сводом.</small>'):''}`:''}</li>`;
+  return `<li><b>${civicOutcomes[q.outcome]}</b> · ${resident(q.person)} · двор ${esc(q.home)} · год ${q.year}${q.source?` · ${storeButton(q.source)||esc(q.source)}`:''}${q.guard!==undefined?` · ${resident(q.guard)}`:''}${q.amount?` · ${foodAmount(q.amount)} ед. зерна`:''}
+  ${progress?`<p>${q.restitution?`Решение записал ${esc(q.restitution.name)}. `:''}${progress.complete?'Возмещение доставлено.':progress.active?'Перевозка заказана.':'Ожидает возмещения.'} Возмещено ${foodAmount(progress.paid)} из ${foodAmount(q.amount)}. ${routeButton(q.restitution?.job)}</p>${!progress.complete&&!progress.active?(authors.some(c=>c.id===law?.author)?`<button type="button" data-civic-restitution="${civicCaseKey(q)}">Назначить возмещение зерном</button>`:'<small>Нужен действующий законодатель со сводом.</small>'):''}`:''}</li>`;
  };
  openDialog('civic-order',`<button type="button" class="management-close" id="close-civic-order" aria-label="Закрыть свод законов">×</button>
  <span class="eyebrow">ОБЩИНА И ЛЕТОПИСЬ</span><h2>${esc(title||'Законы города')}</h2>
  <details class="food-forecast"><summary>Судебные дела в эпоху III династии Ура</summary><p>Таблички конца III тысячелетия до н. э. сохраняют записи отдельных тяжб и судебных решений. Царские сборники законов составляют отдельный вид источников. Просьбы дворов, игровой штраф и порядок возмещения придуманы для этой долины. <a href="https://cdli.earth/articles/cdln/2015-6" target="_blank" rel="noopener">Исследование судебной таблички Ур III</a></p></details>
- <section class="food-forecast"><h3>Просьбы дворов</h3>${incident?`<p>${resident(incident.person)} просит зерно для двора ${esc(incident.home)}.</p>${incident.guard!==undefined?`<p>${resident(incident.person)} и ${resident(incident.guard)} спорят у склада ${esc(incident.source)}.</p><button type="button" id="reconcile-civic">Примирить стороны</button>`:''}<div class="dialog-actions"><button type="button" class="primary" id="send-civic-aid"${civicAidPending(state)?' disabled':''}>${civicAidPending(state)?'Помощь в пути':'Заказать доставку зерна'}</button><button type="button" id="open-civic-home">Путь помощи</button></div>`:'<p>Открытых просьб пока нет.</p>'}</section>
+ <section class="food-forecast"><h3>Просьбы дворов</h3>${incident?`<p>${resident(incident.person)} просит зерно для двора ${esc(incident.home)}.</p>${incident.guard!==undefined?`<p>${resident(incident.person)} и ${resident(incident.guard)} спорят у склада ${esc(incident.source)}.</p><button type="button" id="reconcile-civic">Примирить стороны</button>`:''}<div class="dialog-actions"><button type="button" class="primary" id="send-civic-aid"${civicAidPending(state)?' disabled':''}>${civicAidPending(state)?'Помощь в пути':'Заказать доставку зерна'}</button><button type="button" id="open-civic-home">Путь помощи</button>${routeButton(incident.aid)}</div>`:'<p>Открытых просьб пока нет.</p>'}</section>
  <section class="food-forecast"><h3>Глиняная табличка</h3>
  ${law?`<p>Записал ${esc(law.name)} · год ${law.year}.</p><ol><li>Если двору не хватает зерна, он может попросить общину о помощи.</li><li>Доверяющие своду ждут помощь на день дольше. Из связанного склада заказывают две меры зерна, если есть свободный запас.</li><li>Записанную кражу можно возместить из свободного запаса другого склада.</li></ol>`:'<p>Вдохнови взрослого призванием «Законодатель» в карточке жителя. Он сможет записать свод за 1 глину.</p>'}
  ${authors.filter(c=>c.id!==law?.author).map(c=>{const reason=civicLawReason(state,c.id);return `<p>${esc(displayName(state,c))} · <button type="button" data-publish-law="${c.id}"${reason?' disabled':''}>Записать свод · 1 глина</button>${reason?` <small>${esc(reason)}</small>`:''}</p>`;}).join('')}</section>
@@ -1435,6 +1439,21 @@ function showCivicOrder(selected){
  return `<li><b>${q.year} · ${esc(q.title)}</b>${events.length?`<ul>${events.map(entry=>`<li>${esc(civicOutcomes[entry.outcome])} · ${resident(entry.person)} · <button type="button" data-civic-year-home="${esc(entry.home)}">Двор ${esc(entry.home)}</button></li>`).join('')}</ul>`:''}</li>`;
  }).join('')}</ul>`:''}</section>`);
  $('close-civic-order').onclick=closeDialog;
+ function inspectCivicBuilding(b){
+  closeDialog();clearSupplyRoute();if(selection)choose(selection);
+  inspected={x:b.x,y:b.y};renderer.focusOn(b.x,b.y);detail(b.type,false,b);
+ }
+ for(const button of dialog.querySelectorAll('[data-civic-store]'))button.onclick=()=>{
+  const b=state.buildings.find(item=>buildingKey(item)===button.dataset.civicStore);
+  if(b)inspectCivicBuilding(b);
+ };
+ for(const button of dialog.querySelectorAll('[data-civic-job]'))button.onclick=()=>{
+  const job=state.district?.jobs.find(item=>item.id===Number(button.dataset.civicJob));
+  const route=job&&districtSupplyRoute(state,job);
+  if(!route?.points.length){toast('Маршрут груза сейчас недоступен');return;}
+  inspectCivicBuilding(route.home);drawSupplyRoute(buildingKey(route.home),'civic',route,route.source);
+ };
+
  $('all-civic-cases')?.addEventListener('click',()=>showCivicOrder());
  for(const button of dialog.querySelectorAll('[data-civic-year-home]')){
   button.disabled=!state.buildings.some(b=>b.type==='house'&&buildingKey(b)===button.dataset.civicYearHome);

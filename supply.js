@@ -22,7 +22,7 @@ export function householdSupplyRoute(s,key,resource){
  const courier=water?s.citizens.find(c=>c.waterTrip?.target===key):homeFoodCouriers(s,key).find(c=>c.phase!=='blocked');
  if(courier){
   const trip=water?courier.waterTrip:null,job=!water&&s.district?.jobs.find(q=>q.id===courier.districtJob);
-  const source=water?trip.station:job?.source||courier.store;
+  const source=water?trip.station:job?.source||courier.pantryOrigin||courier.store;
   const loaded=water?trip.load:carriedMealFood(courier);
   return {home,source,courier:courier.id,amount:loaded,points:points(courier,trip?.route||courier.route||[],trip?.index??courier.routeIndex??0),
    status:loaded>0?(water?'Несёт воду во двор':'Несёт еду во двор'):(water?'Идёт за водой':'Идёт за едой')};
@@ -43,4 +43,16 @@ export function householdSupplyRoute(s,key,resource){
  const reason=water?(candidates.length?'Пути от готовых водозаборов нет. Жители могут идти к доступному берегу.':'Готового водозабора нет. Жители могут идти к доступному берегу.'):
   supplyOverview(s).houses.find(h=>h.key===key)?.reason||'Рейс не назначен';
  return {home,source:null,points:[],status:reason};
+}
+
+export function districtSupplyRoute(s,job){
+ const home=s.buildings.find(b=>buildingKey(b)===job.target);
+ const source=s.buildings.find(b=>buildingKey(b)===job.source);
+ if(!home||!source)return null;
+ const carriers=s.citizens.filter(c=>c.districtJob===job.id&&c.phase!=='blocked');
+ const courier=carriers.find(c=>(c.cargo?.[job.resource]||0)>0)||carriers[0];
+ if(courier)return {home,source,points:[{x:courier.x,y:courier.y},...courier.route.slice(courier.routeIndex)]};
+ const net=networkFor(s,{materializeRoads:false});
+ const from=net.ports.find(p=>p.building===source),to=net.ports.find(p=>p.building===home);
+ return {home,source,points:from&&to?routeBetween(s,from.key,to.key,{network:net})||[]:[]};
 }
