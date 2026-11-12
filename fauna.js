@@ -1,3 +1,4 @@
+import {insideFootprint,footprintSize} from './footprints.js';
 import {ecologyCount} from './ecology.js';
 import {flockSize,flockAdults} from './textiles.js';
 import {pestActors} from './pests.js';
@@ -34,6 +35,51 @@ export function naturalAnimalsFor(s){
  }
  return result;
 }
+function flockPlan(s,b,size){
+ const nearby=s.buildings.filter(site=>site!==b&&Math.hypot(site.x-b.x,site.y-b.y)<8);
+ const signature=JSON.stringify([size,b.rotation,footprintSize(b),s.world?.river,s.world?.lakes,nearby.map(site=>[site.x,site.y,footprintSize(site)])]);
+ const cached=flockRoutes.get(b);
+ if(cached?.signature===signature)return cached;
+ const n=footprintSize(b),center={x:b.x+(n-1)/2,y:b.y+(n-1)/2};
+ const free=p=>isDryPoint(s,p.x,p.y)&&!nearby.some(site=>insideFootprint(site,p.x,p.y));
+ const clear=(a,z)=>{
+  const steps=Math.ceil(Math.hypot(z.x-a.x,z.y-a.y)*12);
+  for(let i=0;i<=steps;i++){
+   const f=steps?i/steps:0;
+   if(!free({x:a.x+(z.x-a.x)*f,y:a.y+(z.y-a.y)*f}))return false;
+  }
+  return true;
+ };
+ const candidates=[];
+ for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++){
+  if(Math.hypot(dx,dy)<1.5||Math.hypot(dx,dy)>6)continue;
+  const point={x:b.x+dx,y:b.y+dy};
+  if(free(point)&&clear(center,point))candidates.push(point);
+ }
+ candidates.sort((a,z)=>Math.hypot(a.x-center.x,a.y-center.y)-Math.hypot(z.x-center.x,z.y-center.y));
+ const grass=candidates.find(p=>terrain(p.x,p.y,s)==='fertile')||candidates[0];
+ const shore=grass&&candidates.find(p=>isShore(s,p.x,p.y)&&Math.hypot(p.x-grass.x,p.y-grass.y)>.6&&clear(grass,p));
+ const positions=Array.from({length:size},(_,i)=>{
+  const dx=(i%4-1.5)*.16,dy=(Math.floor(i/4)-.5)*.16;
+  const shift=p=>({x:p.x+dx,y:p.y+dy,flockStage:p.flockStage});
+  const start=shift({...center,flockStage:'pen'});
+  const pen=free(start)?start:{...center,flockStage:'pen'};
+  if(!grass)return [pen];
+  const pasture=shift({...grass,flockStage:'pasture'});
+  if(!clear(pen,pasture))return [pen];
+  const water=shore&&shift({...shore,flockStage:'water'});
+  return water&&clear(pasture,water)&&clear(water,pen)?[pen,pasture,water,pen]:[pen,pasture,pen];
+ });
+ const plan={signature,positions};flockRoutes.set(b,plan);return plan;
+}
+
+export function flockLeader(s,b){
+ if(!b||b.type!=='sheepfold'||b.construction?.kind==='new'||!flockSize(b))return null;
+ const route=flockPlan(s,b,flockSize(b)).positions[0];
+ if(route.length<2)return null;
+ return loopMotion(route,(s.simTime||0)+seed(b.x,b.y)*8-1.1,.22,3.8);
+}
+
 export function animalsFor(s){
  const time=s.simTime||0,result=[],kills=s.gathering?.kills||[],jobs=s.gathering?.jobs||[];
  for(const actor of naturalAnimalsFor(s)){
@@ -43,8 +89,13 @@ export function animalsFor(s){
   result.push(hunt?{...actor,x:hunt.target.x,y:hunt.target.y,behavior:'looking',walking:false}:actor);
  }
  for(const b of s.buildings){if(b.type!=='sheepfold'||b.construction?.kind==='new')continue;
-  const size=flockSize(b);let cached=flockRoutes.get(b);if(cached?.size!==size){cached={size,routes:Array.from({length:size},(_,i)=>{const large=b.footprint===2;const cx=b.x-.24+(i%4)*(large?.41:.16),cy=b.y+.02+Math.floor(i/4)*(large?.35:.22);const route=[{x:cx-.035,y:cy-.035},{x:cx+.035,y:cy-.035},{x:cx+.035,y:cy+.035},{x:cx-.035,y:cy+.035},{x:cx-.035,y:cy-.035}];return route.every(p=>isDryPoint(s,p.x,p.y))?route:[{x:b.x,y:b.y}];})};flockRoutes.set(b,cached);}
-  for(let i=0;i<size;i++){const phase=time+seed(b.x+i,b.y)*23,motion=loopMotion(cached.routes[i],phase,.035,2+i%3);result.push({id:`sheep-${b.x}-${b.y}-${i}`,kind:'sheep',young:i>=flockAdults(b),...motion,step:phase*5,behavior:motion.walking?'walking':Math.floor(phase/3)%4===0?'resting':Math.floor(phase/3)%4===1?'looking':'grazing',headTurn:Math.sin(phase*.8)*.5});}
+  const size=flockSize(b),plan=flockPlan(s,b,size);
+  for(let i=0;i<size;i++){
+   const phase=time+seed(b.x,b.y)*8-i*.18;
+   const motion=loopMotion(plan.positions[i],phase,.22,3.8);
+   const behavior=motion.walking?'walking':motion.flockStage==='water'?'drinking':motion.flockStage==='pasture'?'grazing':'resting';
+   result.push({id:`sheep-${b.x}-${b.y}-${i}`,kind:'sheep',young:i>=flockAdults(b),...motion,step:phase*5,behavior,headTurn:Math.sin(phase*.8)*.5});
+  }
  }
  return [...result,...pestActors(s)];
 }

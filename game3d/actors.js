@@ -11,7 +11,7 @@ import {workstationHands,workstationPose} from './workstations.js';
 import {professionClothing,createProfessionClothing} from './profession-clothing.js';
 import {visibleCitizens,networkFor} from '../workforce.js';
 import {ceremonyJoinStep} from '../festival-layout.js';
-import {animalsFor} from '../fauna.js';
+import {animalsFor,flockLeader} from '../fauna.js';
 import {funeralView} from '../funerals.js';
 import {createFuneralRitual} from './funeral-ritual.js';
 import {createJackals} from './jackals.js';
@@ -40,7 +40,11 @@ export function actorViewFrame(state){
  // A hand must be able to reach the cat; the general neighbourhood test is wider.
  const pettingPairs=catPettingPairs(state,residents).filter(p=>{const c=byId.get(p.citizenId),scale=c.age<16?.55+Math.max(0,Math.min(c.age,15))*.022:1;return Math.hypot(c.x-p.x,c.y-p.y)<=.16*scale;});
  const workplaces=workplaceIndex(state);
- const visible=new Map(residents.map(c=>[c.id,{...c,activity:c.controlled&&c.activity?c.activity:actorWorkActivity(state,c,pettingPairs)||workplaceActivity(state,c,workplaces)}]));
+ const visible=new Map(residents.map(c=>{
+  const activity=c.controlled&&c.activity?c.activity:actorWorkActivity(state,c,pettingPairs)||workplaceActivity(state,c,workplaces);
+  const flock=activity?.task==='sheepfold'&&activity.stage==='waiting'&&!c.carrying?flockLeader(state,workplaces.get(c.work)):null;
+  return [c.id,flock?{...c,x:flock.x,y:flock.y,walking:flock.walking,activity}:{...c,activity}];
+ }));
  const funeral=funeralView(state);
  for(const id of funeral?.mourners||[]){
   const c=visible.get(id)||(state.citizens||[]).find(c=>c.id===id);
@@ -64,6 +68,22 @@ export function actorAnimation(c,distance=0){
  const pose=residentPose(c,null,0).kind;
  return {clip:!c.swimming&&(distance>.00001||pose==='dance')?'Walk_Loop':'Idle_Loop',pose:c.relic?'carry':c.activity&&!c.carrying?(!c.activity.stage||['working','strike','searching'].includes(c.activity.stage)?c.activity.kind:'idle'):c.swimming?'swim':['carry','unload','play','dance','elder'].includes(pose)?pose:c.phase==='working'||c.phase==='constructing'?'work':'idle'};
 }
+const carriedKind=k=>k==='basket'?'basket':['water','beer','pottery','oil','milk'].includes(k)?'vessel':
+ ['wood','reed','timber','flax'].includes(k)?'bundle':'sack';
+const loadGrips={
+  sack:{height:1.02,reach:.34,left:[-.19,-.01,0],right:[.19,-.01,0]},
+  basket:{height:.99,reach:.37,left:[-.26,.06,0],right:[.26,.06,0]},
+  vessel:{height:1.04,reach:.37,left:[-.15,-.10,0],right:[.12,.16,0]},
+  bundle:{height:1.02,reach:.34,left:[-.21,-.01,0],right:[.21,-.01,0]}
+};
+export function residentLoadGrip(resource,unloading=false,time=0){
+ const grip=loadGrips[carriedKind(resource)];
+ const lower=unloading?(1-Math.cos(Math.min(1,Math.max(0,time))*Math.PI))*.11:0;
+ const height=grip.height-lower,reach=grip.reach+lower*.35;
+ const palm=([x,y,z])=>[x,y+height,z+reach];
+ return {height,reach,left:palm(grip.left),right:palm(grip.right)};
+}
+
 export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){return c.swimming?{height:WATER_HEIGHT-.48,pitch:1.12,stroke:reducedMotion?0:Math.sin(time*2.3),sway:reducedMotion?0:Math.sin(time*1.15)*.025}:null;}
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
@@ -300,8 +320,17 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    for(let i=0;i<2;i++){sphere('cargo-fish',a.load,fishSkin,0,i*.10-.04,0,.43,.12,.12);const tail=box('cargo-fish-tail',a.load,fishSkin,.23,i*.10-.04,0,.10,.14,.025);tail.rotation.z=.4; sphere('cargo-fish-eye',a.load,dark,-.16,i*.10-.01,-.055,.02,.02,.02);}
    box('cargo-fish-binding',a.load,reed,0,0,0,.025,.27,.14);
   }else if(k==='food'&&a.look.work==='hunting'){sphere('cargo-game-bundle',a.load,dark,0,0,0,.47,.28,.28);box('cargo-game-binding',a.load,linen,0,0,0,.035,.29,.29);}
-  else if(['water','beer','pottery','oil'].includes(k)){sphere('cargo-vessel',a.load,clay,0,0,0,.32,.36,.32);sphere('cargo-neck',a.load,clay,0,.19,0,.14,.12,.14);}
-  else if(['wood','reed'].includes(k))for(let i=0;i<4;i++)box('cargo-bundle',a.load,k==='wood'?wood:reed,0,i*.055-.08,0,.58,.045,.065);
+  else if(k==='basket'){
+   box('cargo-basket-base',a.load,reed,0,-.11,0,.52,.07,.35);
+   for(const x of [-.245,.245])box('cargo-basket-side',a.load,reed,x,-.015,0,.045,.17,.35);
+   for(const z of [-.158,.158])box('cargo-basket-side',a.load,reed,0,-.015,z,.52,.17,.045);
+   for(const x of [-.255,.255])box('cargo-basket-grip',a.load,wood,x,.06,0,.035,.055,.22);
+  }
+  else if(carriedKind(k)==='vessel'){sphere('cargo-vessel',a.load,clay,0,0,0,.32,.36,.32);sphere('cargo-neck',a.load,clay,0,.19,0,.14,.12,.14);}
+  else if(carriedKind(k)==='bundle'){
+   for(let i=0;i<4;i++)box('cargo-bundle',a.load,['wood','timber'].includes(k)?wood:reed,0,i*.045-.067,0,.58,.043,.10);
+   for(const x of [-.16,.16])box('cargo-bundle-binding',a.load,linen,x,0,0,.035,.20,.11);
+  }
   else if(['clay','brick','firedBrick','stone'].includes(k))for(let i=0;i<3;i++)box('cargo-material',a.load,k==='stone'?stone:clay,(i%2-.5)*.15,Math.floor(i/2)*.1,0,.145,.09,.23);
   else sphere('cargo-sack',a.load,['cloth','clothing','wool'].includes(k)?linen:reed,0,0,0,.39,.31,.30);
  }
@@ -389,6 +418,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.wasPloughing=!!plough;
   a.plough=plough;
   a.paused=paused;
+  if(!paused)a.unloadTime=a.pose==='unload'?Math.min(1,(a.unloadTime||0)+dt*speed):0;
   if(!paused||!a.hasModelPose){
    const playing=c.playing&&c.age<16,keepsake=a.pose==='peaceRelief'&&c.peaceKeepsake;
    if(a.playProps){a.playProps.setEnabled(!!playing);a.playBoard.setEnabled(!!playing&&!c.walking);}
@@ -476,9 +506,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     if(carry){a.load.position.set(0,.50,1.05);for(let solve=0;solve<4;solve++){poseArm(a,'l',vec(-.21,.50,1.05));poseArm(a,'r',vec(.21,.50,1.05));}}
     else for(let solve=0;solve<3;solve++){poseArm(a,'l',vec(-.38-stroke*.10,.34,1.0+stroke*.18));poseArm(a,'r',vec(.38+stroke*.10,.34,1.0-stroke*.18));}
    }else if(carry){
-    // Both palms meet the actual load, not a floating object ahead of the torso.
-    a.load.position.set(0,1.02,.34);
-    poseArm(a,'l',vec(-.21,1.01,.34));poseArm(a,'r',vec(.21,1.01,.34));
+    const resource=Object.keys(a.c.cargo||{}).find(key=>a.c.cargo[key]>0);
+    const grip=residentLoadGrip(resource,a.pose==='unload',a.unloadTime||0);
+    a.load.position.set(0,grip.height,grip.reach);
+    poseArm(a,'l',vec(...grip.left));poseArm(a,'r',vec(...grip.right));
    }else if(a.pose==='logging'||a.pose==='quarry'){
     const swing=a.c.activity?.stage==='strike'?0:(Math.sin(a.time*2.8)+1)*.5;
     poseArm(a,'r',vec(.17,.99+swing*.28,.39-swing*.11));

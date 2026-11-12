@@ -40,3 +40,24 @@ test('porters supply the managed fold, the calendar consumes feed and visuals re
  assert.deepEqual(Object.keys(s.buildings.find(b=>b.x===11&&b.y===9).flock),['fleece']);
  assert.ok(decode(encode(s)));
 });
+
+test('one flock leaves the pen, grazes, drinks on dry land and returns with the same identities',async()=>{
+ const {createGame}=await import('../engine.js');
+ const {isDryPoint}=await import('../world.js');
+ const city=createGame({start:'established'});
+ city.buildings.push({type:'sheepfold',x:9,y:15,level:1});
+ let ids;
+ const visits=[];
+ for(let step=0;step<300;step++){
+  city.simTime=step*.4;
+  const flock=animalsFor(city).filter(a=>a.id.startsWith('sheep-9-15-'));
+  ids??=flock.map(a=>a.id);
+  assert.deepEqual(flock.map(a=>a.id),ids);
+  assert.ok(flock.every(a=>isDryPoint(city,a.x,a.y)));
+  const phase=flock[0].behavior;
+  if(phase!=='walking'&&visits.at(-1)!==phase)visits.push(phase);
+ }
+ const firstPasture=visits.indexOf('grazing');
+ const water=visits.indexOf('drinking',firstPasture+1);
+ assert.ok(firstPasture>=0&&water>firstPasture&&visits.indexOf('resting',water+1)>water);
+});

@@ -110,9 +110,14 @@ export function localFerryVessel(s){
  const from=dockAt(s,trip.from),to=dockAt(s,trip.to);
  const a=riverLocal(from.x,from.y,s).along,b=riverLocal(to.x,to.y,s).along;
  const offset=dock=>Math.sign(signedRiverDistance(dock.x,dock.y,s))*.6;
- const progress=Math.min(1,trip.elapsed/secondsBetween(s,from,to));
+ const duration=secondsBetween(s,from,to),sailing=duration-.65;
+ const progress=Math.min(1,trip.elapsed/sailing);
+ const unload=Math.max(0,(trip.elapsed-sailing)/(duration-sailing));
  const point=t=>riverPoint(a+(b-a)*t,s,offset(from)+(offset(to)-offset(from))*t);
- return {...point(progress),id:'local-ferry',transport:'river',phase:'arriving',stock:{food:trip.amount},route:[point(Math.min(1,progress+.02))],routeIndex:0};
+ const arriving=progress<1;
+ const heading=arriving?point(Math.min(1,progress+.02)):{x:point(1).x*2-point(.98).x,y:point(1).y*2-point(.98).y};
+ return {...point(progress),id:'local-ferry',transport:'river',phase:arriving?'arriving':'unloading',unload,
+  landing:{x:to.x,y:to.y},stock:{food:trip.amount},route:[heading],routeIndex:0};
 }
 
 export function riverStoreDemolitionReason(s,b){

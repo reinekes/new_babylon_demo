@@ -98,3 +98,24 @@ test('strict river vessel has a dry cargo floor and never requests the late hull
   const legacyRoot=view.root;view.update(s,c,0);assert.ok(legacyRoot.isDisposed());assert.equal(loads,1);assert.equal(view.root.metadata.historicalProfile,'sumer-iii-v1');assert.ok(!view.root.getDescendants().some(n=>/RiverCraftHull/.test(n.name)));
  }finally{view.dispose();goods.meshes.forEach(m=>m.dispose());Object.values(materials).forEach(m=>m.dispose());assert.equal(meshes.length,0);scene.dispose();engine.dispose();}
 });
+
+test('local ferry has a pole operator and moves its cargo toward the landing while stock stays fixed',async()=>{
+ const {strictScenario}=await import('../scenario-profiles.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine);
+ const materials=Object.fromEntries(['wood','stone','reed','linen','soil','terracotta'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ const goods=createGoodsSources(B,scene,materials),meshes=[],view=createTradeRiverCraft(B,scene,meshes,materials,goods);
+ try{
+  const s={...state,scenario:strictScenario(),buildings:[]};
+  const craft={id:'local-ferry',transport:'river',phase:'arriving',x:river(12),y:12,
+   route:[{x:river(13),y:13}],routeIndex:0,stock:{food:2}};
+  view.update(s,craft,0);
+  const pole=meshes.find(m=>m.name==='boatman-working-pole'),load=meshes.find(m=>m.metadata?.riverCargo);
+  assert.ok(pole&&load);
+  const swing=pole.rotation.x;view.update(s,craft,.5);assert.notEqual(pole.rotation.x,swing);
+  const dock={...craft,phase:'unloading',unload:.7,landing:{x:craft.x+1,y:craft.y}};
+  const before=JSON.stringify(dock),at=load.position.clone();
+  view.update(s,dock,1);
+  assert.ok(B.Vector3.Distance(load.position,at)>1);
+  assert.equal(JSON.stringify(dock),before);
+ }finally{view.dispose();goods.meshes.forEach(m=>m.dispose());scene.dispose();engine.dispose();}
+});

@@ -25,21 +25,44 @@ export function riverCraftPose(s,c,time=0){
 // resolves, a rounded hull keeps the saved trade visible. Loading never writes
 // trade stock, sales, orders, port cargo or the simulation clock.
 export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={}){
- let asset=null,promise=null,disposed=false,root=null,copy=null,identity=null,detail=false,rig=null,furled=null,lastYaw=0,cargoSignature='',bitumen=null;
+ let asset=null,promise=null,disposed=false,root=null,copy=null,identity=null,detail=false,rig=null,furled=null,lastYaw=0,cargoSignature='',bitumen=null,crew=null,pole=null,skin=null,hair=null;
  const parts=[],cargo=[],ownedMaterials=[];
  const register=m=>{m.isPickable=false;m.receiveShadows=true;meshes.push(m);parts.push(m);return m;};
  const forget=m=>{let i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);i=parts.indexOf(m);if(i>=0)parts.splice(i,1);m.dispose();};
  const load=options.loadBoatAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb'));
  function start(){if(promise||disposed)return;promise=Promise.resolve().then(()=>load(RIVER_CRAFT_MODEL)).then(value=>{if(disposed){value.dispose();return;}asset=value;asset.removeAllFromScene?.();}).catch(error=>(options.warn||console.warn)('River craft detail unavailable',error));}
  function clearCargo(){for(const m of cargo)forget(m);cargo.length=0;cargoSignature='';}
- function clear(){clearCargo();for(const m of parts.splice(0)){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}copy?.dispose?.();copy=null;root?.dispose();root=null;rig=null;furled=null;detail=false;}
+ function clear(){clearCargo();for(const m of parts.splice(0)){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}copy?.dispose?.();copy=null;root?.dispose();root=null;rig=null;furled=null;crew=null;pole=null;detail=false;}
  function material(name,hex){const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=.95;m.metallic=0;ownedMaterials.push(m);return m;}
  const linen=material('river-craft-unbleached-furled-linen','#a18b60');
  function build(c,sumer){
   root=new B.TransformNode(c.id==='local-ferry'?'local-ferry':'actual-trade-caravan',scene);lastYaw=0;
   if(sumer){
    bitumen??=material('sumer-river-bitumen','#352b20');bitumen.backFaceCulling=false;bitumen.twoSidedLighting=true;
-   for(const mesh of createSumerRiverHull(B,scene,{...materials,bitumen})){mesh.parent=root;register(mesh);}detail=true;return;
+   for(const mesh of createSumerRiverHull(B,scene,{...materials,bitumen})){
+    if(c.id==='local-ferry'&&mesh.name==='sumer-river-punt-pole'){mesh.dispose();continue;}
+    mesh.parent=root;register(mesh);
+   }
+   if(c.id==='local-ferry'){
+    skin??=material('local-ferry-boatman-skin','#966347');
+    hair??=material('local-ferry-boatman-hair','#352a20');
+    crew=new B.TransformNode('local-ferry-boatman',scene);crew.parent=root;crew.position.set(0,.29,-2.1);
+    const part=(name,mat,x,y,z,w,h,d)=>{
+     const mesh=B.MeshBuilder.CreateSphere(name,{diameter:1,segments:8},scene);
+     mesh.parent=crew;mesh.position.set(x,y,z);mesh.scaling.set(w,h,d);mesh.material=mat;return register(mesh);
+    };
+    part('boatman-head',skin,0,1.45,0,.23,.27,.23);
+    part('boatman-hair',hair,0,1.52,-.024,.232,.15,.22);
+    part('boatman-neck',skin,0,1.34,0,.11,.18,.10);
+    part('boatman-torso',linen,0,1.04,0,.37,.58,.24);
+    part('boatman-skirt',linen,0,.68,0,.42,.46,.28);
+    for(const x of [-.10,.10])part('boatman-leg',skin,x,.36,0,.13,.73,.15);
+    part('boatman-pole-hand',skin,.27,1.13,.08,.36,.14,.14);
+    part('boatman-brace-hand',skin,.21,.84,.10,.35,.13,.14);
+    pole=B.MeshBuilder.CreateCylinder('boatman-working-pole',{height:2.75,diameter:.052,tessellation:8},scene);
+    pole.parent=crew;pole.position.set(.42,.92,.09);pole.material=materials.wood;register(pole);
+   }
+   detail=true;return;
   }
   if(asset){copy=asset.instantiateModelsToScene(n=>'river-craft-'+n,false,{doNotInstantiate:true});for(const n of copy.rootNodes)n.parent=root;for(const m of root.getChildMeshes())register(m);rig=root.getDescendants().find(n=>n.name==='river-craft-RiverCraftLowerableRig')||null;detail=true;}
   else{
@@ -55,6 +78,19 @@ export function createTradeRiverCraft(B,scene,meshes,materials,goods,options={})
   const sig=JSON.stringify(c.stock||{});if(sig!==cargoSignature){clearCargo();cargoSignature=sig;for(const p of riverCraftCargo(c.stock)){const source=goods.sources.get(p.kind);if(!source)continue;const m=source.createInstance(`cargo-${p.kind}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(c.id==='local-ferry'?.85:CARGO_SCALE);m.position.set(p.x,p.y+(c.id==='local-ferry'?.20:0),p.z);m.metadata={goods:{...p},riverCargo:true};cargo.push(register(m));}}
   if((c.route||[])[c.routeIndex||0]||!root.metadata)lastYaw=pose.yaw;
   root.position.set(pose.x,pose.y,pose.z);root.rotation.set(0,lastYaw,pose.roll);if(rig)rig.setEnabled(!pose.lowered);furled?.setEnabled(pose.lowered);
+  if(crew){
+   const unloading=c.phase==='unloading',stroke=unloading?0:Math.sin(time*2.8);
+   crew.rotation.x=.08+stroke*.12;
+   pole.rotation.x=unloading?.74:-.28+stroke*.52;
+   pole.rotation.z=-.15;
+   const inverse=unloading?root.computeWorldMatrix(true).clone().invert():null;
+   const landing=inverse&&c.landing&&B.Vector3.TransformCoordinates(new B.Vector3(c.landing.x*TILE,WATER_HEIGHT+.22,c.landing.y*TILE),inverse);
+   for(const mesh of cargo){
+    const base=mesh.metadata.goods,p=c.unload||0;
+    if(landing)mesh.position.set(base.x+(landing.x-base.x)*p,base.y+.20+Math.sin(Math.PI*p)*.4,base.z+(landing.z-base.z)*p);
+    else mesh.position.set(base.x,base.y+.20,base.z);
+   }
+  }
   root.metadata={riverCraft:true,tradeId:c.id,detailLoaded:detail,loweredRig:pose.lowered,stockSignature:sig,draft:pose.draft,historicalProfile:sumer?'sumer-iii-v1':'legacy-v1',sourceArtisticAdaptation:sumer?'Ur-inspired bitumen/reed vessel; game interpretation':'Gislinge 12th-century hull'};
  }
  return {update,get ready(){return promise;},get root(){return root;},dispose(){if(disposed)return;disposed=true;clear();asset?.dispose();asset=null;for(const m of ownedMaterials)m.dispose();}};

@@ -192,6 +192,21 @@ export function createArchitecture(B,scene,b,m,state){
  case 'healer':ground();room(-1.6,-.5,1.6,3.8,2.1);room(.5,-1.65,2.55,1.5,2.4);cloth(.65,.75,2.6,2,1.95);for(const x of [0,1.3]){bench(x,.75,.8);block(x,.88,.75,.7,.06,1.5,m.linen);}for(let i=0;i<5;i++)jar(-1.9+i*.32,-1.5,.25,2.2);basin(-1.9,1.7,.6,.55);break;
  default:throw Error(`Missing original architecture for ${b.type}`);
  }
+ // Expansion occupies the yard away from the existing palm targets.
+ if(level>=2&&b.type==='pottery'){
+  block(-1.54,.31,-.45,1.4,.62,.62,m.raw);
+  block(-1.54,.65,-.45,1.54,.09,.66,m.wood);
+  for(const x of [-1.96,-1.55,-1.13])jar(x,-.45,.34,.69);
+ }
+ if(level>=2&&b.type==='fishing'){
+  const rackX=-1.36,rackZ=1.08;
+  for(const x of [-2.06,-.66])beam([x,.08,rackZ],[x,1.28,rackZ],.048,m.wood);
+  beam([-2.06,1.28,rackZ],[-.66,1.28,rackZ],.043,m.wood);
+  for(const x of [rackX-.32,rackX,rackX+.32]){
+   const fish=block(x,1.01,rackZ,.11,.33,.052,m.linen);
+   fish.rotation.z=.18;
+  }
+ }
  // An inset work bay shares coordinates with palm IK; both residents stand
  // inside the production yard instead of on the adjoining street.
  for(const a of workstationLayout(b)){

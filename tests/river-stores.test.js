@@ -37,7 +37,11 @@ test('fish stays conserved through drying, a saved ferry crossing and unloading'
  advanceTime(s,1);
  assert.notEqual(localFerryVessel(s).x,start.x);
  const raw=encode(s),loaded=decode(raw);assert.equal(encode(loaded),raw);
- advanceTime(loaded,1.01);
+ advanceTime(loaded,.45);
+ assert.equal(localFerryVessel(loaded).phase,'unloading');
+ assert.equal(loaded.buildings.find(b=>b.x===16&&b.y===6).driedFish,undefined);
+ const unloading=encode(loaded);assert.equal(encode(decode(unloading)),unloading);
+ advanceTime(loaded,.56);
  assert.equal(loaded.localFerry,undefined);
  assert.equal(loaded.buildings.find(b=>b.x===16&&b.y===6).driedFish,2);
  const source=loaded.buildings.find(b=>b.x===13&&b.y===6);

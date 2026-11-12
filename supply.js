@@ -1,3 +1,4 @@
+import {isDryPoint,isShore} from './world.js';
 import {stockStores,foodAvailability,projectedStoreStock} from './inventory.js';
 import {availableFood,seedReserve} from './food-planning.js';
 import {household,homeFoodCouriers,carriedMealFood} from './households.js';
@@ -55,4 +56,21 @@ export function districtSupplyRoute(s,job){
  const net=networkFor(s,{materializeRoads:false});
  const from=net.ports.find(p=>p.building===source),to=net.ports.find(p=>p.building===home);
  return {home,source,points:from&&to?routeBetween(s,from.key,to.key,{network:net})||[]:[]};
+}
+
+
+// A quarter route follows existing alleys and public ways from the house port.
+export function householdShoreRoute(s,home){
+ const network=networkFor(s,{materializeRoads:false});
+ const from=network.ports.find(p=>p.building===home);
+ if(!from)return null;
+ const component=network.components.get(from.key);
+ const nearby=[...network.nodes].filter(([key,p])=>network.components.get(key)===component&&
+  isDryPoint(s,p.x,p.y)&&isShore(s,Math.round(p.x),Math.round(p.y)));
+ nearby.sort(([,a],[,b])=>Math.hypot(a.x-from.x,a.y-from.y)-Math.hypot(b.x-from.x,b.y-from.y));
+ for(const [key] of nearby.slice(0,6)){
+  const path=routeBetween(s,from.key,key,{network});
+  if(path?.length)return {home,points:[{x:home.x,y:home.y},...path],status:'Двор → переулок → сухой выход к берегу'};
+ }
+ return null;
 }
