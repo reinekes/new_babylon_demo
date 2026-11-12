@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Кряквы у реки · Новый Вавилон</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#263b36;color:#fbf2dc;font:16px system-ui,sans-serif}
+main,canvas{display:block;width:100%;height:100dvh}
+canvas{touch-action:none}
+aside{position:absolute;inset:1rem auto auto 1rem;padding:.9rem 1rem;background:#1c2e28ed;border:1px solid #b59e7480;border-radius:.5rem;max-width:calc(100% - 2rem)}
+h1{font-size:1.15rem;margin:0 0 .45rem}
+p{font-size:.85rem;margin:.4rem 0}
+button,a{font:inherit;color:inherit}
+button{background:#374b3e;border:1px solid #a99674;border-radius:.3rem;padding:.4rem .6rem;cursor:pointer}
+a{margin-left:.6rem}
+.game3d-options,.game3d-loading,.game3d-detail-status,.game3d-fallback{display:none}
+</style>
+</head>
+<body>
+<main><canvas id="city" aria-label="Берег реки в 3D"></canvas></main>
+<aside>
+<h1>Кряквы у реки</h1>
+<p id="status" role="status">Загружается 3D-сцена…</p>
+<button id="pause" disabled>Пауза</button>
+<button id="focus" disabled>К кряквам</button>
+<a href="./">В игру</a>
+</aside>
+<script type="importmap">{"imports":{"./game3d/ambient-fauna.js":"./game3d/ambient-fauna.js?v=mallard-swim-20261112"}}</script>
+<script type="module" src="game3d/mallard-view.js?v=mallard-swim-20261112"></script>
+</body>
+</html>

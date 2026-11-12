@@ -6,6 +6,8 @@ import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength} from '../world
 import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
+import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-swim-20261112';
+import {WATER_HEIGHT} from './water.js';
 import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
  'orange-bird':{file:'imported-orange-bird.glb',count:3,stride:.14,pace:.18},
@@ -73,7 +75,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
  const ploughs=assets.has('bull')?createPloughTeams(B,scene,assets.get('bull'),meshes):null;
  let disposed=false,clock=0,lastState=null;
- function register(a){a.owned=a.root.getChildMeshes();for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
+ function register(a){a.owned=a.root.getChildMeshes().filter(mesh=>mesh!==a.wake);for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
  function imported(species,index,farm=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=farm?farm.id:`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
   root.metadata={ambientId:id,ambientSpecies:species,...(farm?{dairyBuilding:farm.building.id||`${farm.building.x},${farm.building.y}`,calf:farm.calf}:{}),sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
   const shore=SHORE_MODELS[species];
@@ -84,7 +86,19 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   }
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(id+'-')?g.name.slice(id.length+1):g.name,g);}
   if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
-  return register({root,model,groups,skeletons:copy.skeletons,farm,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
+  const rig=shore&&species!=='seagull'?createMallardRig(B,root,species,id):null;
+  let wake;
+  if(rig){
+   const sides=[-1,1];
+   wake=B.MeshBuilder.CreateLineSystem(id+'-wake',{
+    lines:sides.map(side=>[[.09,-.12],[.12,-.22],[.18,-.38],[.31,-.65]]
+     .map(([x,z])=>new B.Vector3(side*x,0,z))),
+    colors:sides.map(()=>[.08,.42,.27,0].map(alpha=>new B.Color4(.68,.78,.68,alpha))),
+    useVertexAlpha:true
+   },scene);
+   wake.parent=root;wake.isPickable=false;wake.isVisible=false;
+  }
+  return register({root,model,groups,rig,wake,skeletons:copy.skeletons,farm,species,index,phase:index*.73,anchor:null,target:null,enabled:false,walkPhase:index*.31,clip:null,clipClock:0,restUntil:0,routeAttempt:0});}
  function originalSky(index,shared){const root=new B.TransformNode(`ambient-sky-${index}`,scene);root.metadata={ambientId:`ambient-sky-${index}`,ambientSpecies:'sky-bird',sourceMotion:'original procedural wing flaps'};const body=shared.body.createInstance(`ambient-sky-${index}-body`),left=shared.wing.createInstance(`ambient-sky-${index}-left`),right=shared.wing.createInstance(`ambient-sky-${index}-right`);for(const m of [body,left,right])m.parent=root;body.scaling.set(.20,.13,.48);left.position.x=-.1;right.position.x=.1;right.rotation.z=Math.PI;return register({root,model:root,species:'original-sky',index,phase:index*.8,groups:new Map(),wings:[left,right],enabled:true});}
  const templates=[];let skyMaterial;
  if(options.includeSkyBirds!==false&&!assets.has('sky-birds')){
@@ -92,7 +106,23 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  }else if(options.includeSkyBirds!==false)for(let i=0;i<2;i++)imported('sky-birds',i);
  for(const [species]of groundModels)for(let i=0;i<2;i++)imported(species,i);
  if(options.includeShoreBirds)for(const species of Object.keys(SHORE_MODELS))imported(species,0);
+ let route=null,routeBuildings=null,routeCount=-1;
  function shorePose(a,state){
+  if(a.rig&&route){
+   const p=mallardPose(route,clock+(a.species==='mallard-female'?2.1:0));
+   a.root.setEnabled(true);
+   a.root.position.set(p.x,p.y,p.z);
+   a.root.rotation.y=p.yaw;
+   a.model.rotation.set(p.pitch,0,p.roll);
+   poseMallardRig(B,a.rig,p);
+   a.root.metadata.shorePhase=p.phase;
+   a.root.metadata.clip=p.phase==='swimming'?'Swim':'Walk';
+   a.wake.isVisible=p.floating>.38;
+   a.wake.position.y=WATER_HEIGHT+.012-p.y;
+   a.wake.scaling.z=.62+.38*p.floating;
+   return;
+  }
+  if(a.wake){a.wake.isVisible=false;a.model.rotation.setAll(0);}
   const home=state.buildings.find(b=>b.type==='house')??{x:8,y:8};
   const center=Math.max(4,Math.min(riverLength(state)-5,riverLocal(home.x,home.y,state).along));
   if(a.species!=='seagull'){
@@ -106,6 +136,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     ?candidates.find(p=>Math.hypot(p.x-maleBank.x,p.y-maleBank.y)>.3&&ambientDryPoint(state,p.x,p.y,.24))
     :maleBank;
    a.root.setEnabled(!!bank);
+   a.root.metadata.shorePhase='resting';
    if(bank){
     const water=riverPoint(riverLocal(bank.x,bank.y,state).along,state);
     a.root.position.set(bank.x*6,surfaceElevation(bank.x,bank.y,state),bank.y*6);
@@ -138,10 +169,19 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   for(const f of farms.values())if(!actors.some(a=>a.farm?.id===f.id))imported('cow',f.index,f);
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=options.includeSkyBirds===false?0:ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(4,speed)):1;const advancing=!paused&&dt>0&&speed>0;if(advancing)clock+=dt*speed;
+  const routeChanged=options.includeShoreBirds&&(stateChanged||routeBuildings!==state.buildings||routeCount!==state.buildings.length);
+  if(routeChanged){
+   routeBuildings=state.buildings;routeCount=routeBuildings.length;
+   route=mallardRoute(state,p=>ambientDryPoint(state,p.x,p.y,-Infinity));
+   for(const a of actors)if(a.rig){
+    a.root.metadata.shoreFocus=route?.focus;
+    if(a.clip){for(const g of a.groups.values()){g.reset();g.stop();}a.clip=null;}
+   }
+  }
   for(const a of actors){
    if(SHORE_MODELS[a.species]){
-    if(stateChanged||(advancing&&a.species==='seagull'))shorePose(a,state);
-    if(stateChanged||advancing)animate(a,clock);
+    if(stateChanged||routeChanged||(advancing&&(a.species==='seagull'||route)))shorePose(a,state);
+    if((stateChanged||advancing||routeChanged)&&!(a.rig&&route))animate(a,clock);
     continue;
    }
    if(a.farm){a.farm=farms.get(a.farm.id);const p=dairyPose(a.farm,clock);a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);a.root.rotation.y=p.yaw;a.root.metadata.herdAnimal=true;if(advancing)a.walkPhase=(a.walkPhase+dt*speed*.035)%1;animate(a,clock,p.walking);continue;}const sky=a.species==='sky-birds'||a.species==='original-sky';

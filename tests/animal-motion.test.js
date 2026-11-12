@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import vm from 'node:vm';import {createAmbientFauna,AMBIENT_MODELS,ambientDryPoint,ambientClearSegment} from '../game3d/ambient-fauna.js';import {createGame} from '../engine.js';import {surfaceElevation} from '../district3d/terrain.js';
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import vm from 'node:vm';import {createAmbientFauna,AMBIENT_MODELS,ambientDryPoint,ambientClearSegment} from '../game3d/ambient-fauna.js';import {createGame} from '../engine.js';import {WATER_HEIGHT,waterDepth} from '../game3d/water.js';import {surfaceElevation} from '../district3d/terrain.js';
 const box={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'},TextDecoder,TextEncoder,URL,Blob};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),box);const B=box.exports.NullEngine?box.exports:box.module.exports;box.BABYLON=B;box.exports=undefined;box.module=undefined;vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url),'utf8'),box);
 const skin=r=>r.getChildMeshes().filter(m=>m.getTotalVertices()>0).flatMap(m=>Array.from(m.getPositionData(true,true)||[]));
 const packed=new Set(['fox','boar','lioness']);
@@ -10,28 +10,45 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   view.update(state,.05,{speed:4});for(const m of meshes)m.alwaysSelectAsActiveMesh=true;scene.render();const roots=view.roots().filter(r=>AMBIENT_MODELS[r.metadata.ambientSpecies]);assert.equal(roots.length,16);
   assert.ok(!view.roots().some(r=>r.metadata.ambientSpecies==='kingfisher'));
   const mallard=view.roots().find(r=>r.metadata.ambientSpecies==='mallard');
-  assert.equal(mallard.metadata.clip,'CINEMA_4D_Main');
+  assert.equal(mallard.metadata.clip,'Walk');
   assert.ok(mallard.isEnabled()&&ambientDryPoint(state,mallard.position.x/6,mallard.position.z/6));
   const female=view.roots().find(r=>r.metadata.ambientSpecies==='mallard-female');
   assert.equal(female?.metadata.shoreRole,'female');
-  assert.equal(female.metadata.clip,'Idle');
+  assert.equal(female.metadata.clip,'Walk');
   assert.ok(female.isEnabled()&&ambientDryPoint(state,female.position.x/6,female.position.z/6));
-  assert.ok(B.Vector3.Distance(female.position,mallard.position)>1.25);
-  const femaleSkin=skin(female);
-  for(const bird of [mallard,female]){
-   const {min,max}=bird.getHierarchyBoundingVectors(true);
-   assert.ok(Math.abs(min.y-bird.position.y)<.025,bird.name+' must be grounded');
-   assert.ok(max.y-min.y>.28&&max.y-min.y<.5,bird.name+' must be duck-sized');
+  assert.ok(B.Vector3.Distance(female.position,mallard.position)>.8);
+  const femaleSkin=skin(female),pair=[mallard,female],shorePhases=pair.map(()=>new Set()),returned=new Set();
+  for(const bird of pair){
+   const mesh=bird.getChildMeshes().find(m=>m.skeleton),vertices=mesh.getPositionData(true,true),matrix=mesh.computeWorldMatrix(true);
+   let low=Infinity,high=-Infinity;
+   for(let i=0;i<vertices.length;i+=3){
+    const point=B.Vector3.TransformCoordinates(B.Vector3.FromArray(vertices,i),matrix);
+    low=Math.min(low,point.y);high=Math.max(high,point.y);
+   }
+   assert.ok(Math.abs(low-bird.position.y)<.04,bird.name+' must be grounded');
+   assert.ok(high-low>.28&&high-low<.5,bird.name+' must be duck-sized');
   }
   const seagull=view.roots().find(r=>r.metadata.ambientSpecies==='seagull');
   assert.equal(seagull.metadata.shoreRole,'female');
   assert.equal(seagull.metadata.clip,'flap');
   const firstFlight=seagull.position.clone();const start=new Map(roots.map(r=>[r,snap(r)])),positions=new Map(roots.map(r=>[r,skin(r)])),skinChanged=new Set(),moving=new Set(),deforming=new Set();
-  for(let i=0;i<160;i++){
+  for(let i=0;i<290;i++){
    const before=new Map(roots.map(r=>[r,{x:r.position.x/6,y:r.position.z/6}]));view.update(state,.05,{speed:4});scene.render();
+   for(const [index,bird] of pair.entries()){
+    const phase=bird.metadata.shorePhase;
+    if(phase==='walking'&&shorePhases[index].has('swimming'))returned.add(bird);
+    shorePhases[index].add(phase);
+    if(phase==='swimming'){
+     assert.ok(waterDepth(bird.position.x/6,bird.position.z/6,state)>.15);
+     assert.ok(bird.position.y<WATER_HEIGHT-.08);
+    }
+   }
+   assert.ok(B.Vector3.Distance(mallard.position,female.position)>.52);
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}
    for(const r of roots){const p={x:r.position.x/6,y:r.position.z/6};assert.ok(ambientDryPoint(state,p.x,p.y));assert.ok(ambientClearSegment(state,before.get(r),p));if(r.metadata.clip==='Walk')moving.add(r.metadata.ambientSpecies);if(snap(r)!==start.get(r))deforming.add(r.metadata.ambientSpecies);}
   }
+  assert.equal(returned.size,2);
+  for(const phases of shorePhases)for(const phase of ['walking','wading','swimming'])assert.ok(phases.has(phase),phase);
   assert.ok(skin(female).some((value,index)=>Math.abs(value-femaleSkin[index])>.001));
   assert.ok(B.Vector3.Distance(seagull.position,firstFlight)>1);
   for(const species of new Set(roots.map(r=>r.metadata.ambientSpecies))){assert.ok(moving.has(species),species+' must select Walk');assert.ok(deforming.has(species),species+' skin must change');assert.ok(skinChanged.has(species),species+' actual CPU skinned/morphed vertex positions must change independent of root translation');}
