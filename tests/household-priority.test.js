@@ -126,3 +126,20 @@ test('the supply overview projects warehouse food and milk without writing city 
  syncInventory(control);
  assert.deepEqual(view,supplyOverview(control));
 });
+
+test('a milk-only warehouse offers a transfer route and does not promise a household pickup',async()=>{
+ const {s,patient}=clinicCity();
+ const {supplyOverview,householdSupplyRoute}=await import('../supply.js');
+ for(const home of s.buildings.filter(b=>b.type==='house'))home.pantry=0;
+ s.resources.food=0;
+ s.resources.milk=12;
+ s.roads=[];
+ const before=JSON.stringify(s);
+ const home=supplyOverview(s).houses.find(h=>h.key===patient.home);
+ assert.match(home.reason,/молоко доставляют носильщики/i);
+ const route=householdSupplyRoute(s,patient.home,'food');
+ assert.ok(route.points.length>1);
+ assert.equal(route.source,'9,8');
+ assert.match(route.status,/молоко доставляют носильщики/i);
+ assert.equal(JSON.stringify(s),before);
+});
