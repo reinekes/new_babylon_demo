@@ -13,7 +13,7 @@ import {abundanceKnowledgeReason} from './abundance-discovery.js';
 import {windKnowledgeReason} from './wind-delivery.js';
 import {recordCreatorInspiration,creatorReady} from './creator-materials.js';
 import {richCatchKnowledgeReason} from './rich-catch.js';
-import {CITY_STAGE_POPULATION,monumentChapterReason} from './monument-chapter.js';
+import {monumentChapterReason} from './monument-chapter.js';
 import {dispatchNeighborWater,neighborWaterRoute} from './water.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
@@ -73,7 +73,8 @@ export function applyBuilderInstruction(s,contributions,room=Infinity,site=null)
  if(builderLevel(pair.pupil)===3)recordCraftNameEvidence(s,site,pair);
  return Math.min(effective,room);
 }
-export const knowledgeTier=(type,level=1)=>Math.max(level,MONUMENTS.has(type)?3:BASIC.has(type)||type==='road'?1:2);
+export const knowledgeTier=(type,level=1,s)=>Math.max(level,
+ isStrictSumer(s)&&!['ziggurat','ishtarGate'].includes(type)?1:MONUMENTS.has(type)?3:BASIC.has(type)||type==='road'?1:2);
 export function initializeGodhood(s,{mode}={}){
  if(mode===undefined||s.godhood)return;
  if(!['awakening','mature'].includes(mode))throw Error('Неизвестный режим игры');
@@ -90,13 +91,10 @@ export function godhoodView(s){
 export function buildingKnowledgeReason(s,type,level=1){
  if(['bakery','linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard'].includes(type)&&!isStrictSumer(s))return 'Постройка доступна в Южном Шумере';
  if(type==='ziggurat'&&level===1){const reason=monumentChapterReason(s);if(reason)return reason;}
- if(isCityFortification(type)){
-  if(!isStrictSumer(s))return 'Городские стены доступны в Южном Шумере';
-  if(s.population<CITY_STAGE_POPULATION)return `Городские стены открываются при ${CITY_STAGE_POPULATION} жителях`;
- }
+ if(isCityFortification(type)&&!isStrictSumer(s))return 'Городские стены и ворота доступны в Южном Шумере';
  if(!isAwakening(s))return '';
  const g=s.godhood;if(g.stage!=='recognized')return 'Сначала заяви о присутствии: нужен первый свидетель';
- const required=knowledgeTier(type,level),master=s.citizens.some(c=>c.age>=16&&c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=required);
+ const required=knowledgeTier(type,level,s),master=s.citizens.some(c=>c.age>=16&&c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=required);
  return master?'':`Нужен вдохновлённый строитель ${['','I','II','III'][required]} уровня`;
 }
 export function miracleKnowledgeReason(s,id){
@@ -120,7 +118,7 @@ export function miracleKnowledgeReason(s,id){
 export function godhoodInspirationReason(s,c,profession){if(!isAwakening(s))return '';if(s.godhood.stage!=='recognized')return 'Сначала помоги первому человеку заметить присутствие бога';if(!knowsPresence(s,c)&&!preparedFisherInspiration(s,c,profession))return 'Этот человек ещё не признал присутствие бога: помоги ему увидеть дело общины';return '';}
 export function firstBuilderInspiration(s,c,profession){return isAwakening(s)&&profession==='builder'&&s.godhood.stage==='recognized'&&!s.godhood.firstBuilderGift&&s.godhood.witnessId===c.id;}
 export function acceptGodhoodInspiration(s,c,profession){if(!s.godhood||!isAwakening(s))return;recordCreatorInspiration(s,profession);if(profession==='builder'){c.builderSkill??={level:1,projects:0};if(c.id===s.godhood.witnessId)s.godhood.firstBuilderGift=true;}}
-export function canLeadConstruction(s,c,b){return !isAwakening(s)||c&&c.age>=16&&(b.type==='house'&&b.householdInitiative&&b.construction?.kind==='new'||c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=knowledgeTier(b.type,b.construction?.kind==='repair'?1:b.construction?.target||b.level||1));}
+export function canLeadConstruction(s,c,b){return !isAwakening(s)||c&&c.age>=16&&(b.type==='house'&&b.householdInitiative&&b.construction?.kind==='new'||c.calling==='builder'&&c.role==='builder'&&knowsPresence(s,c)&&builderLevel(c)>=knowledgeTier(b.type,b.construction?.kind==='repair'?1:b.construction?.target||b.level||1,s));}
 export function recordBuilderCompletion(s,b){
  if(!isAwakening(s)||b.householdInitiative&&b.construction?.kind==='new')return false;
  const q=b.construction;if(!q||!['new','upgrade'].includes(q.kind)||!Number.isFinite(q.work)||![1,2,3].includes(q.target)||q.work+1e-8<(b.type==='road'?6:12)*q.target||Object.entries(q.required||{}).some(([k,n])=>(q.delivered?.[k]||0)<n))return false;

@@ -14,9 +14,10 @@ function matureCity(scenario=strictScenario()){
  return s;
 }
 
-test('only a growing Southern Sumer city can order walls',()=>{
+test('a small Southern Sumer city can order walls with the required materials',()=>{
  const s=createGame({start:'established',scenario:strictScenario()});
- assert.match(canBuild(s,'cityWall',3,7),/48/);
+ s.resources.brick=8;
+ assert.equal(canBuild(s,'cityWall',3,7),'');
  const legacy=matureCity(createGame().scenario);
  assert.match(canBuild(legacy,'cityWall',3,7),/Южном Шумере/);
  assert.ok(decode(encode(legacy)));
@@ -50,4 +51,26 @@ test('a porter approaching a newly closed wall keeps their load and position on 
  assert.equal(porter().x,2.4);
  assert.equal(porter().cargo.wood,3);
  assert.ok(decode(encode(s)));
+});
+
+test('an inspired builder I can place and lead every ordinary building in Southern Sumer',async()=>{
+ const {buildingKnowledgeReason,canLeadConstruction}=await import('../godhood.js');
+ const {BUILDINGS}=await import('../definitions.js');
+ const s=createGame({start:'established',mode:'awakening',scenario:strictScenario()});
+ const builder=s.citizens.find(c=>c.age>=16);
+ s.godhood.stage='recognized';s.godhood.believerIds=[builder.id];
+ Object.assign(builder,{role:'builder',calling:'builder',builderSkill:{level:1,projects:0}});
+ for(const type of Object.keys(BUILDINGS).filter(type=>!['ziggurat','ishtarGate'].includes(type))){
+  assert.equal(buildingKnowledgeReason(s,type),'',type);
+  assert.ok(canLeadConstruction(s,builder,{type,level:1,construction:{kind:'new'}}),type);
+ }
+ for(const type of ['cityWall','cityGate','joineryYard']){
+  const game=structuredClone(s);
+  game.resources.brick=40;
+  const result=build(game,type,3,7);
+  assert.ok(result.ok,type+': '+result.reason);
+ }
+ assert.match(buildingKnowledgeReason(s,'joineryYard',2),/II/);
+ assert.ok(buildingKnowledgeReason(s,'ziggurat'));
+ assert.ok(buildingKnowledgeReason(s,'ishtarGate'));
 });
