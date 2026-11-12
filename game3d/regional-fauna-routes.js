@@ -1,5 +1,5 @@
 import {riverPoint,riverLength,onBridge} from '../world.js';
-import {loopMotion} from '../local-motion.js';
+import {calendarAt,calendarRateFor,MONTH_SECONDS} from '../calendar.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT,waterDepth} from './water.js';
 
@@ -24,6 +24,44 @@ export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
   kingfisher:pool(-3,.28,.70,.09,.42),harrier:bank(9,2.3,.30)};
 }
 
+// The Iraqi Central Marsh survey recorded the species in December–February.
+function pelicanPose(state,site){
+ const {season,month,progress}=calendarAt(state);
+ if(!site||season!==3)return null;
+ const winter=(month-9+progress)/3;
+ const edge=.13;
+ const swim=Math.max(0,Math.min(1,(winter-edge)/(1-2*edge)));
+ const swimSeconds=3*MONTH_SECONDS*(1-2*edge)/calendarRateFor(state);
+ const angle=swim*swimSeconds/34*Math.PI*2;
+ const point=a=>riverPoint(site.bank+1.25*Math.sin(a),state,-.27+.22*Math.cos(a));
+ const water=point(angle),ahead=point(angle+.001);
+ const yaw=Math.atan2(ahead.x-water.x,ahead.y-water.y);
+ const arriving=winter<edge,leaving=winter>1-edge;
+ const flight=arriving?1-winter/edge:leaving?(winter-1+edge)/edge:0;
+ const travel=(arriving?-1:1)*flight*1.7;
+ const lift=flight*flight*6;
+ const phase=swim*swimSeconds;
+ const scoop=Math.max(0,Math.sin(phase*.49-1.6))**7;
+ return {x:water.x+Math.sin(yaw)*travel,y:water.y+Math.cos(yaw)*travel,yaw,
+  behavior:arriving?'landing':leaving?'taking-off':'swimming',flight,scoop,
+  elevation:WATER_HEIGHT+.025+lift, pitch:arriving?.14*flight:leaving?-.17*flight:0};
+}
+
+function onagerPose([start,end=start],time){
+ const length=Math.hypot(end.x-start.x,end.y-start.y);
+ const travel=length/.18,pause=6,turn=1.35;
+ const half=travel+pause+turn;
+ const clock=time%(2*half),returning=clock>=half,phase=clock%half;
+ const distance=travel?Math.min(1,phase/travel):0;
+ const from=returning?end:start,to=returning?start:end;
+ const yaw=Math.atan2(to.x-from.x,to.y-from.y);
+ const turning=length>0&&phase>=travel+pause;
+ const pivot=turning?(phase-travel-pause)/turn:0;
+ return {x:from.x+(to.x-from.x)*distance,y:from.y+(to.y-from.y)*distance,
+  yaw:yaw+pivot*Math.PI,behavior:phase<travel||turning?'walking':'grazing',
+  turn:turning?Math.sin(pivot*Math.PI):0};
+}
+
 export function regionalFauna(state,plan,time){
  const animals=[];
  const add=(kind,pose)=>animals.push({id:'ambient-'+kind,kind,decorative:true,...pose});
@@ -34,7 +72,8 @@ export function regionalFauna(state,plan,time){
   const p=point(a),next=point(a+.001);
   add(kind,{...p,...pose(a),yaw:Math.atan2(next.x-p.x,next.y-p.y)});
  };
- orbit('white-pelican',plan.pelican,-.27,1.25,.22,34,a=>({behavior:'swimming',elevation:WATER_HEIGHT+.017+Math.sin(a*16)*.014}));
+ const pelican=pelicanPose(state,plan.pelican);
+ if(pelican)add('white-pelican',pelican);
  orbit('pygmy-cormorant',plan.cormorant,.47,.83,.19,25,a=>{
   const dive=Math.max(0,-Math.cos(a))**2;
   return {behavior:dive>.2?'swimming-underwater':'swimming',elevation:WATER_HEIGHT+.018-dive*.47,pitch:dive*.25};
@@ -54,9 +93,6 @@ export function regionalFauna(state,plan,time){
   add('savigny-tree-frog',{x,y,hop,yaw:Math.atan2(b.x-a.x,b.y-a.y)+(phase<6?0:Math.PI),
    elevation:surfaceElevation(x,y,state)+hop*.14});
  }
- if(plan.onager){
-  const motion=loopMotion(plan.onager,time,.35,5);
-  add('onager',{...motion,behavior:motion.walking?'walking':'grazing'});
- }
+ if(plan.onager)add('onager',onagerPose(plan.onager,time));
  return animals;
 }

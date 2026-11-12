@@ -22,10 +22,10 @@ export function closedAnimalLoft(B,controls){
 // Stance occupies 62% of the cycle: the foot moves backward against travel at
 // constant height. Only the recovery swing lifts it. Front and hind flexions
 // have opposite signs, with a small resting bend to avoid a locked straight leg.
-export function animalFootPose(phase,upper,lower,moving=1,end=1){
+export function animalFootPose(phase,upper,lower,moving=1,end=1,profile){
  const cycle=((phase/(2*Math.PI))%1+1)%1,stance=.62,swing=cycle>=stance,t=swing?(cycle-stance)/(1-stance):cycle/stance;
- const stride=(upper+lower)*.30,z=(swing?-1+2*(t*t*(3-2*t)):1-2*t)*stride*moving;
- const height=(upper+lower)*.965-(swing?Math.sin(t*Math.PI)*(upper+lower)*.16*moving:0);
+ const stride=profile?.reach??(upper+lower)*.30,z=(swing?-1+2*(t*t*(3-2*t)):1-2*t)*stride*moving;
+ const height=(profile?.standingHeight??(upper+lower)*.965)-(swing?Math.sin(t*Math.PI)*(profile?.lift??(upper+lower)*.16)*moving:0);
  const reach=Math.min(Math.hypot(z,height),upper+lower-.00001),bend=(end<0?-1:1)*Math.acos(Math.max(-1,Math.min(1,(reach*reach-upper*upper-lower*lower)/(2*upper*lower))));
  return {hip:-Math.atan2(z,height)-Math.atan2(lower*Math.sin(bend),upper+lower*Math.cos(bend)),knee:bend,stance:!swing,z,height};
 }

@@ -120,12 +120,12 @@ export function makeCatalog(index, profile) {
     const regional=[
       ['birds','pied-kingfisher','Пегий зимородок','Зависает над водой и ныряет',marshes],
       ['birds','glossy-ibis','Каравайка','Ищет корм на мелководье',marshes],
-      ['birds','white-pelican','Розовый пеликан','Плавает в открытой воде',marshes],
+      ['birds','white-pelican','Розовый пеликан','Прилетает зимой, плавает и ловит рыбу на поверхности',marshes],
       ['birds','pygmy-cormorant','Малый баклан','Ныряет и выныривает на реке',marshes],
       ['birds','marsh-harrier','Болотный лунь','Патрулирует берег низким полётом',marshes],
       ['animals','savigny-tree-frog','Квакша Савиньи','Прыгает короткими перебежками на берегу',
         {author:'Полевые наблюдения в Эль-Хавизе, Университет Ди-Кара',source:'https://jutq.utq.edu.iq/index.php/main/article/download/152/145'}],
-      ['animals','onager','Онагр','Дикий представитель семейства лошадиных, пасётся на суше',
+      ['animals','onager','Онагр','Дикий представитель семейства лошадиных, ходит и пасётся на сухой окраине',
         {author:'Древняя ДНК непарнокопытных, Science Advances',source:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8759742/'}]
     ];
     for(const [group,species,title,description,source] of regional)

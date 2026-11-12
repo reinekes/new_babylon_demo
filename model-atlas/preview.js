@@ -7,7 +7,7 @@ import { loadBabylonVendors } from '../game3d/vendor-loading.js';
 import { loadModel } from '../game3d/asset-loading.js';
 import { createGameBuildings } from '../game3d/buildings.js';
 import { createDistrictMaterials } from '../district3d/materials.js';
-import { createWildlife } from '../game3d/wildlife.js?v=regional-fauna-20261112';
+import { createWildlife } from '../game3d/wildlife.js?v=winter-pelican-onager-20261112';
 import { createAmbientFauna } from '../game3d/ambient-fauna.js';
 import { cropPlantGeometry,createBotanicalMaterial,botanicalMesh } from '../game3d/crop-varieties.js';
 import { createNatureDetails } from '../game3d/nature-details.js';
@@ -105,7 +105,22 @@ async function makeModel(B,scene,item,profile) {
   }
   if (item.kind==='wildlife') {
     const view=createWildlife(B,scene);
-    view.update(state,[{id:'atlas',kind:item.species,x:6,y:6,heading:0,behavior:item.species==='marsh-harrier'?'flying':'looking',waterLevel:0,swimDepth:.12}],0);
+    const animal={id:'atlas',kind:item.species,x:6,y:6,heading:0,
+      behavior:item.species==='marsh-harrier'?'flying':'looking',waterLevel:0,swimDepth:.12};
+    view.update(state,[animal],0);
+    if(item.species==='white-pelican'||item.species==='onager'){
+      const pelican=item.species==='white-pelican';
+      return {
+        names:pelican?['Плавание','Добыча рыбы','Взлёт']:['Шаг','Выпас'],
+        update(index,time,dt){
+          const behavior=pelican?(index===2?'taking-off':'swimming'):
+            (index===0?'walking':index===1?'grazing':'looking');
+          view.update(state,[{...animal,behavior,flight:pelican&&index===2?Math.min(1,time*.9):0,
+            scoop:pelican&&index===1?Math.max(0,Math.sin(time*2))**3:0,
+            resetPose:index<0,previewGait:!pelican&&index===0?time*6:undefined}],dt);
+        }
+      };
+    }
     return;
   }
   if (item.kind==='flock') {
@@ -195,13 +210,23 @@ export async function createPreview(canvas) {
   const B=await loadBabylonVendors();
   const engine=new B.Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true});
   let scene=null,camera=null;
-  const render=()=>scene?.render();
+  let motion=null,playing=-1,elapsed=0;
+  const render=()=>{
+    if(motion&&playing>=0){
+      const dt=Math.min(.05,engine.getDeltaTime()/1000);
+      elapsed+=dt;
+      motion.update(playing,elapsed,dt);
+    }
+    scene?.render();
+  };
   function close() {
     engine.stopRenderLoop(render);
     camera?.detachControl();
     scene?.dispose();
     scene=null;
     camera=null;
+    motion=null;
+    playing=-1;
   }
   async function open(item,profile) {
     close();
@@ -225,13 +250,14 @@ export async function createPreview(canvas) {
     const sky=new B.HemisphericLight('sky',B.Axis.Y,scene);
     sky.intensity=1.18;
     try {
-      await makeModel(B,scene,item,profile);
+      motion=await makeModel(B,scene,item,profile);
       await scene.whenReadyAsync();
       frame(B,scene,camera);
+      if(item.species==='white-pelican')camera.radius*=1.12;
       engine.resize();
       render();
       render();
-      return scene.animationGroups.map(g=>g.name);
+      return motion?.names??scene.animationGroups.map(g=>g.name);
     } catch (error) {
       close();
       throw error;
@@ -242,6 +268,15 @@ export async function createPreview(canvas) {
     capture:()=>canvas.toDataURL('image/jpeg',.82),
     interactive(){engine.resize();camera.attachControl(canvas,true);engine.runRenderLoop(render);},
     rotate(value){if(camera)camera.useAutoRotationBehavior=value;},
-    play(index){for(const clip of scene?.animationGroups??[])clip.stop();scene?.animationGroups[index]?.start(true);}
+    play(index){
+      if(motion){
+        playing=index;
+        elapsed=0;
+        if(index<0)motion.update(-1,0,.1);
+        return;
+      }
+      for(const clip of scene?.animationGroups??[])clip.stop();
+      scene?.animationGroups[index]?.start(true);
+    }
   };
 }

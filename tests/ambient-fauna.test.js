@@ -41,11 +41,11 @@ test('yard pigs and shore turtles follow dry decorative routes without touching 
    assert.equal(JSON.stringify(state),snapshot);
    assert.deepEqual(animals.slice(0,2).map(a=>a.kind),['pig','turtle']);
    const regional=animals.slice(4);
-   assert.deepEqual(regional.map(a=>a.kind),['white-pelican','pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog','onager']);
+   assert.deepEqual(regional.map(a=>a.kind),['pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog','onager']);
    for(const a of regional){
     assert.ok(a.decorative);
     if(a.kind==='onager'||a.kind==='savigny-tree-frog')assert.ok(ambientDryPoint(state,a.x,a.y));
-    if(['white-pelican','pygmy-cormorant','pied-kingfisher'].includes(a.kind))assert.ok(waterDepth(a.x,a.y,state)>.40);
+    if(['pygmy-cormorant','pied-kingfisher'].includes(a.kind))assert.ok(waterDepth(a.x,a.y,state)>.40);
     if(a.kind==='glossy-ibis')assert.ok(waterDepth(a.x,a.y,state)>.105&&waterDepth(a.x,a.y,state)<.31);
    }
    for(const a of animals.slice(0,4)){
@@ -65,5 +65,36 @@ test('yard pigs and shore turtles follow dry decorative routes without touching 
   assert.ok([...positions.values()].every(p=>p.size>1));
   state.simTime=0;
   assert.equal(JSON.stringify(state),before);
+ }
+});
+
+
+test('winter pelican lands, swims and departs without persisting a migration flag',async()=>{
+ const {courtyardFauna}=await import('../game3d/ambient-fauna.js');
+ const {WATER_HEIGHT,waterDepth}=await import('../game3d/water.js');
+ for(const seed of [1,4,9,96]){
+  const state=createGame({seed});
+  const pelican=()=>courtyardFauna(state).find(a=>a.kind==='white-pelican');
+  for(const season of [0,1,2]){
+   state.season=season;
+   assert.equal(pelican(),undefined);
+  }
+  state.season=3;
+  const poseAt=elapsed=>{
+   state.seasonElapsed=elapsed;
+   const before=JSON.stringify(state),pose=pelican();
+   assert.equal(JSON.stringify(state),before);
+   return pose;
+  };
+  const arrival=poseAt(0),landing=poseAt(5.84),swimming=poseAt(5.86),departure=poseAt(44.99);
+  assert.equal(arrival.behavior,'landing');
+  assert.ok(arrival.elevation>WATER_HEIGHT+5);
+  assert.equal(swimming.behavior,'swimming');
+  assert.ok(waterDepth(swimming.x,swimming.y,state)>.4);
+  assert.ok(Math.hypot(landing.x-swimming.x,landing.y-swimming.y)<.01);
+  assert.equal(departure.behavior,'taking-off');
+  assert.ok(departure.elevation>WATER_HEIGHT+5);
+  state.season=0;
+  assert.equal(pelican(),undefined);
  }
 });
