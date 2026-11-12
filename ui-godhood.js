@@ -8,7 +8,10 @@ import {residentLinkHTML} from './ui-resident-links.js';
 export function modeChooserHTML({replace=false}={}){
  return `<span class="eyebrow">НОВАЯ ИСТОРИЯ · ЮЖНЫЙ ШУМЕР</span><h2>Каким богом ты придёшь?</h2><p>${replace?'Выбор заменит текущий город и его сохранение.':'Вымышленное поселение Южного Шумера III тысячелетия до н. э. Пять домов стоят на берегу, и люди ещё не знают, кто рядом с ними.'}</p><div class="god-mode-grid"><article><span class="dialog-emblem">◌</span><h3>Пробуждение</h3><p>0 веры. Подай знак у источника или помоги соседям с водой. Только признанная вера позволит вдохновлять.</p><small>Вдохновлённые строители учатся на завершённых работах: простые дворы → мастерские → великие храмы. Первый дар кошки откроется через настоящие уловы и призвание рыбака.</small><button class="primary" data-new-mode="awakening">Пробудиться · 0 веры</button></article><article><span class="dialog-emblem">✺</span><h3>Взрослый бог</h3><p>1000 веры и 250 престижа. Здания и профессии доступны с самого начала. Обычные способности открыты сразу. Синие дары — после постройки памятника или доставки реликвии в храм.</p><small>Жителям всё ещё нужны материалы, еда, вода и время. Производство и доставка продолжают работать.</small><button class="primary" data-new-mode="mature">Стать покровителем</button></article></div>${replace?'<button class="secondary" id="cancel-mode">Остаться в городе</button>':''}<p class="keyboard-note">Каждая новая игра создаёт другую долину 64 × 64: новое русло реки и озёра. Текущий город сохраняется в архиве; вернуться к нему можно в «Сохранениях».</p>`;
 }
-export function awakeningHTML(s){return awakeningBaseHTML(s)+catDiscoveryHTML(s);}
+export function awakeningHTML(s){
+ const cat=catDiscoveryHTML(s),phase=s.catDiscovery?.phase,active=phase==='offering'||phase==='eyes'||phase==='opened'&&s.catDiscovery.trial==='ready';
+ return awakeningBaseHTML(s)+(cat?`<details class="awakening-side-story" data-awakening-side-story="${active?'active':'optional'}"${active?' open':''}><summary>История рыбака и кошки</summary>${cat}</details>`:'');
+}
 function awakeningBaseHTML(s){
  const v=godhoodView(s);if(v.mode!=='awakening')return '';
  const c=s.citizens.find(c=>c.id===v.witnessId),link=c?residentLinkHTML(s,c):'',first=c&&firstBuilderInspiration(s,c,'builder');
@@ -41,8 +44,14 @@ function nextAwakeningStep(s,master){
 }
 export function gameModeLabel(s){return {awakening:'Пробуждение',mature:'Взрослый бог',legacy:'Прежняя история'}[gameMode(s)];}
 export function createGodhoodControls({root,getState,onSign,onNamelessEnding,onNamelessNew,onWaterHelp,onInspire,onFocus,onBuild,onWork,onRelics,onFisher,onCat,onCatFocus,document=globalThis.document}={}){
- const hud=document.createElement('section');hud.className='godhood-hud';hud.setAttribute('aria-label','Пробуждение бога');root.append(hud);let collapsed=false,lastState,wasForgotten=false;
+ const hud=document.createElement('section');hud.className='godhood-hud';hud.setAttribute('aria-label','Пробуждение бога');root.append(hud);let collapsed=false,lastState,wasForgotten=false,lastHTML,sideStory;
  hud.addEventListener('click',e=>{const b=e.target.closest?.('button');if(!b||b.disabled)return;if(b.hasAttribute('data-cat-fisher'))onFisher?.(Number(b.dataset.catFisher));if(b.hasAttribute('data-cat-cast'))onCat?.();if(b.hasAttribute('data-cat-focus'))onCatFocus?.();if(b.hasAttribute('data-first-sign'))onSign?.();if(b.hasAttribute('data-nameless-ending'))onNamelessEnding?.();if(b.hasAttribute('data-nameless-new'))onNamelessNew?.();if(b.hasAttribute('data-first-water-helper'))onWaterHelp?.(Number(b.dataset.firstWaterHelper),Number(b.dataset.firstWaterRecipient));if(b.hasAttribute('data-first-builder'))onInspire?.(Number(b.dataset.firstBuilder));if(b.hasAttribute('data-focus-witness'))onFocus?.();if(b.hasAttribute('data-awakening-build'))onBuild?.(b.dataset.awakeningBuild);if(b.hasAttribute('data-awakening-work'))onWork?.();if(b.hasAttribute('data-awakening-relics'))onRelics?.();if(b.hasAttribute('data-hide-awakening')){collapsed=true;refresh();}if(b.hasAttribute('data-show-awakening')){collapsed=false;refresh();}});
- function refresh(){const s=getState(),forgotten=isStrictSumer(s)&&s.godhood?.mode==='awakening'&&s.godhood.stage==='unseen'&&s.godhood.recognitionAt!==null;if(lastState!==s||forgotten&&!wasForgotten){lastState=s;collapsed=false;}wasForgotten=forgotten;hud.hidden=gameMode(s)!=='awakening'||relicControlActive(s);const html=collapsed?'<button data-show-awakening>◌ Путь пробуждения</button>':awakeningHTML(s);if(hud.innerHTML!==html)hud.innerHTML=html;}
+ function refresh(){const s=getState(),forgotten=isStrictSumer(s)&&s.godhood?.mode==='awakening'&&s.godhood.stage==='unseen'&&s.godhood.recognitionAt!==null;if(lastState!==s||forgotten&&!wasForgotten){lastState=s;collapsed=false;sideStory=undefined;hud.replaceChildren();lastHTML=undefined;}wasForgotten=forgotten;hud.hidden=gameMode(s)!=='awakening'||relicControlActive(s);const html=collapsed?'<button data-show-awakening>◌ Путь пробуждения</button>':awakeningHTML(s);if(lastHTML!==html){
+  const previous=hud.querySelector('[data-awakening-side-story]');
+  if(previous)sideStory={kind:previous.dataset.awakeningSideStory,open:previous.open};
+  lastHTML=html;hud.innerHTML=html;
+  const current=hud.querySelector('[data-awakening-side-story]');
+  if(current&&sideStory?.kind===current.dataset.awakeningSideStory)current.open=sideStory.open;
+ }}
  refresh();return {refresh,dispose:()=>hud.remove()};
 }
