@@ -19,6 +19,7 @@ import {newMonumentChapter} from './monument-chapter.js';
 import {enableAutumnCrops} from './agriculture.js';
 import {createGame} from './engine.js';
 import {expandResourceSites} from './world.js';
+import {enableCareerRules} from './professions.js';
 import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
 
 // UI creation only. Decoding or loading a previous town never goes through here.
@@ -51,5 +52,5 @@ export function createNewCity({mode,seed}={}){
  }
  state.monumentChapter=newMonumentChapter();
  enableAutumnCrops(state);
- return state;
+ return enableCareerRules(state);
 }

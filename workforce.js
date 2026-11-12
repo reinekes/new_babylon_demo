@@ -41,7 +41,7 @@ import {advanceRelicQuest,relicCitizenView,recoverRelicCitizen} from './relic-qu
 import {recordCitizenDelivery,recordCitizenHarvest,recordProfessionEpithet} from './citizen-epithets.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {workMusic} from './music.js';
-import {canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js';
+import {canStaffBuilding,workplaceCapacity,hasWorkplace,professionForBuilding,professionRole,innateProfession,residentCareerRoll} from './professions.js';
 import {queueGranaryReceipt,workOnAccount} from './scribes.js';
 import {workDairy} from './dairy.js';
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
@@ -929,10 +929,49 @@ function prepareCare(s,ctx){
  ctx.care=new Map(ctx.healers.filter(isComplete).map(b=>[buildingKey(b),{key:buildingKey(b),building:b,staff:false,patients:[]}]));
  for(const c of s.citizens){const workplace=ctx.care.get(c.work);if(workplace&&qualifiedHealer(c))workplace.staff=c;const clinic=ctx.care.get(c.clinic);if(clinic)clinic.patients.push(c);}
 }
+function advanceCareerChoices(s,ctx){
+ const rules=s.careerRules;
+ if(!rules||s.funeral||s.festival||ceremonyActive(s)||!isWorkday(s.simTime))return false;
+ const day=Math.floor((s.simTime+DAY_SECONDS/12+1e-7)/DAY_SECONDS);
+ if(day<=rules.lastChoiceDay)return false;
+ rules.lastChoiceDay=day;
+ const adults=s.citizens.filter(canWork);
+ let openings=Math.floor(adults.length/2)-adults.filter(c=>c.selfCalling).length;
+ const pinned=new Map();
+ for(const c of adults)if(c.workplace)pinned.set(c.workplace,(pinned.get(c.workplace)||0)+1);
+ const jobs=[];
+ for(const b of s.buildings){
+  const profession=professionForBuilding(b.type),key=buildingKey(b);
+  if(!profession||profession==='healer'||profession==='fisher'&&s.catDiscovery&&s.catDiscovery.phase!=='opened'||!isOperational(b)||b.type==='field'&&!fieldActive(s,b))continue;
+  const port=ctx.ports.get(key),component=port&&ctx.network.components.get(port.key);
+  const free=workplaceCapacity(b.type)-(pinned.get(key)||0);
+  if(component!==undefined&&free>0&&closestStore(s,ctx,key))jobs.push({key,profession,component,free});
+ }
+ let changed=false;
+ for(const c of adults){
+  if(c.workplace||c.guardPost||c.pendingRole||c.futureRole||!['home','resting'].includes(c.phase)||c.health<65||c.hunger>=30||shelterHome(c)||waterBusy(c)||hasCargo(c)||hasBuildCargo(c)||c.pantryTrip||c.manualGathering||c.districtJob||c.tradeJob||c.saleJob||c.clothingTarget!==undefined||c.craftSite||c.seedField||c.clinic||c.school)continue;
+  if(!c.selfCalling&&(openings<=0||c.calling&&c.calling!=='auto'||(c.role||'auto')!=='auto'||residentCareerRoll(s,c.id,day)>.28))continue;
+  const home=ctx.ports.get(c.home),component=home&&ctx.network.components.get(home.key);
+  const eligible=jobs.filter(job=>job.free>0&&job.component===component);
+  const innate=innateProfession(s,c);
+  const job=c.selfCalling?eligible.find(job=>job.profession===c.calling):
+   eligible.find(job=>job.profession===innate)||eligible.find(job=>job.key===c.work)||eligible[Math.floor(residentCareerRoll(s,c.id,-day)*eligible.length)];
+  if(!job)continue;
+  if(!c.selfCalling){
+   openings--;
+   c.calling=job.profession;c.role=professionRole(job.profession);c.selfCalling=true;
+   recordProfessionEpithet(s,c);
+  }
+  c.workplace=job.key;job.free--;changed=true;
+ }
+ if(changed)invalidateAssignments(s);
+ return changed;
+}
+
 export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
  syncDistrictJobs(s);
  if(!s.funeral||s.funeral.scope==='family')syncCitizens(s);let ctx=context(s);const start=s.simTime;
- let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);advanceExternalGuest(s,dt,ctx.network);
+ let elapsed=0,laborKind=isWorkday(s.simTime)?activeLaborKind(s):null;for(;elapsed<seconds-1e-8;){if(stopForCeremony&&ceremonyActive(s))break;const dt=Math.min(.1,seconds-elapsed);s.simTime=start+elapsed;if(advanceCareerChoices(s,ctx)){syncCitizens(s);ctx=context(s);}const activeLabor=isWorkday(s.simTime)?activeLaborKind(s):null;if(activeLabor!==laborKind){laborKind=activeLabor;syncCitizens(s);ctx=context(s);}advanceGathering(s);advanceFestival(s,dt);advanceGodhood(s,dt);advanceRelicQuest(s,dt);const family=s.funeral?.scope==='family',mourners=family?new Set(s.funeral.actors.map(a=>a.id)):null;if(advanceFuneral(s,dt)&&!family){advanceWater(s,dt);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);advancePests(s,dt);elapsed+=dt;ctx=context(s);continue;}advanceTradeLogistics(s,dt);ctx=context(s);advanceExternalGuest(s,dt,ctx.network);
   if(advanceArrivalGroup(s,dt,ctx.network)){
    const {home,count,provisions,giftReserve,custom}=s.arrivalGroup,house=ctx.buildings.get(home);
    for(const [source,{food}] of Object.entries(provisions)){

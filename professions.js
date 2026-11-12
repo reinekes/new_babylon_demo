@@ -30,7 +30,7 @@ export function professionMatchesTask(c,task){
  return c.calling===task;
 }
 export function canStaffBuilding(c,b){
- if(c.age<16)return false;
+ if(c.age<16||c.selfCalling&&professionForBuilding(b.type)!==c.calling)return false;
  if(b.type==='granary')return c.role==='production'&&c.calling==='scribe';
  if(b.type==='musicHouse')return c.role==='production'&&c.calling==='musician';
  if(b.type==='healer')return c.role==='healer'&&c.medicine?.level>0;
@@ -42,4 +42,42 @@ export function canStaffBuilding(c,b){
 export function staffingCandidates(citizens,b){
  const key=`${b.x},${b.y}`;
  return citizens.filter(c=>c.workplace!==key&&canStaffBuilding(c,b)).sort((a,c)=>Number(professionMatchesTask(c,b.type))-Number(professionMatchesTask(a,b.type))||a.id-c.id);
+}
+
+const vocationGroups=[
+ ['builder','brickmaker','kilnworker','quarrier','clayworker','lumberjack','reedcutter'],
+ ['farmer','gardener','shepherd','dairyman','fisher','hunter','watercarrier','carrier'],
+ ['potter','brewer','weaver','tailor'],
+ ['musician','priest','scribe','healer','lawmaker']
+];
+const vocations=vocationGroups.flat().filter(id=>id!=='lawmaker');
+const vocationGroup=id=>vocationGroups.find(group=>group.includes(id));
+
+export function enableCareerRules(s){
+ s.careerRules??={attempts:0,lastChoiceDay:0};
+ return s;
+}
+
+export function residentCareerRoll(s,id,salt){
+ let value=(s.world?.seed||0)^Math.imul(id+1,0x9e3779b1)^Math.imul(salt,0x85ebca6b);
+ value=Math.imul(value^(value>>>16),0x7feb352d);
+ value=Math.imul(value^(value>>>15),0x846ca68b);
+ return ((value^(value>>>16))>>>0)/4294967296;
+}
+
+export const innateProfession=(s,c)=>vocations[Math.floor(residentCareerRoll(s,c.id,0)*vocations.length)];
+export const inspirationCost=s=>2**(s.careerRules?.attempts||0);
+export const inspirationPriceLabel=s=>`${inspirationCost(s).toLocaleString('ru-RU')} ${inspirationCost(s)===1?'вера':'веры'}`;
+
+export function vocationInspirationChance(s,c,profession,base){
+ if(!s.careerRules)return base;
+ const innate=innateProfession(s,c);
+ const chance=profession===innate ? .9 : vocationGroup(innate)?.includes(profession)?base:['auto','production'].includes(profession)?base*.75:base*.45;
+ return c.selfCalling&&profession!==c.calling?Math.max(.03,chance*.25):chance;
+}
+
+export function validateCareerRules(s){
+ const rules=s.careerRules;
+ const valid=rules===undefined||rules&&Object.keys(rules).length===2&&Number.isInteger(rules.attempts)&&rules.attempts>=0&&rules.attempts<=30&&rules.attempts<=s.divinity.inspirationAttempts&&Number.isSafeInteger(rules.lastChoiceDay)&&rules.lastChoiceDay>=0&&rules.lastChoiceDay<=Math.floor((s.simTime+5+1e-6)/60);
+ return valid&&s.citizens.every(c=>c.selfCalling===undefined||rules&&c.selfCalling===true&&vocations.includes(c.calling)&&c.role===professionRole(c.calling)&&c.age>=16);
 }

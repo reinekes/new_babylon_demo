@@ -92,7 +92,7 @@ import {initializeCrops,changeCropSeason,cropSummary,validateCrops} from './agri
 import {depthCanalTarget,fieldWater,irrigationFor,lowWaterYear} from './irrigation.js';
 import {initializeClothing,validateClothing} from './clothing.js';
 import {ROLES,validateEducation,newMedicalSkill,advanceMedicalYear} from './education.js';
-import {PROFESSION_IDS,professionRole,canStaffBuilding,hasWorkplace} from './professions.js';
+import {PROFESSION_IDS,professionRole,canStaffBuilding,hasWorkplace,validateCareerRules} from './professions.js';
 import {initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
 import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
@@ -596,7 +596,7 @@ export function decode(raw){
   if(!Array.isArray(s.news)||s.news.length>80||s.news.some(n=>typeof n.title!=='string'||typeof n.text!=='string'||!integer(n.year,1)||!integer(n.season,0,3)||typeof n.kind!=='string'))return null;
   if(s.event!==null&&(!s.event||!cityEventDefinition(s.event.id)||typeof s.event.title!=='string'||typeof s.event.text!=='string'))return null;
   if(legacy)syncCitizens(s);
-  if(!Array.isArray(s.citizens)||s.citizens.length!==s.population)return null;
+  if(!Array.isArray(s.citizens)||s.citizens.length!==s.population||!validateCareerRules(s))return null;
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
   const point=p=>p&&finite(p.x,-.5,worldWidth(s)-.5)&&finite(p.y,-.5,worldHeight(s)-.5);
   for(const c of s.citizens){

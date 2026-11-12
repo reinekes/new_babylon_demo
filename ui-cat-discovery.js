@@ -1,3 +1,4 @@
+import {inspirationPriceLabel} from './professions.js';
 import {isOperational,buildingKey} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
@@ -22,7 +23,7 @@ export function catDiscoveryHTML(s){
   else if(lessons(c)<3)body=`<p>${residentLinkHTML(s,c)} · принято уловов ${lessons(c)} из 3. Важно дождаться доставки на склад: рыба у хижины ещё не засчитана.</p>`;
   else if(c.calling!=='fisher'){
    const reason=inspirationReason(s,c.id,'fisher'),guaranteed=preparedFisherInspiration(s,c,'fisher');
-   body=`<p>${residentLinkHTML(s,c)} доставил три собственных улова. Теперь предложи ему призвание рыбака.</p><button data-cat-fisher="${c.id}" ${reason?'disabled':''}>Вдохновить рыбаком · 1 вера</button><small>${reason|| (guaranteed?'Первое призвание подготовленного рыбака обязательно удастся.':`Шанс принятия: ${Math.round(inspirationSuccessChance(s,c,'fisher')*100)}%. Вера расходуется и при отказе.`)}</small>`;
+   body=`<p>${residentLinkHTML(s,c)} доставил три собственных улова. Теперь предложи ему призвание рыбака.</p><button data-cat-fisher="${c.id}" ${reason?'disabled':''}>Вдохновить рыбаком · ${inspirationPriceLabel(s)}</button><small>${reason|| (guaranteed?'Первое призвание подготовленного рыбака обязательно удастся.':`Шанс принятия: ${Math.round(inspirationSuccessChance(s,c,'fisher')*100)}%. Вера расходуется и при отказе.`)}</small>`;
   }else if(c.role!=='production'||c.pendingRole)body=`<p>${residentLinkHTML(s,c)} уже знает призвание. ${c.pendingRole?'Дождись завершения доставки и смены работы.':'В разделе «Работа» верни ему производственную работу.'}</p><button data-awakening-work>Открыть работу жителей</button>`;
   else body=`<p>${residentLinkHTML(s,c)} готов. Нужны незащищённое хранилище и сухой свободный двор. Для подношения — малая порция еды сверх семян и двух приёмов пищи либо чаша настоящей домашней воды.</p><small>Продолжи время: рыбак оставит подношение, когда всё будет готово.</small>`;
  }

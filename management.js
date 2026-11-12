@@ -34,7 +34,7 @@ import {upgradeCost} from './masonry.js';
 import {craftLoad,craftResource,craftState} from './textiles.js';
 import {putStock,stockStores,storeCapacity,refundSources,syncInventory} from './inventory.js';
 import {ROLES,inspirationChance,newMedicalSkill} from './education.js';
-import {PROFESSION_IDS,professionRole,canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js';
+import {PROFESSION_IDS,professionRole,canStaffBuilding,workplaceCapacity,hasWorkplace,inspirationCost,inspirationPriceLabel,vocationInspirationChance} from './professions.js';
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
@@ -70,6 +70,7 @@ export function setPriority(s,x,y,priority){
 export function setCitizenRole(s,id,role){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);
  if(!c||!roles.includes(role))return {ok:false,reason:'Неизвестный житель или роль'};if(!canWork(c))return {ok:false,reason:'Дети начинают работать с 16 лет'};
+ if(c.selfCalling&&role!==professionRole(c.calling))return {ok:false,reason:'Житель сам выбрал это ремесло. Сменить его можно вдохновением.'};
  const previousRole=c.role||'auto';if(c.phase==='festival')recoverFestivalCitizen(s,id);
  if(hasLoad(c)){if(role===(c.role||'auto'))delete c.pendingRole;else c.pendingRole=role;}
  else{c.role=role;delete c.pendingRole;}
@@ -245,23 +246,26 @@ export function builderConsent(s,c,profession){
   Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return 'Сначала нужно завершить текущую доставку';
  return '';
 }
-export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='lawmaker'&&(!s.civicOrder||c.age<16))return 'Законодателем может стать взрослый в новом «Пробуждении»';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';const knowledge=godhoodInspirationReason(s,c,profession);if(knowledge)return knowledge;const consent=builderConsent(s,c,profession);if(consent)return consent;if(s.resources.faith<1)return 'Нужна 1 вера';return '';}
+export function inspirationReason(s,id,profession){const reason=blocked(s);if(reason)return reason;const c=s.citizens.find(c=>c.id===id),role=professionRole(profession);if(!c||!PROFESSION_IDS.includes(profession))return 'Неизвестный житель или роль';if(profession==='lawmaker'&&(!s.civicOrder||c.age<16))return 'Законодателем может стать взрослый в новом «Пробуждении»';if(profession==='auto'&&(c.role||'auto')==='auto'||c.pendingRole===profession)return 'Эта профессия уже выбрана';if(c.calling===profession&&!preparedFisherInspiration(s,c,profession)&&((c.role||'auto')===role||c.pendingRole===role||c.futureRole===role))return 'Это призвание уже открыто';const knowledge=godhoodInspirationReason(s,c,profession);if(knowledge)return knowledge;const consent=builderConsent(s,c,profession);if(consent)return consent;if(s.resources.faith<inspirationCost(s))return inspirationCost(s)===1?'Нужна 1 вера':`Для попытки нужно ${inspirationPriceLabel(s)}`;return '';}
 export function inspirationSuccessChance(s,c,profession){
  if(!c)return 0;
  const consent=builderConsent(s,c,profession);
- if(consent!==null)return consent?0:1;
- return firstBuilderInspiration(s,c,profession)||preparedFisherInspiration(s,c,profession)?1:inspirationChance(c,profession);
+ if(consent)return 0;
+ if(firstBuilderInspiration(s,c,profession)||preparedFisherInspiration(s,c,profession)||consent===''&&!s.careerRules)return 1;
+ return vocationInspirationChance(s,c,profession,inspirationChance(c,profession));
 }
 export function inspireCitizen(s,id,profession){
  const reason=inspirationReason(s,id,profession);if(reason)return {ok:false,reason,message:reason};
  const subject=s.citizens.find(c=>c.id===id),role=professionRole(profession),consent=builderConsent(s,subject,profession);
- s.resources.faith-=1;
- if(consent===null)s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
- const success=consent===''||s.rngState/4294967296<inspirationSuccessChance(s,subject,profession);
+ const cost=inspirationCost(s),chance=inspirationSuccessChance(s,subject,profession);
+ s.resources.faith-=cost;
+ if(s.careerRules)s.careerRules.attempts++;
+ if(consent===null||s.careerRules&&chance<1)s.rngState=((s.rngState??117)*1664525+1013904223)>>>0;
+ const success=chance===1||s.rngState/4294967296<chance;
  registerInspiration(s,success);affectResidents(s,{faith:success?6:-5,mood:success?4:-3},[id]);const c=s.citizens.find(c=>c.id===id);
- if(success){if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;acceptGodhoodInspiration(s,c,profession);acceptFisherInspiration(s,c,profession);if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
+ if(success){if(c.selfCalling&&c.calling!==profession){delete c.selfCalling;delete c.workplace;}if(role==='healer')c.medicine??=newMedicalSkill(s.year);c.calling=profession;acceptGodhoodInspiration(s,c,profession);acceptFisherInspiration(s,c,profession);if(canWork(c))setCitizenRole(s,id,role);else c.futureRole=role;}
  recordInspirationOutcome(s,s.citizens.find(c=>c.id===id),success);
- const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,message};
+ const message=`Житель ${id+1}: ${success?'вдохновение принято':'вдохновение не принято'}`;note(s,'Вдохновение',message);return {ok:true,success,cost,message};
 }
 
 export function cancelRoadRoute(s,group,expectedOrder){if(!Number.isSafeInteger(group)||group<0)return {ok:false,reason:'Неизвестный дорожный маршрут'};const reason=blocked(s);if(reason)return {ok:false,reason};const roads=(s.roads||[]).filter(r=>r.construction?.routeOrder===group);if(expectedOrder!==undefined&&!roads.some(r=>r.construction===expectedOrder))return {ok:false,reason:'Дорожный заказ изменился. Обнови карточку участка.'};if(!roads.length)return {ok:false,reason:'У маршрута нет незавершённых работ'};for(const r of roads)refundOrder(s,r);rerouteCitizens(s);note(s,'Маршрут отменён','Незавершённые дорожные работы отменены, их материалы возвращены. Готовые участки сохранены.');return {ok:true,count:roads.length};}
@@ -370,6 +374,7 @@ export function assignWorkplace(s,id,key){
 
 export function assignGuard(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c)||!['auto','production'].includes(c.role))return {ok:false,reason:'Нужен взрослый со свободной производственной профессией'};
+ if(key&&c.selfCalling)return {ok:false,reason:'Житель хочет остаться в своём ремесле'};
  if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!['shrine','granary','depot'].includes(b.type))return {ok:false,reason:'Нужен готовый амбар или храм-склад'};if(s.citizens.some(v=>v.id!==id&&v.guardPost===key))return {ok:false,reason:'У склада уже есть сторож'};const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к складу'};c.guardPost=key;delete c.workplace;}else delete c.guardPost;
  invalidateAssignments(s);syncCitizens(s);return {ok:true};
 }

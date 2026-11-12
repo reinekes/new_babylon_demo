@@ -4,7 +4,7 @@ import {decode,encode} from '../engine.js';
 import {createNewCity} from '../new-game.js';
 import {inspirationReason,inspireCitizen} from '../management.js';
 
-test('a hungry builder candidate declines without cost, even after reload, then accepts after recovery',()=>{
+test('a hungry builder candidate declines without cost, even after reload, then can accept after recovery',()=>{
  let s=createNewCity({mode:'awakening',seed:137});
  const [first,second]=s.citizens.filter(c=>c.age>=16);
  Object.assign(s.godhood,{stage:'recognized',witnessId:first.id,believerIds:[first.id,second.id],recognitionAt:0,firstBuilderGift:true});
@@ -19,9 +19,11 @@ test('a hungry builder candidate declines without cost, even after reload, then 
  assert.equal(s.resources.faith,faith);
  assert.equal(s.rngState,rng);
  s.citizens.find(c=>c.id===id).hunger=0;
+ const recoveryRoll=1973;
+ s.rngState=recoveryRoll;
  assert.equal(inspireCitizen(s,id,'builder').success,true);
  assert.equal(s.citizens.find(c=>c.id===id).calling,'builder');
  assert.equal(s.resources.faith,faith-1);
- assert.equal(s.rngState,rng);
+ assert.equal(s.rngState,(recoveryRoll*1664525+1013904223)>>>0);
  assert.equal(inspireCitizen(s,id,'builder').ok,false);
 });

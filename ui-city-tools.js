@@ -28,7 +28,7 @@ import {fireForecast} from './fire-forecast.js';
 import {lowWaterForecast} from './irrigation.js';
 import {needsCanalCleaning} from './canal-maintenance.js';
 import {activeLaborKind,harvestCallActive,harvestDemand,harvestCandidates,unloadDemand,UNLOAD_PORTERS} from './city-labor.js';
-import {professionOptionsHTML} from './ui-professions.js';
+import {residentCareerHTML,professionOptionsHTML} from './ui-professions.js';
 import {buildingDefinition} from './building-presentation.js';
 import {renderTestTools} from './ui-test-tools.js';
 import {PROFESSION_NAMES,PROFESSION_IDS,professionRole,professionMatchesTask,staffingCandidates} from './professions.js';
@@ -40,6 +40,7 @@ import {displayName} from './citizen-epithets.js';
 import {citizenEpithetHTML} from './ui-citizen-epithets.js';
 import {setHTML} from './ui-render.js';
 import {ROLES} from './education.js';
+import {inspirationPriceLabel} from './professions.js';
 import {inspirationReason,inspirationSuccessChance} from './management.js';
 import {uiIcon} from './ui-icons.js';
 import {resourceIcon} from './resource-icons.js';
@@ -63,8 +64,8 @@ function neighborhoodsHTML(model){
 }
 function optionsHTML(options,value){return options.map(([id,text])=>`<option value="${escape(id)}"${value===id?' selected':''}>${escape(text)}</option>`).join('');}
 function personControls(s,c,desired){
- const profession=selectedProfession(c,desired),inspiration=PROFESSION_IDS.includes(profession)&&profession!=='auto'?profession:'builder',reason=inspirationReason(s,c.id,inspiration),adult=(c.age??20)>=16,chance=Math.round(inspirationSuccessChance(s,c,inspiration)*100);
- return `<div class="city-tools-person-controls"><label class="city-tools-field"><span>Профессия</span><select data-city-role="${c.id}" aria-label="Профессия: ${escape(displayName(s,c))}"${adult?'':' disabled'}>${optionsHTML(ROLES.map(id=>[id,PROFESSION_NAMES[id]]),c.pendingRole||c.role||'auto')}</select></label><div class="city-tools-inspiration"><label class="city-tools-field"><span>Вдохновение</span><select data-city-inspiration="${c.id}" aria-label="Вдохновение: ${escape(displayName(s,c))}">${professionOptionsHTML(inspiration,{ids:PROFESSION_IDS.filter(id=>id!=='auto'),lawmaker:!!s.civicOrder})}</select></label><button type="button" class="city-tools-inspire" data-city-inspire="${c.id}"${reason?' disabled':''} title="${escape(reason||`${chance}% успеха; 1 вера расходуется при любом исходе`)}">${resourceIcon('faith')}Вдохновить · 1 вера</button><small>Шанс ${chance}%${reason?` · ${escape(reason)}`:''}</small></div></div>${c.pendingRole?`<small class="city-tools-pending">${escape(PROFESSION_NAMES[c.pendingRole]||c.pendingRole)} — после доставки груза</small>`:''}${!adult?'<small class="city-tools-pending">Работа с 16 лет. Вдохновение сохранится до взросления.</small>':''}`;
+ const profession=selectedProfession(c,desired,s),inspiration=PROFESSION_IDS.includes(profession)&&profession!=='auto'?profession:'builder',reason=inspirationReason(s,c.id,inspiration),adult=(c.age??20)>=16,chance=Math.round(inspirationSuccessChance(s,c,inspiration)*100);
+ return `<div class="city-tools-person-controls"><label class="city-tools-field"><span>Профессия</span><select data-city-role="${c.id}" aria-label="Профессия: ${escape(displayName(s,c))}"${adult&&!c.selfCalling?'':' disabled'}>${optionsHTML(ROLES.map(id=>[id,PROFESSION_NAMES[id]]),c.pendingRole||c.role||'auto')}</select></label><div class="city-tools-inspiration"><label class="city-tools-field"><span>Вдохновение</span><select data-city-inspiration="${c.id}" aria-label="Вдохновение: ${escape(displayName(s,c))}">${professionOptionsHTML(inspiration,{ids:PROFESSION_IDS.filter(id=>id!=='auto'),lawmaker:!!s.civicOrder})}</select></label><button type="button" class="city-tools-inspire" data-city-inspire="${c.id}"${reason?' disabled':''} title="${escape(reason||`${chance}% успеха · ${inspirationPriceLabel(s)} за попытку`)}">${resourceIcon('faith')}Вдохновить · ${inspirationPriceLabel(s)}</button><small>Шанс ${chance}%${reason?` · ${escape(reason)}`:''}</small></div></div>${residentCareerHTML(s,c)}${c.pendingRole?`<small class="city-tools-pending">${escape(PROFESSION_NAMES[c.pendingRole]||c.pendingRole)} — после доставки груза</small>`:''}${!adult?'<small class="city-tools-pending">Работа с 16 лет. Вдохновение сохранится до взросления.</small>':''}`;
 }
 export function sortedCityCitizens(s,filter={}){
  const mode=filter.sort||'name',name=c=>displayName(s,c);
@@ -514,7 +515,7 @@ export function renderCityTools(root,s,options={}){
    if(button.dataset.vitalHome!==undefined){ctl.options.onVitalHome?.(button.dataset.vitalHome,button.dataset.vitalTab,Number(button.dataset.vitalResident),{filter:{...ctl.filter}});return;}
    if(button.dataset.cityFocus!==undefined){ctl.options.onFocus?.(button.dataset.cityFocus);return;}
    if(button.dataset.cityCitizen!==undefined){ctl.options.onCitizen?.(Number(button.dataset.cityCitizen));return;}
-   if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id));ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}
+   if(button.dataset.cityInspire!==undefined){const id=Number(button.dataset.cityInspire),c=ctl.s.citizens.find(c=>c.id===id);if(c){const desired=selectedProfession(c,ctl.desiredInspirations.get(id),ctl.s);ctl.options.onInspire?.(id,desired==='auto'?'builder':desired);ctl.refresh();}return;}
    if(button.dataset.cityRelease!==undefined){ctl.options.onRelease?.(Number(button.dataset.cityRelease));ctl.refresh();return;}
    if(button.dataset.cityInspect!==undefined){ctl.selectedId=Number(button.dataset.cityInspect);ctl.draw();return;}
    if(button.dataset.cityWorkCategory!==undefined){ctl.buildingFilter.category=button.dataset.cityWorkCategory;ctl.page=0;ctl.draw({resetScroll:true});return;}
