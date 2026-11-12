@@ -1,4 +1,6 @@
 import {generateStreets} from './city-life.js';
+import {footprintCells} from './footprints.js';
+import {isStrictSumer} from './scenario-profiles.js';
 export const WIDTH=40, HEIGHT=32;
 // Saved dimensions belong to the world. Missing fields describe the original
 // 40 × 32 valley and never expand or move a previously saved city.
@@ -22,7 +24,11 @@ export function onBridge(buildings,x,y,s){const q=riverLocal(x,y,s);return build
 
 // Persist explicit tiles so future generator changes cannot move a saved lake.
 export function initializeWorld(s){
- if(s.world){ensureResourceSites(s);return s.world;}
+ if(s.world){
+  ensureResourceSites(s);
+  if(s.world.generationVersion===2&&isStrictSumer(s))expandResourceSites(s);
+  return s.world;
+ }
  const buildings=[...(s.buildings||[]),...(s.roadAnchors||[])],roads=generateStreets(buildings),blocked=new Set();
  for(const b of buildings)blocked.add(`${b.x},${b.y}`);
  const stored=(s.roads||[]).map(r=>[r.a,r.b].map(p=>typeof p==='string'?(()=>{const [x,y]=p.split(',').map(Number);return {x:x-.5,y:y-.5};})():p)).filter(pair=>pair.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)));
@@ -51,7 +57,7 @@ export function isDryPoint(s,x,y){
 }
 export function validateWorld(s){
  const w=s?.world,kinds=['clay','reed','stone','forest','wildlife','dates'];
- if(!w||(w.resourceVersion!==undefined&&w.resourceVersion!==1)||!Number.isSafeInteger(w.seed)||!Array.isArray(w.lakes)||!Array.isArray(w.deposits))return false;
+ if(!w||(w.resourceVersion!==undefined&&![1,2].includes(w.resourceVersion))||!Number.isSafeInteger(w.seed)||!Array.isArray(w.lakes)||!Array.isArray(w.deposits))return false;
  const modern=w.generationVersion===2;
  if(modern?(w.width!==64||w.height!==64):(w.width!==undefined||w.height!==undefined))return false;
  const width=worldWidth(s),height=worldHeight(s);
@@ -85,6 +91,38 @@ export function ensureResourceSites(s){
   for(const p of ordered){if(count>=2)break;w.deposits.push({kind,...p});count++;}
  }
  w.resourceVersion=1;return w;
+}
+
+/** Additive migration. Existing sites (including empty ones) remain authoritative. */
+export function expandResourceSites(s){
+ const world=s.world;
+ if(!world||world.resourceVersion!==1)return;
+ const key=({x,y})=>`${x},${y}`;
+ const occupied=new Set([...world.deposits,...(s.buildings||[]).flatMap(footprintCells),...(s.roadAnchors||[])].map(key));
+ const home=(s.buildings||[]).find(b=>b.type==='house')||{x:8,y:8};
+ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+ const candidates=[];
+ for(let y=2;y<worldHeight(s)-2;y++)for(let x=2;x<worldWidth(s)-2;x++){
+  if(occupied.has(`${x},${y}`)||terrain(x,y,s)==='water')continue;
+  const cell={x,y},side=Math.sign(signedRiverDistance(x,y,s));
+  candidates.push({cell,side,shore:isShore(s,x,y),distance:distance(cell,home)});
+ }
+ const bands=worldWidth(s)>=64?[9,17,25,34]:[9,17,24];
+ for(const side of [-1,1])for(const kind of ['reed','clay']){
+  const existing=world.deposits.filter(d=>d.kind===kind);
+  const bank=candidates.filter(p=>p.side===side&&(kind!=='reed'||p.shore));
+  for(const band of bands){
+   let best=null,bestScore=Infinity;
+   for(const p of bank){
+    if(occupied.has(key(p.cell))||existing.some(d=>distance(d,p.cell)<3))continue;
+    const score=Math.abs(p.distance-band)+(kind==='clay'&&!p.shore?2:0);
+    if(score<bestScore){best=p.cell;bestScore=score;}
+   }
+   if(!best)continue;
+   const site={kind,...best};world.deposits.push(site);existing.push(site);occupied.add(key(site));
+  }
+ }
+ world.resourceVersion=2;
 }
 
 // Explicit geometry is generated only for a new game. Loading never rerolls a

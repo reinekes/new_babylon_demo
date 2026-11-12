@@ -18,6 +18,7 @@ import {newRainDiscovery} from './rain-discovery.js';
 import {newMonumentChapter} from './monument-chapter.js';
 import {enableAutumnCrops} from './agriculture.js';
 import {createGame} from './engine.js';
+import {expandResourceSites} from './world.js';
 import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
 
 // UI creation only. Decoding or loading a previous town never goes through here.
@@ -26,6 +27,7 @@ export function createNewCity({mode,seed}={}){
  const state=createGame({mode,seed,scenario:{...strictScenario(),...(mode==='awakening'?{miracles:CAT_DISCOVERY_RULES}:{})}});
  state.demography.birthFoodRule=COURTYARD_BIRTH_FOOD;
  state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
+ expandResourceSites(state);
  if(mode==='awakening'){
   state.civicOrder=newCivicOrder();
   state.fearCrisis={version:1};
