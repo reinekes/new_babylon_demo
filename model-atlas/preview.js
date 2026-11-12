@@ -1,3 +1,4 @@
+import { createAnzudRelief } from './anzud-relief.js';
 import { createShellLamp } from '../game3d/shell-lamp.js';
 import { loadBabylonVendors } from '../game3d/vendor-loading.js';
 import { loadModel } from '../game3d/asset-loading.js';
@@ -56,6 +57,10 @@ async function makeModel(B,scene,item,profile) {
       first.pause();
       first.goToFrame(first.from);
     }
+    return;
+  }
+  if(item.kind==='relief'){
+    createAnzudRelief(B,scene);
     return;
   }
   const state=stateFor(profile);
@@ -190,6 +195,7 @@ export async function createPreview(canvas) {
     scene.imageProcessingConfiguration.toneMappingEnabled=true;
     scene.imageProcessingConfiguration.toneMappingType=B.ImageProcessingConfiguration.TONEMAPPING_ACES;
     camera=new B.ArcRotateCamera('atlas',item.kind==='building'?1.08:.94,item.kind==='glb'?1.26:.86,10,B.Vector3.Zero(),scene);
+    if(item.kind==='relief'){camera.alpha=1.48;camera.beta=1.43;}
     const sun=new B.DirectionalLight('sun',new B.Vector3(-.65,-1,-.45),scene);
     sun.intensity=2.15;
     const sky=new B.HemisphericLight('sky',B.Axis.Y,scene);

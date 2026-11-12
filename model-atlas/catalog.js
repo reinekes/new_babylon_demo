@@ -6,7 +6,7 @@ import * as ambient from '../game3d/ambient-fauna.js';
 
 export const groups = {
   buildings:'Здания и сооружения', people:'Люди', animals:'Животные', birds:'Птицы',
-  transport:'Транспорт', plants:'Растения', goods:'Грузы и предметы', other:'Отдельные сцены и резерв'
+  mythology:'Мифология', transport:'Транспорт', plants:'Растения', goods:'Грузы и предметы', other:'Отдельные сцены и резерв'
 };
 
 export const statuses = {
@@ -63,7 +63,7 @@ function glbName(name) {
 export function usageOf(row) {
   const item=row.previews[0];
   const status=item.entry?.status;
-  if (status==='optional') return 'studio';
+  if (item.studio||status==='optional') return 'studio';
   if (status==='spare'||status==='fallback'||item.reserve) return 'reserve';
   return 'game';
 }
@@ -80,6 +80,12 @@ export function makeCatalog(index, profile) {
   rows.push(row('transport','Южношумерское речное судно','Корпус, борт и шест из игрового генератора', model('boat','Игровая геометрия')));
   rows.push(row('birds','Стая над долиной','Процедурные силуэты, отдельные от GLB',
     model('flock','Игровая геометрия')));
+  rows.push(row('mythology','Анзуд','Львиноголовый орёл по мотивам сосуда Энметены',model('relief','Игровой рельеф',{
+    species:'anzud',studio:true,sources:[
+      {author:'Сосуд Энметены, Лувр',source:'https://collections.louvre.fr/en/ark:/53355/cl010120706'},
+      {author:'Лугальбанда и птица Анзуд, ETCSL',source:'https://etcsl.orinst.ox.ac.uk/section1/tr1822.htm'}
+    ]
+  })));
   const wildlife = {
     fish:['Рыба','Игровая геометрия'], mouse:['Мышь','Игровая геометрия'],
     rat:['Крыса','Игровая геометрия'], goat:['Коза','Резервная геометрия'],
