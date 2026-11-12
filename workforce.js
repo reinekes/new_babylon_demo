@@ -1022,7 +1022,13 @@ export function advanceWorkers(s,seconds,{stopForCeremony=false,cropRate=1}={}){
   const q=site.construction;q.work+=applyBuilderInstruction(s,contributions,Math.max(0,workRequired(site)-q.work),site);
  }
  advanceWellbeing(s,dt);scheduleEveningVisit(s,ctx);advanceClothing(s,dt);advanceTextiles(s,dt);advanceBricks(s,dt);advanceKilns(s,dt);advanceArtisans(s,dt);collectReadyOutputs(s);advanceCrops(s,dt*cropRate);const finished=finishConstruction(s);advancePests(s,dt);advanceCatDiscovery(s,dt);if(finished||caches.get(s)?.synced===null){syncCitizens(s);ctx=context(s);}elapsed+=dt;}
- const advanced=elapsed>=seconds-1e-8?seconds:elapsed;s.simTime=start+advanced;advanceReedBeds(s);return advanced;
+ const advanced=elapsed>=seconds-1e-8?seconds:elapsed;
+ const lastStepWasDinner=isDinnerTime(s.simTime);
+ s.simTime=start+advanced;
+ // The last work step samples its start time. Finalize dinner if its end crossed dawn.
+ if(advanced>0&&lastStepWasDinner&&!isDinnerTime(s.simTime)&&!ceremonyActive(s))advanceWellbeing(s,0);
+ advanceReedBeds(s);
+ return advanced;
 }
 // Clinic waiting places are view offsets only: identities, routes and saved
 // treatment coordinates remain the actual simulation state.

@@ -76,3 +76,24 @@ test('map warning distinguishes a slight shortfall, a missed dinner and a mixtur
  assert.match(warning().title,/пропустили ужин/i);
  assert.doesNotMatch(warning().title,/недобор/i);
 });
+
+test('a time jump ending at dawn clears the fully fed home from the assistance filter',async()=>{
+ const {advanceTime}=await import('../engine.js');
+ const s=createGame({start:'established'});
+ s.simTime=90.675;
+ s.resources.food=0;
+ const fedHome=s.buildings.find(b=>b.type==='house'&&b.x===8);
+ fedHome.pantry=15;
+ fedHome.pantryDelivered=15;
+ for(const c of s.citizens){
+  c.mealDay=1;
+  c.mealEvaluated=0;
+  c.mealEaten=0;
+  c.missedMeals=1;
+  c.lastMealQuality=.9375;
+ }
+ advanceTime(s,115.05-s.simTime);
+ assert.deepEqual(read(s).riskFamilies.map(h=>h.key),['9,9']);
+ const fed=s.citizens.filter(c=>c.home==='8,8');
+ assert.ok(fed.every(c=>c.mealEvaluated===1&&c.lastMealQuality>=.95));
+});
