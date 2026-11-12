@@ -1022,8 +1022,22 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
   :liveRation?.route.amount>0?'Еда получена и в пути'
   :liveRation?.route.courier!==undefined?'Носильщик идёт за едой':'Склад и путь к двору';
  const liveCarrier=liveRation&&!liveRation.delivered&&state.citizens.find(c=>c.id===liveRation.route.courier);
- const rationScene=liveRation?`<section class="house-food" aria-label="Рейс за едой"><b>${rationStage}</b>${liveRation.delivered?`<p>${resident(liveRation.delivered.carrier)} принёс ${foodAmount(liveRation.delivered.amount)} ед. еды.</p>`:''}<p>Склад → выдача → дорога → запас двора → ужин</p>${liveCarrier?'<button type="button" data-focus-ration-carrier>Показать носильщика</button>':''}</section>`:'';
- const rationNote=resource==='food'?`<details class="house-food" data-home-ration><summary>Выдача еды и ужин</summary>${receipt?`<p>Последняя доставка · ${Math.floor(receipt.time/60)+1}-й день города · ${foodAmount(receipt.amount)} ед. еды · ${resident(receipt.carrier)}${receipt.source?` · отправление ${esc(receipt.source)}`:''}.</p>`:'<p>Первая доставка появится здесь после прибытия груза.</p>'}<p>Ужин семьи идёт с 20:00 до 06:00. Домашний запас ${foodAmount(h.food)} ед.</p><p>Табличка Ур III записывает пайки гонцов. В этой долине запись показывает доставку во двор. <a href="https://cdli.earth/cdli-tablet/549" target="_blank" rel="noopener">Табличка в CDLI</a></p></details>`:'';
+ const measure=liveRation?.delivered||liveRation?.route;
+ const rationScene=liveRation?`<section class="house-food" aria-label="Рейс за едой">
+  <b>${rationStage}</b>
+  <p>Получатель · двор ${esc(buildingKey(b))} · ${h.residents.length} жителей</p>
+  ${measure?.amount>0?`<p>В меру отложено ${foodAmount(measure.amount)} ед. · ${resident(measure.carrier??measure.courier)}${measure.source?` · склад ${esc(measure.source)}`:''}</p>`:''}
+  ${measure?.remainder!==undefined?`<p>Остаток сразу после выдачи · ${foodAmount(measure.remainder)} ед.</p>`:''}
+  <p>Дома ${foodAmount(h.food)} ед. · ${h.dining?`ужинают ${h.dining}`:'ужин с 20:00'}</p>
+  ${liveCarrier?'<button type="button" data-focus-ration-carrier>Показать носильщика</button>':''}
+ </section>`:'';
+ const productionStops=resource==='food'?['field','bakery'].map(type=>
+  state.buildings.reduce((nearest,site)=>{
+   if(site.type!==type||!isOperational(site))return nearest;
+   const distance=target=>Math.hypot(target.x-b.x,target.y-b.y);
+   return !nearest||distance(site)<distance(nearest)?site:nearest;
+  },null)).filter(Boolean):[];
+ const rationNote=resource==='food'?`<details class="house-food" data-home-ration><summary>Выдача еды и ужин</summary>${receipt?`<p>Последняя доставка · ${Math.floor(receipt.time/60)+1}-й день города · ${foodAmount(receipt.amount)} ед. еды · ${resident(receipt.carrier)}${receipt.source?` · отправление ${esc(receipt.source)}`:''}${receipt.remainder!==undefined?` · остаток при выдаче ${foodAmount(receipt.remainder)} ед.`:''}.</p>`:'<p>Первая доставка появится здесь после прибытия груза.</p>'}<p>Ужин семьи идёт с 20:00 до 06:00. Домашний запас ${foodAmount(h.food)} ед.</p>${productionStops.length?`<p>Посмотреть, как город получает еду</p><div class="dialog-actions">${productionStops.map(site=>`<button type="button" data-ration-production="${buildingKey(site)}">${site.type==='field'?'Поле и обмолот':'Помол и выпечка'}</button>`).join('')}</div><small>Готовая еда поступает в общий запас склада.</small>`:''}<p>Табличка Ур III записывает пайки гонцов. В этой долине запись показывает доставку во двор. <a href="https://cdli.earth/cdli-tablet/549" target="_blank" rel="noopener">Табличка в CDLI</a></p></details>`:'';
  const routeControls=resource?`<section class="house-food" aria-label="Путь снабжения"><button type="button" data-house-supply-route>${shown?'Обновить путь':'Показать путь доставки'}</button>
  ${shown?` <button type="button" data-hide-house-route>Скрыть</button><p>${esc(shown.route.status)}${shown.route.amount>0?` · ${foodAmount(shown.route.amount)} ед.`:''}${shown.route.courier!==undefined?` · ${esc(displayName(state,shown.route.courier))}`:''}</p>${shown.source?`<button type="button" data-open-route-source>Открыть источник · ${esc(buildingDefinition(state,shown.source.type)?.name||'Склад')} ${esc(buildingKey(shown.source))}</button>`:''}`:''}</section>`:'';
 
@@ -1036,6 +1050,12 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
   const source=shown.source;clearSupplyRoute();renderer.focusOn(source.x,source.y);
   inspected={x:source.x,y:source.y};detail(source.type,false,source);
  });
+ for(const button of panel.querySelectorAll('[data-ration-production]'))button.onclick=()=>{
+  const site=productionStops.find(item=>buildingKey(item)===button.dataset.rationProduction);
+  if(!site||!state.buildings.includes(site))return;
+  clearSupplyRoute();renderer.focusOn(site.x,site.y);
+  inspected={x:site.x,y:site.y};detail(site.type,false,site);
+ };
  bindWaterDream(panel);
  const smallResponse=panel.querySelector('[data-small-water-response]');
  if(smallResponse)smallResponse.onclick=()=>{if(mutate(answerWaterRequest(state,b),'Сосед отправился за водой'))renderHousehold(b);};

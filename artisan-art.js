@@ -58,7 +58,11 @@ export function drawArtisan(r,b,s,t=0){
   oval(8,-7,7,4,'#cf9b70');
   oval(8,1,3,2,v.stage==='baking'?'#eda45f':'#5e4c3c');
   box(21,6,6,3,2,'#b7aa91','#877b65','#9f9075');
-  line([[18,4],[23,2]],'#786d5e',1.6);
+  const handstone=v.stage==='milling'?Math.sin(t*5)*1.3:0;
+  oval(21,3,3.5,1.55,'#a38f73');
+  oval(21+handstone,2.7,2.5,1,'#736754');
+  oval(1,9,4.2,1.7,'#ae8865');
+  if(v.stage==='baking')oval(1,8,2.7,1.1,'#ead2a2');
   if(v.stage==='ready')for(let k=0;k<5;k++)oval(2+k*4,11-k%2*2,2,.9,'#d8ab68');
  }else{
   // Two large clay brewing vessels are equipment; their surfaces show actual contents.
