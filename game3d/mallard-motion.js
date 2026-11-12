@@ -11,6 +11,8 @@ const mix=(a,b,t)=>a+(b-a)*t;
 const samples=96;
 const feedingDuration=2;
 const feedingDelay=.9;
+const scanDuration=1.9;
+const scanDelay=.85;
 
 // Follow a curved strip of shoreline. Validate the entire loop before using it.
 export function mallardRoute(state,isClear){
@@ -39,17 +41,22 @@ export function mallardRoute(state,isClear){
   if(route.length===samples+1){
    const middle=riverPoint(along,state,side*1.19),water=riverPoint(along,state);
    const feedingAt=route.find(point=>point.depth>.25)?.time;
-   return {route,time,distance,feedingAt,focus:{x:middle.x,z:middle.y,angle:Math.atan2(water.y-middle.y,water.x-middle.x)}};
+   const scanAt=route.find((point,index)=>index>samples*.75&&point.y>-.03)?.time;
+   return {route,time,distance,feedingAt,scanAt,focus:{x:middle.x,z:middle.y,angle:Math.atan2(water.y-middle.y,water.x-middle.x)}};
   }
  }
  return null;
 }
 
 export function mallardPose(plan,clock){
- const cycle=plan.time+(plan.feedingAt===undefined?0:feedingDelay);
+ const cycle=plan.time+(plan.feedingAt===undefined?0:feedingDelay)+(plan.scanAt===undefined?0:scanDelay);
  const elapsed=((clock%cycle)+cycle)%cycle;
  const progress=plan.feedingAt===undefined?0:clamp((elapsed-plan.feedingAt)/feedingDuration);
- const t=elapsed-feedingDelay*smooth(progress);
+ const afterFeeding=elapsed-feedingDelay*smooth(progress);
+ const scanProgress=plan.scanAt===undefined?0:clamp((afterFeeding-plan.scanAt)/scanDuration);
+ const t=afterFeeding-scanDelay*smooth(scanProgress);
+ const scan=Math.sin(TAU*scanProgress)*Math.sin(Math.PI*scanProgress);
+ const scanning=scanProgress>0&&scanProgress<1;
  const dip=Math.sin(Math.PI*progress)**2;
  const feeding=progress>0&&progress<1;
  const {route}=plan;
@@ -68,7 +75,7 @@ export function mallardPose(plan,clock){
   yaw:Math.atan2(mix(b.x-prev.x,next.x-a.x,f),mix(b.z-prev.z,next.z-a.z,f)),
   pitch:mix(.035*Math.sin(gait*TAU*2),.025*Math.sin(paddle*TAU*2),floating)+.15*dip,
   roll:mix(.075*Math.sin(gait*TAU),.028*Math.sin(paddle*TAU),floating),
-  floating,gait,paddle,dip,phase:feeding?'feeding':depth>.195?'swimming':depth>.012?'wading':'walking'
+  floating,gait,paddle,dip,scan,phase:scanning?'scanning':feeding?'feeding':depth>.195?'swimming':depth>.012?'wading':'walking'
  };
 }
 
@@ -91,23 +98,29 @@ const joints={
 // models have different bone orientations but share the same gait timing.
 export function createMallardRig(B,root,species,id){
  const nodes=new Map(root.getChildTransformNodes().map(node=>[node.name.slice(id.length+1),node]));
- const joint=name=>{
+ const joint=(name,canTurn=false)=>{
   const node=nodes.get(name);
   if(!node?.rotationQuaternion)return null;
   const world=node.computeWorldMatrix(true);
-  const axis=B.Vector3.TransformNormal(B.Axis.X,world.clone().invert()).normalize();
-  return {node,axis,handedness:Math.sign(world.determinant()),rest:node.rotationQuaternion.clone(),rotation:B.Quaternion.Identity()};
+  const inverse=world.clone().invert();
+  const axis=B.Vector3.TransformNormal(B.Axis.X,inverse).normalize();
+  const turnAxis=canTurn?B.Vector3.TransformNormal(B.Axis.Y,inverse).normalize():null;
+  return {node,axis,turnAxis,handedness:Math.sign(world.determinant()),rest:node.rotationQuaternion.clone(),rotation:B.Quaternion.Identity()};
  };
- return {legs:joints[species].map(leg=>leg.map(joint)),neck:necks[species].map(joint)};
+ return {legs:joints[species].map(leg=>leg.map(name=>joint(name))),neck:necks[species].map(name=>joint(name,true))};
 }
 
 export function poseMallardRig(B,rig,p){
- const rotate=(joint,angle)=>{
+ const rotate=(joint,angle,axis=joint?.axis)=>{
   if(!joint)return;
-  B.Quaternion.RotationAxisToRef(joint.axis,angle,joint.rotation);
+  B.Quaternion.RotationAxisToRef(axis,angle,joint.rotation);
   joint.rest.multiplyToRef(joint.rotation,joint.node.rotationQuaternion);
  };
- for(const [index,joint] of rig.neck.entries())if(joint)rotate(joint,joint.handedness*p.dip*(index===0?.64:.32));
+ for(const [index,joint] of rig.neck.entries()){
+  if(!joint)continue;
+  if(p.phase==='scanning')rotate(joint,joint.handedness*p.scan*(index===0?.29:.48),joint.turnAxis);
+  else rotate(joint,joint.handedness*p.dip*(index===0?.64:.32));
+ }
  for(let side=0;side<rig.legs.length;side++){
   const gait=(p.gait+side*.5)%1,paddle=(p.paddle+side*.5)%1;
   const swing=clamp((gait-.58)/.42),lift=Math.sin(swing*Math.PI);

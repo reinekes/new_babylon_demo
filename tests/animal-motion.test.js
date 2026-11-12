@@ -38,6 +38,7 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
     const phase=bird.metadata.shorePhase;
     if(phase==='walking'&&shorePhases[index].has('swimming'))returned.add(bird);
     shorePhases[index].add(phase);
+    if(phase==='scanning')assert.ok(waterDepth(bird.position.x/6,bird.position.z/6,state)<.001);
     if(phase==='feeding'){
      const beak=bird.getChildTransformNodes().find(n=>/duck Mouth|Beak_nub/.test(n.name));
      beak.computeWorldMatrix(true);
@@ -61,7 +62,7 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   assert.equal(returned.size,2);
   assert.equal(dipped.size,2);
   assert.equal(ripples.size,2);
-  for(const phases of shorePhases)for(const phase of ['walking','wading','feeding','swimming'])assert.ok(phases.has(phase),phase);
+  for(const phases of shorePhases)for(const phase of ['walking','wading','feeding','swimming','scanning'])assert.ok(phases.has(phase),phase);
   assert.ok(skin(female).some((value,index)=>Math.abs(value-femaleSkin[index])>.001));
   assert.ok(B.Vector3.Distance(seagull.position,firstFlight)>1);
   for(const species of new Set(roots.map(r=>r.metadata.ambientSpecies))){assert.ok(moving.has(species),species+' must select Walk');assert.ok(deforming.has(species),species+' skin must change');assert.ok(skinChanged.has(species),species+' actual CPU skinned/morphed vertex positions must change independent of root translation');}

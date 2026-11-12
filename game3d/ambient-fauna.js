@@ -6,7 +6,7 @@ import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength} from '../world
 import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
-import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-feed-20261112';
+import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-scan-20261112';
 import {WATER_HEIGHT} from './water.js';
 import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
