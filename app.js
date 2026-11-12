@@ -123,7 +123,7 @@ import {weatherAt} from './environment.js';
 import {builderConsent,setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
-import {BUILDINGS,MIRACLES,SEASONS,build,advanceTime,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,canPlace,advanceTime,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,isCityFortification,isOperational,levelOf,outputMultiplier} from './definitions.js';
@@ -307,7 +307,7 @@ document.addEventListener('click',event=>{if(!relicControlActive(state))return;c
 
 createPanelControls({onResize:()=>renderer.resize()});
 const modeBadge=document.createElement('span');modeBadge.className='game-mode-label';document.querySelector('.game3d-options,.panel-dock')?.append(modeBadge);
-const godhoodUI=createGodhoodControls({root:$('city').parentNode,getState:()=>state,onNamelessEnding:showNamelessEnding,onNamelessNew:askReset,onSign:()=>{const r=beginFirstSign(state);if(mutate(r,r.recovery?'Житель откликнулся и идёт к месту знака':'Человек услышал зов и идёт к источнику')){paused=false;const c=state.citizens.find(c=>c.id===r.citizenId);if(c)renderer.focusOn(c.x,c.y);save();update();}},onWaterHelp:(helper,recipient)=>{const r=beginFirstWaterHelp(state,helper,recipient);if(mutate(r,'Житель отправился за водой для соседей')){paused=false;const c=state.citizens.find(c=>c.id===helper);if(c)renderer.focusOn(c.x,c.y);save();update();}},onInspire:id=>{const r=inspireCitizen(state,id,'builder');mutate(r,r.success?'Первый строитель вдохновлён. Заложи простой двор: после двух завершённых работ он достигнет II уровня.':'Вдохновение не удалось');},onFocus:()=>{const c=state.citizens.find(c=>c.id===state.godhood?.witnessId);if(c)renderer.focusOn(c.x,c.y);},onBuild:type=>{if(selection!==type)choose(type);},onWork:()=>showCityOverview('workshops'),onRelics:()=>showRelicIntro(),onFisher:id=>{const r=inspireCitizen(state,id,'fisher');mutate(r,r.success?'Рыбак принял призвание. Дождись его подношения у хранилища.':'Вдохновение пока не принято · вера потрачена');},onCat:()=>{const el=$('miracle-cat'),details=el?.closest('details');if(details){if(document.body.dataset.urukPanel!=='miracles')urukUI?.open('miracles');details.open=true;details.scrollIntoView({block:'nearest'});el.focus();}},onCatFocus:()=>{const p=state.catDiscovery?.trace;if(p)renderer.focusOn(p.x,p.y);}});
+const godhoodUI=createGodhoodControls({root:$('city').parentNode,getState:()=>state,onNamelessEnding:showNamelessEnding,onNamelessNew:askReset,onSign:()=>{const r=beginFirstSign(state);if(mutate(r,r.recovery?'Житель откликнулся и идёт к месту знака':'Человек услышал зов и идёт к источнику')){paused=false;const c=state.citizens.find(c=>c.id===r.citizenId);if(c)renderer.focusOn(c.x,c.y);save();update();}},onWaterHelp:(helper,recipient)=>{const r=beginFirstWaterHelp(state,helper,recipient);if(mutate(r,'Житель отправился за водой для соседей')){paused=false;const c=state.citizens.find(c=>c.id===helper);if(c)renderer.focusOn(c.x,c.y);save();update();}},onInspire:id=>{const r=inspireCitizen(state,id,'builder');mutate(r,r.success?'Первый строитель вдохновлён. Заложи простой двор: после двух завершённых работ он достигнет II уровня.':'Вдохновение не удалось');},onFocus:()=>{const c=state.citizens.find(c=>c.id===state.godhood?.witnessId);if(c)renderer.focusOn(c.x,c.y);},onBuild:type=>{if(type==='fishing')showFishingSites();else if(selection!==type)choose(type);},onWork:()=>showCityOverview('workshops'),onRelics:()=>showRelicIntro(),onFisher:id=>{const r=inspireCitizen(state,id,'fisher');mutate(r,r.success?'Рыбак принял призвание. Дождись его подношения у хранилища.':'Вдохновение пока не принято · вера потрачена');},onCat:()=>{const el=$('miracle-cat'),details=el?.closest('details');if(details){if(document.body.dataset.urukPanel!=='miracles')urukUI?.open('miracles');details.open=true;details.scrollIntoView({block:'nearest'});el.focus();}},onCatFocus:()=>{const p=state.catDiscovery?.trace;if(p)renderer.focusOn(p.x,p.y);}});
 const resident=value=>residentLinkHTML(state,value);
 bindResidentLinks(document,{getState:()=>state,onLiving:c=>{if(dialog.open)closeDialog();renderer.focusOn(c.x,c.y);personDetail(c);},onArchived:id=>showLifeAnalytics(id)});
 function toast(text){setHTML($('toast'),residentTextHTML(state,text));$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3500);}
@@ -1265,6 +1265,36 @@ function buildingAvailabilityReason(type){
   return type==='logging'?'Дерево привозят купцы. Нужен рынок или речная пристань.':'Камень привозят купцы. Нужен рынок или речная пристань.';
  }
  return buildingKnowledgeReason(state,type);
+}
+function showFishingSites(){
+ const reason=buildingAvailabilityReason('fishing');
+ if(reason){toast(reason);return;}
+ const net=networkFor(state,{materializeRoads:false});
+ const component=p=>net.components.get(p.key);
+ const occupied=new Set(state.citizens.map(c=>c.home));
+ const homes=net.ports.filter(p=>p.building.type==='house'&&occupied.has(buildingKey(p.building)));
+ const stores=new Set(stockStores(state).map(buildingKey));
+ const supplied=new Set(net.ports.filter(p=>stores.has(buildingKey(p.building))).map(component).filter(value=>value!==undefined));
+ const nearby=new Map();
+ for(const home of homes){
+  const district=component(home);
+  if(!supplied.has(district))continue;
+  for(let dy=-10;dy<=10;dy++)for(let dx=-10;dx<=10;dx++){
+   const x=home.building.x+dx,y=home.building.y+dy,distance=Math.hypot(dx,dy),key=`${x},${y}`;
+   if(distance>= (nearby.get(key)?.distance??Infinity)||canPlace(state,'fishing',x,y))continue;
+   const reachable=[[0,0],[1,0],[0,1],[1,1]].some(([a,b])=>net.components.get(`${x+a},${y+b}`)===district);
+   if(reachable)nearby.set(key,{x,y,distance});
+  }
+ }
+ const choices=[...nearby.values()].sort((a,b)=>a.distance-b.distance||a.y-b.y||a.x-b.x).slice(0,3);
+ openDialog('fishing-sites',`<button class="management-close" id="close-fishing-sites" aria-label="Закрыть площадки">×</button><h2>Площадки рыбацкой хижины</h2>${choices.length?'<p>К этим береговым клеткам есть сухой подход от жилого двора и склада.</p>':'<p>Рядом с дворами и складами свободных площадок не найдено.</p>'}<div class="dialog-actions">${choices.map(({x,y,distance})=>`<button type="button" data-fishing-site="${x},${y}">Клетка ${x}, ${y} · ${rounded(distance)} кл. до двора</button>`).join('')}<button type="button" id="choose-fishing-manually">Выбрать на карте</button></div>`);
+ $('close-fishing-sites').onclick=closeDialog;
+ function startPlacement(){closeDialog();if(selection!=='fishing')choose('fishing');}
+ $('choose-fishing-manually').onclick=startPlacement;
+ for(const button of dialog.querySelectorAll('[data-fishing-site]'))button.onclick=()=>{
+  const [x,y]=button.dataset.fishingSite.split(',').map(Number);
+  startPlacement();renderer.focusOn(x,y);
+ };
 }
 function choose(type){
  waterProjectDraft=null;
