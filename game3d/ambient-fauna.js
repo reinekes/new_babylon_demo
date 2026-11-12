@@ -40,6 +40,23 @@ export function ambientAnchor(state,species,index=0,occupied=[]){
 }
 const YARD_PIG_MODEL={file:"ambient-yard-pig.glb",scale:.12};
 const courtyardPlans=new WeakMap();
+const otterPoint=(state,center,angle)=>riverPoint(center+Math.cos(angle)*1.05,state,.34+Math.sin(angle)*.24);
+function findOtterPool(state,along){
+ for(const shift of [-5,5,-8,8,0]){
+  const center=along+shift;
+  if(center<3||center>riverLength(state)-4)continue;
+  let clear=true;
+  for(let i=0;i<32;i++){
+   const p=otterPoint(state,center,i*Math.PI/16);
+   if(waterDepth(p.x,p.y,state)<.48||onBridge(state.buildings,p.x,p.y,state)||!ambientDryPoint(state,p.x,p.y,-Infinity)){
+    clear=false;
+    break;
+   }
+  }
+  if(clear)return center;
+ }
+ return null;
+}
 export function courtyardFauna(state,time=state.simTime||0){
  let plan=courtyardPlans.get(state);
  if(plan?.buildings!==state.buildings||plan?.count!==state.buildings.length){
@@ -50,7 +67,7 @@ export function courtyardFauna(state,time=state.simTime||0){
     .find(p=>ambientClearSegment(state,anchor,p));
    routes.push({kind,route:end?[anchor,end,anchor]:[anchor],speed,pause});
   };
-  let egret;
+  let egret,otterPool=null;
   if(home){
    add('pig',ambientAnchor(state,'pig'),.55,.22,2.5);
    const along=riverLocal(home.x,home.y,state).along;
@@ -58,6 +75,7 @@ export function courtyardFauna(state,time=state.simTime||0){
     Math.max(2,Math.min(riverLength(state)-3,along+delta)),state,offset
    ))).find(p=>ambientDryPoint(state,p.x,p.y,.22));
    add('turtle',shore,.25,.08,3.5);
+   otterPool=findOtterPool(state,along);
    for(const shift of [6,-6,9,-9,3,-3]){
     const bank=along+shift;
     if(bank<2||bank>riverLength(state)-3)continue;
@@ -72,12 +90,19 @@ export function courtyardFauna(state,time=state.simTime||0){
     }
    }
   }
-  plan={buildings:state.buildings,count:state.buildings.length,routes,egret};courtyardPlans.set(state,plan);
+  plan={buildings:state.buildings,count:state.buildings.length,routes,egret,otterPool};courtyardPlans.set(state,plan);
  }
  const animals=plan.routes.map(({kind,route,speed,pause})=>{
   const motion=loopMotion(route,time,speed,pause);
   return {id:`ambient-${kind}`,kind,decorative:true,...motion,behavior:motion.walking?'walking':'looking'};
  });
+ if(plan.otterPool!==null){
+  const angle=time*Math.PI/12;
+  const point=otterPoint(state,plan.otterPool,angle),next=otterPoint(state,plan.otterPool,angle+.001);
+  const dive=Math.max(0,-Math.cos(angle*2))**2;
+  animals.push({id:'ambient-otter',kind:'otter',decorative:true,...point,dive,
+   yaw:Math.atan2(next.x-point.x,next.y-point.y),elevation:WATER_HEIGHT+.026-.27*dive});
+ }
  if(plan.egret)animals.push({id:'ambient-egret',kind:'egret',decorative:true,...plan.egret});
  return animals;
 }

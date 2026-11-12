@@ -4,7 +4,7 @@ import { loadBabylonVendors } from '../game3d/vendor-loading.js';
 import { loadModel } from '../game3d/asset-loading.js';
 import { createGameBuildings } from '../game3d/buildings.js';
 import { createDistrictMaterials } from '../district3d/materials.js';
-import { createWildlife } from '../game3d/wildlife.js?v=little-egret-20261112';
+import { createWildlife } from '../game3d/wildlife.js?v=smooth-coated-otter-20261112';
 import { createAmbientFauna } from '../game3d/ambient-fauna.js';
 import { cropPlantGeometry,createBotanicalMaterial,botanicalMesh } from '../game3d/crop-varieties.js';
 import { createNatureDetails } from '../game3d/nature-details.js';

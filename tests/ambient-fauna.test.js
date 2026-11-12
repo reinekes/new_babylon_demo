@@ -27,16 +27,24 @@ test('paused load re-centres sky birds over a larger saved world without adding 
 });
 
 test('yard pigs and shore turtles follow dry decorative routes without touching save state',async()=>{
- const {waterDepth}=await import('../game3d/water.js');
+ const {waterDepth,WATER_HEIGHT}=await import('../game3d/water.js');
  const {courtyardFauna,ambientDryPoint}=await import('../game3d/ambient-fauna.js');
  for(const seed of [1,4,9,96]){
   const state=createGame({seed}),before=JSON.stringify(state);
   const positions=new Map();
+  const [surface,dive,resurface]=[0,6,12].map(t=>courtyardFauna(state,t).find(a=>a.kind==='otter'));
+  assert.ok(surface.elevation>WATER_HEIGHT&&dive.elevation<WATER_HEIGHT-.2);
+  assert.equal(resurface.elevation,surface.elevation);
+  assert.ok(Math.hypot(resurface.x-surface.x,resurface.y-surface.y)>1);
   for(let t=0;t<25;t+=.5){
    state.simTime=t;const snapshot=JSON.stringify(state),animals=courtyardFauna(state);
    assert.equal(JSON.stringify(state),snapshot);
-   assert.deepEqual(animals.filter(a=>a.kind!=='egret').map(a=>a.kind),['pig','turtle']);
+   assert.deepEqual(animals.filter(a=>!['egret','otter'].includes(a.kind)).map(a=>a.kind),['pig','turtle']);
    for(const a of animals){
+    if(a.kind==='otter'){
+     assert.ok(a.decorative&&waterDepth(a.x,a.y,state)>.45);
+     continue;
+    }
     if(a.kind==='egret'){
      assert.ok(a.decorative&&waterDepth(a.x,a.y,state)>.13&&waterDepth(a.x,a.y,state)<.24);
      continue;

@@ -117,7 +117,38 @@ export function createWildlife(B,scene,meshes=[]){
   for(const side of [-1,1])ball('egret:eye',neck,black,side*.024,.324,.09,.009,.009,.009);
   return {root,body,neck,d:{egret:true,stride:.4},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
  }
- function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);if(c.kind==='egret')return buildEgret(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
+ function buildOtter(c){
+  const root=node(`wildlife-${c.id}`),body=node(`${c.id}-body`,root);
+  const coat=material('otter-coat','#40342b'),throat=material('otter-throat','#9e8b74');
+  coat.roughness=.64;
+  part('otter:torso',body,coat,name=>loft(name,[
+   [-.39,-.014,.021,.025],[-.3,-.004,.091,.069],[-.15,.008,.126,.092],
+   [.055,.023,.112,.078],[.18,.038,.083,.066],[.31,.059,.055,.046]
+  ]));
+  const head=node(`${c.id}-head`,body,0,.049,.24);
+  ball('otter:head',head,coat,0,.039,.066,.163,.128,.174);
+  ball('otter:throat',head,throat,0,-.01,.055,.107,.07,.161);
+  ball('otter:muzzle',head,throat,0,.015,.137,.115,.075,.096);
+  ball('otter:nose',head,black,0,.034,.181,.055,.031,.032);
+  for(const side of [-1,1]){
+   ball('otter:ear',head,coat,side*.067,.077,.035,.035,.037,.026);
+   ball('otter:eye',head,black,side*.061,.055,.122,.016,.018,.016);
+   for(let i=0;i<2;i++)tube(`otter:whisker-${side}-${i}`,head,throat,
+    [[side*.04,.016+i*.012,.152],[side*.076,.012+i*.016,.166],[side*.105,.008+i*.016,.18]],.0018,.35);
+  }
+  const paddles=[];
+  for(const side of [-1,1])for(const end of [-1,1]){
+   const paddle=node(`${c.id}-paddle-${side}-${end}`,body,side*.087,-.036,end*.165);
+   ball('otter:short-leg',paddle,coat,side*.029,-.024,-.018,.078,.073,.109);
+   ball('otter:webbed-foot',paddle,coat,side*.045,-.051,-.063,.059,.031,.093);
+   paddles.push({paddle,side,end});
+  }
+  const tail=node(`${c.id}-tail`,body,0,-.01,-.35);
+  part('otter:tail',tail,coat,name=>loft(name,[[-.43,-.043,.006,.006],[-.32,-.032,.024,.012],
+   [-.2,-.015,.042,.021],[-.09,0,.061,.035],[.031,.004,.071,.046]]));
+  return {root,body,head,tail,paddles,d:{otter:true,stride:.44},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
+ }
+ function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);if(c.kind==='egret')return buildEgret(c);if(c.kind==='otter')return buildOtter(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
   const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
   if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
@@ -186,7 +217,7 @@ export function createWildlife(B,scene,meshes=[]){
   seen.clear();for(const c of animals){if(c.kind==='sheep')continue;seen.add(c.id);let a=actors.get(c.id);if(a&&a.root.metadata.animalKind!==c.kind){remove(a);actors.delete(c.id);a=null;}let fresh=false;if(!a){a=build(c);a.root.metadata??={animalKind:c.kind};if(c.decorative){delete a.root.metadata.animalId;for(const mesh of a.root.getChildMeshes())mesh.isPickable=false;}actors.set(c.id,a);fresh=true;}
    const {d}=a,dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
    // Include the dorsal fin and its small animated roll, not just the body centre.
-   a.root.position.set(c.x*6,d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   a.root.position.set(c.x*6,d.otter&&Number.isFinite(c.elevation)?c.elevation:d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    a.lastX=c.x;a.lastY=c.y;
    if(paused&&!fresh)continue;
    const delta=fresh?1:1-Math.exp(-dt*9);blend=delta;
@@ -205,6 +236,20 @@ export function createWildlife(B,scene,meshes=[]){
     a.tail.rotation.set(0,0,0);if(a.tailJoints)for(const joint of a.tailJoints)joint.rotation.set(0,0,0);
     if(a.wings)for(const wing of a.wings)wing.node.rotation.set(0,0,wing.side*.12);
     a.move=0;continue;
+   }
+   if(d.otter){
+    if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
+    const dive=c.dive??0,stroke=t*6.1;
+    a.body.rotation.x=Math.sin(stroke)*.044;
+    a.body.rotation.z=Math.sin(stroke*.5)*.062;
+    a.head.rotation.x=-.13*(1-dive);
+    a.tail.rotation.y=Math.sin(stroke-.65)*.22;
+    a.tail.rotation.x=Math.sin(stroke-.7)*.24;
+    for(const {paddle,side,end} of a.paddles){
+     paddle.rotation.x=Math.sin(stroke+end*.9+side*.6)*.34;
+     paddle.rotation.y=side*Math.sin(stroke+end*.9)*.25;
+    }
+    continue;
    }
    if(d.egret){
     a.root.rotation.y=c.yaw??0;
