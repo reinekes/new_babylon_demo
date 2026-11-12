@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 66,
-    "active": 49,
+    "total": 67,
+    "active": 50,
     "fallback": 9,
     "optional": 4,
     "spare": 4
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "b7f052b04cf9537c7c803db694b907fbdbdc35d45d6748b0129bcb0da832f6e6"
+      "sha256": "6bd0451b74fd34ef11a6d4232197c3ccfefd49e80a33065607fdd46941542d36"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "357c222bd64cbf4e6827c5f092d4f05972504f3c448e0f9ee3795831162adfef"
+      "sha256": "33623cc6bcd5f438696159e51e10385775d633c0c740fea8d202225848eb2f51"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -1706,6 +1706,39 @@
           "file": "game3d/actors.js",
           "line": 66,
           "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "shore-seagull.glb",
+      "status": "active",
+      "purpose": "Чайка в полёте над водой.",
+      "classificationEvidence": "game3d/ambient-fauna.js|SHORE_GULL",
+      "bytes": 516392,
+      "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+      "version": "7e4f1a707aa4",
+      "triangles": 1174,
+      "meshes": 14,
+      "bones": 11,
+      "clips": [
+        "flap",
+        "planer",
+        "planer 2"
+      ],
+      "sources": [
+        {
+          "author": "The lighthouse keeper (https://sketchfab.com/geminga)",
+          "license": "CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)",
+          "source": "https://sketchfab.com/3d-models/flying-seagull-07dde3ea7d9048588d3c4edfd37ac20d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "shore-seagull.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 21,
+          "kind": "literal"
         }
       ]
     },

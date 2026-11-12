@@ -4,8 +4,8 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 29962,
-      "sha256": "9f736df9ed01d50cbea84fd81f5afa7337bbdfd75bbb5a55e35ea78962553cb6"
+      "bytes": 30230,
+      "sha256": "34365e0bf9ad468b072855aa2ff40ed88dee251b9b46f49941164370c0c9bb7b"
     },
     {
       "file": "CREDITS.html",
@@ -599,6 +599,14 @@
         "StopWalk",
         "Walk"
       ]
+    },
+    {
+      "file": "models/shore-seagull.glb",
+      "bytes": 516392,
+      "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+      "triangles": 1174,
+      "meshes": 14,
+      "bones": 11
     },
     {
       "file": "models/sky-bird-single.glb",

@@ -23,6 +23,7 @@ group('goat-authored goat','spare','Сохранённая авторская п
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
 group('ambient-bull','active','Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.','game3d/ambient-fauna.js|dairyHerd');
 group('ambient-dog ambient-duck ambient-sheep-kenchoo imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
+group('shore-seagull','active','Чайка в полёте над водой.','game3d/ambient-fauna.js|SHORE_GULL');
 group('imported-goose imported-sky-birds','spare','Сохранённый импорт; ни одного имени в текущих runtime-путях загрузки.','assets/art-courtyard/ATTRIBUTION.md|Imported city fauna');
 group('sky-bird-single','optional','API декоративного полёта; main отключает includeSkyBirds. Небесные стаи main процедурные.','game3d/actors.js|includeSkyBirds:false');
 group('jackal','active','Шакалы похоронного обряда; художественная адаптация Wolf.','game3d/jackals.js|JACKAL_MODEL');

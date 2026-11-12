@@ -141,3 +141,7 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## 2026-10-28 · свеча для Ночи огней
 
 `festival-candle.glb` — адаптация предоставленной пользователем **Candle light**, автор [al0sral0](https://sketchfab.com/al0sral0), [оригинальная модель](https://sketchfab.com/3d-models/candle-light-d9d5ed5de83b4d899ab93f55bdc3d0bc), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Вырезана одна свеча, уменьшена цветовая текстура, удалены паутина и скелет огня; пламя анимируется игрой. Подготовка: `scripts/art-courtyard/prepare_festival_candle.py`. Свеча — художественная условность, не подтверждённая реконструкция шумерского освещения; для эпохи засвидетельствованы лампы.
+
+## Shore birds
+
+- `shore-seagull.glb` is the unchanged Flying Seagull GLB by The lighthouse keeper (geminga). [Source](https://sketchfab.com/3d-models/flying-seagull-07dde3ea7d9048588d3c4edfd37ac20d) · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)

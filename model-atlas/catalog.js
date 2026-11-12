@@ -29,6 +29,7 @@ const names = {
   'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца, фоновая модель','sheep':'Овца из овчарни',
   'imported-boar':'Кабан','imported-fox':'Лиса','imported-lioness':'Львица',
   'gazelle-downloaded':'Газель','jackal':'Шакал','cat-walk':'Кошка, ходьба','cat-sitting':'Кошка, сидит',
+  'shore-seagull':'Чайка · самка (вариант для сравнения)',
   'ambient-duck':'Утка','imported-goose':'Гусь','imported-orange-bird':'Мелкая оранжевая птица',
   'imported-sky-birds':'Стая, импортированный GLB','sky-bird-single':'Птица в полёте, GLB',
   'caravan-camel':'Верблюд, прежняя ветка','river-cargo-boat':'Грузовая лодка, прежняя ветка',
@@ -41,7 +42,7 @@ const names = {
 const ages = {male:'Мужчина',female:'Женщина',child:'Ребёнок',adolescent:'Подросток'};
 function glbGroup(name) {
   if (/^(?:human-native-|source-walk-|sumer-(?:people|child|adolescent)|resident|historical-man|caravan-merchant)/.test(name)) return 'people';
-  if (/duck|goose|bird/.test(name)) return 'birds';
+  if (/duck|goose|bird|seagull/.test(name)) return 'birds';
   if (/^ambient-|^caravan-camel|^cat-|^gazelle|^goat|^imported-|^jackal|^sheep/.test(name)) return 'animals';
   if (name==='river-cargo-boat') return 'transport';
   if (/^crop-|^date-palm|^valley-|^miracle-/.test(name)) return 'plants';
