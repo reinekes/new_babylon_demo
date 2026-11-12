@@ -4,8 +4,8 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 30461,
-      "sha256": "45231e0b2652c537b32e83316e01d33b68856ea94f91c012156d5a5d1839618f"
+      "bytes": 30755,
+      "sha256": "bd9bdd2a5221f5104710f7fa9a564061598e4f298f66f675ea81e18f1d309803"
     },
     {
       "file": "CREDITS.html",
@@ -607,6 +607,17 @@
       "triangles": 5336,
       "meshes": 1,
       "bones": 27
+    },
+    {
+      "file": "models/shore-mallard-female.glb",
+      "bytes": 363016,
+      "sha256": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47",
+      "triangles": 906,
+      "meshes": 1,
+      "bones": 17,
+      "clips": [
+        "Idle"
+      ]
     },
     {
       "file": "models/shore-seagull.glb",

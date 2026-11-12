@@ -29,6 +29,7 @@ const names = {
   'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца, фоновая модель','sheep':'Овца из овчарни',
   'imported-boar':'Кабан','imported-fox':'Лиса','imported-lioness':'Львица',
   'gazelle-downloaded':'Газель','jackal':'Шакал','cat-walk':'Кошка, ходьба','cat-sitting':'Кошка, сидит',
+  'shore-mallard-female':'Кряква · самка',
   'shore-mallard':'Кряква · селезень',
   'shore-seagull':'Чайка · самка (вариант для сравнения)',
   'ambient-duck':'Утка','imported-goose':'Гусь','imported-orange-bird':'Мелкая оранжевая птица',

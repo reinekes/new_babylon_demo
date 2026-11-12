@@ -20,7 +20,8 @@ export const AMBIENT_MODELS=Object.freeze({
 });
 const SHORE_MODELS={
  seagull:{file:'shore-seagull.glb',role:'female',scale:.07},
- mallard:{file:'shore-mallard.glb',role:'male',scale:.012}
+ mallard:{file:'shore-mallard.glb',role:'male',scale:.6},
+ 'mallard-female':{file:'shore-mallard-female.glb',role:'female',scale:1,motion:'authored shore idle'}
 };
 // Ambient actors are deliberately absent from saves, hunting, stocks and selection.
 export function ambientDryPoint(state,x,y,margin=.18){
@@ -79,7 +80,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   if(shore){
    model.scaling.setAll(shore.scale);
    root.metadata.shoreRole=shore.role;
-   root.metadata.sourceMotion='source clip';
+   root.metadata.sourceMotion=shore.motion||'source clip';
   }
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(id+'-')?g.name.slice(id.length+1):g.name,g);}
   if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
@@ -94,12 +95,16 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function shorePose(a,state){
   const home=state.buildings.find(b=>b.type==='house')??{x:8,y:8};
   const center=Math.max(4,Math.min(riverLength(state)-5,riverLocal(home.x,home.y,state).along));
-  if(a.species==='mallard'){
+  if(a.species!=='seagull'){
    const middle=riverPoint(center,state);
    const side=riverLocal(home.x,home.y,state).across>=riverLocal(middle.x,middle.y,state).across?1:-1;
-   const bank=[1,-1,2,-2,0,3,-3].flatMap(delta=>[1.5,1.9,2.3,2.7].map(offset=>
+   const candidates=[1,-1,2,-2,0,3,-3].flatMap(delta=>[1.5,1.9,2.3,2.7].map(offset=>
     riverPoint(center+delta,state,side*offset)
-   )).find(p=>ambientDryPoint(state,p.x,p.y,.24));
+   ));
+   const maleBank=candidates.find(p=>ambientDryPoint(state,p.x,p.y,.24));
+   const bank=a.species==='mallard-female'&&maleBank
+    ?candidates.find(p=>Math.hypot(p.x-maleBank.x,p.y-maleBank.y)>.3&&ambientDryPoint(state,p.x,p.y,.24))
+    :maleBank;
    a.root.setEnabled(!!bank);
    if(bank){
     const water=riverPoint(riverLocal(bank.x,bank.y,state).along,state);

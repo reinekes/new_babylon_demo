@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 68,
-    "active": 51,
+    "total": 69,
+    "active": 52,
     "fallback": 9,
     "optional": 4,
     "spare": 4
@@ -21,7 +21,7 @@
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "24bb2162dbce86bf79c39bf876fe81bd6fdc8cd45ac27c0d74a89841e3f9654c"
+      "sha256": "cfc58a416e598cddfb85d4a7e91aaef9331f9c027eff9daeb38ccc5466741c7a"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -1706,6 +1706,37 @@
           "file": "game3d/actors.js",
           "line": 66,
           "kind": "reviewed-dynamic-expansion"
+        }
+      ]
+    },
+    {
+      "file": "shore-mallard-female.glb",
+      "status": "active",
+      "purpose": "Самка кряквы у берега. Добавлен клип покоя.",
+      "classificationEvidence": "game3d/ambient-fauna.js|SHORE_MODELS",
+      "bytes": 363016,
+      "sha256": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47",
+      "version": "deb44a967634",
+      "triangles": 906,
+      "meshes": 1,
+      "bones": 17,
+      "clips": [
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "Microsoft",
+          "license": "MIT",
+          "source": "https://models.codelove.in/models/bird-duck-female-01/",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "shore-mallard-female.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 24,
+          "kind": "literal"
         }
       ]
     },

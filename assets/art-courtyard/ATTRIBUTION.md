@@ -146,3 +146,4 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 
 - `shore-seagull.glb` is the unchanged Flying Seagull GLB by The lighthouse keeper (geminga). [Source](https://sketchfab.com/3d-models/flying-seagull-07dde3ea7d9048588d3c4edfd37ac20d) · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - `shore-mallard.glb` is the unchanged Mallard Duck (Male) by UC Davis TERC. [Source](https://sketchfab.com/3d-models/mallard-duck-male-16c14682b3414f34b26bf4d558d40a0f) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- `shore-mallard-female.glb` is Duck · Female, Copyright (c) 2020 Microsoft, redistributed under MIT (full notice embedded in the GLB). [Source and viewer](https://models.codelove.in/models/bird-duck-female-01/). New Babylon added the `Idle` clip and unpacked Meshopt data for local playback.
