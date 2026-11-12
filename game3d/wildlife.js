@@ -1,3 +1,4 @@
+import {regionalBirds,createRegionalBird,createRegionalFrog,poseRegionalBird} from './regional-wildlife.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT} from './water.js';
@@ -12,6 +13,7 @@ const species={
  cat:{height:.31,length:.58,width:.105,depth:.105,neck:.07,head:.125,muzzle:.065,leg:.29,color:'#a79c7a',light:'#d6cdb4',stride:.53,cat:true},
  jackal:{height:.53,length:.96,width:.22,depth:.28,neck:.20,head:.21,muzzle:.32,leg:.50,color:'#a38965',light:'#cfbc93',stride:.85,jackal:true},
  bird:{height:.23,length:.38,width:.16,depth:.24,neck:.15,head:.13,muzzle:.10,leg:.20,color:'#928d77',light:'#c8c4aa',stride:.29,bird:true},
+ onager:{height:1.01,length:1.46,width:.25,depth:.30,neck:.33,head:.24,muzzle:.29,leg:.99,stride:1.36,color:'#b38455',light:'#e8d8b7'},
  pig:{height:.39,length:.88,width:.25,depth:.26,neck:.05,head:.19,muzzle:.13,leg:.37,color:'#a67c6d',light:'#cb9a87',stride:.56,pig:true},
  mouse:{height:.095,length:.22,width:.075,depth:.12,neck:.025,head:.095,muzzle:.07,leg:.08,color:'#9b8a73',light:'#cabaa2',stride:.17,mouse:true}
 };
@@ -148,7 +150,10 @@ export function createWildlife(B,scene,meshes=[]){
    [-.2,-.015,.042,.021],[-.09,0,.061,.035],[.031,.004,.071,.046]]));
   return {root,body,head,tail,paddles,d:{otter:true,stride:.44},lastX:c.x,lastY:c.y,gait:0,move:0,yaw:null,idPhase:0};
  }
- function build(c){if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);if(c.kind==='egret')return buildEgret(c);if(c.kind==='otter')return buildOtter(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
+ function build(c){
+  const helpers={node,ball,tube,material,black};
+  if(Object.hasOwn(regionalBirds,c.kind))return createRegionalBird(c,regionalBirds[c.kind],helpers);
+  if(c.kind==='savigny-tree-frog')return createRegionalFrog(c,helpers);if(c.kind==='fish')return buildFish(c);if(c.kind==='turtle')return buildTurtle(c);if(c.kind==='egret')return buildEgret(c);if(c.kind==='otter')return buildOtter(c);const d=species[c.kind==='rat'?'mouse':c.kind]||species.goat,kind=c.kind,root=node(`wildlife-${c.id}`);root.metadata={animalId:c.id,animalKind:kind,gait:0};if(d.mouse)root.scaling.setAll(c.decorative?.83:.55);if(d.cat)root.scaling.setAll(.85);
   const fur=hasHairCoat(kind==='rat'?'mouse':kind)?coatMaterial(kind==='rat'?'mouse':kind,c.id):material(`${kind}-fur`,d.color),pale=material(`${kind}-pale`,d.light),body=node(`${c.id}-body-pivot`,root,0,d.height,0);
   if(fur.bumpTexture&&!pale.bumpTexture)pale.bumpTexture=fur.bumpTexture;
   const L=d.length,W=d.width,D=d.depth;
@@ -165,7 +170,7 @@ export function createWildlife(B,scene,meshes=[]){
    for(const side of [-1,1])ball('pig:nostril',head,black,side*.039,N-.025,.495,.023,.023,.014);
   }
   ball(`${kind}:chin`,head,pale,0,N-H*.24,.29+M*.26,H*.80,H*.40,H*.80);
-  if(!d.bird&&!d.pig)ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*(d.cat?.24:.40),H*(d.cat?.17:.24),H*(d.cat?.14:.20));
+  if(!d.bird&&!d.pig&&kind!=='onager')ball(`${kind}:nose`,head,black,0,N-.025,.345+M,H*(d.cat?.24:.40),H*(d.cat?.17:.24),H*(d.cat?.14:.20));
   else if(d.bird)tube(`${kind}:beak`,head,horn,[[0,N+.02,.28],[0,N,.36],[0,N-.018,.42]],.045);
   const ears=[];for(const side of [-1,1]){
    if(d.cat||d.jackal)ball(`${kind}:iris`,head,material(`${kind}-iris`,d.cat?'#979b72':'#b49155'),side*H*.62,N+H*.23,.275,H*.23,H*.22,H*.22);
@@ -175,7 +180,7 @@ export function createWildlife(B,scene,meshes=[]){
    if(!d.bird){
     const earSize=d.cat?.095:d.jackal?.15:d.mouse?.10:d.pig?.12:kind==='goat'?.17:.22;
     const leaf=part(`${kind}:ear`,ear,fur,name=>loft(name,[[0,0,.015,.01],[.005,earSize*.35,earSize*.26,.025],[.015,earSize*.72,earSize*.20,.018],[.028,earSize,.002,.002]]));
-    ear.rotation.z=side*(d.cat||d.jackal?-.17:d.mouse?-.7:-.90);ears.push({node:ear,base:ear.rotation.z,side});leaf.rotation.y=side*.32;
+    ear.rotation.z=side*(d.cat||d.jackal?-.17:d.mouse?-.7:kind==='onager'?-.28:-.90);ears.push({node:ear,base:ear.rotation.z,side});leaf.rotation.y=side*.32;
     const inner=ball(`${kind}:ear-inner`,ear,pale,0,earSize*.48,.025,earSize*.27,earSize*.60,.012);inner.rotation.x=.1;
    }
    if(d.horns){const tall=kind==='gazelle'?.48:.24;const points=Array.from({length:13},(_,i)=>{const t=i/12;return [side*(H*.50+.035*t),N+H*.64+t*tall,.15-.11*t*t+(kind==='gazelle'?.06:0)*Math.sin(t*Math.PI)];});tube(`${kind}:horn-${side}`,head,horn,points,kind==='gazelle'?.029:.038);}
@@ -183,6 +188,15 @@ export function createWildlife(B,scene,meshes=[]){
   if(d.cat||d.mouse||d.jackal)for(const side of [-1,1]){
    ball(`${kind}:muzzle-pad`,head,pale,side*H*.23,N-.03,.325+M*.65,H*.46,H*.32,H*.48);
    for(let i=0;i<3;i++)tube(`${kind}:whisker-${side}-${i}`,head,pale,[[side*H*.27,N-.015,.34+M*.60],[side*(H*.55+.035),N+(i-1)*.022,.35+M*.59],[side*(H*.8+.055),N+(i-1)*.035,.32+M*.57]],d.mouse?.0015:.0024,.12);
+  }
+  if(kind==='onager'){
+   const mane=material('onager-mane','#4e382b');
+   tube('onager:short-mane',head,mane,[[0,.07,-.075],[0,.20,-.004],[0,.35,.093],[0,.39,.15]],.046,.56);
+   ball('onager:pale-muzzle',head,pale,0,N-.03,.580,.165,.119,.152);
+   for(const side of [-1,1])ball('onager:nostril',head,mane,side*.057,N-.005,.627,.037,.025,.027);
+   ball('onager:dorsal-stripe',body,mane,0,D*.94,-L*.07,.027,.038,L*.64);
+   tube('onager:tail',body,mane,[[0,.067,-L*.48],[0,-.145,-L*.56],[0,-.44,-L*.56]],.035,.55);
+   ball('onager:tail-tuft',body,mane,0,-.46,-L*.56,.066,.17,.077);
   }
   if(d.pig)tube('pig:curled-tail',body,pale,[[0,.055,-L*.49],[0,.09,-L*.57],[.03,.14,-L*.61],[.072,.135,-L*.62],[.075,.10,-L*.62]],.022,.4);
   if(kind==='goat')tube(`${kind}:beard`,head,pale,[[0,N-.035,.34],[0,N-.11,.33],[0,N-.19,.31]],.025);
@@ -204,7 +218,7 @@ export function createWildlife(B,scene,meshes=[]){
   }
   const tail=node(`${c.id}-tail`,body,0,D*.33,-L*.48),tailJoints=[];
   const tailLength=d.cat?.48:d.jackal?.49:d.mouse?.25:d.bird?.20:.12;
-  let previous=tail;for(let i=0;i<(d.pig?0:3);i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.024:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
+  let previous=tail;for(let i=0;i<(d.pig||kind==='onager'?0:3);i++){const joint=node(`${c.id}-tail-${i}`,previous,0,i?0:0,i?-tailLength/3:0);const r=(d.jackal?.085:d.cat?.024:d.mouse?.012:.045)*(1-i*.25);tube(`${kind}:tail-${i}`,joint,d.mouse?pale:fur,[[0,0,0],[0,-.015,-tailLength/6],[0,-.025,-tailLength/3]],r,i===2?.08:.75);tailJoints.push(joint);previous=joint;}
   const wings=[];if(d.bird)for(const side of [-1,1]){const wing=node(`${c.id}-wing-${side}`,body,side*W*.60,.015,-.02);wing.rotation.z=side*.12;
    const cover=ball(`${kind}:wing-cover`,wing,pale,side*.08,0,-.015,.12,.16,.34);cover.rotation.z=side*.3;
    for(let i=0;i<6;i++){const feather=part(`${kind}:flight-feather-${i}`,wing,fur,name=>loft(name,[[-.23-i*.014,0,.002,.002],[-.15,0,.027,.012],[.01,0,.035,.018],[.10-i*.008,0,.015,.012],[.14-i*.01,0,.002,.002]]),side*(.035+i*.027),0,-i*.006);feather.rotation.y=-side*(.15+i*.09);}
@@ -217,7 +231,7 @@ export function createWildlife(B,scene,meshes=[]){
   seen.clear();for(const c of animals){if(c.kind==='sheep')continue;seen.add(c.id);let a=actors.get(c.id);if(a&&a.root.metadata.animalKind!==c.kind){remove(a);actors.delete(c.id);a=null;}let fresh=false;if(!a){a=build(c);a.root.metadata??={animalKind:c.kind};if(c.decorative){delete a.root.metadata.animalId;for(const mesh of a.root.getChildMeshes())mesh.isPickable=false;}actors.set(c.id,a);fresh=true;}
    const {d}=a,dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
    // Include the dorsal fin and its small animated roll, not just the body centre.
-   a.root.position.set(c.x*6,d.otter&&Number.isFinite(c.elevation)?c.elevation:d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   a.root.position.set(c.x*6,Number.isFinite(c.elevation)&&(d.otter||d.regional||d.frog)?c.elevation:d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    a.lastX=c.x;a.lastY=c.y;
    if(paused&&!fresh)continue;
    const delta=fresh?1:1-Math.exp(-dt*9);blend=delta;
@@ -236,6 +250,12 @@ export function createWildlife(B,scene,meshes=[]){
     a.tail.rotation.set(0,0,0);if(a.tailJoints)for(const joint of a.tailJoints)joint.rotation.set(0,0,0);
     if(a.wings)for(const wing of a.wings)wing.node.rotation.set(0,0,wing.side*.12);
     a.move=0;continue;
+   }
+   if(d.regional||d.frog){
+    if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
+    if(d.regional)poseRegionalBird(a,c,t);
+    else a.body.scaling.y=1+(c.hop??0)*.14+Math.sin(t*3)*.028;
+    continue;
    }
    if(d.otter){
     if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;

@@ -97,6 +97,15 @@ export function makeCatalog(index, profile) {
       {author:'Сосуд Гудеа, Лувр',source:'https://collections.louvre.fr/en/ark:/53355/cl010143800'}
     ]
   })));
+  const literature='https://etcsl.orinst.ox.ac.uk/section1/tr162.htm';
+  const seals='https://www.metmuseum.org/art/collection/search/324421';
+  for(const [species,title,description,author,source] of [
+    ['human-headed-bull','Бык-человек','Авторская скульптура по мотивам шумерской печати','Раннединастическая печать, Метрополитен-музей',seals],
+    ['seven-headed-serpent','Семиглавый змей','Авторская скульптура по сюжету о Нинурте','Подвиги Нинурты, ETCSL',literature],
+    ['six-headed-ram','Шестиглавый дикий баран','Авторская скульптура по сюжету о Нинурте','Подвиги Нинурты, ETCSL',literature]
+  ]) rows.push(row('mythology',title,description,model('myth-sculpture','Авторская реконструкция',{
+    species,studio:true,sources:[{author,source}]
+  })));
   const wildlife = {
     fish:['Рыба','Игровая геометрия'], mouse:['Мышь','Игровая геометрия'],
     rat:['Крыса','Игровая геометрия'], goat:['Коза','Резервная геометрия'],
@@ -106,6 +115,22 @@ export function makeCatalog(index, profile) {
   rows.push(row('animals','Змея','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'snakes'})));
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
   if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия'],egret:['Малая белая цапля','Игровая геометрия'],otter:['Гладкошёрстная выдра','Игровая геометрия']});
+  if(ambient.courtyardFauna){
+    const marshes={author:'Полевое исследование птиц болот Ирака',source:'https://doi.org/10.1155/2017/4198690'};
+    const regional=[
+      ['birds','pied-kingfisher','Пегий зимородок','Зависает над водой и ныряет',marshes],
+      ['birds','glossy-ibis','Каравайка','Ищет корм на мелководье',marshes],
+      ['birds','white-pelican','Розовый пеликан','Плавает в открытой воде',marshes],
+      ['birds','pygmy-cormorant','Малый баклан','Ныряет и выныривает на реке',marshes],
+      ['birds','marsh-harrier','Болотный лунь','Патрулирует берег низким полётом',marshes],
+      ['animals','savigny-tree-frog','Квакша Савиньи','Прыгает короткими перебежками на берегу',
+        {author:'Полевые наблюдения в Эль-Хавизе, Университет Ди-Кара',source:'https://jutq.utq.edu.iq/index.php/main/article/download/152/145'}],
+      ['animals','onager','Онагр','Дикий представитель семейства лошадиных, пасётся на суше',
+        {author:'Древняя ДНК непарнокопытных, Science Advances',source:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8759742/'}]
+    ];
+    for(const [group,species,title,description,source] of regional)
+      rows.push(row(group,title,description,model('wildlife','Игровая геометрия',{species,sources:[source]})));
+  }
   for (const [species,[title,label]] of Object.entries(wildlife)) {
     rows.push(row(['bird','egret'].includes(species)?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));
   }

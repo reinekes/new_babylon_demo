@@ -1,3 +1,4 @@
+import { createMythSculpture } from './ninurta-sculptures.js';
 import { createNingishzidaVessel } from './ningishzida-vessel.js';
 import { createHeavenlyBull } from './heavenly-bull.js';
 import { createAnzudRelief } from './anzud-relief.js';
@@ -6,7 +7,7 @@ import { loadBabylonVendors } from '../game3d/vendor-loading.js';
 import { loadModel } from '../game3d/asset-loading.js';
 import { createGameBuildings } from '../game3d/buildings.js';
 import { createDistrictMaterials } from '../district3d/materials.js';
-import { createWildlife } from '../game3d/wildlife.js?v=smooth-coated-otter-20261112';
+import { createWildlife } from '../game3d/wildlife.js?v=regional-fauna-20261112';
 import { createAmbientFauna } from '../game3d/ambient-fauna.js';
 import { cropPlantGeometry,createBotanicalMaterial,botanicalMesh } from '../game3d/crop-varieties.js';
 import { createNatureDetails } from '../game3d/nature-details.js';
@@ -69,6 +70,10 @@ async function makeModel(B,scene,item,profile) {
     createHeavenlyBull(B,scene);
     return;
   }
+  if(item.kind==='myth-sculpture'){
+    createMythSculpture(B,scene,item.species);
+    return;
+  }
   if(item.kind==='vessel'){
     createNingishzidaVessel(B,scene);
     return;
@@ -100,7 +105,7 @@ async function makeModel(B,scene,item,profile) {
   }
   if (item.kind==='wildlife') {
     const view=createWildlife(B,scene);
-    view.update(state,[{id:'atlas',kind:item.species,x:6,y:6,heading:0,behavior:'looking',waterLevel:0,swimDepth:.12}],0);
+    view.update(state,[{id:'atlas',kind:item.species,x:6,y:6,heading:0,behavior:item.species==='marsh-harrier'?'flying':'looking',waterLevel:0,swimDepth:.12}],0);
     return;
   }
   if (item.kind==='flock') {
@@ -207,6 +212,8 @@ export async function createPreview(canvas) {
     camera=new B.ArcRotateCamera('atlas',item.kind==='building'?1.08:.94,item.kind==='glb'?1.26:.86,10,B.Vector3.Zero(),scene);
     if(item.kind==='relief'){camera.alpha=1.48;camera.beta=1.43;}
     if(item.kind==='bust'){camera.alpha=1.12;camera.beta=1.24;}
+    if(item.kind==='wildlife'&&item.sources?.length){camera.alpha=.67;camera.beta=1.22;}
+    if(item.kind==='myth-sculpture'){camera.alpha=1.16;camera.beta=1.19;}
     if(item.kind==='vessel'){
       camera.alpha=1.47;
       camera.beta=1.15;

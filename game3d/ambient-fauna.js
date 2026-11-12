@@ -1,3 +1,4 @@
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js';
 import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
@@ -67,7 +68,7 @@ export function courtyardFauna(state,time=state.simTime||0){
     .find(p=>ambientClearSegment(state,anchor,p));
    routes.push({kind,route:end?[anchor,end,anchor]:[anchor],speed,pause});
   };
-  let egret,otterPool=null;
+  let egret,regional,otterPool=null;
   if(home){
    add('pig',ambientAnchor(state,'pig'),.55,.22,2.5);
    const along=riverLocal(home.x,home.y,state).along;
@@ -76,6 +77,8 @@ export function courtyardFauna(state,time=state.simTime||0){
    ))).find(p=>ambientDryPoint(state,p.x,p.y,.22));
    add('turtle',shore,.25,.08,3.5);
    otterPool=findOtterPool(state,along);
+   const steppeland=ambientAnchor(state,'lioness',1);
+   regional=planRegionalFauna(state,along,ambientDryPoint,ambientClearSegment,steppeland);
    for(const shift of [6,-6,9,-9,3,-3]){
     const bank=along+shift;
     if(bank<2||bank>riverLength(state)-3)continue;
@@ -90,7 +93,7 @@ export function courtyardFauna(state,time=state.simTime||0){
     }
    }
   }
-  plan={buildings:state.buildings,count:state.buildings.length,routes,egret,otterPool};courtyardPlans.set(state,plan);
+  plan={buildings:state.buildings,count:state.buildings.length,routes,egret,otterPool,regional};courtyardPlans.set(state,plan);
  }
  const animals=plan.routes.map(({kind,route,speed,pause})=>{
   const motion=loopMotion(route,time,speed,pause);
@@ -104,6 +107,7 @@ export function courtyardFauna(state,time=state.simTime||0){
    yaw:Math.atan2(next.x-point.x,next.y-point.y),elevation:WATER_HEIGHT+.026-.27*dive});
  }
  if(plan.egret)animals.push({id:'ambient-egret',kind:'egret',decorative:true,...plan.egret});
+ if(plan.regional)animals.push(...regionalFauna(state,plan.regional,time));
  return animals;
 }
 

@@ -39,8 +39,16 @@ test('yard pigs and shore turtles follow dry decorative routes without touching 
   for(let t=0;t<25;t+=.5){
    state.simTime=t;const snapshot=JSON.stringify(state),animals=courtyardFauna(state);
    assert.equal(JSON.stringify(state),snapshot);
-   assert.deepEqual(animals.filter(a=>!['egret','otter'].includes(a.kind)).map(a=>a.kind),['pig','turtle']);
-   for(const a of animals){
+   assert.deepEqual(animals.slice(0,2).map(a=>a.kind),['pig','turtle']);
+   const regional=animals.slice(4);
+   assert.deepEqual(regional.map(a=>a.kind),['white-pelican','pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog','onager']);
+   for(const a of regional){
+    assert.ok(a.decorative);
+    if(a.kind==='onager'||a.kind==='savigny-tree-frog')assert.ok(ambientDryPoint(state,a.x,a.y));
+    if(['white-pelican','pygmy-cormorant','pied-kingfisher'].includes(a.kind))assert.ok(waterDepth(a.x,a.y,state)>.40);
+    if(a.kind==='glossy-ibis')assert.ok(waterDepth(a.x,a.y,state)>.105&&waterDepth(a.x,a.y,state)<.31);
+   }
+   for(const a of animals.slice(0,4)){
     if(a.kind==='otter'){
      assert.ok(a.decorative&&waterDepth(a.x,a.y,state)>.45);
      continue;
