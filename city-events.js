@@ -1,3 +1,4 @@
+import {rememberResidentReaction} from './resident-reactions.js';
 import {affectResidents} from './wellbeing.js';
 import {availableFood} from './food-planning.js';
 import {syncInventory} from './inventory.js';
@@ -77,8 +78,9 @@ export function applyCityThreat(s){
  syncInventory(s);
  const {site,people,choice,kind}=quote;
  s.resources[choice.resource]-=choice.cost;
- const ids=people.map(c=>c.id);
+ const ids=people.map(c=>c.id),before=people.map(c=>c.mood);
  affectResidents(s,{mood:-THREAT_MOOD,faith:-THREAT_FAITH},ids);
+ people.forEach((person,index)=>rememberResidentReaction(s,person,'threat',buildingKey(site),person.mood-before[index]));
  if(kind==='wellRepair')for(const person of people)person.health=Math.min(100,person.health+3);
  else s.resources.prestige=Math.min(1e9,s.resources.prestige+6);
  s.fearCrisis.tension=fearTension(s)+1;

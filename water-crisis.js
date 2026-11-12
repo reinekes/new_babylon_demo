@@ -46,8 +46,17 @@ export function recordWaterCrisisHarvest(s,field,crop,stage){
   const row=crisis.fields.find(f=>f.key===buildingKey(field)&&f.order===(field.built?.order??null));
   if(!row)continue;
   if(stage==='ready'&&row.yield===null)row.yield=crop.total;
-  if(stage==='closed'&&row.yield!==null&&row.harvested===null)row.harvested=crop.harvested;
+  if(stage==='closed'&&row.yield!==null&&row.harvested===null){
+   row.harvested=crop.harvested;
+   if(crisis.fields.every(f=>f.harvested!==null))crisis.settledYear=s.year;
+  }
  }
+}
+
+export const WATER_CRISIS_YEAR_TITLE='Год, когда разделили воду и зерно';
+export function waterCrisisForYear(s,year){
+ return s.waterCrises?.find(record=>record.settledYear===year&&record.aid?.delivered>0&&
+  record.fields.every(field=>field.harvested!==null))||null;
 }
 
 export function validateWaterCrises(s){
@@ -60,7 +69,7 @@ export function validateWaterCrises(s){
   int(a.day,dayOf(s))&&value(a.initialFood)&&value(a.ordered)&&a.ordered>0&&value(a.delivered)&&a.delivered<=a.ordered+1e-7&&
   (a.after===null||!!a.after&&int(a.after.day,dayOf(s))&&a.after.day>=a.day+3&&maybe(a.after.food)&&maybe(a.after.hunger));
  return Array.isArray(s.waterCrises)&&s.waterCrises.length<=LIMIT&&s.waterCrises.every(c=>
-  c&&int(c.day,dayOf(s))&&int(c.year,s.year)&&(c.preferred===null||key(c.preferred))&&aid(c.aid)&&
+  c&&int(c.day,dayOf(s))&&int(c.year,s.year)&&(c.settledYear===undefined||int(c.settledYear,s.year)&&c.settledYear>=c.year)&&(c.preferred===null||key(c.preferred))&&aid(c.aid)&&
   Array.isArray(c.fields)&&c.fields.length>=2&&c.fields.length<=12&&c.fields.some(f=>f?.irrigated===true)&&
   c.fields.some(f=>f?.irrigated===false)&&c.fields.every(f=>f&&key(f.key)&&(f.order===null||int(f.order))&&
    typeof f.irrigated==='boolean'&&maybe(f.yield)&&maybe(f.harvested)));

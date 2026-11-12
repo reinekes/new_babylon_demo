@@ -1,3 +1,5 @@
+import {WATER_CRISIS_YEAR_TITLE,waterCrisisForYear} from './water-crisis.js';
+import {civicTrustAdjustment} from './resident-reactions.js';
 import {buildingKey,citizenName,isOperational} from './definitions.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {fearTension} from './city-events.js';
@@ -27,7 +29,7 @@ function remember(s,incident,outcome){
 function trustedLaw(s,c){
  const law=s.civicOrder.law;
  const author=law&&s.citizens.find(p=>p.id===law.author&&p.calling==='lawmaker');
- return !!author&&c.mood>=25&&c.faith>=30&&fearTension(s)<3;
+ return !!author&&c.mood+civicTrustAdjustment(s,c)>=25&&c.faith>=30&&fearTension(s)<3;
 }
 export function civicLawReason(s,id){
  if(!s.civicOrder)return 'Свод доступен в новом «Пробуждении»';
@@ -119,8 +121,9 @@ export function advanceCivicOrder(s,recordDeath){
   const c=s.citizens.find(p=>p.id===incident.person),home=houseAt(s,incident.home);
   if(!home||!c||supplyHome(c,{arrived:true})!==incident.home){remember(s,incident,'closed');return;}
   if(homeMealFood(home)>=measure||c.hunger<20||aidJob(s,incident)?.delivered>=measure){
+   const physicallyDelivered=aidJob(s,incident)?.delivered>=measure;
    remember(s,incident,'help');
-   c.mood=Math.min(100,c.mood+4);
+   if(!physicallyDelivered)c.mood=Math.min(100,c.mood+4);
    notice(s,'Двор получил помощь',`Нужда двора ${incident.home} отступила.`,'good');
    return;
   }
@@ -175,7 +178,7 @@ export function finishCivicYear(s,year){
  const civic=s.civicOrder;if(!civic)return null;
  const entries=civic.history.filter(q=>q.year===year);
  const thefts=entries.filter(q=>q.outcome==='theft').length,helped=entries.some(q=>q.outcome==='help');
- const title=entries.some(q=>q.outcome==='killing')?'Год, когда у амбара пролилась кровь':thefts?'Год, когда зерно уносили из амбаров':helped?'Год, когда дворы получили помощь':civic.law?.year===year?'Год первой таблички законов':null;
+ const title=entries.some(q=>q.outcome==='killing')?'Год, когда у амбара пролилась кровь':thefts?'Год, когда зерно уносили из амбаров':waterCrisisForYear(s,year)?WATER_CRISIS_YEAR_TITLE:helped?'Год, когда дворы получили помощь':civic.law?.year===year?'Год первой таблички законов':null;
  if(title&&!civic.years.some(q=>q.year===year)){civic.years.unshift({year,title});if(civic.years.length>40)civic.years.length=40;}
  return title;
 }

@@ -40,5 +40,6 @@ test('a scarce share, real aid delivery and the affected fields remain linked th
  assert.equal(result.aid.delivered,result.aid.ordered);
  assert.ok(result.aid.after?.day>=3);
  assert.ok(result.fields.every(f=>f.yield!==null&&f.harvested!==null));
+ assert.ok(city.civicOrder.years.some(y=>y.year===result.settledYear&&y.title==='Год, когда разделили воду и зерно'));
  assert.ok(decode(encode(city)));
 });

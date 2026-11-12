@@ -1,3 +1,4 @@
+import {rememberResidentReaction} from './resident-reactions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {log} from './engine.js';
 import {recordDepthSupply} from './depth-supply.js';
@@ -228,7 +229,9 @@ function advanceTrip(s,c,dt,nav){
 export function advanceWater(s,dt){
  if(!Number.isFinite(dt)||dt<=0)return;initializeWater(s);
  const houses=new Map(s.buildings.filter(b=>b.type==='house').map(b=>[buildingKey(b),b]));
- for(const c of s.citizens){const b=houses.get(supplyHome(c,{arrived:true})),amount=waterDemand(c)*dt/WATER_DAY,drunk=b?Math.min(b.water,amount):0;if(b)b.water=Math.max(0,b.water-drunk);const shortage=amount-drunk;c.thirst=Math.max(0,Math.min(100,c.thirst+(shortage>eps?dt*.8:-dt*3)));if(c.thirst>30){c.health=Math.max(0,c.health-dt*.025*(c.thirst/100));c.mood=Math.max(0,c.mood-dt*.04);}}
+ for(const c of s.citizens){const b=houses.get(supplyHome(c,{arrived:true})),amount=waterDemand(c)*dt/WATER_DAY,drunk=b?Math.min(b.water,amount):0;if(b)b.water=Math.max(0,b.water-drunk);const shortage=amount-drunk,before=c.thirst;c.thirst=Math.max(0,Math.min(100,c.thirst+(shortage>eps?dt*.8:-dt*3)));if(before<=30&&c.thirst>30)rememberResidentReaction(s,c,'thirst',b?buildingKey(b):null);
+  if(before>30&&c.thirst<=30)rememberResidentReaction(s,c,'drank',b?buildingKey(b):null);
+  if(c.thirst>30){c.health=Math.max(0,c.health-dt*.025*(c.thirst/100));c.mood=Math.max(0,c.mood-dt*.04);}}
  if(s.funeral&&s.funeral.scope!=='family')return;
  const nav=navigation(s),mourning=new Set(s.funeral?.actors.map(a=>a.id)||[]),day=((8+s.simTime*.4)%24+24)%24;
  for(const c of s.citizens)if(c.waterTrip&&!mourning.has(c.id))advanceTrip(s,c,dt,nav);

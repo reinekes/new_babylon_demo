@@ -1,3 +1,4 @@
+import {recordCivicAidReaction} from './resident-reactions.js';
 import {recordWaterCrisisDelivery} from './water-crisis.js';
 import {appendGrain,takeGrain} from './grain-origin.js';
 import {householdAwaitingFamily} from './household-initiative.js';
@@ -447,7 +448,7 @@ function deposit(s,c,ctx){
     if(!c.fishCargo)delete c.inspiredFishReturn;
    }
   }
-  if(!MATERIALS.includes(resource))s.resources[resource]=(s.resources[resource]||0)+accepted;if(!local)s.delivered[resource]=(s.delivered[resource]||0)+accepted;if(c.districtJob){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(q){q.delivered+=accepted;if(s.waterCrises)recordWaterCrisisDelivery(s,q);}}c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];if(c.tradeJob){const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob);if(q){q.delivered=Math.min(q.amount,q.delivered+accepted);if(Math.abs(q.amount-q.delivered)<1e-7)q.delivered=q.amount;}}actual[resource]=accepted;delivered+=accepted;
+  if(!MATERIALS.includes(resource))s.resources[resource]=(s.resources[resource]||0)+accepted;if(!local)s.delivered[resource]=(s.delivered[resource]||0)+accepted;if(c.districtJob){const q=s.district.jobs.find(q=>q.id===c.districtJob);if(q){const before=q.delivered;q.delivered+=accepted;if(s.civicOrder?.case?.aid===q.id)recordCivicAidReaction(s,q,before);if(s.waterCrises)recordWaterCrisisDelivery(s,q);}}c.cargo[resource]-=accepted;if(c.cargo[resource]<1e-8)delete c.cargo[resource];if(c.tradeJob){const q=s.trade?.deliveries.find(q=>q.id===c.tradeJob);if(q){q.delivered=Math.min(q.amount,q.delivered+accepted);if(Math.abs(q.amount-q.delivered)<1e-7)q.delivered=q.amount;}}actual[resource]=accepted;delivered+=accepted;
  }
  if(delivered>0){recordCreatorUse(s,ctx.buildings.get(c.store));queueGranaryReceipt(s,ctx.buildings.get(c.store),c,stored);recordCitizenDelivery(s,c,actual);s.deliveries++;s.lastDelivery={time:s.simTime,citizen:c.id,store:c.store,cargo:actual,...c.tradeJob?{source:'market'}:{}};}
  return !hasCargo(c);

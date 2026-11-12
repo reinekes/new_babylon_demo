@@ -1,3 +1,4 @@
+import {validateResidentReactions} from './resident-reactions.js';
 import {reviewWaterCrisisNeeds,validateWaterCrises} from './water-crisis.js';
 import {validateGrainOrigin} from './grain-origin.js';
 import {advanceRiverStores,validateRiverStores} from './river-stores.js';
@@ -692,7 +693,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
+  if(!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateResidentReactions(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateCampaignChapter(s)||!validateHearthEnding(s)||!validateWaterEnding(s)||!validateCraftEnding(s)||!validateCityEnding(s)||!validateMonumentLife(s)||!validateForeignName(s)||!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}
