@@ -6,7 +6,7 @@
 <base href="../">
 <title>Атлас 3D · Новый Вавилон</title>
 <link rel="stylesheet" href="assets/ui/fonts.css">
-<link rel="stylesheet" href="model-atlas/style.css">
+<link rel="stylesheet" href="model-atlas/style.css?v=atlas-usage-20261112-1">
 </head>
 <body>
 <header class="hero">
@@ -18,6 +18,12 @@
   </div>
 </header>
 <main class="wrap">
+  <div id="usage" class="usage" role="group" aria-label="Использование моделей">
+    <button type="button" data-usage="game" aria-pressed="true">В игре</button>
+    <button type="button" data-usage="reserve" aria-pressed="false">Резерв</button>
+    <button type="button" data-usage="studio" aria-pressed="false">Отдельные сцены</button>
+  </div>
+  <p id="usage-help" class="muted"></p>
   <div class="filters">
     <label>Поиск <input id="search" type="search" placeholder="Дом, гусь, кувшин или имя GLB"></label>
     <label>Раздел <select id="group"><option value="">Все разделы</option></select></label>
@@ -48,6 +54,6 @@
   <p id="model-detail" class="muted"></p>
   <p id="model-sources"></p>
 </dialog>
-<script type="module" src="model-atlas/app.js"></script>
+<script type="module" src="model-atlas/app.js?v=atlas-usage-20261112-1"></script>
 </body>
 </html>

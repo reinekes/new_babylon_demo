@@ -56,6 +56,14 @@ function glbName(name) {
   if (name.startsWith('miracle-')) return `Растение чудесного сада · ${name.slice(8)}`;
   return name;
 }
+export function usageOf(row) {
+  const item=row.previews[0];
+  const status=item.entry?.status;
+  if (status==='optional') return 'studio';
+  if (status==='spare'||status==='fallback'||item.reserve) return 'reserve';
+  return 'game';
+}
+
 export function makeCatalog(index, profile) {
   const state = {scenario:profile==='strict' ? strictScenario() : legacyScenario()};
   const rows = Object.keys(BUILDINGS).map(type => row('buildings', buildingDefinition(state,type).name,
@@ -78,7 +86,7 @@ export function makeCatalog(index, profile) {
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
   if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Игровая геометрия'],turtle:['Водяная черепаха','Игровая геометрия']});
   for (const [species,[title,label]] of Object.entries(wildlife)) {
-    rows.push(row(species==='bird'?'birds':'animals',title,label,model('wildlife',label,{species})));
+    rows.push(row(species==='bird'?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));
   }
   for (const [key,title] of Object.entries({flax:'Лён',lentil:'Чечевица',pea:'Горох',chickpea:'Нут',onion:'Лук'})) {
     rows.push(row('plants',title,'Процедурное растение поля или двора',model('crop','Игровая геометрия',{key})));

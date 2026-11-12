@@ -1,4 +1,4 @@
-import { groups, makeCatalog } from './catalog.js';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=atlas-usage-20261112-1';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -7,6 +7,14 @@ const clip=byId('clip'), rotate=byId('rotate'), status=byId('model-status');
 const cache=new Map(), queue=new Map();
 let index, preview, pending, active=false, drawing=false;
 let observer;
+let usage='game';
+const usageButtons=[...byId('usage').querySelectorAll('button')];
+const usageLabels={game:'В игре',reserve:'Резерв',studio:'Отдельные сцены'};
+const usageHelp={
+  game:'Модели основного города. Варианты, действующие только в прежней ветке, подписаны отдельно.',
+  reserve:'Запасные файлы и модели, которые могут подменить основные при ошибке загрузки.',
+  studio:'Модели отдельных художественных и проверочных сцен.'
+};
 
 const element=(tag,text,className)=>{
   const node=document.createElement(tag);
@@ -147,11 +155,18 @@ function render() {
     drain();
   },{rootMargin:'160px'});
   const query=search.value.trim().toLocaleLowerCase('ru');
-  const rows=makeCatalog(index,profile.value).filter(row=>
-    (!group.value||group.value===row.group)&&
+  const allRows=makeCatalog(index,profile.value);
+  for (const button of usageButtons) {
+    const key=button.dataset.usage;
+    button.textContent=`${usageLabels[key]} · ${allRows.filter(row=>usageOf(row)===key).length}`;
+    button.setAttribute('aria-pressed',String(key===usage));
+  }
+  byId('usage-help').textContent=usageHelp[usage];
+  const rows=allRows.filter(row=>
+    usageOf(row)===usage&&(!group.value||group.value===row.group)&&
     [row.title,row.description,...row.previews.map(p=>p.label)].some(text=>text?.toLocaleLowerCase('ru').includes(query)));
   catalog.replaceChildren();
-  byId('results').textContent=rows.length?`Строк в выборке: ${rows.length}`:'Совпадений нет';
+  byId('results').textContent=rows.length?`Строк в выборке: ${rows.length}`:'В этой вкладке совпадений нет';
   for(const [key,title] of Object.entries(groups)) {
     const selected=rows.filter(row=>row.group===key);
     if(!selected.length) continue;
@@ -194,6 +209,11 @@ async function start() {
   for(const [id,name] of Object.entries(groups)) group.add(new Option(name,id));
   for(const field of [group,profile]) field.addEventListener('change',render);
   search.addEventListener('input',render);
+  for(const button of usageButtons) button.addEventListener('click',()=>{
+    usage=button.dataset.usage;
+    group.value='';
+    render();
+  });
   render();
 }
 start().catch(error=>{byId('totals').textContent=`Каталог недоступен. Откройте страницу через HTTP. ${error.message}`;});
