@@ -1,7 +1,7 @@
 import { BUILDINGS, RESOURCE_NAMES } from '../definitions.js';
 import { buildingDefinition, buildingPresentation } from '../building-presentation.js';
 import { strictScenario, legacyScenario } from '../scenario-profiles.js';
-import { GOODS_KINDS } from '../game3d/goods.js';
+import { GOODS_KINDS } from '../game3d/goods.js?v=sumer-props-20261112';
 import * as ambient from '../game3d/ambient-fauna.js';
 
 export const groups = {
@@ -95,9 +95,10 @@ export function makeCatalog(index, profile) {
     rows.push(row('animals',title,'Городской вариант модели коровника',model('dairy','Игровая геометрия',{calf})));
   }
   for (const key of GOODS_KINDS) rows.push(row('goods',(key==='water'?'Вода в кувшинах':RESOURCE_NAMES[key]??key),'Упаковка на складе и при переноске',model('goods','Игровая геометрия',{key})));
+  rows.push(row('goods','Светильник из раковины','Форма по раковине из Ниппура (Ур III) · назначение предмета предположительное',model('lamp','Игровая геометрия')));
   for (const entry of index.models) {
     const name = entry.file.replace(/\.glb$/i,'');
-    rows.push(row(glbGroup(name), glbName(name), entry.file,
+    rows.push(row(glbGroup(name), glbName(name), name==='festival-candle'?'Прежняя эпоха · '+entry.file:entry.file,
       model('glb',statuses[entry.status]??entry.status,{entry})));
   }
   return rows;

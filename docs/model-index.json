@@ -41,7 +41,7 @@
     },
     {
       "file": "game3d/festival-candles.js",
-      "sha256": "f65a301847cc20e41f263ab835f2a770600deff424d996f9a9d6d99700b486c2"
+      "sha256": "5b43ca0aee5ee804e7b7d8a971ee5fff99c3769f84cd847de0990c1a98780aa6"
     },
     {
       "file": "game3d/field-crops.js",
@@ -503,7 +503,7 @@
     {
       "file": "festival-candle.glb",
       "status": "active",
-      "purpose": "Свеча Ночи огней; загрузка по потребности, процедурный резерв. Историческая условность.",
+      "purpose": "Свеча Ночи огней в прежней ветке; в режиме Южного Шумера используется светильник из раковины.",
       "classificationEvidence": "game3d/festival-candles.js|festival-candle.glb",
       "bytes": 24484,
       "sha256": "a10d84770678d428175ca35078fa8a2ae1ba9493bed5b34cfb6d49d969bed93e",
@@ -524,7 +524,7 @@
         {
           "model": "festival-candle.glb",
           "file": "game3d/festival-candles.js",
-          "line": 18,
+          "line": 19,
           "kind": "literal"
         }
       ]
