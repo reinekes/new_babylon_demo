@@ -86,6 +86,12 @@ export function makeCatalog(index, profile) {
       {author:'Лугальбанда и птица Анзуд, ETCSL',source:'https://etcsl.orinst.ox.ac.uk/section1/tr1822.htm'}
     ]
   })));
+  rows.push(row('mythology','Небесный бык','Инанна ведёт быка на лазуритовом поводе',model('bust','Игровая скульптура',{
+    species:'heavenly-bull',studio:true,sources:[
+      {author:'Гильгамеш и Небесный бык, ETCSL',source:'https://etcsl.orinst.ox.ac.uk/section1/tr1812.htm'},
+      {author:'Бычья голова для лиры, Метрополитен-музей',source:'https://www.metmuseum.org/art/collection/search/324023'}
+    ]
+  })));
   const wildlife = {
     fish:['Рыба','Игровая геометрия'], mouse:['Мышь','Игровая геометрия'],
     rat:['Крыса','Игровая геометрия'], goat:['Коза','Резервная геометрия'],

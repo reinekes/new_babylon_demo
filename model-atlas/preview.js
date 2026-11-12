@@ -1,3 +1,4 @@
+import { createHeavenlyBull } from './heavenly-bull.js';
 import { createAnzudRelief } from './anzud-relief.js';
 import { createShellLamp } from '../game3d/shell-lamp.js';
 import { loadBabylonVendors } from '../game3d/vendor-loading.js';
@@ -61,6 +62,10 @@ async function makeModel(B,scene,item,profile) {
   }
   if(item.kind==='relief'){
     createAnzudRelief(B,scene);
+    return;
+  }
+  if(item.kind==='bust'){
+    createHeavenlyBull(B,scene);
     return;
   }
   const state=stateFor(profile);
@@ -196,6 +201,7 @@ export async function createPreview(canvas) {
     scene.imageProcessingConfiguration.toneMappingType=B.ImageProcessingConfiguration.TONEMAPPING_ACES;
     camera=new B.ArcRotateCamera('atlas',item.kind==='building'?1.08:.94,item.kind==='glb'?1.26:.86,10,B.Vector3.Zero(),scene);
     if(item.kind==='relief'){camera.alpha=1.48;camera.beta=1.43;}
+    if(item.kind==='bust'){camera.alpha=1.12;camera.beta=1.24;}
     const sun=new B.DirectionalLight('sun',new B.Vector3(-.65,-1,-.45),scene);
     sun.intensity=2.15;
     const sky=new B.HemisphericLight('sky',B.Axis.Y,scene);

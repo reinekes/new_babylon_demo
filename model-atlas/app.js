@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=smooth-coated-otter-20261112';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=heavenly-bull-20261112';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -22,7 +22,7 @@ const element=(tag,text,className)=>{
   if (className) node.className=className;
   return node;
 };
-const getPreview=()=>preview??=import('./preview.js?v=smooth-coated-otter-20261112').then(m=>m.createPreview(canvas)).catch(error=>{
+const getPreview=()=>preview??=import('./preview.js?v=heavenly-bull-20261112').then(m=>m.createPreview(canvas)).catch(error=>{
   preview=null;
   throw error;
 });
@@ -201,7 +201,7 @@ function render() {
   }
 }
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json?v=smooth-coated-otter-20261112',import.meta.url));
+  const response=await fetch(new URL('../docs/model-index.json?v=heavenly-bull-20261112',import.meta.url));
   if(!response.ok) throw Error(`HTTP ${response.status}`);
   index=await response.json();
   const rows=makeCatalog(index,'strict');
@@ -216,7 +216,7 @@ async function start() {
   });
   const params=new URLSearchParams(location.search);
   const file=params.get('model'),species=params.get('species');
-  const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:(item.kind==='wildlife'||item.kind==='relief')&&item.species===species);
+  const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:!!species&&item.species===species);
   if(selected){
     usage=usageOf(selected);
     search.value=file||selected.title;
