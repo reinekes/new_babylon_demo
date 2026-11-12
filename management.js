@@ -1,3 +1,4 @@
+import {archiveBuildingProduction} from './building-production-history.js';
 import {riverStoreDemolitionReason} from './river-stores.js';
 import {retireMonumentLife} from './campaign.js';
 import {retireStarForecastAt} from './star-forecast.js';
@@ -231,7 +232,7 @@ export function demolish(s,x,y,expected){
  retireFirstBeerVenue(s,b);
  retireMonumentLife(s,b);
  groundShapingBatch(s,b);
- s.buildings=s.buildings.filter(v=>v!==b);discardFishingOutput(s,b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
+ archiveBuildingProduction(s,b);s.buildings=s.buildings.filter(v=>v!==b);discardFishingOutput(s,b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
  syncInventory(s);note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 

@@ -1,5 +1,5 @@
 import {recordCreatorUse} from './creator-materials.js';
-import {BUILDINGS,MATERIALS} from './definitions.js';
+import {BUILDINGS,MATERIALS,buildingKey} from './definitions.js';
 
 const resources=key=>MATERIALS.includes(key)||['faith','prestige'].includes(key);
 const stamp=({year,season})=>(year-1)*4+season;
@@ -32,7 +32,7 @@ export function productionHistory(s,b){
 /** Optional on old saves; an existing history must stay bounded and chronological. */
 export function validateProductionHistory(s){
  if(!validDate(s))return false;
- return (s.buildings||[]).every(b=>(b.productionHistory===undefined||Array.isArray(b.productionHistory)&&b.productionHistory.length<=3&&b.productionHistory.every((row,index,rows)=>validRow(row)&&stamp(row)<=stamp(s)&&(!index||stamp(row)>stamp(rows[index-1]))))&&validAnnual(s,b.productionAnnual));
+ return validCityProduction(s)&&(s.buildings||[]).every(b=>(b.productionHistory===undefined||Array.isArray(b.productionHistory)&&b.productionHistory.length<=3&&b.productionHistory.every((row,index,rows)=>validRow(row)&&stamp(row)<=stamp(s)&&(!index||stamp(row)>stamp(rows[index-1]))))&&validAnnual(s,b.productionAnnual));
 }
 
 
@@ -45,6 +45,7 @@ const validAnnual=(s,a)=>a===undefined||a&&validStart(a.started)&&instant(a.star
  * Decoding old saves leaves dates, people and freight untouched. */
 export function initializeProductionAccounting(s){
  if(!validStart(annualStart(s)))return false;
+ s.cityProductionSince??=annualStart(s);
  for(const b of s.buildings||[])if(Object.keys(BUILDINGS[b.type]?.output||{}).length&&b.construction?.kind!=='new'&&b.productionAnnual===undefined)b.productionAnnual={started:annualStart(s),rows:[]};
  return true;
 }
@@ -65,4 +66,65 @@ export function annualProductionHistory(s,b){
  const a=validAnnual(s,b?.productionAnnual)?b?.productionAnnual:null,byYear=new Map((a?.rows||[]).map(row=>[row.year,row.resources]));
  const fromBirth=a&&b?.built&&instant(b.built)===instant(a.started),firstComplete=a? a.started.year+(fromBirth||a.started.season===0&&a.started.elapsed===0?0:1):Infinity;
  return Array.from({length:Math.min(3,s.year-1)},(_,index)=>{const year=Math.max(1,s.year-3)+index,known=!!a&&year>=a.started.year;return {year,known,complete:known&&year>=firstComplete,resources:known?{...byYear.get(year)}:{}};});
+}
+
+// The building retains its own history while standing. This city archive stores
+// only sources without a live building, so transfers and demolition never double-count.
+function addArchivedOutput(s,year,type,x,y,output){
+ if(year<Math.max(1,s.year-3)||!Object.keys(output).length)return;
+ const key=`${type}:${x},${y}`;
+ const archive=s.cityProductionArchive??={};
+ for(const old of Object.keys(archive))if(Number(old)<s.year-3)delete archive[old];
+ const sources=archive[year]??={},goods=sources[key]??={};
+ for(const [resource,amount] of Object.entries(output))goods[resource]=(goods[resource]||0)+amount;
+}
+
+export function archiveBuildingProduction(s,b){
+ for(const row of b.productionAnnual?.rows||[])addArchivedOutput(s,row.year,b.type,b.x,b.y,row.resources);
+}
+
+export function recordManualProduction(s,site,amount){
+ if(!['clay','reed','stone'].includes(site.resource)||!Number.isFinite(amount)||amount<=0)return;
+ addArchivedOutput(s,s.year,'manual',site.x,site.y,{[site.resource]:amount});
+}
+
+function validCityProduction(s){
+ const start=s.cityProductionSince;
+ if(start!==undefined&&(!validStart(start)||instant(start)>instant(annualStart(s))))return false;
+ const archive=s.cityProductionArchive;
+ if(archive===undefined)return true;
+ const object=value=>value&&typeof value==='object'&&!Array.isArray(value);
+ return object(archive)&&Object.keys(archive).length<=4&&Object.entries(archive).every(([year,sources])=>
+  /^[1-9]\d*$/.test(year)&&Number(year)<=s.year&&object(sources)&&Object.keys(sources).length<=100000&&
+  Object.entries(sources).every(([key,goods])=>{
+   const match=/^(\w+):(\d{1,3}),(\d{1,3})$/.exec(key);
+   return !!match&&(match[1]==='manual'||Object.hasOwn(BUILDINGS,match[1]))&&validResources(goods)&&
+    (match[1]!=='manual'||Object.keys(goods).every(k=>['clay','reed','stone'].includes(k)));
+  }));
+}
+
+export function cityProduction(s,requestedYear=s.year){
+ const years=Array.from({length:Math.min(4,s.year)},(_,i)=>s.year-i);
+ const year=years.includes(requestedYear)?requestedYear:s.year;
+ const totals=new Map();
+ function add(source,goods){
+  for(const [key,amount] of Object.entries(goods||{})){
+   if(!(amount>0))continue;
+   if(!totals.has(key))totals.set(key,{key,total:0,sources:[]});
+   const row=totals.get(key);row.total+=amount;row.sources.push({...source,amount});
+  }
+ }
+ for(const b of s.buildings||[]){
+  const row=b.productionAnnual?.rows.find(row=>row.year===year);
+  if(row)add({type:b.type,kind:'building',x:b.x,y:b.y,building:buildingKey(b)},row.resources);
+ }
+ for(const [key,goods] of Object.entries(s.cityProductionArchive?.[year]||{})){
+  const [type,position]=key.split(':'),[x,y]=position.split(',').map(Number);
+  add({type,kind:type==='manual'?'manual':'demolished',x,y},goods);
+ }
+ const start=s.cityProductionSince;
+ const covered=!!start&&(year>start.year||year===start.year&&start.season===0&&start.elapsed===0);
+ const coverage=covered?'tracked':totals.size||start?.year===year?'partial':'unknown';
+ for(const row of totals.values())row.sources.sort((a,b)=>b.amount-a.amount||a.y-b.y||a.x-b.x);
+ return {year,years,current:year===s.year,coverage,resources:[...totals.values()]};
 }

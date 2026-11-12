@@ -1,3 +1,4 @@
+import {recordManualProduction} from './building-production-history.js';
 import {reedStatus,takeReeds,REED_CAPACITY} from './reed-stock.js';
 import {CLAY_CAPACITY,STONE_CAPACITY,mineralRemaining,takeMineral} from './mineral-stock.js';
 import {depositAt,isDryPoint,worldWidth,worldHeight} from './world.js';
@@ -72,7 +73,7 @@ export function workManualGathering(s,c,dt,rate=1){
  const amount=q.resource==='reed'?takeReeds(s,q.x,q.y,batch):takeMineral(s,q.resource,q.x,q.y,batch);
  job.progress=0;
  if(amount<=1e-8)return false;
- c.cargo={[q.resource]:amount};return true;
+ c.cargo={[q.resource]:amount};recordManualProduction(s,q,amount);return true;
 }
 export function validateManualGathering(s){
  const m=s.manualGathering,custom=(s.citizens||[]).filter(c=>c.manualGathering!==undefined||customPhase(c.phase));if(m===undefined)return custom.length===0;
