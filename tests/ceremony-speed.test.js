@@ -37,6 +37,6 @@ test('manual feast acceleration advances ceremony time while the calendar and ca
  assert.equal(sync(s,4),4);assert.ok(advanceUntil(s,state=>state.festival?.stage==='celebrating'));
  assert.equal(sync(s,4),1);
  const before=clockOf(s),elapsed=festivalView(s).elapsed,cargo=s.citizens.map(c=>[c.id,c.cargo,c.buildCargo]);
- advanceTime(s,.25*sync(s,4));assert.ok(Math.abs(festivalView(s).elapsed-elapsed-1)<1e-6);
+ advanceTime(s,.25*sync(s,10));assert.ok(Math.abs(festivalView(s).elapsed-elapsed-2.5)<1e-6);
  assert.deepEqual(clockOf(s),before);assert.deepEqual(s.citizens.map(c=>[c.id,c.cargo,c.buildCargo]),cargo);assert.ok(decode(encode(s)));
 });

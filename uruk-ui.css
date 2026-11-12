@@ -490,3 +490,8 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 .uruk-ui #building-controls :is(.upgrade-button,.management-button):disabled {
  opacity:1;background:#322c24;color:#c8b79b;border-color:#76654e;
 }
+
+@media(max-width:420px){
+ .uruk-ui .uruk-dock .time-controls{gap:4px}
+ .uruk-ui .uruk-dock .time-controls button{width:clamp(31px,9vw,38px)}
+}
