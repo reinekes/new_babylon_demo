@@ -108,17 +108,33 @@ export function residentVitalsHTML(c,s,scope='register'){
  const rationEvidence=lastRation?` Доставка во двор на ${Math.floor(lastRation.time/60)+1}-й день города: ${number(lastRation.amount)} ед. еды.`:'';
  const civicEvent=s?.civicOrder?.history.find(event=>event.person===c.id||event.guard===c.id);
  const civicLabels={help:'помощь дошла',theft:'записана кража зерна',closed:'просьба закрыта',reconciled:'стороны разошлись',assault:'ранение у амбара',killing:'гибель у амбара'};
- const civicEvidence=civicEvent?` Последняя запись общины о жителе · ${civicLabels[civicEvent.outcome]}, год ${civicEvent.year}.`:'';
+ const civicEvidence=civicEvent?` Последняя запись общины о жителе · ${civicLabels[civicEvent.outcome]}, день ${civicEvent.endedDay+1}, год ${civicEvent.year}.`:'';
+ const impact=c.mealImpact;
+ const impactText=key=>{
+  if(!impact)return '';
+  const change=impact[key],day=Math.floor(impact.time/60)+1;
+  return ` Последняя оценка ужина · день ${day}, ${change===0?'без изменения':`${change>0?'+':''}${number(change)} п. п.`}.`;
+ };
  const current=pressures.length?`Сейчас заметны: ${pressures.join(', ')}. `:'';
  const stats=[
-  ['health','Здоровье',c.health??100,60,current+'Здоровье снижают недоедание, сильная жажда и ветхая одежда.',home?.reedCamp?'Дострой или освободи место в доступном доме. Пока житель в шалаше, проверяй доставку еды и воды.':'Проверь еду и воду дома, запас одежды на складе. Если жителю всё ещё плохо, проверь доступность лечебницы.'],
-  ['food','Сытость',100-(c.hunger??0),70,`Последний ужин: ${Math.round(lastMeal*100)}% порции.${home?` Сейчас у двора ${number(food)} ед. еды.`:''} Голод растёт, когда житель не съедает свою порцию.${rationEvidence}`,'Открой дом → «Еда»: проверь запас, носильщиков и путь до склада. Еду нужно доставить во двор. При сильном голоде взрослый может прервать работу.'],
+  ['health','Здоровье',c.health??100,60,current+'Здоровье снижают недоедание, сильная жажда и ветхая одежда.'+impactText('health'),home?.reedCamp?'Дострой или освободи место в доступном доме. Пока житель в шалаше, проверяй доставку еды и воды.':'Проверь еду и воду дома, запас одежды на складе. Если жителю всё ещё плохо, проверь доступность лечебницы.'],
+  ['food','Сытость',100-(c.hunger??0),70,`Последний ужин: ${Math.round(lastMeal*100)}% порции.${impact?` Учтён на ${Math.floor(impact.time/60)+1}-й день города.`:''}${home?` Сейчас у двора ${number(food)} ед. еды.`:''} Голод растёт, когда житель не съедает свою порцию.${rationEvidence}`,'Открой дом → «Еда»: проверь запас, носильщиков и путь до склада. Еду нужно доставить во двор. При сильном голоде взрослый может прервать работу.'],
   ['water','Утоление жажды',100-(c.thirst??0),70,home?`В запасе двора ${number(home.water)} ед. воды. При нехватке воды растёт жажда.`:'Жажда растёт, если жителю не хватает доступной воды.','Открой дом → «Вода»: проверь запас, ближайший водозабор и доставку. При жажде взрослый может уйти с работы за водой.'],
-  ['mood','Настроение',c.mood??75,35,current+'Настроение может падать из-за недоедания, жажды, ветхой одежды и утраты близких.'+civicEvidence,'Наладь снабжение двора и замену одежды. Семейный ужин и благоустроенный двор помогают восстановиться.'],
+  ['mood','Настроение',c.mood??75,35,current+'Настроение может падать из-за недоедания, жажды, ветхой одежды и утраты близких.'+civicEvidence+impactText('mood'),'Наладь снабжение двора и замену одежды. Семейный ужин и благоустроенный двор помогают восстановиться.'],
   ['faith','Вера',c.faith??60,0,'Это личная вера жителя. Недоедание снижает её, сытый ужин помогает восстановлению.','Начни с запасов еды во дворе.'],
   ['clothing','Состояние одежды',c.clothing??100,26,'Одежда постепенно изнашивается. При остатке 25% или меньше ветхая одежда ухудшает здоровье и настроение.','Проверь, есть ли готовая одежда на доступном складе. Взрослые приносят замену себе и детям.']
  ];
- return `<dl class="city-resident-vitals">${stats.map(([key,label,value,threshold,reason,action])=>registerVital(`vital-${scope}-${c.id}-${key}`,label,value,value<threshold,reason,action,home&&['food','water'].includes(key)?{id:c.id,home:homeKey,tab:key,label:key==='food'?'Открыть еду во дворе':'Открыть воду во дворе'}:null)).join('')}</dl>`;
+ const homeLink=(key)=>{
+  const civicHome=key==='mood'&&civicEvent&&s.buildings.find(b=>b.type==='house'&&buildingKey(b)===civicEvent.home);
+  const target=civicHome||home;
+  if(!target)return null;
+  const tab=civicHome?'family':key==='water'||key==='health'&&thirsty?'water':'food';
+  const label=civicHome?'Открыть двор из записи':tab==='water'?'Открыть воду во дворе':'Открыть еду во дворе';
+  return {id:c.id,home:buildingKey(target),tab,label};
+ };
+ return `<dl class="city-resident-vitals">${stats.map(([key,label,value,threshold,reason,action])=>
+  registerVital(`vital-${scope}-${c.id}-${key}`,label,value,value<threshold,reason,action,
+   ['health','food','water','mood','faith'].includes(key)?homeLink(key):null)).join('')}</dl>`;
 }
 function residentInspector(s,c,desiredInspirations,expandedCitizens,workplace){
  if(!c)return `<aside class="city-register-inspector">${empty('Выбери жителя в списке.')}</aside>`;

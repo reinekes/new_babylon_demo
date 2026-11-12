@@ -95,7 +95,7 @@ test('resident help distinguishes the previous meal from food available at home 
 test('food and water advice link to the supplied home and do not link when there is no home',()=>{
  const c={id:17,home:'courtyard-a'},s={buildings:[{id:'courtyard-a',type:'house',x:2,y:3}]};
  const dom=new JSDOM(residentVitalsHTML(c,s,'map')),doc=dom.window.document;
- assert.deepEqual([...doc.querySelectorAll('[data-vital-home]')].map(b=>[b.dataset.vitalHome,b.dataset.vitalTab]),[['courtyard-a','food'],['courtyard-a','water']]);
+ assert.deepEqual([...doc.querySelectorAll('#vital-map-17-food [data-vital-home],#vital-map-17-water [data-vital-home]')].map(b=>[b.dataset.vitalHome,b.dataset.vitalTab]),[['courtyard-a','food'],['courtyard-a','water']]);
  assert.doesNotMatch(residentVitalsHTML({...c,home:null},s),/data-vital-home/);
  dom.window.close();
 });
