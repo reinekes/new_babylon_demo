@@ -16,9 +16,10 @@ export function household(s,b){const residents=s.citizens.filter(c=>c.home===bui
 export function totalFood(s){return s.resources.food+(s.resources.milk||0)*.5+s.buildings.reduce((n,b)=>n+homeMealFood(b),0)+s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(c.cargo?.food||0)+(c.cargo?.milk||0)*.5+(c.seedFood||0),0)+s.buildings.reduce((n,b)=>n+(b.workshopStock?.output?.food||0)+(b.workshopStock?.output?.milk||0)*.5,0);}
 export function houseLightCount(b,residents){const n=Math.sin(b.x*127.1+b.y*311.7)*43758.5453,tall=n-Math.floor(n)>.64,total=tall?4:3;
  return residents<=0?0:Math.max(1,Math.floor(total*Math.min(1,residents/capacityOf(b))));}
-export function recordHomeRation(s,home,c,amount,source=null){
+export function recordHomeRation(s,home,c,amount,source=null,grain=[]){
  if(home?.type!=='house'||amount<=1e-8)return;
  home.lastRation={time:s.simTime,carrier:c.id,amount,source};
+ if(grain.length)home.lastRation.grain=grain;
  if(c.pantryOrigin===source&&c.pantryRemainder!==undefined)home.lastRation.remainder=c.pantryRemainder;
 }
 const validRemainder=n=>n===undefined||Number.isFinite(n)&&n>=0;

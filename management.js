@@ -1,3 +1,4 @@
+import {appendGrain,takeGrain} from './grain-origin.js';
 import {archiveBuildingProduction} from './building-production-history.js';
 import {riverStoreDemolitionReason} from './river-stores.js';
 import {retireMonumentLife} from './campaign.js';
@@ -201,9 +202,10 @@ export function demolish(s,x,y,expected){
  for(const q of s.district?.jobs||[])if(q.automatic&&(q.source===buildingKey(b)||q.target===buildingKey(b))){q.cancelled+=q.remaining;q.remaining=0;for(const c of s.citizens.filter(c=>c.districtJob===q.id))recoverCitizenCargo(s,c.id);}
  // All capacity, reservation, resident and route gates above have succeeded.
  // This emergency relocation follows the existing demolition-refund abstraction.
- if(transfer)for(const {target,key,amount}of transfer){target.stock??=Object.fromEntries(MATERIALS.map(k=>[k,0]));if(key==='food')moveGiftFood(b,'giftStock',target,'giftStock',amount,b.stock.food,target.stock.food);if(key==='food'&&b.fishStock)appendFish(target,'fishStock',takeFish(b,'fishStock',amount,b.stock.food),target.stock.food);if(b.creatorStock)addCreatorStock(target,key,takeCreatorStock(b,key,amount));target.stock[key]+=amount;b.stock[key]-=amount;}
+ if(transfer)for(const {target,key,amount}of transfer){target.stock??=Object.fromEntries(MATERIALS.map(k=>[k,0]));if(key==='food')appendGrain(target,'grainStock',takeGrain(b,'grainStock',amount,b.stock.food),target.stock.food);if(key==='food')moveGiftFood(b,'giftStock',target,'giftStock',amount,b.stock.food,target.stock.food);if(key==='food'&&b.fishStock)appendFish(target,'fishStock',takeFish(b,'fishStock',amount,b.stock.food),target.stock.food);if(b.creatorStock)addCreatorStock(target,key,takeCreatorStock(b,key,amount));target.stock[key]+=amount;b.stock[key]-=amount;}
  const localGoods=localDemolitionStock(b),localTarget=Object.values(localGoods).some(n=>n>0)?localRefundStore(s,b):null;if(localTarget){for(const [k,n]of Object.entries(localGoods))if(n>0){
   const accepted=putStock(s,buildingKey(localTarget),k,n,{overflow:true});
+  if(k==='food'&&b.grainOutput)appendGrain(localTarget,'grainStock',takeGrain(b,'grainOutput',accepted,b.workshopStock.output.food),localTarget.stock.food-accepted);
   if(k==='food'&&b.giftInput)moveGiftFood(b,'giftInput',localTarget,'giftStock',accepted,b.workshopStock.input.food,localTarget.stock.food-accepted);
   if(k==='food'&&b.fishOutput)appendFish(localTarget,'fishStock',takeFish(b,'fishOutput',Math.min(accepted,b.workshopStock.output.food),b.workshopStock.output.food),localTarget.stock.food-accepted);
  }if(b.workshopStock){b.workshopStock.output={};if(b.workshopStock.input)for(const k of Object.keys(b.workshopStock.input))b.workshopStock.input[k]=0;}if(b.householdStock)for(const k of Object.keys(b.householdStock))b.householdStock[k]=0;if(b.dairy)b.dairy.reed=0;}
@@ -214,9 +216,10 @@ export function demolish(s,x,y,expected){
  if(b.firing)Object.assign(b.firing,{brick:0,reed:0,ready:0});
  if((b.weaving?.wool||b.tailoring?.cloth)>0)craftState(b)[craftResource(b)]=0;
  rememberApproaches(s,b);if(b.pantry){
- const receiver=b.giftHome&&stockStores(s).find(store=>store!==b);
+ const receiver=(b.giftHome||b.grainPantry)&&stockStores(s).find(store=>store!==b);
  if(receiver){
   const key=buildingKey(receiver),accepted=putStock(s,key,'food',b.pantry,{overflow:true});
+  appendGrain(receiver,'grainStock',takeGrain(b,'grainPantry',accepted,b.pantry),receiver.stock.food-accepted);
   moveGiftFood(b,'giftHome',receiver,'giftStock',accepted,b.pantry,receiver.stock.food-accepted);
  }else s.resources.food+=b.pantry;
 }if(b.crop?.seedStock){

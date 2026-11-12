@@ -1,3 +1,4 @@
+import {recordWaterChoice} from './water-crisis.js';
 import {terrain,signedRiverDistance} from './world.js';
 import {buildingKey,isOperational} from './definitions.js';
 import {cityCommandReason} from './city-command-lock.js';
@@ -86,9 +87,11 @@ export function setFieldWaterPriority(s,b){
  const reason=cityCommandReason(s)||(s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':'');
  if(reason)return {ok:false,reason};
  if(!canalMaintenanceEnabled(s)||b?.type!=='field'||!isOperational(b)||!s.buildings.includes(b))return {ok:false,reason:'Нужно готовое поле Южного Шумера'};
+ const before=s.civicOrder?irrigationFor(s).flow:null;
  const selected=b.waterPriority===true;
  for(const field of s.buildings)if(field.waterPriority===true)delete field.waterPriority;
  if(!selected)b.waterPriority=true;
+ if(before)recordWaterChoice(s,selected?null:buildingKey(b),before.routes,irrigationFor(s).flow.routes);
  return {ok:true};
 }
 export function fieldWaterAllocation(s,b){

@@ -1,3 +1,5 @@
+import {reviewWaterCrisisNeeds,validateWaterCrises} from './water-crisis.js';
+import {validateGrainOrigin} from './grain-origin.js';
 import {advanceRiverStores,validateRiverStores} from './river-stores.js';
 import {advanceCivicOrder,civicDayBoundary,finishCivicYear,validateCivicOrder} from './civic-order.js';
 import {advanceCampaignChapter,campaignChapterView,validateCampaignChapter,validateHearthEnding,validateWaterEnding,validateCraftEnding,advanceMonumentLife,validateCityEnding,validateMonumentLife,advanceForeignName,validateForeignName} from './campaign.js';
@@ -438,6 +440,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
   const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
   advanceRiverStores(s,worked);
   advanceCivicOrder(s,citizen=>recordCivicDeath(s,citizen));
+  if(s.waterCrises)reviewWaterCrisisNeeds(s);
   if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
  }
  if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
@@ -689,7 +692,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
+  if(!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateCampaignChapter(s)||!validateHearthEnding(s)||!validateWaterEnding(s)||!validateCraftEnding(s)||!validateCityEnding(s)||!validateMonumentLife(s)||!validateForeignName(s)||!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   s.version=VERSION;return s;
  }catch{return null;}
