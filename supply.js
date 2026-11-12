@@ -24,7 +24,7 @@ export function householdSupplyRoute(s,key,resource){
   const trip=water?courier.waterTrip:null,job=!water&&s.district?.jobs.find(q=>q.id===courier.districtJob);
   const source=water?trip.station:job?.source||courier.store;
   const loaded=water?trip.load:carriedMealFood(courier);
-  return {home,source,courier:courier.id,points:points(courier,trip?.route||courier.route||[],trip?.index??courier.routeIndex??0),
+  return {home,source,courier:courier.id,amount:loaded,points:points(courier,trip?.route||courier.route||[],trip?.index??courier.routeIndex??0),
    status:loaded>0?(water?'Несёт воду во двор':'Несёт еду во двор'):(water?'Идёт за водой':'Идёт за едой')};
  }
  const net=networkFor(s,{materializeRoads:false}),ctx={network:net};

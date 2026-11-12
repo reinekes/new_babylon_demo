@@ -62,7 +62,7 @@ import {cropFor,workField,advanceCrops,fieldActive} from './agriculture.js';
 import {fieldWater} from './irrigation.js';
 import {medicalLevel,qualifiedHealer,newMedicalSkill,STUDY_SECONDS,healingSpeed,healingQuality,healingCost} from './education.js';
 import {initializeWellbeing,advanceWellbeing,workRate,beliefMultiplier,isDinnerTime,mealCycle} from './wellbeing.js';
-import {ration,homeMealFood,supplyHome} from './households.js';
+import {ration,homeMealFood,supplyHome,recordHomeRation} from './households.js';
 import {childPlay} from './local-motion.js';
 import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
@@ -426,7 +426,7 @@ function deposit(s,c,ctx){
     const remaining=home?receiver.pantry:local?giftInputFood(receiver):receiver?.stock?.food||0;
     gift=moveGiftFood(c,'giftCargo',receiver,home?'giftHome':local?'giftInput':'giftStock',accepted,amount,remaining-accepted);
    }
-   if(local&&destination.targetKind==='input')recordAbundanceHome(s,site,c,ctx.buildings.get(destination.source),accepted,gift);
+   if(local&&destination.targetKind==='input'){recordAbundanceHome(s,site,c,ctx.buildings.get(destination.source),accepted,gift);recordHomeRation(s,site,c,accepted,destination.source);}
    acceptFishingCargo(s,c,accepted,amount,{qualifies:!local&&!c.tradeJob&&!c.saleJob});acceptFieldGrain(s,c,accepted,!local,local&&destination.targetKind==='input'&&site.type==='house'?site:null);
    if(c.fishCargo){
     const parts=takeFishEvidence(c,'fishCargo',accepted,amount),store=ctx.buildings.get(c.store);
@@ -503,7 +503,7 @@ function arrival(s,c,ctx){
   if(amount>1e-8){c.pantryFood=takeStock(s,c.store,'food',amount,{fishTo:c,fishKey:'fishPantry',giftTo:c,giftKey:'giftPantry'});startTrip(s,c,target,'toPantryHome',ctx);}else{delete c.pantryTrip;delete c.pantryFood;delete c.pantryTarget;startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);}return;
  }
  if(c.phase==='toPantryHome'){
-  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
+  const target=c.pantryTarget||c.home,b=ctx.buildings.get(target),amount=c.pantryFood||0;if(b){b.pantry=(b.pantry||0)+amount;b.pantryDelivered=(b.pantryDelivered||0)+amount;recordHomeRation(s,b,c,amount);recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
    const gift=moveGiftFood(c,'giftPantry',b,'giftHome',amount,amount,b.pantry-amount);
    recordAbundanceHome(s,b,c,ctx.buildings.get(c.store),amount,gift);
    if(c.fishPantry)recordHomeFish(s,b,takeFishEvidence(c,'fishPantry',amount,amount),c);
