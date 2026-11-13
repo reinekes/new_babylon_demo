@@ -2,7 +2,7 @@ import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 export const IMPORTED_FAUNA_MODELS={catWalk:{file:'cat-walk.glb',kind:'cat',clips:['Walk','Idle'],stride:.38},catSit:{file:'cat-sitting.glb',kind:'cat',clips:['Sit'],stride:.38},gazelle:{file:'gazelle-downloaded.glb',kind:'gazelle',clips:['Walk','Idle','Rest'],stride:.84}};
-export function importedFaunaAction(animal,distance=0){if(animal.dead||animal.behavior==='dead')return 'Rest';if(animal.kind==='cat'&&animal.catchProgress<.26)return 'Walk';if(animal.kind==='cat'&&['petting','petted','resting','sitting'].includes(animal.behavior))return 'Sit';return distance>.00001&&distance<3?'Walk':animal.kind==='cat'?'Sit':'Idle';}
+export function importedFaunaAction(animal,distance=0){if(animal.dead||animal.behavior==='dead')return 'Rest';if(animal.kind==='cat'&&(animal.behavior==='hunting'||animal.catchProgress<.26))return 'Walk';if(animal.kind==='cat'&&['petting','petted','resting','sitting'].includes(animal.behavior))return 'Sit';return distance>.00001&&distance<3?'Walk':animal.kind==='cat'?'Sit':'Idle';}
 // The two cat sources have unrelated rigs; their coats use a matched charcoal profile: switch independent skins
 // with a short visibility fade; never attempt to retarget one skeleton to the other.
 export async function createImportedFauna(B,scene,meshes=[],options={}){
@@ -19,7 +19,7 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
   const nodes=[...new Set([...groups.values()].flatMap(g=>g.targetedAnimations.map(a=>a.target)).filter(n=>n?.position&&n?.rotation))];
   const v={root,groups,owned,nodes,skeletons:copy.skeletons,clip:null,clock:0,weight:0,transition:null,transitionTime:0};a.variants.set(key,v);return v;
  }
- function make(c){const root=new B.TransformNode(`fauna-${c.id}`,scene),model=new B.TransformNode(`fauna-${c.id}-pose`,scene);model.parent=root;root.metadata={animalId:c.id,animalKind:c.kind,gaitPhase:0};return {id:c.id,kind:c.kind,root,model,variants:new Map(),lastX:c.x,lastY:c.y,yaw:null,phase:0,key:null};}
+ function make(c){const root=new B.TransformNode(`fauna-${c.id}`,scene),model=new B.TransformNode(`fauna-${c.id}-pose`,scene);model.parent=root;root.metadata={animalId:c.id,animalKind:c.kind,gaitPhase:0};return {id:c.id,kind:c.kind,root,model,variants:new Map(),lastX:c.x,lastY:c.y,yaw:null,phase:0,hunting:false};}
  function sample(v,clip,phase,dt,speed,frozen){
   if(!v.groups.has(clip))clip=v.groups.has('Sit')?'Sit':v.groups.has('Idle')?'Idle':'Walk';const g=v.groups.get(clip);
   if(v.clip!==clip){v.transition=v.clip?v.nodes.map(n=>({node:n,p:n.position.clone(),q:n.rotationQuaternion?.clone(),r:n.rotation.clone(),s:n.scaling.clone()})):null;v.transitionTime=0;for(const old of v.groups.values())old.stop();g.start(true,1,g.from,g.to,false);g.pause();v.clip=clip;v.clock=0;}
@@ -33,11 +33,15 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
   for(const c of animals){if(!supports(c.kind))continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(paused&&!fresh)continue;
    const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6,dead=!!(c.dead||c.behavior==='dead');a.lastX=c.x;a.lastY=c.y;a.root.position.set(c.x*6,onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
    let action=importedFaunaAction(c,paused?0:distance),key=c.kind==='gazelle'?'gazelle':action==='Walk'?'catWalk':'catSit';if(!sources.has(key))key=sources.has('catWalk')?'catWalk':'catSit';
-   const v=variant(a,key),changed=a.key!==key;for(const other of a.variants.values())other.root.setEnabled(true);if(changed){if(fresh)v.weight=1;a.key=key;}
+   const v=variant(a,key);v.root.setEnabled(true);
+   const hunting=c.kind==='cat'&&(c.behavior==='hunting'||Number.isFinite(c.catchProgress));
+   // A strike and the first frame leaving it must have one silhouette, even
+   // when the cat had already started a normal sit/walk fade.
+   const exclusive=fresh||hunting||a.hunting;a.hunting=hunting;
    if(distance>.00001&&distance<3&&!paused&&!dead)a.yaw=Math.atan2(dx,dz);if(a.yaw!==null&&!dead){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(fresh?1:1-Math.exp(-dt*10));}
    if(action==='Walk'&&!paused&&!dead)a.phase=(a.phase+distance/IMPORTED_FAUNA_MODELS[key].stride)%1;
    action=sample(v,action,a.phase,dt,speed,paused||dead);
-   for(const [variantKey,other]of a.variants){const target=variantKey===key?1:0;if(!paused)other.weight+=Math.sign(target-other.weight)*Math.min(Math.abs(target-other.weight),dt*speed/.35);for(const m of other.owned){m.visibility=other.weight;m.isPickable=other.weight>=.5;}other.root.setEnabled(other.weight>0);}
+   for(const [variantKey,other]of a.variants){const target=variantKey===key?1:0;if(exclusive)other.weight=target;else if(!paused)other.weight+=Math.sign(target-other.weight)*Math.min(Math.abs(target-other.weight),dt*speed/.35);for(const m of other.owned){m.visibility=other.weight;m.isPickable=other.weight>=.5;}other.root.setEnabled(other.weight>0);}
    const catchProgress=c.catchProgress??1;
    const pounce=c.kind==='cat'&&catchProgress<.26?.42+.58*Math.sin(catchProgress/.26*Math.PI):0;
    a.model.rotation.x=.32*pounce;
