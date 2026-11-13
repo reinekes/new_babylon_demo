@@ -8,10 +8,10 @@ import {BUILDINGS} from '../definitions.js';
 import {createOrder} from '../construction.js';
 import {createGame} from '../engine.js';
 const sandbox={console,setTimeout,clearTimeout,performance,self:{}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.BABYLON;
-test('every building has a true-size timber site, rising masonry and shared disposable surfaces',()=>{
+test('every building begins with a ground marker, then materials and masonry appear',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),m={};for(const k of ['raw','fired','wood','soil','brick'])m[k]=new B.StandardMaterial(k,scene);
  for(const type of Object.keys(BUILDINGS).filter(t=>t!=='canal')){
-  const b={type,x:10,y:8,level:1,...(type==='ziggurat'?{footprint:2}:{}),construction:createOrder(BUILDINGS[type])},before=JSON.stringify(b),early=createConstructionSite(B,scene,b,m);assert.equal(JSON.stringify(b),before);assert.ok(early.length<=4);const height=meshes=>{let h=0;for(const mesh of meshes){mesh.computeWorldMatrix(true);h=Math.max(h,mesh.getBoundingInfo().boundingBox.maximumWorld.y);}return h;};const initial=height(early);for(const mesh of early)mesh.dispose();b.construction.work=10;Object.assign(b.construction.delivered,b.construction.required);const late=createConstructionSite(B,scene,b,m);assert.ok(Math.abs(height(late)-initial)<.15,`${type} scaffold must not stretch upwards`);assert.ok(late.every(v=>v.metadata.constructionSite));for(const mesh of late)mesh.dispose();
+  const b={type,x:10,y:8,level:1,...(type==='ziggurat'?{footprint:2}:{}),construction:createOrder(BUILDINGS[type])},before=JSON.stringify(b),early=createConstructionSite(B,scene,b,m);assert.equal(JSON.stringify(b),before);assert.ok(early.length<=4);const height=meshes=>{let h=0;for(const mesh of meshes){mesh.computeWorldMatrix(true);h=Math.max(h,mesh.getBoundingInfo().boundingBox.maximumWorld.y);}return h;};const initial=height(early);for(const mesh of early)mesh.dispose();b.construction.work=10;Object.assign(b.construction.delivered,b.construction.required);const late=createConstructionSite(B,scene,b,m);assert.ok(initial<=.08,`${type} starts at ground level`);if(type!=='bridge')assert.ok(height(late)>initial);assert.ok(late.every(v=>v.metadata.constructionSite));for(const mesh of late)mesh.dispose();
  }
  assert.equal(scene.meshes.length,0);scene.dispose();engine.dispose();
 });

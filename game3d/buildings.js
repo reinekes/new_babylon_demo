@@ -21,12 +21,12 @@ import {createMusicCourtyard} from './music-courtyard.js';
 const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
 const HOME_ASSET='assets/art-courtyard/models/adobe-courtyard.glb';
 const tier=b=>Math.max(1,Math.min(3,b.level||1));
-const progress=b=>b.construction?Math.floor(Math.max(0,Math.min(1,constructionProgress(b).ratio))*12):12;
+const progress=b=>{const p=constructionProgress(b);return [Math.floor(p.materials*12),Math.floor(p.work*40),Math.floor(p.materials*(1-p.work)*9+.000001),Math.floor(p.materials*(1-p.work)*5)];};
 const isHouse=b=>!b.reedCamp&&b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -119,6 +119,9 @@ export async function createGameBuildings(B,scene,materials,options={}){
     const [width,height,depth]=dimensions,mesh=B.MeshBuilder.CreateBox(name,{width,height,depth},scene);
     mesh.position.set(...position);mesh.rotation.z=angle;mesh.material=material;mesh.parent=root;sources.push(mesh);
    };
+   if(b.campSalvage){
+    if(b.campSalvage.reed>0)part('camp-reed-bundle',[1.4,.22,.65],[0,.13,0],materials.reed||trim);
+   }else{
    part('camp-mat',[3.3,.05,3.1],[0,.06,0],raw);
    for(const side of [-1,1]){
     part('camp-woven-roof',[2.25,.09,3.25],[side*.8,.84,0],materials.reed||trim,-side*.72);
@@ -126,6 +129,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
    }
    part('camp-back',[.8,.8,.06],[0,.43,-1.45],shade);
    part('camp-ridge',[.14,.14,3.46],[0,1.59,0],raw);
+   }
   }else if(isHouse(b)){
    sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade},state);for(const mesh of sources)mesh.parent=root;
   }else{

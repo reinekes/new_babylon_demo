@@ -5,19 +5,20 @@ import {bridgeSpanAt,worldFromRiver} from './world.js';
 export function drawConstruction(r,b,s,t){
  const q=b.construction,c=r.ctx,scale=r.s,p=r.point(b.x,b.y),progress=constructionProgress(b);
  if(b.type==='canal'){
-  drawCanal(r,b,s,{dry:true,progress:.15+progress.work*.85});
+  if(progress.work<=0){r.tile(b.x,b.y,'#ac986d','#e0cb98');return;}
+  drawCanal(r,b,s,{dry:true,progress:progress.work});
   for(const dx of [-.3,.3]){const a=r.point(b.x+dx,b.y+.25);r.box(a.x,a.y,4*scale,2*scale,(2+progress.work*3)*scale,'#c6a573','#9b7c50','#b79460');}
  }else if(b.type==='road'){
   r.line([r.point(b.a.x,b.a.y),r.point(b.b.x,b.b.y)],'#ccaa78',6*scale);
   for(const a of [-7,7]){r.line([[p.x+a*scale,p.y+3*scale],[p.x+a*scale,p.y-8*scale]],'#8b704c',1.4*scale);}
   r.line([[p.x-8*scale,p.y-8*scale],[p.x+8*scale,p.y-8*scale]],'#dbc08c',2*scale);
  }else if(b.type==='bridge'){
-  const point=(across,along,z=0)=>{const p=worldFromRiver(across,along,s);return r.point(p.x,p.y,z);},span=bridgeSpanAt(b,s),fraction=q.kind==='upgrade'?1:.08+progress.work*.92,east=s.citizens.some(c=>c.site===`${b.x},${b.y}`&&c.sitePort?.endsWith(':1')),start=east?span.right:span.left,end=start+(east?-1:1)*(span.right-span.left)*fraction,low=Math.min(start,end),high=Math.max(start,end);
-  r.polygon([point(start,span.y-.13,5),point(end,span.y-.13,5),point(end,span.y+.13,5),point(start,span.y+.13,5)],'#c6ad7d','#8e7654');
-  for(let x=span.left;x<=span.right;x+=.5){r.line([point(x,span.y,0),point(x,span.y,8)],'#8b704c',2*scale);}
+  const point=(across,along,z=0)=>{const p=worldFromRiver(across,along,s);return r.point(p.x,p.y,z);},span=bridgeSpanAt(b,s),fraction=q.kind==='upgrade'?1:progress.work,east=s.citizens.some(c=>c.site===`${b.x},${b.y}`&&c.sitePort?.endsWith(':1')),start=east?span.right:span.left,end=start+(east?-1:1)*(span.right-span.left)*fraction,low=Math.min(start,end),high=Math.max(start,end);
+  if(fraction>0)r.polygon([point(start,span.y-.13,5),point(end,span.y-.13,5),point(end,span.y+.13,5),point(start,span.y+.13,5)],'#c6ad7d','#8e7654');
+  for(let x=low;x<high;x+=.5){r.line([point(x,span.y,0),point(x,span.y,8)],'#8b704c',2*scale);}
   for(let x=low;x<high;x+=.2)r.line([point(x,span.y-.13,5),point(x,span.y+.13,5)],'#8c7651',.7*scale);
   if(q.kind==='upgrade')r.bridge(b,false);
-  const bank=point(start+(east?.25:-.25),span.y);r.box(bank.x,bank.y,7*scale,3*scale,5*scale,'#d7b48a','#a77b54','#c49669');
+  const bank=point(start+(east?.25:-.25),span.y);if(progress.materials>0)r.box(bank.x,bank.y,7*scale,3*scale,5*scale,'#d7b48a','#a77b54','#c49669');
  }else{
   if(q.kind!=='new'){
    r.building({...b,construction:undefined},s,t);
@@ -25,17 +26,10 @@ export function drawConstruction(r,b,s,t){
   }
   else{
    r.tile(b.x,b.y,'#ac986d','#e0cb98');
-   r.box(p.x,p.y,21*scale,10.5*scale,3*scale,'#d1b984','#9f8057','#b49463');
    if(progress.work>.18){
     const lightCount=r.lights.length;c.save();const height=8+progress.work*100;c.beginPath();c.rect(p.x-95*scale,p.y-height*scale,190*scale,(height+40)*scale);c.clip();r.building({...b,construction:undefined},s,t);c.restore();r.lights.length=lightCount;
    }
   }
-  // Scaffold posts, cross-braces and the plank platform remain until completion.
-  const h=(q.kind!=='new'?70:18+progress.work*62)*scale;
-  for(const [x,y]of [[-.46,.46],[.46,.46],[.46,-.46]]){const a=r.point(b.x+x,b.y+y);r.line([[a.x,a.y],[a.x,a.y-h]],'#866e4b',1.8*scale);}
-  const a=r.point(b.x-.46,b.y+.46),d=r.point(b.x+.46,b.y+.46),e=r.point(b.x+.46,b.y-.46);
-  for(const k of [.35,.7,1]){r.line([[a.x,a.y-h*k],[d.x,d.y-h*k],[e.x,e.y-h*k]],'#b99763',2.4*scale);}
-  r.line([[a.x,a.y],[d.x,d.y-h*.7]],'#9d8055',scale);r.line([[d.x,d.y],[a.x,a.y-h*.7]],'#9d8055',scale);
   for(const [kind,top,left,right]of [['brick','#d7bc8a','#aa8d61','#c3a575'],['firedBrick','#cf9466','#955c43','#b97750']])if(q.delivered[kind]>0)for(let i=0;i<Math.min(3,Math.ceil(q.delivered[kind]/10));i++)r.box(p.x+(-14+i*5)*scale,p.y+(11-i%2*2)*scale,4*scale,2*scale,(4+i%2*2)*scale,top,left,right);
   if(q.delivered.clay>0)r.box(p.x-14*scale,p.y+11*scale,6*scale,3*scale,5*scale,'#d1a179','#a1714e','#bb885e');
   if(q.delivered.reed>0){for(let i=0;i<4;i++)r.line([[p.x+(8+i)*scale,p.y+10*scale],[p.x+(17+i)*scale,p.y+5*scale]],'#8d9a63',1.5*scale);}

@@ -192,9 +192,10 @@ export function canDemolish(s,b){
  }
  return '';
 }
-export function demolish(s,x,y,expected){
+export function demolish(s,x,y,expected,{salvagedCamp=false}={}){
  const b=find(s,x,y);if(removalChanged(b,expected))return staleRemoval();
  const reason=canDemolish(s,b);if(reason)return {ok:false,reason};
+ if(b.campSalvage&&!salvagedCamp)return {ok:false,reason:'Дождись вывоза тростника'};
  const homes=relocations(s,b),refund=demolitionRefund(b),transfer=b.starterHut?foundingStockTransfer(s,b):null;
  const workshopBatches=workshopDemolitionStock(b);
  const workshopTarget=workshopBatches.length?localRefundStore(s,b):null;
@@ -237,7 +238,7 @@ export function demolish(s,x,y,expected){
  retireMonumentLife(s,b);
  groundShapingBatch(s,b);
  archiveBuildingProduction(s,b);s.buildings=s.buildings.filter(v=>v!==b);discardFishingOutput(s,b);for(const c of s.citizens){if(c.workplace===buildingKey(b))delete c.workplace;if(c.guardPost===buildingKey(b))delete c.guardPost;}s.capacity=housingOf(s);rerouteCitizens(s);
- syncInventory(s);note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
+ syncInventory(s);if(salvagedCamp)note(s,'Шалаш разобран','Тростник отнесли на склад.');else note(s,`Снесено: ${(BUILDINGS[b.type]?.name||'Дорога')}`,'Половина вложенной глины и тростника возвращена. Жители получили новые маршруты.');return {ok:true,refund};
 }
 
 export function builderConsent(s,c,profession){

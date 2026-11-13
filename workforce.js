@@ -168,7 +168,7 @@ export function syncCitizens(s){
  if(cache.synced===signature)return;
  // Population is a count; stable IDs are never reused after a death.
  while(s.citizens.length>s.population){const c=s.citizens.at(-1);if(recoverCitizenCargo(s,c.id)===false){s.population=s.citizens.length;break;}s.citizens.pop();}
- const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)).sort((a,b)=>Number(!!a.reedCamp)-Number(!!b.reedCamp)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
+ const available=new Map(s.buildings.filter(b=>b.type==='house'&&isComplete(b)&&!b.campSalvage).sort((a,b)=>Number(!!a.reedCamp)-Number(!!b.reedCamp)).map(b=>[buildingKey(b),capacityOf(b)])),homes=[];
  for(const c of s.citizens){if(!available.get(c.home))continue;homes[c.id]=c.home;available.set(c.home,available.get(c.home)-1);}
  const reservations=new Map();
  if(s.arrivalGroup)reservations.set(s.arrivalGroup.home,s.arrivalGroup.count);
@@ -199,6 +199,7 @@ export function syncCitizens(s){
   if(!destination)continue;
   available.set(c.home,(available.get(c.home)||0)+Number(!flooded?.has(c.home)));
   available.set(destination,available.get(destination)-1);
+  ctx.buildings.get(c.home).campVacating=true;
   c.home=homes[c.id]=destination;
   c.rehousing=true;
  }

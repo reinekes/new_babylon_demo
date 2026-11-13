@@ -80,7 +80,7 @@ export function addTestCitizens(state,count){
  if(!Number.isSafeInteger(count)||count<1||count>300)return denied('Введи целое число от 1 до 300');
  if((state.demography?.nextId||0)+count>1e6)return denied('Достигнут предел номеров жителей');
  const homes=state.buildings.filter(b=>b.type==='house'&&isOperational(b));
- const camps=homes.filter(b=>b.reedCamp);
+ const camps=homes.filter(b=>b.reedCamp&&!b.campSalvage);
  const vacantHomes=arrivalHousing(state).reduce((n,h)=>n+h.beds,0);
  const flooded=networkFor(state,{materializeRoads:false}).navigation.flooded;
  const vacantCamps=camps.reduce((n,b)=>n+(flooded?.has(buildingKey(b))?0:Math.max(0,capacityOf(b)-state.citizens.filter(c=>c.home===buildingKey(b)).length)),0);

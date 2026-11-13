@@ -16,6 +16,11 @@ export function drawBuilding(r, b, state, t) {
   if(isStrictSumer(state)&&['shrine','ziggurat','ishtarGate'].includes(b.type)){drawSumerSacred(r,b,state);return;}
   if(b.reedCamp){
     const p=r.point(b.x,b.y),q=r.s;
+    if(b.campSalvage){
+      if(b.campSalvage.reed>0)for(let i=0;i<5;i++)
+        r.line([[p.x-8*q,p.y+i*q],[p.x+8*q,p.y+(i-4)*q]],'#a18550',1.5*q);
+      return;
+    }
     const draw=(points,fill)=>r.polygon(points.map(([x,y])=>[p.x+x*q,p.y+y*q]),fill);
     draw([[-24,6],[2,18],[27,5],[2,-7]],'#6c5237');
     draw([[-22,5],[-10,-18],[14,-7],[2,17]],'#be9c63');

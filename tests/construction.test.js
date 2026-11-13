@@ -69,3 +69,31 @@ test('quick construction pays once and leaves older building orders intact acros
  assert.equal(s.resources.clay,clay-12);
  assert.ok(decode(encode(s)));
 });
+
+test('vacated reed camp sends an owned load to a store and frees its cell after delivery',async()=>{
+ const {addTestCitizens}=await import('../test-tools.js');
+ let s=createGame({start:'established'});
+ assert.ok(addTestCitizens(s,8).ok);
+ const camp=s.buildings.find(b=>b.reedCamp),source=`${camp.x},${camp.y}`;
+ const residents=s.citizens.filter(c=>c.home===source).map(c=>c.id);
+ assert.ok(residents.length);
+ assert.ok(build(s,'house',10,9,0,{instant:true}).ok);
+ let carried=false;
+ for(let i=0;i<500&&s.buildings.some(b=>b.reedCamp&&b.x===camp.x&&b.y===camp.y);i++){
+  if(s.event)s.event=null;
+  advanceTime(s,.25);
+  const job=s.district.jobs.find(q=>q.campSalvage&&q.source===source);
+  if(!carried&&job&&s.citizens.some(c=>c.districtJob===job.id&&c.cargo.reed>0)){
+   assert.equal(job.delivered,0);
+   assert.ok(s.buildings.some(b=>b.reedCamp&&b.x===camp.x&&b.y===camp.y));
+   s=decode(encode(s));
+   assert.ok(s);
+   carried=true;
+  }
+ }
+ assert.ok(carried);
+ assert.equal(s.district.jobs.find(q=>q.campSalvage&&q.source===source)?.delivered,4);
+ assert.ok(!s.buildings.some(b=>b.x===camp.x&&b.y===camp.y));
+ assert.ok(residents.every(id=>s.citizens.some(c=>c.id===id&&c.home!==source)));
+ assert.ok(decode(encode(s)));
+});

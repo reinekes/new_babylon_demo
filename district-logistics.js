@@ -39,7 +39,9 @@ export function initializeDistricts(s){s.district??={nextId:1,jobs:[],lastScan:-
 export const storeMinimum=(b,k)=>b.stockMinimum?.[k]??(b.type==='depot'&&k==='food'?12*(b.level||1):0);
 export function connectedStores(s,a,b,pass=null){if(pass)return pass.components.has(a)&&pass.components.has(b)&&pass.components.get(a)===pass.components.get(b);const net=networkFor(s),ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key])),from=ports.get(a),to=ports.get(b);return !!from&&!!to&&net.components.get(from)===net.components.get(to);}
 export function exportable(s,key,k,pass=null){const b=store(s,key,pass);if(!b||b.noExport)return 0;if(!central(s,b,pass))return b.workshopStock?.output?.[k]||0;return Math.max(0,Math.min((pass?b.stock?.[k]||0:storeStock(s,key,k))-storeMinimum(b,k),k==='food'?(pass?pass.food.get(key)||0:foodAvailableAt(s,key)):Infinity));}
-export const districtExportable=(s,q,pass)=>q.shapingBatch?
+export const CAMP_REEDS=4;
+export const districtExportable=(s,q,pass)=>q.campSalvage?
+ store(s,q.source,pass)?.campSalvage?.reed||0:q.shapingBatch?
  findShapingBatch(s,q.shapingBatch)?.remaining[q.resource]||0:exportable(s,q.source,q.resource,pass);
 export const transferCarried=(s,q,pass=null)=>pass?pass.carried.get(q.id)||0:s.citizens.filter(c=>c.districtJob===q.id).reduce((n,c)=>n+(c.cargo?.[q.resource]||0),0);
 const pending=(s,target,k,pass=null)=>pass?pass.incoming.get(entry(target,k))||0:s.district.jobs.filter(q=>q.target===target&&q.resource===k).reduce((n,q)=>n+q.remaining+transferCarried(s,q),0);
@@ -76,7 +78,24 @@ export function syncDistrictJobs(s){
    add(pass.incoming,entry(key,resource),n);invalidateAssignments(s);
   }
  }
- const stores=pass.stores,destinations=[...pass.endpoints.values()].filter(isBuildingStore),donors=new Map();
+ const occupied=new Set(s.citizens.flatMap(c=>[c.home,c.floodShelter,c.fireShelter?.host,c.waterTrip?.target,c.waterTrip?.origin,c.pantryTarget,c.memorialMove?.source,c.memorialMove?.target]));
+ for(const b of s.buildings){
+  if(!b.reedCamp||!b.campVacating)continue;
+  const source=buildingKey(b);
+  if(occupied.has(source)||s.arrivalGroup?.home===source||
+   s.citizens.some(c=>Math.abs(c.x-b.x)<.75&&Math.abs(c.y-b.y)<.75))continue;
+  b.campSalvage??={reed:CAMP_REEDS};
+  const amount=b.campSalvage.reed;
+  if(amount<=eps||pass.active>=128||s.district.jobs.some(q=>q.campSalvage&&q.source===source&&(q.remaining>eps||transferCarried(s,q,pass)>eps)))continue;
+  const target=pass.stores.find(t=>t!==b&&!t.reedCamp&&connectedStores(s,source,buildingKey(t),pass)&&
+   logisticsRoom(s,t,'reed',null,pass)-pending(s,buildingKey(t),'reed',pass)>=amount-eps);
+  if(!target)continue;
+  const key=buildingKey(target);
+  const job={id:s.district.nextId++,source,target:key,resource:'reed',amount,remaining:amount,delivered:0,cancelled:0,automatic:true,campSalvage:true};
+  s.district.jobs.push(job);pass.jobsById.set(job.id,job);pass.active++;
+  add(pass.incoming,entry(key,'reed'),amount);invalidateAssignments(s);
+ }
+ const stores=pass.stores,destinations=[...pass.endpoints.values()].filter(b=>isBuildingStore(b)&&!b.campSalvage),donors=new Map();
  const nearest=(b,metric='round')=>{const target=buildingKey(b),id=target+metric;if(!donors.has(id))donors.set(id,stores.filter(a=>a!==b&&connectedStores(s,buildingKey(a),target,pass)).sort((a,c)=>metric==='round'?Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y):Math.abs(a.x-b.x)+Math.abs(a.y-b.y)-Math.abs(c.x-b.x)-Math.abs(c.y-b.y)));return donors.get(id);};
  const inbound=(b,k,need)=>{const target=buildingKey(b),wanted=need-pending(s,target,k,pass)-(pass.extra.get(entry(target,k))||0);if(wanted<(b.type==='house'&&k==='food'?Math.min(1,homeStockCapacity(s,b,'food')/2):.01))return;for(const a of nearest(b)){const source=buildingKey(a),amount=Math.min(wanted,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(amount>=.01&&requestTransfer(s,source,target,k,amount,{automatic:true,targetKind:'input'},pass).ok)break;}};
  const markedFields=s.earthDiscovery?.qualifiedAt!=null&&!harvestNameEvidence(s)?
@@ -118,11 +137,12 @@ export function districtPickup(s,c){
  const issue=eligible&&fromStock&&c.basketCondition===undefined&&surplus('basket')>=1;
  const repair=eligible&&fromStock&&c.basketCondition===0&&surplus('reed')>=2;
  const basket=eligible&&(c.basketCondition>0||issue||repair);
- const key=entry(q.target,q.resource),n=Math.min(basket?16:12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c,grainTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>12+eps){
+ const key=entry(q.target,q.resource),n=Math.min(basket?16:12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.campSalvage?n:q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c,grainTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>12+eps){
   if(issue)takeStock(s,q.source,'basket',1);
   if(repair)takeStock(s,q.source,'reed',2);
   c.basketCondition=(issue||repair?6:c.basketCondition)-1;
- }q.remaining-=actual;if(q.remaining<eps)q.remaining=0;c.cargo={[q.resource]:actual};if(!fromStock&&!q.shapingBatch)markWindCargo(s,c,actual);if(!q.shapingBatch&&!fromStock&&source?.type===q.resource)markCreatorCargo(s,c,q.resource,actual);if(q.resource==='food'&&!fromStock){appendGrain(c,'grainCargo',takeGrain(source,'grainOutput',actual,beforeOutput),0);pickupFishingOutput(s,source,c,actual,beforeOutput);pickupFieldGrain(source,c,actual,beforeOutput);if(source?.fishOutput)appendFish(c,'fishCargo',takeFish(source,'fishOutput',actual,beforeOutput),0);}c.store=q.target;invalidateAssignments(s);return actual;
+ }if(q.campSalvage)source.campSalvage.reed-=actual;
+ q.remaining-=actual;if(q.remaining<eps)q.remaining=0;c.cargo={[q.resource]:actual};if(!fromStock&&!q.shapingBatch)markWindCargo(s,c,actual);if(!q.shapingBatch&&!fromStock&&source?.type===q.resource)markCreatorCargo(s,c,q.resource,actual);if(q.resource==='food'&&!fromStock){appendGrain(c,'grainCargo',takeGrain(source,'grainOutput',actual,beforeOutput),0);pickupFishingOutput(s,source,c,actual,beforeOutput);pickupFieldGrain(source,c,actual,beforeOutput);if(source?.fishOutput)appendFish(c,'fishCargo',takeFish(source,'fishOutput',actual,beforeOutput),0);}c.store=q.target;invalidateAssignments(s);return actual;
 }
 export function districtReport(s){
  initializeDistricts(s);const pass=createDistrictPass(s),jobs=s.district.jobs.map(q=>{const inTransit=transferCarried(s,q,pass),carriers=pass.owners.get(q.id)||[],done=q.remaining+inTransit<=eps;return {...q,inTransit,status:done?(q.delivered>eps?'done':'cancelled'):!connectedStores(s,q.source,q.target,pass)||carriers.some(c=>c.phase==='blocked')?'blocked':inTransit>eps?'carrying':carriers.length?'active':q.targetKind!=='votive'&&exportable(s,q.source,q.resource,pass)<=eps?'blocked':'waiting'};});
@@ -133,6 +153,8 @@ export function validateDistricts(s){
  if(!d||!Number.isSafeInteger(d.nextId)||d.nextId<1||d.lastScan!==undefined&&(!Number.isInteger(d.lastScan)||d.lastScan< -1||d.lastScan>Math.floor(s.simTime))||!Array.isArray(d.jobs)||d.jobs.length>256&&d.jobs.filter(q=>q.automatic).length>Math.max(256,s.citizens.length+144))return false;const ids=new Set(),index=indexDistrictJobs(s),warehouses=new Set(stockStores(s)),pass={...index,endpoints:new Map(s.buildings.filter(b=>isOperational(b)&&(warehouses.has(b)||isBuildingStore(b)||isVotiveTemple(b))).map(b=>[buildingKey(b),b]))};
  for(const b of s.buildings){if(b.noExport!==undefined&&typeof b.noExport!=='boolean'||b.stockMinimum!==undefined&&(!b.stock||!b.stockMinimum||Array.isArray(b.stockMinimum)||Object.entries(b.stockMinimum).some(([k,n])=>!MATERIALS.includes(k)||!finite(n)||n>storeCapacity(b))))return false;}
  for(const q of d.jobs){if(!Number.isSafeInteger(q.id)||q.id<1||q.id>=d.nextId||ids.has(q.id)||typeof q.source!=='string'||typeof q.target!=='string'||q.source===q.target||!MATERIALS.includes(q.resource)||typeof q.automatic!=='boolean'||q.targetKind!==undefined&&(!['input','votive'].includes(q.targetKind)||q.remaining+transferCarried(s,q,pass)>eps&&!(q.targetKind==='votive'?isVotiveTemple(store(s,q.target,pass)):isBuildingStore(store(s,q.target,pass))))||!['amount','remaining','delivered','cancelled'].every(k=>finite(q[k]))||q.amount<=0||Math.abs(q.amount-q.remaining-q.delivered-q.cancelled-transferCarried(s,q,pass))>1e-6)return false;ids.add(q.id);
+  if(q.campSalvage!==undefined&&(q.campSalvage!==true||!q.automatic||q.resource!=='reed'||q.shapingBatch||q.targetKind||
+   q.remaining+transferCarried(s,q,pass)>eps&&(!store(s,q.source,pass)?.campSalvage||q.remaining>store(s,q.source,pass).campSalvage.reed+eps)))return false;
   if(q.shapingBatch!==undefined){
    const batch=findShapingBatch(s,q.shapingBatch);
    if(!batch||q.source!==`${batch.x},${batch.y}`||!Object.hasOwn(batch.remaining,q.resource)||!q.automatic||q.targetKind||

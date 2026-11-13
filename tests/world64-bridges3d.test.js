@@ -19,9 +19,9 @@ test('finished and unfinished bridges span the same crossing on both map axes',(
   assert.ok(bounds.acrossMin<=span.left*6+.1&&bounds.acrossMax>=span.right*6-.1);
   assert.ok(bounds.alongMin>span.y*6-1.1&&bounds.alongMax<span.y*6+1.1,`${axis} finished bridge follows crossing row`);
   const q=createOrder(BUILDINGS.bridge);Object.assign(q.delivered,q.required);q.work=6;
-  const meshes=createConstructionSite(B,scene,{...b,construction:q},{wood},s),root=new B.TransformNode('site',scene);root.position.set(b.x*6,0,b.y*6);for(const mesh of meshes)mesh.parent=root;
-  const site=projectedBounds(meshes,axis);assert.ok(site.acrossMin<=span.left*6+.1&&site.acrossMax>=span.right*6-.1);
-  assert.ok(site.alongMin>span.y*6-1.1&&site.alongMax<span.y*6+1.1,`${axis} scaffold follows the future deck`);
+  const meshes=createConstructionSite(B,scene,{...b,construction:q},{wood,soil:wood},s),root=new B.TransformNode('site',scene);root.position.set(b.x*6,0,b.y*6);for(const mesh of meshes)mesh.parent=root;
+  const site=projectedBounds(meshes,axis);assert.ok(site.acrossMin<=span.left*6+.1&&site.acrossMax<span.right*6-.1);
+  assert.ok(site.alongMin>span.y*6-1.1&&site.alongMax<span.y*6+1.1,`${axis} partial deck follows the crossing`);
   assert.equal(JSON.stringify(s),before);finished.dispose();root.dispose();
  }}finally{scene.dispose();engine.dispose();}
 });

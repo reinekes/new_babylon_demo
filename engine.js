@@ -11,7 +11,8 @@ import {retireDepthPressure,validateDepthSupply} from './depth-supply.js';
 import {recordStarForecast,retireStarForecastAt} from './star-forecast.js';
 import {validateStarObservations} from './star-observations.js';
 import {advanceArrivalOpening,arrivalHousing,reserveArrival,validateArrivalHospitality} from './arrival-hospitality.js';
-import {connectedStores} from './district-logistics.js';
+import {connectedStores,CAMP_REEDS,transferCarried} from './district-logistics.js';
+import {demolish} from './management.js';
 import {createShapingBatch,validateShapingBatches} from './shaping-batch.js';
 import {validateShapingModel} from './shaping-model.js';
 import {validateShapingProjects} from './shaping-projects.js';
@@ -197,7 +198,7 @@ function orderSiteWork(s,b,kind,cost,eligibleStores,joinery=false){
  return {ok:true};
 }
 export function yieldSummary(s,b){
- const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.reedCamp)return `Временное укрытие: ${capacityOf(b)} мест · здоровье снижается`;if(b.type==='house')return `${b.starterHut&&level===1?buildingPresentation(s,b).name+' · только улучшение или снос · ':''}Жильё: ${capacityOf(b)} жителей`;
+ const level=levelOf(b),def=BUILDINGS[b.type];if(b.type==='field'&&Number.isInteger(b.x))return cropSummary(s,b)+' · 2 рабочих места';if(b.campSalvage)return 'Шалаш разобран · тростник ждёт доставки на склад';if(b.reedCamp)return `Временное укрытие: ${capacityOf(b)} мест · здоровье снижается`;if(b.type==='house')return `${b.starterHut&&level===1?buildingPresentation(s,b).name+' · только улучшение или снос · ':''}Жильё: ${capacityOf(b)} жителей`;
  if(b.type==='garden'&&isStrictSumer(s)&&(!Number.isInteger(b.x)||b.construction?.kind==='new'))return 'После посадки: первый урожай через 4 смены сезона, полный через 12';
  if(b.type==='garden'&&b.orchardPlantedTick!==undefined){
   const stage=orchardMaturity(s,b),food=(def.output.food*outputMultiplier(b)*stage.yield).toLocaleString('ru-RU',{maximumFractionDigits:2});
@@ -439,6 +440,11 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
   advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;
   const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  for(const camp of s.buildings.filter(b=>b.campSalvage?.reed===0)){
+   const source=buildingKey(camp);
+   if(!s.citizens.some(c=>c.home===source)&&!s.district.jobs.some(q=>q.campSalvage&&q.source===source&&q.remaining+transferCarried(s,q)>1e-7))
+    demolish(s,camp.x,camp.y,undefined,{salvagedCamp:true});
+  }
   advanceRiverStores(s,worked);
   advanceCivicOrder(s,citizen=>recordCivicDeath(s,citizen));
   if(s.waterCrises)reviewWaterCrisisNeeds(s);
@@ -571,7 +577,10 @@ export function decode(raw){
   const roadIds=new Set();for(const r of s.roads){if(r.type!=='road'||!integer(r.level,1,3)||typeof r.id!=='string'||roadIds.has(r.id)||!r.a||!r.b||!finite(r.x,-.5,worldWidth(s))||!finite(r.y,-.5,worldHeight(s))||Math.abs(Math.abs(r.a.x-r.b.x)+Math.abs(r.a.y-r.b.y)-1)>1e-7||[r.a,r.b,{x:r.x,y:r.y}].some(p=>!isDryPoint(s,p.x,p.y))||r.id!==roadKey(r.a,r.b)||r.x!==(r.a.x+r.b.x)/2||r.y!==(r.a.y+r.b.y)/2)return null;roadIds.add(r.id);}
   const cells=new Set(),bridgeRows=new Set();
   for(const b of s.buildings){
-   const key=buildingKey(b),land=terrain(b.x,b.y,s);if(b.reedCamp!==undefined&&(b.reedCamp!==true||b.type!=='house'||b.level!==1||b.starterHut||b.construction||b.householdInitiative))return null;if(b.starterHut!==undefined&&(b.type!=='house'||b.starterHut!==true))return null;if(b.rotation!==undefined&&!validRotation(b.type,b.rotation))return null;if(b.footprint!==undefined&&(newFootprint(b.type)===1||b.footprint!==newFootprint(b.type)))return null;
+   const key=buildingKey(b),land=terrain(b.x,b.y,s);
+   if(b.campVacating!==undefined&&(b.campVacating!==true||!b.reedCamp)||
+    b.campSalvage!==undefined&&(!b.campVacating||!b.campSalvage||Object.keys(b.campSalvage).length!==1||!finite(b.campSalvage.reed,0,CAMP_REEDS)))return null;
+   if(b.reedCamp!==undefined&&(b.reedCamp!==true||b.type!=='house'||b.level!==1||b.starterHut||b.construction||b.householdInitiative))return null;if(b.starterHut!==undefined&&(b.type!=='house'||b.starterHut!==true))return null;if(b.rotation!==undefined&&!validRotation(b.type,b.rotation))return null;if(b.footprint!==undefined&&(newFootprint(b.type)===1||b.footprint!==newFootprint(b.type)))return null;
    if(!BUILDINGS[b.type]||land==='void'||cells.has(key)||!integer(b.level,1,3))return null;
    if(['linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard'].includes(b.type)&&!isStrictSumer(s))return null;
    if(isCityFortification(b.type)&&(!isStrictSumer(s)||b.level!==1||b.construction?.kind==='upgrade'||b.type==='cityGate'&&b.footprint!==2))return null;
