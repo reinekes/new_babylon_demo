@@ -393,3 +393,7 @@
  .uruk-ui #tile-detail:has(>[data-map-card=resident]) .map-card-status {margin:6px 0;padding:5px 8px}
  .uruk-ui #tile-detail:has(>[data-map-card=resident]) .map-card-cargo {margin:6px 0;padding:5px 8px}
 }
+
+.test-project-links {display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.test-project-links a {padding:7px 10px;border:1px solid #9c784e;color:inherit;text-decoration:none;border-radius:3px}
+.test-project-links a:hover,.test-project-links a:focus-visible {background:#b88e5521}

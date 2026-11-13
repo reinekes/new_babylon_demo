@@ -1,4 +1,4 @@
-import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=valley-seam-herds-20261112';
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=city-menu-fauna-20261113';
 import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
@@ -152,7 +152,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const groundModels=options.includeShoreBirds
   ?Object.entries(AMBIENT_MODELS).filter(([kind])=>kind!=='orange-bird')
   :Object.entries(AMBIENT_MODELS);
- const entries=[...groundModels,...(options.includeShoreBirds?Object.entries(SHORE_MODELS):[])];if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
+ const entries=[...groundModels,...(options.includeShoreBirds?Object.entries(SHORE_MODELS).filter(([kind])=>!options.hidePlaceholderBirds||kind!=='seagull'):[])];if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
  if(options.includeYardPig)entries.push(['yard-pig',YARD_PIG_MODEL]);
  const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
@@ -196,7 +196,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   skyMaterial=new B.StandardMaterial('ambient-sky-ochre',scene);skyMaterial.diffuseColor=new B.Color3(.27,.23,.18);const body=B.MeshBuilder.CreateSphere('ambient-sky-template-body',{diameter:1,segments:6},scene),wing=B.MeshBuilder.CreateBox('ambient-sky-template-wing',{width:.65,height:.026,depth:.17},scene);body.material=wing.material=skyMaterial;body.isVisible=wing.isVisible=false;body.isPickable=wing.isPickable=false;templates.push(body,wing);for(let i=0;i<2;i++)originalSky(i,{body,wing});
  }else if(options.includeSkyBirds!==false)for(let i=0;i<2;i++)imported('sky-birds',i);
  for(const [species]of groundModels)for(let i=0;i<2;i++)imported(species,i);
- if(options.includeShoreBirds)for(const species of Object.keys(SHORE_MODELS))imported(species,0);
+ if(options.includeShoreBirds)for(const species of Object.keys(SHORE_MODELS))if(!options.hidePlaceholderBirds||species!=='seagull')imported(species,0);
  const yardPigs=assets.has('yard-pig')?[imported('yard-pig',0),imported('yard-pig',1)]:[];
  let yardPlan,yardPlaces=[];
  let route=null,routeBuildings=null,routeCount=-1;

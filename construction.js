@@ -32,9 +32,9 @@ export function constructionProgress(b){
  const total=Object.values(q.required).reduce((a,b)=>a+b,0),materials=total?Object.values(q.delivered).reduce((a,b)=>a+b,0)/total:1,work=Math.min(1,q.work/(workRequired(b)));
  return {ratio:materials*.4+work*.6,materials,work,stage:!materialsReady(q)?'Доставка материалов':q.kind==='boat'?'Сборка перегрузочной лодки':q.kind==='repair'?'Ремонт':b.type==='road'?'Укладка покрытия':b.type==='canal'?(work<.7?'Выкапывание русла':'Укрепление берегов'):work<.3?'Фундамент':work<.75?'Возведение стен':'Крыша и отделка'};
 }
-export function finishConstruction(s){
+export function finishConstruction(s,{only=null,instant=false}={}){
  let changed=false;
- for(const b of constructionEntities(s)){const q=b.construction;if(!q||!materialsReady(q)||q.work<workRequired(b)-1e-8)continue;
+ for(const b of only?[only]:constructionEntities(s)){const q=b.construction;if(!q||!materialsReady(q)||q.work<workRequired(b)-1e-8)continue;
   if(q.kind==='new'&&b.type!=='road'){
    stampBuildingCompletion(s,b);
    if(b.type==='house')delete s.demography?.lastBirth?.[buildingKey(b)];
@@ -52,7 +52,7 @@ export function finishConstruction(s){
   }
   recordRevelationApprenticeship(s,b);
   recordBuilderCompletion(s,b);b.level=q.target;if(b.type==='road')markRoadTopologyChanged(s);if(q.legacyMasonry&&b.type!=='road')b.legacyMasonryLevel=q.target;if(q.legacyFiring&&b.type!=='road')b.legacyFiringLevel=q.target;delete b.construction;changed=true;
-  s.news.unshift({title:q.kind==='boat'?'Готова перегрузочная лодка':q.kind==='repair'?`Отремонтировано: ${buildingDefinition(s,b.type)?.name||'Дорога'}`:q.kind==='upgrade'?`${(buildingDefinition(s,b.type)?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(buildingDefinition(s,b.type)?.name||'Дорога')}`,text:'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
+  s.news.unshift({title:q.kind==='boat'?'Готова перегрузочная лодка':q.kind==='repair'?`Отремонтировано: ${buildingDefinition(s,b.type)?.name||'Дорога'}`:q.kind==='upgrade'?`${(buildingDefinition(s,b.type)?.name||'Дорога')} · уровень ${b.level}`:`Построено: ${(buildingDefinition(s,b.type)?.name||'Дорога')}`,text:instant?'Завершено в режиме быстрого строительства.':'Жители доставили материалы и завершили работы.',kind:'build',year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);
   // Workforce synchronization sees the old site and routes builders home.
  }
  if(changed){s.capacity=housingOf(s);initializeProductionAccounting(s);}return changed;

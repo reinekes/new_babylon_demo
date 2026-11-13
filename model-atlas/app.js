@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=winter-pelican-onager-20261112';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=city-menu-fauna-20261113';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -22,7 +22,7 @@ const element=(tag,text,className)=>{
   if (className) node.className=className;
   return node;
 };
-const getPreview=()=>preview??=import('./preview.js?v=winter-pelican-onager-20261112').then(m=>m.createPreview(canvas)).catch(error=>{
+const getPreview=()=>preview??=import('./preview.js?v=city-menu-fauna-20261113').then(m=>m.createPreview(canvas)).catch(error=>{
   preview=null;
   throw error;
 });

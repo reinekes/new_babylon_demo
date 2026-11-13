@@ -55,3 +55,17 @@ test('a finished bridge remains passable throughout its upgrade',()=>{
  const s=createGame({start:'established'});s.resources.brick=100;s.resources.clay=500;s.resources.reed=500;build(s,'bridge',Math.round(river(8)),8);run(s,240);s.event=null;const b=s.buildings.at(-1);assert.equal(b.construction,undefined);
  const components=()=>new Set(networkFor(s).ports.map(p=>networkFor(s).components.get(p.key))).size;assert.equal(components(),1);assert.ok(upgrade(s,b.x,b.y).ok);assert.equal(b.level,1);assert.equal(components(),1);run(s,300);assert.equal(b.level,2);assert.equal(components(),1);
 });
+
+test('quick construction pays once and leaves older building orders intact across saves',()=>{
+ const s=createGame({start:'established'});
+ assert.ok(build(s,'house',10,9).ok);
+ const older=s.buildings.at(-1),order=structuredClone(older.construction),clay=s.resources.clay;
+ assert.ok(build(s,'house',11,9,0,{instant:true}).ok);
+ assert.equal(s.buildings.at(-1).construction,undefined);
+ assert.ok(s.buildings.at(-1).built);
+ assert.deepEqual(older.construction,order);
+ assert.equal(s.resources.clay,clay-12);
+ assert.equal(build(s,'house',11,9,0,{instant:true}).ok,false);
+ assert.equal(s.resources.clay,clay-12);
+ assert.ok(decode(encode(s)));
+});

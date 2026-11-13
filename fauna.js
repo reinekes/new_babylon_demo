@@ -14,15 +14,30 @@ function habitatsFor(s){
  const free=(x,y)=>isDryPoint(s,x,y)&&!['water','void'].includes(terrain(x,y,s))&&!s.buildings.some(b=>b.x===x&&b.y===y);
  const candidates=[];for(let y=1;y<worldHeight(s)-1;y++)for(let x=1;x<worldWidth(s)-1;x++)if(free(x,y))candidates.push({x,y});
  const wildlife=s.world?.deposits?.filter(d=>d.kind==='wildlife')||[],homes=s.buildings.filter(b=>b.type==='house');
- for(const [kind,count,predicate]of [['goat',7,p=>homes.some(h=>Math.hypot(h.x-p.x,h.y-p.y)<5)],['gazelle',12,p=>wildlife.some(w=>Math.hypot(w.x-p.x,w.y-p.y)<4)],['bird',12,p=>isShore(s,p.x,p.y)],['jackal',4,p=>p.x<3||p.x>worldWidth(s)-4]]){
+ for(const [kind,count,predicate]of [['goat',7,p=>homes.some(h=>Math.hypot(h.x-p.x,h.y-p.y)<5)],['gazelle',12,p=>homes.every(h=>Math.hypot(h.x-p.x,h.y-p.y)>3.5)&&wildlife.some(w=>Math.hypot(w.x-p.x,w.y-p.y)<4)],['bird',12,p=>isShore(s,p.x,p.y)],['jackal',4,p=>homes.every(h=>Math.hypot(h.x-p.x,h.y-p.y)>5)&&(p.x<5||p.x>worldWidth(s)-6||p.y<5||p.y>worldHeight(s)-6)]]){
   const choices=candidates.filter(predicate).sort((a,b)=>seed(a.x+worldSeed,a.y+(['cat','mouse'].includes(kind)?3:kind.length)*13)-seed(b.x+worldSeed,b.y+(['cat','mouse'].includes(kind)?3:kind.length)*13));
+  if(kind==='jackal'){
+   const count=ecologyCount(s,kind,s.ecology&&!s.ecology.legacyFauna?2:4);
+   for(const center of choices){
+    const route=safeLoop(s,center,1.2,true);
+    if(route.length<3||route.some(p=>homes.some(h=>Math.hypot(h.x-p.x,h.y-p.y)<4)))continue;
+    for(let i=0;i<count;i++)places.push({id:`jackal-${i}`,kind,...center,route,packIndex:i});
+    break;
+   }
+   continue;
+  }
   for(let i=0;i<Math.min(ecologyCount(s,kind,s.ecology&&!s.ecology.legacyFauna?2:count),choices.length);i++){const pick=choices.find(p=>!places.some(a=>a.kind===kind&&Math.hypot(a.x-p.x,a.y-p.y)<2.2))||choices[i];places.push({id:`${kind}-${i}`,kind,...pick,route:safeLoop(s,pick,kind==='bird'?.4:.7,true).map(p=>({...p,atWater:isShore(s,Math.round(p.x),Math.round(p.y))}))});}
  }
  habitats.set(s,{signature,places});return places;
 }
 export function naturalAnimalsFor(s){
  const time=s.simTime||0,result=[];
- for(const {id,kind,route,...p} of habitatsFor(s)){const phase=time+seed(p.x,p.y)*17;
+ for(const {id,kind,route,packIndex,...p} of habitatsFor(s)){const phase=time+seed(p.x,p.y)*17;
+  if(packIndex!==undefined){
+   const motion=loopMotion(route,phase-packIndex*1.25,.37,0);
+   result.push({id,kind,...motion,behavior:'walking',growth:1-(packIndex%4)*.055});
+   continue;
+  }
   const motion=loopMotion(route,phase,kind==='bird'?.65:.32,kind==='jackal'?2:3.5);const idle=Math.floor(phase/2.8)%4,behavior=motion.walking?'walking':motion.atWater&&idle===0?'drinking':idle===1?'looking':idle===2?'resting':kind==='bird'?'perched':'grazing';result.push({id,kind,...motion,step:phase*5,behavior,headTurn:Math.sin(phase*.9)*.5});}
  // River coordinates follow the actual continuous river instead of cutting across bends.
  for(let i=0;i<ecologyCount(s,'fish',36);i++){

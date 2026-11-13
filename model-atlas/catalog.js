@@ -79,7 +79,7 @@ export function makeCatalog(index, profile) {
     ...[1,2,3].map(level=>model('road',`Уровень ${level}`,{level}))));
   rows.push(row('transport','Южношумерское речное судно','Корпус, борт и шест из игрового генератора', model('boat','Игровая геометрия')));
   rows.push(row('birds','Стая над долиной','Процедурные силуэты, отдельные от GLB',
-    model('flock','Игровая геометрия')));
+    model('flock','Резервная геометрия',{reserve:true})));
   rows.push(row('mythology','Анзуд','Львиноголовый орёл по мотивам сосуда Энметены',model('relief','Игровой рельеф',{
     species:'anzud',studio:true,sources:[
       {author:'Сосуд Энметены, Лувр',source:'https://collections.louvre.fr/en/ark:/53355/cl010120706'},
@@ -114,7 +114,7 @@ export function makeCatalog(index, profile) {
   };
   rows.push(row('animals','Змея','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'snakes'})));
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
-  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия'],egret:['Малая белая цапля','Игровая геометрия'],otter:['Гладкошёрстная выдра','Игровая геометрия']});
+  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия'],egret:['Малая белая цапля','Резервная геометрия'],otter:['Гладкошёрстная выдра','Резервная геометрия']});
   if(ambient.courtyardFauna){
     const marshes={author:'Полевое исследование птиц болот Ирака',source:'https://doi.org/10.1155/2017/4198690'};
     const regional=[
@@ -128,8 +128,10 @@ export function makeCatalog(index, profile) {
       ['animals','onager','Онагр','Дикий представитель семейства лошадиных, ходит и пасётся на сухой окраине',
         {author:'Древняя ДНК непарнокопытных, Science Advances',source:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8759742/'}]
     ];
-    for(const [group,species,title,description,source] of regional)
-      rows.push(row(group,title,description,model('wildlife','Игровая геометрия',{species,sources:[source]})));
+    for(const [group,species,title,description,source] of regional){
+      const reserve=['pied-kingfisher','glossy-ibis','pygmy-cormorant','marsh-harrier'].includes(species);
+      rows.push(row(group,title,description,model('wildlife',reserve?'Резервная геометрия':'Игровая геометрия',{species,reserve,sources:[source]})));
+    }
   }
   for (const [species,[title,label]] of Object.entries(wildlife)) {
     rows.push(row(['bird','egret'].includes(species)?'birds':'animals',title,label,model('wildlife',label,{species,reserve:label!=='Игровая геометрия'})));

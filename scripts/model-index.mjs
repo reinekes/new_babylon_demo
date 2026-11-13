@@ -26,7 +26,7 @@ group('ambient-dog ambient-duck ambient-sheep-kenchoo imported-boar imported-fox
 group('ambient-yard-pig','active','Домашняя свинья у двора с исходной анимацией на месте.','game3d/ambient-fauna.js|YARD_PIG_MODEL');
 group('shore-mallard','active','Селезень кряквы у берега.','game3d/ambient-fauna.js|SHORE_MODELS');
 group('shore-mallard-female','active','Самка кряквы у берега. Добавлен клип покоя.','game3d/ambient-fauna.js|SHORE_MODELS');
-group('shore-seagull','active','Чайка в полёте над водой.','game3d/ambient-fauna.js|SHORE_MODELS');
+group('shore-seagull','optional','Чайка в отдельных сценах, скрыта на основной карте.','game3d/ambient-fauna.js|SHORE_MODELS');
 group('imported-goose imported-sky-birds','spare','Сохранённый импорт; ни одного имени в текущих runtime-путях загрузки.','assets/art-courtyard/ATTRIBUTION.md|Imported city fauna');
 group('sky-bird-single','optional','API декоративного полёта; main отключает includeSkyBirds. Небесные стаи main процедурные.','game3d/actors.js|includeSkyBirds:false');
 group('jackal','active','Шакалы похоронного обряда; художественная адаптация Wolf.','game3d/jackals.js|JACKAL_MODEL');

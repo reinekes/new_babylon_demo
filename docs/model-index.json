@@ -4,9 +4,9 @@
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
     "total": 70,
-    "active": 53,
+    "active": 52,
     "fallback": 9,
-    "optional": 4,
+    "optional": 5,
     "spare": 4
   },
   "errors": [],
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "f1c6d36aeb9b96a600bb41e98f211c31d69726b864c85b12996b74b8d933a238"
+      "sha256": "dca7988ec8579a85be28e2d67a5ea8b84663e09fe250eff6a00e721c3b2dab0a"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "f5d4ca1bae96e9d0fded941d19fd874a1da74eb4c256f00ea077beef6ed64762"
+      "sha256": "968b1fb9eb8c6cbf5aabf6fe206714eeb72ee120bb1c806d3f1ac64121dbf8e9"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "d7fe016f5e57c3fb5b9fd30c2e2befc328a30766bf552c0aa41d8cd5c8283457"
+      "sha256": "8b638e08e64a523da1618e026b8ce915ecece340e79f0d951987f5c7b8579fcd"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -1804,8 +1804,8 @@
     },
     {
       "file": "shore-seagull.glb",
-      "status": "active",
-      "purpose": "Чайка в полёте над водой.",
+      "status": "optional",
+      "purpose": "Чайка в отдельных сценах, скрыта на основной карте.",
       "classificationEvidence": "game3d/ambient-fauna.js|SHORE_MODELS",
       "bytes": 516392,
       "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",

@@ -158,7 +158,6 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  const resourceModels=new Map();
  const source=(name,create,mat)=>{const m=create();m.name=name;m.material=mat;m.isPickable=false;m.receiveShadows=true;m.setEnabled(false);resourceSources.push(m);meshes.push(m);return m;};
  const stoneSource=source('resource-stone-source',()=>B.MeshBuilder.CreateIcoSphere('site-stone',{radius:1,subdivisions:1},scene),materials.stone);
- const claySource=source('resource-clay-source',()=>B.MeshBuilder.CreateIcoSphere('site-clay',{radius:1,subdivisions:1},scene),materials.terracotta);
  const reedSource=source('resource-reed-source',()=>B.MeshBuilder.CreateCylinder('site-reed',{height:1,diameterTop:.035,diameterBottom:.07,tessellation:5},scene),siteMaterials.reed);
  const hoofSource=source('resource-track-source',()=>B.MeshBuilder.CreateSphere('site-track',{diameter:1,segments:6},scene),materials.wood);
  for(const [kind,spec]of Object.entries(RESOURCE_SITES)){
@@ -173,10 +172,9 @@ export async function createGameLandscape(B,scene,initialState,materials,options
    const patch=instanceResource(resourceModels.get(d.kind),`resource-site-${d.kind}-${d.x}-${d.y}`,X,Y+.045,Z,[1,1,1],d);patch.setEnabled(false);
 
    if(occupied)continue;
-   if(['clay','stone','reed'].includes(d.kind))for(const [i,p]of resourceDisplayLayout(d).entries()){
+   if(d.kind==='reed'&&!valleyVegetation.sources.reed.length)for(const p of resourceDisplayLayout(d)){
     if(!sceneryClear(s,p,.05))continue;const ground=surfaceElevation(p.x,p.y,s);
-    if(d.kind==='reed'){if(valleyVegetation.sources.reed.length)continue;const h=1.25+p.size*.38,m=instanceResource(reedSource,'deposit-reed-bed',p.x*TILE,ground+h/2,p.y*TILE,[1,h,1],d);m.unfreezeWorldMatrix();m.rotation.z=Math.sin(p.angle)*.09;m.freezeWorldMatrix();}
-    else{const m=instanceResource(d.kind==='clay'?claySource:stoneSource,`deposit-${d.kind}-pile`,p.x*TILE,ground+.19*p.size,p.y*TILE,[.56*p.size,.32*p.size,.51*p.size],d);m.unfreezeWorldMatrix();m.rotation.y=p.angle;m.freezeWorldMatrix();}
+    const h=1.25+p.size*.38,m=instanceResource(reedSource,'deposit-reed-bed',p.x*TILE,ground+h/2,p.y*TILE,[1,h,1],d);m.unfreezeWorldMatrix();m.rotation.z=Math.sin(p.angle)*.09;m.freezeWorldMatrix();
    }
    if(d.kind==='wildlife')for(let i=0;i<6;i++)instanceResource(hoofSource,'deposit-wildlife-track',X+(i%2)*.33-.16,Y+.07,Z+(i/2-1.5)*.6,[.13,.055,.23],d);
   }

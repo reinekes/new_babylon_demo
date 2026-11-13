@@ -518,3 +518,12 @@ details[open]>summary.production-total span::after{content:' −'}
  .uruk-ui .city-tools[data-city-view] .city-tools-tabs {grid-template-columns:repeat(2,minmax(0,1fr))}
  .production-total{gap:6px;padding-inline:8px}
 }
+
+.uruk-ui #tile-detail .house-person:hover,
+.uruk-ui #tile-detail .house-person:focus-within {background:#b88e5521;color:#f5dfb9}
+.uruk-ui .uruk-menu :is(.management-nav,.header-actions)>:is(button,a):hover,
+.uruk-ui .uruk-menu :is(.management-nav,.header-actions)>:is(button,a):focus-visible {background:#b88e5521!important;color:#fff1d8!important}
+.uruk-ui .uruk-menu .management-nav [hidden],
+.uruk-ui .uruk-menu #save-status[hidden] {display:none!important}
+.uruk-ui .quick-build-indicator {display:none}
+.uruk-ui.quick-build .quick-build-indicator {display:block;margin:8px 0;padding:7px 10px;color:#f5dfb9;background:#54402b;border:1px solid #ad8956}

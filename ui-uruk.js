@@ -7,7 +7,18 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  const dock=d.createElement('nav');dock.className='uruk-dock';dock.setAttribute('aria-label','Действия города');
  dock.innerHTML=[['build','hammer','Строить'],['people','users','Жители'],['city','buildings','Город'],['miracles','sun','Чудеса'],['menu','list','Меню']].map(([id,image,title])=>`<button type="button" data-uruk-action="${id}"${['build','miracles','menu'].includes(id)?' aria-expanded="false"':''}>${icon(image)}<span>${title}</span></button>`).join('')+'<div class="uruk-transport"></div>';
  body.append(dock);dock.querySelector('.uruk-transport').append(d.querySelector('.time-controls'));
- const menu=d.createElement('section');menu.className='uruk-menu';menu.setAttribute('aria-label','Меню города');menu.innerHTML='<div class="uruk-drawer-heading"><span>ГОРОД И ЕГО ИСТОРИЯ</span><h2>Меню</h2></div>';menu.append(d.querySelector('.management-nav'),d.querySelector('.header-actions'));const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');if(viewOptions)menu.append(viewOptions);body.append(menu);
+ const menu=d.createElement('section');menu.className='uruk-menu';menu.setAttribute('aria-label','Меню города');menu.innerHTML='<div class="uruk-drawer-heading"><h2>Меню</h2></div>';const management=d.querySelector('.management-nav'),header=d.querySelector('.header-actions');
+ for(const id of ['open-construction','open-supply','open-trade','open-roads','lay-roads','open-civic-order','open-festival','open-relic','open-life','open-song-library','open-save-library','test-resources']){
+  const control=$(id);if(control?.parentElement===management)management.append(control);
+ }
+ for(const id of ['open-residents','open-city-tools'])if($(id)?.parentElement===management)$(id).hidden=true;
+ if(header.querySelector('.district-link'))header.querySelector('.district-link').hidden=true;
+ if($('save-status'))$('save-status').hidden=true;
+ const quick=d.createElement('button');quick.type='button';quick.className='quick-build-indicator';quick.textContent='Быстрое строительство · вкл.';
+ d.querySelector('.build-panel .section-label').after(quick);
+ listen(quick,'click',()=>{close();$('test-resources').click();});
+
+ menu.append(management,header);const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');if(viewOptions)menu.append(viewOptions);body.append(menu);
  // The management grid already contains these two destinations.
  for(const id of ['open-saves','open-encyclopedia'])if($(id))$(id).hidden=true;
  if($('help'))$('help').textContent='Как играть';

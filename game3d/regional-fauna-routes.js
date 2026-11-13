@@ -3,15 +3,16 @@ import {calendarAt,calendarRateFor,MONTH_SECONDS} from '../calendar.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT,waterDepth} from './water.js';
 
-const herdFormation=[[0,0],[-.38,-.44],[.37,-.51],[-.24,-.92],[.32,-1.02]];
+const herdFormation=[[0,0],[-.37,-.44],[.38,-.51],[-.75,-.92],[.76,-1.02]];
 function onagerRoutes(state,center,clearSegment){
  if(!center)return [];
  const directions=[[1,0],[0,1],[-1,0],[0,-1]];
  const centers=[center,...directions.map(([x,y])=>({x:center.x+x*1.25,y:center.y+y*1.25}))];
  for(const site of centers)for(const [dx,dy] of directions){
-  const routes=herdFormation.map(([side,back])=>{
+  const routes=herdFormation.map(([side,back],index)=>{
    const start={x:site.x+dx*back-dy*side,y:site.y+dy*back+dx*side};
-   return [start,{x:start.x+dx*1.45,y:start.y+dy*1.45}];
+   const drift=[0,-.06,.11,-.19,.17][index],reach=[1.53,1.42,1.71,1.55,1.34][index];
+   return [start,{x:start.x+dx*reach-dy*drift,y:start.y+dy*reach+dx*drift}];
   });
   if(routes.every(([a,b])=>clearSegment(state,a,b)))return routes;
  }
@@ -108,7 +109,7 @@ export function regionalFauna(state,plan,time){
  }
  for(const [index,route] of plan.onagers.entries()){
   animals.push({id:index?'ambient-onager-'+index:'ambient-onager',kind:'onager',decorative:true,
-   scale:[1,.94,1.04,.9,.98][index],...onagerPose(route,time+index*.38)});
+   scale:[1.07,.88,.99,.71,.94][index],phase:index*.91,...onagerPose(route,time+[0,1.15,2.8,.48,3.7][index])});
  }
  return animals;
 }

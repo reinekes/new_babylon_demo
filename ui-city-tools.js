@@ -479,7 +479,7 @@ export function renderCityTools(root,s,options={}){
    const summaryKey=summaryKeys.find(key=>summary?.hasAttribute(key)),summaryValue=summaryKey?summary.getAttribute(summaryKey):null;
    const openHelp=new Set([...(root.querySelectorAll?.('[data-city-vital-help][open]')||[])].map(e=>e.dataset.cityVitalHelp));
    const scroll=root.querySelector?.('[data-city-scroll]'),previousTop=scroll?.scrollTop||0;
-   const changed=setHTML(root,cityToolsHTML(ctl.s,{tab:ctl.tab,filter:ctl.filter,buildingFilter:ctl.buildingFilter,page:ctl.page,selectedId:ctl.selectedId,group:ctl.group,model:ctl.model,desiredInspirations:ctl.desiredInspirations,expandedBuildings:ctl.expandedBuildings,expandedCitizens:ctl.expandedCitizens,production:ctl.production,testOptions:{...ctl.testOptions,audioStatus:ctl.options.audioStatus,mapUpgrade:ctl.options.mapUpgrade}}));
+   const changed=setHTML(root,cityToolsHTML(ctl.s,{tab:ctl.tab,filter:ctl.filter,buildingFilter:ctl.buildingFilter,page:ctl.page,selectedId:ctl.selectedId,group:ctl.group,model:ctl.model,desiredInspirations:ctl.desiredInspirations,expandedBuildings:ctl.expandedBuildings,expandedCitizens:ctl.expandedCitizens,production:ctl.production,testOptions:{...ctl.testOptions,audioStatus:ctl.options.audioStatus,mapUpgrade:ctl.options.mapUpgrade,quickBuild:ctl.options.quickBuild}}));
    if(changed&&openHelp.size)for(const el of root.querySelectorAll('[data-city-vital-help]'))if(openHelp.has(el.dataset.cityVitalHelp))el.open=true;
    if(changed&&attribute){
     const replacement=[...(root.querySelectorAll?.(`[${attribute}]`)||[])].find(e=>e.getAttribute(attribute)===value);

@@ -289,8 +289,8 @@ export function createWildlife(B,scene,meshes=[]){
     if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
     if(nearOnager){
      a.detail.move=a.move;
-     a.detail.gait=a.gait;
-     poseOnager(a.detail,c,t,ease);
+     a.detail.gait=a.gait+(c.phase??0);
+     poseOnager(a.detail,c,t+(c.phase??0),ease);
     }
     continue;
    }
