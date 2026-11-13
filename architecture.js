@@ -69,7 +69,7 @@ export function drawBuilding(r, b, state, t) {
     masonryBox(r,front.x,front.y,25*q,13*q,36*q,'mud',q);
     c.restore();return;
   }
-  if(b.type==='levee'){box(0,0,37,23,5,'#b78a58','#805637','#986740');box(0,0,33,16,9,'#c69c6a','#916447','#a4774d');return;}
+  if(b.type==='levee'){box(0,0,38,14,2,'#a27b51','#866747','#94714c');box(0,0,35,7,4,'#b18c62','#94734e','#a17d58');return;}
   if(b.type==='musicHouse') {
     poly([[0,-15],[29,0],[0,15],[-29,0]],'#b9a17d');
     for(const [a,z] of [[-24,0],[0,-12],[24,0],[0,12]])line([[a,z],[a,z-27]],'#705136',1.5);

@@ -1,4 +1,4 @@
-import { suppliedFauna } from './supplied-fauna.js';
+import { suppliedFauna } from './supplied-fauna.js?v=fish-preview-20261113';
 import { BUILDINGS, RESOURCE_NAMES } from '../definitions.js';
 import { buildingDefinition, buildingPresentation } from '../building-presentation.js';
 import { strictScenario, legacyScenario } from '../scenario-profiles.js';
@@ -126,11 +126,11 @@ export function makeCatalog(index, profile) {
       ['birds','marsh-harrier','Болотный лунь','Патрулирует берег низким полётом',marshes],
       ['animals','savigny-tree-frog','Квакша Савиньи','Прыгает короткими перебежками на берегу',
         {author:'Полевые наблюдения в Эль-Хавизе, Университет Ди-Кара',source:'https://jutq.utq.edu.iq/index.php/main/article/download/152/145'}],
-      ['animals','onager','Онагр','Дикий представитель семейства лошадиных, ходит и пасётся на сухой окраине',
+      ['animals','onager','Онагр','Резервная модель дикого осла · просмотр шага и выпаса',
         {author:'Древняя ДНК непарнокопытных, Science Advances',source:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8759742/'}]
     ];
     for(const [group,species,title,description,source] of regional){
-      const reserve=['pied-kingfisher','glossy-ibis','pygmy-cormorant','marsh-harrier'].includes(species);
+      const reserve=['onager','pied-kingfisher','glossy-ibis','pygmy-cormorant','marsh-harrier'].includes(species);
       rows.push(row(group,title,description,model('wildlife',reserve?'Резервная геометрия':species==='white-pelican'?'Геометрия полёта':species==='savigny-tree-frog'?'Резерв при ошибке загрузки':'Игровая геометрия',{species,reserve:reserve||species==='savigny-tree-frog',sources:[source]})));
     }
   }

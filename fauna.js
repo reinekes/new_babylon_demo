@@ -72,19 +72,20 @@ function flockPlan(s,b,size){
   if(free(point)&&clear(center,point))candidates.push(point);
  }
  candidates.sort((a,z)=>Math.hypot(a.x-center.x,a.y-center.y)-Math.hypot(z.x-center.x,z.y-center.y));
- const grass=candidates.find(p=>terrain(p.x,p.y,s)==='fertile')||candidates[0];
- const shore=grass&&candidates.find(p=>isShore(s,p.x,p.y)&&Math.hypot(p.x-grass.x,p.y-grass.y)>.6&&clear(grass,p));
- const positions=Array.from({length:size},(_,i)=>{
-  const dx=(i%4-1.5)*.16,dy=(Math.floor(i/4)-.5)*.16;
-  const shift=p=>({x:p.x+dx,y:p.y+dy,flockStage:p.flockStage});
-  const start=shift({...center,flockStage:'pen'});
-  const pen=free(start)?start:{...center,flockStage:'pen'};
-  if(!grass)return [pen];
-  const pasture=shift({...grass,flockStage:'pasture'});
-  if(!clear(pen,pasture))return [pen];
-  const water=shore&&shift({...shore,flockStage:'water'});
-  return water&&clear(pasture,water)&&clear(water,pen)?[pen,pasture,water,pen]:[pen,pasture,pen];
- });
+ const columns=Math.min(n===2?5:3,Math.ceil(Math.sqrt(size)));
+ const rows=Math.ceil(size/columns);
+ const slots=Array.from({length:size},(_,i)=>({
+  x:(i%columns-(columns-1)/2)*(n===2?.28:.20),
+  y:(Math.floor(i/columns)-(rows-1)/2)*(n===2?.34:.24)
+ }));
+ const shift=(point,slot)=>({x:point.x+slot.x,y:point.y+slot.y,flockStage:point.flockStage});
+ const clearForFlock=(from,to)=>slots.every(slot=>clear(shift(from,slot),shift(to,slot)));
+ const field=candidates.find(p=>terrain(p.x,p.y,s)==='fertile'&&clearForFlock(center,p))
+  ||candidates.find(p=>clearForFlock(center,p));
+ const watering=field&&candidates.find(p=>isShore(s,p.x,p.y)&&Math.hypot(p.x-field.x,p.y-field.y)>.6&&clearForFlock(field,p)&&clearForFlock(p,center));
+ const pen={...center,flockStage:'pen'};
+ const route=field?[pen,{...field,flockStage:'pasture'},...(watering?[{...watering,flockStage:'water'}]:[]),pen]:[pen];
+ const positions=slots.map(slot=>route.map(p=>shift(p,slot)));
  const plan={signature,positions};flockRoutes.set(b,plan);return plan;
 }
 
@@ -106,8 +107,8 @@ export function animalsFor(s){
  for(const b of s.buildings){if(b.type!=='sheepfold'||b.construction?.kind==='new')continue;
   const size=flockSize(b),plan=flockPlan(s,b,size);
   for(let i=0;i<size;i++){
-   const phase=time+seed(b.x,b.y)*8-i*.18;
-   const motion=loopMotion(plan.positions[i],phase,.22,3.8);
+   const phase=time+seed(b.x,b.y)*8-i*.39;
+   const motion=loopMotion(plan.positions[i],time+seed(b.x,b.y)*8,.22,3.8);
    const behavior=motion.walking?'walking':motion.flockStage==='water'?'drinking':motion.flockStage==='pasture'?'grazing':'resting';
    result.push({id:`sheep-${b.x}-${b.y}-${i}`,kind:'sheep',young:i>=flockAdults(b),...motion,step:phase*5,behavior,headTurn:Math.sin(phase*.8)*.5});
   }

@@ -54,6 +54,9 @@ test('one flock leaves the pen, grazes, drinks on dry land and returns with the 
   ids??=flock.map(a=>a.id);
   assert.deepEqual(flock.map(a=>a.id),ids);
   assert.ok(flock.every(a=>isDryPoint(city,a.x,a.y)));
+  for(const [index,sheep] of flock.entries()){
+   for(const other of flock.slice(index+1))assert.ok(Math.hypot(sheep.x-other.x,sheep.y-other.y)>=.19);
+  }
   const phase=flock[0].behavior;
   if(phase!=='walking'&&visits.at(-1)!==phase)visits.push(phase);
  }

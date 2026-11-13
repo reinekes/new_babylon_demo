@@ -1,7 +1,7 @@
 export const suppliedFauna = [
   {
     "id": "yellowfin-goby",
-    "note": "Резерв · восточноазиатский вид.",
+    "note": "На тестовой карте рыб · восточноазиатский вид.",
     "title": "Желтопёрый бычок",
     "group": "animals",
     "file": "supplied-yellowfin-goby.glb",
@@ -12,7 +12,7 @@ export const suppliedFauna = [
   },
   {
     "id": "oriental-goby",
-    "note": "Резерв · восточноазиатский вид.",
+    "note": "На тестовой карте рыб · восточноазиатский вид.",
     "title": "Восточный бычок",
     "group": "animals",
     "file": "supplied-oriental-goby.glb",

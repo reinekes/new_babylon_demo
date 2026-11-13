@@ -6,8 +6,8 @@
     "total": 83,
     "active": 55,
     "fallback": 9,
-    "optional": 5,
-    "spare": 14
+    "optional": 7,
+    "spare": 12
   },
   "errors": [],
   "runtimeInputs": [
@@ -17,7 +17,7 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "a6bd3c2ab5f57f8882f01d6164c0425b7b7c02ac146272044365c2ee40fe620f"
+      "sha256": "22c429f84966e367a39e76f9eeff5977a29982b83ea6500b7cf06647e9b1682b"
     },
     {
       "file": "game3d/ambient-fauna.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "22e7a453c0191e6c5094eb97a51708d93c18860645baa4d71422f30284f53761"
+      "sha256": "793025c742c3c5bfd13844a98fef6172f6cc5edfa94d4c6ba5b6cd73fd4d145c"
     },
     {
       "file": "game3d/caravan.js",
@@ -81,7 +81,7 @@
     },
     {
       "file": "game3d/supplied-fauna.js",
-      "sha256": "ae064d98b7738a2a9860a0b7b4ae2755fdc3d492dab20af75ec07a5bcc051c0b"
+      "sha256": "320b2874ed3fa9fcef9b2ec0f854dac25579f7eb32627e790246fb027a9c9c18"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -2172,7 +2172,7 @@
         {
           "model": "supplied-common-quail.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 5,
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -2204,7 +2204,7 @@
         {
           "model": "supplied-frog-jump.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -2279,9 +2279,9 @@
     },
     {
       "file": "supplied-oriental-goby.glb",
-      "status": "spare",
-      "purpose": "Импорт из подборки, просмотр в атласе.",
-      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "status": "optional",
+      "purpose": "Замена живой рыбы в тестовом режиме карты.",
+      "classificationEvidence": "game3d/supplied-fauna.js|fishModels",
       "bytes": 3031240,
       "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
       "version": "4a03227aa63b",
@@ -2297,7 +2297,14 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": []
+      "references": [
+        {
+          "model": "supplied-oriental-goby.glb",
+          "file": "game3d/supplied-fauna.js",
+          "line": 13,
+          "kind": "literal"
+        }
+      ]
     },
     {
       "file": "supplied-pelican-wasis.glb",
@@ -2323,7 +2330,7 @@
         {
           "model": "supplied-pelican-wasis.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 7,
+          "line": 8,
           "kind": "literal"
         }
       ]
@@ -2400,9 +2407,9 @@
     },
     {
       "file": "supplied-yellowfin-goby.glb",
-      "status": "spare",
-      "purpose": "Импорт из подборки, просмотр в атласе.",
-      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "status": "optional",
+      "purpose": "Замена живой рыбы в тестовом режиме карты.",
+      "classificationEvidence": "game3d/supplied-fauna.js|fishModels",
       "bytes": 1519376,
       "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
       "version": "a72a598b2210",
@@ -2418,7 +2425,14 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": []
+      "references": [
+        {
+          "model": "supplied-yellowfin-goby.glb",
+          "file": "game3d/supplied-fauna.js",
+          "line": 12,
+          "kind": "literal"
+        }
+      ]
     },
     {
       "file": "valley-barley.glb",

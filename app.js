@@ -1378,7 +1378,7 @@ function rotatePlacement(direction=1){if(!selection||renderer.mode!=='3d')return
 function buildingAvailabilityReason(type){
  const deposit={logging:'forest',quarry:'stone'}[type];
  if(deposit&&isStrictSumer(state)&&!state.world.deposits.some(d=>d.kind===deposit)){
-  return type==='logging'?'Дерево привозят купцы. Нужен рынок или речная пристань.':'Камень привозят купцы. Нужен рынок или речная пристань.';
+  return type==='logging'?'На карте нет лесного месторождения. Дерево можно купить на рынке или речной пристани.':'На карте нет каменного месторождения. Камень можно купить на рынке или речной пристани.';
  }
  return buildingKnowledgeReason(state,type);
 }

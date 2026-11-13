@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=supplied-fauna-20261113';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=fish-preview-20261113';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -210,7 +210,7 @@ function render() {
   }
 }
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json?v=supplied-fauna-20261113',import.meta.url));
+  const response=await fetch(new URL('../docs/model-index.json?v=fish-preview-20261113',import.meta.url));
   if(!response.ok) throw Error(`HTTP ${response.status}`);
   index=await response.json();
   const rows=makeCatalog(index,'strict');

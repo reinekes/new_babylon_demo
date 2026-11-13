@@ -6,7 +6,7 @@ import {workstationBuilding} from './workstations.js';
 import {createRoofAccess} from './roof-access.js';
 import {cropSeed,fieldCropKind} from './crop-varieties.js';
 import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
-import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js';
+import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js?v=earthen-levee-20261113';
 import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {createArchitecture} from './architecture.js';
@@ -20,13 +20,14 @@ import {createMusicCourtyard} from './music-courtyard.js';
 
 const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
 const HOME_ASSET='assets/art-courtyard/models/adobe-courtyard.glb';
+const leveeSignature=(b,state)=>b.type==='levee'?JSON.stringify([b.x,b.y,b.rotation,state?.world?.river?.axis,(state?.buildings||[]).filter(other=>other.type==='levee'&&!other.construction&&Math.abs(other.x-b.x)+Math.abs(other.y-b.y)===1).map(other=>[other.x,other.y])]):'';
 const tier=b=>Math.max(1,Math.min(3,b.level||1));
 const progress=b=>{const p=constructionProgress(b);return [Math.floor(p.materials*12),Math.floor(p.work*40),Math.floor(p.materials*(1-p.work)*9+.000001),Math.floor(p.materials*(1-p.work)*5)];};
 const isHouse=b=>!b.reedCamp&&b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),leveeSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative

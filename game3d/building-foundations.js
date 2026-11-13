@@ -3,7 +3,7 @@ import {lakeContours} from './lake-shore.js';
 import {renderedShoreDistance,visualSurfaceElevation} from './shore-profile.js';
 import {WATER_HEIGHT} from './water.js';
 
-const excluded=new Set(['bridge','field','canal']);
+const excluded=new Set(['bridge','field','canal','levee']);
 const rotationOf=b=>((Math.trunc(Number(b.rotation)||0)%4)+4)%4;
 // Same pivot and handedness as placeRoot, including the 2×2 monument's offset.
 export function foundationWorldPoint(b,x,z){

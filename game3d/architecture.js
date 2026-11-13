@@ -1,3 +1,5 @@
+import {visualSurfaceElevation} from './shore-profile.js';
+import {riverAxis} from '../world.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {isReedShrine} from '../building-presentation.js';
 import {workstationLayout} from './workstations.js';
@@ -177,7 +179,35 @@ export function createArchitecture(B,scene,b,m,state){
   }
   block(centre,3.08,centre,.58*scale,.34,3.75*scale,m.wood);break;
  }
- case 'levee':block(0,.22,0,5.7,.44,5.7,m.raw);block(0,.61,0,4.7,.4,4.7,m.raw);block(0,.92,0,3.55,.22,3.55,m.plaster);break;
+ case 'levee':{
+  const angle=(riverAxis(state)==='x'?0:Math.PI/2)-(b.rotation||0)*Math.PI/2;
+  const profile=[[-2.25,-.09],[-1.48,.21],[-.56,.63],[.54,.64],[1.46,.25],[2.25,-.09]];
+  const positions=[],indices=[],uvs=[];
+  const endHeight=adjacent=>adjacent?.type==='levee'&&!adjacent.construction?1:.62;
+  const alongX=riverAxis(state)==='x';
+  const neighbor=side=>state?.buildings?.find(other=>other.x===b.x+(alongX?side:0)&&other.y===b.y+(alongX?0:side));
+  for(const [i,x] of [-3,-2.46,0,2.46,3].entries()){
+   const height=i===0?endHeight(neighbor(-1)):i===4?endHeight(neighbor(1)):1;
+   for(const [z,y] of profile){
+    const ground=visualSurfaceElevation(b.x+(alongX?x:z)/6,b.y+(alongX?z:-x)/6,state);
+    const elevation=y>0?y*height+ground*Math.max(0,1-y/.65):ground-.055;
+    positions.push(x*Math.cos(angle)+z*Math.sin(angle),elevation,-x*Math.sin(angle)+z*Math.cos(angle));
+    uvs.push(x*.45,z*.45);
+   }
+   if(i)for(let j=0;j<profile.length-1;j++){
+    const k=(i-1)*profile.length+j,n=k+profile.length;
+    indices.push(k,n,k+1,k+1,n,n+1);
+   }
+  }
+  const normals=[];
+  B.VertexData.ComputeNormals(positions,indices,normals);
+  const data=new B.VertexData();
+  Object.assign(data,{positions,indices,normals,uvs});
+  const bank=new B.Mesh('earthen-levee',scene);
+  data.applyToMesh(bank);
+  add(bank,m.soil);
+  break;
+ }
  case 'harbor':for(let i=0;i<17;i++)block(0,.35,-2.55+i*.32,5.2,.15,.29,m.wood);for(const x of [-2.3,2.3])for(const z of [-2.3,0,2.3])cylinder(x,.3,z,.13,1.55);cloth(-1.2,-1.3,2.4,1.8,2.1,m.reed);stack(-1.9,-1.7,7);jar(-.5,-1.2,.7,.45);for(let i=0;i<4;i++)beam([.3+i*.42,.6,.4],[.3+i*.42,.6,2.2],.12,m.reed);
   if(isStrictSumer(state)){for(const z of [.45,1.18,1.88])jar(-1.72,z,.42,.44);block(-.72,.52,1.65,.9,.3,.53,m.linen,.17);}
   break;
