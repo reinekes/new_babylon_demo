@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=audit-fixes-20261113';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=audit-fixes-20261113-2';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');

@@ -54,8 +54,9 @@ test('the walking mourners spread on clear ground without moving saved citizens'
 
 test('recessing releases small groups at different times and a mid-stage save preserves them',async()=>{
  const {advanceFuneral}=await import('../funerals.js');
- let state=farewell(24);
- advanceFuneral(state,2.5);
+ let state=farewell(24);state.funeral=null;
+ startFuneral(state,[{id:9990,name:'Покойный',x:8,y:8}]);
+ for(let step=0;step<1000&&state.funeral.stage!=='receding';step++)advanceFuneral(state,.1);
  assert.equal(state.funeral.stage,'receding');
  assert.ok(decode(encode(state)));
  const before=state.citizens.map(c=>[c.x,c.y]);

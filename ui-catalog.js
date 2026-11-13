@@ -62,7 +62,7 @@ export const BUILDING_GROUPS=[
  {id:'craft',name:'Ремёсла',types:CRAFT_GROUPS.flatMap(group=>group.types)},
  {id:'supply',name:'Снабжение',types:['waterpoint','granary','depot','market']},
  {id:'sacred',name:'Храмы',types:['shrine','ziggurat','ishtarGate']},
- {id:'routes',name:'Пути и вода',types:['canal','levee','bridge','harbor','cityWall','cityGate']}
+ {id:'routes',name:'Пути, вода и укрепления',types:['canal','levee','bridge','harbor','cityWall','cityGate','watchHouse']}
 ];
 export const groupFor=type=>BUILDING_GROUPS.find(g=>g.types.includes(type));
 

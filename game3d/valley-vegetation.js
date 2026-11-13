@@ -1,6 +1,7 @@
 import {loadModel} from './asset-loading.js';
 import {worldWidth,worldHeight,signedRiverDistance} from '../world.js';
-import {TILE} from '../district3d/terrain.js';
+import {surfaceElevation,TILE} from '../district3d/terrain.js';
+import {footprintSize} from '../footprints.js';
 import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
 import {resourceDisplayLayout} from './nature-details.js';
@@ -16,6 +17,37 @@ export function valleyVegetationPlan(s,roads=[],tier='balanced'){
  const WIDTH=worldWidth(s),HEIGHT=worldHeight(s),budget=VEGETATION_BUDGETS[tier]||VEGETATION_BUDGETS.balanced,contours=lakeContours(s),plan={grass:[],greenGrass:[],reed:[]};
  const clear=(p,r=.24)=>p.x>0&&p.y>0&&p.x<WIDTH-1&&p.y<HEIGHT-1&&sceneryClear(s,p,r)&&roads.every(e=>distance(p,e.a,e.b)>.28+r);
  const put=(kind,p,seed)=>plan[kind].push({...p,angle:random(seed,37)*Math.PI*2,scale:(kind==='reed'?1:2)*((kind==='reed'?.75:.65)+random(seed,53)*.55),variant:Math.floor(random(seed,61)*3)});
+ const homes=s.buildings.filter(b=>b.type==='house'),canals=s.buildings.filter(b=>b.type==='canal');
+ const deposits=s.world?.deposits||[],centers=[];
+ const districtClear=p=>clear(p,.38)&&!deposits.some(d=>Math.abs(d.x-p.x)<.64&&Math.abs(d.y-p.y)<.64);
+ const nearCanal=p=>canals.some(c=>Math.hypot(c.x-p.x,c.y-p.y)<1.85);
+ const districtLimits={grass:54,greenGrass:28};
+ const districtGround=(p,bank)=>bank>.55&&(bank<6||surfaceElevation(p.x,p.y,s)<.35);
+ for(const b of [...homes,...canals]){
+  if(plan.grass.length>=districtLimits.grass&&plan.greenGrass.length>=districtLimits.greenGrass)break;
+  const seed=b.x*101+b.y*37+(s.world?.seed||0),half=(footprintSize(b)-1)/2;
+  for(let j=0;j<9;j++){
+   const a=(j+random(seed,83))*Math.PI*2/9,r=1.05+random(seed,j+109)*1.42;
+   const center={x:b.x+half+Math.cos(a)*r,y:b.y+half+Math.sin(a)*r};
+   const d=vegetationBankDistance(center.x,center.y,s,contours);
+   if(!districtGround(center,d)||!districtClear(center)||centers.some(q=>Math.hypot(q.x-center.x,q.y-center.y)<.72))continue;
+   const kind=d<4.1||nearCanal(center)?'greenGrass':'grass';
+   if(plan[kind].length>=districtLimits[kind])continue;
+   centers.push(center);
+   const count=3+Math.floor(random(seed,j+121)*3);
+   for(let k=0;k<count&&plan[kind].length<districtLimits[kind];k++){
+    const n=seed+j*123+k*43,offset=k?.16+random(n,128)*.27:0,theta=a+k*2.4;
+    const p={x:center.x+Math.cos(theta)*offset,y:center.y+Math.sin(theta)*offset,settlement:true};
+    const bank=vegetationBankDistance(p.x,p.y,s,contours);
+    if(!districtGround(p,bank)||!districtClear(p))continue;
+    if(kind==='greenGrass'){
+     // Reuse the broadleaf ground-cover mesh as a low, spreading clump.
+     // It shares the same material and instance batch as riverside grass.
+     put(kind,p,n);const plant=plan[kind].at(-1);plant.scale*=1.22;plant.scaleY=plant.scale*.69;
+    }else put(kind,p,n);
+   }
+  }
+ }
  const spacing=5,dryWidth=Math.ceil(WIDTH/spacing),dryCells=dryWidth*Math.ceil(HEIGHT/spacing);
  const dryClump=cell=>{
   const phase=s.world?.seed||0,cx=(cell%dryWidth)*spacing,cy=Math.floor(cell/dryWidth)*spacing;
@@ -98,7 +130,7 @@ export async function createValleyVegetation(B,scene,{tier='balanced',assets=VAL
    for(const [cell,points]of cells){
     const m=src.clone(`valley-${kind}-batch-${cell}-${src.uniqueId}`);m.setEnabled(true);m.isVisible=true;m.position.setAll(0);m.rotation.setAll(0);m.rotationQuaternion=null;m.scaling.setAll(1);
     const matrices=new Float32Array(points.length*16);
-    for(const [i,p]of points.entries())B.Matrix.Compose(new B.Vector3(p.scale,p.scale,p.scale),B.Quaternion.RotationYawPitchRoll(p.angle,0,0),new B.Vector3(p.x*TILE,visualSurfaceElevation(p.x,p.y,s),p.y*TILE)).copyToArray(matrices,i*16);
+    for(const [i,p]of points.entries())B.Matrix.Compose(new B.Vector3(p.scale,p.scaleY??p.scale,p.scale),B.Quaternion.RotationYawPitchRoll(p.angle,0,0),new B.Vector3(p.x*TILE,visualSurfaceElevation(p.x,p.y,s),p.y*TILE)).copyToArray(matrices,i*16);
     // Thin-instance world attributes live on geometry, so regions need their
     // own geometry bindings even though they retain the same plant/material.
     m.makeGeometryUnique();

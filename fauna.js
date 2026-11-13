@@ -6,6 +6,7 @@ import {pestActors} from './pests.js';
 import {safeLoop,loopMotion} from './local-motion.js';
 import {worldWidth,worldHeight,terrain,isShore,isDryPoint,riverPoint,riverLength} from './world.js';
 import {DAY_SECONDS,lightingAt,seed} from './city-life.js';
+import {watchOnDuty,watchOnShift} from './watch-house.js';
 import {floodFootprint,floodPhase,floodProtectionRevision} from './river-flood.js';
 const habitats=new WeakMap(),flockRoutes=new WeakMap();
 const FLOCK_SPEED=.28,FLOCK_STOP=3.5,PASTURE_BEGIN=6.5,PASTURE_END=17.5;
@@ -41,10 +42,22 @@ function habitatsFor(s){
 }
 export function naturalAnimalsFor(s){
  const time=s.simTime||0,result=[];
+ const sentries=watchOnShift('night',time)?(s.citizens||[]).filter(c=>c.guardPost&&watchOnDuty(s,c)):[];
  for(const {id,kind,route,packIndex,...p} of habitatsFor(s)){const phase=time+seed(p.x,p.y)*17;
   if(packIndex!==undefined){
    const motion=loopMotion(route,phase-packIndex*1.25,.37,0);
-   result.push({id,kind,...motion,behavior:'walking',growth:1-(packIndex%4)*.055});
+   let retreat=null;
+   for(const guard of sentries){
+    const dx=motion.x-guard.x,dy=motion.y-guard.y,d=Math.hypot(dx,dy);
+    if(d>=1.6||d<.001||retreat&&retreat.distance<d)continue;
+    const scale=.48*((1.6-d)/1.6)**1.5/d,x=motion.x+dx*scale,y=motion.y+dy*scale;
+    if(!isDryPoint(s,x,y)||s.buildings.some(b=>{
+     const size=footprintSize(b);return x>b.x-.5&&x<b.x+size-.5&&y>b.y-.5&&y<b.y+size-.5;
+    }))continue;
+    retreat={x,y,faceX:x+dx,faceY:y+dy,distance:d};
+   }
+   const position=retreat?{x:retreat.x,y:retreat.y,faceX:retreat.faceX,faceY:retreat.faceY}:null;
+   result.push({id,kind,...motion,...position,behavior:retreat?'retreating':'walking',growth:1-(packIndex%4)*.055});
    continue;
   }
   const motion=loopMotion(route,phase,kind==='bird'?.65:.32,kind==='jackal'?2:3.5);const idle=Math.floor(phase/2.8)%4,behavior=motion.walking?'walking':motion.atWater&&idle===0?'drinking':idle===1?'looking':idle===2?'resting':kind==='bird'?'perched':'grazing';result.push({id,kind,...motion,step:phase*5,behavior,headTurn:Math.sin(phase*.9)*.5});}

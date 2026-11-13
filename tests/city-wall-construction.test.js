@@ -60,7 +60,7 @@ test('an inspired builder I can place and lead every ordinary building in Southe
  const builder=s.citizens.find(c=>c.age>=16);
  s.godhood.stage='recognized';s.godhood.believerIds=[builder.id];
  Object.assign(builder,{role:'builder',calling:'builder',builderSkill:{level:1,projects:0}});
- for(const type of Object.keys(BUILDINGS).filter(type=>!['ziggurat','ishtarGate'].includes(type))){
+ for(const type of Object.keys(BUILDINGS).filter(type=>!['ziggurat','ishtarGate','watchHouse'].includes(type))){
   assert.equal(buildingKnowledgeReason(s,type),'',type);
   assert.ok(canLeadConstruction(s,builder,{type,level:1,construction:{kind:'new'}}),type);
  }

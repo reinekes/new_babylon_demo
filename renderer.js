@@ -33,7 +33,7 @@ import {drawPloughTeam} from './plough-art.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
-const spriteTypes=new Set(['house','brickyard','waterpoint','weaver','tailor','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
+const spriteTypes=new Set(['house','brickyard','waterpoint','watchHouse','weaver','tailor','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
@@ -255,7 +255,7 @@ export class Renderer{
   c.fillStyle='#d2ad7c';c.beginPath();c.arc(p.x+.6*q,p.y-10.7*q,.8*q,0,7);c.fill();
   this.line([[p.x-1.6*q,p.y-11.7*q],[p.x+1.7*q,p.y-11.7*q]],person.age>=55?'#deddd3':person.id%2?'#eee0b7':'#5c5140',1.7*q);
   if(rain==='laugh')this.line([[p.x-.8*q,p.y-9.9*q],[p.x,p.y-9.55*q],[p.x+.8*q,p.y-9.9*q]],'#684737',.45*q);
-  if(person.mourningTorch||person.festivalTorch){const candle=person.festivalTorch,x=p.x+5*q,y=p.y-(candle?10:12)*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q*(candle?.25:1);
+  if(person.mourningTorch||person.festivalTorch||person.nightWatch){const candle=person.festivalTorch,x=p.x+5*q,y=p.y-(candle?10:12)*q,flicker=this.reduce?0:Math.sin(playTime*9+(person.id||0))*q*(candle?.25:1);
    this.line([[p.x+2*q,p.y-6*q],[x,p.y-8*q]],'#936746',1.4*q);
    this.line([[x,p.y-8*q],[x,y]],candle?'#ead8b4':'#936746',(candle?2.4:1.4)*q);
    const h=candle?2.8:6,w=candle?.85:2;this.polygon([[x-w*q,y],[x+flicker,y-h*q],[x+w*q,y]],'#ee983f');this.polygon([[x-w*.5*q,y],[x,y-h*.66*q],[x+w*.5*q,y]],'#ffe19a');

@@ -131,12 +131,14 @@ test('shoreline festival lamps stay above the building platform instead of sinki
  }finally{f.close();}
 });
 
-test('large-gate ground lamps clear an unflattened dune at the map edge',()=>{
+test('large-gate ground lamps clear the level footprint beside a dune',()=>{
  const f=setup();try{
   f.state.citizens=[];f.state.buildings=[{type:'ishtarGate',x:0,y:0,level:1,footprint:3}];f.state.festival={stage:'celebrating',occasion:'nightLights',elapsed:10};
   const before=JSON.stringify(f.state);f.r.updateLight(f.state);const positions=Array.from(f.r.houseLights.festivalMeshes[0].thinInstanceGetWorldMatrices(),matrix=>matrix.getTranslation());
-  assert.equal(positions.length,6);assert.ok(positions.some(p=>surfaceElevation(p.x/6,p.z/6,f.state)>.4),'large footprints reach genuinely raised, unflattened scenery');
-  for(const p of positions){const support=Math.max(0,surfaceElevation(p.x/6,p.z/6,f.state));assert.ok(Math.abs(p.y-support-.14)<1e-6,`ground lamp at ${p.x},${p.z} must clear its dune`);}
+  assert.equal(positions.length,6);
+  assert.ok(surfaceElevation(1,4.5,f.state)>.4,'a real dune rises beyond the large gate');
+  assert.ok(positions.every(p=>surfaceElevation(p.x/6,p.z/6,f.state)===0),'the whole reserved gate footprint remains flat');
+  for(const p of positions){const support=Math.max(0,surfaceElevation(p.x/6,p.z/6,f.state));assert.ok(Math.abs(p.y-support-.14)<1e-6,`ground lamp at ${p.x},${p.z} must clear its ground`);}
   assert.equal(JSON.stringify(f.state),before);
  }finally{f.close();}
 });

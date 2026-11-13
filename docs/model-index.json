@@ -17,7 +17,7 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "f330294176f6d79f7dfb744ad30f1199f39b0d24e6a480c6cd643ff816b39afa"
+      "sha256": "f9ff05a14f81a2fb601b2f214d22f07749e849d24271496bf725b8be006a7133"
     },
     {
       "file": "game3d/ambient-fauna.js",
@@ -85,7 +85,7 @@
     },
     {
       "file": "game3d/valley-vegetation.js",
-      "sha256": "5405964dcd190231c28c4dc36f66fb44a48ea0b02782bc1ead44559f7adca791"
+      "sha256": "5d186b55a401b9ddb90b48deebcbbd70af0436855a8b5dde431a471e4b46009d"
     }
   ],
   "models": [
@@ -1283,7 +1283,7 @@
         {
           "model": "miracle-green-grass-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -1318,7 +1318,7 @@
         {
           "model": "miracle-green-grass-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -1353,7 +1353,7 @@
         {
           "model": "miracle-green-grass-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2493,7 +2493,7 @@
         {
           "model": "valley-date-palm.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2522,7 +2522,7 @@
         {
           "model": "valley-dry-grass-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2551,7 +2551,7 @@
         {
           "model": "valley-dry-grass-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2580,7 +2580,7 @@
         {
           "model": "valley-dry-grass-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2609,7 +2609,7 @@
         {
           "model": "valley-reed-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2638,7 +2638,7 @@
         {
           "model": "valley-reed-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2667,7 +2667,7 @@
         {
           "model": "valley-reed-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]

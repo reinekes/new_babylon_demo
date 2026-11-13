@@ -7,6 +7,7 @@ import {connectedStores,requestTransfer,transferCarried} from './district-logist
 import {foodAvailability,stockStores,takeStock} from './inventory.js';
 import {homeFoodCouriers,homeMealFood,supplyHome} from './households.js';
 import {DAY_SECONDS} from './city-life.js';
+import {watchOnDuty} from './watch-house.js';
 
 const measure=2;
 const dayOf=s=>Math.floor(s.simTime/DAY_SECONDS+1e-8);
@@ -155,7 +156,8 @@ export function advanceCivicOrder(s,recordDeath){
    }
    return;
   }
-  const amount=takeStock(s,buildingKey(source),'food',measure);
+  if(s.citizens.some(p=>p.id!==c.id&&p.guardPost&&Math.hypot(p.x-source.x,p.y-source.y)<=3&&watchOnDuty(s,p)&&connectedStores(s,p.guardPost,key)))return;
+  const amount=takeStock(s,key,'food',measure);
   if(amount<=0)return;
   home.pantry=(home.pantry||0)+amount;
   home.pantryDelivered=(home.pantryDelivered||0)+amount;

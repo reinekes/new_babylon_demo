@@ -21,6 +21,22 @@ test('first Sumerian shrine has structural reed walls and roof, while masonry up
   }
  }finally{t.dispose();}
 });
+test('a watch courtyard fits one tile and keeps two approaches open under its reed shade',()=>{
+ const t=setup();
+ try{
+  const building={type:'watchHouse',x:8,y:8,level:1},s={scenario:strictScenario()},before=JSON.stringify(building);
+  const meshes=createArchitecture(B,t.scene,building,t.m,s),bounds=extent(meshes);
+  assert.ok(bounds.x0>=-2.9&&bounds.x1<=2.9&&bounds.z0>=-2.9&&bounds.z1<=2.9);
+  assert.ok(bounds.h>1.8&&bounds.h<3.2);
+  assert.ok(meshes.some(m=>m.material===t.m.reed));
+  assert.ok(meshes.some(m=>m.material===t.m.raw));
+  for(const x of [-1.25,1.25]){
+   const ray=new B.Ray(new B.Vector3(x,1,2.85),new B.Vector3(0,0,-1),1.6);
+   assert.ok(!meshes.some(mesh=>ray.intersectsMesh(mesh).hit),`approach ${x} is blocked`);
+  }
+  assert.equal(JSON.stringify(building),before);
+ }finally{t.dispose();}
+});
 test('every nonlandscape special building has its own bounded geometry, shared materials and no fallback workshop',()=>{
  const t=setup();try{const signatures=new Set();assert.deepEqual([...ARCHITECTURE_TYPES].sort(),Object.keys(BUILDINGS).filter(k=>!['house','field','bridge','canal'].includes(k)).sort());
  for(const type of ARCHITECTURE_TYPES){const b={type,x:2,y:4,level:1},before=structuredClone(b),meshes=createArchitecture(B,t.scene,b,t.m);assert.deepEqual(b,before);const moving=meshes.filter(m=>m.metadata?.potterWheel||m.metadata?.formingClay);assert.ok(meshes.length-moving.length<=10,`${type}: too many static material draws`);assert.ok(moving.length<=(type==='pottery'?2:0),'only the turntable and forming clay stay separate');const bb=extent(meshes),halfWidth=type==='ishtarGate'?3.91:2.9,halfLength=type==='levee'?3.01:2.9;assert.ok(bb.x0>=-halfWidth&&bb.x1<=halfWidth&&bb.z0>=-halfLength&&bb.z1<=halfLength,`${type}: ${JSON.stringify(bb)}`);if(type==='ishtarGate')assert.ok(Math.abs(bb.x1-bb.x0-7.8)<.03,'legacy gate is explicitly 7.8m wide');const hash=createHash('sha256');for(const mesh of meshes){hash.update(JSON.stringify(Array.from(mesh.getVerticesData(B.VertexBuffer.PositionKind))));assert.ok(mesh.getVerticesData(B.VertexBuffer.NormalKind).every(Number.isFinite));}const signature=hash.digest('hex');assert.ok(!signatures.has(signature),`${type} duplicates another silhouette`);signatures.add(signature);for(const mesh of meshes)mesh.dispose();}

@@ -39,7 +39,7 @@ import {PROFESSION_IDS,professionRole,canStaffBuilding,workplaceCapacity,hasWork
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
-import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS} from './definitions.js';
+import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS,guardCapacity} from './definitions.js';
 import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor,recoverCitizenCargo} from './workforce.js';
 import {bridgeSpanAt,worldFromRiver,onBridge,worldWidth,worldHeight} from './world.js';
@@ -379,6 +379,13 @@ export function assignWorkplace(s,id,key){
 export function assignGuard(s,id,key){
  const reason=blocked(s);if(reason)return {ok:false,reason};const c=s.citizens.find(c=>c.id===id);if(!c||!canWork(c)||!['auto','production'].includes(c.role))return {ok:false,reason:'Нужен взрослый со свободной производственной профессией'};
  if(key&&c.selfCalling)return {ok:false,reason:'Житель хочет остаться в своём ремесле'};
- if(key){const b=s.buildings.find(b=>buildingKey(b)===key);if(!b||!isComplete(b)||!['shrine','granary','depot'].includes(b.type))return {ok:false,reason:'Нужен готовый амбар или храм-склад'};if(s.citizens.some(v=>v.id!==id&&v.guardPost===key))return {ok:false,reason:'У склада уже есть сторож'};const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет дороги от дома к складу'};c.guardPost=key;delete c.workplace;}else delete c.guardPost;
+ if(key){
+  const b=s.buildings.find(b=>buildingKey(b)===key),capacity=guardCapacity(b?.type);
+  if(!capacity||!isComplete(b))return {ok:false,reason:'Нужен готовый склад или караульный двор'};
+  if(s.citizens.filter(v=>v.id!==id&&v.guardPost===key).length>=capacity)return {ok:false,reason:capacity===1?'У склада уже есть сторож':'Все места в карауле заняты'};
+  const {net,map}=ports(s),home=map.get(c.home),target=map.get(key);
+  if(!home||!target||net.components.get(home.key)!==net.components.get(target.key))return {ok:false,reason:'Нет прохода от дома к посту'};
+  c.guardPost=key;delete c.workplace;
+ }else delete c.guardPost;
  invalidateAssignments(s);syncCitizens(s);return {ok:true};
 }

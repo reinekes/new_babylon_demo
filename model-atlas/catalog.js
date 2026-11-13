@@ -14,7 +14,7 @@ export const statuses = {
   active:'Используется', fallback:'Резерв при ошибке', optional:'Отдельная сцена', spare:'Файл в запасе'
 };
 
-const singleLevel = new Set(['cityWall','cityGate','canal','levee']);
+const singleLevel = new Set(['cityWall','cityGate','canal','levee','watchHouse']);
 const model = (kind, label, fields={}) => ({kind,label,...fields});
 const row = (group, title, description, ...previews) => ({group,title,description,previews});
 const built = (type, level, starter=false) => model('building', `Уровень ${level}`, {type,level,starter});

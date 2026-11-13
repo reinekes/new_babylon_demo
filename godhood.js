@@ -90,6 +90,7 @@ export function godhoodView(s){
 
 export function buildingKnowledgeReason(s,type,level=1){
  if(['bakery','linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard'].includes(type)&&!isStrictSumer(s))return 'Постройка доступна в Южном Шумере';
+ if(type==='watchHouse'){if(!isStrictSumer(s))return 'Караульный двор доступен в Южном Шумере';if(s.population<48)return 'Караульный двор доступен с 48 жителей';}
  if(type==='ziggurat'&&level===1){const reason=monumentChapterReason(s);if(reason)return reason;}
  if(isCityFortification(type)&&!isStrictSumer(s))return 'Городские стены и ворота доступны в Южном Шумере';
  if(!isAwakening(s))return '';

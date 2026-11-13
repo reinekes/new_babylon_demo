@@ -341,8 +341,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const work=buildingTypes.get(c.work),wear=(c.clothing??100)>50?'new':(c.clothing??100)>25?'worn':'ragged',mourning=c.phase==='mourning',inspiration=!!state.buffs?.inspiration,previous=a.appearanceInputs;
   // Only scalar inputs that can change the rendered surfaces belong here.
   // Clothing decays every tick; cargo, mood and animated head scale stay live.
-  if(!previous||previous.age!==c.age||previous.sex!==c.sex||previous.robe!==c.robe||previous.wear!==wear||previous.work!==work||previous.role!==c.role||previous.calling!==c.calling||previous.futureRole!==c.futureRole||previous.pendingRole!==c.pendingRole||previous.inspiration!==inspiration||previous.mourning!==mourning||previous.siteDuty!==c.siteDuty||previous.guarding!==c.guarding){
-  a.appearanceInputs={age:c.age,sex:c.sex,robe:c.robe,wear,work,role:c.role,calling:c.calling,futureRole:c.futureRole,pendingRole:c.pendingRole,inspiration,mourning,siteDuty:c.siteDuty,guarding:c.guarding};
+  if(!previous||previous.age!==c.age||previous.sex!==c.sex||previous.robe!==c.robe||previous.wear!==wear||previous.work!==work||previous.role!==c.role||previous.calling!==c.calling||previous.futureRole!==c.futureRole||previous.pendingRole!==c.pendingRole||previous.inspiration!==inspiration||previous.mourning!==mourning||previous.siteDuty!==c.siteDuty||previous.guarding!==c.guarding||previous.nightWatch!==c.nightWatch){
+  a.appearanceInputs={age:c.age,sex:c.sex,robe:c.robe,wear,work,role:c.role,calling:c.calling,futureRole:c.futureRole,pendingRole:c.pendingRole,inspiration,mourning,siteDuty:c.siteDuty,guarding:c.guarding,nightWatch:c.nightWatch};
   const look=residentVisual(c,state,buildingTypes),scale=look.scale,motion=look.motion;const width=a.nativeResident?.97+(motion.width-.80)*.15:motion.width,height=a.nativeResident?.97+(motion.height-.89)*.27:motion.height;a.root.scaling.set(scale*width,scale*height,scale*(a.nativeResident?1:(.96+motion.width*.04)));a.look=look;
   const identity=look.identity,adult=c.age>=16,bearded=adult&&c.sex!=='f'&&identity.beard>0;
   for(const m of a.beardMeshes)m.isVisible=bearded;
@@ -361,7 +361,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   for(const m of a.cloth){m.albedoColor=(a.upperCloth.has(m)?B.Color3.Lerp(clothTint,B.Color3.FromHexString('#eee0c0'),.46):clothTint).toLinearSpace();m.roughness=look.wear==='new'?.88:look.wear==='worn'?.96:1;}
   a.inspired.setEnabled(look.inspired);
   const profession=professionClothing(c);
-  const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}:${profession?.id||''}`;
+  const key=`${look.wear}:${look.craft}:${c.role}:${c.siteDuty}:${c.guarding}:${c.nightWatch}:${profession?.id||''}`;
   if(a.detailKey!==key){a.detailKey=key;for(const mesh of a.professionGarments||[]){const i=meshes.indexOf(mesh);if(i>=0)meshes.splice(i,1);mesh.dispose();}a.professionGarments=[];prune(a.details);for(const n of a.details.getChildren())n.dispose();a.torchNode=null;a.torch=false;
    if(profession){if(!a.professionMaterial){a.professionMaterial=new B.PBRMaterial(`profession-cloth-${c.id}`,scene);a.professionMaterial.metallic=0;a.professionMaterial.albedoTexture=materials.linen?.albedoTexture||null;a.materials.push(a.professionMaterial);}const tint=B.Color3.FromHexString(profession.color),fade=look.wear==='ragged'?.38:look.wear==='worn'?.18:0;a.professionMaterial.albedoColor=B.Color3.Lerp(tint,B.Color3.FromHexString('#a69b80'),fade).toLinearSpace();a.professionMaterial.roughness=1;const garment=createProfessionClothing(B,scene,a.model,profession,a.professionMaterial);for(const mesh of garment){mesh.metadata={...a.root.metadata,profession:profession.id};meshes.push(mesh);}a.professionGarments=garment;}
    // Wear is carried by the real skinned wool material; freestanding flat
@@ -369,7 +369,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(c.role==='carrier'||c.siteDuty==='carrier')box('carrier-sling',a.details,reed,-.23,.87,.04,.17,.19,.12);
    if(c.role==='healer')box('healer-satchel',a.details,reed,.23,.92,.02,.18,.22,.12);
    if(look.craft==='weaver'||look.craft==='tailor')sphere('craft-thread',a.details,linen,-.24,.90,.12,.12,.16,.12);
-   if(c.guarding)box('guard-staff',a.details,wood,.35,.83,.04,.035,1.6,.035);
+   if(c.guarding&&!c.nightWatch)box('guard-staff',a.details,wood,.35,.83,.04,.035,1.6,.035);
   }
 
   }
@@ -514,7 +514,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    }else if(a.rainReaction){
     const covered=a.rainReaction==='cover',spread=covered?.12:.41,height=covered?1.42:1.06;
     poseArm(a,'l',vec(-spread,height,.36));poseArm(a,'r',vec(spread,height,.36));
-   }else if(a.c.mourningTorch||a.c.festivalTorch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
+   }else if(a.c.mourningTorch||a.c.festivalTorch||a.c.nightWatch){poseArm(a,'r',vec(.28,1.0,.30));poseArm(a,'l',vec(-.16,.85,.12));
    }else if(a.pose==='peaceRelief'){
     const breath=reducedMotion?0:Math.sin(a.time*1.4)*.015;
     poseArm(a,'l',vec(-.24,.81+breath,.18));poseArm(a,'r',vec(.23,a.c.peaceKeepsake?1.02:.81+breath,.22));
@@ -562,7 +562,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const lift=Math.sin(a.time*3.5)*.06;poseArm(a,'r',vec(.13,.86+lift,.43));poseArm(a,'l',vec(-.06,.87+lift,.43));
    }
    musicianMallets(a,music?a.workContact:null);
-   if(!a.rainReaction&&!plough&&!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&a.pose!=='petting'){
+   if(!a.rainReaction&&!plough&&!swimming&&!a.sourceWalk&&!carry&&!work&&!play&&!a.c.funeralContact?.hands&&!a.c.mourningTorch&&!a.c.festivalTorch&&!a.c.nightWatch&&a.pose!=='petting'){
     // The source idle/walk gesture was too broad for a close city crowd. Keep
     // the authored legs, and solve relaxed palms below their actual shoulders.
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),swing=a.clip==='Walk_Loop'?Math.sin(a.walkPhase*Math.PI*4)*.075:Math.sin(a.time*1.2)*.008;
@@ -622,9 +622,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(riteState)funeralProps(riteState,riteView);
  });
  function funeralProps(state,savedView){
-  const f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map(),festivalTorches=[];
-  for(const [id,a]of people){const current=a.presentationCitizen;if((current?.mourningTorch||current?.festivalTorch)&&a.root.isEnabled()&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());if(current.festivalTorch)festivalTorches.push({id,torch:true,candle:true});}}
-  const torchView=festivalTorches.length?{...f,participants:[...(f?.participants||[]),...festivalTorches]}:f;
+  const f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map(),extraTorches=[];
+  for(const [id,a]of people){const current=a.presentationCitizen;if((current?.mourningTorch||current?.festivalTorch||current?.nightWatch)&&a.root.isEnabled()&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());if(!current.mourningTorch&&(current.festivalTorch||current.nightWatch))extraTorches.push({id,torch:true,candle:!!current.festivalTorch});}}
+  const torchView=extraTorches.length?{...f,participants:[...(f?.participants||[]),...extraTorches]}:f;
   ritual.update(torchView,state,poseTime,grips,id=>jackals?.mouthFor(id));
   if(f?.coffin){if(!bier){const root=new B.TransformNode('funeral-bier',scene);box('bier-cloth',root,linen,0,.58,0,.7,.22,1.8);for(const x of [-.35,.35])box('bier-pole',root,wood,x,.42,0,.045,.045,2.5);bier={root};}bier.root.position.set(f.coffin.x*6,surfaceElevation(f.coffin.x,f.coffin.y,state),f.coffin.y*6);}
   else if(bier){remove(bier);bier=null;}

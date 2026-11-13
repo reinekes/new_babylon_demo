@@ -7,16 +7,33 @@ import {createValleyVegetation,loadValleyPlantSources,valleyVegetationPlan,veget
 import {landscapePlan} from '../game3d/landscape.js';
 import {sceneryClear} from '../game3d/nature.js';
 import {lakeDistance,visualSurfaceElevation} from '../game3d/lake-shore.js';
+import {surfaceElevation} from '../district3d/terrain.js';
 
 const distance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t);};
 test('imported plants follow visible wet/dry bands and avoid full farm/workplace/road footprints read-only',()=>{
  const s=createGame({start:'established'});s.buildings.push({type:'farm',x:4,y:5,footprint:3},{type:'logging',x:20,y:8,footprint:2});const roads=landscapePlan(s).roads,before=JSON.stringify(s),a=valleyVegetationPlan(s,roads);
  assert.deepEqual(a,valleyVegetationPlan(s,roads));assert.ok(a.grass.length>100);assert.ok(a.reed.length>10);assert.ok(a.greenGrass.length>20);assert.ok(a.grass.every(p=>p.scale>=1.3));
  const dry=a.grass.filter(p=>p.dryland);assert.ok(dry.length>15);assert.ok(dry.every(p=>dry.some(q=>p!==q&&Math.hypot(p.x-q.x,p.y-q.y)<1.25)));
- for(const [kind,points]of Object.entries(a))for(const p of points){const d=vegetationBankDistance(p.x,p.y,s);assert.ok(d>.1);assert.ok(lakeDistance(p.x,p.y,s)>.1);assert.ok(sceneryClear(s,p,.05));assert.ok(roads.every(r=>distance(p,r.a,r.b)>.33));if(kind==='grass')assert.ok(p.dryland?d>6:d>=.83&&d<6);if(kind==='greenGrass')assert.ok(d>=.83&&d<2.5);}
+ for(const [kind,points]of Object.entries(a))for(const p of points){const d=vegetationBankDistance(p.x,p.y,s);assert.ok(d>.1);assert.ok(lakeDistance(p.x,p.y,s)>.1);assert.ok(sceneryClear(s,p,.05));assert.ok(roads.every(r=>distance(p,r.a,r.b)>.33));if(p.settlement)assert.ok(d>.55&&(d<6||surfaceElevation(p.x,p.y,s)<.35));else if(kind==='grass')assert.ok(p.dryland?d>6:d>=.83&&d<6);else if(kind==='greenGrass')assert.ok(d>=.83&&d<2.5);}
  assert.equal(JSON.stringify(s),before);
  const low=valleyVegetationPlan(s,roads,'low'),high=valleyVegetationPlan(s,roads,'high');assert.deepEqual(low.grass,high.grass.slice(0,low.grass.length));for(const tier of ['low','balanced','high']){const p=valleyVegetationPlan(s,roads,tier);const dry=p.grass.filter(g=>g.dryland);assert.equal(new Set(dry.map(g=>`${g.x},${g.y}`)).size,dry.length);assert.ok(p.grass.length<=VEGETATION_BUDGETS[tier].grass);assert.ok(p.reed.length<=VEGETATION_BUDGETS[tier].reed+90);}
  s.buildings.push({type:'house',x:a.grass[0].x,y:a.grass[0].y});const next=valleyVegetationPlan(s,roads);assert.ok(!next.grass.some(p=>p.x===a.grass[0].x&&p.y===a.grass[0].y));
+});
+test('settlement and wet access clumps fill open pockets without taking extra instance budget',()=>{
+ const s=createGame({start:'established',seed:137});s.buildings.push({type:'canal',x:12,y:9,level:1});const roads=landscapePlan(s).roads;
+ const plan=valleyVegetationPlan(s,roads,'high'),points=[...plan.grass,...plan.greenGrass].filter(p=>p.settlement);
+ assert.ok(points.length>=12);
+ for(const p of points){
+  assert.ok(sceneryClear(s,p,.38));
+  assert.ok(roads.every(r=>distance(p,r.a,r.b)>.66));
+  const bank=vegetationBankDistance(p.x,p.y,s);assert.ok(bank>.55&&(bank<6||surfaceElevation(p.x,p.y,s)<.35));
+  assert.ok(!s.world.deposits.some(d=>Math.abs(d.x-p.x)<.64&&Math.abs(d.y-p.y)<.64));
+ }
+ assert.ok(plan.greenGrass.some(p=>p.settlement&&p.scaleY<p.scale));
+ assert.ok(plan.grass.length<=VEGETATION_BUDGETS.high.grass&&plan.greenGrass.length<=VEGETATION_BUDGETS.high.greenGrass);
+ const point=points[0];s.buildings.push({type:'canal',x:Math.round(point.x),y:Math.round(point.y),level:1});
+ const next=valleyVegetationPlan(s,roads,'high');
+ assert.ok(![...next.grass,...next.greenGrass].some(p=>p.x===point.x&&p.y===point.y));
 });
 const sandbox={console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.BABYLON;
 test('material layers stay together per variant; cached instances are grounded, bounded and disposed',async()=>{

@@ -27,8 +27,8 @@ const field=(crop={},x=3,y=4)=>({type:'field',id:'field',x,y,level:1,crop:{sown:
 
 test('actual barley GLB batches 64 grounded clumps with shared atlas, alpha cutouts and reflected winding',async()=>{
  const t=setup();let assets;try{
-  assets=await loadFieldCrops(B,t.scene);assert.ok(assets);const b=field(),state={buildings:[b]},before=structuredClone(state),[a]=assets.create(b,state),[other]=assets.create({...b,id:'other',x:5},state);
-  assert.equal(a.metadata.clumps,64);assert.equal(a.getTotalVertices(),64*16);assert.equal(a.getIndices().length,64*24);assert.equal(a.geometry,other.geometry);assert.equal(a.material,other.material);assert.equal(a.material.transparencyMode,B.PBRMaterial.PBRMATERIAL_ALPHATEST);assert.ok(a.material.albedoTexture);assert.equal(a.material.albedoTexture.hasAlpha,true);assert.equal(a.material.backFaceCulling,false);assert.equal(a.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);
+  assets=await loadFieldCrops(B,t.scene);assert.ok(assets);const b=field(),b2={...b,id:'other',x:5},state={buildings:[b,b2]},before=structuredClone(state),[a]=assets.create(b,state),[other]=assets.create(b2,state);
+  assert.equal(a.metadata.clumps,64);assert.equal(a.getTotalVertices(),64*16);assert.equal(a.getIndices().length,64*24);assert.ok(a.geometry===other.geometry,'occupied inland plots share cached flat field geometry');assert.equal(a.material,other.material);assert.equal(a.material.transparencyMode,B.PBRMaterial.PBRMATERIAL_ALPHATEST);assert.ok(a.material.albedoTexture);assert.equal(a.material.albedoTexture.hasAlpha,true);assert.equal(a.material.backFaceCulling,false);assert.equal(a.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);
   const p=a.getVerticesData(B.VertexBuffer.PositionKind),heights=Array.from(p).filter((_,i)=>i%3===1);assert.ok(Math.abs(Math.min(...heights)-.16)<1e-6);assert.ok(Math.abs(Math.max(...heights)-1.11)<1e-6);assert.deepEqual(state,before);a.dispose();other.dispose();assets.dispose();assert.equal(t.scene.meshes.length,0);
  }finally{assets?.dispose();t.dispose();}
 });
