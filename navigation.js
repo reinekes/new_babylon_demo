@@ -42,7 +42,7 @@ function fortificationBounds(buildings){
    :[{...outer,maxY:y+.28},{...outer,minY:y+.72}];
  };
 }
-function obstacleIndex(buildings){
+export function obstacleIndex(buildings){
  const cells=new Map(),boundsFor=fortificationBounds(buildings);
  for(const b of buildings){
   if(b.type==='road'||b.type==='bridge')continue;

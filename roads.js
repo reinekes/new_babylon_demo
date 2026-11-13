@@ -9,10 +9,20 @@ import {generateStreets} from './city-life.js';
 import {terrain,onBridge,isDryPoint} from './world.js';
 import {createOrder,nextOrder} from './construction.js';
 export const roadKey=(a,b)=>`road:${[a.key||`${a.x},${a.y}`,b.key||`${b.x},${b.y}`].sort().join('|')}`;
+export function classifyLegacyRoads(s){
+ const unknown=s.roads.filter(r=>r.built===undefined);
+ if(!unknown.length)return;
+ const net=generateStreets([...s.buildings,...s.roadAnchors||[]],s);
+ const natural=new Set(net.edges.slice(0,net.derivedEdgeCount).map(([a,b])=>roadKey(a,b)));
+ // Older saves used identical L1 records for planned and automatic roads. Keep
+ // paving and L1 segments outside the generated graph as durable infrastructure.
+ for(const r of unknown)r.built=r.level>1||!natural.has(r.id);
+}
+export function roadIsBuilt(road){return road.level>1||road.built!==false;}
 export function ensureRoads(s,network){
  s.roads??=[];const net=network||generateStreets([...s.buildings,...s.roadAnchors||[]],s);
  const existing=new Set(s.roads.map(r=>r.id));
- for(const [a,b]of net.edges){const id=roadKey(a,b);if(existing.has(id))continue;if(onBridge(s.buildings,(a.x+b.x)/2,(a.y+b.y)/2,s)||[.25,.5,.75].some(t=>!isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t)))continue;existing.add(id);s.roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a:{x:a.x,y:a.y,key:a.key},b:{x:b.x,y:b.y,key:b.key},level:1});}
+ for(const [a,b]of net.edges){const id=roadKey(a,b);if(existing.has(id))continue;if(onBridge(s.buildings,(a.x+b.x)/2,(a.y+b.y)/2,s)||[.25,.5,.75].some(t=>!isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t)))continue;existing.add(id);s.roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a:{x:a.x,y:a.y,key:a.key},b:{x:b.x,y:b.y,key:b.key},level:1,built:false});}
  return s.roads;
 }
 export function roadAt(s,x,y){return ensureRoads(s).map(r=>({r,d:Math.hypot(r.x-x,r.y-y)})).filter(v=>v.d<.8).sort((a,b)=>a.d-b.d)[0]?.r;}
@@ -59,8 +69,8 @@ export function planNewRoad(s,from,to){
  for(let i=0;i<queue.length&&!prev.has(b.key);i++){const p=queue[i];for(const [dx,dy]of [[1,0],[0,1],[-1,0],[0,-1]]){const q={x:p.x+dx,y:p.y+dy,key:`${p.x+dx+.5},${p.y+dy+.5}`};if(prev.has(q.key)||!allowed(q)||forts&&!forts.segmentClear(p,q)||![.25,.5,.75].every(t=>allowed({x:p.x+dx*t,y:p.y+dy*t})))continue;prev.set(q.key,p.key);points.set(q.key,q);queue.push(q);}}
  if(!prev.has(b.key))return empty('Нет сухого пути: построй мост или выбери свой берег');
  const path=[];for(let k=b.key;k!==null;k=prev.get(k))path.push(points.get(k));path.reverse();
- const existing=new Set((s.roads||[]).map(r=>r.id)),roads=[];
- for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],id=roadKey(a,b);if(existing.has(id)||!dry(a)||!dry(b)||![.25,.5,.75].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t})))continue;roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a,b,level:1});}
+ const existing=new Map((s.roads||[]).map(r=>[r.id,r])),roads=[];
+ for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],id=roadKey(a,b),previous=existing.get(id);if(previous&&(roadIsBuilt(previous)||previous.construction)||!dry(a)||!dry(b)||![.25,.5,.75].every(t=>dry({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t})))continue;roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a,b,level:1,built:true});}
  return {roads,reason:roads.length?'':'Этот путь уже проложен'};
 }
-export function layRoad(s,from,to){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};s.roads.push(...plan.roads);markRoadTopologyChanged(s);return {ok:true,count:plan.roads.length};}
+export function layRoad(s,from,to){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const plan=planNewRoad(s,from,to);if(plan.reason)return {ok:false,reason:plan.reason};const existing=new Map(s.roads.map(r=>[r.id,r]));for(const road of plan.roads){const previous=existing.get(road.id);if(previous)previous.built=true;else s.roads.push(road);}markRoadTopologyChanged(s);return {ok:true,count:plan.roads.length};}

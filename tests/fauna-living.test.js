@@ -14,6 +14,22 @@ test('natural wildlife is denser and fish swim only in the saved river/lakes wit
  assert.ok(positions.size>500);s.simTime=before.simTime;assert.deepEqual(s,before);
 });
 
+test('river fish retain their identities and swim at a bounded speed on a large map',()=>{
+ const state=createGame({start:'established',seed:137});
+ const fish=()=>naturalAnimalsFor(state).filter(animal=>animal.id.startsWith('fish:river:'));
+ const first=fish();let previous=first;
+ for(let step=1;step<=400;step++){
+  state.simTime=step*.1;
+  const current=fish();
+  assert.deepEqual(current.map(a=>a.id),first.map(a=>a.id));
+  for(const [index,a] of current.entries()){
+   const prior=previous[index];
+   assert.ok(Math.hypot(a.x-prior.x,a.y-prior.y)*60<2,a.id+' swims too fast');
+  }
+  previous=current;
+ }
+});
+
 test('hunting pins working prey, shows corpse briefly, suppresses killed identity and respects respawn',()=>{
  const s=createGame({start:'established'}),prey=naturalAnimalsFor(s).find(a=>a.kind==='gazelle');s.gathering={jobs:[{citizen:1,kind:'hunting',stage:'working',target:{id:prey.id,kind:prey.kind,x:prey.x,y:prey.y}}],kills:[]};s.simTime+=2;
  const pinned=animalsFor(s).find(a=>a.id===prey.id);assert.equal(pinned.x,prey.x);assert.equal(pinned.y,prey.y);

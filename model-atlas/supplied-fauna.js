@@ -34,7 +34,7 @@ export const suppliedFauna = [
   },
   {
     "id": "pelican-wasis",
-    "note": "В игре зимой на воде · для взлёта и посадки используется прежняя модель.",
+    "note": "Зимой на воде · исходный скан без клипов, осадка и кильватер добавлены в игре.",
     "title": "Пеликан · wasis007",
     "group": "birds",
     "file": "supplied-pelican-wasis.glb",
@@ -107,7 +107,7 @@ export const suppliedFauna = [
   {
     "id": "realistic-rat",
     "note": "Резерв · крыса в статичной позе. Домовую мышь в игре сохраняем.",
-    "title": "Крыса",
+    "title": "Крыса · загруженная модель",
     "group": "animals",
     "file": "supplied-realistic-rat.glb",
     "author": "iRahulRajput (https://sketchfab.com/rt699448)",

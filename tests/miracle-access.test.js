@@ -73,7 +73,7 @@ test('the catalogue reveals each blue gift only after its own earned unlock',()=
 });
 
 test('the mature mode description distinguishes ordinary abilities from earned blue gifts',()=>{
- const html=modeChooserHTML();assert.match(html,/Обычные способности/);assert.match(html,/Синие дары/);assert.match(html,/реликв/i);
+ const html=modeChooserHTML();assert.match(html,/обычные чудеса/i);assert.match(html,/Синие дары/);assert.match(html,/реликв/i);
  assert.doesNotMatch(html,/Все здания, профессии и способности доступны/);
 });
 

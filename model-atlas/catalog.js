@@ -1,4 +1,4 @@
-import { suppliedFauna } from './supplied-fauna.js?v=fish-preview-20261113';
+import { suppliedFauna } from './supplied-fauna.js?v=audit-fixes-20261113';
 import { BUILDINGS, RESOURCE_NAMES } from '../definitions.js';
 import { buildingDefinition, buildingPresentation } from '../building-presentation.js';
 import { strictScenario, legacyScenario } from '../scenario-profiles.js';
@@ -27,14 +27,14 @@ const names = {
   'goat-downloaded':'Коза, городская модель','goat-authored-lod':'Коза, авторская модель',
   'goat-authored':'Коза, исходная авторская модель','goat':'Коза, прежний GLB',
   'ambient-bull':'Бык и основа модели вола','ambient-donkey':'Вьючный осёл',
-  'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца, фоновая модель','sheep':'Овца из овчарни',
+  'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца · вариант стада','sheep':'Овца из овчарни',
   'ambient-yard-pig':'Домашняя свинья',
   'imported-boar':'Кабан','imported-fox':'Лиса','imported-lioness':'Львица',
   'gazelle-downloaded':'Газель','jackal':'Шакал','cat-walk':'Кошка, ходьба','cat-sitting':'Кошка, сидит',
   'shore-mallard-female':'Кряква · самка',
   'shore-mallard':'Кряква · селезень',
   'shore-seagull':'Чайка · самка (вариант для сравнения)',
-  'ambient-duck':'Утка','imported-goose':'Гусь','imported-orange-bird':'Мелкая оранжевая птица',
+  'ambient-duck':'Утка · декоративный вариант','imported-goose':'Гусь','imported-orange-bird':'Мелкая оранжевая птица',
   'imported-sky-birds':'Стая, импортированный GLB','sky-bird-single':'Птица в полёте, GLB',
   'caravan-camel':'Верблюд, прежняя ветка','river-cargo-boat':'Грузовая лодка, прежняя ветка',
   'adobe-courtyard':'Двор из художественной сцены','date-palm':'Финиковая пальма, художественный двор',
@@ -108,8 +108,8 @@ export function makeCatalog(index, profile) {
     species,studio:true,sources:[{author,source}]
   })));
   const wildlife = {
-    fish:['Рыба','Игровая геометрия'], mouse:['Мышь','Игровая геометрия'],
-    rat:['Крыса','Игровая геометрия'], goat:['Коза','Резервная геометрия'],
+    fish:['Рыба долины','Игровая геометрия'], mouse:['Домовая мышь','Игровая геометрия'],
+    rat:['Крыса · прежняя модель','Резервная геометрия'], goat:['Коза','Резервная геометрия'],
     gazelle:['Газель','Резервная геометрия'], cat:['Кошка','Резервная геометрия'],
     jackal:['Шакал','Резервная геометрия'], bird:['Береговая птица','Процедурная модель прежнего слоя']
   };
@@ -130,8 +130,8 @@ export function makeCatalog(index, profile) {
         {author:'Древняя ДНК непарнокопытных, Science Advances',source:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8759742/'}]
     ];
     for(const [group,species,title,description,source] of regional){
-      const reserve=['onager','pied-kingfisher','glossy-ibis','pygmy-cormorant','marsh-harrier'].includes(species);
-      rows.push(row(group,title,description,model('wildlife',reserve?'Резервная геометрия':species==='white-pelican'?'Геометрия полёта':species==='savigny-tree-frog'?'Резерв при ошибке загрузки':'Игровая геометрия',{species,reserve:reserve||species==='savigny-tree-frog',sources:[source]})));
+      const reserve=['white-pelican','onager','pied-kingfisher','glossy-ibis','pygmy-cormorant','marsh-harrier'].includes(species);
+      rows.push(row(group,title,description,model('wildlife',reserve?'Резервная геометрия':species==='savigny-tree-frog'?'Резерв при ошибке загрузки':'Игровая геометрия',{species,reserve:reserve||species==='savigny-tree-frog',sources:[source]})));
     }
   }
   for (const [species,[title,label]] of Object.entries(wildlife)) {

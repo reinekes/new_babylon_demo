@@ -6,8 +6,8 @@ import {terrain,worldWidth,worldHeight} from '../world.js';
 import {deformedTerrainNormals,stitchTerrainRim} from './terrain-deformation.js';
 
 export function createBootstrapLandscape(B,scene,state,materials){
- let base=createDistrictTerrain(B,scene,state,materials);const originals=new Map(),owned=[];
- const worldKey=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes]);let baseWorld=worldKey(state),night=0;
+ let base=createDistrictTerrain(B,scene,state,materials,{finishedRoadsOnly:true});const originals=new Map(),owned=[];
+ const worldKey=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes]);let baseWorld=worldKey(state),night=0;
  let channelMeshes=[],signature='',disposed=false;
  let water=base.meshes.find(m=>m.name==='living-river').material;
  const bank=(name,color)=>{const m=materials.soil.clone(name);m.albedoColor=new B.Color3(...color);m.roughness=1;m.metallic=0;owned.push(m);return m;};
@@ -32,7 +32,7 @@ export function createBootstrapLandscape(B,scene,state,materials){
   data.applyToMesh(mesh);mesh.material=material;mesh.useVertexColors=true;mesh.isPickable=false;mesh.receiveShadows=name!=='water';mesh.metadata={canalArms:arms,canalArm:arms[0]};mesh.freezeWorldMatrix();return mesh;
  }
  function update(s,time){
-  if(disposed)return;const nextWorld=worldKey(s);if(nextWorld!==baseWorld){baseWorld=nextWorld;for(const mesh of channelMeshes)mesh.dispose();channelMeshes=[];originals.clear();base.dispose();base=createDistrictTerrain(B,scene,s,materials);water=base.meshes.find(m=>m.name==='living-river').material;base.light(night);signature='';}base.update(s,time);const network=irrigationFor(s),canals=s.buildings.filter(b=>b.type==='canal').map(b=>{const key=`${b.x},${b.y}`;return {x:b.x,y:b.y,wet:network.wet.has(key),progress:b.construction?constructionProgress(b).ratio:1,arms:network.arms.get(key)||CARDINAL.filter(([dx,dy])=>s.buildings.some(v=>v.type==='canal'&&v.x===b.x+dx&&v.y===b.y+dy)||terrain(b.x+dx,b.y+dy,s)==='water')};});
+  if(disposed)return;const nextWorld=worldKey(s);if(nextWorld!==baseWorld){baseWorld=nextWorld;for(const mesh of channelMeshes)mesh.dispose();channelMeshes=[];originals.clear();base.dispose();base=createDistrictTerrain(B,scene,s,materials,{finishedRoadsOnly:true});water=base.meshes.find(m=>m.name==='living-river').material;base.light(night);signature='';}base.update(s,time);const network=irrigationFor(s),canals=s.buildings.filter(b=>b.type==='canal').map(b=>{const key=`${b.x},${b.y}`;return {x:b.x,y:b.y,wet:network.wet.has(key),progress:b.construction?constructionProgress(b).ratio:1,arms:network.arms.get(key)||CARDINAL.filter(([dx,dy])=>s.buildings.some(v=>v.type==='canal'&&v.x===b.x+dx&&v.y===b.y+dy)||terrain(b.x+dx,b.y+dy,s)==='water')};});
   const next=JSON.stringify([canals,s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.x,b.y])]);if(next===signature)return;signature=next;
   const g=canalNetworkGeometry(s,canals),replacement=[surface('wet-bed',g.wetBed,wet,g.arms),surface('dry-bed',g.dryBed,dry,g.arms),surface('water',g.water,water,g.arms)].filter(Boolean);if(g.arms.length||channelMeshes.length)carve(g.arms,s);for(const m of channelMeshes)m.dispose();channelMeshes=replacement;
  }

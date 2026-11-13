@@ -114,5 +114,16 @@ test('placement sites reuse terrain checks until buildings or deposits change',a
  assert.deepEqual(r.placementSites(s,'house'),[]);
 });
 
-test('road outlines are painted before every surface so adjacent segments have no border seams',()=>{const r=Object.create(Renderer.prototype),calls=[];Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads:[]},streets:{edges:[[{key:'a',x:0,y:0},{key:'b',x:1,y:0}],[{key:'b',x:1,y:0},{key:'c',x:2,y:0}]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push(color)});r.streetsLayer();assert.deepEqual(calls.slice(0,4),['#af9c73','#af9c73','#dbc79c','#dbc79c']);});
+test('automatic roads are hidden in 2D outside road mode; finished road outlines have no border seams',()=>{
+ const r=Object.create(Renderer.prototype),calls=[];
+ const a={key:'a',x:0,y:0},b={key:'b',x:1,y:0},c={key:'c',x:2,y:0},d={key:'d',x:3,y:0};
+ const road=(id,a,b,built)=>({id,a,b,built,level:1,x:(a.x+b.x)/2,y:0});
+ const roads=[road('built-a',a,b,true),road('built-b',b,c,true),road('automatic',c,d,false)];
+ Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads},streets:{edges:[[a,b],[b,c],[c,d]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push({path,color}),inView:()=>true});
+ r.streetsLayer();
+ assert.deepEqual(calls.slice(0,4).map(call=>call.color),['#af9c73','#af9c73','#dbc79c','#dbc79c']);
+ assert.ok(calls.every(call=>call.path[1][0]<d.x));
+ r.roadMode=true;calls.length=0;r.streetsLayer();
+ assert.ok(calls.some(call=>call.path[1][0]===d.x));
+});
 test('supply focus puts a distant house visibly to the right of the desktop detail card',()=>{const r=Object.create(Renderer.prototype);Object.assign(r,{w:945,h:715,zoom:1.45,pan:{x:0,y:0}});r.layout();r.focusOn(35,27);const p=r.point(35,27);assert.ok(p.x>400&&p.x<r.w-80);assert.ok(p.y>90&&p.y<r.h-90);});

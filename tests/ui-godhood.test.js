@@ -1,10 +1,23 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createGame,advanceTime} from '../engine.js';
 import {modeChooserHTML,awakeningHTML,gameModeLabel,createGodhoodControls} from '../ui-godhood.js';
-import {beginFirstSign} from '../godhood.js';
+import {beginFirstSign,firstWaterHelpChoices} from '../godhood.js';
+import {createNewCity} from '../new-game.js';
 import {JSDOM} from 'jsdom';
-test('mode choice states its real starting resources, replacement boundary and knowledge progression',()=>{const html=modeChooserHTML({replace:true});assert.match(html,/data-new-mode="awakening"/);assert.match(html,/data-new-mode="mature"/);assert.match(html,/1000 веры и 250/);assert.match(html,/заменит текущий город/);assert.match(html,/id="cancel-mode"/);assert.doesNotMatch(modeChooserHTML(),/id="cancel-mode"/);});
+test('mode choice states its real starting resources, replacement boundary and knowledge progression',()=>{const html=modeChooserHTML({replace:true});assert.match(html,/data-new-mode="awakening"/);assert.match(html,/data-new-mode="mature"/);assert.match(html,/1000 веры и 250/);assert.match(html,/открыть Великий зиккурат.*48 жителей.*смены сезона.*святилища/);assert.match(html,/заменит текущий город/);assert.match(html,/id="cancel-mode"/);assert.doesNotMatch(modeChooserHTML(),/id="cancel-mode"/);});
 test('awakening UI follows a real witness and links that same identity after arrival',()=>{const s=createGame({mode:'awakening'});assert.match(awakeningHTML(s),/data-first-sign/);assert.equal(beginFirstSign(s).ok,true);const id=s.godhood.witnessId;assert.match(awakeningHTML(s),/data-focus-witness/);assert.doesNotMatch(awakeningHTML(s),/data-first-builder/);for(let i=0;i<400&&s.godhood.stage!=='recognized';i++)advanceTime(s,.1);const html=awakeningHTML(s);assert.match(html,new RegExp(`data-first-builder="${id}"`));assert.match(html,/обязательно удастся/);assert.match(html,/data-resident/);});
+test('first water help explains the temporary gap between eligible courier choices',()=>{
+ const city=createNewCity({mode:'awakening',seed:137});
+ assert.ok(firstWaterHelpChoices(city).length);
+ assert.match(awakeningHTML(city),/data-first-water-helper/);
+ advanceTime(city,.125);
+ assert.equal(firstWaterHelpChoices(city).length,0);
+ const html=awakeningHTML(city);
+ assert.match(html,/Помощь водой сейчас недоступна/);
+ assert.match(html,/свободный взрослый будет дома/);
+ assert.doesNotMatch(html,/data-first-water-helper/);
+ assert.match(html,/data-first-sign/);
+});
 test('legacy and mature histories receive no awakening commands',()=>{for(const s of [createGame(),createGame({mode:'mature'})]){assert.equal(awakeningHTML(s),'');assert.ok(gameModeLabel(s));}});
 function recognizedMaster(projects=7){const s=createGame({mode:'awakening'}),c=s.citizens.find(c=>c.age>=16);Object.assign(s.godhood,{stage:'recognized',witnessId:c.id,believerIds:[c.id],recognitionAt:0,firstBuilderGift:true});Object.assign(c,{role:'builder',calling:'builder',builderSkill:{projects,level:projects>=5?3:projects>=2?2:1}});return {s,c};}
 test('master III receives the next real goal instead of repeating completed builder training',()=>{const {s}=recognizedMaster(),before=JSON.stringify(s),html=awakeningHTML(s);assert.match(html,/Высшее мастерство достигнуто/);assert.match(html,/Построй святилище/);assert.match(html,/data-awakening-build="shrine"/);assert.doesNotMatch(html,/после двух проектов|после пяти/);assert.equal(JSON.stringify(s),before);});

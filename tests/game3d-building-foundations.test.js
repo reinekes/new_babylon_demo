@@ -19,12 +19,12 @@ function checkBed(mesh,b,state){
 }
 test('all ordinary building types receive a solid shore foundation, dry land and intentional water geometry stay clear',()=>{
  const t=setup();try{
-  for(const type of ['house',...ARCHITECTURE_TYPES].filter(type=>!['fishing','harbor'].includes(type))){
+  for(const type of ['house',...ARCHITECTURE_TYPES].filter(type=>!['fishing','harbor','levee'].includes(type))){
    const b={...shore,type},state={buildings:[b]},before=structuredClone(state),meshes=createBuildingFoundations(B,t.scene,b,t.materials,state);
    assert.equal(meshes.length,1,type);checkBed(meshes[0],b,state);
    const normals=meshes[0].getVerticesData(B.VertexBuffer.NormalKind);assert.ok(normals[16*3+1]>.9,'upper foundation surface faces daylight');assert.ok(normals[2]<-.9,'outside wall faces outwards');assert.ok(meshes[0].getTotalVertices()<=64*24);assert.deepEqual(state,before);meshes.forEach(m=>m.dispose());
   }
-  for(const type of ['bridge','field','canal'])assert.equal(createBuildingFoundations(B,t.scene,{...shore,type},t.materials,{}).length,0);
+  for(const type of ['bridge','field','canal','levee'])assert.equal(createBuildingFoundations(B,t.scene,{...shore,type},t.materials,{}).length,0);
   assert.equal(createBuildingFoundations(B,t.scene,{...shore,x:3},t.materials,{}).length,0);
  }finally{t.dispose();}
 });

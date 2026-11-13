@@ -102,9 +102,19 @@ body.uruk-ui{--paper:#25231f;--ink:#f0e5ce;--muted:#baa98f;--line:#766048;--teal
 .uruk-ui .miraclebar .miracle-card strong{font:13px/1.3 var(--serif);white-space:normal;color:#f0dfc1}
 .uruk-ui .miraclebar .miracle-card small{font-size:9px;color:#bfa583;white-space:normal}
 .uruk-ui .miraclebar .miracle-disclosure[open]>.miracle-card{background:#244260 var(--uruk-lapis);background-size:320px;box-shadow:none}
-.uruk-ui .miracle-explanation{position:fixed;left:24px;right:auto;bottom:calc(var(--uruk-dock) + 25px);width:min(560px,calc(100vw - 48px));max-width:none;max-height:calc(100dvh - 190px);padding:26px;background:#2d2821 var(--uruk-stone);background-size:510px;color:#efdfc1;border:1px solid #b18b56;border-radius:2px;z-index:45;font:13px/1.7 'Golos Text',sans-serif}
-.uruk-ui .miracle-explanation .miracle-facts{color:#d4b88c;border-color:#8e6f4655;font-size:11px}
-.uruk-ui .miracle-explanation .miracle-unavailable{color:#daa385}
+.uruk-ui .miraclebar #miracles:has(>.miracle-disclosure[open]){grid-template-columns:minmax(0,1fr)}
+.uruk-ui .miraclebar #miracles:has(>.miracle-disclosure[open])>.miracle-disclosure:not([open]){display:none}
+.uruk-ui .miraclebar .miracle-disclosure[open]>.miracle-card{height:auto;min-height:46px}
+.uruk-ui .miraclebar .miracle-disclosure .miracle-explanation{
+ position:relative;inset:auto;width:auto;max-width:none;max-height:none;overflow:visible;
+ margin:8px 0 0;padding:18px;background:#2e2820;color:#efdfc1;border:1px solid #99764b;
+ border-radius:3px;box-shadow:none;font:13px/1.55 'Golos Text',sans-serif;
+}
+.uruk-ui .miraclebar .miracle-explanation .miracle-facts{color:#e4c99f;border-color:#8e6f4688;font-size:12px}
+.uruk-ui .miraclebar .miracle-explanation .miracle-unavailable{color:#ffb999}
+.uruk-ui .miraclebar .miracle-explanation .miracle-close{color:#f0dfc1;min-width:36px;min-height:36px;top:6px;right:6px}
+.uruk-ui .miraclebar .miracle-explanation .miracle-cast{background:#244260;border-color:#66839a;color:#fff0d1}
+.uruk-ui .miraclebar .miracle-explanation .miracle-cast:disabled{background:#373128;border-color:#7d6a50;color:#c8b79e;opacity:1}
 .uruk-ui .story-panel{left:auto;right:24px;width:360px;background:#2a2721 var(--uruk-stone);background-size:510px}
 .uruk-ui .god-card{background:transparent;border:0;max-height:none;padding:12px 0 22px;color:#f1dfc0}
 .uruk-ui .god-card h2{font-size:27px;color:#f4e3c4;line-height:1.3}
@@ -499,9 +509,11 @@ body.uruk-ui{--uruk-note-surface:#383125;--uruk-quote-surface:#28251f;--uruk-rai
 .uruk-ui .city-tools[data-city-view] .city-tools-tabs {grid-template-columns:repeat(5,minmax(0,1fr))}
 .city-production{display:grid;gap:12px}
 .city-production p,.production-group h4{margin:0}
-.production-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.production-group{display:grid;gap:4px}
-.production-group h4{padding:5px 0;color:#e2c395}
+.production-filters{display:grid;grid-template-columns:repeat(2,minmax(0,15rem));gap:10px}
+.production-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%, 250px),1fr));gap:6px;align-items:start}
+.production-group h4{grid-column:1/-1;padding:5px 0;color:#e2c395}
+.production-group>details[open]{grid-column:1/-1}
+.production-group>details,.production-group>div{min-width:0}
 .production-group details,.production-group>div{border:1px solid #715940;border-radius:4px;background:#332b21}
 .production-total{display:grid;grid-template-columns:1.35rem minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:9px 12px;color:#f3e0bd}
 .production-total strong{grid-column:4}
@@ -527,3 +539,55 @@ details[open]>summary.production-total span::after{content:' −'}
 .uruk-ui .uruk-menu #save-status[hidden] {display:none!important}
 .uruk-ui .quick-build-indicator {display:none}
 .uruk-ui.quick-build .quick-build-indicator {display:block;margin:8px 0;padding:7px 10px;color:#f5dfb9;background:#54402b;border:1px solid #ad8956}
+
+
+.uruk-ui .ceremony-notice.funeral-notice {
+ align-items:center;column-gap:12px;row-gap:4px;max-width:calc(100% - 24px);
+}
+.uruk-ui .funeral-notice .ceremony-status {
+ padding:4px 5px;line-height:1.3;text-align:center;overflow-wrap:anywhere;
+}
+.uruk-ui:is(.map-only,.photo-mode) .ceremony-notice.funeral-notice {display:none}
+@media(max-width:650px){
+ .uruk-ui .ceremony-notice.funeral-notice {max-width:min(360px,calc(100% - 24px));bottom:54px}
+}
+
+/* Keep the HUD row compact. All amounts remain available in «Запасы города». */
+.uruk-ui:not(.uruk-resources-open) .resourcebar {container-type:inline-size}
+.uruk-ui:not(.uruk-resources-open) .resourcebar #resources {overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.uruk-ui:not(.uruk-resources-open) .resourcebar #resources::-webkit-scrollbar {display:none}
+@container (max-width:1190px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource.resource-wide {display:none!important}
+}
+@container (max-width:800px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources {gap:5px}
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource {padding:3px 3px;gap:3px}
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource strong {font-size:14px!important}
+}
+@container (max-width:685px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource-frame-processed {display:none!important}
+}
+@container (max-width:420px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource:is([data-resource=stone],[data-resource=prestige]) {display:none!important}
+}
+@container (max-width:315px) {
+ .uruk-ui:not(.uruk-resources-open) .resourcebar #resources .resource:is([data-resource=wood],[data-resource=reed]) {display:none!important}
+}
+
+
+.uruk-ui [data-craft-tabs] {
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:0 0 8px;
+}
+.uruk-ui [data-craft-tabs][hidden],.uruk-ui [data-craft-group][hidden] {display:none!important}
+.uruk-ui [data-craft-tabs] button {
+ min-width:0;min-height:36px;padding:5px 4px;overflow-wrap:anywhere;
+ color:#f0dcc0;background:#382d22;border:1px solid #a78055;border-radius:2px;
+ font:500 12px/1.25 'Golos Text',sans-serif;
+}
+.uruk-ui [data-craft-tabs] button[aria-selected=true] {
+ color:#fff1d8;background:#1f3c59 var(--uruk-lapis);border-color:#7899b5;
+}
+.uruk-ui [data-craft-tabs] button:focus-visible {outline:2px solid #f3c98c;outline-offset:-3px}
+@media(max-width:650px){
+ .uruk-ui [data-craft-tabs] button {min-height:38px;font-size:11px}
+}

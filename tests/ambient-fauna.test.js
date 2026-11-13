@@ -101,3 +101,35 @@ test('winter pelican lands, swims and departs without persisting a migration fla
   assert.equal(pelican(),undefined);
  }
 });
+
+
+test('mixed fold sheep reuse the licensed rig without changing flock identity or decorative counts',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),state=createGame({seed:137}),meshes=[];
+ const animals=Array.from({length:4},(_,i)=>({id:`sheep-6-12-${i}`,kind:'sheep',young:i===3,x:6+i*.3,y:12,walking:false}));
+ const before=JSON.stringify(state);
+ const view=await createAmbientFauna(B,scene,meshes,{includeSkyBirds:false,loadAsset:async file=>{
+  const asset=source(scene,file);
+  if(file==='ambient-sheep-kenchoo.glb')for(const name of ['Walk','Idle']){
+   const animation=new B.Animation(name,'rotation.x',30,B.Animation.ANIMATIONTYPE_FLOAT);
+   animation.setKeys([{frame:0,value:0},{frame:30,value:.03}]);
+   const group=new B.AnimationGroup(name,scene);
+   group.addTargetedAnimation(animation,asset.meshes[0]);
+   asset.animationGroups.push(group);
+  }
+  return asset;
+ }});
+ try{
+  view.update(state,0,{paused:true,sheep:animals});
+  assert.deepEqual(animals.map(view.supportsFoldSheep),[false,true,false,false]);
+  const adult=view.rootForSheep(animals[1].id);
+  assert.equal(adult.metadata.animalId,animals[1].id);
+  assert.equal(adult.metadata.clip,'Idle');
+  assert.equal(view.roots().filter(r=>r.metadata.ambientSpecies==='sheep-kenchoo').length,2);
+  view.update(state,.1,{sheep:animals.map(a=>({...a,x:a.x+.02,walking:true}))});
+  assert.equal(adult.metadata.clip,'Walk');
+  assert.equal(adult.position.x,(animals[1].x+.02)*6);
+  view.update(state,0,{paused:true});
+  assert.ok(adult.isDisposed());
+  assert.equal(JSON.stringify(state),before);
+ }finally{view.dispose();scene.dispose();engine.dispose();}
+});

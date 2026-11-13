@@ -10,6 +10,7 @@ test('managed Sumerian gardens have two palm rows while surrounding and legacy p
  const wild=landscapePlan(s).palms.filter(p=>Math.hypot(p.x-6,p.y-10)>2),garden={type:'garden',x:6,y:10,level:1};s.buildings=[garden];
  const before=JSON.stringify(s),palms=landscapePlan(s).palms,rows=palms.filter(p=>p.managed);
  assert.equal(rows.length,4,'four living palms belong to the managed plot');
+ assert.ok(palms.filter(p=>!p.managed&&!p.resource).every(p=>shoreDistance(p.x,p.y,s)<5.4));
  assert.equal(new Set(rows.map(p=>p.x)).size,2);assert.equal(new Set(rows.map(p=>p.y)).size,2);
  assert.ok(rows.every(p=>Math.abs(p.x-6)<.4&&Math.abs(p.y-10)<.4));
  assert.deepEqual(palms.filter(p=>!p.managed&&Math.hypot(p.x-6,p.y-10)>2),wild,'unrelated wild positions do not turn into a grid');
@@ -267,18 +268,18 @@ test('expanded monument clears palms and tuft colonies across all four cells; le
  assert.equal(sceneryClear(s,{x:29,y:2},.2),false);assert.equal(JSON.stringify(s),before);
  delete z.footprint;assert.equal(sceneryClear(s,{x:29,y:2},.2),true,'saved legacy monument does not reserve new neighbouring cells');
 });
-test('building a 2 by 2 platform hides overlapping gathering trees, stones and deposit fixtures then restores them on removal',async()=>{
+test('building a 2 by 2 platform hides overlapping gathering features then restores them on removal',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  const original=B.SceneLoader.LoadAssetContainerAsync;B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file);let view;
  const s=createGame({start:'established'}),z={type:'ziggurat',x:28,y:1,footprint:2,level:1};s.world.deposits=[{kind:'stone',x:29,y:2},{kind:'reed',x:28,y:2},{kind:'forest',x:29,y:1}];s.gathering={features:[{id:'platform-tree',kind:'tree',x:29,y:2,health:1,felledAt:null,recoverAt:null},{id:'platform-rock',kind:'rock',x:28,y:2,health:1}],jobs:[],kills:[]};
  try{
-  view=await createGameLandscape(B,scene,s,materials);assert.ok(scene.getTransformNodeByName('gathering-feature-platform-tree'));assert.ok(view.meshes.some(m=>m.name==='deposit-stone-pile'));
+  view=await createGameLandscape(B,scene,s,materials);assert.ok(scene.getTransformNodeByName('gathering-feature-platform-tree'));assert.ok(!view.meshes.some(m=>m.name==='deposit-stone-pile'));
   s.buildings.push(z);const before=JSON.stringify(s);view.update(s,1);assert.equal(JSON.stringify(s),before);
   assert.equal(scene.getTransformNodeByName('gathering-feature-platform-tree'),null);assert.equal(scene.getTransformNodeByName('gathering-feature-platform-rock'),null);
   assert.ok(!view.meshes.some(m=>['deposit-stone-pile','deposit-reed-bed'].includes(m.name)));
   for(const m of view.meshes.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh))assert.ok(!insideFootprint(z,m.position.x/6,m.position.z/6));
   const ground=view.meshes.find(m=>m.name==='soft-riparian-grass'),p=ground.getVerticesData(B.VertexBuffer.PositionKind),c=ground.getVerticesData(B.VertexBuffer.ColorKind);for(let i=0;i<p.length;i+=3)if(insideFootprint(z,p[i]/6,p[i+2]/6))assert.equal(c[i/3*4+3],0);
-  s.buildings.pop();view.update(s,2);assert.ok(scene.getTransformNodeByName('gathering-feature-platform-tree'));assert.ok(view.meshes.some(m=>m.name==='deposit-stone-pile'));assert.equal(s.gathering.features[0].health,1);
+  s.buildings.pop();view.update(s,2);assert.ok(scene.getTransformNodeByName('gathering-feature-platform-tree'));assert.ok(!view.meshes.some(m=>m.name==='deposit-stone-pile'));assert.equal(s.gathering.features[0].health,1);
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });
 
@@ -408,5 +409,32 @@ test('the flood map shows a single warning surface, strengthens it in spring and
   s.season=1;
   view.update(s);
   assert.equal(find().length,0);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+});
+
+
+test('resident wear has one fading 3D ground batch and automatic edges have no solid surface',async()=>{
+ const {recordFootsteps}=await import('../footpaths.js');
+ const {layRoad}=await import('../roads.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ const s=createGame({start:'established'}),a={x:1.5,y:1.5},b={x:2.5,y:2.5};
+ const original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>loadGeometry(scene,file.split('?')[0]);
+ let view;
+ try{
+  view=await createGameLandscape(B,scene,s,materials);
+  assert.ok(!view.meshes.some(m=>m.name==='resident-footpaths'||m.name.startsWith('road-road:')));
+  for(let i=0;i<4;i++)recordFootsteps(s,a,b,Math.SQRT2);
+  s.simTime+=2;view.update(s,s.simTime);
+  const trail=view.meshes.find(m=>m.name==='resident-footpaths');
+  assert.ok(trail?.hasVertexAlpha);assert.ok(trail.getTotalVertices()>0);
+  assert.equal(view.meshes.filter(m=>m.name==='resident-footpaths').length,1);
+  const before=JSON.stringify(s);view.update(s,s.simTime);assert.equal(JSON.stringify(s),before);assert.ok(view.meshes.includes(trail));
+  assert.ok(layRoad(s,{x:1,y:1},{x:2,y:1}).ok);view.update(s,s.simTime);
+  const finished=view.meshes.find(m=>m.name.startsWith('road-road:')&&m.name.endsWith('-level-1'));
+  assert.ok(finished);
+  s.simTime+=400;view.update(s,s.simTime);
+  assert.ok(!view.meshes.some(m=>m.name==='resident-footpaths'));
+  assert.ok(view.meshes.includes(finished));
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });

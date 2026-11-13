@@ -1,4 +1,5 @@
-import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js';
+import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js?v=city4x-frozen-20261113';
+import {shadowCasterInside} from './shadow-casters.js?v=city4x-frozen-20261113';
 import {pickResourceDeposit} from './deposit-picking.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
 import {createBackgroundQueue,createLazyFeature} from './asset-loading.js';
@@ -22,6 +23,7 @@ import {weatherAt} from '../environment.js';
 import {createRelicScene} from './relic-scene.js';
 import {createSacredEffects} from './sacred-effects.js';
 import {newFootprint} from '../footprints.js';
+import {roadTopologyRevision} from '../road-revisions.js';
 
 export const GAME3D_RELEASE='city-render-lod-bundle-20261109-1';
 // Keep atmospheric visibility comparable when viewing an enlarged valley.
@@ -60,6 +62,12 @@ export class GameRenderer3D{
   this.sun=new B.DirectionalLight('city-sun',new B.Vector3(-.6,-.85,-.5),this.scene);this.sun.shadowMinZ=.1;this.sun.shadowMaxZ=350;this.sun.shadowFrustumSize=90;
   this.fill=new B.HemisphericLight('city-sky',new B.Vector3(0,1,0),this.scene);this.fill.intensity=.35;
   this.shadow=new B.ShadowGenerator(2048,this.sun);this.shadow.usePercentageCloserFiltering=true;this.shadow.filteringQuality=B.ShadowGenerator.QUALITY_MEDIUM;this.shadow.bias=.0004;this.shadow.normalBias=.025;
+  this.scene.onBeforeRenderTargetsRenderObservable.add(()=>{
+   const map=this.shadow.getShadowMap();
+   if(!this.scene.shadowsEnabled||!map?.renderList?.length)return;
+   const planes=B.Frustum.GetPlanes(this.shadow.getTransformMatrix());
+   map.renderList=map.renderList.filter(mesh=>shadowCasterInside(mesh,planes));
+  });
   // Environment and photographic textures are optional detail, never a first-frame barrier.
   this.materials=createDistrictMaterials(B,this.scene,{deferPhotos:true});this.skyHorizon=createSkyHorizon(B,this.scene,{soil:this.materials.soil});this.reach=createBuildingReach(B,this.scene);
   this.reachNote=document.createElement('output');this.reachNote.className='building-reach-note';this.reachNote.hidden=true;canvas.parentNode.append(this.reachNote);
@@ -180,14 +188,28 @@ export class GameRenderer3D{
   this.supplyLine=B.MeshBuilder.CreateLines('household-supply-route',{points:points.map(p=>new B.Vector3(p.x*6,visualSurfaceElevation(p.x,p.y,this.state)+.42,p.y*6))},this.scene);
   this.supplyLine.isPickable=false;this.supplyLine.color=new B.Color3(.48,.96,.94);
  }
+ updateRoadGuide(){
+  const enabled=this.roadMode&&!this.photoMode,roads=this.state.roads||[];
+  this.roadGuide?.setEnabled(enabled);
+  if(!enabled)return;
+  const revision=roadTopologyRevision(this.state);
+  if(this.roadGuideState===this.state&&this.roadGuideRoads===roads&&this.roadGuideCount===roads.length&&this.roadGuideRevision===revision)return;
+  this.roadGuideState=this.state;this.roadGuideRoads=roads;this.roadGuideCount=roads.length;this.roadGuideRevision=revision;
+  this.roadGuide?.dispose();this.roadGuide=null;
+  if(!roads.length)return;
+  const B=this.B,point=p=>new B.Vector3(p.x*6,visualSurfaceElevation(p.x,p.y,this.state)+.18,p.y*6);
+  this.roadGuide=B.MeshBuilder.CreateLineSystem('road-editing-network',{lines:roads.map(r=>[point(r.a),point(r.b)])},this.scene);
+  this.roadGuide.color=B.Color3.FromHexString('#e9d891');this.roadGuide.alpha=.55;this.roadGuide.isPickable=false;
+ }
  updateSelection(){
+  this.updateRoadGuide();
   this.supplyLine?.setEnabled(!this.photoMode);
   if(this.photoMode){this.reach.clear();this.reachNote.hidden=true;this.buildings.highlight([]);this.buildings.clearPreview();this.marker.setEnabled(false);for(const m of this.routeMarkers||[])m.setEnabled(false);return;}for(const m of this.routeMarkers||[])m.setEnabled(true);
   const B=this.B,p=previewFor(this.state,this.selection,this.hover,this.placementRotation||0),size=newFootprint(this.selection);this.marker.setEnabled(!!p||!!this.hover&&!!this.roadMode||!!this.keyboardHover&&!!this.hover);if(this.marker.isEnabled()){const at=p||this.hover,n=this.selection?size:1;this.marker.scaling.set(n,1,n);this.marker.position.set((at.x+(n-1)/2)*6,.10,(at.y+(n-1)/2)*6);this.marker.material.emissiveColor=B.Color3.FromHexString(p&&!p.allowed?'#e27857':'#dcdda0');this.marker.material.diffuseColor=this.marker.material.emissiveColor;if(p)this.canvas.title=p.allowed?'Нажми, чтобы заложить строительство':p.reason;}
   if(p)this.buildings.preview({type:this.selection,x:p.x,y:p.y,level:1,rotation:this.placementRotation||0,...(size>1?{footprint:size}:{})},this.state,{allowed:p.allowed});else this.buildings.clearPreview();
   const selected=this.selection&&this.hover?{type:this.selection,...this.hover,...(size>1?{footprint:size}:{})}:this.inspected&&this.state.buildings.find(b=>b.x===this.inspected.x&&b.y===this.inspected.y);
   this.buildings.highlight(this.selection&&selected?nearbySimilar(this.state,selected):[]);this.reachNote.textContent=this.reach.update(this.state,selected);this.reachNote.hidden=!this.reachNote.textContent;
-  const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,.12,r.a.y*6),b=new B.Vector3(r.b.x*6,.12,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
+  const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,visualSurfaceElevation(r.a.x,r.a.y,this.state)+.24,r.a.y*6),b=new B.Vector3(r.b.x*6,visualSurfaceElevation(r.b.x,r.b.y,this.state)+.24,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
  }
  draw(state,selection,now,options={}){
   if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState)this.resize();if(changedState&&foundingCameraTarget(state))this.home();

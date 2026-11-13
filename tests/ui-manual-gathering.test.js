@@ -15,13 +15,17 @@ test('manual workers have a readable 2D work pose and count as busy in the city 
 test('live map click dispatch gives explicit people/buildings priority, then the exact deposit before nearby people',async()=>{
  const {readFileSync}=await import('node:fs'),vm=await import('node:vm');
  const source=readFileSync(new URL('../app.js',import.meta.url),'utf8'),body=source.split("const renderer=await createGameRenderer($('city'),tile=>{")[1].split('},{initialState:state});')[0],calls=[];
- const person={id:7,x:3,y:4},context={seasonJumping:false,dialog:{open:false},photo:null,testMapUpgrade:false,updateDepthTargetPreview:()=>{},relicControlActive:()=>false,selection:null,placementRotation:0,state:{citizens:[person]},buildingAt:()=>null,externalGuestView:()=>({id:1000001}),showTrade:()=>calls.push(['guest']),visibleCitizens:()=>[person],manualGatheringView:(_s,x,y)=>x===3&&y===4?view:null,depositDetail:(x,y)=>calls.push(['deposit',x,y]),personDetail:p=>calls.push(['person',p.id]),detail:type=>calls.push(['building',type]),toast:()=>{},terrain:()=> 'sand',$:id=>id==='miracle-relicAwakening'?null:{hidden:false},build:()=>({ok:false,reason:'blocked'})};
+ const person={id:7,x:3,y:4},context={seasonJumping:false,dialog:{open:false},photo:null,testMapUpgrade:false,quickBuild:false,updateDepthTargetPreview:()=>{},relicControlActive:()=>false,selection:null,placementRotation:0,state:{citizens:[person]},buildingAt:()=>null,externalGuestView:()=>({id:1000001}),showTrade:()=>calls.push(['guest']),visibleCitizens:()=>[person],manualGatheringView:(_s,x,y)=>x===3&&y===4?view:null,depositDetail:(x,y)=>calls.push(['deposit',x,y]),personDetail:p=>calls.push(['person',p.id]),detail:type=>calls.push(['building',type]),toast:()=>{},terrain:()=> 'sand',$:id=>id==='miracle-relicAwakening'?null:{hidden:false},testToolsReason:()=>'',build:(_s,type,x,y,_rotation,options)=>{calls.push(['build',type,x,y,options.instant]);return {ok:false,reason:'blocked'};}};
  const click=vm.runInNewContext(`tile=>{${body}}`,context);
  context.seasonJumping=true;click({x:3,y:4,citizenId:7});assert.equal(calls.length,0,'season travel blocks even direct keyboard/canvas dispatch');context.seasonJumping=false;
  click({x:3,y:4});assert.deepEqual(calls.pop(),['deposit',3,4]);
  click({x:3,y:4,citizenId:7});assert.deepEqual(calls.pop(),['person',7]);
  click({x:3,y:4,citizenId:1000001});assert.deepEqual(calls.pop(),['guest']);
  context.buildingAt=()=>({x:3,y:4,type:'clay'});click({x:3,y:4});assert.deepEqual(calls.pop(),['building','clay']);
- context.buildingAt=()=>null;context.selection='house';click({x:3,y:4});assert.equal(calls.length,0,'build placement never starts gathering');
+ context.buildingAt=()=>null;context.selection='house';click({x:3,y:4});assert.deepEqual(calls.splice(0),[['build','house',3,4,false]],'build placement never starts gathering');
+ context.quickBuild=true;
+ click({x:3,y:4});assert.deepEqual(calls.splice(0),[['build','house',3,4,true]]);
+ context.testToolsReason=()=>'blocked';
+ click({x:3,y:4});assert.deepEqual(calls.splice(0),[['build','house',3,4,false]]);
 });
 test('an obsolete occupied deposit order can be cancelled without restarting collection after demolition',()=>{const el=render({...view,active:true,status:'blocked',reason:'На залежи уже есть здание',cancelReason:''});assert.equal(el.querySelector('[data-manual-cancel]').disabled,false);const locked=render({...view,active:true,cancelReason:'Заверши событие'});assert.equal(locked.querySelector('[data-manual-cancel]').disabled,true);});

@@ -97,7 +97,7 @@ test('all defined buildings produce visible pickable architecture; construction 
   for(const type of Object.keys(BUILDINGS)){
    const b={type,x:3,y:4,id:type,level:1};t.layer.sync({buildings:[b],citizens:[]});if(type==='canal'){assert.equal(t.layer.meshes.length,0,'landscape owns canals');continue;}assert.ok(t.layer.meshes.length,type);
    const bb=bounds(t.layer.meshes);assert.ok(Number.isFinite(bb.maxY),type);
-   if(type!=='bridge'){const halfWidth=type==='ishtarGate'?3.91:2.9;assert.ok(bb.minX>=18-halfWidth&&bb.maxX<=18+halfWidth,`${type} ${JSON.stringify(bb)}`);assert.ok(bb.minZ>=21.1&&bb.maxZ<=26.9,`${type} ${JSON.stringify(bb)}`);if(type==='ishtarGate')assert.ok(Math.abs(bb.maxX-bb.minX-7.8)<.03,'legacy gate is explicitly 7.8m wide');}
+   if(type!=='bridge'){const halfWidth=type==='ishtarGate'?3.91:2.9;assert.ok(bb.minX>=18-halfWidth&&bb.maxX<=18+halfWidth,`${type} ${JSON.stringify(bb)}`);assert.ok(bb.minZ>=(type==='levee'?20.99:21.1)&&bb.maxZ<=(type==='levee'?27.01:26.9),`${type} ${JSON.stringify(bb)}`);if(type==='ishtarGate')assert.ok(Math.abs(bb.maxX-bb.minX-7.8)<.03,'legacy gate is explicitly 7.8m wide');}
   }
   const b={...house(),construction:{kind:'new',target:1,required:{clay:10},delivered:{clay:0},work:0}},state={buildings:[b],citizens:[]};
   const signature=gameBuildingSignature(b);t.layer.sync(state);assert.ok(!t.layer.meshes.some(m=>m.name.includes('game-house-courtyard')));const old=t.layer.meshes[0];

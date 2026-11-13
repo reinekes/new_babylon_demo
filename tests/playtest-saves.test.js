@@ -12,7 +12,13 @@ function importPlaytestSave(name){
  const raw=readFileSync(path,'utf8');
  const {state}=parseSaveFile(raw);
  assert.ok(state);
- assert.equal(encode(state),raw);
+ const original=JSON.parse(raw),migrated=JSON.parse(encode(state));
+ assert.equal(migrated.roads.length,original.roads.length);
+ for(let i=0;i<original.roads.length;i++)if(original.roads[i].built===undefined){
+  assert.equal(typeof migrated.roads[i].built,'boolean');
+  delete migrated.roads[i].built;
+ }
+ assert.deepEqual(migrated,original,'loading a published snapshot only adds road provenance');
  return state;
 }
 

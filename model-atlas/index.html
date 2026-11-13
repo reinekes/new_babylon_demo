@@ -6,7 +6,7 @@
 <base href="../">
 <title>Атлас 3D · Новый Вавилон</title>
 <link rel="stylesheet" href="assets/ui/fonts.css">
-<link rel="stylesheet" href="model-atlas/style.css?v=atlas-usage-20261112-1">
+<link rel="stylesheet" href="model-atlas/style.css?v=audit-fixes-20261113">
 </head>
 <body>
 <header class="hero">
@@ -15,12 +15,23 @@
     <h1>Атлас 3D-моделей</h1>
     <p>Здания по уровням, жители, животные, птицы и предметы из проекта.</p>
     <p><a class="back" href="./?fish-preview=1">Бычки на тестовой карте ↗</a></p>
+    <nav class="fauna-links" aria-label="Быстрые ссылки на животных">
+      <a href="model-atlas/?group=animals">Все животные</a>
+      <a href="model-atlas/?species=fish">Рыба</a>
+      <a href="model-atlas/?species=mouse">Мышь</a>
+      <a href="model-atlas/?species=snakes">Змея на карте</a>
+      <a href="model-atlas/?species=cobra-base">Кобра · резерв</a>
+      <a href="model-atlas/?species=realistic-rat">Загруженная крыса</a>
+      <a href="model-atlas/?species=yellowfin-goby">Желтопёрый бычок</a>
+      <a href="model-atlas/?species=oriental-goby">Восточный бычок</a>
+    </nav>
     <p id="totals" class="muted" aria-live="polite">Читаем игровой каталог…</p>
   </div>
 </header>
 <main class="wrap">
   <div id="usage" class="usage" role="group" aria-label="Использование моделей">
     <button type="button" data-usage="game" aria-pressed="true">В игре</button>
+    <button type="button" data-usage="all" aria-pressed="false">Все модели</button>
     <button type="button" data-usage="reserve" aria-pressed="false">Резерв</button>
     <button type="button" data-usage="studio" aria-pressed="false">Отдельные сцены</button>
   </div>
@@ -55,6 +66,6 @@
   <p id="model-detail" class="muted"></p>
   <p id="model-sources"></p>
 </dialog>
-<script type="module" src="model-atlas/app.js?v=fish-preview-20261113"></script>
+<script type="module" src="model-atlas/app.js?v=audit-fixes-20261113"></script>
 </body>
 </html>

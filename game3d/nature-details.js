@@ -77,16 +77,35 @@ export function createNatureDetails(B,scene,materials,{tier='balanced'}={}){
  const earth=material('nature-reed-shards-and-dust','#ffffff',1),water=material('nature-shallow-rain-puddles','#b7c7c2',.09),dry=material('nature-dry-tumbleweed','#ac9160',1),snake=material('nature-small-sand-snake','#81704d',.86);
  for(const m of [earth,water]){m.backFaceCulling=false;m.transparencyMode=B.Material.MATERIAL_ALPHABLEND;m.forceDepthWrite=false;}water.alpha=0;water.environmentIntensity=.7;
  const own=m=>{m.isPickable=false;m.receiveShadows=false;meshes.push(m);return m;};
- const source=(name,paths,radius,mat)=>{const parts=paths.map(path=>B.MeshBuilder.CreateTube(name,{path:path.map(p=>new B.Vector3(...p)),radius,radiusFunction:name.includes('snake')?(i=>radius*(i<2?1.15:Math.max(.12,1-(i-2)/20))):undefined,tessellation:5,cap:2},scene)),m=B.Mesh.MergeMeshes(parts,true,true);m.name=name;m.material=mat;m.setEnabled(false);return own(m);};
+ const source=(name,paths,radius,mat)=>{const parts=paths.map(path=>B.MeshBuilder.CreateTube(name,{path:path.map(p=>new B.Vector3(...p)),radius,tessellation:5,cap:2},scene)),m=B.Mesh.MergeMeshes(parts,true,true);m.name=name;m.material=mat;m.setEnabled(false);return own(m);};
  const twigs=[];for(let j=0;j<7;j++){const path=[];for(let i=0;i<=6;i++){const a=i/6*Math.PI*1.65+j*1.19,r=.22+random(i+j*13,51)*.075;path.push([Math.cos(a)*r,Math.sin(a)*r*Math.cos(j*1.37),Math.sin(a)*r*Math.sin(j*1.37)]);}twigs.push(path);const p=path[3],q=path[4];twigs.push([p,[(p[0]+q[0])*.58,p[1]*1.19,p[2]*1.16],[p[0]*1.34,p[1]*1.28+.025,p[2]*1.3]]);}
- const tumbleSource=source('nature-tumbleweed-shared-source',twigs,.0065,dry),snakeSource=source('nature-snake-shared-source',[Array.from({length:22},(_,i)=>{const t=i/21;return [(t-.5)*1.08,.035+Math.sin(t*Math.PI)*.025,Math.sin(t*Math.PI*3)*.095];})],.035,snake);
+ const tumbleSource=source('nature-tumbleweed-shared-source',twigs,.0065,dry);
+ const snakePath=Array.from({length:22},()=>B.Vector3.Zero());
+ const snakeRadius=i=>.035*(i<2?1.2:Math.max(.12,1-(i-2)/20));
+ function curveSnake(phase){
+  for(const [i,point] of snakePath.entries()){
+   const t=i/(snakePath.length-1);
+   point.set((.5-t)*1.08,.032+Math.max(0,1-i/5)*.032,Math.sin(t*8-phase)*(.025+t*.075));
+  }
+  return snakePath;
+ }
  function remove(list){for(const m of list){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();}list.length=0;}
  function batch(name,g,mat){if(!g.indices.length)return;const m=own(new B.Mesh(name,scene)),d=new B.VertexData();d.positions=g.positions;d.indices=g.indices;d.colors=g.colors;d.uvs=g.uvs;d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);d.applyToMesh(m);m.material=mat;m.useVertexColors=true;m.hasVertexAlpha=true;m.freezeWorldMatrix();batches.push(m);return m;}
  function rebuild(s,roads,key){if(signature===key)return;signature=key;remove(batches);remove(moving);plan=natureDetailPlan(s,roads,currentTier);const geometry=natureGroundGeometry(s,plan);batch('nature-ground-reeds-shards-dust',geometry.debris,earth);batch('nature-rain-puddles',geometry.puddles,water);
-  for(const kind of ['tumbleweeds','snakes'])for(const p of plan[kind]){const m=own((kind==='snakes'?snakeSource:tumbleSource).createInstance(`nature-${kind}`));m.setEnabled(true);m.metadata={natureDetail:{kind,...p}};if(kind==='tumbleweeds')m.scaling.setAll(1.5);moving.push(m);}
+  for(const kind of ['tumbleweeds','snakes'])for(const p of plan[kind]){const m=own(kind==='snakes'
+   ?B.MeshBuilder.CreateTube('nature-snakes',{path:curveSnake(p.phase),radiusFunction:snakeRadius,tessellation:5,cap:2,updatable:true},scene)
+   :tumbleSource.createInstance('nature-tumbleweeds'));
+   if(kind==='snakes')m.material=snake;
+   m.setEnabled(true);m.metadata={natureDetail:{kind,...p}};if(kind==='tumbleweeds')m.scaling.setAll(1.5);moving.push(m);}
  }
  return {meshes,get plan(){return plan;},get wetness(){return wetness;},get materialCount(){return owned.length;},setQuality(next){if(NATURE_BUDGETS[next]&&next!==currentTier){currentTier=next;signature='';}},update(s,time,weather,roads,key){if(disposed)return;rebuild(s,roads,`${key}|${currentTier}`);const dt=lastTime===null?0:Math.max(0,time-lastTime);if(lastTime===null)wetness=weather.type==='rain'?.3:0;lastTime=time;windClock+=Math.min(1,dt)*(weather.type==='wind'?2.2:.65);wetness=advanceWetness(wetness,weather.type==='rain',dt);water.alpha=wetness*.83;
   const puddles=batches.find(m=>m.name==='nature-rain-puddles');if(puddles)puddles.setEnabled(wetness>.005);
-  for(const m of moving){const p=m.metadata.natureDetail;if(p.kind==='tumbleweeds'){const q=tumbleweedPose(p,windClock);m.position.set(q.x*TILE,visualSurfaceElevation(q.x,q.y,s)+.44,q.y*TILE);m.rotation.y=q.yaw;m.rotation.x=q.roll;continue;}const phase=time*.14+p.phase,x=p.x+Math.cos(phase)*.42/TILE,y=p.y+Math.sin(phase)*.189/TILE;m.position.set(x*TILE,visualSurfaceElevation(x,y,s)+.035,y*TILE);m.rotation.y=phase+Math.PI/2;}
+  for(const m of moving){const p=m.metadata.natureDetail;if(p.kind==='tumbleweeds'){const q=tumbleweedPose(p,windClock);m.position.set(q.x*TILE,visualSurfaceElevation(q.x,q.y,s)+.44,q.y*TILE);m.rotation.y=q.yaw;m.rotation.x=q.roll;continue;}const phase=time*.14+p.phase,x=p.x+Math.cos(phase)*.42/TILE,y=p.y+Math.sin(phase)*.189/TILE;m.position.set(x*TILE,visualSurfaceElevation(x,y,s)+.035,y*TILE);m.rotation.y=Math.atan2(-.189*Math.cos(phase),-Math.sin(phase)*.42);
+   const pose=Math.floor(time*12);
+   if(m.metadata.snakeFrame!==pose){
+    B.MeshBuilder.CreateTube(null,{path:curveSnake(pose*.32+p.phase),radiusFunction:snakeRadius,instance:m});
+    m.metadata.snakeFrame=pose;
+   }
+  }
  },dispose(){if(disposed)return;disposed=true;for(const m of meshes)m.dispose();meshes.length=0;batches.length=0;moving.length=0;for(const m of owned)m.dispose(false,false);}};
 }

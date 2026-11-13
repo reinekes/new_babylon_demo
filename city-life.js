@@ -87,6 +87,7 @@ export function generateStreets(buildings,s) {
     graph.get(port.key).add(next); graph.get(next).add(port.key);
     edges.push([port, land.get(next)]);
   }
+  const derivedEdgeCount=edges.length;
   // Upgraded roads are durable city infrastructure even when the shortest route changes.
   for(const road of s?.roads||[]){
     const resolve=v=>typeof v==='string'?land.get(v):v?.key?land.get(v.key):v&&land.get(keyOf(v.x+.5,v.y+.5));
@@ -104,7 +105,7 @@ export function generateStreets(buildings,s) {
     }
     component++;
   }
-  return {nodes, edges, ports, graph, components};
+  return {nodes, edges, ports, graph, components, derivedEdgeCount};
 }
 
 export function makeWalkers(streets, population) {

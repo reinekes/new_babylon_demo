@@ -53,3 +53,23 @@ test('a managed dairy consumes its separate ration after exact reload',()=>{
  assert.equal(dairy.pasture,1);assert.equal(dairy.reed,1);assert.equal(dairy.water,9);
  assert.ok(decode(encode(s)));
 });
+
+test('every cow and calf has a separate standing position through the legal herd size',async()=>{
+ const {dairyHerd,dairyPose}=await import('../game3d/dairy-herd.js');
+ const state=createGame({start:'established',scenario:strictScenario()});
+ for(const footprint of [1,2])for(const rotation of [0,1,2,3]){
+  const building={type:'cowshed',x:8,y:17,level:1,footprint,rotation,dairy:{cows:11,calves:1}};
+  state.buildings=[building];
+  const herd=dairyHerd(state);
+  assert.equal(herd.length,12);
+  assert.equal(herd.filter(a=>a.calf).length,1);
+  for(const [i,animal] of herd.entries()){
+   for(const other of herd.slice(i+1))assert.ok(Math.hypot(animal.anchor.x-other.anchor.x,animal.anchor.y-other.anchor.y)*6>=.90);
+   for(const time of [0,4,11]){
+    const pose=dairyPose(animal,time);
+    assert.equal(pose.walking,false);
+    assert.deepEqual([pose.x,pose.y],[animal.anchor.x,animal.anchor.y]);
+   }
+  }
+ }
+});

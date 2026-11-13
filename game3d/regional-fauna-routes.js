@@ -47,7 +47,10 @@ function pelicanPose(state,site){
  const edge=.13;
  const swim=Math.max(0,Math.min(1,(winter-edge)/(1-2*edge)));
  const swimSeconds=3*MONTH_SECONDS*(1-2*edge)/calendarRateFor(state);
- const angle=swim*swimSeconds/34*Math.PI*2;
+ const phase=swim*swimSeconds;
+ const rhythm=phase*.63;
+ // Paddle, glide, then slow briefly when the bill drops toward the water.
+ const angle=(phase+.78*Math.sin(rhythm))/48*Math.PI*2;
  const point=a=>riverPoint(site.bank+1.25*Math.sin(a),state,-.27+.22*Math.cos(a));
  const water=point(angle),ahead=point(angle+.001);
  const yaw=Math.atan2(ahead.x-water.x,ahead.y-water.y);
@@ -55,10 +58,10 @@ function pelicanPose(state,site){
  const flight=arriving?1-winter/edge:leaving?(winter-1+edge)/edge:0;
  const travel=(arriving?-1:1)*flight*1.7;
  const lift=flight*flight*6;
- const phase=swim*swimSeconds;
- const scoop=Math.max(0,Math.sin(phase*.49-1.6))**7;
+ const stroke=.60+.40*Math.cos(rhythm);
+ const scoop=Math.max(0,-Math.cos(rhythm))**8;
  return {x:water.x+Math.sin(yaw)*travel,y:water.y+Math.cos(yaw)*travel,yaw,
-  behavior:arriving?'landing':leaving?'taking-off':'swimming',flight,scoop,
+  behavior:arriving?'landing':leaving?'taking-off':'swimming',flight,scoop,stroke,
   elevation:WATER_HEIGHT+.025+lift, pitch:arriving?.14*flight:leaving?-.17*flight:0};
 }
 

@@ -2,6 +2,8 @@ import {isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 
 export const CITY_STAGE_POPULATION=48;
+export const MONUMENT_VICTORY_YEAR=10;
+export const MONUMENT_VICTORY_POPULATION=30;
 export const newMonumentChapter=()=>({version:1,cityAt:null,openedAt:null});
 
 export function advanceMonumentChapter(s){

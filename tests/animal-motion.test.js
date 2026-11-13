@@ -17,7 +17,7 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   assert.equal(companion.metadata.clip,'Animation');
   assert.equal(pig.metadata.clip,'Animation');
   assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
-  const pigPosition=pig.position.clone(),pigPose=snap(pig);
+  const pigPositions=new Set([pig.position.asArray().join(',')]),pigPose=snap(pig);
   const mallard=view.roots().find(r=>r.metadata.ambientSpecies==='mallard');
   assert.equal(mallard.metadata.clip,'Walk');
   assert.ok(mallard.isEnabled()&&ambientDryPoint(state,mallard.position.x/6,mallard.position.z/6));
@@ -65,10 +65,12 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
     }
    }
    assert.ok(B.Vector3.Distance(mallard.position,female.position)>.52);
+   pigPositions.add(pig.position.asArray().join(','));
+   assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}
    for(const r of roots){const p={x:r.position.x/6,y:r.position.z/6};assert.ok(ambientDryPoint(state,p.x,p.y));assert.ok(ambientClearSegment(state,before.get(r),p));if(r.metadata.clip==='Walk')moving.add(r.metadata.ambientSpecies);if(snap(r)!==start.get(r))deforming.add(r.metadata.ambientSpecies);}
   }
-  assert.ok(pig.position.equals(pigPosition));
+  assert.ok(pigPositions.size>1);
   assert.notEqual(snap(pig),pigPose);
   assert.equal(returned.size,2);
   assert.equal(dipped.size,2);

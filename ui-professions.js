@@ -2,6 +2,7 @@ import {buildingDefinition} from './building-presentation.js';
 import {displayName} from './citizen-epithets.js';
 import {residentLinkHTML} from './ui-resident-links.js';
 import {buildingKey} from './definitions.js';
+import {isWorkplaceOpen,workplaceHours} from './work-schedule.js';
 import {PROFESSION_NAMES,PROFESSION_IDS,innateProfession,inspirationPriceLabel,professionForBuilding,professionRole,professionMatchesTask,staffingCandidates,canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js';
 import {builderConsent,inspirationReason,inspirationSuccessChance} from './management.js';
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -23,6 +24,19 @@ export function residentCareerHTML(s,c){
  return `<small class="resident-career">Склонность с рождения · ${PROFESSION_NAMES[innateProfession(s,c)]}${c.selfCalling?`<br>Свой выбор · ${PROFESSION_NAMES[c.calling]}`:''}</small>`;
 }
 export function citizenProfessionName(c){return PROFESSION_NAMES[c.calling]&&professionRole(c.calling)===c.role?PROFESSION_NAMES[c.calling]:PROFESSION_NAMES[c.role||'auto']||'Авто';}
+const hourText=hour=>{
+ const minutes=Math.round(hour*60);
+ return `${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
+};
+export function workplaceScheduleHTML(s,b){
+ const buildingSite=b.construction?.kind==='new',type=buildingSite?'construction':b.type;
+ const hours=workplaceHours(type);
+ if(!hours)return '';
+ const open=isWorkplaceOpen(type,s.simTime);
+ const label=buildingSite?'Часы стройки':'Рабочие часы';
+ const status=open?'Рабочее время':`Вне рабочих часов · начало в ${hourText(hours.open)}`;
+ return `<p><b>${label} ${hourText(hours.open)}–${hourText(hours.close)}</b> · ${status}</p>`;
+}
 export function renderStaffing(s,b,draft={}){
  if(!hasWorkplace(b.type))return '';
  const key=buildingKey(b),fixed=s.citizens.filter(c=>c.workplace===key),current=s.citizens.filter(c=>c.work===key),limit=workplaceCapacity(b.type);

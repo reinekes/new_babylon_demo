@@ -1,5 +1,6 @@
 import {visualSurfaceElevation} from './shore-profile.js';
 import {riverAxis} from '../world.js';
+import {sheepfoldGateSide,sheepfoldLayout} from '../sheepfold-layout.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {isReedShrine} from '../building-presentation.js';
 import {workstationLayout} from './workstations.js';
@@ -49,7 +50,23 @@ export function createArchitecture(B,scene,b,m,state){
  const stack=(x,z,n=8,mat=m.raw)=>{for(let i=0;i<n;i++)block(x+(i%3)*.42,.12+Math.floor(i/6)*.23,z+Math.floor(i%6/3)*.43,.39,.21,.37,mat);};
  const bench=(x,z,w=1.5)=>{block(x,.77,z,w,.12,.65,m.wood);for(const s of [-1,1])block(x+s*w*.4,.38,z,.1,.76,.5,m.wood);};
  const basin=(x,z,w,d)=>{block(x,.1,z,w,.2,d,m.raw);for(const s of [-1,1]){block(x+s*w/2,.3,z,.16,.5,d,m.raw);block(x,.3,z+s*d/2,w,.5,.16,m.raw);}block(x,.22,z,w-.16,.025,d-.16,m.shade);};
- const fence=(x,z,w,d)=>{for(const s of [-1,1]){for(let i=0;i<8;i++)cylinder(x-w/2+i*w/7,.52,z+s*d/2,.035,1.04);for(const h of [.25,.7])beam([x-w/2,h,z+s*d/2],[x+w/2,h,z+s*d/2],.035,m.reed);for(let i=0;i<6;i++)cylinder(x+s*w/2,.52,z-d/2+i*d/5,.035,1.04);for(const h of [.25,.7])beam([x+s*w/2,h,z-d/2],[x+s*w/2,h,z+d/2],.035,m.reed);}};
+ const fence=(x,z,w,d,eastGap=0)=>{
+  const posts=(a,b,count)=>{for(let i=0;i<count;i++){
+   const t=i/(count-1);cylinder(a[0]+(b[0]-a[0])*t,.52,a[1]+(b[1]-a[1])*t,.035,1.04);
+  }};
+  const rails=(a,b,count)=>{
+   posts(a,b,count);
+   for(const h of [.25,.7])beam([a[0],h,a[1]],[b[0],h,b[1]],.035,m.reed);
+  };
+  const west=x-w/2,east=x+w/2,north=z-d/2,south=z+d/2;
+  rails([west,north],[east,north],8);
+  rails([west,south],[east,south],8);
+  rails([west,north],[west,south],6);
+  if(eastGap){
+   rails([east,north],[east,z-eastGap],3);
+   rails([east,z+eastGap],[east,south],3);
+  }else rails([east,north],[east,south],6);
+ };
  const loom=(x,z)=>{for(const s of [-1,1])beam([x+s*.65,.08,z+.35],[x+s*.65,1.75,z-.12],.06);beam([x-.7,1.75,z-.12],[x+.7,1.75,z-.12],.06);for(let i=0;i<13;i++)beam([x-.6+i*.1,.23,z+.31],[x-.6+i*.1,1.7,z-.1],.01,m.linen);block(x,.82,z+.13,1.17,.72,.035,m.linen);};
  const ground=()=>block(0,.025,0,5.3,.05,5.3,m.soil);
  const reedSanctuary=()=>{
@@ -160,15 +177,35 @@ export function createArchitecture(B,scene,b,m,state){
    for(let i=0;i<5;i++)block(1.5+i*1.25,.085,5.6,1,.13,1.45,m.reed,.13*(i%2));
   }else{ground();fence(0,0,5,5);}
   cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
- case 'sheepfold':
-  if(b.footprint===2){
+ case 'sheepfold':{
+  const {center,halfWidth,gateHalfWidth}=sheepfoldLayout(b);
+  const side=sheepfoldGateSide(b,state);
+  if(center){
    block(3,.025,3,11,.05,11,m.soil);
-   fence(3,3,11,11);
-   cloth(4.9,5.5,4.1,3,2,m.reed);
-   basin(6.8,.15,.6,3);
-   for(let i=0;i<5;i++)block(1.5+i*1.25,.085,5.6,1,.13,1.45,m.reed,.13*(i%2));
-  }else{ground();fence(0,0,5,5);}
-  cloth(-1,-1.3,2.8,2,1.55,m.reed);basin(1.8,-1,.6,2);for(let i=0;i<6;i++)block(-1.9+i*.65,-.01,1.3,.54,.15,1.4,m.reed,.1);break;
+   cloth(-.85,3,2.7,8.2,1.9,m.reed);
+   basin(5.65,-1.38,2.6,.65);
+   basin(3,7.28,2.6,.72);
+   for(let i=0;i<5;i++)block(-1,.06,-.15+i*1.55,1.34,.10,1.22,m.reed,.1*(i%2));
+  }else{
+   ground();
+   cloth(-1.49,-.05,1.52,3.67,1.55,m.reed);
+   basin(-.22,2.05,2.15,.55);
+   for(let i=0;i<3;i++)block(-1.7,.06,-.99+i*.9,.71,.10,.68,m.reed,.1);
+  }
+  fence(center,center,2*halfWidth,2*halfWidth,gateHalfWidth);
+  if(side){
+   const angle=side*Math.PI/2,c=Math.cos(angle),sin=Math.sin(angle);
+   const rotation=B.Quaternion.RotationAxis(B.Axis.Y,angle);
+   for(const parts of groups.values())for(const mesh of parts){
+    const x=mesh.position.x-center,z=mesh.position.z-center;
+    mesh.position.x=center+x*c+z*sin;
+    mesh.position.z=center-x*sin+z*c;
+    if(mesh.rotationQuaternion)mesh.rotationQuaternion=rotation.multiply(mesh.rotationQuaternion);
+    else mesh.rotation.y+=angle;
+   }
+  }
+  break;
+ }
  case 'cityWall':block(0,1.05,0,5.70,2.1,5.70,m.raw);block(0,2.17,0,5.68,.14,5.68,m.plaster);break;
  case 'cityGate':{
   const scale=b.footprint===2?2:1,centre=(scale-1)*3;
@@ -189,7 +226,7 @@ export function createArchitecture(B,scene,b,m,state){
   for(const [i,x] of [-3,-2.46,0,2.46,3].entries()){
    const height=i===0?endHeight(neighbor(-1)):i===4?endHeight(neighbor(1)):1;
    for(const [z,y] of profile){
-    const ground=visualSurfaceElevation(b.x+(alongX?x:z)/6,b.y+(alongX?z:-x)/6,state);
+    const ground=state?.world?visualSurfaceElevation(b.x+(alongX?x:z)/6,b.y+(alongX?z:-x)/6,state):0;
     const elevation=y>0?y*height+ground*Math.max(0,1-y/.65):ground-.055;
     positions.push(x*Math.cos(angle)+z*Math.sin(angle),elevation,-x*Math.sin(angle)+z*Math.cos(angle));
     uvs.push(x*.45,z*.45);

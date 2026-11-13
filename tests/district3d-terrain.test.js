@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {river,signedRiverDistance} from '../world.js';
-import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain,indexNearbyRoads} from '../district3d/terrain.js';
+import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain,indexNearbyRoads,alluvialHeight,alluvialNormal} from '../district3d/terrain.js';
 const context={console,setTimeout,clearTimeout,performance,window:{URL:globalThis.URL,addEventListener(){},removeEventListener(){}},navigator:{userAgent:"node"}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),context);
 const B=context.BABYLON;
@@ -97,5 +97,24 @@ test('lake cell rejection preserves the exact signed shore distance',()=>{
    return Math.hypot(Math.max(dx,0),Math.max(dy,0))+Math.min(Math.max(dx,dy),0);
   }));
   assert.equal(shoreDistance(x,y,state),Math.min(Math.abs(signedRiverDistance(x,y,state))-1.1,...distances));
+ }
+});
+
+
+test('dry relief stays low, flattens occupied footprints and meets the backdrop continuously',()=>{
+ const s={world:{seed:137,lakes:[]},buildings:[]};
+ const samples=[];
+ for(let y=1;y<30;y++)for(let x=1;x<11;x++)samples.push({x,y,h:surfaceElevation(x,y,s)});
+ const ridge=samples.sort((a,b)=>b.h-a.h)[0];
+ assert.ok(ridge.h>1.1&&ridge.h<3.5);
+ assert.ok(samples.some(p=>p.h<.08),'flat swales remain between the low dunes');
+ s.buildings.push({type:'ziggurat',x:ridge.x,y:ridge.y,footprint:2});
+ for(const dx of [-.5,.5,1.5])for(const dy of [-.5,.5,1.5])assert.equal(surfaceElevation(ridge.x+dx,ridge.y+dy,s),0);
+ for(let y=3;y<29;y+=2){
+  const x=river(y)+3.2;
+  assert.equal(surfaceElevation(x,y,s),0,'low irrigated plain stays flat');
+  const rim=-.5,e=.00001;
+  assert.ok(Math.abs(alluvialHeight(rim-e,y,s)-alluvialHeight(rim+e,y,s))<.0001);
+  assert.ok(alluvialNormal(rim,y,s).every(Number.isFinite));
  }
 });

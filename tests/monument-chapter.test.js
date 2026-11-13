@@ -13,6 +13,7 @@ test('only new Southern Sumer cities enroll in the late monument chapter',()=>{
   assert.ok(s);
   assert.match(buildingKnowledgeReason(s,'ziggurat'),/поздн/i);
   assert.ok(goals(s).some(goal=>/48 жител/.test(goal.label)));
+  assert.match(goals(s).at(-1).label,/В 10-м году.*не менее 30 жителей.*готовый зиккурат/);
  }
  const old=createGame({mode:'mature',scenario:strictScenario()});
  assert.equal(buildingKnowledgeReason(decode(encode(old)),'ziggurat'),'');

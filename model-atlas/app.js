@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=fish-preview-20261113';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=audit-fixes-20261113';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -9,8 +9,9 @@ let index, preview, pending, active=false, drawing=false;
 let observer;
 let usage='game';
 const usageButtons=[...byId('usage').querySelectorAll('button')];
-const usageLabels={game:'В игре',reserve:'Резерв',studio:'Отдельные сцены'};
+const usageLabels={all:'Все модели',game:'В игре',reserve:'Резерв',studio:'Отдельные сцены'};
 const usageHelp={
+  all:'Все модели. У каждой строки указан статус использования.',
   game:'Модели основного города. Варианты, действующие только в прежней ветке, подписаны отдельно.',
   reserve:'Запасные файлы и модели, которые могут подменить основные при ошибке загрузки.',
   studio:'Модели отдельных художественных и проверочных сцен.'
@@ -158,15 +159,15 @@ function render() {
   const allRows=makeCatalog(index,profile.value);
   for (const button of usageButtons) {
     const key=button.dataset.usage;
-    button.textContent=`${usageLabels[key]} · ${allRows.filter(row=>usageOf(row)===key).length}`;
+    button.textContent=`${usageLabels[key]} · ${key==='all'?allRows.length:allRows.filter(row=>usageOf(row)===key).length}`;
     button.setAttribute('aria-pressed',String(key===usage));
   }
-  byId('usage-help').textContent=usageHelp[usage];
+  byId('usage-help').textContent=query?'Поиск по всем статусам в выбранном разделе.':usageHelp[usage];
   const rows=allRows.filter(row=>
-    usageOf(row)===usage&&(!group.value||group.value===row.group)&&
-    [row.title,row.description,...row.previews.map(p=>p.label)].some(text=>text?.toLocaleLowerCase('ru').includes(query)));
+    (query||usage==='all'||usageOf(row)===usage)&&(!group.value||group.value===row.group)&&
+    [row.title,row.description,...row.previews.flatMap(p=>[p.label,p.species,p.entry?.file])].some(text=>text?.toLocaleLowerCase('ru').includes(query)));
   catalog.replaceChildren();
-  byId('results').textContent=rows.length?`Строк в выборке: ${rows.length}`:'В этой вкладке совпадений нет';
+  byId('results').textContent=rows.length?`Строк в выборке: ${rows.length}`:'Совпадений нет';
   for(const [key,title] of Object.entries(groups)) {
     const selected=rows.filter(row=>row.group===key);
     if(!selected.length) continue;
@@ -186,6 +187,7 @@ function render() {
       const tr=body.insertRow(), name=element('th',row.title);
       name.scope='row';
       name.append(element('span',row.description,'hint'));
+      if(usage==='all'||query)name.append(element('span',usageLabels[usageOf(row)],'usage-tag'));
       tr.append(name);
       for(const item of row.previews){
         const cell=tr.insertCell();
@@ -210,7 +212,7 @@ function render() {
   }
 }
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json?v=fish-preview-20261113',import.meta.url));
+  const response=await fetch(new URL('../docs/model-index.json?v=audit-fixes-20261113',import.meta.url));
   if(!response.ok) throw Error(`HTTP ${response.status}`);
   index=await response.json();
   const rows=makeCatalog(index,'strict');
@@ -226,6 +228,8 @@ async function start() {
   const params=new URLSearchParams(location.search);
   const file=params.get('model'),species=params.get('species');
   const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:!!species&&item.species===species);
+  const section=params.get('group');
+  if(Object.hasOwn(groups,section)){group.value=section;usage='all';}
   if(selected){
     usage=usageOf(selected);
     search.value=file||selected.title;

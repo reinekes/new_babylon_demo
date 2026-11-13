@@ -31,7 +31,7 @@ import {PEACE_MOOD,peaceQuote,validatePeaceDiscovery} from './peace-discovery.js
 import {FAMILY_BLESSING_DESCRIPTION,advanceBlessingDiscovery,blessingSupportsFamilies,blessingTrialReady,validateBlessingDiscovery} from './blessing-discovery.js';
 import {recordRainCast,validateRainDiscovery} from './rain-discovery.js';
 import {previousMiracleCastNumber,recordMiracleCast,validateMiracleHistory} from './miracle-history.js';
-import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter} from './monument-chapter.js';
+import {advanceMonumentChapter,monumentChapterReason,validateMonumentChapter,MONUMENT_VICTORY_YEAR,MONUMENT_VICTORY_POPULATION} from './monument-chapter.js';
 import {validateEveningGames} from './household-games.js';
 import {validateCausalFacts} from './causal-facts.js';
 import {advanceAutonomousHousing,autonomousHousingBoundary,validateHouseholdInitiatives} from './household-initiative.js';
@@ -102,7 +102,8 @@ import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
 import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
 import {marketAccess,initializeTrade,advanceTrade,validateTrade} from './trading.js';
-import {roadUpgradeCost,roadKey} from './roads.js';
+import {classifyLegacyRoads,roadUpgradeCost,roadKey} from './roads.js';
+import {validateFootpaths} from './footpaths.js';
 import {createOrder,isComplete,nextOrder,MAX_CONSTRUCTION_ORDER,constructionEntities,workRequired,finishConstruction,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
 import {WIDTH,HEIGHT,worldWidth,worldHeight,bridgeSpanAt,riverLocal,signedRiverDistance,terrain,river,bridgeSpan,initializeWorld,initializeGeneratedWorld,nearDeposit,isShore,validateWorld,isDryPoint,ensureResourceSites} from './world.js';
 import {BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf,citizenName,isCityFortification} from './definitions.js';
@@ -347,7 +348,7 @@ function check(s){
  if(s.population>=24&&!s.achievements.includes('population')){s.achievements.push('population');log(s,'Поселение стало городом','Двадцать четыре человека называют это место домом.','good');}
  if(s.resources.food>=150&&!s.achievements.includes('food')){s.achievements.push('food');if(!hasMiracles){s.name='Наполняющий амбары';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}log(s,'Полные амбары','Запас еды достиг 150. Город встречает будущее с надеждой.','good');}
  if(s.population>=30&&!s.achievements.includes('keeper')){s.achievements.push('keeper');if(!hasMiracles){s.name='Хранитель людей';if(!s.divinity.names.includes(s.name))s.divinity.names.push(s.name);}}
- if(s.year>=10&&s.population>=30&&count(s,'ziggurat')&&!s.won){s.won=true;log(s,'Город коснулся неба','Великий зиккурат возвышается над долиной. Твоё имя останется в веках.','good');}
+ if(s.year>=MONUMENT_VICTORY_YEAR&&s.population>=MONUMENT_VICTORY_POPULATION&&count(s,'ziggurat')&&!s.won){s.won=true;log(s,'Город коснулся неба','Великий зиккурат возвышается над долиной. Твоё имя останется в веках.','good');}
 }
 function settleSeason(s){
  syncLifeAnalytics(s);
@@ -480,7 +481,7 @@ export function goals(s){
  if(s.monumentChapter){
   list.push({label:monumentChapterReason(s)||'Открыта поздняя глава · Великий зиккурат',done:s.monumentChapter.openedAt!==null});
  }
- list.push({label:'Возвести зиккурат и встретить 10-й год с 30 жителями',done:s.won});
+ list.push({label:`В ${MONUMENT_VICTORY_YEAR}-м году или позже иметь не менее ${MONUMENT_VICTORY_POPULATION} жителей и готовый зиккурат`,done:s.won});
  return list;
 }
 export const encode=s=>{if(s?.resources&&Array.isArray(s.buildings))syncInventory(s);if(Array.isArray(s?.citizens)&&Array.isArray(s.lifeAnalytics?.people))syncLifeAnalytics(s);return JSON.stringify(s);};
@@ -573,8 +574,8 @@ export function decode(raw){
  if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||!finite(s.calendarOffset??0)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed+(s.calendarOffset||0)))>.001||!integer(s.deliveries))return null;
   if(!Array.isArray(s.buildings)||s.buildings.length>worldWidth(s)*worldHeight(s))return null;
   if(!oldInventory&&!validateTrade(s))return null;
-  if(!validateWorld(s)||!Number.isInteger(s.rngState)||s.rngState<0||s.rngState>4294967295||!Array.isArray(s.roads)||s.roads.length>worldWidth(s)*worldHeight(s)*4)return null;
-  const roadIds=new Set();for(const r of s.roads){if(r.type!=='road'||!integer(r.level,1,3)||typeof r.id!=='string'||roadIds.has(r.id)||!r.a||!r.b||!finite(r.x,-.5,worldWidth(s))||!finite(r.y,-.5,worldHeight(s))||Math.abs(Math.abs(r.a.x-r.b.x)+Math.abs(r.a.y-r.b.y)-1)>1e-7||[r.a,r.b,{x:r.x,y:r.y}].some(p=>!isDryPoint(s,p.x,p.y))||r.id!==roadKey(r.a,r.b)||r.x!==(r.a.x+r.b.x)/2||r.y!==(r.a.y+r.b.y)/2)return null;roadIds.add(r.id);}
+  if(!validateWorld(s)||!Number.isInteger(s.rngState)||s.rngState<0||s.rngState>4294967295||!Array.isArray(s.roads)||s.roads.length>worldWidth(s)*worldHeight(s)*4||!validateFootpaths(s))return null;
+  const roadIds=new Set();for(const r of s.roads){if(r.type!=='road'||r.built!==undefined&&typeof r.built!=='boolean'||!integer(r.level,1,3)||typeof r.id!=='string'||roadIds.has(r.id)||!r.a||!r.b||!finite(r.x,-.5,worldWidth(s))||!finite(r.y,-.5,worldHeight(s))||Math.abs(Math.abs(r.a.x-r.b.x)+Math.abs(r.a.y-r.b.y)-1)>1e-7||[r.a,r.b,{x:r.x,y:r.y}].some(p=>!isDryPoint(s,p.x,p.y))||r.id!==roadKey(r.a,r.b)||r.x!==(r.a.x+r.b.x)/2||r.y!==(r.a.y+r.b.y)/2)return null;roadIds.add(r.id);}
   const cells=new Set(),bridgeRows=new Set();
   for(const b of s.buildings){
    const key=buildingKey(b),land=terrain(b.x,b.y,s);
@@ -704,7 +705,7 @@ export function decode(raw){
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
   if(!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateResidentReactions(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateCampaignChapter(s)||!validateHearthEnding(s)||!validateWaterEnding(s)||!validateCraftEnding(s)||!validateCityEnding(s)||!validateMonumentLife(s)||!validateForeignName(s)||!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
-  s.version=VERSION;return s;
+  classifyLegacyRoads(s);s.version=VERSION;return s;
  }catch{return null;}
 }
 

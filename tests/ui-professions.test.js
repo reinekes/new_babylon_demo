@@ -25,3 +25,12 @@ test('the building card can prepare an adult for its recommended speciality',asy
  assert.match(html,/data-staff-person="8,10"/);assert.match(html,/<optgroup label="Для этой постройки">\s*<option value="potter" selected>/);
  assert.match(html,/data-staff-inspire="8,10"/);assert.match(html,/data-staff-assign="8,10"/);assert.equal(JSON.stringify(s),before);
 });
+
+
+test('building cards show the current work window and distinguish a construction site',async()=>{
+ const {workplaceScheduleHTML}=await import('../ui-professions.js');
+ assert.match(workplaceScheduleHTML({simTime:0},{type:'market'}),/07:45–19:00.*Рабочее время/);
+ assert.match(workplaceScheduleHTML({simTime:38},{type:'fishing'}),/06:00–18:00.*начало в 06:00/);
+ assert.match(workplaceScheduleHTML({simTime:0},{type:'market',construction:{kind:'new'}}),/Часы стройки 06:45–18:30/);
+ assert.equal(workplaceScheduleHTML({simTime:0},{type:'house'}),'');
+});

@@ -24,7 +24,7 @@ import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {createGameGoats} from './goats.js';
-import {createSuppliedFauna,fishPreviewEnabled} from './supplied-fauna.js?v=fish-preview-20261113';
+import {createSuppliedFauna,fishPreviewEnabled} from './supplied-fauna.js?v=audit-fixes-20261113';
 import {createImportedFauna} from './imported-fauna.js';
 import {createAmbientFauna,courtyardFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
@@ -53,7 +53,7 @@ export function actorViewFrame(state){
  }
  const miracle=miracleCelebrationView(state);
  if(miracle)for(const participant of miracle.participants){const c=visible.get(participant.id)||(state.citizens||[]).find(c=>c.id===participant.id);if(c)visible.set(c.id,{...c,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,swimming:false,eventContact:null,festivalContact:null,funeralContact:null,miracleContact:participant});}
- return {citizens:[...visible.values()],pettingPairs:miracle?[]:pettingPairs};
+ return {citizens:[...visible.values()],pettingPairs:miracle?[]:pettingPairs,funeral};
 }
 export const cityAnimalVisible=(animal,huntedMice)=>animal.kind==='mouse'?!!huntedMice?.has(animal.id):!['bird','rat','pestCatch'].includes(animal.kind);
 export function actorViewCitizens(state){return actorViewFrame(state).citizens;}
@@ -89,8 +89,8 @@ export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
 export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false,warmHiddenResidents=false}={}){
- const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[];
- let disposed=false,poseTime=0,poseClock=0,bier=null,riteState=null,presentedState=null;
+ const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[],sheepCoats=new Map();
+ let disposed=false,poseTime=0,poseClock=0,bier=null,riteState=null,riteView=null,presentedState=null;
  const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
  const ritual=createFuneralRitual(B,scene,meshes),festivalCourt=createFestivalCourt(B,scene,meshes);
  const containers=[];
@@ -376,6 +376,20 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.look.mood=c.mood??50;
   cargo(a,c);
  }
+ function coatSheep(actor,index){
+  const tint=['#f4e5cc','#c7b094','#cfb595','#ead8bd'][index%4];
+  for(const mesh of actor.model.getChildMeshes()){
+   const original=mesh.material;
+   if(!original?.albedoColor)continue;
+   const key=original.uniqueId+'|'+tint;
+   if(!sheepCoats.has(key)){
+    const coat=original.clone('fold-fleece-'+index%4);
+    coat.albedoColor.multiplyInPlace(B.Color3.FromHexString(tint).toLinearSpace());
+    sheepCoats.set(key,coat);ownedMaterials.push(coat);
+   }
+   mesh.material=sheepCoats.get(key);
+  }
+ }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
   const plough=viewPosition.plough;
   a.ploughPoseChanged=!!plough!==!!a.wasPloughing;
@@ -417,7 +431,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.lastX=shownX;a.lastY=shownY;
   const decision=plough?{clip:'Walk_Loop',pose:'idle'}:actorAnimation(c,['dairy','lithophone','lyre'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
-  if(!paused||!a.clip||a.ploughPoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(a.look&&g.to>g.from)g.goToFrame(g.from+a.look.motion.phase/(Math.PI*2)*(g.to-g.from));a.clip=decision.clip;}}
+  if(!paused||!a.clip||a.ploughPoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(g.to>g.from){const phase=a.look?a.look.motion.phase/(Math.PI*2):a.sheepClipPhase;if(phase!==undefined)g.goToFrame(g.from+phase*(g.to-g.from));}a.clip=decision.clip;}}
   a.wasPloughing=!!plough;
   a.plough=plough;
   a.paused=paused;
@@ -605,10 +619,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     B.MeshBuilder.CreateLines('fishing-line',{points:[tip,end],instance:a.fishingLine},scene);
    }
   }
-  if(riteState)funeralProps(riteState);
+  if(riteState)funeralProps(riteState,riteView);
  });
- function funeralProps(state){
-  const savedView=funeralView(state),f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map(),festivalTorches=[];
+ function funeralProps(state,savedView){
+  const f=savedView&&!savedView.participants?{...savedView,participants:(savedView.mourners||[]).map(id=>{const c=people.get(id)?.c;return c?{id,torch:!!c.mourningTorch}:null;}).filter(Boolean)}:savedView,grips=new Map(),festivalTorches=[];
   for(const [id,a]of people){const current=a.presentationCitizen;if((current?.mourningTorch||current?.festivalTorch)&&a.root.isEnabled()&&a.hands.r){a.hands.r.computeWorldMatrix(true);grips.set(id,a.hands.r.getAbsolutePosition());if(current.festivalTorch)festivalTorches.push({id,torch:true,candle:true});}}
   const torchView=festivalTorches.length?{...f,participants:[...(f?.participants||[]),...festivalTorches]}:f;
   ritual.update(torchView,state,poseTime,grips,id=>jackals?.mouthFor(id));
@@ -694,18 +708,24 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);a.root.setEnabled(false);storeSleepingRig(a);people.set(c.id,a);
   }}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const c of visible)if(c.visitor)living.add(c.id);for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
-  const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'),seenSheep=new Set();for(const c of animals){seenSheep.add(c.id);let a=sheep.get(c.id);if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});sheep.set(c.id,a);}a.root.scaling.setAll((c.young?.68:1)*(.91+(Number(c.id.split('-').at(-1))%5)*.035));animate(a,c,state,dt,paused,speed);}
+  const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'&&!ambient?.supportsFoldSheep(c)),seenSheep=new Set();for(const c of animals){
+   seenSheep.add(c.id);let a=sheep.get(c.id);const index=Number(c.id.split('-').at(-1));
+   if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});coatSheep(a,index);a.sheepClipPhase=index*.31%1;sheep.set(c.id,a);}
+   if(Number.isFinite(c.yaw)){a.yaw=c.yaw;if(!a.clip)a.root.rotation.y=c.yaw;}
+   a.root.scaling.setAll((c.young?.68:1)*(.91+(index%5)*.035));
+   animate(a,c,state,dt,paused,speed);
+  }
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
-  imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed,ploughPoses:teams});
-  const riteJackals=funeralView(state)?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
+  imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed,ploughPoses:teams,sheep:fauna.filter(c=>c.kind==='sheep')});
+  const riteJackals=frame.funeral?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
   const protectedSites=new Set((state.pests?.cats||[]).map(cat=>cat.site));
   const huntedMice=new Set((state.pests?.sites||[]).filter(q=>q.mice>0&&protectedSites.has(q.key)&&!(q.flash&&q.clock-q.flash.time<2))
    .map(q=>`mouse:${q.key}:${q.mice-1}`));
   const shore=courtyardFauna(state);
   supplied?.update(state,shore,fishPreview?fauna.filter(c=>c.kind==='fish'):undefined);
-  wildlife.update(state,[...shore.filter(c=>c.kind!=='common-quail'&&!supplied?.supports(c)&&!['onager','egret','otter','glossy-ibis','marsh-harrier','pied-kingfisher','pygmy-cormorant'].includes(c.kind)&&(c.kind!=='pig'||!ambient?.hasYardPig)),...fauna.filter(c=>!(fishPreview&&c.kind==='fish'&&supplied?.supports(c))&&cityAnimalVisible(c,huntedMice)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)).map(c=>c.kind==='mouse'?{...c,decorative:true}:c),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;funeralProps(state);festivalCourt.update(festivalView(state),state,poseTime);
+  wildlife.update(state,[...shore.filter(c=>c.kind!=='common-quail'&&!supplied?.supports(c)&&!['white-pelican','onager','egret','otter','glossy-ibis','marsh-harrier','pied-kingfisher','pygmy-cormorant'].includes(c.kind)&&(c.kind!=='pig'||!ambient?.hasYardPig)),...fauna.filter(c=>!(fishPreview&&c.kind==='fish'&&supplied?.supports(c))&&cityAnimalVisible(c,huntedMice)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)).map(c=>c.kind==='mouse'?{...c,decorative:true}:c),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;riteView=frame.funeral;funeralProps(state,riteView);festivalCourt.update(festivalView(state),state,poseTime);
  }
  function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();geometryLOD.dispose();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();supplied?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
- return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||supplied?.rootFor(selection)||wildlife.rootFor(selection);}};
+ return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||ambient?.rootForSheep(selection.animalId)||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||supplied?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

@@ -1,3 +1,6 @@
+import {roadIsBuilt} from '../roads.js';
+import {footprintSize} from '../footprints.js';
+import {isStrictSumer} from '../scenario-profiles.js';
 import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from '../game3d/atmosphere.js';
 import {worldWidth,worldHeight,river,riverAxis,riverLength,riverAcrossSize,worldFromRiver,signedRiverDistance,riverFlowVector} from '../world.js';
 import {generateStreets} from '../city-life.js';
@@ -23,14 +26,30 @@ export function shoreDistance(x,y,s) {
 export function surfaceElevation(x,y,s) {
   return surfaceElevationFromShore(x,y,s,shoreDistance(x,y,s));
 }
+function dryRelief(x,y,s,d){
+  if(d<3.4)return 0;
+  const phase=((s?.world?.seed||0)%179)*.19;
+  // Two long, softly broken wind-aligned ridges ride a broad low rise. Valley
+  // floors next to every river or lake are continuously blended to flat.
+  const along=x*.24-y*.35+phase,across=x*.53+y*.32+Math.sin(along*.65)*.64;
+  const ridge=smooth((Math.sin(across)-.10)/.90),swell=smooth((Math.sin(along*.48)+.55)/1.55);
+  const mound=smooth((Math.sin(x*.16+y*.23+phase*.8)*Math.cos(x*.22-y*.16)-.1)/.90);
+  return (ridge*(.72+1.68*swell)+mound*.67)*smooth((d-3.4)/5.5);
+}
+function occupiedReliefWeight(x,y,s){
+  let weight=1;
+  for(const b of s?.buildings||[]){
+    const size=footprintSize(b),qx=Math.max(b.x-.5-x,x-(b.x+size-.5),0),qy=Math.max(b.y-.5-y,y-(b.y+size-.5),0);
+    if(qx>=1.6||qy>=1.6)continue;
+    weight=Math.min(weight,smooth(Math.hypot(qx,qy)/1.6));
+    if(weight===0)return 0;
+  }
+  return weight;
+}
 function surfaceElevationFromShore(x,y,s,d){
   if(d<.22)return -.88+.88*smooth((d+.35)/.57);
-  // Only the uninhabited edges rise; all occupied tiles retain a level foundation.
-  const edge=Math.min(x+.5,worldWidth(s)-.5-x,y+.5,worldHeight(s)-.5-y);
-  if(edge>=3.4)return 0;
-  const dune=smooth((3.4-edge)/3.4)*(.18+.30*Math.sin(x*.52+y*.26)**2);
-  const nearBuilding=(s?.buildings||[]).some(b=>Math.abs(b.x-x)<1.2&&Math.abs(b.y-y)<1.2);
-  return nearBuilding?0:dune;
+  const relief=dryRelief(x,y,s,d);
+  return relief?relief*occupiedReliefWeight(x,y,s):0;
 }
 export function districtRoadEdges(s) {
   return (cachedStreetsFor(s)||generateStreets([...(s?.buildings||[]),...(s?.roadAnchors||[])],s)).edges;
@@ -70,8 +89,10 @@ export function alluvialHeight(x,y,s,d=shoreDistance(x,y,s)){
  const near=surfaceElevationFromShore(x,y,s,d);
  const outside=Math.max(0,-.5-x,x-(worldWidth(s)-.5),-.5-y,y-(worldHeight(s)-.5));
  if(!outside||d<.22)return near;
- const plain=.20+.48*(.5+.5*Math.sin(x*.037+y*.026)*Math.sin(y*.044-x*.021));
- const blend=smooth(outside/7)*smooth((d-.22)/1.25);
+ // Keep dune crests through the near background and soften them toward the
+ // outer grid, where only the largest landforms can be represented.
+ const plain=(.21+.72*(.5+.5*Math.sin(x*.037+y*.026)*Math.sin(y*.044-x*.021)))*smooth((d-3.4)/5.5);
+ const blend=smooth((outside-8)/23);
  return near+(plain-near)*blend;
 }
 export function alluvialNormal(x,y,s){const e=.02,dx=(alluvialHeight(x+e,y,s)-alluvialHeight(x-e,y,s))/(2*e*TILE),dz=(alluvialHeight(x,y+e,s)-alluvialHeight(x,y-e,s))/(2*e*TILE),length=Math.hypot(dx,1,dz);return [-dx/length,1/length,-dz/length];}
@@ -79,8 +100,8 @@ export function alluvialColor(x,y,s,d=shoreDistance(x,y,s)){
  const fertile=smooth((4.3-Math.abs(signedRiverDistance(x,y,s)))/3),wet=1-smooth((d+.05)/.7);
  // Fine grain comes from the shared soil texture. Vertex colour carries only
  // broad variation so long exterior triangles do not turn grain into stripes.
- const tone=.024+.012*Math.sin(x*.14+y*.08)*Math.sin(y*.13-x*.055);
- return [.92-fertile*.20-wet*.20+tone,.83-fertile*.09-wet*.17+tone,.64-fertile*.12-wet*.12+tone,1];
+ const tone=.024+.012*Math.sin(x*.14+y*.08)*Math.sin(y*.13-x*.055),sand=smooth(dryRelief(x,y,s,d)/2.5)*.105;
+ return [.92-fertile*.20-wet*.20+tone+sand,.83-fertile*.09-wet*.17+tone+sand*.78,.64-fertile*.12-wet*.12+tone+sand*.52,1];
 }
 function terrainVertex(g,x,y,s,scenery){
  const d=shoreDistance(x,y,s);
@@ -113,7 +134,7 @@ export function alluvialSceneryGeometry(s){
  return g;
 }
 
-export function createDistrictTerrain(B,scene,initialState,materials) {
+export function createDistrictTerrain(B,scene,initialState,materials,{renderRoads=true,finishedRoadsOnly=false}={}) {
   const meshes=[],ownedMaterials=[],textures=[];
   let state=initialState,roadMeshes=[],roadSignature='',waterTime=0;
   const leafBatches=new Map();
@@ -292,7 +313,7 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
     if(d<.24||occupied(xx,yy))continue;
     const X=xx*TILE,Z=yy*TILE,Y=surfaceElevation(xx,yy,state);
     const nearQuarter=xx>=5.5&&xx<=12.5&&yy>=6.5&&yy<=11.5;
-    if((d<6&&r>.92)||(nearQuarter&&r>.68)){
+    if((d<6&&r>.92)||(nearQuarter&&r>.68&&(!isStrictSumer(state)||d<5))){
       const h=5+noise(x+7,y)*3;
       cylinder('date-palm-trunk',X,Y,Z,h,.14,.28,trunks);
       for(let n=0;n<11;n++){
@@ -339,11 +360,13 @@ export function createDistrictTerrain(B,scene,initialState,materials) {
   roadMaterial.albedoColor=C(.53,.39,.25);roadMaterial.roughness=1;roadMaterial.metallic=0;
   if(materials.soil?.albedoTexture)roadMaterial.albedoTexture=materials.soil.albedoTexture;
   function updateRoads(s){
-    const signature=JSON.stringify([s.world?.river,s.world?.lakes,s.buildings?.map(b=>[b.type,b.x,b.y,!!b.construction]),s.roadAnchors,s.roads?.map(r=>[r.id,r.level,!!r.construction])]);
+    if(!renderRoads)return;
+    const signature=JSON.stringify([s.world?.river,s.world?.lakes,s.buildings?.map(b=>[b.type,b.x,b.y,!!b.construction]),s.roadAnchors,s.roads?.map(r=>[r.id,r.level,r.built,!!r.construction])]);
     if(signature===roadSignature)return;roadSignature=signature;
     for(const m of roadMeshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();}roadMeshes=[];
     const pos=[],inds=[];
-    for(const [a,b]of districtRoadEdges(s)){
+    const edges=finishedRoadsOnly?(s.roads||[]).filter(r=>r.construction||roadIsBuilt(r)).map(r=>[r.a,r.b]):districtRoadEdges(s);
+    for(const [a,b]of edges){
       // The bridge module owns the elevated crossing itself.
       if(shoreDistance((a.x+b.x)/2,(a.y+b.y)/2,s)<.08)continue;
       const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),w=.52,nx=-dy/len*w,nz=dx/len*w;

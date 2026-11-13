@@ -69,7 +69,8 @@ import {createSaveLibrary} from './save-library.js';
 import {createSaveLibraryUI} from './ui-saves.js';
 import {runSeasonJump,seasonJumpReason} from './season-jump.js';
 import {festivalBlessingFrame} from './festival-blessing.js';
-import {ceremonyActive,ceremonyLabel,createCeremonySpeedControl} from './ceremony-time.js';
+import {ceremonyActive,ceremonyLabel,funeralStageLabel,createCeremonySpeedControl} from './ceremony-time.js';
+import {funeralView} from './funerals.js';
 import {cityEventDefinition,fearTension,cityThreatQuote,threatSiteLabel} from './city-events.js';
 import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,namelessEndingReason,recordNamelessEnding,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
 import {modeChooserHTML,createGodhoodControls,gameModeLabel} from './ui-godhood.js';
@@ -99,12 +100,12 @@ import {CITY_ART,artworkHTML} from './ui-art.js';
 import {productionReadout} from './ui-production.js';
 import {resourceLabel,DISPLAY_RESOURCE_NAMES} from './resource-display.js';
 import {PROFESSION_NAMES,hasWorkplace,enableCareerRules,inspirationPriceLabel} from './professions.js';
-import {renderStaffing,selectedProfession,citizenProfessionName,professionOptionsHTML,residentCareerHTML} from './ui-professions.js';
+import {renderStaffing,selectedProfession,citizenProfessionName,professionOptionsHTML,residentCareerHTML,workplaceScheduleHTML} from './ui-professions.js';
 import {birthFoodHTML,registerPortrait,renderCityTools,residentVitalsHTML} from './ui-city-tools.js';
 import {waterSummary,WATERPOINT_CAPACITY} from './water.js';
 import {seasonBalance} from './season-balance.js';
 import {createResourceBar} from './ui-resource-bar.js?v=ordered-ledger-20261109-1';
-import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,groupFor,shouldShowMiracle} from './ui-catalog.js';
+import {updateMiracleCard,updateBuildingCardName,BUILDING_GROUPS,CRAFT_GROUPS,craftGroupFor,bindCraftTabs,groupFor,shouldShowMiracle} from './ui-catalog.js';
 import {uiIcon} from './ui-icons.js';
 import {clothingStatus} from './clothing.js';
 import {stockStores,storeCapacity,storeStock} from './inventory.js';
@@ -422,7 +423,7 @@ function drawRoadPoint(point){
  inspectedDeposit=null;
  if(dialog.open)return;
  if(!roadDrawFrom||roadDrawTo){roadDrawFrom={x:point.x,y:point.y};roadDrawTo=null;renderer.plannedRoads=null;toast('Начало выбрано. Выбери конец дороги');$('map-hint').textContent='Выбери конец дороги · путь по границам клеток';return;}
- roadDrawTo={x:point.x,y:point.y};const plan=planNewRoad(state,roadDrawFrom,roadDrawTo);renderer.plannedRoads=plan.roads;inspected=null;$('tile-detail').hidden=false;$('tile-detail').innerHTML=`<button class="detail-close" aria-label="Закрыть описание">×</button><span class="eyebrow">ТВОЯ УЛИЦА</span><h3>Проложить дорогу</h3><p>От ${roadDrawFrom.x}, ${roadDrawFrom.y} до ${roadDrawTo.x}, ${roadDrawTo.y}. Путь идёт по границам клеток, обходит воду. Простая грунтовая улица бесплатна; затем можно улучшить весь маршрут.</p><strong>${plan.reason||`Новых участков: ${plan.roads.length}`}</strong><button id="confirm-road" class="upgrade-button" ${plan.reason?'disabled':''}>Проложить маршрут</button><button id="cancel-road-draw">Отменить</button>`;
+ roadDrawTo={x:point.x,y:point.y};const plan=planNewRoad(state,roadDrawFrom,roadDrawTo);renderer.plannedRoads=plan.roads;inspected=null;$('tile-detail').hidden=false;$('tile-detail').innerHTML=`<button class="detail-close" aria-label="Закрыть описание">×</button><span class="eyebrow">ТВОЯ УЛИЦА</span><h3>Проложить дорогу</h3><p>От ${roadDrawFrom.x}, ${roadDrawFrom.y} до ${roadDrawTo.x}, ${roadDrawTo.y}. Путь идёт по границам клеток, обходит воду. Ровная грунтовая улица бесплатна и останется, даже если по ней перестанут ходить. Тропинки появляются от шагов и со временем исчезают. Улицу можно улучшить.</p><strong>${plan.reason||`Новых участков: ${plan.roads.length}`}</strong><button id="confirm-road" class="upgrade-button" ${plan.reason?'disabled':''}>Проложить маршрут</button><button id="cancel-road-draw">Отменить</button>`;
  const cancel=()=>{renderer.plannedRoads=null;roadDrawFrom=null;roadDrawTo=null;$('tile-detail').hidden=true;};$('tile-detail').querySelector('.detail-close').onclick=cancel;$('cancel-road-draw').onclick=cancel;
  $('confirm-road').onclick=()=>{const r=layRoad(state,roadDrawFrom,roadDrawTo);if(mutate(r,`Проложено участков: ${r.count||0}`)){cancel();$('map-hint').textContent='Выбери начало следующей дороги · Escape — выйти';}};
 }
@@ -715,7 +716,7 @@ function detail(type,placement,b=null){
  const panel=$('tile-detail'),close='<button class="detail-close" aria-label="Закрыть описание">×</button>';
  const locked=placement?buildingAvailabilityReason(type):'';
  if(placement)panel.innerHTML=`${close}<span class="eyebrow">НОВАЯ ПОСТРОЙКА</span><h3>${def.name}</h3>${artworkHTML(type)}<p>${def.desc}</p>${locked?`<p class="build-lock-reason">${esc(locked)}</p>`:''}<strong>${esc(yieldSummary(state,{type,level:1}))}</strong><h4>Цена постройки</h4><div id="placement-cost" data-building="${type}">${costs(def,true,type!=='house')}</div><p>${type==='bridge'?'Выбери клетку воды.':'Нажми на свободную клетку.'} Материалы резервируются сразу. Escape — отмена.</p>`;
- else panel.innerHTML=`${close}<header class="map-card-heading" data-map-card="building"><div class="map-card-emblem">${uiIcon(type)}</div><div><span class="eyebrow"></span><h3>${esc(def.name)}</h3><p class="map-card-address">Клетка ${b.x}, ${b.y} · <span class="building-construction-year">${esc(buildingChronology(b).label)}</span></p></div></header><strong class="map-card-production"></strong>${type==='house'?'<section id="household-panel"></section>':''}<div id="building-controls"></div><details class="map-card-more"><summary>О здании</summary>${artworkHTML(type)}<p>${def.desc}</p></details>${isStrictSumer(state)?buildingHistoryHTML(type):''}`;
+ else panel.innerHTML=`${close}<header class="map-card-heading" data-map-card="building"><div class="map-card-emblem">${uiIcon(type)}</div><div><span class="eyebrow"></span><h3>${esc(def.name)}</h3><p class="map-card-address">Клетка ${b.x}, ${b.y} · <span class="building-construction-year">${esc(buildingChronology(b).label)}</span></p></div></header><strong class="map-card-production"></strong><section id="workplace-schedule" class="staffing-panel" hidden></section>${type==='house'?'<section id="household-panel"></section>':''}<div id="building-controls"></div><details class="map-card-more"><summary>О здании</summary>${artworkHTML(type)}<p>${def.desc}</p></details>${isStrictSumer(state)?buildingHistoryHTML(type):''}`;
  panel.scrollTop=0;
  $('tile-detail').querySelector('.detail-close').onclick=()=>{inspected=null;inspectedPerson=null;inspectedDeposit=null;$('tile-detail').hidden=true;};if(!placement)updateDetail();
 }
@@ -728,6 +729,7 @@ function updateDetail(){
  const b=entityAt(inspected.x,inspected.y);if(!b){inspected=null;$('tile-detail').hidden=true;return;}
  if(b.type==='road'){updateRoadDetail(b);return;}
  const dateLabel=$('tile-detail').querySelector('.building-construction-year');if(dateLabel)dateLabel.textContent=buildingChronology(b).label;
+ const schedule=$('workplace-schedule');if(schedule){const readout=workplaceScheduleHTML(state,b);schedule.hidden=!readout;if(readout)setHTML(schedule,readout);}
  // Refresh the live readout without replacing a focused priority selector.
  if(b.construction&&$('inspector-site-live'))setHTML($('inspector-site-live'),siteStatus(b));
  if($('building-controls').contains(document.activeElement)&&(b.construction||document.activeElement.closest('.staff-preparation')||['SELECT','INPUT'].includes(document.activeElement.tagName)))return;
@@ -1419,7 +1421,7 @@ function choose(type){
  testMapUpgrade=false;document.body.classList.remove('test-map-upgrade');
  const knowledge=buildingAvailabilityReason(type);if(knowledge){toast(knowledge);return;}
  if(selection!==type)placementRotation=0;
- showBuildGroup(groupFor(type).id);
+ showBuildGroup(groupFor(type).id,type);
  inspected=null;clearRoadRoute();roadMode=false;renderer.setRoadMode(false);$('open-roads').setAttribute('aria-pressed','false');selection=selection===type?null:type;document.body.classList.toggle('is-building',!!selection);
  for(const card of document.querySelectorAll('.building-card')){card.classList.toggle('selected',card.dataset.type===selection);card.setAttribute('aria-pressed',String(card.dataset.type===selection));}
  $('map-hint').textContent=selection?`${buildingDefinition(state,selection).name} · ${selection==='bridge'?'выбери воду':selection==='field'?'земля у реки или рядом с наполненным каналом':selection==='canal'?'соединяй соседние клетки от реки':'выбери свободную клетку'} · Escape — отмена`:'Перетаскивание — карта · колесо — масштаб · клик — выбор';
@@ -1431,15 +1433,40 @@ function buildBenefit(type){
  return `${resourceText(b.output)} / рейс${type==='garden'?' · +4 счастья':''}`;
 }
 const buildSections=new Map();
+const craftPanels=new Map();
 $('buildings').setAttribute('aria-label','Группы построек');
-for(const g of BUILDING_GROUPS){const section=document.createElement('details');section.className='building-accordion';section.dataset.buildGroup=g.id;section.open=g.id==='life';section.innerHTML=`<summary><span>${g.name}</span><small>${g.types.length}</small></summary><div class="accordion-buildings"></div>`;buildSections.set(g.id,section);$('buildings').append(section);}
-function showBuildGroup(id){const section=buildSections.get(id);if(section)section.open=true;urukUI?.selectBuildGroup(id);}
+for(const group of BUILDING_GROUPS){
+ const section=document.createElement('details');section.className='building-accordion';
+ section.dataset.buildGroup=group.id;section.open=group.id==='life';
+ section.innerHTML=`<summary><span>${group.name}</span><small>${group.types.length}</small></summary>`;
+ if(group.id==='craft'){
+  const tabs=document.createElement('div');tabs.dataset.craftTabs='';section.append(tabs);
+  for(const craft of CRAFT_GROUPS){
+   const panel=document.createElement('div');panel.className='accordion-buildings';
+   panel.dataset.craftGroup=craft.id;section.append(panel);craftPanels.set(craft.id,panel);
+  }
+ }else{
+  const panel=document.createElement('div');panel.className='accordion-buildings';section.append(panel);
+ }
+ buildSections.set(group.id,section);$('buildings').append(section);
+}
+let craftTabs;
+function showBuildGroup(id,type){
+ const section=buildSections.get(id);if(section)section.open=true;
+ urukUI?.selectBuildGroup(id);
+ if(id==='craft'&&type)craftTabs?.show(type);
+}
 for(const [i,[type]]of Object.entries(Object.entries(BUILDINGS))){
  const b=buildingDefinition(state,type);
  const el=document.createElement('button');el.className='building-card';el.dataset.type=type;el.title=`Поставить: ${b.name}`;el.setAttribute('aria-pressed','false');
  el.innerHTML=`<span class="building-icon">${uiIcon(type)}</span><span class="build-copy"><strong>${b.name}</strong><span class="build-effect">${buildBenefit(type)}</span><span class="catalog-cost" data-cost="${type}">${costs(b)}</span><span class="build-lock-reason" hidden></span></span><span class="build-hotkey">${Number(i)<9?Number(i)+1:''}</span>`;
- const choice=document.createElement('div');choice.className='building-choice';const info=document.createElement('button');info.className='building-info';info.type='button';info.textContent='?';info.setAttribute('aria-label',`О здании: ${b.name}`);info.setAttribute('aria-controls','tile-detail');info.title=`Описание: ${b.name}`;info.onclick=()=>{showBuildGroup(groupFor(type).id);detail(type,true);};el.onclick=()=>choose(type);choice.append(el,info);buildSections.get(groupFor(type).id).querySelector('.accordion-buildings').append(choice);
+ const choice=document.createElement('div');choice.className='building-choice';const info=document.createElement('button');info.className='building-info';info.type='button';info.textContent='?';info.setAttribute('aria-label',`О здании: ${b.name}`);info.setAttribute('aria-controls','tile-detail');info.title=`Описание: ${b.name}`;
+ const group=groupFor(type),craft=craftGroupFor(type);
+ info.onclick=()=>{showBuildGroup(group.id,type);detail(type,true);};el.onclick=()=>choose(type);choice.append(el,info);
+ const panel=craft?craftPanels.get(craft.id):buildSections.get(group.id).querySelector('.accordion-buildings');
+ panel.append(choice);
 }
+craftTabs=bindCraftTabs(buildSections.get('craft'));
 function updateDepthTargetPreview(card){
  const preview=card?.querySelector('[data-depth-quote]');
  if(!preview)return;
@@ -1455,7 +1482,7 @@ function makeMiracleCard(id,m){
  details.innerHTML=`<summary class="miracle-card" aria-label="${m.name} · описание и применение"><span class="miracle-symbol">${uiIcon(id)}</span><span><strong>${m.name}</strong><small class="miracle-summary-status"></small></span></summary><section class="miracle-explanation" aria-label="${m.name}"><button class="miracle-close" aria-label="Закрыть описание способности">×</button><h3>${m.name}</h3><p class="miracle-description">${m.desc}</p><div class="miracle-facts"><span>${m.cost} веры</span><span>${DOMAIN_NAMES[m.domain]}</span><span>Отдых: ${m.cooldown} сез.</span></div><p class="miracle-unavailable" hidden></p><p data-miracle-history hidden></p>${id==='abundance'?'<p class="abundance-quote" aria-live="polite" hidden></p>':''}${id==='richCatch'?'<p data-rich-catch-quote aria-live="polite" hidden></p>':''}${id==='peace'?'<p data-peace-quote hidden></p>':''}${id==='relicAwakening'?'<p data-depth-quote hidden></p>':''}${id==='earthMemory'?'<p data-land-cast hidden></p>':''}<button class="miracle-cast" id="miracle-${id}">Применить · ${m.cost} веры</button></section>`;
  details.addEventListener('toggle',()=>{if(details.open)for(const other of $('miracles').querySelectorAll('details'))if(other!==details)other.open=false;if(id==='revelation'||id==='healing'||id==='peace'||id==='earthMemory')update();});
  details.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();details.open=false;details.querySelector('summary').focus();}});
- details.querySelector('.miracle-close').onclick=()=>{details.open=false;};
+ details.querySelector('.miracle-close').onclick=()=>{details.open=false;details.querySelector('summary').focus();};
  const el=details.querySelector('.miracle-cast');
  if(id==='revelation'){
   const choice=document.createElement('label');
@@ -1654,7 +1681,7 @@ function update(){
  const balance=seasonBalance(state);
  resourceBar.render(state,balance,storage(state),seedReserve(state));
  $('population').title=`Дети: ${state.citizens.filter(c=>c.age<16).length} · взрослые: ${state.citizens.filter(c=>c.age>=16&&c.age<55).length} · пожилые: ${state.citizens.filter(c=>c.age>=55).length}`;$('population').textContent=`${state.population} / ${state.capacity}`;$('happiness').textContent=`☀ ${Math.round(state.happiness)}%`;$('happiness').style.color=state.happiness<40?'#aa654a':'';
- const efficiency=workers(state);const funeralLabels={gathering:'Жители собираются',procession:'Процессия с факелами',collecting:'Возвращаются за умершими',farewell:'Прощание с умершими',receding:'Процессия отходит',jackals:'Шакалы уносят погребальные свёртки',returning:'Жители возвращаются домой'};$('mourning-notice').hidden=!state.funeral;if(state.funeral)$('mourning-notice').textContent=`${funeralLabels[state.funeral.stage]} · погибло ${state.funeral.deceased.length}. Календарь и хозяйство стоят до окончания церемонии.`;const ground=!state.buildings.some(b=>b.type==='granary'&&(!b.construction||b.construction.kind==='upgrade'));$('ground-storage-note').hidden=!ground;$('ground-storage-note').textContent=state.buildings.some(b=>b.starterHut)?'Запасы и припасы хранятся внутри домов':'Без амбара · запасы на земле у разгрузки';$('workers').textContent=`${stats.employed+stats.builders+(stats.carriers??0)+(stats.manualGatherers??0)+marketPorters+quarterPorters} / ${state.population}`;$('labor-meter').style.width=`${efficiency*100}%`;
+ const efficiency=workers(state);const ground=!state.buildings.some(b=>b.type==='granary'&&(!b.construction||b.construction.kind==='upgrade'));$('ground-storage-note').hidden=!ground;$('ground-storage-note').textContent=state.buildings.some(b=>b.starterHut)?'Запасы и припасы хранятся внутри домов':'Без амбара · запасы на земле у разгрузки';$('workers').textContent=`${stats.employed+stats.builders+(stats.carriers??0)+(stats.manualGatherers??0)+marketPorters+quarterPorters} / ${state.population}`;$('labor-meter').style.width=`${efficiency*100}%`;
  $('labor-note').textContent=state.funeral&&state.funeral.scope!=='family'?'Траурная процессия. Назначения и все грузы сохранены; работа продолжится после возвращения.':stats.disconnected?`Нет пути к ${stats.disconnected} рабочим зданиям. Нужен мост или склад на этом берегу.`:`Строители: ${stats.builders} · носильщики: ${stats.carriers??0} · площадки: ${stats.sites} · рынок: ${marketPorters} · склады: ${quarterPorters}. Собирают: ${stats.working} · несут груз: ${stats.carrying}. Ресурсы поступают только после доставки.`;
  $('date').title='1 год города = 2 года возраста. Дети работают с 16 лет.';const calendar=calendarAt(state);$('date').textContent=`Год ${state.year} · ${SEASONS[state.season]} · ${calendar.monthName}`;$('season-icon').textContent=['❀','☀','❧','❄'][state.season];
  setHTML($('season-track'),monthTrackHTML(state));if(!seasonJumping)monthNotice.update(state);
@@ -1989,7 +2016,7 @@ $('building-count').textContent=Object.keys(BUILDINGS).length;
 $('open-supply').onclick=showSupply;
 renderer.onRoadGround=drawRoadPoint;
 $('lay-roads').onclick=()=>{const enable=!renderer.roadDrawMode;clearRoadRoute();if(selection)choose(selection);roadMode=enable;renderer.setRoadMode(enable);renderer.roadDrawMode=enable;$('lay-roads').setAttribute('aria-pressed',String(enable));$('open-roads').setAttribute('aria-pressed','false');$('map-hint').textContent=enable?'Выбери начало дороги · затем конец · Escape — выйти':'Выбери здание или жителя';};
-$('open-roads').onclick=()=>{const enable=!roadMode||renderer.roadDrawMode;clearRoadRoute();if(selection)choose(selection);roadMode=enable;renderer.setRoadMode(roadMode);$('open-roads').setAttribute('aria-pressed',String(roadMode));$('map-hint').textContent=roadMode?'Дороги: выбери участок · стрелки и Enter — с клавиатуры · Escape — выйти':'Выбери здание или жителя';};
+$('open-roads').onclick=()=>{const enable=!roadMode||renderer.roadDrawMode;clearRoadRoute();if(selection)choose(selection);roadMode=enable;renderer.setRoadMode(roadMode);$('open-roads').setAttribute('aria-pressed',String(roadMode));$('map-hint').textContent=roadMode?'Дороги: выбери участок · тонкие линии показывают возможные маршруты · Escape — выйти':'Выбери здание или жителя';};
 renderer.onRoadSelect=road=>{if(dialog.open)return;if(routeFrom&&roadMode){routeTo=road.id;inspected=null;renderRoadRoute();}else roadDetail(road);};
 $('open-trade').onclick=showTrade;
 $('test-resources').textContent='Тестирование';$('test-resources').onclick=()=>showCityOverview('testing');
@@ -2024,10 +2051,11 @@ document.addEventListener('keydown',e=>{if(seasonJumping){e.preventDefault();ret
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden&&loaded)save();});
 let shownEvent=null,shownFeast=null,shownMiracle=null,lastBeerStatus=state.firstBeerFeast?.status;
 const ceremonyControls=document.createElement('div');ceremonyControls.className='ceremony-notice';ceremonyControls.hidden=true;
-const ceremonyNotice=document.createElement('button');ceremonyNotice.type='button';
+const ceremonyStatus=document.createElement('span');ceremonyStatus.className='ceremony-status';ceremonyStatus.setAttribute('role','status');
+const ceremonyNotice=document.createElement('button');ceremonyNotice.type='button';ceremonyNotice.className='ceremony-focus';
 const skipCatScene=document.createElement('button');skipCatScene.type='button';skipCatScene.textContent='Пропустить сцену';skipCatScene.hidden=true;
-ceremonyControls.append(ceremonyNotice,skipCatScene);$('city').parentNode.append(ceremonyControls);
-ceremonyNotice.onclick=()=>{if(state.miracleCelebration){const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);}else if(state.festival)showFestival();else if(state.funeral?.gather)renderer.focusOn(state.funeral.gather.x,state.funeral.gather.y);};
+ceremonyControls.append(ceremonyStatus,ceremonyNotice,skipCatScene);$('city').parentNode.append(ceremonyControls);
+ceremonyNotice.onclick=()=>{if(state.funeral?.gather){const current=funeralView(state),p=current?.biers?.find(b=>b.visible!==false&&b.carriers?.length)||current?.biers?.find(b=>b.visible!==false&&b.laid)||current?.coffin||state.funeral.gather;renderer.focusOn(p.x,p.y);}else if(state.miracleCelebration){const p=state.miracleCelebration.center;renderer.focusOn(p.x,p.y);}else if(state.festival)showFestival();};
 skipCatScene.onclick=()=>{
  const scene=state.miracleCelebration;
  if(scene?.kind!=='cat'||!usesCatDiscovery(state))return;
@@ -2040,7 +2068,16 @@ function ceremonyPresentation(){
  const q=state.festival;if(q?.stage==='celebrating'&&q!==shownFeast){shownFeast=q;const view=festivalView(state),p=view?.court||view;if(p){renderer.addEffect('festival',{x:p.x,y:p.y});renderer.focusOn(p.x,p.y);}toast(q.occasion==='firstBeer'?'Первая партия пива выпущена! Начался пир у пивоварни.':'Ночь огней началась: жители пируют и танцуют.');}
  if(!q)shownFeast=null;
  if(lastBeerStatus!==state.firstBeerFeast?.status){lastBeerStatus=state.firstBeerFeast?.status;if(lastBeerStatus==='pending')toast('Первая партия пива выпущена! Жители готовят малый пир у пивоварни.');}
- const text=festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);ceremonyControls.hidden=!text;skipCatScene.hidden=miracleScene?.kind!=='cat'||!usesCatDiscovery(state);ceremonyNotice.textContent=`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
+ const funeral=state.funeral;
+ const text=funeral?funeralStageLabel(funeral):festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);
+ const status=funeral?`${text} · ${speed}× · ${paused?'На паузе':'Календарь остановлен'}`:'';
+ ceremonyControls.hidden=!text;
+ ceremonyControls.classList.toggle('funeral-notice',!!funeral);
+ ceremonyStatus.hidden=!funeral;
+ if(ceremonyStatus.textContent!==status)ceremonyStatus.textContent=status;
+ skipCatScene.hidden=!!funeral||miracleScene?.kind!=='cat'||!usesCatDiscovery(state);
+ const action=funeral?'К процессии':`${text} · ${speed}× · ${paused?'Ⅱ участники на паузе':'участники продолжают церемонию'}`;
+ if(ceremonyNotice.textContent!==action)ceremonyNotice.textContent=action;
 }
 function frame(now){
  if(shownSupplyRoute&&($('tile-detail').hidden||inspectedPerson!==null||!inspected||inspected.x!==shownSupplyRoute.route.home.x||inspected.y!==shownSupplyRoute.route.home.y))clearSupplyRoute();

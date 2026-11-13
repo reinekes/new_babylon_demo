@@ -9,6 +9,7 @@ import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
 import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js?v=earthen-levee-20261113';
 import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
+import {sheepfoldGateSide} from '../sheepfold-layout.js';
 import {createArchitecture} from './architecture.js';
 import {createHouseArchitecture,houseVisualKind} from './house-architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
@@ -27,7 +28,7 @@ const isHouse=b=>!b.reedCamp&&b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext){
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),leveeSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),b.type==='sheepfold'?sheepfoldGateSide(b,state):'',leveeSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative

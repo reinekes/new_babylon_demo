@@ -4,9 +4,9 @@
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
     "total": 83,
-    "active": 55,
+    "active": 54,
     "fallback": 9,
-    "optional": 7,
+    "optional": 8,
     "spare": 12
   },
   "errors": [],
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "22c429f84966e367a39e76f9eeff5977a29982b83ea6500b7cf06647e9b1682b"
+      "sha256": "f330294176f6d79f7dfb744ad30f1199f39b0d24e6a480c6cd643ff816b39afa"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "9d108647499a526f5c6886f324da13bbfbe877564ff3c7d23247aa531a13ee03"
+      "sha256": "3ebb3bb918113112b30d6aa752ca582f71db33f0e8f51fa445f96b793d60224a"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "793025c742c3c5bfd13844a98fef6172f6cc5edfa94d4c6ba5b6cd73fd4d145c"
+      "sha256": "79389558f728a01a6de6da8ab72fb7771172a48e5e2f091c2b23cbf75cf3b809"
     },
     {
       "file": "game3d/caravan.js",
@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "38390c949a03a72b6bcf22393bb745597b769a639c43b92c65749da198772f0b"
+      "sha256": "122c1f361a08cc6ef3ea3c20b3221a22e6f181ee587f8d45d1b5c34a8ca4b805"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -81,11 +81,11 @@
     },
     {
       "file": "game3d/supplied-fauna.js",
-      "sha256": "320b2874ed3fa9fcef9b2ec0f854dac25579f7eb32627e790246fb027a9c9c18"
+      "sha256": "8420c9ccaeb44dbc6135ac0db4ef00c96b070c1c14bff2d55807f6beb56bb3e6"
     },
     {
       "file": "game3d/valley-vegetation.js",
-      "sha256": "6865799c55d5812be4c25312a54005ee20408d239b06a39942feb2f0b09be8da"
+      "sha256": "5405964dcd190231c28c4dc36f66fb44a48ea0b02782bc1ead44559f7adca791"
     }
   ],
   "models": [
@@ -119,7 +119,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 22,
+          "line": 23,
           "kind": "literal"
         }
       ]
@@ -245,9 +245,9 @@
     },
     {
       "file": "ambient-duck.glb",
-      "status": "active",
-      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
-      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "status": "optional",
+      "purpose": "Декоративная утка для стендов. В городе живёт береговая пара крякв.",
+      "classificationEvidence": "game3d/ambient-fauna.js|hidePlaceholderBirds",
       "bytes": 2740460,
       "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
       "version": "1e0c78ec30c2",
@@ -279,8 +279,8 @@
     {
       "file": "ambient-sheep-kenchoo.glb",
       "status": "active",
-      "purpose": "Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.",
-      "classificationEvidence": "game3d/ambient-fauna.js|AMBIENT_MODELS",
+      "purpose": "Фоновые овцы и часть взрослых овец в овчарнях.",
+      "classificationEvidence": "game3d/ambient-fauna.js|ambient-sheep-kenchoo",
       "bytes": 1777624,
       "sha256": "4119278af230b7b25b1eea8742fec3ded4709c6845333285ff7b46bbc295f1a3",
       "version": "4119278af230",
@@ -530,7 +530,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 154,
+          "line": 161,
           "kind": "literal"
         }
       ]
@@ -2151,7 +2151,7 @@
     {
       "file": "supplied-common-quail.glb",
       "status": "active",
-      "purpose": "Импортированные обитатели берега; пеликан использует эту модель на воде.",
+      "purpose": "Импортированные обитатели берега.",
       "classificationEvidence": "game3d/supplied-fauna.js|supplied-",
       "bytes": 2050532,
       "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
@@ -2180,7 +2180,7 @@
     {
       "file": "supplied-frog-jump.glb",
       "status": "active",
-      "purpose": "Импортированные обитатели берега; пеликан использует эту модель на воде.",
+      "purpose": "Импортированные обитатели берега.",
       "classificationEvidence": "game3d/supplied-fauna.js|supplied-",
       "bytes": 1855544,
       "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
@@ -2309,8 +2309,8 @@
     {
       "file": "supplied-pelican-wasis.glb",
       "status": "active",
-      "purpose": "Импортированные обитатели берега; пеликан использует эту модель на воде.",
-      "classificationEvidence": "game3d/supplied-fauna.js|supplied-",
+      "purpose": "Зимний пеликан на воде.",
+      "classificationEvidence": "game3d/supplied-fauna.js|supplied-pelican-wasis",
       "bytes": 5244380,
       "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
       "version": "fe0253c6ece2",

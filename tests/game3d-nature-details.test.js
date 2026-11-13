@@ -21,8 +21,10 @@ test('rain accumulates and puddles evaporate smoothly; pause or backward time ca
 });
 test('nature rendering shares sources/materials, never rebuilds on animation, handles quality changes and disposes',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),s=createGame({start:'established'}),before=JSON.stringify(s),view=createNatureDetails(B,scene,{});view.update(s,0,{type:'rain'},[],'stable');assert.equal(view.materialCount,4);const count=scene.meshes.length,matCount=scene.materials.length,first=view.meshes.find(m=>m.name==='nature-ground-reeds-shards-dust');
- assert.ok(view.meshes.filter(m=>m.metadata?.natureDetail).every(m=>m.sourceMesh));
- for(let i=1;i<100;i++)view.update(s,i/10,{type:'rain'},[],'stable');assert.equal(scene.meshes.length,count);assert.equal(scene.materials.length,matCount);assert.equal(first.isDisposed(),false);assert.ok(view.wetness>.9);assert.ok(view.meshes.find(m=>m.name==='nature-rain-puddles').material.alpha>.5);
+ assert.ok(view.meshes.filter(m=>m.metadata?.natureDetail?.kind==='tumbleweeds').every(m=>m.sourceMesh));
+ const snake=view.meshes.find(m=>m.metadata?.natureDetail?.kind==='snakes');
+ const initialCurve=Array.from(snake.getVerticesData(B.VertexBuffer.PositionKind));
+ for(let i=1;i<100;i++)view.update(s,i/10,{type:'rain'},[],'stable');assert.notDeepEqual(Array.from(snake.getVerticesData(B.VertexBuffer.PositionKind)),initialCurve);assert.equal(scene.meshes.length,count);assert.equal(scene.materials.length,matCount);assert.equal(first.isDisposed(),false);assert.ok(view.wetness>.9);assert.ok(view.meshes.find(m=>m.name==='nature-rain-puddles').material.alpha>.5);
  for(let i=10;i<60;i++)view.update(s,i,{type:'sunny'},[],'stable');assert.equal(view.wetness,0);assert.equal(view.meshes.find(m=>m.name==='nature-rain-puddles').isEnabled(),false);
  view.setQuality('low');view.update(s,60,{type:'wind'},[],'stable');assert.equal(first.isDisposed(),true);assert.equal(view.plan.snakes.length,1);assert.equal(scene.materials.length,matCount);assert.equal(JSON.stringify(s),before);
  view.dispose();assert.equal(scene.meshes.length,0);assert.equal(scene.materials.length,matCount-4);assert.equal(view.meshes.length,0);view.dispose();scene.dispose();engine.dispose();

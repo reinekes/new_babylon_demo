@@ -5,12 +5,12 @@ import {surfaceElevation} from '../district3d/terrain.js';
 const models={
  'common-quail':{file:'supplied-common-quail.glb',height:.20,yaw:0},
  'savigny-tree-frog':{file:'supplied-frog-jump.glb',height:.07,yaw:0,clip:'metarig|jumpInPlace'},
- 'white-pelican':{file:'supplied-pelican-wasis.glb',height:1.42,yaw:0,waterline:.56}
+ 'white-pelican':{file:'supplied-pelican-wasis.glb',height:1.42,yaw:Math.PI/2,waterline:.42}
 };
 
 const fishModels={
- 'yellowfin-goby':{file:'supplied-yellowfin-goby.glb',length:.32,yaw:0},
- 'oriental-goby':{file:'supplied-oriental-goby.glb',length:.48,yaw:0}
+ 'yellowfin-goby':{file:'supplied-yellowfin-goby.glb',length:.32,yaw:Math.PI/2},
+ 'oriental-goby':{file:'supplied-oriental-goby.glb',length:.48,yaw:Math.PI/2}
 };
 export const fishPreviewEnabled=search=>new URLSearchParams(search).get('fish-preview')==='1';
 const modelKey=pose=>pose.kind==='fish'?fishVariant(pose):pose.kind;
@@ -42,13 +42,36 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
   if(fish)root.metadata={animalKind:pose.kind,animalId:pose.id,fishModel:key};
   const pivot=new B.TransformNode(root.name+'-pivot',scene);
   pivot.parent=root;
-  const copy=sources.get(key).instantiateModelsToScene(undefined,false,{doNotInstantiate:!!model.clip});
+  const copy=sources.get(key).instantiateModelsToScene(undefined,false,{doNotInstantiate:!!model.clip||pose.kind==='white-pelican'});
   for(const node of copy.rootNodes)node.parent=pivot;
   const {min,max}=pivot.getHierarchyBoundingVectors(true);
   const scale=fish?model.length/Math.max(max.x-min.x,max.z-min.z):model.height/(max.y-min.y);
   pivot.scaling.setAll(scale);
   pivot.position.set(-(min.x+max.x)*scale/2,fish?-(min.y+max.y)*scale/2:-min.y*scale-(model.waterline||0),-(min.z+max.z)*scale/2);
   const owned=pivot.getChildMeshes();
+  const materials=new Map();
+  const pelican=pose.kind==='white-pelican';
+  if(pelican){
+   // The scan has standing legs baked into its mesh. Clip their underwater
+   // part on this actor only, so the transparent river never shows them.
+   const surface=new B.Plane(0,-1,0,WATER_HEIGHT-.028);
+   for(const mesh of owned){
+    const material=mesh.material;
+    if(!material)continue;
+    if(!materials.has(material)){
+     const copy=material.clone('pelican-waterline');
+     copy.clipPlane=surface;
+     materials.set(material,copy);
+    }
+    mesh.material=materials.get(material);
+   }
+  }
+  const wake=pelican?B.MeshBuilder.CreateLineSystem('pelican-wake',{
+   lines:[-1,1].map(side=>[[.16,-.19],[.31,-.42],[.55,-.82],[.83,-1.23]].map(([x,z])=>new B.Vector3(side*x,0,z))),
+   colors:[-1,1].map(()=>[0,.65,.42,0].map(alpha=>new B.Color4(.81,.86,.78,alpha))),
+   useVertexAlpha:true
+  },scene):null;
+  if(wake){wake.isPickable=false;wake.setEnabled(false);}
   for(const mesh of owned){
    mesh.isPickable=fish;
    meshes.push(mesh);
@@ -59,7 +82,7 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
    animation.start(false,1,animation.from,animation.to,false);
    animation.pause();
   }
-  return {root,copy,owned,animation,frame:null,lastX:pose.x,lastY:pose.y,yaw:0};
+  return {root,copy,owned,materials,wake,animation,frame:null,lastX:pose.x,lastY:pose.y,yaw:0};
  }
  function update(state,poses,fish=[]){
   for(const actor of actors.values())actor.visible=false;
@@ -74,7 +97,8 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
    actor.root.setEnabled(true);
    if(pose.kind==='fish'){
     const dx=pose.x-actor.lastX,dz=pose.y-actor.lastY;
-    if(Math.hypot(dx,dz)>1e-6){
+    if(Number.isFinite(pose.yaw))actor.yaw=pose.yaw;
+    else if(Math.hypot(dx,dz)>1e-6){
      const yaw=Math.atan2(dx,dz),delta=yaw-actor.yaw;
      actor.yaw+=Math.atan2(Math.sin(delta),Math.cos(delta))*.35;
     }
@@ -90,14 +114,23 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
    const elevation=terrain?surfaceElevation(pose.x,pose.y,state):pose.elevation;
    actor.root.position.set(pose.x*6,elevation+(pose.kind==='savigny-tree-frog'?.018:0),pose.y*6);
    actor.root.rotation.y=(pose.yaw||0)+models[pose.kind].yaw;
-   actor.root.rotation.x=pose.kind==='white-pelican'?Math.sin((state.simTime||0)*1.7)*.028:0;
+   if(pose.kind==='white-pelican'){
+    const scoop=pose.scoop||0,stroke=pose.stroke??1,phase=state.simTime||0;
+    actor.root.position.y=WATER_HEIGHT+.012+Math.sin(phase*2.1)*.018-.045*scoop;
+    actor.root.rotation.x=Math.sin(phase*1.4)*.018;
+    actor.root.rotation.z=scoop*.40+Math.sin(phase*1.7)*.022;
+    actor.wake.setEnabled(stroke>.12);
+    actor.wake.position.set(actor.root.position.x,WATER_HEIGHT+.027,actor.root.position.z);
+    actor.wake.rotation.y=pose.yaw||0;
+    actor.wake.scaling.set(.65+.35*stroke,1,.55+.45*stroke);
+   }
    if(actor.animation&&actor.frame!==pose.hopProgress){
     const {from,to}=actor.animation;
     actor.animation.goToFrame(from+(to-from)*pose.hopProgress);
     actor.frame=pose.hopProgress;
    }
   }
-  for(const actor of actors.values())if(!actor.visible)actor.root.setEnabled(false);
+  for(const actor of actors.values())if(!actor.visible){actor.root.setEnabled(false);actor.wake?.setEnabled(false);}
  }
  function dispose(){
   for(const actor of actors.values()){
@@ -106,6 +139,8 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
     if(index!==-1)meshes.splice(index,1);
    }
    actor.copy.dispose();
+   actor.wake?.dispose();
+   for(const material of actor.materials.values())material.dispose(false,false);
    actor.root.dispose();
   }
   for(const asset of sources.values())asset.dispose();

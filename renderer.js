@@ -10,7 +10,8 @@ import {manualGatheringActivity} from './manual-gathering.js';
 import {miracleCelebrationView} from './miracle-celebration.js';
 import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint} from './footprints.js';
-import {roadTopologyRevision} from './roads.js';
+import {roadIsBuilt,roadTopologyRevision} from './roads.js';
+import {visibleFootpaths} from './footpaths.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
 import {ceremonyJoinStep} from './festival-layout.js';
@@ -32,7 +33,7 @@ import {drawPloughTeam} from './plough-art.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
 import {funeralView} from './funerals.js';
-const spriteTypes=new Set(['house','brickyard','waterpoint','sheepfold','weaver','tailor','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
+const spriteTypes=new Set(['house','brickyard','waterpoint','weaver','tailor','healer','depot','granary','clay','reed','market','fishing','hunting','logging','quarry']);
 const spriteBudget=24*1024*1024;
 const placementTypes=new Set(['clay','reed','garden','quarry','logging','hunting','fishing']);
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
@@ -286,13 +287,29 @@ export class Renderer{
  }
  streetsLayer() {
   const c=this.ctx;c.save();c.lineCap='round';c.lineJoin='round';
-  const edgeKey=(a,b)=>[a.key,b.key].sort().join('|'),edges=[...this.streets.edges],seen=new Set(edges.map(([a,b])=>edgeKey(a,b))),roads=new Map();
- for(const road of this.state?.roads||[]){const key=edgeKey(road.a,road.b);if(!roads.has(key))roads.set(key,road);if(!seen.has(key)){edges.push([road.a,road.b]);seen.add(key);}}
- for(const r of this.plannedRoads||[])this.line([this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)],'#fff0ae',3*this.s);
- const hovered=this.roadMode?this.roadNear(this.hover||{})?.id:null;
-  for(const [color,width] of [['#af9c73',7.6],['#dbc79c',5.4]])for(const [a,b] of edges)this.line([this.point(a.x,a.y),this.point(b.x,b.y)],color,width*this.s);
-  for(const [a,b] of edges){const road=roads.get(edgeKey(a,b)),level=road?.level||1;const path=[this.point(a.x,a.y),this.point(b.x,b.y)];this.line(path,level===3?'#ad7956':level===2?'#b5af94':'#ead9b4',(level>1?4:1.2)*this.s);if(level===3)for(let k=1;k<5;k++){const f=k/5,p=this.point(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}if(road?.construction){const p=this.point(road.x,road.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}if(road&&(this.routeRoads?.has(road.id)||this.selectedRoad===road.id||this.selectedRoad?.id===road.id||this.roadMode&&hovered===road.id))this.line(path,'#fff0ae',2*this.s);}
-  for(const port of this.streets.ports){const p=this.point(port.x,port.y);this.box(p.x,p.y,4*this.s,2*this.s,.6*this.s,'#e6d5ac','#bfac81','#cdbc91');}
+  const state=this.state,roads=state.roads||[];
+  const finished=new Set(roads.filter(r=>r.construction||roadIsBuilt(r)).map(r=>r.id));
+  const points=r=>[this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)];
+  for(const path of visibleFootpaths(state,finished)){
+   if(!this.inView((path.a.x+path.b.x)/2,(path.a.y+path.b.y)/2,50))continue;
+   const opacity=.11+path.level*.06;
+   this.line(points(path),`rgba(95,73,47,${opacity*.38})`,(2.6+path.level*.65)*this.s);
+   this.line(points(path),`rgba(118,90,56,${opacity})`,(1.6+path.level*.4)*this.s);
+  }
+  const showNetwork=this.roadMode&&!this.photoMode,hovered=showNetwork?this.roadNear(this.hover||{})?.id:null;
+  const visibleRoads=roads.filter(r=>(finished.has(r.id)||showNetwork||this.routeRoads?.has(r.id)||this.selectedRoad===r.id||this.selectedRoad?.id===r.id)&&this.inView(r.x,r.y,55));
+  const built=visibleRoads.filter(r=>finished.has(r.id));
+  for(const [color,width]of [['#af9c73',7.6],['#dbc79c',5.4]])for(const r of built)this.line(points(r),color,width*this.s);
+  for(const road of visibleRoads){
+   const {a,b,level}=road,path=points(road);
+   if(finished.has(road.id)){
+    this.line(path,level===3?'#ad7956':level===2?'#b5af94':'#ead9b4',(level>1?4:1.2)*this.s);
+    if(level===3)for(let k=1;k<5;k++){const f=k/5,p=this.point(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}
+    if(road.construction){const p=this.point(road.x,road.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}
+   }else if(showNetwork)this.line(path,'rgba(238,211,143,.55)',1.1*this.s);
+   if(!this.photoMode&&(this.routeRoads?.has(road.id)||this.selectedRoad===road.id||this.selectedRoad?.id===road.id||hovered===road.id))this.line(path,'#fff0ae',2*this.s);
+  }
+  if(!this.photoMode)for(const r of this.plannedRoads||[])this.line(points(r),'#fff0ae',3*this.s);
   if(!this.photoMode&&this.supplyRoute?.length>1)this.line(this.supplyRoute.map(p=>this.point(p.x,p.y)),'#79edec',Math.max(3,3*this.s));
   c.restore();
  }
@@ -387,9 +404,26 @@ export class Renderer{
  if(catTrace)entities.push({...catTrace,kind:'catOffering'});
  const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
- const funeral=funeralView(s);entities.push(...animalsFor(s),...this.groundStocks(s));if(funeral){if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});entities.push(...funeral.jackals);for(const id of funeral.mourners||[]){const existing=entities.find(e=>e.kind==='person'&&e.id===id);if(existing){existing.robe='#c7c9ae';existing.mourningTorch=!!funeral.torches;existing.carrying=false;existing.walking=true;existing.phase='mourning';}else{const citizen=s.citizens.find(c=>c.id===id);if(citizen)entities.push({...citizen,kind:'person',robe:'#c7c9ae',mourningTorch:!!funeral.torches,phase:'mourning',walking:true,step:((s.simTime||0)+(s.funeral?.timer||0))*4});}}}
+ const funeral=funeralView(s);
+ entities.push(...animalsFor(s),...this.groundStocks(s));
+ if(funeral){
+  if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});
+  for(const bier of funeral.biers||[])if(bier.visible!==false)entities.push({...bier,kind:'bier'});
+  entities.push(...funeral.jackals);
+  const mourners=new Map((funeral.participants||[]).map(person=>[person.id,person]));
+  for(const id of funeral.mourners||[]){
+   const existing=entities.find(e=>e.kind==='person'&&e.id===id),citizen=existing||s.citizens.find(c=>c.id===id);
+   if(!citizen)continue;
+   const person=mourners.get(id),walking=person?.walking??true;
+   const appearance={...person,kind:'person',robe:'#c7c9ae',mourningTorch:person?.torch??!!funeral.torches,
+    carrying:false,walking,phase:'mourning',step:walking?((s.simTime||0)+(s.funeral?.timer||0))*4+id*.73:0};
+   if(existing)Object.assign(existing,appearance);
+   else entities.push({...citizen,...appearance});
+  }
+ }
  for(const b of s.buildings)if(b.type==='bridge'&&b.construction?.kind!=='new'){const span=bridgeSpanAt(b,s);for(let across=span.left;across<span.right;across+=.5)entities.push({...worldFromRiver(across+.25,span.y+.13,s),across,along:span.y+.13,kind:'bridgeRail',end:Math.min(across+.5,span.right)});}
- const lamps=[...this.streets.nodes.values()].filter((p,i)=>i%4===0||this.streets.graph.get(p.key).size>=3).map(p=>({...p,kind:'lamp'}));
+ const builtRoadNodes=new Map((s.roads||[]).filter(r=>roadIsBuilt(r)).flatMap(r=>[[r.a.key,r.a],[r.b.key,r.b]]));
+ const lamps=[...builtRoadNodes.values()].filter((_,i)=>i%4===0).map(p=>({...p,kind:'lamp'}));
  entities.push(...lamps,...vessels.filter(v=>!bridgeVessels.has(v)).map(v=>({...v,kind:'caravan'})));
  for(const e of sortScene(entities)){
   if(!this.inView(e.x,e.y,150))continue;

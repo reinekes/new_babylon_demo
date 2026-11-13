@@ -16,9 +16,22 @@ export function valleyVegetationPlan(s,roads=[],tier='balanced'){
  const WIDTH=worldWidth(s),HEIGHT=worldHeight(s),budget=VEGETATION_BUDGETS[tier]||VEGETATION_BUDGETS.balanced,contours=lakeContours(s),plan={grass:[],greenGrass:[],reed:[]};
  const clear=(p,r=.24)=>p.x>0&&p.y>0&&p.x<WIDTH-1&&p.y<HEIGHT-1&&sceneryClear(s,p,r)&&roads.every(e=>distance(p,e.a,e.b)>.28+r);
  const put=(kind,p,seed)=>plan[kind].push({...p,angle:random(seed,37)*Math.PI*2,scale:(kind==='reed'?1:2)*((kind==='reed'?.75:.65)+random(seed,53)*.55),variant:Math.floor(random(seed,61)*3)});
+ const spacing=5,dryWidth=Math.ceil(WIDTH/spacing),dryCells=dryWidth*Math.ceil(HEIGHT/spacing);
+ const dryClump=cell=>{
+  const phase=s.world?.seed||0,cx=(cell%dryWidth)*spacing,cy=Math.floor(cell/dryWidth)*spacing;
+  if(random(cell,phase)<.32)return;
+  const x=cx+1+random(cell,phase+9)*3,y=cy+1+random(cell,phase+19)*3;
+  for(let k=0;k<4&&plan.grass.length<budget.grass;k++){
+   const p={x:x+(random(cell+k*17,phase+27)-.5)*1.0,y:y+(random(cell+k*29,phase+37)-.5)*.7,dryland:true};
+   if(vegetationBankDistance(p.x,p.y,s,contours)>6&&clear(p))put('grass',p,cell*41+k*73);
+  }
+ };
  // Stable distributed walk: lower quality is a prefix of each species, and
  // density stays bounded even on a completely empty floodplain.
  for(let i=0;i<WIDTH*HEIGHT*3;i++){
+  // Interleave the two sources so all quality tiers share the same stable
+  // prefix and the dry clumps do not inflate existing instance budgets.
+  if(i%19===0&&i/19<dryCells)dryClump((i/19*137)%dryCells);
   const cell=(i*137)%(WIDTH*HEIGHT),pass=Math.floor(i/(WIDTH*HEIGHT)),p={x:cell%WIDTH+(random(cell,pass+3)-.5)*.8,y:Math.floor(cell/WIDTH)+(random(cell,pass+9)-.5)*.8},d=vegetationBankDistance(p.x,p.y,s,contours);
   const kind=d>.13&&d<.83?'reed':d>=.83&&d<2.5&&random(cell,pass+21)>.36?'greenGrass':d>=.83&&d<6?'grass':null;
   if(!kind||plan[kind].length>=budget[kind]||!clear(p)||random(cell,pass+18)>(kind==='reed'?.63:.46))continue;

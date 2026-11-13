@@ -23,3 +23,19 @@ test('malformed ceremony counters cannot skip deceased or fabricate completed ba
 test('large casualty layouts keep one unique bounded bier per deceased',()=>{const s=createGame({start:'established'});s.citizens=s.citizens.slice(0,2);s.population=2;startFuneral(s,bodies(1000));const view=funeralView(s);assert.equal(view.biers.length,1000);assert.equal(new Set(view.biers.map(b=>`${b.x},${b.y}`)).size,1000);assert.ok(view.biers.every(b=>b.x>=.5&&b.x<40&&b.y>=.5&&b.y<30));});
 test('carried biers follow dry routes outside occupied building footprints',async()=>{const {isDryPoint}=await import('../world.js'),{footprintSize}=await import('../footprints.js'),s=createGame({start:'established'});s.citizens.forEach(c=>{c.age=30;c.cargo={};c.buildCargo={};});startFuneral(s,bodies(3));while(s.funeral.stage!=='procession')advanceFuneral(s,.2);for(let n=0;n<25&&s.funeral.stage==='procession';n++){for(const b of funeralView(s).biers.filter(b=>b.carriers.length)){assert.ok(isDryPoint(s,b.x,b.y));assert.ok(!s.buildings.some(p=>{if(['field','garden','bridge'].includes(p.type))return false;const size=footprintSize(p);return Math.abs(b.x-p.x-(size-1)/2)<size/2-.04&&Math.abs(b.y-p.y-(size-1)/2)<size/2-.04;}),`${b.id} outside occupied footprints`);}advanceFuneral(s,.2);}});
 test('forty farewell mourners stand on separate dry clear stations around an occupied boundary house',async()=>{const {isDryPoint}=await import('../world.js'),{footprintSize}=await import('../footprints.js'),s=createGame({start:'established'}),base=s.citizens[0];s.citizens=Array.from({length:40},(_,id)=>({...structuredClone(base),id,age:30,cargo:{},buildCargo:{}}));s.population=40;s.buildings.push({type:'house',x:3,y:8,level:1});startFuneral(s,bodies(1));s.funeral.stage='farewell';s.funeral.timer=2;const before=JSON.stringify(s),view=funeralView(s),points=view.participants;assert.equal(points.length,40);assert.equal(new Set(points.map(p=>`${p.x},${p.y}`)).size,40);for(const p of points){assert.ok(isDryPoint(s,p.x,p.y));assert.ok(!s.buildings.some(b=>{if(['field','garden','bridge'].includes(b.type))return false;const size=footprintSize(b);return Math.abs(p.x-b.x-(size-1)/2)<size/2+.08&&Math.abs(p.y-b.y-(size-1)/2)<size/2+.08;}),`mourner ${p.id} clears every building`);}assert.equal(JSON.stringify(s),before);});
+
+
+test('a new rite carries biers beyond edge-of-town buildings on the same dry bank',async()=>{
+ const {signedRiverDistance,isDryPoint}=await import('../world.js');
+ for(const seed of [0,137]){
+  const s=createGame({start:'established',seed}),gather=s.buildings.find(b=>b.type==='shrine')||s.buildings[0];
+  for(let y=2;y<=14;y+=2)if(isDryPoint(s,2,y))s.buildings.push({type:'house',x:2,y,level:1});
+  assert.ok(startFuneral(s,bodies(1)));
+  const {boundary:p,procession}=s.funeral,view=funeralView(s);
+  assert.ok(isDryPoint(s,p.x,p.y));
+  assert.equal(Math.sign(signedRiverDistance(p.x,p.y,s)),Math.sign(signedRiverDistance(gather.x,gather.y,s)));
+  assert.deepEqual(procession.at(-1),p);
+  assert.ok(s.buildings.every(b=>Math.hypot(b.x-p.x,b.y-p.y)>=5));
+  assert.equal(view.biers[0].laid,false);
+ }
+});

@@ -1,3 +1,4 @@
+import {footpathRibbonPoint} from '../footpaths.js';
 import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from './atmosphere.js';
 import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,riverFlowVector,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
@@ -57,12 +58,15 @@ export function submergedPebbles(s){
  return result;
 }
 
-export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1){
- const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),nx=-dz/(len||1),nz=dx/(len||1),steps=Math.max(6,Math.ceil(len*2)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
+export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null){
+ const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
  const g={positions:[],indices:[],uvs:[],colors:[],centers:[],widths:[],origin};if(!len)return g;
  for(let j=0;j<=steps;j++){
-  const t=j/steps,envelope=Math.sin(Math.PI*t),seed=noise(a.x+b.x,a.y+b.y),bend=envelope*Math.sin(t*Math.PI*1.3+seed*2)*(.13/Math.sqrt(level));
-  const x=(a.x+(b.x-a.x)*t)*TILE+nx*bend,z=(a.y+(b.y-a.y)*t)*TILE+nz*bend;
+  const t=j/steps,p=footpathRibbonPoint(a,b,control,t);
+  const vx=control?((control.x-a.x)*(1-t)+(b.x-control.x)*t)*TILE:dx,vz=control?((control.y-a.y)*(1-t)+(b.y-control.y)*t)*TILE:dz;
+  const tangent=Math.hypot(vx,vz)||1,nx=-vz/tangent,nz=vx/tangent;
+  const bend=control?0:Math.sin(Math.PI*t)*Math.sin(t*Math.PI*1.3+noise(a.x+b.x,a.y+b.y)*2)*(.13/Math.sqrt(level));
+  const x=p.x*TILE+nx*bend,z=p.y*TILE+nz*bend;
   g.centers.push({x:j===0?a.x*TILE:j===steps?b.x*TILE:x,y:j===0?a.y*TILE:j===steps?b.y*TILE:z});
   const half=width*.5*(.94+.12*Math.sin(x*1.7+z*.8)+.065*Math.sin(x*3.4-z*1.2));g.widths.push(half*2);
   for(let k=0;k<fractions.length;k++){

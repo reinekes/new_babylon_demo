@@ -15,11 +15,51 @@ export function shouldShowMiracle(s,id){
  const m=MIRACLES[id];return !!m&&(!(m.unlockBuilding||m.unlockQuest)||sacredMiracleUnlocked(s,id));
 }
 
+export const CRAFT_GROUPS=[
+ {id:'clay',name:'Глина и кирпич',types:['pottery','brickyard','kiln']},
+ {id:'textiles',name:'Ткань и тростник',types:['sheepfold','weaver','tailor','linenYard','basketry','matYard']},
+ {id:'materials',name:'Дерево и металл',types:['joineryYard','coppersmith']},
+ {id:'food',name:'Еда и напитки',types:['bakery','brewery','dairyStore']}
+];
+export const craftGroupFor=type=>CRAFT_GROUPS.find(group=>group.types.includes(type));
+
+export function bindCraftTabs(section){
+ const {ownerDocument:document}=section,list=section.querySelector('[data-craft-tabs]'),tabs=[];
+ list.setAttribute('role','tablist');list.setAttribute('aria-label','Виды ремёсел');
+ for(const group of CRAFT_GROUPS){
+  const panel=section.querySelector(`[data-craft-group="${group.id}"]`);
+  if(!panel)continue;
+  panel.hidden=true;
+  if(!panel.children.length)continue;
+  panel.id=`craft-panel-${group.id}`;panel.setAttribute('role','tabpanel');
+  const button=document.createElement('button');button.type='button';button.id=`craft-tab-${group.id}`;
+  button.textContent=group.name;button.setAttribute('role','tab');button.setAttribute('aria-controls',panel.id);
+  panel.setAttribute('aria-labelledby',button.id);list.append(button);
+  const tab={group,panel,button};tabs.push(tab);
+  button.onclick=()=>activate(tab);
+  button.onkeydown=event=>{
+   const index=tabs.indexOf(tab),offset={ArrowLeft:-1,ArrowRight:1,ArrowUp:-2,ArrowDown:2}[event.key];
+   const next=event.key==='Home'?tabs[0]:event.key==='End'?tabs.at(-1):offset&&tabs[(index+tabs.length+offset)%tabs.length];
+   if(next){event.preventDefault();activate(next);next.button.focus();}
+  };
+ }
+ list.hidden=tabs.length<2;
+ function activate(active){
+  for(const tab of tabs){
+   const selected=tab===active;
+   tab.button.setAttribute('aria-selected',String(selected));tab.button.tabIndex=selected?0:-1;
+   tab.panel.hidden=!selected;
+  }
+ }
+ activate(tabs[0]);
+ return {show(type){const tab=tabs.find(t=>t.group.types.includes(type));if(tab)activate(tab);}};
+}
+
 export const BUILDING_GROUPS=[
  {id:'life',name:'Жители',types:['house','healer','musicHouse']},
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Сырьё',types:['clay','reed','logging','quarry']},
- {id:'craft',name:'Ремёсла',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard','kiln','brickyard','sheepfold','weaver','tailor']},
+ {id:'craft',name:'Ремёсла',types:CRAFT_GROUPS.flatMap(group=>group.types)},
  {id:'supply',name:'Снабжение',types:['waterpoint','granary','depot','market']},
  {id:'sacred',name:'Храмы',types:['shrine','ziggurat','ishtarGate']},
  {id:'routes',name:'Пути и вода',types:['canal','levee','bridge','harbor','cityWall','cityGate']}

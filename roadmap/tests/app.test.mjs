@@ -22,6 +22,38 @@ test('Markdown rendering cannot execute raw HTML or javascript URLs',()=>{
   dom.window.close();
 });
 
+test('roadmap and version Markdown can display and open only checked-in screenshot figures',()=>{
+  const {dom,api}=app();
+  const doc=dom.window.document,root=doc.createElement('div');
+  const name='2026-11-13/roads-before.webp',caption='До: тропы <слева> и «дорога»';
+  for(const [base,path] of [['roadmap/overview.md','evidence/'],['roadmap/reports/demo.md','../evidence/'],['docs/versions/demo.md','../../roadmap/evidence/']]){
+    root.innerHTML=api.markdown(`![${caption}](${path}${name})`,base);
+    const image=root.querySelector('figure img');
+    assert.ok(image);
+    assert.equal(image.src,'https://example.test/roadmap/evidence/'+name);
+    assert.equal(image.alt,caption);
+    assert.equal(image.getAttribute('loading'),'lazy');
+    assert.equal(root.querySelector('figcaption').textContent,caption);
+    assert.equal(root.querySelector('figure a').href,image.src);
+  }
+  for(const path of ['https://external.test/pixel.png','//external.test/pixel.png','javascript:alert(1)','../evidence/%2e%2e/secret.webp','../evidence/../private.png','../evidence/staged.svg','../evidence/screen.png?query=1','../evidence/screen.png" onerror="alert(1)']){
+    root.innerHTML=api.markdown(`![Снимок](${path})`,'roadmap/reports/demo.md');
+    assert.equal(root.querySelector('img, a, [onerror]'),null,path);
+  }
+  dom.window.close();
+});
+
+test('recorded and verified historical releases both count and display as published',()=>{
+  const {dom,api}=app(),doc=dom.window.document;
+  const release=(publication,i)=>({id:`release-${i}`,date:'2026-11-13',title:`Выпуск ${i}`,type:'release',sections:{},groups:[],completedIds:[],publication});
+  api.setData({...api.getData(),releases:['recorded','verified','pending'].map(release)});
+  assert.equal(doc.querySelector('#metrics article b').textContent,'2');
+  doc.querySelector('nav [data-view="done"]').click();
+  const statuses=[...doc.querySelectorAll('.releases tbody tr td:last-child .badge')].map(badge=>badge.textContent);
+  assert.deepEqual(statuses,['Публикация не закрыта','Публикация записана','Публикация записана']);
+  dom.window.close();
+});
+
 test('completion export moves exactly the selected IDs and keeps their full evidence',()=>{
   const {dom,api}=app();
   const raw='# План\nupdated: 2026-11-03\n\n## first | Первый\ngroup: performance\nstatus: verify\npriority: P0\ndepends: -\nsources: engine.js\n\n### Готово когда\nИзмерен настоящий FPS.\n\n## second | Второй\ngroup: performance\nstatus: planned\npriority: P1\ndepends: first\nsources: engine.js\n\n### Описание\nПродолжение.\n';

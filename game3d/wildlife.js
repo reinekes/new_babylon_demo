@@ -1,5 +1,5 @@
 import {createOnager,onagerDistanceGeometry,poseOnager} from './onager.js?v=valley-seam-herds-20261112';
-import {createPelican,posePelican} from './pelican.js';
+import {createPelican,posePelican} from './pelican.js?v=audit-fixes-20261113';
 import {regionalBirds,createRegionalBird,createRegionalFrog,poseRegionalBird} from './regional-wildlife.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
@@ -351,6 +351,7 @@ export function createWildlife(B,scene,meshes=[]){
     continue;
    }
    if(d.fish){
+    if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
     a.body.position.y=Math.sin(t*1.4)*.012;a.body.rotation.z=Math.sin(t*1.6)*.055;
     a.body.rotation.y=Math.sin(t*3.2)*.035;a.tail.rotation.y=Math.sin(t*3.2-.8)*(.24+a.move*.14);
     continue;

@@ -32,3 +32,39 @@ test('farewell mourners form a compact, clear group and each faces the closest l
 test('farewell layout is deterministic across a save roundtrip',()=>{
  const state=farewell(18),first=funeralView(state).participants,loaded=decode(encode(state));assert.ok(loaded);assert.deepEqual(funeralView(loaded).participants,first);
 });
+
+test('the walking mourners spread on clear ground without moving saved citizens',async()=>{
+ const {advanceFuneral}=await import('../funerals.js');
+ const state=farewell(24);state.funeral=null;
+ startFuneral(state,[{id:9990,name:'Покойный',x:8,y:8}]);
+ for(let step=0;step<1000&&state.funeral.stage!=='procession';step++)advanceFuneral(state,.2);
+ assert.equal(state.funeral.stage,'procession');
+ for(let step=0;step<18&&state.funeral.stage==='procession';step++)advanceFuneral(state,.2);
+ assert.equal(state.funeral.stage,'procession');
+ const before=encode(state),people=funeralView(state).participants.filter(p=>p.role==='mourner');
+ assert.equal(encode(state),before);
+ assert.ok(people.every(p=>isDryPoint(state,p.x,p.y)));
+ const positions=people.map(p=>[Math.round(p.x*100),Math.round(p.y*100)].join(','));
+ assert.ok(new Set(positions).size>=people.length*.9);
+ assert.ok(people.filter(p=>{
+  const c=state.citizens.find(c=>c.id===p.id);
+  return Math.hypot(p.x-c.x,p.y-c.y)>.07;
+ }).length>=people.length*.5);
+});
+
+test('recessing releases small groups at different times and a mid-stage save preserves them',async()=>{
+ const {advanceFuneral}=await import('../funerals.js');
+ let state=farewell(24);
+ advanceFuneral(state,2.5);
+ assert.equal(state.funeral.stage,'receding');
+ assert.ok(decode(encode(state)));
+ const before=state.citizens.map(c=>[c.x,c.y]);
+ advanceFuneral(state,.65);
+ const early=state.citizens.filter((c,i)=>c.x!==before[i][0]||c.y!==before[i][1]).length;
+ assert.ok(early>0&&early<state.citizens.length/2);
+ const beforeSave=encode(state);state=decode(beforeSave);assert.ok(state);
+ const standing=funeralView(state).participants.filter(p=>!p.walking).length;
+ assert.ok(standing>state.citizens.length/2);
+ for(let step=0;step<1000&&state.funeral;step++)advanceFuneral(state,.2);
+ assert.equal(state.funeral,null);
+});

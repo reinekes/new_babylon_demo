@@ -6,5 +6,23 @@ export function safeLoop(s,center,radius=.6,cellSafe=false){
  const clear=(a,b)=>{for(let i=0;i<=12;i++)if(!free({x:a.x+(b.x-a.x)*i/12,y:a.y+(b.y-a.y)*i/12}))return false;return true;};
  const route=[{x:center.x,y:center.y}];for(const [dx,dy]of [[radius,0],[radius,radius],[0,radius],[-radius,radius],[-radius,0],[0,-radius]]){const p={x:center.x+dx,y:center.y+dy};if(clear(route.at(-1),p)&&clear(p,center))route.push(p);}route.push({x:center.x,y:center.y});return route;
 }
-export function loopMotion(route,time,speed=.55,pause=1.2){let cycle=0;for(let i=1;i<route.length;i++)cycle+=Math.hypot(route[i].x-route[i-1].x,route[i].y-route[i-1].y)/speed+pause;if(!cycle)return {...route[0],walking:false,heading:1};let t=((time%cycle)+cycle)%cycle;for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i],duration=Math.hypot(b.x-a.x,b.y-a.y)/speed;if(t<duration){const f=t/duration;return {x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f,walking:true,heading:b.x-a.x-(b.y-a.y)>=0?1:-1};}t-=duration;if(t<pause)return {...b,walking:false,heading:b.x-a.x-(b.y-a.y)>=0?1:-1};t-=pause;}return {...route[0],walking:false,heading:1};}
+export function loopMotion(route,time,speed=.55,pause=1.2){
+ let cycle=0;
+ for(let i=1;i<route.length;i++)cycle+=Math.hypot(route[i].x-route[i-1].x,route[i].y-route[i-1].y)/speed+(route[i].pause===false?0:pause);
+ if(!cycle)return {...route[0],walking:false,heading:1};
+ let t=((time%cycle)+cycle)%cycle;
+ for(let i=1;i<route.length;i++){
+  const a=route[i-1],b=route[i],duration=Math.hypot(b.x-a.x,b.y-a.y)/speed;
+  const heading=b.x-a.x-(b.y-a.y)>=0?1:-1;
+  if(t<duration){
+   const f=t/duration;
+   return {x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f,walking:true,heading};
+  }
+  t-=duration;
+  const stay=b.pause===false?0:pause;
+  if(t<stay)return {...b,walking:false,heading};
+  t-=stay;
+ }
+ return {...route[0],walking:false,heading:1};
+}
 export function childPlay(s,c){if(c.age<3||c.age>=16||c.phase!=='home'||s.funeral?.actors.some(a=>a.id===c.id))return null;let cache=plans.get(s);if(cache?.buildings!==s.buildings||cache?.count!==s.buildings.length){cache={buildings:s.buildings,count:s.buildings.length,homes:new Map(),ports:new Map(networkFor(s).ports.map(p=>[`${p.building.x},${p.building.y}`,p]))};plans.set(s,cache);}if(!cache.homes.has(c.home)){const port=cache.ports.get(c.home)||c;cache.homes.set(c.home,safeLoop(s,port,.6));}const motion=loopMotion(cache.homes.get(c.home),(s.simTime||0)+c.id*2.31,.6+(c.id%3)*.06,1.3);return {...motion,playing:true,phase:'playing'};}

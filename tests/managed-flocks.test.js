@@ -41,7 +41,7 @@ test('porters supply the managed fold, the calendar consumes feed and visuals re
  assert.ok(decode(encode(s)));
 });
 
-test('one flock leaves the pen, grazes, drinks on dry land and returns with the same identities',async()=>{
+test('one flock leaves the pen, grazes and returns with the same identities',async()=>{
  const {createGame}=await import('../engine.js');
  const {isDryPoint}=await import('../world.js');
  const city=createGame({start:'established'});
@@ -61,6 +61,62 @@ test('one flock leaves the pen, grazes, drinks on dry land and returns with the 
   if(phase!=='walking'&&visits.at(-1)!==phase)visits.push(phase);
  }
  const firstPasture=visits.indexOf('grazing');
- const water=visits.indexOf('drinking',firstPasture+1);
- assert.ok(firstPasture>=0&&water>firstPasture&&visits.indexOf('resting',water+1)>water);
+ assert.ok(firstPasture>=0&&visits.indexOf('resting',firstPasture+1)>firstPasture);
+});
+
+test('flocks cross only the shared opening on all four orientations and both saved footprints',async()=>{
+ const {sheepfoldGateSide,sheepfoldLayout}=await import('../sheepfold-layout.js');
+ const city=createGame({start:'established',seed:137});
+ for(const footprint of [1,2])for(const rotation of [0,1,2,3]){
+  const building={type:'sheepfold',x:13,y:7,footprint,level:3,rotation};
+  city.buildings=[building];
+  const {halfWidth,gateHalfWidth}=sheepfoldLayout(building);
+  const center=(footprint-1)*.5,angle=(rotation+sheepfoldGateSide(building,city))*Math.PI/2;
+  let crossed=0,previous=new Map();
+  for(let step=0;step<=700;step++){
+   city.simTime=step*.2;
+   const flock=animalsFor(city).filter(a=>a.kind==='sheep');
+   for(const animal of flock){
+    const dx=(animal.x-building.x-center)*6,dz=(animal.y-building.y-center)*6;
+    const x=dx*Math.cos(angle)-dz*Math.sin(angle),z=dx*Math.sin(angle)+dz*Math.cos(angle);
+    const inside=Math.max(Math.abs(x),Math.abs(z))<=halfWidth;
+    const from=previous.get(animal.id);
+    if(from&&from.inside!==inside){
+     assert.ok(x>halfWidth-.35&&from.x>halfWidth-.35);
+     assert.ok(Math.abs(z)<gateHalfWidth-.15&&Math.abs(from.z)<gateHalfWidth-.15);
+     crossed++;
+    }
+    previous.set(animal.id,{inside,x,z});
+   }
+  }
+  assert.ok(crossed>=8,`footprint=${footprint}, rotation=${rotation}`);
+ }
+});
+
+test('sheep stay in their pen through the day when there is no reachable fertile pasture',()=>{
+ const city=createGame({start:'established',seed:137});
+ city.buildings=[{type:'sheepfold',x:3,y:3,level:1}];
+ for(let step=0;step<=300;step++){
+  city.simTime=step*.2;
+  const flock=animalsFor(city).filter(animal=>animal.kind==='sheep');
+  assert.equal(flock.length,4);
+  assert.ok(flock.every(a=>Math.abs(a.x-3)<.42&&Math.abs(a.y-3)<.42&&!a.walking),`outside at ${city.simTime}`);
+ }
+});
+
+test('sheep use suitable pasture by day and are back inside before dusk',()=>{
+ const city=createGame({start:'established'});
+ const b={type:'sheepfold',x:9,y:15,level:1};
+ city.buildings.push(b);
+ const modes=new Set();
+ for(let step=0;step<=300;step++){
+  city.simTime=step*.2;
+  const hour=(8+city.simTime*.4)%24;
+  const flock=animalsFor(city).filter(a=>a.kind==='sheep');
+  for(const animal of flock){
+   if(hour<6.5||hour>=17.5)assert.ok(Math.abs(animal.x-b.x)<.42&&Math.abs(animal.y-b.y)<.42,`outside at ${hour}`);
+   if(animal.behavior==='grazing')modes.add('grazing');
+  }
+ }
+ assert.ok(modes.has('grazing'));
 });

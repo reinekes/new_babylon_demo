@@ -30,3 +30,17 @@ test('frustum and screen-size checks share one world-matrix update per candidate
  const scene={meshes:[part],activeCamera:{layerMask:1,position:{x:0,y:0,z:0},fov:.8},frustumPlanes:[{}],getEngine:()=>({getRenderHeight:()=>720})};
  assert.deepEqual(createRenderableMeshCandidates(scene)().data,[part]);assert.equal(matrices,1);
 });
+test('frozen building part culling is reused until camera or world matrix changes',()=>{
+ let tests=0;
+ const view=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],transform=[...view],world={updateFlag:1};
+ const camera={layerMask:1,position:{x:0,y:0,z:0},fov:.8,getViewMatrix:()=>({m:view})};
+ let visible=true;
+ const part=mesh({metadata:{tile:{x:0,y:0}},isWorldMatrixFrozen:true,geometry:{},getWorldMatrix:()=>world,isInFrustum:()=>{tests++;return visible;}});
+ const scene={meshes:[part],activeCamera:camera,frustumPlanes:[{}],getTransformMatrix:()=>({m:transform}),getEngine:()=>({getRenderHeight:()=>720})};
+ const read=createRenderableMeshCandidates(scene);
+ assert.deepEqual(read().data,[part]);assert.deepEqual(read().data,[part]);assert.equal(tests,1);
+ visible=false;transform[14]=3;assert.equal(read().length,0);assert.equal(tests,2);
+ visible=true;world.updateFlag++;assert.deepEqual(read().data,[part]);assert.equal(tests,3);
+ part.geometry={};assert.deepEqual(read().data,[part]);assert.equal(tests,4);
+ part.isVisible=false;assert.equal(read().length,0);assert.equal(tests,4);
+});
