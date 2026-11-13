@@ -81,13 +81,18 @@ export function projectedStoreStock(s,resource,stores=stockStores(s)){
  }
  return result;
 }
+export function warehouseSeedTarget(s){
+ if(s.foodPlan?.protectSeeds===false)return 0;
+ let target=0;
+ for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));
+ return Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0));
+}
 export function foodAvailability(s,{reconcile=true}={}){
  if(reconcile)syncInventory(s);
  const stores=stockStores(s);
  const projected=reconcile?null:projectedStoreStock(s,'food',stores);
  const cityFood=!reconcile&&!s.inventory?Math.max(amount(s.resources.food),stores.reduce((n,b)=>n+(b.stock?.food||0),0)):amount(s.resources.food);
- let target=0;
- if(s.foodPlan?.protectSeeds!==false){for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));target=Math.min(cityFood,Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0)));}
+ let target=Math.min(cityFood,warehouseSeedTarget(s));
  const result=new Map();
  for(const b of stores){
   const available=projected?.get(keyOf(b))??(b.stock?.food||0),protectedFood=Math.min(available,target);

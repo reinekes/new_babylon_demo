@@ -266,3 +266,43 @@ test('reed camp renders a distinct pickable shelter without house lamps',async()
   assert.ok(parts.every(mesh=>!mesh.metadata.homeLamp));
  }finally{t.dispose();}
 });
+
+test('fortification templates connect straight runs, corners and gate wings without covering the passage',async()=>{
+ const t=await setup();try{
+  const gate={type:'cityGate',x:8,y:8,level:1,footprint:2,rotation:0};
+  const corner={type:'cityWall',x:8,y:7,level:1};
+  const west={type:'cityWall',x:7,y:7,level:1};
+  const north={type:'cityWall',x:8,y:6,level:1};
+  const state={buildings:[gate,corner,west,north],citizens:[]};
+  const signature=gameBuildingSignature(corner,state);
+  t.layer.sync(state);
+  const top=(x,z)=>{
+   const ray=new B.Ray(new B.Vector3(x,8,z),new B.Vector3(0,-1,0),9);
+   return (t.scene.multiPickWithRay(ray,m=>t.layer.meshes.includes(m))||[]).filter(h=>h.hit).map(h=>h.pickedPoint.y);
+  };
+  assert.ok(top(45,42).some(y=>y>1.8),'wall-to-wall edge is covered');
+  assert.ok(top(48,39).some(y=>y>1.8),'T extends north');
+  assert.ok(top(48,45).some(y=>y>1.8),'wall meets gate wing on the south edge');
+  assert.ok(top(48,46.3).some(y=>y>1.8),'gate wing extends into its own footprint');
+  assert.ok(top(50,41).every(y=>y<1),'the corner leaves room beside the wall');
+  const pass=new B.Ray(new B.Vector3(41,1,51),new B.Vector3(1,0,0),20);
+  assert.ok(!(t.scene.multiPickWithRay(pass,m=>m.metadata?.type==='cityGate')||[]).some(hit=>hit.hit));
+  assert.ok(top(51,51).some(y=>y>2.3),'the open passage has a lintel');
+  state.buildings=state.buildings.filter(b=>b!==north);
+  assert.notEqual(gameBuildingSignature(corner,state),signature,'the neighbor changes the visual template');
+  t.layer.sync(state);
+  assert.ok(top(48,39).every(y=>y<1),'demolishing a segment removes its connecting arm');
+  state.buildings=[{...gate,rotation:1},{type:'cityWall',x:7,y:9,level:1},{type:'cityWall',x:10,y:8,level:1}];
+  t.layer.sync(state);
+  assert.ok(top(45,54).some(y=>y>1.8),'rotated west wall meets the correct gate lane');
+  assert.ok(top(57,48).some(y=>y>1.8),'rotated east wall meets the correct gate lane');
+  assert.ok(top(46.3,54).some(y=>y>1.8),'rotated gate wing extends into its own footprint');
+  const turned=new B.Ray(new B.Vector3(51,1,41),new B.Vector3(0,0,1),20);
+  assert.ok(!(t.scene.multiPickWithRay(turned,m=>m.metadata?.type==='cityGate')||[]).some(hit=>hit.hit));
+  const spans=t.layer.meshes.filter(m=>m.metadata.type==='cityGate').map(m=>m.getBoundingInfo().boundingBox);
+  assert.ok(Math.max(...spans.map(b=>b.maximumWorld.y))<3.3,'the compact gate fits the village scale');
+  state.buildings=[{type:'cityGate',x:8,y:8,level:1},{type:'cityWall',x:8,y:7,level:1},{type:'cityWall',x:8,y:9,level:1}];
+  t.layer.sync(state);
+  assert.ok(top(48,45.1).some(y=>y>1.8)&&top(48,50.9).some(y=>y>1.8),'legacy one-tile gate joins its walls');
+ }finally{t.dispose();}
+});

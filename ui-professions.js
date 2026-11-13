@@ -1,7 +1,9 @@
 import {buildingDefinition} from './building-presentation.js';
 import {displayName} from './citizen-epithets.js';
 import {residentLinkHTML} from './ui-resident-links.js';
-import {buildingKey} from './definitions.js';
+import {buildingKey,guardCapacity,isOperational} from './definitions.js';
+import {constructionEntities} from './construction.js';
+import {activeLaborKind,UNLOAD_PORTERS} from './city-labor.js';
 import {isWorkplaceOpen,workplaceHours} from './work-schedule.js';
 import {PROFESSION_NAMES,PROFESSION_IDS,innateProfession,inspirationPriceLabel,professionForBuilding,professionRole,professionMatchesTask,staffingCandidates,canStaffBuilding,workplaceCapacity,hasWorkplace} from './professions.js';
 import {builderConsent,inspirationReason,inspirationSuccessChance} from './management.js';
@@ -11,6 +13,61 @@ export function professionOptionsHTML(selected,{recommended,ids=PROFESSION_IDS,l
  const allowed=new Set(ids.filter(id=>id!=='lawmaker'||lawmaker)),option=id=>`<option value="${id}"${id===selected?' selected':''}>${escape(PROFESSION_NAMES[id])}</option>`,group=(label,items)=>items.length?`<optgroup label="${label}">${items.map(option).join('')}</optgroup>`:'';
  const primary=allowed.has(recommended)?group('Для этой постройки',[recommended]):'';
  return primary+groups.map(([label,items])=>group(label,items.filter(id=>allowed.has(id)&&id!==recommended))).join('');
+}
+const workforceGroups=[
+ ['Строительство и перевозки',['builder','carrier','watercarrier']],
+ ['Пища и скот',['farmer','gardener','shepherd','dairyman','fisher','hunter','baker','cheesemaker']],
+ ['Сырьё',['lumberjack','clayworker','reedcutter','quarrier']],
+ ['Ремёсла',['potter','brewer','weaver','tailor','brickmaker','kilnworker','basketmaker','matmaker','joiner','coppersmith']],
+ ['Службы и культура',['healer','musician','priest','scribe','guard','lawmaker']],
+ ['Прочие работы',['production']]
+];
+const workshopJobs={
+ bakery:['baker','Пекарь'],dairyStore:['cheesemaker','Сыродел'],
+ basketry:['basketmaker','Плетельщик корзин'],matYard:['matmaker','Мастер циновок'],
+ joineryYard:['joiner','Столяр'],coppersmith:['coppersmith','Мастер по меди']
+};
+const workforceNames={...PROFESSION_NAMES,...Object.fromEntries(Object.values(workshopJobs)),guard:'Стражник'};
+export function professionStaffing(s,workshops){
+ const totals=new Map(),people=s.citizens||[];
+ const add=(id,filled,capacity)=>{
+  let row=totals.get(id);
+  if(!row){row={name:workforceNames[id],filled:0,capacity:0};totals.set(id,row);}
+  row.filled+=filled;
+  row.capacity+=capacity;
+ };
+ for(const w of workshops){
+  if(!w.staffing)continue;
+  const id=professionForBuilding(w.type)||workshopJobs[w.type]?.[0]||'production';
+  add(id,w.staffing.count,w.staffing.capacity);
+ }
+ const crews=new Map(),guards=new Map(),trade=new Map();
+ for(const c of people){
+  if(c.site&&(c.siteDuty==='builder'||c.siteDuty==='carrier')){const crew=crews.get(c.site)||{builder:0,carrier:0};crew[c.siteDuty]++;crews.set(c.site,crew);}
+  if(c.guardPost)guards.set(c.guardPost,(guards.get(c.guardPost)||0)+1);
+  const dock=c.tradeMarket||c.saleMarket;
+  if(dock)trade.set(dock,(trade.get(dock)||0)+1);
+ }
+ for(const site of constructionEntities(s)){
+  if(!site.construction)continue;
+  const crew=crews.get(buildingKey(site)),carriers=crew?.carrier||0;
+  add('builder',crew?.builder||0,2);
+  add('carrier',carriers,Object.values(site.construction.remaining||{}).some(n=>n>0)?2:carriers);
+ }
+ const unload=activeLaborKind(s)==='unload';
+ for(const b of s.buildings||[]){
+  if(!isOperational(b))continue;
+  const key=buildingKey(b),capacity=guardCapacity(b.type);
+  if(capacity)add('guard',guards.get(key)||0,capacity);
+  if(b.type==='market'||b.type==='harbor')add('carrier',trade.get(key)||0,unload?UNLOAD_PORTERS:2);
+ }
+ const lawmakers=people.filter(c=>(c.age??20)>=16&&c.calling==='lawmaker').length;
+ add('lawmaker',lawmakers,0);
+ return workforceGroups.map(([label,ids])=>({label,rows:ids.map(id=>({id,...(totals.get(id)||{name:workforceNames[id],filled:0,capacity:0})}))}));
+}
+export function professionStaffingHTML(s,workshops){
+ const sections=professionStaffing(s,workshops).map(({label,rows})=>`<section><h3>${label}</h3><table aria-label="${label}"><thead><tr><th scope="col">Профессия</th><th scope="col">Назначено / мест</th></tr></thead><tbody>${rows.map(({id,name,filled,capacity})=>`<tr data-profession="${id}"><th scope="row">${escape(name)}</th><td${capacity>filled?' class="has-vacancies"':''}>${filled} / ${id==='lawmaker'?'—':capacity}</td></tr>`).join('')}</tbody></table></section>`).join('');
+ return `<div class="profession-overview"><p>Рабочие места по назначению. Строители и носильщики на стройках учитываются по действующим площадкам. У законодателя нет отдельного рабочего места.</p><div class="profession-overview-grid">${sections}</div></div>`;
 }
 function prepareWorker(s,b,draft,limit,fixed){
  const key=escape(buildingKey(b)),recommended=professionForBuilding(b.type)||'production',adults=s.citizens.filter(c=>(c.age??20)>=16).sort((a,c)=>Number(canStaffBuilding(c,b))-Number(canStaffBuilding(a,b))||a.id-c.id),c=adults.find(c=>c.id===draft.citizenId);

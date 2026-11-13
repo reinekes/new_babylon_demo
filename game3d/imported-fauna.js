@@ -2,7 +2,7 @@ import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 export const IMPORTED_FAUNA_MODELS={catWalk:{file:'cat-walk.glb',kind:'cat',clips:['Walk','Idle'],stride:.38},catSit:{file:'cat-sitting.glb',kind:'cat',clips:['Sit'],stride:.38},gazelle:{file:'gazelle-downloaded.glb',kind:'gazelle',clips:['Walk','Idle','Rest'],stride:.84}};
-export function importedFaunaAction(animal,distance=0){if(animal.dead||animal.behavior==='dead')return 'Rest';if(animal.kind==='cat'&&['petting','petted','resting','sitting'].includes(animal.behavior))return 'Sit';return distance>.00001&&distance<3?'Walk':animal.kind==='cat'?'Sit':'Idle';}
+export function importedFaunaAction(animal,distance=0){if(animal.dead||animal.behavior==='dead')return 'Rest';if(animal.kind==='cat'&&animal.catchProgress<.26)return 'Walk';if(animal.kind==='cat'&&['petting','petted','resting','sitting'].includes(animal.behavior))return 'Sit';return distance>.00001&&distance<3?'Walk':animal.kind==='cat'?'Sit':'Idle';}
 // The two cat sources have unrelated rigs; their coats use a matched charcoal profile: switch independent skins
 // with a short visibility fade; never attempt to retarget one skeleton to the other.
 export async function createImportedFauna(B,scene,meshes=[],options={}){
@@ -38,6 +38,18 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
    if(action==='Walk'&&!paused&&!dead)a.phase=(a.phase+distance/IMPORTED_FAUNA_MODELS[key].stride)%1;
    action=sample(v,action,a.phase,dt,speed,paused||dead);
    for(const [variantKey,other]of a.variants){const target=variantKey===key?1:0;if(!paused)other.weight+=Math.sign(target-other.weight)*Math.min(Math.abs(target-other.weight),dt*speed/.35);for(const m of other.owned){m.visibility=other.weight;m.isPickable=other.weight>=.5;}other.root.setEnabled(other.weight>0);}
+   const catchProgress=c.catchProgress??1;
+   const pounce=c.kind==='cat'&&catchProgress<.26?.42+.58*Math.sin(catchProgress/.26*Math.PI):0;
+   a.model.rotation.x=.32*pounce;
+   a.model.position.z=0;
+   if(c.prey){
+    const gap=.34-.09*pounce,dx=(c.prey.x-c.x)*6,dz=(c.prey.y-c.y)*6,distance=Math.hypot(dx,dz);
+    if(distance<gap){
+     a.root.rotation.y=c.prey.yaw;
+     a.root.position.x=c.prey.x*6-Math.sin(c.prey.yaw)*gap;
+     a.root.position.z=c.prey.y*6-Math.cos(c.prey.yaw)*gap;
+    }
+   }
    const fall=dead?Math.max(0,Math.min(1,c.deathProgress??1)):0;a.model.rotation.z=fall*Math.PI*.5;a.model.position.y=fall*(c.kind==='cat'?.12:.30);a.model.position.x=fall*(c.kind==='cat'?.12:.3);
    Object.assign(a.root.metadata,{gaitPhase:a.phase,clip:action,faunaVariant:key,dead});
   }

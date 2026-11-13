@@ -1,4 +1,4 @@
-import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
+import {extractionKinds,extractionOwner} from '../extraction-courts.js';
 import {localFerryVessel} from '../river-stores.js';
 import {floodMapView} from '../river-flood.js';
 import {createPalmRenderGroups} from './palm-render-groups.js';
@@ -17,7 +17,7 @@ import {vegetationFor, weatherAt} from '../environment.js';
 import {irrigationFor, CARDINAL} from '../irrigation.js';
 import {constructionProgress} from '../construction.js';
 import {roadIsBuilt,roadKey} from '../roads.js';
-import {footpathRibbons,visibleFootpaths} from '../footpaths.js';
+import {visibleFootpaths} from '../footpaths.js';
 import {generateStreets} from '../city-life.js';
 import {cachedStreetsFor} from '../workforce.js';
 import {canPlace} from '../engine.js';
@@ -38,11 +38,11 @@ export function applyTerrainAlphaClips(colors,clips){
 }
 
 const RESOURCE_SITES={clay:{label:'Глина',color:'#b88764'},reed:{label:'Тростник',color:'#82985c'},stone:{label:'Камень',color:'#a2a996'},forest:{label:'Дерево',color:'#6e8955'},wildlife:{label:'Дичь',color:'#ab9064'},dates:{label:'Финики',color:'#b79a4f'}};
-const RESOURCE_BUILDINGS={clay:'clay',reed:'reed',quarry:'stone',logging:'forest',hunting:'wildlife',garden:'dates'};
+
 export function resourcePlacementSites(s,selection){
- const kind=RESOURCE_BUILDINGS[selection],points=new Map(),put=(x,y)=>points.set(`${x},${y}`,{x,y});
+ const kind=extractionKinds[selection],points=new Map(),put=(x,y)=>points.set(`${x},${y}`,{x,y});
  if(!kind&&selection!=='fishing')return [];
- if(kind){const radius=['forest','wildlife'].includes(kind)?2:0;for(const d of s.world?.deposits||[])if(d.kind===kind)for(let dy=-radius;dy<=radius;dy++)for(let dx=-radius;dx<=radius;dx++)if(Math.hypot(dx,dy)<=radius)put(d.x+dx,d.y+dy);}
+ if(kind){for(const d of s.world?.deposits||[])if(d.kind===kind)put(d.x,d.y);}
  else{ // Inspect only river/lake banks, never every tile of the map.
   const water=[];for(let along=0;along<riverLength(s);along++)for(let across=Math.floor(river(along,s)-1.1);across<=Math.ceil(river(along,s)+1.1);across++){const p=worldFromRiver(across,along,s);if(terrain(p.x,p.y,s)==='water')water.push(p);}
   for(const lake of s.world?.lakes||[])water.push(...lake.cells);for(const p of water)for(const [dx,dy]of CARDINAL)put(p.x+dx,p.y+dy);
@@ -72,7 +72,15 @@ export function landscapePlan(s,streets=cachedStreetsFor(s)||generateStreets([..
  const canals=(s.buildings||[]).filter(b=>b.type==='canal').map(b=>{const id=`${b.x},${b.y}`;return {x:b.x,y:b.y,wet:network.wet.has(id),...(b.drain?{drain:true}:{}),...(b.silt>=.5?{flowWidth:b.silt>=.75?.42:.65}:{}),progress:progress(b),arms:network.arms.get(id)||CARDINAL.filter(([dx,dy])=>s.buildings.some(v=>v.type==='canal'&&v.x===b.x+dx&&v.y===b.y+dy)||terrain(b.x+dx,b.y+dy,s)==='water')};});
  const deposits=(s.world?.deposits||[]).filter(d=>RESOURCE_SITES[d.kind]&&terrain(d.x,d.y,s)!=='water').map(d=>({...d}));
  const palms=vegetationFor(s,{edges}).filter(p=>p.kind==='palm'&&shoreDistance(p.x,p.y,s)>.4&&(!isStrictSumer(s)||vegetationBankDistance(p.x,p.y,s)<5.2)&&sceneryClear(s,p,.2)&&roads.every(r=>pointDistance(p,r.a,r.b)>.4));
- for(const d of deposits)if(['forest','dates'].includes(d.kind))for(const [i,display]of resourceDisplayLayout(d).entries()){const p={id:`resource-${d.kind}-${d.x}-${d.y}-${i}`,x:display.x,y:display.y,resource:d.kind};if(vegetationBankDistance(p.x,p.y,s)>.22&&sceneryClear(s,p,.2)&&roads.every(r=>pointDistance(p,r.a,r.b)>.4))palms.push(p);}
+ for(const d of deposits){
+  if(!['forest','dates'].includes(d.kind))continue;
+  const court=extractionOwner(s,d);
+  if(d.kind==='dates'&&court&&court.construction?.kind!=='new'&&isStrictSumer(s))continue;
+  for(const [i,display]of resourceDisplayLayout(d).entries()){
+   const p={id:`resource-${d.kind}-${d.x}-${d.y}-${i}`,x:display.x,y:display.y,resource:d.kind};
+   if(vegetationBankDistance(p.x,p.y,s)>.22&&(court||sceneryClear(s,p,.2))&&roads.every(r=>pointDistance(p,r.a,r.b)>.4))palms.push(p);
+  }
+ }
  for(const b of s.buildings||[])for(const p of orchardPalms(b,s))if(vegetationBankDistance(p.x,p.y,s)>.22&&sceneryClear({buildings:s.buildings.filter(other=>other!==b)},p,.08)&&roads.every(r=>pointDistance(p,r.a,r.b)>.22))palms.push(p);
  const c=s.trade?.caravan,caravan=c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{x:c.x,y:c.y,river:c.transport==='river',stock:{...c.stock},route:c.route||[],routeIndex:c.routeIndex||0}:null;
  return {roads,canals,palms,caravan,deposits};
@@ -111,6 +119,7 @@ export function groundStocks(s,net,topologySignature=landscapeSignature(s)){
 
 export async function createGameLandscape(B,scene,initialState,materials,options={}){
  let currentState=initialState;
+ const registeredMeshes=new WeakSet();
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map(),trailMeshes=[];
  let finishedRoadIds=new Set(),trailSignature='',trailState=null,trailBucket=-1;
  let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='',staticScenerySignature='',natureGeometrySignature='';
@@ -135,6 +144,14 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  for(const mat of [earth,gravel,paving,trail]){mat.transparencyMode=B.Material.MATERIAL_ALPHABLEND;mat.forceDepthWrite=false;}
  rainMaterial.alpha=.55;rainMaterial.emissiveColor=color(.12,.17,.19);
  const add=(m,collection=staticMeshes)=>{m.isPickable=false;if(!m.sourceMesh)m.receiveShadows=true;collection.push(m);meshes.push(m);return m;};
+ function registerMeshes(collection,disableOldWater=false){
+  for(const mesh of collection){
+   if(registeredMeshes.has(mesh)||mesh.isDisposed?.())continue;
+   registeredMeshes.add(mesh);
+   if(disableOldWater&&['connected-earth-streets','living-river','saved-lakes'].includes(mesh.name))mesh.setEnabled(false);
+   meshes.push(mesh);
+  }
+ }
  const remove=collection=>{for(const m of collection){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();}collection.length=0;};
  function box(name,x,y,z,width,height,depth,mat,collection=staticMeshes){const m=B.MeshBuilder.CreateBox(name,{width,height,depth},scene);m.position.set(x,y,z);m.material=mat;return add(m,collection);}
  function strip(name,a,b,width,height,mat){const length=Math.hypot(b.x-a.x,b.y-a.y)*TILE;if(!length)return;const m=box(name,(a.x+b.x)*TILE/2,height,(a.y+b.y)*TILE/2,width,.035,length,mat);m.rotation.y=Math.atan2(b.x-a.x,b.y-a.y);m.freezeWorldMatrix();return m;}
@@ -146,13 +163,13 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(next===terrainSignature){
    if(roads===terrainRoadSignature)return;
    const mask=base.refreshRoadMask(s);
-   if(mask){terrainRoadSignature=roads;for(let i=3;i<mask.colors.length;i+=4)mask.colors[i]*=.43;mask.mesh.setVerticesData(B.VertexBuffer.ColorKind,mask.colors,true);const original=originalTerrain.get(mask.mesh);if(original)original.colors=mask.colors;return;}
+   if(mask){terrainRoadSignature=roads;for(let i=3;i<mask.colors.length;i+=4)mask.colors[i]*=.43;mask.mesh.setVerticesData(B.VertexBuffer.ColorKind,mask.colors,true);const original=originalTerrain.get(mask.mesh);if(original)original.colors=mask.colors;registerMeshes([mask.mesh]);return;}
    // A completely masked initial cover has no mesh; rebuild to restore it.
   }
   terrainSignature=next;terrainRoadSignature=roads;catGroundHeights.clear();
   if(base){for(const m of base.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}base.dispose();}
   base=createDistrictTerrain(B,scene,s,materials,{renderRoads:false});
-  for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes','valley-scrub','river-reed-beds'].includes(m.name)||palmSources.length&&['date-palm-trunks','date-palm-crowns'].includes(m.name))m.setEnabled(false);if(m.name==='soft-riparian-grass'){const c=m.getVerticesData(B.VertexBuffer.ColorKind);for(let i=3;i<c.length;i+=4)c[i]*=.43;m.setVerticesData(B.VertexBuffer.ColorKind,c,true);}meshes.push(m);}
+  for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes','valley-scrub','river-reed-beds'].includes(m.name)||palmSources.length&&['date-palm-trunks','date-palm-crowns'].includes(m.name))m.setEnabled(false);if(m.name==='soft-riparian-grass'){const c=m.getVerticesData(B.VertexBuffer.ColorKind);for(let i=3;i<c.length;i+=4)c[i]*=.43;m.setVerticesData(B.VertexBuffer.ColorKind,c,true);}registerMeshes([m]);}
  }
  // Use the supplied CC BY 4.0 date palm; retain the existing licensed palm as a
  // graceful fallback if the new optional asset is unavailable.
@@ -165,6 +182,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  const resourceModels=new Map();
  const source=(name,create,mat)=>{const m=create();m.name=name;m.material=mat;m.isPickable=false;m.receiveShadows=true;m.setEnabled(false);resourceSources.push(m);meshes.push(m);return m;};
  const stoneSource=source('resource-stone-source',()=>B.MeshBuilder.CreateIcoSphere('site-stone',{radius:1,subdivisions:1},scene),materials.stone);
+ const claySource=source('resource-clay-source',()=>B.MeshBuilder.CreateIcoSphere('site-clay',{radius:1,subdivisions:2},scene),siteMaterials.clay);
  const reedSource=source('resource-reed-source',()=>B.MeshBuilder.CreateCylinder('site-reed',{height:1,diameterTop:.035,diameterBottom:.07,tessellation:5},scene),siteMaterials.reed);
  const hoofSource=source('resource-track-source',()=>B.MeshBuilder.CreateSphere('site-track',{diameter:1,segments:6},scene),materials.wood);
  for(const [kind,spec]of Object.entries(RESOURCE_SITES)){
@@ -174,13 +192,17 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  }
  function instanceResource(src,name,x,y,z,scale,spec){const m=src.createInstance(name);m.setEnabled(true);m.position.set(x,y,z);m.scaling.set(...scale);m.metadata={resourceSite:{kind:spec.kind,x:spec.x,y:spec.y,label:RESOURCE_SITES[spec.kind].label}};add(m,resourceMeshes);m.freezeWorldMatrix();return m;}
  function updateResourceSites(s){
-  const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,depositGeometry(s),s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1])]);if(next===resourceSignature)return;resourceSignature=next;selectionSignature='';remove(resourceMeshes);
-  for(const d of s.world?.deposits||[]){if(!RESOURCE_SITES[d.kind]||terrain(d.x,d.y,s)==='water')continue;const X=d.x*TILE,Z=d.y*TILE,Y=surfaceElevation(d.x,d.y,s),occupied=!sceneryClear(s,d,.12);
+  const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,depositGeometry(s),s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1,b.deposit?.x,b.deposit?.y])]);if(next===resourceSignature)return;resourceSignature=next;selectionSignature='';remove(resourceMeshes);
+  for(const d of s.world?.deposits||[]){if(!RESOURCE_SITES[d.kind]||terrain(d.x,d.y,s)==='water')continue;const X=d.x*TILE,Z=d.y*TILE,Y=surfaceElevation(d.x,d.y,s),court=extractionOwner(s,d),occupied=!court&&!sceneryClear(s,d,.12);
    const patch=instanceResource(resourceModels.get(d.kind),`resource-site-${d.kind}-${d.x}-${d.y}`,X,Y+.045,Z,[1,1,1],d);patch.setEnabled(false);
 
    if(occupied)continue;
+   if(court&&['clay','stone'].includes(d.kind))for(const p of resourceDisplayLayout(d)){
+    const clay=d.kind==='clay',size=p.size*(clay?.60:.54),ground=surfaceElevation(p.x,p.y,s);
+    instanceResource(clay?claySource:stoneSource,`deposit-open-${d.kind}`,p.x*TILE,ground+size*.13,p.y*TILE,[size,size*(clay?.28:.62),size],d);
+   }
    if(d.kind==='reed'&&!valleyVegetation.sources.reed.length)for(const p of resourceDisplayLayout(d)){
-    if(!sceneryClear(s,p,.05))continue;const ground=surfaceElevation(p.x,p.y,s);
+    if(!court&&!sceneryClear(s,p,.05))continue;const ground=surfaceElevation(p.x,p.y,s);
     const h=1.25+p.size*.38,m=instanceResource(reedSource,'deposit-reed-bed',p.x*TILE,ground+h/2,p.y*TILE,[1,h,1],d);m.unfreezeWorldMatrix();m.rotation.z=Math.sin(p.angle)*.09;m.freezeWorldMatrix();
    }
    if(d.kind==='wildlife')for(let i=0;i<6;i++)instanceResource(hoofSource,'deposit-wildlife-track',X+(i%2)*.33-.16,Y+.07,Z+(i/2-1.5)*.6,[.13,.055,.23],d);
@@ -189,7 +211,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  const selectionMaterial=material('resource-placement-highlight','#d9ee8b');selectionMaterial.emissiveColor=color(.25,.32,.08);selectionMaterial.alpha=.8;
  const selectionSource=source('resource-highlight-source',()=>{const m=new B.Mesh('site-placement-rectangle',scene),d=new B.VertexData(),g=rectangularSiteGeometry();d.positions=g.positions;d.indices=g.indices;d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);d.applyToMesh(m);return m;},selectionMaterial);selectionMaterial.backFaceCulling=false;
  function updateSelection(s,selection){const type=typeof selection==='string'?selection:null,key=`${type}|${resourceSignature}`;if(key===selectionSignature)return;selectionSignature=key;remove(selectionMeshes);
-  for(const m of resourceMeshes)if(m.name.startsWith('resource-site-'))m.setEnabled(!!RESOURCE_BUILDINGS[type]&&m.metadata.resourceSite.kind===RESOURCE_BUILDINGS[type]);
+  for(const m of resourceMeshes)if(m.name.startsWith('resource-site-'))m.setEnabled(!!extractionKinds[type]&&m.metadata.resourceSite.kind===extractionKinds[type]);
   for(const p of resourcePlacementSites(s,type)){const m=selectionSource.createInstance(`resource-placement-${type}-${p.x}-${p.y}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s)+.16,p.y*TILE);m.metadata={resourcePlacement:{type,x:p.x,y:p.y}};add(m,selectionMeshes);m.freezeWorldMatrix();}
  }
  function meshData(name,g,mat,collection=staticMeshes){if(!g.indices.length)return null;const m=new B.Mesh(name,scene),d=new B.VertexData();d.positions=g.positions;d.indices=g.indices;d.colors=g.colors;d.uvs=g.uvs||g.positions.filter((_,i)=>i%3!==1).map(v=>v/3);d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);
@@ -227,14 +249,14 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(trailState===s&&trailBucket===bucket)return;
   if(trailState!==s)trailSignature='';
   trailState=s;trailBucket=bucket;
-  const paths=visibleFootpaths(s,finishedRoadIds).filter(r=>shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)>.08);
-  const key=paths.map(r=>`${r.id}:${r.level}`).join(';');
+  const paths=visibleFootpaths(s,finishedRoadIds);
+  const key=paths.map(r=>`${r.id}:${r.level}:${r.control?.x||''},${r.control?.y||''}`).join(';');
   if(key===trailSignature&&(paths.length||!trailMeshes.length))return;
   trailSignature=key;remove(trailMeshes);
   const geometry={positions:[],indices:[],colors:[],uvs:[]};
-  let obstacles;
-  for(const r of footpathRibbons(paths,(a,b)=>navigationSegmentClear(s,a,b,obstacles??=obstacleIndex(s.buildings)))){
-   const g=wornRoadGeometry(s,r.a,r.b,.35+r.level*.105,.029,1,.85,r.control),first=geometry.positions.length/3,opacity=.16+r.level*.105;
+  for(const r of paths){
+   const control=r.control||{x:(r.a.x+r.b.x)*.5,y:(r.a.y+r.b.y)*.5};
+   const g=wornRoadGeometry(s,r.a,r.b,.35+r.level*.105,.029,1,.85,control),first=geometry.positions.length/3,opacity=.16+r.level*.105;
    for(let i=0;i<g.positions.length;i+=3)geometry.positions.push(g.positions[i]+g.origin.x,g.positions[i+1],g.positions[i+2]+g.origin.z);
    for(let i=0;i<g.colors.length;i+=4)geometry.colors.push(g.colors[i],g.colors[i+1],g.colors[i+2],g.colors[i+3]*opacity);
    for(const i of g.indices)geometry.indices.push(first+i);
@@ -275,11 +297,11 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.managed?.62*p.growth:p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}updatePalmGroups();}
  }
 
- let featureSignature='';
+ let featureSignature='',featureGeometry='';
  const cutWood=material('actual-felled-tree-heartwood','#ac8052');
  function updateWorkFeatures(s,time){
-  const features=s.gathering?.features||[],next=JSON.stringify([features.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1]),landscapePlanRoads]);
-  if(next!==featureSignature){featureSignature=next;remove(workFeatureMeshes);for(const r of workFeatureRoots)r.dispose();workFeatureRoots.length=0;workFeatures.clear();
+  const features=s.gathering?.features||[],next=JSON.stringify(features.map(f=>[f.id,f.kind,f.x,f.y]));
+  if(next!==featureSignature||featureGeometry!==natureGeometrySignature){featureSignature=next;featureGeometry=natureGeometrySignature;remove(workFeatureMeshes);for(const r of workFeatureRoots)r.dispose();workFeatureRoots.length=0;workFeatures.clear();
    for(const f of features){if(!sceneryClear(s,f,.2)||vegetationBankDistance(f.x,f.y,s)<.2||landscapePlanRoads.some(r=>pointDistance(f,r.a,r.b)<.4))continue;const Y=surfaceElevation(f.x,f.y,s),root=new B.TransformNode(`gathering-feature-${f.id}`,scene);root.position.set(f.x*TILE,Y,f.y*TILE);workFeatureRoots.push(root);const parts=[];
     if(f.kind==='tree'){
      for(const src of palmSources){const m=src.createInstance(`working-tree-${f.id}-${src.name}`);m.setEnabled(true);m.parent=root;m.scaling.setAll(.72);if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;parts.push(add(m,workFeatureMeshes));}
@@ -330,7 +352,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   }
   natureDetails.update(s,time,weather,landscapePlanRoads,natureGeometrySignature);
   if(valleyVegetation.update(s,landscapePlanRoads,natureGeometrySignature)){const registered=new Set(meshes);for(const m of valleyVegetation.meshes)if(!registered.has(m))meshes.push(m);}
-  for(const m of natureDetails.meshes)if(!meshes.includes(m))meshes.push(m);
+  registerMeshes(natureDetails.meshes);
   for(let i=0;i<drops.length;i++){const m=drops[i];m.setEnabled(rain);if(rain){const h=((i*.618+time*1.6)%1)*20;m.position.set(((i*53.71+time*3)% (worldWidth(s)*TILE)),20-h,((i*37.29)% (worldHeight(s)*TILE)));m.rotation.z=.16;}}
   // Wind moves only shared source foliage instances, with no allocation or save edits.
   updatePalmWind(time,wind);
@@ -361,9 +383,9 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   Object.assign(data,{positions,indices,normals});data.applyToMesh(mesh);
   mesh.material=floodMaterial;add(mesh,floodMeshes);mesh.freezeWorldMatrix();
  }
- function update(s,time=0,selection=null){if(disposed)return;currentState=s;rebuildBase(s);const next=landscapeSignature(s);if(next!==signature){signature=next;streetNetwork=cachedStreetsFor(s)||generateStreets([...(s.buildings||[]),...(s.roadAnchors||[])],s);const plan=landscapePlan(s,streetNetwork);landscapePlanRoads=plan.roads;rebuildGeometry(s,plan);weatherSignature='';}base.light(night);base.update(s,time);for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes'].includes(m.name))m.setEnabled(false);if(!meshes.includes(m))meshes.push(m);} // Terrain's road owner can replace its hidden batch.
-  catDiscovery.update(s);for(const m of catDiscovery.meshes)if(!meshes.includes(m))meshes.push(m);
-  waterView.update(s,time);waterView.light(night);for(const m of waterView.meshes)if(!meshes.includes(m))meshes.push(m);
+ function update(s,time=0,selection=null){if(disposed)return;currentState=s;rebuildBase(s);const next=landscapeSignature(s);if(next!==signature){signature=next;streetNetwork=cachedStreetsFor(s)||generateStreets([...(s.buildings||[]),...(s.roadAnchors||[])],s);const plan=landscapePlan(s,streetNetwork);landscapePlanRoads=plan.roads;rebuildGeometry(s,plan);weatherSignature='';}base.light(night);base.update(s,time);registerMeshes(base.meshes,true);
+  catDiscovery.update(s);registerMeshes(catDiscovery.meshes);
+  waterView.update(s,time);waterView.light(night);registerMeshes(waterView.meshes);
   updateFlood(s);
   updateTrails(s);
   updateWorkFeatures(s,time);updateResourceSites(s);updateSelection(s,selection);updateStocks(s);const c=s.trade?.caravan;updateTrader(c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{...c,river:c.transport==='river',route:c.route||[],routeIndex:c.routeIndex||0}:null,time);updateWeather(s,time);

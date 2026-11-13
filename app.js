@@ -1,3 +1,4 @@
+import {extractionKinds,extractionSource} from './extraction-courts.js';
 import {linkWaterCrisisAid,WATER_CRISIS_YEAR_TITLE,waterCrisisForYear} from './water-crisis.js';
 import {DRIED_FISH_CAPACITY,launchLocalFerry,localFerryVessel,releaseDriedFish,riverStoreView,startFishDrying} from './river-stores.js';
 import {civicAidPending,civicCaseKey,civicCityEpithet,civicRestitution,civicLawReason,orderCivicRestitution,publishCivicLaw,reconcileCivicConflict,sendCivicAid} from './civic-order.js';
@@ -47,8 +48,8 @@ import {familyMemorialsAt,LIFE_CAUSE_NAMES} from './life-analytics.js';
 import {setCommonMeals} from './common-meal.js';
 import {isVotiveTemple,isMemoryKeeper,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
 import {reedStatus,REED_CAPACITY} from './reed-stock.js';
-import {forestFor,forestStock,FOREST_CAPACITY,FOREST_RECOVERY} from './forest-stock.js';
-import {clayRemaining,stoneRemaining,CLAY_CAPACITY,STONE_CAPACITY} from './mineral-stock.js';
+import {forestFor,forestStock,forestCapacity,FOREST_RECOVERY} from './forest-stock.js';
+import {clayRemaining,stoneRemaining,mineralCapacity} from './mineral-stock.js';
 import {fisheryOptions} from './labor-life.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
@@ -144,7 +145,7 @@ let inspectedDeposit=null,inspectedPerson=null,roadMode=false,householdTab='fami
 const desiredRoles=new Map();
 const entityAt=(x,y)=>state.buildings.find(b=>b.x===x&&b.y===y)||(state.roads||[]).find(b=>b.x===x&&b.y===y);
 const entityName=b=>b.type==='road'?'Участок дороги':buildingPresentation(state,b).name;
-let state=useThreeDayCalendar(createNewCity()),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
+let state=useThreeDayCalendar(createNewCity({centeredStart:true})),loaded=false,storageOK=true,corrupt=false,legacyRaw=null;
 try{const raw=localStorage.getItem(key);if(raw){const saved=decode(raw);if(saved){state=enableCareerRules(useThreeDayCalendar(saved));loaded=true;if(JSON.parse(raw).version<22)legacyRaw=raw;}else corrupt=true;}}catch{storageOK=false;}
 const saveLibrary=createSaveLibrary();
 let savesUI=null,switchingCity=false,citySwitchRevision=0;
@@ -832,18 +833,18 @@ function updateDetail(){
   $('field-water-priority')?.addEventListener('click',()=>mutate(setFieldWaterPriority(state,b),'Распределение полива обновлено'));
  }
  if(['clay','quarry'].includes(b.type)&&isStrictSumer(state)){
-  const stone=b.type==='quarry',remaining=stone?stoneRemaining(state,b.x,b.y):clayRemaining(state,b.x,b.y);
-  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${stone?STONE_CAPACITY:CLAY_CAPACITY}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
+  const stone=b.type==='quarry',source=extractionSource(b),remaining=stone?stoneRemaining(state,source.x,source.y):clayRemaining(state,source.x,source.y),limit=mineralCapacity(state,stone?'stone':'clay',source.x,source.y);
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${limit}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
  }
  if(b.type==='reed'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
-  const controls=$('building-controls');
-  controls.insertAdjacentHTML('afterbegin',reedBedHTML(reedStatus(state,b.x,b.y),REED_CAPACITY));
+  const controls=$('building-controls'),source=extractionSource(b);
+  controls.insertAdjacentHTML('afterbegin',reedBedHTML(reedStatus(state,source.x,source.y),REED_CAPACITY));
   const button=controls.querySelector('[data-reed-rest]');
-  if(button)button.onclick=()=>{button.blur();mutate(closeReedBed(state,b.x,b.y),'Сбор тростника закрыт на два дня');};
+  if(button)button.onclick=()=>{button.blur();mutate(closeReedBed(state,source.x,source.y),'Сбор тростника закрыт на два дня');};
  }
  if(b.type==='logging'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
-  const forest=forestFor(state,b.x,b.y),status=forest&&forestStock(state,forest);
-  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Лесное угодье</h4>${status?`<p>Роща ${esc(forest)} · остаток ${rounded(status.stock)} / ${FOREST_CAPACITY}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><button type="button" id="forest-rest" ${status.resting||status.stock>=FOREST_CAPACITY?'disabled':''}>Закрыть рубку на три дня</button>`:'<p>У этого двора нет доступной рощи.</p>'}<small>Соседние дворы делят запас. После трёх игровых суток отдыха восстановится до ${FOREST_RECOVERY} ед. Древесину можно купить у торговцев.</small></section>`);
+  const source=extractionSource(b),forest=forestFor(state,source.x,source.y),status=forest&&forestStock(state,forest),limit=forest?forestCapacity(state,forest):0;
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Лесное угодье</h4>${status?`<p>Роща ${esc(forest)} · остаток ${rounded(status.stock)} / ${limit}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><button type="button" id="forest-rest" ${status.resting||status.stock>=limit?'disabled':''}>Закрыть рубку на три дня</button>`:'<p>У этого двора нет доступной рощи.</p>'}<small>Соседние дворы делят запас. После трёх игровых суток отдыха восстановится до ${FOREST_RECOVERY} ед. Древесину можно купить у торговцев.</small></section>`);
   if($('forest-rest'))$('forest-rest').onclick=()=>{$('forest-rest').blur();mutate(closeForestForRest(state,b),'Рубка закрыта на три дня');};
  }
  if(b.type==='fishing'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
@@ -1464,8 +1465,8 @@ function choose(type){
 function buildBenefit(type){
  if(type==='watchHouse')return BUILDINGS[type].effect;
  const b=BUILDINGS[type];if(type==='cityWall')return 'Секция стены · перекрывает проход';if(type==='cityGate')return 'Площадка 2 × 2 · проход вдоль оси ворот';if(type==='musicHouse')return 'До 2 музыкантов · литофон и лира · престиж';if(type==='ishtarGate')return 'Площадка 3 × 3 · Покров Инанны';if(type==='pottery')return 'Глина + вода + топливо → керамика · сушка и обжиг';if(type==='brewery')return 'Еда + вода + сосуд → пиво · семена защищены';if(type==='harbor')return 'Главная река · лодки с лесом и камнем · 2 носильщика';if(type==='kiln')return '4 сырца + 3 тростника → 4 обожжённых · нужны работники';if(type==='brickyard')return 'Глина + тростник + вода → 4 сырца · солнечная сушка';if(type==='waterpoint')return 'Водоносам нужен берег · вода кварталу';if(type==='tailor')return '2 ткани → 1 одежда · нужен мастер';if(type==='sheepfold')return '4 овцы · сбор → 2 шерсти / рейс';if(type==='weaver')return '3 шерсти → 1 ткань · товар караванам';if(type==='field')return state.cropCalendar===AUTUMN_CROPS?'Осень: посев · зима: полив · весна: жатва':'Весна: посев · лето: полив · осень: жатва';if(type==='canal')return 'Вода соседним полям · путь от реки';if(type==='levee')return 'Береговой вал · защита от весеннего разлива';if(type==='healer')return 'Лечение · нужен обученный лекарь · 2 места';if(type==='market')return 'Приём караванов · 2 носильщика';if(type==='house')return '+8 мест для жителей';if(type==='ziggurat')return 'Площадка 2 × 2 · великий храм · вера и престиж';if(type==='depot')return 'Местная еда · 2 носильщика · 60 / материал';if(type==='granary')return '+150 / материал · местный склад';if(type==='bridge')return 'Путь и доставка на другой берег';
- if(type==='garden'&&isStrictSumer(state))return 'Первый урожай через год · полный через три';
- return `${resourceText(b.output)} / рейс${type==='garden'?' · +4 счастья':''}`;
+ if(type==='garden'&&isStrictSumer(state))return 'Двор 2 × 2 · первый урожай через год, полный через три';
+ return `${resourceText(b.output)} / рейс${extractionKinds[type]?' · двор 2 × 2':''}${type==='garden'?' · +4 счастья':''}`;
 }
 const buildSections=new Map();
 const craftPanels=new Map();
@@ -2036,7 +2037,7 @@ async function newGame(mode){
   const fixedSeed=mode==='awakening'&&playtestSeed!==null&&/^\d{1,10}$/.test(playtestSeed)&&Number(playtestSeed)<=0xffffffff;
   let seed=fixedSeed?Number(playtestSeed):(globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??(Date.now()>>>0));
   if(!fixedSeed&&seed===state.world?.seed)seed=(seed+1)>>>0;
-  await replaceCity(createNewCity({mode,seed}),{fresh:true});
+  await replaceCity(createNewCity({mode,seed,centeredStart:true}),{fresh:true});
  }
  catch(error){toast(`Новая игра не начата: ${error.message}`);for(const button of buttons)button.disabled=false;}
 }

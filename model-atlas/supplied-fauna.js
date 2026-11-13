@@ -1,7 +1,8 @@
 export const suppliedFauna = [
   {
     "id": "yellowfin-goby",
-    "note": "На тестовой карте рыб · восточноазиатский вид.",
+    "originalFile": "cc0____yellowfin_goby_a._flavimanus.glb",
+    "note": "В игре · визуальный заменитель речной рыбы. Исходный вид восточноазиатский.",
     "title": "Желтопёрый бычок",
     "group": "animals",
     "file": "supplied-yellowfin-goby.glb",
@@ -12,7 +13,8 @@ export const suppliedFauna = [
   },
   {
     "id": "oriental-goby",
-    "note": "На тестовой карте рыб · восточноазиатский вид.",
+    "originalFile": "cc0____spear-like_oriental_goby_a._hasta.glb",
+    "note": "В игре · визуальный заменитель речной рыбы. Исходный вид восточноазиатский.",
     "title": "Восточный бычок",
     "group": "animals",
     "file": "supplied-oriental-goby.glb",
@@ -23,6 +25,7 @@ export const suppliedFauna = [
   },
   {
     "id": "pelican-wigforss",
+    "originalFile": "pelican.glb",
     "note": "Альтернатива · лицензия только для некоммерческого использования. Просмотр у автора.",
     "title": "Пеликан · David Wigforss",
     "group": "birds",
@@ -34,6 +37,7 @@ export const suppliedFauna = [
   },
   {
     "id": "pelican-wasis",
+    "originalFile": "pelikan_pelican.glb",
     "note": "Зимой на воде · исходный скан без клипов, осадка и кильватер добавлены в игре.",
     "title": "Пеликан · wasis007",
     "group": "birds",
@@ -45,7 +49,8 @@ export const suppliedFauna = [
   },
   {
     "id": "common-quail",
-    "note": "В игре у реки · три птицы, исходная модель без клипов.",
+    "originalFile": "realistic_common_quail_bird_3d_model_free.glb",
+    "note": "В игре у реки · группа из пяти птиц, исходная модель без клипов.",
     "title": "Обыкновенный перепел",
     "group": "birds",
     "file": "supplied-common-quail.glb",
@@ -56,6 +61,7 @@ export const suppliedFauna = [
   },
   {
     "id": "northern-cardinal",
+    "originalFile": "northern_cardinal_bird_3d_model_free.glb",
     "note": "Резерв · североамериканский вид.",
     "title": "Северный кардинал",
     "group": "birds",
@@ -67,7 +73,8 @@ export const suppliedFauna = [
   },
   {
     "id": "horse-run",
-    "note": "Резерв · лошадь с бегом. На карте южного Шумера остаётся онагр.",
+    "originalFile": "the_horse.glb",
+    "note": "Резерв · бег. Лошадь не включена в обычную фауну южношумерской карты.",
     "title": "Лошадь · бег",
     "group": "animals",
     "file": "supplied-horse-run.glb",
@@ -80,6 +87,7 @@ export const suppliedFauna = [
   },
   {
     "id": "white-eagle",
+    "originalFile": "white_eagle_animation_fast_fly.glb",
     "note": "Резерв · полёт есть, вид птицы по модели не установлен.",
     "title": "Белый орёл",
     "group": "birds",
@@ -93,6 +101,7 @@ export const suppliedFauna = [
   },
   {
     "id": "schlegel-frog",
+    "originalFile": "218caec043db49d4b41855ab7e92765d.glb",
     "note": "Резерв · японская квакша Шлегеля.",
     "title": "Квакша Шлегеля",
     "group": "animals",
@@ -106,7 +115,8 @@ export const suppliedFauna = [
   },
   {
     "id": "realistic-rat",
-    "note": "Резерв · крыса в статичной позе. Домовую мышь в игре сохраняем.",
+    "originalFile": "low_poly_realistic_rat_3d_model_free.glb",
+    "note": "В игре · этот GLB в уменьшенном масштабе изображает грызуна, которого ловит кошка у склада. Точный вид условен.",
     "title": "Крыса · загруженная модель",
     "group": "animals",
     "file": "supplied-realistic-rat.glb",
@@ -117,6 +127,7 @@ export const suppliedFauna = [
   },
   {
     "id": "horse-brown",
+    "originalFile": "low_poly_horse_brown_colour_3d_model_free.glb",
     "note": "Резерв · статичная лошадь.",
     "title": "Лошадь · коричневая",
     "group": "animals",
@@ -128,6 +139,7 @@ export const suppliedFauna = [
   },
   {
     "id": "horse-walk",
+    "originalFile": "horse.glb",
     "note": "Альтернатива · лицензия только для некоммерческого использования. Просмотр у автора.",
     "title": "Лошадь · шаг",
     "group": "animals",
@@ -141,6 +153,7 @@ export const suppliedFauna = [
   },
   {
     "id": "frog-jump",
+    "originalFile": "frog_jump.glb",
     "note": "В игре на берегу · приближённый облик местной квакши, с авторским прыжком.",
     "title": "Лягушка · прыжок",
     "group": "animals",
@@ -155,6 +168,7 @@ export const suppliedFauna = [
   },
   {
     "id": "hawksbill-turtle",
+    "originalFile": "model_50a_-_hawksbill_sea_turtle.glb",
     "note": "Морская черепаха · лицензия только для некоммерческого использования. Просмотр у автора.",
     "title": "Бисса",
     "group": "animals",
@@ -168,8 +182,9 @@ export const suppliedFauna = [
   },
   {
     "id": "cobra-base",
-    "note": "Резерв · анимация кобры, вид требует уточнения.",
-    "title": "Кобра · базовая поза",
+    "originalFile": "snake_cobra_animated_base_model.glb",
+    "note": "В игре · змея на сухой окраине с анимацией GLB. Кобра передаёт движение, облик местного вида приблизительный.",
+    "title": "Змея · кобра в основной игре",
     "group": "animals",
     "file": "supplied-cobra-base.glb",
     "author": "Kim.David.Hauser (https://sketchfab.com/Kim.David.Hauser)",
@@ -181,8 +196,9 @@ export const suppliedFauna = [
   },
   {
     "id": "cobra-head-up",
+    "originalFile": "snake_cobra_head_up_animated.glb",
     "note": "Резерв · вторая поза кобры для сравнения.",
-    "title": "Кобра · поднятая голова",
+    "title": "Змея · кобра с поднятой головой",
     "group": "animals",
     "file": "supplied-cobra-head-up.glb",
     "author": "Kim.David.Hauser (https://sketchfab.com/Kim.David.Hauser)",

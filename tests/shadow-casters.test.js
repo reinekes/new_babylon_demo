@@ -1,4 +1,15 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {createActorShadowFilter,shadowCasterInside} from '../game3d/shadow-casters.js';
+import test from 'node:test';import assert from 'node:assert/strict';import {createActorShadowFilter,createOverviewShadowCadence,shadowCasterInside} from '../game3d/shadow-casters.js';
+
+test('overview shadow reuse alternates only on stable live views',()=>{
+ const refresh=createOverviewShadowCadence(),state={buildings:[],season:0};
+ const camera={alpha:1,beta:1,radius:120,target:{x:1,y:0,z:2}};
+ const render=(mode='auto',enabled=true,paused=false,elapsed=.03)=>refresh(state,mode,camera,enabled,paused,elapsed);
+ assert.equal(render(),true);assert.equal(render(),false);assert.equal(render(),true);
+ camera.target.x++;assert.equal(render(),true);assert.equal(render(),false);
+ assert.equal(render('night'),true);assert.equal(render('night',true,false,.1),true);
+ assert.equal(render('night',true,true),true);assert.equal(render('night',false),true);
+ assert.equal(render('night'),true);state.buildings.push({});assert.equal(render('night'),true);
+});
 test('small-person shadow uses only the proxy, then switches back to authored rig on zoom/focus',()=>{
  const root={simplifiedShadow:true},model={parent:root},mesh={parent:model,isEnabled:()=>true,isDisposed:()=>false},proxy={parent:root,shadowProxy:true,isEnabled:()=>true,isDisposed:()=>false},accept=createActorShadowFilter();
  assert.equal(accept(mesh),false);assert.equal(accept(proxy),true);

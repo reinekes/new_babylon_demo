@@ -71,8 +71,20 @@ export function pestActors(s){
  if(!s.pests)return [];const routes=yards(s),wander=roamingRoutes(s),result=[];
  for(const q of s.pests.sites){const route=routes.get(q.key);if(!route)continue;const flash=q.flash&&q.clock-q.flash.time<2;
   for(let i=0;i<q.mice;i++)result.push({id:`mouse:${q.key}:${i}`,kind:'mouse',...loopMotion(route,q.clock+i*2.2,.42,0),step:q.clock*8,behavior:'foraging'});
-  for(const cat of s.pests.cats.filter(c=>c.site===q.key)){const hunting=q.mice>0&&!flash,motion=hunting?loopMotion(route,q.clock+(q.mice-1)*2.2-Math.max(0,2*(1-q.hunt/10)),.42,0):flash?loopMotion(route,q.flash.phase,.42,0):loopMotion(wander.get(cat.site)||route,(s.simTime||0)+cat.id*3.7,.18,1.2);result.push({id:`cat:${cat.id}`,kind:'cat',...motion,walking:hunting||!flash&&motion.walking,step:q.clock*9,behavior:hunting?'hunting':flash?'resting':motion.walking?'wandering':'looking'});}
-  if(flash)result.push({id:`catch:${q.key}`,kind:'pestCatch',...loopMotion(route,q.flash.phase,.42,0),progress:(q.clock-q.flash.time)/2,by:q.flash.by});
+  for(const cat of s.pests.cats.filter(c=>c.site===q.key)){
+   const hunting=q.mice>0&&!flash,targetPhase=q.clock+(q.mice-1)*2.2;
+   const motion=hunting?loopMotion(route,targetPhase-Math.max(0,2*(1-q.hunt/10)),.42,0):flash?loopMotion(route,q.flash.phase,.42,0):loopMotion(wander.get(cat.site)||route,(s.simTime||0)+cat.id*3.7,.18,1.2);
+   let prey=null;
+   if(hunting||flash&&q.flash.by==='cat'){
+    const phase=flash?q.flash.phase:targetPhase,target=loopMotion(route,phase,.42,0),ahead=loopMotion(route,phase+.1,.42,0);
+    prey={x:target.x,y:target.y,yaw:Math.atan2(ahead.x-target.x,ahead.y-target.y)};
+   }
+   result.push({id:`cat:${cat.id}`,kind:'cat',...motion,walking:hunting||!flash&&motion.walking,step:q.clock*9,behavior:hunting?'hunting':flash?'resting':motion.walking?'wandering':'looking',prey,...flash&&q.flash.by==='cat'?{catchProgress:(q.clock-q.flash.time)/2}:{}});
+  }
+  if(flash){
+   const motion=loopMotion(route,q.flash.phase,.42,0),ahead=loopMotion(route,q.flash.phase+.1,.42,0);
+   result.push({id:`catch:${q.key}`,kind:'pestCatch',...motion,faceX:ahead.x,faceY:ahead.y,progress:(q.clock-q.flash.time)/2,by:q.flash.by});
+  }
  }
  for(const cat of s.pests.cats)if(!s.pests.sites.some(q=>q.key===cat.site)&&routes.has(cat.site))result.push({id:`cat:${cat.id}`,kind:'cat',...loopMotion(wander.get(cat.site)||routes.get(cat.site),s.simTime||0,.18,1.2),step:(s.simTime||0)*5,behavior:'wandering'});
  const celebrated=miracleCelebrationView(s)?.cat;if(celebrated){const index=result.findIndex(a=>a.id===celebrated.id);if(index>=0)result[index]=celebrated;else result.push(celebrated);}return result;

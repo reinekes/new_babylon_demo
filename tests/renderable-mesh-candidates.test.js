@@ -30,6 +30,16 @@ test('frustum and screen-size checks share one world-matrix update per candidate
  const scene={meshes:[part],activeCamera:{layerMask:1,position:{x:0,y:0,z:0},fov:.8},frustumPlanes:[{}],getEngine:()=>({getRenderHeight:()=>720})};
  assert.deepEqual(createRenderableMeshCandidates(scene)().data,[part]);assert.equal(matrices,1);
 });
+test('conservatively subpixel fish details skip world transforms and return near the camera',()=>{
+ const root={metadata:{animalKind:'fish',fishModelRadius:.04},getAbsolutePosition:()=>({x:0,y:0,z:100})},centerWorld={x:0,y:0,z:100};
+ let computed=0;
+ const part=mesh({parent:root,computeWorldMatrix:()=>computed++,isInFrustum:()=>true,getBoundingInfo:()=>({boundingSphere:{centerWorld,radiusWorld:.03}})});
+ const view=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],camera={layerMask:1,position:{x:0,y:0,z:0},fov:.8,getViewMatrix:()=>({m:view})};
+ const scene={meshes:[part],activeCamera:camera,frustumPlanes:[{dotCoordinate:()=>10}],getEngine:()=>({getRenderHeight:()=>720})};
+ const read=createRenderableMeshCandidates(scene);
+ assert.equal(read().length,0);assert.equal(computed,0);
+ view[14]=-98;assert.deepEqual(read().data,[part]);assert.equal(computed,1);
+});
 test('frozen building part culling is reused until camera or world matrix changes',()=>{
  let tests=0;
  const view=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],transform=[...view],world={updateFlag:1};

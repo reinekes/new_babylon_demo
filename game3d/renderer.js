@@ -1,16 +1,16 @@
-import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js?v=city4x-frozen-20261113';
-import {shadowCasterInside} from './shadow-casters.js?v=city4x-frozen-20261113';
+import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js?v=city500-fauna-courts-20261113';
+import {createOverviewShadowCadence,shadowCasterInside} from './shadow-casters.js?v=city500-fauna-courts-20261113';
 import {pickResourceDeposit} from './deposit-picking.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
 import {createBackgroundQueue,createLazyFeature} from './asset-loading.js';
 import {loadBabylonVendors} from './vendor-loading.js';
 import {createBootstrapActors} from './bootstrap-actors.js';
 import {createBootstrapLandscape} from './bootstrap-landscape.js';
-import {foundingCameraTarget} from '../starter-settlement.js';
+import {cityCameraTarget,foundingCameraTarget} from '../starter-settlement.js';
 import {createBuildingReach,nearbySimilar} from './building-reach.js';
 import {bindMapControls,orbitCamera} from './map-controls.js';
 import {Renderer as CanvasRenderer} from '../renderer.js';
-import {canBuild} from '../engine.js';
+import {buildingPlacement} from '../engine.js';
 import {worldWidth,worldHeight,terrain} from '../world.js';
 import {celestialAt,createSkyHorizon} from './sky-horizon.js';
 import {createHouseLights} from './house-lights.js';
@@ -31,7 +31,7 @@ export const valleyFogDensity=radius=>.0018*Math.min(1,240/Math.max(1,radius));
 export function worldCell(point,state){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<worldWidth(state)&&y<worldHeight(state)?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
 export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
-export function previewFor(state,type,cell,rotation=0){if(!type||!cell)return null;const reason=canBuild(state,type,cell.x,cell.y,false,rotation);return {...cell,allowed:!reason,reason};}
+export function previewFor(state,type,cell,rotation=0){if(!type||!cell)return null;const placement=buildingPlacement(state,type,cell.x,cell.y,false,rotation);return {...placement,allowed:!placement.reason};}
 export async function createGameRenderer(canvas,onSelect,options={}){
  const injected=Object.hasOwn(options,'BABYLON');let B=injected?options.BABYLON:globalThis.BABYLON;
  const legacy=options.legacyFactory||((c,fn)=>new CanvasRenderer(c,fn));
@@ -62,9 +62,10 @@ export class GameRenderer3D{
   this.sun=new B.DirectionalLight('city-sun',new B.Vector3(-.6,-.85,-.5),this.scene);this.sun.shadowMinZ=.1;this.sun.shadowMaxZ=350;this.sun.shadowFrustumSize=90;
   this.fill=new B.HemisphericLight('city-sky',new B.Vector3(0,1,0),this.scene);this.fill.intensity=.35;
   this.shadow=new B.ShadowGenerator(2048,this.sun);this.shadow.usePercentageCloserFiltering=true;this.shadow.filteringQuality=B.ShadowGenerator.QUALITY_MEDIUM;this.shadow.bias=.0004;this.shadow.normalBias=.025;
+  this.renderOverviewShadow=createOverviewShadowCadence();this.refreshShadow=true;
   this.scene.onBeforeRenderTargetsRenderObservable.add(()=>{
    const map=this.shadow.getShadowMap();
-   if(!this.scene.shadowsEnabled||!map?.renderList?.length)return;
+   if(!this.refreshShadow||!this.scene.shadowsEnabled||!map?.renderList?.length)return;
    const planes=B.Frustum.GetPlanes(this.shadow.getTransformMatrix());
    map.renderList=map.renderList.filter(mesh=>shadowCasterInside(mesh,planes));
   });
@@ -79,7 +80,7 @@ export class GameRenderer3D{
   const {createGameBuildings}=await import('./buildings.js');
   this.state=state;this.buildings=await createGameBuildings(this.B,this.scene,this.materials,{deferAssets:true});
   this.actors=createBootstrapActors(this.B,this.scene);this.landscape=createBootstrapLandscape(this.B,this.scene,state,this.materials);this.relicScene=createRelicScene(this.B,this.scene);this.relicScene.update(state);this.sacredEffects=createSacredEffects(this.B,this.scene);this.sacredEffects.update(state,0,{paused:true});
-  this.buildings.sync(state);this.actors.update(state);this.layersReady=true;this.engine.stopRenderLoop();this.resize();if(foundingCameraTarget(state))this.home();
+  this.buildings.sync(state);this.actors.update(state);this.layersReady=true;this.engine.stopRenderLoop();this.resize();if(cityCameraTarget(state))this.home();
   this.detailNote=document.createElement('output');this.detailNote.className='game3d-detail-status';this.detailNote.setAttribute('role','status');this.detailNote.textContent='Город открыт · подробности загружаются';this.canvas.parentNode.append(this.detailNote);
   this.detailQueue=createBackgroundQueue(2,{onError:error=>{console.warn('Optional 3D detail unavailable:',error);if(!this.disposed)this.detailNote.textContent='Город открыт · часть деталей в лёгком виде';}});
   const replace=(name,value)=>{if(this.disposed){value.dispose();return;}const previous=this[name];try{name==='actors'?value.update(this.state,0,{paused:true,speed:1}):value.update(this.state,this.state.simTime);value.setQuality?.(this.quality);}catch(error){value.dispose();throw error;}this[name]=value;previous.dispose();};
@@ -156,7 +157,7 @@ export class GameRenderer3D{
  overviewRadius(){const w=worldWidth(this.state),h=worldHeight(this.state);if(w<=40&&h<=32)return 240;const half=(this.camera?.fov||.8)/2,aspect=Math.max(.2,(this.w||1.5)/(this.h||1));return Math.hypot(w*3,h*3)*1.06/Math.sin(Math.min(half,Math.atan(Math.tan(half)*aspect)));}
  layout(){if(this.camera)this.camera.radius=this.mapOverview?this.overviewRadius():104/this._zoom;}
  resize(){if(!this.engine)return;this.engine.resize();const r=this.canvas.getBoundingClientRect();this.w=r.width;this.h=r.height;this.camera.upperRadiusLimit=Math.max(360,this.overviewRadius()*1.25);this.camera.maxZ=Math.max(20000,this.camera.upperRadiusLimit+650);if(this.mapOverview)this.layout();}
- home(){const founding=foundingCameraTarget(this.state);this.mapOverview=false;this._zoom=founding?104/founding.radius:2.5;this.pan={x:0,y:0};this.camera?.setTarget(new this.B.Vector3(founding?founding.x*6:53,0,founding?founding.y*6:55));if(this.camera){this.camera.alpha=Math.PI/3;this.camera.beta=.96;this.camera.radius=104/this._zoom;}}
+ home(){const founding=cityCameraTarget(this.state);this.mapOverview=false;this._zoom=founding?104/founding.radius:2.5;this.pan={x:0,y:0};this.camera?.setTarget(new this.B.Vector3(founding?founding.x*6:53,0,founding?founding.y*6:55));if(this.camera){this.camera.alpha=Math.PI/3;this.camera.beta=.96;this.camera.radius=104/this._zoom;}}
  overview(){this.mapOverview=true;this.camera.setTarget(new this.B.Vector3((worldWidth(this.state)-1)*3,0,(worldHeight(this.state)-1)*3));this.camera.beta=.68;this.camera.radius=this.overviewRadius();}
  focusOn(x,y){this.mapOverview=false;this.camera.setTarget(new this.B.Vector3(x*6,1,y*6));this.camera.radius=30;this.hover={x,y};}
  projectWindPoint({x,y}){
@@ -173,11 +174,12 @@ export class GameRenderer3D{
   const B=this.B;while(this.effects.length){const effect=this.effects.shift(),m=B.MeshBuilder.CreateTorus(`miracle-${effect.id}`,{diameter:3,thickness:.08,tessellation:48},this.scene),mat=new B.StandardMaterial('divine-light',this.scene);mat.emissiveColor=B.Color3.FromHexString(['rain','richCatch'].includes(effect.id)?'#88c7df':effect.id==='festival'?'#ffc86c':'#f7dc8c');mat.disableLighting=true;mat.alpha=.8;m.material=mat;m.isPickable=false;const p=effect.at||{x:9,y:9};m.position.set(p.x*6,.35,p.y*6);this.effectViews.push({mesh:m,mat,age:0});}
   for(const v of [...this.effectViews]){v.age+=dt;v.mesh.scaling.setAll(1+v.age*3);v.mat.alpha=Math.max(0,.8-v.age*.3);if(v.age>2.7){v.mesh.dispose();v.mat.dispose();this.effectViews.splice(this.effectViews.indexOf(v),1);}}
  }
- updateLight(state){
+ updateLight(state,refreshShadow=true){
   const B=this.B,clock=celestialAt(state.simTime,this.lightMode),n=clock.night;
   this.scene.fogDensity=valleyFogDensity(this.camera.radius);
   const weather=weatherAt(state),cloud=weather.type==='rain'?.7:weather.type==='clouds'?.85:1;
-  this.sun.direction.set(clock.light.direction.x,clock.light.direction.y,clock.light.direction.z);this.sun.position=this.camera.target.subtract(this.sun.direction.normalizeToNew().scale(140));this.sun.shadowFrustumSize=Math.max(42,Math.min(260,this.camera.radius*1.5));this.sun.intensity=clock.light.intensity*cloud;this.sun.diffuse=B.Color3.Lerp(B.Color3.Lerp(B.Color3.FromHexString('#fff0da'),B.Color3.FromHexString('#ffb16b'),clock.warm*.65).toLinearSpace(),B.Color3.FromHexString('#a3b2d8').toLinearSpace(),n);this.fill.intensity=.4-.17*n;this.fill.diffuse=B.Color3.Lerp(new B.Color3(.9,.9,.85),new B.Color3(.35,.46,.65),n);this.fill.groundColor=new B.Color3(.38,.30,.19);this.scene.fogColor=B.Color3.Lerp(B.Color3.FromHexString('#c7bfa5'),B.Color3.FromHexString('#252f42'),n);this.scene.clearColor=new B.Color4(this.scene.fogColor.r,this.scene.fogColor.g,this.scene.fogColor.b,1);this.landscape.light(n);this.buildings.light?.(n);
+  if(refreshShadow){this.sun.direction.set(clock.light.direction.x,clock.light.direction.y,clock.light.direction.z);this.sun.position=this.camera.target.subtract(this.sun.direction.normalizeToNew().scale(140));this.sun.shadowFrustumSize=Math.max(42,Math.min(260,this.camera.radius*1.5));}
+  this.sun.intensity=clock.light.intensity*cloud;this.sun.diffuse=B.Color3.Lerp(B.Color3.Lerp(B.Color3.FromHexString('#fff0da'),B.Color3.FromHexString('#ffb16b'),clock.warm*.65).toLinearSpace(),B.Color3.FromHexString('#a3b2d8').toLinearSpace(),n);this.fill.intensity=.4-.17*n;this.fill.diffuse=B.Color3.Lerp(new B.Color3(.9,.9,.85),new B.Color3(.35,.46,.65),n);this.fill.groundColor=new B.Color3(.38,.30,.19);this.scene.fogColor=B.Color3.Lerp(B.Color3.FromHexString('#c7bfa5'),B.Color3.FromHexString('#252f42'),n);this.scene.clearColor=new B.Color4(this.scene.fogColor.r,this.scene.fogColor.g,this.scene.fogColor.b,1);this.landscape.light(n);this.buildings.light?.(n);
   this.skyHorizon?.update(state,this.camera,this.lightMode,this.landscape?.waterMaterial);
   this.houseLights??=createHouseLights(B,this.scene,{lamps:this.lamps});this.houseLights.update(state,n,this.camera.target);
  }
@@ -206,15 +208,21 @@ export class GameRenderer3D{
   this.supplyLine?.setEnabled(!this.photoMode);
   if(this.photoMode){this.reach.clear();this.reachNote.hidden=true;this.buildings.highlight([]);this.buildings.clearPreview();this.marker.setEnabled(false);for(const m of this.routeMarkers||[])m.setEnabled(false);return;}for(const m of this.routeMarkers||[])m.setEnabled(true);
   const B=this.B,p=previewFor(this.state,this.selection,this.hover,this.placementRotation||0),size=newFootprint(this.selection);this.marker.setEnabled(!!p||!!this.hover&&!!this.roadMode||!!this.keyboardHover&&!!this.hover);if(this.marker.isEnabled()){const at=p||this.hover,n=this.selection?size:1;this.marker.scaling.set(n,1,n);this.marker.position.set((at.x+(n-1)/2)*6,.10,(at.y+(n-1)/2)*6);this.marker.material.emissiveColor=B.Color3.FromHexString(p&&!p.allowed?'#e27857':'#dcdda0');this.marker.material.diffuseColor=this.marker.material.emissiveColor;if(p)this.canvas.title=p.allowed?'Нажми, чтобы заложить строительство':p.reason;}
-  if(p)this.buildings.preview({type:this.selection,x:p.x,y:p.y,level:1,rotation:this.placementRotation||0,...(size>1?{footprint:size}:{})},this.state,{allowed:p.allowed});else this.buildings.clearPreview();
+  if(p)this.buildings.preview({type:this.selection,x:p.x,y:p.y,deposit:p.deposit,level:1,rotation:this.placementRotation||0,...(size>1?{footprint:size}:{})},this.state,{allowed:p.allowed});else this.buildings.clearPreview();
   const selected=this.selection&&this.hover?{type:this.selection,...this.hover,...(size>1?{footprint:size}:{})}:this.inspected&&this.state.buildings.find(b=>b.x===this.inspected.x&&b.y===this.inspected.y);
   this.buildings.highlight(this.selection&&selected?nearbySimilar(this.state,selected):[]);this.reachNote.textContent=this.reach.update(this.state,selected);this.reachNote.hidden=!this.reachNote.textContent;
   const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,visualSurfaceElevation(r.a.x,r.a.y,this.state)+.24,r.a.y*6),b=new B.Vector3(r.b.x*6,visualSurfaceElevation(r.b.x,r.b.y,this.state)+.24,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
  }
  draw(state,selection,now,options={}){
   if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState)this.resize();if(changedState&&foundingCameraTarget(state))this.home();
-  const paused=options.paused??simDelta<=0;this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1,camera:this.camera,viewportHeight:this.engine.getRenderHeight(),rainReaction:options.rainReaction,blessingApproach:options.blessingApproach,focusId:this.focusCitizenId??this.inspected?.citizenId});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
-  this.shadow.getShadowMap().renderList=[...this.buildings.meshes,...(this.actors.shadowMeshes?.()||this.actors.meshes),...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());this.scene.render();
+  const paused=options.paused??simDelta<=0,shadowMap=this.shadow.getShadowMap();
+  const overviewCadence=this.mapOverview&&!this.photoMode&&this.scene.shadowsEnabled&&state.citizens.length>=300&&!state.funeral&&!state.festival&&!state.miracleCelebration;
+  this.refreshShadow=this.renderOverviewShadow?.(state,this.lightMode,this.camera,overviewCadence,paused,dt)??true;
+  const refreshRate=overviewCadence&&!paused?2:1;if(shadowMap.refreshRate!==refreshRate)shadowMap.refreshRate=refreshRate;
+  if(this.refreshShadow&&refreshRate>1)shadowMap.resetRefreshCounter();
+  this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1,camera:this.camera,viewportHeight:this.engine.getRenderHeight(),rainReaction:options.rainReaction,blessingApproach:options.blessingApproach,focusId:this.focusCitizenId??this.inspected?.citizenId});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state,this.refreshShadow);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
+  if(this.refreshShadow)shadowMap.renderList=[...this.buildings.meshes,...(this.actors.shadowMeshes?.()||this.actors.meshes),...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());
+  this.scene.render();
   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
  }
  dispose(){this.disposed=true;this.detailQueue?.dispose();this.detailNote?.remove();this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.relicScene?.dispose();this.sacredEffects?.dispose();this.houseLights?.dispose();this.skyHorizon?.dispose();this.scene?.dispose();this.engine?.dispose();}

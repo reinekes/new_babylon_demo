@@ -1,3 +1,4 @@
+import {extractionOwner} from '../extraction-courts.js';
 import {terrain} from '../world.js';
 import {TILE,surfaceElevation} from '../district3d/terrain.js';
 import {visualSurfaceElevation} from './lake-shore.js';
@@ -14,7 +15,7 @@ function boxDistance(origin,direction,min,max,limit){let near=0,far=limit;for(co
 export function pickResourceDeposit(state,ray,{maxDistance=Infinity}={}){
  if(!finiteVector(ray?.origin)||!finiteVector(ray?.direction)||Number.isNaN(maxDistance)||maxDistance<0)return null;const norm=Math.hypot(ray.direction.x,ray.direction.y,ray.direction.z);if(!norm)return null;const direction={x:ray.direction.x/norm,y:ray.direction.y/norm,z:ray.direction.z/norm};let nearest=Math.min(maxDistance,Number.isFinite(ray.length)?Math.max(0,ray.length):Infinity),selected=null;
  for(const d of state?.world?.deposits||[]){
-  if(!['clay','reed','stone'].includes(d.kind)||terrain(d.x,d.y,state)==='water'||!sceneryClear(state,d,.12))continue;
+  if(!['clay','reed','stone'].includes(d.kind)||terrain(d.x,d.y,state)==='water'||extractionOwner(state,d)||!sceneryClear(state,d,.12))continue;
   const reed=d.kind==='reed',base=surfaceElevation(d.x,d.y,state),x=d.x*TILE,z=d.y*TILE;
   if(boxDistance(ray.origin,direction,{x:x-2.3,y:base-.6,z:z-2.3},{x:x+2.3,y:base+(reed?2.5:1),z:z+2.3},nearest)===null)continue;
   for(const [i,p]of resourceDisplayLayout(d).entries()){

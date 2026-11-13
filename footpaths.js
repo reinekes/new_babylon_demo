@@ -1,11 +1,13 @@
-import {onBridge,worldWidth,worldHeight} from './world.js';
+import {isDryPoint,onBridge,worldWidth,worldHeight} from './world.js';
 import {navigationSegmentClear,obstacleIndex} from './navigation.js';
+import {floodFootprint,floodPhase,floodProtectionRevision,floodedSegment} from './river-flood.js';
 
 const EPSILON=1e-6;
 const MAX_WEAR=8;
 const DECAY_SECONDS=36;
 const LEVEL_THRESHOLD=[1.6,2.8,4.4,6.2];
 const cache=new WeakMap(),terrainCache=new WeakMap();
+const residentEdges=new WeakMap();
 
 export function footpathId(a,b){
  const key=p=>`${p.x+.5},${p.y+.5}`;
@@ -21,11 +23,13 @@ function routeStart(from,to){
  return {x:to.x-(absX>EPSILON?Math.sign(dx):0),y:to.y-(absY>EPSILON?Math.sign(dy):0)};
 }
 function terrainAccess(s){
- const key=s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.footprint||1}:${b.construction?.kind||''}:${b.type==='cityGate'?b.rotation||0:''}`).join('|');
+ const flood=floodPhase(s)==='active'?s.riverFlood:null;
+ const key=s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.footprint||1}:${b.construction?.kind||''}:${b.type==='cityGate'?b.rotation||0:''}`).join('|')+(flood?`/flood:${flood.along}:${flood.bank}:${floodProtectionRevision(s)}`:'');
  let view=terrainCache.get(s);
- if(view?.key===key&&view.river===s.world?.river&&view.lakes===s.world?.lakes&&view.lakeCount===s.world?.lakes?.length)return view;
- view={key,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length,obstacles:obstacleIndex(s.buildings)};
- terrainCache.set(s,view);
+ if(view?.key!==key||view.river!==s.world?.river||view.lakes!==s.world?.lakes||view.lakeCount!==s.world?.lakes?.length){
+  view={key,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length,obstacles:obstacleIndex(s.buildings),flooded:flood&&floodFootprint(s,flood),controls:new Map()};
+  terrainCache.set(s,view);
+ }
  return view;
 }
 function footpathAccess(s,navigation){
@@ -35,7 +39,7 @@ function footpathAccess(s,navigation){
   const x=(a.x+b.x)/2,y=(a.y+b.y)/2;
   // Walking uses its existing obstacle and terrain rules. Bridges have their
   // own surface and must never acquire a dirt overlay.
-  const dry=!onBridge(s.buildings,x,y,s)&&navigationSegmentClear(s,a,b,navigation.obstacles);
+  const dry=!(navigation.flooded&&floodedSegment(navigation.flooded,a,b))&&!onBridge(s.buildings,x,y,s)&&navigationSegmentClear(s,a,b,navigation.obstacles);
   passability.set(id,dry);
   return dry;
  };
@@ -90,16 +94,69 @@ export function recordFootsteps(s,from,to,distance,navigation){
 export function visibleFootpaths(s,finishedIds=null){
  const result=[];
  if(!s.footpaths?.length)return result;
- const access=cachedFootpathAccess(s);
+ const view=terrainAccess(s),access=cachedFootpathAccess(s,view);
  for(const path of s.footpaths||[]){
   const wear=wearAt(path,s.simTime||0);
   if(wear<LEVEL_THRESHOLD[0])continue;
   const id=footpathId(path.a,path.b);
   if(finishedIds?.has(id)||!access(id,path.a,path.b))continue;
   const level=LEVEL_THRESHOLD.filter(threshold=>wear>=threshold).length;
-  result.push({id,a:path.a,b:path.b,level});
+  result.push({id,a:path.a,b:path.b,level,control:footpathControl(s,view,id,path.a,path.b)});
  }
  return result;
+}
+
+function footpathControl(s,view,id,from,to){
+ if(view.controls.has(id))return view.controls.get(id);
+ const [a,b]=from.x<to.x||from.x===to.x&&from.y<to.y?[from,to]:[to,from];
+ const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+ // Adjacent stretches on a straight run bend to alternating sides so their
+ // tangents lead into one another. Opposite trips share the same control.
+ const along=Math.floor(dx?mx:my),across=Math.floor(dx?my-dy*mx:mx);
+ const line=Math.imul(across+3,374761393)^(s.world?.seed||0),shape=(Math.imul(along+2,1274126177)^line)>>>0;
+ const side=((along+line)&1)?1:-1,bend=.38+(shape%29)/200;
+ const clear=(p,q)=>isDryPoint(s,p.x,p.y)&&isDryPoint(s,q.x,q.y)&&!(view.flooded&&floodedSegment(view.flooded,p,q))&&navigationSegmentClear(s,p,q,view.obstacles);
+ let control=null;
+ if(len>EPSILON&&cachedFootpathAccess(s,view)(id,a,b))for(const offset of [side*bend,-side*bend,side*bend*.5,-side*bend*.5]){
+  const candidate={x:mx-dy/len*offset,y:my+dx/len*offset};
+  let previous=a,safe=true;
+  for(let i=1;i<=8;i++){
+   const point=footpathRibbonPoint(a,b,candidate,i/8);
+   if(!clear(previous,point)){safe=false;break;}
+   previous=point;
+  }
+  if(safe){control=candidate;break;}
+ }
+ view.controls.set(id,control);
+ return control;
+}
+
+export function residentFootpathPositions(s){
+ let view;
+ return c=>{
+  if(c.waterTrip||c.floodShelter||c.fireShelter||c.controlled||c.eventContact||c.festivalContact||c.funeralContact)return null;
+  const a=c.route?.[c.routeIndex-1],b=c.route?.[c.routeIndex];
+  if(!a||!b)return null;
+  if(!view){
+   view=terrainAccess(s);
+   if(view.roads!==s.roads||view.roadCount!==s.roads?.length){
+    view.roads=s.roads;view.roadCount=s.roads?.length;
+    view.roadById=new Map((s.roads||[]).map(r=>[r.id,r]));
+   }
+  }
+  let edge=residentEdges.get(b);
+  if(edge?.start!==a||edge.view!==view){
+   const origin=routeStart(a,b),grid=origin&&Math.abs(origin.x-a.x)<EPSILON&&Math.abs(origin.y-a.y)<EPSILON;
+   const id=grid&&footpathId(a,b);
+   edge={start:a,view,id,control:id?footpathControl(s,view,id,a,b):null};
+   residentEdges.set(b,edge);
+  }
+  if(!edge.control)return null;
+  const road=view.roadById?.get(edge.id);
+  if(road&&(road.construction||road.level>1||road.built!==false))return null;
+  const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((c.x-a.x)*dx+(c.y-a.y)*dy)/(dx*dx+dy*dy)));
+  return {...footpathRibbonPoint(a,b,edge.control,t),followingFootpath:true};
+ };
 }
 
 export function validateFootpaths(s){
@@ -114,31 +171,6 @@ export function validateFootpaths(s){
   seen.add(id);
  }
  return true;
-}
-
-// Round only a simple worn corner. At branch points the visible paths keep
-// their original ends, and the curve stays within the walked corridor.
-export function footpathRibbons(paths,canJoin=()=>true){
- const ribbons=paths.map(path=>({...path})),at=new Map(),corners=[];
- for(const ribbon of ribbons)for(const [end,other] of [['a','b'],['b','a']]){
-  const point=ribbon[end],key=`${point.x},${point.y}`;
-  if(!at.has(key))at.set(key,[]);
-  at.get(key).push({ribbon,end,other:ribbon[other],point});
- }
- for(const edges of at.values()){
-  if(edges.length!==2)continue;
-  const [left,right]=edges,p=left.point;
-  const dx=left.other.x-p.x,dy=left.other.y-p.y,ex=right.other.x-p.x,ey=right.other.y-p.y;
-  if(Math.abs(dx*ey-dy*ex)<EPSILON||dx*ex+dy*ey>EPSILON)continue;
-  const inset=(x,y)=>{const distance=.22/Math.hypot(x,y);return {x:p.x+x*distance,y:p.y+y*distance};};
-  const a=inset(dx,dy),b=inset(ex,ey);
-  const samples=[a,...[.25,.5,.75].map(t=>footpathRibbonPoint(a,b,p,t)),b];
-  if(samples.some((sample,i)=>i>0&&!canJoin(samples[i-1],sample)))continue;
-  left.ribbon[left.end]=a;
-  right.ribbon[right.end]=b;
-  corners.push({a,b,control:p,level:Math.min(left.ribbon.level,right.ribbon.level)});
- }
- return [...ribbons,...corners];
 }
 
 export function footpathRibbonPoint(a,b,control,t){

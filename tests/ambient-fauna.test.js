@@ -41,7 +41,7 @@ test('yard pigs and shore turtles follow dry decorative routes without touching 
    assert.equal(JSON.stringify(state),snapshot);
    assert.deepEqual(animals.slice(0,2).map(a=>a.kind),['pig','turtle']);
    const regional=animals.slice(4);
-   assert.deepEqual(regional.map(a=>a.kind),['pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog',...Array(3).fill('common-quail'),...Array(5).fill('onager')]);
+   assert.deepEqual(regional.map(a=>a.kind),['pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog',...Array(5).fill('common-quail'),...Array(5).fill('onager')]);
    const herd=regional.filter(a=>a.kind==='onager');
    assert.equal(new Set(herd.map(a=>a.id)).size,5);
    for(const [i,a] of herd.entries())for(const b of herd.slice(i+1))assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>.25);
@@ -130,6 +130,39 @@ test('mixed fold sheep reuse the licensed rig without changing flock identity or
   assert.equal(adult.position.x,(animals[1].x+.02)*6);
   view.update(state,0,{paused:true});
   assert.ok(adult.isDisposed());
+  assert.equal(JSON.stringify(state),before);
+ }finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
+test('normal 3D settlements have one flock of six mallards, five yard pigs and five nearby quail',async()=>{
+ const {createNewCity}=await import('../new-game.js'),{courtyardFauna}=await import('../game3d/ambient-fauna.js');
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),state=createNewCity({mode:'mature',seed:137}),before=JSON.stringify(state);
+ const view=await createAmbientFauna(B,scene,[],{includeSkyBirds:false,includeShoreBirds:true,hidePlaceholderBirds:true,includeYardPig:true,loadAsset:async f=>source(scene,f)});
+ try{
+  view.update(state,0,{paused:true});
+  const roots=kind=>view.roots().filter(r=>r.isEnabled()&&kind.test(r.metadata.ambientSpecies));
+  const ducks=roots(/^mallard/),pigs=roots(/^yard-pig$/),quail=courtyardFauna(state).filter(a=>a.kind==='common-quail');
+  assert.equal(ducks.length,6);assert.equal(pigs.length,5);assert.equal(quail.length,5);
+  assert.equal(ducks.filter(r=>r.metadata.shoreRole==='female').length,3);
+  const behaviors=new Set(),started=new Map(),initial=pigs.map(r=>r.position.clone());
+  let travel=0;
+  for(let i=0;i<90;i++){
+   view.update(state,.06,{speed:4});
+   behaviors.add(pigs.map(r=>r.metadata.pigBehavior).join(','));
+   for(const [j,pig] of pigs.entries()){
+    const distance=B.Vector3.Distance(pig.position,initial[j]);
+    travel=Math.max(travel,distance);
+    if(distance>.02&&!started.has(pig.name))started.set(pig.name,i);
+   }
+   for(const [j,a] of ducks.entries())for(const b of ducks.slice(j+1))assert.ok(B.Vector3.Distance(a.position,b.position)>.52,a.name+' overlaps '+b.name);
+   for(const [j,a] of pigs.entries()){
+    assert.ok(ambientDryPoint(state,a.position.x/6,a.position.z/6),a.name);
+    for(const b of pigs.slice(j+1))assert.ok(B.Vector3.Distance(a.position,b.position)>1.55,a.name+' overlaps '+b.name);
+   }
+  }
+  assert.ok(new Set(started.values()).size>=3,'pigs start walking at different times');
+  assert.ok(behaviors.size>=5,'foraging, walking and resting vary through the group');
+  assert.ok(travel>.8,'a pig can take more than one short step in place');
   assert.equal(JSON.stringify(state),before);
  }finally{view.dispose();scene.dispose();engine.dispose();}
 });

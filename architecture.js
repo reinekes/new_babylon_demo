@@ -1,5 +1,8 @@
+import {constructionProgress} from './construction.js';
+import {isExtractionCourt,extractionWorkArea} from './extraction-courts.js';
 import {sheepfoldGateSide,sheepfoldLayout,sheepfoldWorldPoint} from './sheepfold-layout.js';
 import {fieldCalendar} from './crop-calendar.js';
+import {fortificationLayout,fortificationWorldPoint} from './fortification-layout.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {orchardPalms} from './orchard-layout.js';
 import {drawArtisan} from './artisan-art.js';
@@ -30,6 +33,16 @@ export function drawBuilding(r, b, state, t) {
     for(let i=0;i<5;i++)r.line([[p.x+(-9+i*4.6)*q,p.y+(-17+i*2.1)*q],[p.x+(-21+i*4.6)*q,p.y+(5+i*2.1)*q]],'#8e6d46',q);
     return;
   }
+  if(isExtractionCourt(b)){
+    const progress=constructionProgress(b),work=extractionWorkArea({...b,rotation:0}),q=r.s;
+    const point=(x,y)=>r.point(b.x+x,b.y+y),near=point(-.46,-.46),east=point(1.46,-.46),far=point(1.46,1.46),west=point(-.46,1.46);
+    if(!b.construction||progress.work>0)for(const [a,c]of [[near,east],[east,far],[near,west]])r.line([a,c],'#91784f',1.7*q);
+    const workPoint=point(work.x/6,work.z/6);
+    if(b.construction?.kind==='new'){
+      for(let i=0;i<Math.floor(progress.materials*5);i++)r.box(workPoint.x+i*3*q,workPoint.y,4*q,2*q,2.5*q,'#b39065','#7e5c41','#9e7753');
+    }else r.box(workPoint.x,workPoint.y,13*q,7*q,(9+levelOf(b))*q,'#bb9d68','#80623e','#9c794a');
+    return;
+  }
   if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
   if(['pottery','brewery','bakery','dairyStore','coppersmith'].includes(b.type)){drawArtisan(r,b,state,t);return;}
   if(b.type==='harbor'){drawHarbor(r,b,state);return;}
@@ -56,18 +69,18 @@ export function drawBuilding(r, b, state, t) {
   c.save();
   c.fillStyle='#5a62452e';c.beginPath();c.ellipse(x+8*q,y+6*q,30*q,11*q,.1,0,7);c.fill();
 
-  if(b.type==='cityWall'){
-    masonryBox(r,x,y,r.tw/2,r.th/2,21*q,'mud',q);
-    c.restore();return;
-  }
-  if(b.type==='cityGate'){
+  if(b.type==='cityWall'||b.type==='cityGate'){
     const turned=(b.rotation||0)%2;
-    const pillar=side=>r.point(b.x+.5+(turned?side*.62:0),b.y+.5+(turned?0:side*.62));
-    const pillars=[pillar(-1),pillar(1)].sort((a,z)=>a.y-z.y);
-    const [back,front]=pillars;
-    masonryBox(r,back.x,back.y,25*q,13*q,36*q,'mud',q);
-    r.line([[back.x,back.y-29*q],[front.x,front.y-29*q]],'#6d4e35',7*q);
-    masonryBox(r,front.x,front.y,25*q,13*q,36*q,'mud',q);
+    const pieces=fortificationLayout(b,state).map(p=>({...p,at:fortificationWorldPoint(b,p.x,p.z)}));
+    const flat=(p,u,v,h)=>r.point(p.at.x+u/6,p.at.y+v/6,h);
+    for(const p of pieces.sort((a,z)=>a.at.x+a.at.y-z.at.x-z.at.y||a.bottom-z.bottom)){
+      const w=(turned?p.d:p.w)/2,d=(turned?p.w:p.d)/2,low=Math.max(0,p.bottom)*10,high=(p.bottom+p.h)*10;
+      const polygon=(points,color)=>r.polygon(points.map(({x,y})=>[x,y]),color);
+      const [top,left,right]=p.material==='wood'?['#795733','#644729','#846142']:p.material==='plaster'?['#e7d0a9','#b89c71','#d2b890']:['#d4b78b','#ad8d66','#bf9e72'];
+      polygon([flat(p,-w,d,low),flat(p,w,d,low),flat(p,w,d,high),flat(p,-w,d,high)],left);
+      polygon([flat(p,w,-d,low),flat(p,w,d,low),flat(p,w,d,high),flat(p,w,-d,high)],right);
+      polygon([flat(p,-w,-d,high),flat(p,w,-d,high),flat(p,w,d,high),flat(p,-w,d,high)],top);
+    }
     c.restore();return;
   }
   if(b.type==='levee'){box(0,0,38,14,2,'#a27b51','#866747','#94714c');box(0,0,35,7,4,'#b18c62','#94734e','#a17d58');return;}

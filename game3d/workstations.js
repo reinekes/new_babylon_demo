@@ -1,3 +1,4 @@
+import {isExtractionCourt,extractionWorkArea} from '../extraction-courts.js';
 import {isDryPoint} from '../world.js';
 import {insideFootprint,footprintSize} from '../footprints.js';
 import {dairyMilkingLayout} from './dairy-layout.js';
@@ -22,6 +23,7 @@ export function workstationLayout(b){
  if(!equipment[b.type]||b.construction)return [];
  if(b.type==='cowshed')return [dairyMilkingLayout(b)];
  if(b.type==='musicHouse')return [musicCourtyardLayout(b)];
+ if(isExtractionCourt(b)){const area=extractionWorkArea(b);return [{kind:equipment[b.type],...area,height:.55,sx:area.x===0?-1:1,sz:area.z===0?-1:1}];}
  return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*1.94,z:sz*1.94,height:b.type==='cowshed'?.72:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
 }
 export function workstationFor(b,c,index=0){

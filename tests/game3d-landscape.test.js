@@ -136,7 +136,7 @@ test('deposit plans use saved coordinates/kinds and resource selections examine 
  const before=JSON.stringify(s),signature=landscapeSignature(s),plan=landscapePlan(s);
  assert.deepEqual(plan.deposits,s.world.deposits);assert.equal(JSON.stringify(s),before);
  assert.deepEqual(resourcePlacementSites(s,'clay'),[{x:2,y:3}]);assert.deepEqual(resourcePlacementSites(s,'quarry'),[{x:3,y:4}]);assert.deepEqual(resourcePlacementSites(s,'garden'),[{x:20,y:6}]);
- assert.equal(resourcePlacementSites(s,'logging').length,13);assert.equal(resourcePlacementSites(s,'hunting').length,13);
+ assert.equal(resourcePlacementSites(s,'logging').length,1);assert.equal(resourcePlacementSites(s,'hunting').length,1);
  assert.deepEqual(resourcePlacementSites(s,'house'),[]);assert.deepEqual(resourcePlacementSites(s,'shrine'),[]);assert.deepEqual(resourcePlacementSites(s,null),[]);
  const guarded={get world(){throw Error('ordinary buildings must not scan deposits');},get buildings(){throw Error('ordinary buildings must not scan the city');}};assert.deepEqual(resourcePlacementSites(guarded,'house'),[]);assert.deepEqual(resourcePlacementSites(guarded,'shrine'),[]);
  s.buildings.push({type:'house',x:2,y:3});assert.deepEqual(resourcePlacementSites(s,'clay'),[]);s.buildings=[];
@@ -437,4 +437,26 @@ test('resident wear has one fading 3D ground batch and automatic edges have no s
   assert.ok(!view.meshes.some(m=>m.name==='resident-footpaths'));
   assert.ok(view.meshes.includes(finished));
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+});
+
+test('an extraction court preserves the selected deposit and reserves four dry cells',async()=>{
+ const {buildingPlacement,buildingAt,build,encode,decode}=await import('../engine.js');
+ const {occupiesCell,footprintCells}=await import('../footprints.js');
+ const {extractionWorkArea}=await import('../extraction-courts.js');
+ const s=createGame({start:'established'});
+ const d=s.world.deposits.find(p=>p.kind==='reed'&&!buildingPlacement(s,'reed',p.x,p.y,true).reason);
+ assert.ok(d);
+ const planned=buildingPlacement(s,'reed',d.x,d.y,false,1);
+ assert.equal(planned.reason,'');
+ assert.ok(build(s,'reed',d.x,d.y,1,{instant:true}).ok);
+ const court=buildingAt(s,d.x,d.y);
+ assert.equal(court.footprint,2);
+ assert.deepEqual(court.deposit,{x:d.x,y:d.y});
+ assert.ok(occupiesCell(court,d.x,d.y));
+ assert.equal(footprintCells(court).filter(p=>buildingAt(s,p.x,p.y)===court).length,4);
+ assert.ok(Object.values(extractionWorkArea(court)).every(n=>n===0||n===6));
+ const raw=encode(s),saved=decode(raw);
+ assert.ok(saved);
+ assert.deepEqual(buildingAt(saved,d.x,d.y).deposit,court.deposit);
+ assert.equal(saved.buildings.find(b=>b.type==='clay').footprint,undefined);
 });

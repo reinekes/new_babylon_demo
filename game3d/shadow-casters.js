@@ -24,3 +24,17 @@ export function shadowCasterInside(mesh,planes){
   return plane.dotCoordinate(point)>=-radius-1;
  });
 }
+
+// At a fixed full-city camera, present the same map and projection together
+// on the intervening frame. Camera, world and light-mode changes render now.
+export function createOverviewShadowCadence(){
+ let previous=null,hold=false;
+ return (state,mode,camera,enabled,paused,elapsed)=>{
+  if(!enabled){previous=null;hold=false;return true;}
+  const {alpha,beta,radius,target}=camera,signature=[mode,alpha,beta,radius,target.x,target.y,target.z,state.buildings.length,state.season];
+  const stable=elapsed<.075&&previous?.state===state&&signature.every((value,i)=>value===previous.signature[i]);
+  previous={state,signature};
+  hold=!!stable&&!paused&&!hold;
+  return !hold;
+ };
+}

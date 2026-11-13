@@ -34,3 +34,16 @@ test('building cards show the current work window and distinguish a construction
  assert.match(workplaceScheduleHTML({simTime:0},{type:'market',construction:{kind:'new'}}),/Часы стройки 06:45–18:30/);
  assert.equal(workplaceScheduleHTML({simTime:0},{type:'house'}),'');
 });
+
+test('profession overview counts assigned places by job and includes vacant and trade places',()=>{
+ const s=createGame({start:'established'});
+ s.buildings.push({type:'logging',x:5,y:4,level:1},{type:'logging',x:5,y:5,level:1},{type:'market',x:4,y:5,level:1},{type:'depot',x:4,y:6,level:1});
+ const [worker,porter]=s.citizens.filter(c=>c.age>=16);
+ Object.assign(worker,{work:'5,4',workplace:'5,4',phase:'home'});
+ Object.assign(porter,{tradeMarket:'4,5'});
+ const before=JSON.stringify(s),html=cityToolsHTML(s,{tab:'professions'});
+ assert.match(html,/data-profession="lumberjack"[^>]*>.*?Лесоруб.*?1 \/ 4/);
+ assert.match(html,/data-profession="carrier"[^>]*>.*?Носильщик.*?1 \/ 4/);
+ assert.match(html,/data-profession="watercarrier"[^>]*>.*?Водонос.*?0 \/ 0/);
+ assert.equal(JSON.stringify(s),before);
+});

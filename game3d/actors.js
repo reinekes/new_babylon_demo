@@ -24,7 +24,7 @@ import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {createGameGoats} from './goats.js';
-import {createSuppliedFauna,fishPreviewEnabled} from './supplied-fauna.js?v=audit-fixes-20261113';
+import {createSuppliedFauna} from './supplied-fauna.js?v=city500-fauna-courts-20261113';
 import {createImportedFauna} from './imported-fauna.js';
 import {createAmbientFauna,courtyardFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
@@ -71,6 +71,7 @@ export function actorAnimation(c,distance=0){
 }
 const carriedKind=k=>k==='basket'?'basket':['water','beer','pottery','oil','milk'].includes(k)?'vessel':
  ['wood','reed','timber','flax'].includes(k)?'bundle':'sack';
+const MAX_WARM_RESIDENTS=32;
 const loadGrips={
   sack:{height:1.02,reach:.34,left:[-.19,-.01,0],right:[.19,-.01,0]},
   basket:{height:.99,reach:.37,left:[-.26,.06,0],right:[.26,.06,0]},
@@ -118,7 +119,6 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   return historicalPromise;
  }
  const geometryLOD=createResidentGeometryLOD();
- const fishPreview=fishPreviewEnabled(globalThis.location?.search||'');
  const wildlife=createWildlife(B,scene,meshes);
  let goats=null,imported=null,ambient=null,jackals=null,supplied=null;
  const loadFauna=async()=>{const values=await Promise.all([
@@ -126,7 +126,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   (includeFauna?createImportedFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
   (includeFauna?createAmbientFauna(B,scene,meshes,{includeSkyBirds:false,includeShoreBirds:true,hidePlaceholderBirds:true,includeYardPig:true}):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;}),
   (includeFuneralFauna?createJackals(B,scene,null,meshes):Promise.resolve(null)).catch(error=>{console.warn('Jackals unavailable; using legacy fauna.',error);return null;}),
-  includeFauna?createSuppliedFauna(B,scene,meshes,{fishPreview}):Promise.resolve(null)]);if(disposed){for(const v of values)v?.dispose();return;}[goats,imported,ambient,jackals,supplied]=values;};
+  includeFauna?createSuppliedFauna(B,scene,meshes):Promise.resolve(null)]);if(disposed){for(const v of values)v?.dispose();return;}[goats,imported,ambient,jackals,supplied]=values;};
  let faunaReady=Promise.resolve();if(!deferFauna)await loadFauna();else faunaReady=new Promise(resolve=>setTimeout(resolve,150)).then(()=>{if(!disposed)return loadFauna();});
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
@@ -137,7 +137,28 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  function prune(root){for(const m of root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}}
  function box(name,parent,material,x,y,z,sx,sy,sz){const mesh=B.MeshBuilder.CreateBox(name,{width:sx,height:sy,depth:sz},scene);mesh.parent=parent;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=true;mesh.receiveShadows=true;meshes.push(mesh);return mesh;}
  function sphere(name,parent,material,x,y,z,sx,sy,sz){const mesh=B.MeshBuilder.CreateSphere(name,{diameter:1,segments:8},scene);mesh.scaling.set(sx,sy,sz);mesh.parent=parent;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=true;mesh.receiveShadows=true;meshes.push(mesh);return mesh;}
- function remove(a){releaseSleepingRig(a);if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();}prune(a.root);for(const g of a.groups?.values()||[])g.dispose();a.root.dispose();for(const s of a.skeletons||[])s.dispose();for(const m of a.materials||[])m.dispose();}
+ // Babylon creates one scheduler entry per clip channel. Distant idle and
+ // walk loops already sample authored poses here, without a clock tick.
+ const manuallySampledChannels=new Set();
+ function attachClock(a){
+  if(!a.sampledChannels)return;
+  for(const channel of a.sampledChannels){
+   if(!manuallySampledChannels.delete(channel))scene.animatables.push(channel);
+  }
+  a.sampledChannels=null;
+ }
+ function queueManualChannels(a,group){
+  a.sampledChannels=[...group.animatables];
+  for(const channel of a.sampledChannels){channel.pause();manuallySampledChannels.add(channel);}
+ }
+ function detachManualChannels(){
+  if(!manuallySampledChannels.size)return;
+  const active=scene.animatables;
+  let next=0;
+  for(const channel of active)if(!manuallySampledChannels.has(channel))active[next++]=channel;
+  active.length=next;manuallySampledChannels.clear();
+ }
+ function remove(a){attachClock(a);releaseSleepingRig(a);if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();}prune(a.root);for(const g of a.groups?.values()||[])g.dispose();a.root.dispose();for(const s of a.skeletons||[])s.dispose();for(const m of a.materials||[])m.dispose();}
  function clayAnimal(name,parent,kind){
   const toy=new B.TransformNode(`${name}-clay-toy`,scene);
   toy.parent=parent;toy.position.set(0,.025,0);toy.scaling.setAll(.75);toy.setEnabled(false);
@@ -220,7 +241,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    a.armNodes=[];
    for(const n of model.getChildTransformNodes())if(/(?:upperarm|lowerarm)_[lr]$/.test(n.name))a.armNodes.push({node:n,base:n.rotationQuaternion?.clone()||B.Quaternion.FromEulerVector(n.rotation),last:null});
   }
-  if(metadata.citizenId!==undefined){root.simplifiedShadow=false;const proxy=shadowShape.clone(`${name}-shadow-lod`,root);proxy.position.y=.85;proxy.isVisible=true;proxy.layerMask=0;proxy.isPickable=false;proxy.shadowProxy=true;meshes.push(proxy);}
+  if(metadata.citizenId!==undefined){root.simplifiedShadow=false;
+   // Shadow-only capsules share a source and submit one instanced draw while
+   // retaining each resident's transform and the original caster silhouette.
+   const proxy=shadowShape.createInstance(`${name}-shadow-lod`);proxy.parent=root;proxy.position.y=.85;proxy.isVisible=true;proxy.layerMask=0;proxy.isPickable=false;proxy.shadowProxy=true;meshes.push(proxy);
+  }
   return a;
  }
  // Solve the authored y-axis upper/lower arm bones toward a palm target in world space.
@@ -431,7 +456,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.lastX=shownX;a.lastY=shownY;
   const decision=plough?{clip:'Walk_Loop',pose:'idle'}:actorAnimation(c,['dairy','lithophone','lyre'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
-  if(!paused||!a.clip||a.ploughPoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){for(const g of a.groups.values())g.stop();const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);if(decision.clip==='Walk_Loop')for(const animation of g.animatables)animation.pause();if(g.to>g.from){const phase=a.look?a.look.motion.phase/(Math.PI*2):a.sheepClipPhase;if(phase!==undefined)g.goToFrame(g.from+phase*(g.to-g.from));}a.clip=decision.clip;}}
+  if(!paused||!a.clip||a.ploughPoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){
+   attachClock(a);
+   a.groups.get(a.clip)?.stop();
+   const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);
+   if(decision.clip==='Walk_Loop')queueManualChannels(a,g);
+   if(g.to>g.from){const phase=a.look?a.look.motion.phase/(Math.PI*2):a.sheepClipPhase;if(phase!==undefined)g.goToFrame(g.from+phase*(g.to-g.from));}a.clip=decision.clip;
+  }}
   a.wasPloughing=!!plough;
   a.plough=plough;
   a.paused=paused;
@@ -633,6 +664,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  function resetResidentPresentation(a){
   // Keep the rig and identity, but forget every sampled task/ceremony pose.
   // Hidden residents need this too: they can reappear after a skipped season.
+  attachClock(a);a.groups.get(a.clip)?.stop();
   a.poseSlot=undefined;a.poseSample=true;a.manualIdle=false;a.appearanceInputs=null;a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.yaw=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
   for(const arm of a.armNodes)arm.last=null;for(const leg of Object.values(a.legs)){leg.lastPosition=null;leg.lastRotations=null;}
   a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
@@ -696,13 +728,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // The root keeps following the real route each frame. Only small skeletal
    // gestures are sampled less often; near/inspected people stay full rate.
    const manualIdle=interval>0&&a.clip==='Idle_Loop',g=a.groups.get(a.clip);
-   if(manualIdle&&!a.manualIdle)g.pause();else if(!manualIdle&&a.manualIdle&&a.clip==='Idle_Loop')g.play(true);
+   if(manualIdle&&!a.manualIdle){g.pause();queueManualChannels(a,g);}
+   else if(!manualIdle&&a.manualIdle&&a.clip==='Idle_Loop'){attachClock(a);g.play(true);}
    a.manualIdle=manualIdle;if(a.fishingLine)a.fishingLine.setEnabled(a.tool.isEnabled());
   }
-  // Prepare at most one sleeping resident per frame. A dawn/season crowd can
-  // then reuse its rigs instead of cloning dozens of skeletons in one frame.
-  // Visible people always take priority and are never delayed by this warmup.
-  if(warmHiddenResidents){const c=(state.citizens||[]).find(c=>!seen.has(c.id)&&!people.has(c.id));if(c){
+  // Keep a small reserve in large cities and yield entirely on slow frames.
+  // Visible residents still receive their real rig in the frame they emerge.
+  const warmRoom=(state.citizens||[]).length<=MAX_WARM_RESIDENTS||dt<1/35&&people.size-seen.size<MAX_WARM_RESIDENTS;
+  if(warmHiddenResidents&&warmRoom){const c=(state.citizens||[]).find(c=>!seen.has(c.id)&&!people.has(c.id));if(c){
    const anatomy=residentAnatomy(c.age),historical=historicalSource&&usesHistoricalMan(c),variant=historical?'historical-man':anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;
    const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;
    const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);a.root.setEnabled(false);storeSleepingRig(a);people.set(c.id,a);
@@ -716,6 +749,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    animate(a,c,state,dt,paused,speed);
   }
   for(const [id,a]of sheep)if(!seenSheep.has(id)){remove(a);sheep.delete(id);}
+  detachManualChannels();
   if(goats)goats.update(state,fauna.filter(c=>c.kind==='goat'),dt,{paused,speed});
   imported?.update(state,fauna.filter(c=>imported.supports(c.kind)),dt,{paused,speed});ambient?.update(state,dt,{paused,speed,ploughPoses:teams,sheep:fauna.filter(c=>c.kind==='sheep')});
   const riteJackals=frame.funeral?.jackals||[];jackals?.update(state,[...fauna.filter(c=>c.kind==='jackal'),...riteJackals],dt,{paused,speed});
@@ -723,8 +757,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const huntedMice=new Set((state.pests?.sites||[]).filter(q=>q.mice>0&&protectedSites.has(q.key)&&!(q.flash&&q.clock-q.flash.time<2))
    .map(q=>`mouse:${q.key}:${q.mice-1}`));
   const shore=courtyardFauna(state);
-  supplied?.update(state,shore,fishPreview?fauna.filter(c=>c.kind==='fish'):undefined);
-  wildlife.update(state,[...shore.filter(c=>c.kind!=='common-quail'&&!supplied?.supports(c)&&!['white-pelican','onager','egret','otter','glossy-ibis','marsh-harrier','pied-kingfisher','pygmy-cormorant'].includes(c.kind)&&(c.kind!=='pig'||!ambient?.hasYardPig)),...fauna.filter(c=>!(fishPreview&&c.kind==='fish'&&supplied?.supports(c))&&cityAnimalVisible(c,huntedMice)&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)).map(c=>c.kind==='mouse'?{...c,decorative:true}:c),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;riteView=frame.funeral;funeralProps(state,riteView);festivalCourt.update(festivalView(state),state,poseTime);
+  if(supplied){
+   const rodents=fauna.filter(c=>huntedMice.has(c.id)||c.kind==='pestCatch'&&c.by==='cat'&&c.progress<.26);
+   supplied.update(state,[...shore,...rodents],fauna.filter(c=>c.kind==='fish'));
+  }
+  wildlife.update(state,[...shore.filter(c=>c.kind!=='common-quail'&&!supplied?.supports(c)&&!['white-pelican','onager','egret','otter','glossy-ibis','marsh-harrier','pied-kingfisher','pygmy-cormorant','turtle'].includes(c.kind)&&(c.kind!=='pig'||!ambient?.hasYardPig)),...fauna.filter(c=>c.kind!=='fish'&&cityAnimalVisible(c,huntedMice)&&c.kind!=='mouse'&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;riteView=frame.funeral;funeralProps(state,riteView);festivalCourt.update(festivalView(state),state,poseTime);
  }
  function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();geometryLOD.dispose();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();supplied?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
  return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||ambient?.rootForSheep(selection.animalId)||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||supplied?.rootFor(selection)||wildlife.rootFor(selection);}};

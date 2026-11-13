@@ -16,3 +16,6 @@ dialog{width:min(840px,calc(100vw - 24px));max-height:calc(100dvh - 24px);paddin
 .fauna-links{display:flex;flex-wrap:wrap;gap:6px 16px;margin:12px 0}
 .fauna-links a{color:var(--accent);text-underline-offset:3px}
 .usage-tag{display:block;margin-top:5px;color:var(--accent);font-size:.75rem;font-weight:600}
+
+.supplied-filter{display:flex;align-items:center;gap:.5rem;margin-top:.75rem;width:fit-content}
+.original-file{overflow-wrap:anywhere}

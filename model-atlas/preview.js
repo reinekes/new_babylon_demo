@@ -18,6 +18,7 @@ import { canalNetworkGeometry } from '../game3d/canal-network.js';
 import { wornRoadGeometry } from '../game3d/water.js';
 import { createNewCity } from '../new-game.js';
 import { legacyScenario } from '../scenario-profiles.js';
+import { extractionKinds } from '../extraction-courts.js';
 import { newFootprint } from '../footprints.js';
 import { riverPoint } from '../world.js';
 
@@ -53,6 +54,11 @@ async function makeModel(B,scene,item,profile) {
   if (item.kind==='glb') {
     const container=await loadModel(B,scene,assetDirectory,item.entry.file,scene,undefined,'.glb');
     container.addAllToScene();
+    // Both cobra files include visible Blender rig guides alongside the skin.
+    // Keep their transforms for the source animation, but show just the body.
+    if (/^supplied-cobra-(?:base|head-up)\.glb$/.test(item.entry.file)) {
+      for (const mesh of container.meshes) if (mesh.getTotalVertices()>0&&!mesh.skeleton) mesh.setEnabled(false);
+    }
     for (const clip of scene.animationGroups) clip.stop();
     const first=scene.animationGroups[0];
     if (first) {
@@ -131,7 +137,7 @@ async function makeModel(B,scene,item,profile) {
   }
   const materials=createDistrictMaterials(B,scene);
   if (item.kind==='nature') {
-    const view=createNatureDetails(B,scene,materials,{tier:'low'});
+    const view=createNatureDetails(B,scene,materials,{tier:'low',loadSnake:null});
     view.update(state,7,{type:'clear'},[],'atlas');
     let found=false;
     for (const mesh of view.meshes) {
@@ -172,6 +178,7 @@ async function makeModel(B,scene,item,profile) {
   const site=item.type==='bridge'?riverPoint(12,state):item.type==='field'?riverPoint(12,state,3):{x:6,y:6};
   const building={type:item.type,x:Math.round(site.x),y:Math.round(site.y),level:item.level,
     footprint:newFootprint(item.type),...(item.starter?{starterHut:true}:{})};
+  if(extractionKinds[item.type])building.deposit={x:building.x,y:building.y};
   if (item.type==='field') building.crop={sown:1,growth:1,seed:1};
   state.buildings.push(building);
   const layer=await createGameBuildings(B,scene,materials,{deferAssets:true});

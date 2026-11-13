@@ -47,3 +47,26 @@ test('gift cats wander streets safely when mice absent; petting uses only availa
  s.pests.sites[0].mice=1;assert.equal(catPettingPairs(s,[child]).length,0,'hunting takes priority');s.pests.sites[0].mice=0;s.simTime=before.simTime;assert.deepEqual(s,before);
  const bare=createGame({start:'established'});assert.equal(bare.pests.cats.length,0);bare.pests.totalLoss=4;advancePests(bare,0);assert.equal(bare.pests.cats.length,1,'first cat arrives as the existing unexpected divine gift');assert.ok(bare.news.some(n=>n.title==='Неожиданный гость'));
 });
+
+test('new seeded valleys show goat herds and jackal packs without creating hunt targets or changing saves',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ for(const seed of [1,9,137]){
+  const s=createNewCity({mode:'mature',seed}),saved=JSON.stringify(s);
+  for(const t of [0,4,9,16,28]){
+   s.simTime=t;
+   const authoritative=naturalAnimalsFor(s),display=animalsFor(s);
+   for(const kind of ['goat','jackal']){
+    const group=display.filter(a=>a.kind===kind),source=authoritative.filter(a=>a.kind===kind);
+    assert.equal(source.length,2);
+    assert.ok(group.length>=5&&group.length<=8,`${seed}:${kind}:${group.length}`);
+    assert.ok(source.every(a=>group.some(member=>member.id===a.id)));
+    for(const [i,a] of group.entries()){
+     assert.ok(isDryPoint(s,a.x,a.y),a.id);
+     assert.ok(!s.buildings.some(b=>Math.abs(a.x-b.x)<.48&&Math.abs(a.y-b.y)<.48),a.id);
+     assert.ok(group.slice(i+1).every(b=>Math.hypot(a.x-b.x,a.y-b.y)>.22),`${seed}:${t}:${a.id}`);
+    }
+   }
+  }
+  s.simTime=0;assert.equal(JSON.stringify(s),saved);
+ }
+});

@@ -1,4 +1,4 @@
-import { suppliedFauna } from './supplied-fauna.js?v=audit-fixes-20261113';
+import { suppliedFauna } from './supplied-fauna.js?v=fauna-500-20261113';
 import { BUILDINGS, RESOURCE_NAMES } from '../definitions.js';
 import { buildingDefinition, buildingPresentation } from '../building-presentation.js';
 import { strictScenario, legacyScenario } from '../scenario-profiles.js';
@@ -64,6 +64,7 @@ function glbName(name) {
 export function usageOf(row) {
   const item=row.previews[0];
   const status=item.entry?.status;
+  if (item.kind==='source') return 'source';
   if (item.studio||status==='optional') return 'studio';
   if (status==='spare'||status==='fallback'||item.reserve) return 'reserve';
   return 'game';
@@ -108,14 +109,13 @@ export function makeCatalog(index, profile) {
     species,studio:true,sources:[{author,source}]
   })));
   const wildlife = {
-    fish:['Рыба долины','Игровая геометрия'], mouse:['Домовая мышь','Игровая геометрия'],
+    fish:['Рыба долины · прежняя модель','Резервная геометрия'], mouse:['Домовая мышь · прежняя модель','Резервная геометрия'],
     rat:['Крыса · прежняя модель','Резервная геометрия'], goat:['Коза','Резервная геометрия'],
     gazelle:['Газель','Резервная геометрия'], cat:['Кошка','Резервная геометрия'],
     jackal:['Шакал','Резервная геометрия'], bird:['Береговая птица','Процедурная модель прежнего слоя']
   };
-  rows.push(row('animals','Змея','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'snakes'})));
   rows.push(row('plants','Перекати-поле','Фоновая геометрия долины',model('nature','Игровая геометрия',{species:'tumbleweeds'})));
-  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха','Игровая геометрия'],egret:['Малая белая цапля','Резервная геометрия'],otter:['Гладкошёрстная выдра','Резервная геометрия']});
+  if (ambient.courtyardFauna) Object.assign(wildlife, {pig:['Домашняя свинья','Резервная геометрия'],turtle:['Евфратская мягкотелая черепаха · прежняя модель','Резервная геометрия'],egret:['Малая белая цапля','Резервная геометрия'],otter:['Гладкошёрстная выдра','Резервная геометрия']});
   if(ambient.courtyardFauna){
     const marshes={author:'Полевое исследование птиц болот Ирака',source:'https://doi.org/10.1155/2017/4198690'};
     const regional=[
@@ -147,8 +147,10 @@ export function makeCatalog(index, profile) {
   rows.push(row('goods','Светильник из раковины','Форма по раковине из Ниппура (Ур III) · назначение предмета предположительное',model('lamp','Игровая геометрия')));
   for(const item of suppliedFauna){
     const entry=index.models.find(model=>model.file===item.file);
-    rows.push(row(item.group,item.title,item.note||'Модель из подборки',
-      model(entry?'glb':'source',item.license,{entry,species:item.id,reserve:entry?.status!=='active',sources:[item]})));
+    rows.push({
+      ...row(item.group,item.title,item.note,model(entry?'glb':'source',item.license,{entry,species:item.id,sources:[item]})),
+      originalFile:item.originalFile
+    });
   }
   for (const entry of index.models) {
     if(suppliedFauna.some(item=>item.file===entry.file))continue;

@@ -24,10 +24,10 @@ import {strictScenario,CAT_DISCOVERY_RULES} from './scenario-profiles.js';
 
 // UI creation only. Decoding or loading a previous town never goes through here.
 // Only a newly chosen Awakening enrolls in the fisherman discovery story.
-export function createNewCity({mode,seed}={}){
- const state=createGame({mode,seed,scenario:{...strictScenario(),...(mode==='awakening'?{miracles:CAT_DISCOVERY_RULES}:{})}});
+export function createNewCity({mode,seed,centeredStart=false}={}){
+ const state=createGame({mode,seed,centeredStart,scenario:{...strictScenario(),...(mode==='awakening'?{miracles:CAT_DISCOVERY_RULES}:{})}});
  state.demography.birthFoodRule=COURTYARD_BIRTH_FOOD;
- state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
+ if(!centeredStart)state.world.deposits=state.world.deposits.filter(d=>d.kind!=='forest'&&d.kind!=='stone');
  expandResourceSites(state);
  if(mode==='awakening'){
   state.civicOrder=newCivicOrder();

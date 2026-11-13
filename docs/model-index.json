@@ -4,10 +4,10 @@
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
     "total": 83,
-    "active": 54,
+    "active": 58,
     "fallback": 9,
-    "optional": 8,
-    "spare": 12
+    "optional": 6,
+    "spare": 10
   },
   "errors": [],
   "runtimeInputs": [
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "f9ff05a14f81a2fb601b2f214d22f07749e849d24271496bf725b8be006a7133"
+      "sha256": "032fc8e9a9cfffdfb94965d083b728b54da34e9c1432ea7c485b36cbadbc0045"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "3ebb3bb918113112b30d6aa752ca582f71db33f0e8f51fa445f96b793d60224a"
+      "sha256": "d89edc9d27151ff2f62b6918f866424607618c50e0325b9cf15297a597aa1ec8"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "79389558f728a01a6de6da8ab72fb7771172a48e5e2f091c2b23cbf75cf3b809"
+      "sha256": "92217215378d1ca8ffd7585442a485bcace882ffc243cb84b690e7fe456dea3d"
     },
     {
       "file": "game3d/caravan.js",
@@ -49,23 +49,27 @@
     },
     {
       "file": "game3d/goats.js",
-      "sha256": "8c15f91dad6f96357b69c22d56677828ca267eee82133d2e8c59dd3819d10942"
+      "sha256": "86bf5f2e3559106834116c225146b1d733a7bd2f8bb3adcc2d7a786e2d429303"
     },
     {
       "file": "game3d/imported-fauna.js",
-      "sha256": "2a0f26e47e32fb1ba3d682d3cebc115946814f88343c650798a91fa23a785af8"
+      "sha256": "e04cd58697d3c10ff15f1b53b89ade03ccfaabde46816db73e910939875b0edc"
     },
     {
       "file": "game3d/jackals.js",
-      "sha256": "8d89234f938a2e716c170f931376f35cc55b533cc6db17f1cb0fa2a239fbd6d6"
+      "sha256": "ac8dbf27261aefbe939227d45190e45a9024ffb00549b14384ea5e93dc745240"
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "122c1f361a08cc6ef3ea3c20b3221a22e6f181ee587f8d45d1b5c34a8ca4b805"
+      "sha256": "5c5c721424ab5c2c5f807d7c55cf4e5a7f23bad212e430e3e69c4a98bfc0b7ce"
     },
     {
       "file": "game3d/miracle-garden.js",
       "sha256": "bcba5c056c48c7a3c11dc31c7155e26d6fe0dc60ed9863c97eb49f3209fde56e"
+    },
+    {
+      "file": "game3d/nature-details.js",
+      "sha256": "e762aaa6845728859b736ed4bfc105d7add54cea45609722af3b0ef2a0bf3ebc"
     },
     {
       "file": "game3d/river-craft.js",
@@ -81,11 +85,11 @@
     },
     {
       "file": "game3d/supplied-fauna.js",
-      "sha256": "8420c9ccaeb44dbc6135ac0db4ef00c96b070c1c14bff2d55807f6beb56bb3e6"
+      "sha256": "c547f6b45039aba556bf9b2989cce09bf10995e14a320cbc5d92ea295a972a72"
     },
     {
       "file": "game3d/valley-vegetation.js",
-      "sha256": "5d186b55a401b9ddb90b48deebcbbd70af0436855a8b5dde431a471e4b46009d"
+      "sha256": "d9c6b90321137392d9a51d8ff0ae6b89ed4bb1c49adcd7e4dff94b7fd9e625ff"
     }
   ],
   "models": [
@@ -119,7 +123,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 23,
+          "line": 25,
           "kind": "literal"
         }
       ]
@@ -530,7 +534,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 161,
+          "line": 178,
           "kind": "literal"
         }
       ]
@@ -765,7 +769,7 @@
         {
           "model": "historical-man.glb",
           "file": "game3d/actors.js",
-          "line": 112,
+          "line": 113,
           "kind": "literal"
         }
       ]
@@ -797,7 +801,7 @@
         {
           "model": "human-native-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -829,7 +833,7 @@
         {
           "model": "human-native-child.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -861,7 +865,7 @@
         {
           "model": "human-native-female.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -893,7 +897,7 @@
         {
           "model": "human-native-male.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1283,7 +1287,7 @@
         {
           "model": "miracle-green-grass-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -1318,7 +1322,7 @@
         {
           "model": "miracle-green-grass-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -1353,7 +1357,7 @@
         {
           "model": "miracle-green-grass-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -1897,7 +1901,7 @@
         {
           "model": "source-walk-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1929,7 +1933,7 @@
         {
           "model": "source-walk-child.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1961,7 +1965,7 @@
         {
           "model": "source-walk-female.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1993,7 +1997,7 @@
         {
           "model": "source-walk-male.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         },
         {
@@ -2031,7 +2035,7 @@
         {
           "model": "sumer-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2063,7 +2067,7 @@
         {
           "model": "sumer-child.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2095,16 +2099,16 @@
         {
           "model": "sumer-people.glb",
           "file": "game3d/actors.js",
-          "line": 102,
+          "line": 103,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
     },
     {
       "file": "supplied-cobra-base.glb",
-      "status": "spare",
-      "purpose": "Импорт из подборки, просмотр в атласе.",
-      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "status": "active",
+      "purpose": "Анимированная береговая змея.",
+      "classificationEvidence": "game3d/nature-details.js|supplied-cobra-base",
       "bytes": 1539392,
       "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
       "version": "1dd646a4a001",
@@ -2122,7 +2126,14 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": []
+      "references": [
+        {
+          "model": "supplied-cobra-base.glb",
+          "file": "game3d/nature-details.js",
+          "line": 9,
+          "kind": "literal"
+        }
+      ]
     },
     {
       "file": "supplied-cobra-head-up.glb",
@@ -2172,7 +2183,7 @@
         {
           "model": "supplied-common-quail.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -2204,7 +2215,7 @@
         {
           "model": "supplied-frog-jump.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 7,
+          "line": 8,
           "kind": "literal"
         }
       ]
@@ -2279,8 +2290,8 @@
     },
     {
       "file": "supplied-oriental-goby.glb",
-      "status": "optional",
-      "purpose": "Замена живой рыбы в тестовом режиме карты.",
+      "status": "active",
+      "purpose": "Визуальные модели речной рыбы.",
       "classificationEvidence": "game3d/supplied-fauna.js|fishModels",
       "bytes": 3031240,
       "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
@@ -2301,7 +2312,7 @@
         {
           "model": "supplied-oriental-goby.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -2330,16 +2341,16 @@
         {
           "model": "supplied-pelican-wasis.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
     },
     {
       "file": "supplied-realistic-rat.glb",
-      "status": "spare",
-      "purpose": "Импорт из подборки, просмотр в атласе.",
-      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "status": "active",
+      "purpose": "Грызун в сцене кошачьей охоты у склада.",
+      "classificationEvidence": "game3d/supplied-fauna.js|supplied-realistic-rat",
       "bytes": 2129524,
       "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
       "version": "24c286f98b4d",
@@ -2355,7 +2366,14 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": []
+      "references": [
+        {
+          "model": "supplied-realistic-rat.glb",
+          "file": "game3d/supplied-fauna.js",
+          "line": 6,
+          "kind": "literal"
+        }
+      ]
     },
     {
       "file": "supplied-schlegel-frog.glb",
@@ -2407,8 +2425,8 @@
     },
     {
       "file": "supplied-yellowfin-goby.glb",
-      "status": "optional",
-      "purpose": "Замена живой рыбы в тестовом режиме карты.",
+      "status": "active",
+      "purpose": "Визуальные модели речной рыбы.",
       "classificationEvidence": "game3d/supplied-fauna.js|fishModels",
       "bytes": 1519376,
       "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
@@ -2429,7 +2447,7 @@
         {
           "model": "supplied-yellowfin-goby.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 12,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -2493,7 +2511,7 @@
         {
           "model": "valley-date-palm.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2522,7 +2540,7 @@
         {
           "model": "valley-dry-grass-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2551,7 +2569,7 @@
         {
           "model": "valley-dry-grass-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2580,7 +2598,7 @@
         {
           "model": "valley-dry-grass-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2609,7 +2627,7 @@
         {
           "model": "valley-reed-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2638,7 +2656,7 @@
         {
           "model": "valley-reed-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2667,7 +2685,7 @@
         {
           "model": "valley-reed-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]

@@ -3,6 +3,7 @@ import {WATER_HEIGHT} from './water.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 
 const models={
+ mouse:{file:'supplied-realistic-rat.glb',height:.085,yaw:0},
  'common-quail':{file:'supplied-common-quail.glb',height:.20,yaw:0},
  'savigny-tree-frog':{file:'supplied-frog-jump.glb',height:.07,yaw:0,clip:'metarig|jumpInPlace'},
  'white-pelican':{file:'supplied-pelican-wasis.glb',height:1.42,yaw:Math.PI/2,waterline:.42}
@@ -12,17 +13,15 @@ const fishModels={
  'yellowfin-goby':{file:'supplied-yellowfin-goby.glb',length:.32,yaw:Math.PI/2},
  'oriental-goby':{file:'supplied-oriental-goby.glb',length:.48,yaw:Math.PI/2}
 };
-export const fishPreviewEnabled=search=>new URLSearchParams(search).get('fish-preview')==='1';
-const modelKey=pose=>pose.kind==='fish'?fishVariant(pose):pose.kind;
 function fishVariant(pose){
  const index=Number(pose.id.split(':').at(-1));
  return index%2?'oriental-goby':'yellowfin-goby';
 }
 
-export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={}){
+export async function createSuppliedFauna(B,scene,meshes){
  const sources=new Map();
  const actors=new Map();
- await Promise.all(Object.entries(fishPreview?{...models,...fishModels}:models).map(async ([kind,model])=>{
+ await Promise.all(Object.entries({...models,...fishModels}).map(async ([kind,model])=>{
   try {
    const asset=await loadModel(B,scene,'assets/art-courtyard/models/',model.file,scene,undefined,'.glb');
    if(model.clip&&!asset.animationGroups.some(group=>group.name===model.clip)){
@@ -34,12 +33,17 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
    console.warn('Shore model unavailable:',model.file,error);
   }
  }));
+ const modelKey=pose=>{
+  if(pose.kind!=='fish')return pose.kind==='pestCatch'?'mouse':pose.kind;
+  const preferred=fishVariant(pose);
+  return sources.has(preferred)?preferred:Object.keys(fishModels).find(key=>sources.has(key));
+ };
  const supports=pose=>sources.has(modelKey(pose))&&(pose.kind!=='white-pelican'||pose.behavior==='swimming');
  function create(pose){
   const key=modelKey(pose),model=models[key]||fishModels[key];
   const fish=pose.kind==='fish';
   const root=new B.TransformNode('supplied-'+pose.id,scene);
-  if(fish)root.metadata={animalKind:pose.kind,animalId:pose.id,fishModel:key};
+  if(fish||pose.kind==='mouse'||pose.kind==='pestCatch')root.metadata={animalKind:pose.kind,animalId:pose.id,...fish?{fishModel:key}:{}};
   const pivot=new B.TransformNode(root.name+'-pivot',scene);
   pivot.parent=root;
   const copy=sources.get(key).instantiateModelsToScene(undefined,false,{doNotInstantiate:!!model.clip||pose.kind==='white-pelican'});
@@ -49,6 +53,12 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
   pivot.scaling.setAll(scale);
   pivot.position.set(-(min.x+max.x)*scale/2,fish?-(min.y+max.y)*scale/2:-min.y*scale-(model.waterline||0),-(min.z+max.z)*scale/2);
   const owned=pivot.getChildMeshes();
+  if(fish){
+   // The source is static and instanced. A full sphere bounds every rolled
+   // or yawed pose and is used before submitting any of its dense triangles.
+   const radius=Math.hypot(max.x-min.x,max.y-min.y,max.z-min.z)*scale*.5;
+   root.metadata.fishModelRadius=radius;
+  }
   const materials=new Map();
   const pelican=pose.kind==='white-pelican';
   if(pelican){
@@ -86,7 +96,7 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
  }
  function update(state,poses,fish=[]){
   for(const actor of actors.values())actor.visible=false;
-  for(const pose of fishPreview?[...poses,...fish]:poses){
+  for(const pose of [...poses,...fish]){
    if(!supports(pose))continue;
    let actor=actors.get(pose.id);
    if(!actor){
@@ -107,13 +117,21 @@ export async function createSuppliedFauna(B,scene,meshes,{fishPreview=false}={})
     const phase=(state.simTime||0)*5+pose.id.length;
     const depth=Math.min(WATER_HEIGHT-.32,(pose.waterLevel??WATER_HEIGHT)-(pose.swimDepth??.28));
     actor.root.position.set(pose.x*6,depth+Math.sin(phase*.4)*.018,pose.y*6);
-    actor.root.rotation.set(0,actor.yaw+fishModels[modelKey(pose)].yaw+Math.sin(phase)*.09,Math.sin(phase*.75)*.035);
+    actor.root.rotation.set(0,actor.yaw+fishModels[actor.root.metadata.fishModel].yaw+Math.sin(phase)*.09,Math.sin(phase*.75)*.035);
     continue;
    }
    const terrain=pose.kind==='savigny-tree-frog'||pose.elevation===undefined;
    const elevation=terrain?surfaceElevation(pose.x,pose.y,state):pose.elevation;
    actor.root.position.set(pose.x*6,elevation+(pose.kind==='savigny-tree-frog'?.018:0),pose.y*6);
-   actor.root.rotation.y=(pose.yaw||0)+models[pose.kind].yaw;
+   const rodent=pose.kind==='mouse'||pose.kind==='pestCatch';
+   const yaw=rodent?Math.atan2((pose.faceX??pose.x)-pose.x,(pose.faceY??pose.y)-pose.y):pose.yaw||0;
+   actor.root.rotation.y=yaw+models[modelKey(pose)].yaw;
+   if(rodent){
+    const catchProgress=pose.kind==='pestCatch'?Math.min(1,pose.progress/.26):0;
+    actor.root.rotation.z=catchProgress*1.5;
+    actor.root.position.y+=pose.kind==='mouse'?Math.abs(Math.sin(pose.step||0))*.012:.025*Math.sin(catchProgress*Math.PI);
+    actor.root.scaling.setAll(1-.62*catchProgress);
+   }
    if(pose.kind==='white-pelican'){
     const scoop=pose.scoop||0,stroke=pose.stroke??1,phase=state.simTime||0;
     actor.root.position.y=WATER_HEIGHT+.012+Math.sin(phase*2.1)*.018-.045*scoop;

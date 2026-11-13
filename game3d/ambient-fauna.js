@@ -1,4 +1,4 @@
-import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=audit-fixes-20261113';
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=city500-fauna-courts-20261113';
 import {dairyHerd,dairyPose} from './dairy-herd.js?v=audit-fixes-20261113';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
@@ -39,7 +39,35 @@ export function ambientAnchor(state,species,index=0,occupied=[]){
  for(let ring=0;ring<32;ring++)for(let j=0;j<16;j++){const angle=(j+index*.73+id*1.37)*Math.PI/8,r=.9+ring*.28,x=seed.x+Math.cos(angle)*r,y=seed.y+Math.sin(angle)*r;if(ambientDryPoint(state,x,y,.3)&&occupied.every(p=>Math.hypot(p.x-x,p.y-y)>2.2)&&(!['fox','boar','lioness','onager'].includes(species)||!(state.buildings||[]).some(b=>Math.hypot(b.x-x,b.y-y)<3)))return {x,y};}
  return null;
 }
-const YARD_PIG_MODEL={file:"ambient-yard-pig.glb",scale:.12};
+const YARD_PIG_MODEL={file:'ambient-yard-pig.glb',scale:.12};
+const PIG_SCALES=[1,.86,.94,.72,.80];
+const MALLARD_PHASES={mallard:[0,5.15,10.85],'mallard-female':[2.1,8.0,13.6]};
+const MALLARD_SCALES={mallard:[1,.94,.88],'mallard-female':[1,.87,.94]};
+function yardPigRoutes(state,origin){
+ if(!origin)return [];
+ const anchors=[origin],seed=origin.x*.77+origin.y*.33;
+ for(const radius of [.63,.85,1.10,1.38])for(let i=0;i<13&&anchors.length<PIG_SCALES.length;i++){
+  const angle=seed+i*2.399+radius*.91,p={x:origin.x+Math.cos(angle)*radius,y:origin.y+Math.sin(angle)*radius};
+  if(anchors.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>.59)&&ambientClearSegment(state,origin,p))anchors.push(p);
+ }
+ return anchors.map((start,i)=>{
+  const rest=2.1+[1.35,.15,2.70,.62,3.5][i],pace=[.085,.112,.068,.102,.077][i];
+  const neighbors=anchors.filter(p=>p!==start);
+  const safe=(a,b)=>ambientClearSegment(state,a,b)&&neighbors.every(p=>{
+   const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));
+   return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t)>.50;
+  });
+  const sites=Array.from({length:12},(_,j)=>{
+   const angle=seed+i*1.7+j*2.399,radius=.14+(j%3)*.045;
+   return {x:start.x+Math.cos(angle)*radius,y:start.y+Math.sin(angle)*radius};
+  }).filter(p=>safe(start,p));
+  const first=sites[0],second=first&&sites.find(p=>Math.hypot(p.x-first.x,p.y-first.y)>.17&&safe(first,p));
+  const route=first?[start,{...first,pigBehavior:'foraging'},...(second?[{...second,pigBehavior:'foraging'}]:[]),{...start,pigBehavior:'resting'}]:[start];
+  let distance=0;for(let j=1;j<route.length;j++)distance+=Math.hypot(route[j].x-route[j-1].x,route[j].y-route[j-1].y);
+  const cycle=distance/pace+(route.length-1)*rest;
+  return {route,pace,rest,offset:Math.max(0,cycle-[.2,1.2,1.9,2.6,3.4][i])};
+ });
+}
 const courtyardPlans=new WeakMap();
 const otterPoint=(state,center,angle)=>riverPoint(center+Math.cos(angle)*1.05,state,.34+Math.sin(angle)*.24);
 function findOtterPool(state,along){
@@ -58,7 +86,7 @@ function findOtterPool(state,along){
  }
  return null;
 }
-export function courtyardFauna(state,time=state.simTime||0){
+function courtyardPlan(state){
  let plan=courtyardPlans.get(state);
  if(plan?.buildings!==state.buildings||plan?.count!==state.buildings.length){
   const routes=[],home=state.buildings.find(b=>b.type==='house');
@@ -95,6 +123,10 @@ export function courtyardFauna(state,time=state.simTime||0){
   }
   plan={buildings:state.buildings,count:state.buildings.length,routes,egret,otterPool,regional};courtyardPlans.set(state,plan);
  }
+ return plan;
+}
+export function courtyardFauna(state,time=state.simTime||0){
+ const plan=courtyardPlan(state);
  const animals=plan.routes.map(({kind,route,speed,pause})=>{
   const motion=loopMotion(route,time,speed,pause);
   return {id:`ambient-${kind}`,kind,decorative:true,...motion,behavior:motion.walking?'walking':'looking'};
@@ -164,14 +196,14 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function imported(species,index,farm=null,foldId=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=foldId||farm?.id||`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
   root.metadata={ambientId:id,ambientSpecies:species,...(farm?{dairyBuilding:farm.building.id||`${farm.building.x},${farm.building.y}`,calf:farm.calf}:{}),sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
   if(species==='yard-pig'){
-   model.scaling.setAll(YARD_PIG_MODEL.scale*(index===0?1:.84));
-   root.rotation.y=index===0?0:-.9;
+   model.scaling.setAll(YARD_PIG_MODEL.scale*PIG_SCALES[index]);
+   root.rotation.y=[0,-.9,1.25,2.1,-1.8][index];
    model.position.y=-model.getHierarchyBoundingVectors(true).min.y;
    root.metadata.sourceMotion='original clip synchronized to a dry route';
   }
   const shore=SHORE_MODELS[species];
   if(shore){
-   model.scaling.setAll(shore.scale);
+   model.scaling.setAll(shore.scale*(MALLARD_SCALES[species]?.[index]||1));
    root.metadata.shoreRole=shore.role;
    root.metadata.sourceMotion=shore.motion||'source clip';
   }
@@ -181,7 +213,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   let wake,ripple,beak;
   if(rig){
    beak=root.getChildTransformNodes().find(node=>/duck Mouth|Beak_nub/.test(node.name));
-   if(beak)ripple=createFeedingRipple(B,scene,id);
+   if(beak&&index===0)ripple=createFeedingRipple(B,scene,id);
    const sides=[-1,1];
    wake=B.MeshBuilder.CreateLineSystem(id+'-wake',{
     lines:sides.map(side=>[[.09,-.12],[.12,-.22],[.18,-.38],[.31,-.65]]
@@ -205,19 +237,23 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   skyMaterial=new B.StandardMaterial('ambient-sky-ochre',scene);skyMaterial.diffuseColor=new B.Color3(.27,.23,.18);const body=B.MeshBuilder.CreateSphere('ambient-sky-template-body',{diameter:1,segments:6},scene),wing=B.MeshBuilder.CreateBox('ambient-sky-template-wing',{width:.65,height:.026,depth:.17},scene);body.material=wing.material=skyMaterial;body.isVisible=wing.isVisible=false;body.isPickable=wing.isPickable=false;templates.push(body,wing);for(let i=0;i<2;i++)originalSky(i,{body,wing});
  }else if(options.includeSkyBirds!==false)for(let i=0;i<2;i++)imported('sky-birds',i);
  for(const [species]of groundModels)for(let i=0;i<2;i++)imported(species,i);
- if(options.includeShoreBirds)for(const species of Object.keys(SHORE_MODELS))if(!options.hidePlaceholderBirds||species!=='seagull')imported(species,0);
- const yardPigs=assets.has('yard-pig')?[imported('yard-pig',0),imported('yard-pig',1)]:[];
+ if(options.includeShoreBirds)for(const species of Object.keys(SHORE_MODELS)){
+  if(options.hidePlaceholderBirds&&species==='seagull')continue;
+  const count=MALLARD_PHASES[species]?.length||1;
+  for(let i=0;i<count;i++)imported(species,i);
+ }
+ const yardPigs=assets.has('yard-pig')?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
  let yardPlan,yardPlaces=[];
  let route=null,routeBuildings=null,routeCount=-1;
  function shorePose(a,state){
   if(a.rig&&route){
-   const p=mallardPose(route,clock+(a.species==='mallard-female'?2.1:0));
+   const p=mallardPose(route,clock+MALLARD_PHASES[a.species][a.index]);
    a.root.setEnabled(true);
    a.root.position.set(p.x,p.y,p.z);
    a.root.rotation.y=p.yaw;
    a.model.rotation.set(p.pitch,0,p.roll);
    poseMallardRig(B,a.rig,p);
-   const feeding=p.phase==='feeding'&&a.beak;
+   const feeding=p.phase==='feeding'&&a.ripple&&a.beak;
    if(feeding)a.beak.computeWorldMatrix(true);
    a.ripple?.update(clock,feeding?a.beak.getAbsolutePosition():null);
    a.root.metadata.shorePhase=p.phase;
@@ -236,10 +272,9 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    const candidates=[1,-1,2,-2,0,3,-3].flatMap(delta=>[1.5,1.9,2.3,2.7].map(offset=>
     riverPoint(center+delta,state,side*offset)
    ));
-   const maleBank=candidates.find(p=>ambientDryPoint(state,p.x,p.y,.24));
-   const bank=a.species==='mallard-female'&&maleBank
-    ?candidates.find(p=>Math.hypot(p.x-maleBank.x,p.y-maleBank.y)>.3&&ambientDryPoint(state,p.x,p.y,.24))
-    :maleBank;
+   const places=[];
+   for(const p of candidates)if(places.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>.28)&&ambientDryPoint(state,p.x,p.y,.24))places.push(p);
+   const bank=places[a.index*2+Number(a.species==='mallard-female')];
    a.root.setEnabled(!!bank);
    a.root.metadata.shorePhase='resting';
    if(bank){
@@ -268,7 +303,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function update(state,dt=1/60,{paused=false,speed=1,ploughPoses,sheep=[]}={}){
   if(disposed)return;
   ploughs?.update(state,ploughPoses);
-  const stateChanged=state!==lastState;if(stateChanged){lastState=state;for(const a of actors){if(['sky-birds','original-sky'].includes(a.species)){a.skyPlaced=false;continue;}if(!a.farm){a.anchor=null;a.target=null;a.enabled=false;a.restUntil=clock;a.routeAttempt=0;}}}
+  const stateChanged=state!==lastState;if(stateChanged){lastState=state;for(const a of actors){if(['sky-birds','original-sky'].includes(a.species)){a.skyPlaced=false;continue;}if(!a.farm){a.anchor=null;a.target=null;a.enabled=false;a.restUntil=clock+(a.species==='boar'?.45+a.index*.83:0);a.routeAttempt=0;}}}
   const fold=new Map();
   for(const animal of sheep)if(supportsFoldSheep(animal))fold.set(animal.id,animal);
   for(const [id,a] of foldSheep)if(!fold.has(id))removeActor(a);
@@ -289,21 +324,11 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    }
   }
   if(yardPigs.length){
-   const first=courtyardFauna(state,0).find(p=>p.kind==='pig');
-   const plan=courtyardPlans.get(state);
+   const plan=courtyardPlan(state);
+   const first=plan.routes.find(p=>p.kind==='pig')?.route[0];
    if(plan!==yardPlan){
     yardPlan=plan;
-    const second=first&&[[.3,.14],[-.3,.14],[.3,-.14],[-.3,-.14],[0,.34],[0,-.34]]
-     .map(([dx,dy])=>({x:first.x+dx,y:first.y+dy}))
-     .find(p=>ambientDryPoint(state,p.x,p.y,.3)&&ambientClearSegment(state,first,p));
-    const anchor=second||first;
-    const delta=first&&anchor&&[[.23,0],[0,.23],[-.23,0],[0,-.23]].find(([dx,dy])=>
-     [first,anchor].every(start=>ambientClearSegment(state,start,{x:start.x+dx,y:start.y+dy})));
-    yardPlaces=[first,second].map(start=>{
-     if(!start)return null;
-     const end=delta&&{x:start.x+delta[0],y:start.y+delta[1]};
-     return end?[start,end,start]:[start];
-    });
+    yardPlaces=yardPigRoutes(state,first);
    }
   }
   for(const a of actors){
@@ -324,18 +349,20 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     continue;
    }
    if(a.species==='yard-pig'){
-    const route=yardPlaces[a.index];
-    a.root.setEnabled(!!route);
-    if(route){
-     const pace=.09,pause=2.7;
-     const place=loopMotion(route,clock,pace,pause);
+    const roam=yardPlaces[a.index];
+    a.root.setEnabled(!!roam);
+    if(roam){
+     const time=clock+roam.offset,place=loopMotion(roam.route,time,roam.pace,roam.rest);
+     a.root.metadata.pigBehavior=place.walking?'walking':place.pigBehavior||'resting';
      const dx=place.x*6-a.root.position.x,dz=place.y*6-a.root.position.z;
      const distance=Math.hypot(dx,dz);
      a.root.position.set(place.x*6,surfaceElevation(place.x,place.y,state),place.y*6);
-     if(place.walking&&distance>1e-5&&distance<1){
-      a.root.rotation.y=Math.atan2(dx,dz);
-      a.walkPhase=(a.walkPhase+distance/.54)%1;
+     if(advancing&&place.walking&&distance>1e-5&&distance<1){
+      const yaw=Math.atan2(dx,dz),delta=yaw-a.root.rotation.y;
+      a.root.rotation.y+=Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*speed*7));
+      a.walkPhase=(a.walkPhase+distance/(.54*PIG_SCALES[a.index]))%1;
      }
+     if(advancing)a.model.rotation.x=a.root.metadata.pigBehavior==='foraging'?.065*(.6+.4*Math.sin(time*3)):0;
      const clip=a.groups.get('Animation');
      if(clip){
       if(!a.clip){clip.start(true);clip.pause();a.clip=clip.name;}
@@ -363,9 +390,9 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     if(ambientClearSegment(state,{x,y},candidate))a.target=candidate;else a.restUntil=clock+.6;
    }
    if(a.target){
-    const dx=a.target.x-x,dy=a.target.y-y,d=Math.hypot(dx,dy),step=Math.min(d,dt*speed*config.pace/6),nx=x+(d?dx/d*step:0),ny=y+(d?dy/d*step:0);
-    if(ambientClearSegment(state,{x,y},{x:nx,y:ny})){a.root.position.set(nx*6,surfaceElevation(nx,ny,state),ny*6);moved=step*6;if(d>.001)a.root.rotation.y=Math.atan2(dx,dy);}else{a.target=null;a.restUntil=clock+.8;}
-    if(d<=step+.001){a.target=null;a.restUntil=clock+1.2+a.index*.3;}
+    const dx=a.target.x-x,dy=a.target.y-y,d=Math.hypot(dx,dy),step=Math.min(d,dt*speed*config.pace*(a.species==='boar'?.9+(a.index%3)*.12:1)/6),nx=x+(d?dx/d*step:0),ny=y+(d?dy/d*step:0);
+    if(ambientClearSegment(state,{x,y},{x:nx,y:ny})){a.root.position.set(nx*6,surfaceElevation(nx,ny,state),ny*6);moved=step*6;if(d>.001){const yaw=Math.atan2(dx,dy),delta=yaw-a.root.rotation.y;a.root.rotation.y=a.species==='boar'?a.root.rotation.y+Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*speed*6)):yaw;}}else{a.target=null;a.restUntil=clock+.8;}
+    if(d<=step+.001){a.target=null;a.restUntil=clock+1.2+a.index*.3+(a.species==='boar'?(a.routeAttempt+a.index)%3*.58:0);}
    }
    if(moved>0)a.walkPhase=(a.walkPhase+moved/config.stride)%1;
    animate(a,clock,moved>.00001);

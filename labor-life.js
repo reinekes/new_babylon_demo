@@ -1,3 +1,4 @@
+import {isExtractionCourt,extractionSource} from './extraction-courts.js';
 import {toolWorkMultiplier} from './axe-kit.js';
 import {advanceReedBeds} from './reed-stock.js';
 import {forestOpen} from './forest-stock.js';
@@ -16,7 +17,7 @@ const kindFor={logging:'tree',quarry:'rock'},clamp=n=>Math.max(0,Math.min(1,n));
 const localLegs=new WeakMap();
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 export function initializeGathering(s){s.gathering??={features:[],jobs:[],kills:[]};return s.gathering;}
-export function clearGround(s,p){return isDryPoint(s,p.x,p.y)&&!s.buildings.some(b=>!['field','garden','canal','bridge'].includes(b.type)&&Math.abs(p.x-b.x)<.43&&Math.abs(p.y-b.y)<.43);}
+export function clearGround(s,p){return isDryPoint(s,p.x,p.y)&&!s.buildings.some(b=>!isExtractionCourt(b)&&!['field','garden','canal','bridge'].includes(b.type)&&Math.abs(p.x-b.x)<.43&&Math.abs(p.y-b.y)<.43);}
 export function gatheringPathClear(s,a,b){const steps=Math.max(1,Math.ceil(distance(a,b)*18));for(let i=0;i<=steps;i++)if(!clearGround(s,{x:a.x+(b.x-a.x)*i/steps,y:a.y+(b.y-a.y)*i/steps}))return false;return true;}
 function pointNear(s,origin,radius,angle){return {x:origin.x+Math.cos(angle)*radius,y:origin.y+Math.sin(angle)*radius};}
 function featureTargets(s,b,origin){
@@ -55,7 +56,7 @@ export function fisheryOptions(state,origin){
 function newJob(s,c,b,origin){
  const g=initializeGathering(s),reserved=new Set(g.jobs.filter(j=>j.citizen!==c.id).map(j=>j.target.id));let target=null,stand=null;
  if(kindFor[b.type]){
-  const options=featureTargets(s,b,origin).filter(f=>f.health>0&&!reserved.has(f.id)).sort((a,b)=>distance(c,a)-distance(c,b));
+  const options=featureTargets(s,b,isExtractionCourt(b)?extractionSource(b):origin).filter(f=>f.health>0&&!reserved.has(f.id)).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const f of options){const p=stance(s,c,f);if(p){target={id:f.id,kind:f.kind,x:f.x,y:f.y};stand=p;break;}}
  }else if(b.type==='hunting'){
   const killed=new Set(g.kills.filter(k=>s.simTime<k.respawnAt).map(k=>k.id));
@@ -75,7 +76,8 @@ function newJob(s,c,b,origin){
 function move(c,to,dt,rate=1){const d=distance(c,to),step=Math.min(d,dt*.65*Math.max(.5,rate));if(d>1e-8){c.x+=(to.x-c.x)*step/d;c.y+=(to.y-c.y)*step/d;}return d-step<1e-6;}
 /** Actual local work trip. A load can only be collected once its target was worked. */
 export function workGathering(s,c,b,dt,rate,origin){
- if(b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)return false;
+ const source=extractionSource(b);
+ if(b.type==='quarry'&&stoneRemaining(s,source.x,source.y)<=1e-8)return false;
  if(b.type==='logging'&&!forestOpen(s,b)){
   const g=initializeGathering(s);
   g.jobs=g.jobs.filter(j=>j.citizen!==c.id);c.workElapsed=0;return false;

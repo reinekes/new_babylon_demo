@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,encode,decode,advanceTime,resolveEvent,build} from '../engine.js';
 import {advanceWorkers,syncCitizens,recoverCitizenCargo} from '../workforce.js';
-import {manualGatheringView,orderManualGathering,cancelManualGathering,MANUAL_GATHERING} from '../manual-gathering.js';
+import {manualGatheringView,orderManualGathering,cancelManualGathering,MANUAL_GATHERING,workManualGathering} from '../manual-gathering.js';
+import {forestStock,FOREST_CAPACITY} from '../forest-stock.js';
+import {strictScenario} from '../scenario-profiles.js';
 import {setCitizenRole} from '../management.js';
 import {BUILDINGS,buildingKey} from '../definitions.js';
 import {syncInventory,stockStores,storeCapacity} from '../inventory.js';
@@ -17,9 +19,30 @@ function step(s,n=1){if(s.event)resolveEvent(s,'skip');advanceTime(s,n);}
 function until(s,predicate,max=600){for(let i=0;i<max;i++){if(predicate())return true;step(s,.5);}return predicate();}
 const target=s=>s.world.deposits.find(d=>d.kind==='clay'&&d.x<12&&!s.buildings.some(b=>b.x===d.x&&b.y===d.y));
 
-test('manual orders require a real unoccupied clay, reed or stone deposit and cost no faith',()=>{const s=fixture(),d=target(s),before=s.resources.faith;assert.equal(s.resources.faith,0);assert.equal(manualGatheringView(s,0,0),null);assert.equal(orderManualGathering(s,0,0).ok,false);assert.equal(orderManualGathering(s,d.x,d.y).ok,true);assert.equal(s.resources.faith,before);assert.equal(orderManualGathering(s,d.x,d.y).ok,true);assert.equal(s.manualGathering.orders.length,1);const forest=s.world.deposits.find(v=>v.kind==='forest');assert.equal(orderManualGathering(s,forest.x,forest.y).ok,false);});
+test('manual orders require a real unoccupied deposit and cost no faith',()=>{const s=fixture(),d=target(s),before=s.resources.faith;assert.equal(s.resources.faith,0);assert.equal(manualGatheringView(s,0,0),null);assert.equal(orderManualGathering(s,0,0).ok,false);assert.equal(orderManualGathering(s,d.x,d.y).ok,true);assert.equal(s.resources.faith,before);assert.equal(orderManualGathering(s,d.x,d.y).ok,true);assert.equal(s.manualGathering.orders.length,1);const wildlife=s.world.deposits.find(v=>v.kind==='wildlife');assert.equal(orderManualGathering(s,wildlife.x,wildlife.y).ok,false);});
 
-test('gatherers walk to the real deposit, work slowly and carry a conserved load before it reaches a store',()=>{const s=fixture(),d=target(s),before=s.resources.clay;orderManualGathering(s,d.x,d.y);assert.ok(until(s,()=>s.citizens.some(c=>c.phase==='manualGathering')));const c=s.citizens.find(c=>c.phase==='manualGathering');assert.ok(Math.hypot(c.x-d.x,c.y-d.y)<1);assert.equal(s.resources.clay,before);assert.ok(MANUAL_GATHERING.clay.workSeconds/MANUAL_GATHERING.clay.batchSize>BUILDINGS.clay.workTime/BUILDINGS.clay.output.clay*3);assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&(c.cargo.clay||0)>0)));assert.equal(s.resources.clay,before,'work does not directly credit stock');const loaded=s.citizens.find(c=>c.manualGathering&&c.cargo.clay>0);assert.equal(loaded.cargo.clay,1);assert.equal(loaded.phase,'toStore');assert.ok(decode(encode(s)),'carrying state reloads');assert.ok(until(s,()=>s.resources.clay>before));assert.equal(s.delivered.clay,s.resources.clay-before);});
+test('gatherers walk to the real deposit, work slowly and carry a conserved load before it reaches a store',()=>{const s=fixture(),d=target(s),before=s.resources.clay;orderManualGathering(s,d.x,d.y);assert.ok(until(s,()=>s.citizens.some(c=>c.phase==='manualGathering')));const c=s.citizens.find(c=>c.phase==='manualGathering');assert.ok(Math.hypot(c.x-d.x,c.y-d.y)<1);assert.equal(s.resources.clay,before);assert.ok(MANUAL_GATHERING.clay.workSeconds/MANUAL_GATHERING.clay.batchSize>BUILDINGS.clay.workTime/BUILDINGS.clay.output.clay*3);assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&(c.cargo.clay||0)>0)));assert.equal(s.resources.clay,before,'work does not directly credit stock');const loaded=s.citizens.find(c=>c.manualGathering&&c.cargo.clay>0);assert.equal(loaded.cargo.clay,.25);assert.equal(loaded.phase,'toStore');assert.ok(decode(encode(s)),'carrying state reloads');assert.ok(until(s,()=>s.resources.clay>before));assert.equal(s.delivered.clay,s.resources.clay-before);});
+
+test('hand gathering logs wood and dates at quarter yield while old baskets remain valid',()=>{
+ const s=createGame({mode:'mature',scenario:strictScenario()});
+ for(const [kind,resource] of [['forest','wood'],['dates','food']]){
+  const site=s.world.deposits.find(d=>d.kind===kind&&!s.buildings.some(b=>b.x===d.x&&b.y===d.y));
+  assert.ok(orderManualGathering(s,site.x,site.y).ok);
+  const view=manualGatheringView(s,site.x,site.y),before=s.resources[resource],stand={x:site.x-.5,y:site.y-.5};
+  const worker={...stand,phase:'manualGathering',cargo:{},manualGathering:{key:view.key,stand,progress:view.workSeconds}};
+  assert.equal(view.batchSize,.25);assert.ok(workManualGathering(s,worker,.1));
+  assert.deepEqual(worker.cargo,{[resource]:.25});assert.equal(s.resources[resource],before);
+  assert.equal(s.cityProductionArchive[1][`manual:${view.key}`][resource],.25);
+  if(kind==='forest')assert.equal(forestStock(s,view.key).stock,FOREST_CAPACITY-1);
+ }
+ assert.ok(decode(encode(s)));
+ const legacy=fixture(),clay=target(legacy);orderManualGathering(legacy,clay.x,clay.y);
+ assert.ok(until(legacy,()=>legacy.citizens.some(c=>c.manualGathering&&c.cargo.clay>0)));
+ const carrier=legacy.citizens.find(c=>c.manualGathering&&c.cargo.clay>0);carrier.cargo.clay=1.75;
+ const raw=encode(legacy),loaded=decode(raw);assert.ok(loaded);assert.equal(encode(loaded),raw);
+ const before=loaded.resources.clay;assert.ok(until(loaded,()=>!(loaded.citizens.find(c=>c.id===carrier.id).cargo.clay>0)));
+ assert.ok(loaded.resources.clay>=before+1.75);
+});
 
 test('cancelling work preserves a carried resource and releases only the manual assignment',()=>{const s=fixture(),d=target(s);orderManualGathering(s,d.x,d.y);assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&c.cargo.clay>0)));const before=s.resources.clay+s.citizens.reduce((n,c)=>n+(c.cargo.clay||0),0);assert.equal(cancelManualGathering(s,d.x,d.y).ok,true);step(s,.1);assert.ok(s.citizens.every(c=>!c.manualGathering));assert.equal(s.resources.clay+s.citizens.reduce((n,c)=>n+(c.cargo.clay||0),0),before);assert.ok(until(s,()=>s.citizens.every(c=>!c.cargo.clay)));assert.equal(s.resources.clay,before);assert.ok(decode(encode(s)));});
 
@@ -52,14 +75,14 @@ test('Hands of the Creator boosts a hand-carried load and the load survives buff
   const d=s.world.deposits.find(d=>d.kind===resource&&d.x<12&&!s.buildings.some(b=>b.x===d.x&&b.y===d.y));
   assert.ok(d,resource);
   s.buffs.inspiration=3;
-  const expected=resource==='stone'?1:1.75;
+  const expected=resource==='stone'?.25:.4375;
   assert.equal(manualGatheringView(s,d.x,d.y).batchSize,expected);
   assert.ok(orderManualGathering(s,d.x,d.y).ok);
   assert.ok(until(s,()=>s.citizens.some(c=>c.manualGathering&&c.cargo[resource]>0)),resource);
   const c=s.citizens.find(c=>c.manualGathering&&c.cargo[resource]>0);
   assert.equal(c.cargo[resource],expected);
   s.buffs.inspiration=0;
-  assert.equal(manualGatheringView(s,d.x,d.y).batchSize,1);
+  assert.equal(manualGatheringView(s,d.x,d.y).batchSize,.25);
   const raw=encode(s);
   assert.equal(encode(decode(raw)),raw);
  }

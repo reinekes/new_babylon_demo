@@ -24,7 +24,7 @@ test('old saves add no cats and lose no food; malformed pest stocks are rejected
 });
 test('the visible chase converges before the target vanishes and reload keeps catches deterministic',()=>{
  const s=createGame({start:'established'});miracle(s,'cat');advanceMiracleCelebration(s,60);for(let i=0;i<99;i++)advancePests(s,.1);const actors=pestActors(s),cat=actors.find(a=>a.kind==='cat'),mouse=actors.find(a=>a.kind==='mouse');assert.ok(Math.hypot(cat.x-mouse.x,cat.y-mouse.y)<.03);
- const copy=decode(encode(s));assert.ok(copy);advancePests(s,.2);advancePests(copy,.2);assert.equal(pestActors(s).filter(a=>a.kind==='mouse').length,0);assert.ok(pestActors(s).some(a=>a.kind==='pestCatch'));assert.deepEqual(copy,s);
+ const copy=decode(encode(s));assert.ok(copy);advancePests(s,.2);advancePests(copy,.2);assert.equal(pestActors(s).filter(a=>a.kind==='mouse').length,0);const capture=pestActors(s);assert.ok(capture.some(a=>a.kind==='pestCatch'&&a.by==='cat'&&a.progress<.15));assert.ok(capture.some(a=>a.kind==='cat'&&a.catchProgress<.15));assert.deepEqual(copy,s);
 });
 test('guarding does not create temple offerings, preserves old cargo, and stops providing protection at night',async()=>{
  const {syncCitizens}=await import('../workforce.js');const s=createGame({start:'established'}),bare=createGame({start:'established'});for(const city of [s,bare])for(const b of city.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;}

@@ -1,3 +1,4 @@
+import {extractionOwner} from '../extraction-courts.js';
 import {loadModel} from './asset-loading.js';
 import {worldWidth,worldHeight,signedRiverDistance} from '../world.js';
 import {surfaceElevation,TILE} from '../district3d/terrain.js';
@@ -73,7 +74,11 @@ export function valleyVegetationPlan(s,roads=[],tier='balanced'){
  }
  // Render the existing reed deposit with imported clumps as well; its identity
  // and quantities continue to belong exclusively to the simulation.
- for(const d of s.world?.deposits||[])if(d.kind==='reed')for(const [i,p]of resourceDisplayLayout(d).entries())if(clear(p,.05)&&vegetationBankDistance(p.x,p.y,s,contours)>.10&&plan.reed.length<budget.reed+90)put('reed',p,d.x*73+d.y*11+i);
+ for(const d of s.world?.deposits||[]){
+  if(d.kind!=='reed')continue;
+  const court=extractionOwner(s,d);
+  for(const [i,p]of resourceDisplayLayout(d).entries())if((court||clear(p,.05))&&vegetationBankDistance(p.x,p.y,s,contours)>.10&&plan.reed.length<budget.reed+90)put('reed',p,d.x*73+d.y*11+i);
+ }
  return plan;
 }
 

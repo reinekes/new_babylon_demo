@@ -93,6 +93,7 @@ test('GLB clones track exact simulation positions, pause, release vanished IDs, 
   const owned=root.getChildMeshes().find(m=>m.material?.name.includes('citizen-cloth'));assert.ok(owned,'clothing gets a per-person material');
   const group=scene.animationGroups.find(g=>g.name.includes(`citizen-${c.id}`)&&g.name.includes('Walk_Loop'));assert.ok(group);
   c.x+=.1;view.update(s,1/60);assert.equal(root.position.x,c.x*6);assert.ok(root.rotation.y>0&&root.rotation.y<Math.PI/2);assert.ok(group.isPlaying);
+  assert.ok(group.animatables.length>0&&group.animatables.every(channel=>!scene.animatables.includes(channel)),'distance-sampled tracks bypass the global scheduler');
   view.update(s,1/60,{paused:true,speed:4});assert.equal(group.speedRatio,0);const yaw=root.rotation.y,markerY=marker.position.y,markerScale=marker.scaling.x;
   view.update(s,1/60,{paused:true,speed:4});assert.equal(root.rotation.y,yaw);assert.equal(group.speedRatio,0);assert.equal(marker.position.y,markerY);assert.equal(marker.scaling.x,markerScale);
   s.buildings.push({id:'test-fold',type:'sheepfold',level:1,x:c.x,y:c.y});view.update(s,1/60);
@@ -543,7 +544,9 @@ test('paused Idle zoom and unsampled distant Walk keep their last rendered clip 
   view.update(s,.05,options);scene.render();const idle=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Idle_Loop`);idle.goToFrame(idle.from+(idle.to-idle.from)*.31);
   view.update(s,.05,{...options,paused:true});scene.render();const frozenIdle=idle.animatables[0].masterFrame;
   view.update(s,.05,{...options,camera:far,paused:true});scene.render();assert.equal(idle.animatables[0].masterFrame,frozenIdle,'paused near→far must not change Idle timebase');
+  assert.ok(idle.animatables.every(channel=>!scene.animatables.includes(channel)),'manually sampled distant idle does not tick Babylon’s scheduler');
   view.update(s,.05,{...options,paused:true});scene.render();assert.equal(idle.animatables[0].masterFrame,frozenIdle,'paused zoom back retains authored frame');
+  assert.ok(idle.animatables.every(channel=>scene.animatables.includes(channel)),'near idle restores authored clock animation');
   c.phase='toStore';c.walking=true;c.carrying=true;c.cargo={clay:2};c.x+=.01;view.update(s,.05,{...options,camera:far});scene.render();const walk=scene.animationGroups.find(g=>g.name===`citizen-${c.id}-Walk_Loop`),frozenWalk=walk.animatables[0].masterFrame;
   c.x+=.001;view.update(s,.000001,{...options,camera:far});scene.render();assert.equal(walk.animatables[0].masterFrame,frozenWalk,'tiny elapsed time stays between LOD samples');
   view.update(s,.01,{...options,camera:far,paused:true});scene.render();assert.equal(walk.animatables[0].masterFrame,frozenWalk,'pause must hold the rendered frame, not the newer unsampled walk phase');

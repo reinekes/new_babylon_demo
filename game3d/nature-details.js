@@ -2,9 +2,12 @@ import {worldWidth,worldHeight,terrain} from '../world.js';
 import {TILE,shoreDistance} from '../district3d/terrain.js';
 import {visualSurfaceElevation} from './lake-shore.js';
 import {sceneryClear} from './nature.js';
+import {loadModel} from './asset-loading.js';
 
 const random=(x,y)=>{const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;return n-Math.floor(n);};
 export const NATURE_BUDGETS=Object.freeze({low:Object.freeze({debris:55,puddles:14,tumbleweeds:2,snakes:1}),balanced:Object.freeze({debris:110,puddles:26,tumbleweeds:4,snakes:2}),high:Object.freeze({debris:170,puddles:38,tumbleweeds:6,snakes:3})});
+const SNAKE_MODEL='supplied-cobra-base.glb';
+const SNAKE_SCALE=.30,SNAKE_GROUND=.018,SNAKE_Z_CENTER=2.34;
 const segmentDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t);};
 // All coordinates below are disposable display plans, independent of the resource
 // ledger and saved animal population. Reserve the entire small movement envelope.
@@ -71,41 +74,77 @@ export function natureGroundGeometry(s,plan){
  return {debris,puddles};
 }
 
-export function createNatureDetails(B,scene,materials,{tier='balanced'}={}){
- let currentTier=tier,signature='',plan=null,wetness=0,lastTime=null,windClock=0,disposed=false;const meshes=[],batches=[],moving=[],owned=[];
+export function createNatureDetails(B,scene,materials,{tier='balanced',loadSnake=()=>loadModel(B,scene,'assets/art-courtyard/models/',SNAKE_MODEL,scene,undefined,'.glb')}={}){
+ let currentTier=tier,signature='',plan=null,wetness=0,lastTime=null,windClock=0,disposed=false,snakeAsset=null,snakesReady=null;
+ const meshes=[],batches=[],moving=[],snakes=[],owned=[];
  const material=(name,hex,roughness)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=roughness;m.metallic=0;owned.push(m);return m;};
- const earth=material('nature-reed-shards-and-dust','#ffffff',1),water=material('nature-shallow-rain-puddles','#b7c7c2',.09),dry=material('nature-dry-tumbleweed','#ac9160',1),snake=material('nature-small-sand-snake','#81704d',.86);
+ const earth=material('nature-reed-shards-and-dust','#ffffff',1),water=material('nature-shallow-rain-puddles','#b7c7c2',.09),dry=material('nature-dry-tumbleweed','#ac9160',1);
  for(const m of [earth,water]){m.backFaceCulling=false;m.transparencyMode=B.Material.MATERIAL_ALPHABLEND;m.forceDepthWrite=false;}water.alpha=0;water.environmentIntensity=.7;
  const own=m=>{m.isPickable=false;m.receiveShadows=false;meshes.push(m);return m;};
  const source=(name,paths,radius,mat)=>{const parts=paths.map(path=>B.MeshBuilder.CreateTube(name,{path:path.map(p=>new B.Vector3(...p)),radius,tessellation:5,cap:2},scene)),m=B.Mesh.MergeMeshes(parts,true,true);m.name=name;m.material=mat;m.setEnabled(false);return own(m);};
  const twigs=[];for(let j=0;j<7;j++){const path=[];for(let i=0;i<=6;i++){const a=i/6*Math.PI*1.65+j*1.19,r=.22+random(i+j*13,51)*.075;path.push([Math.cos(a)*r,Math.sin(a)*r*Math.cos(j*1.37),Math.sin(a)*r*Math.sin(j*1.37)]);}twigs.push(path);const p=path[3],q=path[4];twigs.push([p,[(p[0]+q[0])*.58,p[1]*1.19,p[2]*1.16],[p[0]*1.34,p[1]*1.28+.025,p[2]*1.3]]);}
  const tumbleSource=source('nature-tumbleweed-shared-source',twigs,.0065,dry);
- const snakePath=Array.from({length:22},()=>B.Vector3.Zero());
- const snakeRadius=i=>.035*(i<2?1.2:Math.max(.12,1-(i-2)/20));
- function curveSnake(phase){
-  for(const [i,point] of snakePath.entries()){
-   const t=i/(snakePath.length-1);
-   point.set((.5-t)*1.08,.032+Math.max(0,1-i/5)*.032,Math.sin(t*8-phase)*(.025+t*.075));
+ function buildSnake(point,index){
+  const id=`nature-supplied-snake-${index}`,root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);
+  const copy=snakeAsset.instantiateModelsToScene(name=>`${id}-${name}`,false,{doNotInstantiate:true});
+  model.parent=root;for(const node of copy.rootNodes)node.parent=model;
+  const bodies=[];
+  for(const mesh of model.getChildMeshes()){
+   if(mesh.skeleton&&mesh.getTotalVertices()>0){mesh.skeleton.useTextureToStoreBoneMatrices=true;own(mesh);bodies.push(mesh);}
+   else if(mesh.getTotalVertices()>0)mesh.setEnabled(false);
   }
-  return snakePath;
+  model.scaling.setAll(SNAKE_SCALE);
+  // The source rig is off-centre and faces +Z. Keep its body above the terrain
+  // and put the path's centre halfway along the animated skin, not at the tail.
+  model.position.set(0,SNAKE_GROUND,-SNAKE_Z_CENTER*SNAKE_SCALE);
+  const clip=copy.animationGroups.find(g=>g.name.endsWith('-Animation'));
+  for(const group of copy.animationGroups)group.stop();
+  clip.start(true);clip.pause();
+  root.metadata={natureDetail:{kind:'snakes',...point},modelFile:SNAKE_MODEL,clip:'Animation'};
+  return {root,point,bodies,clip,copy,lastPose:null};
+ }
+ function clearSnakes(){
+  for(const a of snakes){
+   for(const mesh of a.bodies){const i=meshes.indexOf(mesh);if(i>=0)meshes.splice(i,1);}
+   for(const group of a.copy.animationGroups)group.dispose();
+   a.root.dispose();for(const skeleton of a.copy.skeletons)skeleton.dispose();
+  }
+  snakes.length=0;
+ }
+ function prepareSnakes(){
+  if(!snakesReady)snakesReady=Promise.resolve().then(loadSnake).then(asset=>{
+   if(disposed||!asset.animationGroups.some(g=>g.name==='Animation')||!asset.meshes.some(m=>m.skeleton)){
+    asset.dispose();return;
+   }
+   snakeAsset=asset;
+  }).catch(error=>{if(!disposed&&scene.getEngine().getClassName?.()!=='NullEngine')console.warn('Ground snake asset unavailable',error);});
+ }
+ function updateSnakes(s,time){
+  if(!loadSnake||!plan.snakes.length)return;
+  if(!snakeAsset){prepareSnakes();return;}
+  if(!snakes.length)plan.snakes.forEach((point,index)=>snakes.push(buildSnake(point,index)));
+  for(const a of snakes){
+   const p=a.point,phase=time*.52+p.phase,dx=Math.cos(phase)*.9,dz=Math.sin(phase)*.53;
+   const x=p.x+dx/TILE,y=p.y+dz/TILE;
+   a.root.position.set(x*TILE,visualSurfaceElevation(x,y,s),y*TILE);
+   a.root.rotation.y=Math.atan2(-Math.sin(phase)*.9,Math.cos(phase)*.53);
+   const pose=Math.floor(time*18);
+   if(a.lastPose===pose)continue;
+   a.lastPose=pose;
+   const {from,to}=a.clip,elapsed=pose/18*1.48+p.phase*.11;
+   a.clip.goToFrame(from+(elapsed%1)*(to-from));
+  }
  }
  function remove(list){for(const m of list){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();}list.length=0;}
  function batch(name,g,mat){if(!g.indices.length)return;const m=own(new B.Mesh(name,scene)),d=new B.VertexData();d.positions=g.positions;d.indices=g.indices;d.colors=g.colors;d.uvs=g.uvs;d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);d.applyToMesh(m);m.material=mat;m.useVertexColors=true;m.hasVertexAlpha=true;m.freezeWorldMatrix();batches.push(m);return m;}
  function rebuild(s,roads,key){if(signature===key)return;signature=key;remove(batches);remove(moving);plan=natureDetailPlan(s,roads,currentTier);const geometry=natureGroundGeometry(s,plan);batch('nature-ground-reeds-shards-dust',geometry.debris,earth);batch('nature-rain-puddles',geometry.puddles,water);
-  for(const kind of ['tumbleweeds','snakes'])for(const p of plan[kind]){const m=own(kind==='snakes'
-   ?B.MeshBuilder.CreateTube('nature-snakes',{path:curveSnake(p.phase),radiusFunction:snakeRadius,tessellation:5,cap:2,updatable:true},scene)
-   :tumbleSource.createInstance('nature-tumbleweeds'));
-   if(kind==='snakes')m.material=snake;
-   m.setEnabled(true);m.metadata={natureDetail:{kind,...p}};if(kind==='tumbleweeds')m.scaling.setAll(1.5);moving.push(m);}
+  clearSnakes();
+  for(const p of plan.tumbleweeds){const m=own(tumbleSource.createInstance('nature-tumbleweeds'));
+   m.setEnabled(true);m.metadata={natureDetail:{kind:'tumbleweeds',...p}};m.scaling.setAll(1.5);moving.push(m);}
  }
- return {meshes,get plan(){return plan;},get wetness(){return wetness;},get materialCount(){return owned.length;},setQuality(next){if(NATURE_BUDGETS[next]&&next!==currentTier){currentTier=next;signature='';}},update(s,time,weather,roads,key){if(disposed)return;rebuild(s,roads,`${key}|${currentTier}`);const dt=lastTime===null?0:Math.max(0,time-lastTime);if(lastTime===null)wetness=weather.type==='rain'?.3:0;lastTime=time;windClock+=Math.min(1,dt)*(weather.type==='wind'?2.2:.65);wetness=advanceWetness(wetness,weather.type==='rain',dt);water.alpha=wetness*.83;
+ return {meshes,get snakesReady(){return snakesReady;},get plan(){return plan;},get wetness(){return wetness;},get materialCount(){return owned.length;},setQuality(next){if(NATURE_BUDGETS[next]&&next!==currentTier){currentTier=next;signature='';}},update(s,time,weather,roads,key){if(disposed)return;rebuild(s,roads,`${key}|${currentTier}`);const dt=lastTime===null?0:Math.max(0,time-lastTime);if(lastTime===null)wetness=weather.type==='rain'?.3:0;lastTime=time;windClock+=Math.min(1,dt)*(weather.type==='wind'?2.2:.65);wetness=advanceWetness(wetness,weather.type==='rain',dt);water.alpha=wetness*.83;
   const puddles=batches.find(m=>m.name==='nature-rain-puddles');if(puddles)puddles.setEnabled(wetness>.005);
-  for(const m of moving){const p=m.metadata.natureDetail;if(p.kind==='tumbleweeds'){const q=tumbleweedPose(p,windClock);m.position.set(q.x*TILE,visualSurfaceElevation(q.x,q.y,s)+.44,q.y*TILE);m.rotation.y=q.yaw;m.rotation.x=q.roll;continue;}const phase=time*.14+p.phase,x=p.x+Math.cos(phase)*.42/TILE,y=p.y+Math.sin(phase)*.189/TILE;m.position.set(x*TILE,visualSurfaceElevation(x,y,s)+.035,y*TILE);m.rotation.y=Math.atan2(-.189*Math.cos(phase),-Math.sin(phase)*.42);
-   const pose=Math.floor(time*12);
-   if(m.metadata.snakeFrame!==pose){
-    B.MeshBuilder.CreateTube(null,{path:curveSnake(pose*.32+p.phase),radiusFunction:snakeRadius,instance:m});
-    m.metadata.snakeFrame=pose;
-   }
-  }
- },dispose(){if(disposed)return;disposed=true;for(const m of meshes)m.dispose();meshes.length=0;batches.length=0;moving.length=0;for(const m of owned)m.dispose(false,false);}};
+  for(const m of moving){const q=tumbleweedPose(m.metadata.natureDetail,windClock);m.position.set(q.x*TILE,visualSurfaceElevation(q.x,q.y,s)+.44,q.y*TILE);m.rotation.y=q.yaw;m.rotation.x=q.roll;}
+  updateSnakes(s,time);
+ },dispose(){if(disposed)return;disposed=true;clearSnakes();snakeAsset?.dispose();for(const m of meshes)m.dispose();meshes.length=0;batches.length=0;moving.length=0;for(const m of owned)m.dispose(false,false);}};
 }

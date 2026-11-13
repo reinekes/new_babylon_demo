@@ -1,7 +1,9 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=audit-fixes-20261113-2';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=fauna-500-20261113';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
+const supplied=byId('supplied');
+const faunaGroups=new Set(['animals','birds']);
 const viewer=byId('viewer'), canvas=byId('model-canvas'), parking=byId('preview-parking');
 const clip=byId('clip'), rotate=byId('rotate'), status=byId('model-status');
 const cache=new Map(), queue=new Map();
@@ -9,12 +11,13 @@ let index, preview, pending, active=false, drawing=false;
 let observer;
 let usage='game';
 const usageButtons=[...byId('usage').querySelectorAll('button')];
-const usageLabels={all:'Все модели',game:'В игре',reserve:'Резерв',studio:'Отдельные сцены'};
+const usageLabels={all:'Все модели',game:'В игре',reserve:'Резерв',studio:'Отдельные сцены',source:'У автора'};
 const usageHelp={
   all:'Все модели. У каждой строки указан статус использования.',
   game:'Модели основного города. Варианты, действующие только в прежней ветке, подписаны отдельно.',
   reserve:'Запасные файлы и модели, которые могут подменить основные при ошибке загрузки.',
-  studio:'Модели отдельных художественных и проверочных сцен.'
+  studio:'Модели отдельных художественных и проверочных сцен.',
+  source:'Модели, доступные для просмотра на странице автора.'
 };
 
 const element=(tag,text,className)=>{
@@ -23,7 +26,7 @@ const element=(tag,text,className)=>{
   if (className) node.className=className;
   return node;
 };
-const getPreview=()=>preview??=import('./preview.js?v=city-menu-fauna-20261113').then(m=>m.createPreview(canvas)).catch(error=>{
+const getPreview=()=>preview??=import('./preview.js?v=fauna-500-20261113').then(m=>m.createPreview(canvas)).catch(error=>{
   preview=null;
   throw error;
 });
@@ -156,7 +159,9 @@ function render() {
     drain();
   },{rootMargin:'160px'});
   const query=search.value.trim().toLocaleLowerCase('ru');
-  const allRows=makeCatalog(index,profile.value);
+  const allRows=makeCatalog(index,profile.value).filter(row=>
+    (!group.value||(group.value==='fauna'?faunaGroups.has(row.group):group.value===row.group))&&
+    (!supplied.checked||row.originalFile));
   for (const button of usageButtons) {
     const key=button.dataset.usage;
     button.textContent=`${usageLabels[key]} · ${key==='all'?allRows.length:allRows.filter(row=>usageOf(row)===key).length}`;
@@ -164,8 +169,8 @@ function render() {
   }
   byId('usage-help').textContent=query?'Поиск по всем статусам в выбранном разделе.':usageHelp[usage];
   const rows=allRows.filter(row=>
-    (query||usage==='all'||usageOf(row)===usage)&&(!group.value||group.value===row.group)&&
-    [row.title,row.description,...row.previews.flatMap(p=>[p.label,p.species,p.entry?.file])].some(text=>text?.toLocaleLowerCase('ru').includes(query)));
+    (query||usage==='all'||usageOf(row)===usage)&&
+    [row.title,row.description,row.originalFile,...row.previews.flatMap(p=>[p.label,p.species,p.entry?.file])].some(text=>text?.toLocaleLowerCase('ru').includes(query)));
   catalog.replaceChildren();
   byId('results').textContent=rows.length?`Строк в выборке: ${rows.length}`:'Совпадений нет';
   for(const [key,title] of Object.entries(groups)) {
@@ -187,6 +192,7 @@ function render() {
       const tr=body.insertRow(), name=element('th',row.title);
       name.scope='row';
       name.append(element('span',row.description,'hint'));
+      if(row.originalFile)name.append(element('span',row.originalFile,'hint original-file'));
       if(usage==='all'||query)name.append(element('span',usageLabels[usageOf(row)],'usage-tag'));
       tr.append(name);
       for(const item of row.previews){
@@ -202,8 +208,8 @@ function render() {
       if(key==='buildings') {
         for(let i=row.previews.length;i<3;i++) tr.insertCell().append(element('span','—','empty'));
       } else {
-        const record=row.previews[0].entry;
-        tr.insertCell().textContent=record?`Файл GLB · ${row.previews[0].label}`:row.description;
+        const item=row.previews[0], record=item.entry;
+        tr.insertCell().textContent=item.kind==='source'?item.label:record?`Файл GLB · ${item.label}`:row.description;
       }
     }
     scroller.append(table);
@@ -212,24 +218,28 @@ function render() {
   }
 }
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json?v=audit-fixes-20261113',import.meta.url));
+  const response=await fetch(new URL('../docs/model-index.json?v=fauna-500-20261113',import.meta.url));
   if(!response.ok) throw Error(`HTTP ${response.status}`);
   index=await response.json();
   const rows=makeCatalog(index,'strict');
   byId('totals').textContent=`${rows.filter(r=>r.previews[0].kind==='building'&&!r.previews[0].starter).length} типов зданий · ${index.models.length} файлов GLB · отдельные процедурные объекты`;
+  group.add(new Option('Животные и птицы','fauna'));
   for(const [id,name] of Object.entries(groups)) group.add(new Option(name,id));
-  for(const field of [group,profile]) field.addEventListener('change',render);
+  for(const field of [group,profile,supplied]) field.addEventListener('change',render);
   search.addEventListener('input',render);
   for(const button of usageButtons) button.addEventListener('click',()=>{
     usage=button.dataset.usage;
-    group.value='';
     render();
   });
   const params=new URLSearchParams(location.search);
-  const file=params.get('model'),species=params.get('species');
+  const file=params.get('model'), requestedSpecies=params.get('species');
+  const species=requestedSpecies==='snakes'?'cobra-base':requestedSpecies;
   const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:!!species&&item.species===species);
   const section=params.get('group');
-  if(Object.hasOwn(groups,section)){group.value=section;usage='all';}
+  if(section==='animals'||section==='fauna'){group.value='fauna';usage='all';}
+  else if(Object.hasOwn(groups,section)){group.value=section;usage='all';}
+  supplied.checked=params.get('supplied')==='1';
+  if(supplied.checked)usage='all';
   if(selected){
     usage=usageOf(selected);
     search.value=file||selected.title;

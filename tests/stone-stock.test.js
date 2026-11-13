@@ -15,7 +15,7 @@ test('manual collection and the quarry share a finite deposit without losing the
  assert.ok(orderManualGathering(s,pit.x,pit.y).ok);
  const worker={x:pit.x-.5,y:pit.y-.5,phase:'manualGathering',cargo:{},manualGathering:{key:`${pit.x},${pit.y}`,stand:{x:pit.x-.5,y:pit.y-.5},progress:27}};
  assert.ok(workManualGathering(s,worker,1));
- assert.deepEqual(worker.cargo,{stone:1});
+ assert.deepEqual(worker.cargo,{stone:.25});
  assert.equal(stoneRemaining(s,pit.x,pit.y),.5);
  const quarry={type:'quarry',x:pit.x,y:pit.y,level:1};
  s.buildings.push(quarry);stampBuildingCompletion(s,quarry);syncCitizens(s);

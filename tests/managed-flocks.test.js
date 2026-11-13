@@ -120,3 +120,27 @@ test('sheep use suitable pasture by day and are back inside before dusk',()=>{
  }
  assert.ok(modes.has('grazing'));
 });
+
+test('the flock changes shape on the move and sheep pause at different moments',()=>{
+ const city=createGame({start:'established',seed:137});
+ const fold={type:'sheepfold',x:13,y:7,footprint:2,rotation:1,level:3};
+ city.buildings=[fold];
+ const flock=()=>animalsFor(city).filter(a=>a.kind==='sheep');
+ const initial=flock(),ids=initial.map(a=>a.id),distanceChanges=new Set();
+ let mixedAtPasture=false,movingBeforePasture=false;
+ for(let step=1;step<=300;step++){
+  city.simTime=step*.2;
+  const herd=flock();assert.deepEqual(herd.map(a=>a.id),ids);
+  const walking=herd.filter(a=>a.walking);
+  if(walking.length>=3){
+   const d=Math.hypot(herd[0].x-herd[1].x,herd[0].y-herd[1].y);
+   distanceChanges.add(Math.round(d*100));
+  }
+  mixedAtPasture ||= walking.length>0&&herd.some(a=>a.behavior==='grazing');
+  movingBeforePasture ||= walking.length>0&&walking.length<herd.length&&herd.some(a=>a.behavior==='resting');
+  for(const [i,a] of herd.entries())assert.ok(herd.slice(i+1).every(b=>Math.hypot(a.x-b.x,a.y-b.y)>=.185),`${step}:${a.id}`);
+ }
+ assert.ok(distanceChanges.size>=4,'pair spacing varies during travel');
+ assert.ok(mixedAtPasture,'some sheep graze while others are still moving');
+ assert.ok(movingBeforePasture,'the gate departure is staggered');
+});

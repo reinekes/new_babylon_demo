@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,advanceTime,build,encode,decode} from '../engine.js';
 import {layRoad,roadIsBuilt} from '../roads.js';
-import {footpathRibbons,footpathRibbonPoint,recordFootsteps,visibleFootpaths} from '../footpaths.js';
-import {networkFor} from '../workforce.js';
+import {footpathRibbonPoint,recordFootsteps,visibleFootpaths} from '../footpaths.js';
+import {navigationSegmentClear} from '../navigation.js';
+import {networkFor,visibleCitizens} from '../workforce.js';
 
 const point=(x,y)=>({x,y});
 
@@ -24,6 +25,31 @@ test('footpaths come from actual resident motion and do not become road orders',
  advanceTime(s,12);
  assert.ok(s.footpaths?.length>0,'residents record their walking routes');
  assert.equal(s.roads.length,n);assert.ok(decode(encode(s)));
+});
+
+test('Amal follows the same safe worn curve in either direction and after loading',()=>{
+ const s=createGame({start:'established'});
+ advanceTime(s,3.4);
+ const amal=s.citizens[0],edge=[amal.route[amal.routeIndex-1],amal.route[amal.routeIndex]];
+ assert.equal(amal.phase,'toWork');assert.equal(amal.work,'12,8');
+ assert.ok(edge.every(Boolean));
+ recordFootsteps(s,...edge,3);
+ const trail=visibleFootpaths(s).find(r=>edge.every(p=>[r.a,r.b].some(q=>q.x===p.x&&q.y===p.y)));
+ assert.ok(trail?.control);
+ const [a,b]=edge;
+ const shown=()=>visibleCitizens(s).find(c=>c.id===amal.id);
+ const forward=shown(),raw=encode(s),loaded=decode(raw);
+ assert.ok(loaded);assert.equal(encode(s),raw);
+ assert.deepEqual(visibleFootpaths(loaded),visibleFootpaths(s));
+ const reloaded=visibleCitizens(loaded).find(c=>c.id===amal.id);
+ assert.deepEqual([reloaded.x,reloaded.y],[forward.x,forward.y]);
+ assert.ok(Math.abs(forward.y-amal.y)>.025,'feet visibly depart from the straight grid edge');
+ const t=(amal.x-a.x)/(b.x-a.x),curve=footpathRibbonPoint(a,b,trail.control,t);
+ assert.ok(Math.hypot(curve.x-forward.x,curve.y-forward.y)<1e-8);
+ amal.route=[b,a];amal.routeIndex=1;amal.phase='toHome';
+ assert.ok(Math.hypot(shown().x-forward.x,shown().y-forward.y)<1e-8);
+ assert.ok(layRoad(s,point(a.x-.5,a.y-.5),point(b.x-.5,b.y-.5)).ok);
+ assert.deepEqual([shown().x,shown().y],[amal.x,amal.y],'a finished street stays straight');
 });
 
 test('an explicit street promotes a matching automatic edge, including after save and load',()=>{
@@ -64,18 +90,12 @@ test('a newly blocked segment hides wear and cannot collect more, while the old 
 });
 
 
-test('a worn right-angle corner joins smoothly while branches and blocked joins stay intact',()=>{
- const left=point(0,0),corner=point(1,0),right=point(1,1);
- const paths=[{a:left,b:corner,level:3},{a:corner,b:right,level:2}];
- const [first,second,join]=footpathRibbons(paths);
- assert.deepEqual(first.b,join.a);
- assert.deepEqual(second.a,join.b);
- assert.deepEqual(join.control,corner);
- assert.equal(join.level,2);
- const midpoint=footpathRibbonPoint(join.a,join.b,join.control,.5);
- assert.ok(midpoint.x<corner.x&&midpoint.y>corner.y);
- assert.deepEqual(paths[0].b,corner);
- assert.deepEqual(footpathRibbons(paths,()=>false),paths);
- const branch=[...paths,{a:corner,b:point(2,0),level:1}];
- assert.deepEqual(footpathRibbons(branch),branch);
+test('curves share their junction and stay out of buildings',()=>{
+ const s=createGame({start:'established'}),a=point(8.5,8.5),b=point(9.5,8.5),c=point(10.5,8.5);
+ recordFootsteps(s,a,b,3);recordFootsteps(s,b,c,3);
+ const [first,second]=visibleFootpaths(s);
+ assert.equal(first.control,null,'the narrow passage between a shrine and a house stays straight');
+ assert.ok(second.control,'the next segment can bend in the open');
+ assert.deepEqual(footpathRibbonPoint(first.a,first.b,first.control,1),footpathRibbonPoint(second.a,second.b,second.control,0));
+ for(let i=1;i<=20;i++)assert.ok(navigationSegmentClear(s,footpathRibbonPoint(second.a,second.b,second.control,(i-1)/20),footpathRibbonPoint(second.a,second.b,second.control,i/20)));
 });

@@ -1,3 +1,4 @@
+import {extractionSource} from './extraction-courts.js';
 import {appendGrain,takeGrain} from './grain-origin.js';
 import {archiveBuildingProduction} from './building-production-history.js';
 import {riverStoreDemolitionReason} from './river-stores.js';
@@ -328,7 +329,8 @@ export function closeForestForRest(state,building){
  const reason=blocked(state);
  if(reason)return {ok:false,reason};
  if(building?.type!=='logging'||!state.buildings.includes(building)||!isComplete(building))return {ok:false,reason:'Нужна готовая лесозаготовка'};
- const forest=forestFor(state,building.x,building.y);
+ const source=extractionSource(building);
+ const forest=forestFor(state,source.x,source.y);
  return forest&&restForest(state,forest)?{ok:true}:{ok:false,reason:'Роща недоступна, уже закрыта или запас полный'};
 }
 

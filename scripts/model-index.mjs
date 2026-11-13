@@ -45,8 +45,10 @@ group('ambient-duck','optional','Декоративная утка для сте
 group('ambient-sheep-kenchoo','active','Фоновые овцы и часть взрослых овец в овчарнях.','game3d/ambient-fauna.js|ambient-sheep-kenchoo');
 group('supplied-common-quail supplied-frog-jump','active','Импортированные обитатели берега.','game3d/supplied-fauna.js|supplied-');
 group('supplied-pelican-wasis','active','Зимний пеликан на воде.','game3d/supplied-fauna.js|supplied-pelican-wasis');
-group('supplied-yellowfin-goby supplied-oriental-goby','optional','Замена живой рыбы в тестовом режиме карты.','game3d/supplied-fauna.js|fishModels');
-group('supplied-northern-cardinal supplied-horse-run supplied-white-eagle supplied-schlegel-frog supplied-realistic-rat supplied-horse-brown supplied-cobra-base supplied-cobra-head-up','spare','Импорт из подборки, просмотр в атласе.','model-atlas/supplied-fauna.js|supplied-');
+group('supplied-yellowfin-goby supplied-oriental-goby','active','Визуальные модели речной рыбы.','game3d/supplied-fauna.js|fishModels');
+group('supplied-realistic-rat','active','Грызун в сцене кошачьей охоты у склада.','game3d/supplied-fauna.js|supplied-realistic-rat');
+group('supplied-cobra-base','active','Анимированная береговая змея.','game3d/nature-details.js|supplied-cobra-base');
+group('supplied-northern-cardinal supplied-horse-run supplied-white-eagle supplied-schlegel-frog supplied-horse-brown supplied-cobra-head-up','spare','Импорт из подборки, просмотр в атласе.','model-atlas/supplied-fauna.js|supplied-');
 group('festival-candle','active','Свеча Ночи огней в прежней ветке; в режиме Южного Шумера используется светильник из раковины.','game3d/festival-candles.js|festival-candle.glb');
 
 export function readGlb(bytes){

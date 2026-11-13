@@ -31,7 +31,12 @@ export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
   }));
  const ibis=pool(7,1.05,.46,.025,.105);
  const frog=bank(-3,1.66,.20);
- const quail=[0,.16,.33].map((offset,index)=>bank(9+index*.27,2.05+offset,.28)?.point).filter(Boolean);
+ const quail=[];
+ for(const {bank:center} of spots(9,2.1)){
+  const group=[[0,0],[.27,.12],[-.24,.17],[.5,.35],[-.52,.34]].map(([x,y])=>riverPoint(center+x,state,2.05+y));
+  if(!group.every((p,i)=>dry(state,p.x,p.y,.28)&&group.slice(0,i).every(q=>Math.hypot(p.x-q.x,p.y-q.y)>.18)))continue;
+  quail.push(...group);break;
+ }
  const frogEnd=frog&&riverPoint(frog.bank+.16,state,1.66);
  return {ibis,quail,frog:frog&&(frogEnd&&clearSegment(state,frog.point,frogEnd)?[frog.point,frogEnd]:[frog.point]),
   onagers:onagerRoutes(state,steppeland,clearSegment),

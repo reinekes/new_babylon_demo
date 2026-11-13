@@ -1,3 +1,4 @@
+import {isExtractionCourt,extractionWorkArea} from '../extraction-courts.js';
 import {constructionProgress} from '../construction.js';
 import {bridgeSpanAt,riverLocal,riverAxis} from '../world.js';
 import {footprintSize} from '../footprints.js';
@@ -21,10 +22,11 @@ export function createConstructionSite(B,scene,b,m,s){
   const result=[];for(const [mat,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='construction-bridge-timber';mesh.material=mat;mesh.metadata={constructionSite:true};result.push(mesh);}return result;
  }
 
- const c=a.center,r=a.width/2,ground=m.raw||m.brick,finish=b.level>=2?(m.fired||ground):ground;
+ const court=isExtractionCourt(b),workArea=court?extractionWorkArea(b):{x:a.center,z:a.center},c=workArea.x,z=workArea.z,r=court?1.6:a.width/2,ground=m.raw||m.brick,finish=b.level>=2?(m.fired||ground):ground;
  if(!a.upgrade){
-  box(c,.025,c,a.width,.05,a.width,m.soil);
-  if(!a.low){
+  if(!court)box(c,.025,z,a.width,.05,a.width,m.soil);
+  if(court){if(a.p>0)for(const side of [-1,1])box(c+side*1.25,.30*a.p,z,.18,.60*a.p,2.1,finish);}
+  else if(!a.low){
    const rows=Math.floor(a.p*a.height/.22);
    for(let j=0;j<rows;j++){
     // Open doorway and irregular brick ends read as unfinished masonry.
@@ -35,7 +37,7 @@ export function createConstructionSite(B,scene,b,m,s){
   }else for(let i=0;i<Math.floor(a.p*9);i++)box(c-r+.3+i*(a.width-.6)/9,.2,c,a.width/12,.12,a.width-.5,m.wood);
  }
  const stock=Math.floor(a.materials*(1-a.p)*9+.000001);
- for(let i=0;i<stock;i++)box(c-r+.42+(i%3)*.43,.13+Math.floor(i/6)*.22,c+r-.55-Math.floor(i%6/3)*.43,.39,.20,.37,ground);
+ for(let i=0;i<stock;i++)box(c-r+.42+(i%3)*.43,.13+Math.floor(i/6)*.22,z+r-.55-Math.floor(i%6/3)*.43,.39,.20,.37,ground);
  const result=[];
  for(const [mat,parts] of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);if(mesh){mesh.name=`construction-${b.type}-${mat.name}`;mesh.material=mat;mesh.metadata={constructionSite:true};result.push(mesh);}}
  return result;

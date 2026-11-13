@@ -1,5 +1,7 @@
+import {isExtractionCourt,extractionWorkArea,extractionWorkspaceWidth} from '../extraction-courts.js';
 import {visualSurfaceElevation} from './shore-profile.js';
 import {riverAxis} from '../world.js';
+import {fortificationLayout} from '../fortification-layout.js';
 import {sheepfoldGateSide,sheepfoldLayout} from '../sheepfold-layout.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {isReedShrine} from '../building-presentation.js';
@@ -104,7 +106,24 @@ export function createArchitecture(B,scene,b,m,state){
   jar(-1.29,2.03,.38,.55);
   jar(1.31,2.02,.53);
  };
- switch(b.type){
+ if(isExtractionCourt(b)){
+  const {x,z}=extractionWorkArea(b);
+  const width=extractionWorkspaceWidth(b),height=level===3?2.15:1.75;
+  cloth(x,z,width,2.4,height,m.reed);
+  if(b.type==='clay')basin(x,z+.16,1.52,1.08);
+  if(b.type==='quarry'||b.type==='logging')bench(x,z+.25,1.55);
+  if(b.type==='reed')for(let i=0;i<3;i++)block(x-.9+i*.6,.11,z+.35,.50,.18,1.25,m.reed);
+  if(b.type==='garden'||b.type==='hunting')for(let i=0;i<3;i++)jar(x-.7+i*.7,z+.2,.63);
+  const posts=(x1,z1,x2,z2)=>{
+   for(let i=0;i<4;i++)cylinder(x1+(x2-x1)*i/3,.40,z1+(z2-z1)*i/3,.035,.80);
+   for(const h of [.28,.59])beam([x1,h,z1],[x2,h,z2],.032,m.reed);
+  };
+  // The street ports meet the corners. Keep them open for workers.
+  for(const edge of [-2.78,8.78]){
+   posts(edge,-1.50,edge,7.50);
+   posts(-1.50,edge,7.50,edge);
+  }
+ }else switch(b.type){
  case 'pottery':ground();room(-1.3,-1.45,2.2,1.8,2);cloth(-1.15,.65,2.4,1.6);cylinder(1.4,.65,-.7,.85,1.3,m.fired,.6);cylinder(1.4,1.4,-.7,.6,.3,m.terracotta,.34);block(1.4,.35,.14,.47,.58,.04,m.shade);bench(-1.2,.7);for(let i=0;i<5;i++)jar(-1.85+i*.34,.7,.37,.84);for(let i=0;i<7;i++)jar(-1.9+i*.61,1.9,.52+i%2*.18);break;
  case 'bakery':
   ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);
@@ -223,15 +242,13 @@ export function createArchitecture(B,scene,b,m,state){
   }
   break;
  }
- case 'cityWall':block(0,1.05,0,5.70,2.1,5.70,m.raw);block(0,2.17,0,5.68,.14,5.68,m.plaster);break;
- case 'cityGate':{
-  const scale=b.footprint===2?2:1,centre=(scale-1)*3;
-  for(const side of [-1,1]){
-   const z=centre+side*1.82*scale;
-   block(centre,1.68,z,5.7*scale,3.36,2*scale,m.raw);
-   block(centre,3.45,z,5.55*scale,.18,1.98*scale,m.plaster);
+ case 'cityWall':case 'cityGate':{
+  for(const p of fortificationLayout(b,state)){
+   const part=B.MeshBuilder.CreateBox(`fortification-${serial++}`,{width:p.w,height:p.h,depth:p.d},scene);
+   part.position.set(p.x,p.bottom+p.h/2,p.z);
+   add(part,p.material==='brick'?m.raw:m[p.material]);
   }
-  block(centre,3.08,centre,.58*scale,.34,3.75*scale,m.wood);break;
+  break;
  }
  case 'levee':{
   const angle=(riverAxis(state)==='x'?0:Math.PI/2)-(b.rotation||0)*Math.PI/2;

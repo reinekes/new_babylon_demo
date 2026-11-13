@@ -1,4 +1,5 @@
 import {constructionProgress} from '../construction.js';
+import {fortificationLayout,fortificationWorldPoint} from '../fortification-layout.js';
 import {bridgeSpanAt,riverLocal,riverAxis} from '../world.js';
 // Original procedural adobe architecture. All vertices are local to one 6 m tile.
 // Archaeological forms are a stylisation, not reconstructions of specific excavated houses.
@@ -182,15 +183,13 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
   for(let x=-2.5;x<=2.5;x+=1.25){cyl(x,1.55,-2.6,.055,3.1);beam([x,2.5,-2.6],[x,2.5,-1.9],.045);}
   beam([-2.5,1.6,-2.6],[2.5,1.6,-2.6],.05);ladder(1.8,.5,2.6);pot(-1,0,.8);
  }else switch(b.type){
-  case 'cityWall':box(0,1.05,0,5.68,2.1,5.68,'brick');box(0,2.17,0,5.6,.14,5.6,'plaster');break;
-  case 'cityGate':{
-   const scale=b.footprint===2?2:1,centre=(scale-1)*3,turned=(b.rotation||0)%2;
-   for(const side of [-1,1]){
-    const offset=side*1.82*scale,x=centre+(turned?offset:0),z=centre+(turned?0:offset);
-    box(x,1.68,z,(turned?2:5.68)*scale,3.36,(turned?5.68:2)*scale,'brick');
-    box(x,3.45,z,(turned?1.98:5.55)*scale,.18,(turned?5.55:1.98)*scale,'plaster');
+  case 'cityWall':case 'cityGate':{
+   const turned=(b.rotation||0)%2;
+   for(const p of fortificationLayout(b,s)){
+    const point=fortificationWorldPoint(b,p.x,p.z);
+    box((point.x-b.x)*6,p.bottom+p.h/2,(point.y-b.y)*6,turned?p.d:p.w,p.h,turned?p.w:p.d,p.material);
    }
-   box(centre,3.08,centre,(turned?3.75:.58)*scale,.34,(turned?.58:3.75)*scale,'wood');break;
+   break;
   }
   case 'house':courtyard();break;
   case 'pottery':

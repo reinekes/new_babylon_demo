@@ -6,7 +6,7 @@
 <base href="../">
 <title>Атлас 3D · Новый Вавилон</title>
 <link rel="stylesheet" href="assets/ui/fonts.css">
-<link rel="stylesheet" href="model-atlas/style.css?v=audit-fixes-20261113">
+<link rel="stylesheet" href="model-atlas/style.css?v=fauna-500-20261113">
 </head>
 <body>
 <header class="hero">
@@ -14,14 +14,15 @@
     <a class="back" href="./">← Новый Вавилон</a>
     <h1>Атлас 3D-моделей</h1>
     <p>Здания по уровням, жители, животные, птицы и предметы из проекта.</p>
-    <p><a class="back" href="./?fish-preview=1">Бычки на тестовой карте ↗</a></p>
+    <p><a class="back" href="./?fish-preview=1">Посмотреть обе модели рыб в игре ↗</a></p>
     <nav class="fauna-links" aria-label="Быстрые ссылки на животных">
-      <a href="model-atlas/?group=animals">Все животные</a>
-      <a href="model-atlas/?species=fish">Рыба</a>
-      <a href="model-atlas/?species=mouse">Мышь</a>
-      <a href="model-atlas/?species=snakes">Змея на карте</a>
-      <a href="model-atlas/?species=cobra-base">Кобра · резерв</a>
-      <a href="model-atlas/?species=realistic-rat">Загруженная крыса</a>
+      <a href="model-atlas/?group=animals">Животные и птицы</a>
+      <a href="model-atlas/?group=animals&amp;supplied=1">Присланные модели · 16</a>
+      <a href="model-atlas/?species=yellowfin-goby">Рыба</a>
+      <a href="model-atlas/?species=realistic-rat">Мышь в сцене поимки</a>
+      <a href="model-atlas/?species=cobra-base">Змея в игре</a>
+      <a href="model-atlas/?species=cobra-head-up">Кобра · второй вариант</a>
+      <a href="model-atlas/?species=realistic-rat">Крыса</a>
       <a href="model-atlas/?species=yellowfin-goby">Желтопёрый бычок</a>
       <a href="model-atlas/?species=oriental-goby">Восточный бычок</a>
     </nav>
@@ -34,6 +35,7 @@
     <button type="button" data-usage="all" aria-pressed="false">Все модели</button>
     <button type="button" data-usage="reserve" aria-pressed="false">Резерв</button>
     <button type="button" data-usage="studio" aria-pressed="false">Отдельные сцены</button>
+    <button type="button" data-usage="source" aria-pressed="false">У автора</button>
   </div>
   <p id="usage-help" class="muted"></p>
   <div class="filters">
@@ -41,6 +43,7 @@
     <label>Раздел <select id="group"><option value="">Все разделы</option></select></label>
     <label>Профиль зданий <select id="profile"><option value="strict">Южный Шумер</option><option value="legacy">Прежняя ветка</option></select></label>
   </div>
+  <label class="supplied-filter"><input id="supplied" type="checkbox"> Только присланные модели</label>
   <p class="muted">Нажмите на превью, чтобы повернуть модель, приблизить её или выбрать анимацию. «Файл GLB» показывает базовый объект. Костюмы, груз и рабочие позы могут добавляться игровым кодом.</p>
   <p id="results" aria-live="polite"></p>
   <div id="catalog"></div>
@@ -66,6 +69,6 @@
   <p id="model-detail" class="muted"></p>
   <p id="model-sources"></p>
 </dialog>
-<script type="module" src="model-atlas/app.js?v=audit-fixes-20261113-2"></script>
+<script type="module" src="model-atlas/app.js?v=fauna-500-20261113"></script>
 </body>
 </html>

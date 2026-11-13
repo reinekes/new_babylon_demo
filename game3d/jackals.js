@@ -11,12 +11,13 @@ export async function createJackals(B,scene,shadow,meshes=[],options={}){
  function make(c){
   const prefix=`jackal-${c.id}-`,copy=source.instantiateModelsToScene(n=>prefix+n,false,{doNotInstantiate:true}),root=new B.TransformNode(prefix+'actor',scene),model=new B.TransformNode(prefix+'pose',scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
   for(const skeleton of copy.skeletons||[])skeleton.useTextureToStoreBoneMatrices=true;
-  root.metadata={animalId:c.id,animalKind:'jackal',gaitPhase:0};const owned=root.getChildMeshes();for(const m of owned){m.metadata={...(m.metadata||{}),animalId:c.id,animalKind:'jackal'};m.receiveShadows=true;meshes.push(m);shadow?.addShadowCaster(m);}
+  const identity=c.decorative?{decorativeId:c.id}:{animalId:c.id};
+  root.metadata={...identity,animalKind:'jackal',gaitPhase:0};const owned=root.getChildMeshes();for(const m of owned){m.metadata={...(m.metadata||{}),...identity,animalKind:'jackal'};m.isPickable=!c.decorative;m.receiveShadows=true;meshes.push(m);if(!c.decorative)shadow?.addShadowCaster(m);}
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(prefix)?g.name.slice(prefix.length):g.name,g);}
   const mouth=root.getDescendants().find(n=>n.name.endsWith('JackalMouthContact'));
-  return {root,model,mouth,owned,groups,skeletons:copy.skeletons,lastX:c.x,lastY:c.y,phase:0,clip:null};
+  return {root,model,mouth,owned,groups,decorative:c.decorative,skeletons:copy.skeletons,lastX:c.x,lastY:c.y,phase:0,clip:null};
  }
- function remove(a){for(const m of a.owned){shadow?.removeShadowCaster(m);const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose(false,false);for(const skeleton of a.skeletons||[])skeleton.dispose();}
+ function remove(a){for(const m of a.owned){if(!a.decorative)shadow?.removeShadowCaster(m);const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose(false,false);for(const skeleton of a.skeletons||[])skeleton.dispose();}
  function update(state,animals,dt=1/60,{paused=false,speed=1}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);const frozen=paused||!dt||!speed,seen=new Set();
   for(const c of animals){if(c.kind!=='jackal')continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(frozen&&!fresh)continue;

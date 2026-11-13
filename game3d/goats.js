@@ -12,9 +12,9 @@ export async function createGameGoats(B,scene,meshes=[],options={}){
  for(const r of results)if(r.status==='fulfilled')sources.set(r.value.variant,r.value.asset);else warn('Goat model unavailable; using another available model.',r.reason);
  if(!sources.size)throw Error('No goat model could be loaded');let disposed=false;
  function make(c){const requested=goatVariant(c.id),variant=sources.has(requested)?requested:sources.keys().next().value,source=sources.get(variant),copy=source.instantiateModelsToScene(n=>`goat-${c.id}-${n}`,false,{doNotInstantiate:true});
-  const root=new B.TransformNode(`goat-${c.id}`,scene),model=new B.TransformNode(`goat-${c.id}-model`,scene);model.parent=root;root.metadata={animalId:c.id,animalKind:'goat',goatVariant:variant,gaitPhase:0};for(const n of copy.rootNodes)n.parent=model;
+  const root=new B.TransformNode(`goat-${c.id}`,scene),model=new B.TransformNode(`goat-${c.id}-model`,scene);model.parent=root;root.metadata={...c.decorative?{decorativeId:c.id}:{animalId:c.id},animalKind:'goat',goatVariant:variant,gaitPhase:0};for(const n of copy.rootNodes)n.parent=model;root.scaling.setAll(c.growth||1);
   const groups=new Map();for(const g of copy.animationGroups){g.stop();const name=g.name.startsWith(`goat-${c.id}-`)?g.name.slice(`goat-${c.id}-`.length):g.name;groups.set(name,g);}
-  const owned=root.getChildMeshes();for(const m of owned){m.receiveShadows=true;m.isPickable=true;meshes.push(m);}
+  const owned=root.getChildMeshes();for(const m of owned){m.receiveShadows=true;m.isPickable=!c.decorative;meshes.push(m);}
   const nodes=[...new Set([...groups.values()].flatMap(g=>g.targetedAnimations.map(a=>a.target)).filter(n=>n?.position&&n?.rotation))];
   return {root,model,owned,nodes,groups,skeletons:copy.skeletons,variant,lastX:c.x,lastY:c.y,yaw:null,phase:0,clock:0,clip:null,transition:null,transitionTime:0};
  }

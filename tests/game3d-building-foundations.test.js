@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {createBuildingFoundations,foundationWorldPoint,foundationSignature} from '../game3d/building-foundations.js';
+import {extractionWorkArea,extractionWorkspaceWidth} from '../extraction-courts.js';
 import {visualSurfaceElevation} from '../game3d/shore-profile.js';
 import {createGameBuildings} from '../game3d/buildings.js';
 import {ARCHITECTURE_TYPES} from '../game3d/architecture.js';
@@ -14,25 +15,41 @@ function setup(){const engine=new B.NullEngine(),scene=new B.Scene(engine),mater
 const shore={type:'pottery',id:'shore',x:river(8)+1.25,y:8,level:1};
 function checkBed(mesh,b,state){
  const p=mesh.getVerticesData(B.VertexBuffer.PositionKind);let submerged=0;
- for(let i=0;i<p.length;i+=3){if(p[i+1]>=0)continue;const at=foundationWorldPoint(b,p[i],p[i+2]),ground=visualSurfaceElevation(at.x,at.y,state);assert.ok(p[i+1]<=ground+.00001,`floating foundation corner: ${p[i+1]} > ${ground}`);submerged++;}
- assert.ok(submerged);assert.ok(p.some((v,i)=>i%3===1&&Math.abs(v-.012)<.00001));
+ for(let i=0;i<p.length;i+=3){if(p[i+1]>-.24)continue;const at=foundationWorldPoint(b,p[i],p[i+2]),ground=visualSurfaceElevation(at.x,at.y,state);assert.ok(p[i+1]<=ground+.00001,`floating post: ${p[i+1]} > ${ground}`);submerged++;}
+ assert.ok(submerged);assert.ok(mesh.metadata.pileCount>0);
 }
-test('all ordinary building types receive a solid shore foundation, dry land and intentional water geometry stay clear',()=>{
+test('ordinary waterfront buildings stand on a timber deck and spaced piles; dry land and intentional water geometry stay clear',()=>{
  const t=setup();try{
-  for(const type of ['house',...ARCHITECTURE_TYPES].filter(type=>!['fishing','harbor','levee'].includes(type))){
+  for(const type of ['house',...ARCHITECTURE_TYPES].filter(type=>!['harbor','levee','cityWall','cityGate'].includes(type))){
    const b={...shore,type},state={buildings:[b]},before=structuredClone(state),meshes=createBuildingFoundations(B,t.scene,b,t.materials,state);
    assert.equal(meshes.length,1,type);checkBed(meshes[0],b,state);
-   const normals=meshes[0].getVerticesData(B.VertexBuffer.NormalKind);assert.ok(normals[16*3+1]>.9,'upper foundation surface faces daylight');assert.ok(normals[2]<-.9,'outside wall faces outwards');assert.ok(meshes[0].getTotalVertices()<=64*24);assert.deepEqual(state,before);meshes.forEach(m=>m.dispose());
+   assert.equal(meshes[0].material,t.materials.wood);assert.ok(meshes[0].metadata.boardCount>0);
+   assert.ok(meshes[0].getTotalVertices()<=1400);assert.deepEqual(state,before);meshes.forEach(m=>m.dispose());
   }
-  for(const type of ['bridge','field','canal','levee'])assert.equal(createBuildingFoundations(B,t.scene,{...shore,type},t.materials,{}).length,0);
+  for(const type of ['bridge','field','canal','levee','cityWall','cityGate'])assert.equal(createBuildingFoundations(B,t.scene,{...shore,type},t.materials,{}).length,0);
   assert.equal(createBuildingFoundations(B,t.scene,{...shore,x:3},t.materials,{}).length,0);
+  assert.equal(createBuildingFoundations(B,t.scene,{...shore,x:river(8)+1.9},t.materials,{}).length,0,'dry parcel near the river stays bare');
+ }finally{t.dispose();}
+});
+test('extraction court timber supports the wet work area without covering the deposit',()=>{
+ const t=setup();try{
+  const b={type:'reed',x:3,y:4,footprint:2,level:2,rotation:1,deposit:{x:3,y:5}};
+  const state={buildings:[b],world:{lakes:[{cells:[{x:4,y:4}]}]}},area=extractionWorkArea(b);
+  const [mesh]=createBuildingFoundations(B,t.scene,b,t.materials,state);
+  assert.ok(mesh);checkBed(mesh,b,state);
+  const p=mesh.getVerticesData(B.VertexBuffer.PositionKind);
+  for(let i=0;i<p.length;i+=3){
+   assert.ok(Math.abs(p[i]-area.x)<extractionWorkspaceWidth(b)/2+.01);
+   assert.ok(Math.abs(p[i+2]-area.z)<1.21);
+  }
+  assert.equal(createBuildingFoundations(B,t.scene,{...b,construction:{kind:'new'}},t.materials,state).length,0);
  }finally{t.dispose();}
 });
 test('rotated two-tile monuments, levels, new sites and upgrades bury support in the actual saved lake bed',()=>{
  const t=setup();try{
   for(const rotation of [0,1,2,3])for(const level of [1,2,3])for(const construction of [undefined,{kind:'new'},{kind:'upgrade'}]){
    const b={type:'ziggurat',x:3,y:4,footprint:2,level,rotation,construction},state={buildings:[b],world:{lakes:[{cells:[{x:4,y:4},{x:4,y:5}]}]}},meshes=createBuildingFoundations(B,t.scene,b,t.materials,state);
-   assert.equal(meshes.length,1);checkBed(meshes[0],b,state);assert.ok(meshes[0].getTotalVertices()<=256*24);meshes[0].dispose();
+   assert.equal(meshes.length,1);checkBed(meshes[0],b,state);assert.ok(meshes[0].getTotalVertices()<=3200);meshes[0].dispose();
   }
  }finally{t.dispose();}
 });
@@ -40,8 +57,21 @@ test('fishing and harbor piles reach below water to the bed, and stay in the foo
  const t=setup();try{
   for(const type of ['fishing','harbor']){
    const b={...shore,type},state={buildings:[b]},[mesh]=createBuildingFoundations(B,t.scene,b,t.materials,state);assert.ok(mesh);assert.equal(mesh.material,t.materials.wood);assert.equal(mesh.metadata.timber,true);
+   assert.equal(mesh.metadata.boardCount===0,type==='harbor','the pier reuses the modeled deck');
    const p=mesh.getVerticesData(B.VertexBuffer.PositionKind);assert.ok(p.some((v,i)=>i%3===1&&v<-.8));assert.ok(mesh.getTotalVertices()<2000);mesh.computeWorldMatrix(true);assert.ok(mesh.getBoundingInfo().boundingBox.minimum.y<-.8);mesh.dispose();
   }
+ }finally{t.dispose();}
+});
+test('the under-deck water remains visibly open between piles',()=>{
+ const t=setup();try{
+  const b={...shore,type:'waterpoint'},state={buildings:[b]};
+  const [mesh]=createBuildingFoundations(B,t.scene,b,t.materials,state);
+  const picks=Array.from({length:51},(_,i)=>-2.5+i*.1).map(z=>{
+   const ray=new B.Ray(new B.Vector3(-4,-.26,z),new B.Vector3(1,0,0),8);
+   return !!t.scene.pickWithRay(ray,candidate=>candidate===mesh).hit;
+  });
+  assert.ok(picks.filter(Boolean).length>=6,'posts remain visible below water');
+  assert.ok(picks.filter(hit=>!hit).length>=25,'open water separates the piles');
  }finally{t.dispose();}
 });
 test('shore signatures account for moves, quarter turns and saved lake edits; inland templates remain shared',()=>{

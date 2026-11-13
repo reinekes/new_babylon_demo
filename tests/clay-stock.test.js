@@ -51,7 +51,7 @@ test('manual work picks up only the remaining clay and cannot repeat on an exhau
  const stand={x:pit.x-.5,y:pit.y-.5};
  Object.assign(c,stand,{cargo:{},phase:'manualGathering',manualGathering:{key:`${pit.x},${pit.y}`,stand,progress:17}});
  assert.ok(workManualGathering(s,c,1));
- assert.deepEqual(c.cargo,{clay:.25});
+ assert.deepEqual(c.cargo,{clay:.0625});
  assert.equal(clayRemaining(s,pit.x,pit.y),0);
  assert.equal(orderManualGathering(s,pit.x,pit.y).ok,false);
 });

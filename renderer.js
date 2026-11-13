@@ -1,3 +1,4 @@
+import {extractionKinds} from './extraction-courts.js';
 import {localFerryVessel} from './river-stores.js';
 import {showBlessingApproach} from './blessing-presentation.js';
 import {blessingCupAt} from './blessing-discovery.js';
@@ -11,7 +12,7 @@ import {miracleCelebrationView} from './miracle-celebration.js';
 import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
-import {visibleFootpaths} from './footpaths.js';
+import {footpathRibbonPoint,visibleFootpaths} from './footpaths.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
 import {ceremonyJoinStep} from './festival-layout.js';
@@ -23,7 +24,7 @@ import {drawCanal,irrigationFor} from './irrigation.js';
 import {drawGroundTexture} from './terrain-texture.js';
 import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
-import {canBuild,canPlace} from './engine.js';
+import {buildingPlacement,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
 import {worldWidth,worldHeight,terrain,riverPoint,riverLocal,worldFromRiver,riverLength,riverFlowSign,signedRiverDistance,bridgeSpanAt,onBridge,depositAt,isShore,nearDeposit,isDryPoint} from './world.js';
 import {visibleCitizens,networkFor} from './workforce.js';
@@ -42,12 +43,12 @@ export function miraclePlantClear(s,p){
  return isDryPoint(s,p.x,p.y)&&!(s.buildings||[]).some(b=>{const size=footprintSize(b),center=(size-1)/2,half=size/2+.16;return Math.abs(b.x+center-p.x)<half&&Math.abs(b.y+center-p.y)<half;});
 }
 export class Renderer{
- constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.75;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(moves[e.key]){e.preventDefault();const current=this.hover||{x:10,y:9};const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(worldWidth(this.state)-1,current.x+dx)),y:Math.max(0,Math.min(worldHeight(this.state)-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= {x:10,y:9};this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
+ constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.75;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]},home=this.state?.world?.foundingCenter||{x:10,y:9},defaultTile={x:Math.round(home.x),y:Math.round(home.y)};if(moves[e.key]){e.preventDefault();const current=this.hover||defaultTile;const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(worldWidth(this.state)-1,current.x+dx)),y:Math.max(0,Math.min(worldHeight(this.state)-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= defaultTile;this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
  setRoadMode(enabled){this.roadMode=!!enabled;if(!enabled)this.roadDrawMode=false;}
  selectPoint(point,onSelect){if(this.roadDrawMode){this.onRoadGround?.(point);return;}if(!this.roadMode){onSelect(point);return;}const road=this.roadNear(point);if(road)this.onRoadSelect?.(road);}
  roadNear(point){let best=null,distance=Infinity;for(const road of this.state?.roads||[]){const a=road.a,b=road.b;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return distance<.85?best:null;}
  resize(){const r=this.canvas.getBoundingClientRect();this.w=r.width;this.h=r.height;const d=Math.min(devicePixelRatio||1,2);this.canvas.width=Math.round(r.width*d);this.canvas.height=Math.round(r.height*d);this.ctx.setTransform(d,0,0,d,0,0);this.layout();}
- layout(){const WIDTH=worldWidth(this.state),HEIGHT=worldHeight(this.state),scale=Math.min((this.w-22)/1200,(this.h-165)/670)*this.zoom;this.s=this.mapOverview?Math.max(.1,Math.min((this.w-30)/((WIDTH+HEIGHT)*30),(this.h-60)/((WIDTH+HEIGHT)*15))):Math.max(.22,scale);this.tw=60*this.s;this.th=30*this.s;const focus=this.mapOverview?{x:(WIDTH-1)/2,y:(HEIGHT-1)/2}:{x:10,y:9};this.ox=this.w*.49-(focus.x-focus.y)*this.tw/2+(this.pan?.x||0);this.oy=this.h*.52-(focus.x+focus.y)*this.th/2+(this.pan?.y||0);}
+ layout(){const WIDTH=worldWidth(this.state),HEIGHT=worldHeight(this.state),scale=Math.min((this.w-22)/1200,(this.h-165)/670)*this.zoom;this.s=this.mapOverview?Math.max(.1,Math.min((this.w-30)/((WIDTH+HEIGHT)*30),(this.h-60)/((WIDTH+HEIGHT)*15))):Math.max(.22,scale);this.tw=60*this.s;this.th=30*this.s;const focus=this.mapOverview?{x:(WIDTH-1)/2,y:(HEIGHT-1)/2}:this.state?.world?.foundingCenter||{x:10,y:9};this.ox=this.w*.49-(focus.x-focus.y)*this.tw/2+(this.pan?.x||0);this.oy=this.h*.52-(focus.x+focus.y)*this.th/2+(this.pan?.y||0);}
  home(){this.mapOverview=false;this.zoom=1.75;this.pan={x:0,y:0};this.layout();}
  focusOn(x,y){this.home();const p=this.point(x+.5,y+.5);this.pan={x:this.w*(this.w>=600?.67:.88)-p.x,y:this.h*.48-p.y};this.layout();this.hover={x,y};}
  overview(){this.mapOverview=true;this.zoom=.72;this.pan={x:0,y:0};this.layout();}
@@ -133,9 +134,14 @@ export class Renderer{
  }
  placementSites(s,selection){
   if(!placementTypes.has(selection))return [];
-  const key=JSON.stringify([selection,s.buildings.map(b=>[b.type,b.x,b.y]),s.world]);
+  const key=JSON.stringify([selection,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint]),s.world]);
   if(this.placementCache?.state===s&&this.placementCache.key===key)return this.placementCache.tiles;
-  const tiles=[];for(let y=0;y<worldHeight(s);y++)for(let x=0;x<worldWidth(s);x++)if(!canPlace(s,selection,x,y))tiles.push({x,y});
+  const kind=extractionKinds[selection],tiles=[];
+  if(kind){
+   for(const {kind:resource,x,y}of s.world?.deposits||[])if(resource===kind&&!canPlace(s,selection,x,y))tiles.push({x,y});
+  }else{
+   for(let y=0;y<worldHeight(s);y++)for(let x=0;x<worldWidth(s);x++)if(!canPlace(s,selection,x,y))tiles.push({x,y});
+  }
   this.placementCache={state:s,key,tiles};return tiles;
  }
  placementLayer(s,selection){
@@ -293,8 +299,11 @@ export class Renderer{
   for(const path of visibleFootpaths(state,finished)){
    if(!this.inView((path.a.x+path.b.x)/2,(path.a.y+path.b.y)/2,50))continue;
    const opacity=.11+path.level*.06;
-   this.line(points(path),`rgba(95,73,47,${opacity*.38})`,(2.6+path.level*.65)*this.s);
-   this.line(points(path),`rgba(118,90,56,${opacity})`,(1.6+path.level*.4)*this.s);
+   const curve=path.control?[0,.25,.5,.75,1].map(t=>{
+    const p=footpathRibbonPoint(path.a,path.b,path.control,t);return this.point(p.x,p.y);
+   }):points(path);
+   this.line(curve,`rgba(95,73,47,${opacity*.38})`,(2.6+path.level*.65)*this.s);
+   this.line(curve,`rgba(118,90,56,${opacity})`,(1.6+path.level*.4)*this.s);
   }
   const showNetwork=this.roadMode&&!this.photoMode,hovered=showNetwork?this.roadNear(this.hover||{})?.id:null;
   const visibleRoads=roads.filter(r=>(finished.has(r.id)||showNetwork||this.routeRoads?.has(r.id)||this.selectedRoad===r.id||this.selectedRoad?.id===r.id)&&this.inView(r.x,r.y,55));
@@ -446,8 +455,8 @@ export class Renderer{
   else this.box(p.x,p.y,5*this.s,3*this.s,4*this.s,'#c6bf9d','#aea98b','#b6b293');
  }
  for(const b of [...s.buildings,...s.roads||[]])if(b.construction&&this.inView(b.x,b.y,150))drawConstructionLabel(this,b);
- const p=this.point(8.5,4.7);c.textAlign='center';c.fillStyle='#5e7057';c.font=`${Math.max(9,13*this.s)}px Georgia`;c.fillText('Э Р И Д У',p.x,p.y-12*this.s);c.fillStyle='#7c8b70';c.font=`${Math.max(7,9*this.s)}px Arial`;c.fillText(`${s.population} жителей · ${s.name}`,p.x,p.y+3*this.s);
- if(this.hover&&!this.photoMode){const {x,y}=this.hover;const reason=selection?canBuild(s,selection,x,y):'';const draft={x,y,type:selection,footprint:newFootprint(selection)};for(const cell of footprintCells(draft))this.tile(cell.x,cell.y,selection?(reason?'#bd65433b':'#edf0b86b'):'#fff7cf38',selection?(reason?'#a8573e':'#79905c'):'#f6edd1');if(selection&&!reason){c.globalAlpha=.55;this.building(draft,s,t);c.globalAlpha=1;}}
+ const center=s.world?.foundingCenter,p=this.point(center?.x??8.5,center?center.y-4:4.7);c.textAlign='center';c.fillStyle='#5e7057';c.font=`${Math.max(9,13*this.s)}px Georgia`;c.fillText('Э Р И Д У',p.x,p.y-12*this.s);c.fillStyle='#7c8b70';c.font=`${Math.max(7,9*this.s)}px Arial`;c.fillText(`${s.population} жителей · ${s.name}`,p.x,p.y+3*this.s);
+ if(this.hover&&!this.photoMode){const {x,y}=this.hover;const placement=selection?buildingPlacement(s,selection,x,y):{x,y,reason:''},reason=placement.reason;const draft={...placement,type:selection,footprint:newFootprint(selection)};for(const cell of footprintCells(draft))this.tile(cell.x,cell.y,selection?(reason?'#bd65433b':'#edf0b86b'):'#fff7cf38',selection?(reason?'#a8573e':'#79905c'):'#f6edd1');if(selection&&!reason){c.globalAlpha=.55;this.building(draft,s,t);c.globalAlpha=1;}}
  this.effects=this.effects.filter(e=>time-e.start<4000);for(const e of this.effects){const actualAge=(time-e.start)/1000,age=this.reduce?.6:actualAge,alpha=Math.max(0,1-actualAge/4);if(e.id==='rain'){c.strokeStyle=`rgba(210,233,220,${alpha*.8})`;c.lineWidth=1;for(let k=0;k<100;k++){const xx=hash(k,1)*w,yy=(hash(k,2)*h+age*180)%h;c.beginPath();c.moveTo(xx,yy);c.lineTo(xx-6,yy+15);c.stroke();}}else if(e.id==='richCatch'&&e.at){
   const pos=this.point(e.at.x,e.at.y);c.strokeStyle=`rgba(146,218,233,${alpha})`;c.lineWidth=2;
   c.beginPath();c.ellipse(pos.x,pos.y,(.5+age)*this.s,(.25+age*.5)*this.s,0,0,Math.PI*2);c.stroke();

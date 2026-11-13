@@ -1,6 +1,8 @@
 import {generateStreets} from './city-life.js';
 import {footprintCells} from './footprints.js';
 import {isStrictSumer} from './scenario-profiles.js';
+import {RIVER_START_HOMES} from './starter-settlement.js';
+export const DEFAULT_FOREST_CAPACITY=96,DEFAULT_STONE_CAPACITY=240;
 export const WIDTH=40, HEIGHT=32;
 // Saved dimensions belong to the world. Missing fields describe the original
 // 40 × 32 valley and never expand or move a previously saved city.
@@ -48,7 +50,8 @@ export function initializeWorld(s){
  for(const b of buildings)if(['clay','reed'].includes(b.type)){const at=deposits.find(d=>d.x===b.x&&d.y===b.y);if(at)at.kind=b.type;else deposits.push({kind:b.type,x:b.x,y:b.y});}
  s.world={seed:73129,lakes,deposits:deposits.filter(d=>terrain(d.x,d.y,{world:{lakes}})!=='water')};ensureResourceSites(s);return s.world;
 }
-export function depositAt(s,x,y){return s?.world?.deposits?.find(d=>d.x===x&&d.y===y)?.kind||null;}
+export function depositSiteAt(s,x,y){return s?.world?.deposits?.find(d=>d.x===x&&d.y===y)||null;}
+export function depositAt(s,x,y){return depositSiteAt(s,x,y)?.kind||null;}
 export function nearDeposit(s,kind,x,y){const radius=['forest','wildlife'].includes(kind)?2:0;return !!s?.world?.deposits?.some(d=>d.kind===kind&&Math.hypot(d.x-x,d.y-y)<=radius);}
 export function isShore(s,x,y){return !['water','void'].includes(terrain(x,y,s))&&[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>terrain(x+dx,y+dy,s)==='water');}
 
@@ -61,6 +64,8 @@ export function validateWorld(s){
  const modern=w.generationVersion===2;
  if(modern?(w.width!==64||w.height!==64):(w.width!==undefined||w.height!==undefined))return false;
  const width=worldWidth(s),height=worldHeight(s);
+ const origin=w.foundingCenter;
+ if(origin!==undefined&&(!modern||!origin||Object.keys(origin).length!==2||!Number.isFinite(origin.x)||!Number.isFinite(origin.y)||origin.x<0||origin.y<0||origin.x>=width||origin.y>=height))return false;
  if(w.lakes.length>(modern?7:5)||w.deposits.length>width*height)return false;
  if(w.river!==undefined){
   const r=w.river,ranges=modern?{offset:[14,52],slope:[-.4,.4],amplitude:[.35,2.4],frequency:[.07,.24],phase:[0,Math.PI*2]}:{offset:[15.5,20.5],slope:[-.22,.20],amplitude:[.35,1.45],frequency:[.11,.24],phase:[0,Math.PI*2]};
@@ -74,7 +79,7 @@ export function validateWorld(s){
   for(const c of l.cells){const key=`${c?.x},${c?.y}`;if(!tile(c)||seen.has(key)||terrain(c.x,c.y,riverOnly)==='water'||s.buildings?.some(b=>b.x===c.x&&b.y===c.y))return false;seen.add(key);}
   if(modern){const remaining=new Set(l.cells.map(c=>`${c.x},${c.y}`)),queue=[l.cells[0]];remaining.delete(`${queue[0].x},${queue[0].y}`);for(let i=0;i<queue.length;i++)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const p={x:queue[i].x+dx,y:queue[i].y+dy};if(remaining.delete(`${p.x},${p.y}`))queue.push(p);}if(remaining.size)return false;}
  }
- const deposits=new Set();for(const d of w.deposits){const key=`${d?.x},${d?.y}`;if(!tile(d)||!kinds.includes(d.kind)||deposits.has(key)||terrain(d.x,d.y,s)==='water')return false;deposits.add(key);}return true;
+ const deposits=new Set();for(const d of w.deposits){const key=`${d?.x},${d?.y}`;if(!tile(d)||!kinds.includes(d.kind)||deposits.has(key)||terrain(d.x,d.y,s)==='water'||d.capacity!==undefined&&(!Number.isSafeInteger(d.capacity)||d.capacity<=0||d.capacity>(d.kind==='forest'?DEFAULT_FOREST_CAPACITY:d.kind==='stone'?DEFAULT_STONE_CAPACITY:0)))return false;deposits.add(key);}return true;
 }
 
 // Versioned supplementation leaves a saved valley's terrain and existing sites in place.
@@ -127,11 +132,11 @@ export function expandResourceSites(s){
 
 // Explicit geometry is generated only for a new game. Loading never rerolls a
 // seed, so edits to this algorithm cannot move a saved river or resource site.
-export function initializeGeneratedWorld(s,seed,{version=2}={}){
+export function initializeGeneratedWorld(s,seed,{version=2,centeredStart=false}={}){
  if(!Number.isInteger(seed)||seed<0||seed>0xffffffff)throw new RangeError('World seed must be a uint32');
  if(![1,2].includes(version))throw new RangeError('Unsupported world generation version');
  if(s.world)return s.world;
- return version===1?initializeGeneratedWorldV1(s,seed):initializeGeneratedWorldV2(s,seed);
+ return version===1?initializeGeneratedWorldV1(s,seed):initializeGeneratedWorldV2(s,seed,centeredStart);
 }
 function initializeGeneratedWorldV1(s,seed){
  if(!Number.isInteger(seed)||seed<0||seed>0xffffffff)throw new RangeError('World seed must be a uint32');
@@ -177,26 +182,46 @@ function initializeGeneratedWorldV1(s,seed){
  return w;
 }
 
-function initializeGeneratedWorldV2(s,seed){
+function initializeGeneratedWorldV2(s,seed,centeredStart){
  let value=seed>>>0;const random=()=>{value=(value+0x6D2B79F5)>>>0;let n=value;n=Math.imul(n^(n>>>15),n|1);n^=n+Math.imul(n^(n>>>7),n|61);return ((n^(n>>>14))>>>0)/4294967296;};
  const buildings=s.buildings||[],established=buildings.some(b=>b.type==='field');
+ const centered=centeredStart&&!established&&buildings.length===RIVER_START_HOMES.length;
  const w=s.world={generationVersion:2,width:64,height:64,seed,river:null,lakes:[],deposits:[],resourceVersion:1};
  const axis=established?'y':random()<.5?'y':'x',flowSign=random()<.5?-1:1;
  const candidate=()=>established?{offset:15.5+random()*5,slope:-.22+random()*.42,amplitude:.35+random()*1.1,frequency:.11+random()*.13,phase:random()*Math.PI*2,axis,flowSign}:{offset:18+random()*31,slope:-.34+random()*.68,amplitude:.5+random()*1.8,frequency:.075+random()*.13,phase:random()*Math.PI*2,axis,flowSign};
+ const center=32,bankCell=(along,across)=>worldFromRiver(Math.floor(river(along,s))+across,along,s);
  const safeCourse=()=>{
+  if(w.river.offset<14||w.river.offset>52)return false;
   // Reserve the founders' whole neighbourhood, not merely house centres, so
   // their doors and diagonal approaches never start on the opposite bank.
-  if(!established)for(const along of [1,5,10,15])if(river(along,s)<16)return false;
+  if(!centered&&!established)for(const along of [1,5,10,15])if(river(along,s)<16)return false;
   for(let along=0;along<64;along+=2)if(river(along,s)<5||river(along,s)>59)return false;
+  if(centered)return true;
   return buildings.every(b=>isDryPoint(s,b.x,b.y)&&(b.type!=='field'||terrain(b.x,b.y,s)==='fertile'));
  };
- for(let attempt=0;attempt<1000;attempt++){w.river=candidate();if(safeCourse())break;}
- if(!safeCourse())w.river={offset:established?16:32,slope:0,amplitude:.35,frequency:.2,phase:0,axis,flowSign};
- const protectedTile=(x,y)=>buildings.some(b=>Math.abs(b.x-x)<2.2&&Math.abs(b.y-y)<2.2);
+ for(let attempt=0;attempt<1000;attempt++){
+  w.river=candidate();
+  if(centered)w.river.offset+=center+4-river(center,s);
+  if(safeCourse())break;
+ }
+ if(!safeCourse())w.river={offset:established?16:centered?36:32,slope:0,amplitude:.35,frequency:.2,phase:0,axis,flowSign};
+ const localSites=centered?[
+  {kind:'forest',...bankCell(center-5,-6),capacity:24},
+  {kind:'stone',...bankCell(center+4,-6),capacity:30},
+ ]:[];
+ if(centered){
+  for(const [i,{along,across}] of RIVER_START_HOMES.entries())Object.assign(buildings[i],bankCell(center+along,across));
+  w.foundingCenter={x:buildings.reduce((n,b)=>n+b.x,0)/buildings.length,y:buildings.reduce((n,b)=>n+b.y,0)/buildings.length};
+ }
+ const reserved=[...buildings,...localSites];
+ const protectedTile=(x,y)=>reserved.some(b=>Math.abs(b.x-x)<2.2&&Math.abs(b.y-y)<2.2);
  const centers=[];
  // A nearby basin on the founders' bank guarantees water and a reachable relic
  // even when the main river is on the far side of this larger valley.
- for(let i=0;i<80;i++)centers.push(worldFromRiver(4+Math.floor(random()*4),17+Math.floor(random()*7),s));
+ for(let i=0;i<80;i++){
+  const across=4+Math.floor(random()*4),along=17+Math.floor(random()*7);
+  centers.push(centered?bankCell(center+along-9,-across-6):worldFromRiver(across,along,s));
+ }
  for(let i=0;i<500;i++)centers.push({x:4+Math.floor(random()*56),y:4+Math.floor(random()*56)});
  const lakeCount=4+Math.floor(random()*3);
  for(const center of centers){
@@ -215,11 +240,13 @@ function initializeGeneratedWorldV2(s,seed){
   if(connected.length>=6)w.lakes.push({id:`lake-${w.lakes.length}`,cells:connected.sort((a,b)=>a.y-b.y||a.x-b.x)});
  }
  const occupied=(x,y)=>buildings.some(b=>b.x===x&&b.y===y),used=new Set();
- const put=(kind,p)=>{w.deposits.push({kind,x:p.x,y:p.y});used.add(`${p.x},${p.y}`);};
+ const put=(kind,p)=>{w.deposits.push({kind,x:p.x,y:p.y,...p.capacity===undefined?{}:{capacity:p.capacity}});used.add(`${p.x},${p.y}`);};
+ for(const site of localSites)put(site.kind,site);
  for(const b of buildings)if(['clay','reed','garden'].includes(b.type))put(b.type==='garden'?'dates':b.type,b);
  const tiles=[];for(let y=2;y<62;y++)for(let x=2;x<62;x++)if(isDryPoint(s,x,y)&&!occupied(x,y))tiles.push({x,y,noise:random()});
  const home=buildings.filter(b=>b.type==='house'),origin=home.length?{x:home.reduce((n,p)=>n+p.x,0)/home.length,y:home.reduce((n,p)=>n+p.y,0)/home.length}:{x:7,y:9};
  for(const negative of [true,false])for(const kind of ['reed','clay','dates','forest','wildlife','stone']){
+  if(centered&&(kind==='forest'||kind==='stone'))continue;
   const target=['reed','clay','dates'].includes(kind)?2:1;
   let existing=w.deposits.filter(d=>d.kind===kind&&(signedRiverDistance(d.x,d.y,s)<0)===negative).length;
   const ranked=tiles.filter(p=>(signedRiverDistance(p.x,p.y,s)<0)===negative&&!used.has(`${p.x},${p.y}`)&&(kind!=='reed'||isShore(s,p.x,p.y))).sort((a,b)=>{

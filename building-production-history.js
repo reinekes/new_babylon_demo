@@ -83,8 +83,9 @@ export function archiveBuildingProduction(s,b){
  for(const row of b.productionAnnual?.rows||[])addArchivedOutput(s,row.year,b.type,b.x,b.y,row.resources);
 }
 
+const manualResources=['clay','reed','stone','wood','food'];
 export function recordManualProduction(s,site,amount){
- if(!['clay','reed','stone'].includes(site.resource)||!Number.isFinite(amount)||amount<=0)return;
+ if(!manualResources.includes(site.resource)||!Number.isFinite(amount)||amount<=0)return;
  addArchivedOutput(s,s.year,'manual',site.x,site.y,{[site.resource]:amount});
 }
 
@@ -99,7 +100,7 @@ function validCityProduction(s){
   Object.entries(sources).every(([key,goods])=>{
    const match=/^(\w+):(\d{1,3}),(\d{1,3})$/.exec(key);
    return !!match&&(match[1]==='manual'||Object.hasOwn(BUILDINGS,match[1]))&&validResources(goods)&&
-    (match[1]!=='manual'||Object.keys(goods).every(k=>['clay','reed','stone'].includes(k)));
+    (match[1]!=='manual'||Object.keys(goods).every(k=>manualResources.includes(k)));
   }));
 }
 

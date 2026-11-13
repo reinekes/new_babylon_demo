@@ -123,8 +123,10 @@ export function updateMiracleCard(details,s,id,reason='',gift=null,arrival=null)
  el.disabled=!!reason;el.textContent=`${arrival?`Позвать ${arrival.beds} чел.`:id==='cat'?'Призвать':first?'Первый призыв':'Применить'} · ${price} веры`;
  el.title=`${m.name} · ${price} веры. ${desc} Домен: ${DOMAIN_NAMES[m.domain]}. ${reason}`;el.setAttribute('aria-label',`Применить: ${el.title}`);
  details.hidden=false;details.classList.toggle('knowledge-locked',!!miracleKnowledgeReason(s,id));
+ details.classList.toggle('miracle-ready',!reason);
  details.querySelector('.miracle-facts span').textContent=`${price} веры${first?' · первый дар':''}`;
- details.querySelector('.miracle-summary-status').textContent=reason||`${price} веры · ${first?'первый дар':DOMAIN_NAMES[m.domain]}`;
+ const status=details.querySelector('.miracle-summary-status'),statusText=reason||(first?'Доступно · первый дар':`Доступно · ${price} веры`);
+ if(status.textContent!==statusText)status.textContent=statusText;
  let advisory='';
  if(id==='inspiration'&&s.creatorMaterials&&!reason){
   const yards=new Set(s.buildings.filter(b=>['clay','reed'].includes(b.type)&&isOperational(b)).map(buildingKey));

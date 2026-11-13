@@ -28,7 +28,19 @@ export function residentIdentity(id){
 // Resolve actual visible neighbours only, keeping route coordinates, cargo and IDs intact.
 // A small spatial hash avoids an all-pairs pass in the large city.
 export function residentViewPositions(state,citizens){
- const cells=new Map(),result=new Map(),gap=.10,workSlots=new Map();
+ const cells=new Map(),result=new Map(),gap=.10,workSlots=new Map(),obstacles=new Map(),bridges=[];
+ const tileKey=(x,y)=>`${x},${y}`;
+ for(const b of state.buildings||[]){
+  if(b.type==='bridge'){if(b.construction?.kind!=='new')bridges.push(b);continue;}
+  if(['road','field','canal'].includes(b.type))continue;
+  const size=footprintSize(b),bounds={b,x:b.x+(size-1)/2,y:b.y+(size-1)/2,half:size/2};
+  for(let y=Math.round(b.y);y<=Math.round(b.y+size-1);y++)for(let x=Math.round(b.x);x<=Math.round(b.x+size-1);x++){
+   const key=tileKey(x,y);
+   if(!obstacles.has(key))obstacles.set(key,[]);
+   obstacles.get(key).push(bounds);
+  }
+ }
+ const solids=(x,y)=>obstacles.get(tileKey(Math.round(x),Math.round(y)));
  const fixed=c=>!c.walking&&['working','constructing','waiting','treatment'].includes(c.phase);
  // Allocate work aprons first so passing pedestrians cannot reshuffle colleagues.
  const order=[...citizens].sort((a,b)=>Number(fixed(b))-Number(fixed(a))||String(a.id).localeCompare(String(b.id)));
@@ -46,15 +58,15 @@ export function residentViewPositions(state,citizens){
    if(Math.hypot(q.x-c.x,q.y-c.y)<.3)contact={kind:'healing',stand:q,target:{...target,height:1.12},building:target};
   }
   if(contact){workSlots.set(workKey,slot+1);const q=contact.stand;
-   const clearApproach=[0,.25,.5,.75,1].every(t=>{const x=c.x+(q.x-c.x)*t,y=c.y+(q.y-c.y)*t;return isDryPoint(state,x,y)&&!(state.buildings||[]).some(b=>b!==target&&(b.x!==target.x||b.y!==target.y)&&!['road','bridge','field','canal'].includes(b.type)&&Math.abs(x-b.x-(footprintSize(b)-1)/2)<footprintSize(b)/2-.04&&Math.abs(y-b.y-(footprintSize(b)-1)/2)<footprintSize(b)/2-.04);});
+   const clearApproach=[0,.25,.5,.75,1].every(t=>{const x=c.x+(q.x-c.x)*t,y=c.y+(q.y-c.y)*t;return isDryPoint(state,x,y)&&!solids(x,y)?.some(o=>o.b!==target&&(o.b.x!==target.x||o.b.y!==target.y)&&Math.abs(x-o.b.x-(o.half-.5))<o.half-.04&&Math.abs(y-o.b.y-(o.half-.5))<o.half-.04);});
    if(clearApproach&&neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001)){p={x:q.x,y:q.y,contact};}
   }
-  const bridge=onBridge(state.buildings||[],c.x,c.y,state),phase=residentMotion(c.id).phase;
-  const safe=q=>{if(bridge)return !!onBridge(state.buildings||[],q.x,q.y,state)&&Math.abs(q.y-c.y)<.025;
+  const bridge=bridges.length>0&&onBridge(bridges,c.x,c.y,state),phase=residentMotion(c.id).phase;
+  const safe=q=>{if(bridge)return onBridge(bridges,q.x,q.y,state)&&Math.abs(q.y-c.y)<.025;
    if(!isDryPoint(state,q.x,q.y))return false;
-   return !(state.buildings||[]).some(b=>{if(['road','bridge','field','canal'].includes(b.type))return false;const size=footprintSize(b),x=b.x+(size-1)/2,y=b.y+(size-1)/2,half=size/2-.035;return Math.abs(q.x-x)<half&&Math.abs(q.y-y)<half&&!(Math.abs(c.x-x)<half&&Math.abs(c.y-y)<half);});};
+   return !solids(q.x,q.y)?.some(({x,y,half})=>{const edge=half-.035;return Math.abs(q.x-x)<edge&&Math.abs(q.y-y)<edge&&!(Math.abs(c.x-x)<edge&&Math.abs(c.y-y)<edge);});};
   const clear=q=>neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001);
-  if(c.walking&&!contact&&!bridge){
+  if(c.walking&&!c.followingFootpath&&!contact&&!bridge){
    const route=c.waterTrip?.route||c.route,next=route?.[c.waterTrip?.index??c.routeIndex],dx=(next?.x??c.x)-c.x,dy=(next?.y??c.y)-c.y,length=Math.hypot(dx,dy);
    if(length>1e-6){const lane=.065+.015*(phase/(Math.PI*2)),q={x:c.x+dy/length*lane,y:c.y-dx/length*lane};if([.25,.5,.75,1].every(t=>safe({x:c.x+(q.x-c.x)*t,y:c.y+(q.y-c.y)*t})))p=q;}
   }
