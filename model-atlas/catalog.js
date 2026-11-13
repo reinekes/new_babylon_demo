@@ -1,3 +1,4 @@
+import { suppliedFauna } from './supplied-fauna.js';
 import { BUILDINGS, RESOURCE_NAMES } from '../definitions.js';
 import { buildingDefinition, buildingPresentation } from '../building-presentation.js';
 import { strictScenario, legacyScenario } from '../scenario-profiles.js';
@@ -130,7 +131,7 @@ export function makeCatalog(index, profile) {
     ];
     for(const [group,species,title,description,source] of regional){
       const reserve=['pied-kingfisher','glossy-ibis','pygmy-cormorant','marsh-harrier'].includes(species);
-      rows.push(row(group,title,description,model('wildlife',reserve?'Резервная геометрия':'Игровая геометрия',{species,reserve,sources:[source]})));
+      rows.push(row(group,title,description,model('wildlife',reserve?'Резервная геометрия':species==='white-pelican'?'Геометрия полёта':species==='savigny-tree-frog'?'Резерв при ошибке загрузки':'Игровая геометрия',{species,reserve:reserve||species==='savigny-tree-frog',sources:[source]})));
     }
   }
   for (const [species,[title,label]] of Object.entries(wildlife)) {
@@ -144,7 +145,13 @@ export function makeCatalog(index, profile) {
   }
   for (const key of GOODS_KINDS) rows.push(row('goods',(key==='water'?'Вода в кувшинах':RESOURCE_NAMES[key]??key),'Упаковка на складе и при переноске',model('goods','Игровая геометрия',{key})));
   rows.push(row('goods','Светильник из раковины','Форма по раковине из Ниппура (Ур III) · назначение предмета предположительное',model('lamp','Игровая геометрия')));
+  for(const item of suppliedFauna){
+    const entry=index.models.find(model=>model.file===item.file);
+    rows.push(row(item.group,item.title,item.note||'Модель из подборки',
+      model(entry?'glb':'source',item.license,{entry,species:item.id,reserve:entry?.status!=='active',sources:[item]})));
+  }
   for (const entry of index.models) {
+    if(suppliedFauna.some(item=>item.file===entry.file))continue;
     const name = entry.file.replace(/\.glb$/i,'');
     rows.push(row(glbGroup(name), glbName(name), name==='festival-candle'?'Прежняя эпоха · '+entry.file:entry.file,
       model('glb',statuses[entry.status]??entry.status,{entry})));

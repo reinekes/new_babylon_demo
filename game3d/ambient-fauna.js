@@ -1,4 +1,4 @@
-import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=city-menu-fauna-20261113';
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=supplied-fauna-20261113';
 import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';

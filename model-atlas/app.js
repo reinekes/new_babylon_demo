@@ -1,4 +1,4 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=city-menu-fauna-20261113';
+import { groups, makeCatalog, usageOf } from './catalog.js?v=supplied-fauna-20261113';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
@@ -187,7 +187,16 @@ function render() {
       name.scope='row';
       name.append(element('span',row.description,'hint'));
       tr.append(name);
-      for(const item of row.previews) tr.insertCell().append(thumbnail(item,row.title,profile.value));
+      for(const item of row.previews){
+        const cell=tr.insertCell();
+        if(item.kind==='source'){
+          const link=element('a','Смотреть у автора ↗');
+          link.href=item.sources[0].source;
+          link.target='_blank';
+          link.rel='noopener';
+          cell.append(link);
+        }else cell.append(thumbnail(item,row.title,profile.value));
+      }
       if(key==='buildings') {
         for(let i=row.previews.length;i<3;i++) tr.insertCell().append(element('span','—','empty'));
       } else {
@@ -201,7 +210,7 @@ function render() {
   }
 }
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json?v=ningishzida-vessel-20261112',import.meta.url));
+  const response=await fetch(new URL('../docs/model-index.json?v=supplied-fauna-20261113',import.meta.url));
   if(!response.ok) throw Error(`HTTP ${response.status}`);
   index=await response.json();
   const rows=makeCatalog(index,'strict');
@@ -222,6 +231,6 @@ async function start() {
     search.value=file||selected.title;
   }
   render();
-  if(selected)await open(selected.previews[0],profile.value,selected.title);
+  if(selected&&selected.previews[0].kind!=='source')await open(selected.previews[0],profile.value,selected.title);
 }
 start().catch(error=>{byId('totals').textContent=`Каталог недоступен. Откройте страницу через HTTP. ${error.message}`;});

@@ -41,13 +41,13 @@ test('yard pigs and shore turtles follow dry decorative routes without touching 
    assert.equal(JSON.stringify(state),snapshot);
    assert.deepEqual(animals.slice(0,2).map(a=>a.kind),['pig','turtle']);
    const regional=animals.slice(4);
-   assert.deepEqual(regional.map(a=>a.kind),['pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog',...Array(5).fill('onager')]);
+   assert.deepEqual(regional.map(a=>a.kind),['pygmy-cormorant','glossy-ibis','pied-kingfisher','marsh-harrier','savigny-tree-frog',...Array(3).fill('common-quail'),...Array(5).fill('onager')]);
    const herd=regional.filter(a=>a.kind==='onager');
    assert.equal(new Set(herd.map(a=>a.id)).size,5);
    for(const [i,a] of herd.entries())for(const b of herd.slice(i+1))assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>.25);
    for(const a of regional){
     assert.ok(a.decorative);
-    if(a.kind==='onager'||a.kind==='savigny-tree-frog')assert.ok(ambientDryPoint(state,a.x,a.y));
+    if(['onager','savigny-tree-frog','common-quail'].includes(a.kind))assert.ok(ambientDryPoint(state,a.x,a.y));
     if(['pygmy-cormorant','pied-kingfisher'].includes(a.kind))assert.ok(waterDepth(a.x,a.y,state)>.40);
     if(a.kind==='glossy-ibis')assert.ok(waterDepth(a.x,a.y,state)>.105&&waterDepth(a.x,a.y,state)<.31);
    }

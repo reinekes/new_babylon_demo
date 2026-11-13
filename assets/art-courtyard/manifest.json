@@ -854,6 +854,110 @@
       "file": "textures/palm_bark_roughness.jpg",
       "bytes": 240790,
       "sha256": "04f4507af58a2011f90dba2c69455a8959e52c01e5748f31d1c5b5654839153b"
+    },
+    {
+      "file": "models/supplied-yellowfin-goby.glb",
+      "bytes": 1519376,
+      "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
+      "triangles": 14214,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-oriental-goby.glb",
+      "bytes": 3031240,
+      "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
+      "triangles": 50488,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-pelican-wasis.glb",
+      "bytes": 5244380,
+      "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
+      "triangles": 138011,
+      "meshes": 2,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-common-quail.glb",
+      "bytes": 2050532,
+      "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
+      "triangles": 19250,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-northern-cardinal.glb",
+      "bytes": 1978712,
+      "sha256": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9",
+      "triangles": 19002,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-horse-run.glb",
+      "bytes": 1277372,
+      "sha256": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8",
+      "triangles": 1972,
+      "meshes": 2,
+      "bones": 47
+    },
+    {
+      "file": "models/supplied-white-eagle.glb",
+      "bytes": 886568,
+      "sha256": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514",
+      "triangles": 3128,
+      "meshes": 1,
+      "bones": 52
+    },
+    {
+      "file": "models/supplied-schlegel-frog.glb",
+      "bytes": 2502324,
+      "sha256": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66",
+      "triangles": 15526,
+      "meshes": 1,
+      "bones": 32
+    },
+    {
+      "file": "models/supplied-realistic-rat.glb",
+      "bytes": 2129524,
+      "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
+      "triangles": 17918,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-horse-brown.glb",
+      "bytes": 1660088,
+      "sha256": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4",
+      "triangles": 18566,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/supplied-frog-jump.glb",
+      "bytes": 1855544,
+      "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
+      "triangles": 10853,
+      "meshes": 1,
+      "bones": 113
+    },
+    {
+      "file": "models/supplied-cobra-base.glb",
+      "bytes": 1539392,
+      "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
+      "triangles": 3812,
+      "meshes": 33,
+      "bones": 38
+    },
+    {
+      "file": "models/supplied-cobra-head-up.glb",
+      "bytes": 1541772,
+      "sha256": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf",
+      "triangles": 3812,
+      "meshes": 33,
+      "bones": 38
     }
   ]
 }

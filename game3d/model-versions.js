@@ -1,5 +1,18 @@
 // Content hashes keep unchanged models cached across UI releases.
 export const MODEL_VERSIONS=Object.freeze({
+ "supplied-cobra-head-up.glb": "a2d107887b23",
+ "supplied-cobra-base.glb": "1dd646a4a001",
+ "supplied-frog-jump.glb": "c542468f473f",
+ "supplied-horse-brown.glb": "0ee7ff259db7",
+ "supplied-realistic-rat.glb": "24c286f98b4d",
+ "supplied-schlegel-frog.glb": "5fa37e8414b3",
+ "supplied-white-eagle.glb": "a72a2176fa4d",
+ "supplied-horse-run.glb": "5b91c0729a4f",
+ "supplied-northern-cardinal.glb": "3c4ad8719436",
+ "supplied-common-quail.glb": "32147a1d198b",
+ "supplied-pelican-wasis.glb": "fe0253c6ece2",
+ "supplied-oriental-goby.glb": "4a03227aa63b",
+ "supplied-yellowfin-goby.glb": "a72a598b2210",
  "festival-candle.glb": "a10d84770678",
  "adobe-courtyard.glb": "77e7cb06148b",
  "ambient-bull.glb": "5c28f930db52",

@@ -31,8 +31,9 @@ export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
   }));
  const ibis=pool(7,1.05,.46,.025,.105);
  const frog=bank(-3,1.66,.20);
+ const quail=[0,.16,.33].map((offset,index)=>bank(9+index*.27,2.05+offset,.28)?.point).filter(Boolean);
  const frogEnd=frog&&riverPoint(frog.bank+.16,state,1.66);
- return {ibis,frog:frog&&(frogEnd&&clearSegment(state,frog.point,frogEnd)?[frog.point,frogEnd]:[frog.point]),
+ return {ibis,quail,frog:frog&&(frogEnd&&clearSegment(state,frog.point,frogEnd)?[frog.point,frogEnd]:[frog.point]),
   onagers:onagerRoutes(state,steppeland,clearSegment),
   pelican:pool(5,-.27,1.25,.22,.40),cormorant:pool(-6,.47,.83,.19,.40),
   kingfisher:pool(-3,.28,.70,.09,.42),harrier:bank(9,2.3,.30)};
@@ -104,8 +105,12 @@ export function regionalFauna(state,plan,time){
   const progress=phase<6?step:1-step,[a,b=a]=plan.frog;
   const x=a.x+(b.x-a.x)*progress,y=a.y+(b.y-a.y)*progress;
   const hop=b===a?0:4*step*(1-step);
-  add('savigny-tree-frog',{x,y,hop,yaw:Math.atan2(b.x-a.x,b.y-a.y)+(phase<6?0:Math.PI),
+  add('savigny-tree-frog',{x,y,hop,hopProgress:b===a?0:step,yaw:Math.atan2(b.x-a.x,b.y-a.y)+(phase<6?0:Math.PI),
    elevation:surfaceElevation(x,y,state)+hop*.14});
+ }
+ for(const [index,point] of plan.quail.entries()){
+  animals.push({id:'ambient-common-quail-'+index,kind:'common-quail',decorative:true,...point,
+   yaw:index*1.8+Math.sin(time*.53+index)*.38});
  }
  for(const [index,route] of plan.onagers.entries()){
   animals.push({id:index?'ambient-onager-'+index:'ambient-onager',kind:'onager',decorative:true,

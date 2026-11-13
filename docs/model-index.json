@@ -3,11 +3,11 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 70,
-    "active": 52,
+    "total": 83,
+    "active": 55,
     "fallback": 9,
     "optional": 5,
-    "spare": 4
+    "spare": 14
   },
   "errors": [],
   "runtimeInputs": [
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "dca7988ec8579a85be28e2d67a5ea8b84663e09fe250eff6a00e721c3b2dab0a"
+      "sha256": "a6bd3c2ab5f57f8882f01d6164c0425b7b7c02ac146272044365c2ee40fe620f"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "968b1fb9eb8c6cbf5aabf6fe206714eeb72ee120bb1c806d3f1ac64121dbf8e9"
+      "sha256": "9d108647499a526f5c6886f324da13bbfbe877564ff3c7d23247aa531a13ee03"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "d6cf069e6dac73b53df532cff0f2f7075b9c5325bfc06872a17c6114d2255928"
+      "sha256": "22e7a453c0191e6c5094eb97a51708d93c18860645baa4d71422f30284f53761"
     },
     {
       "file": "game3d/caravan.js",
@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "8b638e08e64a523da1618e026b8ce915ecece340e79f0d951987f5c7b8579fcd"
+      "sha256": "38390c949a03a72b6bcf22393bb745597b769a639c43b92c65749da198772f0b"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -78,6 +78,10 @@
     {
       "file": "game3d/sky-flight.js",
       "sha256": "9c7aeedd5c8984e67dd203d91b93066bdc23a16c09a6691b64ba87024fcc5463"
+    },
+    {
+      "file": "game3d/supplied-fauna.js",
+      "sha256": "ae064d98b7738a2a9860a0b7b4ae2755fdc3d492dab20af75ec07a5bcc051c0b"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -761,7 +765,7 @@
         {
           "model": "historical-man.glb",
           "file": "game3d/actors.js",
-          "line": 111,
+          "line": 112,
           "kind": "literal"
         }
       ]
@@ -793,7 +797,7 @@
         {
           "model": "human-native-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -825,7 +829,7 @@
         {
           "model": "human-native-child.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -857,7 +861,7 @@
         {
           "model": "human-native-female.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -889,7 +893,7 @@
         {
           "model": "human-native-male.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1547,7 +1551,7 @@
         {
           "model": "resident.glb",
           "file": "game3d/actors.js",
-          "line": 63,
+          "line": 64,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1735,7 +1739,7 @@
         {
           "model": "sheep.glb",
           "file": "game3d/actors.js",
-          "line": 66,
+          "line": 67,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1893,7 +1897,7 @@
         {
           "model": "source-walk-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1925,7 +1929,7 @@
         {
           "model": "source-walk-child.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1957,7 +1961,7 @@
         {
           "model": "source-walk-female.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1989,7 +1993,7 @@
         {
           "model": "source-walk-male.glb",
           "file": "game3d/actors.js",
-          "line": 100,
+          "line": 101,
           "kind": "reviewed-dynamic-expansion"
         },
         {
@@ -2027,7 +2031,7 @@
         {
           "model": "sumer-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 102,
+          "line": 103,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2059,7 +2063,7 @@
         {
           "model": "sumer-child.glb",
           "file": "game3d/actors.js",
-          "line": 102,
+          "line": 103,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2091,10 +2095,330 @@
         {
           "model": "sumer-people.glb",
           "file": "game3d/actors.js",
-          "line": 101,
+          "line": 102,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
+    },
+    {
+      "file": "supplied-cobra-base.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 1539392,
+      "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
+      "version": "1dd646a4a001",
+      "triangles": 3812,
+      "meshes": 33,
+      "bones": 38,
+      "clips": [
+        "Animation"
+      ],
+      "sources": [
+        {
+          "author": "Kim.David.Hauser (https://sketchfab.com/Kim.David.Hauser)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/snake-cobra-animated-base-model-e2e55fd17aad4309ac4782b1d3e67c2f",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-cobra-head-up.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 1541772,
+      "sha256": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf",
+      "version": "a2d107887b23",
+      "triangles": 3812,
+      "meshes": 33,
+      "bones": 38,
+      "clips": [
+        "Animation"
+      ],
+      "sources": [
+        {
+          "author": "Kim.David.Hauser (https://sketchfab.com/Kim.David.Hauser)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/snake-cobra-head-up-animated-c5076a2421b04ad8a76b17a8a6a03c35",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-common-quail.glb",
+      "status": "active",
+      "purpose": "Импортированные обитатели берега; пеликан использует эту модель на воде.",
+      "classificationEvidence": "game3d/supplied-fauna.js|supplied-",
+      "bytes": 2050532,
+      "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
+      "version": "32147a1d198b",
+      "triangles": 19250,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "iRahulRajput (https://sketchfab.com/rt699448)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/realistic-common-quail-bird-3d-model-free-902dfc2a95a24e988c6a961c61a0c6b5",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "supplied-common-quail.glb",
+          "file": "game3d/supplied-fauna.js",
+          "line": 5,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "supplied-frog-jump.glb",
+      "status": "active",
+      "purpose": "Импортированные обитатели берега; пеликан использует эту модель на воде.",
+      "classificationEvidence": "game3d/supplied-fauna.js|supplied-",
+      "bytes": 1855544,
+      "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
+      "version": "c542468f473f",
+      "triangles": 10853,
+      "meshes": 1,
+      "bones": 113,
+      "clips": [
+        "metarig|jump",
+        "metarig|jumpInPlace"
+      ],
+      "sources": [
+        {
+          "author": "Rukh3D (https://sketchfab.com/rukh3d)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/frog-jump-a3e1dfd0a6134060a0e23d5772edb42f",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "supplied-frog-jump.glb",
+          "file": "game3d/supplied-fauna.js",
+          "line": 6,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "supplied-horse-brown.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 1660088,
+      "sha256": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4",
+      "version": "0ee7ff259db7",
+      "triangles": 18566,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "iRahulRajput (https://sketchfab.com/rt699448)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/low-poly-horse-brown-colour-3d-model-free-9073d1dfc345495a88ef84eed4d2a9e5",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-horse-run.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 1277372,
+      "sha256": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8",
+      "version": "5b91c0729a4f",
+      "triangles": 1972,
+      "meshes": 2,
+      "bones": 47,
+      "clips": [
+        "Armature|run"
+      ],
+      "sources": [
+        {
+          "author": "aaadragon (https://sketchfab.com/aaadragon)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/the-horse-ecfe459c6baa4377b487f89c57569d5c",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-northern-cardinal.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 1978712,
+      "sha256": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9",
+      "version": "3c4ad8719436",
+      "triangles": 19002,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "iRahulRajput (https://sketchfab.com/rt699448)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/northern-cardinal-bird-3d-model-free-5c7f1e2c718641c0bf139384082b5ae0",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-oriental-goby.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 3031240,
+      "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
+      "version": "4a03227aa63b",
+      "triangles": 50488,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "ffish.asia / floraZia.com (https://sketchfab.com/ffishAsia-and-floraZia)",
+          "license": "CC0-1.0 (http://creativecommons.org/publicdomain/zero/1.0/)",
+          "source": "https://sketchfab.com/3d-models/cc0-spear-like-oriental-goby-a-hasta-0f13e52c947e4cffad3530d2bef7d27a",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-pelican-wasis.glb",
+      "status": "active",
+      "purpose": "Импортированные обитатели берега; пеликан использует эту модель на воде.",
+      "classificationEvidence": "game3d/supplied-fauna.js|supplied-",
+      "bytes": 5244380,
+      "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
+      "version": "fe0253c6ece2",
+      "triangles": 138011,
+      "meshes": 2,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "wasis007 (https://sketchfab.com/wasis007)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/pelikan-pelican-dba2ea5b9f1e40cca54bd77713d8ff16",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "supplied-pelican-wasis.glb",
+          "file": "game3d/supplied-fauna.js",
+          "line": 7,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "supplied-realistic-rat.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 2129524,
+      "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
+      "version": "24c286f98b4d",
+      "triangles": 17918,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "iRahulRajput (https://sketchfab.com/rt699448)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/low-poly-realistic-rat-3d-model-free-a1d7eabc3d704e5e929d695904bd8f42",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-schlegel-frog.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 2502324,
+      "sha256": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66",
+      "version": "5fa37e8414b3",
+      "triangles": 15526,
+      "meshes": 1,
+      "bones": 32,
+      "clips": [
+        "Animation"
+      ],
+      "sources": [
+        {
+          "author": "ffish.asia / floraZia.com (https://sketchfab.com/ffishAsia-and-floraZia)",
+          "license": "CC0-1.0 (http://creativecommons.org/publicdomain/zero/1.0/)",
+          "source": "https://sketchfab.com/3d-models/cc0-schlegels-green-tree-frog-218caec043db49d4b41855ab7e92765d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-white-eagle.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 886568,
+      "sha256": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514",
+      "version": "a72a2176fa4d",
+      "triangles": 3128,
+      "meshes": 1,
+      "bones": 52,
+      "clips": [
+        "CINEMA_4D_Principal"
+      ],
+      "sources": [
+        {
+          "author": "GremorySaiyan (https://sketchfab.com/GremorySaiyan)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/white-eagle-animation-fast-fly-30203bf39e5145f19c79e83c550139d3",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
+    },
+    {
+      "file": "supplied-yellowfin-goby.glb",
+      "status": "spare",
+      "purpose": "Импорт из подборки, просмотр в атласе.",
+      "classificationEvidence": "model-atlas/supplied-fauna.js|supplied-",
+      "bytes": 1519376,
+      "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
+      "version": "a72a598b2210",
+      "triangles": 14214,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "ffish.asia / floraZia.com (https://sketchfab.com/ffishAsia-and-floraZia)",
+          "license": "CC0-1.0 (http://creativecommons.org/publicdomain/zero/1.0/)",
+          "source": "https://sketchfab.com/3d-models/cc0-yellowfin-goby-a-flavimanus-360a4e45f06a4ea59438c6ae7be36816",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": []
     },
     {
       "file": "valley-barley.glb",
