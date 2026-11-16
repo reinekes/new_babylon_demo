@@ -3,6 +3,8 @@ import {readFile, readdir, writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {makeCatalog} from '../model-atlas/catalog.js';
+import {sections,sectionForGroup} from '../model-atlas/sections.js';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const ART='assets/art-courtyard';
@@ -169,9 +171,27 @@ export function renderMarkdown(index){
  return lines.join('\n')+'\n';
 }
 
+function atlasOutputs(index) {
+ const models=index.models.map(({file,status,purpose,triangles,sources})=>({file,status,purpose,triangles,sources}));
+ const rows=makeCatalog({models},'strict');
+ const legacyBuildings=makeCatalog({models},'legacy').filter(row=>row.group==='buildings');
+ const bySection=Object.fromEntries(Object.keys(sections).map(section=>[section,{rows:[]}]));
+ const links={model:{},species:{}};
+ for(const row of rows){
+  const section=sectionForGroup(row.group);
+  if(!section)throw Error('Unassigned atlas group: '+row.group);
+  bySection[section].rows.push(row);
+  const [preview]=row.previews;
+  if(preview.entry?.file)links.model[preview.entry.file]=section;
+  if(preview.species)links.species[preview.species]??=section;
+ }
+ bySection.buildings.legacyLabels=legacyBuildings.map(({title,description})=>({title,description}));
+ return Object.entries({...bySection,links}).map(([name,data])=>[`model-atlas/data/${name}.json`,JSON.stringify(data)+'\n']);
+}
+
 async function main(){
  const args=process.argv.slice(2);if(args.some(a=>a!=='--check'))throw Error('Usage: node scripts/model-index.mjs [--check]');
- const index=await buildIndex(),outputs=[['docs/model-index.json',JSON.stringify(index,null,2)+'\n'],['docs/MODEL_INDEX.md',renderMarkdown(index)]];
+ const index=await buildIndex(),outputs=[['docs/model-index.json',JSON.stringify(index,null,2)+'\n'],['docs/MODEL_INDEX.md',renderMarkdown(index)],...atlasOutputs(index)];
  if(index.errors.length)throw Error(index.errors.join('\n'));
  for(const [path,content] of outputs){if(args.includes('--check')){if(await readFile(join(ROOT,path),'utf8')!==content)throw Error('Stale generated index: '+path+'; run node scripts/model-index.mjs');}else await writeFile(join(ROOT,path),content);}
  console.log(JSON.stringify({check:args.includes('--check'),manifestRelease:index.manifestRelease,...index.counts,errors:index.errors.length}));

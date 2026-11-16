@@ -5,12 +5,7 @@ import { strictScenario, legacyScenario } from '../scenario-profiles.js';
 import { GOODS_KINDS } from '../game3d/goods.js?v=sumer-props-20261112';
 import * as ambient from '../game3d/ambient-fauna.js';
 
-export const groups = {
-  buildings:'Здания и сооружения', people:'Люди', animals:'Животные', birds:'Птицы',
-  mythology:'Мифология', transport:'Транспорт', plants:'Растения', goods:'Грузы и предметы', other:'Отдельные сцены и резерв'
-};
-
-export const statuses = {
+const statuses = {
   active:'Используется', fallback:'Резерв при ошибке', optional:'Отдельная сцена', spare:'Файл в запасе'
 };
 
@@ -42,6 +37,9 @@ const names = {
   'festival-candle':'Свеча праздника','sacred-ishtar-gate':'Врата Иштар, исходный GLB',
   'sacred-shrine-3':'Святилище III, исходный GLB','sacred-ziggurat-1':'Зиккурат I, исходный GLB',
   'sacred-ziggurat-3':'Зиккурат III, исходный GLB',
+  'uruk-city-gate':'Ворота Урука, исходный GLB', 'uruk-city-wall':'Стена Урука, исходный GLB',
+  'reed-camp-sf3d':'Тростниковая хижина, исходный GLB',
+  'watch-house-sf3d':'Сторожевой двор, исходный GLB',
 };
 const ages = {male:'Мужчина',female:'Женщина',child:'Ребёнок',adolescent:'Подросток'};
 function glbGroup(name) {
@@ -61,15 +59,6 @@ function glbName(name) {
   if (name.startsWith('miracle-')) return `Растение чудесного сада · ${name.slice(8)}`;
   return name;
 }
-export function usageOf(row) {
-  const item=row.previews[0];
-  const status=item.entry?.status;
-  if (item.kind==='source') return 'source';
-  if (item.studio||status==='optional') return 'studio';
-  if (status==='spare'||status==='fallback'||item.reserve) return 'reserve';
-  return 'game';
-}
-
 export function makeCatalog(index, profile) {
   const state = {scenario:profile==='strict' ? strictScenario() : legacyScenario()};
   const rows = Object.keys(BUILDINGS).map(type => row('buildings', buildingDefinition(state,type).name,

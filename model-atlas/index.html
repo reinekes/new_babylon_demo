@@ -6,17 +6,19 @@
 <base href="../">
 <title>Атлас 3D · Новый Вавилон</title>
 <link rel="stylesheet" href="assets/ui/fonts.css">
-<link rel="stylesheet" href="model-atlas/style.css?v=fauna-500-20261113">
+<link rel="stylesheet" href="model-atlas/style.css?v=atlas-sections-20261116">
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
     <a class="back" href="./">← Новый Вавилон</a>
     <h1>Атлас 3D-моделей</h1>
-    <p>Здания по уровням, жители, животные, птицы и предметы из проекта.</p>
-    <p><a class="back" href="./?fish-preview=1">Посмотреть обе модели рыб в игре ↗</a></p>
-    <nav class="fauna-links" aria-label="Быстрые ссылки на животных">
-      <a href="model-atlas/?group=animals">Животные и птицы</a>
+    <nav class="category-tabs" id="category-tabs" aria-label="Разделы атласа">
+      <a href="model-atlas/?group=buildings" data-category="buildings">Здания</a>
+      <a href="model-atlas/?group=animals" data-category="animals">Животные</a>
+      <a href="model-atlas/?group=mini" data-category="mini">Мини-модели</a>
+    </nav>
+    <nav class="fauna-links" id="fauna-tools" hidden aria-label="Быстрые ссылки на животных">
       <a href="model-atlas/?group=animals&amp;supplied=1">Присланные модели · 16</a>
       <a href="model-atlas/?species=yellowfin-goby">Рыба</a>
       <a href="model-atlas/?species=realistic-rat">Мышь в сцене поимки</a>
@@ -25,8 +27,9 @@
       <a href="model-atlas/?species=realistic-rat">Крыса</a>
       <a href="model-atlas/?species=yellowfin-goby">Желтопёрый бычок</a>
       <a href="model-atlas/?species=oriental-goby">Восточный бычок</a>
+      <a href="./?fish-preview=1">Обе модели рыб в игре ↗</a>
     </nav>
-    <p id="totals" class="muted" aria-live="polite">Читаем игровой каталог…</p>
+    <p id="totals" class="muted" aria-live="polite">Загрузка раздела…</p>
   </div>
 </header>
 <main class="wrap">
@@ -39,11 +42,11 @@
   </div>
   <p id="usage-help" class="muted"></p>
   <div class="filters">
-    <label>Поиск <input id="search" type="search" placeholder="Дом, гусь, кувшин или имя GLB"></label>
-    <label>Раздел <select id="group"><option value="">Все разделы</option></select></label>
-    <label>Профиль зданий <select id="profile"><option value="strict">Южный Шумер</option><option value="legacy">Прежняя ветка</option></select></label>
+    <label>Поиск <input id="search" type="search" placeholder="Название или имя GLB"></label>
+    <label>Подраздел <select id="group"><option value="">Все подразделы</option></select></label>
+    <label id="profile-filter" hidden>Профиль зданий <select id="profile"><option value="strict">Южный Шумер</option><option value="legacy">Прежняя ветка</option></select></label>
   </div>
-  <label class="supplied-filter"><input id="supplied" type="checkbox"> Только присланные модели</label>
+  <label class="supplied-filter" id="supplied-filter" hidden><input id="supplied" type="checkbox"> Только присланные модели</label>
   <p class="muted">Нажмите на превью, чтобы повернуть модель, приблизить её или выбрать анимацию. «Файл GLB» показывает базовый объект. Костюмы, груз и рабочие позы могут добавляться игровым кодом.</p>
   <p id="results" aria-live="polite"></p>
   <div id="catalog"></div>
@@ -69,7 +72,7 @@
   <p id="model-detail" class="muted"></p>
   <p id="model-sources"></p>
 </dialog>
-<script type="importmap" id="game-visual-versions">{"imports":{"./architecture.js":"./architecture.js?v=living-fields-20261116","./district3d/buildings.js":"./district3d/buildings.js?v=living-fields-20261116","./district3d/materials.js":"./district3d/materials.js?v=living-fields-20261116","./engine.js":"./engine.js?v=living-fields-20261116","./extraction-courts.js":"./extraction-courts.js?v=living-fields-20261116","./extraction-stock.js":"./extraction-stock.js?v=living-fields-20261116","./fauna.js":"./fauna.js?v=living-fields-20261116","./field-patches.js":"./field-patches.js?v=living-fields-20261116","./game3d/actors.js":"./game3d/actors.js?v=living-fields-20261116","./game3d/ambient-fauna.js":"./game3d/ambient-fauna.js?v=living-fields-20261116","./game3d/architecture.js":"./game3d/architecture.js?v=living-fields-20261116","./game3d/building-foundations.js":"./game3d/building-foundations.js?v=living-fields-20261116","./game3d/buildings.js":"./game3d/buildings.js?v=field-shore-draw-range-20261116","./game3d/construction-sites.js":"./game3d/construction-sites.js?v=living-fields-20261116","./game3d/field-crops.js":"./game3d/field-crops.js?v=living-fields-20261116","./game3d/field-shore.js":"./game3d/field-shore.js?v=living-fields-20261116","./game3d/goats.js":"./game3d/goats.js?v=living-fields-20261116","./game3d/house-architecture.js":"./game3d/house-architecture.js?v=living-fields-20261116","./game3d/imported-fauna.js":"./game3d/imported-fauna.js?v=living-fields-20261116","./game3d/landscape.js":"./game3d/landscape.js?v=living-fields-20261116","./game3d/mallard-motion.js":"./game3d/mallard-motion.js?v=living-fields-20261116","./game3d/music-courtyard.js":"./game3d/music-courtyard.js?v=living-fields-20261116","./game3d/plough-teams.js":"./game3d/plough-teams.js?v=living-fields-20261116","./game3d/reed-roof.js":"./game3d/reed-roof.js?v=living-fields-20261116","./game3d/regional-fauna-routes.js":"./game3d/regional-fauna-routes.js?v=living-fields-20261116","./game3d/renderable-mesh-candidates.js":"./game3d/renderable-mesh-candidates.js?v=living-fields-20261116","./game3d/renderer.js":"./game3d/renderer.js?v=living-fields-20261116","./game3d/supplied-fauna.js":"./game3d/supplied-fauna.js?v=living-fields-20261116","./game3d/valley-vegetation.js":"./game3d/valley-vegetation.js?v=living-fields-20261116","./game3d/workstations.js":"./game3d/workstations.js?v=living-fields-20261116","./labor-life.js":"./labor-life.js?v=living-fields-20261116","./management.js":"./management.js?v=living-fields-20261116","./manual-gathering.js":"./manual-gathering.js?v=living-fields-20261116","./orchard-layout.js":"./orchard-layout.js?v=living-fields-20261116","./plough-art.js":"./plough-art.js?v=living-fields-20261116","./plough-team.js":"./plough-team.js?v=living-fields-20261116","./renderer.js":"./renderer.js?v=living-fields-20261116","./ui-manual-gathering.js":"./ui-manual-gathering.js?v=living-fields-20261116","./water.js":"./water.js?v=living-fields-20261116","./workforce.js":"./workforce.js?v=living-fields-20261116"}}</script>
-<script type="module" src="model-atlas/app.js?v=living-fields-20261116"></script>
+<script type="importmap" id="game-visual-versions">{"imports":{"./architecture.js":"./architecture.js?v=living-fields-20261116","./district3d/buildings.js":"./district3d/buildings.js?v=living-fields-20261116","./district3d/materials.js":"./district3d/materials.js?v=living-fields-20261116","./engine.js":"./engine.js?v=living-fields-20261116","./extraction-courts.js":"./extraction-courts.js?v=living-fields-20261116","./extraction-stock.js":"./extraction-stock.js?v=living-fields-20261116","./fauna.js":"./fauna.js?v=living-fields-20261116","./field-patches.js":"./field-patches.js?v=living-fields-20261116","./game3d/actors.js":"./game3d/actors.js?v=living-fields-20261116","./game3d/ambient-fauna.js":"./game3d/ambient-fauna.js?v=living-fields-20261116","./game3d/architecture.js":"./game3d/architecture.js?v=living-fields-20261116","./game3d/building-foundations.js":"./game3d/building-foundations.js?v=living-fields-20261116","./game3d/buildings.js":"./game3d/buildings.js?v=watch-house-model-20261116","./game3d/construction-sites.js":"./game3d/construction-sites.js?v=living-fields-20261116","./game3d/field-crops.js":"./game3d/field-crops.js?v=living-fields-20261116","./game3d/field-shore.js":"./game3d/field-shore.js?v=living-fields-20261116","./game3d/goats.js":"./game3d/goats.js?v=living-fields-20261116","./game3d/house-architecture.js":"./game3d/house-architecture.js?v=living-fields-20261116","./game3d/imported-fauna.js":"./game3d/imported-fauna.js?v=living-fields-20261116","./game3d/landscape.js":"./game3d/landscape.js?v=living-fields-20261116","./game3d/mallard-motion.js":"./game3d/mallard-motion.js?v=living-fields-20261116","./game3d/music-courtyard.js":"./game3d/music-courtyard.js?v=living-fields-20261116","./game3d/plough-teams.js":"./game3d/plough-teams.js?v=living-fields-20261116","./game3d/reed-roof.js":"./game3d/reed-roof.js?v=living-fields-20261116","./game3d/regional-fauna-routes.js":"./game3d/regional-fauna-routes.js?v=living-fields-20261116","./game3d/renderable-mesh-candidates.js":"./game3d/renderable-mesh-candidates.js?v=living-fields-20261116","./game3d/renderer.js":"./game3d/renderer.js?v=living-fields-20261116","./game3d/supplied-fauna.js":"./game3d/supplied-fauna.js?v=living-fields-20261116","./game3d/valley-vegetation.js":"./game3d/valley-vegetation.js?v=living-fields-20261116","./game3d/workstations.js":"./game3d/workstations.js?v=living-fields-20261116","./labor-life.js":"./labor-life.js?v=living-fields-20261116","./management.js":"./management.js?v=living-fields-20261116","./manual-gathering.js":"./manual-gathering.js?v=living-fields-20261116","./orchard-layout.js":"./orchard-layout.js?v=living-fields-20261116","./plough-art.js":"./plough-art.js?v=living-fields-20261116","./plough-team.js":"./plough-team.js?v=living-fields-20261116","./renderer.js":"./renderer.js?v=living-fields-20261116","./ui-manual-gathering.js":"./ui-manual-gathering.js?v=living-fields-20261116","./water.js":"./water.js?v=living-fields-20261116","./workforce.js":"./workforce.js?v=living-fields-20261116","./fortification-layout.js":"./fortification-layout.js?v=uruk-fortifications-20261116","./game3d/model-versions.js":"./game3d/model-versions.js?v=watch-house-model-20261116","./game3d/sacred-models.js":"./game3d/sacred-models.js?v=watch-house-model-20261116","./game3d/asset-loading.js":"./game3d/asset-loading.js?v=ceremony-speed-lights-20261028-1","./game3d/wildlife.js":"./game3d/wildlife.js?v=audit-fixes-20261113","./game3d/goods.js":"./game3d/goods.js?v=sumer-props-20261112"}}</script>
+<script type="module" src="model-atlas/app.js?v=atlas-sections-20261116"></script>
 </body>
 </html>

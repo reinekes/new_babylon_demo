@@ -1,26 +1,4 @@
-import { createMythSculpture } from './ninurta-sculptures.js';
-import { createNingishzidaVessel } from './ningishzida-vessel.js';
-import { createHeavenlyBull } from './heavenly-bull.js';
-import { createAnzudRelief } from './anzud-relief.js';
-import { createShellLamp } from '../game3d/shell-lamp.js';
 import { loadBabylonVendors } from '../game3d/vendor-loading.js';
-import { loadModel } from '../game3d/asset-loading.js';
-import { createGameBuildings } from '../game3d/buildings.js';
-import { createDistrictMaterials } from '../district3d/materials.js';
-import { createWildlife } from '../game3d/wildlife.js?v=winter-pelican-onager-20261112';
-import { createAmbientFauna } from '../game3d/ambient-fauna.js';
-import { cropPlantGeometry,createBotanicalMaterial,botanicalMesh } from '../game3d/crop-varieties.js';
-import { createNatureDetails } from '../game3d/nature-details.js';
-import { createBirdFlocks } from '../game3d/bird-flocks.js';
-import { createGoodsSources } from '../game3d/goods.js?v=sumer-props-20261112';
-import { createSumerRiverHull } from '../game3d/sumer-river-hull.js';
-import { canalNetworkGeometry } from '../game3d/canal-network.js';
-import { wornRoadGeometry } from '../game3d/water.js';
-import { createNewCity } from '../new-game.js';
-import { legacyScenario } from '../scenario-profiles.js';
-import { extractionKinds } from '../extraction-courts.js';
-import { newFootprint } from '../footprints.js';
-import { riverPoint } from '../world.js';
 
 function plainMaterial(B,scene,name,color) {
   const material=new B.PBRMaterial(name,scene);
@@ -32,9 +10,13 @@ function plainMaterial(B,scene,name,color) {
 }
 
 const assetDirectory = new URL('../assets/art-courtyard/models/',import.meta.url).href;
-const stateFor = profile => {
+const stateFor = async profile => {
+  const {createNewCity}=await import('../new-game.js');
   const state = createNewCity({mode:'mature',seed:137});
-  if (profile==='legacy') state.scenario=legacyScenario();
+  if (profile==='legacy') {
+    const {legacyScenario}=await import('../scenario-profiles.js');
+    state.scenario=legacyScenario();
+  }
   state.buildings=[];
   state.citizens=[];
   return state;
@@ -52,6 +34,7 @@ function geometry(B,scene,name,data,material) {
 
 async function makeModel(B,scene,item,profile) {
   if (item.kind==='glb') {
+    const {loadModel}=await import('../game3d/asset-loading.js');
     const container=await loadModel(B,scene,assetDirectory,item.entry.file,scene,undefined,'.glb');
     container.addAllToScene();
     // Both cobra files include visible Blender rig guides alongside the skin.
@@ -69,30 +52,42 @@ async function makeModel(B,scene,item,profile) {
     return;
   }
   if(item.kind==='relief'){
+    const {createAnzudRelief}=await import('./anzud-relief.js');
     createAnzudRelief(B,scene);
     return;
   }
   if(item.kind==='bust'){
+    const {createHeavenlyBull}=await import('./heavenly-bull.js');
     createHeavenlyBull(B,scene);
     return;
   }
   if(item.kind==='myth-sculpture'){
+    const {createMythSculpture}=await import('./ninurta-sculptures.js');
     createMythSculpture(B,scene,item.species);
     return;
   }
   if(item.kind==='vessel'){
+    const {createNingishzidaVessel}=await import('./ningishzida-vessel.js');
     createNingishzidaVessel(B,scene);
     return;
   }
-  const state=stateFor(profile);
   if (item.kind==='crop') {
+    const {cropPlantGeometry,createBotanicalMaterial,botanicalMesh}=await import('../game3d/crop-varieties.js');
     const data=cropPlantGeometry(item.key);
     data.normals=[];
     B.VertexData.ComputeNormals(data.positions,data.indices,data.normals);
     botanicalMesh(B,scene,item.key,data,createBotanicalMaterial(B,scene));
     return;
   }
+  if (item.kind==='lamp') {
+    const {createShellLamp}=await import('../game3d/shell-lamp.js');
+    createShellLamp(B,scene).isVisible=true;
+    return;
+  }
   if (item.kind==='dairy') {
+    const [state,{createAmbientFauna},{loadModel}]=await Promise.all([
+      stateFor(profile),import('../game3d/ambient-fauna.js'),import('../game3d/asset-loading.js')
+    ]);
     state.buildings.push({type:'cowshed',x:6,y:6,level:1,footprint:2,dairy:{cows:1,calves:1}});
     const view=await createAmbientFauna(B,scene,[],{
       includeSkyBirds:false,
@@ -110,6 +105,7 @@ async function makeModel(B,scene,item,profile) {
     return;
   }
   if (item.kind==='wildlife') {
+    const [state,{createWildlife}]=await Promise.all([stateFor(profile),import('../game3d/wildlife.js')]);
     const view=createWildlife(B,scene);
     const animal={id:'atlas',kind:item.species,x:6,y:6,heading:0,
       behavior:item.species==='marsh-harrier'?'flying':'looking',waterLevel:0,swimDepth:.12};
@@ -130,13 +126,44 @@ async function makeModel(B,scene,item,profile) {
     return;
   }
   if (item.kind==='flock') {
+    const [state,{createBirdFlocks}]=await Promise.all([stateFor(profile),import('../game3d/bird-flocks.js')]);
     const view=createBirdFlocks(B,scene,{tier:'low',state});
     view.update(state,7);
     for (const root of view.roots().slice(1)) root.setEnabled(false);
     return;
   }
+  if (item.kind==='road') {
+    const [state,{wornRoadGeometry}]=await Promise.all([stateFor(profile),import('../game3d/water.js')]);
+    const road=wornRoadGeometry(state,{x:6,y:6},{x:8,y:6},1.22,.038,item.level);
+    const surface=geometry(B,scene,'road',road,plainMaterial(B,scene,'road-finish',['#806443','#a18b63','#afa68b'][item.level-1]));
+    surface.position.set(road.origin.x,0,road.origin.z);
+    return;
+  }
+  if (item.type==='canal') {
+    const [state,{canalNetworkGeometry}]=await Promise.all([stateFor(profile),import('../game3d/canal-network.js')]);
+    const canal={x:6,y:6,wet:true,progress:1,arms:[[-1,0],[1,0]],flowWidth:1};
+    const channels=canalNetworkGeometry(state,[canal]);
+    const water=new B.StandardMaterial('atlas-water',scene);
+    water.diffuseColor=B.Color3.FromHexString('#56938c');
+    water.backFaceCulling=false;
+    geometry(B,scene,'canal-bed',channels.wetBed,plainMaterial(B,scene,'wet-mud','#4d584a'));
+    geometry(B,scene,'canal-water',channels.water,water);
+    return;
+  }
+  const {createDistrictMaterials}=await import('../district3d/materials.js');
   const materials=createDistrictMaterials(B,scene);
+  if (item.kind==='goods') {
+    const {createGoodsSources}=await import('../game3d/goods.js');
+    createGoodsSources(B,scene,materials).sources.get(item.key).setEnabled(true);
+    return;
+  }
+  if (item.kind==='boat') {
+    const {createSumerRiverHull}=await import('../game3d/sumer-river-hull.js');
+    createSumerRiverHull(B,scene,{bitumen:plainMaterial(B,scene,'bitumen','#352b20'),reed:materials.reed,wood:materials.wood});
+    return;
+  }
   if (item.kind==='nature') {
+    const [state,{createNatureDetails}]=await Promise.all([stateFor(profile),import('../game3d/nature-details.js')]);
     const view=createNatureDetails(B,scene,materials,{tier:'low',loadSnake:null});
     view.update(state,7,{type:'clear'},[],'atlas');
     let found=false;
@@ -147,34 +174,9 @@ async function makeModel(B,scene,item,profile) {
     }
     return;
   }
-  if (item.kind==='lamp') {
-    createShellLamp(B,scene).isVisible=true;
-    return;
-  }
-  if (item.kind==='goods') {
-    createGoodsSources(B,scene,materials).sources.get(item.key).setEnabled(true);
-    return;
-  }
-  if (item.kind==='boat') {
-    createSumerRiverHull(B,scene,{bitumen:plainMaterial(B,scene,'bitumen','#352b20'),reed:materials.reed,wood:materials.wood});
-    return;
-  }
-  if (item.kind==='road') {
-    const road=wornRoadGeometry(state,{x:6,y:6},{x:8,y:6},1.22,.038,item.level);
-    const surface=geometry(B,scene,'road',road,plainMaterial(B,scene,'road-finish',['#806443','#a18b63','#afa68b'][item.level-1]));
-    surface.position.set(road.origin.x,0,road.origin.z);
-    return;
-  }
-  if (item.type==='canal') {
-    const canal={x:6,y:6,wet:true,progress:1,arms:[[-1,0],[1,0]],flowWidth:1};
-    const channels=canalNetworkGeometry(state,[canal]);
-    const water=new B.StandardMaterial('atlas-water',scene);
-    water.diffuseColor=B.Color3.FromHexString('#56938c');
-    water.backFaceCulling=false;
-    geometry(B,scene,'canal-bed',channels.wetBed,plainMaterial(B,scene,'wet-mud','#4d584a'));
-    geometry(B,scene,'canal-water',channels.water,water);
-    return;
-  }
+  const [state,{createGameBuildings},{extractionKinds},{newFootprint},{riverPoint}]=await Promise.all([
+    stateFor(profile),import('../game3d/buildings.js'),import('../extraction-courts.js'),import('../footprints.js'),import('../world.js')
+  ]);
   const site=item.type==='bridge'?riverPoint(12,state):item.type==='field'?riverPoint(12,state,3):{x:6,y:6};
   const building={type:item.type,x:Math.round(site.x),y:Math.round(site.y),level:item.level,
     footprint:newFootprint(item.type),...(item.starter?{starterHut:true}:{})};

@@ -1,13 +1,13 @@
-import { groups, makeCatalog, usageOf } from './catalog.js?v=fauna-500-20261113';
+import { sections, sectionForGroup, usageOf } from './sections.js?v=atlas-sections-20261116';
 
 const byId=id=>document.getElementById(id);
 const catalog=byId('catalog'), group=byId('group'), search=byId('search'), profile=byId('profile');
 const supplied=byId('supplied');
-const faunaGroups=new Set(['animals','birds']);
+const tabs=[...byId('category-tabs').querySelectorAll('a')];
 const viewer=byId('viewer'), canvas=byId('model-canvas'), parking=byId('preview-parking');
 const clip=byId('clip'), rotate=byId('rotate'), status=byId('model-status');
 const cache=new Map(), queue=new Map();
-let index, preview, pending, active=false, drawing=false;
+let data, section, preview, pending, active=false, drawing=false;
 let observer;
 let usage='game';
 const usageButtons=[...byId('usage').querySelectorAll('button')];
@@ -26,7 +26,7 @@ const element=(tag,text,className)=>{
   if (className) node.className=className;
   return node;
 };
-const getPreview=()=>preview??=import('./preview.js?v=living-fields-20261116').then(m=>m.createPreview(canvas)).catch(error=>{
+const getPreview=()=>preview??=import('./preview.js?v=atlas-sections-20261116').then(m=>m.createPreview(canvas)).catch(error=>{
   preview=null;
   throw error;
 });
@@ -45,6 +45,7 @@ async function drain() {
     while (queue.size&&!active) {
       const [button,request]=queue.entries().next().value;
       queue.delete(button);
+      observer.unobserve(button);
       if (!button.isConnected) continue;
       const {item,mode}=request;
       const key=identity(item,mode);
@@ -152,16 +153,20 @@ function render() {
   queue.clear();
   observer=new IntersectionObserver(entries=>{
     for(const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      observer.unobserve(entry.target);
-      queue.set(entry.target,entry.target.previewRequest);
+      if (entry.isIntersecting) queue.set(entry.target,entry.target.previewRequest);
+      else queue.delete(entry.target);
     }
     drain();
   },{rootMargin:'160px'});
   const query=search.value.trim().toLocaleLowerCase('ru');
-  const allRows=makeCatalog(index,profile.value).filter(row=>
-    (!group.value||(group.value==='fauna'?faunaGroups.has(row.group):group.value===row.group))&&
-    (!supplied.checked||row.originalFile));
+  const scopedRows=profile.value==='legacy'&&data.legacyLabels
+    ? data.rows.map((row,i)=>({...row,...data.legacyLabels[i]})) : data.rows;
+  const allRows=scopedRows.filter(row=>(!group.value||group.value===row.group)&&(!supplied.checked||row.originalFile));
+  for(const tab of tabs){
+    const url=new URL(tab.href);
+    url.searchParams.set('usage',usage==='source'?'all':usage);
+    tab.href=url.href;
+  }
   for (const button of usageButtons) {
     const key=button.dataset.usage;
     button.textContent=`${usageLabels[key]} · ${key==='all'?allRows.length:allRows.filter(row=>usageOf(row)===key).length}`;
@@ -173,12 +178,12 @@ function render() {
     [row.title,row.description,row.originalFile,...row.previews.flatMap(p=>[p.label,p.species,p.entry?.file])].some(text=>text?.toLocaleLowerCase('ru').includes(query)));
   catalog.replaceChildren();
   byId('results').textContent=rows.length?`Строк в выборке: ${rows.length}`:'Совпадений нет';
-  for(const [key,title] of Object.entries(groups)) {
+  for(const [key,title] of Object.entries(sections[section])) {
     const selected=rows.filter(row=>row.group===key);
     if(!selected.length) continue;
-    const section=element('section'), heading=element('h2',title);
+    const panel=element('section'), heading=element('h2',title);
     heading.id=`group-${key}`;
-    section.setAttribute('aria-labelledby',heading.id);
+    panel.setAttribute('aria-labelledby',heading.id);
     const scroller=element('div',null,'scroll'), table=element('table',null,`grid ${key==='buildings'?'levels':''}`);
     const head=table.createTHead().insertRow();
     const headers=key==='buildings'?['Объект','I уровень','II уровень','III уровень']:['Объект','3D-модель','Источник / статус'];
@@ -213,33 +218,57 @@ function render() {
       }
     }
     scroller.append(table);
-    section.append(heading,scroller);
-    catalog.append(section);
+    panel.append(heading,scroller);
+    catalog.append(panel);
   }
 }
+
+async function readData(name) {
+  const response=await fetch(new URL(`./data/${name}.json?v=atlas-sections-20261116`,import.meta.url),{cache:'no-cache'});
+  if (!response.ok) throw Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
 async function start() {
-  const response=await fetch(new URL('../docs/model-index.json?v=living-fields-20261116',import.meta.url));
-  if(!response.ok) throw Error(`HTTP ${response.status}`);
-  index=await response.json();
-  const rows=makeCatalog(index,'strict');
-  byId('totals').textContent=`${rows.filter(r=>r.previews[0].kind==='building'&&!r.previews[0].starter).length} типов зданий · ${index.models.length} файлов GLB · отдельные процедурные объекты`;
-  group.add(new Option('Животные и птицы','fauna'));
-  for(const [id,name] of Object.entries(groups)) group.add(new Option(name,id));
+  const params=new URLSearchParams(location.search);
+  const file=params.get('model'), requestedSpecies=params.get('species');
+  const species=requestedSpecies==='snakes'?'cobra-base':requestedSpecies;
+  const requested=params.get('group');
+  const requestedSection=sectionForGroup(requested);
+  const suppliedOnly=params.get('supplied')==='1';
+  let linkedSection;
+  if (file||species) {
+    const links=await readData('links');
+    const entries=file?links.model:links.species;
+    const key=file||species;
+    if (Object.hasOwn(entries,key)) linkedSection=entries[key];
+  }
+  section=linkedSection??requestedSection??(suppliedOnly?'animals':'buildings');
+  for(const tab of tabs) {
+    if (tab.dataset.category===section) tab.setAttribute('aria-current','page');
+    else tab.removeAttribute('aria-current');
+  }
+  byId('fauna-tools').hidden=section!=='animals';
+  byId('supplied-filter').hidden=section!=='animals';
+  byId('profile-filter').hidden=section!=='buildings';
+  const selectedUsage=params.get('usage');
+  if (Object.hasOwn(usageLabels,selectedUsage)) usage=selectedUsage;
+  else if(requestedSection||suppliedOnly) usage='all';
+  data=await readData(section);
+  const {rows}=data;
+  const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:!!species&&item.species===species);
+  const glbCount=rows.filter(row=>row.previews.some(item=>item.kind==='glb')).length;
+  byId('totals').textContent=`${rows.length} позиций в разделе · GLB: ${glbCount}`;
+  for(const [id,name] of Object.entries(sections[section])) group.add(new Option(name,id));
+  if(requested!==section&&Object.hasOwn(sections[section],requested)&&(!selected||selected.group===requested))group.value=requested;
+  supplied.checked=section==='animals'&&suppliedOnly&&(!selected||!!selected.originalFile);
+  usageButtons.find(button=>button.dataset.usage==='source').hidden=!rows.some(row=>usageOf(row)==='source');
   for(const field of [group,profile,supplied]) field.addEventListener('change',render);
   search.addEventListener('input',render);
   for(const button of usageButtons) button.addEventListener('click',()=>{
     usage=button.dataset.usage;
     render();
   });
-  const params=new URLSearchParams(location.search);
-  const file=params.get('model'), requestedSpecies=params.get('species');
-  const species=requestedSpecies==='snakes'?'cobra-base':requestedSpecies;
-  const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:!!species&&item.species===species);
-  const section=params.get('group');
-  if(section==='animals'||section==='fauna'){group.value='fauna';usage='all';}
-  else if(Object.hasOwn(groups,section)){group.value=section;usage='all';}
-  supplied.checked=params.get('supplied')==='1';
-  if(supplied.checked)usage='all';
   if(selected){
     usage=usageOf(selected);
     search.value=file||selected.title;
