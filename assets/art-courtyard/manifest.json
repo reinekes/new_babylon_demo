@@ -4,8 +4,8 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 32648,
-      "sha256": "261f87e4ed5f7386ec4faaac4a2ac0109a2c8fcc7e915edf3256c52565325c39"
+      "bytes": 33084,
+      "sha256": "b9770836b3b7a10fa70fe3c01c26edbe2e010c274ecd323f79ed3a8f33c60036"
     },
     {
       "file": "CREDITS.html",
@@ -964,6 +964,22 @@
       "bytes": 577884,
       "sha256": "0ec171e23977a3acf564c621d9804a2871a5d735cb3c9aaaf4685e6169496c4d",
       "triangles": 7600,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/uruk-city-gate.glb",
+      "bytes": 487964,
+      "sha256": "ad7c25735f5e701910c56d013bd542e1eaae42911c6e6830e47173ff23b5b9d4",
+      "triangles": 6140,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/uruk-city-wall.glb",
+      "bytes": 204368,
+      "sha256": "5f2c0295720c7bec2e4a7c3ae401fe16fd7db2491c354ee39e6649a415aa267a",
+      "triangles": 770,
       "meshes": 1,
       "bones": 0
     }

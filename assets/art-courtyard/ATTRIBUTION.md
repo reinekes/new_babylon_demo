@@ -157,3 +157,7 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## Временный тростниковый шалаш
 
 `reed-camp-sf3d.glb` — [Stable Fast 3D](https://github.com/Stability-AI/stable-fast-3d) по концепту, полученному в Tripo Studio. Исходную сетку упростили с 38 000 до 7 600 треугольников, сохранили встроенные карты, выровняли наклон и прижали нижние кромки стен к земле. [Лицензия модели генерации](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md); ассет подготовлен для некоммерческой демоверсии.
+
+## Укрепления Урука
+
+`uruk-city-gate.glb` и `uruk-city-wall.glb` — Stable Fast 3D по двум концептам ImageGen. Геометрия упрощена, основания выровнены, проём ворот расширен и подогнан к игровому проезду. [Лицензия модели генерации](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md).

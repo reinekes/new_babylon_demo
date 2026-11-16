@@ -33,7 +33,7 @@ export function fortificationSignature(b,state){
 }
 export function fortificationLayout(b,state){
  const pieces=[];
- const piece=(x,z,w,d,h=HEIGHT,material='brick',bottom=-.16)=>pieces.push({x,z,w,d,h:h-bottom,bottom,material});
+ const piece=(x,z,w,d,h=HEIGHT,material='brick',bottom=-.16,gateBody=false)=>pieces.push({x,z,w,d,h:h-bottom,bottom,material,gateBody});
  const arm=(x,z,w,d)=>piece(x,z,w,d);
  if(b.type==='cityWall'){
   const mask=wallMask(b,state);
@@ -55,8 +55,8 @@ export function fortificationLayout(b,state){
  const size=footprintSize(b),center=(size-1)*HALF,mask=size===2?gateMask(b,state):wallMask(b,state)&10;
  for(const side of [-1,1]){
   const lateral=side*(size===2?1.95:1.54),width=size===2?3.05:2.62,depth=size===2?1.45:1.27;
-  piece(center,center+lateral,width,depth,3.08);
-  piece(center,center+lateral,width+.14,depth+.13,3.22,'plaster',3.08);
+  piece(center,center+lateral,width,depth,3.08,'brick',-.16,true);
+  piece(center,center+lateral,width+.14,depth+.13,3.22,'plaster',3.08,true);
   if(size!==2){
    if(mask&(side<0?8:2)){
     const start=Math.abs(lateral),length=HALF-start;
@@ -77,6 +77,6 @@ export function fortificationLayout(b,state){
    arm(center+x,lane+side*(3+half)/2,THICKNESS,3-half);
   }
  }
- piece(center,center,size===2?1.28:1.05,size===2?3.05:2.4,2.91,'wood',2.55);
+ piece(center,center,size===2?1.28:1.05,size===2?3.05:2.4,2.91,'wood',2.55,true);
  return pieces;
 }

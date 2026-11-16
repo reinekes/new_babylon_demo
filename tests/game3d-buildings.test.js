@@ -346,3 +346,26 @@ test('fortification templates connect straight runs, corners and gate wings with
   assert.ok(top(48,45.1).some(y=>y>1.8)&&top(48,50.9).some(y=>y>1.8),'legacy one-tile gate joins its walls');
  }finally{t.dispose();}
 });
+
+test('imported fortifications join at tile edges and keep the gate axis clear',async()=>{
+ const t=await setup(),previous=B.SceneLoader.LoadAssetContainerAsync,loads=[];
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>{
+  const name=file.split('?')[0];loads.push(name);return loadGeometry(t.scene,name);
+ };
+ try{
+  const g={type:'cityGate',x:8,y:8,level:1,footprint:2};
+  const w=(x,y)=>({type:'cityWall',x,y,level:1});
+  const state={buildings:[g,w(8,7),w(7,7),w(6,7)],citizens:[]},before=structuredClone(state);
+  t.layer.sync(state); await t.layer.sacredReady(); t.layer.sync(state);
+  assert.deepEqual(loads.toSorted(),['uruk-city-gate.glb','uruk-city-wall.glb']);
+  const hits=(x,z,y=9,dir=new B.Vector3(0,-1,0))=>t.scene.multiPickWithRay(new B.Ray(new B.Vector3(x,y,z),dir,20),m=>t.layer.meshes.includes(m)).filter(h=>h.hit);
+  for(const [x,z] of [[39,42],[45,42],[48,42],[48,45],[48,46.3]])assert.ok(hits(x,z).some(h=>h.pickedPoint.y>1.8),`seam at ${x},${z}`);
+  for(const z of [50.55,51,51.45])assert.ok(!hits(41,z,1.3,new B.Vector3(1,0,0)).some(h=>h.pickedMesh.metadata.type==='cityGate'));
+  assert.ok(hits(51,51).some(h=>h.pickedPoint.y>2.3));
+  assert.deepEqual(state,before);
+  state.buildings=[{...g,rotation:1},w(7,9)];
+  t.layer.sync(state);
+  for(const x of [50.55,51,51.45])assert.ok(!hits(x,41,1.3,new B.Vector3(0,0,1)).some(h=>h.pickedMesh.metadata.type==='cityGate'));
+  assert.ok(hits(45,54).some(h=>h.pickedPoint.y>1.8));
+ }finally{B.SceneLoader.LoadAssetContainerAsync=previous;t.dispose();}
+});

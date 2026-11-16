@@ -13,6 +13,7 @@ import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {fortificationSignature} from '../fortification-layout.js';
 import {sheepfoldGateSide} from '../sheepfold-layout.js';
+import {createImportedFortification} from './fortification-models.js';
 import {createArchitecture} from './architecture.js';
 import {createHouseArchitecture,houseVisualKind} from './house-architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
@@ -67,7 +68,8 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
- const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|model-ready':'');
+ let fortificationClay;
+ const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|model-ready':'')+(b.type==='cityGate'&&sacredModels.ready({type:'cityWall'},state)?'|wing-model':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
  function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
  function highlight(keys=[]){
@@ -164,6 +166,14 @@ export async function createGameBuildings(B,scene,materials,options={}){
     base.root.dispose();
    }else if(b.type==='musicHouse'){
     for(const mesh of createMusicCourtyard(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
+   }else if((b.type==='cityGate'||b.type==='cityWall')&&sacredModels.ready(b,state)){
+    if(!fortificationClay){
+     fortificationClay=new B.PBRMaterial('fortification-joint-clay',scene);
+     fortificationClay.albedoColor=B.Color3.FromHexString('#b9815c').toLinearSpace();
+     fortificationClay.roughness=1;fortificationClay.metallic=0;ownedMaterials.push(fortificationClay);
+    }
+    sources=createImportedFortification(B,scene,b,state,fortificationClay,sacredModels.sources(b,state),sacredModels.sources({type:'cityWall'},state));
+    for(const mesh of sources)mesh.parent=root;
    }else if(sacredModels.sources(b,state)){
     const {center,scale}=sacredModelTransform(b);
     for(const source of sacredModels.sources(b,state)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
