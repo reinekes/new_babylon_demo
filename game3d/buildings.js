@@ -67,7 +67,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
- const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|model-ready':'');
+ const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|sacred-ready':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
  function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
  function highlight(keys=[]){
@@ -139,12 +139,6 @@ export async function createGameBuildings(B,scene,materials,options={}){
    };
    if(b.campSalvage){
     if(b.campSalvage.reed>0)part('camp-reed-bundle',[1.4,.22,.65],[0,.13,0],materials.reed||trim);
-   }else if(sacredModels.sources(b,state)){
-    for(const source of sacredModels.sources(b,state)){
-     const mesh=source.clone('camp-sf3d',root,true);
-     mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;
-     sources.push(mesh);
-    }
    }else{
    part('camp-mat',[3.3,.05,3.1],[0,.06,0],raw);
    const roof=createReedRoof(B,scene,'camp-woven-roof',materials.reedRoof||materials.reed||trim,{

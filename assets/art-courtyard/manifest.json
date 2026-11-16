@@ -4,8 +4,8 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 32605,
-      "sha256": "889f3cc273f515f5cc33c67d79767eaf8208b26c0b4ed44fa08704e1d5b14f4a"
+      "bytes": 31974,
+      "sha256": "c7c2974ff51d52c554d9a9e700a0afed92ae26c3b3b8cd8070ade3f26e37fa36"
     },
     {
       "file": "CREDITS.html",
@@ -958,14 +958,6 @@
       "triangles": 3812,
       "meshes": 33,
       "bones": 38
-    },
-    {
-      "file": "models/reed-camp-sf3d.glb",
-      "bytes": 578048,
-      "sha256": "eb20ac70e7c55112df24e5e105b083892d20d5831125c977c1ec15fcfc0ca197",
-      "triangles": 7600,
-      "meshes": 1,
-      "bones": 0
     }
   ]
 }

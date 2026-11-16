@@ -153,7 +153,3 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## 2026-11-16 · тростниковые крыши
 
 `assets/3d/textures/reed-roof.webp` — фрагмент атласа крыши **Primitive Hut 1A (Barn)**, [Nucity](https://sketchfab.com/nucity), [исходная модель](https://sketchfab.com/3d-models/primitive-hut-1a-barn-039b8d79561c4b81a9e36a5c8540e94e), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Фото выделено из предоставленного GLB, прозрачные пиксели подкрашены для фильтрации края, карта сжата в WebP. Из непрозрачной части стеблей собрана отдельная карта `woven-reed.webp` для циновок и экранов. Геометрия крыш адаптирована к игровым каркасам; исходный GLB не распространяется. [Скрипт подготовки](../../scripts/art-courtyard/prepare_reed_roof.py).
-
-## Временный тростниковый шалаш
-
-`reed-camp-sf3d.glb` — [Stable Fast 3D](https://github.com/Stability-AI/stable-fast-3d) по концепту, полученному в Tripo Studio. Исходную сетку упростили с 38 000 до 7 600 треугольников, сохранили встроенные карты и поставили основание на землю. [Лицензия модели генерации](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md); ассет подготовлен для некоммерческой демоверсии.

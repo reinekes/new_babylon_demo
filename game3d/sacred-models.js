@@ -2,8 +2,6 @@ import {isStrictSumer} from '../scenario-profiles.js';
 import {loadModel} from './asset-loading.js';
 import {footprintSize} from '../footprints.js';
 
-const REED_CAMP_MODEL='reed-camp-sf3d.glb';
-
 export const SACRED_MODELS=Object.freeze({
  ishtarGate:{file:'sacred-ishtar-gate.glb',width:5.2},
  shrine3:{file:'sacred-shrine-3.glb',width:5.2},
@@ -42,7 +40,7 @@ export function flattenSacredContainer(B,container){
   mesh.isVisible=false;mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=true;
   mesh.computeWorldMatrix(true);sources.push(mesh);
  }
- if(!sources.length)throw Error('Модель здания не содержит геометрии');
+ if(!sources.length)throw Error('Священное здание не содержит геометрии');
  return sources;
 }
 
@@ -92,27 +90,23 @@ export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
  return [...groups].map(([mat,parts])=>{const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='game-sumer-gate-'+mat.name;mesh.material=mat;mesh.scaling.setAll(scale);mesh.position.set(center,0,center);return mesh;});
 }
 
-function modelKey(b,state){
- if(b?.type==='house'&&b.reedCamp&&!b.campSalvage&&!b.construction)return 'reedCamp';
- return sacredModelKey(b,state);
-}
-
-// Built monuments and reed camps load on demand. The procedural silhouette stays
-// while decoding or offline; only the view changes.
-export function createSacredModels(B,scene,{onError=error=>console.warn('Building model unavailable; retaining architecture.',error)}={}){
+// No sacred GLB is requested on startup or placement previews. Built monuments
+// opt in independently; their procedural silhouette remains while decoding or
+// offline. Loading changes view templates only, never simulation/save objects.
+export function createSacredModels(B,scene,{onError=error=>console.warn('Sacred model unavailable; retaining architecture.',error)}={}){
  const loaded=new Map(),pending=new Map(),failed=new Set();let disposed=false,blue=null;
  function request(b,state){
-  const key=modelKey(b,state);
+  const key=sacredModelKey(b,state);
   if(!key||disposed||loaded.has(key)||failed.has(key))return pending.get(key)||null;
   if(pending.has(key))return pending.get(key);
-  const promise=loadModel(B,scene,'assets/art-courtyard/models/',key==='reedCamp'?REED_CAMP_MODEL:SACRED_MODELS[key].file,scene,undefined,'.glb').then(container=>{
+  const promise=loadModel(B,scene,'assets/art-courtyard/models/',SACRED_MODELS[key].file,scene,undefined,'.glb').then(container=>{
    if(disposed){container.dispose();return null;}
    try{const sources=flattenSacredContainer(B,container);loaded.set(key,{container,sources});return sources;}
    catch(error){container.dispose();throw error;}
   }).catch(error=>{failed.add(key);if(!disposed)onError(error);return null;}).finally(()=>pending.delete(key));
   pending.set(key,promise);return promise;
  }
- return {request,key:sacredModelKey,ready(b,state){return loaded.has(modelKey(b,state));},sources(b,state){return loaded.get(modelKey(b,state))?.sources||null;},
+ return {request,key:sacredModelKey,ready(b,state){return loaded.has(sacredModelKey(b,state));},sources(b,state){return loaded.get(sacredModelKey(b,state))?.sources||null;},
   fallback(b,m,state){if(b.type!=='ishtarGate')return null;if(isStrictSumer(state))return createSumerGate(B,scene,m,b);if(!blue){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;}return createIshtarGateFallback(B,scene,m,blue,b);},
   idle(){return Promise.all([...pending.values()]);},
   dispose(){if(disposed)return;disposed=true;for(const {container} of loaded.values())container.dispose();loaded.clear();failed.clear();blue?.dispose();}
