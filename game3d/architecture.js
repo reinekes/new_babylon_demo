@@ -1,6 +1,7 @@
 import {isExtractionCourt,extractionWorkArea,extractionWorkspaceWidth} from '../extraction-courts.js';
 import {visualSurfaceElevation} from './shore-profile.js';
 import {riverAxis} from '../world.js';
+import {footprintSize} from '../footprints.js';
 import {fortificationLayout} from '../fortification-layout.js';
 import {sheepfoldGateSide,sheepfoldLayout} from '../sheepfold-layout.js';
 import {isStrictSumer} from '../scenario-profiles.js';
@@ -282,7 +283,17 @@ export function createArchitecture(B,scene,b,m,state){
  case 'harbor':for(let i=0;i<17;i++)block(0,.35,-2.55+i*.32,5.2,.15,.29,m.wood);for(const x of [-2.3,2.3])for(const z of [-2.3,0,2.3])cylinder(x,.3,z,.13,1.55);cloth(-1.2,-1.3,2.4,1.8,2.1,m.reed);stack(-1.9,-1.7,7);jar(-.5,-1.2,.7,.45);for(let i=0;i<4;i++)beam([.3+i*.42,.6,.4],[.3+i*.42,.6,2.2],.12,m.reed);
   if(isStrictSumer(state)){for(const z of [.45,1.18,1.88])jar(-1.72,z,.42,.44);block(-.72,.52,1.65,.9,.3,.53,m.linen,.17);}
   break;
- case 'market':ground();cloth(0,-1.55,4.5,1.6,2.15);cloth(-1.6,.8,1.65,2.6,1.9,m.reed);cloth(1.65,.8,1.5,2.6,2.35);bench(0,-1.55,3.8);for(let i=0;i<6;i++)jar(-1.5+i*.6,-1.55,.4,.85);for(let i=0;i<3;i++)block(1.65,.3,.1+i*.75,.8,.5,.6,m.reed);break;
+ case 'market':
+  if(footprintSize(b)===2){
+   block(3,.025,3,11.5,.05,11.5,m.soil);
+   room(3,-.65,6.7,2.5,2.6);
+   for(const x of [-.85,6.85])for(const z of [1.25,3.75,6.25]){
+    cloth(x,z,2.1,1.7,1.85,m.reed);
+    jar(x,z,.57,.75);
+   }
+   break;
+  }
+  ground();cloth(0,-1.55,4.5,1.6,2.15);cloth(-1.6,.8,1.65,2.6,1.9,m.reed);cloth(1.65,.8,1.5,2.6,2.35);bench(0,-1.55,3.8);for(let i=0;i<6;i++)jar(-1.5+i*.6,-1.55,.4,.85);for(let i=0;i<3;i++)block(1.65,.3,.1+i*.75,.8,.5,.6,m.reed);break;
  case 'clay':ground();basin(.8,.7,3,2.7);room(-1.65,-1.6,1.7,1.5,1.45);cloth(-1.5,.3,1.9,1.5,1.5,m.reed);for(let i=0;i<4;i++)jar(-2+i*.45,1.9,.5);break;
  case 'quarry':ground();for(let i=0;i<7;i++){const mesh=block(.2+i%3*.85,.25+Math.floor(i/3)*.25,-1.4+Math.floor(i/3)*1.1,.85,.7,.9,m.stone,i*.39);mesh.rotation.z=.11;}cloth(-1.5,-1.5,1.7,1.8,1.5,m.reed);bench(-1.2,1.5);beam([.4,.1,1.6],[1.9,1.6,1.6],.075);break;
  case 'reed':ground();cloth(-.65,-1.15,3.8,2.2,2.1,m.reed);for(let i=0;i<7;i++){const a=cylinder(-1.8+i*.58,.65,.75,.19,1.3,m.reed,.13);a.rotation.z=.12*(i%2?1:-1);}for(let i=0;i<4;i++)block(-1.6+i, .09,1.85,.85,.08,1,m.reed);bench(1.5,-.9);break;

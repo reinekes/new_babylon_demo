@@ -165,3 +165,7 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## Караульный двор
 
 `watch-house-sf3d.glb` — геометрия и текстуры Stable Fast 3D по концепту ImageGen, выровненное основание и два отдельно смоделированных настенных факела. [Лицензия Stable Fast 3D](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md).
+
+## Рынок 2 × 2
+
+`market-2x2.glb` — собственная геометрия и материалы проекта по концепту ImageGen. Отдельная лицензия для этого ассета не указана.

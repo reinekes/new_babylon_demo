@@ -57,3 +57,21 @@ test('version 30 adds flax slots without changing an active order or any worker'
  assert.deepEqual(migrated.citizens,old.citizens);
  assert.equal(migrated.trade.silver,old.trade.silver);
 });
+
+test('new markets reserve four cells while a legacy market saves and trades in one cell',async()=>{
+ const {footprintCells}=await import('../footprints.js');
+ const s=summer(),market=s.buildings.find(b=>b.type==='market');
+ const cells=[{x:10,y:9},{x:11,y:9},{x:10,y:10},{x:11,y:10}];
+ assert.deepEqual(footprintCells(market),cells);
+ assert.equal(trading.marketAccess(s,'10,9').market,market);
+ const claim=build(s,'house',11,10,0,{instant:true});
+ assert.equal(claim.ok,false);
+ const current=encode(s);
+ assert.equal(encode(decode(current)),current);
+ delete market.footprint;
+ const legacy=encode(s),restored=decode(legacy);
+ assert.ok(restored);
+ assert.equal(encode(restored),legacy);
+ assert.deepEqual(footprintCells(restored.buildings.find(b=>b.type==='market')),[{x:10,y:9}]);
+ assert.ok(trading.trade(restored,'stone','buy',1).ok);
+});

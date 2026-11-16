@@ -3,6 +3,7 @@ import {loadModel} from './asset-loading.js';
 import {footprintSize} from '../footprints.js';
 
 const FORTIFICATION_MODELS=Object.freeze({cityGate:'uruk-city-gate.glb',cityWall:'uruk-city-wall.glb'});
+const MARKET_MODEL='market-2x2.glb';
 const WATCH_HOUSE_MODEL='watch-house-sf3d.glb';
 const REED_CAMP_MODEL='reed-camp-sf3d.glb';
 
@@ -95,6 +96,7 @@ export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
 }
 
 function modelKey(b,state){
+ if(b?.type==='market'&&footprintSize(b)===2&&b.construction?.kind!=='new')return 'market';
  if(b?.type==='watchHouse'&&b.construction?.kind!=='new')return 'watchHouse';
  if(b?.construction?.kind!=='new'&&(b?.type==='cityWall'||b?.type==='cityGate'&&footprintSize(b)===2))return b.type;
  if(b?.type==='house'&&b.reedCamp&&!b.campSalvage&&!b.construction)return 'reedCamp';
@@ -109,7 +111,7 @@ export function createSacredModels(B,scene,{onError=error=>console.warn('Buildin
   const key=modelKey(b,state);
   if(!key||disposed||loaded.has(key)||failed.has(key))return pending.get(key)||null;
   if(pending.has(key))return pending.get(key);
-  const file=key==='watchHouse'?WATCH_HOUSE_MODEL:key==='reedCamp'?REED_CAMP_MODEL:FORTIFICATION_MODELS[key]??SACRED_MODELS[key].file;
+  const file=key==='market'?MARKET_MODEL:key==='watchHouse'?WATCH_HOUSE_MODEL:key==='reedCamp'?REED_CAMP_MODEL:FORTIFICATION_MODELS[key]??SACRED_MODELS[key].file;
   const promise=loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb').then(container=>{
    if(disposed){container.dispose();return null;}
    try{const sources=flattenSacredContainer(B,container);loaded.set(key,{container,sources});return sources;}

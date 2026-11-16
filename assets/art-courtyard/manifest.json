@@ -4,8 +4,8 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 33469,
-      "sha256": "0bf5fce348a079322c0b2e3a0c7cbd612e6d4ef5de0e5e547c9e7062f99a7d87"
+      "bytes": 33712,
+      "sha256": "c82a4ffe27a56ff55ac7b8e5e2ae5929d500b38e4b3ee2e3c1f26acbc12a6862"
     },
     {
       "file": "CREDITS.html",
@@ -989,6 +989,14 @@
       "sha256": "6385c6f9fe6230a3f9ad30f4661cc8c360f7d7f61cb87d1be5bde4e2f8b38dfb",
       "triangles": 8962,
       "meshes": 5,
+      "bones": 0
+    },
+    {
+      "file": "models/market-2x2.glb",
+      "bytes": 1397632,
+      "sha256": "34585856005eb4cb6fac579699221492fe30e6eb906419ba71b6cc528efe906a",
+      "triangles": 7971,
+      "meshes": 13,
       "bones": 0
     }
   ]

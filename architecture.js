@@ -13,6 +13,7 @@ import {masonryBox} from './masonry-art.js';
 import {cropFor} from './agriculture.js';
 import {fieldWater,drawCanal} from './irrigation.js';
 import {levelOf} from './definitions.js';
+import {footprintSize} from './footprints.js';
 import {seed} from './city-life.js';
 
 // All solid architecture is painted inside its depth-sorted scene entry.
@@ -50,7 +51,8 @@ export function drawBuilding(r, b, state, t) {
   if(b.type==='canal'){drawCanal(r,b,state);return;}
   if(b.type==='bridge'){r.bridge(b);return;}
   const level=levelOf(b);
-  const p=r.point(b.x,b.y), c=r.ctx, q=r.s, x=p.x, y=p.y;
+  const marketSize=b.type==='market'?footprintSize(b):1, marketCenter=(marketSize-1)*.5;
+  const p=r.point(b.x+marketCenter,b.y+marketCenter), c=r.ctx, q=r.s*marketSize, x=p.x, y=p.y;
   const night=r.lighting?.night||0;let windowIndex=1;const lit=Infinity;
   const poly=(points,fill)=>r.polygon(points.map(([a,z])=>[x+a*q,y+z*q]),fill);
   const line=(points,color,width=1)=>r.line(points.map(([a,z])=>[x+a*q,y+z*q]),color,width*q);

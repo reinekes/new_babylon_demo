@@ -174,6 +174,14 @@ export async function createGameBuildings(B,scene,materials,options={}){
     }
     sources=createImportedFortification(B,scene,b,state,fortificationClay,sacredModels.sources(b,state),sacredModels.sources({type:'cityWall'},state));
     for(const mesh of sources)mesh.parent=root;
+   }else if(b.type==='market'&&sacredModels.ready(b,state)){
+    for(const source of sacredModels.sources(b,state)){
+     const mesh=source.clone(`market-model-${source.name}`,root,true);
+     mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;
+     mesh.rotation.y=Math.PI;
+     mesh.position.set(3,.012,3);
+     sources.push(mesh);
+    }
    }else if(b.type==='watchHouse'&&sacredModels.ready(b,state)){
     for(const source of sacredModels.sources(b,state)){
      const mesh=source.clone(`watch-house-model-${source.name}`,root,true);
