@@ -13,6 +13,7 @@ import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {fortificationSignature} from '../fortification-layout.js';
 import {sheepfoldGateSide} from '../sheepfold-layout.js';
+import {createWatchHouseFire} from './watch-house-fire.js';
 import {createImportedFortification} from './fortification-models.js';
 import {createArchitecture} from './architecture.js';
 import {createHouseArchitecture,houseVisualKind} from './house-architecture.js';
@@ -68,6 +69,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
+ const watchHouseFire=createWatchHouseFire(B,scene);
  let fortificationClay;
  const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|model-ready':'')+(b.type==='cityGate'&&sacredModels.ready({type:'cityWall'},state)?'|wing-model':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
@@ -186,9 +188,8 @@ export async function createGameBuildings(B,scene,materials,options={}){
     for(const source of sacredModels.sources(b,state)){
      const mesh=source.clone(`watch-house-model-${source.name}`,root,true);
      mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;
-     mesh.scaling.setAll(5.1);
      mesh.rotation.y=Math.PI;
-     mesh.position.set(0,-.025,-.43);
+     mesh.position.set(0,-.008,-.18);
      sources.push(mesh);
     }
    }else if(sacredModels.sources(b,state)){
@@ -233,7 +234,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   t={root,sources,users:1};templates.set(key,t);return t;
  }
  function release(key){const t=templates.get(key);if(t&&!--t.users){t.root.dispose();templates.delete(key);}}
- function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}record.root.dispose();release(record.signature);active.delete(key);}
+ function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}watchHouseFire.remove(key);record.root.dispose();release(record.signature);active.delete(key);}
  function placeRoot(root,b){
   const angle=rotationOf(b)*Math.PI/2,offset=(footprintSize(b)-1)*3,c=Math.cos(angle),s=Math.sin(angle);
   root.rotation.y=angle;root.position.set(b.x*6+offset-(c+s)*offset,0,b.y*6+offset-(-s+c)*offset);
@@ -291,10 +292,13 @@ export async function createGameBuildings(B,scene,materials,options={}){
     const template=acquire(view,signature,state,shoreContext),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
     placeRoot(root,view);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
-     const mesh=source.metadata?.homeLamp?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(source.metadata?.homeLamp)mesh.receiveShadows=true;
+     // Watch courts need their own light sources while sharing the same geometry.
+     const localLighting=source.metadata?.homeLamp||b.type==='watchHouse'&&sacredModels.ready(b,state);
+     const mesh=localLighting?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(localLighting){mesh.receiveShadows=true;mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;}
      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
     record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view)};active.set(key,record);meshes.push(...parts);
+    if(b.type==='watchHouse')watchHouseFire.add(key,root,parts);
    }
    if(record.rotation!==rotationOf(view)){
     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,view);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(view);
@@ -325,5 +329,5 @@ export async function createGameBuildings(B,scene,materials,options={}){
   for(const [key,entry]of fieldBeds)if(!fieldSites.has(`${entry.x},${entry.y}`)&&!(previewRecord?.x===entry.x&&previewRecord?.y===entry.y)){entry.owner.dispose();fieldBeds.delete(key);}
  }
  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
- return {sync,meshes,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night){const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,loadDetails,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;watchHouseFire.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

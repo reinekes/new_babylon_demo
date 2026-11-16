@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "e51c97da4c470ba8e0d80d0ccbea2869468c5f2b04bae272c232fdc291f99f9d"
+      "sha256": "7d6d2aa23639a1b278678ebf1795a1518082721dbc89e1f1da25a3bd1ceedbca"
     },
     {
       "file": "game3d/caravan.js",
@@ -77,7 +77,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "cce7e0ac5f89d156e625be2869af9d596a42281e78acb0fb5e362e188bbb34f1"
+      "sha256": "c112af38d4d3eb8aa53ee21374cc4bac34a822ab04411df361b3ec6db3304b46"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -123,7 +123,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 28,
+          "line": 29,
           "kind": "literal"
         }
       ]
@@ -2807,28 +2807,28 @@
       ]
     },
     {
-      "file": "watch-house-sf3d.glb",
+      "file": "watch-house-v2.glb",
       "status": "active",
       "purpose": "Готовый караульный двор с башней и двумя факелами.",
       "classificationEvidence": "game3d/sacred-models.js|WATCH_HOUSE_MODEL",
-      "bytes": 608880,
-      "sha256": "6385c6f9fe6230a3f9ad30f4661cc8c360f7d7f61cb87d1be5bde4e2f8b38dfb",
-      "version": "6385c6f9fe62",
-      "triangles": 8962,
-      "meshes": 5,
+      "bytes": 978836,
+      "sha256": "74086a14e53deac659c9a95ba5da91298a7c52c1c68cd3dd214e209c3f1913ac",
+      "version": "74086a14e53d",
+      "triangles": 2562,
+      "meshes": 9,
       "bones": 0,
       "clips": [],
       "sources": [
         {
-          "author": "Stability AI; New Babylon concept and adaptation",
-          "license": "https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md",
-          "source": "https://huggingface.co/spaces/stabilityai/stable-fast-3d",
+          "author": "New Babylon",
+          "license": "Project-authored; explicit standalone asset license not recorded.",
+          "source": "Собственная геометрия и материалы по утверждённому концепту ImageGen",
           "evidence": "asset.extras"
         }
       ],
       "references": [
         {
-          "model": "watch-house-sf3d.glb",
+          "model": "watch-house-v2.glb",
           "file": "game3d/sacred-models.js",
           "line": 7,
           "kind": "literal"

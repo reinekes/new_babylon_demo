@@ -45,7 +45,7 @@ group('miracle-birch-1 miracle-cactus-1 miracle-cactus-2 miracle-daisy-1 miracle
 group('sacred-ishtar-gate sacred-shrine-3 sacred-ziggurat-1 sacred-ziggurat-3','active','Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.','game3d/sacred-models.js|SACRED_MODELS');
 group('uruk-city-gate uruk-city-wall','active','Готовые южномесопотамские укрепления: модель ворот 2 × 2 и повторяемые секции стены.','game3d/sacred-models.js|FORTIFICATION_MODELS');
 group('market-2x2','active','Готовый новый рынок на четырёх клетках.','game3d/sacred-models.js|MARKET_MODEL');
-group('watch-house-sf3d','active','Готовый караульный двор с башней и двумя факелами.','game3d/sacred-models.js|WATCH_HOUSE_MODEL');
+group('watch-house-v2','active','Готовый караульный двор с башней и двумя факелами.','game3d/sacred-models.js|WATCH_HOUSE_MODEL');
 group('reed-camp-sf3d','active','Готовый временный тростниковый шалаш; процедурная форма остаётся при загрузке или ошибке.','game3d/sacred-models.js|REED_CAMP_MODEL');
 group('ambient-duck','optional','Декоративная утка для стендов. В городе живёт береговая пара крякв.','game3d/ambient-fauna.js|hidePlaceholderBirds');
 group('ambient-sheep-kenchoo','active','Фоновые овцы и часть взрослых овец в овчарнях.','game3d/ambient-fauna.js|ambient-sheep-kenchoo');

@@ -4,7 +4,7 @@ import {footprintSize} from '../footprints.js';
 
 const FORTIFICATION_MODELS=Object.freeze({cityGate:'uruk-city-gate.glb',cityWall:'uruk-city-wall.glb'});
 const MARKET_MODEL='market-2x2.glb';
-const WATCH_HOUSE_MODEL='watch-house-sf3d.glb';
+const WATCH_HOUSE_MODEL='watch-house-v2.glb';
 const REED_CAMP_MODEL='reed-camp-sf3d.glb';
 
 export const SACRED_MODELS=Object.freeze({
