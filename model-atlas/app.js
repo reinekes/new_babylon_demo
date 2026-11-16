@@ -258,7 +258,7 @@ async function start() {
   const {rows}=data;
   const selected=rows.find(({previews:[item]})=>file?item.entry?.file===file:!!species&&item.species===species);
   const glbCount=rows.filter(row=>row.previews.some(item=>item.kind==='glb')).length;
-  byId('totals').textContent=`${rows.length} позиций в разделе · GLB: ${glbCount}`;
+  byId('totals').textContent=`Позиций в разделе: ${rows.length} · GLB: ${glbCount}`;
   for(const [id,name] of Object.entries(sections[section])) group.add(new Option(name,id));
   if(requested!==section&&Object.hasOwn(sections[section],requested)&&(!selected||selected.group===requested))group.value=requested;
   supplied.checked=section==='animals'&&suppliedOnly&&(!selected||!!selected.originalFile);

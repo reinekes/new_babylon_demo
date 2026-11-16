@@ -39,7 +39,7 @@ const names = {
   'sacred-ziggurat-3':'Зиккурат III, исходный GLB',
   'uruk-city-gate':'Ворота Урука, исходный GLB', 'uruk-city-wall':'Стена Урука, исходный GLB',
   'reed-camp-sf3d':'Тростниковая хижина, исходный GLB',
-  'watch-house-sf3d':'Сторожевой двор, исходный GLB',
+  'watch-house-sf3d':'Караульный двор, исходный GLB',
 };
 const ages = {male:'Мужчина',female:'Женщина',child:'Ребёнок',adolescent:'Подросток'};
 function glbGroup(name) {
