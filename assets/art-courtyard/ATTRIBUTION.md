@@ -161,3 +161,7 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## Укрепления Урука
 
 `uruk-city-gate.glb` и `uruk-city-wall.glb` — Stable Fast 3D по двум концептам ImageGen. Геометрия упрощена, основания выровнены, проём ворот расширен и подогнан к игровому проезду. [Лицензия модели генерации](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md).
+
+## Караульный двор
+
+`watch-house-sf3d.glb` — геометрия и текстуры Stable Fast 3D по концепту ImageGen, выровненное основание и два отдельно смоделированных настенных факела. [Лицензия Stable Fast 3D](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md).

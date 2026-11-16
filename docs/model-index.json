@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 86,
-    "active": 61,
+    "total": 87,
+    "active": 62,
     "fallback": 9,
     "optional": 6,
     "spare": 10
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "12df3047613eac581e07964adbc4e56a54bcf0e75f5d74784373823ea442f26e"
+      "sha256": "23744d76cfb048901d4a5fb37d8e6fbd00010d5e82304bc6c848b21ec4c2fb2d"
     },
     {
       "file": "game3d/caravan.js",
@@ -77,7 +77,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "60dba2efbd60bbf062eab5afbcd78c606f006970c1bba89ebdbfd4592e46627b"
+      "sha256": "17089e850dc94c50126baac79af4021391928e6dcb465fabed4036c1d9ca5ea7"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -1502,7 +1502,7 @@
         {
           "model": "reed-camp-sf3d.glb",
           "file": "game3d/sacred-models.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -1642,7 +1642,7 @@
         {
           "model": "sacred-ishtar-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -1671,7 +1671,7 @@
         {
           "model": "sacred-shrine-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 10,
+          "line": 11,
           "kind": "literal"
         }
       ]
@@ -1700,7 +1700,7 @@
         {
           "model": "sacred-ziggurat-1.glb",
           "file": "game3d/sacred-models.js",
-          "line": 11,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -1729,7 +1729,7 @@
         {
           "model": "sacred-ziggurat-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 12,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -2773,6 +2773,35 @@
           "model": "valley-reed-3.glb",
           "file": "game3d/valley-vegetation.js",
           "line": 10,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "watch-house-sf3d.glb",
+      "status": "active",
+      "purpose": "Готовый караульный двор с башней и двумя факелами.",
+      "classificationEvidence": "game3d/sacred-models.js|WATCH_HOUSE_MODEL",
+      "bytes": 608880,
+      "sha256": "6385c6f9fe6230a3f9ad30f4661cc8c360f7d7f61cb87d1be5bde4e2f8b38dfb",
+      "version": "6385c6f9fe62",
+      "triangles": 8962,
+      "meshes": 5,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "Stability AI; New Babylon concept and adaptation",
+          "license": "https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md",
+          "source": "https://huggingface.co/spaces/stabilityai/stable-fast-3d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "watch-house-sf3d.glb",
+          "file": "game3d/sacred-models.js",
+          "line": 6,
           "kind": "literal"
         }
       ]
