@@ -105,11 +105,22 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function clipField(mesh,b,state){
   const key=mesh.metadata?.fieldBed?JSON.stringify([b.x,b.y,rotationOf(b),b.fieldPatch?.signature,state?.world?.river,state?.world?.lakes||[],(state?.buildings||[]).map(v=>[v.x,v.y])]):null;
   const cached=key&&fieldBeds.get(key);
-  if(cached){fieldBeds.delete(key);fieldBeds.set(key,cached);mesh.geometry.releaseForMesh(mesh,true);cached.owner.geometry.applyToMesh(mesh);return true;}
+  // Clipping can expand the index buffer. Babylon retains an existing draw
+  // range when it still fits, so detach it before attaching the replacement.
+  if(cached){
+   fieldBeds.delete(key);fieldBeds.set(key,cached);
+   mesh.releaseSubMeshes();
+   mesh.geometry.releaseForMesh(mesh,true);
+   cached.owner.geometry.applyToMesh(mesh);
+   return true;
+  }
   const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
   if(!clipped.indices.length){mesh.dispose();return false;}
+  if(clipped===data)return true;
+  mesh.releaseSubMeshes();
+  mesh.geometry.releaseForMesh(mesh,true);
   const geometry=new B.VertexData();Object.assign(geometry,clipped);geometry.applyToMesh(mesh);
-  if(key&&clipped!==data){
+  if(key){
    const owner=mesh.clone('game-field-bed-cache',null,true);owner.parent=null;owner.isVisible=false;owner.isPickable=false;owner.setEnabled(false);owner.metadata={fieldBedCache:true};owner.freezeWorldMatrix();
    fieldBeds.set(key,{owner,x:b.x,y:b.y});
    while(fieldBeds.size>128){const oldest=fieldBeds.keys().next().value;fieldBeds.get(oldest).owner.dispose();fieldBeds.delete(oldest);}

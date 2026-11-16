@@ -81,3 +81,34 @@ test('construction transitions keep scaffolding separate from completed field so
   b.construction.work=12;t.layer.sync(s);assert.equal(soil(t.layer.meshes).geometry,geometry);delete b.construction;b.level=2;t.layer.sync(s);assert.deepEqual(snapshot(t.layer.meshes),await t.fresh(s));
  }finally{t.dispose();}
 });
+
+test('the draw range covers every shoreline triangle before and after reusing joined soil',async()=>{
+ const t=await setup(true);
+ try{
+  const plots=[44,45,46].map(x=>({...field(x,34),id:`shore-${x}`}));
+  const s={buildings:plots,citizens:[],world:{width:64,height:64,generationVersion:2,seed:3828928875,lakes:[],
+   river:{offset:41.452427078376346,slope:-.1884370527416468,amplitude:1.9377949648536743,frequency:.11884558093035594,phase:6.122254219936697,axis:'x',flowSign:1}}};
+  const joined=()=>t.layer.meshes.filter(m=>m.material.name==='district-ploughed-silt');
+  const checkDrawRanges=()=>{
+   const beds=joined();assert.equal(beds.length,3);
+   for(const bed of beds){
+    assert.ok(bed.getTotalIndices()>2304,'clipping subdivides the original bed');
+    for(const mesh of [bed,bed.sourceMesh]){
+     assert.equal(mesh.subMeshes.length,1);
+     const range=mesh.subMeshes[0];
+     assert.equal(range.indexStart,0);
+     assert.equal(range.indexCount,bed.getTotalIndices(),'no shoreline triangles are left outside the draw range');
+     assert.equal(range.verticesCount,bed.getTotalVertices());
+    }
+   }
+   return beds;
+  };
+  t.layer.sync(s);
+  const geometry=new Map(checkDrawRanges().map(m=>[m.metadata.buildingKey,m.geometry]));
+  for(const plot of plots)plot.crop.sown=.5;
+  const before=JSON.stringify(s);
+  t.layer.sync(s);
+  for(const mesh of checkDrawRanges())assert.equal(mesh.geometry,geometry.get(mesh.metadata.buildingKey),'sowing reuses the already clipped soil');
+  assert.equal(JSON.stringify(s),before);
+ }finally{t.dispose();}
+});
