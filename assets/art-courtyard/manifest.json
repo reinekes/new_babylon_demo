@@ -4,13 +4,13 @@
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 30998,
-      "sha256": "8368ee6e6b69bc3706b5a28554ff5cfdf1fabbf3181d6b93f7a1b5e10cefaaf0"
+      "bytes": 31974,
+      "sha256": "c7c2974ff51d52c554d9a9e700a0afed92ae26c3b3b8cd8070ade3f26e37fa36"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 31328,
-      "sha256": "3a6d95e60cd42f6aa8189deb546d31c2722fd90816fd235e5f85f401b47cccad"
+      "bytes": 31857,
+      "sha256": "a1214dccc7ae2171df1bea9139b03f45a9fbd5c177242b4f4f850914ce2dd7b6"
     },
     {
       "file": "festival-candle-report.json",

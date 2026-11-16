@@ -1,5 +1,6 @@
 import {riverPoint,riverLength,onBridge} from '../world.js';
 import {calendarAt,calendarRateFor,MONTH_SECONDS} from '../calendar.js';
+import {isStrictSumer} from '../scenario-profiles.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT,waterDepth} from './water.js';
 
@@ -19,7 +20,7 @@ function onagerRoutes(state,center,clearSegment){
  return [];
 }
 
-export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
+export function planRegionalFauna(state,along,dry,clearSegment,steppeland,shoreSide=1){
  const length=riverLength(state);
  const spots=(shift,offset)=>[shift,-shift,shift+3,-shift-3,0,3,-3].map(delta=>along+delta)
   .filter(bank=>bank>=3&&bank<=length-4).map(bank=>({bank,point:riverPoint(bank,state,offset)}));
@@ -38,7 +39,23 @@ export function planRegionalFauna(state,along,dry,clearSegment,steppeland){
   quail.push(...group);break;
  }
  const frogEnd=frog&&riverPoint(frog.bank+.16,state,1.66);
- return {ibis,quail,frog:frog&&(frogEnd&&clearSegment(state,frog.point,frogEnd)?[frog.point,frogEnd]:[frog.point]),
+ const frogs=frog?[frogEnd&&clearSegment(state,frog.point,frogEnd)?[frog.point,frogEnd]:[frog.point]]:[];
+ if(isStrictSumer(state)){
+  for(const {bank:center} of spots(2,shoreSide*2.24)){
+   const group=[[0,0],[.38,.09],[-.32,.21],[.68,.4],[-.67,.35]].map(([x,y])=>riverPoint(center+x,state,shoreSide*(2.24+y)));
+   if(!group.every(p=>dry(state,p.x,p.y,.28)&&quail.every(q=>Math.hypot(q.x-p.x,q.y-p.y)>.62)))continue;
+   quail.push(...group);break;
+  }
+  for(const {bank:center} of spots(3.1,shoreSide*1.62)){
+   const patch=[[-.65,1.61],[-.13,1.74],[.36,1.55],[.91,1.68]].map(([delta,offset],i)=>{
+    const a=riverPoint(center+delta,state,shoreSide*offset),b=riverPoint(center+delta+.105+(i%2)*.036,state,shoreSide*(offset+.023));
+    return [a,b];
+   });
+   if(!patch.every(([a,b])=>clearSegment(state,a,b)&&frogs.every(([p])=>Math.hypot(p.x-a.x,p.y-a.y)>.34)))continue;
+   frogs.push(...patch);break;
+  }
+ }
+ return {ibis,quail,frogs,
   onagers:onagerRoutes(state,steppeland,clearSegment),
   pelican:pool(5,-.27,1.25,.22,.40),cormorant:pool(-6,.47,.83,.19,.40),
   kingfisher:pool(-3,.28,.70,.09,.42),harrier:bank(9,2.3,.30)};
@@ -108,12 +125,12 @@ export function regionalFauna(state,plan,time){
   return {behavior:dip>.3?'diving':'hovering',elevation:WATER_HEIGHT+1.14-dip*1.20,pitch:dip*.84};
  });
  orbit('marsh-harrier',plan.harrier,2.3,1.45,.42,24,a=>({behavior:'flying',elevation:WATER_HEIGHT+3.0+Math.cos(a)*.38}));
- if(plan.frog){
-  const phase=time%12,step=Math.max(0,Math.min(1,(phase%6-4.9)/.32));
-  const progress=phase<6?step:1-step,[a,b=a]=plan.frog;
+ for(const [index,[a,b=a]] of plan.frogs.entries()){
+  const period=6+index*.3,phase=(time+index*1.49)%(2*period),step=Math.max(0,Math.min(1,(phase%period-4.9)/.32));
+  const progress=phase<period?step:1-step;
   const x=a.x+(b.x-a.x)*progress,y=a.y+(b.y-a.y)*progress;
   const hop=b===a?0:4*step*(1-step);
-  add('savigny-tree-frog',{x,y,hop,hopProgress:b===a?0:step,yaw:Math.atan2(b.x-a.x,b.y-a.y)+(phase<6?0:Math.PI),
+  add('savigny-tree-frog',{id:index?'ambient-bank-frog-'+index:'ambient-savigny-tree-frog',x,y,hop,hopProgress:b===a?0:step,yaw:Math.atan2(b.x-a.x,b.y-a.y)+(phase<period?0:Math.PI),
    elevation:surfaceElevation(x,y,state)+hop*.14});
  }
  for(const [index,point] of plan.quail.entries()){

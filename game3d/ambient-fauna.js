@@ -1,13 +1,13 @@
-import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=city500-fauna-courts-20261113';
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=living-fields-20261116';
 import {dairyHerd,dairyPose} from './dairy-herd.js?v=audit-fixes-20261113';
 import {loadModel} from './asset-loading.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
-import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength,onBridge} from '../world.js';
+import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength,signedRiverDistance,onBridge} from '../world.js';
 import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
-import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=mallard-scan-20261112';
+import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=living-fields-20261116';
 import {WATER_HEIGHT,waterDepth} from './water.js';
 import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
@@ -106,7 +106,7 @@ function courtyardPlan(state){
    add('turtle',shore,.25,.08,3.5);
    otterPool=findOtterPool(state,along);
    const steppeland=ambientAnchor(state,'onager');
-   regional=planRegionalFauna(state,along,ambientDryPoint,ambientClearSegment,steppeland);
+   regional=planRegionalFauna(state,along,ambientDryPoint,ambientClearSegment,steppeland,Math.sign(signedRiverDistance(home.x,home.y,state))||1);
    for(const shift of [6,-6,9,-9,3,-3]){
     const bank=along+shift;
     if(bank<2||bank>riverLength(state)-3)continue;
@@ -247,7 +247,8 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  let route=null,routeBuildings=null,routeCount=-1;
  function shorePose(a,state){
   if(a.rig&&route){
-   const p=mallardPose(route,clock+MALLARD_PHASES[a.species][a.index]);
+   const individual=MALLARD_PHASES[a.species][a.index];
+   const p=mallardPose(route,clock+route.start+individual+.32*Math.sin(clock*.24+individual*.94));
    a.root.setEnabled(true);
    a.root.position.set(p.x,p.y,p.z);
    a.root.rotation.y=p.yaw;
@@ -317,6 +318,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   if(routeChanged){
    routeBuildings=state.buildings;routeCount=routeBuildings.length;
    route=mallardRoute(state,p=>ambientDryPoint(state,p.x,p.y,-Infinity));
+   if(route)route.start=Math.max(0,(route.stops.find(p=>p.kind==='feeding')?.time||0)-15);
    for(const a of actors)if(a.rig){
     a.root.metadata.shoreFocus=route?.focus;
     a.ripple?.reset();

@@ -59,7 +59,7 @@ export async function loadFieldCrops(B,scene){
    let allDry=true;
    for(let row=0;row<count;row++)for(let i=0;i<count;i++){
     if((row*count+i+.5)/(count*count)>visual.sown*visual.standing)continue;
-    const spacing=count===8?.62:1.25,start=count===8?-2.2:-1.875,x=start+row*spacing,z=start+i*spacing,world=fieldWorldPoint(b,x,z);
+    const spacing=b.fieldPatch?6/count:count===8?.62:1.25,start=b.fieldPatch?-3+spacing/2:count===8?-2.2:-1.875,x=start+row*spacing,z=start+i*spacing,world=fieldWorldPoint(b,x,z);
     // Whole clumps stay on the dry part of the rounded bank. A conservative
     // radius covers all triangles after rotation, not just their centre.
     if(renderedShoreDistance(world.x,world.y,state,contours)<FIELD_SHORE_BUFFER+radius*scale/6*1.3){allDry=false;continue;}
@@ -71,7 +71,7 @@ export async function loadFieldCrops(B,scene){
    const flat=points.every(({x,z})=>{
     const p=fieldWorldPoint(b,x,z);return Math.abs(visualSurfaceElevation(p.x,p.y,state,contours))<1e-8&&renderedShoreDistance(p.x,p.y,state,contours)>.4+radius*scale/6;
    });
-   const key=`${kind}:${growth}:${points.length}`,cached=allDry&&flat?batches.get(key):null;
+   const key=`${kind}:${growth}:${points.length}:${Number(!!b.fieldPatch)}`,cached=allDry&&flat?batches.get(key):null;
    if(cached){const mesh=cached.clone(`game-field-${kind}`,null,true);mesh.metadata={fieldCrops:true,cropKind:kind,clumps:points.length};return [mesh];}
    const positions=[],indices=[],normals=[],uvs=[],colors=[];
    for(const {x,z,angle}of points){

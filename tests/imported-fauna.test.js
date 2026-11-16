@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGame} from '../engine.js';
 import {createImportedFauna,IMPORTED_FAUNA_MODELS,importedFaunaAction} from '../game3d/imported-fauna.js';
+import {createSuppliedFauna} from '../game3d/supplied-fauna.js';
 const box={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),box);const B=box.exports.NullEngine?box.exports:box.module.exports;
 function source(scene,file){const key=Object.keys(IMPORTED_FAUNA_MODELS).find(k=>IMPORTED_FAUNA_MODELS[k].file===file),asset=new B.AssetContainer(scene),root=new B.TransformNode(`${key}-source`,scene),head=new B.TransformNode(`${key}-head`,scene),body=B.MeshBuilder.CreateBox(`${key}-body`,{},scene);body.parent=root;head.parent=root;asset.rootNodes=[root];asset.transformNodes=[root,head];asset.meshes=[body];asset.animationGroups=[];for(const clip of IMPORTED_FAUNA_MODELS[key].clips){const animation=new B.Animation(clip,'rotation.x',30,B.Animation.ANIMATIONTYPE_FLOAT,B.Animation.ANIMATIONLOOPMODE_CYCLE);animation.setKeys([{frame:0,value:0},{frame:15,value:clip==='Sit'?.4:.2},{frame:30,value:0}]);const group=new B.AnimationGroup(clip,scene);group.addTargetedAnimation(animation,head);asset.animationGroups.push(group);}asset.removeAllFromScene();return asset;}
 async function fixture(reject=()=>false){const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[],loads=[];const view=await createImportedFauna(B,scene,meshes,{warn:()=>{},loadAsset:async file=>{loads.push(file);if(reject(file))throw Error('fixture missing');return source(scene,file);}});return {view,engine,scene,meshes,loads,close(){view.dispose();scene.dispose();engine.dispose();}};}
@@ -34,4 +35,35 @@ test('gazelle gait moves detached hoof controls and stationary clips restore eve
   const node=g.nodes.findIndex(n=>n.name===name),channel=walk.channels.find(c=>c.target.node===node&&c.target.path==='translation');assert.ok(channel,`${name} must follow the lower-leg chain`);const accessor=g.accessors[walk.samplers[channel.sampler].output];assert.ok(accessor.max[2]-accessor.min[2]>.5,'hoof should actually travel, rather than stretch stationary weights');
   for(const clip of ['Idle','Rest'])for(const path of ['translation','rotation'])assert.ok(g.animations.find(a=>a.name===clip).channels.some(c=>c.target.node===node&&c.target.path===path),'standing clips reset procedural hoof transforms');
  }
+});
+
+test('both shipped fish meshes face head first at multiple travel headings',async()=>{
+ box.BABYLON=B;box.exports=undefined;box.module=undefined;box.TextDecoder=TextDecoder;box.TextEncoder=TextEncoder;box.URL=URL;box.Blob=Blob;
+ vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url),'utf8'),box);
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[];
+ const load=async file=>{
+  if(!file.includes('goby')){
+   const empty=new B.AssetContainer(scene);
+   if(file.includes('frog'))empty.animationGroups.push(new B.AnimationGroup('metarig|jumpInPlace',scene));
+   return empty;
+  }
+  B.SceneLoader.OnPluginActivatedObservable.addOnce(plugin=>{plugin.skipMaterials=true;});
+  return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');
+ };
+ const view=await createSuppliedFauna(B,scene,meshes,{loadAsset:load});
+ try{
+  const poses=[0,1].map(i=>({id:`fish:river:${i}`,kind:'fish',x:3+i,y:4,swimDepth:.20}));
+  for(const yaw of [0,.8,-1.4,Math.PI]){
+   view.update({simTime:1},[],poses.map(p=>({...p,yaw})));
+   for(const pose of poses){
+    const root=view.rootFor({animalId:pose.id}),skin=root.getChildMeshes().find(m=>m.getTotalVertices()>10),matrix=skin.computeWorldMatrix(true);
+    // In both scans the head occupies negative local X and the tail positive X.
+    const head=B.Vector3.TransformCoordinates(new B.Vector3(-1,0,0),matrix);
+    const tail=B.Vector3.TransformCoordinates(new B.Vector3(1,0,0),matrix);
+    const direction=head.subtract(tail).normalize();
+    assert.ok(B.Vector3.Dot(direction,new B.Vector3(Math.sin(yaw),0,Math.cos(yaw)))>.98,root.metadata.fishModel);
+    assert.ok(root.position.y<-.34&&root.position.y>-.42);
+   }
+  }
+ }finally{view.dispose();scene.dispose();engine.dispose();}
 });

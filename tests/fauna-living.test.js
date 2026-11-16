@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createGame,miracle} from '../engine.js';
 import {animalsFor,naturalAnimalsFor} from '../fauna.js';
 import {pestActors,catPettingPairs,advancePests} from '../pests.js';
-import {terrain,isDryPoint} from '../world.js';
+import {terrain,isDryPoint,riverPoint,riverLocal} from '../world.js';
 
 test('natural wildlife is denser and fish swim only in the saved river/lakes without mutating city',()=>{
  const s=createGame({start:'established'}),before=structuredClone(s),first=naturalAnimalsFor(s);
@@ -68,5 +68,63 @@ test('new seeded valleys show goat herds and jackal packs without creating hunt 
    }
   }
   s.simTime=0;assert.equal(JSON.stringify(s),saved);
+ }
+});
+
+test('grazing goats leave independently, walk at different speeds and remain spread out for a full grazing cycle',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ for(const seed of [1,9,137]){
+  const s=createNewCity({mode:'mature',seed}),speeds=new Set(),behaviors=new Set();
+  const get=()=>animalsFor(s).filter(a=>a.kind==='goat');
+  for(let t=0,previous=get();t<70;t+=.27){
+   s.simTime=t+.27;const current=get();
+   assert.ok(current.length>=5);
+   behaviors.add(current.filter(a=>a.walking).map(a=>a.id).join(','));
+   for(const [i,a] of current.entries()){
+    const prior=previous[i];assert.equal(a.id,prior.id);
+    if(a.walking&&prior.walking){const speed=Math.hypot(a.x-prior.x,a.y-prior.y)/.27;if(speed>.01)speeds.add(speed.toFixed(2));}
+    assert.ok(isDryPoint(s,a.x,a.y));
+    for(const b of current.slice(i+1))assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>.24,`${seed}:${t} ${a.id} and ${b.id}`);
+   }
+   previous=current;
+  }
+  assert.ok(speeds.size>=5,`distinct observed speeds in ${seed}: ${[...speeds]}`);
+  assert.ok(behaviors.size>=9,`different departures in ${seed}`);
+ }
+});
+
+test('river schools are visual companions, present at the settlement, facing travel and preserving real fish IDs',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ for(const seed of [1,9,137]){
+  const s=createNewCity({mode:'mature',seed}),home=s.buildings.find(b=>b.type==='house'),bank=riverPoint(riverLocal(home.x,home.y,s).along,s);
+  const get=()=>animalsFor(s).filter(a=>a.kind==='fish');
+  const first=get(),real=naturalAnimalsFor(s).filter(a=>a.kind==='fish');
+  assert.equal(real.length,2);assert.ok(real.every(f=>first.some(a=>a.id===f.id&&!a.decorative)));
+  assert.ok(first.length>=14&&first.length<=44,`seed ${seed}: ${first.length} fish`);
+  assert.ok(first.filter(a=>Math.hypot(a.x-bank.x,a.y-bank.y)<3).length>=5,`seed ${seed}: near settlement river reach`);
+  s.simTime+=.01;const next=get();assert.deepEqual(next.map(a=>a.id),first.map(a=>a.id));
+  for(const [i,a] of next.entries()){
+   const b=first[i],dx=a.x-b.x,dy=a.y-b.y,distance=Math.hypot(dx,dy);
+   assert.equal(terrain(Math.round(a.x),Math.round(a.y),s),'water',a.id);
+   assert.ok(distance>0&&(dx*Math.sin(a.yaw)+dy*Math.cos(a.yaw))/distance>.98,`${a.id} faces along its travel`);
+  }
+ }
+});
+
+test('visual gazelles extend wild habitat herds without adding hunting targets',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ for(const seed of [1,9,137]){
+  const s=createNewCity({mode:'mature',seed}),gazelles=animalsFor(s).filter(a=>a.kind==='gazelle');
+  assert.equal(naturalAnimalsFor(s).filter(a=>a.kind==='gazelle').length,2);
+  assert.equal(gazelles.filter(a=>a.decorative).length,3);
+  for(let t=0;t<24;t+=.33){
+   s.simTime=t;const herd=animalsFor(s).filter(a=>a.kind==='gazelle');
+   for(const a of herd.filter(a=>a.decorative)){
+    assert.ok(isDryPoint(s,a.x,a.y));
+    assert.ok(s.buildings.filter(b=>b.type==='house').every(b=>Math.hypot(a.x-b.x,a.y-b.y)>3.3));
+    assert.ok(s.world.deposits.some(d=>d.kind==='wildlife'&&Math.hypot(a.x-d.x,a.y-d.y)<4.6));
+    assert.ok(herd.every(b=>a.id===b.id||Math.hypot(a.x-b.x,a.y-b.y)>.25));
+   }
+  }
  }
 });

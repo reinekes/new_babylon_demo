@@ -71,7 +71,7 @@ export function createPloughTeams(B,scene,source,meshes){
      pivot.position.set(index===0?-PLOUGH_OX_OFFSET:PLOUGH_OX_OFFSET,surfaceElevation(ox.x,ox.y,state)-elevation,.55);
      if(walk){
       const stride=1.23*PLOUGH_OX_SCALE;
-      const phase=(pose.progress*1.5/stride+index*.07)%1;
+      const phase=((pose.travelMetres??pose.progress*1.5)/stride+index*.07)%1;
       walk.goToFrame(walk.from+phase*(walk.to-walk.from));
      }
     }

@@ -4,7 +4,7 @@ import {ecologyCount} from './ecology.js';
 import {flockSize,flockAdults} from './textiles.js';
 import {pestActors} from './pests.js';
 import {safeLoop,loopMotion} from './local-motion.js';
-import {worldWidth,worldHeight,terrain,isShore,isDryPoint,riverPoint,riverLength} from './world.js';
+import {worldWidth,worldHeight,terrain,isShore,isDryPoint,riverPoint,riverLength,riverLocal} from './world.js';
 import {DAY_SECONDS,lightingAt,seed} from './city-life.js';
 import {navigationSegmentClear,obstacleIndex} from './navigation.js';
 import {watchOnDuty,watchOnShift} from './watch-house.js';
@@ -83,7 +83,29 @@ function habitatsFor(s){
   for(let i=0;i<Math.min(ecologyCount(s,kind,s.ecology&&!s.ecology.legacyFauna?2:count),choices.length);i++){const pick=choices.find(p=>!places.some(a=>a.kind===kind&&Math.hypot(a.x-p.x,a.y-p.y)<2.2))||choices[i];places.push({id:`${kind}-${i}`,kind,...pick,route:safeLoop(s,pick,kind==='bird'?.4:.7,true).map(p=>({...p,atWater:isShore(s,Math.round(p.x),Math.round(p.y))}))});}
  }
  planGoatHerd(s,places);
+ if(s.ecology&&!s.ecology.legacyFauna)planGazelleGroup(s,places,wildlife,homes);
  habitats.set(s,{signature,places});return places;
+}
+function planGazelleGroup(s,places,wildlife,homes){
+ const gazelles=places.filter(a=>a.kind==='gazelle');
+ if(gazelles.length>=5||!gazelles.length)return;
+ const obstacles=obstacleIndex(s.buildings),count=5-gazelles.length;
+ const nearestHome=p=>Math.min(...homes.map(h=>Math.hypot(h.x-p.x,h.y-p.y)));
+ const leads=gazelles.toSorted((a,b)=>nearestHome(a)-nearestHome(b));
+ for(const lead of leads){
+  const companions=[],angle=seed(lead.x,lead.y)*Math.PI*2;
+  for(const radius of [1.45,1.78,2.1,2.5])for(let i=0;i<16&&companions.length<count;i++){
+   const theta=angle+i*2.39996+radius*.51,p={x:lead.x+Math.cos(theta)*radius,y:lead.y+Math.sin(theta)*radius};
+   if(companions.some(q=>Math.hypot(p.x-q.x,p.y-q.y)<1.02)||gazelles.some(q=>q.route.some(w=>Math.hypot(p.x-w.x,p.y-w.y)<.89)))continue;
+   const route=[p,...[.4,2.25,4.36].map(a=>({x:p.x+Math.cos(theta+a)*.33,y:p.y+Math.sin(theta+a)*.33})),p];
+   if(!route.every((q,j)=>nearestHome(q)>3.4&&wildlife.some(w=>Math.hypot(q.x-w.x,q.y-w.y)<4.55)&&
+    navigationSegmentClear(s,route[Math.max(0,j-1)],q,obstacles)))continue;
+   companions.push({...p,route});
+  }
+  if(companions.length<count)continue;
+  for(const [i,p] of companions.entries())places.push({id:`gazelle-group-${i}`,kind:'gazelle',...p,herdIndex:i,decorative:true});
+  return;
+ }
 }
 function jackalPackRoute(s,center,homes,obstacles){
  const ring=[[-1.15,-.58],[-.58,-1.15],[.58,-1.15],[1.15,-.58],[1.15,.58],[.58,1.15],[-.58,1.15],[-1.15,.58],[-1.15,-.58]];
@@ -100,21 +122,26 @@ function planGoatHerd(s,places){
  const occupied=new Set(s.buildings.flatMap(b=>Array.from({length:footprintSize(b)**2},(_,i)=>
   `${b.x+i%footprintSize(b)},${b.y+Math.floor(i/footprintSize(b))}`)));
  const free=(x,y)=>isDryPoint(s,x,y)&&terrain(Math.round(x),Math.round(y),s)!=='water'&&!occupied.has(`${Math.round(x)},${Math.round(y)}`);
- const count=6-goats.length;
- for(const goat of goats){
-  const formation=[];
-  for(let i=0;i<12&&formation.length<count;i++){
-   const angle=(i+seed(goat.x,goat.y))*Math.PI/6,radius=i%2?.78:.60,dx=Math.cos(angle)*radius,dy=Math.sin(angle)*radius;
-   if(formation.some(p=>Math.hypot(dx-p.dx,dy-p.dy)<.47))continue;
-   const route=goat.route.map(p=>({x:p.x+dx,y:p.y+dy,atWater:p.atWater}));
-   if(!route.slice(1).every((p,j)=>[0,.2,.4,.6,.8,1].every(t=>{
-    const x=route[j].x+(p.x-route[j].x)*t,y=route[j].y+(p.y-route[j].y)*t;
-    return free(x,y)&&goats.every(a=>a===goat||Math.hypot(x-a.x,y-a.y)>1.03);
-   })))continue;
-   formation.push({dx,dy,route});
+ const count=6-goats.length,patchRadius=.27;
+ for(const lead of goats){
+  const rotation=seed(lead.x,lead.y)*Math.PI*2,patches=[];
+  const accepts=p=>free(p.x,p.y)&&[0,1,2,3,4,5,6,7].every(i=>{
+   const angle=i*Math.PI/4;
+   return free(p.x+Math.cos(angle)*patchRadius,p.y+Math.sin(angle)*patchRadius);
+  })&&goats.every(g=>g===lead||g.route.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>.77));
+  if(!accepts(lead))continue;
+  for(const radius of [.93,1.27,1.61,1.86])for(let i=0;i<16&&patches.length<count;i++){
+   const angle=rotation+i*2.39996+radius*.44,p={x:lead.x+Math.cos(angle)*radius,y:lead.y+Math.sin(angle)*radius};
+   if(patches.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>.87)&&accepts(p))patches.push(p);
   }
-  if(formation.length<count)continue;
-  for(const [i,{route}] of formation.entries())places.push({id:`goat-herd-${i}`,kind:'goat',x:goat.x,y:goat.y,route,herdIndex:i,decorative:true});
+  if(patches.length<count)continue;
+  const grazingRoute=(p,index)=>{
+   const angle=rotation+index*2.39996;
+   const spot=(n,r,behavior)=>({x:p.x+Math.cos(angle+n)*r,y:p.y+Math.sin(angle+n)*r,behavior});
+   return [{...p,behavior:'grazing'},spot(.35,.21,'looking'),spot(2.1,.22,'grazing'),spot(4.32,.25,index%3===1?'resting':'grazing'),{...p,behavior:'grazing'}];
+  };
+  lead.route=grazingRoute(lead,0);
+  for(const [i,p] of patches.entries())places.push({id:`goat-herd-${i}`,kind:'goat',...p,route:grazingRoute(p,i+1),herdIndex:i,decorative:true});
   return;
  }
 }
@@ -140,7 +167,17 @@ export function naturalAnimalsFor(s,{displayGroups=false}={}){
    result.push({id,kind,...decorative?{decorative}:{},...motion,...position,behavior:retreat?'retreating':'walking',growth:1-(packIndex%5)*.049});
    continue;
   }
-  const motion=loopMotion(route,phase,kind==='bird'?.65:.32,kind==='jackal'?2:3.5);const idle=Math.floor(phase/2.8)%4,behavior=motion.walking?'walking':motion.atWater&&idle===0?'drinking':idle===1?'looking':idle===2?'resting':kind==='bird'?'perched':'grazing';result.push({id,kind,...decorative?{decorative,growth:.79+herdIndex*.055}:{},...motion,step:phase*5,behavior,headTurn:Math.sin(phase*.9)*.5});}
+  let speed=kind==='bird'?.65:.32,pause=3.5;
+  if(kind==='goat'){
+   const index=herdIndex===undefined?Number(id.split('-').at(-1))%4:(herdIndex+2)%6;
+   speed=[.16,.19,.13,.22,.105,.15][index];
+   pause=[3.4,4.1,2.5,3.2,5.45,4.7][index];
+  }
+  if(kind==='gazelle'&&decorative){speed=.17+herdIndex*.023;pause=2.6+herdIndex*.63;}
+  const motion=loopMotion(route,phase,speed,pause),idle=Math.floor(phase/2.8)%4;
+  const behavior=motion.walking?'walking':motion.behavior|| (motion.atWater&&idle===0?'drinking':idle===1?'looking':idle===2?'resting':kind==='bird'?'perched':'grazing');
+  result.push({id,kind,...decorative?{decorative,growth:.79+herdIndex*.055}:{},...motion,step:phase*5,behavior,headTurn:Math.sin(phase*.9)*.5});
+ }
  // River coordinates follow the actual continuous river instead of cutting across bends.
  const riverFish=ecologyCount(s,'fish',36),length=riverLength(s),reach=Math.min(1.45,(length-2)/2);
  for(let i=0;i<riverFish;i++){
@@ -150,6 +187,20 @@ export function naturalAnimalsFor(s,{displayGroups=false}={}){
   const point=riverAt(phase),ahead=riverAt(phase+.001);
   result.push({id:`fish:river:${i}`,kind:'fish',...point,yaw:Math.atan2(ahead.x-point.x,ahead.y-point.y),
    behavior:'swimming',walking:true,waterLevel:-.18,swimDepth:.22});
+ }
+ if(displayGroups&&s.ecology&&!s.ecology.legacyFauna){
+  const home=s.buildings.find(b=>b.type==='house')||{x:8,y:8};
+  const town=Math.max(5,Math.min(length-6,riverLocal(home.x,home.y,s).along));
+  for(const [school,offset] of [0,6,-6].entries()){
+   const center=Math.max(2.1,Math.min(length-3.1,town+offset));
+   for(let i=0;i<5+school;i++){
+    const phase=time*(.164+school*.016)+school*2.42+i*.143;
+    const riverAt=angle=>riverPoint(center+1.32*Math.sin(angle),s,((i%3)-1)*.16+.23*Math.cos(angle)+.035*Math.sin(angle+i));
+    const point=riverAt(phase),ahead=riverAt(phase+.001);
+    result.push({id:`fish:school:${school}:${i}`,kind:'fish',...point,yaw:Math.atan2(ahead.x-point.x,ahead.y-point.y),decorative:true,
+     behavior:'swimming',walking:true,waterLevel:-.18,swimDepth:.16+(i%4)*.046});
+   }
+  }
  }
  let fishCount=0;for(const lake of (s.ecology&&!s.ecology.legacyFauna?[]:s.world?.lakes||[]))for(const cell of lake.cells)for(let i=0;i<2&&fishCount<80;i++,fishCount++){
   const phase=time*.5+seed(cell.x+i,cell.y)*23;

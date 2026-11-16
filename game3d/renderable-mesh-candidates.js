@@ -73,7 +73,7 @@ export function createRenderableMeshCandidates(scene){
    if(mesh.isBlocked||!mesh.isEnabled())continue;
    if(!mesh.actionManager&&(!mesh.isVisible||mesh.visibility<=0||(mesh.layerMask&mask)===0))continue;
    const frozen=transform&&mesh.isWorldMatrixFrozen&&!mesh.infiniteDistance&&!mesh.skeleton&&!mesh.sourceMesh?.skeleton
-    &&!mesh.morphTargetManager&&!mesh.sourceMesh?.morphTargetManager&&!mesh.hasThinInstances
+    &&!mesh.morphTargetManager&&!mesh.sourceMesh?.morphTargetManager&&(!mesh.hasThinInstances||mesh.metadata?.valleyBatch||mesh.metadata?.palmBatch)
     &&!mesh.actionManager&&!mesh.alwaysSelectAsActiveMesh&&!mesh.billboardMode;
    if(frozen){
     const world=mesh.getWorldMatrix(),geometry=mesh.geometry||mesh.sourceMesh?.geometry,bounds=mesh.getBoundingInfo?.(),previous=frozenResults.get(mesh);

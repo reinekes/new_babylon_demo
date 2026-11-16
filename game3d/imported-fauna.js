@@ -15,11 +15,11 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
   if(a.variants.has(key))return a.variants.get(key);
   const prefix=`fauna-${a.id}-${key}-`,copy=sources.get(key).instantiateModelsToScene(n=>`${prefix}${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(`${prefix}model`,scene);root.parent=a.model;for(const n of copy.rootNodes)n.parent=root;
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(prefix)?g.name.slice(prefix.length):g.name,g);}
-  const owned=root.getChildMeshes();for(const m of owned){m.receiveShadows=true;m.isPickable=true;m.metadata={...(m.metadata||{}),animalId:a.id,animalKind:a.kind};meshes.push(m);}
+  const owned=root.getChildMeshes();for(const m of owned){m.receiveShadows=true;m.isPickable=!a.decorative;m.metadata={...(m.metadata||{}),...a.root.metadata};meshes.push(m);}
   const nodes=[...new Set([...groups.values()].flatMap(g=>g.targetedAnimations.map(a=>a.target)).filter(n=>n?.position&&n?.rotation))];
   const v={root,groups,owned,nodes,skeletons:copy.skeletons,clip:null,clock:0,weight:0,transition:null,transitionTime:0};a.variants.set(key,v);return v;
  }
- function make(c){const root=new B.TransformNode(`fauna-${c.id}`,scene),model=new B.TransformNode(`fauna-${c.id}-pose`,scene);model.parent=root;root.metadata={animalId:c.id,animalKind:c.kind,gaitPhase:0};return {id:c.id,kind:c.kind,root,model,variants:new Map(),lastX:c.x,lastY:c.y,yaw:null,phase:0,hunting:false};}
+ function make(c){const root=new B.TransformNode(`fauna-${c.id}`,scene),model=new B.TransformNode(`fauna-${c.id}-pose`,scene);model.parent=root;root.metadata={...c.decorative?{decorativeId:c.id}:{animalId:c.id},animalKind:c.kind,gaitPhase:0};root.scaling.setAll(c.growth||1);return {id:c.id,kind:c.kind,decorative:!!c.decorative,root,model,variants:new Map(),lastX:c.x,lastY:c.y,yaw:null,phase:0,hunting:false};}
  function sample(v,clip,phase,dt,speed,frozen){
   if(!v.groups.has(clip))clip=v.groups.has('Sit')?'Sit':v.groups.has('Idle')?'Idle':'Walk';const g=v.groups.get(clip);
   if(v.clip!==clip){v.transition=v.clip?v.nodes.map(n=>({node:n,p:n.position.clone(),q:n.rotationQuaternion?.clone(),r:n.rotation.clone(),s:n.scaling.clone()})):null;v.transitionTime=0;for(const old of v.groups.values())old.stop();g.start(true,1,g.from,g.to,false);g.pause();v.clip=clip;v.clock=0;}
@@ -41,7 +41,7 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
    if(distance>.00001&&distance<3&&!paused&&!dead)a.yaw=Math.atan2(dx,dz);if(a.yaw!==null&&!dead){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(fresh?1:1-Math.exp(-dt*10));}
    if(action==='Walk'&&!paused&&!dead)a.phase=(a.phase+distance/IMPORTED_FAUNA_MODELS[key].stride)%1;
    action=sample(v,action,a.phase,dt,speed,paused||dead);
-   for(const [variantKey,other]of a.variants){const target=variantKey===key?1:0;if(exclusive)other.weight=target;else if(!paused)other.weight+=Math.sign(target-other.weight)*Math.min(Math.abs(target-other.weight),dt*speed/.35);for(const m of other.owned){m.visibility=other.weight;m.isPickable=other.weight>=.5;}other.root.setEnabled(other.weight>0);}
+   for(const [variantKey,other]of a.variants){const target=variantKey===key?1:0;if(exclusive)other.weight=target;else if(!paused)other.weight+=Math.sign(target-other.weight)*Math.min(Math.abs(target-other.weight),dt*speed/.35);for(const m of other.owned){m.visibility=other.weight;m.isPickable=!a.decorative&&other.weight>=.5;}other.root.setEnabled(other.weight>0);}
    const catchProgress=c.catchProgress??1;
    const pounce=c.kind==='cat'&&catchProgress<.26?.42+.58*Math.sin(catchProgress/.26*Math.PI):0;
    a.model.rotation.x=.32*pounce;

@@ -10,6 +10,7 @@ import {stockStores,storeCapacity} from './inventory.js';
 import {nearestWalkingNode} from './navigation.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {isStrictSumer} from './scenario-profiles.js';
+import {DATE_HARVEST_CAPACITY,dateStock,takeDates} from './orchard-layout.js';
 
 // One small basket of raw material. A quarter is usable without a workplace.
 export const MANUAL_YIELD=.25;
@@ -18,7 +19,7 @@ export const MANUAL_GATHERING=Object.freeze({
  reed:{workSeconds:18,batchSize:1,resource:'reed',task:'reed',capacity:REED_CAPACITY,inspiration:true},
  stone:{workSeconds:28,batchSize:1,resource:'stone',task:'quarry',capacity:STONE_CAPACITY},
  forest:{workSeconds:28,batchSize:1,resource:'wood',task:'logging',capacity:FOREST_CAPACITY},
- dates:{workSeconds:18,batchSize:1,resource:'food',task:'garden'},
+ dates:{workSeconds:18,batchSize:1,resource:'food',task:'garden',capacity:DATE_HARVEST_CAPACITY},
 });
 const rawBatchSize=(kind,boosted)=>MANUAL_GATHERING[kind].batchSize*(boosted&&MANUAL_GATHERING[kind].inspiration?1.75:1);
 const customPhase=p=>p==='toManualGathering'||p==='manualGathering';
@@ -43,6 +44,7 @@ function siteReason(s,x,y){
   if(resting)return 'Лес восстанавливается';
   if(stock<=1e-8)return 'Лесной участок исчерпан';
  }
+ if(kind==='dates'&&dateStock(s,{x,y})<=1e-8)return 'Финики собраны. Новый урожай будет осенью';
  if(occupied(s,x,y))return 'На участке уже есть здание или стройка';
  if(!isDryPoint(s,x,y))return 'К участку нет подхода с суши';
  return '';
@@ -60,7 +62,8 @@ export function manualGatheringView(s,x,y){
  const reason=commandReason(s)||siteReason(s,x,y),active=!!q?.active,status=reason?'blocked':!active?'inactive':workers.some(c=>c.phase==='manualGathering')?'working':workers.some(c=>c.carrying)?'carrying':workers.length?'walking':'waiting';
  const statusReason=!active?'':!daylight(s)?'Ночью жители отдыхают; добыча продолжится утром':workers.length?'':accessFailures.get(s)?.get(key)||(!s.citizens.some(eligible)?'Нет свободных взрослых: занятые работой, стройкой и снабжением жители не отвлекаются':'Свободные жители готовятся выйти к залежи');
  const wetland=kind==='reed'?reedStatus(s,x,y):null,forest=kind==='forest'&&isStrictSumer(s)?forestStock(s,key):null;
- return {key,kind,resource,wetland,remaining:wetland?.stock??forest?.stock??mineralRemaining(s,kind,x,y),capacity,active,status,reason,cancelReason:commandReason(s),statusReason,workers,progress:Math.max(0,...workers.map(c=>c.progress)),workSeconds,batchSize:rawBatchSize(kind,s.buffs?.inspiration)*MANUAL_YIELD,maxWorkers:2};
+ const remaining=kind==='dates'?dateStock(s,site):wetland?.stock??forest?.stock??mineralRemaining(s,kind,x,y);
+ return {key,kind,resource,wetland,remaining,capacity,active,status,reason,cancelReason:commandReason(s),statusReason,workers,progress:Math.max(0,...workers.map(c=>c.progress)),workSeconds,batchSize:rawBatchSize(kind,s.buffs?.inspiration)*MANUAL_YIELD,maxWorkers:2};
 }
 export function manualGatheringOrder(s,c){return orders(s).find(q=>q.key===c.manualGathering?.key);}
 export function manualGatheringStillAssigned(s,c){
@@ -98,7 +101,7 @@ export function workManualGathering(s,c,dt,rate=1){
  const q=manualGatheringOrder(s,c),job=c.manualGathering;if(!q||!job||c.phase!=='manualGathering'||Math.hypot(c.x-job.stand.x,c.y-job.stand.y)>1e-6||hasLoad(c))return false;
  const config=MANUAL_GATHERING[q.resource];job.progress=Math.min(config.workSeconds,job.progress+dt*Math.max(0,rate));if(job.progress<config.workSeconds-1e-7)return false;
  const batch=rawBatchSize(q.resource,s.buffs?.inspiration);
- const taken=q.resource==='reed'?takeReeds(s,q.x,q.y,batch):q.resource==='forest'?takeWood(s,q.key,batch):q.resource==='dates'?batch:takeMineral(s,q.resource,q.x,q.y,batch);
+ const taken=q.resource==='reed'?takeReeds(s,q.x,q.y,batch):q.resource==='forest'?takeWood(s,q.key,batch):q.resource==='dates'?takeDates(s,q,batch):takeMineral(s,q.resource,q.x,q.y,batch);
  const amount=taken*MANUAL_YIELD;
  job.progress=0;
  if(amount<=1e-8)return false;

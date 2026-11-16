@@ -6,9 +6,9 @@ const names={clay:'Глина',reed:'Тростник',stone:'Камень',fore
 const yieldNumber=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:4});
 const phases={toManualGathering:'идёт к залежи',manualGathering:'собирает вручную',toStore:'несёт на склад',unloading:'ждёт места на складе',toHome:'возвращается домой',toRest:'несёт груз домой',resting:'отдыхает с грузом'};
 const statuses={inactive:'Поручения пока нет',working:'Идёт ручной сбор',carrying:'Собранное несут на склад',walking:'Жители идут к залежи',waiting:'Ждём свободных жителей',blocked:'Сбор сейчас недоступен'};
-export function reedBedHTML(status,capacity){
+export function reedBedHTML(status,capacity,location=''){
  if(!status||!Number.isFinite(status.stock))return '';
- return `<section class="staffing-panel"><h4>Тростниковое угодье</h4><p>Остаток ${Number(status.stock.toFixed(1))} / ${capacity}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><small>${status.drained?'Связный дренаж остановил восстановление. Выросший тростник ещё можно собрать.':'Двое суток отдыха возвращают до 24 единиц. Связный дренаж прерывает восстановление.'}</small><button type="button" data-reed-rest ${status.drained||status.resting||status.stock>=capacity?'disabled':''}>Закрыть сбор на два дня</button></section>`;
+ return `<section class="staffing-panel"><h4>Тростниковое угодье${location?` · ${esc(location)}`:''}</h4><p>Остаток ${Number(status.stock.toFixed(1))} / ${capacity}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><small>${status.drained?'Связный дренаж остановил восстановление. Выросший тростник ещё можно собрать.':'Двое суток отдыха возвращают до 24 единиц. Связный дренаж прерывает восстановление.'}</small><button type="button" data-reed-rest ${status.drained||status.resting||status.stock>=capacity?'disabled':''}>Закрыть сбор на два дня</button></section>`;
 }
 export function manualGatheringHTML(s,v){
  if(!v)return '';

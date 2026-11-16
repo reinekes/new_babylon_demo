@@ -149,3 +149,7 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 - `shore-mallard-female.glb` is Duck · Female, Copyright (c) 2020 Microsoft, redistributed under MIT (full notice embedded in the GLB). [Source and viewer](https://models.codelove.in/models/bird-duck-female-01/). New Babylon added the `Idle` clip and unpacked Meshopt data for local playback.
 
 - `ambient-yard-pig.glb`: Black Pig by kenchoo, CC BY-NC-ND 4.0. Original GLB, unmodified. [Source](https://sketchfab.com/3d-models/black-pig-4fc11b4aede6413d896f5a18a8f7be1e) · [License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+
+## 2026-11-16 · тростниковые крыши
+
+`assets/3d/textures/reed-roof.webp` — фрагмент атласа крыши **Primitive Hut 1A (Barn)**, [Nucity](https://sketchfab.com/nucity), [исходная модель](https://sketchfab.com/3d-models/primitive-hut-1a-barn-039b8d79561c4b81a9e36a5c8540e94e), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Фото выделено из предоставленного GLB, прозрачные пиксели подкрашены для фильтрации края, карта сжата в WebP. Из непрозрачной части стеблей собрана отдельная карта `woven-reed.webp` для циновок и экранов. Геометрия крыш адаптирована к игровым каркасам; исходный GLB не распространяется. [Скрипт подготовки](../../scripts/art-courtyard/prepare_reed_roof.py).

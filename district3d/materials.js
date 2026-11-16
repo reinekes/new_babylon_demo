@@ -16,6 +16,24 @@ export function createDistrictMaterials(B,scene,{deferPhotos=false}={}){
  const random=(i)=>{const n=Math.sin(i*12.9898)*43758.5453;return n-Math.floor(n);};
  mats.brick.albedoTexture=pattern('mudbrick-courses',c=>{c.fillStyle='#958366';c.fillRect(0,0,512,512);for(let row=0;row<12;row++)for(let col=-1;col<7;col++){const x=col*85+(row%2?42:0),y=row*43,v=Math.floor(random(row*17+col)*20);c.fillStyle=`rgb(${173+v},${144+v},${105+v})`;c.fillRect(x+2,y+2,81,39);c.fillStyle='#d7bd9438';c.fillRect(x+3,y+2,79,2);}for(let i=0;i<12000;i++){const v=random(i)*60+110;c.fillStyle=`rgba(${v+35},${v+15},${v},.08)`;c.fillRect(random(i+1)*512,random(i+2)*512,2,1);}});
  mats.reed.albedoTexture=pattern('woven-reed',c=>{c.fillStyle='#af9b6c';c.fillRect(0,0,512,512);for(let i=0;i<100;i++){c.fillStyle=i%3?'#c7b787':'#9f8b60';c.fillRect(i*6,0,3,512);}for(let i=0;i<20;i++){c.fillStyle='#8b785655';c.fillRect(0,i*28,512,2);}});
+ // Shared photograph cut from Nucity's CC BY 4.0 barn. One cutout pass,
+ // with the woven mat as a fallback while the small local atlas loads.
+ const roof=mats.reedRoof=make('laid-reed-thatch','#fff5de');
+ roof.albedoTexture=mats.reed.albedoTexture;
+ roof.backFaceCulling=false;roof.twoSidedLighting=true;
+ roof.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHATEST;roof.alphaCutOff=.36;
+ if(typeof Image!=='undefined'){
+  const replace=(material,name,alpha=false)=>{
+   let atlas;
+   atlas=new B.Texture(`assets/3d/textures/${name}.webp`,scene,false,true,undefined,()=>{
+    if(!scene.isDisposed)material.albedoTexture=atlas;
+   },()=>atlas?.dispose());
+   atlas.hasAlpha=alpha;atlas.wrapU=B.Texture.WRAP_ADDRESSMODE;
+   atlas.wrapV=alpha?B.Texture.CLAMP_ADDRESSMODE:B.Texture.WRAP_ADDRESSMODE;
+  };
+  replace(roof,'reed-roof',true);
+  replace(mats.reed,'woven-reed');
+ }
  mats.linen.albedoTexture=pattern('linen-weave',c=>{c.fillStyle='#d2c5a7';c.fillRect(0,0,512,512);for(let i=0;i<512;i+=3){c.fillStyle=i%2?'#e8ddbf66':'#ab9b7b55';c.fillRect(i,0,1,512);c.fillRect(0,i,512,1);}});
  Object.defineProperty(mats,'loadPhotos',{value:()=>{photosEnabled=true;for(const args of pendingPhotos.splice(0))photo(...args);return Promise.all(photoReady);}});
  return mats;

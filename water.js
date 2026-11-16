@@ -46,15 +46,42 @@ function navigation(s){
   for(let y=0;y<=worldHeight(s);y++)for(let x=0;x<=worldWidth(s);x++){const p={x:x-.5,y:y-.5};if(isDryPoint(s,p.x,p.y)&&(!forts||forts.pointClear(p))&&(!flooded||!floodedSegment(flooded,p,p))){nodes.set(`${x},${y}`,p);graph.set(`${x},${y}`,[]);}}
   for(const [k,p]of nodes)for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,y:p.y+dy},qk=key(q);if(nodes.has(qk)&&dryEdge(s,p,q)&&(!forts||forts.segmentClear(p,q))&&(!flooded||!floodedSegment(flooded,p,q)))graph.get(k).push(qk);}
  }
- cache={signature,geometry,flooded,forts,footpaths,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),roads:new Map()};caches.set(s,cache);return cache;
+ cache={signature,geometry,flooded,forts,footpaths,world:s.world,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length||0,network,ports,nodes,graph,banks:reuse?cache.banks:new Map(),bankDistances:reuse?cache.bankDistances:null,roads:new Map()};caches.set(s,cache);return cache;
 }
 function path(nodes,graph,from,to,flooded=null){
  if(!nodes.has(from))return null;const prev=new Map([[from,null]]),queue=[from];
  for(let i=0;i<queue.length;i++){const k=queue[i];if(to(k,nodes.get(k))){const result=[];for(let at=k;at!==null;at=prev.get(at))result.push(point(nodes.get(at)));return result.reverse();}for(const next of graph.get(k)||[])if(!prev.has(next)&&(!flooded||!floodedSegment(flooded,nodes.get(k),nodes.get(next)))){prev.set(next,k);queue.push(next);}}
  return null;
 }
+function bankPath(s,nav,from){
+ if(!nav.nodes.has(from))return null;
+ // Compute one reverse distance field for all homes. Walking down it in the
+ // original forward neighbor order picks the same shortest path as per-home BFS,
+ // including ties between river access points. Flood/fortification changes
+ // rebuild the navigation graph and invalidate these distances.
+ if(!nav.bankDistances){
+  const incoming=new Map(),queue=[],distance=new Map();
+  for(const [k,neighbors] of nav.graph){
+   if(Math.abs(signedRiverDistance(nav.nodes.get(k).x,nav.nodes.get(k).y,s))<2.25){distance.set(k,0);queue.push(k);}
+   for(const next of neighbors){let previous=incoming.get(next);if(!previous)incoming.set(next,previous=[]);previous.push(k);}
+  }
+  for(let i=0;i<queue.length;i++){
+   const current=queue[i],level=distance.get(current)+1;
+   for(const previous of incoming.get(current)||[])if(!distance.has(previous)){distance.set(previous,level);queue.push(previous);}
+  }
+  nav.bankDistances=distance;
+ }
+ let level=nav.bankDistances.get(from);
+ if(level===undefined)return null;
+ const result=[point(nav.nodes.get(from))];let current=from;
+ while(level>0){
+  current=nav.graph.get(current).find(next=>nav.bankDistances.get(next)===level-1);
+  result.push(point(nav.nodes.get(current)));level--;
+ }
+ return result;
+}
 function bankRoute(s,nav,origin){
- if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?path(nav.nodes,nav.graph,key(p),(_,q)=>Math.abs(signedRiverDistance(q.x,q.y,s))<2.25):null);}return nav.banks.get(origin);
+ if(!nav.banks.has(origin)){const p=nav.ports.get(origin);nav.banks.set(origin,p?bankPath(s,nav,key(p)):null);}return nav.banks.get(origin);
 }
 function roadRoute(nav,from,to){
  const id=`${from}>${to}`;if(!nav.roads.has(id)){const a=nav.ports.get(from),b=nav.ports.get(to);nav.roads.set(id,a&&b?path(nav.network.nodes,nav.network.graph,a.key,k=>k===b.key,nav.flooded):null);}return nav.roads.get(id);
@@ -73,6 +100,22 @@ export function initializeWater(s){
  for(const b of s.buildings||[])if(b.type==='house'){const daily=demands.get(buildingKey(b))||0;b.water??=daily*2;b.waterDelivered??=b.water;}
 }
 function eligible(c){return c.age>=16&&c.health>20&&!c.clinic&&!c.school&&!c.waterTrip&&!c.pantryTrip&&!c.craftSite&&!c.seedField&&c.clothingTarget===undefined&&!c.districtJob&&!c.tradeJob&&!c.saleJob&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);}
+// Read-only hint for the 3D presentation. Preparing a rig never schedules a
+// water trip or reserves a vessel; advanceWater still decides who leaves.
+export function nearTermWaterCouriers(s,lookAhead=18){
+ const residents=new Map(),first=new Map();
+ for(const c of s.citizens){
+  const home=supplyHome(c);residents.set(home,(residents.get(home)||0)+waterDemand(c));
+  if(c.phase==='home'&&eligible(c)&&!c.floodShelter&&!first.has(c.home))first.set(c.home,c);
+ }
+ const enRoute=new Set(s.citizens.filter(c=>c.waterTrip).map(c=>c.waterTrip.target)),candidates=[];
+ for(const b of s.buildings){
+  if(b.type!=='house'||!isOperational(b))continue;
+  const key=buildingKey(b),demand=residents.get(key),c=first.get(key);
+  if(c&&demand>0&&!enRoute.has(key)&&b.water<=demand*(1+lookAhead/WATER_DAY))candidates.push(c);
+ }
+ return candidates;
+}
 function need(s,b){
  if(!isOperational(b)||!['house','brickyard','pottery','brewery','bakery','linenYard','cowshed'].includes(b.type))return 0;
  const id=buildingKey(b);if(s.citizens.some(c=>c.waterTrip?.target===id))return 0;
@@ -158,7 +201,7 @@ function waterDetour(s,c,t,nav,phase=t.phase){
  for(const p of starts){
   const at=key(p);
   const route=phase==='source'
-   ?path(nav.nodes,nav.graph,at,(_,q)=>Math.abs(signedRiverDistance(q.x,q.y,s))<2.25)
+   ?bankPath(s,nav,at)
    :destination&&(path(nav.network.nodes,nav.network.graph,at,k=>k===destination.key,nav.flooded)||
      path(nav.nodes,nav.graph,at,k=>k===destination.key));
   if(route)return route;

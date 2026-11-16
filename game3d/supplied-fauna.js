@@ -10,20 +10,22 @@ const models={
 };
 
 const fishModels={
- 'yellowfin-goby':{file:'supplied-yellowfin-goby.glb',length:.32,yaw:Math.PI/2},
- 'oriental-goby':{file:'supplied-oriental-goby.glb',length:.48,yaw:Math.PI/2}
+ // Babylon's glTF handedness transform brings both source heads to +X.
+ 'yellowfin-goby':{file:'supplied-yellowfin-goby.glb',length:.32,yaw:-Math.PI/2},
+ 'oriental-goby':{file:'supplied-oriental-goby.glb',length:.48,yaw:-Math.PI/2}
 };
 function fishVariant(pose){
  const index=Number(pose.id.split(':').at(-1));
- return index%2?'oriental-goby':'yellowfin-goby';
+ return (pose.decorative?index===2:index%2)?'oriental-goby':'yellowfin-goby';
 }
 
-export async function createSuppliedFauna(B,scene,meshes){
+export async function createSuppliedFauna(B,scene,meshes,{loadAsset}={}){
  const sources=new Map();
  const actors=new Map();
+ const load=loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb'));
  await Promise.all(Object.entries({...models,...fishModels}).map(async ([kind,model])=>{
   try {
-   const asset=await loadModel(B,scene,'assets/art-courtyard/models/',model.file,scene,undefined,'.glb');
+   const asset=await load(model.file);
    if(model.clip&&!asset.animationGroups.some(group=>group.name===model.clip)){
     asset.dispose();
     throw new Error('Missing '+model.clip);
@@ -92,7 +94,7 @@ export async function createSuppliedFauna(B,scene,meshes){
    animation.start(false,1,animation.from,animation.to,false);
    animation.pause();
   }
-  return {root,copy,owned,materials,wake,animation,frame:null,lastX:pose.x,lastY:pose.y,yaw:0};
+  return {root,copy,owned,materials,wake,animation,frame:null,lastX:pose.x,lastY:pose.y,yaw:0,phaseShift:fish?Number(pose.id.split(':').at(-1))*2.39996:0};
  }
  function update(state,poses,fish=[]){
   for(const actor of actors.values())actor.visible=false;
@@ -114,8 +116,8 @@ export async function createSuppliedFauna(B,scene,meshes){
     }
     actor.lastX=pose.x;
     actor.lastY=pose.y;
-    const phase=(state.simTime||0)*5+pose.id.length;
-    const depth=Math.min(WATER_HEIGHT-.32,(pose.waterLevel??WATER_HEIGHT)-(pose.swimDepth??.28));
+    const phase=(state.simTime||0)*5+actor.phaseShift;
+    const depth=Math.min(WATER_HEIGHT-.14,(pose.waterLevel??WATER_HEIGHT)-(pose.swimDepth??.28));
     actor.root.position.set(pose.x*6,depth+Math.sin(phase*.4)*.018,pose.y*6);
     actor.root.rotation.set(0,actor.yaw+fishModels[actor.root.metadata.fishModel].yaw+Math.sin(phase)*.09,Math.sin(phase*.75)*.035);
     continue;

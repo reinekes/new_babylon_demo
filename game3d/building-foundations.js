@@ -29,7 +29,7 @@ export function foundationSignature(b,state,context=foundationContext(state)){
 // surface, and a harbor already has its own plank deck.
 export function createBuildingFoundations(B,scene,b,materials,state,context=foundationContext(state)){
  if(!nearShore(b,context))return [];
- const n=footprintSize(b),center=(n-1)*3,court=isExtractionCourt(b),area=court?extractionWorkArea(b):{x:center,z:center};
+ const n=footprintSize(b),center=(n-1)*3,court=isExtractionCourt(b),area=court?extractionWorkArea(b,state):{x:center,z:center};
  const width=court?extractionWorkspaceWidth(b):n*6-.7,depth=court?2.4:width,left=area.x-width/2,near=area.z-depth/2,wetHeight=-.035;
  const heightAt=(x,z)=>{const p=foundationWorldPoint(b,x,z);return visualSurfaceElevation(p.x,p.y,context.state,context.contours);};
  const dock=b.type==='harbor'&&b.construction?.kind!=='new',top=dock?.31:.012;

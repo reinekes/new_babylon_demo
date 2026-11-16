@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  const pinnedDocuments={materials:'docs/ASSET_BRIEF_2026-11-13.md',performance:'docs/PERFORMANCE_CITY_500_2026-11-13.md'};
+  const pinnedDocuments={materials:'docs/ASSET_BRIEF_2026-11-13.md',performance:'docs/PERFORMANCE_CITY_500_2026-11-16.md'};
   const pinnedView=()=>Object.hasOwn(pinnedDocuments,location.hash.slice(1))?location.hash.slice(1):null;
   let data=window.ROADMAP_DATA,view=pinnedView()||'overview',currentDoc='';
   const $=id=>document.getElementById(id),KEY='new-babylon-roadmap-v1';

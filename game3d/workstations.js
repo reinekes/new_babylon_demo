@@ -11,10 +11,27 @@ export function workstationWorldPoint(b,[x,height,z]){
  const center=(footprintSize(b)-1)*3;
  return {x:b.x+(center+snap((x-center)*c+(z-center)*s))/6,y:b.y+(center+snap(-(x-center)*s+(z-center)*c))/6,height};
 }
-export function workstationBuilding(b,state){
+const stationContexts=new WeakMap();
+// Only the dry terrain and multi-tile footprints block a street corner.
+// Reuse that exact answer across templates until either of those changes.
+export function workstationContext(state){
+ const footprints=(state.buildings||[]).filter(b=>footprintSize(b)>1);
+ const signature=JSON.stringify([state.world?.width,state.world?.height,state.world?.river,state.world?.lakes,footprints.map(b=>[b.x,b.y,footprintSize(b)])]);
+ let cached=stationContexts.get(state);
+ if(cached?.signature===signature)return cached;
+ const dryCorners=new Map(),blocked=new Set();
+ for(const b of footprints)for(let dx=1;dx<footprintSize(b);dx++)for(let dy=1;dy<footprintSize(b);dy++)blocked.add(`${b.x+dx-.5},${b.y+dy-.5}`);
+ cached={signature,canUse(x,y){
+  const key=`${x},${y}`;
+  if(!dryCorners.has(key))dryCorners.set(key,!(Number.isInteger(x+.5)&&Number.isInteger(y+.5)?blocked.has(key):footprints.some(b=>insideFootprint(b,x,y)))&&isDryPoint(state,x,y));
+  return dryCorners.get(key);
+ }};
+ stationContexts.set(state,cached);return cached;
+}
+export function workstationBuilding(b,state,context=null){
  if(!state||!equipment[b.type]&&!b.construction&&b.type!=='field')return b;
  // Same ordered dry corners as generateStreets, without rebuilding its whole graph.
- const n=footprintSize(b),port=[[b.x+n-.5,b.y+n-.5],[b.x-.5,b.y+n-.5],[b.x+n-.5,b.y-.5],[b.x-.5,b.y-.5]].map(([x,y])=>({x,y})).find(p=>isDryPoint(state,p.x,p.y)&&!(state.buildings||[]).some(v=>insideFootprint(v,p.x,p.y)));
+ const n=footprintSize(b),port=[[b.x+n-.5,b.y+n-.5],[b.x-.5,b.y+n-.5],[b.x+n-.5,b.y-.5],[b.x-.5,b.y-.5]].map(([x,y])=>({x,y})).find(p=>context?context.canUse(p.x,p.y):isDryPoint(state,p.x,p.y)&&!(state.buildings||[]).some(v=>insideFootprint(v,p.x,p.y)));
  if(!port)return b;
  const angle=(b.rotation||0)*Math.PI/2,dx=port.x-b.x-(n-1)/2,dz=port.y-b.y-(n-1)/2,c=Math.cos(angle),s=Math.sin(angle);
  return {...b,workCorner:[Math.sign(dx*c-dz*s)||1,Math.sign(dx*s+dz*c)||1]};

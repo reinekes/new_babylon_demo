@@ -1,4 +1,4 @@
-import {extractionSource} from './extraction-courts.js';
+import {extractionSources} from './extraction-courts.js';
 import {appendGrain,takeGrain} from './grain-origin.js';
 import {archiveBuildingProduction} from './building-production-history.js';
 import {riverStoreDemolitionReason} from './river-stores.js';
@@ -325,12 +325,12 @@ export function closeReedBed(state,x,y){
  return restReeds(state,x,y)?{ok:true}:{ok:false,reason:'Угодье осушено, уже отдыхает или запас полный'};
 }
 
-export function closeForestForRest(state,building){
+export function closeForestForRest(state,building,selected=null){
  const reason=blocked(state);
  if(reason)return {ok:false,reason};
  if(building?.type!=='logging'||!state.buildings.includes(building)||!isComplete(building))return {ok:false,reason:'Нужна готовая лесозаготовка'};
- const source=extractionSource(building);
- const forest=forestFor(state,source.x,source.y);
+ const forests=extractionSources(state,building).map(source=>forestFor(state,source.x,source.y));
+ const forest=selected===null?forests[0]:forests.includes(selected)?selected:null;
  return forest&&restForest(state,forest)?{ok:true}:{ok:false,reason:'Роща недоступна, уже закрыта или запас полный'};
 }
 

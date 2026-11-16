@@ -1,4 +1,5 @@
-import {isExtractionCourt,extractionSource} from './extraction-courts.js';
+import {extractableCourts,extractionKinds,extractionSources,isExtractionCourt} from './extraction-courts.js';
+import {availableExtractionSources,extractionStock} from './extraction-stock.js';
 import {toolWorkMultiplier} from './axe-kit.js';
 import {advanceReedBeds} from './reed-stock.js';
 import {forestOpen} from './forest-stock.js';
@@ -55,8 +56,23 @@ export function fisheryOptions(state,origin){
 }
 function newJob(s,c,b,origin){
  const g=initializeGathering(s),reserved=new Set(g.jobs.filter(j=>j.citizen!==c.id).map(j=>j.target.id));let target=null,stand=null;
- if(kindFor[b.type]){
-  const options=featureTargets(s,b,isExtractionCourt(b)?extractionSource(b):origin).filter(f=>f.health>0&&!reserved.has(f.id)).sort((a,b)=>distance(c,a)-distance(c,b));
+ if(isExtractionCourt(b)&&extractableCourts.has(b.type)){
+  const sites=availableExtractionSources(s,b);
+  // Give each worker an available plot before sharing a plot. Each approach
+  // ends inside the open court with room left between the two workers.
+  choose:for(const occupied of [false,true])for(const p of sites){
+   const inUse=g.jobs.some(j=>j.work===c.work&&j.source?.x===p.x&&j.source?.y===p.y);
+   if(inUse!==occupied)continue;
+   for(let i=0;i<8;i++){
+    const id=`deposit:${p.x},${p.y}:${i}`;
+    if(reserved.has(id))continue;
+    const q=pointNear(s,p,.31,i*Math.PI/4);
+    if(!clearGround(s,q)||!gatheringPathClear(s,c,q)||!gatheringPathClear(s,origin,q))continue;
+    target={id,kind:extractionKinds[b.type],x:p.x,y:p.y};stand=q;break choose;
+   }
+  }
+ }else if(kindFor[b.type]){
+  const options=featureTargets(s,b,origin).filter(f=>f.health>0&&!reserved.has(f.id)).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const f of options){const p=stance(s,c,f);if(p){target={id:f.id,kind:f.kind,x:f.x,y:f.y};stand=p;break;}}
  }else if(b.type==='hunting'){
   const killed=new Set(g.kills.filter(k=>s.simTime<k.respawnAt).map(k=>k.id));
@@ -71,19 +87,21 @@ function newJob(s,c,b,origin){
   }
  }
  if(!target||!stand)return null;
- const job={citizen:c.id,work:c.work,kind:b.type,target,stand,origin:{x:origin.x,y:origin.y},stage:'approach',progress:0};g.jobs.push(job);return job;
+ const source=target.id.startsWith('deposit:')?{x:target.x,y:target.y}:null;
+ const job={citizen:c.id,work:c.work,kind:b.type,target,stand,origin:{x:origin.x,y:origin.y},stage:'approach',progress:0,...source?{source}:{}};g.jobs.push(job);return job;
 }
 function move(c,to,dt,rate=1){const d=distance(c,to),step=Math.min(d,dt*.65*Math.max(.5,rate));if(d>1e-8){c.x+=(to.x-c.x)*step/d;c.y+=(to.y-c.y)*step/d;}return d-step<1e-6;}
 /** Actual local work trip. A load can only be collected once its target was worked. */
 export function workGathering(s,c,b,dt,rate,origin){
- const source=extractionSource(b);
- if(b.type==='quarry'&&stoneRemaining(s,source.x,source.y)<=1e-8)return false;
- if(b.type==='logging'&&!forestOpen(s,b)){
+ const court=isExtractionCourt(b)&&extractableCourts.has(b.type);
+ if(!court&&b.type==='quarry'&&stoneRemaining(s,b.x,b.y)<=1e-8)return false;
+ if(!court&&b.type==='logging'&&!forestOpen(s,b)){
   const g=initializeGathering(s);
   g.jobs=g.jobs.filter(j=>j.citizen!==c.id);c.workElapsed=0;return false;
  }
  const g=initializeGathering(s);let j=g.jobs.find(j=>j.citizen===c.id);
- if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
+ const stock=j?.source&&extractionStock(s,j.source,extractionKinds[b.type]);
+ if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target)||stock&&(stock.resting||stock.stock<=1e-8))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
  if(!j)j=newJob(s,c,b,origin||c);if(!j)return false;
  if(j.stage==='approach'){if(move(c,j.stand,dt,rate))j.stage='working';return false;}
  c.workElapsed=Math.min(BUILDINGS[b.type].workTime,c.workElapsed+dt*rate*toolWorkMultiplier(b));j.progress=clamp(c.workElapsed/BUILDINGS[b.type].workTime);
@@ -92,16 +110,16 @@ export function workGathering(s,c,b,dt,rate,origin){
   // The same living actor falls; this ID cannot yield a second load until recovery.
   if(g.kills.some(k=>k.id===j.target.id&&s.simTime<k.respawnAt)){g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return false;}
   g.kills.push({...j.target,time:s.simTime,respawnAt:s.simTime+180});
- }else if(kindFor[b.type]){
+ }else if(kindFor[b.type]&&!j.source){
   const f=g.features.find(f=>f.id===j.target.id);if(!f||f.health<=0){g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return false;}
   f.health=Math.max(0,f.health-(b.type==='logging'?1:.2));if(f.health<1e-7){f.health=0;f.felledAt=s.simTime;f.recoverAt=s.simTime+(b.type==='logging'?120:180);}
  }
  // Collect at the target, then carry the actual load back over the same dry leg.
- g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.kind==='fishing'?{...j.origin,fishery:fisheryKey(s,j.target)}:j.origin;
+ g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.kind==='fishing'?{...j.origin,fishery:fisheryKey(s,j.target)}:j.source?{...j.origin,source:j.source}:j.origin;
 }
 export function advanceGathering(s){
  advanceReedBeds(s);
- const g=initializeGathering(s),active=new Set(s.buildings.filter(isOperational).filter(b=>GATHERING_TYPES.includes(b.type)).map(buildingKey));
+ const g=initializeGathering(s),active=new Set(s.buildings.filter(isOperational).filter(b=>GATHERING_TYPES.includes(b.type)||isExtractionCourt(b)&&extractableCourts.has(b.type)).map(buildingKey));
  const signature=s.buildings.map(b=>`${b.type}:${b.x},${b.y}`).join('|');let paths=localLegs.get(s);if(paths?.signature!==signature){paths={signature,legs:new WeakMap()};localLegs.set(s,paths);}
  g.jobs=g.jobs.filter(j=>{if(!active.has(j.work)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work&&c.phase==='working'))return false;if(!paths.legs.has(j))paths.legs.set(j,clearGround(s,j.stand)&&gatheringPathClear(s,j.origin,j.stand));return paths.legs.get(j);});
  g.features=g.features.filter(f=>active.has(f.id.split(':')[1]));
@@ -113,7 +131,7 @@ export function actorWorkActivity(s,c,pettingPairs){
  if(c.activity)return c.activity;
  const manual=manualGatheringActivity(s,c);if(manual)return manual;
  const j=s.gathering?.jobs.find(j=>j.citizen===c.id&&j.work===c.work&&c.phase==='working');
- if(j)return {kind:j.kind,target:j.target,progress:j.progress,stage:j.stage==='working'&&j.progress>.8?'strike':j.stage};
+ if(j)return {kind:j.source&&['clay','reed','garden'].includes(j.kind)?'gathering':j.kind,task:j.kind,target:j.target,progress:j.progress,stage:j.stage==='working'&&j.progress>.8?'strike':j.stage};
  const pair=(pettingPairs||catPettingPairs(s)).find(p=>p.citizenId===c.id);return pair?{kind:'petting',target:{x:pair.x,y:pair.y},progress:((s.simTime||0)%3)/3,stage:'working'}:null;
 }
 export function validateGathering(s){
@@ -125,8 +143,15 @@ export function validateGathering(s){
  const natural=new Map(naturalAnimalsFor(s).map(a=>[a.id,a]));
  if(!unique(g.jobs.map(j=>j.target?.id)))return false;
  return !g.jobs.some(j=>{
-  if(!Number.isInteger(j.citizen)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work)||typeof j.work!=='string'||!s.buildings.some(b=>buildingKey(b)===j.work&&b.type===j.kind)||!GATHERING_TYPES.includes(j.kind)||!point(j.target)||typeof j.target.id!=='string'||!point(j.stand)||!point(j.origin)||!['approach','working','return'].includes(j.stage)||!finite(j.progress,0,1))return true;
+  const building=s.buildings.find(b=>buildingKey(b)===j.work&&b.type===j.kind),court=isExtractionCourt(building)&&extractableCourts.has(j.kind);
+  if(!Number.isInteger(j.citizen)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work)||typeof j.work!=='string'||!building||!GATHERING_TYPES.includes(j.kind)&&!court||!point(j.target)||typeof j.target.id!=='string'||!point(j.stand)||!point(j.origin)||!['approach','working','return'].includes(j.stage)||!finite(j.progress,0,1))return true;
   if(!clearGround(s,j.stand)||!gatheringPathClear(s,j.origin,j.stand))return true;
+  if(j.source!==undefined){
+   if(!court||!j.source||Object.keys(j.source).length!==2||j.target.kind!==extractionKinds[j.kind])return true;
+   const {x,y}=j.source,standIndex=Number(j.target.id.slice(-1));
+   if(j.target.id!==`deposit:${x},${y}:${standIndex}`||!Number.isInteger(standIndex)||standIndex<0||standIndex>7)return true;
+   return !extractionSources(s,building).some(p=>p.x===x&&p.y===y&&p.x===j.target.x&&p.y===j.target.y)||distance(j.stand,pointNear(s,j.target,.31,standIndex*Math.PI/4))>1e-7;
+  }
   if(kindFor[j.kind])return !g.features.some(f=>f.id===j.target.id&&f.kind===kindFor[j.kind]&&f.health>0&&f.x===j.target.x&&f.y===j.target.y);
   if(j.kind==='fishing'&&j.target.id.startsWith('fish:water:'))return !validFishingWaterTarget(s,j.target,j.origin,j.stand);
   return natural.get(j.target.id)?.kind!==(j.kind==='hunting'?'gazelle':'fish')||j.target.kind!==(j.kind==='hunting'?'gazelle':'fish');

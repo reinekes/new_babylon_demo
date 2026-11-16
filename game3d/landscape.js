@@ -1,4 +1,5 @@
 import {extractionKinds,extractionOwner} from '../extraction-courts.js';
+import {extractionStockFraction} from '../extraction-stock.js';
 import {localFerryVessel} from '../river-stores.js';
 import {floodMapView} from '../river-flood.js';
 import {createPalmRenderGroups} from './palm-render-groups.js';
@@ -57,6 +58,7 @@ const pointDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((p.x-a.x)*dx+
 // Resource quantities change during work and at season boundaries; only kind and
 // coordinates affect these static meshes (resourceDisplayLayout uses the same data).
 const depositGeometry=s=>s.world?.deposits?.map(d=>[d.kind,d.x,d.y]);
+const datePalmGround=(s,p)=>vegetationBankDistance(p.x,p.y,s)>.22;
 export function landscapeSignature(s){return JSON.stringify([isStrictSumer(s),worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes,depositGeometry(s),s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b),b.type==='garden'?[b.rotation||0,orchardMaturity(s,b).growth]:0]),s.roadAnchors,s.roads?.map(r=>[r.id,r.a,r.b,r.level,r.built,r.construction])]);}
 export function landscapeFallbackTufts(s,roads=[],sources={}){
  if(sources.grass?.length&&sources.reed?.length)return [];
@@ -75,13 +77,13 @@ export function landscapePlan(s,streets=cachedStreetsFor(s)||generateStreets([..
  for(const d of deposits){
   if(!['forest','dates'].includes(d.kind))continue;
   const court=extractionOwner(s,d);
-  if(d.kind==='dates'&&court&&court.construction?.kind!=='new'&&isStrictSumer(s))continue;
+  if(court&&d.kind==='forest')continue; // Working groves are scaled by their real stock below.
   for(const [i,display]of resourceDisplayLayout(d).entries()){
-   const p={id:`resource-${d.kind}-${d.x}-${d.y}-${i}`,x:display.x,y:display.y,resource:d.kind};
-   if(vegetationBankDistance(p.x,p.y,s)>.22&&(court||sceneryClear(s,p,.2))&&roads.every(r=>pointDistance(p,r.a,r.b)>.4))palms.push(p);
+   const p={id:`resource-${d.kind}-${d.x}-${d.y}-${i}`,x:display.x,y:display.y,resource:d.kind,...court&&d.kind==='dates'?{workingDates:true}:{}};
+   if(datePalmGround(s,p)&&(p.workingDates||sceneryClear(s,p,.2)&&roads.every(r=>pointDistance(p,r.a,r.b)>.4)))palms.push(p);
   }
  }
- for(const b of s.buildings||[])for(const p of orchardPalms(b,s))if(vegetationBankDistance(p.x,p.y,s)>.22&&sceneryClear({buildings:s.buildings.filter(other=>other!==b)},p,.08)&&roads.every(r=>pointDistance(p,r.a,r.b)>.22))palms.push(p);
+ for(const b of s.buildings||[])if(!b.deposit)for(const p of orchardPalms(b,s))if(vegetationBankDistance(p.x,p.y,s)>.22&&sceneryClear({buildings:s.buildings.filter(other=>other!==b)},p,.08)&&roads.every(r=>pointDistance(p,r.a,r.b)>.22))palms.push(p);
  const c=s.trade?.caravan,caravan=c&&Number.isFinite(c.x)&&Number.isFinite(c.y)?{x:c.x,y:c.y,river:c.transport==='river',stock:{...c.stock},route:c.route||[],routeIndex:c.routeIndex||0}:null;
  return {roads,canals,palms,caravan,deposits};
 }
@@ -191,22 +193,59 @@ export async function createGameLandscape(B,scene,initialState,materials,options
 
  }
  function instanceResource(src,name,x,y,z,scale,spec){const m=src.createInstance(name);m.setEnabled(true);m.position.set(x,y,z);m.scaling.set(...scale);m.metadata={resourceSite:{kind:spec.kind,x:spec.x,y:spec.y,label:RESOURCE_SITES[spec.kind].label}};add(m,resourceMeshes);m.freezeWorldMatrix();return m;}
+ const activePlots=[];
+ function plotPart(plot,src,name,p,scale,height=0,crown=0){
+  const y=surfaceElevation(p.x,p.y,plot.state),mesh=instanceResource(src,name,p.x*TILE,y+height,p.y*TILE,scale,plot.site);
+  plot.parts.push({mesh,scale,height,y,crown});return mesh;
+ }
+ function updatePlotStock(s){
+  for(const plot of activePlots){
+   const fraction=extractionStockFraction(s,plot.site);
+   if(fraction===plot.fraction)continue;
+   plot.fraction=fraction;
+   const size=Math.cbrt(fraction);
+   for(const {mesh,scale,height,y,crown} of plot.parts){
+    mesh.setEnabled(fraction>1e-8);
+    if(fraction<=1e-8)continue;
+    mesh.unfreezeWorldMatrix();mesh.scaling.set(...scale.map(value=>value*size));mesh.position.y=y+height*size+crown*(1-size);mesh.freezeWorldMatrix();
+   }
+  }
+ }
  function updateResourceSites(s){
-  const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,depositGeometry(s),s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1,b.deposit?.x,b.deposit?.y])]);if(next===resourceSignature)return;resourceSignature=next;selectionSignature='';remove(resourceMeshes);
+  const next=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,depositGeometry(s),s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1,b.deposit?.x,b.deposit?.y])]);if(next===resourceSignature){updatePlotStock(s);return;}resourceSignature=next;selectionSignature='';remove(resourceMeshes);activePlots.length=0;
   for(const d of s.world?.deposits||[]){if(!RESOURCE_SITES[d.kind]||terrain(d.x,d.y,s)==='water')continue;const X=d.x*TILE,Z=d.y*TILE,Y=surfaceElevation(d.x,d.y,s),court=extractionOwner(s,d),occupied=!court&&!sceneryClear(s,d,.12);
    const patch=instanceResource(resourceModels.get(d.kind),`resource-site-${d.kind}-${d.x}-${d.y}`,X,Y+.045,Z,[1,1,1],d);patch.setEnabled(false);
 
    if(occupied)continue;
-   if(court&&['clay','stone'].includes(d.kind))for(const p of resourceDisplayLayout(d)){
-    const clay=d.kind==='clay',size=p.size*(clay?.60:.54),ground=surfaceElevation(p.x,p.y,s);
-    instanceResource(clay?claySource:stoneSource,`deposit-open-${d.kind}`,p.x*TILE,ground+size*.13,p.y*TILE,[size,size*(clay?.28:.62),size],d);
+   const plot=court&&{state:s,site:d,parts:[],fraction:null};
+   if(plot)activePlots.push(plot);
+   if(plot&&['clay','stone'].includes(d.kind))for(const p of resourceDisplayLayout(d)){
+    const clay=d.kind==='clay',size=p.size*(clay?.60:.54);
+    plotPart(plot,clay?claySource:stoneSource,`deposit-open-${d.kind}-${d.x}-${d.y}`,p,[size,size*(clay?.28:.62),size],size*.13);
    }
-   if(d.kind==='reed'&&!valleyVegetation.sources.reed.length)for(const p of resourceDisplayLayout(d)){
+   if(plot&&d.kind==='forest')for(const p of resourceDisplayLayout(d))for(const src of palmSources){
+    if(src.metadata?.nativeDates)continue;
+    const mesh=plotPart(plot,src,`deposit-open-forest-${d.x}-${d.y}`,p,[.72,.72,.72]);
+    mesh.unfreezeWorldMatrix();mesh.rotation.y=p.angle;mesh.freezeWorldMatrix();
+   }
+   if(plot&&d.kind==='dates')for(const p of resourceDisplayLayout(d).filter(p=>datePalmGround(s,p)))for(const src of palmSources.filter(m=>m.metadata?.nativeDates)){
+    const scale=.72,mesh=plotPart(plot,src,`deposit-open-dates-${d.x}-${d.y}`,p,[scale,scale,scale],0,5.15*scale);
+    mesh.unfreezeWorldMatrix();mesh.rotation.y=(p.x+p.y)*2.399;mesh.freezeWorldMatrix();
+   }
+   if(plot&&d.kind==='reed')for(const [i,p]of resourceDisplayLayout(d).entries()){
+    const sources=valleyVegetation.sources.reed,variant=i%3,selected=sources.filter(m=>m.metadata?.valleyVariant===variant);
+    for(const src of selected.length?selected:[reedSource]){
+     const h=1.25+p.size*.38,mesh=plotPart(plot,src,`deposit-open-reed-${d.x}-${d.y}`,p,src===reedSource?[1,h,1]:[p.size,p.size,p.size],src===reedSource?h/2:0);
+     mesh.unfreezeWorldMatrix();mesh.rotation.y=p.angle;mesh.freezeWorldMatrix();
+    }
+   }
+   if(!plot&&d.kind==='reed'&&!valleyVegetation.sources.reed.length)for(const p of resourceDisplayLayout(d)){
     if(!court&&!sceneryClear(s,p,.05))continue;const ground=surfaceElevation(p.x,p.y,s);
     const h=1.25+p.size*.38,m=instanceResource(reedSource,'deposit-reed-bed',p.x*TILE,ground+h/2,p.y*TILE,[1,h,1],d);m.unfreezeWorldMatrix();m.rotation.z=Math.sin(p.angle)*.09;m.freezeWorldMatrix();
    }
    if(d.kind==='wildlife')for(let i=0;i<6;i++)instanceResource(hoofSource,'deposit-wildlife-track',X+(i%2)*.33-.16,Y+.07,Z+(i/2-1.5)*.6,[.13,.055,.23],d);
   }
+  updatePlotStock(s);
  }
  const selectionMaterial=material('resource-placement-highlight','#d9ee8b');selectionMaterial.emissiveColor=color(.25,.32,.08);selectionMaterial.alpha=.8;
  const selectionSource=source('resource-highlight-source',()=>{const m=new B.Mesh('site-placement-rectangle',scene),d=new B.VertexData(),g=rectangularSiteGeometry();d.positions=g.positions;d.indices=g.indices;d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);d.applyToMesh(m);return m;},selectionMaterial);selectionMaterial.backFaceCulling=false;
@@ -293,8 +332,8 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   }
   carveChannels(s,arms);
   const visiblePalms=plan.palms.filter(p=>p.managed||!(s.gathering?.features||[]).some(f=>f.kind==='tree'&&Math.hypot(f.x-p.x,f.y-p.y)<.85));
-  const nextPalms=JSON.stringify(visiblePalms.map(p=>[p.id,p.x,p.y,p.growth]));
-  if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.managed?.62*p.growth:p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}updatePalmGroups();}
+  const nextPalms=JSON.stringify(visiblePalms.map(p=>[p.id,p.x,p.y,p.growth,p.workingDates]));
+  if(nextPalms!==palmsSignature){palmsSignature=nextPalms;remove(palmInstances);for(const p of visiblePalms){const scale=p.managed?.62*p.growth:p.resource?.72:.88+(p.id%7)*.035;for(const src of palmSources){if(p.workingDates&&src.metadata?.nativeDates)continue;const m=src.createInstance(`date-palm-${p.id}-${src.name}`);m.setEnabled(true);m.position.set(p.x*TILE,surfaceElevation(p.x,p.y,s),p.y*TILE);m.scaling.setAll(scale);m.rotation.y=p.resource?(p.x+p.y)*2.399:p.id*2.399;if(!src.metadata?.nativeDates)m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.computeWorldMatrix(true);m.freezeWorldMatrix();add(m,palmInstances);}}updatePalmGroups();}
  }
 
  let featureSignature='',featureGeometry='';

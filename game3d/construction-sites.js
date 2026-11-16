@@ -22,7 +22,7 @@ export function createConstructionSite(B,scene,b,m,s){
   const result=[];for(const [mat,parts]of groups){for(const mesh of parts)mesh.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='construction-bridge-timber';mesh.material=mat;mesh.metadata={constructionSite:true};result.push(mesh);}return result;
  }
 
- const court=isExtractionCourt(b),workArea=court?extractionWorkArea(b):{x:a.center,z:a.center},c=workArea.x,z=workArea.z,r=court?1.6:a.width/2,ground=m.raw||m.brick,finish=b.level>=2?(m.fired||ground):ground;
+ const court=isExtractionCourt(b),workArea=court?extractionWorkArea(b,s):{x:a.center,z:a.center},c=workArea.x,z=workArea.z,r=court?1.6:a.width/2,ground=m.raw||m.brick,finish=b.level>=2?(m.fired||ground):ground;
  if(!a.upgrade){
   if(!court)box(c,.025,z,a.width,.05,a.width,m.soil);
   if(court){if(a.p>0)for(const side of [-1,1])box(c+side*1.25,.30*a.p,z,.18,.60*a.p,2.1,finish);}

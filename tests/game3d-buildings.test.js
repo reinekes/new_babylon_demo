@@ -262,7 +262,11 @@ test('reed camp renders a distinct pickable shelter without house lamps',async()
   const shelter={...house(1,8,8,'shelter'),reedCamp:true};
   t.layer.sync({buildings:[shelter],citizens:[]});
   const parts=t.layer.meshes.filter(mesh=>mesh.metadata.buildingKey==='shelter');
-  assert.equal(parts.filter(mesh=>mesh.name.endsWith('camp-woven-roof')&&mesh.isPickable).length,2);
+  const roofs=parts.filter(mesh=>mesh.name.endsWith('camp-woven-roof')&&mesh.isPickable);
+  assert.equal(roofs.length,1);
+  const bounds=roofs[0].getBoundingInfo().boundingBox;
+  assert.ok(bounds.minimum.x< -1.66&&bounds.maximum.x>1.66&&bounds.maximum.y>=1.55,'both eaves and ridge span a single shelter');
+  assert.ok(roofs[0].getTotalIndices()<=144,'roof keeps a small shared surface');
   assert.ok(parts.every(mesh=>!mesh.metadata.homeLamp));
  }finally{t.dispose();}
 });

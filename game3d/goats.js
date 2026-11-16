@@ -2,7 +2,8 @@ import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 export const GOAT_MODELS={authored:{file:'goat-authored-lod.glb',stride:.34},downloaded:{file:'goat-downloaded.glb',stride:.30}};
-export function goatVariant(id){let h=2166136261;for(const c of String(id)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0)%2?'authored':'downloaded';}
+function goatSeed(id){let h=2166136261;for(const c of String(id)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+export function goatVariant(id){return goatSeed(id)%2?'authored':'downloaded';}
 export function goatAction(c,distance=0){if(c.dead||c.behavior==='dead')return 'Rest';if(c.walking!==false&&distance<3&&(c.walking||distance>.00001))return 'Walk';return ['grazing','drinking'].includes(c.behavior)?'Graze':c.behavior==='resting'?'Rest':'Idle';}
 // Asset containers are loaded once; each animal owns its skeleton and clips,
 // while material/geometry resources stay shared. No saved fields are added.
@@ -13,10 +14,12 @@ export async function createGameGoats(B,scene,meshes=[],options={}){
  if(!sources.size)throw Error('No goat model could be loaded');let disposed=false;
  function make(c){const requested=goatVariant(c.id),variant=sources.has(requested)?requested:sources.keys().next().value,source=sources.get(variant),copy=source.instantiateModelsToScene(n=>`goat-${c.id}-${n}`,false,{doNotInstantiate:true});
   const root=new B.TransformNode(`goat-${c.id}`,scene),model=new B.TransformNode(`goat-${c.id}-model`,scene);model.parent=root;root.metadata={...c.decorative?{decorativeId:c.id}:{animalId:c.id},animalKind:'goat',goatVariant:variant,gaitPhase:0};for(const n of copy.rootNodes)n.parent=model;root.scaling.setAll(c.growth||1);
+  const identity=goatSeed(c.id),gaitOffset=(identity%997)/997,heading=(Math.imul(identity,2654435761)>>>0)/4294967296*Math.PI*2;
+  root.rotation.y=heading;
   const groups=new Map();for(const g of copy.animationGroups){g.stop();const name=g.name.startsWith(`goat-${c.id}-`)?g.name.slice(`goat-${c.id}-`.length):g.name;groups.set(name,g);}
   const owned=root.getChildMeshes();for(const m of owned){m.receiveShadows=true;m.isPickable=!c.decorative;meshes.push(m);}
   const nodes=[...new Set([...groups.values()].flatMap(g=>g.targetedAnimations.map(a=>a.target)).filter(n=>n?.position&&n?.rotation))];
-  return {root,model,owned,nodes,groups,skeletons:copy.skeletons,variant,lastX:c.x,lastY:c.y,yaw:null,phase:0,clock:0,clip:null,transition:null,transitionTime:0};
+  return {root,model,owned,nodes,groups,skeletons:copy.skeletons,variant,lastX:c.x,lastY:c.y,yaw:null,phase:gaitOffset,clock:0,idleOffset:gaitOffset,clip:null,transition:null,transitionTime:0};
  }
  function snapshot(a){return a.nodes.map(n=>({node:n,p:n.position.clone(),q:n.rotationQuaternion?.clone(),r:n.rotation.clone(),s:n.scaling.clone()}));}
  function play(a,clip){const g=a.groups.get(clip);if(!g)throw Error(`Missing goat animation: ${a.variant}/${clip}`);a.transition=a.clip?snapshot(a):null;a.transitionTime=0;for(const old of a.groups.values())old.stop();g.start(true,1,g.from,g.to,false);g.pause();a.clip=clip;a.clock=0;return g;}
@@ -28,7 +31,7 @@ export async function createGameGoats(B,scene,meshes=[],options={}){
    if(distance>.00001&&distance<3&&!paused)a.yaw=Math.atan2(dx,dz);if(a.yaw!==null){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(fresh?1:1-Math.exp(-dt*10));}
    const dead=!!(c.dead||c.behavior==='dead'),clip=goatAction(c,distance),g=clip!==a.clip?play(a,clip):a.groups.get(clip);
    if(!paused&&!dead){if(clip==='Walk'){if(distance<3)a.phase=(a.phase+distance/GOAT_MODELS[a.variant].stride)%1;}else a.clock+=dt*speed;}
-   const duration=Math.max(.01,(g.to-g.from)/(g.targetedAnimations[0]?.animation.framePerSecond||30)),phase=dead?0:clip==='Walk'?a.phase:(a.clock/duration)%1;g.goToFrame(g.from+phase*(g.to-g.from));
+   const duration=Math.max(.01,(g.to-g.from)/(g.targetedAnimations[0]?.animation.framePerSecond||30)),phase=dead?0:clip==='Walk'?a.phase:(a.idleOffset+a.clock/duration)%1;g.goToFrame(g.from+phase*(g.to-g.from));
    if(a.transition){a.transitionTime+=paused?0:dt*speed;const blend=Math.min(1,a.transitionTime/(clip==='Rest'||clip==='Graze'?.65:.25)),t=blend*blend*(3-2*blend);for(const from of a.transition){const n=from.node;n.position.copyFrom(B.Vector3.Lerp(from.p,n.position,t));n.scaling.copyFrom(B.Vector3.Lerp(from.s,n.scaling,t));if(n.rotationQuaternion&&from.q)B.Quaternion.SlerpToRef(from.q,n.rotationQuaternion,t,n.rotationQuaternion);else n.rotation.copyFrom(B.Vector3.Lerp(from.r,n.rotation,t));}if(blend===1)a.transition=null;}
    const fall=dead?Math.max(0,Math.min(1,c.deathProgress??1)):0;a.model.rotation.z=fall*Math.PI*.5;a.model.position.y=fall*.235;a.model.position.x=fall*(a.variant==='authored'?.22:.65);
    a.root.metadata.gaitPhase=a.phase;a.root.metadata.clip=clip;a.root.metadata.dead=dead;

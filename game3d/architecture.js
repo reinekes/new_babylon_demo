@@ -7,6 +7,7 @@ import {isStrictSumer} from '../scenario-profiles.js';
 import {isReedShrine} from '../building-presentation.js';
 import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
+import {createReedRoof} from './reed-roof.js';
 import {createMusicCourtyard} from './music-courtyard.js';
 import {createIshtarGateFallback,createSumerGate} from './sacred-models.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
@@ -37,7 +38,7 @@ export function createArchitecture(B,scene,b,m,state){
  const cylinder=(x,y,z,r,h,mat=m.wood,top=r)=>{const a=B.MeshBuilder.CreateCylinder(`round-${serial++}`,{height:h,diameterBottom:r*2,diameterTop:top*2,tessellation:12},scene);a.position.set(x,y,z);return add(a,mat);};
  const beam=(a,c,r=.045,mat=m.wood)=>{const start=new B.Vector3(...a),end=new B.Vector3(...c),v=end.subtract(start),mesh=B.MeshBuilder.CreateCylinder(`beam-${serial++}`,{height:v.length(),diameter:r*2,tessellation:7},scene);mesh.position=start.add(end).scale(.5);mesh.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(B.Axis.Y,v.normalize(),new B.Quaternion());return add(mesh,mat);};
  const jar=(x,z,s=1,y=0)=>{const shape=[[0,0],[.18,.03],[.34,.21],[.38,.53],[.25,.83],[.16,.9],[.17,1],[.12,1],[.12,.89],[.2,.77],[.3,.51],[.26,.22],[.1,.09],[0,.09]].map(([r,h])=>new B.Vector3(r*s,h*s,0));const mesh=B.MeshBuilder.CreateLathe(`storage-jar-${serial++}`,{shape,tessellation:12,sideOrientation:B.Mesh.DOUBLESIDE},scene);mesh.position.set(x,y,z);return add(mesh,m.terracotta);};
- const cloth=(x,z,w,d,y=1.9,mat=m.linen)=>{const before=new Set([...groups.values()].flat());for(const a of [-1,1])for(const c of [-1,1])cylinder(x+a*(w/2-.08),y/2,z+c*(d/2-.08),.045,y);for(let i=0;i<8;i++){const q=block(x-w/2+w*(i+.5)/8,y-.1*Math.sin(i/7*Math.PI),z,w/8+.02,.045,d,mat);q.rotation.z=-.12*Math.cos(i/7*Math.PI);}beam([x-w/2,y,z-d/2],[x+w/2,y,z-d/2]);beam([x-w/2,y,z+d/2],[x+w/2,y,z+d/2]);canopies.push({x,z,w,d,y,mat,parts:[...groups.values()].flat().filter(p=>!before.has(p))});};
+ const cloth=(x,z,w,d,y=1.9,mat=m.linen)=>{const before=new Set([...groups.values()].flat());for(const a of [-1,1])for(const c of [-1,1])cylinder(x+a*(w/2-.08),y/2,z+c*(d/2-.08),.045,y);if(mat===m.reed)add(createReedRoof(B,scene,'reed-canopy',m.reedRoof||m.reed,{x,y,z,width:w,depth:d,sag:.065}),m.reedRoof||m.reed);else for(let i=0;i<8;i++){const q=block(x-w/2+w*(i+.5)/8,y-.1*Math.sin(i/7*Math.PI),z,w/8+.02,.045,d,mat);q.rotation.z=-.12*Math.cos(i/7*Math.PI);}beam([x-w/2,y,z-d/2],[x+w/2,y,z-d/2]);beam([x-w/2,y,z+d/2],[x+w/2,y,z+d/2]);canopies.push({x,z,w,d,y,mat,parts:[...groups.values()].flat().filter(p=>!before.has(p))});};
  // A rotated road port can put the active bay at a back corner. Reserve that
  // real volume in the room, rather than reaching through an intact wall/roof.
  const workBay=workstationLayout(b)[0];
@@ -92,10 +93,9 @@ export function createArchitecture(B,scene,b,m,state){
    for(const y of [.42,1.12])beam([side*2.05,y,back],[side*2.05,y,front],.025,m.wood);
    for(const z of [back,center,front])beam([side*2.04,base,z],[side*2.04,eave,z],.055,m.reed);
   }
+  add(createReedRoof(B,scene,'reed-sanctuary-roof',m.reedRoof||m.reed,{z:center,width:4.04,depth:depth+.19,profile}),m.reedRoof||m.reed);
   for(let i=1;i<profile.length;i++){
-   const [x0,y0]=profile[i-1],[x1,y1]=profile[i],x=(x0+x1)/2,y=(y0+y1)/2;
-   const roof=block(x,y,center,Math.hypot(x1-x0,y1-y0)+.065,.09,depth+.19,m.reed);
-   roof.rotation.z=Math.atan2(y1-y0,x1-x0);
+   const [x0,y0]=profile[i-1],[x1,y1]=profile[i],x=(x0+x1)/2;
    for(const z of [back-.07,center,front+.07])beam([x0,y0+.052,z],[x1,y1+.052,z],.043,m.reed);
    endMat(x0,y0,x1,y1,base,back);
    endMat(x0,y0,x1,y1,Math.abs(x)<.71?1.85:base,front);
@@ -107,7 +107,7 @@ export function createArchitecture(B,scene,b,m,state){
   jar(1.31,2.02,.53);
  };
  if(isExtractionCourt(b)){
-  const {x,z}=extractionWorkArea(b);
+  const {x,z}=extractionWorkArea(b,state);
   const width=extractionWorkspaceWidth(b),height=level===3?2.15:1.75;
   cloth(x,z,width,2.4,height,m.reed);
   if(b.type==='clay')basin(x,z+.16,1.52,1.08);

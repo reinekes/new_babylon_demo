@@ -1,0 +1,454 @@
+{
+  "fixture": "city500-save-2026-11-13.json",
+  "baselineCommit": "7bbc12c8",
+  "release": "living-fields-20261116",
+  "method": "Chrome requestAnimationFrame intervals, full city view, HUD, shadows, autosave, 4×",
+  "runs": {
+    "baseline": {
+      "warmMs": 5000,
+      "result": {
+        "fps": 25.625068638576707,
+        "durationMs": 30048.700000000004,
+        "frames": 770,
+        "medianMs": 33.39999999999782,
+        "p95Ms": 50.099999999998545,
+        "p99Ms": 66.70000000000437,
+        "maxMs": 483.29999999999563,
+        "interruptions": [],
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 2.683249999999999,
+          "bytes": 586282
+        },
+        "after": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 16.182700000000068,
+          "bytes": 638043
+        },
+        "saves": 9,
+        "viewport": [
+          1440,
+          900
+        ],
+        "canvas": [
+          1440,
+          750
+        ],
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "spikes": [
+          {
+            "at": 24999,
+            "duration": 483.29999999999563,
+            "clock": "☀ День · 14:03\nБара-заг-гар · день 1"
+          },
+          {
+            "at": 25115.6,
+            "duration": 116.59999999999854,
+            "clock": "☀ День · 14:03\nБара-заг-гар · день 1"
+          },
+          {
+            "at": 26448.9,
+            "duration": 100,
+            "clock": "☀ День · 14:17\nБара-заг-гар · день 1"
+          }
+        ],
+        "buckets": [
+          133,
+          137,
+          133,
+          139,
+          127,
+          100,
+          1
+        ],
+        "longTasks": [
+          {
+            "at": 24529.600000047685,
+            "duration": 479
+          },
+          {
+            "at": 25009.200000011922,
+            "duration": 120
+          }
+        ],
+        "saveTimes": [
+          2892.7000000119224,
+          5912.4000000000015,
+          8943.100000047685,
+          11986.500000023843,
+          15019.900000000001,
+          18040.800000035764,
+          21053.800000035764,
+          24085.500000023843,
+          27089.200000011922
+        ]
+      },
+      "reload": {
+        "roundtrip": true,
+        "same": true,
+        "population": 500,
+        "buildings": 250,
+        "simTime": 18.040950000000024,
+        "paused": true
+      },
+      "errors": [],
+      "detailWarnings": []
+    },
+    "firstCandidate": {
+      "warmMs": 5000,
+      "result": {
+        "fps": 23.42855621522324,
+        "durationMs": 30048.8,
+        "frames": 704,
+        "medianMs": 33.400000000001455,
+        "p95Ms": 66.59999999999854,
+        "p99Ms": 66.70000000000437,
+        "maxMs": 550,
+        "interruptions": [],
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 1.3832499999999992,
+          "bytes": 585313
+        },
+        "after": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 16.374300000000055,
+          "bytes": 638119
+        },
+        "saves": 10,
+        "viewport": [
+          1440,
+          900
+        ],
+        "canvas": [
+          1440,
+          750
+        ],
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "spikes": [
+          {
+            "at": 17882.600000000002,
+            "duration": 100,
+            "clock": "☀ День · 12:37\nБара-заг-гар · день 1"
+          },
+          {
+            "at": 25182.3,
+            "duration": 550,
+            "clock": "☀ День · 14:03\nБара-заг-гар · день 1"
+          },
+          {
+            "at": 25315.600000000002,
+            "duration": 133.3000000000029,
+            "clock": "☀ День · 14:03\nБара-заг-гар · день 1"
+          }
+        ],
+        "buckets": [
+          118,
+          123,
+          125,
+          128,
+          113,
+          96,
+          1
+        ],
+        "longTasks": [
+          {
+            "at": 24643.90000002384,
+            "duration": 554
+          },
+          {
+            "at": 25198.60000001192,
+            "duration": 123
+          }
+        ],
+        "saveTimes": [
+          396.99999998807834,
+          3405.400000023841,
+          6459.199999976157,
+          9500.400000023841,
+          12513.199999976157,
+          15549.400000023841,
+          18557.49999998808,
+          21583.60000001192,
+          24602.199999976157,
+          27649.40000002384
+        ]
+      },
+      "reload": {
+        "roundtrip": true,
+        "same": true,
+        "population": 500,
+        "buildings": 250,
+        "simTime": 17.940950000000026,
+        "paused": true
+      },
+      "errors": [],
+      "detailWarnings": []
+    },
+    "stagedResidents": {
+      "warmMs": 5000,
+      "result": {
+        "fps": 26.723196932989005,
+        "durationMs": 30048.8,
+        "frames": 803,
+        "medianMs": 33.39999999999418,
+        "p95Ms": 50.099999999998545,
+        "p99Ms": 66.69999999999709,
+        "maxMs": 116.70000000000437,
+        "interruptions": [],
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 1.3999999999999986,
+          "bytes": 585300
+        },
+        "after": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 16.574400000000043,
+          "bytes": 638160
+        },
+        "saves": 10,
+        "viewport": [
+          1440,
+          900
+        ],
+        "canvas": [
+          1440,
+          750
+        ],
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "spikes": [
+          {
+            "at": 24682.3,
+            "duration": 100,
+            "clock": "☀ День · 13:58\nБара-заг-гар · день 1"
+          },
+          {
+            "at": 24799.000000000004,
+            "duration": 116.70000000000437,
+            "clock": "☀ День · 14:02\nБара-заг-гар · день 1"
+          }
+        ],
+        "buckets": [
+          137,
+          144,
+          142,
+          133,
+          131,
+          115,
+          1
+        ],
+        "longTasks": [
+          {
+            "at": 24688.400000047684,
+            "duration": 115
+          }
+        ],
+        "saveTimes": [
+          386.6000000357635,
+          3395.3000000238426,
+          6429.000000011922,
+          9475.100000035764,
+          12507.100000035764,
+          15526.2,
+          18555.400000047684,
+          21607.7,
+          24716.900000047684,
+          27704.2
+        ]
+      },
+      "reload": {
+        "roundtrip": true,
+        "same": true,
+        "population": 500,
+        "buildings": 250,
+        "simTime": 18.09100000000002,
+        "paused": true
+      },
+      "errors": [],
+      "detailWarnings": []
+    },
+    "candidate1": {
+      "warmMs": 5000,
+      "result": {
+        "fps": 27.322222518037325,
+        "durationMs": 30048.8,
+        "frames": 821,
+        "medianMs": 33.39999999999418,
+        "p95Ms": 50,
+        "p99Ms": 66.70000000000073,
+        "maxMs": 116.69999999999709,
+        "interruptions": [],
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 1.399899999999998,
+          "bytes": 585304
+        },
+        "after": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 16.51595000000004,
+          "bytes": 638168
+        },
+        "saves": 10,
+        "viewport": [
+          1440,
+          900
+        ],
+        "canvas": [
+          1440,
+          750
+        ],
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "spikes": [
+          {
+            "at": 24748.999999999996,
+            "duration": 116.69999999999709,
+            "clock": "☀ День · 14:01\nБара-заг-гар · день 1"
+          }
+        ],
+        "buckets": [
+          139,
+          140,
+          139,
+          146,
+          138,
+          118,
+          1
+        ],
+        "longTasks": [
+          {
+            "at": 24638.60000001192,
+            "duration": 118
+          }
+        ],
+        "saveTimes": [
+          368.20000003576206,
+          3384.7999999999993,
+          6387.60000001192,
+          9418.700000035762,
+          12436.999999988078,
+          15474.10000001192,
+          18497.99999998808,
+          21531.49999998808,
+          24560.10000001192,
+          27581.3
+        ]
+      },
+      "reload": {
+        "roundtrip": true,
+        "same": true,
+        "population": 500,
+        "buildings": 250,
+        "simTime": 18.12425000000001,
+        "paused": true
+      },
+      "errors": [],
+      "detailWarnings": []
+    },
+    "candidate2": {
+      "warmMs": 5000,
+      "result": {
+        "fps": 26.404991975279863,
+        "durationMs": 30032.200000000004,
+        "frames": 793,
+        "medianMs": 33.39999999999782,
+        "p95Ms": 50.099999999998545,
+        "p99Ms": 66.70000000000073,
+        "maxMs": 133.3000000000029,
+        "interruptions": [],
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 1.3916499999999985,
+          "bytes": 585318
+        },
+        "after": {
+          "population": 500,
+          "buildings": 250,
+          "seed": 137,
+          "simTime": 16.507650000000034,
+          "bytes": 638272
+        },
+        "saves": 10,
+        "viewport": [
+          1440,
+          900
+        ],
+        "canvas": [
+          1440,
+          750
+        ],
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "spikes": [
+          {
+            "at": 13382.800000000001,
+            "duration": 133.3000000000029,
+            "clock": "☀ День · 11:41\nБара-заг-гар · день 1"
+          },
+          {
+            "at": 24782.300000000003,
+            "duration": 116.59999999999854,
+            "clock": "☀ День · 14:02\nБара-заг-гар · день 1"
+          }
+        ],
+        "buckets": [
+          137,
+          145,
+          131,
+          137,
+          132,
+          110,
+          1
+        ],
+        "longTasks": [
+          {
+            "at": 13250.099999988079,
+            "duration": 148
+          },
+          {
+            "at": 24681.700000011922,
+            "duration": 108
+          }
+        ],
+        "saveTimes": [
+          358.89999999999964,
+          3377.0999999880787,
+          6411.9,
+          9440.9,
+          12468.9,
+          15475.70000001192,
+          18496.49999996424,
+          21525.79999997616,
+          24565.4,
+          27586.09999998808
+        ]
+      },
+      "reload": {
+        "roundtrip": true,
+        "same": true,
+        "population": 500,
+        "buildings": 250,
+        "simTime": 18.11595000000001,
+        "paused": true
+      },
+      "errors": [],
+      "detailWarnings": []
+    }
+  }
+}

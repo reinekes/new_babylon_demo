@@ -1,4 +1,5 @@
-import {extractionKinds,extractionSource} from './extraction-courts.js';
+import {extractionKinds,extractionSources} from './extraction-courts.js';
+import {extractionStock} from './extraction-stock.js';
 import {linkWaterCrisisAid,WATER_CRISIS_YEAR_TITLE,waterCrisisForYear} from './water-crisis.js';
 import {DRIED_FISH_CAPACITY,launchLocalFerry,localFerryVessel,releaseDriedFish,riverStoreView,startFishDrying} from './river-stores.js';
 import {civicAidPending,civicCaseKey,civicCityEpithet,civicRestitution,civicLawReason,orderCivicRestitution,publishCivicLaw,reconcileCivicConflict,sendCivicAid} from './civic-order.js';
@@ -30,6 +31,7 @@ import {REVELATION_BRANCHES,revelationAdviceQuote} from './revelation-advice.js'
 import {createSunlightPresentation} from './sunlight-presentation.js';
 import {createAbundancePresentation} from './abundance-presentation.js';
 import {giftAmount} from './abundance-origin.js';
+import {fieldPatches} from './field-patches.js';
 import {connectedStores} from './district-logistics.js';
 import {abundanceQuote} from './abundance-gift.js';
 import {createWindPresentation} from './wind-presentation.js';
@@ -49,7 +51,6 @@ import {setCommonMeals} from './common-meal.js';
 import {isVotiveTemple,isMemoryKeeper,orderVotive,templeOfferings,votiveOptions} from './votive-offerings.js';
 import {reedStatus,REED_CAPACITY} from './reed-stock.js';
 import {forestFor,forestStock,forestCapacity,FOREST_RECOVERY} from './forest-stock.js';
-import {clayRemaining,stoneRemaining,mineralCapacity} from './mineral-stock.js';
 import {fisheryOptions} from './labor-life.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {storageJarCover,JAR_FOOD_CAPACITY} from './river-flood.js';
@@ -752,9 +753,19 @@ function detail(type,placement,b=null){
  const locked=placement?buildingAvailabilityReason(type):'';
  if(placement)panel.innerHTML=`${close}<span class="eyebrow">НОВАЯ ПОСТРОЙКА</span><h3>${def.name}</h3>${artworkHTML(type)}<p>${def.desc}</p>${locked?`<p class="build-lock-reason">${esc(locked)}</p>`:''}<strong>${esc(yieldSummary(state,{type,level:1}))}</strong><h4>Цена постройки</h4><div id="placement-cost" data-building="${type}">${costs(def,true,type!=='house')}</div><p>${type==='bridge'?'Выбери клетку воды.':'Нажми на свободную клетку.'} Материалы резервируются сразу. Escape — отмена.</p>`;
  else panel.innerHTML=`${close}<header class="map-card-heading" data-map-card="building"><div class="map-card-emblem">${uiIcon(type)}</div><div><span class="eyebrow"></span><h3>${esc(def.name)}</h3><p class="map-card-address">Клетка ${b.x}, ${b.y} · <span class="building-construction-year">${esc(buildingChronology(b).label)}</span></p></div></header><strong class="map-card-production"></strong><section id="workplace-schedule" class="staffing-panel" hidden></section>${type==='house'?'<section id="household-panel"></section>':''}<div id="building-controls"></div><details class="map-card-more"><summary>О здании</summary>${artworkHTML(type)}<p>${def.desc}</p></details>${isStrictSumer(state)?buildingHistoryHTML(type):''}`;
+ if(!placement&&type==='field')panel.querySelector('.map-card-production').insertAdjacentHTML('afterend','<div id="field-group-summary"></div>');
  panel.scrollTop=0;
  $('tile-detail').querySelector('.detail-close').onclick=()=>{inspected=null;inspectedPerson=null;inspectedDeposit=null;$('tile-detail').hidden=true;};if(!placement)updateDetail();
 }
+function fieldGroupDetail(group,selected){
+ const keys=new Set(group.plots.map(buildingKey));
+ const workers=state.citizens.filter(c=>keys.has(c.work)&&!c.guardPost).length;
+ let seeds=0,sheaves=0,grain=0;
+ for(const plot of group.plots){seeds+=plot.crop?.seedStock||0;sheaves+=plot.crop?.sheaves||0;grain+=plot.crop?.remaining||0;}
+ const plots=group.plots.map(plot=>`<button type="button" class="resident-link" data-field-plot="${esc(buildingKey(plot))}"${plot===selected?' aria-current="true" disabled':''}>${plot.x}, ${plot.y}</button>`).join(' · ');
+ return `<section class="staffing-panel" data-field-group><h4>Работа и урожай</h4><p>Площадь · ${group.plots.length} кл. · Земледельцы ${workers} / ${group.slots}</p><p>Семена ${rounded(seeds)} · снопы ${rounded(sheaves)} · зерно на корню ${rounded(grain)}</p><p>Участки поля · ${plots}</p></section>`;
+}
+
 function updateDetail(){
  if(inspectedDeposit&&!selection&&!$('tile-detail').hidden){depositDetail(inspectedDeposit.x,inspectedDeposit.y);return;}
  if(roadMode&&routeFrom&&routeTo){renderRoadRoute();return;}
@@ -780,7 +791,20 @@ function updateDetail(){
  if(receiptsOpen){const receipts=$('building-controls').querySelector('[data-granary-receipts]');if(receipts)receipts.open=true;}
  const marks=cultSign(state,b);
  if(marks.length)$('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel" data-cult-sign><h4>Глиняная табличка культа</h4><p>${marks.map(mark=>`${mark.label} · ${esc(mark.name)}`).join('<br>')}</p></section>`);
- if(b.type==='field')$('building-controls').insertAdjacentHTML('afterbegin',`<p>Декоративная посадка: ${esc(CROP_NAMES[fieldCropKind(b)])}; урожай учитывается как общая еда. Семена привозят земледельцы со склада. Снопы обмолачивают на току у поля; только потом несут еду в амбар.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
+ if(b.type==='field'){
+  const patch=fieldPatches(state.buildings).get(b)?.group;
+  const grouped=patch?.plots.length>1;
+  $('tile-detail').querySelector('.map-card-heading h3').textContent=grouped?'Общее поле':buildingPresentation(state,b).name;
+  if(grouped){const production=$('tile-detail').querySelector('.map-card-production');production.textContent=`Участок · ${production.textContent}`;}
+  const summary=$('field-group-summary');
+  setHTML(summary,grouped?fieldGroupDetail(patch,b):'');
+  $('building-controls').insertAdjacentHTML('afterbegin',`<p>Посадка участка · ${esc(CROP_NAMES[fieldCropKind(b)])}. Семена привозят со склада. Снопы обмолачивают на току. Зерно доставляют в общий запас.</p><button data-open-food-plan>Прогноз еды и семена</button>`);
+  for(const button of summary.querySelectorAll('[data-field-plot]'))button.onclick=()=>{
+   const plot=patch.plots.find(plot=>buildingKey(plot)===button.dataset.fieldPlot);
+   if(!plot)return;
+   inspected={x:plot.x,y:plot.y};renderer.focusOn(plot.x,plot.y);detail('field',false,plot);
+  };
+ }
  const gifted=giftAmount(b.giftStock);
  if(gifted>0)$('building-controls').insertAdjacentHTML('afterbegin',`<p class="abundance-store-mark">${resourceIcon('grain')} Дарственное зерно · ${foodAmount(gifted)}</p>`);
  if(!q||q.kind!=='new')$('building-controls').insertAdjacentHTML('afterbegin',productionReadout(state,b)+buildingProductionHistoryHTML(state,b)+buildingInventoryHTML(buildingInventory(state,b),{compactStorage:true,house:b.type==='house',production:!!Object.keys(BUILDINGS[b.type]?.output||{}).length}));
@@ -833,19 +857,28 @@ function updateDetail(){
   $('field-water-priority')?.addEventListener('click',()=>mutate(setFieldWaterPriority(state,b),'Распределение полива обновлено'));
  }
  if(['clay','quarry'].includes(b.type)&&isStrictSumer(state)){
-  const stone=b.type==='quarry',source=extractionSource(b),remaining=stone?stoneRemaining(state,source.x,source.y):clayRemaining(state,source.x,source.y),limit=mineralCapacity(state,stone?'stone':'clay',source.x,source.y);
-  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${stone?'Месторождение камня':'Залежь глины'}</h4><p>Остаток ${rounded(remaining)} / ${limit}${remaining<=1e-8?' · залежь исчерпана':''}.</p><small>Для дальнейшей добычи нужна другая залежь. Сырьё также можно купить у прибывших торговцев.</small></section>`);
+  const kind=b.type==='quarry'?'stone':'clay',rows=extractionSources(state,b).map(source=>{
+   const {stock,capacity}=extractionStock(state,source,kind);
+   return `<li>${source.x}, ${source.y} · ${rounded(stock)} / ${capacity}${stock<=1e-8?' · исчерпана':''}</li>`;
+  }).join('');
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>${kind==='stone'?'Залежи камня':'Залежи глины'}</h4><ul>${rows}</ul></section>`);
+ }
+ if(b.type==='garden'&&b.deposit&&isStrictSumer(state)){
+  const rows=extractionSources(state,b).map(source=>{const {stock,capacity}=extractionStock(state,source,'dates');return `<li>${source.x}, ${source.y} · ${rounded(stock)} / ${capacity}</li>`;}).join('');
+  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Финики на пальмах</h4><ul>${rows}</ul><small>Новый урожай созревает осенью.</small></section>`);
  }
  if(b.type==='reed'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
-  const controls=$('building-controls'),source=extractionSource(b);
-  controls.insertAdjacentHTML('afterbegin',reedBedHTML(reedStatus(state,source.x,source.y),REED_CAPACITY));
-  const button=controls.querySelector('[data-reed-rest]');
-  if(button)button.onclick=()=>{button.blur();mutate(closeReedBed(state,source.x,source.y),'Сбор тростника закрыт на два дня');};
+  const controls=$('building-controls'),sources=extractionSources(state,b);
+  controls.insertAdjacentHTML('afterbegin',sources.map(source=>reedBedHTML(reedStatus(state,source.x,source.y),REED_CAPACITY,`${source.x}, ${source.y}`)).join(''));
+  controls.querySelectorAll('[data-reed-rest]').forEach((button,i)=>{const source=sources[i];button.onclick=()=>{button.blur();mutate(closeReedBed(state,source.x,source.y),'Сбор тростника закрыт на два дня');};});
  }
  if(b.type==='logging'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
-  const source=extractionSource(b),forest=forestFor(state,source.x,source.y),status=forest&&forestStock(state,forest),limit=forest?forestCapacity(state,forest):0;
-  $('building-controls').insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Лесное угодье</h4>${status?`<p>Роща ${esc(forest)} · остаток ${rounded(status.stock)} / ${limit}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><button type="button" id="forest-rest" ${status.resting||status.stock>=limit?'disabled':''}>Закрыть рубку на три дня</button>`:'<p>У этого двора нет доступной рощи.</p>'}<small>Соседние дворы делят запас. После трёх игровых суток отдыха восстановится до ${FOREST_RECOVERY} ед. Древесину можно купить у торговцев.</small></section>`);
-  if($('forest-rest'))$('forest-rest').onclick=()=>{$('forest-rest').blur();mutate(closeForestForRest(state,b),'Рубка закрыта на три дня');};
+  const controls=$('building-controls'),forests=extractionSources(state,b).map(p=>forestFor(state,p.x,p.y)).filter(Boolean);
+  const rows=forests.map(forest=>{const status=forestStock(state,forest),limit=forestCapacity(state,forest);
+   return `<p>Роща ${esc(forest)} · остаток ${rounded(status.stock)} / ${limit}${status.resting?` · отдых ещё ${Math.ceil(status.seconds)} с`:''}.</p><button type="button" data-forest-rest="${esc(forest)}" ${status.resting||status.stock>=limit?'disabled':''}>Закрыть рубку на три дня</button>`;
+  }).join('');
+  controls.insertAdjacentHTML('afterbegin',`<section class="staffing-panel"><h4>Лесные угодья</h4>${rows||'<p>У этого двора нет доступной рощи.</p>'}<small>Роща за три дня отдыха восстанавливает до ${FOREST_RECOVERY} ед.</small></section>`);
+  controls.querySelectorAll('[data-forest-rest]').forEach(button=>{button.onclick=()=>{button.blur();mutate(closeForestForRest(state,b,button.dataset.forestRest),'Рубка закрыта на три дня');};});
  }
  if(b.type==='fishing'&&(!q||q.kind==='upgrade')&&isStrictSumer(state)){
   const origin=networkFor(state).ports.find(p=>p.building===b),grounds=fisheryOptions(state,origin);

@@ -1,4 +1,4 @@
-import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js?v=city500-fauna-courts-20261113';
+import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js?v=living-fields-20261116';
 import {createOverviewShadowCadence,shadowCasterInside} from './shadow-casters.js?v=city500-fauna-courts-20261113';
 import {pickResourceDeposit} from './deposit-picking.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';

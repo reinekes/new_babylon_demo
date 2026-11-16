@@ -24,13 +24,14 @@ import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {createGameGoats} from './goats.js';
-import {createSuppliedFauna} from './supplied-fauna.js?v=city500-fauna-courts-20261113';
+import {createSuppliedFauna} from './supplied-fauna.js?v=living-fields-20261116';
 import {createImportedFauna} from './imported-fauna.js';
 import {createAmbientFauna,courtyardFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';
 import {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity,RESIDENT_STANCE} from './resident-motion.js';
 import {usesHistoricalMan} from './historical-resident.js';
 import {WATER_HEIGHT} from './water.js';
+import {nearTermWaterCouriers} from '../water.js';
 import {ploughTeams,PLOUGH_HANDLE_HEIGHT} from '../plough-team.js';
 export {residentMotion,residentViewPositions,residentWalkPhase,residentIdentity} from './resident-motion.js';
 
@@ -687,10 +688,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Actor ownership/disposal remains with remove(a), including never-woken rigs.
   a.sleepingRig=null;
  }
+ let courierCandidates=[],courierScanAt=-Infinity,lastCourierWarm=-Infinity;
  function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null,rainReaction=null,blessingApproach=null}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   const replacedState=presentedState!==state;presentedState=state;
-  if(replacedState)for(const a of people.values())resetResidentPresentation(a);
+  if(replacedState){courierScanAt=lastCourierWarm=-Infinity;courierCandidates=[];for(const a of people.values())resetResidentPresentation(a);}
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused){poseTime+=dt*speed;poseClock+=dt;}
@@ -735,7 +737,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Keep a small reserve in large cities and yield entirely on slow frames.
   // Visible residents still receive their real rig in the frame they emerge.
   const warmRoom=(state.citizens||[]).length<=MAX_WARM_RESIDENTS||dt<1/35&&people.size-seen.size<MAX_WARM_RESIDENTS;
-  if(warmHiddenResidents&&warmRoom){const c=(state.citizens||[]).find(c=>!seen.has(c.id)&&!people.has(c.id));if(c){
+  let courier;
+  if(warmHiddenResidents&&!paused&&state.citizens?.length>=300&&dt<=.052&&poseClock-lastCourierWarm>=.12){
+   if(state.simTime-courierScanAt>=.6||state.simTime<courierScanAt){courierCandidates=nearTermWaterCouriers(state);courierScanAt=state.simTime;}
+   if(people.size-seen.size<72)courier=courierCandidates.find(c=>!seen.has(c.id)&&!people.has(c.id));
+   if(courier)lastCourierWarm=poseClock;
+  }
+  if(warmHiddenResidents&&(warmRoom||courier)){const c=courier||(state.citizens||[]).find(c=>!seen.has(c.id)&&!people.has(c.id));if(c){
    const anatomy=residentAnatomy(c.age),historical=historicalSource&&usesHistoricalMan(c),variant=historical?'historical-man':anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;
    const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;
    const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);a.root.setEnabled(false);storeSleepingRig(a);people.set(c.id,a);

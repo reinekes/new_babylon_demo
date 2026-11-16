@@ -134,7 +134,7 @@ test('mixed fold sheep reuse the licensed rig without changing flock identity or
  }finally{view.dispose();scene.dispose();engine.dispose();}
 });
 
-test('normal 3D settlements have one flock of six mallards, five yard pigs and five nearby quail',async()=>{
+test('normal 3D settlements show six mallards, five yard pigs and groups of quail and frogs',async()=>{
  const {createNewCity}=await import('../new-game.js'),{courtyardFauna}=await import('../game3d/ambient-fauna.js');
  const engine=new B.NullEngine(),scene=new B.Scene(engine),state=createNewCity({mode:'mature',seed:137}),before=JSON.stringify(state);
  const view=await createAmbientFauna(B,scene,[],{includeSkyBirds:false,includeShoreBirds:true,hidePlaceholderBirds:true,includeYardPig:true,loadAsset:async f=>source(scene,f)});
@@ -142,7 +142,13 @@ test('normal 3D settlements have one flock of six mallards, five yard pigs and f
   view.update(state,0,{paused:true});
   const roots=kind=>view.roots().filter(r=>r.isEnabled()&&kind.test(r.metadata.ambientSpecies));
   const ducks=roots(/^mallard/),pigs=roots(/^yard-pig$/),quail=courtyardFauna(state).filter(a=>a.kind==='common-quail');
-  assert.equal(ducks.length,6);assert.equal(pigs.length,5);assert.equal(quail.length,5);
+  assert.equal(ducks.length,6);assert.equal(pigs.length,5);assert.equal(quail.length,10);
+  const frogsAt=t=>courtyardFauna(state,t).filter(a=>a.kind==='savigny-tree-frog');
+  const frogs=frogsAt(0);assert.equal(frogs.length,5);
+  assert.ok(frogs.filter(a=>a.id!=='ambient-savigny-tree-frog').every(a=>ambientDryPoint(state,a.x,a.y)));
+  const jumping=new Set();
+  for(let t=0;t<20;t+=.07){const active=frogsAt(t).filter(a=>a.hop>0);if(active.length===1)jumping.add(active[0].id);}
+  assert.ok(jumping.size>=4,'frogs hop at individual times');
   assert.equal(ducks.filter(r=>r.metadata.shoreRole==='female').length,3);
   const behaviors=new Set(),started=new Map(),initial=pigs.map(r=>r.position.clone());
   let travel=0;
@@ -165,4 +171,26 @@ test('normal 3D settlements have one flock of six mallards, five yard pigs and f
   assert.ok(travel>.8,'a pig can take more than one short step in place');
   assert.equal(JSON.stringify(state),before);
  }finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
+test('mallards make a long riverbank circuit with separate feeding and lookout stops',async()=>{
+ const {createNewCity}=await import('../new-game.js'),{mallardRoute,mallardPose}=await import('../game3d/mallard-motion.js');
+ const {waterDepth}=await import('../game3d/water.js');
+ for(const seed of [1,9,137]){
+  const s=createNewCity({mode:'mature',seed});
+  const plan=mallardRoute(s,p=>ambientDryPoint(s,p.x,p.y,-Infinity));assert.ok(plan);
+  assert.ok(plan.distance>=62,`seed ${seed}: ${plan.distance}m route`);
+  assert.ok(plan.time>=85,`seed ${seed}: ${plan.time}s walk and swim`);
+  const phases=new Set(),feedSites=[];
+  for(let t=0;t<plan.time+9;t+=.25){
+   const p=mallardPose(plan,t);phases.add(p.phase);
+   assert.ok(ambientDryPoint(s,p.x/6,p.z/6,-Infinity));
+   if(p.phase==='feeding'){
+    assert.ok(waterDepth(p.x/6,p.z/6,s)>.12);
+    if(feedSites.every(q=>Math.hypot(p.x-q.x,p.z-q.z)>5))feedSites.push(p);
+   }
+  }
+  assert.ok(['walking','swimming','feeding','scanning'].every(phase=>phases.has(phase)));
+  assert.ok(feedSites.length>=2,'two distinct feeding patches');
+ }
 });

@@ -1,3 +1,5 @@
+import {extractionStockFraction} from './extraction-stock.js';
+import {extractionOwner} from './extraction-courts.js';
 import {extractionKinds} from './extraction-courts.js';
 import {localFerryVessel} from './river-stores.js';
 import {showBlessingApproach} from './blessing-presentation.js';
@@ -26,10 +28,11 @@ import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
 import {buildingPlacement,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
-import {worldWidth,worldHeight,terrain,riverPoint,riverLocal,worldFromRiver,riverLength,riverFlowSign,signedRiverDistance,bridgeSpanAt,onBridge,depositAt,isShore,nearDeposit,isDryPoint} from './world.js';
+import {worldWidth,worldHeight,terrain,riverPoint,riverLocal,worldFromRiver,riverLength,riverFlowSign,signedRiverDistance,bridgeSpanAt,onBridge,isShore,nearDeposit,isDryPoint} from './world.js';
 import {visibleCitizens,networkFor} from './workforce.js';
 import {drawBuilding} from './architecture.js';
 import {ploughTeams} from './plough-team.js';
+import {fieldPatches} from './field-patches.js';
 import {drawPloughTeam} from './plough-art.js';
 import {weatherAt,vegetationFor} from './environment.js';
 import {animalsFor} from './fauna.js';
@@ -351,7 +354,28 @@ export class Renderer{
  const a=this.point(-.5,HEIGHT-.5),b=this.point(WIDTH-.5,HEIGHT-.5),d=this.point(WIDTH-.5,-.5);this.polygon([a,b,{x:b.x,y:b.y+12*this.s},{x:a.x,y:a.y+12*this.s}],'#c4b68d');this.polygon([b,d,{x:d.x,y:d.y+12*this.s},{x:b.x,y:b.y+12*this.s}],'#b2ab83');
  for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;const k=hash(x,y),type=terrain(x,y,s),dist=Math.abs(signedRiverDistance(x,y,s));const blend=Math.max(0,Math.min(1,(dist-1.2)/4.3)),smooth=blend*blend*(3-2*blend),near=s.drought?[193,181,132]:[179,190,139],far=[216,201,158],base=near.map((n,i)=>n+(far[i]-n)*smooth);const variation=(k-.5)*4;let color=`rgb(${base.map(n=>Math.round(n+variation)).join(',')})`;this.tile(x,y,color);drawGroundTexture(this,s,x,y,type);if(k>.88&&type==='sand'){const p=this.point(x,y);this.line([[p.x-5*this.s,p.y],[p.x+3*this.s,p.y+2*this.s]],'#bdb58b',this.s);}}
  const riverPoints=[];for(let y=-.5;y<=length-.5;y+=.25)riverPoints.push(waterPoint(y,-1.12));for(let y=length-.5;y>=-.5;y-=.25)riverPoints.push(waterPoint(y,1.12));this.polygon(riverPoints,s.drought?'#80aaa0':'#77aaa0');const inner=[];for(let y=-.5;y<=length-.5;y+=.25)inner.push(waterPoint(y,-.7));for(let y=length-.5;y>=-.5;y-=.25)inner.push(waterPoint(y,.6));this.polygon(inner,'#4d9192');for(const side of [-1,1]){const bank=[],shallows=[];for(let yy=-.5;yy<=length-.5;yy+=.25){bank.push(waterPoint(yy,side*1.15));shallows.push(waterPoint(yy,side*.91));}this.line(bank,'#a9b58a',2.2*this.s);this.line(shallows,'#a4c5af70',1.3*this.s);}
- for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(signedRiverDistance(x,y,s))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}const deposit=depositAt(s,x,y);if(deposit&&terrain(x,y,s)!=='water'){const kind=typeof deposit==='string'?deposit:deposit.kind,colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};this.tile(x,y,(colors[kind]||'#a8ad7a')+'77');const p=this.point(x,y);if(kind==='stone'||kind==='clay')for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*this.s,p.y+(k%2)*3*this.s,4*this.s,2*this.s,(3+k)*this.s,colors[kind],'#999276','#b1a282');}}
+ for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(signedRiverDistance(x,y,s))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}}
+ }
+ depositsLayer(s){
+  const colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};
+  for(const deposit of s.world?.deposits||[]){
+   const {kind,x,y}=deposit,color=colors[kind];
+   if(!color||!this.inView(x,y,40)||terrain(x,y,s)==='water')continue;
+   this.tile(x,y,color+'77');
+   const size=Math.cbrt(extractionStockFraction(s,deposit));
+   if(size<=0&&kind!=='dates')continue;
+   if(kind==='stone'||kind==='clay'){
+    const p=this.point(x,y),q=this.s;
+    for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*q,p.y+(k%2)*3*q,4*q*size,2*q*size,(3+k)*q*size,color,'#999276','#b1a282');
+   }else if(extractionOwner(s,deposit)){
+    for(const [dx,dy] of [[-.19,-.1],[.19,-.13],[.03,.21]]){
+     const p=this.point(x+dx,y+dy);
+     if(kind==='forest'||kind==='dates')this.palm(p.x,p.y,.57*(kind==='dates'?1:size));
+     if(kind==='dates'&&size>0)this.box(p.x,p.y-13*this.s,2.5*this.s*size,1.25*this.s*size,2*this.s*size,'#b98348','#8c522d','#9d6536');
+     if(kind==='reed')this.line([[p.x-4*this.s,p.y],[p.x,p.y-10*this.s*size],[p.x+3*this.s,p.y]],color,1.7*this.s);
+    }
+   }
+  }
  }
  miraclePlant(e){
   const grow=Math.max(0,Math.min(1,(e.age-e.delay)/2.4)),fade=Math.max(0,Math.min(1,(60-e.age)/5));if(!grow||!fade)return;
@@ -391,7 +415,7 @@ export class Renderer{
  this.lighting=lightingAt(this.lightMode==='auto'?(s.simTime||0):(modeSeconds[this.lightMode]??s.simTime??0));
  this.refreshCity(s);this.weather=weatherAt(s);this.lights=[];c.clearRect(0,0,w,h);c.save();const ground=this.point(10,9);const glow=c.createRadialGradient(ground.x,ground.y,10,ground.x,ground.y,w*.7);glow.addColorStop(0,'#f0ecd9');glow.addColorStop(1,'#e2e6d8');c.fillStyle=glow;c.fillRect(0,0,w,h);
  if(this.lighting.night){c.fillStyle=`rgba(239,232,207,${this.lighting.night*.65})`;for(let k=0;k<55;k++){const px=hash(k,34)*w,py=hash(k,56)*(h-80);c.beginPath();c.arc(px,py,(k%5===0?1.2:.6)*this.s,0,7);c.fill();}}
- this.terrainLayer(s);
+ this.terrainLayer(s);this.depositsLayer(s);
  for(let k=0;k<42;k++){const length=riverLength(s)-.3,along=((k*.47+t*.13*riverFlowSign(s))%length+length)%length-.4,offset=(hash(k,9)-.5)*1.45,at=riverPoint(along,s,offset),to=riverPoint(along+.13+hash(k,8)*.4,s,offset+.06),p=this.point(at.x,at.y),p2=this.point(to.x,to.y);this.line([p,p2],'#c3d9bd70',this.s);}
  const irrigation=irrigationFor(s);
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
@@ -407,8 +431,9 @@ export class Renderer{
  for(const b of s.buildings)if(b.type==='bridge'&&!b.construction)this.bridge(b,false);
  const people=this.ceremonyCitizens(s,dt,{paused:paused||!dt||speed===0,speed}),teams=ploughTeams(s,people);
  const drivers=new Map(teams.map(team=>[team.driverId,team]));
- const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building'})),...this.scenery,...people.map(c=>{
-  const team=drivers.get(c.id);return team?{...c,...team.driver,walking:true,step:team.progress*13,ploughDepth:team.fieldDepth+.002}:c;
+ const patches=fieldPatches(s.buildings);
+ const entities=[...s.buildings.filter(b=>!['bridge','canal'].includes(b.type)||b.construction).map(b=>({...b,kind:'building',fieldPatch:patches.get(b)})),...this.scenery,...people.map(c=>{
+  const team=drivers.get(c.id);return team?{...c,...team.driver,walking:true,step:team.travelMetres*13/1.5,ploughDepth:team.fieldDepth+.002}:c;
  }),...teams.map(team=>({...team,kind:'ploughTeam',ploughDepth:team.fieldDepth+.001}))];
  if(catTrace)entities.push({...catTrace,kind:'catOffering'});
  const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}

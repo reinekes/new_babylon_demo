@@ -1,4 +1,5 @@
-import {extractionSource} from './extraction-courts.js';
+import {extractableCourts,extractionSource,isExtractionCourt} from './extraction-courts.js';
+import {availableExtractionSources} from './extraction-stock.js';
 import {recordCivicAidReaction} from './resident-reactions.js';
 import {recordWaterCrisisDelivery} from './water-crisis.js';
 import {appendGrain,takeGrain} from './grain-origin.js';
@@ -26,10 +27,10 @@ import {commonMealWindow,commonMealDay,commonMealAvailable,serveCommonMeal,isMea
 import {advanceFamilyCare} from './family-care.js';
 import {receiveVotive,recordVotiveMemory} from './votive-offerings.js';
 import {advanceExternalGuest,externalGuestView,visitorsView} from './external-guest.js';
-import {orchardMaturity} from './orchard-layout.js';
+import {orchardMaturity,takeDates} from './orchard-layout.js';
 import {takeReeds,advanceReedBeds} from './reed-stock.js';
 import {forestFor,takeWood} from './forest-stock.js';
-import {clayRemaining,stoneRemaining,takeClay,takeStone} from './mineral-stock.js';
+import {takeClay,takeStone} from './mineral-stock.js';
 import {takeFish} from './fishery-stock.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {floodPhase,floodFootprint,floodProtectionRevision,floodedSegment,floodEscapeRoute} from './river-flood.js';
@@ -390,7 +391,7 @@ export function syncCitizens(s){
   }
  }
  const priority={waterpoint:-.5,pottery:1,brewery:1,bakery:1,linenYard:1,dairyStore:1,basketry:1,matYard:1,coppersmith:1,joineryYard:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
- const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='garden'||orchardMaturity(s,b).yield>0)&&(b.type!=='clay'||clayRemaining(s,extractionSource(b).x,extractionSource(b).y)>1e-8)&&(b.type!=='quarry'||stoneRemaining(s,extractionSource(b).x,extractionSource(b).y)>1e-8)).sort((a,b)=>priority[a.type]-priority[b.type]);
+ const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='garden'||orchardMaturity(s,b).yield>0)&&(!['clay','quarry'].includes(b.type)||availableExtractionSources(s,b).length)).sort((a,b)=>priority[a.type]-priority[b.type]);
  const slots=jobs.flatMap(b=>Array(workplaceCapacity(b.type)).fill(buildingKey(b))),used=new Set();
  for(const c of citizens.filter(c=>locked.has(c.id)&&c.work&&!c.guardPost)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
  // A pinned worker completing an old delivery still owns their new workplace
@@ -455,19 +456,19 @@ function harvest(s,c,ctx,via=null){
   }else c.workElapsed=0;
   return food>0;
  }
- const def=BUILDINGS[b.type],boost=s.buffs||{},source=extractionSource(b);c.cargo={};
+ const def=BUILDINGS[b.type],boost=s.buffs||{},source=via?.source||extractionSource(b);c.cargo={};
  for(const [resource,base]of Object.entries(def.output)){
   let mult=outputMultiplier(b);
   if(resource==='food')mult*=foodYieldMultiplier(s,b)*(b.type==='garden'?orchardMaturity(s,b).yield:1);
   if(resource==='clay'||resource==='reed')mult*=boost.inspiration?1.75:1;
   if(resource==='faith'||resource==='prestige')mult*=boost.sunlight?1.8:1;if(resource==='faith')mult*=beliefMultiplier(s);
-  const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,source.x,source.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,source.x,source.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,source.x,source.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,source.x,source.y,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
+  const amount=b.type==='reed'&&resource==='reed'?takeReeds(s,source.x,source.y,base*mult):b.type==='logging'&&resource==='wood'?takeWood(s,forestFor(s,source.x,source.y),base*mult):b.type==='clay'&&resource==='clay'?takeClay(s,source.x,source.y,base*mult):b.type==='quarry'&&resource==='stone'?takeStone(s,source.x,source.y,base*mult):b.type==='garden'&&via?.source?takeDates(s,source,base*mult):b.type==='fishing'&&resource==='food'&&via?.fishery?takeFish(s,via.fishery,base*mult):base*mult;
   if(amount<=1e-8)continue;
   c.cargo[resource]=amount;if(!MATERIALS.includes(resource))recordBuildingProduction(s,b,resource,amount);
  }
  if(toolResource(b)&&hasCargo(c))wearWorkTool(b);
  if(c.cargo.faith>0&&c.calling==='priest')recordSunlightService(s,b,c);
- if(b.type==='clay'&&clayRemaining(s,extractionSource(b).x,extractionSource(b).y)<=1e-8||b.type==='quarry'&&stoneRemaining(s,extractionSource(b).x,extractionSource(b).y)<=1e-8)invalidateAssignments(s);
+ if(['clay','quarry'].includes(b.type)&&!availableExtractionSources(s,b).length)invalidateAssignments(s);
  if(['fishing','clay','quarry','logging','reed','garden'].includes(b.type)&&!hasCargo(c))return false;
  if(isProductionStore(b)){if(via){
   // The target has already yielded this load. Returning to the local shed is
@@ -1020,7 +1021,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
      if(before<60&&patient.health>=60)recordMedicalRecovery(s,c,patient);if(b.giftInput)takeGiftFood(b,'giftInput',amount*.04*cost,b.workshopStock.input.food);b.workshopStock.input.food=Math.max(0,b.workshopStock.input.food-amount*.04*cost);b.workshopStock.input.reed=Math.max(0,b.workshopStock.input.reed-amount*.02*cost);}return;
    }
    const rate=workRate(c,b.type);
-   if(GATHERING_TYPES.includes(b.type)){
+   if(GATHERING_TYPES.includes(b.type)||isExtractionCourt(b)&&extractableCourts.has(b.type)){
     const via=workGathering(s,c,b,remaining,rate,ctx.ports.get(c.work));if(via)harvest(s,c,ctx,via);
     return;
    }
@@ -1155,7 +1156,11 @@ function guardView(s,c){
 export function visibleCitizens(s){
  const footpathPosition=residentFootpathPositions(s);
  const people=(s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:(c.floodShelter||c.fireShelter)&&c.routeIndex<c.route.length||waterBusy(c)||['toEveningGame','toManualGathering','toCommonMeal','toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.memorialMove?true:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...guardView(s,c),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...relicCitizenView(s,c),...godhoodCitizenView(s,c),...treatmentViewPosition(s,c)}));
- for(const person of people)if(person.walking)Object.assign(person,footpathPosition(person));
+ const walkingPlots=s.gathering?.jobs.filter(j=>j.source&&j.stage==='approach');
+ for(const person of people){
+  if(person.walking)Object.assign(person,footpathPosition(person));
+  else if(walkingPlots?.length&&walkingPlots.some(j=>j.citizen===person.id))person.walking=true;
+ }
  const cast=s.peaceDiscovery?.lastCast;
  if(cast&&s.simTime-cast.at<60){
   for(const c of s.citizens)if(peaceResting(s,c)){

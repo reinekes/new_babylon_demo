@@ -8,24 +8,22 @@ const TAU=2*Math.PI;
 const clamp=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{const t=clamp(x);return t*t*(3-2*t);};
 const mix=(a,b,t)=>a+(b-a)*t;
-const samples=96;
-const feedingDuration=2;
-const feedingDelay=.9;
-const scanDuration=1.9;
-const scanDelay=.85;
+const samples=160;
+const stopKinds={feeding:{duration:2.8,delay:1.2},scanning:{duration:2.3,delay:1.05}};
 
-// Follow a curved strip of shoreline. Validate the entire loop before using it.
+// Walk to a second mudflat along the bank, cross the shallows at either end,
+// and swim back along the same bend past two feeding patches.
 export function mallardRoute(state,isClear){
  const home=state.buildings.find(b=>b.type==='house')??{x:8,y:8};
- const center=Math.max(3,Math.min(riverLength(state)-4,riverLocal(home.x,home.y,state).along));
+ const length=riverLength(state),center=riverLocal(home.x,home.y,state).along;
  const preferred=Math.sign(signedRiverDistance(home.x,home.y,state))||1;
- for(const side of [preferred,-preferred])for(const shift of [0,3,-3,6,-6,9,-9,12,-12]){
-  const along=center+shift;
-  if(along<2||along>riverLength(state)-3)continue;
+ for(const reach of [4.8,3.7,2.8,1.7,1.05])for(const side of [preferred,-preferred])for(const shift of [0,3,-3,6,-6,9,-9,12,-12]){
+  const along=Math.max(reach+1.55,Math.min(length-reach-2.55,center+shift));
   const route=[];
   let time=0,distance=0;
   for(let i=0;i<=samples;i++){
-   const angle=i/samples*TAU,p=riverPoint(along+1.05*Math.sin(angle),state,side*(1.19+.44*Math.cos(angle)));
+   const angle=i/samples*TAU,cross=1.13+.62*Math.cos(angle)+.060*Math.sin(angle*3)+.023*Math.sin(angle*5+.9);
+   const p=riverPoint(along+reach*Math.sin(angle),state,side*cross);
    if(!isClear(p)||onBridge(state.buildings,p.x,p.y,state))break;
    const y=visualSurfaceElevation(p.x,p.y,state);
    const depth=renderedShoreDistance(p.x,p.y,state)<0?Math.max(0,WATER_HEIGHT-y):0;
@@ -34,36 +32,43 @@ export function mallardRoute(state,isClear){
    if(prev){
     const segment=TILE*Math.hypot(p.x-prev.x,p.y-prev.z);
     distance+=segment;
-    time+=segment/mix(.48,.66,floating);
+    time+=segment/mix(.52,.77,floating);
    }
    route.push({x:p.x,z:p.y,y,depth,time,distance});
   }
   if(route.length===samples+1){
-   const middle=riverPoint(along,state,side*1.19),water=riverPoint(along,state);
-   const feedingAt=route.find(point=>point.depth>.25)?.time;
-   const scanAt=route.find((point,index)=>index>samples*.75&&point.y>-.03)?.time;
-   return {route,time,distance,feedingAt,scanAt,focus:{x:middle.x,z:middle.y,angle:Math.atan2(water.y-middle.y,water.x-middle.x)}};
+   const feed=(point,index)=>point.depth>.19&&point.depth<.44&&
+    route.slice(index,index+5).filter(next=>next.time<point.time+1.85).every(next=>next.depth>.15);
+   const stops=[
+    ['scanning',route.find((p,i)=>i>samples*.11&&p.y>-.025)],
+    ['feeding',route.find((p,i)=>i>samples*.18&&i<samples*.37&&feed(p,i))],
+    ['feeding',route.find((p,i)=>i>samples*.65&&i<samples*.86&&feed(p,i))],
+    ['scanning',route.find((p,i)=>i>samples*.79&&p.y>-.025)]
+   ].filter(([,p])=>p).map(([kind,p])=>({kind,time:p.time,...stopKinds[kind]}));
+   const middle=stops.find(p=>p.kind==='feeding'),station=middle?route.find(p=>p.time===middle.time):route[Math.floor(samples*.25)];
+   const water=riverPoint(riverLocal(station.x,station.z,state).along,state);
+   return {route,time,distance,stops,cycle:time+stops.reduce((total,stop)=>total+stop.delay,0),focus:{x:station.x,z:station.z,angle:Math.atan2(water.y-station.z,water.x-station.x)}};
   }
  }
  return null;
 }
 
 export function mallardPose(plan,clock){
- const cycle=plan.time+(plan.feedingAt===undefined?0:feedingDelay)+(plan.scanAt===undefined?0:scanDelay);
- const elapsed=((clock%cycle)+cycle)%cycle;
- const progress=plan.feedingAt===undefined?0:clamp((elapsed-plan.feedingAt)/feedingDuration);
- const afterFeeding=elapsed-feedingDelay*smooth(progress);
- const scanProgress=plan.scanAt===undefined?0:clamp((afterFeeding-plan.scanAt)/scanDuration);
- const t=afterFeeding-scanDelay*smooth(scanProgress);
+ let t=((clock%plan.cycle)+plan.cycle)%plan.cycle,progress=0,scanProgress=0;
+ for(const stop of plan.stops){
+  const p=clamp((t-stop.time)/stop.duration);
+  if(p>0&&p<1){if(stop.kind==='feeding')progress=p;else scanProgress=p;}
+  t-=stop.delay*smooth(p);
+ }
  const scan=Math.sin(TAU*scanProgress)*Math.sin(Math.PI*scanProgress);
  const scanning=scanProgress>0&&scanProgress<1;
  const dip=Math.sin(Math.PI*progress)**2;
  const feeding=progress>0&&progress<1;
- const {route}=plan;
- let low=0,high=samples;
+ const {route}=plan,last=route.length-1;
+ let low=0,high=last;
  while(high-low>1){const mid=(low+high)>>1;if(route[mid].time<=t)low=mid;else high=mid;}
  const a=route[low],b=route[high],f=(t-a.time)/(b.time-a.time);
- const prev=route[(low+samples-1)%samples],next=route[(high+1)%samples];
+ const prev=route[(low+last-1)%last],next=route[(high+1)%last];
  const depth=mix(a.depth,b.depth,f),floating=smooth((depth-.035)/.16);
  const distance=mix(a.distance,b.distance,f);
  const gait=distance/plan.distance*Math.round(plan.distance/.32);

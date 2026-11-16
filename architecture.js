@@ -2,6 +2,7 @@ import {constructionProgress} from './construction.js';
 import {isExtractionCourt,extractionWorkArea} from './extraction-courts.js';
 import {sheepfoldGateSide,sheepfoldLayout,sheepfoldWorldPoint} from './sheepfold-layout.js';
 import {fieldCalendar} from './crop-calendar.js';
+import {fieldPatchLimits} from './field-patches.js';
 import {fortificationLayout,fortificationWorldPoint} from './fortification-layout.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {orchardPalms} from './orchard-layout.js';
@@ -34,7 +35,7 @@ export function drawBuilding(r, b, state, t) {
     return;
   }
   if(isExtractionCourt(b)){
-    const progress=constructionProgress(b),work=extractionWorkArea({...b,rotation:0}),q=r.s;
+    const progress=constructionProgress(b),work=extractionWorkArea({...b,rotation:0},state),q=r.s;
     const point=(x,y)=>r.point(b.x+x,b.y+y),near=point(-.46,-.46),east=point(1.46,-.46),far=point(1.46,1.46),west=point(-.46,1.46);
     if(!b.construction||progress.work>0)for(const [a,c]of [[near,east],[east,far],[near,west]])r.line([a,c],'#91784f',1.7*q);
     const workPoint=point(work.x/6,work.z/6);
@@ -247,21 +248,30 @@ export function drawBuilding(r, b, state, t) {
   if(b.type==='field') {
     const crop=cropFor(state,b),{sow,grow,harvest}=fieldCalendar(state,b),water=fieldWater(state,b),dry=state.season===grow&&!water.canal&&!state.rain&&!(crop.legacyYear===state.year&&water.natural);
     const density=state.season===sow||state.season===grow?crop.sown:state.season===harvest?(crop.total?crop.sown*crop.remaining/crop.total:0):0,height=state.season===sow?2:state.season===grow?2+crop.growth*5:7;
-    r.tile(b.x,b.y,state.season===3||density===0?'#b69b6d':dry?'#ac935b':'#94a86a');
-    for(let k=0;k<7;k++){
-      const yy=-.39+k*.13;
-      r.line([r.point(b.x-.42,b.y+yy),r.point(b.x+.42,b.y+yy)],dry?'#897447':'#688352',2*q);
+    const patch=b.fieldPatch?.group.plots.length>1?b.fieldPatch:null,turned=patch?.group.rotation===1;
+    const point=(side,forward)=>turned?r.point(b.x+forward,b.y-side):r.point(b.x+side,b.y+forward);
+    const limits=patch?fieldPatchLimits(patch.joins,2.8):null;
+    const fill=state.season===3||density===0?'#b69b6d':dry?'#ac935b':'#94a86a';
+    if(limits){
+      const {left,right,near,far}=limits;
+      r.polygon([[left,near],[(left+right)/2,near+(patch.joins[0]?0:.13)],[right,near],[right,far],[(left+right)/2,far-(patch.joins[2]?0:.14)],[left,far]].map(([u,v])=>point(u/6,v/6)),fill);
+    }else r.tile(b.x,b.y,fill);
+    for(let k=0;k<(patch?8:7);k++){
+      const yy=patch?-.4375+k/8:-.39+k*.13;
+      r.line(limits?[point(yy,patch.joins[0]?-.5:-.40),point(yy,patch.joins[2]?.5:.40)]:[r.point(b.x-.42,b.y+yy),r.point(b.x+.42,b.y+yy)],dry?'#897447':'#688352',2*q);
       for(let j=0;j<7*density;j++){
-        const a=r.point(b.x-.38+j*.12,b.y+yy),sway=r.reduce?0:Math.sin(t*1.5+k+j)*q;
+        const a=patch?point(yy,-.43+j/7):r.point(b.x-.38+j*.12,b.y+yy),sway=r.reduce?0:Math.sin(t*1.5+k+j)*q;
         r.line([[a.x,a.y],[a.x+sway,a.y-height*q]],dry?'#c9b276':state.season===harvest?'#dfc77f':'#c1c87b',1.3*q);
         r.line([[a.x+sway,a.y-height*q],[a.x-2*q+sway,a.y-(height-2)*q]],'#d5ce87',.8*q);
       }
     }
-    const floor=[r.point(b.x+.05,b.y+.1),r.point(b.x+.45,b.y+.1),r.point(b.x+.45,b.y+.45),r.point(b.x+.05,b.y+.45)];r.polygon(floor,'#c7af79','#9f8859');
+    if(!patch||crop.sheaves>0){const floor=[r.point(b.x+.05,b.y+.1),r.point(b.x+.45,b.y+.1),r.point(b.x+.45,b.y+.45),r.point(b.x+.05,b.y+.45)];r.polygon(floor,'#c7af79','#9f8859');}
     if(crop.sheaves>0)for(let k=0;k<Math.min(5,Math.ceil(crop.sheaves/7));k++){const p=r.point(b.x+.12+k*.065,b.y+.3);for(let j=0;j<3;j++)r.line([[p.x+j*q,p.y],[p.x+(j+6)*q,p.y-5*q]],'#dbbe71',1.5*q);}
     if(crop.seedStock>0){const p=r.point(b.x-.28,b.y+.34);r.box(p.x,p.y,3*q,1.5*q,4*q,'#bb9b66','#92764c','#a98c5a');}
-    const a=r.point(b.x-.46,b.y-.45),z=r.point(b.x-.46,b.y+.45);
-    r.line([a,z],dry?'#a6885b':'#79aaa0',2*q);
+    if(!patch||!patch.joins[3]){
+      const a=point(-.46,-.45),z=point(-.46,.45);
+      r.line([a,z],dry?'#a6885b':'#79aaa0',2*q);
+    }
   }
 
   if(b.type==='clay') {

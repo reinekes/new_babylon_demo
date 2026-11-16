@@ -43,3 +43,16 @@ test('builder contact lies on the real construction corner scaffold, field conta
  const station=workstationFor(b,c,0);assert.ok(Math.abs((station.target.x-b.x)*6-2.72)<1e-8);assert.ok(Math.abs((station.target.y-b.y)*6-2.72)<1e-8);assert.equal(station.target.height,.95);
  const field=workstationFor({type:'field',x:6,y:10},{...c,activity:{stage:'working',task:'harvesting'}},0);assert.equal(field.target.height,.65);assert.equal(workstationPose(field,0).tool,'sickle');
 });
+
+test('cached workstation corners match the real port after terrain and footprint edits',async()=>{
+ const {workstationBuilding,workstationContext}=await import('../game3d/workstations.js');
+ const b={type:'pottery',x:7,y:9,rotation:1},court={type:'clay',x:7,y:9,footprint:2};
+ const state={world:{lakes:[]},buildings:[b]};
+ let context=workstationContext(state);
+ const check=()=>assert.deepEqual(workstationBuilding(b,state,workstationContext(state)),workstationBuilding(b,state));
+ check();
+ assert.equal(workstationContext(state),context);
+ state.buildings.push(court);check();assert.notEqual(workstationContext(state),context);
+ context=workstationContext(state);
+ state.world.lakes.push({cells:[{x:6,y:9}]});check();assert.notEqual(workstationContext(state),context);
+});

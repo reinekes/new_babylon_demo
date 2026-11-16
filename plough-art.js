@@ -19,7 +19,7 @@ export function drawPloughTeam(r,team){
  const sides=[-PLOUGH_OX_OFFSET,PLOUGH_OX_OFFSET].sort((a,b)=>at(a,.55)[1]-at(b,.55)[1]);
  for(const [index,side] of sides.entries()){
   const body=at(side,.51,.63),head=at(side,1.35,.79),tail=at(side,-.24,.54);
-  const gait=Math.sin(team.progress*13+index*.6)*.15;
+  const gait=Math.sin((team.travelMetres??team.progress*1.5)*13/1.5+index*.6)*.15;
   oval(at(side,.55),5.9,2.6,'#48372334');
   for(const leg of [-.42,.40])for(const offset of [-.18,.18]){
    line(at(side+offset,.50+leg,.52),at(side+offset,.50+leg+(offset<0?gait:-gait)),'#60452f',1.05);

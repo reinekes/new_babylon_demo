@@ -41,8 +41,10 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   assert.equal(seagull.metadata.shoreRole,'female');
   assert.equal(seagull.metadata.clip,'flap');
   const firstFlight=seagull.position.clone();const start=new Map(roots.map(r=>[r,snap(r)])),positions=new Map(roots.map(r=>[r,skin(r)])),skinChanged=new Set(),moving=new Set(),deforming=new Set();
-  for(let i=0;i<290;i++){
-   const before=new Map(roots.map(r=>[r,{x:r.position.x/6,y:r.position.z/6}]));view.update(state,.05,{speed:4});scene.render();
+  // The land checks still use the short motion sample; the new shore circuit
+  // takes well over a minute so follow it until both ducks return to land.
+  for(let i=0;i<800;i++){
+   const before=i<290?new Map(roots.map(r=>[r,{x:r.position.x/6,y:r.position.z/6}])):null;view.update(state,before ? .05 : .1,{speed:4});scene.render();
    for(const [index,bird] of pair.entries()){
     const phase=bird.metadata.shorePhase;
     if(phase==='walking'&&shorePhases[index].has('swimming'))returned.add(bird);
@@ -65,6 +67,7 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
     }
    }
    assert.ok(B.Vector3.Distance(mallard.position,female.position)>.52);
+   if(!before){if(returned.size===2&&dipped.size===2&&ripples.size===2&&shorePhases.every(phases=>phases.has('scanning')))break;continue;}
    pigPositions.add(pig.position.asArray().join(','));
    assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}

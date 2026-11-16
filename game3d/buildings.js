@@ -3,11 +3,12 @@ import {blessingCupAt} from '../blessing-discovery.js';
 import {cultSign} from '../cult-sign.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {potterWheelView} from '../potter-wheel.js';
-import {workstationBuilding} from './workstations.js';
+import {workstationBuilding,workstationContext} from './workstations.js';
 import {createRoofAccess} from './roof-access.js';
+import {fieldPatches} from '../field-patches.js';
 import {cropSeed,fieldCropKind} from './crop-varieties.js';
 import {loadFieldCrops,usesBarleyCards} from './field-crops.js';
-import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js?v=city500-fauna-courts-20261113';
+import {createBuildingFoundations,foundationContext,foundationSignature} from './building-foundations.js?v=living-fields-20261116';
 import {createConstructionSite} from './construction-sites.js';
 import {footprintSize} from '../footprints.js';
 import {fortificationSignature} from '../fortification-layout.js';
@@ -19,6 +20,7 @@ import {constructionProgress} from '../construction.js';
 import {buildingKey,capacityOf} from '../definitions.js';
 import {createDistrictBuilding, districtCropVisual} from '../district3d/buildings.js';
 import {createSacredModels,sacredModelTransform} from './sacred-models.js';
+import {createReedRoof} from './reed-roof.js';
 import {createMusicCourtyard} from './music-courtyard.js';
 
 const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
@@ -29,8 +31,9 @@ const progress=b=>{const p=constructionProgress(b);return [Math.floor(p.material
 const isHouse=b=>!b.reedCamp&&b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
-export function gameBuildingSignature(b,state,shoreContext){
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,isExtractionCourt(b)?Object.values(extractionWorkArea(b)).join(','):'',Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}`:'',b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),b.type==='sheepfold'?sheepfoldGateSide(b,state):'',leveeSignature(b,state),fortificationSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
+export function gameBuildingSignature(b,state,shoreContext,fieldPatch=b.type==='field'?fieldPatches(state?.buildings).get(b):null,stationContext=null){
+ const field=b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}:${fieldPatch?.signature||''}`:'';
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state,stationContext).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,isExtractionCourt(b)?Object.values(extractionWorkArea(b,state)).join(','):'',Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),field,b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),b.type==='sheepfold'?sheepfoldGateSide(b,state):'',leveeSignature(b,state),fortificationSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -64,7 +67,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
- const visualSignature=(b,state,shoreContext)=>gameBuildingSignature(b,state,shoreContext)+(sacredModels.ready(b,state)?'|sacred-ready':'');
+ const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|sacred-ready':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
  function clearHighlights(){for(const mesh of highlighted)mesh.dispose();highlighted.length=0;highlightSignature='';}
  function highlight(keys=[]){
@@ -100,7 +103,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function clearFieldBeds(){for(const entry of fieldBeds.values())entry.owner.dispose();fieldBeds.clear();}
  function fieldBedContext(state){if(fieldBedState!==state){clearFieldBeds();fieldBedState=state;}}
  function clipField(mesh,b,state){
-  const key=mesh.metadata?.fieldBed?JSON.stringify([b.x,b.y,rotationOf(b),state?.world?.river,state?.world?.lakes||[],(state?.buildings||[]).map(v=>[v.x,v.y])]):null;
+  const key=mesh.metadata?.fieldBed?JSON.stringify([b.x,b.y,rotationOf(b),b.fieldPatch?.signature,state?.world?.river,state?.world?.lakes||[],(state?.buildings||[]).map(v=>[v.x,v.y])]):null;
   const cached=key&&fieldBeds.get(key);
   if(cached){fieldBeds.delete(key);fieldBeds.set(key,cached);mesh.geometry.releaseForMesh(mesh,true);cached.owner.geometry.applyToMesh(mesh);return true;}
   const data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,state);
@@ -127,10 +130,10 @@ export async function createGameBuildings(B,scene,materials,options={}){
     if(b.campSalvage.reed>0)part('camp-reed-bundle',[1.4,.22,.65],[0,.13,0],materials.reed||trim);
    }else{
    part('camp-mat',[3.3,.05,3.1],[0,.06,0],raw);
-   for(const side of [-1,1]){
-    part('camp-woven-roof',[2.25,.09,3.25],[side*.8,.84,0],materials.reed||trim,-side*.72);
-    for(let i=0;i<5;i++)part('camp-reed-lashing',[.07,.09,3.34],[side*(.22+i*.3),1.39-i*.26,0],fired);
-   }
+   const roof=createReedRoof(B,scene,'camp-woven-roof',materials.reedRoof||materials.reed||trim,{
+    width:3.35,depth:3.27,profile:[[-1.665,.105],[-.94,.73],[0,1.58],[.94,.73],[1.665,.105]]
+   });
+   roof.parent=root;sources.push(roof);
    part('camp-back',[.8,.8,.06],[0,.43,-1.45],shade);
    part('camp-ridge',[.14,.14,3.46],[0,1.59,0],raw);
    }
@@ -230,26 +233,27 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function sync(state){
   if(disposed)return;if(options.deferAssets&&state.buildings.some(b=>b.type==='field'))loadDetails();
   fieldBedContext(state);
-  const shoreContext=foundationContext(state),seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
+  const shoreContext=foundationContext(state),patches=fieldPatches(state.buildings),stationContext=workstationContext(state),seen=new Set(),occupied=new Map();for(const c of state.citizens||[])if(c.home!=null)occupied.set(c.home,(occupied.get(c.home)||0)+1);
   for(const b of state.buildings||[]){
    // Landscape owns connected canal beds, wetness, banks and construction.
    // The legacy standalone side walls would span across those real channels.
    if(b.type==='canal')continue;
    sacredModels.request(b,state);
-   const key=buildingKey(b),signature=visualSignature(b,state,shoreContext);seen.add(key);
+   const patch=patches.get(b),view=patch?.group.plots.length>1?{...b,rotation:patch.group.rotation,fieldPatch:patch}:b;
+   const key=buildingKey(b),signature=visualSignature(b,state,shoreContext,patch||null,stationContext);seen.add(key);
    let record=active.get(key);
    if(record&&(record.signature!==signature||record.x!==b.x||record.y!==b.y)){remove(key);record=null;}
    if(!record){
-    const template=acquire(b,signature,state,shoreContext),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
-    placeRoot(root,b);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
+    const template=acquire(view,signature,state,shoreContext),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
+    placeRoot(root,view);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
      const mesh=source.metadata?.homeLamp?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(source.metadata?.homeLamp)mesh.receiveShadows=true;
      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
-    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b)};active.set(key,record);meshes.push(...parts);
+    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view)};active.set(key,record);meshes.push(...parts);
    }
-   if(record.rotation!==rotationOf(b)){
-    for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,b);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(b);
+   if(record.rotation!==rotationOf(view)){
+    for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,view);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(view);
    }
    // The courtyard architecture keeps its three shared templates. A tiny garden
    // owns its terrain-dependent geometry separately, so plant variety never

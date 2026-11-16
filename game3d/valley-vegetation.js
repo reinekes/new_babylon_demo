@@ -77,7 +77,8 @@ export function valleyVegetationPlan(s,roads=[],tier='balanced'){
  for(const d of s.world?.deposits||[]){
   if(d.kind!=='reed')continue;
   const court=extractionOwner(s,d);
-  for(const [i,p]of resourceDisplayLayout(d).entries())if((court||clear(p,.05))&&vegetationBankDistance(p.x,p.y,s,contours)>.10&&plan.reed.length<budget.reed+90)put('reed',p,d.x*73+d.y*11+i);
+  if(court)continue; // Landscape owns stock-scaled clumps inside active plots.
+  for(const [i,p]of resourceDisplayLayout(d).entries())if(clear(p,.05)&&vegetationBankDistance(p.x,p.y,s,contours)>.10&&plan.reed.length<budget.reed+90)put('reed',p,d.x*73+d.y*11+i);
  }
  return plan;
 }

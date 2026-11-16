@@ -1,6 +1,7 @@
 import {constructionProgress} from '../construction.js';
 import {fortificationLayout,fortificationWorldPoint} from '../fortification-layout.js';
 import {bridgeSpanAt,riverLocal,riverAxis} from '../world.js';
+import {fieldPatchBedGeometry} from '../game3d/field-shore.js';
 // Original procedural adobe architecture. All vertices are local to one 6 m tile.
 // Archaeological forms are a stylisation, not reconstructions of specific excavated houses.
 const materialCache = new WeakMap();
@@ -41,8 +42,8 @@ function supplements(B,scene) {
   const m=new B.PBRMaterial(`district-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color);m.metallic=0;m.roughness=.97;
   if(emission)m.emissiveColor=B.Color3.FromHexString(emission);return m;
  };
- mats={dark:make('interior','#51483b'),edge:make('adobe-edge','#ac9678'),straw:make('dry-straw','#aa9a66'),glow:make('occupied-lamp','#b59257','#ce9a4c'),leaf:make('olive-foliage','#777653'),silt:make('wet-silt','#88775e')};
- mats.silt.albedoColor=mats.silt.albedoColor.toLinearSpace();
+ mats={dark:make('interior','#51483b'),edge:make('adobe-edge','#ac9678'),straw:make('dry-straw','#aa9a66'),glow:make('occupied-lamp','#b59257','#ce9a4c'),leaf:make('olive-foliage','#777653'),silt:make('wet-silt','#88775e'),joinedSilt:make('ploughed-silt','#b29b78')};
+ for(const m of [mats.silt,mats.joinedSilt])m.albedoColor=m.albedoColor.toLinearSpace();
  // Four shared plaster finishes: variation without creating a material for every house.
  mats.plasters=['#fff0dc','#e6d3b4','#f5ddba','#d6c09e'].map((color,i)=>{
   const m=make(`plaster-finish-${i}`,color);m.albedoColor.scaleInPlace(2.1);return m;
@@ -55,7 +56,7 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
  const finish=extra.plasters[plan.variant];
  if(!finish.albedoTexture){finish.albedoTexture=materials.plaster?.albedoTexture;finish.bumpTexture=materials.plaster?.bumpTexture;}
  m.plaster=finish;
- if(!extra.silt.albedoTexture){extra.silt.albedoTexture=materials.soil?.albedoTexture;extra.silt.bumpTexture=materials.soil?.bumpTexture;}
+ for(const surface of [extra.silt,extra.joinedSilt])if(!surface.albedoTexture){surface.albedoTexture=materials.soil?.albedoTexture;surface.bumpTexture=materials.soil?.bumpTexture;}
  const root=new B.TransformNode(`building-${b.id||`${b.x},${b.y}`}`,scene);
  root.metadata={buildingKey:b.id||`${b.x},${b.y}`,type:b.type};
  const groups=new Map();let serial=0;const lights=[];
@@ -156,14 +157,19 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
  };
  const field=()=>{
   const visual=districtCropVisual(b);
-  box(0,.02,0,5.35,.09,5.35,'silt');
+  if(b.fieldPatch){
+   const bed=new B.Mesh('joined-field-bed',scene),data=new B.VertexData();
+   Object.assign(data,fieldPatchBedGeometry(b));data.normals=[];
+   B.VertexData.ComputeNormals(data.positions,data.indices,data.normals);data.applyToMesh(bed);bed.useVertexColors=true;add(bed,'joinedSilt');
+  }else box(0,.02,0,5.35,.09,5.35,'silt');
   const h=.08+visual.growth*.75;
   for(let row=0;row<8;row++){
-   box(-2.2+row*.62,.09,0,.29,.14,5.02,'silt');
+   if(!b.fieldPatch)box(-2.2+row*.62,.09,0,.29,.14,5.02,'silt');
    for(let i=0;i<13;i++){
     // Fixed positions keep crop loss stable between quantised harvest stages.
     if((row*13+i+.5)/104>visual.sown*visual.standing)continue;
-    const x=-2.2+row*.62+(hash(row+i,b.x)*.1),z=-2.3+i*.37;
+    const rowX=b.fieldPatch?-2.625+row*.75:-2.2+row*.62;
+    const x=rowX+hash(row+i,b.x)*.1,z=b.fieldPatch?-36/13+i*6/13:-2.3+i*.37;
     beam([x,.16,z],[x+.06,h+.14,z+.035],.018,visual.growth>.7?'straw':'grass');
     const leaf=box(x+.07,.16+h*.6,z,.22,.022,.055,'grass',.3);leaf.rotation.z=.6;
     if(visual.growth>.65){const ear=box(x+.06,h+.14,z+.035,.075,.18,.06,'straw');ear.rotation.z=-.18;}
@@ -278,7 +284,7 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
   for(const mesh of parts)mesh.computeWorldMatrix(true);
   const mesh=parts.length===1?parts[0]:B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);
   if(!mesh)continue;mesh.name=`${b.type}-${material?.name||'surface'}`;mesh.material=material;mesh.parent=root;mesh.receiveShadows=true;mesh.isPickable=true;
-  if(b.type==='field'&&!plan.construction&&material===m.silt)mesh.metadata={fieldBed:true};
+  if(b.type==='field'&&!plan.construction&&(material===m.silt||material===m.joinedSilt))mesh.metadata={fieldBed:true};
   meshes.push(mesh);
  }
  for(const mesh of lights){mesh.receiveShadows=true;meshes.push(mesh);}

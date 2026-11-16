@@ -1,3 +1,5 @@
+import {createReedRoof} from './reed-roof.js';
+
 // Fictional stone instrument from the user's reference, not a historical claim.
 export function musicCourtyardLayout(b){const [sx,sz]=b.workCorner||[1,1];return {kind:'lithophone',x:sx*1.9,z:sz*1.9,height:.16,sx,sz};}
 export function lyreLayout(b){
@@ -9,7 +11,7 @@ export function createMusicCourtyard(B,scene,b,m){
  const box=(name,x,y,z,w,h,d,mat)=>{const a=add(B.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene),mat);a.position.set(x,y,z);return a;};
  box('music-earth-floor',0,.035,0,5.4,.07,5.4,m.raw);box('music-low-rear-wall',0,.57,-2.4,5,.95,.18,m.plaster||m.raw);
  for(const x of [-2.35,2.35])for(const z of [-2.35,2.35])box('music-palm-post',x,1.45,x===a.sx*2.35&&z===a.sz*2.35?-a.sz*.75:z,.11,2.9,.11,m.wood);
- box('music-reed-canopy',0,2.92,0,5.15,.07,4.8,m.reed);for(const x of [-2.35,0,2.35])box('music-canopy-beam',x,2.83,0,.09,.12,5.05,m.wood);
+ add(createReedRoof(B,scene,'music-reed-canopy',m.reedRoof||m.reed,{y:2.92,width:5.15,depth:4.8}),m.reedRoof||m.reed);for(const x of [-2.35,0,2.35])box('music-canopy-beam',x,2.83,0,.09,.12,5.05,m.wood);
  box('music-woven-mat',-.8,.095,.45,1.8,.025,2.2,m.linen);
  for(let i=0;i<8;i++){const angle=i*Math.PI/4,x=a.x+Math.sin(angle)*.65,z=a.z+Math.cos(angle)*.65,stone=add(B.MeshBuilder.CreateCylinder('lithophone-petal-'+i,{height:.13,diameter:1,tessellation:7},scene),m.stone);stone.position.set(x,.15,z);stone.scaling.set(.30,1,.68);stone.rotation.y=angle;}
  // A low central cushion leaves a clear ring of resonant stone slabs.
