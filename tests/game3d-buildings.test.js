@@ -11,8 +11,8 @@ vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',imp
 const B=sandbox.BABYLON;
 // Decode the actual local, uncompressed static GLB geometry for NullEngine. This
 // avoids browser-only image decoding while testing its real node transforms.
-function loadGeometry(scene){
- const bytes=readFileSync(new URL('../assets/art-courtyard/models/adobe-courtyard.glb',import.meta.url));
+function loadGeometry(scene,file='adobe-courtyard.glb'){
+ const bytes=readFileSync(new URL('../assets/art-courtyard/models/'+file,import.meta.url));
  const jsonSize=bytes.readUInt32LE(12),g=JSON.parse(bytes.subarray(20,20+jsonSize)),binary=bytes.subarray(28+jsonSize);
  const container=new B.AssetContainer(scene),root=new B.TransformNode('gltf-reflection',scene);root.scaling.z=-1;container.transformNodes.push(root);
  const mats=g.materials.map(m=>new B.PBRMaterial(m.name,scene));container.materials.push(...mats);
@@ -269,6 +269,33 @@ test('reed camp renders a distinct pickable shelter without house lamps',async()
   assert.ok(roofs[0].getTotalIndices()<=144,'roof keeps a small shared surface');
   assert.ok(parts.every(mesh=>!mesh.metadata.homeLamp));
  }finally{t.dispose();}
+});
+
+test('completed reed camps share the imported model and retain salvage and save data',async()=>{
+ const t=await setup();
+ const previous=B.SceneLoader.LoadAssetContainerAsync,loads=[];
+ B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>{
+  loads.push(file.split('?')[0]);
+  return loadGeometry(t.scene,'reed-camp-sf3d.glb');
+ };
+ try{
+  const camp={...house(1,8,8,'camp'),reedCamp:true};
+  const second={...camp,id:'second',x:9,rotation:1};
+  const salvage={...camp,id:'salvage',x:10,campSalvage:{reed:4}};
+  const state={buildings:[camp,second,salvage],citizens:[]},before=structuredClone(state);
+  t.layer.sync(state);
+  assert.ok(t.layer.meshes.some(m=>m.name.endsWith('camp-woven-roof')));
+  await t.layer.sacredReady();
+  t.layer.sync(state);
+  assert.deepEqual(loads,['reed-camp-sf3d.glb']);
+  const model=t.layer.meshes.filter(m=>m.name.includes('camp-sf3d'));
+  assert.equal(model.length,2);
+  assert.equal(model[0].sourceMesh,model[1].sourceMesh);
+  assert.equal(model[1].parent.rotation.y,Math.PI/2);
+  assert.ok(model.every(m=>m.isPickable&&!m.metadata.homeLamp));
+  assert.ok(t.layer.meshes.some(m=>m.name.endsWith('camp-reed-bundle')));
+  assert.deepEqual(state,before);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=previous;t.dispose();}
 });
 
 test('fortification templates connect straight runs, corners and gate wings without covering the passage',async()=>{

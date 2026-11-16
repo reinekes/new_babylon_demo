@@ -1,5 +1,6 @@
 // Content hashes keep unchanged models cached across UI releases.
 export const MODEL_VERSIONS=Object.freeze({
+ "reed-camp-sf3d.glb": "eb20ac70e7c5",
  "supplied-cobra-head-up.glb": "a2d107887b23",
  "supplied-cobra-base.glb": "1dd646a4a001",
  "supplied-frog-jump.glb": "c542468f473f",

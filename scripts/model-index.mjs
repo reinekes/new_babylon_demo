@@ -41,6 +41,7 @@ group('valley-barley crop-emmer','active','Детали зрелых полей;
 group('valley-dry-grass-1 valley-dry-grass-2 valley-dry-grass-3 valley-reed-1 valley-reed-2 valley-reed-3 miracle-green-grass-1 miracle-green-grass-2 miracle-green-grass-3','active','Растительность обычной долины; зелёная трава также в чудесном саду.','game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS');
 group('miracle-birch-1 miracle-cactus-1 miracle-cactus-2 miracle-daisy-1 miracle-daisy-2 miracle-lilac-1 miracle-lilac-2 miracle-snowdrop-1 miracle-snowdrop-2','active','Только временный чудесный сад; фантазия, не обычная историческая флора.','game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS');
 group('sacred-ishtar-gate sacred-shrine-3 sacred-ziggurat-1 sacred-ziggurat-3','active','Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.','game3d/sacred-models.js|SACRED_MODELS');
+group('reed-camp-sf3d','active','Готовый временный тростниковый шалаш; процедурная форма остаётся при загрузке или ошибке.','game3d/sacred-models.js|REED_CAMP_MODEL');
 group('ambient-duck','optional','Декоративная утка для стендов. В городе живёт береговая пара крякв.','game3d/ambient-fauna.js|hidePlaceholderBirds');
 group('ambient-sheep-kenchoo','active','Фоновые овцы и часть взрослых овец в овчарнях.','game3d/ambient-fauna.js|ambient-sheep-kenchoo');
 group('supplied-common-quail supplied-frog-jump','active','Импортированные обитатели берега.','game3d/supplied-fauna.js|supplied-');
