@@ -2,9 +2,10 @@
 date: 2026-11-16
 type: release
 release: living-fields-20261116
-publication: pending
+commit: 934fbba5
+publication: verified
 groups: graphics; simulation; ux; economy; performance
-source: GAME_DESIGN.md
+source: docs/versions/2026-11-16.md
 
 ### Поля и упряжка
 
@@ -47,3 +48,5 @@ source: GAME_DESIGN.md
 [Замеры и сохранение для повтора](../../docs/PERFORMANCE_CITY_500_2026-11-16.md). Средние FPS и время длинного кадра указаны отдельно.
 
 В двух локальных прогонах: **27,32 и 26,40 FPS**; самый длинный кадр **116,7 и 133,3 мс** против **483,3 мс** в сегодняшнем исходном замере. Десять автосохранений в каждом повторе, загрузка побайтная. Стабильные 30 FPS остаются в плане.
+
+2 030 тестов Node и 6 тестов roadmap прошли. GitHub Pages: 32 файла совпали с игровым коммитом по SHA-256. В публичном Chrome проверены атлас, объединение поля и загрузка сохранения в 2D, вкладка замеров и узкая вёрстка roadmap.
