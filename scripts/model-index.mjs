@@ -174,7 +174,10 @@ export function renderMarkdown(index){
 }
 
 function atlasOutputs(index) {
- const models=index.models.map(({file,status,purpose,triangles,sources})=>({file,status,purpose,triangles,sources}));
+ // Unreviewed models in the test herd stay in the runtime inventory.
+ const pendingHerdReview=new Set(['test-pig-trellis.glb','test-goat-trellis.glb']);
+ const models=index.models.filter(({file})=>!pendingHerdReview.has(file))
+  .map(({file,status,purpose,triangles,sources})=>({file,status,purpose,triangles,sources}));
  const rows=makeCatalog({models},'strict');
  const legacyBuildings=makeCatalog({models},'legacy').filter(row=>row.group==='buildings');
  const bySection=Object.fromEntries(Object.keys(sections).map(section=>[section,{rows:[]}]));
