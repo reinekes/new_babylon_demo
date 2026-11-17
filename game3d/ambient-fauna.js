@@ -1,3 +1,4 @@
+import {createTestLivestock} from './test-livestock.js';
 import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=living-fields-20261116';
 import {dairyHerd,dairyPose} from './dairy-herd.js?v=audit-fixes-20261113';
 import {loadModel} from './asset-loading.js';
@@ -242,8 +243,9 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const count=MALLARD_PHASES[species]?.length||1;
   for(let i=0;i<count;i++)imported(species,i);
  }
+ const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment):null;
  const yardPigs=assets.has('yard-pig')?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
- let yardPlan,yardPlaces=[];
+ let yardPlan,yardPlaces=[],yardAnchors=[];
  let route=null,routeBuildings=null,routeCount=-1;
  function shorePose(a,state){
   if(a.rig&&route){
@@ -331,8 +333,10 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    if(plan!==yardPlan){
     yardPlan=plan;
     yardPlaces=yardPigRoutes(state,first);
+    yardAnchors=yardPlaces.map(place=>place.route[0]);
    }
   }
+  testLivestock?.update(state,dt,paused,speed,yardAnchors);
   for(const a of actors){
    if(a.foldId){
     const animal=fold.get(a.foldId),x=animal.x*6,z=animal.y*6;
@@ -401,7 +405,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
 
   }
  }
- function dispose(){if(disposed)return;disposed=true;ploughs?.dispose();for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const a of assets.values())a.dispose();assets.clear();}
+ function dispose(){if(disposed)return;disposed=true;testLivestock?.dispose();ploughs?.dispose();for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const a of assets.values())a.dispose();assets.clear();}
  function supportsFoldSheep(animal){
   return foldSheepAvailable&&animal.kind==='sheep'&&!animal.young&&Number(animal.id.split('-').at(-1))%2===1;
  }

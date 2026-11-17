@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "8a23da703643afcbec930f2071d7cb04948ac65b34fbc839eae1358455c732e2"
+      "sha256": "ec757b59e8b695844eeaf02783ac132f9a26c423596aa1a1b58db698a82b195b"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "18c63647e2dd1430e5e523e4ea341f4ab494c54b6ac0c7c76164740234b5ff7b"
+      "sha256": "dd261eda0ce41abebdd17e77c05ae4f09044723891c321580478dea440247355"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -159,7 +159,7 @@
         {
           "model": "ambient-bull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 21,
+          "line": 22,
           "kind": "literal"
         }
       ]
@@ -192,7 +192,7 @@
         {
           "model": "ambient-dog.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 18,
+          "line": 19,
           "kind": "literal"
         }
       ]
@@ -236,7 +236,7 @@
         {
           "model": "ambient-donkey.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 20,
+          "line": 21,
           "kind": "literal"
         },
         {
@@ -275,7 +275,7 @@
         {
           "model": "ambient-duck.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 19,
+          "line": 20,
           "kind": "literal"
         }
       ]
@@ -308,7 +308,7 @@
         {
           "model": "ambient-sheep-kenchoo.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 22,
+          "line": 23,
           "kind": "literal"
         }
       ]
@@ -339,7 +339,7 @@
         {
           "model": "ambient-yard-pig.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 42,
+          "line": 43,
           "kind": "literal"
         }
       ]
@@ -929,7 +929,7 @@
         {
           "model": "imported-boar.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 16,
+          "line": 17,
           "kind": "literal"
         }
       ]
@@ -961,7 +961,7 @@
         {
           "model": "imported-fox.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 15,
+          "line": 16,
           "kind": "literal"
         }
       ]
@@ -1018,7 +1018,7 @@
         {
           "model": "imported-lioness.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 17,
+          "line": 18,
           "kind": "literal"
         }
       ]
@@ -1049,7 +1049,7 @@
         {
           "model": "imported-orange-bird.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 14,
+          "line": 15,
           "kind": "literal"
         }
       ]
@@ -1832,7 +1832,7 @@
         {
           "model": "shore-mallard-female.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 27,
+          "line": 28,
           "kind": "literal"
         }
       ]
@@ -1863,7 +1863,7 @@
         {
           "model": "shore-mallard.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 26,
+          "line": 27,
           "kind": "literal"
         }
       ]
@@ -1896,7 +1896,7 @@
         {
           "model": "shore-seagull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 25,
+          "line": 26,
           "kind": "literal"
         }
       ]
@@ -2515,9 +2515,9 @@
       "status": "active",
       "purpose": "Готовые южномесопотамские укрепления: модель ворот 2 × 2 и повторяемые секции стены.",
       "classificationEvidence": "game3d/sacred-models.js|FORTIFICATION_MODELS",
-      "bytes": 273464,
-      "sha256": "27f381ae392f72b781f4cbc244b16c323d63824583f6f5867ff75460ed2000d5",
-      "version": "27f381ae392f",
+      "bytes": 259104,
+      "sha256": "5bba27c374ad6f8430decba38db1930850cacafc6cc661a050304dffd50f0f41",
+      "version": "5bba27c374ad",
       "triangles": 534,
       "meshes": 1,
       "bones": 0,
@@ -2544,9 +2544,9 @@
       "status": "active",
       "purpose": "Готовые южномесопотамские укрепления: модель ворот 2 × 2 и повторяемые секции стены.",
       "classificationEvidence": "game3d/sacred-models.js|FORTIFICATION_MODELS",
-      "bytes": 240488,
-      "sha256": "56e2a39c54687df96e4a12a3c1e04060369b9051d6b728dfbdf11d210475fd7b",
-      "version": "56e2a39c5468",
+      "bytes": 226128,
+      "sha256": "4b6abfb15fd8247f9115ba44d758c6c6fc2de5886cfe80e80b296219575f6aa7",
+      "version": "4b6abfb15fd8",
       "triangles": 100,
       "meshes": 1,
       "bones": 0,

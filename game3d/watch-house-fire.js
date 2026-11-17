@@ -31,7 +31,8 @@ export function createWatchHouseFire(B,scene){
   materials??=[
    fireMaterial('watch-flame-amber','#ff7816',.83),
    fireMaterial('watch-flame-core','#ffdf8a'),
-   fireMaterial('watch-flame-tip','#ffac31',.68)
+   fireMaterial('watch-flame-tip','#ffac31',.68),
+   fireMaterial('gate-ember','#ffba51')
   ];
   const inverse=parent.computeWorldMatrix(true).clone().invert();
   const torches=wicks.map((wick,index)=>{
@@ -41,17 +42,25 @@ export function createWatchHouseFire(B,scene){
    const anchor=new B.TransformNode(`watch-fire-${key}-${index}`,scene);
    anchor.parent=parent;
    anchor.position=B.Vector3.TransformCoordinates(centre,inverse);
+   const gate=wick.name.includes('gate-wick-');
+   if(gate)anchor.scaling.setAll(1.23);
    const outer=flame('watch-flame-outer',anchor,materials[0],1,.46);
    const core=flame('watch-flame-core',anchor,materials[1],.69,.22);
    const tongue=flame('watch-flame-tongue',anchor,materials[2],.60,-.46);
    tongue.position.set(.035,.09,0);
+   const embers=gate?Array.from({length:3},(_,i)=>{
+    const ember=B.MeshBuilder.CreateSphere('gate-ember-'+i,{diameter:1,segments:4},scene);
+    ember.material=materials[3];ember.isPickable=false;ember.parent=anchor;
+    return ember;
+   }):[];
    const light=new B.PointLight(`watch-fire-light-${key}-${index}`,new B.Vector3(0,.17,.08),scene);
    light.parent=anchor;
    light.diffuse=B.Color3.FromHexString('#ffad55');
    light.intensity=0;light.range=2.8;
    light.includedOnlyMeshes=meshes;
    light.setEnabled(false);
-   return {anchor,outer,core,tongue,light,phase:index*2.31+centre.x*.33+centre.z*.29};
+   anchor.setEnabled(false);
+   return {anchor,outer,core,tongue,light,embers,phase:index*2.31+centre.x*.33+centre.z*.29};
   });
   houses.set(key,torches);
  }
@@ -60,13 +69,18 @@ export function createWatchHouseFire(B,scene){
   const limit=night>.12?4:0;
   const lit=[];
   for(const torches of houses.values())for(const torch of torches){
-   const {anchor,phase,outer,core,tongue,light}=torch;
+   const {anchor,phase,outer,core,tongue,light,embers}=torch;
    anchor.setEnabled(night>.07);
    if(night>.07){
     const t=seconds+phase,f=.96+.13*Math.sin(t*18)+.07*Math.sin(t*29);
     outer.scaling.set(1+.12*Math.sin(t*16),f,1+.08*Math.sin(t*23));
     outer.rotation.z=.16*Math.sin(t*11);core.scaling.y=.90+.12*Math.sin(t*21);
     tongue.rotation.z=.34*Math.sin(t*15);tongue.scaling.y=f;
+    for(const [i,ember] of embers.entries()){
+     const age=(t*(.63+.11*i)+i*.39)%1;
+     ember.position.set((age+.1)*.15*Math.sin(t*2.3+i*4),.18+age*.66,(age+.1)*.09*Math.cos(t*2+i));
+     ember.scaling.setAll(.034*(1-age)**1.5);
+    }
     light.intensity=(.62+.38*night)*f;
     const distance=camera?B.Vector3.DistanceSquared(camera,anchor.getAbsolutePosition()):0;
     if(limit&&distance<48**2)lit.push({light,distance});

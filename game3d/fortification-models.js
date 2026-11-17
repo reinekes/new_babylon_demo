@@ -66,7 +66,16 @@ export function createGateTorches(B,scene,b,materials){
   const wick=B.MeshBuilder.CreateCylinder('gate-wick-'+side,{height:.04,diameter:.10,tessellation:10},scene);
   wick.position.set(facade+.20,2.13,z);
   wick.material=materials.shade;
-  parts.push(bracket,handle,head,wick);
+  const plate=B.MeshBuilder.CreateBox('gate-torch-mount',{width:.07,height:.25,depth:.19},scene);
+  plate.position.set(facade+.009,1.81,z);
+  plate.material=materials.shade;
+  const bands=[1.997,2.086].map((y,i)=>{
+   const band=B.MeshBuilder.CreateCylinder('gate-torch-band',{height:.023,diameter:i?.162:.121,tessellation:10},scene);
+   band.position.set(facade+.20,y,z);
+   band.material=materials.wood;
+   return band;
+  });
+  parts.push(bracket,handle,head,wick,plate,...bands);
  }
  return parts;
 }

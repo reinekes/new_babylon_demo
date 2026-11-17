@@ -969,16 +969,16 @@
     },
     {
       "file": "models/uruk-city-gate.glb",
-      "bytes": 273464,
-      "sha256": "27f381ae392f72b781f4cbc244b16c323d63824583f6f5867ff75460ed2000d5",
+      "bytes": 259104,
+      "sha256": "5bba27c374ad6f8430decba38db1930850cacafc6cc661a050304dffd50f0f41",
       "triangles": 534,
       "meshes": 1,
       "bones": 0
     },
     {
       "file": "models/uruk-city-wall.glb",
-      "bytes": 240488,
-      "sha256": "56e2a39c54687df96e4a12a3c1e04060369b9051d6b728dfbdf11d210475fd7b",
+      "bytes": 226128,
+      "sha256": "4b6abfb15fd8247f9115ba44d758c6c6fc2de5886cfe80e80b296219575f6aa7",
       "triangles": 100,
       "meshes": 1,
       "bones": 0
