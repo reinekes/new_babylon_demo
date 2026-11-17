@@ -1,0 +1,314 @@
+{
+  "browser": {
+    "models": [
+      {
+        "id": "cityWall",
+        "footprint": 1,
+        "triangles": 100,
+        "textures": 1
+      },
+      {
+        "id": "cityGate",
+        "footprint": 2,
+        "triangles": 1166,
+        "textures": 5
+      },
+      {
+        "id": "watchHouse",
+        "footprint": 1,
+        "triangles": 2562,
+        "textures": 8
+      },
+      {
+        "id": "musicHouse",
+        "footprint": 1,
+        "triangles": 652,
+        "textures": 10
+      },
+      {
+        "id": "ishtarGate",
+        "footprint": 3,
+        "triangles": 120,
+        "textures": 7
+      },
+      {
+        "id": "cowshed",
+        "footprint": 2,
+        "triangles": 6204,
+        "textures": 8
+      },
+      {
+        "id": "pottery",
+        "footprint": 1,
+        "triangles": 12652,
+        "textures": 11
+      },
+      {
+        "id": "joineryYard",
+        "footprint": 1,
+        "triangles": 1524,
+        "textures": 7
+      },
+      {
+        "id": "coppersmith",
+        "footprint": 1,
+        "triangles": 2300,
+        "textures": 8
+      },
+      {
+        "id": "matYard",
+        "footprint": 1,
+        "triangles": 1440,
+        "textures": 8
+      },
+      {
+        "id": "basketry",
+        "footprint": 1,
+        "triangles": 1828,
+        "textures": 8
+      },
+      {
+        "id": "dairyStore",
+        "footprint": 1,
+        "triangles": 2760,
+        "textures": 8
+      },
+      {
+        "id": "linenYard",
+        "footprint": 1,
+        "triangles": 2548,
+        "textures": 9
+      },
+      {
+        "id": "bakery",
+        "footprint": 1,
+        "triangles": 3064,
+        "textures": 12
+      },
+      {
+        "id": "brewery",
+        "footprint": 1,
+        "triangles": 6860,
+        "textures": 9
+      },
+      {
+        "id": "harbor",
+        "footprint": 1,
+        "triangles": 4852,
+        "textures": 6
+      },
+      {
+        "id": "kiln",
+        "footprint": 1,
+        "triangles": 2392,
+        "textures": 8
+      },
+      {
+        "id": "brickyard",
+        "footprint": 1,
+        "triangles": 3732,
+        "textures": 9
+      },
+      {
+        "id": "waterpoint",
+        "footprint": 1,
+        "triangles": 5896,
+        "textures": 7
+      },
+      {
+        "id": "tailor",
+        "footprint": 1,
+        "triangles": 2696,
+        "textures": 8
+      },
+      {
+        "id": "sheepfold",
+        "footprint": 2,
+        "triangles": 2984,
+        "textures": 8
+      },
+      {
+        "id": "weaver",
+        "footprint": 1,
+        "triangles": 2920,
+        "textures": 9
+      },
+      {
+        "id": "house",
+        "footprint": 1,
+        "triangles": 6551,
+        "textures": 10
+      },
+      {
+        "id": "field",
+        "footprint": 1,
+        "triangles": 12140,
+        "textures": 2
+      },
+      {
+        "id": "clay",
+        "footprint": 2,
+        "triangles": 3624,
+        "textures": 5
+      },
+      {
+        "id": "reed",
+        "footprint": 2,
+        "triangles": 7054,
+        "textures": 16
+      },
+      {
+        "id": "shrine",
+        "footprint": 1,
+        "triangles": 2736,
+        "textures": 7
+      },
+      {
+        "id": "garden",
+        "footprint": 2,
+        "triangles": 6896,
+        "textures": 6
+      },
+      {
+        "id": "depot",
+        "footprint": 1,
+        "triangles": 3844,
+        "textures": 9
+      },
+      {
+        "id": "granary",
+        "footprint": 1,
+        "triangles": 7144,
+        "textures": 10
+      },
+      {
+        "id": "ziggurat",
+        "footprint": 2,
+        "triangles": 3616,
+        "textures": 8
+      },
+      {
+        "id": "bridge",
+        "footprint": 1,
+        "triangles": 1860,
+        "textures": 2
+      },
+      {
+        "id": "fishing",
+        "footprint": 1,
+        "triangles": 5764,
+        "textures": 9
+      },
+      {
+        "id": "hunting",
+        "footprint": 2,
+        "triangles": 3876,
+        "textures": 5
+      },
+      {
+        "id": "logging",
+        "footprint": 2,
+        "triangles": 31563,
+        "textures": 16
+      },
+      {
+        "id": "quarry",
+        "footprint": 2,
+        "triangles": 1704,
+        "textures": 6
+      },
+      {
+        "id": "healer",
+        "footprint": 1,
+        "triangles": 7624,
+        "textures": 8
+      },
+      {
+        "id": "levee",
+        "footprint": 1,
+        "triangles": 40,
+        "textures": 2
+      },
+      {
+        "id": "canal",
+        "footprint": 1,
+        "triangles": 1682,
+        "textures": 2
+      },
+      {
+        "id": "market",
+        "footprint": 2,
+        "triangles": 7971,
+        "textures": 13
+      }
+    ],
+    "citizens": 24,
+    "sameIdentities": true,
+    "saveByteEqual": true,
+    "glError": 0,
+    "queueErrors": []
+  },
+  "webgl4x": [
+    {
+      "label": "base",
+      "initial": {
+        "population": 500,
+        "buildings": 250
+      },
+      "fps": 18.20614013177249,
+      "frames": 328,
+      "seconds": 18.015900000000002,
+      "population": 500,
+      "buildings": 250,
+      "simulationP95": 18.100000023841858,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "errors": []
+    },
+    {
+      "label": "new",
+      "initial": {
+        "population": 500,
+        "buildings": 250
+      },
+      "fps": 16.58108093120238,
+      "frames": 299,
+      "seconds": 18.0326,
+      "population": 500,
+      "buildings": 250,
+      "simulationP95": 18.699999928474426,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "errors": []
+    },
+    {
+      "label": "new",
+      "initial": {
+        "population": 500,
+        "buildings": 250
+      },
+      "fps": 18.13382429599725,
+      "frames": 327,
+      "seconds": 18.0326,
+      "population": 500,
+      "buildings": 250,
+      "simulationP95": 17.899999976158142,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "errors": []
+    },
+    {
+      "label": "base",
+      "initial": {
+        "population": 500,
+        "buildings": 250
+      },
+      "fps": 17.52381797411355,
+      "frames": 316,
+      "seconds": 18.032600000000002,
+      "population": 500,
+      "buildings": 250,
+      "simulationP95": 18.5,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "errors": []
+    }
+  ],
+  "tests": 40
+}
