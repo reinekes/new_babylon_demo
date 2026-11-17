@@ -367,5 +367,12 @@ test('imported fortifications join at tile edges and keep the gate axis clear',a
   t.layer.sync(state);
   for(const x of [50.55,51,51.45])assert.ok(!hits(x,41,1.3,new B.Vector3(0,0,1)).some(h=>h.pickedMesh.metadata.type==='cityGate'));
   assert.ok(hits(45,54).some(h=>h.pickedPoint.y>1.8));
+
+  const {footprint,...legacyGate}=g;
+  state.buildings=[legacyGate,w(8,7),w(8,9)];
+  t.layer.sync(state);
+  assert.ok(t.layer.meshes.some(m=>m.name.includes('uruk-city-gate')));
+  for(const z of [45,51])assert.ok(hits(48,z).some(h=>h.pickedPoint.y>1.8));
+  for(const z of [47.55,48,48.45])assert.ok(!hits(41,z,1.3,new B.Vector3(1,0,0)).some(h=>h.pickedMesh.metadata.type==='cityGate'));
  }finally{B.SceneLoader.LoadAssetContainerAsync=previous;t.dispose();}
 });

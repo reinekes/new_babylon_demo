@@ -77,7 +77,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "c112af38d4d3eb8aa53ee21374cc4bac34a822ab04411df361b3ec6db3304b46"
+      "sha256": "c652f10e90eec0fad4a1b1bbebcdda19027ba21cdc1a63aaac6281210d79f425"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -2515,18 +2515,18 @@
       "status": "active",
       "purpose": "Готовые южномесопотамские укрепления: модель ворот 2 × 2 и повторяемые секции стены.",
       "classificationEvidence": "game3d/sacred-models.js|FORTIFICATION_MODELS",
-      "bytes": 487964,
-      "sha256": "ad7c25735f5e701910c56d013bd542e1eaae42911c6e6830e47173ff23b5b9d4",
-      "version": "ad7c25735f5e",
-      "triangles": 6140,
+      "bytes": 273464,
+      "sha256": "27f381ae392f72b781f4cbc244b16c323d63824583f6f5867ff75460ed2000d5",
+      "version": "27f381ae392f",
+      "triangles": 534,
       "meshes": 1,
       "bones": 0,
       "clips": [],
       "sources": [
         {
-          "author": "Stability AI Stable Fast 3D; New Babylon (reference and adaptation)",
-          "license": "https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md",
-          "source": "https://huggingface.co/spaces/stabilityai/stable-fast-3d",
+          "author": "New Babylon",
+          "license": "Project-authored; explicit standalone asset license not recorded.",
+          "source": "Собственная геометрия и процедурные материалы проекта",
           "evidence": "asset.extras"
         }
       ],
@@ -2544,18 +2544,18 @@
       "status": "active",
       "purpose": "Готовые южномесопотамские укрепления: модель ворот 2 × 2 и повторяемые секции стены.",
       "classificationEvidence": "game3d/sacred-models.js|FORTIFICATION_MODELS",
-      "bytes": 204368,
-      "sha256": "5f2c0295720c7bec2e4a7c3ae401fe16fd7db2491c354ee39e6649a415aa267a",
-      "version": "5f2c0295720c",
-      "triangles": 770,
+      "bytes": 240488,
+      "sha256": "56e2a39c54687df96e4a12a3c1e04060369b9051d6b728dfbdf11d210475fd7b",
+      "version": "56e2a39c5468",
+      "triangles": 100,
       "meshes": 1,
       "bones": 0,
       "clips": [],
       "sources": [
         {
-          "author": "Stability AI Stable Fast 3D; New Babylon (reference and adaptation)",
-          "license": "https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md",
-          "source": "https://huggingface.co/spaces/stabilityai/stable-fast-3d",
+          "author": "New Babylon",
+          "license": "Project-authored; explicit standalone asset license not recorded.",
+          "source": "Собственная геометрия и процедурные материалы проекта",
           "evidence": "asset.extras"
         }
       ],

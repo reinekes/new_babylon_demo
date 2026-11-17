@@ -98,7 +98,7 @@ export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
 function modelKey(b,state){
  if(b?.type==='market'&&footprintSize(b)===2&&b.construction?.kind!=='new')return 'market';
  if(b?.type==='watchHouse'&&b.construction?.kind!=='new')return 'watchHouse';
- if(b?.construction?.kind!=='new'&&(b?.type==='cityWall'||b?.type==='cityGate'&&footprintSize(b)===2))return b.type;
+ if(b?.construction?.kind!=='new'&&(b?.type==='cityWall'||b?.type==='cityGate'))return b.type;
  if(b?.type==='house'&&b.reedCamp&&!b.campSalvage&&!b.construction)return 'reedCamp';
  return sacredModelKey(b,state);
 }

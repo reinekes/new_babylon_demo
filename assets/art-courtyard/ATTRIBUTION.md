@@ -160,7 +160,7 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 
 ## Укрепления Урука
 
-`uruk-city-gate.glb` и `uruk-city-wall.glb` — Stable Fast 3D по двум концептам ImageGen. Геометрия упрощена, основания выровнены, проём ворот расширен и подогнан к игровому проезду. [Лицензия модели генерации](https://github.com/Stability-AI/stable-fast-3d/blob/main/LICENSE.md).
+`uruk-city-gate.glb` и `uruk-city-wall.glb` — геометрия проекта с процедурными текстурами сырцовой кладки, глиняной штукатурки и дерева из палитры караульного двора. Планировка ворот — игровая реконструкция.
 
 ## Караульный двор
 

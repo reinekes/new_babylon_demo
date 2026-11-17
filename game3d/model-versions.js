@@ -2,8 +2,8 @@
 export const MODEL_VERSIONS=Object.freeze({
  "market-2x2.glb": "34585856005e",
  "watch-house-v2.glb": "74086a14e53d",
- "uruk-city-wall.glb": "5f2c0295720c",
- "uruk-city-gate.glb": "ad7c25735f5e",
+ "uruk-city-wall.glb": "56e2a39c5468",
+ "uruk-city-gate.glb": "27f381ae392f",
  "reed-camp-sf3d.glb": "0ec171e23977",
  "supplied-cobra-head-up.glb": "a2d107887b23",
  "supplied-cobra-base.glb": "1dd646a4a001",

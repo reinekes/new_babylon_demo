@@ -1,3 +1,4 @@
+import {footprintSize} from '../footprints.js';
 import {fortificationLayout} from '../fortification-layout.js';
 
 export function createImportedFortification(B,scene,b,state,clay,models,wallModels=models){
@@ -22,19 +23,15 @@ export function createImportedFortification(B,scene,b,state,clay,models,wallMode
   parts.push(mesh);
  }
  function span(p){
-  if(!wallModels||p.w===p.d){solid(p);return;}
+  if(!wallModels){solid(p);return;}
   const turn=p.d>p.w,length=turn?p.d:p.w,width=turn?p.w:p.d;
-  for(const source of wallModels)fit(source,'uruk-city-wall',[p.x,-.045,p.z],[length,2.17,width],turn);
-  // A thin solid mortar joint covers the uneven scan ends. It shares the
-  // canonical tile edge and keeps straight runs, bends and T junctions sealed.
-  for(const end of [-1,1]){
-   const cap=.13,offset=end*(length-cap+.012)/2;
-   solid({...p,x:p.x+(turn?0:offset),z:p.z+(turn?offset:0),w:turn?width:cap,d:turn?cap:width});
-  }
+  // Slight overlap at shared ends avoids gaps from world-space rounding.
+  for(const source of wallModels)fit(source,'uruk-city-wall',[p.x,p.bottom,p.z],[length+.014,p.h,width],turn);
  }
  if(b.type==='cityGate'){
+  const size=footprintSize(b),center=(size-1)*3;
   for(const p of fortificationLayout(b,state))if(!p.gateBody)span(p);
-  for(const source of models)fit(source,'uruk-city-gate',[3,-.04,3],[6,3.25,3.12],true);
+  for(const source of models)fit(source,'uruk-city-gate',[center,-.04,center],size===2?[6,3.25,3.12]:[4.4,3.25,2.76],true);
   return finish();
  }
  const layout=fortificationLayout(b,state);
