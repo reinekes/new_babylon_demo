@@ -20,7 +20,7 @@ export const AMBIENT_MODELS=Object.freeze({
  duck:{file:'ambient-duck.glb',count:2,stride:.17,pace:.16},
  donkey:{file:'ambient-donkey.glb',count:1,stride:1.17,pace:.48},
  bull:{file:'ambient-bull.glb',count:1,stride:1.23,pace:.46},
- 'sheep-kenchoo':{file:'ambient-sheep-kenchoo.glb',count:1,stride:.19,pace:.2}
+ 'sheep-kenchoo':{file:'ambient-sheep-kenchoo.glb',count:1,stride:.31,pace:.2}
 });
 const SHORE_MODELS={
  seagull:{file:'shore-seagull.glb',role:'female',scale:.07},
@@ -245,7 +245,9 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const count=MALLARD_PHASES[species]?.length||1;
   for(let i=0;i<count;i++)imported(species,i);
  }
- const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment,new Map(entries.filter(([kind])=>assets.has(kind)).map(([kind,spec])=>[spec.file,assets.get(kind)]))):null;
+ const herdSources=new Map(entries.filter(([kind])=>assets.has(kind)).map(([kind,spec])=>[spec.file,assets.get(kind)]));
+ if(options.herdGoat)herdSources.set('goat-downloaded.glb',options.herdGoat);
+ const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment,herdSources):null;
  const yardPigs=assets.has('yard-pig')&&!testLivestock?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
  let yardPlan,yardPlaces=[],yardAnchors=[];
  let route=null,routeBuildings=null,routeCount=-1;
@@ -368,14 +370,17 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
      if(advancing&&place.walking&&distance>1e-5&&distance<1){
       const yaw=Math.atan2(dx,dz),delta=yaw-a.root.rotation.y;
       a.root.rotation.y+=Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*speed*7));
-      a.walkPhase=(a.walkPhase+distance/(.54*PIG_SCALES[a.index]))%1;
+      a.walkPhase=(a.walkPhase+distance/((a.groups.has('Walk')?.42:.54)*PIG_SCALES[a.index]))%1;
      }
      if(advancing)a.model.rotation.x=a.root.metadata.pigBehavior==='foraging'?.065*(.6+.4*Math.sin(time*3)):0;
-     const clip=a.groups.get('Animation');
+     const clip=(place.walking&&a.groups.get('Walk'))||a.groups.get('Animation');
      if(clip){
-      if(!a.clip){clip.start(true);clip.pause();a.clip=clip.name;}
+      if(a.clip!==clip.name){
+       a.groups.get(a.clip)?.stop();
+       clip.start(true);clip.pause();a.clip=clip.name;
+      }
       clip.goToFrame(clip.from+a.walkPhase*(clip.to-clip.from));
-      a.root.metadata.clip='Animation';
+      a.root.metadata.clip=clip.name;
      }
     }
     continue;

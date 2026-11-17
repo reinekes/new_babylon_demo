@@ -3,14 +3,14 @@ import {surfaceElevation} from '../district3d/terrain.js';
 import {buildingKey,isOperational} from '../definitions.js';
 import {flockAdults,flockSize} from '../textiles.js';
 import {sheepfoldGateSide,sheepfoldLayout,sheepfoldWorldPoint} from '../sheepfold-layout.js';
-import {DAY_SECONDS,lightingAt} from '../city-life.js';
+import {DAY_SECONDS,lightingAt,seed} from '../city-life.js';
 import {dairyHerd} from './dairy-herd.js';
 
 const MODELS={
- pig:{files:['test-pig-trellis.glb','ambient-yard-pig.glb'],strides:[.34,.54],height:.64,space:.22},
+ pig:{files:['test-pig-trellis.glb','ambient-yard-pig.glb'],strides:[.34,.42],height:.64,space:.22},
  goat:{files:['test-goat-trellis.glb','goat-downloaded.glb'],strides:[.40,.30],height:.96,space:.22},
  bull:{files:['test-bull-trellis.glb','ambient-bull.glb'],strides:[.62,1.23],height:1.43,space:.32,pen:'cowshed'},
- sheep:{files:['ambient-sheep-kenchoo.glb'],strides:[.19],height:.83,space:.21,pen:'sheepfold'},
+ sheep:{files:['ambient-sheep-kenchoo.glb'],strides:[.31],height:.83,space:.21,pen:'sheepfold'},
 };
 const PACE=.105;
 const MAX_HERD=7;
@@ -33,22 +33,49 @@ function trackPoint(track,distance){
  return {x:x+u*cos-v*sin,y:y+u*sin+v*cos,yaw:Math.atan2(du*cos-dv*sin,du*sin+dv*cos)};
 }
 
-function trackClear(state,track,dry,clear){
- const samples=Math.ceil(track.length/.24);
- let last=trackPoint(track,0);
- if(!dry(state,last.x,last.y,.42))return false;
- for(let step=1;step<=samples;step++){
-  const next=trackPoint(track,track.length*step/samples);
-  if(!dry(state,next.x,next.y,.42)||!clear(state,last,next))return false;
-  last=next;
+function herdSlots(worldSeed,index,space){
+ const size=4+Math.floor(seed(worldSeed,index+51)*4);
+ // Irregular rows place several animals abreast, with room for the larger cattle.
+ const positions=[[-.50,.60],[.38,.43],[-1.03,-.27],[.06,-.26],[1.1,-.37],[-.57,-1.22],[.51,-1.35]];
+ const mirror=seed(worldSeed,index+21)<.5?-1:1;
+ return positions.slice(0,size).map(([side,front],i)=>({
+  side:side*space*mirror+(seed(worldSeed,index*17+i+101)-.5)*.026,
+  front:front*space+(seed(worldSeed,index*29+i+201)-.5)*.034,
+ }));
+}
+
+function slotPoint(track,distance,slot){
+ const center=trackPoint(track,distance);
+ return {
+  x:center.x+Math.cos(center.yaw)*slot.side+Math.sin(center.yaw)*slot.front,
+  y:center.y-Math.sin(center.yaw)*slot.side+Math.cos(center.yaw)*slot.front,
+ };
+}
+
+function formationPoint(track,distance,slot){
+ const point=slotPoint(track,distance,slot);
+ const before=slotPoint(track,distance-.009,slot),after=slotPoint(track,distance+.009,slot);
+ return {...point,yaw:Math.atan2(after.x-before.x,after.y-before.y)};
+}
+
+function trackClear(state,track,slots,dry,clear){
+ const samples=Math.ceil(track.length/.22);
+ for(const slot of slots){
+  let last=slotPoint(track,0,slot);
+  if(!dry(state,last.x,last.y,.34))return false;
+  for(let step=1;step<=samples;step++){
+   const next=slotPoint(track,track.length*step/samples,slot);
+   if(!dry(state,next.x,next.y,.34)||!clear(state,last,next))return false;
+   last=next;
+  }
  }
  return true;
 }
 
-function findTrack(state,occupied,offset,dry,clear){
+function findTrack(state,occupied,offset,slots,dry,clear){
  const home=state.buildings.find(b=>b.type==='cityGate')||state.buildings.find(b=>b.type==='house');
  if(!home)return null;
- for(let ring=0;ring<20;ring++)for(let i=0;i<16;i++){
+ for(let ring=0;ring<25;ring++)for(let i=0;i<16;i++){
   const angle=(i+offset*3)*Math.PI/8,r=2.3+ring*.54;
   const x=home.x+r*Math.cos(angle),y=home.y+r*Math.sin(angle);
   if(occupied.some(p=>Math.hypot(x-p.x,y-p.y)<2.7))continue;
@@ -56,7 +83,7 @@ function findTrack(state,occupied,offset,dry,clear){
   const half=.83,radius=.48,length=4*half+2*Math.PI*radius;
   const heading=angle+Math.PI/2;
   const track={x,y,half,radius,length,cos:Math.cos(heading),sin:Math.sin(heading)};
-  if(trackClear(state,track,dry,clear))return track;
+  if(trackClear(state,track,slots,dry,clear))return track;
  }
  return null;
 }
@@ -137,8 +164,10 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const files=[...new Set(herds.flatMap(herd=>herd.spec.files))];
   await Promise.all(files.map(async file=>{
    try{
-    const source=shared.get(file)||await loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb');
-    if(disposed&&!shared.has(file))source.dispose();
+    const source=shared.has(file)?await shared.get(file):
+     await loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb');
+    if(!source)return;
+    if(disposed){if(!shared.has(file))source.dispose();}
     else assets.set(file,source);
    }catch(error){console.warn('Livestock model unavailable:',file,error);}
   }));
@@ -164,12 +193,12 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   root.setEnabled(false);
   const owned=root.getChildMeshes();
   for(const mesh of owned){mesh.isPickable=false;mesh.receiveShadows=true;meshes.push(mesh);}
-  const walk=copy.animationGroups.find(group=>/(?:Walk|Animation)$/i.test(group.name));
+  const walk=copy.animationGroups.find(group=>/-Walk$/i.test(group.name))||copy.animationGroups.find(group=>/-Animation$/i.test(group.name));
   const idle=copy.animationGroups.find(group=>/Idle$/i.test(group.name));
   const member={root,owned,copy,walk,idle,stride:spec.strides[variant],phase:index*.31,point:null};
   const targets=walk?.targetedAnimations||[];
-  member.trunk=targets.find(({target,animation})=>target.name.endsWith('-body')&&animation.targetProperty==='position')?.target;
-  member.trunkRest=member.trunk?.position.clone();
+  member.restPositions=targets.filter(({target,animation})=>target.position&&animation.targetProperty==='position')
+   .map(({target})=>({target,position:target.position.clone()}));
   member.rest=targets.filter(({target,animation})=>target.rotationQuaternion&&animation.targetProperty==='rotationQuaternion')
    .map(({target})=>({target,rotation:target.rotationQuaternion.clone()}));
   return member;
@@ -201,7 +230,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const phase=clip===member.walk?member.phase:clock*.26+member.phase;
   clip.goToFrame(clip.from+(phase%1)*(clip.to-clip.from));
   if(!walking&&!member.idle){
-   if(member.trunk)member.trunk.position.copyFrom(member.trunkRest);
+   for(const {target,position} of member.restPositions)target.position.copyFrom(position);
    for(const {target,rotation} of member.rest)target.rotationQuaternion.copyFrom(rotation);
   }
  }
@@ -211,7 +240,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const leader=herd.members[0].point;
   if(!leader)return null;
   for(const building of candidates.sort((a,b)=>Math.hypot(a.x-leader.x,a.y-leader.y)-Math.hypot(b.x-leader.x,b.y-leader.y))){
-   const targets=penTargets(state,building,herd.kind);
+   const targets=penTargets(state,building,herd.kind).slice(0,herd.slots.length);
    if(!targets.length||targets.length>herd.members.length)continue;
    const {outside,inside}=penEntrance(state,building);
    const approaches=targets.map((_,i)=>{
@@ -246,7 +275,16 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
    for(const herd of herds){
     if(herd.transfer&&!pens.some(b=>penKey(b)===penKey(herd.transfer.building)))herd.transfer=null;
     for(const key of herd.handled.keys())if(!pens.some(b=>penKey(b)===key))herd.handled.delete(key);
-    if(!herd.track||!trackClear(state,herd.track,dry,clear))herd.track=findTrack(state,[...otherHerd,...herds.filter(other=>other!==herd&&other.track).map(other=>other.track)],herd.index,dry,clear);
+    const worldSeed=state.world?.seed??0;
+    if(herd.seed!==worldSeed){
+     herd.seed=worldSeed;
+     herd.slots=herdSlots(worldSeed,herd.index,herd.spec.space);
+     herd.track=null;
+    }
+    if(!herd.track||!trackClear(state,herd.track,herd.slots,dry,clear)){
+     const occupied=[...otherHerd,...herds.filter(other=>other!==herd&&other.track).map(other=>other.track)];
+     herd.track=findTrack(state,occupied,herd.index,herd.slots,dry,clear);
+    }
     herd.nextSearch=clock;
    }
   }
@@ -301,11 +339,11 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
    const leadDistance=Math.min(time%cycle,travel)*PACE+herd.track.half;
    for(let i=0;i<herd.members.length;i++){
     const member=herd.members[i];
-    if(i>=(herd.spec.pen?MAX_HERD:5)){member.root.setEnabled(false);continue;}
-    const distance=leadDistance-i*herd.spec.space;
+    const slot=herd.slots[i];
+    if(!slot){member.root.setEnabled(false);continue;}
     delete member.root.metadata.herdDestination;
     member.root.scaling.setAll(1);
-    pose(member,trackPoint(herd.track,distance),state,elapsed,moving);
+    pose(member,formationPoint(herd.track,leadDistance,slot),state,elapsed,moving);
    }
   }
  }

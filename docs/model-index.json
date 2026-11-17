@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "a40aa7286eb5fdb072713c7eef431889bfd4ae3fcacd296bd96f74be1d31feb3"
+      "sha256": "e1745602f6ed211e38cc203175d881555d06ccb1dde3ebd67bd00d33d2f22a4b"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "6f5e7f8c30d8702d89f575c43912177ab713299040a0583eea65163378717109"
+      "sha256": "f55735a00a46e4c895da8aead8988fd5f07764700e4be6a04a34bbc57fde0f63"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -49,7 +49,7 @@
     },
     {
       "file": "game3d/goats.js",
-      "sha256": "a5d3dd17489c806b28d27513a689bda2413fadab7357781363e8a804ccaa23ef"
+      "sha256": "c0c47f68c529607e838dc3f70621c6b6505626fa0da1e4fd4ac95d46788789ea"
     },
     {
       "file": "game3d/imported-fauna.js",
@@ -89,7 +89,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "3acc4ef720b957bd90efa3a19e2908b61cf8cd56336529232d8ba38b4c68d0e4"
+      "sha256": "01079e18998c04c21fa8a184f37b0d2986f10e3be30124c00cbfd6dc36454571"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -295,9 +295,9 @@
       "status": "active",
       "purpose": "Фоновые овцы и часть взрослых овец в овчарнях.",
       "classificationEvidence": "game3d/ambient-fauna.js|ambient-sheep-kenchoo",
-      "bytes": 1777624,
-      "sha256": "4119278af230b7b25b1eea8742fec3ded4709c6845333285ff7b46bbc295f1a3",
-      "version": "4119278af230",
+      "bytes": 1785652,
+      "sha256": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5",
+      "version": "cb8f6357313b",
       "triangles": 2290,
       "meshes": 1,
       "bones": 38,
@@ -334,13 +334,14 @@
       "status": "active",
       "purpose": "Один из двух обликов свободного стада свиней.",
       "classificationEvidence": "game3d/ambient-fauna.js|YARD_PIG_MODEL",
-      "bytes": 2094196,
-      "sha256": "4887fe358b56da91e364c1828bc56a3f356403fdc05ff6c371ec7630a3ba6c72",
-      "version": "4887fe358b56",
+      "bytes": 2105828,
+      "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
+      "version": "0df10688d4c5",
       "triangles": 9816,
       "meshes": 1,
       "bones": 25,
       "clips": [
+        "Walk",
         "Animation"
       ],
       "sources": [
@@ -718,6 +719,12 @@
         }
       ],
       "references": [
+        {
+          "model": "goat-downloaded.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 249,
+          "kind": "literal"
+        },
         {
           "model": "goat-downloaded.glb",
           "file": "game3d/goats.js",

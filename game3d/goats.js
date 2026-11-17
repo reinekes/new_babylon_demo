@@ -39,5 +39,5 @@ export async function createGameGoats(B,scene,meshes=[],options={}){
   for(const[id,a]of actors)if(!seen.has(id)){remove(a);actors.delete(id);}
  }
  function dispose(){if(disposed)return;disposed=true;for(const a of actors.values())remove(a);actors.clear();for(const source of sources.values())source.dispose();sources.clear();}
- return {update,dispose,rootFor:selection=>actors.get(selection.animalId)?.root};
+ return {update,dispose,sourceForHerd:()=>sources.get('downloaded'),rootFor:selection=>actors.get(selection.animalId)?.root};
 }

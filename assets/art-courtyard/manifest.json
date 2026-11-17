@@ -99,8 +99,8 @@
     },
     {
       "file": "models/ambient-sheep-kenchoo.glb",
-      "bytes": 1777624,
-      "sha256": "4119278af230b7b25b1eea8742fec3ded4709c6845333285ff7b46bbc295f1a3",
+      "bytes": 1785652,
+      "sha256": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5",
       "triangles": 2290,
       "meshes": 1,
       "bones": 38,
@@ -324,12 +324,13 @@
     },
     {
       "file": "models/ambient-yard-pig.glb",
-      "bytes": 2094196,
-      "sha256": "4887fe358b56da91e364c1828bc56a3f356403fdc05ff6c371ec7630a3ba6c72",
+      "bytes": 2105828,
+      "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
       "triangles": 9816,
       "meshes": 1,
       "bones": 25,
       "clips": [
+        "Walk",
         "Animation"
       ]
     },
