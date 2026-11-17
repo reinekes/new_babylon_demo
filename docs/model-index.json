@@ -89,7 +89,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "a5d13a6a17ee9f9d08c36c508fb00378e4ccb7c7f062d5b1c89b6b05eb74db4d"
+      "sha256": "d871772adbebff77af3194a0dc1f3e7c86cb5d874fed9ae534e30650e2916952"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -2519,13 +2519,15 @@
       "status": "active",
       "purpose": "Текстурированная проба TRELLIS.2 в демонстрационном стаде.",
       "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
-      "bytes": 799108,
-      "sha256": "03ec626dad00edf87152752847926d807a71799fd194fbb8b7f0cc9023268b2b",
-      "version": "03ec626dad00",
+      "bytes": 1107532,
+      "sha256": "158a371b224b9eae76cae3ce4944c028738c77e9ce73cb6ea6dc137f3cf7f557",
+      "version": "158a371b224b",
       "triangles": 14418,
       "meshes": 1,
-      "bones": 0,
-      "clips": [],
+      "bones": 13,
+      "clips": [
+        "Walk"
+      ],
       "sources": [
         {
           "author": "New Babylon, generated with Microsoft TRELLIS.2",
@@ -2548,13 +2550,15 @@
       "status": "active",
       "purpose": "Текстурированная проба TRELLIS.2 в демонстрационном стаде.",
       "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
-      "bytes": 688508,
-      "sha256": "0b62951616c4f829f14a91243b2e0a2b6b8b8c8386a1fc054f53675dcdf12ced",
-      "version": "0b62951616c4",
+      "bytes": 966760,
+      "sha256": "0f1e8352801e499babe089c190b2810a2bf3a091839e436c2522f0b1bd4d16ad",
+      "version": "0f1e8352801e",
       "triangles": 14298,
       "meshes": 1,
-      "bones": 0,
-      "clips": [],
+      "bones": 13,
+      "clips": [
+        "Walk"
+      ],
       "sources": [
         {
           "author": "New Babylon, generated with Microsoft TRELLIS.2",
