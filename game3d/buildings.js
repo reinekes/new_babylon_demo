@@ -14,7 +14,7 @@ import {footprintSize} from '../footprints.js';
 import {fortificationSignature} from '../fortification-layout.js';
 import {sheepfoldGateSide} from '../sheepfold-layout.js';
 import {createWatchHouseFire} from './watch-house-fire.js';
-import {createImportedFortification} from './fortification-models.js';
+import {createGateTorches,createImportedFortification} from './fortification-models.js';
 import {createArchitecture} from './architecture.js';
 import {createHouseArchitecture,houseVisualKind} from './house-architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
@@ -229,6 +229,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b,state)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
+  if(b.type==='cityGate'&&b.construction?.kind!=='new')for(const mesh of createGateTorches(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(!b.reedCamp)for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}
   for(const source of sources){source.isVisible=false;source.isPickable=false;source.checkCollisions=false;source.receiveShadows=true;source.computeWorldMatrix(true);}
   t={root,sources,users:1};templates.set(key,t);return t;
@@ -292,13 +293,13 @@ export async function createGameBuildings(B,scene,materials,options={}){
     const template=acquire(view,signature,state,shoreContext),root=new B.TransformNode(`game-building-${key}`,scene),parts=[];
     placeRoot(root,view);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
-     // Watch courts need their own light sources while sharing the same geometry.
-     const localLighting=source.metadata?.homeLamp||b.type==='watchHouse'&&sacredModels.ready(b,state);
+     // Buildings with torches receive local lights while sharing their geometry.
+     const localLighting=source.metadata?.homeLamp||b.type==='cityGate'&&b.construction?.kind!=='new'||b.type==='watchHouse'&&sacredModels.ready(b,state);
      const mesh=localLighting?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(localLighting){mesh.receiveShadows=true;mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;}
      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
     record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view)};active.set(key,record);meshes.push(...parts);
-    if(b.type==='watchHouse')watchHouseFire.add(key,root,parts);
+    if(b.type==='watchHouse'||b.type==='cityGate')watchHouseFire.add(key,root,parts);
    }
    if(record.rotation!==rotationOf(view)){
     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,view);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(view);

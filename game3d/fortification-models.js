@@ -46,3 +46,27 @@ export function createImportedFortification(B,scene,b,state,clay,models,wallMode
  for(const p of spans)span(p);
  return finish();
 }
+
+export function createGateTorches(B,scene,b,materials){
+ const large=footprintSize(b)===2,center=large?3:0;
+ const facade=center+(large?1.52:1.34),offset=large?2.16:1.58;
+ const parts=[];
+ for(const side of [-1,1]){
+  const z=center+side*offset;
+  const bracket=B.MeshBuilder.CreateBox('gate-torch-bracket',{width:.28,height:.12,depth:.14},scene);
+  bracket.position.set(facade+.04,1.81,z);
+  bracket.material=materials.wood;
+  const handle=B.MeshBuilder.CreateCylinder('gate-torch-handle',{height:.30,diameter:.065,tessellation:8},scene);
+  handle.position.set(facade+.16,1.86,z);
+  handle.rotation.z=-.24;
+  handle.material=materials.wood;
+  const head=B.MeshBuilder.CreateCylinder('gate-torch-wrap',{height:.13,diameterTop:.16,diameterBottom:.105,tessellation:10},scene);
+  head.position.set(facade+.20,2.05,z);
+  head.material=materials.reed;
+  const wick=B.MeshBuilder.CreateCylinder('gate-wick-'+side,{height:.04,diameter:.10,tessellation:10},scene);
+  wick.position.set(facade+.20,2.13,z);
+  wick.material=materials.shade;
+  parts.push(bracket,handle,head,wick);
+ }
+ return parts;
+}

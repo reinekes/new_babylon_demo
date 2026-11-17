@@ -26,7 +26,7 @@ export function createWatchHouseFire(B,scene){
   return mesh;
  }
  function add(key,parent,meshes){
-  const wicks=meshes.filter(mesh=>mesh.name.includes('watch-wick-'));
+  const wicks=meshes.filter(mesh=>mesh.name.includes('watch-wick-')||mesh.name.includes('gate-wick-'));
   if(!wicks.length)return;
   materials??=[
    fireMaterial('watch-flame-amber','#ff7816',.83),
