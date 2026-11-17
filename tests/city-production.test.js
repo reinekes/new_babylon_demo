@@ -10,6 +10,7 @@ import {putStock} from '../inventory.js';
 import {initializeTextiles} from '../textiles.js';
 import {JSDOM} from 'jsdom';
 import {renderCityTools} from '../ui-city-tools.js';
+import {BUILDINGS} from '../definitions.js';
 
 test('annual production attributes output to current and removed buildings and manual sites',()=>{
  const s=createGame({start:'established'}),tailor={type:'tailor',x:7,y:8,level:1},second={type:'tailor',x:6,y:8,level:1};
@@ -76,5 +77,28 @@ test('visual chains show the existing recipes without treating stone as a proces
  assert.ok([...steps('clay'),...steps('wool'),...steps('stone')].every(step=>step.querySelector('img[loading="lazy"]')));
  root.querySelector('[data-city-tab="production"]').click();
  assert.match(root.querySelector('h2').textContent,/Производство за год/);
+ assert.equal(encode(s),before);
+});
+
+test('the guide covers every building and exposes help above every preview',()=>{
+ const s=createGame({start:'established'}),before=encode(s);
+ const {window}=new JSDOM('<main></main>'),root=window.document.querySelector('main');
+ renderCityTools(root,s,{tab:'chains'});
+ const cards=[...root.querySelectorAll('[data-chain-building]')];
+ const types=new Set(cards.map(card=>card.dataset.chainBuilding));
+ assert.deepEqual(types,new Set([...Object.keys(BUILDINGS),'road','starterHut','reedCamp']));
+ assert.match(root.querySelector('[data-chain-building="starterHut"] .chain-effect').textContent,/4 места/);
+ for(const card of cards){
+  const help=card.querySelector('details.chain-help');
+  assert.ok(help?.querySelector('summary[aria-label]'),card.dataset.chainBuilding);
+  assert.ok(help.querySelector('p').textContent.trim(),card.dataset.chainBuilding);
+  assert.equal(help.open,false);
+ }
+ const bridge=root.querySelector('[data-chain-building="bridge"] details');
+ bridge.querySelector('summary').click();
+ assert.ok(bridge.open);
+ assert.match(bridge.textContent,/соединит берега/i);
+ renderCityTools(root,s);
+ assert.ok(bridge.open);
  assert.equal(encode(s),before);
 });

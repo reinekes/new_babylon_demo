@@ -1,5 +1,14 @@
 // Local resource drawings share one silhouette in stock bars and cost cards.
 const drawings={
+ flax:'<path d="M11 22V7m0 8 6-6m-6 9-6-6m6-2-6-4"/><circle cx="11" cy="5" r="2"/><circle cx="18" cy="8" r="1.5"/><circle cx="4" cy="5" r="1.5"/><circle cx="4" cy="11" r="1.5"/>',
+ basket:'<path d="M3 10h18l-2 10H5L3 10Zm4 0V7a5 5 0 0 1 10 0v3M4 14h16M5 17h14m-10-7 1 10m5-10-1 10"/>',
+ mat:'<path d="M4 5h16v14H4zM8 5v14m4-14v14m4-14v14M4 10h16M4 14h16M4 2v3m4-3v3m4-3v3m4-3v3m4-3v3M4 19v3m4-3v3m4-3v3m4-3v3m4-3v3"/>',
+ copper:'<path d="m3 13 4-5h10l4 5v5H3v-5Zm0 0h18m-12-3h6M6 18v2h12v-2"/>',
+ axe:'<path d="m10 11-6 9 3 2 7-11m-3-1L7 7l2-4 4 2 5-2 3 7-7 1-3-1Zm6-6 2 6"/>',
+ blade:'<path d="M9 15 4 22 2 20l5-7m0 0 6-8 9-3-4 9-9 4Zm1 1 9-6"/>',
+ chisel:'<path d="m12 11 5-8 4 3-5 8m0 0-7 8-4-3 7-8 4 3Zm-9 3 4 3"/>',
+ timber:'<path d="m2 14 13-6 5 3v5L7 22l-5-3v-5Zm0 0 5 3 13-6M7 17v5M6 12V8l12-6 4 3v4l-3 2M6 8l5 3 11-6"/>',
+ joinery:'<path d="M3 8h8v3h5V8h5v7h-8v-3H8v3H3V8Zm2 3h2m10 1h2M5 6h6m2 11h6"/>',
  milk:'<path d="M8 2h8v4l3 5v10H5V11l3-5V2Zm0 4h8M5 12h14M10 16h4m-2-2v4"/>' ,
  pottery:'<path d="M8 3h8M9 3v4c-8 7-7 14 3 14s11-7 3-14V3M5 14h14m-13 4h12"/>',
  beer:'<path d="M6 5h12l-2 4c6 8 3 12-4 12S2 17 8 9L6 5Zm2 9h8M11 5V2m3 3V1"/>',
@@ -19,5 +28,8 @@ const drawings={
  faith:'<path d="M12 2v5m0 10v5M2 12h5m10 0h5M5 5l3 3m8 8 3 3M5 19l3-3m8-8 3-3m-7 1 3 6-3 6-3-6 3-6Z"/>',
  prestige:'<path d="m7 13-3 9 7-3 2-6m4 0 3 9-7-3-2-6"/><circle cx="12" cy="9" r="7"/><path d="m12 5 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>'
 };
-const names={milk:'Молоко',pottery:'Керамика',beer:'Пиво',firedBrick:'Обожжённый кирпич',water:'Вода',brick:'Сырцовый кирпич',wool:'Шерсть',cloth:'Ткань',clothing:'Одежда',food:'Еда',wood:'Дерево',stone:'Камень',hides:'Шкуры',grain:'Зерно',clay:'Глина',reed:'Тростник',faith:'Вера',prestige:'Престиж'};
+const names={
+ flax:'Лён',basket:'Корзина',mat:'Циновка',copper:'Медь',axe:'Медный топор',blade:'Медный нож',chisel:'Медное долото',timber:'Привозной лес',joinery:'Столярные детали',
+ milk:'Молоко',pottery:'Керамика',beer:'Пиво',firedBrick:'Обожжённый кирпич',water:'Вода',brick:'Сырцовый кирпич',wool:'Шерсть',cloth:'Ткань',clothing:'Одежда',food:'Еда',wood:'Дерево',stone:'Камень',hides:'Шкуры',grain:'Зерно',clay:'Глина',reed:'Тростник',faith:'Вера',prestige:'Престиж'
+};
 export function resourceIcon(kind,{decorative=false}={}){return `<svg class="resource-svg resource-${kind}" viewBox="0 0 24 24" ${decorative?'aria-hidden="true"':`role="img" aria-label="${names[kind]||kind}"`} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${decorative?'':`<title>${names[kind]||kind}</title>`}${drawings[kind]||''}</svg>`;}

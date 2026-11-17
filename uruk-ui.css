@@ -535,23 +535,41 @@ details[open]>summary.production-total span::after{content:' −'}
 .production-coverage{color:#f2ca92}
 
 .production-chains {color:#efdab5}
-.chains-intro {margin:0 0 12px;color:#ceb998}
+.chains-intro {display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;margin:0 0 12px;color:#ceb998}
+.chains-intro p {margin:0}
+.chains-intro a {color:#f4d29c;text-underline-offset:3px}
+.chain-group+.chain-group,.chain-directory {margin-top:24px}
+.chain-group-title {margin:0 0 10px;color:#f6dfb6;font:500 20px/1.2 var(--serif,Georgia,serif)}
 .production-chains-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px}
+.production-chains-grid-two {grid-template-columns:repeat(2,minmax(0,1fr))}
 .production-chain {display:grid;grid-row:span 4;grid-template-rows:subgrid;min-width:0}
 .production-chain h3 {
  display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:7px 10px;
  background:#3c2d21;border-bottom:1px solid #9a744a;color:#f6dfb6;
  font:500 18px/1.2 var(--serif,Georgia,serif);
 }
-.production-chain .resource-svg {width:16px;height:16px;flex:none;color:#e5bc83}
+.production-chains .resource-svg {width:16px;height:16px;flex:none;color:#e5bc83}
 .production-chain ol {display:grid;grid-row:span 3;grid-template-rows:subgrid;list-style:none;padding:0;margin:0}
 .chain-step {min-width:0;display:flex;flex-direction:column}
 .chain-stage {margin:0 0 5px;color:#ebc997;font-size:11px;font-weight:700}
 .chain-arrow {display:grid;place-items:center;height:23px;color:#d8ad75;font:19px/1 Georgia,serif}
+.chain-entry {display:flex;flex:1;flex-direction:column;min-width:0}
+.chain-entry+.chain-entry {margin-top:6px}
+.chain-card-heading {position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 6px 5px 9px;background:#3c2d21;border:1px solid #806142;border-bottom:0;border-radius:4px 4px 0 0}
+.chain-card-heading h4 {margin:0;color:#f6dfb6;font:500 15px/1.2 var(--serif,Georgia,serif)}
+.chain-help summary {display:grid;place-items:center;width:28px;height:28px;border:1px solid #967247;border-radius:50%;background:#32291f;color:#ffe0a5;font:700 14px/1 system-ui;list-style:none;cursor:pointer}
+.chain-help summary::-webkit-details-marker {display:none}
+.chain-help summary:is(:hover,:focus-visible),.chain-help[open] summary {background:#244260;color:#fff1d8;outline:1px solid #d3a46c}
+.chain-help-text {position:absolute;z-index:3;inset:auto 0 auto auto;top:calc(100% + 3px);width:min(100%,340px);padding:10px 12px;background:#25201b;border:1px solid #b98d5b;border-radius:4px;box-shadow:0 4px 14px #100b08a8;color:#f1dcb8;font:12px/1.5 var(--sans,system-ui,sans-serif)}
+.chain-help-text p {margin:0}
+.chain-help-text p+p {margin-top:5px}
+.chain-help-condition {color:#f5c98f}
 .chain-card {display:grid;grid-template-columns:38% minmax(0,1fr);overflow:hidden;flex:1;border:1px solid #806142;border-radius:4px;background:#32291f}
+.production-chains-grid-two .chain-card {grid-template-columns:29% minmax(0,1fr)}
+.chain-entry .chain-card {border-radius:0 0 4px 4px}
 .chain-card img {display:block;width:100%;height:100%;min-height:100px;object-fit:cover;background:#bfaa83}
 .chain-card-body {display:grid;align-content:center;gap:6px;min-width:0;padding:8px 10px 10px}
-.chain-card h4 {margin:0;color:#f6dfb6;font:500 16px/1.2 var(--serif,Georgia,serif)}
+.chain-effect {margin:0;color:#f2dbb4;font-weight:600}
 .chain-product,.chain-input {display:flex;align-items:center;flex-wrap:wrap;gap:4px}
 .chain-input>span:first-child {margin-right:2px;color:#cfbb9a;font-size:11px}
 .chain-resource {display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:2px 5px;border-radius:3px;font-size:11px}
@@ -560,9 +578,15 @@ details[open]>summary.production-total span::after{content:' −'}
 .chain-product .chain-resource {background:#263a43;border:1px solid #637780;color:#ffe5b4;font-weight:600}
 .chain-input .chain-resource {background:#211b14;border:1px solid #71583d;color:#ebd3a9}
 .chain-note {margin:0;color:#cfbb9a;font-size:11px}
+.chain-directory-group {margin-top:14px}
+.chain-directory-group h3 {margin:0 0 7px;color:#eac898;font:500 16px/1.2 var(--serif,Georgia,serif)}
+.chain-directory-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:10px}
+.chain-directory-grid .chain-entry {margin-top:0}
+.chain-directory-grid .chain-card img {min-height:72px;max-height:100px}
 @media(max-width:740px){
  .production-chains-grid {grid-template-columns:1fr;gap:18px}
  .production-chain,.production-chain ol {grid-row:auto;grid-template-rows:auto}
+ .chain-directory-grid {grid-template-columns:1fr}
 }
 @media(max-width:600px){
  .uruk-ui .city-tools[data-city-view] .city-tools-tabs {grid-template-columns:repeat(2,minmax(0,1fr))}
