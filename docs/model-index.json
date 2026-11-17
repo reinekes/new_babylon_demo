@@ -4,9 +4,9 @@
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
     "total": 91,
-    "active": 67,
+    "active": 66,
     "fallback": 9,
-    "optional": 5,
+    "optional": 6,
     "spare": 10
   },
   "errors": [],
@@ -89,7 +89,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "2889e40dc915fe871adfd246a4886ba27f0aa4a652747ea540c02881c7e5f3ee"
+      "sha256": "3acc4ef720b957bd90efa3a19e2908b61cf8cd56336529232d8ba38b4c68d0e4"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -626,9 +626,9 @@
     },
     {
       "file": "goat-authored-lod.glb",
-      "status": "active",
-      "purpose": "Один из двух обликов свободного стада коз.",
-      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "status": "optional",
+      "purpose": "Авторская коза через API createGameGoats; main выбирает downloaded.",
+      "classificationEvidence": "game3d/goats.js|authored:",
       "bytes": 1649492,
       "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
       "version": "c2d8562fa2e8",
@@ -654,12 +654,6 @@
           "model": "goat-authored-lod.glb",
           "file": "game3d/goats.js",
           "line": 4,
-          "kind": "literal"
-        },
-        {
-          "model": "goat-authored-lod.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 11,
           "kind": "literal"
         }
       ]
@@ -694,7 +688,7 @@
     {
       "file": "goat-downloaded.glb",
       "status": "active",
-      "purpose": "Основная коза симуляции; исходный Idle, добавленная проектом ходьба.",
+      "purpose": "Основная коза симуляции и один из двух обликов стада; исходный Idle, добавленная проектом ходьба.",
       "classificationEvidence": "game3d/actors.js|variants:['downloaded']",
       "bytes": 8930460,
       "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
@@ -728,6 +722,12 @@
           "model": "goat-downloaded.glb",
           "file": "game3d/goats.js",
           "line": 4,
+          "kind": "literal"
+        },
+        {
+          "model": "goat-downloaded.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 11,
           "kind": "literal"
         }
       ]

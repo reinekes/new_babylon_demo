@@ -19,8 +19,8 @@ group('resident','fallback','Последний резерв взрослого 
 group('resident-lod','optional','Только benchmark художественного двора; не основной городской LOD.','courtyard/app.js|stress?model(\'resident-lod\')');
 group('historical-man','active','Жрец/музыкант: дополнительный облик реального взрослого мужчины, загрузка по потребности.','game3d/actors.js|requestHistoricalResident');
 group('sheep','active','Основное стадо овец симуляции; также художественный двор.','game3d/actors.js|load(\'sheep\')');
-group('goat-downloaded','active','Основная коза симуляции; исходный Idle, добавленная проектом ходьба.','game3d/actors.js|variants:[\'downloaded\']');
-group('goat-authored-lod','active','Один из двух обликов свободного стада коз.','game3d/test-livestock.js|loadAnimals');
+group('goat-downloaded','active','Основная коза симуляции и один из двух обликов стада; исходный Idle, добавленная проектом ходьба.','game3d/actors.js|variants:[\'downloaded\']');
+group('goat-authored-lod','optional','Авторская коза через API createGameGoats; main выбирает downloaded.','game3d/goats.js|authored:');
 group('goat-authored goat','spare','Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.','assets/art-courtyard/ATTRIBUTION.md|## Goats');
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
 group('test-pig-trellis test-goat-trellis test-bull-trellis','active','Текстурированная модель TRELLIS.2 с ходьбой в прогулочном стаде.','game3d/test-livestock.js|loadAnimals');

@@ -8,7 +8,7 @@ import {dairyHerd} from './dairy-herd.js';
 
 const MODELS={
  pig:{files:['test-pig-trellis.glb','ambient-yard-pig.glb'],strides:[.34,.54],height:.64,space:.22},
- goat:{files:['test-goat-trellis.glb','goat-authored-lod.glb'],strides:[.40,.34],height:.96,space:.22},
+ goat:{files:['test-goat-trellis.glb','goat-downloaded.glb'],strides:[.40,.30],height:.96,space:.22},
  bull:{files:['test-bull-trellis.glb','ambient-bull.glb'],strides:[.62,1.23],height:1.43,space:.32,pen:'cowshed'},
  sheep:{files:['ambient-sheep-kenchoo.glb'],strides:[.19],height:.83,space:.21,pen:'sheepfold'},
 };
