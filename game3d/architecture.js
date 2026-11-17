@@ -208,11 +208,11 @@ export function createArchitecture(B,scene,b,m,state){
  case 'cowshed':
   if(b.footprint===2){
    block(3,.025,3,11,.05,11,m.soil);
-   fence(3,3,11,11);
+   fence(3,3,11,11,1.20);
    cloth(4.9,5.5,4.1,3,2,m.reed);
    basin(6.8,.15,.6,3);
    for(let i=0;i<5;i++)block(1.5+i*1.25,.085,5.6,1,.13,1.45,m.reed,.13*(i%2));
-  }else{ground();fence(0,0,5,5);}
+  }else{ground();fence(0,0,5,5,1.05);}
   cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
  case 'sheepfold':{
   const {center,halfWidth,gateHalfWidth}=sheepfoldLayout(b);

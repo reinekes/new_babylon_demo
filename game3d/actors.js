@@ -749,7 +749,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);a.root.setEnabled(false);storeSleepingRig(a);people.set(c.id,a);
   }}
   const living=new Set((state.citizens||[]).map(c=>c.id));for(const c of visible)if(c.visitor)living.add(c.id);for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
-  const fauna=animalsFor(state).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'&&!ambient?.supportsFoldSheep(c)),seenSheep=new Set();for(const c of animals){
+  ambient?.updateHerds(state,dt,paused,speed);
+  const fauna=animalsFor(state).filter(c=>!ambient?.herdClaims(c.id)).map(c=>c.kind==='sheep'&&ambient?ambient.herdSheepPose(c):c).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'&&!ambient?.supportsFoldSheep(c)),seenSheep=new Set();for(const c of animals){
    seenSheep.add(c.id);let a=sheep.get(c.id);const index=Number(c.id.split('-').at(-1));
    if(!a){a=instantiate(sheepSource,c.id,{animalId:c.id,animalKind:'sheep'});coatSheep(a,index);a.sheepClipPhase=index*.31%1;sheep.set(c.id,a);}
    if(Number.isFinite(c.yaw)){a.yaw=c.yaw;if(!a.clip)a.root.rotation.y=c.yaw;}

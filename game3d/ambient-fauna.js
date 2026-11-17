@@ -182,11 +182,13 @@ function createFeedingRipple(B,scene,id){
 
 export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const farmMaterials=new Map(),assets=new Map(),actors=[],warn=options.warn||console.warn,load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=craft-and-fast-start-20261023-1`,scene,undefined,'.glb'));
+ const roamingModels=Object.entries(AMBIENT_MODELS).filter(([kind])=>!options.includeTestLivestock||!['bull','sheep-kenchoo'].includes(kind));
  const groundModels=options.includeShoreBirds
-  ?Object.entries(AMBIENT_MODELS).filter(([kind])=>kind!=='orange-bird'&&(!options.hidePlaceholderBirds||kind!=='duck'))
-  :Object.entries(AMBIENT_MODELS);
+  ?roamingModels.filter(([kind])=>kind!=='orange-bird'&&(!options.hidePlaceholderBirds||kind!=='duck'))
+  :roamingModels;
  const entries=[...groundModels,...(options.includeShoreBirds?Object.entries(SHORE_MODELS).filter(([kind])=>!options.hidePlaceholderBirds||kind!=='seagull'):[])];if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
- if(options.includeYardPig)entries.push(['yard-pig',YARD_PIG_MODEL]);
+ if(options.includeTestLivestock)entries.push(['bull',AMBIENT_MODELS.bull],['sheep-kenchoo',AMBIENT_MODELS['sheep-kenchoo']]);
+ if(options.includeYardPig&&!options.includeTestLivestock)entries.push(['yard-pig',YARD_PIG_MODEL]);
  const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
  const ploughs=assets.has('bull')?createPloughTeams(B,scene,assets.get('bull'),meshes):null;
@@ -243,8 +245,8 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const count=MALLARD_PHASES[species]?.length||1;
   for(let i=0;i<count;i++)imported(species,i);
  }
- const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment):null;
- const yardPigs=assets.has('yard-pig')?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
+ const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment,new Map(entries.filter(([kind])=>assets.has(kind)).map(([kind,spec])=>[spec.file,assets.get(kind)]))):null;
+ const yardPigs=assets.has('yard-pig')&&!testLivestock?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
  let yardPlan,yardPlaces=[],yardAnchors=[];
  let route=null,routeBuildings=null,routeCount=-1;
  function shorePose(a,state){
@@ -311,7 +313,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   for(const animal of sheep)if(supportsFoldSheep(animal))fold.set(animal.id,animal);
   for(const [id,a] of foldSheep)if(!fold.has(id))removeActor(a);
   for(const id of fold.keys())if(!foldSheep.has(id))foldSheep.set(id,imported('sheep-kenchoo',Number(id.split('-').at(-1)),null,id));
-  const farms=new Map(dairyHerd(state).map(f=>[f.id,f]));for(const a of [...actors]){if(a.foldId)continue;if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}if(a.species==='yard-pig'||SHORE_MODELS[a.species])continue;const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
+  const farms=new Map(dairyHerd(state).filter(animal=>!testLivestock?.claims(animal.id)).map(f=>[f.id,f]));for(const a of [...actors]){if(a.foldId)continue;if(a.farm){if(!farms.has(a.farm.id)||farms.get(a.farm.id).calf!==a.farm.calf)removeActor(a);continue;}if(a.species==='yard-pig'||SHORE_MODELS[a.species])continue;const kind=['sky-birds','original-sky'].includes(a.species)?'sky-birds':a.species;if(a.index>=ecologyCount(state,kind,2))removeActor(a);}
   for(const [species]of groundModels){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>!a.foldId&&a.species===species).length;i<desired;i++)imported(species,i);}
   for(const f of farms.values())if(!actors.some(a=>a.farm?.id===f.id))imported('cow',f.index,f);
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=options.includeSkyBirds===false?0:ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
@@ -336,7 +338,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     yardAnchors=yardPlaces.map(place=>place.route[0]);
    }
   }
-  testLivestock?.update(state,dt,paused,speed,yardAnchors);
+
   for(const a of actors){
    if(a.foldId){
     const animal=fold.get(a.foldId),x=animal.x*6,z=animal.y*6;
@@ -409,5 +411,5 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function supportsFoldSheep(animal){
   return foldSheepAvailable&&animal.kind==='sheep'&&!animal.young&&Number(animal.id.split('-').at(-1))%2===1;
  }
- return {update,dispose,supportsFoldSheep,rootForSheep:id=>foldSheep.get(id)?.root,hasYardPig:yardPigs.length>0,hasPloughTeams:!!ploughs,roots:()=>actors.map(a=>a.root)};
+ return {update,dispose,supportsFoldSheep,updateHerds:(state,dt,paused,speed)=>testLivestock?.update(state,dt,paused,speed,yardAnchors),herdClaims:id=>testLivestock?.claims(id),herdSheepPose:animal=>testLivestock?.sheepPose(animal)??animal,rootForSheep:id=>foldSheep.get(id)?.root,get hasYardPig(){return yardPigs.length>0||!!testLivestock?.hasPigs();},hasPloughTeams:!!ploughs,roots:()=>actors.map(a=>a.root)};
 }
