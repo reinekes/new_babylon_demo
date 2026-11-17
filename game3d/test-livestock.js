@@ -15,77 +15,49 @@ const MODELS={
 const PACE=.105;
 const MAX_HERD=7;
 
-function trackPoint(track,distance){
- const {x,y,cos,sin,half,radius,length}=track;
- const straight=2*half,bend=Math.PI*radius;
- const d=((distance%length)+length)%length;
- let u,v,du,dv;
- if(d<straight){
-  u=-half+d;v=-radius;du=1;dv=0;
- }else if(d>=straight+bend&&d<2*straight+bend){
-  u=half-(d-straight-bend);v=radius;du=-1;dv=0;
- }else{
-  const far=d<straight+bend;
-  const angle=(d-(far?straight:2*straight+bend))/radius+(far?0:Math.PI);
-  u=(far?half:-half)+radius*Math.sin(angle);v=-radius*Math.cos(angle);
-  du=Math.cos(angle);dv=Math.sin(angle);
- }
- return {x:x+u*cos-v*sin,y:y+u*sin+v*cos,yaw:Math.atan2(du*cos-dv*sin,du*sin+dv*cos)};
-}
-
-function herdSlots(worldSeed,index,space){
- const size=4+Math.floor(seed(worldSeed,index+51)*4);
- // Irregular rows place several animals abreast, with room for the larger cattle.
- const positions=[[-.50,.60],[.38,.43],[-1.03,-.27],[.06,-.26],[1.1,-.37],[-.57,-1.22],[.51,-1.35]];
- const mirror=seed(worldSeed,index+21)<.5?-1:1;
- return positions.slice(0,size).map(([side,front],i)=>({
-  side:side*space*mirror+(seed(worldSeed,index*17+i+101)-.5)*.026,
-  front:front*space+(seed(worldSeed,index*29+i+201)-.5)*.034,
- }));
-}
-
-function slotPoint(track,distance,slot){
- const center=trackPoint(track,distance);
- return {
-  x:center.x+Math.cos(center.yaw)*slot.side+Math.sin(center.yaw)*slot.front,
-  y:center.y-Math.sin(center.yaw)*slot.side+Math.cos(center.yaw)*slot.front,
- };
-}
-
-function formationPoint(track,distance,slot){
- const point=slotPoint(track,distance,slot);
- const before=slotPoint(track,distance-.009,slot),after=slotPoint(track,distance+.009,slot);
- return {...point,yaw:Math.atan2(after.x-before.x,after.y-before.y)};
-}
-
-function trackClear(state,track,slots,dry,clear){
- const samples=Math.ceil(track.length/.22);
- for(const slot of slots){
-  let last=slotPoint(track,0,slot);
-  if(!dry(state,last.x,last.y,.34))return false;
-  for(let step=1;step<=samples;step++){
-   const next=slotPoint(track,track.length*step/samples,slot);
-   if(!dry(state,next.x,next.y,.34)||!clear(state,last,next))return false;
-   last=next;
-  }
+function zoneClear(state,zone,dry,clear){
+ if(!dry(state,zone.x,zone.y,.4))return false;
+ for(let i=0;i<12;i++){
+  const angle=i*Math.PI/6;
+  const edge={x:zone.x+Math.cos(angle)*zone.radius,y:zone.y+Math.sin(angle)*zone.radius};
+  if(!dry(state,edge.x,edge.y,.4)||!clear(state,zone,edge))return false;
  }
  return true;
 }
 
-function findTrack(state,occupied,offset,slots,dry,clear){
+function findZone(state,occupied,herd,dry,clear){
  const home=state.buildings.find(b=>b.type==='cityGate')||state.buildings.find(b=>b.type==='house');
  if(!home)return null;
+ const radius=herd.spec.space*3.6;
  for(let ring=0;ring<25;ring++)for(let i=0;i<16;i++){
-  const angle=(i+offset*3)*Math.PI/8,r=2.3+ring*.54;
-  const x=home.x+r*Math.cos(angle),y=home.y+r*Math.sin(angle);
-  if(occupied.some(p=>Math.hypot(x-p.x,y-p.y)<2.7))continue;
-  if(!dry(state,x,y,.5))continue;
-  const half=.83,radius=.48,length=4*half+2*Math.PI*radius;
-  const heading=angle+Math.PI/2;
-  const track={x,y,half,radius,length,cos:Math.cos(heading),sin:Math.sin(heading)};
-  if(trackClear(state,track,slots,dry,clear))return track;
+  const angle=(i+herd.index*3)*Math.PI/8,distance=2.3+ring*.54;
+  const x=home.x+distance*Math.cos(angle),y=home.y+distance*Math.sin(angle);
+  if(occupied.some(p=>Math.hypot(x-p.x,y-p.y)<radius+(p.radius??.6)+.75))continue;
+  const zone={x,y,radius};
+  if(zoneClear(state,zone,dry,clear))return zone;
  }
  return null;
+}
+
+function randomPoint(herd,member){
+ const attempt=member.attempt++;
+ const angle=seed(herd.seed,member.index*149+attempt*11+herd.index*1729)*2*Math.PI;
+ const radius=Math.sqrt(seed(herd.seed,member.index*173+attempt*7+herd.index*1949))*herd.zone.radius;
+ return {x:herd.zone.x+Math.cos(angle)*radius,y:herd.zone.y+Math.sin(angle)*radius,yaw:angle};
+}
+
+function segmentDistance(point,from,to){
+ const dx=to.x-from.x,dy=to.y-from.y;
+ const along=Math.max(0,Math.min(1,((point.x-from.x)*dx+(point.y-from.y)*dy)/(dx*dx+dy*dy||1)));
+ return Math.hypot(point.x-from.x-dx*along,point.y-from.y-dy*along);
+}
+
+const closeToGroup=(herd,member,point)=>herd.members.some(other=>other!==member&&other.point&&
+ Math.hypot(other.point.x-point.x,other.point.y-point.y)<herd.spec.space*2.9);
+
+function clearOfGroup(herd,member,from,to){
+ return herd.members.every(other=>other===member||!other.point||
+  segmentDistance(other.point,from,to)>=herd.spec.space*.92);
 }
 
 function approach(state,from,to,clear){
@@ -195,7 +167,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   for(const mesh of owned){mesh.isPickable=false;mesh.receiveShadows=true;meshes.push(mesh);}
   const walk=copy.animationGroups.find(group=>/-Walk$/i.test(group.name))||copy.animationGroups.find(group=>/-Animation$/i.test(group.name));
   const idle=copy.animationGroups.find(group=>/Idle$/i.test(group.name));
-  const member={root,owned,copy,walk,idle,stride:spec.strides[variant],phase:index*.31,point:null};
+  const member={root,owned,copy,walk,idle,stride:spec.strides[variant],phase:index*.31,point:null,index,attempt:0,waitUntil:0};
   const targets=walk?.targetedAnimations||[];
   member.restPositions=targets.filter(({target,animation})=>target.position&&animation.targetProperty==='position')
    .map(({target})=>({target,position:target.position.clone()}));
@@ -239,13 +211,16 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const candidates=pens.filter(b=>isOperational(b)&&b.type===herd.spec.pen&&herd.handled.get(penKey(b))!==(b.built?.order??0));
   const leader=herd.members[0].point;
   if(!leader)return null;
+  const otherZones=herds.filter(other=>other!==herd&&other.zone).map(other=>other.zone);
+  const clearApproach=(world,from,to)=>otherZones.every(zone=>
+   segmentDistance(zone,from,to)>zone.radius+.18)&&clear(world,from,to);
   for(const building of candidates.sort((a,b)=>Math.hypot(a.x-leader.x,a.y-leader.y)-Math.hypot(b.x-leader.x,b.y-leader.y))){
-   const targets=penTargets(state,building,herd.kind).slice(0,herd.slots.length);
+   const targets=penTargets(state,building,herd.kind).slice(0,herd.size);
    if(!targets.length||targets.length>herd.members.length)continue;
    const {outside,inside}=penEntrance(state,building);
    const approaches=targets.map((_,i)=>{
     const start=herd.members[i].point;
-    const external=start&&approach(state,start,outside,clear);
+    const external=start&&approach(state,start,outside,clearApproach);
     return external&&timedPath(external);
    });
    if(approaches.every(Boolean)){
@@ -264,6 +239,58 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   return null;
  }
 
+ function roam(herd,member,state,elapsed){
+  if(!member.point){
+   for(let i=0;i<48;i++){
+    const point=randomPoint(herd,member);
+    if(!clearOfGroup(herd,member,point,point)||!clear(state,herd.zone,point))continue;
+    if(herd.members.some(other=>other.point)&&!closeToGroup(herd,member,point))continue;
+    pose(member,point,state,0,false);
+    member.waitUntil=clock+seed(herd.seed,member.index+herd.index*19+503)*2.9;
+    break;
+   }
+   return;
+  }
+  if(!elapsed)return;
+  const from=member.point;
+  if(!member.goal&&clock>=member.waitUntil){
+   for(let i=0;i<16;i++){
+    const goal=randomPoint(herd,member);
+    const distance=Math.hypot(goal.x-from.x,goal.y-from.y);
+    if(distance<herd.spec.space*.7||distance>herd.zone.radius*.85)continue;
+    if(!clearOfGroup(herd,member,from,goal)||!clear(state,from,goal))continue;
+    if(!closeToGroup(herd,member,goal))continue;
+    const direction=Math.atan2(goal.x-from.x,goal.y-from.y)-member.root.rotation.y;
+    if(i<12&&Math.cos(direction)<.15)continue;
+    member.goal=goal;
+    break;
+   }
+   if(!member.goal)member.waitUntil=clock+.55+seed(herd.seed,member.attempt)*1.1;
+  }
+  if(member.goal){
+   const dx=member.goal.x-from.x,dy=member.goal.y-from.y;
+   const distance=Math.hypot(dx,dy);
+   const yaw=Math.atan2(dx,dy);
+   const difference=yaw-member.root.rotation.y;
+   const turn=Math.atan2(Math.sin(difference),Math.cos(difference));
+   if(Math.abs(turn)>.37){
+    member.root.rotation.y+=Math.sign(turn)*Math.min(Math.abs(turn),elapsed*1.8);
+    pose(member,from,state,elapsed,false);
+    return;
+   }
+   const pace=PACE*(.70+seed(herd.seed,member.index+herd.index*23+671)*.45);
+   const step=Math.min(distance,pace*elapsed);
+   const next={x:from.x+dx*step/distance,y:from.y+dy*step/distance,yaw};
+   if(clearOfGroup(herd,member,from,next)&&closeToGroup(herd,member,next)){
+    pose(member,next,state,elapsed,true);
+    if(step<distance)return;
+   }
+   member.goal=null;
+   member.waitUntil=clock+.8+seed(herd.seed,member.attempt+member.index*13)*3.1;
+  }
+  pose(member,member.point,state,elapsed,false);
+ }
+
  function update(state,dt,paused,speed,otherHerd=[]){
   if(!ready||disposed)return;
   const elapsed=paused?0:Math.min(.1,Math.max(0,dt))*speed;
@@ -278,12 +305,13 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
     const worldSeed=state.world?.seed??0;
     if(herd.seed!==worldSeed){
      herd.seed=worldSeed;
-     herd.slots=herdSlots(worldSeed,herd.index,herd.spec.space);
-     herd.track=null;
+     herd.size=4+Math.floor(seed(worldSeed,herd.index+51)*4);
+     herd.zone=null;
     }
-    if(!herd.track||!trackClear(state,herd.track,herd.slots,dry,clear)){
-     const occupied=[...otherHerd,...herds.filter(other=>other!==herd&&other.track).map(other=>other.track)];
-     herd.track=findTrack(state,occupied,herd.index,herd.slots,dry,clear);
+    if(!herd.zone||!zoneClear(state,herd.zone,dry,clear)){
+     const occupied=[...otherHerd,...herds.filter(other=>other!==herd&&other.zone).map(other=>other.zone)];
+     herd.zone=findZone(state,occupied,herd,dry,clear);
+     for(const member of herd.members){member.point=null;member.goal=null;}
     }
     herd.nextSearch=clock;
    }
@@ -291,7 +319,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   claimed.clear();
   for(const [id,point] of settledSheep)if(state.simTime>=point.release)settledSheep.delete(id);
   for(const herd of herds){
-   if(!herd.track&&!herd.transfer){for(const member of herd.members)member.root.setEnabled(false);continue;}
+   if(!herd.zone&&!herd.transfer){for(const member of herd.members)member.root.setEnabled(false);continue;}
    if(!herd.members.length){
     for(let i=0;i<MAX_HERD;i++){
      const member=makeMember(herd,i);
@@ -327,24 +355,18 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
        settledSheep.set(target.id,{...target,yaw:pathPoint(transfer.paths[i],transfer.paths[i].length).yaw,release});
       }
      }
-     for(const member of herd.members){member.root.setEnabled(false);member.point=null;}
+     for(const member of herd.members){member.root.setEnabled(false);member.point=null;member.goal=null;}
     }
     continue;
    }
-   if(!herd.track||clock-(herd.departedAt??-Infinity)<8)continue;
-   const travel=herd.track.length/PACE;
-   const time=clock+herd.index*3;
-   const cycle=travel+1.25;
-   const moving=time%cycle<travel;
-   const leadDistance=Math.min(time%cycle,travel)*PACE+herd.track.half;
-   for(let i=0;i<herd.members.length;i++){
-    const member=herd.members[i];
-    const slot=herd.slots[i];
-    if(!slot){member.root.setEnabled(false);continue;}
+   if(!herd.zone||clock-(herd.departedAt??-Infinity)<8)continue;
+   for(const member of herd.members){
+    if(member.index>=herd.size){member.root.setEnabled(false);continue;}
     delete member.root.metadata.herdDestination;
     member.root.scaling.setAll(1);
-    pose(member,formationPoint(herd.track,leadDistance,slot),state,elapsed,moving);
+    roam(herd,member,state,elapsed);
    }
+
   }
  }
  function dispose(){
