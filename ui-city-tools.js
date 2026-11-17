@@ -1,4 +1,5 @@
 import {productionChainsHTML} from './ui-production-chains.js';
+import {mountProductionGraph} from './ui-production-graph.js';
 import {RESIDENT_REACTION_LABELS} from './resident-reactions.js';
 import {buildingInventory} from './building-inventory.js';
 import {homeMealFood,supplyHome} from './households.js';
@@ -526,6 +527,11 @@ export function renderCityTools(root,s,options={}){
    const openHelp=new Set([...(root.querySelectorAll?.('[data-city-vital-help][open]')||[])].map(e=>e.dataset.cityVitalHelp));
    const scroll=root.querySelector?.('[data-city-scroll]'),previousTop=scroll?.scrollTop||0;
    const changed=setHTML(root,cityToolsHTML(ctl.s,{tab:ctl.tab,filter:ctl.filter,buildingFilter:ctl.buildingFilter,page:ctl.page,selectedId:ctl.selectedId,group:ctl.group,model:ctl.model,desiredInspirations:ctl.desiredInspirations,expandedBuildings:ctl.expandedBuildings,expandedCitizens:ctl.expandedCitizens,production:ctl.production,testOptions:{...ctl.testOptions,audioStatus:ctl.options.audioStatus,mapUpgrade:ctl.options.mapUpgrade,quickBuild:ctl.options.quickBuild}}));
+   if(changed){
+    ctl.stopProductionGraph?.();
+    const graph=ctl.tab==='chains'?root.querySelector?.('.production-graph'):null;
+    ctl.stopProductionGraph=graph?mountProductionGraph(graph):null;
+   }
    if(changed&&openHelp.size)for(const el of root.querySelectorAll('[data-city-vital-help]'))if(openHelp.has(el.dataset.cityVitalHelp))el.open=true;
    if(changed&&attribute){
     const replacement=[...(root.querySelectorAll?.(`[${attribute}]`)||[])].find(e=>e.getAttribute(attribute)===value);
@@ -576,6 +582,11 @@ export function renderCityTools(root,s,options={}){
   });
   root.addEventListener('click',event=>{
    const button=event.target.closest?.('button');if(!button||!root.contains(button))return;
+   if(button.hasAttribute('data-production-pan')){
+    const viewport=root.querySelector?.('.production-viewport');
+    if(viewport)viewport.scrollBy({left:Math.max(180,viewport.clientWidth-180)*Number(button.dataset.productionPan)});
+    return;
+   }
    if(button.dataset.testAction!==undefined){const data={...ctl.testOptions};for(const k of ['event','resource','building','citizen','count','add-count']){const input=root.querySelector(`[data-test-${k}]`);if(input)data[k]=['count','add-count'].includes(k)?Number(input.value):input.value;}ctl.options.onTestAction?.(button.dataset.testAction,data);ctl.refresh();return;}
    if(button.dataset.cityFireEvacuate!==undefined){ctl.options.onFireEvacuate?.(button.dataset.kiln,button.dataset.cityFireEvacuate);ctl.refresh();return;}
    if(button.dataset.cityExtinguishKiln!==undefined){ctl.options.onKilnExtinguish?.(button.dataset.cityExtinguishKiln);ctl.refresh();return;}
