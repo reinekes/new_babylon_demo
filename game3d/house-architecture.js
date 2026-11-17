@@ -36,13 +36,15 @@ export function createHouseArchitecture(B,scene,b,m,state){
  }else if(kind==='courtyard-1'){
   // A buildable first dwelling is a small plastered room with a working yard;
   // the founding corbelled hut remains a separate, unbuildable origin house.
-  room('modest-back-room',0,-1.18,3.65,2.15,1.74);
+  room('modest-back-room',-.58,-1.10,3.25,2.30,1.84);
+  for(const x of [-1.96,-1.51,.29,.74])block('mudbrick-foot',x,.13,.06,.40,.22,.16,m.trim);
   block('modest-yard-wall',-2.03,.46,.77,.2,.92,2.83);
   block('modest-yard-wall',1.98,.36,.93,.2,.72,2.5);
-  canopy('modest-entrance-shade',0,.79,2.18,1.5,1.56);
+  canopy('modest-entrance-shade',.85,.72,1.92,1.46,1.61);
   block('modest-bench',-1.58,.22,1.6,.5,.44,.87,m.trim);
   block('woven-mat',.04,.09,1.75,1.25,.025,.66,m.reed);
-  jar('water-jar',1.46,1.69,.64);jar('small-pot',1.07,1.98,.37);
+  jar('water-jar',1.33,1.14,.76);jar('small-pot',.79,1.49,.38);
+  if(variant===0)jar('door-planter',1.73,.90,.46,0,true);
   if(variant===1){canopy('side-reed-shelter',-1.16,1.03,1.12,1.9,1.52);jar('door-planter',-1.55,2.02,.47,0,true);}
   if(variant===2){block('storage-bin',-1.28,.32,1.19,.64,.64,.71,m.trim);block('storage-bin-lid',-1.28,.66,1.19,.69,.065,.76,m.reed);jar('door-planter',1.74,.29,.48,0,true);}
  }else if(kind==='courtyard-2'){

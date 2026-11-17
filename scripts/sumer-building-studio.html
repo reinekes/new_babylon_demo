@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="../">
+<title>Новый Вавилон · модели построек</title>
+<style>
+body{margin:0;background:#f5eee1;color:#34291f;font:16px system-ui}header{padding:.8rem 1rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}h1{font-size:1.1rem;margin:0}select,button{font:inherit}canvas{display:block;width:100%;height:calc(100dvh - 120px);touch-action:none}#status{margin:.35rem 1rem}
+</style>
+<header><h1>Модели Южного Шумера</h1><select id="building" aria-label="Постройка"></select><button id="overview">Весь город</button><a id="download">GLB</a></header>
+<p id="status" role="status">Загрузка города…</p><canvas id="city" tabindex="0" aria-label="Тестовый город"></canvas>
+<script src="assets/vendor/babylon-9.31.0.js"></script>
+<script type="module" src="scripts/sumer-building-studio.js"></script>
+</html>

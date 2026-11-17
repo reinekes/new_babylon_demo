@@ -9,6 +9,7 @@ import {isReedShrine} from '../building-presentation.js';
 import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
 import {createReedRoof} from './reed-roof.js';
+import {dressSumerYard} from './sumer-yard-details.js';
 import {createMusicCourtyard} from './music-courtyard.js';
 import {createIshtarGateFallback,createSumerGate} from './sacred-models.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
@@ -73,6 +74,21 @@ export function createArchitecture(B,scene,b,m,state){
  };
  const loom=(x,z)=>{for(const s of [-1,1])beam([x+s*.65,.08,z+.35],[x+s*.65,1.75,z-.12],.06);beam([x-.7,1.75,z-.12],[x+.7,1.75,z-.12],.06);for(let i=0;i<13;i++)beam([x-.6+i*.1,.23,z+.31],[x-.6+i*.1,1.7,z-.1],.01,m.linen);block(x,.82,z+.13,1.17,.72,.035,m.linen);};
  const ground=()=>block(0,.025,0,5.3,.05,5.3,m.soil);
+ const oven=(x,z,width,depth,height,material)=>{
+  // Wedge voussoirs leave a real loading recess instead of a dark decal
+  // attached to the face of an opaque brick block.
+  const radius=width*.5,opening=radius*.57,spring=height*.35;
+  for(const side of [-1,1])block(x+side*(opening+radius)/2,spring/2,z,(radius-opening),spring,depth,material);
+  for(let i=0;i<13;i++){
+   const a=(i+.5)*Math.PI/13;
+   const wedge=block(x+Math.cos(a)*(radius+opening)/2,spring+Math.sin(a)*(radius+opening)/2,z,
+    (radius-opening)*1.08,(radius+opening)*Math.sin(Math.PI/26)*1.11,depth,material);
+   wedge.rotation.z=a;
+  }
+  block(x,height*.25,z-depth*.46,width*.84,height*.47,.14,m.raw);
+  block(x,.055,z,opening*2,.11,depth,m.fired);
+ };
+
  const reedSanctuary=()=>{
   ground();
   const back=-2.18,front=1.58,center=(back+front)/2,depth=front-back;
@@ -110,8 +126,18 @@ export function createArchitecture(B,scene,b,m,state){
  if(isExtractionCourt(b)){
   const {x,z}=extractionWorkArea(b,state);
   const width=extractionWorkspaceWidth(b),height=level===3?2.15:1.75;
+  dressSumerYard(b.type,{block,beam,cylinder,jar,m},{x,z});
   cloth(x,z,width,2.4,height,m.reed);
-  if(b.type==='clay')basin(x,z+.16,1.52,1.08);
+  if(b.type==='clay'){
+   basin(x,z+.16,1.52,1.08);
+   // A low retaining edge and exposed benches read as a cut clay bank.
+   // Terrain and remaining clay still belong to the live extraction plot.
+   const px=6-x,pz=6-z,side=px<3?-1:1;
+   for(let step=0;step<3;step++){
+    const high=.12*(3-step);
+    block(px+side*(1.71-step*.45),high*.5,pz+.08,.48,high,3.16-step*.49,m.raw);
+   }
+  }
   if(b.type==='quarry'||b.type==='logging')bench(x,z+.25,1.55);
   if(b.type==='reed')for(let i=0;i<3;i++)block(x-.9+i*.6,.11,z+.35,.50,.18,1.25,m.reed);
   if(b.type==='garden'||b.type==='hunting')for(let i=0;i<3;i++)jar(x-.7+i*.7,z+.2,.63);
@@ -128,8 +154,7 @@ export function createArchitecture(B,scene,b,m,state){
  case 'pottery':ground();room(-1.3,-1.45,2.2,1.8,2);cloth(-1.15,.65,2.4,1.6);cylinder(1.4,.65,-.7,.85,1.3,m.fired,.6);cylinder(1.4,1.4,-.7,.6,.3,m.terracotta,.34);block(1.4,.35,.14,.47,.58,.04,m.shade);bench(-1.2,.7);for(let i=0;i<5;i++)jar(-1.85+i*.34,.7,.37,.84);for(let i=0;i<7;i++)jar(-1.9+i*.61,1.9,.52+i%2*.18);break;
  case 'bakery':
   ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);
-  cylinder(1.6,.55,.45,.9,1.1,m.raw,.66);
-  block(1.6,.34,1.21,.55,.36,.14,m.shade);
+  oven(1.57,.40,1.56,1.56,1.42,m.raw);
   block(-1.28,.2,1.28,1.12,.24,.64,m.shade);
   block(-1.28,.36,1.28,.86,.12,.37,m.trim,.14);
   bench(-.16,1.36,.94);
@@ -180,7 +205,13 @@ export function createArchitecture(B,scene,b,m,state){
   for(const sign of [-1,1])for(let i=0;i<12;i++){const t=(i+.5)/12;block(ox+sign*(large?4.65:2.25)*(1-t),.08+t*(large?3.15:.85),oz+(large?3.9:1.9),large?.65:.35,.15,large?1.1:.6,brick);}
   break;}
  case 'brickyard':ground();room(-1.6,-1.7,1.8,1.5,1.65);basin(-1.45,.05,1.65,1.35);cloth(-1.4,-.25,2,1.6,1.65,m.reed);for(let r=0;r<5;r++)for(let k=0;k<5;k++)block(-.1+k*.5,.13,-1.8+r*.88,.4,.2,.57,m.raw);bench(-1.5,1.6,1.5);block(-1.5,.86,1.6,.6,.08,.34,m.wood);break;
- case 'kiln':ground();block(-.6,1.05,-.55,2.75,2.1,2.8,m.fired);block(-.6,2.14,-.55,2.4,.18,2.45,m.raw);for(const x of [-1.3,.1]){block(x,.5,.87,.47,.67,.04,m.shade);cylinder(x,2.4,-.95,.19,.65,m.fired,.15);}cloth(1.8,.2,1.25,3.2,1.65,m.reed);stack(.95,.2,17,m.fired);stack(-1.8,1.7,9);break;
+ case 'kiln':
+  ground();
+  oven(-.7,-.66,2.85,2.87,2.52,m.fired);
+  cloth(1.78,.1,1.22,3.16,1.65,m.reed);
+  stack(1.02,-1.54,12,m.fired);
+  stack(-1.93,1.43,9,m.raw);
+  break;
  case 'watchHouse':{
   ground();
   room(-.36,-1.42,3.7,1.65,2.18);
@@ -304,6 +335,7 @@ export function createArchitecture(B,scene,b,m,state){
  case 'healer':ground();room(-1.6,-.5,1.6,3.8,2.1);room(.5,-1.65,2.55,1.5,2.4);cloth(.65,.75,2.6,2,1.95);for(const x of [0,1.3]){bench(x,.75,.8);block(x,.88,.75,.7,.06,1.5,m.linen);}for(let i=0;i<5;i++)jar(-1.9+i*.32,-1.5,.25,2.2);basin(-1.9,1.7,.6,.55);break;
  default:throw Error(`Missing original architecture for ${b.type}`);
  }
+ if(!isExtractionCourt(b))dressSumerYard(b.type,{block,beam,cylinder,jar,m});
  // Expansion occupies the yard away from the existing palm targets.
  if(level>=2&&b.type==='pottery'){
   block(-1.54,.31,-.45,1.4,.62,.62,m.raw);
