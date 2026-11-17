@@ -8,7 +8,7 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  dock.innerHTML=[['build','hammer','Строить'],['people','users','Жители'],['city','buildings','Город'],['miracles','sun','Чудеса'],['menu','list','Меню']].map(([id,image,title])=>`<button type="button" data-uruk-action="${id}"${['build','miracles','menu'].includes(id)?' aria-expanded="false"':''}>${icon(image)}<span>${title}</span></button>`).join('')+'<div class="uruk-transport"></div>';
  body.append(dock);dock.querySelector('.uruk-transport').append(d.querySelector('.time-controls'));
  const menu=d.createElement('section');menu.className='uruk-menu';menu.setAttribute('aria-label','Меню города');menu.innerHTML='<div class="uruk-drawer-heading"><h2>Меню</h2></div>';const management=d.querySelector('.management-nav'),header=d.querySelector('.header-actions');
- for(const id of ['open-construction','open-supply','open-trade','open-roads','lay-roads','open-civic-order','open-festival','open-relic','open-life','open-song-library','open-save-library','test-resources']){
+ for(const id of ['open-construction','open-supply','open-production-chains','open-trade','open-roads','lay-roads','open-civic-order','open-festival','open-relic','open-life','open-song-library','open-save-library','test-resources']){
   const control=$(id);if(control?.parentElement===management)management.append(control);
  }
  for(const id of ['open-residents','open-city-tools'])if($(id)?.parentElement===management)$(id).hidden=true;

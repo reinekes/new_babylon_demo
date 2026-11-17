@@ -57,3 +57,24 @@ test('a real garment batch appears once through delivery and can be opened from 
  assert.ok(output.open);
  output.querySelector('[data-city-focus]').click();assert.equal(opened,'10,9');
 });
+
+test('visual chains show the existing recipes without treating stone as a processed resource',()=>{
+ const s=createGame({start:'established'}),before=encode(s);
+ const {window}=new JSDOM('<main></main>'),root=window.document.querySelector('main');
+ renderCityTools(root,s,{tab:'production'});
+ root.querySelector('[data-city-tab="chains"]').click();
+ assert.match(root.querySelector('h2').textContent,/Цепочки производства/);
+ const steps=id=>[...root.querySelectorAll(`[data-production-chain="${id}"] [data-chain-building]`)];
+ assert.deepEqual(steps('clay').map(step=>step.dataset.chainBuilding),['clay','brickyard','kiln']);
+ assert.deepEqual(steps('wool').map(step=>step.dataset.chainBuilding),['sheepfold','weaver','tailor']);
+ const inputs=step=>[...step.querySelectorAll('[data-chain-input]')].map(el=>[el.dataset.chainInput,Number(el.dataset.units)]);
+ assert.deepEqual(inputs(steps('clay')[1]),[['clay',4],['reed',1],['water',2]]);
+ assert.deepEqual(inputs(steps('clay')[2]),[['brick',4],['reed',3]]);
+ assert.deepEqual(inputs(steps('wool')[2]),[['cloth',2]]);
+ assert.deepEqual(inputs(steps('stone')[1]),[['stone',4]]);
+ assert.equal(steps('stone')[1].querySelector('[data-chain-output]'),null);
+ assert.ok([...steps('clay'),...steps('wool'),...steps('stone')].every(step=>step.querySelector('img[loading="lazy"]')));
+ root.querySelector('[data-city-tab="production"]').click();
+ assert.match(root.querySelector('h2').textContent,/Производство за год/);
+ assert.equal(encode(s),before);
+});

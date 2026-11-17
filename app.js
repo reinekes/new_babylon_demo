@@ -2083,6 +2083,7 @@ function chooseNewMode(replace=false){paused=true;openDialog('mode',modeChooserH
 function askReset(){chooseNewMode(true);}
 $('building-count').textContent=Object.keys(BUILDINGS).length;
 $('open-supply').onclick=showSupply;
+$('open-production-chains').onclick=()=>showCityOverview('chains');
 renderer.onRoadGround=drawRoadPoint;
 $('lay-roads').onclick=()=>{const enable=!renderer.roadDrawMode;clearRoadRoute();if(selection)choose(selection);roadMode=enable;renderer.setRoadMode(enable);renderer.roadDrawMode=enable;$('lay-roads').setAttribute('aria-pressed',String(enable));$('open-roads').setAttribute('aria-pressed','false');$('map-hint').textContent=enable?'Выбери начало дороги · затем конец · Escape — выйти':'Выбери здание или жителя';};
 $('open-roads').onclick=()=>{const enable=!roadMode||renderer.roadDrawMode;clearRoadRoute();if(selection)choose(selection);roadMode=enable;renderer.setRoadMode(roadMode);$('open-roads').setAttribute('aria-pressed',String(roadMode));$('map-hint').textContent=roadMode?'Дороги: выбери участок · тонкие линии показывают возможные маршруты · Escape — выйти':'Выбери здание или жителя';};

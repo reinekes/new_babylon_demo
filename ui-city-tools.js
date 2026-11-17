@@ -1,3 +1,4 @@
+import {productionChainsHTML} from './ui-production-chains.js';
 import {RESIDENT_REACTION_LABELS} from './resident-reactions.js';
 import {buildingInventory} from './building-inventory.js';
 import {homeMealFood,supplyHome} from './households.js';
@@ -457,9 +458,53 @@ function annualProductionHTML(s,{year,resource='all',expanded=new Set()}={}){
  return `<section class="city-production" aria-label="Годовая сводка производства"><div class="production-filters"><label class="city-tools-field"><span>Период</span><select data-production-year>${report.years.map(y=>option(y,y===s.year?`Год ${y} · текущий`:`Год ${y}`,y===report.year)).join('')}</select></label><label class="city-tools-field"><span>Ресурс</span><select data-production-resource>${option('all','Все ресурсы',resource==='all')}${RESOURCE_GROUPS.map(g=>`<optgroup label="${escape(g.name)}">${g.keys.map(key=>option(key,label(key),key===resource)).join('')}</optgroup>`).join('')}</select></label></div><p>Учитывается местный выпуск и добыча. Покупки, складские остатки и перевозки сюда не входят.</p>${coverage?`<p class="production-coverage">${coverage}</p>`:''}${list||empty(report.coverage==='unknown'?'Открой другой период.':'За выбранный период выпуск пока не записан.')}</section>`;
 }
 
-export function cityToolsHTML(s,{tab='districts',filter={},page=0,selectedId=null,buildingFilter={},group=null,model=cityDiagnostics(s),desiredInspirations=new Map(),expandedBuildings=new Set(),expandedCitizens=new Set(),testOptions={},production={}}={}){
- const total=model.totals;
- return `<section class="city-tools${tab==='testing'?'':' city-tools-register'}" data-city-view="${tab}" aria-label="Обзор города"><header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>${tab==='citizens'?'Реестр жителей':tab==='professions'?'Профессии и рабочие места':tab==='workshops'?'Здания города':tab==='production'?'Производство за год':tab==='testing'?'Тестирование':'Кварталы'}</h2></div><span class="city-tools-clock">${String(Math.floor(model.hour)).padStart(2,'0')}:${String(Math.floor(model.hour%1*60)).padStart(2,'0')} · ${model.isDay?'День':'Ночь'}</span></header><div class="city-tools-summary"><span><b>${total.population}</b> жителей</span><span><b>${total.workers}</b> на службе</span><span><b>${total.carrying}</b> с грузом</span><span class="${total.hungry||total.ill?'is-warning':''}"><b>${total.hungry+total.ill>0?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0}</b> нужна помощь</span></div><nav class="city-tools-tabs" aria-label="Разделы обзора">${[['districts','Кварталы'],['citizens','Жители'],['professions','Профессии'],['workshops','Здания'],['production','Производство'],['testing','Тестирование']].map(([id,text])=>`<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${text}${id==='citizens'?` <small>${total.population}</small>`:id==='workshops'?` <small>${s.buildings.length}</small>`:''}</button>`).join('')}</nav><div class="city-tools-content">${tab==='testing'?renderTestTools(s,{...testOptions,showHeading:false}):tab==='production'?annualProductionHTML(s,production):tab==='professions'?professionStaffingHTML(s,model.workshops):tab==='citizens'?citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens):tab==='workshops'?workshopsHTML(s,model,expandedBuildings,buildingFilter,page):tab==='homes'?homesHTML(model,group):neighborhoodsHTML(model)+fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+revelationEvidenceHTML(s)+housingPolicyHTML(s)}</div><footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer></section>`;
+const cityTabs=[
+ ['districts','Кварталы','Кварталы'],['citizens','Жители','Реестр жителей'],
+ ['professions','Профессии','Профессии и рабочие места'],['workshops','Здания','Здания города'],
+ ['production','Производство','Производство за год'],['chains','Цепочки','Цепочки производства'],
+ ['testing','Тестирование','Тестирование']
+];
+
+export function cityToolsHTML(s,{tab='districts',filter={},page=0,selectedId=null,buildingFilter={},group=null,model,desiredInspirations=new Map(),expandedBuildings=new Set(),expandedCitizens=new Set(),testOptions={},production={}}={}){
+ const reference=tab==='chains';
+ if(!reference) model??=cityDiagnostics(s);
+ const title=cityTabs.find(([id])=>id===tab)?.[2]??'Кварталы';
+ const tabs=cityTabs.map(([id,label])=>{
+  const count=reference?null:id==='citizens'?model.totals.population:id==='workshops'?s.buildings.length:null;
+  return `<button type="button" data-city-tab="${id}" aria-pressed="${tab===id||tab==='homes'&&id==='districts'}">${label}${count===null?'':` <small>${count}</small>`}</button>`;
+ }).join('');
+ let clock='',summary='',legend='';
+ if(!reference){
+  const {hour,isDay,totals}=model;
+  const needsHelp=totals.hungry||totals.ill;
+  const helpCount=needsHelp?new Set([...filterCitizens(s,{trouble:'hunger'}),...filterCitizens(s,{trouble:'health'})].map(c=>c.id)).size:0;
+  clock=`<span class="city-tools-clock">${String(Math.floor(hour)).padStart(2,'0')}:${String(Math.floor(hour%1*60)).padStart(2,'0')} · ${isDay?'День':'Ночь'}</span>`;
+  summary=`<div class="city-tools-summary">
+   <span><b>${totals.population}</b> жителей</span><span><b>${totals.workers}</b> на службе</span>
+   <span><b>${totals.carrying}</b> с грузом</span><span class="${needsHelp?'is-warning':''}"><b>${helpCount}</b> нужна помощь</span>
+  </div>`;
+  legend='<footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer>';
+ }
+ let content;
+ switch(tab){
+  case 'chains': content=productionChainsHTML(s);break;
+  case 'testing': content=renderTestTools(s,{...testOptions,showHeading:false});break;
+  case 'production': content=annualProductionHTML(s,production);break;
+  case 'professions': content=professionStaffingHTML(s,model.workshops);break;
+  case 'citizens': content=citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens);break;
+  case 'workshops': content=workshopsHTML(s,model,expandedBuildings,buildingFilter,page);break;
+  case 'homes': content=homesHTML(model,group);break;
+  default: content=neighborhoodsHTML(model)+fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+
+    earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+
+    arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+
+    inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+
+    revelationEvidenceHTML(s)+housingPolicyHTML(s);
+ }
+ return `<section class="city-tools${tab==='testing'?'':' city-tools-register'}" data-city-view="${tab}" aria-label="Обзор города">
+  <header class="city-tools-heading"><div><span class="city-tools-eyebrow">Город в деталях</span><h2>${title}</h2></div>${clock}</header>
+  ${summary}<nav class="city-tools-tabs" aria-label="Разделы обзора">${tabs}</nav>
+  <div class="city-tools-content">${content}</div>${legend}
+ </section>`;
 }
 
 /** Mount in an existing panel root. Refresh on the app's throttled UI tick.
@@ -470,6 +515,7 @@ export function renderCityTools(root,s,options={}){
  if(!ctl){
   ctl={s,options,tab:'districts',filter:{role:'all',age:'all',trouble:'all'},page:0,selectedId:null,buildingFilter:{},group:null,desiredInspirations:new Map(),expandedBuildings:new Set(),expandedCitizens:new Set(),testOptions:{},production:{expanded:new Set()}};controllers.set(root,ctl);
   ctl.draw=({resetScroll=false}={})=>{
+   if(ctl.tab!=='chains'&&!ctl.model)ctl.model=cityDiagnostics(ctl.s);
    const active=root.ownerDocument?.activeElement,inside=active&&root.contains(active);
    const attributes=['data-city-search','data-city-filter','data-city-role','data-city-inspiration','data-city-assign','data-city-inspect','data-vital-tab','data-city-citizen','data-city-work-category','data-city-building-attention','data-city-tab','data-city-page','data-production-year','data-production-resource'];
    const attribute=inside?attributes.find(key=>active.hasAttribute(key)):null,value=attribute?active.getAttribute(attribute):null;
@@ -556,7 +602,9 @@ export function renderCityTools(root,s,options={}){
    ctl.draw({resetScroll:true});
   });
  }
- ctl.s=s;ctl.options=options;ctl.model=cityDiagnostics(s);if(options.tab)ctl.tab=options.tab;if(options.residentView){
+ ctl.options=options;
+ if(!options.tab&&ctl.s===s&&ctl.tab==='chains'&&root.firstElementChild?.dataset.cityView==='chains')return ctl.model;
+ ctl.s=s;if(options.tab)ctl.tab=options.tab;ctl.model=ctl.tab==='chains'?null:cityDiagnostics(s);if(options.residentView){
   const {id,filter}=options.residentView;
   ctl.selectedId=id;
   ctl.filter={...filter};
