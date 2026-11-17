@@ -138,6 +138,60 @@ function routePaths(svg,layout){
  }
 }
 
+function productionRoutes(paths,start,from,to){
+ const pending=[start],visited=new Set(pending),edges=new Set();
+ while(pending.length){
+  const current=pending.pop();
+  for(const path of paths){
+   if(path.dataset[from]!==current)continue;
+   edges.add(path);
+   const next=path.dataset[to];
+   if(visited.has(next))continue;
+   visited.add(next);
+   pending.push(next);
+  }
+ }
+ visited.delete(start);
+ return {edges,buildings:visited};
+}
+
+function bindProductionSelection(graph,svg){
+ const paths=[...svg.querySelectorAll('path[data-from][data-to]')];
+ const cards=[...graph.querySelectorAll('[data-production-node]')];
+ const buttons=new Map(cards.map(card=>[card.dataset.productionNode,card.querySelector('.production-card-toggle')]));
+ const status=graph.querySelector('[data-production-status]');
+ const names=ids=>[...ids].map(id=>buttons.get(id)?.textContent).filter(Boolean).join(', ');
+ function select(event){
+  if(event.target.closest('.chain-help'))return;
+  const card=event.target.closest('[data-production-node]');
+  if(!card)return;
+  const id=card.dataset.productionNode;
+  const selected=graph.dataset.productionSelection===id?'':id;
+  const upstream=productionRoutes(paths,selected,'to','from');
+  const downstream=productionRoutes(paths,selected,'from','to');
+  if(selected)graph.dataset.productionSelection=selected;
+  else delete graph.dataset.productionSelection;
+  graph.toggleAttribute('data-production-focus',upstream.edges.size+downstream.edges.size>0);
+  for(const path of paths)path.toggleAttribute('data-production-connected',upstream.edges.has(path)||downstream.edges.has(path));
+  for(const item of cards){
+   const type=item.dataset.productionNode;
+   item.toggleAttribute('data-production-active',type===selected);
+   item.toggleAttribute('data-production-connected',upstream.buildings.has(type)||downstream.buildings.has(type));
+   buttons.get(type)?.setAttribute('aria-pressed',String(type===selected));
+  }
+  if(status){
+   const incoming=names(upstream.buildings),outgoing=names(downstream.buildings);
+   status.textContent=selected?[
+    `Выбрана постройка «${names([selected])}».`,
+    incoming&&`Поставщики ресурсов на схеме — ${incoming}.`,
+    outgoing&&`Получатели продукции на схеме — ${outgoing}.`
+   ].filter(Boolean).join(' '):'Подсветка снята.';
+  }
+ }
+ graph.addEventListener('click',select);
+ return ()=>graph.removeEventListener('click',select);
+}
+
 /** The graph and SVG share one scroll plane; scrolling requires no remeasurement. */
 export function mountProductionGraph(graph){
  const svg=graph?.querySelector('svg[data-production-edges]');
@@ -146,6 +200,7 @@ export function mountProductionGraph(graph){
  const request=win.requestAnimationFrame?.bind(win)||win.setTimeout.bind(win);
  const cancel=win.cancelAnimationFrame?.bind(win)||win.clearTimeout.bind(win);
  const dialog=graph.closest('dialog');
+ const stopSelection=bindProductionSelection(graph,svg);
  let frame=null,disposed=false;
  const schedule=()=>{
   if(disposed||frame!==null)return;
@@ -162,6 +217,7 @@ export function mountProductionGraph(graph){
   if(disposed)return;
   disposed=true;
   if(frame!==null)cancel(frame);
+  stopSelection();
   observer?.disconnect();
   if(!observer)win.removeEventListener('resize',schedule);
   dialog?.removeEventListener('close',onClose);

@@ -110,3 +110,31 @@ test('the guide covers every building and exposes help above every preview',()=>
  assert.ok(bridge.open);
  assert.equal(encode(s),before);
 });
+
+test('a selected building highlights only its upstream and downstream routes',()=>{
+ const s=createGame({start:'established'}),before=encode(s);
+ const {window}=new JSDOM('<main></main>'),root=window.document.querySelector('main');
+ renderCityTools(root,s,{tab:'chains'});
+ const graph=root.querySelector('.production-graph');
+ const card=id=>graph.querySelector(`[data-production-node="${id}"]`);
+ const paths=()=>[...graph.querySelectorAll('path[data-production-connected]')].map(({dataset})=>`${dataset.from}>${dataset.to}`);
+
+ card('pottery').querySelector('img').click();
+ assert.equal(graph.dataset.productionSelection,'pottery');
+ assert.equal(card('pottery').querySelector('button').getAttribute('aria-pressed'),'true');
+ assert.deepEqual(paths(),['clay>pottery','pottery>brewery','pottery>dairyStore']);
+ card('brewery').querySelector('button').click();
+ assert.deepEqual(paths(),['field>brewery','clay>pottery','pottery>brewery']);
+ card('clay').querySelector('img').click();
+ assert.deepEqual(paths(),['clay>pottery','clay>brickyard','pottery>brewery','pottery>dairyStore','brickyard>kiln']);
+ card('quarry').querySelector('summary').click();
+ assert.equal(graph.dataset.productionSelection,'clay');
+ assert.equal(card('quarry').querySelector('details').open,true);
+ card('clay').querySelector('img').click();
+ assert.equal(graph.hasAttribute('data-production-selection'),false);
+ assert.deepEqual(paths(),[]);
+ card('quarry').querySelector('button').click();
+ assert.equal(card('quarry').hasAttribute('data-production-active'),true);
+ assert.equal(graph.hasAttribute('data-production-focus'),false);
+ assert.equal(encode(s),before);
+});

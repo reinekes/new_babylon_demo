@@ -91,9 +91,10 @@ function cardHTML(state,building,column){
  const showOutput=column&&outputKeys.length;
  const note=notes[building];
  const graphNode=column?` data-production-node="${building}" data-production-column="${column}" style="grid-column:${column}"`:'';
+ const heading=column?`<button type="button" class="production-card-toggle" aria-pressed="false" aria-label="${def.name}, подсветить цепочку">${def.name}</button>`:def.name;
  return `<article class="chain-entry" data-chain-building="${building}"${graphNode}>
   <div class="chain-card-heading">
-   <h4>${def.name}</h4>
+   <h4>${heading}</h4>
    <details class="chain-help" name="production-building-help">
     <summary aria-label="О постройке: ${def.name}">?</summary>
     <div class="chain-help-text" role="region" aria-label="${def.name}">
@@ -120,6 +121,7 @@ function graphHTML(state){
  const columns=Math.max(...levels.flatMap(({buildings})=>buildings.map(([column])=>column)));
  return `<div class="production-viewport" tabindex="0" role="region" aria-label="Схема производства с горизонтальной прокруткой" data-city-scroll>
   <div class="production-graph" style="--production-columns:${columns}">
+   <p class="production-selection-status" role="status" data-production-status></p>
    <svg class="production-edges" data-production-edges aria-hidden="true" focusable="false">
     <defs><marker id="production-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="context-stroke"/></marker></defs>
     ${dependencies.map(([from,to,key])=>`<path data-from="${from}" data-to="${to}" data-resource="${key}" marker-end="url(#production-arrow)"/>`).join('')}
@@ -135,7 +137,7 @@ function graphHTML(state){
 export function productionChainsHTML(state){
  const standalone=BUILDING_GROUPS.map(({id,name,types})=>({name,types:[...types.filter(type=>!linked.has(type)),...(standaloneExtras[id]??[])]}));
  return `<div class="production-chains">
-  <div class="chains-intro"><p>Стрелки показывают путь основных ресурсов. Вода и топливо указаны на карточках.</p>
+  <div class="chains-intro"><p>Нажми на постройку, чтобы подсветить её связи. Повторное нажатие снимет подсветку.</p>
    <div class="production-navigation">
     <button type="button" data-production-pan="-1" aria-label="Прокрутить схему влево">←</button>
     <button type="button" data-production-pan="1" aria-label="Прокрутить схему вправо">→</button>

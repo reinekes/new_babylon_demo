@@ -556,6 +556,14 @@ details[open]>summary.production-total span::after{content:' −'}
 .production-edges>path[data-resource=grain] {stroke:#f0c675}
 .production-edges>path[data-resource=pottery] {stroke:#e9956f}
 .production-edges>path[data-resource=milk] {stroke:#e7e2c8}
+.production-graph[data-production-focus] .production-edges>path[data-from] {opacity:.18}
+.production-graph[data-production-focus] .production-edges>path[data-production-connected] {opacity:1;stroke-width:3.5}
+.production-graph [data-production-node] {cursor:pointer}
+.production-graph [data-production-connected] :is(.chain-card-heading,.chain-card) {border-color:#c59d65}
+.production-graph [data-production-active] .chain-card-heading {background:#244260 var(--uruk-lapis);background-size:320px}
+.production-graph [data-production-active] :is(.chain-card-heading,.chain-card) {border-color:#edd2a3}
+.uruk-ui dialog .production-card-toggle {display:block;min-height:0;padding:0;background:none!important;border:0!important;color:inherit!important;font:inherit;text-align:left}
+.production-selection-status {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .production-chains .resource-svg {width:16px;height:16px;flex:none;color:#e5bc83}
 .chain-entry {display:flex;flex:1;flex-direction:column;min-width:0}
 .chain-card-heading {position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 6px 5px 9px;background:#3c2d21;border:1px solid #806142;border-bottom:0;border-radius:4px 4px 0 0}
