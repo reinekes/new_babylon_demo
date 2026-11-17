@@ -23,7 +23,7 @@ group('goat-downloaded','active','Основная коза симуляции; 
 group('goat-authored-lod','optional','Авторская коза через API createGameGoats; main явно выбирает только downloaded.','game3d/goats.js|authored:');
 group('goat-authored goat','spare','Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.','assets/art-courtyard/ATTRIBUTION.md|## Goats');
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
-group('test-pig-trellis test-goat-trellis','active','Текстурированная проба TRELLIS.2 в демонстрационном стаде.','game3d/test-livestock.js|loadAnimals');
+group('test-pig-trellis test-goat-trellis test-bull-trellis','active','Текстурированная модель TRELLIS.2 с ходьбой в демонстрационном стаде.','game3d/test-livestock.js|loadAnimals');
 group('ambient-bull','active','Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.','game3d/ambient-fauna.js|dairyHerd');
 group('ambient-dog imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
 group('ambient-yard-pig','active','Домашняя свинья у двора с исходной анимацией на месте.','game3d/ambient-fauna.js|YARD_PIG_MODEL');
@@ -174,9 +174,7 @@ export function renderMarkdown(index){
 }
 
 function atlasOutputs(index) {
- // Unreviewed models in the test herd stay in the runtime inventory.
- const pendingHerdReview=new Set(['test-pig-trellis.glb','test-goat-trellis.glb']);
- const models=index.models.filter(({file})=>!pendingHerdReview.has(file))
+ const models=index.models
   .map(({file,status,purpose,triangles,sources})=>({file,status,purpose,triangles,sources}));
  const rows=makeCatalog({models},'strict');
  const legacyBuildings=makeCatalog({models},'legacy').filter(row=>row.group==='buildings');

@@ -7,6 +7,12 @@ from pathlib import Path
 
 # Each row is the model-space shoulder/hip, knee/hock, and ankle.
 LANDMARKS = {
+    "bull": [
+        [(-.044,.018,-.365),(-.043,-.135,-.417),(-.044,-.289,-.414)],
+        [(.100,.025,-.288),(.105,-.148,-.280),(.103,-.289,-.236)],
+        [(-.035,.015,.148),(-.041,-.139,.106),(-.040,-.284,.109)],
+        [(.117,.029,.209),(.124,-.144,.189),(.123,-.283,.216)],
+    ],
     "pig": [
         [(-.045,.012,-.315),(-.042,-.111,-.394),(-.054,-.258,-.420)],
         [(.090,.010,-.265),(.109,-.107,-.315),(.118,-.255,-.264)],
@@ -20,8 +26,8 @@ LANDMARKS = {
         [(.076,.025,.166),(.084,-.140,.185),(.078,-.308,.230)],
     ],
 }
-STRIDE = {"pig": .34, "goat": .40}
-HEIGHT = {"pig": .64, "goat": .96}
+STRIDE = {"pig": .34, "goat": .40, "bull": .62}
+HEIGHT = {"pig": .64, "goat": .96, "bull": 1.43}
 
 
 def smoothstep(low, high, value):
@@ -133,6 +139,12 @@ def rig(kind, path):
             samplers.append({"input":time,"output":output,"interpolation":"LINEAR"})
     doc["animations"]=[{"name":"Walk","channels":channels,"samplers":samplers}]
     doc["asset"].setdefault("extras",{})["walk_stride"]=STRIDE[kind]
+    if kind == "bull":
+        doc["asset"]["extras"].update(
+            source="https://3dvalley.com/tools/create/image-to-3d",
+            author="Новый Вавилон / TRELLIS.2 Standard (3D Valley)",
+            license="Результат генерации по референсу проекта, условия 3D Valley",
+        )
     doc["buffers"][0]["byteLength"]=len(data)
     header=json.dumps(doc,separators=(",",":")).encode()
     header+=b" "*(-len(header)%4)

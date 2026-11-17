@@ -1014,6 +1014,14 @@
       "triangles": 14418,
       "meshes": 1,
       "bones": 13
+    },
+    {
+      "file": "models/test-bull-trellis.glb",
+      "bytes": 1930104,
+      "sha256": "3e480d46c1f53d5423656712ce6b572a2e67afea27ef4f07433cb6b081fc454b",
+      "triangles": 14512,
+      "meshes": 1,
+      "bones": 13
     }
   ]
 }

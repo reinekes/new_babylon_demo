@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 90,
-    "active": 65,
+    "total": 91,
+    "active": 66,
     "fallback": 9,
     "optional": 6,
     "spare": 10
@@ -89,7 +89,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "d871772adbebff77af3194a0dc1f3e7c86cb5d874fed9ae534e30650e2916952"
+      "sha256": "766fb84d95ca4112a5fe99902679dba76e134cbd283969d78f9261d0590816c6"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -2515,9 +2515,40 @@
       ]
     },
     {
+      "file": "test-bull-trellis.glb",
+      "status": "active",
+      "purpose": "Текстурированная модель TRELLIS.2 с ходьбой в демонстрационном стаде.",
+      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "bytes": 1930104,
+      "sha256": "3e480d46c1f53d5423656712ce6b572a2e67afea27ef4f07433cb6b081fc454b",
+      "version": "3e480d46c1f5",
+      "triangles": 14512,
+      "meshes": 1,
+      "bones": 13,
+      "clips": [
+        "Walk"
+      ],
+      "sources": [
+        {
+          "author": "Новый Вавилон / TRELLIS.2 Standard (3D Valley)",
+          "license": "Результат генерации по референсу проекта, условия 3D Valley",
+          "source": "https://3dvalley.com/tools/create/image-to-3d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "test-bull-trellis.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 7,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
       "file": "test-goat-trellis.glb",
       "status": "active",
-      "purpose": "Текстурированная проба TRELLIS.2 в демонстрационном стаде.",
+      "purpose": "Текстурированная модель TRELLIS.2 с ходьбой в демонстрационном стаде.",
       "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
       "bytes": 1107532,
       "sha256": "158a371b224b9eae76cae3ce4944c028738c77e9ce73cb6ea6dc137f3cf7f557",
@@ -2548,7 +2579,7 @@
     {
       "file": "test-pig-trellis.glb",
       "status": "active",
-      "purpose": "Текстурированная проба TRELLIS.2 в демонстрационном стаде.",
+      "purpose": "Текстурированная модель TRELLIS.2 с ходьбой в демонстрационном стаде.",
       "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
       "bytes": 966760,
       "sha256": "0f1e8352801e499babe089c190b2810a2bf3a091839e436c2522f0b1bd4d16ad",

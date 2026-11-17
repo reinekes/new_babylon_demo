@@ -4,7 +4,7 @@ import {surfaceElevation} from '../district3d/terrain.js';
 const ANIMALS=[
  {kind:'pig',file:'test-pig-trellis.glb',stride:.34,coat:'#937164',mark:'#b98c7b',height:.64,length:1.19,width:.53,head:.31,leg:.29},
  {kind:'goat',file:'test-goat-trellis.glb',stride:.40,coat:'#9c7854',mark:'#d6bc94',height:.96,length:1.04,width:.39,head:.26,leg:.52},
- {kind:'bull',coat:'#5b3c32',mark:'#98664e',height:1.43,length:1.82,width:.74,head:.43,leg:.70}
+ {kind:'bull',file:'test-bull-trellis.glb',stride:.62,coat:'#5b3c32',mark:'#98664e',height:1.43,length:1.82,width:.74,head:.43,leg:.70}
 ];
 
 export function createTestLivestock(B,scene,meshes,dry,clear){
@@ -115,8 +115,13 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
     actor.root.metadata.testModel='TRELLIS.2';
     actor.detailed=true;
     actor.walk=copy.animationGroups.find(group=>group.name.endsWith('Walk'));
-    if(actor.walk){actor.walk.start(true);actor.walk.pause();}
-    if(site)positionDetailed(actor);
+    if(actor.walk){
+     actor.legRotations=actor.walk.targetedAnimations.map(({target})=>({
+      target,rest:target.rotationQuaternion.clone()
+     }));
+     actor.walk.start(true);actor.walk.pause();
+    }
+    if(site)positionActor(actor);
    }).catch(error=>console.warn('Test livestock model unavailable:',file,error));
   }
  }
@@ -135,40 +140,54 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
   }
   return null;
  }
- function positionDetailed(actor){
-  const [dx,dy]=offsets[actor.index],angle=clock*.68+actor.index*1.8;
-  const x=site.x+dx+.052*Math.cos(angle),y=site.y+dy+.10*Math.sin(angle);
-  const point=actor.root.position;
-  const distance=Math.hypot(x*6-point.x,y*6-point.z);
-  actor.root.position.set(x*6,surfaceElevation(x,y,previousState),y*6);
-  actor.root.rotation.y=Math.atan2(-.052*Math.sin(angle),.10*Math.cos(angle));
+ // Alternate crossings and short diagonals. Each segment has a stop before it.
+ const points=[[0,0],[-.12,.04],[.11,-.07],[.02,.09],[-.08,-.09],[.12,.03]];
+ const route=[0,1,2,0,3,4,1,5,3,0];
+ const smooth=t=>t*t*(3-2*t);
+ function positionActor(actor){
+  const {root,model,skull,legs,index}=actor;
+  const [dx,dy]=offsets[index];
+  const interval=3.8+index*.49;
+  const time=clock+index*2.31;
+  const step=Math.floor(time/interval);
+  const segment=step%(route.length-1);
+  const [ax,ay]=points[route[segment]], [bx,by]=points[route[segment+1]];
+  const stationary=1.25+(step%3)*.21;
+  const elapsed=time-step*interval;
+  const t=Math.max(0,(elapsed-stationary)/(interval-stationary));
+  const progress=smooth(t);
+  const x=site.x+dx+ax+(bx-ax)*progress;
+  const y=site.y+dy+ay+(by-ay)*progress;
+  root.position.set(x*6,surfaceElevation(x,y,previousState),y*6);
+  const facing=Math.atan2(bx-ax,by-ay);
+  const [px,py]=points[route[(segment+route.length-2)%(route.length-1)]];
+  const arrival=Math.atan2(ax-px,ay-py);
+  const turn=Math.atan2(Math.sin(facing-arrival),Math.cos(facing-arrival));
+  const turning=smooth(Math.max(0,Math.min(1,(elapsed-stationary+.65)/.65)));
+  root.rotation.y=arrival+turn*turning;
+  const distance=Math.hypot(bx-ax,by-ay)*6*progress;
+  const gait=(distance/ANIMALS[index].stride+index*.17)%1;
+  const engagement=smooth(Math.min(1,t*7,(1-t)*7));
   if(actor.walk){
-   actor.phase=((actor.phase||0)+(distance<1?distance:0)/ANIMALS[actor.index].stride)%1;
-   actor.walk.goToFrame(actor.walk.from+actor.phase*(actor.walk.to-actor.walk.from));
+   actor.walk.goToFrame(actor.walk.from+gait*(actor.walk.to-actor.walk.from));
+   for(const {target,rest} of actor.legRotations){
+    B.Quaternion.SlerpToRef(rest,target.rotationQuaternion,engagement,target.rotationQuaternion);
+   }
+  }else if(!actor.detailed){
+   for(const {pivot,phase} of legs)pivot.rotation.x=phase*.22*Math.sin(gait*2*Math.PI)*engagement;
+   model.position.y=.015*(1-Math.cos(gait*4*Math.PI))*engagement;
+   skull.rotation.x=.14+.12*Math.sin(time*.88);
   }
  }
  function update(state,dt,paused,speed,otherHerd){
   if(state!==previousState||state.buildings!==previousBuildings||state.buildings.length!==previousCount){
    previousState=state;previousBuildings=state.buildings;previousCount=state.buildings.length;site=findSite(state,otherHerd);
    for(const a of herd)a.root.setEnabled(!!site);
-   if(site)for(const actor of herd)if(actor.detailed)positionDetailed(actor);
   }else if(paused||!dt||!speed)return;
   if(!site)return;
   if(!requested)loadAnimals();
   if(!paused)clock+=dt*speed;
-  for(const actor of herd){
-   if(actor.detailed){positionDetailed(actor);continue;}
-   const {root,model,skull,legs,index}=actor;
-   const [dx,dy]=offsets[index],p=clock*.56+index*1.7;
-   const x=site.x+dx+.12*Math.sin(p),y=site.y+dy;
-   root.position.set(x*6,surfaceElevation(x,y,state),y*6);
-   root.rotation.y=Math.PI*.5*Math.tanh(Math.cos(p)*4);
-   const gait=clock*3.1+index;
-   for(const {pivot,phase} of legs)pivot.rotation.x=phase*.22*Math.sin(gait)*Math.abs(Math.cos(p));
-   model.position.y=.015*(1-Math.cos(gait*2));
-   skull.rotation.x=.14+.23*Math.sin(clock*.88+index*2);
-   skull.rotation.y=.15*Math.sin(clock*1.05+index);
-  }
+  for(const actor of herd)positionActor(actor);
  }
  function dispose(){
   disposed=true;
