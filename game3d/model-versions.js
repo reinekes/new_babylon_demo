@@ -1,5 +1,7 @@
 // Content hashes keep unchanged models cached across UI releases.
 export const MODEL_VERSIONS=Object.freeze({
+ "test-goat-trellis.glb": "03ec626dad00",
+ "test-pig-trellis.glb": "0b62951616c4",
  "market-2x2.glb": "34585856005e",
  "watch-house-v2.glb": "74086a14e53d",
  "uruk-city-wall.glb": "4b6abfb15fd8",

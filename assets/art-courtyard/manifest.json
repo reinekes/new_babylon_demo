@@ -998,6 +998,22 @@
       "triangles": 7971,
       "meshes": 13,
       "bones": 0
+    },
+    {
+      "file": "models/test-pig-trellis.glb",
+      "bytes": 688508,
+      "sha256": "0b62951616c4f829f14a91243b2e0a2b6b8b8c8386a1fc054f53675dcdf12ced",
+      "triangles": 14298,
+      "meshes": 1,
+      "bones": 0
+    },
+    {
+      "file": "models/test-goat-trellis.glb",
+      "bytes": 799108,
+      "sha256": "03ec626dad00edf87152752847926d807a71799fd194fbb8b7f0cc9023268b2b",
+      "triangles": 14418,
+      "meshes": 1,
+      "bones": 0
     }
   ]
 }

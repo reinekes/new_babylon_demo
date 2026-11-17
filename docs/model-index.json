@@ -3,8 +3,8 @@
   "manifestRelease": "festival-candles-tests-20261028-1",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 88,
-    "active": 63,
+    "total": 90,
+    "active": 65,
     "fallback": 9,
     "optional": 6,
     "spare": 10
@@ -86,6 +86,10 @@
     {
       "file": "game3d/supplied-fauna.js",
       "sha256": "1f9ef3a7e07a6e2fdc717d530cc0507648f0338f8818a18de3f3c6a81bc24261"
+    },
+    {
+      "file": "game3d/test-livestock.js",
+      "sha256": "a5d13a6a17ee9f9d08c36c508fb00378e4ccb7c7f062d5b1c89b6b05eb74db4d"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -2506,6 +2510,64 @@
           "model": "supplied-yellowfin-goby.glb",
           "file": "game3d/supplied-fauna.js",
           "line": 14,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "test-goat-trellis.glb",
+      "status": "active",
+      "purpose": "Текстурированная проба TRELLIS.2 в демонстрационном стаде.",
+      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "bytes": 799108,
+      "sha256": "03ec626dad00edf87152752847926d807a71799fd194fbb8b7f0cc9023268b2b",
+      "version": "03ec626dad00",
+      "triangles": 14418,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon, generated with Microsoft TRELLIS.2",
+          "license": "TRELLIS.2 code and weights: MIT. Project-generated reference and asset.",
+          "source": "https://huggingface.co/spaces/microsoft/TRELLIS.2",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "test-goat-trellis.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 6,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "test-pig-trellis.glb",
+      "status": "active",
+      "purpose": "Текстурированная проба TRELLIS.2 в демонстрационном стаде.",
+      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "bytes": 688508,
+      "sha256": "0b62951616c4f829f14a91243b2e0a2b6b8b8c8386a1fc054f53675dcdf12ced",
+      "version": "0b62951616c4",
+      "triangles": 14298,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon, generated with Microsoft TRELLIS.2",
+          "license": "TRELLIS.2 code and weights: MIT. Project-generated reference and asset.",
+          "source": "https://huggingface.co/spaces/microsoft/TRELLIS.2",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "test-pig-trellis.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 5,
           "kind": "literal"
         }
       ]

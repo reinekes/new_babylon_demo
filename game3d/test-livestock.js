@@ -1,13 +1,15 @@
+import {loadModel} from './asset-loading.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 
 const ANIMALS=[
- {kind:'pig',coat:'#937164',mark:'#b98c7b',height:.64,length:1.19,width:.53,head:.31,leg:.29},
- {kind:'goat',coat:'#9c7854',mark:'#d6bc94',height:.96,length:1.04,width:.39,head:.26,leg:.52},
+ {kind:'pig',file:'test-pig-trellis.glb',coat:'#937164',mark:'#b98c7b',height:.64,length:1.19,width:.53,head:.31,leg:.29},
+ {kind:'goat',file:'test-goat-trellis.glb',coat:'#9c7854',mark:'#d6bc94',height:.96,length:1.04,width:.39,head:.26,leg:.52},
  {kind:'bull',coat:'#5b3c32',mark:'#98664e',height:1.43,length:1.82,width:.74,head:.43,leg:.70}
 ];
 
 export function createTestLivestock(B,scene,meshes,dry,clear){
- const materials=new Map(),parts=[];
+ const materials=new Map(),parts=[],containers=[];
+ let disposed=false,requested=false;
  function material(color){
   if(!materials.has(color)){
    const mat=new B.PBRMaterial('test-livestock-'+color,scene);
@@ -79,6 +81,43 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
   return {root,model,skull,legs,index};
  }
  const herd=ANIMALS.map(make);
+ function removeMesh(mesh){
+  for(const list of [meshes,parts]){
+   const index=list.indexOf(mesh);
+   if(index>=0)list.splice(index,1);
+  }
+ }
+ function loadAnimals(){
+  requested=true;
+  for(const actor of herd){
+   const {file,kind,height}=ANIMALS[actor.index];
+   if(!file)continue;
+   loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb').then(container=>{
+    if(disposed){container.dispose();return;}
+    containers.push(container);
+    const display=new B.TransformNode('trellis-'+kind,scene);
+    const copy=container.instantiateModelsToScene(name=>'trellis-'+kind+'-'+name,false,{doNotInstantiate:true});
+    for(const root of copy.rootNodes)root.parent=display;
+    const {min,max}=display.getHierarchyBoundingVectors(true);
+    const scale=height/(max.y-min.y);
+    if(!Number.isFinite(scale)||scale<=0){display.dispose();throw Error('Invalid TRELLIS.2 bounds for '+kind);}
+    display.scaling.setAll(scale);
+    display.position.set(-(min.x+max.x)*scale/2,-min.y*scale,-(min.z+max.z)*scale/2);
+    const previous=actor.model.getChildMeshes();
+    for(const mesh of previous)removeMesh(mesh);
+    actor.model.dispose();
+    display.parent=actor.root;
+    for(const mesh of display.getChildMeshes()){
+     mesh.isPickable=false;mesh.receiveShadows=true;
+     if(mesh.material)mesh.material.metallic=0;
+     meshes.push(mesh);parts.push(mesh);
+    }
+    actor.root.metadata.testModel='TRELLIS.2';
+    actor.detailed=true;
+    if(site)positionDetailed(actor);
+   }).catch(error=>console.warn('Test livestock model unavailable:',file,error));
+  }
+ }
  let previousState,previousBuildings,previousCount,site,clock=0;
  const offsets=[[-.63,.27],[.09,-.14],[.60,.34]];
  function findSite(state,otherHerd){
@@ -93,14 +132,22 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
   }
   return null;
  }
+ function positionDetailed(actor){
+  const [dx,dy]=offsets[actor.index],x=site.x+dx,y=site.y+dy;
+  actor.root.position.set(x*6,surfaceElevation(x,y,previousState),y*6);
+  actor.root.rotation.y=[-.10,.08,-.15][actor.index];
+ }
  function update(state,dt,paused,speed,otherHerd){
   if(state!==previousState||state.buildings!==previousBuildings||state.buildings.length!==previousCount){
    previousState=state;previousBuildings=state.buildings;previousCount=state.buildings.length;site=findSite(state,otherHerd);
    for(const a of herd)a.root.setEnabled(!!site);
+   if(site)for(const actor of herd)if(actor.detailed)positionDetailed(actor);
   }else if(paused||!dt||!speed)return;
   if(!site)return;
+  if(!requested)loadAnimals();
   if(!paused)clock+=dt*speed;
-  for(const {root,model,skull,legs,index} of herd){
+  for(const {root,model,skull,legs,index,detailed} of herd){
+   if(detailed)continue;
    const [dx,dy]=offsets[index],p=clock*.56+index*1.7;
    const x=site.x+dx+.12*Math.sin(p),y=site.y+dy;
    root.position.set(x*6,surfaceElevation(x,y,state),y*6);
@@ -113,9 +160,11 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
   }
  }
  function dispose(){
-  for(const part of parts){const i=meshes.indexOf(part);if(i>=0)meshes.splice(i,1);}
+  disposed=true;
+  for(const part of [...parts])removeMesh(part);
   for(const {root} of herd)root.dispose();
   for(const mat of materials.values())mat.dispose();
+  for(const container of containers)container.dispose();
  }
  return {update,dispose};
 }
