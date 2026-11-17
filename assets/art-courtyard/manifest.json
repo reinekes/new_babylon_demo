@@ -1001,24 +1001,24 @@
     },
     {
       "file": "models/test-pig-trellis.glb",
-      "bytes": 966760,
-      "sha256": "0f1e8352801e499babe089c190b2810a2bf3a091839e436c2522f0b1bd4d16ad",
+      "bytes": 967568,
+      "sha256": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902",
       "triangles": 14298,
       "meshes": 1,
       "bones": 13
     },
     {
       "file": "models/test-goat-trellis.glb",
-      "bytes": 1107532,
-      "sha256": "158a371b224b9eae76cae3ce4944c028738c77e9ce73cb6ea6dc137f3cf7f557",
+      "bytes": 1108340,
+      "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
       "triangles": 14418,
       "meshes": 1,
       "bones": 13
     },
     {
       "file": "models/test-bull-trellis.glb",
-      "bytes": 1930104,
-      "sha256": "3e480d46c1f53d5423656712ce6b572a2e67afea27ef4f07433cb6b081fc454b",
+      "bytes": 1930912,
+      "sha256": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9",
       "triangles": 14512,
       "meshes": 1,
       "bones": 13

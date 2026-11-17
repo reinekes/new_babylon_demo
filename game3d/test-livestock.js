@@ -116,9 +116,11 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
     actor.detailed=true;
     actor.walk=copy.animationGroups.find(group=>group.name.endsWith('Walk'));
     if(actor.walk){
-     actor.legRotations=actor.walk.targetedAnimations.map(({target})=>({
+     actor.legRotations=actor.walk.targetedAnimations.filter(({animation})=>animation.targetProperty==='rotationQuaternion').map(({target})=>({
       target,rest:target.rotationQuaternion.clone()
      }));
+     actor.trunk=actor.walk.targetedAnimations.find(({animation})=>animation.targetProperty==='position')?.target;
+     actor.trunkRest=actor.trunk?.position.clone();
      actor.walk.start(true);actor.walk.pause();
     }
     if(site)positionActor(actor);
@@ -126,50 +128,66 @@ export function createTestLivestock(B,scene,meshes,dry,clear){
   }
  }
  let previousState,previousBuildings,previousCount,site,clock=0;
- const offsets=[[-.63,.27],[.09,-.14],[.60,.34]];
+ // A track has two straight passes joined by tangent semicircles.
+ const trackPoint=(track,distance)=>{
+  const {x,y,cos,sin,half,radius,length}=track;
+  const straight=2*half, bend=Math.PI*radius;
+  const d=((distance%length)+length)%length;
+  let u,v,du,dv;
+  if(d<straight){
+   u=-half+d;v=-radius;du=1;dv=0;
+  }else if(d>=straight+bend&&d<2*straight+bend){
+   u=half-(d-straight-bend);v=radius;du=-1;dv=0;
+  }else{
+   const far=d<straight+bend;
+   const angle=(d-(far?straight:2*straight+bend))/radius+(far?0:Math.PI);
+   u=(far?half:-half)+radius*Math.sin(angle);v=-radius*Math.cos(angle);
+   du=Math.cos(angle);dv=Math.sin(angle);
+  }
+  return {x:x+u*cos-v*sin,y:y+u*sin+v*cos,facing:Math.atan2(du*cos-dv*sin,du*sin+dv*cos)};
+ };
  function findSite(state,otherHerd){
   const home=state.buildings.find(b=>b.type==='cityGate')||state.buildings.find(b=>b.type==='house');
   if(!home)return null;
-  for(let ring=0;ring<15;ring++)for(let i=0;i<16;i++){
-   const angle=i*Math.PI/8,r=2.2+ring*.48;
-   const p={x:home.x+r*Math.cos(angle),y:home.y+r*Math.sin(angle)};
-   if(offsets.every(([dx,dy])=>otherHerd.every(({x,y})=>Math.hypot(p.x+dx-x,p.y+dy-y)>1.18)
-    &&[-.13,.13].every(shift=>dry(state,p.x+dx+shift,p.y+dy,.38))
-    &&[-.11,.11].every(dz=>[-.13,.13].every(sx=>dry(state,p.x+dx+sx,p.y+dy+dz,.38)))
-    &&clear(state,{x:p.x+dx-.13,y:p.y+dy},{x:p.x+dx+.13,y:p.y+dy})))return p;
+  for(const [half,radius] of [[.91,.56],[.72,.46],[.56,.39]]){
+   for(let ring=0;ring<17;ring++)for(let i=0;i<16;i++){
+    const angle=i*Math.PI/8,r=2.2+ring*.48;
+    const x=home.x+r*Math.cos(angle),y=home.y+r*Math.sin(angle);
+    if(otherHerd.some(p=>Math.hypot(x-p.x,y-p.y)<half+radius+1.18))continue;
+    const length=4*half+2*Math.PI*radius;
+    for(const heading of [angle+Math.PI/2,angle]){
+     const track={x,y,half,radius,length,cos:Math.cos(heading),sin:Math.sin(heading)};
+     const samples=Math.ceil(length/.18);
+     let last=trackPoint(track,0),valid=dry(state,last.x,last.y,.38);
+     for(let step=1;valid&&step<=samples;step++){
+      const next=trackPoint(track,length*step/samples);
+      valid=dry(state,next.x,next.y,.38)&&clear(state,last,next);
+      last=next;
+     }
+     if(valid)return track;
+    }
+   }
   }
   return null;
  }
- // Alternate crossings and short diagonals. Each segment has a stop before it.
- const points=[[0,0],[-.12,.04],[.11,-.07],[.02,.09],[-.08,-.09],[.12,.03]];
- const route=[0,1,2,0,3,4,1,5,3,0];
- const smooth=t=>t*t*(3-2*t);
  function positionActor(actor){
   const {root,model,skull,legs,index}=actor;
-  const [dx,dy]=offsets[index];
-  const interval=3.8+index*.49;
-  const time=clock+index*2.31;
-  const step=Math.floor(time/interval);
-  const segment=step%(route.length-1);
-  const [ax,ay]=points[route[segment]], [bx,by]=points[route[segment+1]];
-  const stationary=1.25+(step%3)*.21;
-  const elapsed=time-step*interval;
-  const t=Math.max(0,(elapsed-stationary)/(interval-stationary));
-  const progress=smooth(t);
-  const x=site.x+dx+ax+(bx-ax)*progress;
-  const y=site.y+dy+ay+(by-ay)*progress;
-  root.position.set(x*6,surfaceElevation(x,y,previousState),y*6);
-  const facing=Math.atan2(bx-ax,by-ay);
-  const [px,py]=points[route[(segment+route.length-2)%(route.length-1)]];
-  const arrival=Math.atan2(ax-px,ay-py);
-  const turn=Math.atan2(Math.sin(facing-arrival),Math.cos(facing-arrival));
-  const turning=smooth(Math.max(0,Math.min(1,(elapsed-stationary+.65)/.65)));
-  root.rotation.y=arrival+turn*turning;
-  const distance=Math.hypot(bx-ax,by-ay)*6*progress;
-  const gait=(distance/ANIMALS[index].stride+index*.17)%1;
-  const engagement=smooth(Math.min(1,t*7,(1-t)*7));
+  const speed=.095, ramp=.8, rest=1.25;
+  const travel=site.length/speed+ramp, period=travel+rest;
+  // Slow down to rest on a straight, then pick up the walk on the same heading.
+  const time=clock+period*index/3+3;
+  const elapsed=time%period;
+  const end=Math.max(0,travel-elapsed);
+  const distance=speed*(elapsed<ramp?elapsed*elapsed/(2*ramp):
+   end<ramp?site.length/speed-end*end/(2*ramp):elapsed-ramp/2);
+  const point=trackPoint(site,distance+site.half);
+  root.position.set(point.x*6,surfaceElevation(point.x,point.y,previousState),point.y*6);
+  root.rotation.y=point.facing;
+  const gait=((Math.floor(time/period)*site.length+distance)*6/ANIMALS[index].stride+index*.17)%1;
+  const engagement=Math.min(1,elapsed/ramp,end/ramp);
   if(actor.walk){
    actor.walk.goToFrame(actor.walk.from+gait*(actor.walk.to-actor.walk.from));
+   if(actor.trunk)B.Vector3.LerpToRef(actor.trunkRest,actor.trunk.position,engagement,actor.trunk.position);
    for(const {target,rest} of actor.legRotations){
     B.Quaternion.SlerpToRef(rest,target.rotationQuaternion,engagement,target.rotationQuaternion);
    }

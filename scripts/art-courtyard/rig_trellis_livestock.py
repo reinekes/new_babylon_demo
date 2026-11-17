@@ -35,7 +35,7 @@ def smoothstep(low, high, value):
     return t*t*(3-2*t)
 
 
-def gait(leg, phase, stride, lift):
+def gait(leg, phase, stride, lift, body_drop):
     hip, knee, ankle = leg
     upper = math.hypot(knee[1]-hip[1], knee[2]-hip[2])
     lower = math.hypot(ankle[1]-knee[1], ankle[2]-knee[2])
@@ -49,7 +49,7 @@ def gait(leg, phase, stride, lift):
         fore = -reach + 2*reach*smoothstep(0, 1, swing)
         up = lift*math.sin(math.pi*swing)**2
     z = ankle[2]-hip[2]+fore
-    y = hip[1]-ankle[1]-up
+    y = hip[1]-ankle[1]-up-body_drop
     distance = min(math.hypot(z, y), upper+lower-.0002)
     cosine = (distance**2-upper**2-lower**2)/(2*upper*lower)
     take = math.acos(max(-1, min(1, cosine)))
@@ -126,11 +126,16 @@ def rig(kind, path):
     doc["skins"]=[{"joints":list(range(body,len(nodes))),"skeleton":body,"inverseBindMatrices":inverse}]
     count=48
     time=add_accessor([(i/count,) for i in range(count+1)],"SCALAR","f")
-    samplers,channels=[],[]
+    # Flex the legs under load and move the trunk twice per four-beat stride.
+    # Compensate at the ankles so this does not lift the stance hooves.
+    drop = [height*(.012+.005*math.cos(4*math.pi*i/count)) for i in range(count+1)]
+    trunk = add_accessor([(0,-value,0) for value in drop],"VEC3","3f")
+    samplers=[{"input":time,"output":trunk,"interpolation":"LINEAR"}]
+    channels=[{"sampler":0,"target":{"node":body,"path":"translation"}}]
     for i,leg in enumerate(legs):
         angles=[]
         for frame in range(count+1):
-            upper,lower=gait(leg,(frame/count+[0,.5,.25,.75][i])%1,STRIDE[kind]*height/HEIGHT[kind],.065*height)
+            upper,lower=gait(leg,(frame/count+[0,.5,.25,.75][i])%1,STRIDE[kind]*height/HEIGHT[kind],.065*height,drop[frame])
             angles.append((upper,lower,-upper-lower))
         for j in range(3):
             keys=[(math.sin(a[j]/2),0,0,math.cos(a[j]/2)) for a in angles]
@@ -139,6 +144,12 @@ def rig(kind, path):
             samplers.append({"input":time,"output":output,"interpolation":"LINEAR"})
     doc["animations"]=[{"name":"Walk","channels":channels,"samplers":samplers}]
     doc["asset"].setdefault("extras",{})["walk_stride"]=STRIDE[kind]
+    if kind != "bull":
+        doc["asset"]["extras"].update(
+            author="New Babylon, generated with Microsoft TRELLIS.2",
+            source="https://huggingface.co/spaces/microsoft/TRELLIS.2",
+            license="TRELLIS.2 code and weights: MIT. Project-generated reference and asset.",
+        )
     if kind == "bull":
         doc["asset"]["extras"].update(
             source="https://3dvalley.com/tools/create/image-to-3d",
