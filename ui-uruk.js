@@ -34,6 +34,8 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  const settingsLabel=d.createElement('summary');settingsLabel.innerHTML=icon('gear')+'<span>Настройки и камера</span>';
  settings.append(settingsLabel);
  const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');
+ const qualityLabel=viewOptions?.querySelector(':scope > span:first-child');
+ if(qualityLabel&&viewOptions.classList.contains('game3d-options'))qualityLabel.textContent='Качество 3D';
  if(viewOptions)settings.append(viewOptions);
  const tools=d.createElement('div');tools.className='uruk-menu-tools';
  tools.append($('test-resources'),$('reset'));settings.append(tools);
