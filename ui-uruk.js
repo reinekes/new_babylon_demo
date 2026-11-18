@@ -8,9 +8,18 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  dock.innerHTML=[['build','hammer','Строить'],['people','users','Жители'],['city','buildings','Город'],['miracles','sun','Чудеса'],['menu','list','Меню']].map(([id,image,title])=>`<button type="button" data-uruk-action="${id}"${['build','miracles','menu'].includes(id)?' aria-expanded="false"':''}>${icon(image)}<span>${title}</span></button>`).join('')+'<div class="uruk-transport"></div>';
  body.append(dock);dock.querySelector('.uruk-transport').append(d.querySelector('.time-controls'));
  const menu=d.createElement('section');menu.className='uruk-menu';menu.setAttribute('aria-label','Меню города');menu.innerHTML='<div class="uruk-drawer-heading"><h2>Меню</h2></div>';const management=d.querySelector('.management-nav'),header=d.querySelector('.header-actions');
- for(const id of ['open-construction','open-supply','open-production-chains','open-trade','open-roads','lay-roads','open-civic-order','open-festival','open-relic','open-life','open-song-library','open-save-library','test-resources']){
-  const control=$(id);if(control?.parentElement===management)management.append(control);
+ const groupsInMenu=[
+  ['Хозяйство',['open-construction','open-supply','open-production-chains','open-trade']],
+  ['Дороги',['open-roads','lay-roads']],
+  ['Жизнь города',['open-festival','open-relic','open-life','open-song-library','open-civic-order']],
+ ];
+ for(const [title,ids] of groupsInMenu){
+  const section=d.createElement('section'),heading=d.createElement('h3');
+  section.className='uruk-menu-group';heading.textContent=title;section.append(heading);
+  for(const id of ids){const control=$(id);if(control?.parentElement===management)section.append(control);}
+  management.append(section);
  }
+ $('open-roads').textContent='Улучшить дорогу';
  for(const id of ['open-residents','open-city-tools'])if($(id)?.parentElement===management)$(id).hidden=true;
  if(header.querySelector('.district-link'))header.querySelector('.district-link').hidden=true;
  if($('save-status'))$('save-status').hidden=true;
@@ -18,7 +27,18 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  d.querySelector('.build-panel .section-label').after(quick);
  listen(quick,'click',()=>{close();$('test-resources').click();});
 
- menu.append(management,header);const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');if(viewOptions)menu.append(viewOptions);body.append(menu);
+ const sound=$('toggle-sound');
+ sound.setAttribute('aria-label','Звук');sound.title='Звук';
+ menu.querySelector('.uruk-drawer-heading').append(sound);
+ const settings=d.createElement('details');settings.className='uruk-menu-settings';
+ const settingsLabel=d.createElement('summary');settingsLabel.innerHTML=icon('gear')+'<span>Настройки и камера</span>';
+ settings.append(settingsLabel);
+ const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');
+ if(viewOptions)settings.append(viewOptions);
+ const tools=d.createElement('div');tools.className='uruk-menu-tools';
+ tools.append($('test-resources'),$('reset'));settings.append(tools);
+ header.prepend($('open-save-library'));
+ menu.append(management,header,settings);body.append(menu);
  // The management grid already contains these two destinations.
  for(const id of ['open-saves','open-encyclopedia'])if($(id))$(id).hidden=true;
  if($('help'))$('help').textContent='Как играть';
@@ -46,7 +66,7 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  listen(badge,'click',()=>open('story',badge));
  listen(d,'keydown',event=>{if(event.key==='Escape'&&!d.querySelector('dialog[open]'))close({restoreFocus:true});});
  listen(d.querySelector('#buildings'),'click',event=>{if(event.target.closest('.building-info')){close();$('tile-detail')?.querySelector('.detail-close')?.focus();return;}const card=event.target.closest('.building-card');if(card&&!card.disabled){close();$('city').focus();}});
- listen(menu,'click',event=>{if(event.target.closest('.management-nav button,.header-actions button,.header-actions a')){const dialog=d.querySelector('dialog[open]');if(dialog)dialogReturnTarget=opener;close({restoreFocus:!dialog});}});
+ listen(menu,'click',event=>{if(event.target.closest('.management-nav button,.header-actions button,.header-actions a,.uruk-menu-tools button')){const dialog=d.querySelector('dialog[open]');if(dialog)dialogReturnTarget=opener;close({restoreFocus:!dialog});}});
  listen($('dialog'),'close',()=>{dialogReturnTarget?.focus();dialogReturnTarget=null;});
  refresh();return {open,close,refresh,selectBuildGroup,dispose(){for(const remove of listeners)remove();}};
 }

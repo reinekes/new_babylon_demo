@@ -181,7 +181,6 @@ body.uruk-ui{--paper:#25231f;--ink:#f0e5ce;--muted:#baa98f;--line:#766048;--teal
 .uruk-ui .build-panel .section-label{padding-bottom:4px}
 @media(min-width:1251px){.uruk-dock>button{font:400 19px/1.2 var(--serif);min-width:145px;flex:1;max-width:180px}.uruk-dock>button>img{width:27px;height:27px}.uruk-ui .resourcebar .resource>div{flex-direction:column-reverse!important;align-items:flex-start!important;gap:0!important}}
 /* Moved controls must not retain the legacy mobile fixed positioning. */
-.uruk-ui .uruk-menu .header-actions :is(#toggle-sound,.district-link){position:static!important;inset:auto!important;transform:none!important;max-width:none}
 .uruk-ui .uruk-menu .panel-dock-2d{position:static;transform:none;background:transparent;border:0;padding:0}
 /* Existing dialogs share the material system, including inline production/save sections. */
 .uruk-ui dialog :where(p,span,small,strong,label,h2,h3,h4){color:inherit!important}
@@ -200,7 +199,6 @@ body.uruk-ui{--paper:#25231f;--ink:#f0e5ce;--muted:#baa98f;--line:#766048;--teal
 .uruk-ui .uruk-menu .management-nav button,.uruk-ui .uruk-menu .header-actions :is(button,a){background:transparent!important;color:#ead7b6!important;border-color:#95724a33!important;box-shadow:none!important}
 .uruk-ui .uruk-menu .game3d-options{position:static!important;inset:auto!important;transform:none!important;width:100%;max-width:none;justify-content:flex-start;overflow:visible}
 .uruk-ui .uruk-menu .game3d-options .camera-controls{position:static!important;inset:auto!important;transform:none!important;display:flex;flex-wrap:wrap}
-.uruk-ui .uruk-menu .management-nav #test-resources{grid-column:auto;font-size:12px;border-style:solid}
 .uruk-ui.photo-mode :is(.topbar,.resourcebar,[data-uruk-drawer]){display:none!important}
 .uruk-ui.photo-mode .game-layout{inset:0!important}
 .uruk-ui .photo-toolbar{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;width:max-content;max-width:calc(100% - 28px);padding:15px 20px;background:#29251ff5 var(--uruk-stone);background-size:510px;color:#ebd7b2;border:1px solid #ac8552;font:12px/1.5 'Golos Text',sans-serif}
@@ -685,3 +683,39 @@ details[open]>summary.production-total span::after{content:' −'}
 .profession-overview-grid thead th{font-size:.8rem;color:#d5b998}
 .profession-overview-grid tbody tr:last-child>*{border-bottom:0}
 .profession-overview-grid .has-vacancies{color:#f3d393;font-weight:650}
+
+.uruk-menu .uruk-drawer-heading {
+ display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:42px;margin-bottom:10px;
+}
+.uruk-menu .uruk-drawer-heading h2 {margin:0}
+.uruk-ui .uruk-menu #toggle-sound {
+ position:relative;display:grid;place-items:center;flex:none;width:40px;min-height:40px;padding:0;
+ font-size:0;border:1px solid #95724a88;border-radius:3px;background:#34312a;color:#ead7b6;
+}
+.uruk-menu #toggle-sound::before {content:'';width:22px;height:22px;background:url('assets/ui/icons/speaker.svg') center/contain no-repeat}
+.uruk-menu #toggle-sound[aria-pressed=false]::after {
+ content:'';position:absolute;width:24px;height:2px;background:currentColor;box-shadow:0 0 0 1px #34312a;transform:rotate(-45deg);
+}
+.uruk-ui .uruk-menu #toggle-sound[aria-pressed=true] {background:#244260 var(--uruk-lapis);border-color:#69879e}
+.uruk-ui .uruk-menu .management-nav {display:block;margin:0;border:0}
+.uruk-menu-group {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 6px;margin:0 0 10px}
+.uruk-menu-group h3 {
+ grid-column:1/-1;margin:0;padding:6px 0 3px;border-top:1px solid #95724a66;
+ color:#d5b88d;font:600 11px/1.4 system-ui,sans-serif;
+}
+.uruk-ui .uruk-menu :is(.uruk-menu-group,.uruk-menu-tools)>button {
+ min-width:0;min-height:38px;padding:6px 8px;text-align:left;border:1px solid #95724a55;border-radius:3px;
+ background:#3b3227;color:#ead7b6;font-size:12px;line-height:1.35;
+}
+.uruk-ui .uruk-menu :is(.uruk-menu-group,.uruk-menu-tools)>button:hover:not(:disabled) {background:#504136!important}
+.uruk-ui .uruk-menu .uruk-menu-group>button[aria-pressed=true] {background:#244260 var(--uruk-lapis)!important;border-color:#69879e!important}
+.uruk-ui .uruk-menu .header-actions {margin:0}
+.uruk-menu-settings {border-top:1px solid #95724a66}
+.uruk-menu-settings summary {
+ display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 8px;color:#ead7b6;cursor:pointer;list-style:none;
+}
+.uruk-menu-settings summary::-webkit-details-marker {display:none}
+.uruk-menu-settings summary img {width:17px;height:17px}
+.uruk-menu-settings summary::after {content:'';width:8px;height:8px;border:solid currentColor;border-width:0 1px 1px 0;margin-left:auto;transform:rotate(45deg)}
+.uruk-menu-settings[open] summary::after {transform:rotate(225deg)}
+.uruk-menu-tools {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
