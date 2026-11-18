@@ -1,0 +1,1570 @@
+{
+  "commit": "6eab6d06915666b8902035dd32cf46189ae5467f",
+  "run": "https://github.com/reinekes/new_babylon_demo/actions/runs/44360552830",
+  "files": [
+    {
+      "path": "courtyard.html",
+      "bytes": 16475,
+      "sha256": "7f4835d9c6ea2265e3d7048698083283798fb39a36a13f47b9dd3231b1888be7"
+    },
+    {
+      "path": "district3d.html",
+      "bytes": 21067,
+      "sha256": "7f1a985ee0602aeae622cddf4004698620f06f8900a66b44d468a45e960be5b7"
+    },
+    {
+      "path": "district3d/actors.js",
+      "bytes": 17979,
+      "sha256": "4f1864dbf90a8cd3ad0c46b50ec22e2453f0d553e1f6dc5203dca540b0e26e22"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-18-work-clothes-and-ground-turns.json",
+      "bytes": 129941,
+      "sha256": "747b0e7d76eeb4ab21c33d4315b538276ea0d9d0d47e67704d034488f7e17ca2"
+    },
+    {
+      "path": "docs/model-index.json",
+      "bytes": 118163,
+      "sha256": "2d19df2139b9e0db6286d555001c3fe4b998ef77ef94de0d7dec6a269f78badb"
+    },
+    {
+      "path": "game3d/actors.js",
+      "bytes": 76571,
+      "sha256": "626914bce652dd8853a345e1ec19b1782298a82eb4247b1904f4bf1b3d64e07e"
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "bytes": 28723,
+      "sha256": "88089de9433d9d5d4ebe957a7b7e9c05d6a206a0d17cfd9ada654c71937d3b3c"
+    },
+    {
+      "path": "game3d/caravan.js",
+      "bytes": 10498,
+      "sha256": "9bdef0e0be4218755cb38a2c7850742a0594b36b66e3ee3c16098a0796a24f06"
+    },
+    {
+      "path": "game3d/dairy-herd.js",
+      "bytes": 1515,
+      "sha256": "b3c1d12a51e35f75161b7792cc07871d564eb122d96780662ef68bf21242d0cd"
+    },
+    {
+      "path": "game3d/goats.js",
+      "bytes": 6691,
+      "sha256": "695411d7de2e1a3a6923c7a8359ef5e60706f294631f134a246a1fa19aa795aa"
+    },
+    {
+      "path": "game3d/ground-turn.js",
+      "bytes": 1457,
+      "sha256": "889864cb3d64466fe65101a46a40ce711e7ac304290399e4c813f0ec71b1c051"
+    },
+    {
+      "path": "game3d/imported-fauna.js",
+      "bytes": 7865,
+      "sha256": "d875690fc2d459faeddebc106e335db8d6cb2a2ff32e7d59a44a8773f5cc45f3"
+    },
+    {
+      "path": "game3d/jackals.js",
+      "bytes": 4761,
+      "sha256": "02a1a82f5a81926893f83213e0b5500af43622a3abfb9a6eafb3c77d30aa980b"
+    },
+    {
+      "path": "game3d/profession-clothing.js",
+      "bytes": 121,
+      "sha256": "bc0c97eff9d756af2b807dc1e38f66b021378acb05a586c3df2ae4a5637a1f99"
+    },
+    {
+      "path": "game3d/resident-garments.js",
+      "bytes": 18016,
+      "sha256": "de2fa0121375983f52dfc01362f171fec3c9cb4c66835eb9474015addf0570d3"
+    },
+    {
+      "path": "game3d/test-livestock.js",
+      "bytes": 17175,
+      "sha256": "23dcdd3f064b7af7955bc3987b842ad58c221fa41ca7ca56e2d6c1e57ea2468e"
+    },
+    {
+      "path": "game3d/wildlife.js",
+      "bytes": 28128,
+      "sha256": "306500563356173a50b2bd940b7d6da286e8b8778e4a4771426647cd518f733b"
+    },
+    {
+      "path": "goat-studio.html",
+      "bytes": 20903,
+      "sha256": "da7028ebf176facead7640dd27cdeceab9a4dd2246e484d8bbaec4eed18bb1dd"
+    },
+    {
+      "path": "index.html",
+      "bytes": 34674,
+      "sha256": "7e8e90b610f3361eb30040440c52e1bd5180d6b801d33804a4e3e3bb7aa41b06"
+    },
+    {
+      "path": "mallards.html",
+      "bytes": 1481,
+      "sha256": "08072675fbf6114e2d70d99f62522cf9791cb992336025626c509d347cfe150f"
+    },
+    {
+      "path": "model-atlas/index.html",
+      "bytes": 11597,
+      "sha256": "64f4627e541e63c8c8e3122ea5d6703c27233a41ba92e2464609e55e3c8e436e"
+    },
+    {
+      "path": "renderer.js",
+      "bytes": 52345,
+      "sha256": "7943dadbdac3cadfdabc89fe886b0b5fa8449734598b1773eb28b517a6ea7b74"
+    },
+    {
+      "path": "resident-appearance.js",
+      "bytes": 2512,
+      "sha256": "ebda89177d7d576faa95f4e1302334888b15ec2425df0c509c74c5bc1cf1df6c"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/ground-turns/donkey-turn-frame.webp",
+      "bytes": 64134,
+      "sha256": "345e471f296559be98ab704ec4699657d1af1b563d7acc10ebfcd46a1909932b"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/ground-turns/donkey-turn.webp",
+      "bytes": 803518,
+      "sha256": "b35c2dc6f4d4edeb4988b8cf353de1387bb61f2e06aeea3288a62ee1b8d73910"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/profession-clothing/before-pottery.webp",
+      "bytes": 72622,
+      "sha256": "832b6525b4a1e5538d5d8e0b73bdeb82e486823c28a7ab32f048242df18e43ee"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/profession-clothing/before-weaving.webp",
+      "bytes": 72606,
+      "sha256": "b80a54e0e259c0d91d22dd789ae98df9b16532d03b6b90870ca7923a96cad01f"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/profession-clothing/clay-chain.webp",
+      "bytes": 145996,
+      "sha256": "1448c250576819f64e2913900a4c699a382f4aa05ce700fab2d41d78caa0300a"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/profession-clothing/other-workers.webp",
+      "bytes": 148370,
+      "sha256": "010f247ecc871881b2155e83c7875d68f38db3239ff2b36761b46dd56223a770"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/profession-clothing/potter-route.webp",
+      "bytes": 70278,
+      "sha256": "1d006ca5e3c099067cbe6459039f8e94861486fd61e7bafecc015c603b92a2bc"
+    },
+    {
+      "path": "roadmap/index.html",
+      "bytes": 5131038,
+      "sha256": "f8423822d9fe28866e2149a7944f955deb0b44093b26b8ff3ec9443bb67ebd04"
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "bytes": 17844,
+      "sha256": "52e4e7c309bd59a1e328e2839a5e015b5d74ddd292004292f22d6a6a942125c8"
+    },
+    {
+      "path": "roadmap/reports/2026-11-18-work-clothes-and-ground-turns.md",
+      "bytes": 7966,
+      "sha256": "b7b18b2b5991d89bf8b5d3c0c2c34b8a74bf97d08fb794003203521ac1218f3d"
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "bytes": 5073351,
+      "sha256": "db7e4d0cde6f2e534f10ffb66735dfd5ac0ac7412e9abf7412380d526972557c"
+    },
+    {
+      "path": "scripts/sumer-building-studio.html",
+      "bytes": 5360,
+      "sha256": "4f2b6fcc05c9350f4c135ba4154d34e92f04bc730a53ff1373d61ff003313b20"
+    },
+    {
+      "path": "work-clothing.js",
+      "bytes": 2724,
+      "sha256": "70cd023837f8da2520c166caeb5ee9bd58342e73d19c1d3fae2e1af56d519756"
+    }
+  ],
+  "release": "work-cloth-ground-turns-20261118",
+  "groundTurns": {
+    "results": {
+      "donkey": {
+        "steps": 976,
+        "stationaryRotations": 0,
+        "turningSteps": 306,
+        "largestTurnDegrees": 2.3741345102106037,
+        "largestSlipAngle": 1.1870672551328199,
+        "restFrames": 322
+      },
+      "pig": {
+        "steps": 1267,
+        "stationaryRotations": 0,
+        "turningSteps": 135,
+        "largestTurnDegrees": 8.195787884395829,
+        "largestSlipAngle": 4.094392175333394,
+        "restFrames": 1978
+      },
+      "goat": {
+        "steps": 1103,
+        "stationaryRotations": 0,
+        "turningSteps": 260,
+        "largestTurnDegrees": 5.01806074390849,
+        "largestSlipAngle": 2.5082277773284125,
+        "restFrames": 1493
+      },
+      "bull": {
+        "steps": 2087,
+        "stationaryRotations": 0,
+        "turningSteps": 419,
+        "largestTurnDegrees": 3.727264788197319,
+        "largestSlipAngle": 1.8633036249567243,
+        "restFrames": 2456
+      },
+      "sheep": {
+        "steps": 2173,
+        "stationaryRotations": 0,
+        "turningSteps": 39,
+        "largestTurnDegrees": 5.8743925884676305,
+        "largestSlipAngle": 2.935908292400145,
+        "restFrames": 423
+      }
+    },
+    "dt": 0.05,
+    "gl": 0,
+    "exceptions": [],
+    "http": [],
+    "outsideProject": [],
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "trackedAnimals": 22,
+    "samples": 650
+  },
+  "ordinaryCityAnimals": {
+    "url": "https://reinekes.github.io/new_babylon_demo/index.html",
+    "clock": "ordinary requestAnimationFrame at player speed; roots and rig read only",
+    "release": {
+      "module": "https://reinekes.github.io/new_babylon_demo/game3d/ground-turn.js?v=work-cloth-ground-turns-20261118",
+      "sha256": "889864cb3d64466fe65101a46a40ce711e7ac304290399e4c813f0ec71b1c051"
+    },
+    "webgl": 2,
+    "glError": 0,
+    "elapsedMs": 42385.89999997616,
+    "frames": 38,
+    "engineFrames": 38,
+    "longestGapMs": 4433.100000000006,
+    "previousButton": "Продолжить время",
+    "finishButton": "Приостановить время",
+    "groups": {
+      "roaming-fox": {
+        "ids": [
+          "ambient-fox-0",
+          "ambient-fox-1"
+        ],
+        "samples": 76,
+        "moving": 74,
+        "rest": 0,
+        "turningInMotion": 33,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 9.3417,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 1.51142,
+        "changedGaitPhase": 74,
+        "clips": {
+          "Walk": 76
+        },
+        "first": {
+          "ambient-fox-0": [
+            25.32433,
+            0,
+            149.25948,
+            0.16304
+          ],
+          "ambient-fox-1": [
+            48.74119,
+            0,
+            136.92787,
+            0.16304
+          ]
+        },
+        "last": {
+          "ambient-fox-0": [
+            26.01777,
+            0,
+            149.35697,
+            1.61846
+          ],
+          "ambient-fox-1": [
+            49.11298,
+            0,
+            136.59611,
+            2.90383
+          ]
+        }
+      },
+      "roaming-boar": {
+        "ids": [
+          "ambient-boar-0",
+          "ambient-boar-1"
+        ],
+        "samples": 76,
+        "moving": 56,
+        "rest": 18,
+        "turningInMotion": 41,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 7.41936,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 1.20277,
+        "changedGaitPhase": 56,
+        "clips": {
+          "Idle": 20,
+          "Walk": 56
+        },
+        "first": {
+          "ambient-boar-0": [
+            170.56422,
+            2e-05,
+            106.75234,
+            0
+          ],
+          "ambient-boar-1": [
+            196.11581,
+            0,
+            95.28346,
+            0
+          ]
+        },
+        "last": {
+          "ambient-boar-0": [
+            171.10182,
+            0,
+            106.93537,
+            1.63842
+          ],
+          "ambient-boar-1": [
+            196.50363,
+            0,
+            95.37537,
+            2.67622
+          ]
+        },
+        "idleRest": 18
+      },
+      "roaming-lioness": {
+        "ids": [
+          "ambient-lioness-0",
+          "ambient-lioness-1"
+        ],
+        "samples": 76,
+        "moving": 60,
+        "rest": 14,
+        "turningInMotion": 40,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 6.39462,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 1.53455,
+        "changedGaitPhase": 60,
+        "clips": {
+          "Walk": 61,
+          "Idle": 15
+        },
+        "first": {
+          "ambient-lioness-0": [
+            203.76848,
+            0.3033,
+            167.4249,
+            0.11161
+          ],
+          "ambient-lioness-1": [
+            227.42892,
+            0.08535,
+            154.0506,
+            0
+          ]
+        },
+        "last": {
+          "ambient-lioness-0": [
+            204.58622,
+            0.34204,
+            167.61492,
+            1.66142
+          ],
+          "ambient-lioness-1": [
+            227.00282,
+            0.11515,
+            154.26901,
+            -2.17111
+          ]
+        },
+        "idleRest": 14
+      },
+      "roaming-dog": {
+        "ids": [
+          "ambient-dog-0",
+          "ambient-dog-1"
+        ],
+        "samples": 76,
+        "moving": 74,
+        "rest": 0,
+        "turningInMotion": 39,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 7.95775,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 2.01532,
+        "changedGaitPhase": 74,
+        "clips": {
+          "Walk": 76
+        },
+        "first": {
+          "ambient-dog-0": [
+            45.0375,
+            0,
+            52.54526,
+            0.13889
+          ],
+          "ambient-dog-1": [
+            74.70656,
+            0,
+            38.7929,
+            0.13889
+          ]
+        },
+        "last": {
+          "ambient-dog-0": [
+            45.94185,
+            0,
+            52.69257,
+            1.64745
+          ],
+          "ambient-dog-1": [
+            75.22797,
+            0,
+            38.45083,
+            2.95557
+          ]
+        }
+      },
+      "pasture-donkey": {
+        "ids": [
+          "ambient-donkey-0",
+          "ambient-donkey-1"
+        ],
+        "samples": 76,
+        "moving": 74,
+        "rest": 0,
+        "turningInMotion": 64,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 4.74827,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 3.02342,
+        "changedGaitPhase": 74,
+        "clips": {
+          "Walk": 76
+        },
+        "first": {
+          "ambient-donkey-0": [
+            61.63029,
+            0,
+            65.1966,
+            0.08287
+          ],
+          "ambient-donkey-1": [
+            87.97343,
+            0,
+            52.0798,
+            0.08287
+          ]
+        },
+        "last": {
+          "ambient-donkey-0": [
+            62.84422,
+            0,
+            65.60023,
+            1.7903
+          ],
+          "ambient-donkey-1": [
+            89.07265,
+            0,
+            52.28282,
+            2.69345
+          ]
+        }
+      },
+      "city-goat": {
+        "ids": [
+          "goat-goat-0",
+          "goat-goat-1",
+          "goat-goat-2",
+          "goat-goat-3",
+          "goat-goat-4",
+          "goat-goat-5",
+          "goat-goat-6"
+        ],
+        "samples": 266,
+        "moving": 196,
+        "rest": 63,
+        "turningInMotion": 130,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 7.38578,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 5.31912,
+        "changedGaitPhase": 194,
+        "clips": {
+          "Walk": 200,
+          "Idle": 29,
+          "Rest": 9,
+          "Graze": 28
+        },
+        "first": {
+          "goat-goat-0": [
+            52.11629,
+            0,
+            28.2,
+            5.25187
+          ],
+          "goat-goat-1": [
+            64.54142,
+            0,
+            50.74142,
+            0.46471
+          ],
+          "goat-goat-2": [
+            46.2,
+            0,
+            36,
+            2.31842
+          ],
+          "goat-goat-3": [
+            52.08892,
+            0,
+            69.71108,
+            3.70311
+          ],
+          "goat-goat-4": [
+            30.21132,
+            0,
+            58.2,
+            5.48065
+          ],
+          "goat-goat-5": [
+            39.68045,
+            0.55412,
+            76.2,
+            0.69349
+          ],
+          "goat-goat-6": [
+            64.2,
+            0,
+            39.89545,
+            2.47103
+          ]
+        },
+        "last": {
+          "goat-goat-0": [
+            51.19828,
+            0,
+            28.2,
+            4.71239
+          ],
+          "goat-goat-1": [
+            63.77058,
+            0,
+            49.97058,
+            -2.35619
+          ],
+          "goat-goat-2": [
+            46.2,
+            0,
+            36.44269,
+            0.93502
+          ],
+          "goat-goat-3": [
+            52.98148,
+            0,
+            68.81852,
+            2.35619
+          ],
+          "goat-goat-4": [
+            30,
+            0,
+            58.2,
+            4.82027
+          ],
+          "goat-goat-5": [
+            38.59031,
+            0.5865,
+            76.2,
+            -1.5708
+          ],
+          "goat-goat-6": [
+            64.2,
+            0,
+            40.2,
+            1.5193
+          ]
+        },
+        "idleRest": 27
+      },
+      "city-gazelle": {
+        "ids": [
+          "fauna-gazelle-0",
+          "fauna-gazelle-1",
+          "fauna-gazelle-2",
+          "fauna-gazelle-3",
+          "fauna-gazelle-4",
+          "fauna-gazelle-5",
+          "fauna-gazelle-6",
+          "fauna-gazelle-7",
+          "fauna-gazelle-8",
+          "fauna-gazelle-9",
+          "fauna-gazelle-10",
+          "fauna-gazelle-11"
+        ],
+        "samples": 456,
+        "moving": 220,
+        "rest": 224,
+        "turningInMotion": 76,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 8.18511,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 10.82738,
+        "changedGaitPhase": 220,
+        "clips": {
+          "Idle": 230,
+          "Walk": 226
+        },
+        "first": {
+          "fauna-gazelle-0": [
+            36,
+            0,
+            108,
+            0
+          ],
+          "fauna-gazelle-1": [
+            14.1794,
+            0,
+            90,
+            0.14286
+          ],
+          "fauna-gazelle-2": [
+            171.56402,
+            0,
+            106.23598,
+            0.14286
+          ],
+          "fauna-gazelle-3": [
+            189.14184,
+            0,
+            120,
+            -0.14286
+          ],
+          "fauna-gazelle-4": [
+            48,
+            0.05856,
+            79.8,
+            0
+          ],
+          "fauna-gazelle-5": [
+            192,
+            0,
+            103.8,
+            0
+          ],
+          "fauna-gazelle-6": [
+            186,
+            0.21014,
+            79.8,
+            0
+          ],
+          "fauna-gazelle-7": [
+            157.8,
+            0.08412,
+            114,
+            0
+          ],
+          "fauna-gazelle-8": [
+            34.2,
+            0.64173,
+            78,
+            0
+          ],
+          "fauna-gazelle-9": [
+            22.84938,
+            0.73466,
+            92.95062,
+            0.14286
+          ],
+          "fauna-gazelle-10": [
+            18,
+            0,
+            69.57635,
+            0
+          ],
+          "fauna-gazelle-11": [
+            171.7632,
+            0.31276,
+            84,
+            0.14286
+          ]
+        },
+        "last": {
+          "fauna-gazelle-0": [
+            36,
+            0,
+            108,
+            0
+          ],
+          "fauna-gazelle-1": [
+            16.01542,
+            0.03906,
+            90,
+            1.5708
+          ],
+          "fauna-gazelle-2": [
+            172.86229,
+            0.00057,
+            104.93771,
+            2.35619
+          ],
+          "fauna-gazelle-3": [
+            187.30582,
+            0,
+            120,
+            -1.5708
+          ],
+          "fauna-gazelle-4": [
+            48,
+            0.05856,
+            79.8,
+            0
+          ],
+          "fauna-gazelle-5": [
+            192,
+            0,
+            105.21926,
+            0
+          ],
+          "fauna-gazelle-6": [
+            186,
+            0.21014,
+            79.8,
+            0
+          ],
+          "fauna-gazelle-7": [
+            157.8,
+            0.08412,
+            114,
+            0
+          ],
+          "fauna-gazelle-8": [
+            34.2,
+            0.64173,
+            78,
+            0
+          ],
+          "fauna-gazelle-9": [
+            24,
+            0.84902,
+            91.8,
+            2.35619
+          ],
+          "fauna-gazelle-10": [
+            18,
+            0,
+            71.41238,
+            0
+          ],
+          "fauna-gazelle-11": [
+            172.2,
+            0.31569,
+            84,
+            1.18287
+          ]
+        },
+        "idleRest": 224
+      },
+      "city-jackal": {
+        "ids": [
+          "jackal-jackal-0-actor",
+          "jackal-jackal-1-actor",
+          "jackal-jackal-2-actor",
+          "jackal-jackal-3-actor",
+          "jackal-jackal-pack-4-actor"
+        ],
+        "samples": 190,
+        "moving": 185,
+        "rest": 0,
+        "turningInMotion": 51,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 13.24965,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 10.60775,
+        "changedGaitPhase": 185,
+        "clips": {
+          "Walk": 190
+        },
+        "first": {
+          "jackal-jackal-0-actor": [
+            221.04427,
+            0.98242,
+            12.66427,
+            0.23125
+          ],
+          "jackal-jackal-1-actor": [
+            218.91722,
+            0.44054,
+            11.1,
+            0.23125
+          ],
+          "jackal-jackal-2-actor": [
+            216.14222,
+            0.06534,
+            11.1,
+            0.23125
+          ],
+          "jackal-jackal-3-actor": [
+            213.36722,
+            0.07721,
+            11.1,
+            0.23125
+          ],
+          "jackal-jackal-pack-4-actor": [
+            211.15685,
+            0.16031,
+            12.46315,
+            0.23125
+          ]
+        },
+        "last": {
+          "jackal-jackal-0-actor": [
+            222.54539,
+            1.26245,
+            14.16539,
+            0.7854
+          ],
+          "jackal-jackal-1-actor": [
+            220.58317,
+            0.86548,
+            12.20317,
+            0.7854
+          ],
+          "jackal-jackal-2-actor": [
+            218.26512,
+            0.32316,
+            11.1,
+            1.5708
+          ],
+          "jackal-jackal-3-actor": [
+            215.49012,
+            0.03918,
+            11.1,
+            1.5708
+          ],
+          "jackal-jackal-pack-4-actor": [
+            212.71512,
+            0.09481,
+            11.1,
+            1.673
+          ]
+        }
+      },
+      "pig": {
+        "ids": [
+          "livestock-pig-0",
+          "livestock-pig-1",
+          "livestock-pig-2",
+          "livestock-pig-3",
+          "livestock-pig-4",
+          "livestock-pig-5",
+          "livestock-pig-6"
+        ],
+        "samples": 266,
+        "moving": 112,
+        "rest": 147,
+        "turningInMotion": 34,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 17.0713,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 5.83355,
+        "changedGaitPhase": 0,
+        "clips": {
+          "-": 266
+        },
+        "first": {
+          "livestock-pig-0": [
+            41.0509,
+            0,
+            63.0172,
+            2.20501
+          ],
+          "livestock-pig-1": [
+            44.14472,
+            0.01432,
+            61.33256,
+            0.38817
+          ],
+          "livestock-pig-2": [
+            44.85873,
+            0.00731,
+            59.91136,
+            5.90984
+          ],
+          "livestock-pig-3": [
+            44.83893,
+            0.05889,
+            64.23223,
+            1.02399
+          ],
+          "livestock-pig-4": [
+            41.70922,
+            0,
+            60.73174,
+            3.15922
+          ],
+          "livestock-pig-5": [
+            39.08057,
+            0,
+            58.1344,
+            3.7648
+          ],
+          "livestock-pig-6": [
+            44.77213,
+            0.00136,
+            58.59734,
+            5.47424
+          ]
+        },
+        "last": {
+          "livestock-pig-0": [
+            42.34394,
+            0.00966,
+            62.80019,
+            1.71521
+          ],
+          "livestock-pig-1": [
+            44.28651,
+            0.01893,
+            61.64673,
+            0.42724
+          ],
+          "livestock-pig-2": [
+            45.10203,
+            0.01292,
+            60.58275,
+            6.74411
+          ],
+          "livestock-pig-3": [
+            43.91091,
+            0.0632,
+            64.56914,
+            -1.70179
+          ],
+          "livestock-pig-4": [
+            42.03405,
+            0,
+            60.43842,
+            1.9389
+          ],
+          "livestock-pig-5": [
+            39.0103,
+            0,
+            58.06964,
+            4.17041
+          ],
+          "livestock-pig-6": [
+            43.38174,
+            0,
+            58.35265,
+            4.45746
+          ]
+        }
+      },
+      "goat": {
+        "ids": [
+          "livestock-goat-0",
+          "livestock-goat-1",
+          "livestock-goat-2",
+          "livestock-goat-3",
+          "livestock-goat-4",
+          "livestock-goat-5",
+          "livestock-goat-6"
+        ],
+        "samples": 266,
+        "moving": 100,
+        "rest": 159,
+        "turningInMotion": 55,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 11.61764,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 5.64459,
+        "changedGaitPhase": 0,
+        "clips": {
+          "-": 266
+        },
+        "first": {
+          "livestock-goat-0": [
+            48.88127,
+            0,
+            35.79757,
+            3.01788
+          ],
+          "livestock-goat-1": [
+            50.24298,
+            0,
+            36.35569,
+            2.79268
+          ],
+          "livestock-goat-2": [
+            49.97661,
+            0,
+            33.10182,
+            3.71813
+          ],
+          "livestock-goat-3": [
+            52.39271,
+            0,
+            31.78676,
+            4.46133
+          ],
+          "livestock-goat-4": [
+            53.67137,
+            0,
+            30.7018,
+            4.79799
+          ],
+          "livestock-goat-5": [
+            50.76023,
+            0,
+            34.47855,
+            3.43875
+          ],
+          "livestock-goat-6": [
+            53.70106,
+            0,
+            34.54101,
+            5.24694
+          ]
+        },
+        "last": {
+          "livestock-goat-0": [
+            48.88127,
+            0,
+            35.79757,
+            3.01788
+          ],
+          "livestock-goat-1": [
+            51.37656,
+            0,
+            36.08531,
+            1.61442
+          ],
+          "livestock-goat-2": [
+            50.25015,
+            0,
+            32.42821,
+            2.35574
+          ],
+          "livestock-goat-3": [
+            52.81447,
+            0,
+            32.75965,
+            7.42125
+          ],
+          "livestock-goat-4": [
+            53.35131,
+            0,
+            31.11544,
+            6.45119
+          ],
+          "livestock-goat-5": [
+            50.75274,
+            0,
+            34.29915,
+            2.92805
+          ],
+          "livestock-goat-6": [
+            52.89433,
+            0,
+            35.22525,
+            5.42259
+          ]
+        }
+      },
+      "bull": {
+        "ids": [
+          "livestock-bull-0",
+          "livestock-bull-1",
+          "livestock-bull-2",
+          "livestock-bull-3"
+        ],
+        "samples": 152,
+        "moving": 47,
+        "rest": 101,
+        "turningInMotion": 21,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 5.95966,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 2.10799,
+        "changedGaitPhase": 0,
+        "clips": {
+          "-": 152
+        },
+        "first": {
+          "livestock-bull-0": [
+            28.50829,
+            0,
+            48.54155,
+            2.9242
+          ],
+          "livestock-bull-1": [
+            25.91345,
+            0,
+            43.71293,
+            3.8458
+          ],
+          "livestock-bull-2": [
+            25.49898,
+            0,
+            48.46888,
+            3.05594
+          ],
+          "livestock-bull-3": [
+            28.74462,
+            0,
+            51.86415,
+            2.09136
+          ]
+        },
+        "last": {
+          "livestock-bull-0": [
+            28.57973,
+            0,
+            47.6981,
+            3.06368
+          ],
+          "livestock-bull-1": [
+            25.91345,
+            0,
+            43.71293,
+            3.8458
+          ],
+          "livestock-bull-2": [
+            25.85064,
+            0,
+            47.79616,
+            2.58272
+          ],
+          "livestock-bull-3": [
+            29.00723,
+            0,
+            51.46518,
+            3.0275
+          ]
+        }
+      },
+      "sheep": {
+        "ids": [
+          "livestock-sheep-0",
+          "livestock-sheep-1",
+          "livestock-sheep-2",
+          "livestock-sheep-3",
+          "livestock-sheep-4",
+          "livestock-sheep-5",
+          "livestock-sheep-6"
+        ],
+        "samples": 266,
+        "moving": 93,
+        "rest": 166,
+        "turningInMotion": 45,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 13.30564,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 5.18518,
+        "changedGaitPhase": 0,
+        "clips": {
+          "-": 266
+        },
+        "first": {
+          "livestock-sheep-0": [
+            37.70121,
+            0,
+            26.34103,
+            3.99733
+          ],
+          "livestock-sheep-1": [
+            40.50387,
+            0,
+            28.64146,
+            5.11456
+          ],
+          "livestock-sheep-2": [
+            42.32126,
+            0,
+            27.91054,
+            5.70687
+          ],
+          "livestock-sheep-3": [
+            39.59688,
+            0,
+            25.94747,
+            4.52108
+          ],
+          "livestock-sheep-4": [
+            43.2637,
+            0,
+            30.61976,
+            0.42148
+          ],
+          "livestock-sheep-5": [
+            37.6937,
+            0,
+            28.66715,
+            3.3718
+          ],
+          "livestock-sheep-6": [
+            40.17369,
+            0,
+            30.77032,
+            1.61424
+          ]
+        },
+        "last": {
+          "livestock-sheep-0": [
+            37.70121,
+            0,
+            26.34103,
+            3.99733
+          ],
+          "livestock-sheep-1": [
+            40.2665,
+            0,
+            28.77465,
+            5.23967
+          ],
+          "livestock-sheep-2": [
+            42.60764,
+            0,
+            28.82276,
+            6.74794
+          ],
+          "livestock-sheep-3": [
+            39.23595,
+            0,
+            26.19366,
+            6.10058
+          ],
+          "livestock-sheep-4": [
+            43.78484,
+            0,
+            29.64199,
+            3.22426
+          ],
+          "livestock-sheep-5": [
+            37.20879,
+            0,
+            28.49107,
+            5.33474
+          ],
+          "livestock-sheep-6": [
+            41.26958,
+            0,
+            30.49709,
+            1.82145
+          ]
+        }
+      },
+      "pack-donkey": {
+        "ids": [
+          "caravan-donkey-1",
+          "caravan-donkey-2"
+        ],
+        "samples": 76,
+        "moving": 74,
+        "rest": 0,
+        "turningInMotion": 0,
+        "stationaryRotations": 0,
+        "maxSingleFrameTurnDegrees": 0,
+        "maxRestTurnDegrees": 0,
+        "routeMetres": 12.62266,
+        "changedGaitPhase": 74,
+        "clips": {
+          "Walk": 76
+        },
+        "first": {
+          "caravan-donkey-1": [
+            6.00625,
+            0,
+            57,
+            1.5708
+          ],
+          "caravan-donkey-2": [
+            2.35625,
+            0.04476,
+            57,
+            1.5708
+          ]
+        },
+        "last": {
+          "caravan-donkey-1": [
+            12.31758,
+            0,
+            57,
+            1.5708
+          ],
+          "caravan-donkey-2": [
+            8.66758,
+            0,
+            57,
+            1.5708
+          ]
+        }
+      }
+    },
+    "visibility": "visible",
+    "commit": "6eab6d06",
+    "timestamp": "2026-11-18T17:43:08.752Z",
+    "savedCity": {
+      "version": 36,
+      "history": "sumer-iii-v1",
+      "population": 12,
+      "caravanId": "caravan:1",
+      "sha256": "d20fcacc4cf78372c69ccd9e7ae3b5e48e561b32104201800c76b9e632e4dbf0"
+    },
+    "runtimeExceptions": [],
+    "httpErrors": []
+  },
+  "ordinaryWorkers": {
+    "commit": "6eab6d06915666b8902035dd32cf46189ae5467f",
+    "origin": "https://reinekes.github.io/new_babylon_demo/",
+    "fixture": "tests/fixtures/profession-tour.html",
+    "game": "index.html",
+    "versionMatches": true,
+    "sources": [
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=town-overview-years-20261026-1",
+        "bytes": 76571,
+        "hash": "626914bce652dd8853a345e1ec19b1782298a82eb4247b1904f4bf1b3d64e07e",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/resident-garments.js",
+        "bytes": 18016,
+        "hash": "de2fa0121375983f52dfc01362f171fec3c9cb4c66835eb9474015addf0570d3",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/work-clothing.js",
+        "bytes": 2724,
+        "hash": "70cd023837f8da2520c166caeb5ee9bd58342e73d19c1d3fae2e1af56d519756",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/profession-clothing.js?v=town-overview-years-20261026-1",
+        "bytes": 121,
+        "hash": "bc0c97eff9d756af2b807dc1e38f66b021378acb05a586c3df2ae4a5637a1f99",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/resident-appearance.js?v=town-overview-years-20261026-1",
+        "bytes": 2512,
+        "hash": "ebda89177d7d576faa95f4e1302334888b15ec2425df0c509c74c5bc1cf1df6c",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=work-cloth-ground-turns-20261118",
+        "bytes": 76571,
+        "hash": "626914bce652dd8853a345e1ec19b1782298a82eb4247b1904f4bf1b3d64e07e",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/resident-garments.js?v=work-cloth-ground-turns-20261118",
+        "bytes": 18016,
+        "hash": "de2fa0121375983f52dfc01362f171fec3c9cb4c66835eb9474015addf0570d3",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/work-clothing.js?v=work-cloth-ground-turns-20261118",
+        "bytes": 2724,
+        "hash": "70cd023837f8da2520c166caeb5ee9bd58342e73d19c1d3fae2e1af56d519756",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/profession-clothing.js?v=work-cloth-ground-turns-20261118",
+        "bytes": 121,
+        "hash": "bc0c97eff9d756af2b807dc1e38f66b021378acb05a586c3df2ae4a5637a1f99",
+        "versionMatches": true
+      },
+      {
+        "url": "https://reinekes.github.io/new_babylon_demo/resident-appearance.js?v=work-cloth-ground-turns-20261118",
+        "bytes": 2512,
+        "hash": "ebda89177d7d576faa95f4e1302334888b15ec2425df0c509c74c5bc1cf1df6c",
+        "versionMatches": true
+      }
+    ],
+    "routes": {
+      "pottery": {
+        "id": 1,
+        "sex": "f",
+        "phase": "toWork",
+        "role": "production",
+        "work": "pottery",
+        "workKey": "5,12",
+        "calling": "auto",
+        "clothing": 86.20910648148117,
+        "look": "potter",
+        "cut": "apron",
+        "dye": "#B46B42",
+        "sharedSkeleton": true,
+        "meshTriangles": 1479,
+        "distanceM": 1.2060033551930616,
+        "frames": 81,
+        "seconds": 1.3591999999284745,
+        "cargo": {},
+        "near": [
+          {
+            "id": 0,
+            "role": "auto",
+            "sex": "m",
+            "calling": "auto",
+            "work": "5,12",
+            "tag": "potter",
+            "shape": "apron",
+            "range": 0.60003672062925
+          }
+        ],
+        "GL": 0,
+        "exceptions": [],
+        "http": []
+      },
+      "clay": {
+        "id": 1,
+        "sex": "f",
+        "phase": "toWork",
+        "role": "production",
+        "work": "clay",
+        "workKey": "7,7",
+        "calling": "auto",
+        "clothing": 99.92746990740744,
+        "look": "clayworker",
+        "cut": "short",
+        "dye": "#B46B42",
+        "sharedSkeleton": true,
+        "meshTriangles": 1591,
+        "distanceM": 1.2074737499999202,
+        "frames": 92,
+        "seconds": 1.5304000000953675,
+        "cargo": {},
+        "near": [
+          {
+            "id": 3,
+            "role": "auto",
+            "sex": "f",
+            "calling": "auto",
+            "work": "7,7",
+            "tag": "clayworker",
+            "shape": "short",
+            "range": 0.6000000000000011
+          }
+        ],
+        "GL": 0,
+        "exceptions": [],
+        "http": []
+      }
+    },
+    "coverage": {
+      "profiles": 32,
+      "matchedBothSexes": 32,
+      "totalSkinnedActors": 64,
+      "noStateChange": true,
+      "shapes": [
+        "short",
+        "wrap",
+        "apron",
+        "sash",
+        "mantle"
+      ],
+      "allClayColors": [
+        "#B46B42"
+      ],
+      "GL": 0,
+      "exceptions": [],
+      "http": [
+        [
+          404,
+          "https://reinekes.github.io/favicon.ico"
+        ]
+      ]
+    },
+    "changeOfWork": {
+      "allStages": [
+        {
+          "phase": "real-workplace",
+          "look": [
+            "potter"
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        },
+        {
+          "phase": "promised-role-during-old-cargo",
+          "look": [
+            "potter"
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        },
+        {
+          "phase": "same-role-distant",
+          "look": [
+            "potter"
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        },
+        {
+          "phase": "same-role-near",
+          "look": [
+            "potter"
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        },
+        {
+          "phase": "different-actual-workplace",
+          "look": [
+            "weaver"
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        },
+        {
+          "phase": "mourning",
+          "look": [
+            null
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        },
+        {
+          "phase": "return-to-actual-workplace",
+          "look": [
+            "potter"
+          ],
+          "samePersonAndStock": true,
+          "GL": 0
+        }
+      ],
+      "identityAndSkinMaterialStable": [
+        [
+          9801,
+          true,
+          true
+        ],
+        [
+          9802,
+          true,
+          true
+        ]
+      ],
+      "everyStatePreserved": true,
+      "exceptions": [],
+      "http": []
+    }
+  }
+}
