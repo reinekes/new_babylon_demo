@@ -104,7 +104,7 @@ function cardHTML(state,building,column){
    </details>
   </div>
   <div class="chain-card">
-   <img src="assets/ui/production-chains/${building}.webp" width="320" height="200" alt="" loading="lazy" decoding="async">
+   <img src="assets/ui/production-chains/${building}.webp?v=building-series-20261118-2" width="320" height="200" alt="" loading="lazy" decoding="async">
    <div class="chain-card-body">
     ${showOutput?`<div class="chain-product">${building==='coppersmith'?'<span>На выбор</span>':''}${outputKeys.map(key=>resource(key,def.output[key],{upTo:building==='sheepfold'})).join('')}</div>`:`<p class="chain-effect">${def.effect}</p>`}
     ${costs.length?`<div class="chain-input"><span>Нужно</span>${costs.map(([key,units])=>resource(key,units,{kind:'input',grain:key==='food'&&['bakery','brewery'].includes(building)})).join('')}</div>`:''}

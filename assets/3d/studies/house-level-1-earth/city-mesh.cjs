@@ -44,7 +44,11 @@ async function build(source, destination) {
   }
 
   await MeshoptSimplifier.ready;
-  const triangleBudgets = [2500, 300, 3300, 750, 1000, 400];
+  const triangleBudgets = {
+    'Straw-tempered mud plaster': 2500, 'Compacted alluvial soil': 300,
+    'Dry reed rind and binding': 3300, 'Unpeeled weathered timber': 750,
+    'Unpolished terracotta slip': 1000, 'Handwoven fibre': 400
+  };
   for (const primitive of gltf.meshes[0].primitives) {
     const {POSITION, NORMAL, TEXCOORD_0} = primitive.attributes;
     const positions = read(POSITION);
@@ -56,7 +60,7 @@ async function build(source, destination) {
     }
     const [indices] = MeshoptSimplifier.simplifyWithAttributes(
       read(primitive.indices), positions, 3, attributes, 5, [.18, .18, .18, .03, .03],
-      null, triangleBudgets[primitive.material] * 3, .009, ['Permissive']
+      null, Math.min(oldAccessors[primitive.indices].count, triangleBudgets[gltf.materials[primitive.material].name] * 3), .009, ['Permissive']
     );
     const [remap, count] = MeshoptSimplifier.compactMesh(indices);
     if (count > 65535) throw Error('City mesh exceeds 16-bit index range');

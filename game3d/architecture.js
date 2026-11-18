@@ -35,6 +35,16 @@ export function createArchitecture(B,scene,b,m,state){
   for(const j of [0,2])for(const [xx,zz]of ring){const factor=j===2?.985:1;p.push(xx*factor,(j/2-.5)*h,zz*factor);uv.push(xx*factor/2,zz*factor/2);}
   for(let k=1;k<7;k++){indices.push(cap,cap+k,cap+k+1,cap+8,cap+8+k+1,cap+8+k);}
   for(let i=0;i<indices.length;i+=3)[indices[i+1],indices[i+2]]=[indices[i+2],indices[i+1]];
+  if((mat===wall||mat===m.raw||mat===m.fired)&&h>.26){
+   // Keep the wall feet and the support planes fixed; hand-formed edges and
+   // bowed solids share the same displacement across their separate UV charts.
+   for(let i=0;i<p.length;i+=3){
+    const rise=p[i+1]/h+.5,weather=rise*Math.min(h,.9);
+    const warp=.022*Math.sin((x+p[i])*2.9+(z+p[i+2])*3.4+y);
+    p[i]+=weather*warp;
+    p[i+2]+=weather*.016*Math.sin((z+p[i+2])*3.1-(x+p[i])*2.3);
+   }
+  }
   const normals=[];B.VertexData.ComputeNormals(p,indices,normals);const data=new B.VertexData();Object.assign(data,{positions:p,indices,normals,uvs:uv});const mesh=new B.Mesh(`handmade-${serial++}`,scene);data.applyToMesh(mesh);mesh.position.set(x,y,z);mesh.rotation.y=angle;return add(mesh,mat);
  };
  const cylinder=(x,y,z,r,h,mat=m.wood,top=r)=>{const a=B.MeshBuilder.CreateCylinder(`round-${serial++}`,{height:h,diameterBottom:r*2,diameterTop:top*2,tessellation:12},scene);a.position.set(x,y,z);return add(a,mat);};
@@ -156,14 +166,14 @@ export function createArchitecture(B,scene,b,m,state){
   ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);
   oven(1.57,.40,1.56,1.56,1.42,m.raw);
   block(-1.28,.2,1.28,1.12,.24,.64,m.shade);
-  block(-1.28,.36,1.28,.86,.12,.37,m.trim,.14);
+  block(-1.28,.36,1.28,.86,.12,.37,m.raw,.14);
   bench(-.16,1.36,.94);
   cylinder(-.15,.86,1.36,.31,.04,m.terracotta);
   cylinder(-.15,.90,1.36,.19,.055,m.linen);
   jar(-1.65,.65,.61);
   break;
- case 'coppersmith':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);basin(1.4,.35,1.4,1.3);bench(-.8,1.1,1.6);break
- case 'dairyStore':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);jar(1.4,.35,1.1);jar(1.8,1.35,.85);bench(-.8,1.1,1.6);break
+ case 'coppersmith':ground();room(-.58,-1.52,3.48,1.64,2.29);cloth(-.80,.69,2.81,2.0,1.98,m.reed);basin(1.4,.35,1.4,1.3);bench(-.8,1.1,1.6);break
+ case 'dairyStore':ground();room(-.30,-1.52,4.0,1.72,1.94);cloth(-.73,.52,3.18,2.10,1.84,m.reed);jar(1.4,.35,1.1);jar(1.8,1.35,.85);bench(-.8,1.1,1.6);break
  case 'brewery':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);for(let i=0;i<6;i++)jar(-1.7+(i%3)*.95,.1+Math.floor(i/3)*1.35,1.05);basin(1.8,.45,.7,1.3);beam([1.6,.8,.1],[2,1.25,-.1]);break;
  case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);
   if(isStrictSumer(state)){cloth(-.6,1.2,3.8,2.4,2.25,m.reed);bench(-.45,1.25,2);block(-.55,.93,1.25,.42,.06,.3,m.raw);for(const x of [.55,1.15])block(x,.2,1.5,.48,.37,.55,m.linen,.23);}
@@ -230,9 +240,9 @@ export function createArchitecture(B,scene,b,m,state){
   break;
  }
  case 'waterpoint':ground();basin(0,.4,2.6,2.1);cloth(-.25,-.8,3.6,1.5,2.1,m.reed);for(let i=0;i<6;i++)jar(-2.1+i*.8,1.95,.55);beam([-1.8,.3,-2],[1.8,.3,-2],.13,m.reed);block(0,.26,-1.7,.55,.1,.6,m.shade);break;
- case 'joineryYard':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);bench(-.8,1.1,1.6);for(let i=0;i<4;i++)block(1.35,.16+i*.10,1.1,1.65,.10,.45,m.wood);break
- case 'matYard':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);block(0,.13,1.15,2.5,.18,1.35,m.reed);break
- case 'basketry':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);bench(-.8,1.1,1.6);cylinder(1.6,.25,.65,.47,.5,m.reed);break
+ case 'joineryYard':ground();room(-.71,-1.48,3.14,1.84,1.97);cloth(-.85,.50,2.89,1.63,2.05,m.reed);bench(-.8,1.1,1.6);for(let i=0;i<4;i++)block(1.35,.16+i*.10,1.1,1.65,.10,.45,m.wood);break
+ case 'matYard':ground();room(-1.55,-1.04,1.68,2.56,1.83);cloth(.80,-.78,2.45,2.74,1.87,m.reed);block(0,.13,1.15,2.5,.18,1.35,m.reed);break
+ case 'basketry':ground();room(.56,-1.62,3.50,1.47,1.96);cloth(-.86,.53,2.63,2.08,1.80,m.reed);bench(-.8,1.1,1.6);cylinder(1.6,.25,.65,.47,.5,m.reed);break
  case 'linenYard':
  case 'weaver':ground();room(-1.5,-.4,1.7,3.8,2);cloth(.65,.05,3,3.6,2.25,m.reed);loom(.3,-.9);loom(.5,1.1);for(let i=0;i<5;i++)cylinder(1.8,.28,-1.4+i*.66,.24,.52,m.linen,.18);break;
  case 'tailor':ground();room(0,-1.55,4.3,1.65,2.35);cloth(-.5,.55,3.3,2,2.05);bench(-.7,.5,2.5);for(let i=0;i<3;i++)block(-1.4+i*.65,.86,.5,.55,.06,.58,m.linen);for(let i=0;i<4;i++){beam([1.65,.1,-.5+i*.65],[1.65,1.7,-.5+i*.65]);block(1.65,1.27,-.5+i*.65,.6,.8,.07,m.linen);}break;

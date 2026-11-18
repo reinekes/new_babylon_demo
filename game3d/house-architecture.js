@@ -22,7 +22,7 @@ export function createHouseArchitecture(B,scene,b,m,state,{furnishingsOnly=false
   const t=.22,door=.72,side=(w-door)/2;block(name,x,base+h/2,z-d/2,w,h,t);for(const s of [-1,1]){block(name,x+s*(w-t)/2,base+h/2,z,t,h,d);block(name,x+s*(door+side)/2,base+h/2,z+d/2,side,h,t);}block(name,x,base+h-.18,z+d/2,door,.36,t);block('door-recess',x,base+.72,z+d/2-.14,door,1.44,.03,m.shade);block('timber-lintel',x,base+h-.36,z+d/2+.04,door+.2,.1,.3,m.wood);block('earth-roof',x,base+h+.05,z,w+.12,.15,d+.12,m.soil);for(const s of [-1,1])block('roof-parapet',x+s*w/2,base+h+.22,z,.16,.3,d+.14);block('roof-parapet',x,base+h+.22,z-d/2,w,.3,.16);
  };
  if(!furnishingsOnly)block('court-ground',0,.035,0,5.1,.07,5.1,m.soil);
- if(kind==='hut'){
+ if(kind==='hut'&&!furnishingsOnly){
   const profile=[[0,1.58],[.18,1.61],[.38,1.6],[.58,1.57],[.78,1.53],[.98,1.48],[1.18,1.41],[1.38,1.33],[1.58,1.24],[1.78,1.13],[1.98,1.01],[2.18,.87],[2.36,.71],[2.52,.54],[2.66,.37],[2.77,.2],[2.83,.08],[2.85,0]],p=[],indices=[],uv=[],segments=64;
   for(const [y,r]of profile)for(let k=0;k<=segments;k++){const a=k/segments*Math.PI*2,ripple=1+.012*Math.cos(a*3)*Math.sin(y*1.7);p.push(Math.sin(a)*r*ripple,y,Math.cos(a)*r*ripple-.35);uv.push(k/segments*4,y/2);}
   for(let j=0;j<profile.length-1;j++)for(let k=0;k<segments;k++){const a=(k+.5)/segments*Math.PI*2,angle=Math.min(a,Math.PI*2-a),height=(profile[j][0]+profile[j+1][0])/2,opening=height<.8?.29:height<1?.24:height<1.2?.17:height<1.38?.07:0;if(angle<opening)continue;const q=j*(segments+1)+k;indices.push(q,q+segments+1,q+1,q+1,q+segments+1,q+segments+2);}
@@ -47,12 +47,12 @@ export function createHouseArchitecture(B,scene,b,m,state,{furnishingsOnly=false
   if(variant===0)jar('door-planter',1.73,.90,.46,0,true);
   if(variant===1){canopy('side-reed-shelter',-1.16,1.03,1.12,1.9,1.52);jar('door-planter',-1.55,2.02,.47,0,true);}
   if(variant===2){block('storage-bin',-1.28,.32,1.19,.64,.64,.71,m.trim);block('storage-bin-lid',-1.28,.66,1.19,.69,.065,.76,m.reed);jar('door-planter',1.74,.29,.48,0,true);}
- }else if(kind==='courtyard-2'){
+ }else if(kind==='courtyard-2'&&!furnishingsOnly){
   room('court-back-room',.2,-1.55,4.35,1.6,2.05);room('court-west-wing',-1.62,.28,1.45,1.9,1.84);
   block('court-east-wall',2.34,.66,.57,.2,1.32,2.7);block('court-front-wall',-1.43,.58,2.23,1.9,1.16,.2);block('court-front-wall',1.45,.58,2.23,1.9,1.16,.2);
   canopy('court-reed-awning',.9,.28,2.45,1.75,1.9);block('court-bench',1.92,.27,1.48,.46,.54,1.03,m.trim);block('woven-mat',.12,.09,1.35,1.15,.025,.72,m.reed);
   jar('water-jar',-1.94,1.65,.72);jar('small-pot',-1.27,1.75,.43);jar('court-planter',1.91,-.56,.59,0,true);
- }else if(kind==='courtyard-3'){
+ }else if(kind==='courtyard-3'&&!furnishingsOnly){
   room('terrace-lower-hall',-.75,-1.48,3.4,1.83,2.28);room('terrace-west-wing',-1.73,.3,1.22,1.77,2.28);room('terrace-upper-room',-1.2,-1.43,2.05,1.7,1.55,2.43);
   block('terrace-deck',.6,-.02+2.43,-1.43,1.5,.16,1.82,m.soil);block('terrace-balustrade',1.35,2.77,-1.49,.17,.62,1.97);block('terrace-balustrade',.62,2.77,-2.4,1.62,.62,.17);
   // Eleven solid risers climb along the east wall and meet the terrace deck.
@@ -71,14 +71,15 @@ export function createHouseArchitecture(B,scene,b,m,state,{furnishingsOnly=false
  if(b.householdStock?.mat>=1)block('installed-mat',furnishingsOnly ? .54 : 0,.10,furnishingsOnly ? .94 : 1.85,1.35,.05,.58,m.reed);
  if(b.householdStock?.mat>=2)canopy('installed-reed-awning',furnishingsOnly ? 1 : -.8,furnishingsOnly ? .84 : 1.15,1.35,1.12,1.55);
  if(kind!=='hut'){
-  const roof=furnishingsOnly?2.175:kind==='courtyard-3'?4.08:kind==='courtyard-2'?2.26:1.95;
+  const roof=furnishingsOnly?({'courtyard-1':2.175,'courtyard-2':2.42,'courtyard-3':3.98})[kind]:kind==='courtyard-3'?4.08:kind==='courtyard-2'?2.26:1.95;
   if(!furnishingsOnly)for(let i=0;i<3;i++)block('roof-reed-ends',(kind==='courtyard-3'?-1.7:-.6)+i*.43,roof-.17,kind==='courtyard-3'?-.51:kind==='courtyard-2'?-.68:-.04,.1,.1,.18,m.wood);
   if(variant===1){
-   const benchX=furnishingsOnly?1.25:1.86,benchZ=furnishingsOnly ? .57 : 1.65;
+   const upperCourt=furnishingsOnly&&kind!=='courtyard-1';
+   const benchX=upperCourt?-1.67:furnishingsOnly?1.25:1.86,benchZ=upperCourt?1.77:furnishingsOnly ? .57 : 1.65;
    block('courtyard-storage-bench',benchX,.25,benchZ,.45,.5,.7,m.trim);
    jar('household-bowl',benchX-.03,benchZ-.02,.34,.5);
    // Lean reed screen makes the shaded yard visibly distinct without adding a room.
-   const screen=block('woven-court-screen',-1.93,.84,1.1,.05,1.25,.75,m.reed);screen.rotation.z=-.06;
+   if(!upperCourt){const screen=block('woven-court-screen',-1.93,.84,1.1,.05,1.25,.75,m.reed);screen.rotation.z=-.06;}
   }else if(variant===2){
    for(let i=0;i<3;i++)jar('roof-drying-pot',(kind==='courtyard-3'?-1.8:-.5)+i*.32,furnishingsOnly?-1.22:-1.64,.35,roof);
    const troughX=furnishingsOnly?1.35:1.74;

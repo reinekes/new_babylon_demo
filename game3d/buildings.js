@@ -23,6 +23,7 @@ import {buildingKey,capacityOf} from '../definitions.js';
 import {createDistrictBuilding, districtCropVisual} from '../district3d/buildings.js';
 import {createSacredModels,sacredModelTransform} from './sacred-models.js';
 import {createReedRoof} from './reed-roof.js';
+import {applyWorkshopArchitecture} from './workshop-architecture.js';
 import {createMusicCourtyard} from './music-courtyard.js';
 
 const rotationOf=b=>((Math.trunc(Number(b?.rotation)||0)%4)+4)%4;
@@ -145,7 +146,9 @@ export async function createGameBuildings(B,scene,materials,options={}){
     if(b.campSalvage.reed>0)part('camp-reed-bundle',[1.4,.22,.65],[0,.13,0],materials.reed||trim);
    }else if(sacredModels.sources(b,state)){
     for(const source of sacredModels.sources(b,state)){
-     const mesh=source.clone('camp-sf3d',root,true);
+     const catalogue=sacredModels.catalogue(b,state);
+     const mesh=source.clone(catalogue?'game-camp-earth-'+source.material.name:'camp-sf3d',root,true);
+     if(catalogue)mesh.position.y=.018;
      mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;
      sources.push(mesh);
     }
@@ -163,7 +166,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
    sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade},state,{furnishingsOnly:!!houseAsset});
    for(const mesh of sources)mesh.parent=root;
    for(const source of houseAsset||[]){
-    const mesh=source.clone('game-house-earth-1-'+source.material.name,root,true);
+    const mesh=source.clone('game-house-earth-'+(houseVisualKind(b,state)==='hut'?'hut':tier(b))+'-'+source.material.name,root,true);
     mesh.position.y=.018;
     mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;
     sources.push(mesh);
@@ -206,6 +209,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
    }else for(const mesh of sacredModels.fallback(b,materialSet,state)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
 
   }
+  applyWorkshopArchitecture(B,scene,b,state,materialSet,sources,root);
   const marks=cultSign(state,b);
   if(marks.length){
    const x=1.65,y=.89,z=2.62;
@@ -233,8 +237,10 @@ export async function createGameBuildings(B,scene,materials,options={}){
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
    const earth=sacredModels.ready(b,state);
-   const doorCentre=earth?-.22:tier(b)===3?-.75:tier(b)===2?.2:0;
-   const doorZ=earth?-.09:houseVisualKind(b,state)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245;
+   const kind=houseVisualKind(b,state);
+   const [doorCentre,doorZ]=earth?({hut:[0,1.07],'courtyard-1':[-.22,-.09],
+    'courtyard-2':[.45,-.84],'courtyard-3':[-.56,-.57]})[kind]:
+    kind==='hut'?[0,1.07]:tier(b)===3?[-.75,-.69]:tier(b)===2?[.2,-.875]:[0,-.245];
    for(let index=0;index<4;index++){
     const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:.15,height:.2,depth:.04},scene);
     lamp.position.set(doorCentre-.27+index*.18,.73,doorZ);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);

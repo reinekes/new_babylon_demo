@@ -3,17 +3,24 @@ import {advanceTime, build, buildingAt, canBuild, createGame, encode, decode} fr
 import {simulationSeconds} from '../calendar.js';
 import {BUILDINGS, MATERIALS, buildingKey, housingOf} from '../definitions.js';
 import {footprintCells, footprintSize} from '../footprints.js';
-import {strictScenario} from '../scenario-profiles.js';
+import {legacyScenario,strictScenario} from '../scenario-profiles.js';
 import {worldHeight, worldWidth, terrain, signedRiverDistance} from '../world.js';
 import {syncCitizens} from '../workforce.js';
 import {createGameRenderer} from '../game3d/renderer.js';
 import {extractionKinds} from '../extraction-courts.js';
 import {stockStores} from '../inventory.js';
 
-const state=createGame({start:'established',seed:137,scenario:strictScenario()});
+const query=new URLSearchParams(location.search);
+const requested=query.get('model')||'house';
+const homeVariants={'house-2':'Дом II','house-3':'Дом III',starterHut:'Дом основателей',reedCamp:'Тростниковый шалаш'};
+const titles={...Object.fromEntries(Object.entries(BUILDINGS).map(([id,def])=>[id,def.name])),...homeVariants,road:'Дорога'};
+const legacyFounder=requested==='starterHut';
+const state=createGame({start:'established',seed:137,scenario:legacyFounder?legacyScenario():strictScenario()});
 state.population=100;
 const models=new Map();
-for(const type of Object.keys(BUILDINGS)){
+// The founding hut belongs to the legacy city. Strict-only workshops and
+// fortifications load on their own scenario through the selector.
+for(const type of legacyFounder?['house']:Object.keys(BUILDINGS)){
  state.resources.faith=3000;state.resources.prestige=3000;
  const stock=stockStores(state)[0].stock;
  for(const k of MATERIALS){const restock=Math.max(0,500-stock[k]);stock[k]+=restock;state.resources[k]+=restock;}
@@ -32,8 +39,14 @@ for(const type of Object.keys(BUILDINGS)){
  models.set(type,building);
 }
 
-const stress=new URLSearchParams(location.search).has('stress');
-if(!stress)Object.assign(models.get('field').crop,{sown:1,growth:.98,total:40,remaining:40,seedUsed:4});
+const stress=query.has('stress');
+const home=models.get('house');
+for(const variant of Object.keys(homeVariants))models.set(variant,home);
+if(!stress){
+ const path=state.roads?.find(r=>!r.construction);
+ if(path){path.built=true;models.set('road',path);}
+}
+if(!stress&&models.has('field'))Object.assign(models.get('field').crop,{sown:1,growth:.98,total:40,remaining:40,seedUsed:4});
 if(stress){
  for(let y=2;y<worldHeight(state)-2&&state.buildings.length<250;y+=2)
   for(let x=2;x<worldWidth(state)-2&&state.buildings.length<250;x+=2)
@@ -45,7 +58,7 @@ if(!stress)state.population=Math.min(state.population,state.capacity);
 syncCitizens(state);
 state.dayTime=.54;
 const selector=document.querySelector('#building'),status=document.querySelector('#status');
-for(const [id,def] of Object.entries(BUILDINGS))selector.add(new Option(def.name,id));
+for(const [id,title] of Object.entries(titles))if(legacyFounder||models.has(id))selector.add(new Option(title,id));
 const renderer=await createGameRenderer(document.querySelector('#city'),()=>{}, {initialState:state});
 if(renderer.mode!=='3d')throw Error('WebGL renderer unavailable');
 renderer.lightMode='day';
@@ -53,6 +66,10 @@ renderer.draw(state,null,performance.now(),{paused:true});
 await renderer.detailsReady;
 await renderer.buildings.sacredReady();
 const meshesFor=(type)=>{
+ if(type==='road'){
+  const road=models.get('road');
+  return renderer.scene.meshes.filter(m=>m.metadata?.road?.a&&m.name.startsWith('road-')&&m.metadata.road.a.x===road.a.x&&m.metadata.road.a.y===road.a.y&&m.metadata.road.b.x===road.b.x&&m.metadata.road.b.y===road.b.y);
+ }
  if(type==='canal')return renderer.scene.meshes.filter(mesh=>mesh.metadata?.canalArms&&mesh.getTotalVertices());
  const b=models.get(type),key=buildingKey(b),cells=footprintCells(b);
  const buildings=renderer.buildings.meshes.filter(mesh=>mesh.metadata?.buildingKey===key&&mesh.isVisible&&mesh.getTotalVertices());
@@ -64,18 +81,28 @@ const meshesFor=(type)=>{
  })):buildings;
 };
 const focus=type=>{
+ if((type==='starterHut')!==(state.scenario.history==='legacy-v1')){
+  const url=new URL(location.href);url.searchParams.set('model',type);location.assign(url);return;
+ }
+ if(type==='house'||type in homeVariants){
+  home.level=type==='house-2'?2:type==='house-3'?3:1;
+  if(type==='starterHut')home.starterHut=true;else delete home.starterHut;
+  if(type==='reedCamp')home.reedCamp=true;else delete home.reedCamp;
+  state.capacity=housingOf(state);
+ }
  const b=models.get(type),n=footprintSize(b),center=(n-1)*3;
  renderer.camera.setTarget(new renderer.B.Vector3(b.x*6+center,1.1,b.y*6+center));
  renderer.camera.alpha=Math.PI/2-.56;renderer.camera.beta=1.01;renderer.camera.radius=n===1?12:n===2?23:30;
  renderer.camera.inertialAlphaOffset=0;renderer.camera.inertialBetaOffset=0;renderer.camera.inertialRadiusOffset=0;
  selector.value=type;
  renderer.draw(state,null,performance.now(),{paused:true});
+ renderer.buildings.sacredReady().then(()=>{if(selector.value===type)renderer.draw(state,null,performance.now(),{paused:true});});
  const link=document.querySelector('#download');link.href='assets/3d/sumer-buildings/'+type+'.glb';link.download=type+'.glb';
- status.textContent=BUILDINGS[type].name+' · '+n+'×'+n+(type==='bridge'?' · пролёт по реке':'');
+ status.textContent=titles[type]+' · '+n+'×'+n+(type==='bridge'?' · пролёт по реке':'');
 };
 selector.onchange=()=>focus(selector.value);
 document.querySelector('#overview').onclick=()=>{renderer.overview();renderer.draw(state,null,performance.now(),{paused:true});};
-focus('house');
+focus(models.has(requested)?requested:'house');
 renderer.draw(state,null,performance.now(),{paused:true});
 window.sumerStudio={renderer,state,models,focus,meshesFor,encode,decode,
  async benchmark(seconds=12){

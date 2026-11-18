@@ -7,6 +7,13 @@ const FORTIFICATION_MODELS=Object.freeze({cityGate:'uruk-city-gate.glb',cityWall
 const MARKET_MODEL='market-2x2.glb';
 const WATCH_HOUSE_MODEL='watch-house-v2.glb';
 const REED_CAMP_MODEL='reed-camp-sf3d.glb';
+const HOUSE_CATALOGUE={
+ 'courtyard-1':['house','84ef78b6072b'],
+ 'courtyard-2':['house-2','c99ad4297e03'],
+ 'courtyard-3':['house-3','b8d0c4e44d96'],
+ hut:['starterHut','b4fc4c40764d'],
+ reedCamp:['reedCamp','e630b90f315c'],
+};
 
 export const SACRED_MODELS=Object.freeze({
  ishtarGate:{file:'sacred-ishtar-gate.glb',width:5.2},
@@ -109,7 +116,7 @@ export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
 }
 
 function modelKey(b,state){
- if(b?.type==='house'&&!b.reedCamp&&!b.campSalvage&&b.construction?.kind!=='new'&&houseVisualKind(b,state)==='courtyard-1')return 'courtyardHouse';
+ if(b?.type==='house'&&!b.reedCamp&&!b.campSalvage&&b.construction?.kind!=='new')return houseVisualKind(b,state);
  if(b?.type==='market'&&footprintSize(b)===2&&b.construction?.kind!=='new')return 'market';
  if(b?.type==='watchHouse'&&b.construction?.kind!=='new')return 'watchHouse';
  if(b?.construction?.kind!=='new'&&(b?.type==='cityWall'||b?.type==='cityGate'))return b.type;
@@ -125,17 +132,31 @@ export function createSacredModels(B,scene,{onError=error=>console.warn('Buildin
   const key=modelKey(b,state);
   if(!key||disposed||loaded.has(key)||failed.has(key))return pending.get(key)||null;
   if(pending.has(key))return pending.get(key);
-  const isHouse=key==='courtyardHouse';
-  const directory=isHouse?'assets/3d/sumer-buildings/':'assets/art-courtyard/models/';
-  const file=isHouse?b.type+'.glb?v=84ef78b6072b':key==='market'?MARKET_MODEL:key==='watchHouse'?WATCH_HOUSE_MODEL:key==='reedCamp'?REED_CAMP_MODEL:FORTIFICATION_MODELS[key]??SACRED_MODELS[key].file;
-  const promise=loadModel(B,scene,directory,file,scene,undefined,'.glb').then(container=>{
+  async function open(directory,file,catalogue=false){
+   const container=await loadModel(B,scene,directory,file,scene,undefined,'.glb');
    if(disposed){container.dispose();return null;}
-   try{const sources=flattenSacredContainer(B,container,{tileCoordinates:isHouse});loaded.set(key,{container,sources});return sources;}
-   catch(error){container.dispose();throw error;}
-  }).catch(error=>{failed.add(key);if(!disposed)onError(error);return null;}).finally(()=>pending.delete(key));
+   try{
+    const sources=flattenSacredContainer(B,container,{tileCoordinates:catalogue});
+    loaded.set(key,{container,sources,catalogue});return sources;
+   }catch(error){container.dispose();throw error;}
+  }
+  const house=HOUSE_CATALOGUE[key];
+  let task;
+  if(house){
+   const [stem,version]=house;
+   task=open('assets/3d/sumer-buildings/',stem+'.glb?v='+version,true);
+   if(key==='reedCamp')task=task.catch(error=>{
+    if(disposed)throw error;
+    return open('assets/art-courtyard/models/',REED_CAMP_MODEL);
+   });
+  }else{
+   const file=key==='market'?MARKET_MODEL:key==='watchHouse'?WATCH_HOUSE_MODEL:FORTIFICATION_MODELS[key]??SACRED_MODELS[key].file;
+   task=open('assets/art-courtyard/models/',file);
+  }
+  const promise=task.catch(error=>{failed.add(key);if(!disposed)onError(error);return null;}).finally(()=>pending.delete(key));
   pending.set(key,promise);return promise;
  }
- return {request,key:sacredModelKey,ready(b,state){return loaded.has(modelKey(b,state));},sources(b,state){return loaded.get(modelKey(b,state))?.sources||null;},
+ return {request,key:sacredModelKey,catalogue(b,state){return !!loaded.get(modelKey(b,state))?.catalogue;},ready(b,state){return loaded.has(modelKey(b,state));},sources(b,state){return loaded.get(modelKey(b,state))?.sources||null;},
   fallback(b,m,state){if(b.type!=='ishtarGate')return null;if(isStrictSumer(state))return createSumerGate(B,scene,m,b);if(!blue){blue=new B.PBRMaterial('sacred-glazed-blue',scene);blue.albedoColor=B.Color3.FromHexString('#1e6087').toLinearSpace();blue.metallic=0;blue.roughness=.56;}return createIshtarGateFallback(B,scene,m,blue,b);},
   idle(){return Promise.all([...pending.values()]);},
   dispose(){if(disposed)return;disposed=true;for(const {container} of loaded.values())container.dispose();loaded.clear();failed.clear();blue?.dispose();}

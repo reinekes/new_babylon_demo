@@ -1,0 +1,483 @@
+{
+  "date": "2026-11-18",
+  "fixture": "scripts/sumer-building-studio.html?stress",
+  "baseline": "4ce7b38",
+  "speed": 4,
+  "method": "18 s, requestAnimationFrame intervals over elapsed time. Four ordinary-city runs alternate the published level I release and the new building collection. The separate mixed runs assign the ordinary homes evenly across all three levels, recompute capacity, then exercise the same city and camera.",
+  "metrics": {
+    "fps": "displayed rAF frames per second",
+    "simulationP95": "main-thread wall time per simulation tick in ms",
+    "activeIndices": "Babylon active indices at the final sampled frame; this changes with the scene"
+  },
+  "checks": "Encode/decode strings compared before and after for each run, including inventories and cargo. Ordered resident IDs, resident cargo and global stock compared explicitly at the start.",
+  "results": {
+    "after-1": 30.22,
+    "after-2": 27.95,
+    "after-mixed": 29.92,
+    "baseline-1": 30.42,
+    "baseline-2": 26.42,
+    "baseline-mixed": 29.45
+  },
+  "runs": [
+    {
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenCargoAndResources": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 30.223040493328746,
+        "frames": 545,
+        "seconds": 18.032600000000002,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 10.799999952316284,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": [],
+        "framesMs": {
+          "samples": 544,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 545,
+            "p50": 25.799999952316284,
+            "p95": 33.89999997615814
+          },
+          "buildings": {
+            "samples": 545,
+            "p50": 0.6000000238418579,
+            "p95": 0.8999999761581421
+          },
+          "actors": {
+            "samples": 545,
+            "p50": 3.899999976158142,
+            "p95": 11.199999928474426
+          },
+          "scene": {
+            "samples": 545,
+            "p50": 19.600000023841858,
+            "p95": 23.399999976158142
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "endCargoAndResources": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8871/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 431,
+        "visibleBuildingMeshes": 2996,
+        "houseVisualMeshes": {},
+        "activeIndices": 13587201,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "viewport": [
+        1440,
+        900
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+      "canvasHidden": false,
+      "exceptions": [],
+      "label": "after-1",
+      "captured": "2026-11-18T09:00:22.031Z"
+    },
+    {
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenCargoAndResources": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 27.949380566307685,
+        "frames": 504,
+        "seconds": 18.032600000000002,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 11.5,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": [],
+        "framesMs": {
+          "samples": 503,
+          "p50": 33.29999999999927,
+          "p95": 50.100000000000364
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 504,
+            "p50": 27.399999976158142,
+            "p95": 36.40000009536743
+          },
+          "buildings": {
+            "samples": 504,
+            "p50": 0.6999999284744263,
+            "p95": 0.8999999761581421
+          },
+          "actors": {
+            "samples": 504,
+            "p50": 4.100000023841858,
+            "p95": 11.700000047683716
+          },
+          "scene": {
+            "samples": 504,
+            "p50": 21.299999952316284,
+            "p95": 25.100000023841858
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "endCargoAndResources": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8871/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 430,
+        "visibleBuildingMeshes": 2996,
+        "houseVisualMeshes": {},
+        "activeIndices": 22334625,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "viewport": [
+        1440,
+        900
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+      "canvasHidden": false,
+      "exceptions": [],
+      "label": "after-2",
+      "captured": "2026-11-18T09:01:25.244Z"
+    },
+    {
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 70,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenCargoAndResources": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 29.91801686288223,
+        "frames": 539,
+        "seconds": 18.015900000000002,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 11.100000023841858,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": [],
+        "framesMs": {
+          "samples": 538,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 539,
+            "p50": 25.799999952316284,
+            "p95": 34.5
+          },
+          "buildings": {
+            "samples": 539,
+            "p50": 0.7000000476837158,
+            "p95": 0.8999999761581421
+          },
+          "actors": {
+            "samples": 539,
+            "p50": 3.899999976158142,
+            "p95": 11
+          },
+          "scene": {
+            "samples": 539,
+            "p50": 19.40000009536743,
+            "p95": 23.40000009536743
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "endCargoAndResources": true,
+      "scene": {
+        "houseTierDistribution": [
+          70,
+          69,
+          69
+        ],
+        "importedEarthHouses": 70,
+        "runtimeAsset": "http://127.0.0.1:8871/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 420,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 455,
+        "visibleBuildingMeshes": 2949,
+        "houseVisualMeshes": {},
+        "activeIndices": 21886869,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "viewport": [
+        1440,
+        900
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+      "canvasHidden": false,
+      "exceptions": [],
+      "label": "after-mixed",
+      "captured": "2026-11-18T09:03:40.009Z"
+    },
+    {
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenCargoAndResources": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 30.416860581078385,
+        "frames": 549,
+        "seconds": 18.0492,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 10.600000023841858,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": [],
+        "framesMs": {
+          "samples": 548,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 549,
+            "p50": 25.5,
+            "p95": 33.5
+          },
+          "buildings": {
+            "samples": 549,
+            "p50": 0.6000000238418579,
+            "p95": 0.8000000715255737
+          },
+          "actors": {
+            "samples": 549,
+            "p50": 4.099999904632568,
+            "p95": 10.600000023841858
+          },
+          "scene": {
+            "samples": 549,
+            "p50": 19.300000071525574,
+            "p95": 22.399999976158142
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "endCargoAndResources": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8872/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 419,
+        "visibleBuildingMeshes": 2971,
+        "houseVisualMeshes": {},
+        "activeIndices": 22116093,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "viewport": [
+        1440,
+        900
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+      "canvasHidden": false,
+      "exceptions": [],
+      "label": "baseline-1",
+      "captured": "2026-11-18T08:59:50.786Z"
+    },
+    {
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenCargoAndResources": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 26.421105800986904,
+        "frames": 476,
+        "seconds": 18.015900000000002,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 12,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": [],
+        "framesMs": {
+          "samples": 475,
+          "p50": 33.29999999999927,
+          "p95": 50.10000000000218
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 476,
+            "p50": 28.399999976158142,
+            "p95": 40.10000002384186
+          },
+          "buildings": {
+            "samples": 476,
+            "p50": 0.6999999284744263,
+            "p95": 0.9000000953674316
+          },
+          "actors": {
+            "samples": 476,
+            "p50": 4.399999976158142,
+            "p95": 12.399999976158142
+          },
+          "scene": {
+            "samples": 476,
+            "p50": 22,
+            "p95": 27.799999952316284
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "endCargoAndResources": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8872/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 419,
+        "visibleBuildingMeshes": 2971,
+        "houseVisualMeshes": {},
+        "activeIndices": 13468647,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "viewport": [
+        1440,
+        900
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+      "canvasHidden": false,
+      "exceptions": [],
+      "label": "baseline-2",
+      "captured": "2026-11-18T09:00:53.292Z"
+    },
+    {
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 70,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenCargoAndResources": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 29.447581091553193,
+        "frames": 532,
+        "seconds": 18.066,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 11,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": [],
+        "framesMs": {
+          "samples": 531,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 532,
+            "p50": 26.600000023841858,
+            "p95": 34.89999997615814
+          },
+          "buildings": {
+            "samples": 532,
+            "p50": 0.6999999284744263,
+            "p95": 0.8000000715255737
+          },
+          "actors": {
+            "samples": 532,
+            "p50": 3.899999976158142,
+            "p95": 11.199999928474426
+          },
+          "scene": {
+            "samples": 532,
+            "p50": 20.299999952316284,
+            "p95": 23.799999952316284
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "endCargoAndResources": true,
+      "scene": {
+        "houseTierDistribution": [
+          70,
+          69,
+          69
+        ],
+        "importedEarthHouses": 70,
+        "runtimeAsset": "http://127.0.0.1:8872/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 420,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 419,
+        "visibleBuildingMeshes": 3262,
+        "houseVisualMeshes": {},
+        "activeIndices": 21010191,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "viewport": [
+        1440,
+        900
+      ],
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+      "canvasHidden": false,
+      "exceptions": [],
+      "label": "baseline-mixed",
+      "captured": "2026-11-18T09:03:06.967Z"
+    }
+  ]
+}

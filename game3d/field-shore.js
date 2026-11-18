@@ -29,9 +29,12 @@ export function fieldPatchBedGeometry(b){
   const X=x+rimX*(limits.left+3+waveX*envelopeX)+rimEast*(limits.right-3+waveX*envelopeX);
   const Z=z+rimZ*(limits.near+3+waveZ*envelopeZ)+rimSouth*(limits.far-3+waveZ*envelopeZ);
   const edge=smooth(Math.min(north?1:v*8,east?1:(1-u)*9,south?1:(1-v)*8,west?1:u*9));
-  const ridge=(.5-.5*Math.cos(u*Math.PI*16))**2;
-  const height=.004+edge*(.030+ridge*.106);
   const world=fieldWorldPoint(b,X,Z);
+  // Alluvium accumulates on one side of a slightly wandering plough ridge.
+  // Vanishing at each seam preserves the exact crop/soil join of adjacent tiles.
+  const drift=.28*Math.sin(world.y*7.2+world.x*.83)*Math.sin(Math.PI*u)*Math.sin(Math.PI*v);
+  const ridge=(.5-.5*Math.cos(u*Math.PI*16+drift))**2;
+  const height=.004+edge*(.030+ridge*.106);
   const soil=.59+.35*ridge+.05*Math.sin(world.x*15.1+world.y*8.2)*Math.cos(world.y*13.8);
   const shade=soil*edge+(1-edge)*.98;
   positions.push(X,height,Z);uvs.push(world.x*1.5,world.y*1.5);colors.push(shade,shade*.94,shade*.85,1);

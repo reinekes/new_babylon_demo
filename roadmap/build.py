@@ -106,6 +106,29 @@ def task_from_record(record, source):
             'depends': split_field(fields.get('depends', '')), 'sources': split_field(fields.get('sources', '')), 'recordSource': source}
 
 
+def model_register(root):
+    register = json.loads((root / 'building-models.json').read_text())
+    seen = set()
+    for group in register['groups']:
+        for item in group['items']:
+            key = item['id']
+            if not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9-]+', key) or key in seen:
+                raise ValueError(f'Повтор или неверный ID модели: {key}')
+            seen.add(key)
+            if item['status'] not in ('planned', 'working', 'ready'):
+                raise ValueError(f'Неизвестный статус модели: {key}')
+            if item['status'] == 'ready' and not (item.get('image') and item.get('checked')):
+                raise ValueError(f'Для готовой модели нужны изображение и проверка в игре: {key}')
+            links = [item[k] for k in ('previous', 'image', 'checked', 'release', 'source', 'model') if item.get(k)]
+            if not group.get('future') and 'previous' not in item:
+                links.append(f'evidence/2026-11-18/building-models/previous/{key}.webp')
+            for link in links:
+                target = (root / link).resolve()
+                if not target.is_relative_to(root.parent.resolve()) or not target.is_file():
+                    raise ValueError(f'Отсутствует материал модели {key}: {link}')
+    return register
+
+
 def collect_data(root=ROOT):
     repo = root.parent
     plan_path = root / 'plan.md'
@@ -158,9 +181,10 @@ def collect_data(root=ROOT):
     stamp = datetime.now(ZoneInfo('Europe/Samara')).isoformat(timespec='seconds')
     return {'schema': 1, 'asOf': re.search(r'^updated: (\d{4}-\d{2}-\d{2})$', plan, re.M)[1], 'builtAt': stamp, 'groups': GROUPS, 'statuses': STATUSES,
             'tasks': tasks, 'releases': releases, 'history': history, 'documents': documents,
+            'buildingModels': model_register(root),
             'overview': (root / 'overview.md').read_text(), 'guide': (root / 'README.md').read_text(),
             'planRaw': plan, 'completedIds': completed,
-            'manifest': {'schema': 1, 'plan': 'plan.md', 'reports': [str(p.relative_to(root)) for p in report_files],
+            'manifest': {'schema': 1, 'plan': 'plan.md', 'buildingModels': 'building-models.json', 'reports': [str(p.relative_to(root)) for p in report_files],
                          'history': 'historical-review.md', 'overview': 'overview.md', 'guide': 'README.md'}}
 
 

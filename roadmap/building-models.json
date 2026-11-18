@@ -1,0 +1,495 @@
+{
+  "baseline": "33be6d398621b38c23abac32bf6ee599529ec672",
+  "groups": [
+    {
+      "name": "Жители",
+      "items": [
+        {
+          "id": "house",
+          "name": "Дом I · рабочий двор",
+          "status": "ready",
+          "image": "evidence/2026-11-18/building-models/house.webp",
+          "model": "../assets/3d/sumer-buildings/house.glb",
+          "checked": "evidence/2026-11-18/earth-house-level-one.webp",
+          "release": "../docs/versions/2026-11-18.md",
+          "baselineGlb": true
+        },
+        {
+          "id": "house-2",
+          "name": "Дом II · открытый двор",
+          "status": "ready",
+          "previous": "evidence/2026-11-18/building-models/old-house-2.webp",
+          "image": "evidence/2026-11-18/building-models/house-2.webp",
+          "checked": "evidence/2026-11-18/building-models/checked-house-2.webp",
+          "model": "../assets/3d/sumer-buildings/house-2.glb"
+        },
+        {
+          "id": "house-3",
+          "name": "Дом III · верхняя терраса",
+          "status": "ready",
+          "previous": "evidence/2026-11-18/building-models/old-house-3.webp",
+          "image": "evidence/2026-11-18/building-models/house-3.webp",
+          "checked": "evidence/2026-11-18/building-models/checked-house-3.webp",
+          "model": "../assets/3d/sumer-buildings/house-3.glb"
+        },
+        {
+          "id": "starterHut",
+          "name": "Стартовый дом-улей",
+          "status": "ready",
+          "previous": "evidence/2026-11-18/building-models/old-starterHut.webp",
+          "image": "evidence/2026-11-18/building-models/starterHut.webp",
+          "model": "../assets/3d/sumer-buildings/starterHut.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "reedCamp",
+          "name": "Временный тростниковый шалаш",
+          "status": "ready",
+          "image": "evidence/2026-11-18/building-models/reedCamp.webp",
+          "model": "../assets/3d/sumer-buildings/reedCamp.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "healer",
+          "name": "Дом лекаря",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/healer.webp",
+          "model": "../assets/3d/sumer-buildings/healer.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "musicHouse",
+          "name": "Музыкальный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/musicHouse.webp",
+          "model": "../assets/3d/sumer-buildings/musicHouse.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Пища",
+      "items": [
+        {
+          "id": "field",
+          "name": "Ячменное поле",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/field.webp",
+          "model": "../assets/3d/sumer-buildings/field.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "garden",
+          "name": "Финиковый сад",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/garden.webp",
+          "model": "../assets/3d/sumer-buildings/garden.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "fishing",
+          "name": "Рыбацкая хижина",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/fishing.webp",
+          "model": "../assets/3d/sumer-buildings/fishing.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "hunting",
+          "name": "Охотничий домик",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/hunting.webp",
+          "model": "../assets/3d/sumer-buildings/hunting.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "cowshed",
+          "name": "Коровник",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/cowshed.webp",
+          "model": "../assets/3d/sumer-buildings/cowshed.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Сырьё",
+      "items": [
+        {
+          "id": "clay",
+          "name": "Глиняный карьер",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/clay.webp",
+          "model": "../assets/3d/sumer-buildings/clay.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "reed",
+          "name": "Тростниковый двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/reed.webp",
+          "model": "../assets/3d/sumer-buildings/reed.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "logging",
+          "name": "Лесорубная хижина",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/logging.webp",
+          "model": "../assets/3d/sumer-buildings/logging.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "quarry",
+          "name": "Каменоломня",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/quarry.webp",
+          "model": "../assets/3d/sumer-buildings/quarry.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Ремёсла",
+      "items": [
+        {
+          "id": "pottery",
+          "name": "Гончарный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/pottery.webp",
+          "model": "../assets/3d/sumer-buildings/pottery.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "brickyard",
+          "name": "Кирпичный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/brickyard.webp",
+          "model": "../assets/3d/sumer-buildings/brickyard.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "kiln",
+          "name": "Печь для обжига",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/kiln.webp",
+          "model": "../assets/3d/sumer-buildings/kiln.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "sheepfold",
+          "name": "Овчарня",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/sheepfold.webp",
+          "model": "../assets/3d/sumer-buildings/sheepfold.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "weaver",
+          "name": "Ткацкая мастерская",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/weaver.webp",
+          "model": "../assets/3d/sumer-buildings/weaver.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "tailor",
+          "name": "Мастерская одежды",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/tailor.webp",
+          "model": "../assets/3d/sumer-buildings/tailor.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "linenYard",
+          "name": "Льняной двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/linenYard.webp",
+          "model": "../assets/3d/sumer-buildings/linenYard.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "basketry",
+          "name": "Плетельный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/basketry.webp",
+          "model": "../assets/3d/sumer-buildings/basketry.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "matYard",
+          "name": "Циновочный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/matYard.webp",
+          "model": "../assets/3d/sumer-buildings/matYard.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "joineryYard",
+          "name": "Столярный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/joineryYard.webp",
+          "model": "../assets/3d/sumer-buildings/joineryYard.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "coppersmith",
+          "name": "Медный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/coppersmith.webp",
+          "model": "../assets/3d/sumer-buildings/coppersmith.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "bakery",
+          "name": "Общая печь",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/bakery.webp",
+          "model": "../assets/3d/sumer-buildings/bakery.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "brewery",
+          "name": "Пивоварня",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/brewery.webp",
+          "model": "../assets/3d/sumer-buildings/brewery.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "dairyStore",
+          "name": "Двор молочных припасов",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/dairyStore.webp",
+          "model": "../assets/3d/sumer-buildings/dairyStore.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Снабжение",
+      "items": [
+        {
+          "id": "waterpoint",
+          "name": "Береговой водозабор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/waterpoint.webp",
+          "model": "../assets/3d/sumer-buildings/waterpoint.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "granary",
+          "name": "Амбар и склад",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/granary.webp",
+          "model": "../assets/3d/sumer-buildings/granary.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "depot",
+          "name": "Раздаточный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/depot.webp",
+          "model": "../assets/3d/sumer-buildings/depot.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "market",
+          "name": "Рынок",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/market.webp",
+          "model": "../assets/3d/sumer-buildings/market.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Храмы",
+      "items": [
+        {
+          "id": "shrine",
+          "name": "Святилище",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/shrine.webp",
+          "model": "../assets/3d/sumer-buildings/shrine.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "ziggurat",
+          "name": "Великий зиккурат",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/ziggurat.webp",
+          "model": "../assets/3d/sumer-buildings/ziggurat.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "ishtarGate",
+          "name": "Врата Инанны",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/ishtarGate.webp",
+          "model": "../assets/3d/sumer-buildings/ishtarGate.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Пути, вода и укрепления",
+      "items": [
+        {
+          "id": "canal",
+          "name": "Оросительный канал",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/canal.webp",
+          "model": "../assets/3d/sumer-buildings/canal.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "levee",
+          "name": "Береговой вал",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/levee.webp",
+          "model": "../assets/3d/sumer-buildings/levee.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "bridge",
+          "name": "Мост через реку",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/bridge.webp",
+          "model": "../assets/3d/sumer-buildings/bridge.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "harbor",
+          "name": "Речная пристань",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/harbor.webp",
+          "model": "../assets/3d/sumer-buildings/harbor.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "cityWall",
+          "name": "Городская стена",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/cityWall.webp",
+          "model": "../assets/3d/sumer-buildings/cityWall.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "cityGate",
+          "name": "Городские ворота",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/cityGate.webp",
+          "model": "../assets/3d/sumer-buildings/cityGate.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "watchHouse",
+          "name": "Караульный двор",
+          "status": "ready",
+          "baselineGlb": true,
+          "image": "evidence/2026-11-18/building-models/watchHouse.webp",
+          "model": "../assets/3d/sumer-buildings/watchHouse.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        },
+        {
+          "id": "road",
+          "name": "Дорога",
+          "status": "ready",
+          "image": "evidence/2026-11-18/building-models/road.webp",
+          "model": "../assets/3d/sumer-buildings/road.glb",
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+        }
+      ]
+    },
+    {
+      "name": "Предложенные объекты",
+      "future": true,
+      "items": [
+        {
+          "id": "scribal-house",
+          "name": "Дом писца и архив",
+          "note": "Обучение писцов и хранение табличек.",
+          "status": "working",
+          "source": "../docs/MESOPOTAMIA_RESEARCH.md",
+          "image": "evidence/2026-11-18/building-models/scribal-house.webp",
+          "model": "../assets/3d/proposed-buildings/scribal-house.glb"
+        },
+        {
+          "id": "festival-square",
+          "name": "Площадь праздников",
+          "note": "Отдельная площадь для городских обрядов и собраний.",
+          "status": "working",
+          "source": "../GAME_DESIGN.md",
+          "image": "evidence/2026-11-18/building-models/festival-square.webp",
+          "model": "../assets/3d/proposed-buildings/festival-square.glb"
+        },
+        {
+          "id": "irrigation-yard",
+          "name": "Двор водных работ",
+          "note": "Место организации устройства и расчистки каналов.",
+          "status": "working",
+          "source": "../docs/MESOPOTAMIA_RESEARCH.md",
+          "image": "evidence/2026-11-18/building-models/irrigation-yard.webp",
+          "model": "../assets/3d/proposed-buildings/irrigation-yard.glb"
+        },
+        {
+          "id": "threshing-floor",
+          "name": "Ток · площадка обмолота",
+          "note": "В предложении допускается как часть поля. В игре зерно уже обмолачивают.",
+          "status": "working",
+          "source": "../docs/MESOPOTAMIA_RESEARCH.md",
+          "image": "evidence/2026-11-18/building-models/threshing-floor.webp",
+          "model": "../assets/3d/proposed-buildings/threshing-floor.glb"
+        },
+        {
+          "id": "master-house",
+          "name": "Двор общественного проекта",
+          "note": "Предложение о доме мастера для общественных заказов.",
+          "status": "working",
+          "source": "../docs/MESOPOTAMIA_RESEARCH.md",
+          "image": "evidence/2026-11-18/building-models/master-house.webp",
+          "model": "../assets/3d/proposed-buildings/master-house.glb"
+        }
+      ]
+    }
+  ]
+}

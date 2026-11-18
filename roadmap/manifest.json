@@ -1,6 +1,7 @@
 {
   "schema": 1,
   "plan": "plan.md",
+  "buildingModels": "building-models.json",
   "reports": [
     "reports/2026-10-19.md",
     "reports/2026-10-20.md",

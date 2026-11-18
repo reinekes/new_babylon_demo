@@ -71,7 +71,10 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
   const half=width*.5*(.94+.12*Math.sin(x*1.7+z*.8)+.065*Math.sin(x*3.4-z*1.2));g.widths.push(half*2);
   for(let k=0;k<fractions.length;k++){
    const side=fractions[k],fray=(Math.abs(side)>.8?1+(noise(x+k,z)-.5)*.24:1),X=x+nx*side*half*fray,Z=z+nz*side*half*fray;
-   g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height),Z-origin.z);g.uvs.push(X/3,Z/3);
+   // Gently crowned paving and shoulders of compacted earth meet the original
+   // elevation at every endpoint, including at street and footpath junctions.
+   const crown=Math.sin(Math.PI*t)*(1-Math.abs(side))*(level>=3?.022:.012);
+   g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown,Z-origin.z);g.uvs.push(X/3,Z/3);
    const alpha=Math.abs(side)===1?0:Math.abs(side)>.8?.32:.8+.15*noise(X,Z),v=.92+noise(X*2,Z*2)*.08;g.colors.push(v,v,v,alpha);
    if(j<steps&&k<fractions.length-1){const i=j*fractions.length+k;g.indices.push(i,i+fractions.length,i+1,i+1,i+fractions.length,i+fractions.length+1);}
   }

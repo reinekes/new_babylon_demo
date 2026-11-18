@@ -17,3 +17,24 @@
   .materials-prose .md-table td {display:block;padding:5px 0;border:0;overflow-wrap:anywhere}
   .materials-prose .md-table td::before {content:attr(data-label);display:block;color:var(--green);font-weight:600}
 }
+
+.model-filters,.model-links{display:flex;align-items:center;flex-wrap:wrap;gap:.55rem}
+.model-filters button{border:1px solid var(--line);background:var(--white);color:var(--ink);border-radius:2rem;padding:.42rem .86rem}
+.model-filters button[aria-pressed=true]{background:var(--green);border-color:var(--green);color:white}
+.model-filters b{margin-left:.25rem;font-variant-numeric:tabular-nums}
+.model-section{margin:2rem 0}
+.model-section>h2{margin:0 0 .8rem;font-size:1.2rem}
+.model-section h2 small{font-size:.8rem;color:var(--muted);font-weight:500}
+.model-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:1rem}
+.model-card{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:1rem;min-width:0}
+.model-card header{display:flex;justify-content:space-between;gap:.5rem;align-items:flex-start}
+.model-card h3{font-size:1.06rem;margin:0;line-height:1.3}
+.model-status{font-size:.74rem;padding:.15rem .52rem;border-radius:1rem;font-weight:650;white-space:nowrap;background:#eeeae2;color:#555c56}
+.model-ready{background:#e0efe3;color:#23503c}.model-working{background:#f5e7ce;color:#72501a}
+.model-pair{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.75rem}
+.model-pair figure{margin:0;min-width:0}
+.model-pair figcaption{font-size:.76rem;color:var(--muted);margin-bottom:.3rem}
+.model-pair img,.model-awaiting{width:100%;height:clamp(90px,10vw,126px);object-fit:contain;display:block;border-radius:6px;background:#ede6d6}
+.model-awaiting{background:#f5f3ed;border:1px dashed var(--line);display:grid;place-content:center;text-align:center;font-size:.82rem;color:var(--muted);padding:.3rem}
+.model-card p,.model-links{font-size:.82rem;margin:.7rem 0 0}.model-links{column-gap:.85rem}
+@media(max-width:600px){.model-card{padding:.8rem}.model-pair img,.model-awaiting{height:104px}.model-filters{gap:.35rem}.model-filters button{font-size:.82rem;padding:.4rem .65rem}}

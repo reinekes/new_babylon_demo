@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
+import {BUILDINGS} from '../../definitions.js';
 
 function app() {
   const shell=fs.readFileSync(new URL('../assets/shell.html',import.meta.url),'utf8').replace(/<script[\s\S]*?<\/script>/g,'');
@@ -111,4 +112,29 @@ with zipfile.ZipFile(sys.argv[1]) as z:
     assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/PASS/);
     assert.deepEqual(errors,[]);
   }finally{rmSync(folder,{recursive:true,force:true});dom.window.close();}
+});
+
+test('model register compares the two visuals and filters status without changing the game plan',()=>{
+  const {dom,api}=app(),doc=dom.window.document;
+  const register=JSON.parse(fs.readFileSync(new URL('../building-models.json',import.meta.url)));
+  const rows=register.groups.flatMap(group=>group.items);
+  const current=register.groups.filter(group=>!group.future).flatMap(group=>group.items.map(item=>item.id));
+  assert.deepEqual(current.sort(),[...Object.keys(BUILDINGS),'road','starterHut','reedCamp','house-2','house-3'].sort());
+  api.setData({...api.getData(),buildingModels:register});
+  doc.querySelector('nav [data-view="buildings"]').click();
+  assert.equal(dom.window.location.hash,'#buildings');
+  assert.equal(doc.querySelectorAll('[data-model]').length,rows.length);
+  const house=doc.querySelector('[data-model="house"]');
+  assert.equal(house.querySelectorAll('figure img').length,2);
+  assert.notEqual(...[...house.querySelectorAll('img')].map(img=>img.src));
+  assert.match(house.textContent,/Проверка в игре/);
+  doc.querySelector('[data-model-status="ready"]').click();
+  assert.equal(doc.querySelectorAll('[data-model]').length,rows.filter(r=>r.status==='ready').length);
+  doc.querySelector('[data-model-status="working"]').click();
+  assert.ok(!doc.querySelector('[data-model="house"]'));
+  doc.getElementById('search').value='архив';
+  doc.getElementById('search').dispatchEvent(new dom.window.Event('input'));
+  assert.equal(doc.querySelectorAll('[data-model]').length,1);
+  assert.equal(doc.querySelector('[data-model]').dataset.model,'scribal-house');
+  dom.window.close();
 });

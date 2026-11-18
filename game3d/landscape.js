@@ -1,3 +1,4 @@
+import {workshopSurfaces} from './workshop-surfaces.js';
 import {extractionKinds,extractionOwner} from '../extraction-courts.js';
 import {extractionStockFraction} from '../extraction-stock.js';
 import {localFerryVessel} from '../river-stores.js';
@@ -143,6 +144,16 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  for(const mat of [bank,wetMud]){mat.albedoTexture=materials.soil?.albedoTexture||null;mat.bumpTexture=materials.soil?.bumpTexture||null;}
  bank.albedoColor=color(1,.91,.76);wetMud.albedoColor=color(.42,.37,.28);
  earth.albedoColor=color(1.05,1,.88);earth.albedoTexture=materials.soil?.albedoTexture||null;earth.bumpTexture=materials.soil?.bumpTexture||null;
+ // Actual roads and complex junctions retain their generated ribbon/union.
+ // One tiling earth pair covers paths and canal banks at world-space scale.
+ const groundMaps=workshopSurfaces(B,scene).textures('earth');
+ if(groundMaps.color)for(const mat of [earth,gravel,paving,trail,bank,wetMud]){
+  mat.albedoTexture=groundMaps.color;mat.bumpTexture=groundMaps.normal;
+ }
+ earth.albedoColor=B.Color3.FromHexString('#ac9475').toLinearSpace();
+ trail.albedoColor=B.Color3.FromHexString('#97836c').toLinearSpace();
+ bank.albedoColor=B.Color3.FromHexString('#b69e80').toLinearSpace();
+ wetMud.albedoColor=B.Color3.FromHexString('#81735e').toLinearSpace();
  for(const mat of [earth,gravel,paving,trail]){mat.transparencyMode=B.Material.MATERIAL_ALPHABLEND;mat.forceDepthWrite=false;}
  rainMaterial.alpha=.55;rainMaterial.emissiveColor=color(.12,.17,.19);
  const add=(m,collection=staticMeshes)=>{m.isPickable=false;if(!m.sourceMesh)m.receiveShadows=true;collection.push(m);meshes.push(m);return m;};

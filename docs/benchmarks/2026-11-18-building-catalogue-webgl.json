@@ -1,0 +1,2371 @@
+{
+  "fixture": "scripts/sumer-building-studio.html",
+  "method": "Actual production WebGL. Select each catalogue entry, wait for model and shaders, draw to framebuffer. Hide only the selected parts and redraw immediately. Report pixels with summed RGB delta above 24. Disable road batching for the per-road comparison. No simulation time advances. The founder uses its own legacy scene.",
+  "geometryHash": "Sorted list of part vertex/normal/uv/colour/index hashes, face counts and material names hashed with SHA-256. Each vertex channel quantised to 0.001.",
+  "localAt": "2026-11-18T09:16:18.616Z",
+  "ordinaryGameLocal": {
+    "engineVersion": "9.31.0",
+    "framesDrawn": 77,
+    "activeMeshes": 371,
+    "glError": 0,
+    "cityMeshCount": 62,
+    "levelOneParts": 48,
+    "activeCamera": "city-camera",
+    "webGL": 2,
+    "uiDocument": "Новый Вавилон — имена богов",
+    "mode": "Взрослый бог",
+    "modal": null
+  },
+  "localErrors": {
+    "http": [],
+    "js": [],
+    "log": []
+  },
+  "models": [
+    {
+      "id": "cityWall",
+      "roundtrip": {
+        "meshes": 2,
+        "materials": 2,
+        "textures": 3,
+        "pendingTextures": [],
+        "triangles": 136,
+        "visiblePixels": 73597,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 272,
+        "glbVertices": 272,
+        "bounds": [
+          1.605,
+          2.28,
+          5.854
+        ],
+        "glError": 0
+      },
+      "changedPixels": 57480,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 2,
+      "drawnParts": 2,
+      "batchedRoad": false,
+      "triangles": 136,
+      "geometryHash": "5bbfaba3f0ae2e8a7d44ff2ce64e12480110e368139d702ae1dab83f239f7ebe",
+      "materials": [
+        "courtyard-fired",
+        "Сырец, штукатурка и дерево"
+      ],
+      "readyTextures": 3,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "70ecbb64d43cf8fb14cd003ea5e96cd730dc9da226c0ecfe56a6a46b8c967ddf",
+        "bytes": 121404,
+        "materials": 2,
+        "textures": 3,
+        "triangles": 136
+      }
+    },
+    {
+      "id": "cityGate",
+      "roundtrip": {
+        "meshes": 19,
+        "materials": 6,
+        "textures": 9,
+        "pendingTextures": [],
+        "triangles": 4698,
+        "visiblePixels": 75406,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3818,
+        "glbVertices": 3818,
+        "bounds": [
+          5.6075,
+          3.37,
+          9.007
+        ],
+        "glError": 0
+      },
+      "changedPixels": 27844,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 19,
+      "drawnParts": 19,
+      "batchedRoad": false,
+      "triangles": 4698,
+      "geometryHash": "72d91d9bd6e24a0873395039562653465c35d0a87cd79a61111e17c9b5ea49b9",
+      "materials": [
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "reed-mat",
+        "worn-timber",
+        "Сырец, штукатурка и дерево"
+      ],
+      "readyTextures": 8,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "54ad936c815a6a09dcf7639fcf014b12105779f5067f3296d7fe7551bc000a95",
+        "bytes": 610464,
+        "materials": 7,
+        "textures": 9,
+        "triangles": 4698
+      }
+    },
+    {
+      "id": "watchHouse",
+      "roundtrip": {
+        "meshes": 11,
+        "materials": 10,
+        "textures": 12,
+        "pendingTextures": [],
+        "triangles": 3118,
+        "visiblePixels": 180134,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5604,
+        "glbVertices": 5604,
+        "bounds": [
+          4.82,
+          3.761,
+          4.4927
+        ],
+        "glError": 0
+      },
+      "changedPixels": 121660,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 3118,
+      "geometryHash": "9afc80e772a2e74d4c467427a19997c9d67b5a2d3202e32246d715958148f297",
+      "materials": [
+        "courtyard-pottery",
+        "courtyard-wood",
+        "Глиняная штукатурка",
+        "Дерево",
+        "Светлая керамика",
+        "Сырцовая кладка",
+        "Тени внутри сосудов",
+        "Терракота",
+        "Тростник и плетение",
+        "Утрамбованный двор"
+      ],
+      "readyTextures": 12,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "fd17f5a5ee56c247760ac03d88d7fe3516b58622b9ef2c7769a99e2a16f84827",
+        "bytes": 910412,
+        "materials": 10,
+        "textures": 12,
+        "triangles": 3118
+      }
+    },
+    {
+      "id": "musicHouse",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 7,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 2000,
+        "visiblePixels": 180468,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 1853,
+        "glbVertices": 1853,
+        "bounds": [
+          5.58148,
+          2.94089,
+          5.58148
+        ],
+        "glError": 0
+      },
+      "changedPixels": 136446,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 2000,
+      "geometryHash": "e54cd5d9b37eeba7369af810e5ce54ca5491b8bc6fdc56c8e237e112c52a5d68",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-fired",
+        "courtyard-plaster",
+        "courtyard-raw",
+        "courtyard-stone",
+        "courtyard-wood",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "292d9d22717f32ee973a9ccc37a3e5bc07b4729341608bac9833234ed06a66ec",
+        "bytes": 912280,
+        "materials": 7,
+        "textures": 9,
+        "triangles": 2000
+      }
+    },
+    {
+      "id": "ishtarGate",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 5,
+        "textures": 10,
+        "pendingTextures": [],
+        "triangles": 504,
+        "visiblePixels": 145459,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 512,
+        "glbVertices": 512,
+        "bounds": [
+          15.66,
+          9.63,
+          7.14
+        ],
+        "glError": 0
+      },
+      "changedPixels": 182064,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 504,
+      "geometryHash": "8f222eb3e928330fd20b13f21f3b5371498ac70b43269bae807736a4d2e0efcc",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-fired",
+        "courtyard-raw",
+        "courtyard-trim",
+        "courtyard-wood"
+      ],
+      "readyTextures": 10,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "3e6c287a31cafef3e71400fd2e425f2eae1c32018f2da83819fa1378f3714472",
+        "bytes": 340260,
+        "materials": 5,
+        "textures": 6,
+        "triangles": 504
+      }
+    },
+    {
+      "id": "cowshed",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 6844,
+        "visiblePixels": 122593,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 6653,
+        "glbVertices": 6653,
+        "bounds": [
+          11.154,
+          2.40554,
+          11.154
+        ],
+        "glError": 0
+      },
+      "changedPixels": 102439,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 6844,
+      "geometryHash": "4ce60957234e961a989533ccdd6d24eb63dad8a85fa71870ea41a71cab4a333a",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "5cab732b8cb3a5930c6fd87ff445bb1ade282d52fab2faa58c5fcc6ed59f5296",
+        "bytes": 1370668,
+        "materials": 8,
+        "textures": 13,
+        "triangles": 6844
+      }
+    },
+    {
+      "id": "pottery",
+      "roundtrip": {
+        "meshes": 12,
+        "materials": 11,
+        "textures": 17,
+        "pendingTextures": [],
+        "triangles": 13364,
+        "visiblePixels": 149865,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 9753,
+        "glbVertices": 9753,
+        "bounds": [
+          5.40485,
+          2.4,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 117397,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 12,
+      "drawnParts": 12,
+      "batchedRoad": false,
+      "triangles": 13364,
+      "geometryHash": "6ca0ebdafa14f4776829b56bf21b2a648ed7fb3da3bf4917034aea1dbab2085b",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-fired",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-stone",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 17,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "0bd20bc442e2862fefe3690f2c775b819a91ae7011f5ffc90f4229fab5512d96",
+        "bytes": 1473200,
+        "materials": 11,
+        "textures": 13,
+        "triangles": 13364
+      }
+    },
+    {
+      "id": "joineryYard",
+      "roundtrip": {
+        "meshes": 6,
+        "materials": 6,
+        "textures": 7,
+        "pendingTextures": [],
+        "triangles": 1612,
+        "visiblePixels": 156568,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 2163,
+        "glbVertices": 2163,
+        "bounds": [
+          5.3742,
+          2.37,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 87274,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 6,
+      "drawnParts": 6,
+      "batchedRoad": false,
+      "triangles": 1612,
+      "geometryHash": "3de0f3162b83e4c448e378540665d3e04000c9f273e0ae54dd5facf14ec3e270",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 7,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "9ced502105dec1145cb5a15b3c6ebea13edee679cb3e6e4765b52119160fe6da",
+        "bytes": 720680,
+        "materials": 6,
+        "textures": 7,
+        "triangles": 1612
+      }
+    },
+    {
+      "id": "coppersmith",
+      "roundtrip": {
+        "meshes": 11,
+        "materials": 11,
+        "textures": 17,
+        "pendingTextures": [],
+        "triangles": 2736,
+        "visiblePixels": 166383,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 2919,
+        "glbVertices": 2919,
+        "bounds": [
+          5.3742,
+          2.69,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 123145,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 2736,
+      "geometryHash": "e7976eeace81db8a6cc48494a67ca4a41b810ab42b7ed722b74f90d74601eef6",
+      "materials": [
+        "courtyard-char",
+        "courtyard-copper",
+        "courtyard-earth",
+        "courtyard-fired",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 17,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "23ded610696f66928b5e73dde3ce8a7b2563fcf4efe04928aaec92412eb2c741",
+        "bytes": 901892,
+        "materials": 11,
+        "textures": 9,
+        "triangles": 2736
+      }
+    },
+    {
+      "id": "matYard",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 7,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 1432,
+        "visiblePixels": 156352,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 1978,
+        "glbVertices": 1978,
+        "bounds": [
+          5.3742,
+          2.23,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 108278,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 1432,
+      "geometryHash": "31cc6b3b5aff30d6d924429051a8e00f40d7eb55174ecdd973f9357686d2b8a4",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "5ebf105f9aa4578057ad26c652b65743a61428aa3388da15d050f985d1d1d777",
+        "bytes": 1043008,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 1432
+      }
+    },
+    {
+      "id": "basketry",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 7,
+        "textures": 9,
+        "pendingTextures": [],
+        "triangles": 4468,
+        "visiblePixels": 164202,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3915,
+        "glbVertices": 3915,
+        "bounds": [
+          5.3742,
+          2.36,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 97393,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 4468,
+      "geometryHash": "a9cb61e4330f6e980eed2ff13eac22cb4406a531a7734b24f97983c912b76e16",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 9,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "9242d4d3027d49f318f6f1cc7ed1c5f8c85d4d26b70505dbd5b65ac068727276",
+        "bytes": 925320,
+        "materials": 7,
+        "textures": 9,
+        "triangles": 4468
+      }
+    },
+    {
+      "id": "dairyStore",
+      "roundtrip": {
+        "meshes": 9,
+        "materials": 9,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 3676,
+        "visiblePixels": 165672,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3319,
+        "glbVertices": 3319,
+        "bounds": [
+          5.3742,
+          2.34,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 119301,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 9,
+      "drawnParts": 9,
+      "batchedRoad": false,
+      "triangles": 3676,
+      "geometryHash": "aabbcfc82eb3769f67ea55f1b43cdf7a9eaefa4dc9bc25b8371cefe17f4f4832",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "6d9c160f48429bacfbe2c67a16592ac6f51fbae58d91ee490fff03648b10d39e",
+        "bytes": 1246012,
+        "materials": 9,
+        "textures": 13,
+        "triangles": 3676
+      }
+    },
+    {
+      "id": "linenYard",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 2748,
+        "visiblePixels": 170588,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3540,
+        "glbVertices": 3540,
+        "bounds": [
+          5.3742,
+          2.4,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 110661,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 2748,
+      "geometryHash": "66b3a2904bf8f1217ada71f43d3b7cb636b2d54f1a4101cfc630bced3d6e269c",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "0472ff3aea4f0768ddfe61096b5bc8c4fb96487651e558be9a406cb0ab571c57",
+        "bytes": 1101912,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 2748
+      }
+    },
+    {
+      "id": "bakery",
+      "roundtrip": {
+        "meshes": 12,
+        "materials": 12,
+        "textures": 19,
+        "pendingTextures": [],
+        "triangles": 3320,
+        "visiblePixels": 179397,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3837,
+        "glbVertices": 3837,
+        "bounds": [
+          5.3742,
+          2.6,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 111223,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 12,
+      "drawnParts": 12,
+      "batchedRoad": false,
+      "triangles": 3320,
+      "geometryHash": "64521c7a4870a21dc1b721b4bda630a6c1acf88811591b6a1d2e23cd19c67976",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-fired",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-stone",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 19,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "9b304d9e00cdda3e453cc6875637750966dc9f1de2851449d37cc5dd158da656",
+        "bytes": 1263960,
+        "materials": 12,
+        "textures": 13,
+        "triangles": 3320
+      }
+    },
+    {
+      "id": "brewery",
+      "roundtrip": {
+        "meshes": 10,
+        "materials": 10,
+        "textures": 15,
+        "pendingTextures": [],
+        "triangles": 7564,
+        "visiblePixels": 186398,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 6038,
+        "glbVertices": 6038,
+        "bounds": [
+          5.3742,
+          2.6,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 133134,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 10,
+      "drawnParts": 10,
+      "batchedRoad": false,
+      "triangles": 7564,
+      "geometryHash": "ce352120f783428874b10723f27f92d8b6ac9ea4a6943899e0e088b2e80634c9",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 15,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "de24a041ffda13cc0f5fcbdd267baf12e74da35ff1e9073fb99d138072538f72",
+        "bytes": 1250032,
+        "materials": 10,
+        "textures": 13,
+        "triangles": 7564
+      }
+    },
+    {
+      "id": "harbor",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 7,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 11852,
+        "visiblePixels": 127093,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 7903,
+        "glbVertices": 7903,
+        "bounds": [
+          5.4519,
+          2.61554,
+          5.41406
+        ],
+        "glError": 0
+      },
+      "changedPixels": 74613,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 11852,
+      "geometryHash": "1d6486310ac4fe89c85b9f79fab8aac0382827649178bbdefde875cc3e09acc8",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "c15ec259e3aa1c5c07f7db94441e3fc0b7b5ee4a15199f8fd7fb558a9070a101",
+        "bytes": 1334788,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 11852
+      }
+    },
+    {
+      "id": "kiln",
+      "roundtrip": {
+        "meshes": 6,
+        "materials": 6,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 3292,
+        "visiblePixels": 150148,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3941,
+        "glbVertices": 3941,
+        "bounds": [
+          5.3742,
+          2.33715,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 116978,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 6,
+      "drawnParts": 6,
+      "batchedRoad": false,
+      "triangles": 3292,
+      "geometryHash": "571cb015f0115a53f62f1f709aba7d54ebf9a9e5099a046a1b6825632c2a8dae",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-fired",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "4e2581570577501bc74252bb9464ac242a259c68d3f94f5e6ee2f0e18ffb83c4",
+        "bytes": 918244,
+        "materials": 6,
+        "textures": 9,
+        "triangles": 3292
+      }
+    },
+    {
+      "id": "brickyard",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 3984,
+        "visiblePixels": 132206,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5380,
+        "glbVertices": 5380,
+        "bounds": [
+          5.50475,
+          2.22054,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 98533,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 3984,
+      "geometryHash": "284024e51185ea49ff548aedd293fc7ef0e83ce8315283c0f50daa33db582474",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "f56bfe44f92382b0cc69b84fce433998df1aadd1e258fb9d54f127e78f207135",
+        "bytes": 1060912,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 3984
+      }
+    },
+    {
+      "id": "waterpoint",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 8002,
+        "visiblePixels": 131925,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5538,
+        "glbVertices": 5538,
+        "bounds": [
+          5.3742,
+          2.41054,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 105739,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 8002,
+      "geometryHash": "ccddd6054022d804f7b43a1e55d6f691c1b9cdecd2ef8b3cd2f1b6967798bc85",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "3e19a59b9ceb0c7d796480dcacc79b91d887ce0f9e797d12faa70dde08db3229",
+        "bytes": 1234476,
+        "materials": 8,
+        "textures": 13,
+        "triangles": 8002
+      }
+    },
+    {
+      "id": "tailor",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 12,
+        "pendingTextures": [],
+        "triangles": 2832,
+        "visiblePixels": 186910,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3886,
+        "glbVertices": 3886,
+        "bounds": [
+          5.3742,
+          2.75,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 126263,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 2832,
+      "geometryHash": "eabafe5bbf38a8ae98943d9b3eccd1fc8344c15aaed87e42def741c49cdc36c7",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "worn-timber"
+      ],
+      "readyTextures": 12,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "13ddb4ef790e0d5887807a88b6341dc021cf5e5a86ca303d9aefee9ff91c8995",
+        "bytes": 881952,
+        "materials": 8,
+        "textures": 12,
+        "triangles": 2832
+      }
+    },
+    {
+      "id": "sheepfold",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 3676,
+        "visiblePixels": 127619,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 4432,
+        "glbVertices": 4432,
+        "bounds": [
+          11.154,
+          1.94054,
+          11.154
+        ],
+        "glError": 0
+      },
+      "changedPixels": 116009,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 3676,
+      "geometryHash": "db9aaa38bf7a7a70ff16535bfe913e401146dfb3d32edfe7964503256ccd906d",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-stone",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "7bea993ce6001048e8a94075827bff53ebd37244bf85e07ceaed71bb8e3e9bb0",
+        "bytes": 1136196,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 3676
+      }
+    },
+    {
+      "id": "weaver",
+      "roundtrip": {
+        "meshes": 10,
+        "materials": 10,
+        "textures": 15,
+        "pendingTextures": [],
+        "triangles": 3510,
+        "visiblePixels": 174272,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 4255,
+        "glbVertices": 4255,
+        "bounds": [
+          5.3742,
+          2.4,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 134436,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 10,
+      "drawnParts": 10,
+      "batchedRoad": false,
+      "triangles": 3510,
+      "geometryHash": "2bfef1867aa27c681ce0e4c84f5ba5c5150d5837aa30eb51732b38b8ff4433b8",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 15,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "6489d0b3c41d608b2a1cea007377a861ff0f681e45fe6d257357f464c4a874f9",
+        "bytes": 1221964,
+        "materials": 10,
+        "textures": 13,
+        "triangles": 3510
+      }
+    },
+    {
+      "id": "house",
+      "roundtrip": {
+        "meshes": 6,
+        "materials": 6,
+        "textures": 12,
+        "pendingTextures": [],
+        "triangles": 8246,
+        "visiblePixels": 156905,
+        "positionComparison": null,
+        "liveVertices": 12236,
+        "glbVertices": 10250,
+        "bounds": [
+          4.9738,
+          2.48437,
+          5.05929
+        ],
+        "glError": 0
+      },
+      "changedPixels": 110016,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 9929,
+      "geometryHash": "2153099f31c98dda074eb03ff8d7c14a830d6e8b9952f4b8ffc8c6b84cac06e9",
+      "materials": [
+        "Compacted alluvial soil",
+        "Dry reed rind and binding",
+        "Handwoven fibre",
+        "Straw-tempered mud plaster",
+        "Unpeeled weathered timber",
+        "Unpolished terracotta slip",
+        "crop-botanical",
+        "game-occupied-home"
+      ],
+      "readyTextures": 12,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "84ef78b6072ba7c842f9666680ecdc7eadef80cd54d925a29bb6616cd72b1db8",
+        "bytes": 1325556,
+        "materials": 6,
+        "textures": 12,
+        "triangles": 8246
+      }
+    },
+    {
+      "id": "field",
+      "roundtrip": {
+        "meshes": 2,
+        "materials": 2,
+        "textures": 2,
+        "pendingTextures": [],
+        "triangles": 12140,
+        "visiblePixels": 125406,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 18136,
+        "glbVertices": 18136,
+        "bounds": [
+          5.35,
+          0.985,
+          5.35
+        ],
+        "glError": 0
+      },
+      "changedPixels": 101699,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 2,
+      "drawnParts": 2,
+      "batchedRoad": false,
+      "triangles": 12140,
+      "geometryHash": "d68890210dc779ea01e0e148561dacb65b2a55d40c54a5b248838768dfa4eddb",
+      "materials": [
+        "crop-botanical",
+        "district-wet-silt"
+      ],
+      "readyTextures": 2,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "342955e7243b96ca62eb93d9bac92cdacae25f095dd6cd595242d17c32388807",
+        "bytes": 971960,
+        "materials": 2,
+        "textures": 2,
+        "triangles": 12140
+      }
+    },
+    {
+      "id": "clay",
+      "roundtrip": {
+        "meshes": 14,
+        "materials": 8,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 3864,
+        "visiblePixels": 25349,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5283,
+        "glbVertices": 5283,
+        "bounds": [
+          11.63256,
+          2.38008,
+          11.63
+        ],
+        "glError": 0
+      },
+      "changedPixels": 28330,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 14,
+      "drawnParts": 14,
+      "batchedRoad": false,
+      "triangles": 3864,
+      "geometryHash": "d173ced044dcd7cada52df89aa60accf09da320dea63d908efc8270b402965e7",
+      "materials": [
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch",
+        "resource-clay",
+        "worn-timber"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "83ea4a61552214a3a2fd525cdb43aad1c075e9603f2e19d2327b1d864b506525",
+        "bytes": 1101256,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 3864
+      }
+    },
+    {
+      "id": "reed",
+      "roundtrip": {
+        "meshes": 33,
+        "materials": 5,
+        "textures": 17,
+        "pendingTextures": [],
+        "triangles": 7822,
+        "visiblePixels": 18634,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 8185,
+        "glbVertices": 8185,
+        "bounds": [
+          11.63,
+          2.22054,
+          11.63
+        ],
+        "glError": 0
+      },
+      "changedPixels": 20971,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 33,
+      "drawnParts": 33,
+      "batchedRoad": false,
+      "triangles": 7822,
+      "geometryHash": "5802c47a8df77777f3d1929f4dcdea043dae1851623eed425fe573c62487ee98",
+      "materials": [
+        "Plant_Bark",
+        "Reed_Leaves",
+        "courtyard-reed",
+        "courtyard-wood",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 9,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "406def19c5ef5b258be948989a683f8442d2b777bb21fe213eb4e4627c346b45",
+        "bytes": 2181456,
+        "materials": 9,
+        "textures": 17,
+        "triangles": 7822
+      }
+    },
+    {
+      "id": "shrine",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 7,
+        "textures": 13,
+        "pendingTextures": [],
+        "triangles": 3096,
+        "visiblePixels": 163430,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 2759,
+        "glbVertices": 2759,
+        "bounds": [
+          5.3742,
+          2.7205,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 124534,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 3096,
+      "geometryHash": "c07e68589829f003a7bf751ee9372f36162403ced8e04c3683495cd06a36e709",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-stone",
+        "courtyard-wood",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 13,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "5600f6f1c84dffd2c28c017ba524fe276df66c7f69fb64328a082ff9cbf9f1f0",
+        "bytes": 1024740,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 3096
+      }
+    },
+    {
+      "id": "garden",
+      "roundtrip": {
+        "meshes": 9,
+        "materials": 8,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 7948,
+        "visiblePixels": 19140,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 6581,
+        "glbVertices": 6581,
+        "bounds": [
+          11.63,
+          3.708,
+          11.63
+        ],
+        "glError": 0
+      },
+      "changedPixels": 22297,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 9,
+      "drawnParts": 9,
+      "batchedRoad": false,
+      "triangles": 7948,
+      "geometryHash": "e3c8d234eb36de132d800df6c19f7099b0859159034aea535daf2a76fed0cedf",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-pottery",
+        "courtyard-reed",
+        "courtyard-stone",
+        "courtyard-wood",
+        "crop-botanical",
+        "game-door-shadow",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "e7337be2a5650502e1f0a64627d6c9d637ad4edc8f43db2e5624dd80882c9f8d",
+        "bytes": 1118168,
+        "materials": 8,
+        "textures": 9,
+        "triangles": 7948
+      }
+    },
+    {
+      "id": "depot",
+      "roundtrip": {
+        "meshes": 10,
+        "materials": 10,
+        "textures": 15,
+        "pendingTextures": [],
+        "triangles": 5624,
+        "visiblePixels": 195438,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5647,
+        "glbVertices": 5647,
+        "bounds": [
+          5.40492,
+          3.65,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 110681,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 10,
+      "drawnParts": 10,
+      "batchedRoad": false,
+      "triangles": 5624,
+      "geometryHash": "87178cf5e93313841df8e76bdefcd67b60c47292b0755999571b04f4ae49fb55",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 15,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "e1054b2e453bc9e301dd7b0c38b0c8c88688771c624048a0b3af03991b9825ad",
+        "bytes": 1225856,
+        "materials": 10,
+        "textures": 13,
+        "triangles": 5624
+      }
+    },
+    {
+      "id": "granary",
+      "roundtrip": {
+        "meshes": 11,
+        "materials": 11,
+        "textures": 17,
+        "pendingTextures": [],
+        "triangles": 9238,
+        "visiblePixels": 206890,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 8190,
+        "glbVertices": 8190,
+        "bounds": [
+          5.3742,
+          3.2,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 158550,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 9238,
+      "geometryHash": "f9b952f807cd2244dcecfaea6a9077b0c13bf7ff5373d2375f858fcd60520ea0",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 17,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "1c97551597e0ad7cd2194f62dd3fb2c4efe5725c7697f54e21a0b47597b5cefa",
+        "bytes": 1527912,
+        "materials": 11,
+        "textures": 15,
+        "triangles": 9238
+      }
+    },
+    {
+      "id": "ziggurat",
+      "roundtrip": {
+        "meshes": 8,
+        "materials": 8,
+        "textures": 12,
+        "pendingTextures": [],
+        "triangles": 4000,
+        "visiblePixels": 145056,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5498,
+        "glbVertices": 5498,
+        "bounds": [
+          10.97041,
+          6.55,
+          11.08725
+        ],
+        "glError": 0
+      },
+      "changedPixels": 146364,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 8,
+      "drawnParts": 8,
+      "batchedRoad": false,
+      "triangles": 4000,
+      "geometryHash": "d65c55805a858db983897389ec55e9428763e95bf54e74f6dbb919c3f21470ff",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-fired",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home"
+      ],
+      "readyTextures": 12,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "e8db4492e7047f96a0a74d44e58ac3edc0d4a1e819f69f670ea48cfb3ee5a6a9",
+        "bytes": 666616,
+        "materials": 8,
+        "textures": 8,
+        "triangles": 4000
+      }
+    },
+    {
+      "id": "bridge",
+      "roundtrip": {
+        "meshes": 2,
+        "materials": 2,
+        "textures": 4,
+        "pendingTextures": [],
+        "triangles": 3932,
+        "visiblePixels": 13003,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 5132,
+        "glbVertices": 5132,
+        "bounds": [
+          18.02516,
+          1.31,
+          1.77119
+        ],
+        "glError": 0
+      },
+      "changedPixels": 89297,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 2,
+      "drawnParts": 2,
+      "batchedRoad": false,
+      "triangles": 3932,
+      "geometryHash": "53deae462495be257807f9c940f0252eefe18fa3d8ceb14b0391a76cd0847703",
+      "materials": [
+        "courtyard-reed",
+        "courtyard-wood"
+      ],
+      "readyTextures": 4,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "9bfd0d0f367c395a6a13f508391841f2969531a55f5a8feee7f3c9a3fcce6140",
+        "bytes": 451236,
+        "materials": 2,
+        "textures": 4,
+        "triangles": 3932
+      }
+    },
+    {
+      "id": "fishing",
+      "roundtrip": {
+        "meshes": 10,
+        "materials": 9,
+        "textures": 15,
+        "pendingTextures": [],
+        "triangles": 8942,
+        "visiblePixels": 149016,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 6762,
+        "glbVertices": 6762,
+        "bounds": [
+          5.3742,
+          2.47,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 119280,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 10,
+      "drawnParts": 10,
+      "batchedRoad": false,
+      "triangles": 8942,
+      "geometryHash": "5130e46d3d063b1e48deb0610eac698537398911da225c9dccd649c249a7ed00",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 15,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "ba2833595048a4b8c079f43006e324dee9255e94966b945a693c528991e91505",
+        "bytes": 1479140,
+        "materials": 9,
+        "textures": 15,
+        "triangles": 8942
+      }
+    },
+    {
+      "id": "hunting",
+      "roundtrip": {
+        "meshes": 7,
+        "materials": 7,
+        "textures": 11,
+        "pendingTextures": [],
+        "triangles": 4252,
+        "visiblePixels": 19809,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 3741,
+        "glbVertices": 3741,
+        "bounds": [
+          11.63,
+          1.98432,
+          11.63
+        ],
+        "glError": 0
+      },
+      "changedPixels": 22249,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 7,
+      "drawnParts": 7,
+      "batchedRoad": false,
+      "triangles": 4252,
+      "geometryHash": "acb0f0863c4bf8780f2b2b2a7a9c119e3242fe42affe2e4b47c7f696515ccdb0",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-pottery",
+        "courtyard-reed",
+        "courtyard-wood",
+        "game-door-shadow",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 11,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "c7e87aeaece421cb3d6f10354cabe9f1af783d59f92a8ea91a623bc9325c49fb",
+        "bytes": 1168592,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 4252
+      }
+    },
+    {
+      "id": "logging",
+      "roundtrip": {
+        "meshes": 16,
+        "materials": 8,
+        "textures": 19,
+        "pendingTextures": [],
+        "triangles": 31723,
+        "visiblePixels": 26961,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 23778,
+        "glbVertices": 23778,
+        "bounds": [
+          12.29933,
+          5.2848,
+          11.63
+        ],
+        "glError": 0
+      },
+      "changedPixels": 37504,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 16,
+      "drawnParts": 16,
+      "batchedRoad": false,
+      "triangles": 31723,
+      "geometryHash": "7441783dc2cc24527996a87944803bc5bbe074ed4db6586934ea0afdb9cdc7e5",
+      "materials": [
+        "Tree_0Mat",
+        "Tree_1Mat",
+        "Tree_2Mat",
+        "Tree_3Mat",
+        "courtyard-reed",
+        "courtyard-wood",
+        "laid-reed-thatch",
+        "worn-timber"
+      ],
+      "readyTextures": 19,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "6531fd9dcdca827da88897717de29e37f83f122d2a05743d5b24c969f6c6dc0b",
+        "bytes": 2988128,
+        "materials": 8,
+        "textures": 19,
+        "triangles": 31723
+      }
+    },
+    {
+      "id": "quarry",
+      "roundtrip": {
+        "meshes": 11,
+        "materials": 5,
+        "textures": 9,
+        "pendingTextures": [],
+        "triangles": 1816,
+        "visiblePixels": 21089,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 2475,
+        "glbVertices": 2475,
+        "bounds": [
+          11.63,
+          2.12185,
+          11.63
+        ],
+        "glError": 0
+      },
+      "changedPixels": 21947,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 1816,
+      "geometryHash": "f6c5c47358b97bd61260dfbe60e8c142759f3dd6ec009f8576d7c16c5467c83b",
+      "materials": [
+        "bank-stone",
+        "courtyard-reed",
+        "courtyard-stone",
+        "courtyard-wood",
+        "laid-reed-thatch"
+      ],
+      "readyTextures": 9,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "1b34c88b0425fa17b1f477d330681ca1173c703415c14aceb38afb4117c2b8ee",
+        "bytes": 961872,
+        "materials": 5,
+        "textures": 9,
+        "triangles": 1816
+      }
+    },
+    {
+      "id": "healer",
+      "roundtrip": {
+        "meshes": 11,
+        "materials": 11,
+        "textures": 18,
+        "pendingTextures": [],
+        "triangles": 8212,
+        "visiblePixels": 182214,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 7326,
+        "glbVertices": 7326,
+        "bounds": [
+          5.40487,
+          2.8,
+          5.3742
+        ],
+        "glError": 0
+      },
+      "changedPixels": 132880,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 8212,
+      "geometryHash": "f2c5c7bf82ce2ea5cf2346592613c6bc79f08c7faba1df3ad6f88eb47463c963",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-earth",
+        "courtyard-plaster",
+        "courtyard-pottery",
+        "courtyard-raw",
+        "courtyard-reed",
+        "courtyard-stone",
+        "courtyard-wood",
+        "game-door-shadow",
+        "game-occupied-home",
+        "worn-timber"
+      ],
+      "readyTextures": 18,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "9ba833cd1e2e713d9b0a99ee531ef69552c2a522fe0dbc9e94946ef92a54c1b3",
+        "bytes": 1172248,
+        "materials": 11,
+        "textures": 14,
+        "triangles": 8212
+      }
+    },
+    {
+      "id": "levee",
+      "roundtrip": {
+        "meshes": 3,
+        "materials": 3,
+        "textures": 6,
+        "pendingTextures": [],
+        "triangles": 264,
+        "visiblePixels": 82030,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 296,
+        "glbVertices": 296,
+        "bounds": [
+          4.5,
+          0.695,
+          6
+        ],
+        "glError": 0
+      },
+      "changedPixels": 79692,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 3,
+      "drawnParts": 3,
+      "batchedRoad": false,
+      "triangles": 264,
+      "geometryHash": "786f19cf22dee7e7d3a18bb1d8948ec36ca3c254d288c1f1cf870fdc7b93cdc8",
+      "materials": [
+        "courtyard-earth",
+        "courtyard-reed",
+        "courtyard-wood"
+      ],
+      "readyTextures": 6,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "4cafeba885567d854636048365045065a19b366c6519018d317283ca8d572e16",
+        "bytes": 380368,
+        "materials": 3,
+        "textures": 6,
+        "triangles": 264
+      }
+    },
+    {
+      "id": "canal",
+      "roundtrip": {
+        "meshes": 2,
+        "materials": 2,
+        "textures": 2,
+        "pendingTextures": [],
+        "triangles": 1682,
+        "visiblePixels": 28301,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 4612,
+        "glbVertices": 4612,
+        "bounds": [
+          5.28,
+          0.86492,
+          9.6
+        ],
+        "glError": 0
+      },
+      "changedPixels": 22643,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 2,
+      "drawnParts": 2,
+      "batchedRoad": false,
+      "triangles": 1682,
+      "geometryHash": "9059c5cd44ba0059091890a0fae3271e07100b1afa9de1ccc4902f91abff7f86",
+      "materials": [
+        "clear-flowing-water",
+        "game-wet-channel-mud"
+      ],
+      "readyTextures": 2,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "bc139285cb2ff9af5ae3db9b4325108bd675b92fd0d478b56e2c6de8d66c3ea7",
+        "bytes": 308276,
+        "materials": 2,
+        "textures": 2,
+        "triangles": 1682
+      }
+    },
+    {
+      "id": "market",
+      "roundtrip": {
+        "meshes": 16,
+        "materials": 16,
+        "textures": 19,
+        "pendingTextures": [],
+        "triangles": 8679,
+        "visiblePixels": 144166,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 16523,
+        "glbVertices": 16523,
+        "bounds": [
+          11.55,
+          2.97,
+          11.55
+        ],
+        "glError": 0
+      },
+      "changedPixels": 151613,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 16,
+      "drawnParts": 16,
+      "batchedRoad": false,
+      "triangles": 8679,
+      "geometryHash": "7f56bf7b7782094dd36cd89ecb4d97c300d9e9057db5ebef54ddbfaa3c4b6872",
+      "materials": [
+        "courtyard-cloth",
+        "courtyard-reed",
+        "courtyard-wood",
+        "Глиняная штукатурка",
+        "Дерево",
+        "Красноватая шерсть",
+        "Медь",
+        "Охристая шерсть",
+        "Светлая керамика",
+        "Светлая шерсть",
+        "Сырцовая кладка",
+        "Терракота",
+        "Тростник и плетение",
+        "Утрамбованный двор",
+        "Финики",
+        "Ячмень"
+      ],
+      "readyTextures": 19,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "b9c68761714d22f7aa29d8e6b6cf82acbd4bfdfd9021d4abeb6de904cd58cdd9",
+        "bytes": 1830360,
+        "materials": 16,
+        "textures": 19,
+        "triangles": 8679
+      }
+    },
+    {
+      "id": "house-2",
+      "roundtrip": {
+        "meshes": 6,
+        "materials": 6,
+        "textures": 12,
+        "pendingTextures": [],
+        "triangles": 7307,
+        "visiblePixels": 171513,
+        "positionComparison": null,
+        "liveVertices": 10446,
+        "glbVertices": 8460,
+        "bounds": [
+          5.08424,
+          2.60329,
+          5.05929
+        ],
+        "glError": 0
+      },
+      "changedPixels": 122899,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 8990,
+      "geometryHash": "f50bb6a82746b5e4443b10df78812a4e0d694204a8d00fc0ed35036a1fe2c582",
+      "materials": [
+        "Compacted alluvial soil",
+        "Dry reed rind and binding",
+        "Handwoven fibre",
+        "Straw-tempered mud plaster",
+        "Unpeeled weathered timber",
+        "Unpolished terracotta slip",
+        "crop-botanical",
+        "game-door-shadow",
+        "game-occupied-home"
+      ],
+      "readyTextures": 12,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "c99ad4297e03e26d6970b41c1fed1f7d7687365962aa3a73aaae484d6ca6a28a",
+        "bytes": 1255476,
+        "materials": 6,
+        "textures": 12,
+        "triangles": 7307
+      }
+    },
+    {
+      "id": "house-3",
+      "roundtrip": {
+        "meshes": 6,
+        "materials": 6,
+        "textures": 12,
+        "pendingTextures": [],
+        "triangles": 7969,
+        "visiblePixels": 192848,
+        "positionComparison": null,
+        "liveVertices": 11621,
+        "glbVertices": 9635,
+        "bounds": [
+          4.9738,
+          4.16233,
+          5.05929
+        ],
+        "glError": 0
+      },
+      "changedPixels": 141839,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 11,
+      "drawnParts": 11,
+      "batchedRoad": false,
+      "triangles": 9652,
+      "geometryHash": "b9aef6c786551c3c5f3016515674ed3a99548d041e748d1ed671abb0589729b8",
+      "materials": [
+        "Compacted alluvial soil",
+        "Dry reed rind and binding",
+        "Handwoven fibre",
+        "Straw-tempered mud plaster",
+        "Unpeeled weathered timber",
+        "Unpolished terracotta slip",
+        "crop-botanical",
+        "game-door-shadow",
+        "game-occupied-home"
+      ],
+      "readyTextures": 12,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "b8d0c4e44d96e1a9d6cbccfde37912b64a4c51ddb3101e80cc854adfdc5c3617",
+        "bytes": 1301756,
+        "materials": 6,
+        "textures": 12,
+        "triangles": 7969
+      }
+    },
+    {
+      "id": "reedCamp",
+      "roundtrip": {
+        "meshes": 5,
+        "materials": 5,
+        "textures": 10,
+        "pendingTextures": [],
+        "triangles": 5013,
+        "visiblePixels": 120072,
+        "positionComparison": null,
+        "liveVertices": 7899,
+        "glbVertices": 7899,
+        "bounds": [
+          4.9738,
+          1.96338,
+          5.05929
+        ],
+        "glError": 0
+      },
+      "changedPixels": 72985,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 5,
+      "drawnParts": 5,
+      "batchedRoad": false,
+      "triangles": 5013,
+      "geometryHash": "0eb0b57143f47e46a5496439d161b043534ac4ee332e6a63fd0131dc229117fe",
+      "materials": [
+        "Compacted alluvial soil",
+        "Dry reed rind and binding",
+        "Handwoven fibre",
+        "Unpeeled weathered timber",
+        "Unpolished terracotta slip"
+      ],
+      "readyTextures": 10,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "e630b90f315c5f21dfdfa0ffaad02caa12ed54fd844f240b69229833fc6eb1fb",
+        "bytes": 1143324,
+        "materials": 5,
+        "textures": 10,
+        "triangles": 5013
+      }
+    },
+    {
+      "id": "road",
+      "roundtrip": {
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2,
+        "pendingTextures": [],
+        "triangles": 144,
+        "visiblePixels": 18769,
+        "positionComparison": {
+          "missingFromGLB": 0,
+          "missingFromScene": 0
+        },
+        "liveVertices": 91,
+        "glbVertices": 91,
+        "bounds": [
+          6,
+          0.012,
+          1.46468
+        ],
+        "glError": 0
+      },
+      "changedPixels": 4352,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 1,
+      "drawnParts": 1,
+      "batchedRoad": false,
+      "triangles": 144,
+      "geometryHash": "355b7b4457c709eb5c7a2cafe65b467e80fc5afb6c405a12b04587b4167a7dac",
+      "materials": [
+        "game-road-compacted-earth"
+      ],
+      "readyTextures": 2,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "6c0f597364842aad8acec8cdc17ea4ab2bc4f7aab6b19efa35fd75c4e862bf27",
+        "bytes": 111616,
+        "materials": 1,
+        "textures": 2,
+        "triangles": 144
+      }
+    },
+    {
+      "id": "starterHut",
+      "roundtrip": {
+        "meshes": 5,
+        "materials": 5,
+        "textures": 10,
+        "pendingTextures": [],
+        "triangles": 5104,
+        "visiblePixels": 121439,
+        "positionComparison": null,
+        "liveVertices": 8700,
+        "glbVertices": 5684,
+        "bounds": [
+          4.9738,
+          2.76494,
+          5.05929
+        ],
+        "glError": 0
+      },
+      "changedPixels": 87394,
+      "framebuffer": [
+        1200,
+        760
+      ],
+      "parts": 10,
+      "drawnParts": 10,
+      "batchedRoad": false,
+      "triangles": 6932,
+      "geometryHash": "71ed9969791a43c0c86c6f846a6752a5b88aed0212d0b796e71311abc52b809f",
+      "materials": [
+        "Compacted alluvial soil",
+        "Dry reed rind and binding",
+        "Straw-tempered mud plaster",
+        "Unpeeled weathered timber",
+        "Unpolished terracotta slip",
+        "crop-botanical",
+        "game-occupied-home"
+      ],
+      "readyTextures": 10,
+      "glError": 0,
+      "queueErrors": [],
+      "localDownload": {
+        "sha256": "b4fc4c40764dfc45a551734fda6538b20ed99ad63432ef8b28179f43bb6c74ac",
+        "bytes": 908060,
+        "materials": 5,
+        "textures": 10,
+        "triangles": 5104
+      }
+    }
+  ]
+}

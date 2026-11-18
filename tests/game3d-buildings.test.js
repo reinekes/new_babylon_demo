@@ -271,11 +271,12 @@ test('reed camp renders a distinct pickable shelter without house lamps',async()
  }finally{t.dispose();}
 });
 
-test('completed reed camps share the imported model and retain salvage and save data',async()=>{
+test('completed reed camps fall back to shared SF3D after a catalogue error and retain salvage and save data',async()=>{
  const t=await setup();
  const previous=B.SceneLoader.LoadAssetContainerAsync,loads=[];
  B.SceneLoader.LoadAssetContainerAsync=async(_root,file)=>{
   loads.push(file.split('?')[0]);
+  if(file.startsWith('reedCamp.'))throw Error('Catalogue unavailable');
   return loadGeometry(t.scene,'reed-camp-sf3d.glb');
  };
  try{
@@ -287,7 +288,7 @@ test('completed reed camps share the imported model and retain salvage and save 
   assert.ok(t.layer.meshes.some(m=>m.name.endsWith('camp-woven-roof')));
   await t.layer.sacredReady();
   t.layer.sync(state);
-  assert.deepEqual(loads,['reed-camp-sf3d.glb']);
+  assert.deepEqual(loads,['reedCamp.glb','reed-camp-sf3d.glb']);
   const model=t.layer.meshes.filter(m=>m.name.includes('camp-sf3d'));
   assert.equal(model.length,2);
   assert.equal(model[0].sourceMesh,model[1].sourceMesh);
@@ -383,21 +384,25 @@ test('ordinary homes share the loaded earth model until the effective level chan
  B.SceneLoader.LoadAssetContainerAsync=async(directory,file)=>{
   const path=(directory+file).split('?')[0];
   requested.push(path);
-  assert.equal(path,'assets/3d/sumer-buildings/house.glb');
-  return loadGeometry(t.scene,'house.glb','assets/3d/sumer-buildings/');
+  assert.equal(directory,'assets/3d/sumer-buildings/');
+  return loadGeometry(t.scene,file.split('?')[0],directory);
  };
  try{
   const home=house(1,3,4,'family-a'),neighbor=house(1,8,4,'family-b');
   neighbor.rotation=1;
   const hut={...house(1,6,2,'founder'),starterHut:true};
   const site={...house(1,5,2,'site'),construction:{kind:'new',target:1,required:{clay:8},delivered:{clay:2},work:0}};
-  const state={buildings:[home,neighbor,hut,site],citizens:[{id:1,home:'family-a',name:'Нинда',cargo:{food:2}}]};
+  const camp={...house(1,12,4,'reed-shelter'),reedCamp:true};
+  const state={buildings:[home,neighbor,hut,site,camp],citizens:[{id:1,home:'family-a',name:'Нинда',cargo:{food:2}}]};
   const snapshot=structuredClone(state);
   const earthFor=id=>t.layer.meshes.filter(mesh=>mesh.metadata.buildingKey===id&&mesh.name.includes('game-house-earth-1-'));
   t.layer.sync(state);
   await t.layer.sacredReady();
   t.layer.sync(state);
-  assert.deepEqual(requested,['assets/3d/sumer-buildings/house.glb']);
+  assert.deepEqual(requested.sort(),['house','reedCamp','starterHut'].map(file=>'assets/3d/sumer-buildings/'+file+'.glb'));
+  assert.ok(t.layer.meshes.some(m=>m.metadata.buildingKey===hut.id&&m.name.includes('game-house-earth-hut-')));
+  assert.ok(t.layer.meshes.some(m=>m.metadata.buildingKey===camp.id&&m.name.includes('game-camp-earth-')));
+  assert.ok(!t.layer.meshes.some(m=>(m.metadata.buildingKey===hut.id||m.metadata.buildingKey===camp.id)&&m.name.includes('roof-access')));
   const a=earthFor('family-a'),b=earthFor('family-b');
   assert.ok(a.length>0);assert.equal(a.length,b.length);
   assert.ok(a.every((mesh,i)=>mesh.sourceMesh.geometry===b[i].sourceMesh.geometry));
@@ -415,6 +420,14 @@ test('ordinary homes share the loaded earth model until the effective level chan
   delete home.construction;home.level=2;
   t.layer.sync(state);assert.equal(earthFor(home.id).length,0);
   assert.ok(t.layer.meshes.some(mesh=>mesh.metadata.buildingKey===home.id&&mesh.name.includes('game-house-courtyard-2')));
+  for(const level of [2,3]){
+   home.level=level;t.layer.sync(state);await t.layer.sacredReady();t.layer.sync(state);
+   const key='game-house-earth-'+level+'-';
+   const parts=t.layer.meshes.filter(m=>m.metadata.buildingKey===home.id);
+   assert.equal(parts.filter(m=>m.name.includes(key)).length,6);
+   assert.ok(parts.every(m=>!m.name.includes('roof-access')),'ladder and stairs are in the GLB');
+   assert.equal(requested.filter(path=>path.endsWith('/house-'+level+'.glb')).length,1);
+  }
   assert.equal(earthFor(neighbor.id)[0],b[0]);
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;t.dispose();}
 });

@@ -236,6 +236,8 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
    for(let i=0;i<pieces;i++)box(...point(left+step*(i+.5),.14,z),horizontal?1.65:step-.02,.16,horizontal?step-.02:1.65,'wood');
    for(let x=left+.14;x<=right;x+=Math.max(1,(right-left-.28)/6))for(const side of [-1,1]){
     cyl(...point(x,-.12,z+side*.8),.09,.68,'wood');cyl(...point(x,.46,z+side*.8),.055,.78,'wood');
+    for(const y of [.70,.74,.78])cyl(...point(x,y,z+side*.8),.081,.025,'reed');
+    beam(point(x,.36,z+side*.8),point(Math.min(right,x+.50),.72,z+side*.8),.027,'wood');
    }
    for(const side of [-1,1])beam(point(left,.75,z+side*.8),point(right,.75,z+side*.8),.045,'wood');
    break;

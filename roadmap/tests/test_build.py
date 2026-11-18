@@ -45,6 +45,7 @@ class BuildTests(unittest.TestCase):
             repo = Path(directory)
             root = repo / 'roadmap'
             (root / 'reports').mkdir(parents=True)
+            (root / 'building-models.json').write_text('{"groups":[]}')
             (repo / 'docs' / 'superpowers').mkdir(parents=True)
             (repo / 'docs' / 'superpowers' / 'private-plan.md').write_text('# Local draft')
             for name in ['README.md', 'overview.md', 'historical-review.md']:
@@ -57,6 +58,16 @@ class BuildTests(unittest.TestCase):
             (root / 'plan.md').write_text('updated: 2026-11-04\n\n## missing | Missing\ngroup: ux\nstatus: planned\npriority: P1\ndepends: -\nsources: docs/missing.md\n')
             with self.assertRaises(ValueError):
                 builder().collect_data(root)
+
+    def test_finished_model_requires_a_new_picture_and_gameplay_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            register = {'groups': [{'future': True, 'items': [
+                {'id': 'model', 'status': 'ready', 'image': 'capture.webp'}
+            ]}]}
+            (root / 'building-models.json').write_text(json.dumps(register))
+            with self.assertRaisesRegex(ValueError, 'проверка в игре'):
+                builder().model_register(root)
 
     def test_dependency_cycle_and_report_conflict_are_rejected(self):
         m = builder()
