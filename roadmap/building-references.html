@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Референсы построек · Новый Вавилон</title>
+<style>
+:root { color-scheme: light; font: 16px/1.55 system-ui, sans-serif; color: #292e2b; background: #f5f2eb; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1320px; margin: auto; padding: clamp(18px, 5vw, 64px); }
+a { color: #224a42; text-underline-offset: .2em; }
+a:focus-visible { outline: 3px solid #9b4f2d; outline-offset: 4px; }
+header { max-width: 72ch; margin-bottom: 2.5rem; }
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.08; margin: 1.4rem 0 1rem; }
+h2 { margin: 0 0 .35rem; line-height: 1.2; }
+.family { margin: 2rem 0; padding-top: 1.5rem; border-top: 1px solid #d8d6cc; }
+.motif { margin: 0 0 .9rem; color: #525a52; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+.card { min-width: 0; background: #fffefa; border: 1px solid #deded2; border-radius: 10px; }
+.card a { display: block; border-radius: 9px 9px 0 0; background: #e8e6e0; }
+.card img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: contain; border-radius: inherit; }
+.card-copy { padding: .9rem 1rem; }
+.card h3 { margin: 0; line-height: 1.25; font-size: 1.05rem; }
+.card p { margin: .35rem 0 0; }
+.size { color: #884729; font-weight: 650; }
+.placement, .size-source { color: #525a52; font-size: .875rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+<a href="index.html">← Карта развития</a>
+<h1>Референсы построек Южного Шумера</h1>
+<p>40 концептов построек и ссылки на актуальные GLB. Постройки сгруппированы по общим деталям и производственным цепочкам. Нажмите на картинку, чтобы открыть PNG в исходном размере.</p>
+<p>Габариты сверены с актуальной версией игры. Под каждой карточкой доступна модель GLB. Иллюстрации показывают исходные концепты. Масштаб изображений условный.</p>
+<p><a href="../scripts/sumer-building-studio.html">Открыть модели в тестовом городе</a> · <a href="../docs/model-prototypes/sumer-building-set/40-building-models.zip" download>Скачать все 40 GLB</a> · <a href="../docs/model-prototypes/sumer-building-set/overview.webp">Лист референсов</a> · <a href="../docs/model-prototypes/sumer-building-set/market-1x1-concept.webp">Компактный вариант рынка 1×1</a></p>
+</header>
+<section class="family"><h2>Глина и кирпич</h2><p class="motif">Низкий сырцовый бортик, прямоугольное корыто, тростниковый мат с двойной перевязью.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/clay.webp" aria-label="Открыть PNG: Глиняный карьер"><img src="../docs/model-prototypes/sumer-building-set/clay.webp" alt="Глиняный карьер" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Глиняный карьер</h3><p class="size">Габарит · 2×2</p><p>Широкая ступенчатая выемка с пандусом и небольшим навесом</p><p><a href="../assets/3d/sumer-buildings/clay.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/brickyard.webp" aria-label="Открыть PNG: Кирпичный двор"><img src="../docs/model-prototypes/sumer-building-set/brickyard.webp" alt="Кирпичный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Кирпичный двор</h3><p class="size">Габарит · 1×1</p><p>Форма и открытые ряды сырца на сушке</p><p><a href="../assets/3d/sumer-buildings/brickyard.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/kiln.webp" aria-label="Открыть PNG: Печь для обжига"><img src="../docs/model-prototypes/sumer-building-set/kiln.webp" alt="Печь для обжига" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Печь для обжига</h3><p class="size">Габарит · 1×1</p><p>Высокая камера с загрузочным устьем, сырец у входа, терракотовые штабели на выходе</p><p><a href="../assets/3d/sumer-buildings/kiln.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Глина → керамика → напитки и припасы</h2><p class="motif">Один профиль пузатого сосуда с широким венчиком.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/pottery.webp" aria-label="Открыть PNG: Гончарный двор"><img src="../docs/model-prototypes/sumer-building-set/pottery.webp" alt="Гончарный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Гончарный двор</h3><p class="size">Габарит · 1×1</p><p>Круг для формовки, полка с пустыми сосудами, маленькая печь</p><p><a href="../assets/3d/sumer-buildings/pottery.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/brewery.webp" aria-label="Открыть PNG: Пивоварня"><img src="../docs/model-prototypes/sumer-building-set/brewery.webp" alt="Пивоварня" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Пивоварня</h3><p class="size">Габарит · 1×1</p><p>Ряд крупных бродильных сосудов, сито, зерновые корзины</p><p><a href="../assets/3d/sumer-buildings/brewery.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/dairyStore.webp" aria-label="Открыть PNG: Двор молочных припасов"><img src="../docs/model-prototypes/sumer-building-set/dairyStore.webp" alt="Двор молочных припасов" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Двор молочных припасов</h3><p class="size">Габарит · 1×1</p><p>Затенённый стол с мелкими формами, молочный кувшин и полка для сыров</p><p><a href="../assets/3d/sumer-buildings/dairyStore.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Ячмень и хлеб</h2><p class="motif">Низкие зерновые корзины с двойным поясом плетения.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/field.webp" aria-label="Открыть PNG: Ячменное поле"><img src="../docs/model-prototypes/sumer-building-set/field.webp" alt="Ячменное поле" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Ячменное поле</h3><p class="size">Габарит · 1×1</p><p>Полосы ячменя, поливная борозда, край участка со снопами</p><p><a href="../assets/3d/sumer-buildings/field.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/granary.webp" aria-label="Открыть PNG: Амбар и склад"><img src="../docs/model-prototypes/sumer-building-set/granary.webp" alt="Амбар и склад" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Амбар и склад</h3><p class="size">Габарит · 1×1</p><p>Массивные закрытые ячейки, высокий порог, площадка для приёмки</p><p><a href="../assets/3d/sumer-buildings/granary.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/bakery.webp" aria-label="Открыть PNG: Общая печь"><img src="../docs/model-prototypes/sumer-building-set/bakery.webp" alt="Общая печь" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Общая печь</h3><p class="size">Габарит · 1×1</p><p>Невысокая печь, ручная зернотёрка и плоские лепёшки</p><p><a href="../assets/3d/sumer-buildings/bakery.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/depot.webp" aria-label="Открыть PNG: Раздаточный двор"><img src="../docs/model-prototypes/sumer-building-set/depot.webp" alt="Раздаточный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Раздаточный двор</h3><p class="size">Габарит · 1×1</p><p>Широкий открытый прилавок, несколько зерновых корзин</p><p><a href="../assets/3d/sumer-buildings/depot.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Урожай</h2><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/garden.webp" aria-label="Открыть PNG: Финиковый сад"><img src="../docs/model-prototypes/sumer-building-set/garden.webp" alt="Финиковый сад" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Финиковый сад</h3><p class="size">Габарит · 2×2</p><p>Две пальмы, неглубокий поливной рукав, корзина фиников</p><p><a href="../assets/3d/sumer-buildings/garden.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Стада и ткань</h2><p class="motif">Переносные плетёные панели и корзины для волокна.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/sheepfold.webp" aria-label="Открыть PNG: Овчарня"><img src="../docs/model-prototypes/sumer-building-set/sheepfold.webp" alt="Овчарня" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Овчарня</h3><p class="size">Габарит · 2×2</p><p>Низкий загон, щит от ветра, корзина шерсти</p><p><a href="../assets/3d/sumer-buildings/sheepfold.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/cowshed.webp" aria-label="Открыть PNG: Коровник"><img src="../docs/model-prototypes/sumer-building-set/cowshed.webp" alt="Коровник" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Коровник</h3><p class="size">Габарит · 2×2</p><p>Широкий открытый навес, длинное корыто и ворота</p><p><a href="../assets/3d/sumer-buildings/cowshed.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/weaver.webp" aria-label="Открыть PNG: Ткацкая мастерская"><img src="../docs/model-prototypes/sumer-building-set/weaver.webp" alt="Ткацкая мастерская" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Ткацкая мастерская</h3><p class="size">Габарит · 1×1</p><p>Станок в тени и корзина шерстяной пряжи</p><p><a href="../assets/3d/sumer-buildings/weaver.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/linenYard.webp" aria-label="Открыть PNG: Льняной двор"><img src="../docs/model-prototypes/sumer-building-set/linenYard.webp" alt="Льняной двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Льняной двор</h3><p class="size">Габарит · 1×1</p><p>Светлые стебли, ёмкость для подготовки волокна, станок</p><p><a href="../assets/3d/sumer-buildings/linenYard.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/tailor.webp" aria-label="Открыть PNG: Мастерская одежды"><img src="../docs/model-prototypes/sumer-building-set/tailor.webp" alt="Мастерская одежды" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Мастерская одежды</h3><p class="size">Габарит · 1×1</p><p>Сложенное полотно и одна подвешенная одежда</p><p><a href="../assets/3d/sumer-buildings/tailor.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Тростник и плетение</h2><p class="motif">Связки с двумя перевязями и видимый край циновки.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/reed.webp" aria-label="Открыть PNG: Тростниковый двор"><img src="../docs/model-prototypes/sumer-building-set/reed.webp" alt="Тростниковый двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Тростниковый двор</h3><p class="size">Габарит · 2×2</p><p>Сушильная рама и груды срезанных стеблей</p><p><a href="../assets/3d/sumer-buildings/reed.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/basketry.webp" aria-label="Открыть PNG: Плетельный двор"><img src="../docs/model-prototypes/sumer-building-set/basketry.webp" alt="Плетельный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Плетельный двор</h3><p class="size">Габарит · 1×1</p><p>Скамья, заготовки и корзины разных размеров</p><p><a href="../assets/3d/sumer-buildings/basketry.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/matYard.webp" aria-label="Открыть PNG: Циновочный двор"><img src="../docs/model-prototypes/sumer-building-set/matYard.webp" alt="Циновочный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Циновочный двор</h3><p class="size">Габарит · 1×1</p><p>Низкая прямоугольная рама, свернутая и развёрнутая циновки</p><p><a href="../assets/3d/sumer-buildings/matYard.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Береговые строения</h2><p class="motif">Открытый край у воды, тростниковые маты на простых рамах.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/waterpoint.webp" aria-label="Открыть PNG: Береговой водозабор"><img src="../docs/model-prototypes/sumer-building-set/waterpoint.webp" alt="Береговой водозабор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Береговой водозабор</h3><p class="size">Габарит · 1×1</p><p>Спуск к воде, ровная площадка и кувшины</p><p><a href="../assets/3d/sumer-buildings/waterpoint.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/fishing.webp" aria-label="Открыть PNG: Рыбацкая хижина"><img src="../docs/model-prototypes/sumer-building-set/fishing.webp" alt="Рыбацкая хижина" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Рыбацкая хижина</h3><p class="size">Габарит · 1×1</p><p>Низкая плетёная хижина, рыболовная сеть на сушильной стойке</p><p><a href="../assets/3d/sumer-buildings/fishing.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/harbor.webp" aria-label="Открыть PNG: Речная пристань"><img src="../docs/model-prototypes/sumer-building-set/harbor.webp" alt="Речная пристань" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Речная пристань</h3><p class="size">Габарит · 1×1</p><p>Настил над откосом, швартовые столбы и грузовая рампа</p><p><a href="../assets/3d/sumer-buildings/harbor.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/bridge.webp" aria-label="Открыть PNG: Мост через реку"><img src="../docs/model-prototypes/sumer-building-set/bridge.webp" alt="Мост через реку" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Мост через реку</h3><p class="size">Закладка · 1×1, пролёт по ширине реки</p><p>Плоский деревянный пролёт и два массивных устоя</p><p><a href="../assets/3d/sumer-buildings/bridge.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Земляные работы</h2><p class="motif">Уплотнённые откосы и прямой стык.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/canal.webp" aria-label="Открыть PNG: Оросительный канал"><img src="../docs/model-prototypes/sumer-building-set/canal.webp" alt="Оросительный канал" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Оросительный канал</h3><p class="size">Габарит · 1×1</p><p>Повторяемый прямой модуль с узким руслом</p><p><a href="../assets/3d/sumer-buildings/canal.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/levee.webp" aria-label="Открыть PNG: Береговой вал"><img src="../docs/model-prototypes/sumer-building-set/levee.webp" alt="Береговой вал" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Береговой вал</h3><p class="size">Габарит · 1×1</p><p>Низкая насыпь с трапециевидным сечением</p><p><a href="../assets/3d/sumer-buildings/levee.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Инструменты и сырьё</h2><p class="motif">Открытые рабочие места и крупная заготовка.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/coppersmith.webp" aria-label="Открыть PNG: Медный двор"><img src="../docs/model-prototypes/sumer-building-set/coppersmith.webp" alt="Медный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Медный двор</h3><p class="size">Габарит · 1×1</p><p>Малый горн, формы для литья и медные заготовки</p><p><a href="../assets/3d/sumer-buildings/coppersmith.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/quarry.webp" aria-label="Открыть PNG: Каменоломня"><img src="../docs/model-prototypes/sumer-building-set/quarry.webp" alt="Каменоломня" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Каменоломня</h3><p class="size">Габарит · 2×2</p><p>Ступень выработки и крупные отделённые каменные блоки</p><p><a href="../assets/3d/sumer-buildings/quarry.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/hunting.webp" aria-label="Открыть PNG: Охотничий домик"><img src="../docs/model-prototypes/sumer-building-set/hunting.webp" alt="Охотничий домик" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Охотничий домик</h3><p class="size">Габарит · 2×2</p><p>Полузакрытый навес, рама для шкуры, копья на стойке</p><p><a href="../assets/3d/sumer-buildings/hunting.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Дерево и лодочные детали</h2><p class="motif">Парные опоры для брёвен.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/logging.webp" aria-label="Открыть PNG: Лесорубная хижина"><img src="../docs/model-prototypes/sumer-building-set/logging.webp" alt="Лесорубная хижина" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Лесорубная хижина</h3><p class="size">Габарит · 2×2</p><p>Стена из сырца, колода и шероховатые брёвна</p><p><a href="../assets/3d/sumer-buildings/logging.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/joineryYard.webp" aria-label="Открыть PNG: Столярный двор"><img src="../docs/model-prototypes/sumer-building-set/joineryYard.webp" alt="Столярный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Столярный двор</h3><p class="size">Габарит · 1×1</p><p>Козлы, тесаные доски и подготовленные детали лодки</p><p><a href="../assets/3d/sumer-buildings/joineryYard.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Жилые дворы</h2><p class="motif">Один и тот же глиняный порог и навес.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/house.webp" aria-label="Открыть PNG: Дом"><img src="../docs/model-prototypes/sumer-building-set/house.webp" alt="Дом" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Дом</h3><p class="size">Габарит · 1×1</p><p>Низкий однокомнатный объём, навес, домашняя посуда</p><p><a href="../assets/3d/sumer-buildings/house.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/healer.webp" aria-label="Открыть PNG: Дом лекаря"><img src="../docs/model-prototypes/sumer-building-set/healer.webp" alt="Дом лекаря" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Дом лекаря</h3><p class="size">Габарит · 1×1</p><p>Углублённый вход, скамьи ожидания, набор маленьких сосудов</p><p><a href="../assets/3d/sumer-buildings/healer.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/musicHouse.webp" aria-label="Открыть PNG: Музыкальный двор"><img src="../docs/model-prototypes/sumer-building-set/musicHouse.webp" alt="Музыкальный двор" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Музыкальный двор</h3><p class="size">Габарит · 1×1</p><p>Открытая площадка со скамьями, лира, игровой литофон</p><p><a href="../assets/3d/sumer-buildings/musicHouse.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Торговля</h2><p class="motif">Грузовые корзины, матовые навесы, просторный проход.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/market.webp" aria-label="Открыть PNG: Рынок"><img src="../docs/model-prototypes/sumer-building-set/market.webp" alt="Рынок" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Рынок</h3><p class="size">Габарит · 2×2</p><p>Открытый двор с двумя входами и крытыми торговыми рядами</p><p><a href="../assets/3d/sumer-buildings/market.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Священные строения</h2><p class="motif">Симметрия входа, простая ось, места для приношений.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/shrine.webp" aria-label="Открыть PNG: Святилище"><img src="../docs/model-prototypes/sumer-building-set/shrine.webp" alt="Святилище" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Святилище</h3><p class="size">Габарит · 1×1</p><p>Тростниковая сводчатая постройка, широкий проём и сосуды</p><p><a href="../assets/3d/sumer-buildings/shrine.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/ziggurat.webp" aria-label="Открыть PNG: Великий зиккурат"><img src="../docs/model-prototypes/sumer-building-set/ziggurat.webp" alt="Великий зиккурат" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Великий зиккурат</h3><p class="size">Габарит · 2×2</p><p>Массивные террасы, осевые лестницы, обожжённая облицовка</p><p><a href="../assets/3d/sumer-buildings/ziggurat.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/ishtarGate.webp" aria-label="Открыть PNG: Врата Инанны"><img src="../docs/model-prototypes/sumer-building-set/ishtarGate.webp" alt="Врата Инанны" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Врата Инанны</h3><p class="size">Габарит · 3×3</p><p>Пара сырцовых пилонов, деревянная перемычка и прямой проход</p><p><a href="../assets/3d/sumer-buildings/ishtarGate.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Укрепления</h2><p class="motif">Прямоугольные контрфорсы и общий профиль кладки.</p><div class="grid">
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/cityWall.webp" aria-label="Открыть PNG: Городская стена"><img src="../docs/model-prototypes/sumer-building-set/cityWall.webp" alt="Городская стена" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Городская стена</h3><p class="size">Габарит · 1×1</p><p>Повторяемая прямая секция с ровными торцами</p><p><a href="../assets/3d/sumer-buildings/cityWall.glb" download>Скачать GLB</a></p></div>
+</article>
+<article class="card">
+  <a href="../docs/model-prototypes/sumer-building-set/cityGate.webp" aria-label="Открыть PNG: Городские ворота"><img src="../docs/model-prototypes/sumer-building-set/cityGate.webp" alt="Городские ворота" loading="lazy" decoding="async"></a>
+  <div class="card-copy"><h3>Городские ворота</h3><p class="size">Габарит · 2×2</p><p>Два фланговых объёма, полноценный сквозной проезд</p><p><a href="../assets/3d/sumer-buildings/cityGate.glb" download>Скачать GLB</a></p></div>
+</article>
+</div></section>
+<section class="family"><h2>Караульный двор</h2><div class="grid">
+<article class="card">
+<a href="../docs/model-prototypes/watch-house/concept-v2.webp"><img src="../docs/model-prototypes/watch-house/concept-v2.webp" alt="Караульный двор" loading="lazy" decoding="async"></a>
+<div class="card-copy"><h3>Караульный двор</h3><p class="size">Габарит · 1×1</p><p>Двор с башней и настенными факелами.</p><p><a href="../assets/3d/sumer-buildings/watchHouse.glb" download>Скачать GLB</a></p></div>
+</article></div></section>
+</main>
+</body>
+</html>
