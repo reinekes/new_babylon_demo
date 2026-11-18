@@ -26,7 +26,7 @@ const element=(tag,text,className)=>{
   if (className) node.className=className;
   return node;
 };
-const getPreview=()=>preview??=import('./preview.js?v=alluvial-craft-20261118').then(m=>m.createPreview(canvas)).catch(error=>{
+const getPreview=()=>preview??=import('./preview.js?v=river-farms-and-pits-20261118').then(m=>m.createPreview(canvas)).catch(error=>{
   preview=null;
   throw error;
 });
@@ -224,7 +224,7 @@ function render() {
 }
 
 async function readData(name) {
-  const response=await fetch(new URL(`./data/${name}.json?v=pasture-donkey-20261118`,import.meta.url),{cache:'no-cache'});
+  const response=await fetch(new URL(`./data/${name}.json?v=river-farms-and-pits-20261118`,import.meta.url),{cache:'no-cache'});
   if (!response.ok) throw Error(`HTTP ${response.status}`);
   return response.json();
 }

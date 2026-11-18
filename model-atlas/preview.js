@@ -183,6 +183,16 @@ async function makeModel(B,scene,item,profile) {
   if(extractionKinds[item.type])building.deposit={x:building.x,y:building.y};
   if (item.type==='field') building.crop={sown:1,growth:1,seed:1};
   state.buildings.push(building);
+  if(item.type==='quarry'||item.type==='clay'){
+    const [{mineralSiteView},{mineralExcavations}]=await Promise.all([import('../district3d/mineral-sites.js'),import('../game3d/mineral-excavation.js')]);
+    const d={kind:extractionKinds[item.type],...building.deposit};state.world.deposits=[d];
+    const pits=mineralExcavations(state);mineralSiteView(B,scene,state,materials,pits,6,()=>0,()=>[.90,.84,.73,1]);
+    for(const [dx,dz] of [[1,0],[0,1],[1,1]]){
+      if(pits.some(p=>dx===p.extensionX&&dz===p.extensionY))continue;
+      const bank=B.MeshBuilder.CreateGround('mineral-loading-bank',{width:6,height:6},scene);
+      bank.position.set((building.x+dx)*6,0,(building.y+dz)*6);bank.material=materials.soil;
+    }
+  }
   const layer=await createGameBuildings(B,scene,materials,{deferAssets:true});
   if (item.type==='field') await layer.loadDetails();
   layer.sync(state);

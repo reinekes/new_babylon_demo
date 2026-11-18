@@ -1,0 +1,1592 @@
+{
+  "release": "river-farms-and-pits-20261118",
+  "previous": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+  "protocol": "Ordinary WebGL city loaded from saved games before and after building both extraction courts on the surveyed deposits. All dimensions are in metres. A second pair of sites and the close-up shoreline were checked in the model studio with the city renderer.",
+  "city": {
+    "entry": "index.html",
+    "naturalSources": {
+      "quarry": {
+        "source": "native-mineral-source-stone",
+        "material": "mineral-bedding",
+        "form": "natural",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.35222111922737953,
+        "world": [
+          60,
+          0.017742953593135408,
+          60
+        ],
+        "bedRelativeToLand": 0,
+        "walls": [],
+        "triangles": 2954,
+        "geometry": {
+          "position": "d909d8fb21c2a84185b79e07be34337862a818efb3112efb7dbbc23e272793db",
+          "normal": "072a49d7f0c8ae02c6ec2d20e3379223fb760c96f32f978057b3f7c9a67facd2",
+          "color": "55f77af48427b23a181ce4bf71c54ea5c1102ddfca792f3d3080a287c1afbb55",
+          "uv": "cc20323db8b306e17736f69e5ae51fbc566431e8497162b8da3aa05e1b8fca72",
+          "indices": "84716747f9c2f830b838dac4fa71f419f9579e191a3f29ffa7bf836b225be47e"
+        }
+      },
+      "clay": {
+        "source": "native-mineral-source-clay",
+        "material": "mineral-bedding",
+        "form": "natural",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.08162766535579061,
+        "world": [
+          54,
+          0.0024810557672883776,
+          42
+        ],
+        "bedRelativeToLand": 0,
+        "walls": [],
+        "triangles": 2360,
+        "geometry": {
+          "position": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+          "normal": "c5a84167456ef65401dba0fa157382d94e0e02f19f6573beb81301710cfe8a66",
+          "color": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+          "uv": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+          "indices": "558bcf8ef760bb44c69134e4308995f109073e83583227ab866e28be09c9e35c"
+        }
+      }
+    },
+    "afterConstruction": {
+      "quarry": {
+        "source": "native-mineral-source-stone",
+        "material": "mineral-bedding",
+        "form": "excavated",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.35222111922737953,
+        "world": [
+          60,
+          -2.65,
+          60
+        ],
+        "bedRelativeToLand": -2.65,
+        "walls": [
+          [
+            "rim",
+            80
+          ],
+          [
+            "bowl",
+            1112
+          ],
+          [
+            "ladder",
+            308
+          ]
+        ],
+        "triangles": 2954,
+        "geometry": {
+          "position": "d909d8fb21c2a84185b79e07be34337862a818efb3112efb7dbbc23e272793db",
+          "normal": "072a49d7f0c8ae02c6ec2d20e3379223fb760c96f32f978057b3f7c9a67facd2",
+          "color": "55f77af48427b23a181ce4bf71c54ea5c1102ddfca792f3d3080a287c1afbb55",
+          "uv": "cc20323db8b306e17736f69e5ae51fbc566431e8497162b8da3aa05e1b8fca72",
+          "indices": "84716747f9c2f830b838dac4fa71f419f9579e191a3f29ffa7bf836b225be47e"
+        }
+      },
+      "clay": {
+        "source": "native-mineral-source-clay",
+        "material": "mineral-bedding",
+        "form": "excavated",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.08162766535579061,
+        "world": [
+          54,
+          -2.15,
+          42
+        ],
+        "bedRelativeToLand": -2.15,
+        "walls": [
+          [
+            "rim",
+            80
+          ],
+          [
+            "bowl",
+            1066
+          ],
+          [
+            "ladder",
+            252
+          ]
+        ],
+        "triangles": 2360,
+        "geometry": {
+          "position": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+          "normal": "c5a84167456ef65401dba0fa157382d94e0e02f19f6573beb81301710cfe8a66",
+          "color": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+          "uv": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+          "indices": "558bcf8ef760bb44c69134e4308995f109073e83583227ab866e28be09c9e35c"
+        }
+      }
+    },
+    "profiles": {
+      "field": {
+        "visible": 1,
+        "foundation": null,
+        "soilVertices": 4812,
+        "minCoastDistance": 0.013000000000029655
+      },
+      "fishing": {
+        "visible": 10,
+        "foundation": {
+          "lift": 0.8,
+          "piles": 9,
+          "braces": 5,
+          "stairs": 5,
+          "boards": 19
+        },
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "waterpoint": {
+        "visible": 9,
+        "foundation": {
+          "lift": 0.8,
+          "piles": 9,
+          "braces": 5,
+          "stairs": 5,
+          "boards": 19
+        },
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "harbor": {
+        "visible": 9,
+        "foundation": {
+          "lift": 0.8,
+          "piles": 9,
+          "braces": 3,
+          "stairs": 5,
+          "boards": 19
+        },
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "quarry": {
+        "visible": 7,
+        "foundation": null,
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "clay": {
+        "visible": 8,
+        "foundation": null,
+        "soilVertices": 0,
+        "minCoastDistance": null
+      }
+    },
+    "cattle": {
+      "cow": 7,
+      "bull": 2
+    },
+    "stockBefore": {
+      "quarry": 240,
+      "clay": 480
+    },
+    "stockAfter": {
+      "quarry": 240,
+      "clay": 480
+    },
+    "citizenIds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "glError": 0,
+    "runtimeErrors": [],
+    "assetErrors": [],
+    "dryFieldMarginMetersAlongRiverCrossSection": 0.078
+  },
+  "map2D": {
+    "renderer": "2d",
+    "oldSaveRoundtrip": true,
+    "builtSaveRoundtrip": true,
+    "result": [
+      {
+        "kind": "stone",
+        "site": [
+          10,
+          10
+        ],
+        "before": 12880,
+        "after": 29163,
+        "stock": 1,
+        "endStock": 1,
+        "depth": 2.65
+      },
+      {
+        "kind": "clay",
+        "site": [
+          9,
+          7
+        ],
+        "before": 7797,
+        "after": 30766,
+        "stock": 1,
+        "endStock": 1,
+        "depth": 2.15
+      }
+    ],
+    "exceptions": [],
+    "errors": []
+  },
+  "workingResidents": [
+    {
+      "job": "quarry",
+      "id": 9,
+      "source": {
+        "x": 10,
+        "y": 10
+      },
+      "position": [
+        61.86,
+        -2.40248559360918,
+        60
+      ],
+      "highest": -2.40248559360918,
+      "support": "deposit-open-stone-10-10",
+      "delta": 0,
+      "gl": 0,
+      "exceptions": [],
+      "errors": []
+    },
+    {
+      "job": "clay",
+      "id": 7,
+      "source": {
+        "x": 9,
+        "y": 7
+      },
+      "position": [
+        55.86,
+        -2.1500000000000004,
+        42
+      ],
+      "highest": -2.1500000000000004,
+      "support": "excavated-clay-bowl-9-7",
+      "delta": 0,
+      "gl": 0,
+      "exceptions": [],
+      "errors": []
+    }
+  ],
+  "plough": [
+    {
+      "case": "bank-sowing",
+      "field": "12,8",
+      "driver": 0,
+      "progress": 0.10753968253968381,
+      "cows": 6,
+      "bulls": 1,
+      "adultFiles": [
+        "pasture-cow.glb",
+        "pasture-bull.glb"
+      ],
+      "allRigged": true,
+      "oxen": 2,
+      "observedFrames": 403,
+      "measuredDistance": 0.9515041666666672,
+      "elapsedMs": 6691.100000023842,
+      "webgl": 2,
+      "glError": 0,
+      "exceptions": [],
+      "httpErrors": []
+    },
+    {
+      "case": "preparing",
+      "field": "12,8",
+      "driver": 0,
+      "progress": 0.0834285714285733,
+      "cows": 7,
+      "bulls": 2,
+      "adultFiles": [
+        "pasture-cow.glb",
+        "pasture-bull.glb"
+      ],
+      "allRigged": true,
+      "oxen": 2,
+      "observedFrames": 317,
+      "measuredDistance": 0.9521094626900654,
+      "elapsedMs": 5249.799999952316,
+      "webgl": 2,
+      "glError": 0,
+      "exceptions": [],
+      "httpErrors": []
+    }
+  ],
+  "artFallbacks": {
+    "cow": {
+      "result": {
+        "herd": [
+          [
+            "cow",
+            "pasture-bull.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-bull.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-bull.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-bull.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-bull.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-bull.glb",
+            true
+          ],
+          [
+            "bull",
+            "pasture-bull.glb",
+            true
+          ]
+        ],
+        "oxen": [
+          {
+            "model": "pasture-bull.glb",
+            "skin": [
+              "plough-12,8-0-geometry_0"
+            ],
+            "gait": 0.314671362847823
+          },
+          {
+            "model": "pasture-bull.glb",
+            "skin": [
+              "plough-12,8-1-geometry_0"
+            ],
+            "gait": 0.384671362847823
+          }
+        ],
+        "otherSpecies": [
+          "pig",
+          "goat",
+          "bull",
+          "sheep"
+        ],
+        "webgl": 2,
+        "error": 0
+      },
+      "exceptions": [],
+      "http": []
+    },
+    "bull": {
+      "result": {
+        "herd": [
+          [
+            "cow",
+            "pasture-cow.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-cow.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-cow.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-cow.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-cow.glb",
+            true
+          ],
+          [
+            "cow",
+            "pasture-cow.glb",
+            true
+          ],
+          [
+            "bull",
+            "alluvial-bull.glb",
+            true
+          ]
+        ],
+        "oxen": [
+          {
+            "skin": [
+              "plough-12,8-0-Object_60"
+            ],
+            "gait": 0.15645482269359223
+          },
+          {
+            "skin": [
+              "plough-12,8-1-Object_60"
+            ],
+            "gait": 0.22645482269359224
+          }
+        ],
+        "otherSpecies": [
+          "pig",
+          "goat",
+          "bull",
+          "sheep"
+        ],
+        "webgl": 2,
+        "error": 0
+      },
+      "exceptions": [],
+      "http": []
+    }
+  },
+  "terrain": {
+    "source": "Production WebGL2, normal game build on legal sites in sumer-building-studio; original compared at 85b5161c",
+    "checks": {
+      "clay": {
+        "sameSourceAndTransformsExceptHeight": true,
+        "openTerrain": true,
+        "depthMetresBelowFinishedBank": 2.15,
+        "bare": {
+          "type": "clay",
+          "dryFloor": null,
+          "building": [
+            60,
+            25,
+            2,
+            0
+          ],
+          "site": [
+            60,
+            25
+          ],
+          "stage": "land",
+          "bedHit": 1.1729379892349243,
+          "oreHit": 2.0331497621143644,
+          "pitFloor": null,
+          "structure": null,
+          "props": {
+            "source": "native-mineral-source-clay",
+            "position": [
+              360,
+              1.1729380153544136,
+              150
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "angle": -0.3487455448358553,
+            "positions": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+            "indices": "4baba7858d699e9f99cfa8470b63e5cba06016d8d3a22134761ee5f468c95fae",
+            "colors": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+            "uvs": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+            "material": "mineral-bedding",
+            "n": 2504,
+            "tris": 2360
+          },
+          "gl": 0
+        },
+        "working": {
+          "type": "clay",
+          "dryFloor": 270.40708637143325,
+          "building": [
+            60,
+            25,
+            2,
+            0
+          ],
+          "site": [
+            60,
+            25
+          ],
+          "stage": "cut",
+          "bedHit": null,
+          "oreHit": -1.2897883224879916,
+          "pitFloor": -2.1499999999999915,
+          "structure": null,
+          "props": {
+            "source": "native-mineral-source-clay",
+            "position": [
+              360,
+              -2.15,
+              150
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "angle": -0.3487455448358553,
+            "positions": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+            "indices": "4baba7858d699e9f99cfa8470b63e5cba06016d8d3a22134761ee5f468c95fae",
+            "colors": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+            "uvs": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+            "material": "mineral-bedding",
+            "n": 2504,
+            "tris": 2360
+          },
+          "gl": 0
+        }
+      },
+      "quarry": {
+        "sameSourceAndTransformsExceptHeight": true,
+        "openTerrain": true,
+        "depthMetresBelowFinishedBank": 2.65,
+        "bare": {
+          "type": "quarry",
+          "dryFloor": null,
+          "building": [
+            47,
+            17,
+            2,
+            0
+          ],
+          "site": [
+            48,
+            17
+          ],
+          "stage": "land",
+          "bedHit": 0,
+          "oreHit": 1.1128469127569147,
+          "pitFloor": null,
+          "structure": null,
+          "props": {
+            "source": "native-mineral-source-stone",
+            "position": [
+              288,
+              0,
+              102
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "angle": -0.010951683192017196,
+            "positions": "d909d8fb21c2a84185b79e07be34337862a818efb3112efb7dbbc23e272793db",
+            "indices": "d453be058e51cfcc82fe15fe78a231df8160d3e61092633a6cd42369e27d5d35",
+            "colors": "55f77af48427b23a181ce4bf71c54ea5c1102ddfca792f3d3080a287c1afbb55",
+            "uvs": "cc20323db8b306e17736f69e5ae51fbc566431e8497162b8da3aa05e1b8fca72",
+            "material": "mineral-bedding",
+            "n": 3242,
+            "tris": 2954
+          },
+          "gl": 0
+        },
+        "working": {
+          "type": "quarry",
+          "dryFloor": 197.0626360241891,
+          "building": [
+            47,
+            17,
+            2,
+            0
+          ],
+          "site": [
+            48,
+            17
+          ],
+          "stage": "cut",
+          "bedHit": null,
+          "oreHit": -1.537153182610517,
+          "pitFloor": -2.6499999999999932,
+          "structure": null,
+          "props": {
+            "source": "native-mineral-source-stone",
+            "position": [
+              288,
+              -2.65,
+              102
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "angle": -0.010951683192017196,
+            "positions": "d909d8fb21c2a84185b79e07be34337862a818efb3112efb7dbbc23e272793db",
+            "indices": "d453be058e51cfcc82fe15fe78a231df8160d3e61092633a6cd42369e27d5d35",
+            "colors": "55f77af48427b23a181ce4bf71c54ea5c1102ddfca792f3d3080a287c1afbb55",
+            "uvs": "cc20323db8b306e17736f69e5ae51fbc566431e8497162b8da3aa05e1b8fca72",
+            "material": "mineral-bedding",
+            "n": 3242,
+            "tris": 2954
+          },
+          "gl": 0
+        }
+      }
+    },
+    "riverbankClay": {
+      "type": "clay",
+      "dryFloor": 0.5354963338478571,
+      "building": [
+        16,
+        12,
+        2,
+        0
+      ],
+      "site": [
+        16,
+        13
+      ],
+      "stage": "cut",
+      "bedHit": null,
+      "oreHit": -1.2897884277789995,
+      "pitFloor": -2.1499999999999932,
+      "structure": null,
+      "props": {
+        "source": "native-mineral-source-clay",
+        "position": [
+          96,
+          -2.15,
+          78
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "angle": -0.32189550040718623,
+        "positions": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+        "indices": "4baba7858d699e9f99cfa8470b63e5cba06016d8d3a22134761ee5f468c95fae",
+        "colors": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+        "uvs": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+        "material": "mineral-bedding",
+        "n": 2504,
+        "tris": 2360
+      },
+      "gl": 0
+    },
+    "previousVersion": [
+      {
+        "type": "quarry",
+        "dryFloor": null,
+        "building": [
+          47,
+          17,
+          2,
+          0
+        ],
+        "site": [
+          48,
+          17
+        ],
+        "stage": "cut",
+        "bedHit": 0,
+        "oreHit": null,
+        "pitFloor": null,
+        "structure": 0.7625000143051155,
+        "props": null,
+        "gl": 0
+      },
+      {
+        "type": "clay",
+        "dryFloor": null,
+        "building": [
+          60,
+          25,
+          2,
+          0
+        ],
+        "site": [
+          60,
+          25
+        ],
+        "stage": "cut",
+        "bedHit": 0,
+        "oreHit": null,
+        "pitFloor": null,
+        "structure": 0.23620184751946915,
+        "props": null,
+        "gl": 0
+      }
+    ],
+    "nodeTestsPassed": 50,
+    "runtimeExceptions": [],
+    "resourceErrors": []
+  },
+  "barley": {
+    "river-field-field-district-wet-silt": {
+      "minDryMetres": 0.07800000000026319,
+      "minY": -0.16088415168237002,
+      "maxY": 0.1526322744070747,
+      "vertices": 4793
+    },
+    "river-field-game-field-barley": {
+      "minDryMetres": 0.3992645896424145,
+      "minY": 0.00954060451636482,
+      "maxY": 0.985,
+      "vertices": 16320
+    }
+  },
+  "studioErrors": {
+    "runtime": [],
+    "http": []
+  },
+  "saves": [
+    {
+      "file": "legacy-v1.json",
+      "bytes": 1115,
+      "canonicalBytes": 15586,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5f60c84e6789e2ce48fa3941351ed3e8bbc89b78d17d72ef6e770dd87011abf5"
+    },
+    {
+      "file": "legacy-v2.json",
+      "bytes": 3722,
+      "canonicalBytes": 14795,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "6eb71b9385b6f9e3a7919cccf19b828d35c0a5c91eafd8f68bbc754facbd86b7"
+    },
+    {
+      "file": "legacy-v3.json",
+      "bytes": 6935,
+      "canonicalBytes": 16420,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5045bd0494767f469116ed626fdcb1e8ca503fc803f93ab632ffa9b104f922f9"
+    },
+    {
+      "file": "legacy-v4.json",
+      "bytes": 7123,
+      "canonicalBytes": 17736,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d4f19c224c63cd40f4482addd4bd0ea516ae00760d48c15a6550156da2e81080"
+    },
+    {
+      "file": "legacy-v5.json",
+      "bytes": 10554,
+      "canonicalBytes": 21451,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d0e2086a6fdf01f3996aee6b53e32f1450ac19bd0ac26a15aba12b7958e248b7"
+    },
+    {
+      "file": "legacy-v6-city.json",
+      "bytes": 7281,
+      "canonicalBytes": 16070,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "a3571a1285a284c2fff5026cc99d96f673e53b951b0dd51b82e3c9ff32983694"
+    },
+    {
+      "file": "legacy-v6-funeral.json",
+      "bytes": 9970,
+      "canonicalBytes": 19447,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "84db001bc085b911964ba561b2e886bdcff883c6712dda0d7498b3fbcc05199d"
+    },
+    {
+      "file": "legacy-v7-city.json",
+      "bytes": 8217,
+      "canonicalBytes": 16168,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "329449361ef9d8786a96da00f94d12ba2bd03dd4091fb23f190a625ab3e6717e"
+    },
+    {
+      "file": "legacy-v8-city.json",
+      "bytes": 8267,
+      "canonicalBytes": 16247,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "0bad910c2e9b407bd17a5cb44bc6a6bdba74aef6226ab06ca2373830fd1d7290"
+    },
+    {
+      "file": "legacy-v10-healer.json",
+      "bytes": 10914,
+      "canonicalBytes": 16730,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "693fa5a2ee18420e344ddc80f585196e5fb93b3923f35aaef8f570796b2e9cf6"
+    },
+    {
+      "file": "legacy-v11-autumn.json",
+      "bytes": 15332,
+      "canonicalBytes": 22504,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "2070d654d1b24d6029afa6368f15b1bffd36232b521473f900766952cd052b84"
+    },
+    {
+      "file": "legacy-v12-harvest.json",
+      "bytes": 13426,
+      "canonicalBytes": 20010,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1ce6e80b7bae1e7adfb2de59ef1895c937800fc050897bead58b25189108dc82"
+    },
+    {
+      "file": "legacy-v13-autumn.json",
+      "bytes": 13874,
+      "canonicalBytes": 20516,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1fc4519e7d0d5296411e2c86a78212688020a8d45720e9cf078ac62b2c5c383d"
+    },
+    {
+      "file": "legacy-v14-warning-city.json",
+      "bytes": 12290,
+      "canonicalBytes": 18566,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4b62d30cb25439becf8ed79bcf1c9dc45d50a7e4818b39aec302cd03a203f46e"
+    },
+    {
+      "file": "legacy-v15-districts.json",
+      "bytes": 13267,
+      "canonicalBytes": 18858,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f3058a2ffa7cbf5fdb3e5ff14b5c3cc2b436cbc4361f5c81d1b7e76a51f4b27d"
+    },
+    {
+      "file": "legacy-v16-textiles.json",
+      "bytes": 16006,
+      "canonicalBytes": 22268,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4049d985aae20e2d4b4a8e13a709a03a8c50129e0c185044723663b497bdc160"
+    },
+    {
+      "file": "legacy-v17-water-bricks.json",
+      "bytes": 11682,
+      "canonicalBytes": 16697,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "b422ce3deb9743b093fa6085ec969224fc2ba7db94fe1cb88be7c18c68effa77"
+    },
+    {
+      "file": "legacy-v18-kiln.json",
+      "bytes": 12620,
+      "canonicalBytes": 17329,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "12df80b13eade67b774cfb95d40f4c6277a914d3a31e1b775578d8ea7a55befd"
+    },
+    {
+      "file": "legacy-v19-masonry.json",
+      "bytes": 12435,
+      "canonicalBytes": 16911,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "d4b2943eed7ad25913cd56c0663de3bf12bb7d38094653a60175efd5a3e72acb"
+    },
+    {
+      "file": "legacy-v27-local-stock.json",
+      "bytes": 27798,
+      "canonicalBytes": 17036,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f1e8483a4b82eb8ca91188ba71beaa82e48a4608abe6348a884aaa6beb88b8e1"
+    }
+  ],
+  "tests": {
+    "node": 2070,
+    "roadmapPython": 7
+  },
+  "largeCity": {
+    "speed": 4,
+    "residents": 500,
+    "buildings": 250,
+    "camera": "overview, mixed house levels",
+    "order": "after, before, before, after",
+    "method": "RequestAnimationFrame, same local Chromium and Apple GPU, identical view and scenario, 18 seconds per run. FPS are frames divided by elapsed wall time. CPU timings in milliseconds recorded separately.",
+    "runs": {
+      "before": [
+        {
+          "device": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "framebuffer": [
+            1440,
+            780
+          ],
+          "fps": 24.53147100424328,
+          "frames": 444,
+          "seconds": 18.0992,
+          "frameTimeMs": {
+            "samples": 443,
+            "p50": 33.29999999999927,
+            "p95": 50.10000000000218
+          },
+          "cpuTimeMs": {
+            "draw": {
+              "samples": 444,
+              "p50": 27.800000071525574,
+              "p95": 42.5
+            },
+            "buildings": {
+              "samples": 444,
+              "p50": 0.7000000476837158,
+              "p95": 0.8999999761581421
+            },
+            "actors": {
+              "samples": 444,
+              "p50": 4.299999952316284,
+              "p95": 14.600000023841858
+            },
+            "scene": {
+              "samples": 444,
+              "p50": 21.199999928474426,
+              "p95": 26.200000047683716
+            }
+          },
+          "activeIndices": 24574419,
+          "roundtripStart": true,
+          "roundtripEnd": true,
+          "resourcesAndCargo": true
+        },
+        {
+          "device": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "framebuffer": [
+            1440,
+            780
+          ],
+          "fps": 24.8267358071992,
+          "frames": 451,
+          "seconds": 18.1659,
+          "frameTimeMs": {
+            "samples": 450,
+            "p50": 33.29999999999927,
+            "p95": 50.099999999998545
+          },
+          "cpuTimeMs": {
+            "draw": {
+              "samples": 451,
+              "p50": 27.5,
+              "p95": 43.10000002384186
+            },
+            "buildings": {
+              "samples": 451,
+              "p50": 0.7000000476837158,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 451,
+              "p50": 4.199999928474426,
+              "p95": 15.200000047683716
+            },
+            "scene": {
+              "samples": 451,
+              "p50": 21.100000023841858,
+              "p95": 25.299999952316284
+            }
+          },
+          "activeIndices": 24565677,
+          "roundtripStart": true,
+          "roundtripEnd": true,
+          "resourcesAndCargo": true
+        }
+      ],
+      "after": [
+        {
+          "device": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "framebuffer": [
+            1440,
+            780
+          ],
+          "fps": 25.083704432191126,
+          "frames": 454,
+          "seconds": 18.0994,
+          "frameTimeMs": {
+            "samples": 453,
+            "p50": 33.29999999999927,
+            "p95": 50.099999999998545
+          },
+          "cpuTimeMs": {
+            "draw": {
+              "samples": 454,
+              "p50": 27.199999928474426,
+              "p95": 42.299999952316284
+            },
+            "buildings": {
+              "samples": 454,
+              "p50": 0.7000000476837158,
+              "p95": 0.9000000953674316
+            },
+            "actors": {
+              "samples": 454,
+              "p50": 4.199999928474426,
+              "p95": 15.5
+            },
+            "scene": {
+              "samples": 454,
+              "p50": 20.600000023841858,
+              "p95": 25.399999976158142
+            }
+          },
+          "activeIndices": 25297830,
+          "roundtripStart": true,
+          "roundtripEnd": true,
+          "resourcesAndCargo": true
+        },
+        {
+          "device": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "framebuffer": [
+            1440,
+            780
+          ],
+          "fps": 24.84546995233838,
+          "frames": 453,
+          "seconds": 18.2327,
+          "frameTimeMs": {
+            "samples": 452,
+            "p50": 33.29999999999927,
+            "p95": 50.10000000000218
+          },
+          "cpuTimeMs": {
+            "draw": {
+              "samples": 453,
+              "p50": 27.300000071525574,
+              "p95": 43.39999997615814
+            },
+            "buildings": {
+              "samples": 453,
+              "p50": 0.7000000476837158,
+              "p95": 1.0999999046325684
+            },
+            "actors": {
+              "samples": 453,
+              "p50": 4.100000023841858,
+              "p95": 16.699999928474426
+            },
+            "scene": {
+              "samples": 453,
+              "p50": 20.699999928474426,
+              "p95": 25.5
+            }
+          },
+          "activeIndices": 25292754,
+          "roundtripStart": true,
+          "roundtripEnd": true,
+          "resourcesAndCargo": true
+        }
+      ]
+    },
+    "meanFps": {
+      "before": 24.67910340572124,
+      "after": 24.96458719226475
+    }
+  },
+  "downloads": {
+    "format": "glTF 2.0 binary",
+    "basis": "glTF node matrix hierarchy, metres in plot space",
+    "files": {
+      "field": {
+        "sha256": "98987dd74e7e21926f4977a0631d5d7508e7dc62a5d98478104f50f68c7e7e8d",
+        "bytes": 1305416,
+        "scenes": [
+          "Harvest and bound sheaves",
+          "Young barley shoots"
+        ],
+        "nodes": 4,
+        "triangles": 19310,
+        "materials": 5,
+        "embeddedImages": 5,
+        "worldBoundsMetres": [
+          [
+            -0.9585,
+            -0.1601,
+            -2.7561
+          ],
+          [
+            2.9485,
+            0.985,
+            2.7452
+          ]
+        ],
+        "field": {
+          "soilBounds": [
+            [
+              -0.9585,
+              -0.1601,
+              -2.65
+            ],
+            [
+              2.65,
+              0.1559,
+              2.65
+            ]
+          ],
+          "barleyBounds": [
+            [
+              0.0304,
+              0.035,
+              -2.7561
+            ],
+            [
+              2.9485,
+              0.985,
+              2.7452
+            ]
+          ],
+          "crossSectionRidgeCount": 6,
+          "crossSectionReliefMetres": 0.2219,
+          "soilTriangles": 7094,
+          "barleyTriangles": 11550,
+          "youngBarleyTriangles": 1566,
+          "youngBarleyBounds": [
+            [
+              -0.3197,
+              0.0283,
+              -2.4897
+            ],
+            [
+              2.4349,
+              0.435,
+              2.3639
+            ]
+          ],
+          "sameSoilForBothGrowthStages": true,
+          "standingSampleRootsOverSoil": 37,
+          "boundSheaves": true
+        },
+        "pass": true
+      },
+      "fishing": {
+        "sha256": "bcc2cb37526e6b3fc45a3eb89e4951051077a34ff6e104df1148c13ad7c7e2ad",
+        "bytes": 1572368,
+        "scenes": [
+          null
+        ],
+        "nodes": 10,
+        "triangles": 10088,
+        "materials": 9,
+        "embeddedImages": 15,
+        "worldBoundsMetres": [
+          [
+            -3.7829,
+            -0.9836,
+            -2.6516
+          ],
+          [
+            2.6516,
+            2.8926,
+            2.6516
+          ]
+        ],
+        "waterfront": {
+          "deckTopY": 0.855,
+          "deepestPileToeY": -0.9836,
+          "architecturalBaseY": 0.755,
+          "connectedPileShafts": 9,
+          "deckBoards": 19,
+          "landingStairTreads": 5
+        },
+        "pass": true
+      },
+      "harbor": {
+        "sha256": "5c1188563dab645791651d035049670b2f38ae01fd95313bc05ac26f0914f4d2",
+        "bytes": 1527164,
+        "scenes": [
+          null
+        ],
+        "nodes": 9,
+        "triangles": 12100,
+        "materials": 8,
+        "embeddedImages": 13,
+        "worldBoundsMetres": [
+          [
+            -2.65,
+            -0.9864,
+            -2.6425
+          ],
+          [
+            3.7829,
+            3.915,
+            2.6425
+          ]
+        ],
+        "waterfront": {
+          "deckTopY": 0.855,
+          "deepestPileToeY": -0.9864,
+          "architecturalBaseY": 0.49,
+          "connectedPileShafts": 9,
+          "deckBoards": 19,
+          "landingStairTreads": 5
+        },
+        "pass": true
+      },
+      "waterpoint": {
+        "sha256": "8cfca85a53a71b2b2af9731ba1a486b4c9b271c9bbc974f13fd721377822b83c",
+        "bytes": 1387524,
+        "scenes": [
+          null
+        ],
+        "nodes": 9,
+        "triangles": 7682,
+        "materials": 8,
+        "embeddedImages": 13,
+        "worldBoundsMetres": [
+          [
+            -3.7829,
+            -0.9897,
+            -2.6425
+          ],
+          [
+            2.65,
+            3.765,
+            2.6425
+          ]
+        ],
+        "waterfront": {
+          "deckTopY": 0.855,
+          "deepestPileToeY": -0.9897,
+          "architecturalBaseY": 0.69,
+          "connectedPileShafts": 9,
+          "deckBoards": 19,
+          "landingStairTreads": 5
+        },
+        "pass": true
+      },
+      "clay": {
+        "sha256": "5630e9a57fa603e1d42b76a0bead27a1e698ad2c885e6d5beb7fa6113997be42",
+        "bytes": 1806160,
+        "scenes": [
+          null
+        ],
+        "nodes": 13,
+        "triangles": 12398,
+        "materials": 10,
+        "embeddedImages": 17,
+        "worldBoundsMetres": [
+          [
+            -6.0,
+            -2.252,
+            -6.0
+          ],
+          [
+            6.0,
+            1.7536,
+            6.0
+          ]
+        ],
+        "excavation": {
+          "deposit": "excavated-clay-deposit",
+          "maxSourceEdgeOrRadialErrorMetres": 5.45e-07,
+          "depositTriangles": 2360,
+          "depositBounds": [
+            [
+              1.0385,
+              -2.252,
+              1.6862
+            ],
+            [
+              5.0402,
+              -1.0455,
+              4.399
+            ]
+          ],
+          "ladderBounds": [
+            [
+              2.693,
+              -2.1333,
+              0.136
+            ],
+            [
+              3.3023,
+              0.4083,
+              1.3131
+            ]
+          ],
+          "shelterRoofBounds": [
+            [
+              -5.1,
+              1.4194,
+              -3.44
+            ],
+            [
+              -3.86,
+              1.68,
+              -1.9202
+            ]
+          ],
+          "bedCenterY": -2.15,
+          "depositSurfaceAtCenterY": -1.3133,
+          "rimY": -0.0,
+          "workBayNodesAboveGrade": [
+            "original-clay-warm-clay-plaster",
+            "original-clay-worn-timber",
+            "original-clay-game-door-shadow",
+            "original-clay-game-raw-brick-facing",
+            "original-clay-laid-reed-thatch",
+            "original-clay-reed-mat",
+            "roof-access-clay"
+          ],
+          "rayAboveDepositClear": true
+        },
+        "pass": true
+      },
+      "quarry": {
+        "sha256": "c25182a987872b2f66d9d9cd9e6304c76f3e1de90d6457e17ab1123a95a078c4",
+        "bytes": 1564100,
+        "scenes": [
+          null
+        ],
+        "nodes": 12,
+        "triangles": 7670,
+        "materials": 10,
+        "embeddedImages": 15,
+        "worldBoundsMetres": [
+          [
+            -6.0,
+            -2.8628,
+            -6.0
+          ],
+          [
+            6.0,
+            1.91,
+            6.0
+          ]
+        ],
+        "excavation": {
+          "deposit": "excavated-stone-deposit",
+          "maxSourceEdgeOrRadialErrorMetres": 4.56e-07,
+          "depositTriangles": 2954,
+          "depositBounds": [
+            [
+              0.8867,
+              -2.8628,
+              -4.6395
+            ],
+            [
+              5.2039,
+              -1.0246,
+              -1.3041
+            ]
+          ],
+          "ladderBounds": [
+            [
+              2.693,
+              -2.6307,
+              -5.8686
+            ],
+            [
+              3.3023,
+              0.4057,
+              -4.6852
+            ]
+          ],
+          "shelterRoofBounds": [
+            [
+              -4.615,
+              1.5994,
+              1.66
+            ],
+            [
+              -3.125,
+              1.86,
+              3.1598
+            ]
+          ],
+          "bedCenterY": -2.65,
+          "depositSurfaceAtCenterY": -1.5434,
+          "rimY": -0.0001,
+          "workBayNodesAboveGrade": [
+            "original-quarry-warm-clay-plaster",
+            "original-quarry-worn-timber",
+            "original-quarry-game-door-shadow",
+            "original-quarry-game-raw-brick-facing",
+            "original-quarry-laid-reed-thatch",
+            "original-quarry-reed-mat"
+          ],
+          "rayAboveDepositClear": true
+        },
+        "pass": true
+      }
+    },
+    "pass": true
+  },
+  "modelCards": {
+    "panels": [
+      {
+        "id": "field",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "field.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "fishing",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "fishing.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "waterpoint",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "waterpoint.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "harbor",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "harbor.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "clay",
+        "pictures": [
+          [
+            1060,
+            735
+          ],
+          [
+            1060,
+            735
+          ]
+        ],
+        "model": "clay.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "quarry",
+        "pictures": [
+          [
+            1060,
+            735
+          ],
+          [
+            1060,
+            735
+          ]
+        ],
+        "model": "quarry.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "pasture-cow",
+        "pictures": [
+          [
+            1024,
+            416
+          ],
+          [
+            1040,
+            710
+          ]
+        ],
+        "model": "pasture-cow.glb",
+        "version": null
+      }
+    ],
+    "errors": [],
+    "exceptions": []
+  }
+}

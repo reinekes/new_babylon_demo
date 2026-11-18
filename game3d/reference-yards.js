@@ -1,6 +1,6 @@
 import {extractionWorkArea,isExtractionCourt} from '../extraction-courts.js';
 import {footprintSize} from '../footprints.js';
-import {workshopSurfaces} from './workshop-surfaces.js';
+import {mineralWorkBay} from './mineral-excavation.js';
 import {sheepfoldGateSide} from '../sheepfold-layout.js';
 
 const yardFinishes=new WeakMap();
@@ -33,8 +33,9 @@ export function referenceYardFrame(b,state){
  return {large,center,angle,span:large?2.03:1,rise:large?1.22:1};
 }
 export function referenceYardLadder(b,state){
+ if(b.type==='clay'){const bay=mineralWorkBay(b,state);return {x:bay.x-(bay.compact?.49:.86),z:bay.z+.1,height:1.58,side:-1,angle:0,width:.40,lean:.22,ground:.06};}
  const sideWall={logging:[2.37,-1.32,2.18,1],hunting:[2.40,-1.36,2.17,1],
-  clay:[-2.46,-.40,1.45,-1],fishing:[1.96,-.59,1.40,1]}[b.type];
+  fishing:[1.96,-.59,1.40,1]}[b.type];
  if(!sideWall)return null;
  const {center,angle,span,rise}=referenceYardFrame(b,state),[x,z,h,side]=sideWall;
  return {x:center+span*(x*Math.cos(angle)+z*Math.sin(angle)),z:center+span*(-x*Math.sin(angle)+z*Math.cos(angle)),
@@ -49,11 +50,6 @@ export function drawReferenceYard(B,scene,b,state,kit){
   m.rill=specialFinish(B,scene,'irrigation-water','#68705a',.65);
   m.silt=specialFinish(B,scene,'wet-alluvial-silt','#625246',.97);m.shade=m.silt;
   m.dates=specialFinish(B,scene,'dried-date-skin','#6b3621',.80);
- }
- if(b.type==='quarry'){
-  m.outcrop=specialFinish(B,scene,'cut-limestone','#ad9d85',.99);
-  const grain=workshopSurfaces(B,scene).textures('earth');
-  if(grain.color){m.outcrop.albedoTexture=grain.color;m.outcrop.bumpTexture=grain.normal;}
  }
  if(b.type==='hunting')m.hide=specialFinish(B,scene,'tanned-hide','#a56936',.92);
  const start=new Set([...groups.values()].flat());
@@ -150,7 +146,12 @@ export function drawReferenceYard(B,scene,b,state,kit){
   for(const side of [-1,1]){block(x+side*w*.48,base+.25,z,.09,.37,d,m.raw);block(x,base+.25,z+side*d*.48,w,.37,.09,m.raw);}
   block(x,base+.20,z,w-.12,.045,d-.12,m.shade);
  }
- if(isExtractionCourt(b)||['clay','reed','quarry','logging','hunting','garden','fishing'].includes(b.type)){
+ if(b.type==='clay'||b.type==='quarry'){
+  const bay=mineralWorkBay(b,state);
+  build({block,beam,canopy,basket,hut,jar,trough,m,bay});
+  return true;
+ }
+ if(isExtractionCourt(b)||['reed','logging','hunting','garden','fishing'].includes(b.type)){
   // Compact the earth inside the yard; real surface deposits stay above it.
   block(0,-.015,0,5.23,.06,5.23,m.soil);
  }
@@ -168,85 +169,23 @@ export function drawReferenceYard(B,scene,b,state,kit){
  }
  return true;
 }
-function clayPit({block,sheet,canopy,basket,trough,m}){
- // A cut in a raised bank, terraced on three sides. Leave the fourth side
- // open as a continuous ramp to the street and the exposed damp working bed.
- const lip=[[-2.43,-2.42],[.43,-2.42],[.86,-1.86],[.96,-.94],[1.12,-.28],[1.10,.76],[.71,1.55],[-.28,2.28],[-2.42,2.28]];
- // Each inner lip returns along the western edge, so it stays a solid earthwork viewed from the rear.
- lip.push(lip[0]);
- const bands=[];
- for(let n=0;n<4;n++){
-  const arr=lip.map(([x,z])=>[-1.05+(x+1.05)*(1-n*.17),1.19-n*.35,-.1+(z+.1)*(1-n*.16)]);
-  bands.push(arr);
-  if(n<3){const lower=arr.map(([x,y,z])=>[x,y-.29,z]);sheet('cut-clay-bank',[arr,lower],m.raw);
-   const inner=lip.map(([x,z])=>[-1.05+(x+1.05)*(1-(n+1)*.17),1.19-(n+1)*.35,-.1+(z+.1)*(1-(n+1)*.16)]);sheet('clay-bench',[lower,inner],m.soil);}
- }
- const outer=bands[0];sheet('outer-clay-bank',[outer,outer.map(([x,y,z])=>[x,0,z])],m.raw);
- block(-2.40,1.27,-.52,.14,.34,1.62,m.raw);
- sheet('ramp-to-pit',[[[.64,1.14,-2.34],[2.4,1.14,-2.34]],[[1.13,.63,-.25],[2.4,.63,-.25]],[[.85,.065,2.35],[2.4,.065,2.35]]],m.soil);
- canopy(1.38,-1.84,1.80,1.02,2.48);trough(1.42,-1.76,.90,.46,1.00);
- for(const [x,z]of [[.61,1.55],[.82,1.24]])basket(x,z,.17,.25);
- block(-1.08,.035,-.03,1.29,.07,1.8,m.raw);
+function clayPit({block,canopy,basket,hut,jar,trough,m,bay}){
+ const {x,z,compact}=bay;
+ hut(x,z,compact?.98:1.72,compact?.83:1.40,1.47);
+ if(compact)return;
+ canopy(x+1.48,z+.31,1.24,1.50,1.58);
+ trough(x+1.44,z+.32,.84,.58);basket(x+.86,z+1.18,.27,.41);
+ basket(x+1.46,z+1.35,.23,.38);jar(x-.91,z+.59,.46);
+ block(x-1.25,.12,z+.14,.62,.24,1.28,m.raw,.08);
 }
-function stoneYard({block,beam,canopy,hut,sheet,m}){
- // The benches recede into one bank. Each break line has its own length,
- // batter and edge damage. Stones that the workers have freed sit on sledges.
- const cuts=[0,.065,.165,.25,.36,.42,.51,.62,.72,.81,.93,1];
- const rock=cuts.map((t,i)=>{
-  const groove=Math.exp(-Math.pow((t-.39)/.095,2)),end=Math.pow(2*t-1,2);
-  const wave=.085*Math.sin(11*t+.3)+.043*Math.sin(28*t);
-  const front=.22+.35*Math.sin(t*3.5-.48)+wave-groove*.14;
-  const rise=.99+.072*Math.sin(t*5.7+.42)-.15*end;
-  const point=(left,right,y,z)=>[left+(right-left)*t,y,z];
-  const z1=front-.13-.13*groove,z2=z1-.54-.19*t+.11*Math.sin(t*9);
-  const z3=z2-.11-.10*groove,z4=z3-.42-.35*(1-t)+wave;
-  const y1=.66*rise+wave*.42,y2=1.37*rise+.09*Math.sin(t*9.3);
-  const y3=2.02*rise+.081*Math.sin(t*7.4+.7)-groove*.11;
-  return [
-   point(-2.46,.99,.04,front+.18),
-   point(-2.43,1.00,.19*rise,front+.07),
-   point(-2.43,.94,.42*rise+wave,z1+.07+.12*Math.cos(15*t)),
-   point(-2.47,.90,y1,z1),
-   point(-2.41,.78,y1+.035,z1-.12),
-   point(-2.34,.64,y1+.07+wave*.23,z2),
-   point(-2.32,.62,(y1+y2)*.48,z2-.025-.10*Math.sin(i*2.1)),
-   point(-2.29,.56,y2,z3),
-   point(-2.23,.53,y2+.04,z3-.16),
-   point(-2.19,.38,y2+.08+wave*.20,z4),
-   point(-2.12,.33,y2+.28+wave,z4-.08-groove*.14),
-   point(-2.08,.25,y3,z4-.24-.09*Math.sin(t*8)),
-   point(-2.00,.17,y3+.05-.04*end,-2.27+wave),
-   point(-1.97,.12,y3-.09,-2.38+wave*.39)
-  ];
- });
- const sections=rock[0].map((_,j)=>rock.map(col=>col[j]));
- const stoneUV=([x,y,z])=>[x*.93+z*.17,(z*.91+y*.98)];
- const tint=(j,k,band)=>{
-  const u=cuts[k],seam=.065*Math.sin(u*16+band*.55)+.025*Math.sin(k*2.11+band);
-  const shade=([.73,.82,.91,.96,.99,.81,.88,.98,1.01,.85,.92,.99,.96][band]||.85)+seam;
-  return [shade*1.025,shade,shade*.947];
- };
- for(let j=0;j<sections.length-1;j++)sheet('continuous-quarry-bench',[sections[j],sections[j+1]],m.outcrop,(row,k)=>tint(row,k,j),stoneUV);
- for(const side of [0,cuts.length-1]){
-  const edge=sections.map(row=>row[side]);
-  sheet('quarry-broken-end',[edge,edge.map(([x,y,z])=>[x,.035,z])],m.outcrop,(_,k)=>[.88+.038*Math.sin(k),.83,.77],stoneUV);
- }
- const rear=sections.at(-1);sheet('quarry-back',[rear,rear.map(([x,y,z])=>[x,.035,z])],m.outcrop,(_,k)=>tint(0,k,0),stoneUV);
- // Veins of exposed bedding split the quarry face at different angles.
- for(const [col,base,high]of [[1,1,3],[4,1,3],[8,5,7],[3,5,7],[6,9,11],[9,9,11]]){
-  const left=[],right=[];
-  for(let j=base;j<=high;j++){
-   const p=rock[col][j],q=rock[col+1][j],f=.26+.30*Math.sin(j*2.2+col*.57);
-   const x=p[0]+(q[0]-p[0])*f,y=p[1]+(q[1]-p[1])*f,z=p[2]+(q[2]-p[2])*f+.018;
-   const width=j===base?.009:j===high?.014:.034;
-   left.push([x-width,y,z]);right.push([x+width,y+.008,z]);
-  }
-  sheet('rock-stratum-joint',[left,right],m.outcrop,()=>[.49,.48,.46],stoneUV);
- }
- hut(1.65,-1.70,1.38,1.45,1.60);canopy(1.53,-.24,1.61,1.30,1.56);
- for(const [x,z,turn]of [[-.98,.67,.06],[-1.59,1.68,-.11],[.16,1.55,.13]]){
-  for(const s of [-1,1])beam([x+s*.29,.115,z-.47],[x+s*.29,.115,z+.49],.09,m.wood);
-  block(x,.39,z,.83,.47,.71,m.stone,turn);
+function stoneYard({block,beam,canopy,hut,m,bay}){
+ const {x,z,compact}=bay;
+ if(compact){canopy(x,z,.95,.88,1.52);return;}
+ hut(x-.76,z-.71,1.61,1.54,1.66);canopy(x+.87,z-.60,1.49,1.48,1.76);
+ // Two dressed limestone blocks stand on separate sledges on the loading bank.
+ for(const [ox,oz,angle] of [[-.95,1.15,.07],[.58,1.32,-.11]]){
+  for(const side of [-1,1])beam([x+ox+side*.31,.10,z+oz-.59],[x+ox+side*.31,.10,z+oz+.62],.083,m.wood);
+  block(x+ox,.37,z+oz,.87,.42,.76,m.stone,angle);
  }
 }
 function reedYard({hut,beam,block,canopy,basket,hoop,fence,m}){

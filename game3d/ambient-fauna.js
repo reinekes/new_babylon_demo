@@ -189,7 +189,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   ?roamingModels.filter(([kind])=>kind!=='orange-bird'&&(!options.hidePlaceholderBirds||kind!=='duck'))
   :roamingModels;
  const entries=[...groundModels,...(options.includeShoreBirds?Object.entries(SHORE_MODELS).filter(([kind])=>!options.hidePlaceholderBirds||kind!=='seagull'):[])];if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
- if(options.includeTestLivestock)entries.push(['bull',AMBIENT_MODELS.bull],['sheep-kenchoo',AMBIENT_MODELS['sheep-kenchoo']]);
+ if(options.includeTestLivestock)entries.push(['bull',AMBIENT_MODELS.bull],['draught-bull',{file:'pasture-bull.glb'}],['cow',{file:'pasture-cow.glb'}],['sheep-kenchoo',AMBIENT_MODELS['sheep-kenchoo']]);
  if(options.includeYardPig&&!options.includeTestLivestock)entries.push(['yard-pig',YARD_PIG_MODEL]);
  let donkeySource;
  const results=await Promise.allSettled(entries.map(async([species,c])=>{
@@ -198,12 +198,13 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   return {species,asset:donkeySource.asset};
  }));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
- const ploughs=assets.has('bull')?createPloughTeams(B,scene,assets.get('bull'),meshes):null;
+ const draught=assets.get('draught-bull'),oxSource=draught||assets.get('bull');
+ const ploughs=oxSource?createPloughTeams(B,scene,oxSource,meshes,!!draught):null;
  let disposed=false,clock=0,lastState=null;
  const foldSheep=new Map();
  const foldSheepAvailable=assets.get('sheep-kenchoo')?.animationGroups.some(g=>g.name==='Walk')&&assets.get('sheep-kenchoo')?.animationGroups.some(g=>g.name==='Idle');
  function register(a){a.owned=a.root.getChildMeshes().filter(mesh=>mesh!==a.wake);for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
- function imported(species,index,farm=null,foldId=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=foldId||farm?.id||`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
+ function imported(species,index,farm=null,foldId=null){const dairyCow=farm&&assets.get('cow');const source=dairyCow||assets.get(farm?'bull':species);if(!source)return null;const id=foldId||farm?.id||`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
   root.metadata={ambientId:id,ambientSpecies:species,...(farm?{dairyBuilding:farm.building.id||`${farm.building.x},${farm.building.y}`,calf:farm.calf}:{}),sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
   if(species==='donkey')root.metadata.modelFile=donkeySource.model.file;
   if(species==='yard-pig'){
@@ -219,7 +220,14 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    root.metadata.sourceMotion=shore.motion||'source clip';
   }
   const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.startsWith(id+'-')?g.name.slice(id.length+1):g.name,g);}
-  if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
+  if(dairyCow){
+   root.metadata.modelFile='pasture-cow.glb';
+   const {min,max}=model.getHierarchyBoundingVectors(true),scale=(farm.calf?.73:1.27)/(max.y-min.y);
+   model.scaling.setAll(scale);
+   // Place the udder at the existing hand contact of the milking stool.
+   model.position.set(-.024*scale,-min.y*scale,.217*scale-.34);
+   if(farm.calf)for(const mesh of model.getChildMeshes())if(mesh.name.endsWith('Udder and four teats'))mesh.setEnabled(false);
+  }else if(farm){model.scaling.setAll(farm.scale);if(!farm.calf){const udder=B.MeshBuilder.CreateSphere(`${id}-udder`,{diameter:1,segments:10},scene);udder.parent=root;udder.scaling.set(.19,.14,.23);udder.position.set(0,.45,-.34);const material=new B.StandardMaterial(`${id}-udder-clay`,scene);material.diffuseColor=new B.Color3(.61,.42,.31);udder.material=material;farmMaterials.set(root,material);}}
   const rig=shore&&species!=='seagull'?createMallardRig(B,root,species,id):null;
   let wake,ripple,beak;
   if(rig){

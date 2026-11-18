@@ -28,10 +28,12 @@ test('one joined plough run progresses across both plots with the attached pair'
  assert.equal(start[0].yaw,Math.PI/2);
  assert.equal(start[0].oxen.length,2);
  assert.deepEqual(s,before);
- for(const plot of [a,b])plot.crop.sown=.9;
+ for(const plot of [a,b])plot.crop.sown=.49;
  const end=ploughTeams(s);
  assert.equal(end.length,1);
  assert.ok(start[0].x<5.5&&end[0].x>5.5);
+ for(const plot of [a,b])plot.crop.sown=.98;
+ const [back]=ploughTeams(s);assert.ok(back.yaw>end[0].yaw&&back.x<5.5);
 });
 
 test('joined furrows share the exact terrain contour and the area retains two work slots per plot',()=>{

@@ -112,3 +112,15 @@ test('the draw range covers every shoreline triangle before and after reusing jo
   assert.equal(JSON.stringify(s),before);
  }finally{t.dispose();}
 });
+
+test('a single shoreline plot reaches the water tile lip and yields it to a neighbouring construction footprint',async()=>{
+ const t=await setup(true);try{
+  const plot=field(8,8),s={buildings:[plot],citizens:[],world:{lakes:[],river:{axis:'y',offset:10,slope:0,frequency:.1,phase:0,amplitude:0}}};
+  const east=()=>{const bed=soil(t.layer.meshes),p=bed.getVerticesData(B.VertexBuffer.PositionKind);let max=-Infinity;for(let j=0;j<p.length;j+=3)max=Math.max(max,p[j]);return max;};
+  t.layer.sync(s);const free=soil(t.layer.meshes),freeGeometry=free.geometry;assert.ok(east()>5&&east()<5.08,'the same single field continues across the dry lip to within 8 cm of water');
+  s.buildings.push({type:'house',x:2,y:3,level:1});t.layer.sync(s);assert.equal(soil(t.layer.meshes),free,'distant construction preserves the live field');
+  const yard={type:'market',x:9,y:7,level:1,footprint:2,construction:{kind:'new',target:1,required:{},delivered:{},work:0}};
+  s.buildings.push(yard);t.layer.sync(s);assert.ok(east()<=3,'the adjacent tile belongs to the two-by-two building site');assert.notEqual(soil(t.layer.meshes),free);
+  s.buildings.pop();t.layer.sync(s);assert.ok(east()>5);assert.equal(soil(t.layer.meshes).geometry,freeGeometry);
+ }finally{t.dispose();}
+});

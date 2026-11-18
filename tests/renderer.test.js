@@ -127,3 +127,30 @@ test('automatic roads are hidden in 2D outside road mode; finished road outlines
  assert.ok(calls.some(call=>call.path[1][0]===d.x));
 });
 test('supply focus puts a distant house visibly to the right of the desktop detail card',()=>{const r=Object.create(Renderer.prototype);Object.assign(r,{w:945,h:715,zoom:1.45,pan:{x:0,y:0}});r.layout();r.focusOn(35,27);const p=r.point(35,27);assert.ok(p.x>400&&p.x<r.w-80);assert.ok(p.y>90&&p.y<r.h-90);});
+
+test('the map lowers each unchanged mineral mesh into its pit and reuses its painted sprite',async()=>{
+ const {drawMapMineral}=await import('../mineral-map-art.js');
+ const {mineralDepth}=await import('../game3d/mineral-excavation.js');
+ const scaleY=Math.sqrt(37.5),images=[];
+ function layer(){
+  const triangles=[];let path=[];
+  const context={setTransform(){},save(){},restore(){},closePath(){},clip(){},beginPath(){path=[];},
+   moveTo(x,y){path.push([x,y]);},lineTo(x,y){path.push([x,y]);},fill(){triangles.push({points:path,color:this.fillStyle});}};
+  return {getContext:()=>context,triangles};
+ }
+ const r={state:{world:{}},s:1,point:()=>({x:0,y:0}),createLayerCanvas:layer,ctx:{drawImage:image=>images.push(image)}};
+ const fingerprint=(f,offset=0)=>[f.color,...f.points.flatMap(([x,y])=>[x.toFixed(5),(y-offset).toFixed(5)])].join('|');
+ for(const kind of ['clay','stone']){
+  const deposit={x:3,y:5,kind},pit={...deposit,depth:mineralDepth(kind)};
+  drawMapMineral(r,deposit,null,1);const surface=images.at(-1);
+  drawMapMineral(r,deposit,pit,1);const cut=images.at(-1);
+  assert.ok(surface.triangles.length>200&&cut.triangles.length>surface.triangles.length);
+  const lowered=new Set(cut.triangles.map(f=>fingerprint(f,pit.depth*scaleY)));
+  assert.ok(surface.triangles.every(f=>lowered.has(fingerprint(f))),kind+' retains its full silhouette and shading');
+  drawMapMineral(r,{...deposit},pit,1);assert.equal(images.at(-1),cut);
+  drawMapMineral(r,deposit,pit,0);assert.equal(images.at(-1).triangles.length,cut.triangles.length-surface.triangles.length);
+  const dryBowl=images.at(-1);
+  drawMapMineral(r,deposit,{...pit,bankDistance:1,landX:1,landZ:0},0);
+  assert.notDeepEqual(images.at(-1).triangles,dryBowl.triangles);
+ }
+});

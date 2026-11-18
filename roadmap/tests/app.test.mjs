@@ -128,6 +128,10 @@ test('model register compares the two visuals and filters status without changin
   assert.equal(house.querySelectorAll('figure img').length,2);
   assert.notEqual(...[...house.querySelectorAll('img')].map(img=>img.src));
   assert.match(house.textContent,/Проверка в игре/);
+  const quarry=doc.querySelector('[data-model="quarry"]');
+  const download=new URL([...quarry.querySelectorAll('a')].find(a=>a.textContent==='Новая GLB').href);
+  assert.equal(download.pathname,'/assets/3d/sumer-buildings/quarry.glb');
+  assert.equal(download.searchParams.get('v'),register.groups.flatMap(g=>g.items).find(i=>i.id==='quarry').modelVersion);
   const goat=doc.querySelector('[data-model="pasture-goat"]');
   assert.ok(goat);
   assert.ok([...goat.querySelectorAll('a')].some(link=>link.getAttribute('href')==='../model-atlas/?model=pasture-goat.glb'));

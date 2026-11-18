@@ -8,6 +8,7 @@ export const MODEL_VERSIONS=Object.freeze({
  "pasture-goat.glb": "d120e227ce0b",
  "pasture-ram.glb": "b2cc547a1534",
  "pasture-pig.glb": "7bb75ccbe1b7",
+ "pasture-cow.glb": "5608c12d6d14",
  "pasture-bull.glb": "708a1c70678c",
  "alluvial-bull.glb": "098d0f5f64c3",
  "alluvial-pig.glb": "b6a003319428",

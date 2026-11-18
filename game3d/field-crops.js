@@ -2,7 +2,7 @@ import {loadModel} from './asset-loading.js';
 import {cropSeed,fieldCropKind,cropPlantGeometry,createBotanicalMaterial,botanicalMesh} from './crop-varieties.js';
 import {districtCropVisual} from '../district3d/buildings.js';
 import {lakeContours} from './lake-shore.js';
-import {fieldWorldPoint,FIELD_SHORE_BUFFER} from './field-shore.js';
+import {bankFieldLayout,fieldWorldPoint,FIELD_SHORE_BUFFER} from './field-shore.js';
 import {renderedShoreDistance,visualSurfaceElevation} from './shore-profile.js';
 
 export const FIELD_CROP_ASSET='assets/3d/crops/barley-tillers.glb';
@@ -45,7 +45,7 @@ export async function loadFieldCrops(B,scene){
   base.overrideMaterialSideOrientation=reflected?B.Material.ClockWiseSideOrientation:B.Material.CounterClockWiseSideOrientation;
   // Preserve the source atlas and its glTF orientation. The narrow awns and
   // gaps between stalks are cutouts, not opaque rectangles or blended sheets.
-  material.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHATEST;material.alphaCutOff=.35;material.useAlphaFromAlbedoTexture=true;material.backFaceCulling=false;material.twoSidedLighting=true;
+  material.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHATEST;material.alphaCutOff=.35;material.useAlphaFromAlbedoTexture=true;material.backFaceCulling=false;material.twoSidedLighting=false;material.forceNormalForward=false;material.separateCullingPass=false;
   if(material.albedoTexture)material.albedoTexture.hasAlpha=true;
   addBarleyBreeze(B,material);
   const source=B.VertexData.ExtractFromMesh(base),bounds=base.getBoundingInfo().boundingBox,min=bounds.minimum,max=bounds.maximum,height=max.y-min.y;
@@ -53,6 +53,12 @@ export async function loadFieldCrops(B,scene){
   const authoredScale=.95/height,cx=(min.x+max.x)/2,cz=(min.z+max.z)/2;
   const data={positions:Array.from(source.positions),indices:Array.from(source.indices),normals:Array.from(source.normals||[]),uvs:Array.from(source.uvs||[])};
   for(let i=0;i<data.positions.length;i+=3){data.positions[i]=(data.positions[i]-cx)*authoredScale;data.positions[i+1]=(data.positions[i+1]-min.y)*authoredScale;data.positions[i+2]=(data.positions[i+2]-cz)*authoredScale;}
+  // A spikelet card represents a round ear reflecting light from every angle.
+  // Soft upward normals light both sides of the cutout as the same cluster.
+  for(let i=0;i<data.normals.length;i+=3){
+   const nx=data.normals[i]*.37,ny=.82+.18*Math.abs(data.normals[i+1]),nz=data.normals[i+2]*.37,len=Math.hypot(nx,ny,nz);
+   data.normals[i]=nx/len;data.normals[i+1]=ny/len;data.normals[i+2]=nz/len;
+  }
   const radius=Math.max(...Array.from({length:data.positions.length/3},(_,i)=>Math.hypot(data.positions[i*3],data.positions[i*3+2])));
   const botanicalMaterial=createBotanicalMaterial(B,scene);owned.push(botanicalMaterial);
   const sourcesByKind=new Map([['barley',{data,radius,material,orientation:base.overrideMaterialSideOrientation,count:8}]]);
@@ -76,13 +82,14 @@ export async function loadFieldCrops(B,scene){
    if(!usesBarleyCards(b))return [];
    const visual=districtCropVisual(b),kind=fieldCropKind(b),source=sourcesByKind.get(kind)||sourcesByKind.get('barley'),{data,radius,material,count}=source;
    if(!['growing','ripe'].includes(visual.stage)||visual.standing<=0)return [];
-   const growth=Math.ceil(visual.growth*6)/6,scale=.2+growth*.8,contours=lakeContours(state),points=[];
+   const growth=Math.ceil(visual.growth*6)/6,scale=.2+growth*.8,contours=lakeContours(state),layout=bankFieldLayout(b,state),points=[];
    let allDry=true;
    for(let row=0;row<count;row++)for(let i=0;i<count;i++){
     if((row*count+i+.5)/(count*count)>visual.sown*visual.standing)continue;
     const spacing=b.fieldPatch?6/count:count===8?.62:1.25,start=b.fieldPatch?-3+spacing/2:count===8?-2.2:-1.875,isBarley=kind==='barley';
     const wind=Math.sin(row*.55+i*.32),jitter=Math.sin(i*12.37+row*7.91);
-    const x=start+row*spacing+(isBarley?.085*wind:0),z=start+i*spacing+(isBarley?.086*jitter:0),world=fieldWorldPoint(b,x,z);
+    const a=start+row*spacing+(isBarley?.085*wind:0),h=start+i*spacing+(isBarley?.086*jitter:0);
+    const {x,z}=layout?layout(a,h):{x:a,z:h},world=fieldWorldPoint(b,x,z);
     // Whole clumps stay on the dry part of the rounded bank. A conservative
     // radius covers all triangles after rotation, not just their centre.
     if(renderedShoreDistance(world.x,world.y,state,contours)<FIELD_SHORE_BUFFER+radius*scale/6*1.3){allDry=false;continue;}
@@ -95,7 +102,7 @@ export async function loadFieldCrops(B,scene){
    const flat=points.every(({x,z})=>{
     const p=fieldWorldPoint(b,x,z);return Math.abs(visualSurfaceElevation(p.x,p.y,state,contours))<1e-8&&renderedShoreDistance(p.x,p.y,state,contours)>.4+radius*scale/6;
    });
-   const key=`${kind}:${growth}:${points.length}:${Number(!!b.fieldPatch)}`,cached=allDry&&flat?batches.get(key):null;
+   const key=`${kind}:${growth}:${points.length}:${Number(!!b.fieldPatch)}`,cached=!layout&&allDry&&flat?batches.get(key):null;
    if(cached){const mesh=cached.clone(`game-field-${kind}`,null,true);mesh.metadata={fieldCrops:true,cropKind:kind,clumps:points.length};return [mesh];}
    const positions=[],indices=[],normals=[],uvs=[],colors=[];
    for(const {x,z,angle,height}of points){
@@ -110,7 +117,7 @@ export async function loadFieldCrops(B,scene){
    const mesh=new B.Mesh(`game-field-${kind}`,scene),geometry=new B.VertexData();
    if(!normals.length)B.VertexData.ComputeNormals(positions,indices,normals);
    Object.assign(geometry,{positions,indices,normals,uvs,...(colors.length?{colors}:{})});geometry.applyToMesh(mesh);mesh.material=material;mesh.overrideMaterialSideOrientation=source.orientation;mesh.metadata={fieldCrops:true,cropKind:kind,clumps:points.length};
-   if(allDry&&flat){
+   if(!layout&&allDry&&flat){
     const source=mesh.clone('game-field-barley-batch',null,true);source.isVisible=false;source.isPickable=false;batches.set(key,source);
     while(batches.size>24){const oldest=batches.keys().next().value;batches.get(oldest).dispose();batches.delete(oldest);}
    }

@@ -91,7 +91,7 @@ export function residentLoadGrip(resource,unloading=false,time=0){
 export function residentSwimmingPresentation(c,time=0,{reducedMotion=false}={}){return c.swimming?{height:WATER_HEIGHT-.48,pitch:1.12,stroke:reducedMotion?0:Math.sin(time*2.3),sway:reducedMotion?0:Math.sin(time*1.15)*.025}:null;}
 
 /** Licensed articulated GLB actors following the real city. No decorative routes. */
-export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false,warmHiddenResidents=false}={}){
+export async function createGameActors(B,scene,materials,{includeFauna=true,includeFuneralFauna=includeFauna,deferFauna=false,warmHiddenResidents=false,floorHeight=(x,y,ground)=>ground}={}){
  const meshes=[],people=new Map(),sheep=new Map(),ownedMaterials=[],sheepCoats=new Map();
  let disposed=false,poseTime=0,poseClock=0,bier=null,riteState=null,riteView=null,presentedState=null;
  const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
@@ -479,7 +479,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(c.controlled||c.miracleContact){a.viewOffsetX=0;a.viewOffsetY=0;}
   const shownX=c.x+a.viewOffsetX,shownY=c.y+a.viewOffsetY,swim=residentSwimmingPresentation(c,a.time,{reducedMotion});
   dx=a.lastX===null?0:shownX-a.lastX;dz=a.lastY===null?0:shownY-a.lastY;distance=Math.hypot(dx,dz)*6;
-  a.root.position.set(shownX*6,swim?swim.height:onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(shownX,shownY,state),shownY*6);a.root.metadata.swimming=!!swim;
+  a.root.position.set(shownX*6,swim?swim.height:onBridge(state.buildings,c.x,c.y,state)?.22:floorHeight(shownX,shownY,surfaceElevation(shownX,shownY,state)),shownY*6);a.root.metadata.swimming=!!swim;
   if(a.details)a.details.setEnabled(!swim);
   if(plough){a.yaw=plough.yaw;a.root.rotation.y=plough.yaw;}
   else if(c.miracleContact||c.funeralContact||c.eventContact&&!a.ceremonyJoin){

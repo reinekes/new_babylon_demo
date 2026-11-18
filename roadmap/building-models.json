@@ -101,12 +101,14 @@
           "name": "Ячменное поле",
           "status": "ready",
           "baselineGlb": true,
-          "image": "evidence/2026-11-18/building-art/field.webp",
+          "image": "evidence/2026-11-18/river-farms-and-pits/field.webp",
           "model": "../assets/3d/sumer-buildings/field.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
-          "previous": "evidence/2026-11-18/building-models/field.webp",
-          "note": "Исходный концепт исключён. В молодом посеве читаются узкие листья, в зрелом — тонкие стебли, слегка склонённые тяжёлые колосья и длинные ости. Между группами видна почва.",
-          "release": "../docs/versions/2026-11-18-04.md"
+          "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+          "previous": "evidence/2026-11-18/river-farms-and-pits/field-before.webp",
+          "note": "Берег задаёт контур пашни, борозд и посадок даже на участке в одну клетку. GLB сохраняет отдельную модель ячменя с тонкими стеблями, колосьями и остями.",
+          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+          "modelVersion": "river-farms-and-pits-20261118"
         },
         {
           "id": "garden",
@@ -126,13 +128,15 @@
           "name": "Рыбацкая хижина",
           "status": "ready",
           "baselineGlb": true,
-          "image": "evidence/2026-11-18/building-art/fishing.webp",
+          "image": "evidence/2026-11-18/river-farms-and-pits/fishing.webp",
           "model": "../assets/3d/sumer-buildings/fishing.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
-          "previous": "evidence/2026-11-18/building-models/fishing.webp",
-          "note": "Гнутая кровля плетёного укрытия, отдельная рама с провисшей сетью и грузилами; у проёма — объёмная верша.",
+          "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+          "previous": "evidence/2026-11-18/river-farms-and-pits/fishing-before.webp",
+          "note": "Плетёная хижина с сетью и вершей стоит на дощатом настиле. Игра ставит под ним сваи и подкосы, а со стороны суши добавляет ступени. В GLB доступна отдельная хижина.",
           "reference": "../docs/model-prototypes/sumer-building-set/fishing.webp",
-          "release": "../docs/versions/2026-11-18-04.md"
+          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+          "modelVersion": "river-farms-and-pits-20261118"
         },
         {
           "id": "hunting",
@@ -170,13 +174,15 @@
           "name": "Глиняный карьер",
           "status": "ready",
           "baselineGlb": true,
-          "image": "evidence/2026-11-18/building-art/clay.webp",
+          "image": "evidence/2026-11-18/river-farms-and-pits/clay-after.webp",
           "model": "../assets/3d/sumer-buildings/clay.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
-          "previous": "evidence/2026-11-18/building-models/clay.webp",
-          "note": "Ступенчатая выемка, боковой пандус, корыто и навес на краю. Срез сырой глины темнее верхней сухой корки.",
+          "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+          "previous": "evidence/2026-11-18/river-farms-and-pits/clay-before.webp",
+          "note": "В грунте открывается выемка глубиной 2,15 м со спуском на рабочее дно. Туда опускается та же модель местной залежи глины, в натуральном масштабе. В GLB сохранён отдельный двор.",
           "reference": "../docs/model-prototypes/sumer-building-set/clay.webp",
-          "release": "../docs/versions/2026-11-18-04.md"
+          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+          "modelVersion": "river-farms-and-pits-20261118"
         },
         {
           "id": "reed",
@@ -209,13 +215,15 @@
           "name": "Каменоломня",
           "status": "ready",
           "baselineGlb": true,
-          "image": "evidence/2026-11-18/building-art/quarry.webp",
+          "image": "evidence/2026-11-18/river-farms-and-pits/quarry-after.webp",
           "model": "../assets/3d/sumer-buildings/quarry.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
-          "previous": "evidence/2026-11-18/building-models/quarry.webp",
-          "note": "Выступ породы с несколькими уступами и свежими плоскостями среза. Пара отделённых блоков лежит на низких полозьях.",
+          "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+          "previous": "evidence/2026-11-18/river-farms-and-pits/quarry-before.webp",
+          "note": "Ступенчатый разрез глубиной 2,65 м открывает те же расколотые блоки, которые видны на участке до стройки. В игре грунт и залежь образуют рабочую каменоломню. В GLB сохранён отдельный двор.",
           "reference": "../docs/model-prototypes/sumer-building-set/quarry.webp",
-          "release": "../docs/versions/2026-11-18-04.md"
+          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+          "modelVersion": "river-farms-and-pits-20261118"
         }
       ]
     },
@@ -424,13 +432,15 @@
           "name": "Береговой водозабор",
           "status": "ready",
           "baselineGlb": true,
-          "image": "evidence/2026-11-18/building-art/waterpoint.webp",
+          "image": "evidence/2026-11-18/river-farms-and-pits/waterpoint.webp",
           "model": "../assets/3d/sumer-buildings/waterpoint.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
-          "previous": "evidence/2026-11-18/building-models/waterpoint.webp",
-          "note": "Из затенённой площадки спуск по ступеням к воде. Кувшины собраны у задней стены и оставляют открытым подход носильщика.",
+          "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+          "previous": "evidence/2026-11-18/river-farms-and-pits/waterpoint-before.webp",
+          "note": "Навес и кувшины стоят на дощатом настиле. Со стороны реки видны сваи с подкосами, с суши к настилу ведут пять ступеней.",
           "reference": "../docs/model-prototypes/sumer-building-set/waterpoint.webp",
-          "release": "../docs/versions/2026-11-18-04.md"
+          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+          "modelVersion": "river-farms-and-pits-20261118"
         },
         {
           "id": "granary",
@@ -564,13 +574,15 @@
           "name": "Речная пристань",
           "status": "ready",
           "baselineGlb": true,
-          "image": "evidence/2026-11-18/building-art/harbor.webp",
+          "image": "evidence/2026-11-18/river-farms-and-pits/harbor.webp",
           "model": "../assets/3d/sumer-buildings/harbor.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
-          "previous": "evidence/2026-11-18/building-models/harbor.webp",
-          "note": "У откоса устроить дощатый помост со швартовыми столбами и боковой грузовой рампой. Складская дверь и крытая площадка выходят к воде.",
+          "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+          "previous": "evidence/2026-11-18/river-farms-and-pits/harbor-before.webp",
+          "note": "Крытая грузовая площадка смотрит к воде. Игра подбирает высоту свай и размещает подкосы и ступени по берегу. GLB показывает отдельно стоящую пристань.",
           "reference": "../docs/model-prototypes/sumer-building-set/harbor.webp",
-          "release": "../docs/versions/2026-11-18-04.md"
+          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
+          "modelVersion": "river-farms-and-pits-20261118"
         },
         {
           "id": "cityWall",
@@ -652,6 +664,18 @@
           "model": "../assets/art-courtyard/models/pasture-donkey.glb",
           "note": "Сбоку видны вытянутая морда, длинные уши и сгибы ног. Сняты шаг осла по городскому маршруту и вьючные сумы каравана.",
           "release": "../docs/versions/2026-11-18-11.md"
+        },
+        {
+          "id": "pasture-cow",
+          "name": "Корова в смешанном стаде",
+          "status": "ready",
+          "previous": "evidence/2026-11-18/river-and-herds/bull-after.webp",
+          "previousModel": "../assets/art-courtyard/models/pasture-bull.glb",
+          "image": "evidence/2026-11-18/river-farms-and-pits/pasture-cow-side.webp",
+          "checked": "evidence/2026-11-18/river-farms-and-pits/cattle-herd.webp",
+          "model": "../assets/art-courtyard/models/pasture-cow.glb",
+          "note": "Раньше у всего стада была модель быка. У коровы более лёгкие плечи, тонкие рога и вымя. В двух проверенных стадах на шесть и семь коров пришлось по одному и два быка.",
+          "release": "reports/2026-11-18-river-farms-and-pits.md"
         }
       ]
     },

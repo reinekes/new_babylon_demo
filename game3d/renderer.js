@@ -79,13 +79,14 @@ export class GameRenderer3D{
   if(!state)throw Error('Нет состояния города для карты');
   const {createGameBuildings}=await import('./buildings.js');
   this.state=state;this.buildings=await createGameBuildings(this.B,this.scene,this.materials,{deferAssets:true});
-  this.actors=createBootstrapActors(this.B,this.scene);this.landscape=createBootstrapLandscape(this.B,this.scene,state,this.materials);this.relicScene=createRelicScene(this.B,this.scene);this.relicScene.update(state);this.sacredEffects=createSacredEffects(this.B,this.scene);this.sacredEffects.update(state,0,{paused:true});
+  const floorHeight=(x,y,land)=>this.buildings.floorHeight(x,y,this.landscape?.mineralHeightAt(x,y,land)??land);
+  this.actors=createBootstrapActors(this.B,this.scene,floorHeight);this.landscape=createBootstrapLandscape(this.B,this.scene,state,this.materials);this.relicScene=createRelicScene(this.B,this.scene);this.relicScene.update(state);this.sacredEffects=createSacredEffects(this.B,this.scene);this.sacredEffects.update(state,0,{paused:true});
   this.buildings.sync(state);this.actors.update(state);this.layersReady=true;this.engine.stopRenderLoop();this.resize();if(cityCameraTarget(state))this.home();
   this.detailNote=document.createElement('output');this.detailNote.className='game3d-detail-status';this.detailNote.setAttribute('role','status');this.detailNote.textContent='Город открыт · подробности загружаются';this.canvas.parentNode.append(this.detailNote);
   this.detailQueue=createBackgroundQueue(2,{onError:error=>{console.warn('Optional 3D detail unavailable:',error);if(!this.disposed)this.detailNote.textContent='Город открыт · часть деталей в лёгком виде';}});
   const replace=(name,value)=>{if(this.disposed){value.dispose();return;}const previous=this[name];try{name==='actors'?value.update(this.state,0,{paused:true,speed:1}):value.update(this.state,this.state.simTime);value.setQuality?.(this.quality);}catch(error){value.dispose();throw error;}this[name]=value;previous.dispose();};
   if(state.buildings.some(b=>b.type==='field'))this.detailQueue.add(()=>this.buildings.loadDetails(),()=>{});
-  this.detailQueue.add(async()=>{const {createGameActors}=await import('./actors.js');return createGameActors(this.B,this.scene,this.materials,{deferFauna:true,warmHiddenResidents:true});},value=>replace('actors',value));
+  this.detailQueue.add(async()=>{const {createGameActors}=await import('./actors.js');return createGameActors(this.B,this.scene,this.materials,{deferFauna:true,warmHiddenResidents:true,floorHeight});},value=>replace('actors',value));
   this.detailQueue.add(async()=>{const {createGameLandscape}=await import('./landscape.js');return createGameLandscape(this.B,this.scene,this.state,this.materials,{tier:this.quality,deferOptional:true});},value=>replace('landscape',value));
   // A miracle and its vegetation are loaded on first invocation, not before playing.
   this.miracleGarden=createLazyFeature(()=>createMiracleGarden(this.B,this.scene,{groundHeight:(x,y)=>visualSurfaceElevation(x,y,this.state),canPlant:(x,y)=>x>0&&y>0&&x<worldWidth(this.state)-1&&y<worldHeight(this.state)-1&&vegetationBankDistance(x,y,this.state)>.08&&sceneryClear(this.state,{x,y},.16)}),{required:(_dt,options)=>!!options?.celebration,onError:error=>console.warn('Miracle plants unavailable',error)});

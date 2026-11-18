@@ -132,3 +132,9 @@ test('actual field geometry is bare when empty or harvested and taller only when
  assert.ok(empty<.18);assert.ok(seedlings>empty);assert.ok(grown>seedlings+.5);assert.equal(harvested,empty);
  scene.dispose();engine.dispose();
 });
+
+test('preparing a new sowing clears last year\'s standing crop and keeps harvested sheaves',()=>{
+ const crop={sown:1,growth:.78,remaining:0,total:0,sheaves:16,tilled:.08};
+ const view=districtCropVisual({type:'field',crop});
+ assert.equal(view.sown,0);assert.equal(view.growth,0);assert.equal(view.standing,0);assert.equal(view.sheaves,16);
+});

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "manifestRelease": "pasture-donkey-20261118",
+  "manifestRelease": "river-farms-and-pits-20261118",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 103,
-    "active": 67,
+    "total": 104,
+    "active": 68,
     "fallback": 16,
     "optional": 7,
     "spare": 13
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "626914bce652dd8853a345e1ec19b1782298a82eb4247b1904f4bf1b3d64e07e"
+      "sha256": "5e0b0eaf4e768523157c346d39966d0ddf444b81822011ad2a757719889d82e8"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "88089de9433d9d5d4ebe957a7b7e9c05d6a206a0d17cfd9ada654c71937d3b3c"
+      "sha256": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "4165c132a4f1b83b792ace755f71652c09f3d817705ee803e1628fd7909ca335"
+      "sha256": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba"
     },
     {
       "file": "game3d/caravan.js",
@@ -49,7 +49,7 @@
     },
     {
       "file": "game3d/field-crops.js",
-      "sha256": "de14938462b17ebbe0633a790a0fa5a71f624511c67e062f17da400ab3589840"
+      "sha256": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6"
     },
     {
       "file": "game3d/goats.js",
@@ -65,7 +65,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "70483acee073bd84febda73159d6d5fc5f8a710cd9a2b19992346e8ef7c2185e"
+      "sha256": "5e19e2860bfc7b72f6397f5d8cfcca877603dfa90c253db924b3f303ca28d6d8"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -74,6 +74,10 @@
     {
       "file": "game3d/nature-details.js",
       "sha256": "e762aaa6845728859b736ed4bfc105d7add54cea45609722af3b0ef2a0bf3ebc"
+    },
+    {
+      "file": "game3d/plough-teams.js",
+      "sha256": "29b925d62449c21a6a2eef7af65b47445cfbc98300010fd4b30c946c9ab5a5e0"
     },
     {
       "file": "game3d/river-craft.js",
@@ -93,7 +97,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "23dcdd3f064b7af7955bc3987b842ad58c221fa41ca7ca56e2d6c1e57ea2468e"
+      "sha256": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -276,7 +280,7 @@
     {
       "file": "ambient-bull.glb",
       "status": "active",
-      "purpose": "Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.",
+      "purpose": "Декоративный бык, резерв для молочного двора и рабочие волы.",
       "classificationEvidence": "game3d/ambient-fauna.js|dairyHerd",
       "bytes": 5800664,
       "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
@@ -1760,8 +1764,70 @@
       "references": [
         {
           "model": "pasture-bull.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 192,
+          "kind": "literal"
+        },
+        {
+          "model": "pasture-bull.glb",
+          "file": "game3d/plough-teams.js",
+          "line": 26,
+          "kind": "literal"
+        },
+        {
+          "model": "pasture-bull.glb",
           "file": "game3d/test-livestock.js",
           "line": 14,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "pasture-cow.glb",
+      "status": "active",
+      "purpose": "Взрослые коровы на пастбище и молочном дворе, молодняк двора.",
+      "classificationEvidence": "game3d/ambient-fauna.js|pasture-cow.glb",
+      "bytes": 2073692,
+      "sha256": "5608c12d6d1417db1a14a309537fb5db523e0178ff91bf30973f50a59f6fc3bc",
+      "version": "5608c12d6d14",
+      "triangles": 17184,
+      "meshes": 2,
+      "bones": 15,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "Новый Вавилон / TRELLIS.2 Standard (3D Valley)",
+          "license": "Результат генерации по референсу проекта, условия 3D Valley",
+          "source": "https://3dvalley.com/tools/create/image-to-3d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "pasture-cow.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 192,
+          "kind": "literal"
+        },
+        {
+          "model": "pasture-cow.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 224,
+          "kind": "literal"
+        },
+        {
+          "model": "pasture-cow.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 14,
+          "kind": "literal"
+        },
+        {
+          "model": "pasture-cow.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 166,
           "kind": "literal"
         }
       ]
@@ -1846,7 +1912,7 @@
         {
           "model": "pasture-goat.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 257,
+          "line": 265,
           "kind": "literal"
         },
         {

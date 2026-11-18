@@ -2,6 +2,8 @@ import {roadIsBuilt} from '../roads.js';
 import {footprintSize} from '../footprints.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {createAlluvialWaterMaterial} from '../game3d/alluvial-water.js';
+import {mineralExcavations,openMineralCells} from '../game3d/mineral-excavation.js';
+import {mineralSiteView} from './mineral-sites.js';
 import {refineLakeBedGrid} from './lake-bed-grid.js';
 import {worldWidth,worldHeight,river,riverAxis,riverLength,riverAcrossSize,worldFromRiver,signedRiverDistance} from '../world.js';
 import {generateStreets} from '../city-life.js';
@@ -188,7 +190,10 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
     bed={positions:ground.positions.slice(),normals:ground.normals.slice(),colors:ground.colors.slice(),indices:ground.indices};
     refineLakeBedGrid(bed,state,TILE,worldWidth(state),worldHeight(state));
   }
-  geometry('alluvial-valley',bed.positions,bed.indices,materials.soil,bed.colors,bed.normals).freezeWorldMatrix();
+  const pits=mineralExcavations(state);
+  const mineralView=mineralSiteView(B,scene,state,materials,pits,TILE,surfaceElevation,alluvialColor);
+  meshes.push(...mineralView.meshes);ownedMaterials.push(mineralView.material);
+  geometry('alluvial-valley',bed.positions,openMineralCells(bed,pits,TILE),materials.soil,bed.colors,bed.normals).freezeWorldMatrix();
   geometry('distant-alluvial-plain',background.positions,background.indices,materials.soil,background.colors,background.normals).freezeWorldMatrix();
   const surface=createAlluvialWaterMaterial(B,scene,'river-water'),water=surface.material;
   surface.update(state,0);
@@ -258,7 +263,7 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
     }
     return alpha;
   };
-  const grassGround={positions:[...ground.positions,...background.positions],indices:[...ground.indices,...background.indices.map(i=>i+ground.positions.length/3)]};
+  const grassGround={positions:[...ground.positions,...background.positions],indices:[...openMineralCells(ground,pits,TILE),...background.indices.map(i=>i+ground.positions.length/3)]};
   for(let i=0;i<grassGround.positions.length;i+=3){
     const x=grassGround.positions[i]/TILE,y=grassGround.positions[i+2]/TILE,variation=.93+noise(x*.3,y*.3)*.07;
     gp.push(x*TILE,grassGround.positions[i+1]+.018,y*TILE);
@@ -384,5 +389,5 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
     if(inds.length)roadMeshes.push(geometry('connected-earth-streets',pos,inds,roadMaterial));
   }
   updateRoads(state);
-  return {meshes,refreshRoadMask,light(n){water.setFloat('night',n);},update(s,t){state=s;updateRoads(s);waterTime=Number.isFinite(t)?t:waterTime+.016;surface.update(s,waterTime);},dispose(){surface.dispose();for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
+  return {meshes,refreshRoadMask,mineralHeightAt:mineralView.heightAt,light(n){water.setFloat('night',n);},update(s,t){state=s;mineralView.update(s);updateRoads(s);waterTime=Number.isFinite(t)?t:waterTime+.016;surface.update(s,waterTime);},dispose(){surface.dispose();for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
 }

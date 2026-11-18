@@ -277,13 +277,6 @@ export function drawBuilding(r, b, state, t) {
   }
 
   if(b.type==='clay') {
-    box(0,0,26,13,3,'#c49b72','#a77c58','#b78d63');
-    box(-4,1,16,8,2,'#a67d59','#906b4f','#a17a58');
-    for(let k=0;k<10;k++) {
-      const a=-13+seed(k,b.x)*30,z=-5+seed(k,b.y)*13;
-      box(a,z,5,2.5,4+seed(k,1)*7,'#d8b27e','#a47c54','#bf9667');
-      line([[a-4,z-4],[a+4,z-8]],'#ecce9d',.7);
-    }
     line([[-21,-5],[-21,-30],[8,-15],[8,3]],'#816a46',2);
     poly([[-24,-32],[-4,-42],[11,-33],[-9,-23]],'#c6b17a');
     for(let i=0;i<5;i++)line([[-21+i*4,-32-i*2],[-6+i*4,-23-i*2]],'#9e8c60',.7);
@@ -306,12 +299,11 @@ export function drawBuilding(r, b, state, t) {
 
   if(['fishing','hunting','logging','quarry'].includes(b.type)) {
     const fishing=b.type==='fishing',hunting=b.type==='hunting',logging=b.type==='logging';
-    box(0,0,25,12.5,3,'#c4b385','#9c8962','#b39e71');
     if(b.type==='quarry') {
-      for(let k=0;k<7;k++){const a=-18+seed(k,b.x)*37,z=-5+seed(k,b.y)*13;box(a,z,7,3.5,8+seed(k,7)*15,'#c6c4ad','#8c948a','#aab1a0');line([[a-5,z-6],[a+5,z-11]],'#e4dfc5',1);}
       line([[-19,2],[-19,-39],[7,-27]],'#7e694b',2.4);line([[-19,-37],[7,-25],[7,-8]],'#a38b5b',1.5);
       box(7,-3,5,2.5,8,'#bbb9a1','#8b9186','#a5ad9b');
     } else {
+      box(0,0,25,12.5,3,'#c4b385','#9c8962','#b39e71');
       const h=23+(level-1)*5;
       box(-3,-1,16,8,h,'#c7b080','#99825a','#b49b6d');
       poly([[-24,-h-2],[-5,-h-24],[19,-h-3],[-2,-h+8]],fishing?'#b5ba92':hunting?'#a98259':'#8d9b73');

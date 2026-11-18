@@ -1,16 +1,16 @@
 {
-  "release": "pasture-donkey-20261118",
+  "release": "river-farms-and-pits-20261118",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 36781,
-      "sha256": "8adc93a4c7f10f5008a76943003614d094d51854c0b088f2a6f63ca41f983edf"
+      "bytes": 37198,
+      "sha256": "0f61c8c0fce23be097ed040684dccd12af0ea23baaba1428279c9f7465b5758f"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 33357,
-      "sha256": "f35b1b22cf0fb0808c31e19efed549d22a2fe7e87e0174ad25d95e8c926d44bd"
+      "bytes": 33653,
+      "sha256": "52123b8c1914cbe44f7ee21a322957d55f379cf3a5801faa1b5b3c7c594c994a"
     },
     {
       "file": "festival-candle-report.json",
@@ -90,6 +90,18 @@
       "triangles": 26126,
       "meshes": 4,
       "bones": 17,
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
+    },
+    {
+      "file": "models/pasture-cow.glb",
+      "bytes": 2073692,
+      "sha256": "5608c12d6d1417db1a14a309537fb5db523e0178ff91bf30973f50a59f6fc3bc",
+      "triangles": 17184,
+      "meshes": 2,
+      "bones": 15,
       "clips": [
         "Walk",
         "Idle"

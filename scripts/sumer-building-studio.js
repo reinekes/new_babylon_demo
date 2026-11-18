@@ -17,6 +17,7 @@ import {stockStores} from '../inventory.js';
 const query=new URLSearchParams(location.search);
 const requested=query.get('model')||'house';
 const craftDownloads=new Set(['pottery','brickyard','kiln','bakery','brewery']);
+const riverDownloads=new Set(['field','fishing','waterpoint','harbor','clay','quarry']);
 const homeVariants={'house-2':'Дом II','house-3':'Дом III',starterHut:'Дом основателей',reedCamp:'Тростниковый шалаш'};
 const titles={...Object.fromEntries(Object.entries(BUILDINGS).map(([id,def])=>[id,def.name])),...homeVariants,road:'Дорога'};
 const legacyFounder=requested==='starterHut';
@@ -88,6 +89,8 @@ const meshesFor=(type)=>{
   // The landscape batches these same palm instances in the city. The exported
   // single orchard needs the individual frond and trunk matrices within its site.
   if(palms.some(prefix=>mesh.name.startsWith(prefix))&&mesh.sourceMesh)return true;
+  const cut=mesh.metadata?.mineralCut;
+  if(cut?.kind===resource&&cells.some(cell=>cell.x===cut.x&&cell.y===cut.y))return true;
   const site=mesh.metadata?.resourceSite;
   return mesh.isEnabled()&&mesh.name.startsWith('deposit-open-')&&site?.kind===resource&&
    cells.some(cell=>cell.x===site.x&&cell.y===site.y)&&mesh.getTotalVertices();
@@ -118,7 +121,8 @@ const focus=type=>{
  renderer.buildings.sacredReady().then(()=>{if(selector.value===type)renderer.draw(state,null,performance.now(),{paused:true});});
  const link=document.querySelector('#download');
  link.download=type+'.glb';
- link.href='assets/3d/sumer-buildings/'+link.download+(craftDownloads.has(type)?'?v=alluvial-craft-20261118':'');
+ const release=riverDownloads.has(type)?'river-farms-and-pits-20261118':craftDownloads.has(type)?'alluvial-craft-20261118':'';
+ link.href='assets/3d/sumer-buildings/'+link.download+(release?'?v='+release:'');
  status.textContent=titles[type]+' · '+n+'×'+n+(type==='bridge'?' · пролёт по реке':'');
 };
 selector.onchange=()=>focus(selector.value);

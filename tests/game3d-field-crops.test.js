@@ -28,7 +28,7 @@ const field=(crop={},x=3,y=4)=>({type:'field',id:'field',x,y,level:1,crop:{sown:
 test('actual barley GLB batches 64 grounded clumps with shared atlas, alpha cutouts and reflected winding',async()=>{
  const t=setup();let assets;try{
   assets=await loadFieldCrops(B,t.scene);assert.ok(assets);const b=field(),b2={...b,id:'other',x:5},state={buildings:[b,b2]},before=structuredClone(state),[a]=assets.create(b,state),[other]=assets.create(b2,state);
-  assert.equal(a.metadata.clumps,64);assert.ok(a.getTotalVertices()>64*100,'modelled stems, tapered leaves and bent ears');assert.ok(a.getIndices().length/3<=22000,'one field stays within the crop budget');assert.ok(a.geometry===other.geometry,'occupied inland plots share cached flat field geometry');assert.equal(a.material,other.material);assert.equal(a.material.transparencyMode,B.PBRMaterial.PBRMATERIAL_ALPHATEST);assert.ok(a.material.albedoTexture);assert.equal(a.material.albedoTexture.hasAlpha,true);assert.equal(a.material.backFaceCulling,false);assert.equal(a.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);
+  assert.equal(a.metadata.clumps,64);assert.ok(a.getTotalVertices()>64*100,'modelled stems, tapered leaves and bent ears');assert.ok(a.getIndices().length/3<=22000,'one field stays within the crop budget');assert.ok(a.geometry===other.geometry,'occupied inland plots share cached flat field geometry');assert.equal(a.material,other.material);assert.equal(a.material.transparencyMode,B.PBRMaterial.PBRMATERIAL_ALPHATEST);assert.ok(a.material.albedoTexture);assert.equal(a.material.albedoTexture.hasAlpha,true);assert.equal(a.material.backFaceCulling,false);assert.equal(a.material.twoSidedLighting,false);assert.equal(a.material.forceNormalForward,false);assert.equal(a.overrideMaterialSideOrientation,B.Material.ClockWiseSideOrientation);
   const p=a.getVerticesData(B.VertexBuffer.PositionKind),heights=Array.from(p).filter((_,i)=>i%3===1);assert.ok(Math.abs(Math.min(...heights)-.035)<1e-6);assert.ok(Math.abs(Math.max(...heights)-.985)<1e-6);assert.deepEqual(state,before);a.dispose();other.dispose();assets.dispose();assert.equal(t.scene.meshes.length,0);
  }finally{assets?.dispose();t.dispose();}
 });
@@ -59,7 +59,7 @@ test('crop state alone controls empty fields, early sprouts, standing harvest lo
 test('adapter loads barley once, removes only old standing stalks and rebuilds on crop stages rather than workers or frames',async()=>{
  const t=setup();let layer;try{
   layer=await createGameBuildings(B,t.scene,t.materials);const b=field(),state={buildings:[b],citizens:[],season:'summer',tick:10},before=structuredClone(state);layer.sync(state);
-  const crop=layer.meshes.find(m=>m.name.includes('game-field-barley'));assert.ok(crop);assert.ok(layer.meshes.some(m=>m.material.name==='district-wet-silt'));assert.ok(!layer.meshes.some(m=>m.material===t.materials.grass));const count=t.scene.meshes.length;
+  const crop=layer.meshes.find(m=>m.name.includes('game-field-barley'));assert.ok(crop);assert.ok(layer.meshes.some(m=>m.material.name==='district-wet-silt'));assert.ok(!layer.meshes.some(m=>m.material.name==='district-barley-blades'));const count=t.scene.meshes.length;
   for(let i=0;i<40;i++){state.tick++;b.workers=0;layer.sync(state);}assert.ok(layer.meshes.includes(crop));assert.equal(t.scene.meshes.length,count);assert.deepEqual(b.crop,before.buildings[0].crop);assert.equal(t.loads.filter(p=>p===FIELD_CROP_ASSET).length,1);
   b.crop.remaining=50;layer.sync(state);assert.ok(crop.isDisposed());assert.equal(layer.meshes.find(m=>m.name.includes('game-field-barley')).sourceMesh.metadata.clumps,32);
   b.crop.remaining=0;b.crop.harvested=100;b.crop.sheaves=20;layer.sync(state);assert.ok(!layer.meshes.some(m=>m.name.includes('game-field-barley')));assert.ok(layer.meshes.some(m=>m.material.name==='district-dry-straw'),'retained actual sheaves');
@@ -69,8 +69,8 @@ test('adapter loads barley once, removes only old standing stalks and rebuilds o
 
 test('optional barley load failure keeps the existing standing crop and empty field behavior intact',async()=>{
  const t=setup(true);let layer;try{
-  layer=await createGameBuildings(B,t.scene,t.materials);const b=field(),state={buildings:[b],citizens:[]};layer.sync(state);assert.ok(layer.meshes.some(m=>m.material===t.materials.grass));assert.ok(!layer.meshes.some(m=>m.name.includes('game-field-barley')));
-  b.crop.sown=0;layer.sync(state);assert.ok(!layer.meshes.some(m=>m.material===t.materials.grass));layer.dispose();assert.equal(t.scene.meshes.length,0);
+  layer=await createGameBuildings(B,t.scene,t.materials);const b=field(),state={buildings:[b],citizens:[]};layer.sync(state);assert.ok(layer.meshes.some(m=>m.material.name==='district-barley-blades'));assert.ok(!layer.meshes.some(m=>m.name.includes('game-field-barley')));
+  b.crop.sown=0;layer.sync(state);assert.ok(!layer.meshes.some(m=>m.material.name==='district-barley-blades'));layer.dispose();assert.equal(t.scene.meshes.length,0);
  }finally{layer?.dispose();t.dispose();}
 });
 

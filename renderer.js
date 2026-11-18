@@ -1,6 +1,7 @@
 import {extractionStockFraction} from './extraction-stock.js';
-import {extractionOwner} from './extraction-courts.js';
-import {extractionKinds} from './extraction-courts.js';
+import {mineralExcavations} from './game3d/mineral-excavation.js';
+import {drawMapMineral} from './mineral-map-art.js';
+import {extractionOwner,extractionKinds} from './extraction-courts.js';
 import {localFerryVessel} from './river-stores.js';
 import {showBlessingApproach} from './blessing-presentation.js';
 import {blessingCupAt} from './blessing-discovery.js';
@@ -12,7 +13,7 @@ import {isStrictSumer} from './scenario-profiles.js';
 import {manualGatheringActivity} from './manual-gathering.js';
 import {miracleCelebrationView} from './miracle-celebration.js';
 import {miracleGardenPlan} from './miracle-garden-plan.js';
-import {footprintCells,footprintSize,newFootprint} from './footprints.js';
+import {footprintCells,footprintSize,newFootprint,occupiesCell} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
 import {footpathRibbonPoint,visibleFootpaths} from './footpaths.js';
 import {festivalView} from './festival.js';
@@ -358,16 +359,19 @@ export class Renderer{
  }
  depositsLayer(s){
   const colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};
+  const pits=new Map(mineralExcavations(s).map(p=>[`${p.x},${p.y}`,p]));
   for(const deposit of s.world?.deposits||[]){
    const {kind,x,y}=deposit,color=colors[kind];
    if(!color||!this.inView(x,y,40)||terrain(x,y,s)==='water')continue;
-   this.tile(x,y,color+'77');
    const size=Math.cbrt(extractionStockFraction(s,deposit));
+   if(kind==='clay'||kind==='stone'){
+    const key=`${x},${y}`,pit=pits.get(key);
+    if(pit||(size>0&&!s.buildings?.some(b=>occupiesCell(b,x,y))))drawMapMineral(this,deposit,pit,size);
+    pits.delete(key);continue;
+   }
+   this.tile(x,y,color+'77');
    if(size<=0&&kind!=='dates')continue;
-   if(kind==='stone'||kind==='clay'){
-    const p=this.point(x,y),q=this.s;
-    for(let k=0;k<3;k++)this.box(p.x+(k-1)*7*q,p.y+(k%2)*3*q,4*q*size,2*q*size,(3+k)*q*size,color,'#999276','#b1a282');
-   }else if(extractionOwner(s,deposit)){
+   if(extractionOwner(s,deposit)){
     for(const [dx,dy] of [[-.19,-.1],[.19,-.13],[.03,.21]]){
      const p=this.point(x+dx,y+dy);
      if(kind==='forest'||kind==='dates')this.palm(p.x,p.y,.57*(kind==='dates'?1:size));
@@ -376,6 +380,7 @@ export class Renderer{
     }
    }
   }
+  for(const pit of pits.values())if(this.inView(pit.x,pit.y,40))drawMapMineral(this,pit,pit,Math.cbrt(extractionStockFraction(s,pit)));
  }
  miraclePlant(e){
   const grow=Math.max(0,Math.min(1,(e.age-e.delay)/2.4)),fade=Math.max(0,Math.min(1,(60-e.age)/5));if(!grow||!fade)return;

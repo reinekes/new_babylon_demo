@@ -1,3 +1,4 @@
+import {workshopSurfaces} from '../game3d/workshop-surfaces.js';
 // Local CC0 photographs, plus original repeating brick/reed/cloth detail maps.
 export function createDistrictMaterials(B,scene,{deferPhotos=false}={}){
  const pendingPhotos=[],photoReady=[];let photosEnabled=!deferPhotos;
@@ -9,6 +10,7 @@ export function createDistrictMaterials(B,scene,{deferPhotos=false}={}){
   if(deferPhotos)photoReady.push(ready.then(()=>{if(!failed&&!scene.isDisposed){m.albedoTexture=a;m.bumpTexture=n;}else{a.dispose();n.dispose();}}));else{m.albedoTexture=a;m.bumpTexture=n;}return m;
  };
  const mats={plaster:photo(make('warm-clay-plaster','#fff0da'),'clay_plaster',1,.38),soil:photo(make('alluvial-earth','#ede1cd'),'floodplain-alluvium',1,.42,'webp?v=fines-1'),bankSilt:photo(make('laminated-bank-silt','#f4e8cf',.86),'river-silt',1,.74,'webp'),grass:photo(make('dry-river-grass','#dcdfb2'),'sparse_grass',1,.3),wood:photo(make('worn-timber','#c1a886'),'wood_table_worn',1,.45),stone:photo(make('bank-stone','#b0a68e'),'dry_ground_01',1,.7),terracotta:make('fired-pottery','#a56b43',.98),brick:make('exposed-mudbrick','#d3ad82'),reed:make('reed-mat','#c0ad78'),linen:make('woven-linen','#ddd0af')};
+ mats.bankWood=workshopSurfaces(B,scene).material('wood');
  // PBR albedo is linear: an sRGB brown assigned directly turns pale pink in
  // the tone-mapped sun. Keep all procedural jars/cargo/goods matte earth clay.
  mats.terracotta.albedoColor=mats.terracotta.albedoColor.toLinearSpace();

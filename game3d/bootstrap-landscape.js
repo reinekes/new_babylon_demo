@@ -7,7 +7,7 @@ import {deformedTerrainNormals,stitchTerrainRim} from './terrain-deformation.js'
 
 export function createBootstrapLandscape(B,scene,state,materials){
  let base=createDistrictTerrain(B,scene,state,materials,{finishedRoadsOnly:true});const originals=new Map(),owned=[];
- const worldKey=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes]);let baseWorld=worldKey(state),night=0;
+ const worldKey=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes,s.world?.deposits?.map(d=>[d.kind,d.x,d.y]),s.buildings.filter(b=>b.type==='clay'||b.type==='quarry').map(b=>[b.type,b.x,b.y,b.footprint,b.deposit?.x,b.deposit?.y,b.construction?.kind==='new'])]);let baseWorld=worldKey(state),night=0;
  let channelMeshes=[],signature='',disposed=false;
  let water=base.meshes.find(m=>m.name==='living-river').material;
  const bank=(name,color)=>{const m=materials.soil.clone(name);m.albedoColor=new B.Color3(...color);m.roughness=1;m.metallic=0;owned.push(m);return m;};
@@ -37,5 +37,5 @@ export function createBootstrapLandscape(B,scene,state,materials){
   const g=canalNetworkGeometry(s,canals),replacement=[surface('wet-bed',g.wetBed,wet,g.arms),surface('dry-bed',g.dryBed,dry,g.arms),surface('water',g.water,water,g.arms)].filter(Boolean);if(g.arms.length||channelMeshes.length)carve(g.arms,s);for(const m of channelMeshes)m.dispose();channelMeshes=replacement;
  }
  update(state,state.simTime);
- return {get waterMaterial(){return water;},get meshes(){return [...base.meshes,...channelMeshes];},update,light(n){night=n;if(!disposed)base.light(n);},dispose(){if(disposed)return;disposed=true;for(const m of channelMeshes)m.dispose();channelMeshes=[];originals.clear();base.dispose();for(const m of owned)m.dispose(false,false);}};
+ return {mineralHeightAt:(x,y,ground)=>base.mineralHeightAt(x,y,ground),get waterMaterial(){return water;},get meshes(){return [...base.meshes,...channelMeshes];},update,light(n){night=n;if(!disposed)base.light(n);},dispose(){if(disposed)return;disposed=true;for(const m of channelMeshes)m.dispose();channelMeshes=[];originals.clear();base.dispose();for(const m of owned)m.dispose(false,false);}};
 }

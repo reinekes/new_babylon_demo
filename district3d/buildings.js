@@ -1,9 +1,11 @@
+import {createBuildingFoundations} from '../game3d/building-foundations.js';
+import {mineralWorkBay} from '../game3d/mineral-excavation.js';
 import {constructionProgress} from '../construction.js';
 import {fortificationLayout,fortificationWorldPoint} from '../fortification-layout.js';
 import {bridgeSpanAt,riverLocal,riverAxis} from '../world.js';
 import {batteredAdobe} from '../game3d/reference-civic.js';
 import {createReedRoof} from '../game3d/reed-roof.js';
-import {fieldPatchBedGeometry} from '../game3d/field-shore.js';
+import {bankFieldLayout,clippedFieldGeometry,fieldPatchBedGeometry} from '../game3d/field-shore.js';
 // Original procedural adobe architecture. All vertices are local to one 6 m tile.
 // Archaeological forms are a stylisation, not reconstructions of specific excavated houses.
 const materialCache = new WeakMap();
@@ -13,7 +15,8 @@ const hash = (x,y)=>{const v=Math.sin(x*127.1+y*311.7)*43758.5453;return v-Math.
 
 // Quantised signature lets the integration rebuild at visible crop changes, not every frame.
 export function districtCropVisual(b) {
- const c=b.crop||{},sown=clamp(c.sown||0,0,1),growth=clamp(c.growth||0,0,1);
+ const c=b.crop||{},preparing=c.tilled>0;
+ const sown=preparing?0:clamp(c.sown||0,0,1),growth=preparing?0:clamp(c.growth||0,0,1);
  const standing=sown<=0?0:c.total>0?clamp((c.remaining||0)/c.total,0,1):c.harvested>0||c.spoiled>0?0:1;
  const sheaves=Math.max(0,c.sheaves||0),stage=sown<=0?'empty':standing<=0?'harvested':growth<=0?'sown':growth<.95?'growing':'ripe';
  return {sown,growth,standing,sheaves,stage,signature:[c.year||0,stage,Math.ceil(sown*5),Math.ceil(growth*6),Math.ceil(standing*6),Math.ceil(sheaves/14)].join(':')};
@@ -44,7 +47,8 @@ function supplements(B,scene) {
   const m=new B.PBRMaterial(`district-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color);m.metallic=0;m.roughness=.97;
   if(emission)m.emissiveColor=B.Color3.FromHexString(emission);return m;
  };
- mats={dark:make('interior','#51483b'),edge:make('adobe-edge','#ac9678'),straw:make('dry-straw','#aa9a66'),glow:make('occupied-lamp','#b59257','#ce9a4c'),leaf:make('olive-foliage','#777653'),silt:make('wet-silt','#88775e'),joinedSilt:make('ploughed-silt','#b29b78')};
+ mats={dark:make('interior','#51483b'),edge:make('adobe-edge','#ac9678'),straw:make('dry-straw','#aa9a66'),blades:make('barley-blades','#f2f0d4'),glow:make('occupied-lamp','#b59257','#ce9a4c'),leaf:make('olive-foliage','#777653'),silt:make('wet-silt','#c9bda7'),joinedSilt:make('ploughed-silt','#c9bda7')};
+ mats.blades.backFaceCulling=false;mats.blades.twoSidedLighting=true;
  for(const m of [mats.silt,mats.joinedSilt])m.albedoColor=m.albedoColor.toLinearSpace();
  // Four shared plaster finishes: variation without creating a material for every house.
  mats.plasters=['#fff0dc','#e6d3b4','#f5ddba','#d6c09e'].map((color,i)=>{
@@ -53,12 +57,11 @@ function supplements(B,scene) {
  materialCache.set(scene,mats);return mats;
 }
 
-export function createDistrictBuilding(B,scene,b,materials,s) {
+export function createDistrictBuilding(B,scene,b,materials,s,{standalone=true,walkways}={}) {
  const plan=districtBuildingPlan(b), extra=supplements(B,scene),m={...extra,...materials};
  const finish=extra.plasters[plan.variant];
  if(!finish.albedoTexture){finish.albedoTexture=materials.plaster?.albedoTexture;finish.bumpTexture=materials.plaster?.bumpTexture;}
  m.plaster=finish;
- for(const surface of [extra.silt,extra.joinedSilt])if(!surface.albedoTexture){surface.albedoTexture=materials.soil?.albedoTexture;surface.bumpTexture=materials.soil?.bumpTexture;}
  const root=new B.TransformNode(`building-${b.id||`${b.x},${b.y}`}`,scene);
  root.metadata={buildingKey:b.id||`${b.x},${b.y}`,type:b.type};
  const groups=new Map();let serial=0;const lights=[];
@@ -159,22 +162,48 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
  };
  const field=()=>{
   const visual=districtCropVisual(b);
+  if(typeof Image!=='undefined'&&!extra.silt.albedoTexture){
+   const color=new B.Texture('assets/3d/textures/ploughed-loam_color.webp',scene),relief=new B.Texture('assets/3d/textures/ploughed-loam_normal.webp',scene);
+   relief.gammaSpace=false;relief.level=.48;
+   for(const bed of [extra.silt,extra.joinedSilt]){bed.albedoTexture=color;bed.bumpTexture=relief;}
+  }
   {
    const bed=new B.Mesh('field-soil-ridges',scene),data=new B.VertexData();
    Object.assign(data,fieldPatchBedGeometry(b.fieldPatch?b:{...b,fieldPatch:{joins:[false,false,false,false]}},b.fieldPatch?2.9:2.65));data.normals=[];
    B.VertexData.ComputeNormals(data.positions,data.indices,data.normals);data.applyToMesh(bed);bed.useVertexColors=true;add(bed,b.fieldPatch?'joinedSilt':'silt');
   }
-  const h=.08+visual.growth*.75;
-  for(let row=0;row<8;row++){
-   for(let i=0;i<13;i++){
-    // Fixed positions keep crop loss stable between quantised harvest stages.
-    if((row*13+i+.5)/104>visual.sown*visual.standing)continue;
-    const rowX=b.fieldPatch?-2.625+row*.75:-2.2+row*.62;
-    const x=rowX+hash(row+i,b.x)*.1,z=b.fieldPatch?-36/13+i*6/13:-2.3+i*.37;
-    beam([x,.16,z],[x+.06,h+.14,z+.035],.018,visual.growth>.7?'straw':'grass');
-    const leaf=box(x+.07,.16+h*.6,z,.22,.022,.055,'grass',.3);leaf.rotation.z=.6;
-    if(visual.growth>.65){const ear=box(x+.06,h+.14,z+.035,.075,.18,.06,'straw');ear.rotation.z=-.18;}
+  const positions=[],indices=[],colors=[],h=.25+visual.growth*.74;
+  for(let row=0;row<8;row++)for(let i=0;i<13;i++){
+   if((row*13+i+.5)/104>visual.sown*visual.standing)continue;
+   const x=(b.fieldPatch?-2.625+row*.75:-2.2+row*.62)+hash(row+i,b.x)*.095;
+   const z=(b.fieldPatch?-36/13+i*6/13:-2.3+i*.37)+(hash(row,b.y+i)-.5)*.12;
+   // Flat strips taper to a point, spread from a common crown and arch back
+   // towards the light. The first shoot shares the taper of the older blades.
+   for(let leaf=0;leaf<3;leaf++){
+    const k=hash(row+leaf*7,i+b.y),a=k*2.4+leaf*2.095,dx=Math.cos(a),dz=Math.sin(a);
+    const reach=h*(.25+.32*k),rise=h*(.71+.29*hash(row+b.x,i+leaf)),base=positions.length/3;
+    const shade=.81+k*.24;
+    for(const [t,alt,width] of [[0,0,.006],[.3,.53,.024],[.78,.94,.016],[1,1,0]]){
+     const px=x+dx*reach*t*t,pz=z+dz*reach*t*t;
+     for(const side of [-1,1]){
+      positions.push(px-dz*width*side,.045+rise*alt,pz+dx*width*side);
+      const light=shade*(.66+.34*alt),dry=visual.growth>.80;
+      colors.push((dry?.64:.29)*light,(dry?.48:.47)*light,(dry?.19:.125)*light,1);
+     }
+    }
+    for(let j=0;j<3;j++){const n=base+j*2;indices.push(n,n+1,n+2,n+1,n+3,n+2);}
    }
+   if(visual.growth>.66){
+    const q=positions.length/3;
+    for(const [dx,dz,dy] of [[0,0,.70],[-.027,0,.83],[.024,.014,.86],[.03,.012,1.14]]){
+     positions.push(x+dx,.045+dy*h,z+dz);colors.push(.70,.52,.21,1);
+    }
+    indices.push(q,q+1,q+2,q+1,q+3,q+2);
+   }
+  }
+  if(indices.length){
+   const leaves=new B.Mesh('field-blade-clumps',scene),data=new B.VertexData(),normals=[];
+   B.VertexData.ComputeNormals(positions,indices,normals);Object.assign(data,{positions,indices,colors,normals});data.applyToMesh(leaves);add(leaves,'blades');
   }
   for(let n=0;n<Math.min(6,Math.ceil(visual.sheaves/14));n++){
    const x=1.3+(n%2)*.45,z=1.15+Math.floor(n/2)*.46;
@@ -275,10 +304,12 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
    room(0,-.3,1.65,1.65,3.9);break;
   case 'canal':
    for(const x of [-2.2,2.2]){box(x,.12,0,.55,.3,5.5,'soil');for(let i=0;i<7;i++)box(x,.29,-2.4+i*.75,.6,.08,.68,'brick');}break;
-  case 'clay':case 'quarry':
-   box(.4,.015,.45,4.3,.1,4.15,'silt');awning(-1.45,-1.55,2.1,1.7,1.65);
-   for(let i=0;i<8;i++){const mesh=box(.3+hash(i,b.x)*1.9,.16+hash(i,4)*.25,-1.1+hash(i,b.y)*3, .5+hash(i,3)*.6,.3+hash(i,5)*.35,.5,b.type==='clay'?'soil':'stone',i*.6);mesh.rotation.z=.15;}
-   pot(-1.7,.3,.9);break;
+  case 'clay':case 'quarry':{
+   const bay=mineralWorkBay(b,s),w=bay.compact?.96:1.82;
+   awning(bay.x,bay.z,w,w*.83,1.65);
+   if(!bay.compact)pot(bay.x+.98,bay.z+1,.72);
+   break;
+  }
   case 'reed':
    workshop();for(let i=0;i<7;i++){const bundle=box(-1.5+i*.47,.42,.7,.28,.5,1.45,'reed',.16);for(let j=0;j<3;j++)box(bundle.position.x,.69,.3+j*.4,.31,.035,.04,'wood');}break;
   case 'garden':
@@ -312,6 +343,27 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
   meshes.push(mesh);
  }
  for(const mesh of lights){mesh.receiveShadows=true;meshes.push(mesh);}
+ let removeWalkway;
+ if(standalone&&s){
+  if(b.type==='field'&&!plan.construction){
+   const layout=bankFieldLayout(b,s);
+   for(let i=meshes.length-1;i>=0;i--){
+    const mesh=meshes[i],data=B.VertexData.ExtractFromMesh(mesh),clipped=clippedFieldGeometry(data,b,s,layout);
+    if(!clipped.indices.length){mesh.dispose();meshes.splice(i,1);continue;}
+    if(clipped!==data){
+     mesh.releaseSubMeshes();mesh.geometry.releaseForMesh(mesh,true);
+     const cut=new B.VertexData();Object.assign(cut,clipped);
+     if(mesh.metadata?.fieldBed){cut.normals=[];B.VertexData.ComputeNormals(cut.positions,cut.indices,cut.normals);}cut.applyToMesh(mesh);
+    }
+   }
+   root.rotation.y=(b.rotation||0)*Math.PI/2;
+  }else{
+   // This separate district scene draws most architecture in world-axis order.
+   const unturned={...b,rotation:0},footing=createBuildingFoundations(B,scene,unturned,materials,s),platform=footing[0]?.metadata;
+   if(platform?.lift){for(const mesh of meshes)mesh.position.y+=platform.lift;removeWalkway=walkways?.add(unturned,platform);}
+   for(const mesh of footing){mesh.parent=root;meshes.push(mesh);}
+  }
+ }
  root.position.set(...plan.position);root.computeWorldMatrix(true);for(const mesh of meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}
  let previousOccupied;
  const update=(s)=>{
@@ -320,5 +372,5 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
   if(occupied===previousOccupied)return;previousOccupied=occupied;
   for(const light of lights)light.material=occupied?m.glow:m.dark;
  };
- return {root,meshes,update,dispose(){root.dispose(false);}};
+ return {root,meshes,update,dispose(){removeWalkway?.();root.dispose(false);}};
 }

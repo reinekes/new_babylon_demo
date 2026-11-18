@@ -7,7 +7,7 @@ import {surfaceElevation} from './terrain.js';
 
 /** Articulated procedural figures. All visible parts instance shared geometry;
  * transforms are presentation only and never write into the simulation. */
-export function createDistrictActors(B,scene,materials){
+export function createDistrictActors(B,scene,materials,floorHeight=(x,y,ground)=>ground){
  const meshes=[],sources=new Map(),ownMaterials=new Map(),people=new Map(),animals=new Map();
  let serial=0,frustumPlanes=null,hasCamera=false,lastTime=null,frameDelta=1/60;
  const frustumPoint=new B.Vector3();
@@ -179,7 +179,7 @@ export function createDistrictActors(B,scene,materials){
   if(moving)a.gait+=Math.min(distance*2.4,frameDelta*15);
   a.snap=false;a.lastX=c.x;a.lastY=c.y;
   a.root.position.x=c.x*6;a.root.position.z=c.y*6;
-  a.root.position.y=onBridge(s.buildings,c.x,c.y,s)?.22:surfaceElevation(c.x,c.y,s);
+  a.root.position.y=onBridge(s.buildings,c.x,c.y,s)?.22:floorHeight(c.x,c.y,surfaceElevation(c.x,c.y,s));
  }
  function dress(a,look){
   const spec=look.profession;

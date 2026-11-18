@@ -1,3 +1,4 @@
+import {mineralWorkBay} from './mineral-excavation.js';
 import {isReferenceWorkshop,workshopAngle,turnWorkshopParts} from './reference-workshops.js';
 import {workstationBuilding} from './workstations.js';
 import {footprintSize} from '../footprints.js';
@@ -108,7 +109,16 @@ function equipment(B,scene,palette){
 
 function extractionEquipment(b,state,e){
  const {box,rod,vessel,screen,rack,hurdle,loop}=e;
- const a=isExtractionCourt(b)?extractionWorkArea(b,state):{x:0,z:0};
+ const mineral=b.type==='clay'||b.type==='quarry';
+ const a=mineral?mineralWorkBay(b,state):isExtractionCourt(b)?extractionWorkArea(b,state):{x:0,z:0};
+ if(mineral&&a.compact){
+  // The old single-cell yard has room for hand tools against its shelter.
+  const x=a.x+.43,z=a.z+.35;
+  rod([x,.06,z+.15],[x+.15,.96,z],b.type==='clay'?.030:.039,'wood');
+  if(b.type==='clay')box(x+.02,.15,z+.13,.18,.22,.06,'earth');
+  else box(x+.15,.91,z,.25,.13,.12,'stone');
+  return;
+ }
  const x=a.x,z=a.z;
  switch(b.type){
   case 'clay':

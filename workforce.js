@@ -63,7 +63,7 @@ import {initializeDistricts,syncDistrictJobs,districtPickup,districtExportable,c
 import {initializeBuildingInventory,collectReadyOutputs,isProductionStore,putProductionOutput,outputRoom} from './building-inventory.js';
 import {SEED_COST,seedTarget} from './food-planning.js';
 import {advancePests,syncPestSites} from './pests.js';
-import {cropFor,workField,advanceCrops,fieldActive} from './agriculture.js';
+import {cropFor,workField,advanceCrops,canTillField,fieldActive} from './agriculture.js';
 import {fieldWater} from './irrigation.js';
 import {medicalLevel,qualifiedHealer,newMedicalSkill,STUDY_SECONDS,healingSpeed,healingQuality,healingCost} from './education.js';
 import {initializeWellbeing,advanceWellbeing,workRate,beliefMultiplier,isDinnerTime,mealCycle} from './wellbeing.js';
@@ -1012,7 +1012,12 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
    if(b.type==='brickyard'){const v=b.brickmaking;if(v.wet)return;if(!v.ready){const needs=brickNeeds(b);const k=['clay','reed'].find(k=>needs[k]>1e-8);if(k){c.workElapsed=0;const incoming=s.citizens.filter(p=>p.craftSite===c.work&&p.craftMaterial===k).reduce((n,p)=>n+craftLoad(p),0)+workshopIncoming(s,c.work,k);if(needs[k]>incoming+1e-8){const store=closestStock(s,ctx,c.work,k);if(store){c.store=store;c.craftSite=c.work;c.craftMaterial=k;c.craftAmount=0;startTrip(s,c,store,'toCraftSupply',ctx);}}return;}if(needs.water>1e-8)return;}}
    if(b.type==='sheepfold'&&(b.flock?.fleece||0)<1-1e-8)return;
    if(['weaver','tailor'].includes(b.type)){const k=craftResource(b),input=craftState(b)?.[k]||0;if(input+1e-8<craftBatch(b)){c.workElapsed=0;const incoming=s.citizens.filter(p=>p.craftSite===c.work).reduce((n,p)=>n+craftLoad(p),0)+workshopIncoming(s,c.work,k);if(input+incoming+1e-8<craftBatch(b)){const store=closestStock(s,ctx,c.work,k);if(store){c.store=store;c.craftSite=c.work;if(b.type==='tailor')c.craftCloth=0;else c.craftWool=0;startTrip(s,c,store,'toCraftSupply',ctx);}}return;}}
-   if(b.type==='field'){if(s.season===fieldCalendar(s,b).sow&&!fieldResting(s,b)&&cropFor(s,b).sheaves<=1e-8){const crop=cropFor(s,b),before=crop.sown;if(crop.sown<1-1e-8&&crop.seedStock<=1e-8&&!s.citizens.some(p=>p.id!==c.id&&p.seedField===c.work)){c.seedField=c.work;c.seedFood=0;c.store=closestStock(s,ctx,c.work,'food',{seed:true});if(c.store)startTrip(s,c,c.store,'toStore',ctx);else{delete c.seedField;delete c.seedFood;}return;}workFieldWithSeedBudget(s,b,remaining*workRate(c,b.type),ctx);if(before<1&&crop.sown>=1)invalidateAssignments(s);return;}if(cropFor(s,b).sheaves<=1e-8&&(s.season!==fieldCalendar(s,b).harvest||cropFor(s,b).remaining<=0))return;}
+   if(b.type==='field'){if(canTillField(s,b)){
+    workField(s,b,remaining*workRate(c,b.type),c);
+    if(!canTillField(s,b))invalidateAssignments(s);
+    return;
+   }
+   if(s.season===fieldCalendar(s,b).sow&&!fieldResting(s,b)&&cropFor(s,b).sheaves<=1e-8){const crop=cropFor(s,b),before=crop.sown;if(crop.sown<1-1e-8&&crop.seedStock<=1e-8&&!s.citizens.some(p=>p.id!==c.id&&p.seedField===c.work)){c.seedField=c.work;c.seedFood=0;c.store=closestStock(s,ctx,c.work,'food',{seed:true});if(c.store)startTrip(s,c,c.store,'toStore',ctx);else{delete c.seedField;delete c.seedFood;}return;}workFieldWithSeedBudget(s,b,remaining*workRate(c,b.type),ctx);if(before<1&&crop.sown>=1)invalidateAssignments(s);return;}if(cropFor(s,b).sheaves<=1e-8&&(s.season!==fieldCalendar(s,b).harvest||cropFor(s,b).remaining<=0))return;}
    if(b.type==='healer'){
     const patients=(ctx.care?.get(c.work)?.patients||[]).filter(p=>p.phase==='treatment'&&p.health<(p.careGoal||85)&&!s.funeral?.actors.some(a=>a.id===p.id));
     let budget=remaining*(1+(b.level-1)*.5)*workRate(c,'healer')*healingSpeed(c);const cost=healingCost(c);

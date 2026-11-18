@@ -82,6 +82,27 @@ def bake(kind):
     Image.fromarray(normal_map(lift,1.33)).save(OUTPUT/(kind+'_normal.webp'),quality=95,method=5)
 
 
+def bake_ploughed_loam():
+    """A square metre of turned silt: fractured aggregates, pores and chaff."""
+    size = 512
+    random = np.random.default_rng(41016)
+    kx, ky = np.meshgrid(np.fft.rfftfreq(size), np.fft.fftfreq(size))
+    def band(radius):
+        spectrum = np.fft.rfft2(random.normal(size=(size,size)))
+        image = np.fft.irfft2(spectrum * np.exp(-2*np.pi**2*radius**2*(kx*kx+ky*ky)),s=(size,size),axes=(0,1))
+        return image / image.std()
+    coarse, grit, fines, broad = band(8), band(2.1), band(.6), band(37)
+    cracks = np.exp(-(np.abs(coarse+.26*grit)/.12)**2) * np.clip(broad+.67,0,1)
+    lumps = np.clip((coarse+.40*grit+.28)*.83,0,1)
+    pores = np.clip((-grit-.7*fines-1.15)*.8,0,1)
+    grains = np.clip((grit+.38*fines-1.25)*.85,0,1)
+    relief = .61*lumps-.17*cracks-.24*pores+.17*grains+.077*fines
+    light = 4*broad+5*coarse+6*grit+3*fines+8*lumps-10*pores-9*cracks+6*grains
+    rgb = np.array([148,126,98]) + light[:,:,None]*[1,.86,.65]
+    Image.fromarray(np.uint8(np.clip(rgb,0,255))).save(OUTPUT/'ploughed-loam_color.webp',quality=90,method=6)
+    Image.fromarray(normal_map(relief,1.45)).save(OUTPUT/'ploughed-loam_normal.webp',quality=92,method=6)
+
+
 def bake_water_slopes():
     """Encode two periodic ripple slopes and the area sheltered from wind."""
     size = 512
@@ -113,3 +134,4 @@ def bake_water_slopes():
 if __name__=='__main__':
     for surface in ('floodplain-alluvium','river-silt'):bake(surface)
     bake_water_slopes()
+    bake_ploughed_loam()

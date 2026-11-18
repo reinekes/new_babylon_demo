@@ -11,11 +11,14 @@ import {GOAT_MODELS} from './goats.js';
 const MODELS={
  pig:{files:['pasture-pig.glb'],strides:[.34],fallback:{file:'alluvial-pig.glb',stride:.33},height:.64,space:.22},
  goat:{files:[GOAT_MODELS.pasture.file],strides:[GOAT_MODELS.pasture.stride],fallback:{file:'test-goat-trellis.glb',stride:.40},height:.96,space:.22},
- bull:{files:['pasture-bull.glb'],strides:[.62],fallback:{file:'alluvial-bull.glb',stride:.69},height:1.43,space:.32,pen:'cowshed'},
+ bull:{files:['pasture-bull.glb','pasture-cow.glb'],strides:[.62,.56],fallback:{file:'alluvial-bull.glb',stride:.69},height:1.43,space:.32,pen:'cowshed'},
  sheep:{files:['pasture-ram.glb'],strides:[.31],fallback:{file:'alluvial-ram.glb',stride:.38},height:.83,space:.21,pen:'sheepfold'},
 };
+const COW_COATS=[[.96,.89,.77],[.65,.56,.47],[.86,.65,.47],[1,1,1]];
 const PACE=.105;
 const MAX_HERD=7;
+const CATTLE_CAPACITY=9;
+const cattleBull=index=>index===6||index===8;
 
 function zoneClear(state,zone,dry,clear){
  if(!dry(state,zone.x,zone.y,.4))return false;
@@ -120,7 +123,7 @@ function penEntrance(state,building){
 
 export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
  const herds=Object.entries(MODELS).map(([kind,spec],index)=>({kind,spec,index,members:[],handled:new Map()}));
- const assets=new Map(),claimed=new Set(),settledSheep=new Map();
+ const assets=new Map(),coats=new Map(),claimed=new Set(),settledSheep=new Map();
  let disposed=false,ready=false,clock=0,buildings,count,world,pens=[];
  const loadAnimals=async()=>{
   async function loadFile(file){
@@ -134,7 +137,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   }
   await Promise.all(herds.map(async({spec})=>{
    await Promise.all(spec.files.map(loadFile));
-   if(!disposed&&spec.fallback&&!spec.files.some(file=>assets.has(file)))await loadFile(spec.fallback.file);
+   if(!disposed&&spec.fallback&&!assets.has(spec.files[0]))await loadFile(spec.fallback.file);
   }));
   ready=true;
  };
@@ -142,8 +145,8 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
 
  function makeMember(herd,index){
   const {spec,kind}=herd;
-  const preferred=index%spec.files.length;
-  const variant=assets.has(spec.files[preferred])?preferred:spec.files.findIndex(file=>assets.has(file));
+  const preferred=kind==='bull'&&!cattleBull(index)?1:0;
+  const variant=assets.has(spec.files[preferred])?preferred:assets.has(spec.files[0])?0:-1;
   const file=spec.files[variant]||spec.fallback?.file;
   if(!assets.has(file))return null;
   const source=assets.get(file);
@@ -152,13 +155,21 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const copy=source.instantiateModelsToScene(node=>name+'-'+node,false,{doNotInstantiate:true});
   for(const node of copy.rootNodes)node.parent=display;
   const {min,max}=display.getHierarchyBoundingVectors(true);
-  const scale=spec.height*(.92+index%4*.04)/(max.y-min.y);
+  const height=kind==='bull'&&!cattleBull(index)?1.27:spec.height;
+  const scale=height*(.92+index%4*.04)/(max.y-min.y);
   display.scaling.setAll(scale);
   display.position.set(-(min.x+max.x)*scale/2,-min.y*scale,-(min.z+max.z)*scale/2);
   display.parent=root;
-  root.metadata={herdAnimal:true,herdSpecies:kind,herdVariant:variant,herdModel:file};
+  root.metadata={herdAnimal:true,herdSpecies:kind,herdVariant:variant,herdModel:file,...(kind==='bull'?{cattleSex:cattleBull(index)?'bull':'cow'}:{})};
   root.setEnabled(false);
   const owned=root.getChildMeshes();
+  if(file==='pasture-cow.glb'){
+   const hide=owned.find(m=>m.getTotalVertices()>0&&m.material?.albedoColor&&!m.name.endsWith('Udder and four teats'));
+   if(hide){const shade=index%COW_COATS.length;
+    if(!coats.has(shade)){const coat=hide.material.clone('pasture-cow-hide-'+shade);coat.albedoColor.copyFromFloats(...COW_COATS[shade]);coats.set(shade,coat);}
+    hide.material=coats.get(shade);
+   }
+  }
   for(const mesh of owned){mesh.isPickable=false;mesh.receiveShadows=true;meshes.push(mesh);}
   const walk=copy.animationGroups.find(group=>/-Walk$/i.test(group.name))||copy.animationGroups.find(group=>/-Animation$/i.test(group.name));
   const idle=copy.animationGroups.find(group=>/Idle$/i.test(group.name));
@@ -189,6 +200,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   member.point=point;
   const clip=walking?member.walk:(member.idle||member.walk);
   if(!clip)return;
+  root.metadata.clip=walking?'Walk':'Idle';root.metadata.gaitPhase=member.phase;
   const clipChanged=clip!==member.clip;
   if(clipChanged){
    member.clip?.stop();
@@ -213,11 +225,12 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const clearApproach=(world,from,to)=>otherZones.every(zone=>
    segmentDistance(zone,from,to)>zone.radius+.18)&&clear(world,from,to);
   for(const building of candidates.sort((a,b)=>Math.hypot(a.x-leader.x,a.y-leader.y)-Math.hypot(b.x-leader.x,b.y-leader.y))){
-   const targets=penTargets(state,building,herd.kind).slice(0,herd.size);
-   if(!targets.length||targets.length>herd.members.length)continue;
+   const approaching=herd.members.filter(m=>m.index<herd.size&&(herd.kind!=='bull'||!cattleBull(m.index)));
+   const targets=penTargets(state,building,herd.kind).slice(0,approaching.length);
+   if(!targets.length)continue;
    const {outside,inside}=penEntrance(state,building);
    const approaches=targets.map((_,i)=>{
-    const start=herd.members[i].point;
+    const start=approaching[i].point;
     const external=start&&approach(state,start,outside,clearApproach);
     return external&&{points:external,length:routeLength(external)};
    });
@@ -227,7 +240,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
      points:[...path.points.slice(1),inside,targets[i]],next:0,outsideEndsAt:path.points.length-1,
      delay:gateTime+i*herd.spec.space/PACE-path.length/PACE
     }));
-    return {building,targets,paths,start:clock};
+    return {building,targets,paths,members:approaching.slice(0,targets.length),start:clock};
    }
   }
   return null;
@@ -288,7 +301,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
     const worldSeed=state.world?.seed??0;
     if(herd.seed!==worldSeed){
      herd.seed=worldSeed;
-     herd.size=4+Math.floor(seed(worldSeed,herd.index+51)*4);
+     herd.size=herd.kind==='bull'?7+Math.floor(seed(worldSeed,53)*3):4+Math.floor(seed(worldSeed,herd.index+51)*4);
      herd.zone=null;
     }
     if(!herd.zone||!zoneClear(state,herd.zone,dry,clear)){
@@ -304,7 +317,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   for(const herd of herds){
    if(!herd.zone&&!herd.transfer){for(const member of herd.members)member.root.setEnabled(false);continue;}
    if(!herd.members.length){
-    for(let i=0;i<MAX_HERD;i++){
+    for(let i=0;i<(herd.kind==='bull'?CATTLE_CAPACITY:MAX_HERD);i++){
      const member=makeMember(herd,i);
      if(member)herd.members.push(member);
     }
@@ -317,12 +330,18 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
    }
    if(transfer){
     let arrived=true;
-    for(let i=0;i<herd.members.length;i++){
-     const member=herd.members[i],path=transfer.paths[i];
-     if(!path){member.root.setEnabled(false);continue;}
+    for(const member of herd.members){
+     const i=transfer.members.indexOf(member);
+     if(i<0){
+      if(herd.kind==='bull'&&member.index<herd.size)roam(herd,member,state,elapsed);
+      else member.root.setEnabled(false);
+      continue;
+     }
+     const path=transfer.paths[i];
      claimed.add(transfer.targets[i].id);
      member.root.metadata.herdDestination=transfer.building.type;
      member.root.scaling.setAll(transfer.targets[i].young?.68:1);
+     if(herd.kind==='bull')for(const mesh of member.owned)if(mesh.name.endsWith('Udder and four teats'))mesh.setEnabled(!transfer.targets[i].young);
      const goal=path.points[path.next];
      if(goal&&elapsed&&clock>transfer.start+path.delay){
       const next=groundStep(member.point,goal,member.root.rotation.y,elapsed*PACE,member.turnRadius/6);
@@ -351,13 +370,14 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
        settledSheep.set(target.id,{...target,...herd.members[i].point,yaw:herd.members[i].root.rotation.y,release});
       }
      }
-     for(const member of herd.members){member.root.setEnabled(false);member.point=null;member.goal=null;}
+     for(const member of herd.members){if(herd.kind==='bull'&&!transfer.members.includes(member))continue;member.root.setEnabled(false);member.point=null;member.goal=null;}
     }
     continue;
    }
-   if(!herd.zone||clock-(herd.departedAt??-Infinity)<8)continue;
+   if(!herd.zone)continue;
    for(const member of herd.members){
-    if(member.index>=herd.size){member.root.setEnabled(false);continue;}
+    if(member.index>=herd.size||!member.point&&clock-(herd.departedAt??-Infinity)<8){member.root.setEnabled(false);continue;}
+    if(member.root.metadata.herdDestination&&herd.kind==='bull')for(const mesh of member.owned)if(mesh.name.endsWith('Udder and four teats'))mesh.setEnabled(true);
     delete member.root.metadata.herdDestination;
     member.root.scaling.setAll(1);
     roam(herd,member,state,elapsed);
@@ -373,6 +393,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
    member.root.dispose();
    for(const skeleton of member.copy.skeletons)skeleton.dispose();
   }
+  for(const coat of coats.values())coat.dispose();
   for(const [file,asset] of assets)if(!shared.has(file))asset.dispose();
  }
  return {update,dispose,claims:id=>claimed.has(id),hasPigs:()=>herds[0].members.some(member=>member.root.isEnabled()),sheepPose:animal=>{

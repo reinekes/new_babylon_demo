@@ -71,10 +71,12 @@
   const modelStatuses={planned:'Запланировано',working:'В работе',ready:'Готово'};
   let modelFilter='';
   const modelBase='roadmap/building-models.json';
-  function modelLink(path,label){
+  function modelLink(path,label,version){
     if(!path)return '';
     const url=href(path,modelBase);
-    return url?`<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>`:'';
+    if(!url)return '';
+    const target=version?url+'?v='+encodeURIComponent(version):url;
+    return `<a href="${escape(target)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>`;
   }
   function modelPicture(path,name,stage,empty){
     const url=path&&href(path,modelBase);
@@ -100,8 +102,7 @@
             ?`<a href="../model-atlas/?model=${encodeURIComponent(item.model.split('/').pop())}" target="_blank" rel="noopener noreferrer">В 3D-атласе</a>`
             :`<a href="../scripts/sumer-building-studio.html?model=${encodeURIComponent(item.id)}" target="_blank" rel="noopener noreferrer">В городе</a>`;
         }
-        const currentModel=item.modelVersion&&item.model?item.model+'?v='+encodeURIComponent(item.modelVersion):item.model;
-        const links=[studio,modelLink(oldModel,'Прежняя GLB'),modelLink(currentModel,group.future?'Эскиз · GLB':'Новая GLB'),modelLink(item.reference,'Исходная иллюстрация'),modelLink(item.checked,'Проверка в игре'),modelLink(item.release,'Выпуск'),modelLink(item.source,'Предложение')].filter(Boolean);
+        const links=[studio,modelLink(oldModel,'Прежняя GLB'),modelLink(item.model,group.future?'Эскиз · GLB':'Новая GLB',item.modelVersion),modelLink(item.reference,'Исходная иллюстрация'),modelLink(item.checked,'Проверка в игре'),modelLink(item.release,'Выпуск'),modelLink(item.source,'Предложение')].filter(Boolean);
         cards.push(`<article class="model-card" data-model="${escape(item.id)}">
           <header><h3>${escape(item.name)}</h3><span class="model-status model-${escape(item.status)}">${escape(modelStatuses[item.status])}</span></header>
           <div class="model-pair">${modelPicture(previous,item.name,'Прежняя модель','Предложено для игры')}${modelPicture(item.image,item.name,group.future?'Эскиз модели':'Новая модель',item.status==='working'?'Готовится':'Ожидается')}</div>

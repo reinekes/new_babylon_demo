@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
-import {createBuildingFoundations,foundationWorldPoint,foundationSignature} from '../game3d/building-foundations.js';
+import {shoreWalkways,createBuildingFoundations,foundationWorldPoint,foundationSignature} from '../game3d/building-foundations.js';
 import {extractionWorkArea,extractionWorkspaceWidth} from '../extraction-courts.js';
 import {visualSurfaceElevation} from '../game3d/shore-profile.js';
 import {createGameBuildings} from '../game3d/buildings.js';
@@ -57,7 +57,7 @@ test('fishing and harbor piles reach below water to the bed, and stay in the foo
  const t=setup();try{
   for(const type of ['fishing','harbor']){
    const b={...shore,type},state={buildings:[b]},[mesh]=createBuildingFoundations(B,t.scene,b,t.materials,state);assert.ok(mesh);assert.equal(mesh.material,t.materials.wood);assert.equal(mesh.metadata.timber,true);
-   assert.equal(mesh.metadata.boardCount===0,type==='harbor','the pier reuses the modeled deck');
+   assert.ok(mesh.metadata.boardCount>0,'a continuous lower landing connects the raised house and quay steps');
    const p=mesh.getVerticesData(B.VertexBuffer.PositionKind);assert.ok(p.some((v,i)=>i%3===1&&v<-.8));assert.ok(mesh.getTotalVertices()<2000);mesh.computeWorldMatrix(true);assert.ok(mesh.getBoundingInfo().boundingBox.minimum.y<-.8);mesh.dispose();
   }
  }finally{t.dispose();}
@@ -91,4 +91,24 @@ test('adapter registers support in live shadow meshes and preview, reuses unchan
   b.rotation=2;layer.sync(state);assert.ok(support.isDisposed());
   for(let i=0;i<16;i++)layer.preview({...b,x:b.x+i*.03},state);layer.dispose();assert.equal(t.scene.meshes.length,0);
  }finally{B.SceneLoader.LoadAssetContainerAsync=previous;layer?.dispose();t.dispose();}
+});
+
+
+test('a quay stands above the water on tied bents and residents walk continuously from the bank onto its deck',()=>{
+ const t=setup();try{
+  const b={...shore,type:'fishing'},s={buildings:[b]};
+  for(let rotation=0;rotation<4;rotation++){
+   b.rotation=rotation;
+   const [footing]=createBuildingFoundations(B,t.scene,b,t.materials,s),p=footing.metadata,walks=shoreWalkways(),remove=walks.add(b,p),[dx,dz]=p.wetDirection;
+   assert.ok(p.lift>=.7&&p.braceCount>=2&&p.pileCount>=6&&p.stairSteps>=4);assert.ok(p.boardCount>10);
+   const values=[];
+   for(let i=-1;i<=p.stairSteps;i++){
+    const d=p.half+(i+.5)*p.run/p.stairSteps,w=foundationWorldPoint(b,-dx*d,-dz*d);
+    values.push(walks.heightAt(w.x,w.y,0));
+   }
+   assert.ok(values[0]>.75);assert.equal(values.at(-1),0);
+   for(let k=1;k<values.length;k++){assert.ok(values[k]<=values[k-1]);assert.ok(values[k-1]-values[k]<.22);}
+   remove();assert.equal(walks.heightAt(b.x,b.y,0),0);footing.dispose();
+  }
+ }finally{t.dispose();}
 });
