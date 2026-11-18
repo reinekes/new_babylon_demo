@@ -67,6 +67,16 @@
         "materials": 2,
         "textures": 3,
         "triangles": 136
+      },
+      "publicDownloadVisiblePixels": 73597,
+      "publicChangedPixels": 57480,
+      "publicDrawnParts": 2,
+      "publicDownload": {
+        "sha256": "70ecbb64d43cf8fb14cd003ea5e96cd730dc9da226c0ecfe56a6a46b8c967ddf",
+        "bytes": 121404,
+        "materials": 2,
+        "textures": 3,
+        "triangles": 136
       }
     },
     {
@@ -113,6 +123,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "54ad936c815a6a09dcf7639fcf014b12105779f5067f3296d7fe7551bc000a95",
+        "bytes": 610464,
+        "materials": 7,
+        "textures": 9,
+        "triangles": 4698
+      },
+      "publicDownloadVisiblePixels": 75406,
+      "publicChangedPixels": 27844,
+      "publicDrawnParts": 19,
+      "publicDownload": {
         "sha256": "54ad936c815a6a09dcf7639fcf014b12105779f5067f3296d7fe7551bc000a95",
         "bytes": 610464,
         "materials": 7,
@@ -173,6 +193,16 @@
         "materials": 10,
         "textures": 12,
         "triangles": 3118
+      },
+      "publicDownloadVisiblePixels": 180134,
+      "publicChangedPixels": 121660,
+      "publicDrawnParts": 11,
+      "publicDownload": {
+        "sha256": "fd17f5a5ee56c247760ac03d88d7fe3516b58622b9ef2c7769a99e2a16f84827",
+        "bytes": 910412,
+        "materials": 10,
+        "textures": 12,
+        "triangles": 3118
       }
     },
     {
@@ -220,6 +250,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "292d9d22717f32ee973a9ccc37a3e5bc07b4729341608bac9833234ed06a66ec",
+        "bytes": 912280,
+        "materials": 7,
+        "textures": 9,
+        "triangles": 2000
+      },
+      "publicDownloadVisiblePixels": 180468,
+      "publicChangedPixels": 136446,
+      "publicDrawnParts": 7,
+      "publicDownload": {
         "sha256": "292d9d22717f32ee973a9ccc37a3e5bc07b4729341608bac9833234ed06a66ec",
         "bytes": 912280,
         "materials": 7,
@@ -275,6 +315,16 @@
         "materials": 5,
         "textures": 6,
         "triangles": 504
+      },
+      "publicDownloadVisiblePixels": 145459,
+      "publicChangedPixels": 182064,
+      "publicDrawnParts": 7,
+      "publicDownload": {
+        "sha256": "3e6c287a31cafef3e71400fd2e425f2eae1c32018f2da83819fa1378f3714472",
+        "bytes": 340260,
+        "materials": 5,
+        "textures": 6,
+        "triangles": 504
       }
     },
     {
@@ -323,6 +373,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "5cab732b8cb3a5930c6fd87ff445bb1ade282d52fab2faa58c5fcc6ed59f5296",
+        "bytes": 1370668,
+        "materials": 8,
+        "textures": 13,
+        "triangles": 6844
+      },
+      "publicDownloadVisiblePixels": 122593,
+      "publicChangedPixels": 102439,
+      "publicDrawnParts": 8,
+      "publicDownload": {
         "sha256": "5cab732b8cb3a5930c6fd87ff445bb1ade282d52fab2faa58c5fcc6ed59f5296",
         "bytes": 1370668,
         "materials": 8,
@@ -384,6 +444,16 @@
         "materials": 11,
         "textures": 13,
         "triangles": 13364
+      },
+      "publicDownloadVisiblePixels": 149865,
+      "publicChangedPixels": 117397,
+      "publicDrawnParts": 12,
+      "publicDownload": {
+        "sha256": "0bd20bc442e2862fefe3690f2c775b819a91ae7011f5ffc90f4229fab5512d96",
+        "bytes": 1473200,
+        "materials": 11,
+        "textures": 13,
+        "triangles": 13364
       }
     },
     {
@@ -430,6 +500,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "9ced502105dec1145cb5a15b3c6ebea13edee679cb3e6e4765b52119160fe6da",
+        "bytes": 720680,
+        "materials": 6,
+        "textures": 7,
+        "triangles": 1612
+      },
+      "publicDownloadVisiblePixels": 156568,
+      "publicChangedPixels": 87274,
+      "publicDrawnParts": 6,
+      "publicDownload": {
         "sha256": "9ced502105dec1145cb5a15b3c6ebea13edee679cb3e6e4765b52119160fe6da",
         "bytes": 720680,
         "materials": 6,
@@ -491,6 +571,16 @@
         "materials": 11,
         "textures": 9,
         "triangles": 2736
+      },
+      "publicDownloadVisiblePixels": 166383,
+      "publicChangedPixels": 123145,
+      "publicDrawnParts": 11,
+      "publicDownload": {
+        "sha256": "23ded610696f66928b5e73dde3ce8a7b2563fcf4efe04928aaec92412eb2c741",
+        "bytes": 901892,
+        "materials": 11,
+        "textures": 9,
+        "triangles": 2736
       }
     },
     {
@@ -543,6 +633,16 @@
         "materials": 7,
         "textures": 11,
         "triangles": 1432
+      },
+      "publicDownloadVisiblePixels": 156352,
+      "publicChangedPixels": 108278,
+      "publicDrawnParts": 7,
+      "publicDownload": {
+        "sha256": "5ebf105f9aa4578057ad26c652b65743a61428aa3388da15d050f985d1d1d777",
+        "bytes": 1043008,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 1432
       }
     },
     {
@@ -590,6 +690,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "9242d4d3027d49f318f6f1cc7ed1c5f8c85d4d26b70505dbd5b65ac068727276",
+        "bytes": 925320,
+        "materials": 7,
+        "textures": 9,
+        "triangles": 4468
+      },
+      "publicDownloadVisiblePixels": 164202,
+      "publicChangedPixels": 97393,
+      "publicDrawnParts": 7,
+      "publicDownload": {
         "sha256": "9242d4d3027d49f318f6f1cc7ed1c5f8c85d4d26b70505dbd5b65ac068727276",
         "bytes": 925320,
         "materials": 7,
@@ -649,6 +759,16 @@
         "materials": 9,
         "textures": 13,
         "triangles": 3676
+      },
+      "publicDownloadVisiblePixels": 165672,
+      "publicChangedPixels": 119301,
+      "publicDrawnParts": 9,
+      "publicDownload": {
+        "sha256": "6d9c160f48429bacfbe2c67a16592ac6f51fbae58d91ee490fff03648b10d39e",
+        "bytes": 1246012,
+        "materials": 9,
+        "textures": 13,
+        "triangles": 3676
       }
     },
     {
@@ -697,6 +817,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "0472ff3aea4f0768ddfe61096b5bc8c4fb96487651e558be9a406cb0ab571c57",
+        "bytes": 1101912,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 2748
+      },
+      "publicDownloadVisiblePixels": 170588,
+      "publicChangedPixels": 110661,
+      "publicDrawnParts": 8,
+      "publicDownload": {
         "sha256": "0472ff3aea4f0768ddfe61096b5bc8c4fb96487651e558be9a406cb0ab571c57",
         "bytes": 1101912,
         "materials": 8,
@@ -759,6 +889,16 @@
         "materials": 12,
         "textures": 13,
         "triangles": 3320
+      },
+      "publicDownloadVisiblePixels": 179397,
+      "publicChangedPixels": 111223,
+      "publicDrawnParts": 12,
+      "publicDownload": {
+        "sha256": "9b304d9e00cdda3e453cc6875637750966dc9f1de2851449d37cc5dd158da656",
+        "bytes": 1263960,
+        "materials": 12,
+        "textures": 13,
+        "triangles": 3320
       }
     },
     {
@@ -809,6 +949,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "de24a041ffda13cc0f5fcbdd267baf12e74da35ff1e9073fb99d138072538f72",
+        "bytes": 1250032,
+        "materials": 10,
+        "textures": 13,
+        "triangles": 7564
+      },
+      "publicDownloadVisiblePixels": 186398,
+      "publicChangedPixels": 133134,
+      "publicDrawnParts": 10,
+      "publicDownload": {
         "sha256": "de24a041ffda13cc0f5fcbdd267baf12e74da35ff1e9073fb99d138072538f72",
         "bytes": 1250032,
         "materials": 10,
@@ -866,6 +1016,16 @@
         "materials": 7,
         "textures": 11,
         "triangles": 11852
+      },
+      "publicDownloadVisiblePixels": 127093,
+      "publicChangedPixels": 74613,
+      "publicDrawnParts": 7,
+      "publicDownload": {
+        "sha256": "c15ec259e3aa1c5c07f7db94441e3fc0b7b5ee4a15199f8fd7fb558a9070a101",
+        "bytes": 1334788,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 11852
       }
     },
     {
@@ -912,6 +1072,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "4e2581570577501bc74252bb9464ac242a259c68d3f94f5e6ee2f0e18ffb83c4",
+        "bytes": 918244,
+        "materials": 6,
+        "textures": 9,
+        "triangles": 3292
+      },
+      "publicDownloadVisiblePixels": 150148,
+      "publicChangedPixels": 116978,
+      "publicDrawnParts": 6,
+      "publicDownload": {
         "sha256": "4e2581570577501bc74252bb9464ac242a259c68d3f94f5e6ee2f0e18ffb83c4",
         "bytes": 918244,
         "materials": 6,
@@ -970,6 +1140,16 @@
         "materials": 8,
         "textures": 11,
         "triangles": 3984
+      },
+      "publicDownloadVisiblePixels": 132206,
+      "publicChangedPixels": 98533,
+      "publicDrawnParts": 8,
+      "publicDownload": {
+        "sha256": "f56bfe44f92382b0cc69b84fce433998df1aadd1e258fb9d54f127e78f207135",
+        "bytes": 1060912,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 3984
       }
     },
     {
@@ -1018,6 +1198,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "3e19a59b9ceb0c7d796480dcacc79b91d887ce0f9e797d12faa70dde08db3229",
+        "bytes": 1234476,
+        "materials": 8,
+        "textures": 13,
+        "triangles": 8002
+      },
+      "publicDownloadVisiblePixels": 131925,
+      "publicChangedPixels": 105739,
+      "publicDrawnParts": 8,
+      "publicDownload": {
         "sha256": "3e19a59b9ceb0c7d796480dcacc79b91d887ce0f9e797d12faa70dde08db3229",
         "bytes": 1234476,
         "materials": 8,
@@ -1076,6 +1266,16 @@
         "materials": 8,
         "textures": 12,
         "triangles": 2832
+      },
+      "publicDownloadVisiblePixels": 186910,
+      "publicChangedPixels": 126263,
+      "publicDrawnParts": 8,
+      "publicDownload": {
+        "sha256": "13ddb4ef790e0d5887807a88b6341dc021cf5e5a86ca303d9aefee9ff91c8995",
+        "bytes": 881952,
+        "materials": 8,
+        "textures": 12,
+        "triangles": 2832
       }
     },
     {
@@ -1124,6 +1324,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "7bea993ce6001048e8a94075827bff53ebd37244bf85e07ceaed71bb8e3e9bb0",
+        "bytes": 1136196,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 3676
+      },
+      "publicDownloadVisiblePixels": 127619,
+      "publicChangedPixels": 116009,
+      "publicDrawnParts": 8,
+      "publicDownload": {
         "sha256": "7bea993ce6001048e8a94075827bff53ebd37244bf85e07ceaed71bb8e3e9bb0",
         "bytes": 1136196,
         "materials": 8,
@@ -1184,6 +1394,16 @@
         "materials": 10,
         "textures": 13,
         "triangles": 3510
+      },
+      "publicDownloadVisiblePixels": 174272,
+      "publicChangedPixels": 134436,
+      "publicDrawnParts": 10,
+      "publicDownload": {
+        "sha256": "6489d0b3c41d608b2a1cea007377a861ff0f681e45fe6d257357f464c4a874f9",
+        "bytes": 1221964,
+        "materials": 10,
+        "textures": 13,
+        "triangles": 3510
       }
     },
     {
@@ -1234,6 +1454,16 @@
         "materials": 6,
         "textures": 12,
         "triangles": 8246
+      },
+      "publicDownloadVisiblePixels": 156905,
+      "publicChangedPixels": 110016,
+      "publicDrawnParts": 11,
+      "publicDownload": {
+        "sha256": "84ef78b6072ba7c842f9666680ecdc7eadef80cd54d925a29bb6616cd72b1db8",
+        "bytes": 1325556,
+        "materials": 6,
+        "textures": 12,
+        "triangles": 8246
       }
     },
     {
@@ -1276,6 +1506,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "342955e7243b96ca62eb93d9bac92cdacae25f095dd6cd595242d17c32388807",
+        "bytes": 971960,
+        "materials": 2,
+        "textures": 2,
+        "triangles": 12140
+      },
+      "publicDownloadVisiblePixels": 125406,
+      "publicChangedPixels": 101699,
+      "publicDrawnParts": 2,
+      "publicDownload": {
         "sha256": "342955e7243b96ca62eb93d9bac92cdacae25f095dd6cd595242d17c32388807",
         "bytes": 971960,
         "materials": 2,
@@ -1334,6 +1574,16 @@
         "materials": 8,
         "textures": 11,
         "triangles": 3864
+      },
+      "publicDownloadVisiblePixels": 25349,
+      "publicChangedPixels": 28330,
+      "publicDrawnParts": 14,
+      "publicDownload": {
+        "sha256": "83ea4a61552214a3a2fd525cdb43aad1c075e9603f2e19d2327b1d864b506525",
+        "bytes": 1101256,
+        "materials": 8,
+        "textures": 11,
+        "triangles": 3864
       }
     },
     {
@@ -1379,6 +1629,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "406def19c5ef5b258be948989a683f8442d2b777bb21fe213eb4e4627c346b45",
+        "bytes": 2181456,
+        "materials": 9,
+        "textures": 17,
+        "triangles": 7822
+      },
+      "publicDownloadVisiblePixels": 18634,
+      "publicChangedPixels": 20971,
+      "publicDrawnParts": 33,
+      "publicDownload": {
         "sha256": "406def19c5ef5b258be948989a683f8442d2b777bb21fe213eb4e4627c346b45",
         "bytes": 2181456,
         "materials": 9,
@@ -1431,6 +1691,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "5600f6f1c84dffd2c28c017ba524fe276df66c7f69fb64328a082ff9cbf9f1f0",
+        "bytes": 1024740,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 3096
+      },
+      "publicDownloadVisiblePixels": 163430,
+      "publicChangedPixels": 124534,
+      "publicDrawnParts": 7,
+      "publicDownload": {
         "sha256": "5600f6f1c84dffd2c28c017ba524fe276df66c7f69fb64328a082ff9cbf9f1f0",
         "bytes": 1024740,
         "materials": 7,
@@ -1489,6 +1759,16 @@
         "materials": 8,
         "textures": 9,
         "triangles": 7948
+      },
+      "publicDownloadVisiblePixels": 19140,
+      "publicChangedPixels": 22297,
+      "publicDrawnParts": 9,
+      "publicDownload": {
+        "sha256": "e7337be2a5650502e1f0a64627d6c9d637ad4edc8f43db2e5624dd80882c9f8d",
+        "bytes": 1118168,
+        "materials": 8,
+        "textures": 9,
+        "triangles": 7948
       }
     },
     {
@@ -1539,6 +1819,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "e1054b2e453bc9e301dd7b0c38b0c8c88688771c624048a0b3af03991b9825ad",
+        "bytes": 1225856,
+        "materials": 10,
+        "textures": 13,
+        "triangles": 5624
+      },
+      "publicDownloadVisiblePixels": 195438,
+      "publicChangedPixels": 110681,
+      "publicDrawnParts": 10,
+      "publicDownload": {
         "sha256": "e1054b2e453bc9e301dd7b0c38b0c8c88688771c624048a0b3af03991b9825ad",
         "bytes": 1225856,
         "materials": 10,
@@ -1600,6 +1890,16 @@
         "materials": 11,
         "textures": 15,
         "triangles": 9238
+      },
+      "publicDownloadVisiblePixels": 206890,
+      "publicChangedPixels": 158550,
+      "publicDrawnParts": 11,
+      "publicDownload": {
+        "sha256": "1c97551597e0ad7cd2194f62dd3fb2c4efe5725c7697f54e21a0b47597b5cefa",
+        "bytes": 1527912,
+        "materials": 11,
+        "textures": 15,
+        "triangles": 9238
       }
     },
     {
@@ -1653,6 +1953,16 @@
         "materials": 8,
         "textures": 8,
         "triangles": 4000
+      },
+      "publicDownloadVisiblePixels": 145056,
+      "publicChangedPixels": 146364,
+      "publicDrawnParts": 8,
+      "publicDownload": {
+        "sha256": "e8db4492e7047f96a0a74d44e58ac3edc0d4a1e819f69f670ea48cfb3ee5a6a9",
+        "bytes": 666616,
+        "materials": 8,
+        "textures": 8,
+        "triangles": 4000
       }
     },
     {
@@ -1695,6 +2005,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "9bfd0d0f367c395a6a13f508391841f2969531a55f5a8feee7f3c9a3fcce6140",
+        "bytes": 451236,
+        "materials": 2,
+        "textures": 4,
+        "triangles": 3932
+      },
+      "publicDownloadVisiblePixels": 13003,
+      "publicChangedPixels": 89297,
+      "publicDrawnParts": 2,
+      "publicDownload": {
         "sha256": "9bfd0d0f367c395a6a13f508391841f2969531a55f5a8feee7f3c9a3fcce6140",
         "bytes": 451236,
         "materials": 2,
@@ -1754,6 +2074,16 @@
         "materials": 9,
         "textures": 15,
         "triangles": 8942
+      },
+      "publicDownloadVisiblePixels": 149016,
+      "publicChangedPixels": 119280,
+      "publicDrawnParts": 10,
+      "publicDownload": {
+        "sha256": "ba2833595048a4b8c079f43006e324dee9255e94966b945a693c528991e91505",
+        "bytes": 1479140,
+        "materials": 9,
+        "textures": 15,
+        "triangles": 8942
       }
     },
     {
@@ -1801,6 +2131,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "c7e87aeaece421cb3d6f10354cabe9f1af783d59f92a8ea91a623bc9325c49fb",
+        "bytes": 1168592,
+        "materials": 7,
+        "textures": 11,
+        "triangles": 4252
+      },
+      "publicDownloadVisiblePixels": 19809,
+      "publicChangedPixels": 22249,
+      "publicDrawnParts": 7,
+      "publicDownload": {
         "sha256": "c7e87aeaece421cb3d6f10354cabe9f1af783d59f92a8ea91a623bc9325c49fb",
         "bytes": 1168592,
         "materials": 7,
@@ -1859,6 +2199,16 @@
         "materials": 8,
         "textures": 19,
         "triangles": 31723
+      },
+      "publicDownloadVisiblePixels": 26961,
+      "publicChangedPixels": 37504,
+      "publicDrawnParts": 16,
+      "publicDownload": {
+        "sha256": "6531fd9dcdca827da88897717de29e37f83f122d2a05743d5b24c969f6c6dc0b",
+        "bytes": 2988128,
+        "materials": 8,
+        "textures": 19,
+        "triangles": 31723
       }
     },
     {
@@ -1904,6 +2254,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "1b34c88b0425fa17b1f477d330681ca1173c703415c14aceb38afb4117c2b8ee",
+        "bytes": 961872,
+        "materials": 5,
+        "textures": 9,
+        "triangles": 1816
+      },
+      "publicDownloadVisiblePixels": 21089,
+      "publicChangedPixels": 21947,
+      "publicDrawnParts": 11,
+      "publicDownload": {
         "sha256": "1b34c88b0425fa17b1f477d330681ca1173c703415c14aceb38afb4117c2b8ee",
         "bytes": 961872,
         "materials": 5,
@@ -1965,6 +2325,16 @@
         "materials": 11,
         "textures": 14,
         "triangles": 8212
+      },
+      "publicDownloadVisiblePixels": 182214,
+      "publicChangedPixels": 132880,
+      "publicDrawnParts": 11,
+      "publicDownload": {
+        "sha256": "9ba833cd1e2e713d9b0a99ee531ef69552c2a522fe0dbc9e94946ef92a54c1b3",
+        "bytes": 1172248,
+        "materials": 11,
+        "textures": 14,
+        "triangles": 8212
       }
     },
     {
@@ -2013,6 +2383,16 @@
         "materials": 3,
         "textures": 6,
         "triangles": 264
+      },
+      "publicDownloadVisiblePixels": 82030,
+      "publicChangedPixels": 79692,
+      "publicDrawnParts": 3,
+      "publicDownload": {
+        "sha256": "4cafeba885567d854636048365045065a19b366c6519018d317283ca8d572e16",
+        "bytes": 380368,
+        "materials": 3,
+        "textures": 6,
+        "triangles": 264
       }
     },
     {
@@ -2055,6 +2435,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "bc139285cb2ff9af5ae3db9b4325108bd675b92fd0d478b56e2c6de8d66c3ea7",
+        "bytes": 308276,
+        "materials": 2,
+        "textures": 2,
+        "triangles": 1682
+      },
+      "publicDownloadVisiblePixels": 28301,
+      "publicChangedPixels": 22643,
+      "publicDrawnParts": 2,
+      "publicDownload": {
         "sha256": "bc139285cb2ff9af5ae3db9b4325108bd675b92fd0d478b56e2c6de8d66c3ea7",
         "bytes": 308276,
         "materials": 2,
@@ -2121,6 +2511,16 @@
         "materials": 16,
         "textures": 19,
         "triangles": 8679
+      },
+      "publicDownloadVisiblePixels": 144166,
+      "publicChangedPixels": 151613,
+      "publicDrawnParts": 16,
+      "publicDownload": {
+        "sha256": "b9c68761714d22f7aa29d8e6b6cf82acbd4bfdfd9021d4abeb6de904cd58cdd9",
+        "bytes": 1830360,
+        "materials": 16,
+        "textures": 19,
+        "triangles": 8679
       }
     },
     {
@@ -2167,6 +2567,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "c99ad4297e03e26d6970b41c1fed1f7d7687365962aa3a73aaae484d6ca6a28a",
+        "bytes": 1255476,
+        "materials": 6,
+        "textures": 12,
+        "triangles": 7307
+      },
+      "publicDownloadVisiblePixels": 171513,
+      "publicChangedPixels": 122899,
+      "publicDrawnParts": 11,
+      "publicDownload": {
         "sha256": "c99ad4297e03e26d6970b41c1fed1f7d7687365962aa3a73aaae484d6ca6a28a",
         "bytes": 1255476,
         "materials": 6,
@@ -2223,6 +2633,16 @@
         "materials": 6,
         "textures": 12,
         "triangles": 7969
+      },
+      "publicDownloadVisiblePixels": 192848,
+      "publicChangedPixels": 141839,
+      "publicDrawnParts": 11,
+      "publicDownload": {
+        "sha256": "b8d0c4e44d96e1a9d6cbccfde37912b64a4c51ddb3101e80cc854adfdc5c3617",
+        "bytes": 1301756,
+        "materials": 6,
+        "textures": 12,
+        "triangles": 7969
       }
     },
     {
@@ -2270,6 +2690,16 @@
         "materials": 5,
         "textures": 10,
         "triangles": 5013
+      },
+      "publicDownloadVisiblePixels": 120072,
+      "publicChangedPixels": 72985,
+      "publicDrawnParts": 5,
+      "publicDownload": {
+        "sha256": "e630b90f315c5f21dfdfa0ffaad02caa12ed54fd844f240b69229833fc6eb1fb",
+        "bytes": 1143324,
+        "materials": 5,
+        "textures": 10,
+        "triangles": 5013
       }
     },
     {
@@ -2311,6 +2741,16 @@
       "glError": 0,
       "queueErrors": [],
       "localDownload": {
+        "sha256": "6c0f597364842aad8acec8cdc17ea4ab2bc4f7aab6b19efa35fd75c4e862bf27",
+        "bytes": 111616,
+        "materials": 1,
+        "textures": 2,
+        "triangles": 144
+      },
+      "publicDownloadVisiblePixels": 18769,
+      "publicChangedPixels": 4352,
+      "publicDrawnParts": 1,
+      "publicDownload": {
         "sha256": "6c0f597364842aad8acec8cdc17ea4ab2bc4f7aab6b19efa35fd75c4e862bf27",
         "bytes": 111616,
         "materials": 1,
@@ -2365,7 +2805,31 @@
         "materials": 5,
         "textures": 10,
         "triangles": 5104
+      },
+      "publicDownloadVisiblePixels": 121439,
+      "publicChangedPixels": 87394,
+      "publicDrawnParts": 10,
+      "publicDownload": {
+        "sha256": "b4fc4c40764dfc45a551734fda6538b20ed99ad63432ef8b28179f43bb6c74ac",
+        "bytes": 908060,
+        "materials": 5,
+        "textures": 10,
+        "triangles": 5104
       }
     }
-  ]
+  ],
+  "publicAt": "2026-11-18T09:23:57.472Z",
+  "publicOrigin": "https://reinekes.github.io/new_babylon_demo",
+  "publicErrors": {
+    "http": [
+      [
+        404,
+        "https://reinekes.github.io/favicon.ico"
+      ]
+    ],
+    "js": [],
+    "log": [
+      "Failed to load resource: the server responded with a status of 404 ()"
+    ]
+  }
 }

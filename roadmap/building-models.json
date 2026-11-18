@@ -21,7 +21,8 @@
           "previous": "evidence/2026-11-18/building-models/old-house-2.webp",
           "image": "evidence/2026-11-18/building-models/house-2.webp",
           "checked": "evidence/2026-11-18/building-models/checked-house-2.webp",
-          "model": "../assets/3d/sumer-buildings/house-2.glb"
+          "model": "../assets/3d/sumer-buildings/house-2.glb",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "house-3",
@@ -30,7 +31,8 @@
           "previous": "evidence/2026-11-18/building-models/old-house-3.webp",
           "image": "evidence/2026-11-18/building-models/house-3.webp",
           "checked": "evidence/2026-11-18/building-models/checked-house-3.webp",
-          "model": "../assets/3d/sumer-buildings/house-3.glb"
+          "model": "../assets/3d/sumer-buildings/house-3.glb",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "starterHut",
@@ -39,7 +41,8 @@
           "previous": "evidence/2026-11-18/building-models/old-starterHut.webp",
           "image": "evidence/2026-11-18/building-models/starterHut.webp",
           "model": "../assets/3d/sumer-buildings/starterHut.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "reedCamp",
@@ -47,7 +50,8 @@
           "status": "ready",
           "image": "evidence/2026-11-18/building-models/reedCamp.webp",
           "model": "../assets/3d/sumer-buildings/reedCamp.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "healer",
@@ -56,7 +60,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/healer.webp",
           "model": "../assets/3d/sumer-buildings/healer.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "musicHouse",
@@ -65,7 +70,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/musicHouse.webp",
           "model": "../assets/3d/sumer-buildings/musicHouse.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
@@ -79,7 +85,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/field.webp",
           "model": "../assets/3d/sumer-buildings/field.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "garden",
@@ -88,7 +95,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/garden.webp",
           "model": "../assets/3d/sumer-buildings/garden.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "fishing",
@@ -97,7 +105,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/fishing.webp",
           "model": "../assets/3d/sumer-buildings/fishing.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "hunting",
@@ -106,7 +115,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/hunting.webp",
           "model": "../assets/3d/sumer-buildings/hunting.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "cowshed",
@@ -115,7 +125,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/cowshed.webp",
           "model": "../assets/3d/sumer-buildings/cowshed.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
@@ -129,7 +140,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/clay.webp",
           "model": "../assets/3d/sumer-buildings/clay.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "reed",
@@ -138,7 +150,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/reed.webp",
           "model": "../assets/3d/sumer-buildings/reed.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "logging",
@@ -147,7 +160,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/logging.webp",
           "model": "../assets/3d/sumer-buildings/logging.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "quarry",
@@ -156,7 +170,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/quarry.webp",
           "model": "../assets/3d/sumer-buildings/quarry.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
@@ -170,7 +185,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/pottery.webp",
           "model": "../assets/3d/sumer-buildings/pottery.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "brickyard",
@@ -179,7 +195,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/brickyard.webp",
           "model": "../assets/3d/sumer-buildings/brickyard.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "kiln",
@@ -188,7 +205,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/kiln.webp",
           "model": "../assets/3d/sumer-buildings/kiln.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "sheepfold",
@@ -197,7 +215,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/sheepfold.webp",
           "model": "../assets/3d/sumer-buildings/sheepfold.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "weaver",
@@ -206,7 +225,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/weaver.webp",
           "model": "../assets/3d/sumer-buildings/weaver.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "tailor",
@@ -215,7 +235,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/tailor.webp",
           "model": "../assets/3d/sumer-buildings/tailor.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "linenYard",
@@ -224,7 +245,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/linenYard.webp",
           "model": "../assets/3d/sumer-buildings/linenYard.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "basketry",
@@ -233,7 +255,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/basketry.webp",
           "model": "../assets/3d/sumer-buildings/basketry.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "matYard",
@@ -242,7 +265,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/matYard.webp",
           "model": "../assets/3d/sumer-buildings/matYard.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "joineryYard",
@@ -251,7 +275,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/joineryYard.webp",
           "model": "../assets/3d/sumer-buildings/joineryYard.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "coppersmith",
@@ -260,7 +285,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/coppersmith.webp",
           "model": "../assets/3d/sumer-buildings/coppersmith.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "bakery",
@@ -269,7 +295,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/bakery.webp",
           "model": "../assets/3d/sumer-buildings/bakery.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "brewery",
@@ -278,7 +305,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/brewery.webp",
           "model": "../assets/3d/sumer-buildings/brewery.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "dairyStore",
@@ -287,7 +315,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/dairyStore.webp",
           "model": "../assets/3d/sumer-buildings/dairyStore.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
@@ -301,7 +330,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/waterpoint.webp",
           "model": "../assets/3d/sumer-buildings/waterpoint.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "granary",
@@ -310,7 +340,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/granary.webp",
           "model": "../assets/3d/sumer-buildings/granary.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "depot",
@@ -319,7 +350,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/depot.webp",
           "model": "../assets/3d/sumer-buildings/depot.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "market",
@@ -328,7 +360,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/market.webp",
           "model": "../assets/3d/sumer-buildings/market.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
@@ -342,7 +375,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/shrine.webp",
           "model": "../assets/3d/sumer-buildings/shrine.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "ziggurat",
@@ -351,7 +385,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/ziggurat.webp",
           "model": "../assets/3d/sumer-buildings/ziggurat.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "ishtarGate",
@@ -360,7 +395,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/ishtarGate.webp",
           "model": "../assets/3d/sumer-buildings/ishtarGate.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
@@ -374,7 +410,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/canal.webp",
           "model": "../assets/3d/sumer-buildings/canal.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "levee",
@@ -383,7 +420,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/levee.webp",
           "model": "../assets/3d/sumer-buildings/levee.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "bridge",
@@ -392,7 +430,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/bridge.webp",
           "model": "../assets/3d/sumer-buildings/bridge.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "harbor",
@@ -401,7 +440,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/harbor.webp",
           "model": "../assets/3d/sumer-buildings/harbor.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "cityWall",
@@ -410,7 +450,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/cityWall.webp",
           "model": "../assets/3d/sumer-buildings/cityWall.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "cityGate",
@@ -419,7 +460,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/cityGate.webp",
           "model": "../assets/3d/sumer-buildings/cityGate.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "watchHouse",
@@ -428,7 +470,8 @@
           "baselineGlb": true,
           "image": "evidence/2026-11-18/building-models/watchHouse.webp",
           "model": "../assets/3d/sumer-buildings/watchHouse.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         },
         {
           "id": "road",
@@ -436,7 +479,8 @@
           "status": "ready",
           "image": "evidence/2026-11-18/building-models/road.webp",
           "model": "../assets/3d/sumer-buildings/road.glb",
-          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json"
+          "checked": "../docs/benchmarks/2026-11-18-building-catalogue-webgl.json",
+          "release": "../docs/versions/2026-11-18-02.md"
         }
       ]
     },
