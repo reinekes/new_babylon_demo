@@ -1,0 +1,883 @@
+{
+  "release": "pasture-goat-20261118",
+  "gameCommit": "3310ecf8db2881f16b8374e38c74e62b41a8a51c",
+  "run": "https://github.com/reinekes/new_babylon_demo/actions/runs/44317539999",
+  "matchedFiles": [
+    {
+      "path": "assets/art-courtyard/ATTRIBUTION.md",
+      "bytes": 35808,
+      "sha256": "c8fa7f382e4303b50b0ea0ad866dd4c952a5dd5adc7ec11789b27f0efdaa176c"
+    },
+    {
+      "path": "assets/art-courtyard/CREDITS.html",
+      "bytes": 32952,
+      "sha256": "2bf386a7484addcdcec593dde4c7403682362b0ca24842e360c253048d120808"
+    },
+    {
+      "path": "assets/art-courtyard/manifest.json",
+      "bytes": 30252,
+      "sha256": "08281c97dd1131ec4f0b63eb472c2c961b93ad8c23ac95050188fedf8b03781a"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat-authored-lod.glb",
+      "bytes": 1649492,
+      "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat-authored.glb",
+      "bytes": 4000280,
+      "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat-downloaded.glb",
+      "bytes": 8930460,
+      "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat.glb",
+      "bytes": 29877228,
+      "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249"
+    },
+    {
+      "path": "assets/art-courtyard/models/pasture-goat.glb",
+      "bytes": 6430168,
+      "sha256": "d120e227ce0b6a124037034a081e330033a38b2cfd6a7aae941064f2b2b6a182"
+    },
+    {
+      "path": "assets/art-courtyard/models/test-goat-trellis.glb",
+      "bytes": 1108340,
+      "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f"
+    },
+    {
+      "path": "crop-studio.html",
+      "bytes": 1893,
+      "sha256": "46d4acf4771bf0d952ce69c58f6482ad876c2a41055ca453094c4ca055ba9308"
+    },
+    {
+      "path": "district3d.html",
+      "bytes": 20673,
+      "sha256": "66c6a458bb107d8d41c53681807dd2339716d4b575125f73e226bdf02e3ac697"
+    },
+    {
+      "path": "game3d/actors.js",
+      "bytes": 75004,
+      "sha256": "e92d5e8665c49379c79eb4605b3f000f18d86109e4ed0ff8d7ca756295ea3db3"
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "bytes": 28643,
+      "sha256": "7b9b01199fe07d783d8669948d1dee988d296f589022d314e1ff375ae0400aff"
+    },
+    {
+      "path": "game3d/goats.js",
+      "bytes": 6700,
+      "sha256": "7ff65159352c737b5ea5186446a9f6a3418edca57af5dda2c7ed89e07994ce70"
+    },
+    {
+      "path": "game3d/model-versions.js",
+      "bytes": 4249,
+      "sha256": "f40c911ceda21b63db5059784fece62584351a3b3a2a03f7f231bfb9b4af564b"
+    },
+    {
+      "path": "game3d/test-livestock.js",
+      "bytes": 17531,
+      "sha256": "9db6b4b62a4b1c5a0bd456ff197cbbabb98580e9abd6e037f4af80ceecc1e8c1"
+    },
+    {
+      "path": "index.html",
+      "bytes": 34235,
+      "sha256": "ba5cf05b11bec527be9eded27066aca89ddd3b9f81a333699256cb5e9cc2c984"
+    },
+    {
+      "path": "model-atlas/app.js",
+      "bytes": 12739,
+      "sha256": "1bea9df29b13bdf1726768a6a617266bd579df27e6676e7fa8d39836924fadd0"
+    },
+    {
+      "path": "model-atlas/catalog.js",
+      "bytes": 15145,
+      "sha256": "13650ad9868ec6c58bb71d5327859a98524a5e07dc05e58680ebfaf45d245208"
+    },
+    {
+      "path": "model-atlas/data/animals.json",
+      "bytes": 49816,
+      "sha256": "9ae5196cdfd10300e3314c63aefc22c7b17dbeeccdaf4655bc86272e0777d1db"
+    },
+    {
+      "path": "model-atlas/data/links.json",
+      "bytes": 4195,
+      "sha256": "0a2731fd11b0e1fac7265a99ad160140eefb8af1b85ab8f89d93b59848f4327f"
+    },
+    {
+      "path": "model-atlas/index.html",
+      "bytes": 10666,
+      "sha256": "a056f8bc7529520e80b8812e1c7c45af53541681629f4bdfabd79df01555ae88"
+    },
+    {
+      "path": "roadmap/assets/app.js",
+      "bytes": 34920,
+      "sha256": "4c0851ff5ff8e6ab01638d476d46f1f29df231996ca442c3f3d3c64c09815251"
+    },
+    {
+      "path": "roadmap/building-models.json",
+      "bytes": 41154,
+      "sha256": "18aea85977296280690306c09c30bba90dd4fb596a3dce9682f30819b0e63070"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/before-walk.webp",
+      "bytes": 1347954,
+      "sha256": "0e599cf2ba3fb6abdbd88907d59ab102089fcca7542434a4ce632654a294a5bd"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/before.webp",
+      "bytes": 67388,
+      "sha256": "38b7febcf368d7b952445993c641d114566393499ff3c45bffe064b0b60fabdb"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/first-pass.webp",
+      "bytes": 47058,
+      "sha256": "d4b16bf29d8ccad52a0ae0d43ef0634dde91c397a65b4e5ed8f05a34c21a5218"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/head.webp",
+      "bytes": 58472,
+      "sha256": "215522670dbadba43be7d92b0838cf3c2b728792c9ed9c43c5b414239616dc9c"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/side.webp",
+      "bytes": 79120,
+      "sha256": "87e067de85a21b1aa22195cb2c0eb26d6c1dc0a06f612cc9bc6f26b1d013f8b4"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/three-quarter.webp",
+      "bytes": 78244,
+      "sha256": "d51c5ece1f10fa4d7ffcb634e7f85f704dcc6a73c98dbdcd70c8e651bf736a76"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/walk.mp4",
+      "bytes": 773663,
+      "sha256": "547c86808db18f00f0b8c5686a2454b4722d83f039d860fe5bfb2c95181b290c"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/pasture-goat/walk.webp",
+      "bytes": 1925524,
+      "sha256": "3698fb554bd63363adcbf60606efd2b3eae15132a10eda82d49e0272b68ae84d"
+    },
+    {
+      "path": "roadmap/index.html",
+      "bytes": 5117059,
+      "sha256": "c3174e5508a03002dedaed76006098db1da0122e87f8e0405f44048bc46bb03a"
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "bytes": 17741,
+      "sha256": "15887e4de5bff274583191e8c574fb338a936e339f73a843ea03dcf1c90cfc4f"
+    },
+    {
+      "path": "roadmap/reports/2026-11-18-pasture-goat.md",
+      "bytes": 5971,
+      "sha256": "0ce87cd6046dc850caa1a188bf6679ca1915de74f8a23aec126730a25c99e94b"
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "bytes": 5059372,
+      "sha256": "599b3a3a8d12a550b6861c9d9793e3497dca43344d9a985148763b8471ab5651"
+    },
+    {
+      "path": "scripts/sumer-building-studio.html",
+      "bytes": 4222,
+      "sha256": "2689394175785dedae08e620706df803030cb4dd024995c7ef95b2d4be76db42"
+    }
+  ],
+  "ordinaryGame": {
+    "users": {
+      "simulated": [
+        {
+          "name": "goat-goat-0",
+          "variant": "pasture",
+          "actor": "goat-0",
+          "clip": "Graze",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-1",
+          "variant": "pasture",
+          "actor": "goat-1",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-0",
+          "variant": "pasture",
+          "actor": "goat-herd-0",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-1",
+          "variant": "pasture",
+          "actor": "goat-herd-1",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-2",
+          "variant": "pasture",
+          "actor": "goat-herd-2",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-3",
+          "variant": "pasture",
+          "actor": "goat-herd-3",
+          "clip": "Idle",
+          "skin": true
+        }
+      ],
+      "pastureHerd": [
+        "livestock-goat-0",
+        "livestock-goat-1",
+        "livestock-goat-2",
+        "livestock-goat-3",
+        "livestock-goat-4",
+        "livestock-goat-5",
+        "livestock-goat-6"
+      ],
+      "resourceRequests": [
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b"
+      ]
+    },
+    "mode": "Взрослый бог",
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "initialGLError": 0,
+    "webGL": 2,
+    "specimens": [
+      {
+        "file": "pasture-goat.glb",
+        "silhouettePixels": 50291,
+        "poseChangedPixels": 8137,
+        "glError": 0,
+        "center": [
+          175.9127355123171,
+          0.44159999373540043,
+          193.98747548808734
+        ],
+        "extent": [
+          0.7100083928111474,
+          0.8831999874033253,
+          1.191211074088784
+        ],
+        "triangles": 41682,
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze",
+          "Rest",
+          "SourceRigAction"
+        ],
+        "rigged": true,
+        "loaded": true
+      }
+    ],
+    "water": [
+      {
+        "name": "horizon-river",
+        "indices": 1152,
+        "compiled": true
+      },
+      {
+        "name": "clear-living-river",
+        "indices": 28224,
+        "compiled": true
+      },
+      {
+        "name": "clear-saved-lakes",
+        "indices": 34782,
+        "compiled": true
+      }
+    ],
+    "exceptions": [],
+    "http": []
+  },
+  "atlas": {
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "transport": "Chrome network",
+    "timestamp": "2026-11-18T13:49:58.172Z",
+    "preservation": {
+      "baseRevision": "21bff6329268a2b5150d0352c7cfbab84388ffec",
+      "oldGlbCount": 48,
+      "listedAndUnchangedOldGlbs": 48,
+      "oldOtherCounts": {
+        "flock": 1,
+        "wildlife": 19,
+        "dairy": 2,
+        "source": 3
+      },
+      "unchangedOtherRows": 25,
+      "unchangedOtherRowOrder": true,
+      "currentGlbCount": 49,
+      "added": [
+        "pasture-goat.glb"
+      ],
+      "oldGlbs": [
+        {
+          "file": "alluvial-bull.glb",
+          "byteLength": 2720752,
+          "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "alluvial-pig.glb",
+          "byteLength": 2576076,
+          "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "alluvial-ram.glb",
+          "byteLength": 2618268,
+          "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-bull.glb",
+          "byteLength": 5800664,
+          "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-dog.glb",
+          "byteLength": 2161184,
+          "sha256": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-donkey.glb",
+          "byteLength": 4356268,
+          "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-duck.glb",
+          "byteLength": 2740460,
+          "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-sheep-kenchoo.glb",
+          "byteLength": 1785652,
+          "sha256": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-yard-pig.glb",
+          "byteLength": 2105828,
+          "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "caravan-camel.glb",
+          "byteLength": 4713460,
+          "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "cat-sitting.glb",
+          "byteLength": 3289240,
+          "sha256": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "cat-walk.glb",
+          "byteLength": 667472,
+          "sha256": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "gazelle-downloaded.glb",
+          "byteLength": 3731492,
+          "sha256": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-authored-lod.glb",
+          "byteLength": 1649492,
+          "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-authored.glb",
+          "byteLength": 4000280,
+          "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-downloaded.glb",
+          "byteLength": 8930460,
+          "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat.glb",
+          "byteLength": 29877228,
+          "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-boar.glb",
+          "byteLength": 1951108,
+          "sha256": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-fox.glb",
+          "byteLength": 1884684,
+          "sha256": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-goose.glb",
+          "byteLength": 1310296,
+          "sha256": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-lioness.glb",
+          "byteLength": 2322264,
+          "sha256": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-orange-bird.glb",
+          "byteLength": 570772,
+          "sha256": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-sky-birds.glb",
+          "byteLength": 195568,
+          "sha256": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "jackal.glb",
+          "byteLength": 1424196,
+          "sha256": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "pasture-bull.glb",
+          "byteLength": 1956500,
+          "sha256": "708a1c70678c21f496aef8d09eca2596272e7c2f34bd9c66e517ab1353747be1",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "pasture-pig.glb",
+          "byteLength": 1699180,
+          "sha256": "7bb75ccbe1b74509fa628c61fa74005dc643fe7214798a373a409d973d06ded4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "pasture-ram.glb",
+          "byteLength": 2799184,
+          "sha256": "b2cc547a1534b87d4544e48e642360c1cdd0e41c20248596d6adc93e83e5ec96",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "sheep.glb",
+          "byteLength": 2024888,
+          "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-mallard-female.glb",
+          "byteLength": 363016,
+          "sha256": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-mallard.glb",
+          "byteLength": 2592180,
+          "sha256": "6f7174d94cab33025c8ee053df196bc323ba5a85a825091155fd29b9c7d240e1",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-seagull.glb",
+          "byteLength": 516392,
+          "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "sky-bird-single.glb",
+          "byteLength": 38304,
+          "sha256": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-cobra-base.glb",
+          "byteLength": 1539392,
+          "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-cobra-head-up.glb",
+          "byteLength": 1541772,
+          "sha256": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-common-quail.glb",
+          "byteLength": 2050532,
+          "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-frog-jump.glb",
+          "byteLength": 1855544,
+          "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-horse-brown.glb",
+          "byteLength": 1660088,
+          "sha256": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-horse-run.glb",
+          "byteLength": 1277372,
+          "sha256": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-northern-cardinal.glb",
+          "byteLength": 1978712,
+          "sha256": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-oriental-goby.glb",
+          "byteLength": 3031240,
+          "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-pelican-wasis.glb",
+          "byteLength": 5244380,
+          "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-realistic-rat.glb",
+          "byteLength": 2129524,
+          "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-schlegel-frog.glb",
+          "byteLength": 2502324,
+          "sha256": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-white-eagle.glb",
+          "byteLength": 886568,
+          "sha256": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-yellowfin-goby.glb",
+          "byteLength": 1519376,
+          "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-bull-trellis.glb",
+          "byteLength": 1930912,
+          "sha256": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-goat-trellis.glb",
+          "byteLength": 1108340,
+          "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-pig-trellis.glb",
+          "byteLength": 967568,
+          "sha256": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902",
+          "unchanged": true,
+          "listed": true
+        }
+      ]
+    },
+    "pages": [
+      {
+        "file": "pasture-goat.glb",
+        "url": "https://reinekes.github.io/new_babylon_demo/model-atlas/?model=pasture-goat.glb",
+        "title": "Пастбищная коза · Используется",
+        "category": "animals",
+        "detail": "Пастбищная коза свободного стада и отдельных животных симуляции с шагом, покоем, выпасом и отдыхом. · 41 682 треугольников · pasture-goat.glb",
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze",
+          "Rest",
+          "SourceRigAction"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.063999998569488,
+          11.046000001430512,
+          18.00600000143051,
+          23.951999995708466,
+          29.99399999856949
+        ],
+        "meshCount": 6,
+        "skinned": 6,
+        "triangles": 41682,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 12349,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "implicitFaviconHttp": [
+          [
+            "https://reinekes.github.io/favicon.ico",
+            404
+          ]
+        ],
+        "failedHttp": [],
+        "outsideProjectHttp": [
+          [
+            "https://reinekes.github.io/favicon.ico",
+            404
+          ]
+        ]
+      },
+      {
+        "file": "goat-downloaded.glb",
+        "url": "https://reinekes.github.io/new_babylon_demo/model-atlas/?model=goat-downloaded.glb",
+        "title": "Коза, прежняя городская модель · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежняя городская коза симуляции. Загружается при отказе новой пастбищной модели. · 41 346 треугольников · goat-downloaded.glb",
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze",
+          "Rest",
+          "SourceRigAction"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.993999998569489,
+          11.97,
+          18.041999995708466,
+          23.927999997138976,
+          29.957999997138977
+        ],
+        "meshCount": 5,
+        "skinned": 5,
+        "triangles": 41346,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 13353,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/goat-downloaded.glb?v=bae9407ee425",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "implicitFaviconHttp": [],
+        "failedHttp": [],
+        "outsideProjectHttp": []
+      },
+      {
+        "file": "test-goat-trellis.glb",
+        "url": "https://reinekes.github.io/new_babylon_demo/model-atlas/?model=test-goat-trellis.glb",
+        "title": "Коза · тестовое стадо · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежняя модель свободного стада коз. Подменяет пастбищную козу при сбое. · 14 418 треугольников · test-goat-trellis.glb",
+        "clips": [
+          "Walk"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.898000004291535,
+          11.94,
+          17.958000004291534,
+          23.946000001430512,
+          29.964000005722045
+        ],
+        "meshCount": 1,
+        "skinned": 1,
+        "triangles": 14418,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 12779,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/test-goat-trellis.glb?v=0a752a0c419a",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "implicitFaviconHttp": [],
+        "failedHttp": [],
+        "outsideProjectHttp": []
+      }
+    ]
+  },
+  "blockedPublicModelWebGL": {
+    "mode": "Взрослый бог",
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "initialGLError": 0,
+    "webGL": 2,
+    "specimens": [
+      {
+        "file": "test-goat-trellis.glb",
+        "silhouettePixels": 69979,
+        "poseChangedPixels": 15526,
+        "glError": 0,
+        "center": [
+          169.64841388844408,
+          0.44337329291583494,
+          186.23758501586667
+        ],
+        "extent": [
+          0.7023600197242672,
+          0.8832000344274782,
+          1.2534863361260022
+        ],
+        "triangles": 14418,
+        "clips": [
+          "Walk"
+        ],
+        "rigged": true,
+        "loaded": true
+      }
+    ],
+    "goats": {
+      "roots": [
+        {
+          "animalId": "goat-0",
+          "variant": "downloaded",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "animalId": "goat-1",
+          "variant": "downloaded",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-0",
+          "variant": "downloaded",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-1",
+          "variant": "downloaded",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-2",
+          "variant": "downloaded",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-3",
+          "variant": "downloaded",
+          "clip": "Walk",
+          "skin": true
+        }
+      ],
+      "requests": [
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/goat-downloaded.glb?v=bae9407ee425",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/test-goat-trellis.glb?v=0a752a0c419a"
+      ]
+    },
+    "exceptions": [],
+    "http": []
+  }
+}
