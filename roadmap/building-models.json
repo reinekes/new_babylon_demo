@@ -26,7 +26,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "model": "../assets/3d/sumer-buildings/house-2.glb",
           "note": "Одноэтажный семейный двор. У двери в жилое крыло — высокий кувшин и чаши. Короткий навес прикрывает только рабочее место, глинобитная скамья видна со входа.",
-          "baselineGlb": true
+          "baselineGlb": true,
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "house-3",
@@ -37,7 +38,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "model": "../assets/3d/sumer-buildings/house-3.glb",
           "note": "Лестница ведёт на обжитую террасу. Верхний этаж отступает от улицы, на парапете сохнет ткань, внизу виден защищённый хозяйственный двор.",
-          "baselineGlb": true
+          "baselineGlb": true,
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "starterHut",
@@ -48,7 +50,8 @@
           "model": "../assets/3d/sumer-buildings/starterHut.glb",
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "note": "У старого стартового улья подчеркнуть толщину косяков и следы починки глиной. Вытоптанная площадка и ручная тара обозначают вход.",
-          "baselineGlb": true
+          "baselineGlb": true,
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "reedCamp",
@@ -59,7 +62,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/reedCamp.webp",
           "note": "Сделать хорошо видимыми стянутые верёвкой арки, край загнутого мата и свёрнутую постель внутри открытого укрытия.",
-          "baselineGlb": true
+          "baselineGlb": true,
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "healer",
@@ -71,7 +75,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/healer.webp",
           "note": "Глубокий затенённый приёмный фасад, скамья ожидания и небольшая полка. Связки трав и боковая грядка отличают дом лекаря от жилья.",
-          "reference": "../docs/model-prototypes/sumer-building-set/healer.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/healer.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "musicHouse",
@@ -83,7 +88,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/musicHouse.webp",
           "note": "Укоротить крышу до полосы тени над задней скамьёй. Низкая боковая комната с красной росписью, лира и каменные пластины в открытой части двора.",
-          "reference": "../docs/model-prototypes/sumer-building-set/musicHouse.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/musicHouse.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },
@@ -99,7 +105,8 @@
           "model": "../assets/3d/sumer-buildings/field.glb",
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/field.webp",
-          "note": "Исходный концепт исключён. В молодом посеве читаются узкие листья, в зрелом — тонкие стебли, слегка склонённые тяжёлые колосья и длинные ости. Между группами видна почва."
+          "note": "Исходный концепт исключён. В молодом посеве читаются узкие листья, в зрелом — тонкие стебли, слегка склонённые тяжёлые колосья и длинные ости. Между группами видна почва.",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "garden",
@@ -111,7 +118,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/garden.webp",
           "note": "По одну сторону поливного рукава видны стволы, кроны и грозди двух пальм. У кладовой под коротким козырьком — два плетёных ларя и открытая корзина с плодами.",
-          "reference": "../docs/model-prototypes/sumer-building-set/garden.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/garden.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "fishing",
@@ -123,7 +131,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/fishing.webp",
           "note": "Гнутая кровля плетёного укрытия, отдельная рама с провисшей сетью и грузилами; у проёма — объёмная верша.",
-          "reference": "../docs/model-prototypes/sumer-building-set/fishing.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/fishing.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "hunting",
@@ -135,7 +144,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/hunting.webp",
           "note": "Кладовая вплотную примыкает к затенённой площадке. Со входа видна светлая шкура с неровными краями, растянутая на тёмной раме.",
-          "reference": "../docs/model-prototypes/sumer-building-set/hunting.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/hunting.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "cowshed",
@@ -147,7 +157,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/cowshed.webp",
           "note": "Два стойла объединяет одна длинная крыша. Низкая перегородка делит заднюю часть, длинное корыто стоит сбоку, створки открывают проход в вытоптанный двор.",
-          "reference": "../docs/model-prototypes/sumer-building-set/cowshed.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/cowshed.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },
@@ -164,7 +175,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/clay.webp",
           "note": "Ступенчатая выемка, боковой пандус, корыто и навес на краю. Срез сырой глины темнее верхней сухой корки.",
-          "reference": "../docs/model-prototypes/sumer-building-set/clay.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/clay.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "reed",
@@ -176,7 +188,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/reed.webp",
           "note": "Высокая наклонная стойка с сохнущим тростником, у ног две перевязанные вязанки. Часть готового мата перекинута через край.",
-          "reference": "../docs/model-prototypes/sumer-building-set/reed.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/reed.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "logging",
@@ -188,7 +201,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/logging.webp",
           "note": "Сырцовая хижина вплотную к навесу над штабелем круглого леса. Со двора видны торцы брёвен, отдельно лежат колода и щепа.",
-          "reference": "../docs/model-prototypes/sumer-building-set/logging.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/logging.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "quarry",
@@ -200,7 +214,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/quarry.webp",
           "note": "Выступ породы с несколькими уступами и свежими плоскостями среза. Пара отделённых блоков лежит на низких полозьях.",
-          "reference": "../docs/model-prototypes/sumer-building-set/quarry.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/quarry.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },
@@ -217,7 +232,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/pottery.webp",
           "note": "Выставить круг к открытой стороне, сгруппировать готовые сосуды на двух полках под коротким навесом. В стороне видна малая печь.",
-          "reference": "../docs/model-prototypes/sumer-building-set/pottery.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/pottery.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "brickyard",
@@ -229,7 +245,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/brickyard.webp",
           "note": "Освободить место под ровные ряды заготовок. Ячеистая форма у ванны замеса под небольшим навесом, подсохший сырец вынесен на солнце.",
-          "reference": "../docs/model-prototypes/sumer-building-set/brickyard.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/brickyard.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "kiln",
@@ -241,7 +258,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/kiln.webp",
           "note": "Песчаная обмазка на сводчатой камере, глубокое устье с кирпичной аркой. Светлый сырец и красноватая готовая партия сложены по разные стороны.",
-          "reference": "../docs/model-prototypes/sumer-building-set/kiln.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/kiln.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "sheepfold",
@@ -253,7 +271,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/sheepfold.webp",
           "note": "Низкие плетёные панели между глиняными столбами, калитка; за спинами животных видны длинный навес, кормушка и корзина шерсти.",
-          "reference": "../docs/model-prototypes/sumer-building-set/sheepfold.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/sheepfold.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "weaver",
@@ -265,7 +284,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/weaver.webp",
           "note": "Повернуть станок с натянутой основой к открытому двору. У станка корзина шерсти, на боковой раме висит полотно с цветной каймой.",
-          "reference": "../docs/model-prototypes/sumer-building-set/weaver.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/weaver.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "tailor",
@@ -277,7 +297,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/tailor.webp",
           "note": "Под коротким навесом на стене видна готовая туника; на низкой скамье — стопка цветных тканей с заметными сгибами.",
-          "reference": "../docs/model-prototypes/sumer-building-set/tailor.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/tailor.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "linenYard",
@@ -289,7 +310,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/linenYard.webp",
           "note": "Светлые снопы в глубине, овальная ванна вымачивания впереди и рама со светлым полотном в стороне от мокрой работы.",
-          "reference": "../docs/model-prototypes/sumer-building-set/linenYard.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/linenYard.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "basketry",
@@ -301,7 +323,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/basketry.webp",
           "note": "Незаконченная корзина раскрывается веером прутьев. По одну сторону сложен материал, по другую стоят готовые корзины разной глубины.",
-          "reference": "../docs/model-prototypes/sumer-building-set/basketry.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/basketry.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "matYard",
@@ -313,7 +336,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/matYard.webp",
           "note": "Открытая рабочая поверхность с развёрнутой широкой циновкой, на свёртках виден виток. Навес занимает только задний угол.",
-          "reference": "../docs/model-prototypes/sumer-building-set/matYard.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/matYard.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "joineryYard",
@@ -325,7 +349,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/joineryYard.webp",
           "note": "По сторонам прохода показать две стадии работы: тёсаные доски на козлах и изогнутые шпангоуты собираемой лодки.",
-          "reference": "../docs/model-prototypes/sumer-building-set/joineryYard.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/joineryYard.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "coppersmith",
@@ -337,7 +362,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/coppersmith.webp",
           "note": "Купольный горн с потемневшим устьем, на соседнем столе литейные формы с выемками и медно-красные заготовки.",
-          "reference": "../docs/model-prototypes/sumer-building-set/coppersmith.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/coppersmith.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "bakery",
@@ -349,7 +375,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/bakery.webp",
           "note": "Закопчённое устье купола в глубине, ручная зернотёрка у входа, плоские лепёшки на циновке рядом с местом выпечки.",
-          "reference": "../docs/model-prototypes/sumer-building-set/bakery.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/bakery.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "brewery",
@@ -361,7 +388,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/brewery.webp",
           "note": "Ряд крупных сосудов с открытыми горлами под боковым навесом, сито прислонено к стене, впереди низкие корзины с зерном.",
-          "reference": "../docs/model-prototypes/sumer-building-set/brewery.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/brewery.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "dairyStore",
@@ -373,7 +401,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/dairyStore.webp",
           "note": "В тени видно стол с небольшими формами, на задней полке лежат светлые круги сыра. Один кувшин и свисающий край ткани задают масштаб.",
-          "reference": "../docs/model-prototypes/sumer-building-set/dairyStore.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/dairyStore.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },
@@ -390,7 +419,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/waterpoint.webp",
           "note": "Из затенённой площадки спуск по ступеням к воде. Кувшины собраны у задней стены и оставляют открытым подход носильщика.",
-          "reference": "../docs/model-prototypes/sumer-building-set/waterpoint.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/waterpoint.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "granary",
@@ -402,7 +432,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/granary.webp",
           "note": "Объединить ячейки в тяжёлый замкнутый объём с продухами. Поднятая дверь и ступени ведут с площадки приёмки, у порога стоят мерные корзины.",
-          "reference": "../docs/model-prototypes/sumer-building-set/granary.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/granary.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "depot",
@@ -414,7 +445,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/depot.webp",
           "note": "Основу фасада образует открытый прилавок с крупными низкими корзинами зерна. За спиной раздатчика — полка с посудой.",
-          "reference": "../docs/model-prototypes/sumer-building-set/depot.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/depot.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "market",
@@ -426,7 +458,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/market.webp",
           "note": "У крупного рынка сохранить сквозной проход с открытыми прилавками по сторонам. Развести плетёные и тканевые навесы, показать товары в корзинах и нишах. Для старого 1×1 использовать компактный концепт.",
-          "reference": "../docs/model-prototypes/sumer-building-set/market.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/market.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },
@@ -443,7 +476,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/shrine.webp",
           "note": "Плетёный свод с наружными дугами и диагональной перевязью на торце. Глубокий вход между небольшими площадками для приношений.",
-          "reference": "../docs/model-prototypes/sumer-building-set/shrine.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/shrine.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "ziggurat",
@@ -455,7 +489,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/ziggurat.webp",
           "note": "Три явно сужающиеся террасы, наклонные контрфорсы и осевой лестничный подъём к небольшому верхнему храму.",
-          "reference": "../docs/model-prototypes/sumer-building-set/ziggurat.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/ziggurat.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "ishtarGate",
@@ -467,7 +502,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/ishtarGate.webp",
           "note": "Во вратах Инанны две сырцовые башни с наклонными стенами и углублёнными нишами; над настоящим проходом лежит тяжёлая деревянная балка.",
-          "reference": "../docs/model-prototypes/sumer-building-set/ishtarGate.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/ishtarGate.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },
@@ -484,7 +520,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/canal.webp",
           "note": "Углубить узкое русло между двумя глиняными откосами. Влажная полоса у воды проходит непрерывно через поворот и соединение.",
-          "reference": "../docs/model-prototypes/sumer-building-set/canal.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/canal.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "levee",
@@ -496,7 +533,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/levee.webp",
           "note": "У насыпи отчётливо видны узкий продольный гребень, крутые уплотнённые бока и сопряжение соседних участков.",
-          "reference": "../docs/model-prototypes/sumer-building-set/levee.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/levee.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "bridge",
@@ -508,7 +546,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/bridge.webp",
           "note": "Дощатый настил между двумя массивными сырцовыми устоями. У берегов выделить опирание балок, длину пролёта задаёт русло.",
-          "reference": "../docs/model-prototypes/sumer-building-set/bridge.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/bridge.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "harbor",
@@ -520,7 +559,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/harbor.webp",
           "note": "У откоса устроить дощатый помост со швартовыми столбами и боковой грузовой рампой. Складская дверь и крытая площадка выходят к воде.",
-          "reference": "../docs/model-prototypes/sumer-building-set/harbor.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/harbor.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "cityWall",
@@ -532,7 +572,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/cityWall.webp",
           "note": "У секции расширенное основание, выступающий верхний ряд и участки открытой кладки. Торцы совпадают с соседними секциями.",
-          "reference": "../docs/model-prototypes/sumer-building-set/cityWall.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/cityWall.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "cityGate",
@@ -544,7 +585,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/cityGate.webp",
           "note": "Сужающиеся кверху боковые башни с верхними щелями и глубоким сквозным проездом. Стена подходит к воротам на той же отметке.",
-          "reference": "../docs/model-prototypes/sumer-building-set/cityGate.webp"
+          "reference": "../docs/model-prototypes/sumer-building-set/cityGate.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "watchHouse",
@@ -556,7 +598,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/watchHouse.webp",
           "note": "Главный объём — башня с приставной лестницей. Один боковой навес над скамьёй, крупный сосуд у входа и свет факелов на стенах.",
-          "reference": "../docs/model-prototypes/watch-house/concept-v2.webp"
+          "reference": "../docs/model-prototypes/watch-house/concept-v2.webp",
+          "release": "../docs/versions/2026-11-18-04.md"
         },
         {
           "id": "road",
@@ -567,7 +610,8 @@
           "checked": "../docs/benchmarks/2026-11-18-building-art-webgl.json",
           "previous": "evidence/2026-11-18/building-models/road.webp",
           "note": "Утоптанная светлая середина, уплотнённые колеи и рыхлые края постепенно переходят в грунт. Стыки продолжают дорогу через соседнюю клетку.",
-          "baselineGlb": true
+          "baselineGlb": true,
+          "release": "../docs/versions/2026-11-18-04.md"
         }
       ]
     },

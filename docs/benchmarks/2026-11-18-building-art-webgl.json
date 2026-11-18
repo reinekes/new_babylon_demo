@@ -2579,5 +2579,141 @@
     "exceptions": [],
     "failures": [],
     "errors": []
+  },
+  "published": {
+    "gameCommit": "bfcfbcea3510f85d8e71774130c960d53e9ea8ed",
+    "deployment": "https://github.com/reinekes/new_babylon_demo/actions/runs/44289618648",
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "checkedAt": "2026-11-18T10:56:45.258Z",
+    "views": 45,
+    "matchingGameGeometryHashes": 45,
+    "matchingDownloadedGlbHashes": 45,
+    "matchingProceduralVertexSets": 40,
+    "cityVisiblePixelsMin": 4100,
+    "standaloneVisiblePixelsMin": 18762,
+    "exceptions": [],
+    "shaderErrors": [],
+    "httpFailures": [
+      [
+        404,
+        "https://reinekes.github.io/favicon.ico"
+      ]
+    ],
+    "gameEntry": {
+      "game": {
+        "engineVersion": "9.31.0",
+        "framesDrawn": 79,
+        "activeMeshes": 89,
+        "glError": 0,
+        "cityMeshCount": 59,
+        "levelOneParts": 48,
+        "activeCamera": "city-camera",
+        "webGL": 2,
+        "uiDocument": "Новый Вавилон — имена богов",
+        "mode": "Взрослый бог",
+        "modal": null
+      },
+      "exceptions": [],
+      "failures": [],
+      "errors": []
+    },
+    "verifiedFiles": [
+      {
+        "path": "index.html",
+        "bytes": 33889,
+        "sha256": "206d5b61f8dedfe688c6c080ebee63afe29660844a341ad726e88f1911cf245c"
+      },
+      {
+        "path": "scripts/sumer-building-studio.js",
+        "bytes": 8668,
+        "sha256": "f9b04c451179924c7856fefade51c0bfb5a43aceea1ac3b21ab663abaa411a01"
+      },
+      {
+        "path": "assets/vendor/babylon-runtime-9.31.0.js",
+        "bytes": 3964486,
+        "sha256": "ea35a20077ab48b875def111295317d20e66295b2b90bfaa2e275ee79a9649f2"
+      },
+      {
+        "path": "game3d/reference-workshops.js",
+        "bytes": 18610,
+        "sha256": "16f567d05838235c59dc7fef342563293582faed5dd787e6b6c702d9927c1c0d"
+      },
+      {
+        "path": "game3d/reference-yards.js",
+        "bytes": 22404,
+        "sha256": "628afc7bc6c3bf613d726580dc37b1ac7e2131cb52904c18eacbaed1f715f782"
+      },
+      {
+        "path": "game3d/reference-civic.js",
+        "bytes": 10852,
+        "sha256": "20a4ec25e69b9043cfd6e122ff68230b91f082f6eb7a6f6b70b3d431d2c1c0cd"
+      },
+      {
+        "path": "roadmap/index.html",
+        "bytes": 5085204,
+        "sha256": "ec854a7d7214945d52c9e3f940bced3a677ec42b6554e200e675b595ad3e7606"
+      },
+      {
+        "path": "roadmap/reports/2026-11-18-building-art-review.md",
+        "bytes": 58546,
+        "sha256": "9cadbaca06b01a1ebbeb4db013b486e1e04899c00686cad91f586b0c570eb570"
+      },
+      {
+        "path": "assets/3d/crops/barley-tillers.glb",
+        "bytes": 88676,
+        "sha256": "eacd4ca6d1c97da5c60d6e8141bcb4b50da3a44fe7024bfa537a7f50545437ab"
+      },
+      {
+        "path": "assets/3d/sumer-buildings/garden.glb",
+        "bytes": 3508484,
+        "sha256": "5421ffb1d4a6927834f0a7b25995cbb5d0ef326efc0a2d28bb7cc9f0c8ce7df6"
+      },
+      {
+        "path": "assets/3d/sumer-buildings/quarry.glb",
+        "bytes": 1339792,
+        "sha256": "b6a1c0faaef29c65461419a9de7dd68abab6b99abca3f840494dc1068740db15"
+      },
+      {
+        "path": "assets/3d/sumer-buildings/field.glb",
+        "bytes": 1098576,
+        "sha256": "bab39452bffc6b6a5a030f85f555ec42b2b40ded7995bbdf658504246e6649a1"
+      }
+    ],
+    "productionBarley": {
+      "at": "2026-11-18T10:58:04.374Z",
+      "origin": "https://reinekes.github.io/new_babylon_demo",
+      "data": {
+        "crop": {
+          "fieldCrops": true,
+          "cropKind": "barley",
+          "clumps": 64
+        },
+        "base": "function",
+        "plugin": "BarleyBreeze",
+        "ready": true,
+        "uniform": true,
+        "codeHasDisplacement": true,
+        "loadedRuntime": [
+          "https://reinekes.github.io/new_babylon_demo/assets/vendor/babylon-runtime-9.31.0.js?v=ea35a20077ab"
+        ],
+        "width": 1200,
+        "height": 880,
+        "elapsedMs": 532,
+        "barley": {
+          "changed": 84089,
+          "sum": 10755099
+        },
+        "hiddenBarley": {
+          "changed": 0,
+          "sum": 0
+        },
+        "cameraFixed": true,
+        "glError": 0
+      },
+      "compilationErrors": [],
+      "exceptions": [],
+      "failures": [],
+      "errors": []
+    }
   }
 }
