@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "manifestRelease": "river-herds-20261118",
+  "manifestRelease": "pasture-goat-20261118",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 101,
-    "active": 68,
-    "fallback": 13,
+    "total": 102,
+    "active": 67,
+    "fallback": 15,
     "optional": 7,
     "spare": 13
   },
@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "e1745602f6ed211e38cc203175d881555d06ccb1dde3ebd67bd00d33d2f22a4b"
+      "sha256": "e92d5e8665c49379c79eb4605b3f000f18d86109e4ed0ff8d7ca756295ea3db3"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "7806a8664482e39505ca65ba24be4ea40d0baaad194f2ff086a01e63da0ffdc8"
+      "sha256": "7b9b01199fe07d783d8669948d1dee988d296f589022d314e1ff375ae0400aff"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -49,7 +49,7 @@
     },
     {
       "file": "game3d/goats.js",
-      "sha256": "c0c47f68c529607e838dc3f70621c6b6505626fa0da1e4fd4ac95d46788789ea"
+      "sha256": "7ff65159352c737b5ea5186446a9f6a3418edca57af5dda2c7ed89e07994ce70"
     },
     {
       "file": "game3d/imported-fauna.js",
@@ -89,7 +89,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "732974f956d72fdf034aed8d568526cd33ce4e7375494d189c9cf6ba897e51ea"
+      "sha256": "9db6b4b62a4b1c5a0bd456ff197cbbabb98580e9abd6e037f4af80ceecc1e8c1"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -194,7 +194,7 @@
         {
           "model": "alluvial-bull.glb",
           "file": "game3d/test-livestock.js",
-          "line": 12,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -232,7 +232,7 @@
         {
           "model": "alluvial-pig.glb",
           "file": "game3d/test-livestock.js",
-          "line": 10,
+          "line": 11,
           "kind": "literal"
         }
       ]
@@ -264,7 +264,7 @@
         {
           "model": "alluvial-ram.glb",
           "file": "game3d/test-livestock.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -747,7 +747,7 @@
     {
       "file": "goat-authored-lod.glb",
       "status": "optional",
-      "purpose": "Авторская коза через API createGameGoats; main выбирает downloaded.",
+      "purpose": "Авторская коза через API createGameGoats; основной город использует pasture.",
       "classificationEvidence": "game3d/goats.js|authored:",
       "bytes": 1649492,
       "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
@@ -807,9 +807,9 @@
     },
     {
       "file": "goat-downloaded.glb",
-      "status": "active",
-      "purpose": "Основная коза симуляции и один из двух обликов стада; исходный Idle, добавленная проектом ходьба.",
-      "classificationEvidence": "game3d/actors.js|variants:['downloaded']",
+      "status": "fallback",
+      "purpose": "Прежняя городская коза симуляции. Загружается при отказе новой пастбищной модели.",
+      "classificationEvidence": "game3d/actors.js|fallbackVariant:'downloaded'",
       "bytes": 8930460,
       "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
       "version": "bae9407ee425",
@@ -840,20 +840,8 @@
       "references": [
         {
           "model": "goat-downloaded.glb",
-          "file": "game3d/ambient-fauna.js",
-          "line": 249,
-          "kind": "literal"
-        },
-        {
-          "model": "goat-downloaded.glb",
           "file": "game3d/goats.js",
           "line": 4,
-          "kind": "literal"
-        },
-        {
-          "model": "goat-downloaded.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 11,
           "kind": "literal"
         }
       ]
@@ -1775,7 +1763,54 @@
         {
           "model": "pasture-bull.glb",
           "file": "game3d/test-livestock.js",
-          "line": 12,
+          "line": 13,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "pasture-goat.glb",
+      "status": "active",
+      "purpose": "Пастбищная коза свободного стада и отдельных животных симуляции с шагом, покоем, выпасом и отдыхом.",
+      "classificationEvidence": "game3d/goats.js|pasture-goat.glb",
+      "bytes": 6430168,
+      "sha256": "d120e227ce0b6a124037034a081e330033a38b2cfd6a7aae941064f2b2b6a182",
+      "version": "d120e227ce0b",
+      "triangles": 41682,
+      "meshes": 6,
+      "bones": 34,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest",
+        "SourceRigAction"
+      ],
+      "sources": [
+        {
+          "author": "GerardoA400 (https://sketchfab.com/GerardoA400)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/goat-5d7431517b634f4e9e8c0f3729cd9c59",
+          "evidence": "asset.extras"
+        },
+        {
+          "author": "GerardoA400 (https://sketchfab.com/GerardoA400)",
+          "license": "CC-BY-4.0",
+          "source": "https://sketchfab.com/3d-models/goat-5d7431517b634f4e9e8c0f3729cd9c59",
+          "evidence": "asset.extras.new_babylon_adaptation"
+        }
+      ],
+      "references": [
+        {
+          "model": "pasture-goat.glb",
+          "file": "game3d/ambient-fauna.js",
+          "line": 249,
+          "kind": "literal"
+        },
+        {
+          "model": "pasture-goat.glb",
+          "file": "game3d/goats.js",
+          "line": 4,
           "kind": "literal"
         }
       ]
@@ -1807,7 +1842,7 @@
         {
           "model": "pasture-pig.glb",
           "file": "game3d/test-livestock.js",
-          "line": 10,
+          "line": 11,
           "kind": "literal"
         }
       ]
@@ -1840,7 +1875,7 @@
         {
           "model": "pasture-ram.glb",
           "file": "game3d/test-livestock.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -2874,8 +2909,8 @@
     },
     {
       "file": "test-goat-trellis.glb",
-      "status": "active",
-      "purpose": "Один из обликов свободного стада коз.",
+      "status": "fallback",
+      "purpose": "Прежняя модель свободного стада коз. Подменяет пастбищную козу при сбое.",
       "classificationEvidence": "game3d/test-livestock.js|test-goat-trellis",
       "bytes": 1108340,
       "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
@@ -2898,7 +2933,7 @@
         {
           "model": "test-goat-trellis.glb",
           "file": "game3d/test-livestock.js",
-          "line": 11,
+          "line": 12,
           "kind": "literal"
         }
       ]

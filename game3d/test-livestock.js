@@ -5,10 +5,11 @@ import {flockAdults,flockSize} from '../textiles.js';
 import {sheepfoldGateSide,sheepfoldLayout,sheepfoldWorldPoint} from '../sheepfold-layout.js';
 import {DAY_SECONDS,lightingAt,seed} from '../city-life.js';
 import {dairyHerd} from './dairy-herd.js';
+import {GOAT_MODELS} from './goats.js';
 
 const MODELS={
  pig:{files:['pasture-pig.glb'],strides:[.34],fallback:{file:'alluvial-pig.glb',stride:.33},height:.64,space:.22},
- goat:{files:['test-goat-trellis.glb','goat-downloaded.glb'],strides:[.40,.30],height:.96,space:.22},
+ goat:{files:[GOAT_MODELS.pasture.file],strides:[GOAT_MODELS.pasture.stride],fallback:{file:'test-goat-trellis.glb',stride:.40},height:.96,space:.22},
  bull:{files:['pasture-bull.glb'],strides:[.62],fallback:{file:'alluvial-bull.glb',stride:.69},height:1.43,space:.32,pen:'cowshed'},
  sheep:{files:['pasture-ram.glb'],strides:[.31],fallback:{file:'alluvial-ram.glb',stride:.38},height:.83,space:.21,pen:'sheepfold'},
 };
@@ -172,7 +173,9 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   for(const mesh of owned){mesh.isPickable=false;mesh.receiveShadows=true;meshes.push(mesh);}
   const walk=copy.animationGroups.find(group=>/-Walk$/i.test(group.name))||copy.animationGroups.find(group=>/-Animation$/i.test(group.name));
   const idle=copy.animationGroups.find(group=>/Idle$/i.test(group.name));
-  const member={root,owned,copy,walk,idle,stride:spec.strides[variant]??spec.fallback.stride,phase:index*.31,point:null,index,attempt:0,waitUntil:0};
+  const baseStride=spec.strides[variant]??spec.fallback.stride;
+  const stride=file===GOAT_MODELS.pasture.file?baseStride*scale:baseStride;
+  const member={root,owned,copy,walk,idle,stride,phase:index*.31,point:null,index,attempt:0,waitUntil:0};
   const targets=walk?.targetedAnimations||[];
   member.restPositions=targets.filter(({target,animation})=>target.position&&animation.targetProperty==='position')
    .map(({target})=>({target,position:target.position.clone()}));

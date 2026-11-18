@@ -246,7 +246,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   for(let i=0;i<count;i++)imported(species,i);
  }
  const herdSources=new Map(entries.filter(([kind])=>assets.has(kind)).map(([kind,spec])=>[spec.file,assets.get(kind)]));
- if(options.herdGoat)herdSources.set('goat-downloaded.glb',options.herdGoat);
+ if(options.herdGoat)herdSources.set('pasture-goat.glb',options.herdGoat);
  const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment,herdSources):null;
  const yardPigs=assets.has('yard-pig')&&!testLivestock?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
  let yardPlan,yardPlaces=[],yardAnchors=[];

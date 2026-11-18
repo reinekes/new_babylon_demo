@@ -118,7 +118,7 @@ test('model register compares the two visuals and filters status without changin
   const {dom,api}=app(),doc=dom.window.document;
   const register=JSON.parse(fs.readFileSync(new URL('../building-models.json',import.meta.url)));
   const rows=register.groups.flatMap(group=>group.items);
-  const current=register.groups.filter(group=>!group.future).flatMap(group=>group.items.map(item=>item.id));
+  const current=register.groups.filter(group=>!group.future&&group.kind!=='animals').flatMap(group=>group.items.map(item=>item.id));
   assert.deepEqual(current.sort(),[...Object.keys(BUILDINGS),'road','starterHut','reedCamp','house-2','house-3'].sort());
   api.setData({...api.getData(),buildingModels:register});
   doc.querySelector('nav [data-view="buildings"]').click();
@@ -128,6 +128,11 @@ test('model register compares the two visuals and filters status without changin
   assert.equal(house.querySelectorAll('figure img').length,2);
   assert.notEqual(...[...house.querySelectorAll('img')].map(img=>img.src));
   assert.match(house.textContent,/Проверка в игре/);
+  const goat=doc.querySelector('[data-model="pasture-goat"]');
+  assert.ok(goat);
+  assert.ok([...goat.querySelectorAll('a')].some(link=>link.getAttribute('href')==='../model-atlas/?model=pasture-goat.glb'));
+  assert.ok([...goat.querySelectorAll('a')].some(link=>link.getAttribute('href')==='../assets/art-courtyard/models/test-goat-trellis.glb'));
+
   doc.querySelector('[data-model-status="ready"]').click();
   assert.equal(doc.querySelectorAll('[data-model]').length,rows.filter(r=>r.status==='ready').length);
   doc.querySelector('[data-model-status="working"]').click();

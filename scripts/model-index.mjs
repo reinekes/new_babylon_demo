@@ -19,13 +19,14 @@ group('resident','fallback','Последний резерв взрослого 
 group('resident-lod','optional','Только benchmark художественного двора; не основной городской LOD.','courtyard/app.js|stress?model(\'resident-lod\')');
 group('historical-man','active','Жрец/музыкант: дополнительный облик реального взрослого мужчины, загрузка по потребности.','game3d/actors.js|requestHistoricalResident');
 group('sheep','active','Основное стадо овец симуляции; также художественный двор.','game3d/actors.js|load(\'sheep\')');
-group('goat-downloaded','active','Основная коза симуляции и один из двух обликов стада; исходный Idle, добавленная проектом ходьба.','game3d/actors.js|variants:[\'downloaded\']');
-group('goat-authored-lod','optional','Авторская коза через API createGameGoats; main выбирает downloaded.','game3d/goats.js|authored:');
+group('goat-downloaded','fallback','Прежняя городская коза симуляции. Загружается при отказе новой пастбищной модели.','game3d/actors.js|fallbackVariant:\'downloaded\'');
+group('goat-authored-lod','optional','Авторская коза через API createGameGoats; основной город использует pasture.','game3d/goats.js|authored:');
 group('goat-authored goat','spare','Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.','assets/art-courtyard/ATTRIBUTION.md|## Goats');
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
 group('pasture-ram pasture-bull pasture-pig','active','Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида.','game3d/test-livestock.js|pasture-');
+group('pasture-goat','active','Пастбищная коза свободного стада и отдельных животных симуляции с шагом, покоем, выпасом и отдыхом.','game3d/goats.js|pasture-goat.glb');
 group('alluvial-ram alluvial-bull alluvial-pig','fallback','Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой.','game3d/test-livestock.js|fallback:');
-group('test-goat-trellis','active','Один из обликов свободного стада коз.','game3d/test-livestock.js|test-goat-trellis');
+group('test-goat-trellis','fallback','Прежняя модель свободного стада коз. Подменяет пастбищную козу при сбое.','game3d/test-livestock.js|test-goat-trellis');
 group('test-pig-trellis test-bull-trellis','spare','Исходные модели TRELLIS.2 с прежней походкой. Открываются в атласе.','model-atlas/catalog.js|test-bull-trellis');
 group('ambient-bull','active','Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.','game3d/ambient-fauna.js|dairyHerd');
 group('ambient-dog imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
@@ -145,7 +146,7 @@ export async function buildIndex(root=ROOT){
  const refs=scanReferences(sources);
  const errors=reconcile({disk,manifest:manifestModels,versions,refs,classified:groups.map(x=>x.file)});
  // Fail closed when main defaults controlling optional classifications change.
- for(const token of ["variants:['downloaded']",'includeSkyBirds:false'])if(!sources['game3d/actors.js'].includes(token))errors.push('Review main selection: '+token);
+ for(const token of ["variants:['pasture'],fallbackVariant:'downloaded'",'includeSkyBirds:false'])if(!sources['game3d/actors.js'].includes(token))errors.push('Review main selection: '+token);
  const models=[];
  for(const file of disk){
   const bytes=await readFile(join(root,ART,'models',file)),glb=readGlb(bytes),entry=manifestModels.find(x=>x.file===file),rule=groups.find(x=>x.file===file);

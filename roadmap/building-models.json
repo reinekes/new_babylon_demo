@@ -626,6 +626,23 @@
       ]
     },
     {
+      "name": "Животные",
+      "kind": "animals",
+      "items": [
+        {
+          "id": "pasture-goat",
+          "name": "Пастбищная коза",
+          "status": "ready",
+          "previous": "evidence/2026-11-18/pasture-goat/before.webp",
+          "previousModel": "../assets/art-courtyard/models/test-goat-trellis.glb",
+          "image": "evidence/2026-11-18/pasture-goat/side.webp",
+          "checked": "evidence/2026-11-18/pasture-goat/walk.mp4",
+          "model": "../assets/art-courtyard/models/pasture-goat.glb",
+          "note": "Взрослая коза. Сбоку видны холка, лёгкая голова и сгиб скакательного сустава. На видео коза идёт по земле своим игровым маршрутом."
+        }
+      ]
+    },
+    {
       "name": "Предложенные объекты",
       "future": true,
       "items": [

@@ -123,11 +123,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const wildlife=createWildlife(B,scene,meshes);
  let goats=null,imported=null,ambient=null,jackals=null,supplied=null;
  const loadFauna=async()=>{
-  const goatReady=(includeFauna?createGameGoats(B,scene,meshes,{variants:['downloaded']}):Promise.resolve(null)).catch(error=>{console.warn('Downloaded goats unavailable; herd remains in simulation.',error);return null;});
+  const goatReady=(includeFauna?createGameGoats(B,scene,meshes,{variants:['pasture'],fallbackVariant:'downloaded'}):Promise.resolve(null)).catch(error=>{console.warn('Detailed goat models unavailable; herd remains in simulation.',error);return null;});
   const values=await Promise.all([
   goatReady,
   (includeFauna?createImportedFauna(B,scene,meshes):Promise.resolve(null)).catch(error=>{console.warn('Imported fauna unavailable; using legacy fauna.',error);return null;}),
-  (includeFauna?createAmbientFauna(B,scene,meshes,{includeSkyBirds:false,includeShoreBirds:true,hidePlaceholderBirds:true,includeYardPig:true,includeTestLivestock:true,herdGoat:goatReady.then(view=>view?.sourceForHerd())}):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;}),
+  (includeFauna?createAmbientFauna(B,scene,meshes,{includeSkyBirds:false,includeShoreBirds:true,hidePlaceholderBirds:true,includeYardPig:true,includeTestLivestock:true,herdGoat:goatReady.then(view=>view?.sourceForHerd('pasture'))}):Promise.resolve(null)).catch(error=>{console.warn('Ambient fauna unavailable.',error);return null;}),
   (includeFuneralFauna?createJackals(B,scene,null,meshes):Promise.resolve(null)).catch(error=>{console.warn('Jackals unavailable; using legacy fauna.',error);return null;}),
   includeFauna?createSuppliedFauna(B,scene,meshes):Promise.resolve(null)]);if(disposed){for(const v of values)v?.dispose();return;}[goats,imported,ambient,jackals,supplied]=values;};
  let faunaReady=Promise.resolve();if(!deferFauna)await loadFauna();else faunaReady=new Promise(resolve=>setTimeout(resolve,150)).then(()=>{if(!disposed)return loadFauna();});

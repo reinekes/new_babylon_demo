@@ -1,16 +1,16 @@
 {
-  "release": "river-herds-20261118",
+  "release": "pasture-goat-20261118",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 34922,
-      "sha256": "c1894b1efd15a52244da08820427e47d741cf73ece60da2571326ca47259fca9"
+      "bytes": 35808,
+      "sha256": "c8fa7f382e4303b50b0ea0ad866dd4c952a5dd5adc7ec11789b27f0efdaa176c"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 32601,
-      "sha256": "2065e54489d04887e2a4ad29024d252e6afb241f839f4a5b0a6d420e6b9d3bc1"
+      "bytes": 32952,
+      "sha256": "2bf386a7484addcdcec593dde4c7403682362b0ca24842e360c253048d120808"
     },
     {
       "file": "festival-candle-report.json",
@@ -30,6 +30,21 @@
       "meshes": 1,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "models/pasture-goat.glb",
+      "bytes": 6430168,
+      "sha256": "d120e227ce0b6a124037034a081e330033a38b2cfd6a7aae941064f2b2b6a182",
+      "triangles": 41682,
+      "meshes": 6,
+      "bones": 34,
+      "clips": [
+        "Idle",
+        "Walk",
+        "Graze",
+        "Rest",
+        "SourceRigAction"
+      ]
     },
     {
       "file": "models/pasture-ram.glb",

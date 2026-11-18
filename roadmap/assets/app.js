@@ -93,8 +93,13 @@
         counters[item.status]++;
         if(modelFilter&&item.status!==modelFilter)continue;
         const previous=item.previous||(group.future?'':`evidence/2026-11-18/building-models/previous/${item.id}.webp`);
-        const oldModel=item.baselineGlb?`https://github.com/reinekes/new_babylon_demo/blob/${item.previousCommit||data.buildingModels.baseline}/assets/3d/sumer-buildings/${item.id}.glb`:'';
-        const studio=!group.future&&item.status==='ready'?`<a href="../scripts/sumer-building-studio.html?model=${encodeURIComponent(item.id)}" target="_blank" rel="noopener noreferrer">В городе</a>`:'';
+        const oldModel=item.previousModel||(item.baselineGlb?`https://github.com/reinekes/new_babylon_demo/blob/${item.previousCommit||data.buildingModels.baseline}/assets/3d/sumer-buildings/${item.id}.glb`:'');
+        let studio='';
+        if(!group.future&&item.status==='ready'){
+          studio=group.kind==='animals'
+            ?`<a href="../model-atlas/?model=${encodeURIComponent(item.model.split('/').pop())}" target="_blank" rel="noopener noreferrer">В 3D-атласе</a>`
+            :`<a href="../scripts/sumer-building-studio.html?model=${encodeURIComponent(item.id)}" target="_blank" rel="noopener noreferrer">В городе</a>`;
+        }
         const currentModel=item.modelVersion&&item.model?item.model+'?v='+encodeURIComponent(item.modelVersion):item.model;
         const links=[studio,modelLink(oldModel,'Прежняя GLB'),modelLink(currentModel,group.future?'Эскиз · GLB':'Новая GLB'),modelLink(item.reference,'Исходная иллюстрация'),modelLink(item.checked,'Проверка в игре'),modelLink(item.release,'Выпуск'),modelLink(item.source,'Предложение')].filter(Boolean);
         cards.push(`<article class="model-card" data-model="${escape(item.id)}">
@@ -106,7 +111,7 @@
     }
     const total=Object.values(counters).reduce((sum,n)=>sum+n,0);
     const filters=[['','Все',total],...Object.entries(modelStatuses).map(([id,name])=>[id,name,counters[id]])];
-    return `<p><a href="reports/2026-11-18-building-art-review.md">Художественная проверка всех 45 моделей</a></p><div class="model-filters" aria-label="Статус модели">${filters.map(([id,name,n])=>`<button type="button" data-model-status="${id}" aria-pressed="${modelFilter===id}">${name} <b>${n}</b></button>`).join('')}</div>${sections.join('')||'<p>По этому запросу моделей нет.</p>'}`;
+    return `<p><a href="reports/2026-11-18-building-art-review.md">Художественная проверка 45 моделей построек</a></p><div class="model-filters" aria-label="Статус модели">${filters.map(([id,name,n])=>`<button type="button" data-model-status="${id}" aria-pressed="${modelFilter===id}">${name} <b>${n}</b></button>`).join('')}</div>${sections.join('')||'<p>По этому запросу моделей нет.</p>'}`;
   }
   function renderPinnedDocument(){
     const document=data.documents.find(doc=>doc.path===pinnedDocuments[view]);

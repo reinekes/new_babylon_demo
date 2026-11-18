@@ -7,3 +7,38 @@ test('one missing goat asset falls back to the available variant and releases pa
 test('invalid clip sets are rejected before spawning and killed goats lie still',async()=>{const engine=new B.NullEngine(),scene=new B.Scene(engine);await assert.rejects(createGameGoats(B,scene,[],{loadAsset:async name=>{const a=source(scene,name);a.animationGroups.pop().dispose();return a;},warn:()=>{}}),/No goat model/);assert.equal(scene.meshes.length,0);const view=await createGameGoats(B,scene,[],{loadAsset:async name=>source(scene,name)}),s=createGame({start:'established'}),c={id:'goat-dead',kind:'goat',x:4,y:4,dead:true,behavior:'dead',deathProgress:1};view.update(s,[c],.05);const root=view.rootFor({animalId:c.id}),model=root.getChildTransformNodes().find(n=>n.name.endsWith('-model'));assert.ok(model.rotation.z>1.5);const phase=root.metadata.gaitPhase;for(let i=0;i<10;i++)view.update(s,[c],.05);assert.equal(root.metadata.gaitPhase,phase);view.dispose();scene.dispose();engine.dispose();});
 
 test('city can restrict goats to the downloaded skin without changing herd IDs or simulation',async()=>{const engine=new B.NullEngine(),scene=new B.Scene(engine),loads=[],state=createGame({start:'established'}),before=JSON.stringify(state);const view=await createGameGoats(B,scene,[],{variants:['downloaded'],loadAsset:async file=>{loads.push(file);return source(scene,file);}});const goats=Array.from({length:8},(_,i)=>({id:`goat-${i}`,kind:'goat',x:4,y:4}));view.update(state,goats,.05);assert.equal(loads.length,1);assert.ok(loads[0].includes('downloaded'));for(const c of goats)assert.equal(view.rootFor({animalId:c.id}).metadata.goatVariant,'downloaded');assert.equal(JSON.stringify(state),before);view.dispose();scene.dispose();engine.dispose();});
+
+test('pasture goats share one validated source with the herd and fall back only after its failure',async()=>{
+ for(const failPrimary of [false,true]){
+  const engine=new B.NullEngine(),scene=new B.Scene(engine),requests=[];
+  const state=createGame({start:'established'}),saved=JSON.stringify(state);
+  const goat={kind:'goat',id:'goat-with-a-history',x:6,y:7,growth:.7,behavior:'grazing'};
+  const view=await createGameGoats(B,scene,[],{
+   variants:['pasture'],fallbackVariant:'downloaded',warn:()=>{},
+   async loadAsset(file){
+    requests.push(file);
+    if(failPrimary&&file==='pasture-goat.glb')throw Error('Requested file unavailable');
+    return source(scene,file);
+   }
+  });
+  try{
+   const variant=failPrimary?'downloaded':'pasture';
+   assert.deepEqual(requests,failPrimary?['pasture-goat.glb','goat-downloaded.glb']:['pasture-goat.glb']);
+   assert.ok(view.sourceForHerd(variant));
+   assert.equal(view.sourceForHerd(failPrimary?'pasture':'downloaded'),undefined);
+   view.update(state,[goat],.05);
+   const node=view.rootFor({animalId:goat.id});
+   assert.equal(node.metadata.animalId,goat.id);
+   assert.equal(node.metadata.goatVariant,variant);
+   assert.equal(node.metadata.clip,'Graze');
+   view.update(state,[{...goat,behavior:'resting'}],.05);
+   assert.equal(node.metadata.clip,'Rest');
+   const phase=node.metadata.gaitPhase;
+   view.update(state,[{...goat,x:goat.x+.002,walking:true}],.05);
+   const advance=(node.metadata.gaitPhase-phase+1)%1;
+   const stride=failPrimary ? .30 : .410*goat.growth;
+   assert.ok(Math.abs(advance-.012/stride)<1e-7);
+   assert.equal(JSON.stringify(state),saved);
+  }finally{view.dispose();scene.dispose();engine.dispose();}
+ }
+});

@@ -1,0 +1,2338 @@
+{
+  "release": "pasture-goat-20261118",
+  "gaitEvidence": {
+    "model": "pasture-goat.glb",
+    "sha256": "d120e227ce0b6a124037034a081e330033a38b2cfd6a7aae941064f2b2b6a182",
+    "gameEntry": "index.html, new mature city, seed 20261118",
+    "webGL": 2,
+    "capture": "Actual route and skinned transforms of one member recorded from the city after render; same city scene and poses replayed for a side tracking camera. Meshes of other members of the decorative herd were hidden for the recording.",
+    "specimen": "livestock-goat-2",
+    "triangles": 41682,
+    "camera": {
+      "alpha": 0.4746794000689696,
+      "beta": 1.36,
+      "radius": 2.0351999592075023,
+      "resolution": [
+        1000,
+        650
+      ],
+      "crop": [
+        54,
+        67,
+        950,
+        567
+      ]
+    },
+    "sampleCount": 104,
+    "lengthWorldMeters": 3.3397138442803342,
+    "recordedSeconds": 6.866100000023842,
+    "sampleDurationMs": 6866,
+    "forwardAlignment": 1.0000000000000002,
+    "movingRigComponents": [
+      "root.x_30",
+      "neck.x_1",
+      "thigh_stretch_dupli_002.l_11",
+      "leg_stretch_dupli_002.l_10",
+      "thigh_stretch_dupli_001.l_17",
+      "leg_stretch_dupli_001.l_16",
+      "thigh_stretch_dupli_001.r_23",
+      "leg_stretch_dupli_001.r_22",
+      "thigh_stretch_dupli_002.r_29",
+      "leg_stretch_dupli_002.r_28"
+    ],
+    "soleHeightRelativeToNode_mm": [
+      -0.6088203814885312,
+      1.0161324016916273
+    ],
+    "contactOnRenderedSlope_mm": [
+      -3.1298231729666726,
+      6.7971866998308705
+    ],
+    "webGLChecks": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "httpErrors": [],
+    "runtimeExceptions": [],
+    "trace": [
+      {
+        "ms": 0,
+        "position": [
+          184.3429122301417,
+          0.09655321448422935,
+          191.38235995739032
+        ],
+        "yaw": 2.476070447561047,
+        "walkFrame": 51.253936775477456,
+        "minHoofOverRayHit_mm": -1.117
+      },
+      {
+        "ms": 67,
+        "position": [
+          184.35686770367533,
+          0.0963451354165626,
+          191.35307309636892
+        ],
+        "yaw": 2.562492319724578,
+        "walkFrame": 57.86787177712068,
+        "minHoofOverRayHit_mm": -1.255
+      },
+      {
+        "ms": 134,
+        "position": [
+          184.370823177209,
+          0.09613768236713247,
+          191.32378623534748
+        ],
+        "yaw": 2.615094984589255,
+        "walkFrame": 64.48180677875999,
+        "minHoofOverRayHit_mm": -0.496
+      },
+      {
+        "ms": 199,
+        "position": [
+          184.3847577279937,
+          0.09593116381724148,
+          191.29454328266345
+        ],
+        "yaw": 2.6470732515686772,
+        "walkFrame": 71.08582583586919,
+        "minHoofOverRayHit_mm": -0.466
+      },
+      {
+        "ms": 266,
+        "position": [
+          184.39871320152736,
+          0.0957249584515394,
+          191.26525642164205
+        ],
+        "yaw": 2.666577036028064,
+        "walkFrame": 5.699757976485562,
+        "minHoofOverRayHit_mm": 3.04
+      },
+      {
+        "ms": 333,
+        "position": [
+          184.41266867506098,
+          0.09551937568298682,
+          191.23596956062065
+        ],
+        "yaw": 2.6784484450193995,
+        "walkFrame": 12.313692978124887,
+        "minHoofOverRayHit_mm": 2.276
+      },
+      {
+        "ms": 400,
+        "position": [
+          184.4266032258457,
+          0.09531472119010151,
+          191.20672660793662
+        ],
+        "yaw": 2.6856653243756727,
+        "walkFrame": 18.91771203523412,
+        "minHoofOverRayHit_mm": 3.221
+      },
+      {
+        "ms": 466,
+        "position": [
+          184.4405377766304,
+          0.09511068514494389,
+          191.17748365525256
+        ],
+        "yaw": 2.6900615220208457,
+        "walkFrame": 25.521731092343355,
+        "minHoofOverRayHit_mm": 2.96
+      },
+      {
+        "ms": 533,
+        "position": [
+          184.45449325016403,
+          0.09490696143331981,
+          191.14819679423113
+        ],
+        "yaw": 2.692742793259623,
+        "walkFrame": 32.135666093986615,
+        "minHoofOverRayHit_mm": 2.861
+      },
+      {
+        "ms": 601,
+        "position": [
+          184.4684487236977,
+          0.09470385572895608,
+          191.1189099332097
+        ],
+        "yaw": 2.6943748092182704,
+        "walkFrame": 38.74960109562987,
+        "minHoofOverRayHit_mm": 2.731
+      },
+      {
+        "ms": 667,
+        "position": [
+          184.4823832744824,
+          0.09450166999879034,
+          191.08966698052566
+        ],
+        "yaw": 2.6953669476578157,
+        "walkFrame": 45.353620152739104,
+        "minHoofOverRayHit_mm": 1.384
+      },
+      {
+        "ms": 734,
+        "position": [
+          184.49633874801606,
+          0.09429979592452549,
+          191.06038011950423
+        ],
+        "yaw": 2.6959720597290984,
+        "walkFrame": 51.96755515438237,
+        "minHoofOverRayHit_mm": -0.567
+      },
+      {
+        "ms": 801,
+        "position": [
+          184.51029422154969,
+          0.09409853639314093,
+          191.03109325848283
+        ],
+        "yaw": 2.6963403747816073,
+        "walkFrame": 58.58149015602562,
+        "minHoofOverRayHit_mm": -0.939
+      },
+      {
+        "ms": 867,
+        "position": [
+          184.5242287723344,
+          0.09389819060567466,
+          191.00185030579877
+        ],
+        "yaw": 2.696564281612616,
+        "walkFrame": 65.18550921313485,
+        "minHoofOverRayHit_mm": -0.661
+      },
+      {
+        "ms": 934,
+        "position": [
+          184.53818424586802,
+          0.09369815576346145,
+          190.97256344477734
+        ],
+        "yaw": 2.6967008439318305,
+        "walkFrame": 71.79944421477812,
+        "minHoofOverRayHit_mm": -0.842
+      },
+      {
+        "ms": 1000,
+        "position": [
+          184.55213971940168,
+          0.09349873198256144,
+          190.9432765837559
+        ],
+        "yaw": 2.6967839658168358,
+        "walkFrame": 6.413376355398393,
+        "minHoofOverRayHit_mm": 3.427
+      },
+      {
+        "ms": 1067,
+        "position": [
+          184.5660742701864,
+          0.09330021571405026,
+          190.91403363107187
+        ],
+        "yaw": 2.696834497279002,
+        "walkFrame": 13.017395412507627,
+        "minHoofOverRayHit_mm": 1.325
+      },
+      {
+        "ms": 1132,
+        "position": [
+          184.58002974372005,
+          0.09310200964785736,
+          190.88474677005047
+        ],
+        "yaw": 2.696865316796118,
+        "walkFrame": 19.63133041414695,
+        "minHoofOverRayHit_mm": 2.613
+      },
+      {
+        "ms": 1199,
+        "position": [
+          184.59398521725367,
+          0.09290441114502555,
+          190.85545990902904
+        ],
+        "yaw": 2.6968840757572723,
+        "walkFrame": 26.24526541579021,
+        "minHoofOverRayHit_mm": 2.173
+      },
+      {
+        "ms": 1266,
+        "position": [
+          184.60791976803839,
+          0.09270771392268014,
+          190.826216956345
+        ],
+        "yaw": 2.6968954797428446,
+        "walkFrame": 32.84928447289944,
+        "minHoofOverRayHit_mm": 2.017
+      },
+      {
+        "ms": 1333,
+        "position": [
+          184.6218543188231,
+          0.09251162011020539,
+          190.79697400366095
+        ],
+        "yaw": 2.696902426536887,
+        "walkFrame": 39.453303530008675,
+        "minHoofOverRayHit_mm": 1.909
+      },
+      {
+        "ms": 1400,
+        "position": [
+          184.63580979235672,
+          0.09231583546076647,
+          190.76768714263955
+        ],
+        "yaw": 2.696906663434444,
+        "walkFrame": 46.06723853165194,
+        "minHoofOverRayHit_mm": 1.33
+      },
+      {
+        "ms": 1466,
+        "position": [
+          184.64976526589038,
+          0.09212065368782515,
+          190.7384002816181
+        ],
+        "yaw": 2.696909242317299,
+        "walkFrame": 52.681173533295194,
+        "minHoofOverRayHit_mm": -1.425
+      },
+      {
+        "ms": 1533,
+        "position": [
+          184.66372073942404,
+          0.09192607361467806,
+          190.70911342059668
+        ],
+        "yaw": 2.696910812012267,
+        "walkFrame": 59.29510853493846,
+        "minHoofOverRayHit_mm": -1.899
+      },
+      {
+        "ms": 1600,
+        "position": [
+          184.67765529020875,
+          0.09173238443803998,
+          190.67987046791262
+        ],
+        "yaw": 2.696911766264404,
+        "walkFrame": 65.89912759204769,
+        "minHoofOverRayHit_mm": -1.459
+      },
+      {
+        "ms": 1665,
+        "position": [
+          184.69161076374237,
+          0.09153900333035012,
+          190.65058360689122
+        ],
+        "yaw": 2.6969123482693576,
+        "walkFrame": 0.5130597326679966,
+        "minHoofOverRayHit_mm": -1.671
+      },
+      {
+        "ms": 1732,
+        "position": [
+          184.7055453145271,
+          0.09134650896745647,
+          190.6213406542072
+        ],
+        "yaw": 2.6969127020833317,
+        "walkFrame": 7.117078789773297,
+        "minHoofOverRayHit_mm": 2.511
+      },
+      {
+        "ms": 1800,
+        "position": [
+          184.7195007880607,
+          0.09115432210680122,
+          190.59205379318576
+        ],
+        "yaw": 2.6969129178765656,
+        "walkFrame": 13.731013791416556,
+        "minHoofOverRayHit_mm": 0.535
+      },
+      {
+        "ms": 1866,
+        "position": [
+          184.73345626159437,
+          0.09096273104270029,
+          190.56276693216432
+        ],
+        "yaw": 2.6969130492239635,
+        "walkFrame": 20.344948793059814,
+        "minHoofOverRayHit_mm": 1.814
+      },
+      {
+        "ms": 1934,
+        "position": [
+          184.74739081237908,
+          0.09077202049638206,
+          190.5335239794803
+        ],
+        "yaw": 2.696913129072938,
+        "walkFrame": 26.948967850169048,
+        "minHoofOverRayHit_mm": 1.377
+      },
+      {
+        "ms": 2000,
+        "position": [
+          184.76134628591274,
+          0.09058161657775682,
+          190.50423711845886
+        ],
+        "yaw": 2.6969131777733772,
+        "walkFrame": 33.562902851812304,
+        "minHoofOverRayHit_mm": 1.239
+      },
+      {
+        "ms": 2066,
+        "position": [
+          184.77530175944636,
+          0.0903918048958243,
+          190.47495025743746
+        ],
+        "yaw": 2.6969132074159927,
+        "walkFrame": 40.17683785345557,
+        "minHoofOverRayHit_mm": 0.147
+      },
+      {
+        "ms": 2133,
+        "position": [
+          184.78923631023108,
+          0.09020286750791504,
+          190.4457073047534
+        ],
+        "yaw": 2.696913225436391,
+        "walkFrame": 46.7808569105648,
+        "minHoofOverRayHit_mm": 1.763
+      },
+      {
+        "ms": 2200,
+        "position": [
+          184.8031917837647,
+          0.09001423584465601,
+          190.41642044373197
+        ],
+        "yaw": 2.696913236427155,
+        "walkFrame": 53.394791912208056,
+        "minHoofOverRayHit_mm": -2.144
+      },
+      {
+        "ms": 2266,
+        "position": [
+          184.81714725729836,
+          0.08982619284597011,
+          190.38713358271053
+        ],
+        "yaw": 2.69691324311693,
+        "walkFrame": 60.00872691385132,
+        "minHoofOverRayHit_mm": -1.991
+      },
+      {
+        "ms": 2334,
+        "position": [
+          184.83110273083201,
+          0.08963873731795809,
+          190.35784672168913
+        ],
+        "yaw": 2.6969132471888106,
+        "walkFrame": 66.62266191549458,
+        "minHoofOverRayHit_mm": -2.238
+      },
+      {
+        "ms": 2400,
+        "position": [
+          184.84503728161673,
+          0.0894521477910306,
+          190.32860376900507
+        ],
+        "yaw": 2.6969132496641954,
+        "walkFrame": 1.2266781115808594,
+        "minHoofOverRayHit_mm": -2.422
+      },
+      {
+        "ms": 2467,
+        "position": [
+          184.85897183240144,
+          0.0892661415919849,
+          190.29936081632104
+        ],
+        "yaw": 2.6969132511720875,
+        "walkFrame": 7.830697168690029,
+        "minHoofOverRayHit_mm": 2.145
+      },
+      {
+        "ms": 2533,
+        "position": [
+          184.87292730593506,
+          0.08908043955121143,
+          190.2700739552996
+        ],
+        "yaw": 2.6969132520917607,
+        "walkFrame": 14.444632170333255,
+        "minHoofOverRayHit_mm": -0.185
+      },
+      {
+        "ms": 2600,
+        "position": [
+          184.8868827794687,
+          0.08889532019683313,
+          190.2407870942782
+        ],
+        "yaw": 2.6969132526515405,
+        "walkFrame": 21.058567171972516,
+        "minHoofOverRayHit_mm": 1.27
+      },
+      {
+        "ms": 2665,
+        "position": [
+          184.9008173302534,
+          0.08871105856278132,
+          190.21154414159417
+        ],
+        "yaw": 2.6969132529918425,
+        "walkFrame": 27.662586229081686,
+        "minHoofOverRayHit_mm": 0.73
+      },
+      {
+        "ms": 2733,
+        "position": [
+          184.91477280378706,
+          0.08852710011129629,
+          190.18225728057274
+        ],
+        "yaw": 2.696913253199394,
+        "walkFrame": 34.27652123072492,
+        "minHoofOverRayHit_mm": 0.529
+      },
+      {
+        "ms": 2799,
+        "position": [
+          184.92872827732072,
+          0.08834372074498514,
+          190.1529704195513
+        ],
+        "yaw": 2.696913253325724,
+        "walkFrame": 40.89045623236814,
+        "minHoofOverRayHit_mm": -0.69
+      },
+      {
+        "ms": 2867,
+        "position": [
+          184.94268375085434,
+          0.08816091926066733,
+          190.12368355852988
+        ],
+        "yaw": 2.6969132534026166,
+        "walkFrame": 47.504391234011365,
+        "minHoofOverRayHit_mm": 0.241
+      },
+      {
+        "ms": 2933,
+        "position": [
+          184.95661830163905,
+          0.08797896722369349,
+          190.09444060584585
+        ],
+        "yaw": 2.6969132534493605,
+        "walkFrame": 54.108410291120535,
+        "minHoofOverRayHit_mm": -2.846
+      },
+      {
+        "ms": 2999,
+        "position": [
+          184.97057377517268,
+          0.08779731702781135,
+          190.0651537448244
+        ],
+        "yaw": 2.6969132534778684,
+        "walkFrame": 60.72234529276376,
+        "minHoofOverRayHit_mm": -2.714
+      },
+      {
+        "ms": 3067,
+        "position": [
+          184.9845083259574,
+          0.08761651214896375,
+          190.03591079214038
+        ],
+        "yaw": 2.696913253495198,
+        "walkFrame": 67.32636434987293,
+        "minHoofOverRayHit_mm": -2.924
+      },
+      {
+        "ms": 3133,
+        "position": [
+          184.99846379949105,
+          0.08743600842387418,
+          190.00662393111895
+        ],
+        "yaw": 2.6969132535057674,
+        "walkFrame": 1.9402964904892457,
+        "minHoofOverRayHit_mm": -3.13
+      },
+      {
+        "ms": 3200,
+        "position": [
+          185.0124192730247,
+          0.08725607655339397,
+          189.97733707009755
+        ],
+        "yaw": 2.6969132535122,
+        "walkFrame": 8.554231492132473,
+        "minHoofOverRayHit_mm": 1.163
+      },
+      {
+        "ms": 3266,
+        "position": [
+          185.02635382380942,
+          0.08707698380934101,
+          189.9480941174135
+        ],
+        "yaw": 2.6969132535161098,
+        "walkFrame": 15.158250549241641,
+        "minHoofOverRayHit_mm": 0.883
+      },
+      {
+        "ms": 3333,
+        "position": [
+          185.04030929734304,
+          0.08689819116724445,
+          189.91880725639209
+        ],
+        "yaw": 2.696913253518493,
+        "walkFrame": 21.77218555088487,
+        "minHoofOverRayHit_mm": 0.604
+      },
+      {
+        "ms": 3399,
+        "position": [
+          185.05424384812775,
+          0.08672023353011242,
+          189.88956430370803
+        ],
+        "yaw": 2.6969132535199414,
+        "walkFrame": 28.376204607994037,
+        "minHoofOverRayHit_mm": 0.058
+      },
+      {
+        "ms": 3466,
+        "position": [
+          185.06819932166138,
+          0.0865425752805083,
+          189.8602774426866
+        ],
+        "yaw": 2.6969132535208233,
+        "walkFrame": 34.99013960963727,
+        "minHoofOverRayHit_mm": -0.135
+      },
+      {
+        "ms": 3532,
+        "position": [
+          185.08215479519504,
+          0.08636548283529906,
+          189.83099058166516
+        ],
+        "yaw": 2.696913253521359,
+        "walkFrame": 41.60407461128049,
+        "minHoofOverRayHit_mm": 1.4
+      },
+      {
+        "ms": 3600,
+        "position": [
+          185.0961102687287,
+          0.08618895498125329,
+          189.80170372064376
+        ],
+        "yaw": 2.696913253521683,
+        "walkFrame": 48.218009612923716,
+        "minHoofOverRayHit_mm": -0.739
+      },
+      {
+        "ms": 3666,
+        "position": [
+          185.1100448195134,
+          0.08601325389809024,
+          189.7724607679597
+        ],
+        "yaw": 2.696913253521879,
+        "walkFrame": 54.822028670032886,
+        "minHoofOverRayHit_mm": -3.004
+      },
+      {
+        "ms": 3732,
+        "position": [
+          185.12400029304703,
+          0.0858378507417088,
+          189.7431739069383
+        ],
+        "yaw": 2.696913253521997,
+        "walkFrame": 61.43596367167611,
+        "minHoofOverRayHit_mm": -2.783
+      },
+      {
+        "ms": 3800,
+        "position": [
+          185.13795576658066,
+          0.08566300853411288,
+          189.71388704591686
+        ],
+        "yaw": 2.6969132535220677,
+        "walkFrame": 68.04989867331935,
+        "minHoofOverRayHit_mm": -2.89
+      },
+      {
+        "ms": 3867,
+        "position": [
+          185.15189031736537,
+          0.0854889869338653,
+          189.68464409323283
+        ],
+        "yaw": 2.69691325352211,
+        "walkFrame": 2.653914869401597,
+        "minHoofOverRayHit_mm": -3.065
+      },
+      {
+        "ms": 3932,
+        "position": [
+          185.16584579089903,
+          0.08531526213828385,
+          189.6553572322114
+        ],
+        "yaw": 2.6969132535221356,
+        "walkFrame": 9.267849871044824,
+        "minHoofOverRayHit_mm": 3.203
+      },
+      {
+        "ms": 3998,
+        "position": [
+          185.17978034168374,
+          0.08514235384778393,
+          189.62611427952737
+        ],
+        "yaw": 2.69691325352215,
+        "walkFrame": 15.871868928153994,
+        "minHoofOverRayHit_mm": -0.076
+      },
+      {
+        "ms": 4066,
+        "position": [
+          185.1937358152174,
+          0.08496974160169249,
+          189.59682741850594
+        ],
+        "yaw": 2.696913253522157,
+        "walkFrame": 22.48580392979722,
+        "minHoofOverRayHit_mm": 0.053
+      },
+      {
+        "ms": 4133,
+        "position": [
+          185.20769128875102,
+          0.0847976842208498,
+          189.5675405574845
+        ],
+        "yaw": 2.696913253522159,
+        "walkFrame": 29.099738931440445,
+        "minHoofOverRayHit_mm": -0.54
+      },
+      {
+        "ms": 4200,
+        "position": [
+          185.22164676228465,
+          0.08462618048600479,
+          189.53825369646307
+        ],
+        "yaw": 2.6969132535221587,
+        "walkFrame": 35.713673933083676,
+        "minHoofOverRayHit_mm": -0.697
+      },
+      {
+        "ms": 4266,
+        "position": [
+          185.23558131306936,
+          0.08445548506328723,
+          189.50901074377904
+        ],
+        "yaw": 2.696913253522157,
+        "walkFrame": 42.317692990192846,
+        "minHoofOverRayHit_mm": 3.398
+      },
+      {
+        "ms": 4333,
+        "position": [
+          185.24951586385407,
+          0.08428533919670224,
+          189.47976779109501
+        ],
+        "yaw": 2.696913253522154,
+        "walkFrame": 48.92171204730201,
+        "minHoofOverRayHit_mm": 0.828
+      },
+      {
+        "ms": 4400,
+        "position": [
+          185.26347133738773,
+          0.08411548743163669,
+          189.45048093007358
+        ],
+        "yaw": 2.6969132535221516,
+        "walkFrame": 55.53564704894127,
+        "minHoofOverRayHit_mm": -0.946
+      },
+      {
+        "ms": 4465,
+        "position": [
+          185.27742681092138,
+          0.08394618443394104,
+          189.42119406905218
+        ],
+        "yaw": 2.696913253522149,
+        "walkFrame": 62.1495820505845,
+        "minHoofOverRayHit_mm": -0.743
+      },
+      {
+        "ms": 4533,
+        "position": [
+          185.2913613617061,
+          0.08377768157928768,
+          189.39195111636812
+        ],
+        "yaw": 2.6969132535221454,
+        "walkFrame": 68.75360110769367,
+        "minHoofOverRayHit_mm": -0.895
+      },
+      {
+        "ms": 4600,
+        "position": [
+          185.30531683523972,
+          0.08360947163240808,
+          189.36266425534671
+        ],
+        "yaw": 2.696913253522143,
+        "walkFrame": 3.367533248309983,
+        "minHoofOverRayHit_mm": -1.035
+      },
+      {
+        "ms": 4666,
+        "position": [
+          185.31927230877335,
+          0.08344180678811566,
+          189.33337739432528
+        ],
+        "yaw": 2.69691325352214,
+        "walkFrame": 9.98146824995321,
+        "minHoofOverRayHit_mm": 4.927
+      },
+      {
+        "ms": 4733,
+        "position": [
+          185.33320685955806,
+          0.08327493597307599,
+          189.30413444164125
+        ],
+        "yaw": 2.696913253522136,
+        "walkFrame": 16.58548730706238,
+        "minHoofOverRayHit_mm": 0.762
+      },
+      {
+        "ms": 4798,
+        "position": [
+          185.34716233309172,
+          0.08310835685186838,
+          189.27484758061982
+        ],
+        "yaw": 2.696913253522131,
+        "walkFrame": 23.199422308705607,
+        "minHoofOverRayHit_mm": 1.122
+      },
+      {
+        "ms": 4866,
+        "position": [
+          185.36111780662537,
+          0.082942319164936,
+          189.24556071959842
+        ],
+        "yaw": 2.696913253522126,
+        "walkFrame": 29.813357310348835,
+        "minHoofOverRayHit_mm": 0.87
+      },
+      {
+        "ms": 4934,
+        "position": [
+          185.37505235741008,
+          0.08277706940663307,
+          189.21631776691436
+        ],
+        "yaw": 2.6969132535221205,
+        "walkFrame": 36.417376367458004,
+        "minHoofOverRayHit_mm": 0.689
+      },
+      {
+        "ms": 5000,
+        "position": [
+          185.3890078309437,
+          0.0826121101085973,
+          189.18703090589293
+        ],
+        "yaw": 2.6969132535221143,
+        "walkFrame": 43.03131136910123,
+        "minHoofOverRayHit_mm": 5.423
+      },
+      {
+        "ms": 5067,
+        "position": [
+          185.40294238172842,
+          0.08244793468072956,
+          189.1577879532089
+        ],
+        "yaw": 2.6969132535221076,
+        "walkFrame": 49.6353304262104,
+        "minHoofOverRayHit_mm": 2.49
+      },
+      {
+        "ms": 5132,
+        "position": [
+          185.416918778011,
+          0.08228380357669172,
+          189.12845718385012
+        ],
+        "yaw": 2.6969132535221028,
+        "walkFrame": 56.259181372383715,
+        "minHoofOverRayHit_mm": 1.132
+      },
+      {
+        "ms": 5199,
+        "position": [
+          185.4308533287957,
+          0.08212069839476195,
+          189.09921423116606
+        ],
+        "yaw": 2.6969132535220974,
+        "walkFrame": 62.863200429492885,
+        "minHoofOverRayHit_mm": 1.334
+      },
+      {
+        "ms": 5266,
+        "position": [
+          185.44480880232936,
+          0.08195788199860474,
+          189.06992737014463
+        ],
+        "yaw": 2.6969132535220908,
+        "walkFrame": 69.47713543113612,
+        "minHoofOverRayHit_mm": 1.2
+      },
+      {
+        "ms": 5332,
+        "position": [
+          185.45874335311407,
+          0.08179584137170752,
+          189.0406844174606
+        ],
+        "yaw": 2.6969132535220837,
+        "walkFrame": 4.081151627222335,
+        "minHoofOverRayHit_mm": 1.256
+      },
+      {
+        "ms": 5399,
+        "position": [
+          185.4726988266477,
+          0.0816340886813658,
+          189.01139755643916
+        ],
+        "yaw": 2.696913253522076,
+        "walkFrame": 10.695086628865434,
+        "minHoofOverRayHit_mm": 6.797
+      },
+      {
+        "ms": 5466,
+        "position": [
+          185.4866333774324,
+          0.08147310772121698,
+          188.98215460375513
+        ],
+        "yaw": 2.6969132535220672,
+        "walkFrame": 17.299105685974602,
+        "minHoofOverRayHit_mm": 2.941
+      },
+      {
+        "ms": 5532,
+        "position": [
+          185.50060977371498,
+          0.08131217331675816,
+          188.95282383439633
+        ],
+        "yaw": 2.6969132535220584,
+        "walkFrame": 23.92295663215163,
+        "minHoofOverRayHit_mm": 3.108
+      },
+      {
+        "ms": 5600,
+        "position": [
+          185.5145443244997,
+          0.08115224792334776,
+          188.92358088171227
+        ],
+        "yaw": 2.696913253522049,
+        "walkFrame": 30.5269756892608,
+        "minHoofOverRayHit_mm": 2.974
+      },
+      {
+        "ms": 5666,
+        "position": [
+          185.52849979803335,
+          0.08099260874367678,
+          188.89429402069084
+        ],
+        "yaw": 2.696913253522038,
+        "walkFrame": 37.1409106909039,
+        "minHoofOverRayHit_mm": 2.808
+      },
+      {
+        "ms": 5733,
+        "position": [
+          185.54243434881806,
+          0.08083373323359275,
+          188.86505106800684
+        ],
+        "yaw": 2.6969132535220286,
+        "walkFrame": 43.74492974800936,
+        "minHoofOverRayHit_mm": 5.397
+      },
+      {
+        "ms": 5800,
+        "position": [
+          185.5563898223517,
+          0.08067514306461268,
+          188.8357642069854
+        ],
+        "yaw": 2.696913253522021,
+        "walkFrame": 50.35886474965246,
+        "minHoofOverRayHit_mm": 4.216
+      },
+      {
+        "ms": 5868,
+        "position": [
+          185.5703243731364,
+          0.08051731254703509,
+          188.80652125430134
+        ],
+        "yaw": 2.6969132535220104,
+        "walkFrame": 56.96288380676163,
+        "minHoofOverRayHit_mm": 3.327
+      },
+      {
+        "ms": 5934,
+        "position": [
+          185.58427984667003,
+          0.08035976649044349,
+          188.7772343932799
+        ],
+        "yaw": 2.696913253521999,
+        "walkFrame": 63.576818808404724,
+        "minHoofOverRayHit_mm": 3.544
+      },
+      {
+        "ms": 6000,
+        "position": [
+          185.59821439745474,
+          0.0802029760743479,
+          188.74799144059588
+        ],
+        "yaw": 2.6969132535219855,
+        "walkFrame": 70.1808378655139,
+        "minHoofOverRayHit_mm": 3.369
+      },
+      {
+        "ms": 6066,
+        "position": [
+          185.6121698709884,
+          0.08004646923178328,
+          188.71870457957445
+        ],
+        "yaw": 2.6969132535219713,
+        "walkFrame": 4.794770006134046,
+        "minHoofOverRayHit_mm": 4.891
+      },
+      {
+        "ms": 6133,
+        "position": [
+          185.62612534452205,
+          0.07989048054738604,
+          188.68941771855305
+        ],
+        "yaw": 2.6969132535219558,
+        "walkFrame": 11.408705007777145,
+        "minHoofOverRayHit_mm": 5.399
+      },
+      {
+        "ms": 6200,
+        "position": [
+          185.64008081805568,
+          0.07973500879485278,
+          188.6601308575316
+        ],
+        "yaw": 2.6969132535219393,
+        "walkFrame": 18.022640009420243,
+        "minHoofOverRayHit_mm": 5.109
+      },
+      {
+        "ms": 6266,
+        "position": [
+          185.6540153688404,
+          0.07958028468047618,
+          188.63088790484755
+        ],
+        "yaw": 2.696913253521921,
+        "walkFrame": 24.626659066529413,
+        "minHoofOverRayHit_mm": 5.063
+      },
+      {
+        "ms": 6334,
+        "position": [
+          185.66797084237402,
+          0.07942584234268181,
+          188.60160104382612
+        ],
+        "yaw": 2.6969132535219016,
+        "walkFrame": 31.240594068172513,
+        "minHoofOverRayHit_mm": 4.93
+      },
+      {
+        "ms": 6399,
+        "position": [
+          185.68192631590767,
+          0.07927191326023497,
+          188.57231418280475
+        ],
+        "yaw": 2.696913253521883,
+        "walkFrame": 37.85452906980794,
+        "minHoofOverRayHit_mm": 4.837
+      },
+      {
+        "ms": 6466,
+        "position": [
+          185.69586086669239,
+          0.07911872583519543,
+          188.54307123012074
+        ],
+        "yaw": 2.6969132535218687,
+        "walkFrame": 44.45854812691327,
+        "minHoofOverRayHit_mm": 3.959
+      },
+      {
+        "ms": 6533,
+        "position": [
+          185.70981634022604,
+          0.0789658188210844,
+          188.5137843690993
+        ],
+        "yaw": 2.6969132535218567,
+        "walkFrame": 51.072483128552534,
+        "minHoofOverRayHit_mm": 3.897
+      },
+      {
+        "ms": 6600,
+        "position": [
+          185.72375089101075,
+          0.07881364948813699,
+          188.4845414164153
+        ],
+        "yaw": 2.696913253521846,
+        "walkFrame": 57.67650218565787,
+        "minHoofOverRayHit_mm": 3.193
+      },
+      {
+        "ms": 6665,
+        "position": [
+          185.73770636454438,
+          0.07866175964756837,
+          188.45525455539394
+        ],
+        "yaw": 2.696913253521834,
+        "walkFrame": 64.29043718729329,
+        "minHoofOverRayHit_mm": 3.238
+      },
+      {
+        "ms": 6732,
+        "position": [
+          185.7516409153291,
+          0.07851060352001794,
+          188.4260116027099
+        ],
+        "yaw": 2.6969132535218225,
+        "walkFrame": 70.89445624439863,
+        "minHoofOverRayHit_mm": 3.068
+      },
+      {
+        "ms": 6800,
+        "position": [
+          185.76561731161166,
+          0.07835950013575958,
+          188.39668083335113
+        ],
+        "yaw": 2.69691325352181,
+        "walkFrame": 5.518304329545027,
+        "minHoofOverRayHit_mm": 4.614
+      },
+      {
+        "ms": 6866,
+        "position": [
+          185.77955186239637,
+          0.07820935308326028,
+          188.36743788066713
+        ],
+        "yaw": 2.696913253521797,
+        "walkFrame": 12.12232338665036,
+        "minHoofOverRayHit_mm": 3.771
+      }
+    ],
+    "film": {
+      "sourceTraceRangeZeroBased": [
+        25,
+        79
+      ],
+      "frames": 55,
+      "sourceDurationSec": 3.600600000023842,
+      "pathMeters": 1.7509372987337901,
+      "forwardCosine": 1.0000000000000002,
+      "codec": "H.264 (avc1), yuv420p",
+      "dimensions": [
+        896,
+        500
+      ]
+    }
+  },
+  "baseline": "fe91a8b875ddf4e25945022d3b25fbc5eb30c71a",
+  "previousGoatGLB": {
+    "goat-authored-lod.glb": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+    "goat-authored.glb": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+    "goat-downloaded.glb": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
+    "goat.glb": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+    "test-goat-trellis.glb": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f"
+  },
+  "cityWebGL": {
+    "users": {
+      "simulated": [
+        {
+          "name": "goat-goat-0",
+          "variant": "pasture",
+          "actor": "goat-0",
+          "clip": "Graze",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-1",
+          "variant": "pasture",
+          "actor": "goat-1",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-0",
+          "variant": "pasture",
+          "actor": "goat-herd-0",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-1",
+          "variant": "pasture",
+          "actor": "goat-herd-1",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-2",
+          "variant": "pasture",
+          "actor": "goat-herd-2",
+          "clip": "Graze",
+          "skin": true
+        },
+        {
+          "name": "goat-goat-herd-3",
+          "variant": "pasture",
+          "actor": "goat-herd-3",
+          "clip": "Walk",
+          "skin": true
+        }
+      ],
+      "pastureHerd": [
+        "livestock-goat-0",
+        "livestock-goat-1",
+        "livestock-goat-2",
+        "livestock-goat-3",
+        "livestock-goat-4"
+      ],
+      "resourceRequests": [
+        "http://127.0.0.1:8982/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b"
+      ]
+    },
+    "mode": "Взрослый бог",
+    "origin": "http://127.0.0.1:8982",
+    "initialGLError": 0,
+    "webGL": 2,
+    "specimens": [
+      {
+        "file": "pasture-goat.glb",
+        "silhouettePixels": 50549,
+        "poseChangedPixels": 8715,
+        "glError": 0,
+        "center": [
+          176.71413525311277,
+          0.4417608084985568,
+          186.7959435822503
+        ],
+        "extent": [
+          0.34810178597930985,
+          0.8831999935066517,
+          1.1714242957401382
+        ],
+        "triangles": 41682,
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze",
+          "Rest",
+          "SourceRigAction"
+        ],
+        "rigged": true,
+        "loaded": true
+      }
+    ],
+    "water": [
+      {
+        "name": "horizon-river",
+        "indices": 1152,
+        "compiled": true
+      },
+      {
+        "name": "clear-living-river",
+        "indices": 28224,
+        "compiled": true
+      },
+      {
+        "name": "clear-saved-lakes",
+        "indices": 36612,
+        "compiled": true
+      }
+    ],
+    "exceptions": [],
+    "http": []
+  },
+  "blockedNewGLB": {
+    "mode": "Взрослый бог",
+    "origin": "http://127.0.0.1:8982",
+    "initialGLError": 0,
+    "webGL": 2,
+    "specimens": [
+      {
+        "file": "test-goat-trellis.glb",
+        "silhouettePixels": 36686,
+        "poseChangedPixels": 9879,
+        "glError": 0,
+        "center": [
+          179.90331541861605,
+          0.4415999951291223,
+          196.81452882763097
+        ],
+        "extent": [
+          1.2538441533671403,
+          0.8832000344274782,
+          0.4890142440821421
+        ],
+        "triangles": 14418,
+        "clips": [
+          "Walk"
+        ],
+        "rigged": true,
+        "loaded": true
+      }
+    ],
+    "goats": {
+      "roots": [
+        {
+          "animalId": "goat-0",
+          "variant": "downloaded",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "animalId": "goat-1",
+          "variant": "downloaded",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-0",
+          "variant": "downloaded",
+          "clip": "Idle",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-1",
+          "variant": "downloaded",
+          "clip": "Graze",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-2",
+          "variant": "downloaded",
+          "clip": "Walk",
+          "skin": true
+        },
+        {
+          "animalId": "goat-herd-3",
+          "variant": "downloaded",
+          "clip": "Idle",
+          "skin": true
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:8982/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "http://127.0.0.1:8982/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "http://127.0.0.1:8982/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "http://127.0.0.1:8982/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+        "http://127.0.0.1:8982/assets/art-courtyard/models/goat-downloaded.glb?v=bae9407ee425",
+        "http://127.0.0.1:8982/assets/art-courtyard/models/test-goat-trellis.glb?v=0a752a0c419a"
+      ]
+    },
+    "exceptions": [],
+    "http": []
+  },
+  "atlas": {
+    "origin": "http://127.0.0.1:8982",
+    "transport": "Chrome network",
+    "timestamp": "2026-11-18T13:43:24.207Z",
+    "preservation": {
+      "baseRevision": "21bff6329268a2b5150d0352c7cfbab84388ffec",
+      "oldGlbCount": 48,
+      "listedAndUnchangedOldGlbs": 48,
+      "oldOtherCounts": {
+        "flock": 1,
+        "wildlife": 19,
+        "dairy": 2,
+        "source": 3
+      },
+      "unchangedOtherRows": 25,
+      "unchangedOtherRowOrder": true,
+      "currentGlbCount": 49,
+      "added": [
+        "pasture-goat.glb"
+      ],
+      "oldGlbs": [
+        {
+          "file": "alluvial-bull.glb",
+          "byteLength": 2720752,
+          "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "alluvial-pig.glb",
+          "byteLength": 2576076,
+          "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "alluvial-ram.glb",
+          "byteLength": 2618268,
+          "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-bull.glb",
+          "byteLength": 5800664,
+          "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-dog.glb",
+          "byteLength": 2161184,
+          "sha256": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-donkey.glb",
+          "byteLength": 4356268,
+          "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-duck.glb",
+          "byteLength": 2740460,
+          "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-sheep-kenchoo.glb",
+          "byteLength": 1785652,
+          "sha256": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-yard-pig.glb",
+          "byteLength": 2105828,
+          "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "caravan-camel.glb",
+          "byteLength": 4713460,
+          "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "cat-sitting.glb",
+          "byteLength": 3289240,
+          "sha256": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "cat-walk.glb",
+          "byteLength": 667472,
+          "sha256": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "gazelle-downloaded.glb",
+          "byteLength": 3731492,
+          "sha256": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-authored-lod.glb",
+          "byteLength": 1649492,
+          "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-authored.glb",
+          "byteLength": 4000280,
+          "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-downloaded.glb",
+          "byteLength": 8930460,
+          "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat.glb",
+          "byteLength": 29877228,
+          "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-boar.glb",
+          "byteLength": 1951108,
+          "sha256": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-fox.glb",
+          "byteLength": 1884684,
+          "sha256": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-goose.glb",
+          "byteLength": 1310296,
+          "sha256": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-lioness.glb",
+          "byteLength": 2322264,
+          "sha256": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-orange-bird.glb",
+          "byteLength": 570772,
+          "sha256": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-sky-birds.glb",
+          "byteLength": 195568,
+          "sha256": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "jackal.glb",
+          "byteLength": 1424196,
+          "sha256": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "pasture-bull.glb",
+          "byteLength": 1956500,
+          "sha256": "708a1c70678c21f496aef8d09eca2596272e7c2f34bd9c66e517ab1353747be1",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "pasture-pig.glb",
+          "byteLength": 1699180,
+          "sha256": "7bb75ccbe1b74509fa628c61fa74005dc643fe7214798a373a409d973d06ded4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "pasture-ram.glb",
+          "byteLength": 2799184,
+          "sha256": "b2cc547a1534b87d4544e48e642360c1cdd0e41c20248596d6adc93e83e5ec96",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "sheep.glb",
+          "byteLength": 2024888,
+          "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-mallard-female.glb",
+          "byteLength": 363016,
+          "sha256": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-mallard.glb",
+          "byteLength": 2592180,
+          "sha256": "6f7174d94cab33025c8ee053df196bc323ba5a85a825091155fd29b9c7d240e1",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-seagull.glb",
+          "byteLength": 516392,
+          "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "sky-bird-single.glb",
+          "byteLength": 38304,
+          "sha256": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-cobra-base.glb",
+          "byteLength": 1539392,
+          "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-cobra-head-up.glb",
+          "byteLength": 1541772,
+          "sha256": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-common-quail.glb",
+          "byteLength": 2050532,
+          "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-frog-jump.glb",
+          "byteLength": 1855544,
+          "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-horse-brown.glb",
+          "byteLength": 1660088,
+          "sha256": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-horse-run.glb",
+          "byteLength": 1277372,
+          "sha256": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-northern-cardinal.glb",
+          "byteLength": 1978712,
+          "sha256": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-oriental-goby.glb",
+          "byteLength": 3031240,
+          "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-pelican-wasis.glb",
+          "byteLength": 5244380,
+          "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-realistic-rat.glb",
+          "byteLength": 2129524,
+          "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-schlegel-frog.glb",
+          "byteLength": 2502324,
+          "sha256": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-white-eagle.glb",
+          "byteLength": 886568,
+          "sha256": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-yellowfin-goby.glb",
+          "byteLength": 1519376,
+          "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-bull-trellis.glb",
+          "byteLength": 1930912,
+          "sha256": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-goat-trellis.glb",
+          "byteLength": 1108340,
+          "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-pig-trellis.glb",
+          "byteLength": 967568,
+          "sha256": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902",
+          "unchanged": true,
+          "listed": true
+        }
+      ]
+    },
+    "pages": [
+      {
+        "file": "pasture-goat.glb",
+        "url": "http://127.0.0.1:8982/model-atlas/?model=pasture-goat.glb",
+        "title": "Пастбищная коза · Используется",
+        "category": "animals",
+        "detail": "Пастбищная коза свободного стада и отдельных животных симуляции с шагом, покоем, выпасом и отдыхом. · 41 682 треугольников · pasture-goat.glb",
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze",
+          "Rest",
+          "SourceRigAction"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.766000001430512,
+          11.747999997138978,
+          17.76,
+          23.70600000143051,
+          29.71799999713898
+        ],
+        "meshCount": 6,
+        "skinned": 6,
+        "triangles": 41682,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 12349,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8982/assets/art-courtyard/models/pasture-goat.glb?v=d120e227ce0b",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "implicitFaviconHttp": [],
+        "failedHttp": [],
+        "outsideProjectHttp": []
+      },
+      {
+        "file": "goat-downloaded.glb",
+        "url": "http://127.0.0.1:8982/model-atlas/?model=goat-downloaded.glb",
+        "title": "Коза, прежняя городская модель · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежняя городская коза симуляции. Загружается при отказе новой пастбищной модели. · 41 346 треугольников · goat-downloaded.glb",
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze",
+          "Rest",
+          "SourceRigAction"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.0040000057220455,
+          12.03,
+          18.018000004291533,
+          23.982000002861025,
+          29.97600000143051
+        ],
+        "meshCount": 5,
+        "skinned": 5,
+        "triangles": 41346,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 13353,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8982/assets/art-courtyard/models/goat-downloaded.glb?v=bae9407ee425",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "implicitFaviconHttp": [],
+        "failedHttp": [],
+        "outsideProjectHttp": []
+      },
+      {
+        "file": "test-goat-trellis.glb",
+        "url": "http://127.0.0.1:8982/model-atlas/?model=test-goat-trellis.glb",
+        "title": "Коза · тестовое стадо · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежняя модель свободного стада коз. Подменяет пастбищную козу при сбое. · 14 418 треугольников · test-goat-trellis.glb",
+        "clips": [
+          "Walk"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          4.95,
+          10.98,
+          16.992000002861023,
+          23.958000004291534,
+          30
+        ],
+        "meshCount": 1,
+        "skinned": 1,
+        "triangles": 14418,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 12779,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8982/assets/art-courtyard/models/test-goat-trellis.glb?v=0a752a0c419a",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "implicitFaviconHttp": [],
+        "failedHttp": [],
+        "outsideProjectHttp": []
+      }
+    ]
+  },
+  "largeCity": {
+    "speed": 4,
+    "frameTiming": "requestAnimationFrame for 18 seconds per run",
+    "meanFPS": {
+      "before": 29.723862302524452,
+      "after": 29.72386168747379
+    },
+    "runs": [
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.613034171445047,
+          "frames": 534,
+          "seconds": 18.032600000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.699999928474426,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 533,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 534,
+              "p50": 26.40000009536743,
+              "p95": 34.299999952316284
+            },
+            "buildings": {
+              "samples": 534,
+              "p50": 0.6999999284744263,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 534,
+              "p50": 3.8000000715255737,
+              "p95": 10.799999952316284
+            },
+            "scene": {
+              "samples": 534,
+              "p50": 20.200000047683716,
+              "p95": 23.800000071525574
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8982/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 439,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 14040405,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "after-doe-pair1-mixed",
+        "captured": "2026-11-18T13:45:02.919Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.834854652130034,
+          "frames": 538,
+          "seconds": 18.0326,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.899999976158142,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 537,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 538,
+              "p50": 26.299999952316284,
+              "p95": 34
+            },
+            "buildings": {
+              "samples": 538,
+              "p50": 0.6999999284744263,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 538,
+              "p50": 3.8000000715255737,
+              "p95": 10.699999928474426
+            },
+            "scene": {
+              "samples": 538,
+              "p50": 20.200000047683716,
+              "p95": 23.699999928474426
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8983/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 440,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 23535960,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "before-doe-pair1-mixed",
+        "captured": "2026-11-18T13:45:36.530Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.612869952918867,
+          "frames": 534,
+          "seconds": 18.0327,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.700000047683716,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 533,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 534,
+              "p50": 26.200000047683716,
+              "p95": 34.39999997615814
+            },
+            "buildings": {
+              "samples": 534,
+              "p50": 0.6999999284744263,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 534,
+              "p50": 3.899999976158142,
+              "p95": 10.899999976158142
+            },
+            "scene": {
+              "samples": 534,
+              "p50": 20.199999928474426,
+              "p95": 23.5
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8983/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 440,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 23535756,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "before-doe-pair2-mixed",
+        "captured": "2026-11-18T13:46:10.401Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.83468920350253,
+          "frames": 538,
+          "seconds": 18.0327,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.800000071525574,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 537,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 538,
+              "p50": 26.200000047683716,
+              "p95": 34.5
+            },
+            "buildings": {
+              "samples": 538,
+              "p50": 0.7000000476837158,
+              "p95": 0.9000000953674316
+            },
+            "actors": {
+              "samples": 538,
+              "p50": 3.799999952316284,
+              "p95": 10.899999976158142
+            },
+            "scene": {
+              "samples": 538,
+              "p50": 20.299999952316284,
+              "p95": 23.700000047683716
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8982/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 439,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 14048607,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "after-doe-pair2-mixed",
+        "captured": "2026-11-18T13:46:44.325Z"
+      }
+    ]
+  }
+}
