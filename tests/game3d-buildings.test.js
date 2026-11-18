@@ -11,8 +11,8 @@ vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',imp
 const B=sandbox.BABYLON;
 // Decode the actual local, uncompressed static GLB geometry for NullEngine. This
 // avoids browser-only image decoding while testing its real node transforms.
-function loadGeometry(scene,file='adobe-courtyard.glb'){
- const bytes=readFileSync(new URL('../assets/art-courtyard/models/'+file,import.meta.url));
+function loadGeometry(scene,file='adobe-courtyard.glb',directory='assets/art-courtyard/models/'){
+ const bytes=readFileSync(new URL('../'+directory+file,import.meta.url));
  const jsonSize=bytes.readUInt32LE(12),g=JSON.parse(bytes.subarray(20,20+jsonSize)),binary=bytes.subarray(28+jsonSize);
  const container=new B.AssetContainer(scene),root=new B.TransformNode('gltf-reflection',scene);root.scaling.z=-1;container.transformNodes.push(root);
  const mats=g.materials.map(m=>new B.PBRMaterial(m.name,scene));container.materials.push(...mats);
@@ -21,12 +21,12 @@ function loadGeometry(scene,file='adobe-courtyard.glb'){
   for(let k=0;k<a.count;k++)for(let j=0;j<n;j++){
    const p=offset+k*(view.byteStride||n*size)+j*size;
    out.push(a.componentType===5126?binary.readFloatLE(p):a.componentType===5125?binary.readUInt32LE(p):a.componentType===5123?binary.readUInt16LE(p):binary.readUInt8(p));
-  }return out;
+  }return a.normalized ? out.map(value=>value/(a.componentType===5121?255:65535)) : out;
  }
  for(const node of g.nodes){
   if(node.mesh===undefined)continue;
   for(const p of g.meshes[node.mesh].primitives){
-   const mesh=new B.Mesh(node.name,scene),v=new B.VertexData();v.positions=data(p.attributes.POSITION);v.normals=data(p.attributes.NORMAL);v.indices=data(p.indices);if(p.attributes.TEXCOORD_0!==undefined)v.uvs=data(p.attributes.TEXCOORD_0);v.applyToMesh(mesh);
+   const mesh=new B.Mesh(node.name,scene),v=new B.VertexData();v.positions=data(p.attributes.POSITION);v.normals=data(p.attributes.NORMAL);v.indices=data(p.indices);if(p.attributes.COLOR_0!==undefined)v.colors=data(p.attributes.COLOR_0);if(p.attributes.TEXCOORD_0!==undefined)v.uvs=data(p.attributes.TEXCOORD_0);v.applyToMesh(mesh);
    mesh.position.set(...(node.translation||[0,0,0]));mesh.scaling.set(...(node.scale||[1,1,1]));if(node.rotation)mesh.rotationQuaternion=new B.Quaternion(...node.rotation);
    mesh.parent=root;mesh.material=mats[p.material];container.meshes.push(mesh);
   }
@@ -375,4 +375,46 @@ test('imported fortifications join at tile edges and keep the gate axis clear',a
   for(const z of [45,51])assert.ok(hits(48,z).some(h=>h.pickedPoint.y>1.8));
   for(const z of [47.55,48,48.45])assert.ok(!hits(41,z,1.3,new B.Vector3(1,0,0)).some(h=>h.pickedMesh.metadata.type==='cityGate'));
  }finally{B.SceneLoader.LoadAssetContainerAsync=previous;t.dispose();}
+});
+
+
+test('ordinary homes share the loaded earth model until the effective level changes',async()=>{
+ const t=await setup(), original=B.SceneLoader.LoadAssetContainerAsync, requested=[];
+ B.SceneLoader.LoadAssetContainerAsync=async(directory,file)=>{
+  const path=(directory+file).split('?')[0];
+  requested.push(path);
+  assert.equal(path,'assets/3d/sumer-buildings/house.glb');
+  return loadGeometry(t.scene,'house.glb','assets/3d/sumer-buildings/');
+ };
+ try{
+  const home=house(1,3,4,'family-a'),neighbor=house(1,8,4,'family-b');
+  neighbor.rotation=1;
+  const hut={...house(1,6,2,'founder'),starterHut:true};
+  const site={...house(1,5,2,'site'),construction:{kind:'new',target:1,required:{clay:8},delivered:{clay:2},work:0}};
+  const state={buildings:[home,neighbor,hut,site],citizens:[{id:1,home:'family-a',name:'Нинда',cargo:{food:2}}]};
+  const snapshot=structuredClone(state);
+  const earthFor=id=>t.layer.meshes.filter(mesh=>mesh.metadata.buildingKey===id&&mesh.name.includes('game-house-earth-1-'));
+  t.layer.sync(state);
+  await t.layer.sacredReady();
+  t.layer.sync(state);
+  assert.deepEqual(requested,['assets/3d/sumer-buildings/house.glb']);
+  const a=earthFor('family-a'),b=earthFor('family-b');
+  assert.ok(a.length>0);assert.equal(a.length,b.length);
+  assert.ok(a.every((mesh,i)=>mesh.sourceMesh.geometry===b[i].sourceMesh.geometry));
+  assert.ok(a.every(mesh=>mesh.isVerticesDataPresent(B.VertexBuffer.ColorKind)&&mesh.isVerticesDataPresent(B.VertexBuffer.UVKind)));
+  assert.ok(a.every(mesh=>mesh.sourceMesh.overrideMaterialSideOrientation===B.Material.ClockWiseSideOrientation),
+   'authored glTF surfaces keep their lit face after the tile adapter removes the loader reflection');
+  assert.ok(b.every(mesh=>mesh.parent.rotation.y===Math.PI/2&&mesh.isPickable));
+  assert.equal(earthFor('founder').length,0);assert.equal(earthFor('site').length,0);
+  assert.deepEqual(state,snapshot);
+  const ghost=t.layer.preview(home,state);
+  assert.ok(ghost.meshes.some(mesh=>mesh.name.includes('game-house-earth-1-')&&!mesh.isPickable));
+  t.layer.clearPreview();
+  home.construction={kind:'upgrade',target:2,required:{clay:8},delivered:{clay:2},work:0};
+  t.layer.sync(state);assert.equal(earthFor(home.id).length,a.length);
+  delete home.construction;home.level=2;
+  t.layer.sync(state);assert.equal(earthFor(home.id).length,0);
+  assert.ok(t.layer.meshes.some(mesh=>mesh.metadata.buildingKey===home.id&&mesh.name.includes('game-house-courtyard-2')));
+  assert.equal(earthFor(neighbor.id)[0],b[0]);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;t.dispose();}
 });

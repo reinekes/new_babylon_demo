@@ -6,7 +6,7 @@ import {organicHousePoint,organicHouseVariant} from './field-shore.js';
 // Starter beehives are an artistic opening, not a reconstruction of a typical
 // third-millennium Sumerian house. Levels II/III use mudbrick courtyard masses.
 export const houseVisualKind=(b,state)=>!isStrictSumer(state)&&b.starterHut&&Number(b.level||1)===1?'hut':`courtyard-${Math.max(1,Math.min(3,b.level||1))}`;
-export function createHouseArchitecture(B,scene,b,m,state){
+export function createHouseArchitecture(B,scene,b,m,state,{furnishingsOnly=false}={}){
  const groups=new Map(),variant=organicHouseVariant(b),kind=houseVisualKind(b,state);let serial=0;
  const add=(mesh,mat,name)=>{mesh.material=mat||m.plaster;mesh.metadata={housePart:name};if(!groups.has(mesh.material))groups.set(mesh.material,[]);groups.get(mesh.material).push(mesh);return mesh;};
  const block=(name,x,y,z,w,h,d,mat=m.plaster)=>{
@@ -21,7 +21,7 @@ export function createHouseArchitecture(B,scene,b,m,state){
  const room=(name,x,z,w,d,h,base=0)=>{
   const t=.22,door=.72,side=(w-door)/2;block(name,x,base+h/2,z-d/2,w,h,t);for(const s of [-1,1]){block(name,x+s*(w-t)/2,base+h/2,z,t,h,d);block(name,x+s*(door+side)/2,base+h/2,z+d/2,side,h,t);}block(name,x,base+h-.18,z+d/2,door,.36,t);block('door-recess',x,base+.72,z+d/2-.14,door,1.44,.03,m.shade);block('timber-lintel',x,base+h-.36,z+d/2+.04,door+.2,.1,.3,m.wood);block('earth-roof',x,base+h+.05,z,w+.12,.15,d+.12,m.soil);for(const s of [-1,1])block('roof-parapet',x+s*w/2,base+h+.22,z,.16,.3,d+.14);block('roof-parapet',x,base+h+.22,z-d/2,w,.3,.16);
  };
- block('court-ground',0,.035,0,5.1,.07,5.1,m.soil);
+ if(!furnishingsOnly)block('court-ground',0,.035,0,5.1,.07,5.1,m.soil);
  if(kind==='hut'){
   const profile=[[0,1.58],[.18,1.61],[.38,1.6],[.58,1.57],[.78,1.53],[.98,1.48],[1.18,1.41],[1.38,1.33],[1.58,1.24],[1.78,1.13],[1.98,1.01],[2.18,.87],[2.36,.71],[2.52,.54],[2.66,.37],[2.77,.2],[2.83,.08],[2.85,0]],p=[],indices=[],uv=[],segments=64;
   for(const [y,r]of profile)for(let k=0;k<=segments;k++){const a=k/segments*Math.PI*2,ripple=1+.012*Math.cos(a*3)*Math.sin(y*1.7);p.push(Math.sin(a)*r*ripple,y,Math.cos(a)*r*ripple-.35);uv.push(k/segments*4,y/2);}
@@ -33,7 +33,7 @@ export function createHouseArchitecture(B,scene,b,m,state){
   const dp=[0,.6,1.03],di=[];for(const v of shape)dp.push(v.x,v.y,1.03);for(let i=0;i<shape.length;i++)di.push(0,1+i,1+(i+1)%shape.length);const dn=[];B.VertexData.ComputeNormals(dp,di,dn);const dd=new B.VertexData();Object.assign(dd,{positions:dp,indices:di,normals:dn,uvs:dp.filter((_,i)=>i%3!==2)});const inset=new B.Mesh('hut-entry-shadow',scene);dd.applyToMesh(inset);add(inset,m.shade,'entry-shadow');
   block('threshold',0,.07,1.21,.9,.14,.55,m.trim);canopy('reed-porch',0,1.76,1.6,1.42,1.52);
   block('small-vent',0,2.13,.54,.19,.12,.035,m.shade);jar('water-jar',1.05,1.63,.63);jar('door-planter',-1.03,1.7,.54,0,true);
- }else if(kind==='courtyard-1'){
+ }else if(kind==='courtyard-1'&&!furnishingsOnly){
   // A buildable first dwelling is a small plastered room with a working yard;
   // the founding corbelled hut remains a separate, unbuildable origin house.
   room('modest-back-room',-.58,-1.10,3.25,2.30,1.84);
@@ -52,7 +52,7 @@ export function createHouseArchitecture(B,scene,b,m,state){
   block('court-east-wall',2.34,.66,.57,.2,1.32,2.7);block('court-front-wall',-1.43,.58,2.23,1.9,1.16,.2);block('court-front-wall',1.45,.58,2.23,1.9,1.16,.2);
   canopy('court-reed-awning',.9,.28,2.45,1.75,1.9);block('court-bench',1.92,.27,1.48,.46,.54,1.03,m.trim);block('woven-mat',.12,.09,1.35,1.15,.025,.72,m.reed);
   jar('water-jar',-1.94,1.65,.72);jar('small-pot',-1.27,1.75,.43);jar('court-planter',1.91,-.56,.59,0,true);
- }else{
+ }else if(kind==='courtyard-3'){
   room('terrace-lower-hall',-.75,-1.48,3.4,1.83,2.28);room('terrace-west-wing',-1.73,.3,1.22,1.77,2.28);room('terrace-upper-room',-1.2,-1.43,2.05,1.7,1.55,2.43);
   block('terrace-deck',.6,-.02+2.43,-1.43,1.5,.16,1.82,m.soil);block('terrace-balustrade',1.35,2.77,-1.49,.17,.62,1.97);block('terrace-balustrade',.62,2.77,-2.4,1.62,.62,.17);
   // Eleven solid risers climb along the east wall and meet the terrace deck.
@@ -68,23 +68,25 @@ export function createHouseArchitecture(B,scene,b,m,state){
   const bowl=B.MeshBuilder.CreateLathe('house-blessing-cup',{shape,tessellation:14,sideOrientation:B.Mesh.DOUBLESIDE},scene);
   bowl.position.set(.4,.13,1.72);add(bowl,m.terracotta,'blessing-cup');
  }
- if(b.householdStock?.mat>=1)block('installed-mat',0,.10,1.85,1.35,.05,.58,m.reed);
- if(b.householdStock?.mat>=2)canopy('installed-reed-awning',-.8,1.15,1.35,1.12,1.55);
+ if(b.householdStock?.mat>=1)block('installed-mat',furnishingsOnly ? .54 : 0,.10,furnishingsOnly ? .94 : 1.85,1.35,.05,.58,m.reed);
+ if(b.householdStock?.mat>=2)canopy('installed-reed-awning',furnishingsOnly ? 1 : -.8,furnishingsOnly ? .84 : 1.15,1.35,1.12,1.55);
  if(kind!=='hut'){
-  const roof=kind==='courtyard-3'?4.08:kind==='courtyard-2'?2.26:1.95;
-  for(let i=0;i<3;i++)block('roof-reed-ends',(kind==='courtyard-3'?-1.7:-.6)+i*.43,roof-.17,kind==='courtyard-3'?-.51:kind==='courtyard-2'?-.68:-.04,.1,.1,.18,m.wood);
+  const roof=furnishingsOnly?2.175:kind==='courtyard-3'?4.08:kind==='courtyard-2'?2.26:1.95;
+  if(!furnishingsOnly)for(let i=0;i<3;i++)block('roof-reed-ends',(kind==='courtyard-3'?-1.7:-.6)+i*.43,roof-.17,kind==='courtyard-3'?-.51:kind==='courtyard-2'?-.68:-.04,.1,.1,.18,m.wood);
   if(variant===1){
-   block('courtyard-storage-bench',1.86,.25,1.65,.45,.5,.7,m.trim);
-   jar('household-bowl',1.83,1.63,.34,.5);
+   const benchX=furnishingsOnly?1.25:1.86,benchZ=furnishingsOnly ? .57 : 1.65;
+   block('courtyard-storage-bench',benchX,.25,benchZ,.45,.5,.7,m.trim);
+   jar('household-bowl',benchX-.03,benchZ-.02,.34,.5);
    // Lean reed screen makes the shaded yard visibly distinct without adding a room.
    const screen=block('woven-court-screen',-1.93,.84,1.1,.05,1.25,.75,m.reed);screen.rotation.z=-.06;
   }else if(variant===2){
-   for(let i=0;i<3;i++)jar('roof-drying-pot',(kind==='courtyard-3'?-1.8:-.5)+i*.32,-1.64,.35,roof);
-   block('raised-herb-trough',1.74,.24,.59,.44,.48,.8,m.terracotta);
-   for(let i=0;i<3;i++)jar('small-herb-pot',1.74,.34+i*.23,.32,.48,true);
+   for(let i=0;i<3;i++)jar('roof-drying-pot',(kind==='courtyard-3'?-1.8:-.5)+i*.32,furnishingsOnly?-1.22:-1.64,.35,roof);
+   const troughX=furnishingsOnly?1.35:1.74;
+   block('raised-herb-trough',troughX,.24,.59,.44,.48,.8,m.terracotta);
+   for(let i=0;i<3;i++)jar('small-herb-pot',troughX,.34+i*.23,.32,.48,true);
   }
  }
  const meshes=[];for(const [material,parts]of groups){const names=[...new Set(parts.map(p=>p.metadata.housePart))],openDoor=parts.some(p=>p.metadata.openDoor);for(const p of parts)p.computeWorldMatrix(true);const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name=`game-house-${kind}-${material.name}`;mesh.material=material;mesh.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;mesh.metadata={houseParts:names,openDoor,houseVisual:kind};
-  if(variant){const positions=Array.from(mesh.getVerticesData(B.VertexBuffer.PositionKind));for(let i=0;i<positions.length;i+=3){const q=organicHousePoint(positions[i],positions[i+1],positions[i+2],variant);positions[i]=q[0];positions[i+1]=q[1];positions[i+2]=q[2];}mesh.setVerticesData(B.VertexBuffer.PositionKind,positions);const normals=[];B.VertexData.ComputeNormals(positions,mesh.getIndices(),normals);mesh.setVerticesData(B.VertexBuffer.NormalKind,normals);}meshes.push(mesh);
+  if(variant&&!furnishingsOnly){const positions=Array.from(mesh.getVerticesData(B.VertexBuffer.PositionKind));for(let i=0;i<positions.length;i+=3){const q=organicHousePoint(positions[i],positions[i+1],positions[i+2],variant);positions[i]=q[0];positions[i+1]=q[1];positions[i+2]=q[2];}mesh.setVerticesData(B.VertexBuffer.PositionKind,positions);const normals=[];B.VertexData.ComputeNormals(positions,mesh.getIndices(),normals);mesh.setVerticesData(B.VertexBuffer.NormalKind,normals);}meshes.push(mesh);
  }return meshes;
 }

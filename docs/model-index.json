@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "c51096cb0e891b378b1eba2a74c0007413e65812ca113ccfcec2c9308c7f150a"
+      "sha256": "b6fc27da9423e5246a1947f60747a99445344e0ea4a95987ceaf057f3b8589fc"
     },
     {
       "file": "game3d/caravan.js",
@@ -77,7 +77,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "c652f10e90eec0fad4a1b1bbebcdda19027ba21cdc1a63aaac6281210d79f425"
+      "sha256": "42c9f01b2a41ee6d981517e8911b896fa827381327ad44b45c4aee2b04142924"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -1171,7 +1171,7 @@
         {
           "model": "market-2x2.glb",
           "file": "game3d/sacred-models.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -1566,7 +1566,7 @@
         {
           "model": "reed-camp-sf3d.glb",
           "file": "game3d/sacred-models.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -1706,7 +1706,7 @@
         {
           "model": "sacred-ishtar-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 11,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -1735,7 +1735,7 @@
         {
           "model": "sacred-shrine-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 12,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -1764,7 +1764,7 @@
         {
           "model": "sacred-ziggurat-1.glb",
           "file": "game3d/sacred-models.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -1793,7 +1793,7 @@
         {
           "model": "sacred-ziggurat-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 14,
+          "line": 15,
           "kind": "literal"
         }
       ]
@@ -2662,7 +2662,7 @@
         {
           "model": "uruk-city-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 5,
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -2691,7 +2691,7 @@
         {
           "model": "uruk-city-wall.glb",
           "file": "game3d/sacred-models.js",
-          "line": 5,
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -2958,7 +2958,7 @@
         {
           "model": "watch-house-v2.glb",
           "file": "game3d/sacred-models.js",
-          "line": 7,
+          "line": 8,
           "kind": "literal"
         }
       ]

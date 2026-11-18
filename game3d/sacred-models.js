@@ -1,4 +1,5 @@
 import {isStrictSumer} from '../scenario-profiles.js';
+import {houseVisualKind} from './house-architecture.js';
 import {loadModel} from './asset-loading.js';
 import {footprintSize} from '../footprints.js';
 
@@ -32,16 +33,28 @@ export function sacredModelKey(b,state){
  return null;
 }
 
-export function flattenSacredContainer(B,container){
+export function flattenSacredContainer(B,container,{tileCoordinates=false}={}){
  container.addAllToScene();
  const sources=[];
  for(const mesh of container.meshes){
   if(!mesh.getTotalVertices())continue;
   mesh.computeWorldMatrix(true);
-  const world=mesh.getWorldMatrix().clone(),reflected=world.determinant()<0;
+  let world=mesh.getWorldMatrix().clone();
+  if(tileCoordinates){
+   // The catalogue authors positions directly in the city tile frame. Remove
+   // only the glTF loader's handedness root, retaining any authored node transforms.
+   let root=mesh.parent;
+   if(root){while(root.parent)root=root.parent;world=world.multiply(root.getWorldMatrix().clone().invert());}
+  }
+  const reflected=world.determinant()<0;
   mesh.bakeTransformIntoVertices(world);
   mesh.parent=null;mesh.position.setAll(0);mesh.rotation.setAll(0);mesh.rotationQuaternion=null;mesh.scaling.setAll(1);
-  mesh.overrideMaterialSideOrientation=reflected?B.Material.ClockWiseSideOrientation:B.Material.CounterClockWiseSideOrientation;
+  // A tile authored in glTF keeps its original CCW triangles and normals
+  // after the loader reflection is removed. Babylon's LH front-face setting
+  // must then preserve the lit outward side of its double-sided PBR material.
+  mesh.overrideMaterialSideOrientation=tileCoordinates&&!container.scene?.useRightHandedSystem
+   ?B.Material.ClockWiseSideOrientation
+   :reflected?B.Material.ClockWiseSideOrientation:B.Material.CounterClockWiseSideOrientation;
   mesh.isVisible=false;mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=true;
   mesh.computeWorldMatrix(true);sources.push(mesh);
  }
@@ -96,6 +109,7 @@ export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
 }
 
 function modelKey(b,state){
+ if(b?.type==='house'&&!b.reedCamp&&!b.campSalvage&&b.construction?.kind!=='new'&&houseVisualKind(b,state)==='courtyard-1')return 'courtyardHouse';
  if(b?.type==='market'&&footprintSize(b)===2&&b.construction?.kind!=='new')return 'market';
  if(b?.type==='watchHouse'&&b.construction?.kind!=='new')return 'watchHouse';
  if(b?.construction?.kind!=='new'&&(b?.type==='cityWall'||b?.type==='cityGate'))return b.type;
@@ -111,10 +125,12 @@ export function createSacredModels(B,scene,{onError=error=>console.warn('Buildin
   const key=modelKey(b,state);
   if(!key||disposed||loaded.has(key)||failed.has(key))return pending.get(key)||null;
   if(pending.has(key))return pending.get(key);
-  const file=key==='market'?MARKET_MODEL:key==='watchHouse'?WATCH_HOUSE_MODEL:key==='reedCamp'?REED_CAMP_MODEL:FORTIFICATION_MODELS[key]??SACRED_MODELS[key].file;
-  const promise=loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb').then(container=>{
+  const isHouse=key==='courtyardHouse';
+  const directory=isHouse?'assets/3d/sumer-buildings/':'assets/art-courtyard/models/';
+  const file=isHouse?b.type+'.glb?v=84ef78b6072b':key==='market'?MARKET_MODEL:key==='watchHouse'?WATCH_HOUSE_MODEL:key==='reedCamp'?REED_CAMP_MODEL:FORTIFICATION_MODELS[key]??SACRED_MODELS[key].file;
+  const promise=loadModel(B,scene,directory,file,scene,undefined,'.glb').then(container=>{
    if(disposed){container.dispose();return null;}
-   try{const sources=flattenSacredContainer(B,container);loaded.set(key,{container,sources});return sources;}
+   try{const sources=flattenSacredContainer(B,container,{tileCoordinates:isHouse});loaded.set(key,{container,sources});return sources;}
    catch(error){container.dispose();throw error;}
   }).catch(error=>{failed.add(key);if(!disposed)onError(error);return null;}).finally(()=>pending.delete(key));
   pending.set(key,promise);return promise;

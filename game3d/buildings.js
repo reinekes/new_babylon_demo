@@ -159,7 +159,15 @@ export async function createGameBuildings(B,scene,materials,options={}){
    part('camp-ridge',[.14,.14,3.46],[0,1.59,0],raw);
    }
   }else if(isHouse(b)){
-   sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade},state);for(const mesh of sources)mesh.parent=root;
+   const houseAsset=sacredModels.sources(b,state);
+   sources=createHouseArchitecture(B,scene,b,{...materialSet,plaster:homePlasters[tier(b)-1][organicHouseVariant(b)],shade:homeShade},state,{furnishingsOnly:!!houseAsset});
+   for(const mesh of sources)mesh.parent=root;
+   for(const source of houseAsset||[]){
+    const mesh=source.clone('game-house-earth-1-'+source.material.name,root,true);
+    mesh.position.y=.018;
+    mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;
+    sources.push(mesh);
+   }
   }else{
    if(b.type==='field'||b.type==='bridge'||b.type==='house'||b.type==='canal'){
     const adapted=cropAssets&&usesBarleyCards(b)?{...b,crop:{...b.crop,sown:0}}:b;
@@ -224,9 +232,12 @@ export async function createGameBuildings(B,scene,materials,options={}){
   if(b.type==='field')sources=sources.filter(mesh=>clipField(mesh,b,state));
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
   if(isHouse(b)){
+   const earth=sacredModels.ready(b,state);
+   const doorCentre=earth?-.22:tier(b)===3?-.75:tier(b)===2?.2:0;
+   const doorZ=earth?-.09:houseVisualKind(b,state)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245;
    for(let index=0;index<4;index++){
-    const renewed=true,doorCentre=tier(b)===3?-.75:tier(b)===2?.2:0;
-    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:renewed?.15:.22,height:.2,depth:.04},scene);lamp.position.set(renewed?doorCentre-.27+index*.18:.22+index*.34,renewed?.73:1.08,renewed?(houseVisualKind(b,state)==='hut'?1.07:tier(b)===3?-.69:tier(b)===2?-.875:-.245):.52);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
+    const lamp=B.MeshBuilder.CreateBox(`game-home-lamp-${index}`,{width:.15,height:.2,depth:.04},scene);
+    lamp.position.set(doorCentre-.27+index*.18,.73,doorZ);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
   if(b.type==='cityGate'&&b.construction?.kind!=='new')for(const mesh of createGateTorches(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
@@ -250,7 +261,9 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function preview(input,state,options={}){
   if(disposed)return null;if(!input){clearPreview();return null;}
   fieldBedContext(state);
-  const b={...input,level:1,construction:undefined},shoreContext=foundationContext(state),signature=visualSignature(b,state,shoreContext),allowed=options.allowed!==false;
+  const b={...input,level:1,construction:undefined};
+  if(isHouse(b))sacredModels.request(b,state);
+  const shoreContext=foundationContext(state),signature=visualSignature(b,state,shoreContext),allowed=options.allowed!==false;
   if(!previewRecord||previewRecord.signature!==signature){
    clearPreview();let template=previewTemplates.get(signature);
    if(template){previewTemplates.delete(signature);previewTemplates.set(signature,template);}else{template=acquire(b,signature,state,shoreContext);previewTemplates.set(signature,template);}
