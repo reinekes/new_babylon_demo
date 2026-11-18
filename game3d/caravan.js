@@ -1,3 +1,4 @@
+import {groundHeading} from './ground-turn.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {loadModel} from './asset-loading.js';
 import {acquireDonkey,createDonkeyPack,DONKEY_MODELS} from './donkey.js';
@@ -75,7 +76,7 @@ export async function createTradeCaravan(B,scene,meshes,materials,goods,options=
   if(!actors.length){lastTime=time;return;}goodsUpdate(c);const dt=lastTime===null?0:Math.max(0,time-lastTime),reset=lastTime!==null&&(time<lastTime||dt>5);lastTime=time;const stopped=['trading','unloading'].includes(c.phase);
   for(const [i,a]of actors.entries()){const p=formation[i],d=a.last?Math.hypot(p.x-a.last.x,p.y-a.last.y)*TILE:0;const moved=d>.000001&&!reset;const fresh=!a.last;
    // Position derives only from the saved caravan; gait is distance-driven and freezes on pause.
-   if(dt>0||fresh||reset){a.root.position.set(p.x*TILE,surfaceElevation(p.x,p.y,state),p.y*TILE);a.root.rotation.y=p.yaw;a.last={x:p.x,y:p.y};if(moved)a.phase=(a.phase+d/a.stride)%1;if(stopped&&dt>0)a.clock+=Math.min(dt,.25);const clip=stopped?(a.kind==='camel'&&i===2?'Idle2':'Idle'):'Walk';pose(a,clip,stopped?a.clock/(a.kind==='camel'?4.5:3):a.phase,Math.min(dt,.1));a.pack?.update();}
+   if(dt>0||fresh||reset){a.root.position.set(p.x*TILE,surfaceElevation(p.x,p.y,state),p.y*TILE);if(fresh||reset||a.kind==='merchant')a.root.rotation.y=p.yaw;else if(moved)a.root.rotation.y=groundHeading(a.root.rotation.y,p.yaw,d,a.stride*.65);a.last={x:p.x,y:p.y};if(moved)a.phase=(a.phase+d/a.stride)%1;if(stopped&&dt>0)a.clock+=Math.min(dt,.25);const clip=stopped?(a.kind==='camel'&&i===2?'Idle2':'Idle'):'Walk';pose(a,clip,stopped?a.clock/(a.kind==='camel'?4.5:3):a.phase,Math.min(dt,.1));a.pack?.update();}
    a.root.metadata={caravanId:c.id,kind:a.kind,clip:a.clip,gaitPhase:a.phase,historicalArtisticCamel:a.kind==='camel',...(a.kind==='donkey'?{modelFile:donkeySource.model.file}:{})};
   }
  }

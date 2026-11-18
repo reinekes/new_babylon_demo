@@ -250,7 +250,7 @@ export class Renderer{
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
   this.line([[p.x-1.1*q,p.y-3*q],[p.x+stride*q,p.y]],'#665841',1.25*q);
   this.line([[p.x+1.1*q,p.y-3*q],[p.x-stride*q,p.y]],'#665841',1.25*q);
-  const look=residentAppearance(person,this.professionByWork||[]),pose=residentPose(person,manualGatheringActivity(this.state,person)?.task||look.work,playTime,this.reduce);drawResidentClothes(this,p,q,look);
+  const look=residentAppearance(person,this.professionByWork||[],this.state),pose=residentPose(person,manualGatheringActivity(this.state,person)?.task||look.work,playTime,this.reduce);drawResidentClothes(this,p,q,look);
   if(rain){
    const raised=rain==='cover';
    this.line([[p.x-2*q,p.y-7*q],[p.x-4*q,p.y-(raised?9:6)*q],[p.x-(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);

@@ -1,3 +1,4 @@
+import {groundHeading} from './ground-turn.js';
 import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
@@ -23,7 +24,11 @@ export async function createJackals(B,scene,shadow,meshes=[],options={}){
   for(const c of animals){if(c.kind!=='jackal')continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(frozen&&!fresh)continue;
    const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6,dead=!!(c.dead||c.behavior==='dead');a.lastX=c.x;a.lastY=c.y;
    a.root.position.set(c.x*6,onBridge(state.buildings||[],c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
-   const yaw=jackalHeading(c,dx,dz);if(yaw!==null&&!dead){const d=Math.atan2(Math.sin(yaw-a.root.rotation.y),Math.cos(yaw-a.root.rotation.y));a.root.rotation.y+=d*(fresh||c.pulling?1:1-Math.exp(-dt*12));}
+   const yaw=jackalHeading(c,dx,dz);
+   if(yaw!==null&&!dead){
+    if(fresh||c.pulling)a.root.rotation.y=yaw;
+    else if(distance>.00001&&distance<3)a.root.rotation.y=groundHeading(a.root.rotation.y,yaw,distance,.3);
+   }
    const growth=Number.isFinite(c.growth)?Math.max(.3,Math.min(1,c.growth)):1;a.root.scaling.setAll(growth);
    const moving=distance>.00001&&distance<3&&!dead,clip=c.pulling&&!dead?'Pull':moving?'Walk':'Idle',group=a.groups.get(clip);
    if(clip!==a.clip){for(const g of a.groups.values())g.stop();group.start(true,1,group.from,group.to,false);group.pause();a.clip=clip;}

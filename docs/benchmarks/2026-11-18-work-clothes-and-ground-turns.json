@@ -1,0 +1,5039 @@
+{
+  "parallelCaptureComparisonFPS": {
+    "before": [
+      16.873983536764744,
+      16.41471557068864
+    ],
+    "after": [
+      11.595724896896504,
+      12.322448503821626
+    ]
+  },
+  "release": "work-cloth-ground-turns-20261118",
+  "base": "d3c4fc69",
+  "simSpeed": 4,
+  "largeCity": {
+    "meanFramesPerSecond": {
+      "before": 21.251442516082548,
+      "after": 20.030196161417297
+    },
+    "runs": [
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 16.303805330346147,
+          "frames": 294,
+          "seconds": 18.032600000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 23.800000071525574,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 293,
+            "p50": 50,
+            "p95": 116.59999999999854
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 294,
+              "p50": 40.700000047683716,
+              "p95": 75.10000002384186
+            },
+            "buildings": {
+              "samples": 294,
+              "p50": 1,
+              "p95": 1.3000000715255737
+            },
+            "actors": {
+              "samples": 294,
+              "p50": 6.600000023841858,
+              "p95": 30.600000023841858
+            },
+            "scene": {
+              "samples": 294,
+              "p50": 31.600000023841858,
+              "p95": 43.699999928474426
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 0,
+          "visibleWorkMeshes": 0,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8994/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 405,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 23965206,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "before-work-ground-quiet1-mixed",
+        "captured": "2026-11-18T17:30:14.374Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 26.199079701818953,
+          "frames": 472,
+          "seconds": 18.0159,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 12.699999928474426,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 471,
+            "p50": 33.30000000000291,
+            "p95": 50.099999999998545
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 472,
+              "p50": 28,
+              "p95": 38.10000002384186
+            },
+            "buildings": {
+              "samples": 472,
+              "p50": 0.7000000476837158,
+              "p95": 0.8999999761581421
+            },
+            "actors": {
+              "samples": 472,
+              "p50": 4.399999976158142,
+              "p95": 11.900000095367432
+            },
+            "scene": {
+              "samples": 472,
+              "p50": 21.399999976158142,
+              "p95": 26.200000047683716
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 0,
+          "visibleWorkMeshes": 0,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8994/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 437,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 23951388,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "before-work-ground-quiet2-mixed",
+        "captured": "2026-11-18T17:30:57.880Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 16.52562581103113,
+          "frames": 298,
+          "seconds": 18.032600000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 17.699999928474426,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 297,
+            "p50": 49.89999999999418,
+            "p95": 100.10000000000218
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 298,
+              "p50": 35.5,
+              "p95": 64.19999992847443
+            },
+            "buildings": {
+              "samples": 298,
+              "p50": 0.8999999761581421,
+              "p95": 1.100000023841858
+            },
+            "actors": {
+              "samples": 298,
+              "p50": 6,
+              "p95": 30.800000071525574
+            },
+            "scene": {
+              "samples": 298,
+              "p50": 27.5,
+              "p95": 36.199999928474426
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 410,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 24471321,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "after-work-ground-quiet1-mixed",
+        "captured": "2026-11-18T17:29:31.961Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 23.534766511803465,
+          "frames": 424,
+          "seconds": 18.0159,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 12.699999928474426,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 423,
+            "p50": 33.30000000000291,
+            "p95": 66.70000000000073
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 424,
+              "p50": 28.5,
+              "p95": 44
+            },
+            "buildings": {
+              "samples": 424,
+              "p50": 0.7000000476837158,
+              "p95": 0.8999999761581421
+            },
+            "actors": {
+              "samples": 424,
+              "p50": 4.600000023841858,
+              "p95": 16.200000047683716
+            },
+            "scene": {
+              "samples": 424,
+              "p50": 21.5,
+              "p95": 27
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 68,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 442,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 14502168,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "after-work-ground-quiet2-mixed",
+        "captured": "2026-11-18T17:31:32.500Z"
+      }
+    ]
+  },
+  "groundTurning": {
+    "before": {
+      "results": {
+        "donkey": {
+          "steps": 1132,
+          "stationaryRotations": 0,
+          "turningSteps": 5,
+          "largestTurnDegrees": 155.88309399688166,
+          "largestSlipAngle": 2.043188327372163e-11,
+          "restFrames": 166
+        },
+        "pig": {
+          "steps": 1559,
+          "stationaryRotations": 224,
+          "turningSteps": 157,
+          "largestTurnDegrees": 7.389920495328886,
+          "largestSlipAngle": 13.724138062765293,
+          "restFrames": 1686
+        },
+        "goat": {
+          "steps": 1248,
+          "stationaryRotations": 271,
+          "turningSteps": 148,
+          "largestTurnDegrees": 6.96664943408394,
+          "largestSlipAngle": 12.938063234726766,
+          "restFrames": 1348
+        },
+        "bull": {
+          "steps": 2702,
+          "stationaryRotations": 281,
+          "turningSteps": 230,
+          "largestTurnDegrees": 7.295929312999977,
+          "largestSlipAngle": 13.549583009919148,
+          "restFrames": 1841
+        },
+        "sheep": {
+          "steps": 2173,
+          "stationaryRotations": 0,
+          "turningSteps": 35,
+          "largestTurnDegrees": 31.937769028592506,
+          "largestSlipAngle": 59.312999624517914,
+          "restFrames": 423
+        }
+      },
+      "dt": 0.05,
+      "gl": 0,
+      "exceptions": [],
+      "http": [],
+      "animals": 22,
+      "samples": 650
+    },
+    "after": {
+      "results": {
+        "donkey": {
+          "steps": 976,
+          "stationaryRotations": 0,
+          "turningSteps": 306,
+          "largestTurnDegrees": 2.3741345102106037,
+          "largestSlipAngle": 1.1870672551328199,
+          "restFrames": 322
+        },
+        "pig": {
+          "steps": 1267,
+          "stationaryRotations": 0,
+          "turningSteps": 135,
+          "largestTurnDegrees": 8.195787884395829,
+          "largestSlipAngle": 4.094392175333394,
+          "restFrames": 1978
+        },
+        "goat": {
+          "steps": 1103,
+          "stationaryRotations": 0,
+          "turningSteps": 260,
+          "largestTurnDegrees": 5.01806074390849,
+          "largestSlipAngle": 2.5082277773284125,
+          "restFrames": 1493
+        },
+        "bull": {
+          "steps": 2087,
+          "stationaryRotations": 0,
+          "turningSteps": 419,
+          "largestTurnDegrees": 3.727264788197319,
+          "largestSlipAngle": 1.8633036249567243,
+          "restFrames": 2456
+        },
+        "sheep": {
+          "steps": 2173,
+          "stationaryRotations": 0,
+          "turningSteps": 39,
+          "largestTurnDegrees": 5.8743925884676305,
+          "largestSlipAngle": 2.935908292400145,
+          "restFrames": 423
+        }
+      },
+      "dt": 0.05,
+      "gl": 0,
+      "exceptions": [],
+      "http": [],
+      "animals": 22,
+      "samples": 650
+    }
+  },
+  "checks": {
+    "profileTests": 242,
+    "roadmapTests": 14
+  },
+  "workProfiles": {
+    "result": {
+      "rows": [
+        {
+          "expected": "clayworker",
+          "type": "clay",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "clayworker",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "clayworker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "clayworker",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "clayworker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "brickmaker",
+          "type": "brickyard",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "brickmaker",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1448,
+                  "profession": "brickmaker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "brickmaker",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1470,
+                  "profession": "brickmaker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "potter",
+          "type": "pottery",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "potter",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "potter",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "potter",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "potter",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "kilnworker",
+          "type": "kiln",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "kilnworker",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "kilnworker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "kilnworker",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "kilnworker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B46B42",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "farmer",
+          "type": "field",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "farmer",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "farmer",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#9F854F",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "farmer",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "farmer",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#9F854F",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "gardener",
+          "type": "garden",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "gardener",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1448,
+                  "profession": "gardener",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#788555",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "gardener",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1470,
+                  "profession": "gardener",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#788555",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "shepherd",
+          "type": "sheepfold",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "shepherd",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "shepherd",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A39772",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "shepherd",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "shepherd",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A39772",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "dairyman",
+          "type": "cowshed",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "dairyman",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "dairyman",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B6A278",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "dairyman",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "dairyman",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B6A278",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "lumberjack",
+          "type": "logging",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "lumberjack",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "lumberjack",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#755C43",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "lumberjack",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "lumberjack",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#755C43",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "joiner",
+          "type": "joineryYard",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "joiner",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "joiner",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#895F41",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "joiner",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "joiner",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#895F41",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "quarrier",
+          "type": "quarry",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "quarrier",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "quarrier",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#888077",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "quarrier",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "quarrier",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#888077",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "coppersmith",
+          "type": "coppersmith",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "coppersmith",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "coppersmith",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#865B4C",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "coppersmith",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "coppersmith",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#865B4C",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "reedcutter",
+          "type": "reed",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "reedcutter",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "reedcutter",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#819357",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "reedcutter",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "reedcutter",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#819357",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "basketweaver",
+          "type": "basketry",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "basketweaver",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "basketweaver",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A28C56",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "basketweaver",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "basketweaver",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A28C56",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "matweaver",
+          "type": "matYard",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "matweaver",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1448,
+                  "profession": "matweaver",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#8B9058",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "matweaver",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1470,
+                  "profession": "matweaver",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#8B9058",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "fisher",
+          "type": "fishing",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "fisher",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "fisher",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#4F7B82",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "fisher",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "fisher",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#4F7B82",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "watercarrier",
+          "type": "waterpoint",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "watercarrier",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "watercarrier",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#568591",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "watercarrier",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "watercarrier",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#568591",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "canalworker",
+          "type": "canal",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "canalworker",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "canalworker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#69888A",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "canalworker",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "canalworker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#69888A",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "hunter",
+          "type": "hunting",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "hunter",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "hunter",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#78684B",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "hunter",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "hunter",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#78684B",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "weaver",
+          "type": "weaver",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "weaver",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1448,
+                  "profession": "weaver",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#548780",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "weaver",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1470,
+                  "profession": "weaver",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#548780",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "tailor",
+          "type": "tailor",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "tailor",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1448,
+                  "profession": "tailor",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#796E87",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "tailor",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1470,
+                  "profession": "tailor",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#796E87",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "musician",
+          "type": "musicHouse",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "historical-man",
+              "selector": "musician",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1591,
+                  "profession": "musician",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#758B77",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "musician",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "musician",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#758B77",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "baker",
+          "type": "bakery",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "baker",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "baker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B8A17B",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "baker",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "baker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#B8A17B",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "brewer",
+          "type": "brewery",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "brewer",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "brewer",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A08651",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "brewer",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "brewer",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A08651",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "healer",
+          "type": "healer",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "healer",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1459,
+                  "profession": "healer",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#7C9981",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "healer",
+              "mesh": [
+                {
+                  "shape": "apron",
+                  "faces": 1479,
+                  "profession": "healer",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#7C9981",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "priest",
+          "type": "shrine",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "historical-man",
+              "selector": "priest",
+              "mesh": [
+                {
+                  "shape": "mantle",
+                  "faces": 2711,
+                  "profession": "priest",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#C4B28D",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "priest",
+              "mesh": [
+                {
+                  "shape": "mantle",
+                  "faces": 642,
+                  "profession": "priest",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#C4B28D",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "scribe",
+          "type": "granary",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "scribe",
+              "mesh": [
+                {
+                  "shape": "mantle",
+                  "faces": 653,
+                  "profession": "scribe",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#8F7463",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "scribe",
+              "mesh": [
+                {
+                  "shape": "mantle",
+                  "faces": 642,
+                  "profession": "scribe",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#8F7463",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "lawmaker",
+          "type": null,
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "lawmaker",
+              "mesh": [
+                {
+                  "shape": "mantle",
+                  "faces": 653,
+                  "profession": "lawmaker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#9A715B",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "lawmaker",
+              "mesh": [
+                {
+                  "shape": "mantle",
+                  "faces": 642,
+                  "profession": "lawmaker",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#9A715B",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "guard",
+          "type": "watchHouse",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "guard",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "guard",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#876357",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "guard",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "guard",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#876357",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "builder",
+          "type": null,
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "builder",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1557,
+                  "profession": "builder",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#93825D",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "builder",
+              "mesh": [
+                {
+                  "shape": "short",
+                  "faces": 1591,
+                  "profession": "builder",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#93825D",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "carrier",
+          "type": "depot",
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "carrier",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 975,
+                  "profession": "carrier",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#9C875F",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "carrier",
+              "mesh": [
+                {
+                  "shape": "sash",
+                  "faces": 1061,
+                  "profession": "carrier",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#9C875F",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        },
+        {
+          "expected": "production",
+          "type": null,
+          "profiles": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "source": "male",
+              "selector": "production",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1448,
+                  "profession": "production",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A18D68",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "source": "female",
+              "selector": "production",
+              "mesh": [
+                {
+                  "shape": "wrap",
+                  "faces": 1470,
+                  "profession": "production",
+                  "skinned": true,
+                  "visible": true,
+                  "dye": "#A18D68",
+                  "texture": "resident-fine-woven-cloth"
+                }
+              ]
+            }
+          ],
+          "unchanged": true,
+          "gl": 0
+        }
+      ],
+      "matches": 32,
+      "total": 32
+    },
+    "exceptions": [],
+    "http": []
+  },
+  "occupationChange": {
+    "result": {
+      "rows": [
+        {
+          "label": "real-workplace",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 5502,
+              "faces": 1172,
+              "garmentSkeleton": 5089,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 6091,
+              "faces": 1172,
+              "garmentSkeleton": 5614,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        },
+        {
+          "label": "promised-role-during-old-cargo",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 5502,
+              "faces": 1172,
+              "garmentSkeleton": 5089,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 6091,
+              "faces": 1172,
+              "garmentSkeleton": 5614,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        },
+        {
+          "label": "same-role-distant",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 5502,
+              "faces": 1172,
+              "garmentSkeleton": 5089,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 6091,
+              "faces": 1172,
+              "garmentSkeleton": 5614,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        },
+        {
+          "label": "same-role-near",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 5502,
+              "faces": 1172,
+              "garmentSkeleton": 5089,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 6091,
+              "faces": 1172,
+              "garmentSkeleton": 5614,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        },
+        {
+          "label": "different-actual-workplace",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": "weaver",
+              "shape": "wrap",
+              "dye": "#548780",
+              "garmentMesh": 42024,
+              "faces": 1700,
+              "garmentSkeleton": 5089,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": "weaver",
+              "shape": "wrap",
+              "dye": "#548780",
+              "garmentMesh": 42034,
+              "faces": 1700,
+              "garmentSkeleton": 5614,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        },
+        {
+          "label": "mourning",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": null,
+              "shape": null,
+              "dye": null,
+              "garmentMesh": null,
+              "faces": null,
+              "sharedSkeleton": false,
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ]
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": null,
+              "shape": null,
+              "dye": null,
+              "garmentMesh": null,
+              "faces": null,
+              "sharedSkeleton": false,
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ]
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        },
+        {
+          "label": "return-to-actual-workplace",
+          "people": [
+            {
+              "id": 9801,
+              "sex": "m",
+              "root": 5488,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 42044,
+              "faces": 1172,
+              "garmentSkeleton": 5089,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9801-0",
+                  5490,
+                  "#2A0F06",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9801-1",
+                  5491,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9801-2",
+                  5493,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            },
+            {
+              "id": 9802,
+              "sex": "f",
+              "root": 6078,
+              "tag": "potter",
+              "shape": "apron",
+              "dye": "#b46b42",
+              "garmentMesh": 42052,
+              "faces": 1172,
+              "garmentSkeleton": 5614,
+              "sharedSkeleton": true,
+              "texture": "resident-fine-woven-cloth",
+              "skin": [
+                [
+                  "citizen-skin-9802-0",
+                  6080,
+                  "#3D1508",
+                  null
+                ]
+              ],
+              "cloth": [
+                [
+                  "citizen-cloth-9802-1",
+                  6081,
+                  "resident-fine-woven-cloth"
+                ],
+                [
+                  "citizen-cloth-9802-2",
+                  6082,
+                  "resident-fine-woven-cloth"
+                ]
+              ],
+              "rendered": true
+            }
+          ],
+          "preserved": true,
+          "gl": 0
+        }
+      ],
+      "stockAndIdentitiesPreservedEveryFrame": true,
+      "oldToNew": [
+        [
+          9801,
+          true,
+          true
+        ],
+        [
+          9802,
+          true,
+          true
+        ]
+      ],
+      "source": {
+        "original": "6,10",
+        "next": "17,11",
+        "cargo": "2 clay per resident",
+        "clothing": 68
+      }
+    },
+    "exceptions": [],
+    "http": []
+  },
+  "clayWorker": {
+    "details": {
+      "meta": {
+        "citizenId": 1,
+        "child": false,
+        "nativeResident": true,
+        "sourceWalk": true,
+        "residentVariant": "female",
+        "nativeStrideMetres": 1.701598323679086,
+        "workClothing": "clayworker",
+        "clothShape": "short",
+        "clothColor": "#b46b42",
+        "swimming": false
+      },
+      "save": {
+        "sex": "f",
+        "id": 1,
+        "phase": "toWork",
+        "work": "clay",
+        "workKey": "7,7",
+        "role": "production",
+        "calling": "auto",
+        "clothing": 99.92746990740746,
+        "cargo": {},
+        "buildCargo": {},
+        "visualRoot": 6155
+      },
+      "mesh": {
+        "material": "profession-cloth-1",
+        "color": "#B46B42",
+        "faces": 1788,
+        "correctSkeleton": true
+      },
+      "naturalRoute": true,
+      "start": [
+        51,
+        0,
+        49.739999999999995
+      ],
+      "end": [
+        51,
+        0,
+        48.53252625000007
+      ],
+      "distance": 1.2074737499999273,
+      "yaw": 3.141591964758955,
+      "poses": [
+        {
+          "t": 61.299999952316284,
+          "p": [
+            51,
+            0,
+            49.72692749999999
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 95.70000004768372,
+          "p": [
+            51,
+            0,
+            49.687552499999995
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 130.39999997615814,
+          "p": [
+            51,
+            0,
+            49.6481775
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 168.89999997615814,
+          "p": [
+            51,
+            0,
+            49.62195375
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 194.79999995231628,
+          "p": [
+            51,
+            0,
+            49.595651249999996
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 221.60000002384186,
+          "p": [
+            51,
+            0,
+            49.582499999999996
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 252.10000002384186,
+          "p": [
+            51,
+            0,
+            49.556355
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 275.2000000476837,
+          "p": [
+            51,
+            0,
+            49.5300525
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 292.7000000476837,
+          "p": [
+            51,
+            0,
+            49.51698
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 309,
+          "p": [
+            51,
+            0,
+            49.50382875
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 322.7000000476837,
+          "p": [
+            51,
+            0,
+            49.490677500000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 337.7999999523163,
+          "p": [
+            51,
+            0,
+            49.47752625000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 353.60000002384186,
+          "p": [
+            51,
+            0,
+            49.464453750000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 368.60000002384186,
+          "p": [
+            51,
+            0,
+            49.45130250000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 383.7000000476837,
+          "p": [
+            51,
+            0,
+            49.43815125000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 399.5,
+          "p": [
+            51,
+            0,
+            49.42500000000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 416.60000002384186,
+          "p": [
+            51,
+            0,
+            49.41192750000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 431.7999999523163,
+          "p": [
+            51,
+            0,
+            49.39877625000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 449.5,
+          "p": [
+            51,
+            0,
+            49.38562500000002
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 464.7000000476837,
+          "p": [
+            51,
+            0,
+            49.37255250000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 479.7999999523163,
+          "p": [
+            51,
+            0,
+            49.35948000000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 495.89999997615814,
+          "p": [
+            51,
+            0,
+            49.34632875000001
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 514,
+          "p": [
+            51,
+            0,
+            49.33317750000002
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 530.7000000476837,
+          "p": [
+            51,
+            0,
+            49.320026250000026
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 546.6000000238419,
+          "p": [
+            51,
+            0,
+            49.306875000000026
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 562.7999999523163,
+          "p": [
+            51,
+            0,
+            49.29380250000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 579.8999999761581,
+          "p": [
+            51,
+            0,
+            49.28065125000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 596.7999999523163,
+          "p": [
+            51,
+            0,
+            49.26750000000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 613.2999999523163,
+          "p": [
+            51,
+            0,
+            49.25442750000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 629.7000000476837,
+          "p": [
+            51,
+            0,
+            49.24135500000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 648,
+          "p": [
+            51,
+            0,
+            49.22820375000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 665.3999999761581,
+          "p": [
+            51,
+            0,
+            49.21505250000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 680.1000000238419,
+          "p": [
+            51,
+            0,
+            49.201901250000034
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 695.8999999761581,
+          "p": [
+            51,
+            0,
+            49.18882875000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 713.6000000238419,
+          "p": [
+            51,
+            0,
+            49.175677500000035
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 729.7000000476837,
+          "p": [
+            51,
+            0,
+            49.16260500000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 746.7999999523163,
+          "p": [
+            51,
+            0,
+            49.149453750000035
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 762.7999999523163,
+          "p": [
+            51,
+            0,
+            49.13630250000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 779.7000000476837,
+          "p": [
+            51,
+            0,
+            49.123230000000035
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 796.8999999761581,
+          "p": [
+            51,
+            0,
+            49.11007875000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 812.5,
+          "p": [
+            51,
+            0,
+            49.09692750000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 829.3999999761581,
+          "p": [
+            51,
+            0,
+            49.08385500000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 845.7999999523163,
+          "p": [
+            51,
+            0,
+            49.070625000000035
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 865,
+          "p": [
+            51,
+            0,
+            49.057552500000035
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 880.5,
+          "p": [
+            51,
+            0,
+            49.044480000000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 896.7999999523163,
+          "p": [
+            51,
+            0,
+            49.031328750000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 913.6000000238419,
+          "p": [
+            51,
+            0,
+            49.018177500000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 931,
+          "p": [
+            51,
+            0,
+            49.005105000000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 947.5,
+          "p": [
+            51,
+            0,
+            48.991875000000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 963.6000000238419,
+          "p": [
+            51,
+            0,
+            48.97880250000003
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 980.2999999523163,
+          "p": [
+            51,
+            0,
+            48.965651250000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1000.7999999523163,
+          "p": [
+            51,
+            0,
+            48.95250000000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1017.6000000238419,
+          "p": [
+            51,
+            0,
+            48.939427500000036
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1033.1000000238419,
+          "p": [
+            51,
+            0,
+            48.92627625000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1048.2000000476837,
+          "p": [
+            51,
+            0,
+            48.91320375000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1063.2999999523163,
+          "p": [
+            51,
+            0,
+            48.900052500000044
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1080.8999999761581,
+          "p": [
+            51,
+            0,
+            48.886901250000044
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1096.7999999523163,
+          "p": [
+            51,
+            0,
+            48.873828750000044
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1114.5,
+          "p": [
+            51,
+            0,
+            48.86075625000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1132.2000000476837,
+          "p": [
+            51,
+            0,
+            48.847605000000044
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1149,
+          "p": [
+            51,
+            0,
+            48.834453750000044
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1164.5,
+          "p": [
+            51,
+            0,
+            48.821381250000044
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1181.1000000238419,
+          "p": [
+            51,
+            0,
+            48.80815125000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1199.1000000238419,
+          "p": [
+            51,
+            0,
+            48.79507875000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1216,
+          "p": [
+            51,
+            0,
+            48.78192750000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1230.7999999523163,
+          "p": [
+            51,
+            0,
+            48.768776250000045
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1247.2999999523163,
+          "p": [
+            51,
+            0,
+            48.75570375000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1264.5,
+          "p": [
+            51,
+            0,
+            48.742552500000045
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1283.5,
+          "p": [
+            51,
+            0,
+            48.72948000000004
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1301.2000000476837,
+          "p": [
+            51,
+            0,
+            48.716328750000045
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1317.7999999523163,
+          "p": [
+            51,
+            0,
+            48.70317750000005
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1335.7999999523163,
+          "p": [
+            51,
+            0,
+            48.690105000000045
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1353.2999999523163,
+          "p": [
+            51,
+            0,
+            48.676875000000045
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1371.2999999523163,
+          "p": [
+            51,
+            0,
+            48.663881250000045
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1390.1000000238419,
+          "p": [
+            51,
+            0,
+            48.65073000000005
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1408.5,
+          "p": [
+            51,
+            0,
+            48.63757875000005
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1426,
+          "p": [
+            51,
+            0,
+            48.62442750000005
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1443.7000000476837,
+          "p": [
+            51,
+            0,
+            48.61127625000006
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1461.6000000238419,
+          "p": [
+            51,
+            0,
+            48.59820375000005
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1482,
+          "p": [
+            51,
+            0,
+            48.58505250000006
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1501.2999999523163,
+          "p": [
+            51,
+            0,
+            48.55882875000006
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1519.2999999523163,
+          "p": [
+            51,
+            0,
+            48.54567750000007
+          ],
+          "model": "clayworker"
+        },
+        {
+          "t": 1538.2000000476837,
+          "p": [
+            51,
+            0,
+            48.53252625000007
+          ],
+          "model": "clayworker"
+        }
+      ],
+      "gl": 0
+    },
+    "exceptions": [],
+    "http": []
+  },
+  "potterWalk": {
+    "details": {
+      "near": [
+        {
+          "id": 0,
+          "role": "auto",
+          "sex": "m",
+          "calling": "auto",
+          "work": "5,12",
+          "tag": "potter",
+          "shape": "apron",
+          "range": 0.6000682208602595
+        }
+      ],
+      "stats": [
+        {
+          "t": 37.799999952316284,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            44.04336694257967,
+            0.05853319615549774,
+            64.29147979408278
+          ],
+          "yaw": -0.05285301435939923
+        },
+        {
+          "t": 216.79999995231628,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.98022690992511,
+            0.06146069186623786,
+            64.4614728671854
+          ],
+          "yaw": -0.31766067311225227
+        },
+        {
+          "t": 382.89999997615814,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.92523510610551,
+            0.0639221560786074,
+            64.60068094046153
+          ],
+          "yaw": -0.3671732829362576
+        },
+        {
+          "t": 550.1000000238419,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.868030483918325,
+            0.06640318240317014,
+            64.73779276192298
+          ],
+          "yaw": -0.39201151763506825
+        },
+        {
+          "t": 717.1000000238419,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.808645397640746,
+            0.06889944374188836,
+            64.87272411929402
+          ],
+          "yaw": -0.4124266226324692
+        },
+        {
+          "t": 882.6999999284744,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.74711743283271,
+            0.07140625996007136,
+            65.00539603158172
+          ],
+          "yaw": -0.43223350426546103
+        },
+        {
+          "t": 1050.1000000238419,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.68341161918333,
+            0.07392162265606644,
+            65.13589009502809
+          ],
+          "yaw": -0.4521591001406575
+        },
+        {
+          "t": 1215.6999999284744,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.61748775666828,
+            0.0764431905783492,
+            65.26428267616164
+          ],
+          "yaw": -0.4723424409220965
+        },
+        {
+          "t": 1383.6000000238419,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.549424938104025,
+            0.07896371104221458,
+            65.39041973469313
+          ],
+          "yaw": -0.4927743355093701
+        },
+        {
+          "t": 1547.2999999523163,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.479141455425044,
+            0.08148159032172703,
+            65.51445269566275
+          ],
+          "yaw": -0.5134720056001087
+        },
+        {
+          "t": 1715,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.40667750865566,
+            0.08399028736126181,
+            65.63630519254201
+          ],
+          "yaw": -0.5344110148466994
+        },
+        {
+          "t": 1882.2999999523163,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.33207852910296,
+            0.08648286120198143,
+            65.75590609008508
+          ],
+          "yaw": -0.5555643997723994
+        },
+        {
+          "t": 2051.100000023842,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.255254962169644,
+            0.08895641857951431,
+            65.87339896680041
+          ],
+          "yaw": -0.5769419263276354
+        },
+        {
+          "t": 2218.600000023842,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.17625093114593,
+            0.0914031168854922,
+            65.98871137942535
+          ],
+          "yaw": -0.5985144435380194
+        },
+        {
+          "t": 2384.399999976158,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.09511579060481,
+            0.09381471160294069,
+            66.10177611597999
+          ],
+          "yaw": -0.6202512223119627
+        },
+        {
+          "t": 2550,
+          "id": 1,
+          "wear": "potter",
+          "pos": [
+            43.011752139417155,
+            0.09618681349238661,
+            66.21272890844098
+          ],
+          "yaw": -0.6421596865308662
+        }
+      ],
+      "actualRoute": true,
+      "displacement": 2.1960800684357484,
+      "gl": 0,
+      "save": {
+        "id": 1,
+        "sex": "f",
+        "phase": "toWork",
+        "work": "5,12",
+        "calling": "auto",
+        "cargo": {},
+        "personalClothing": 86.1817152777775
+      }
+    },
+    "exceptions": [],
+    "http": []
+  },
+  "turnHooves": [
+    [
+      {
+        "x": 51.542191624146426,
+        "y": 0.03960397746817835,
+        "z": 62.206512465108,
+        "h": 0.003586634406571564,
+        "terrain": 0.004247032342976256
+      },
+      {
+        "x": 51.28680662871172,
+        "y": 0.04060515417833738,
+        "z": 62.646995520502834,
+        "h": 0.0045878111167305955,
+        "terrain": 0.006860248371761669
+      },
+      {
+        "x": 52.08307454612504,
+        "y": 0.05939979205221382,
+        "z": 61.795283523287466,
+        "h": 0.02338244899060704,
+        "terrain": 0.021244481950975433
+      },
+      {
+        "x": 52.120780658883696,
+        "y": 0.03601686715414114,
+        "z": 61.9683215901571,
+        "h": -4.759074656451607e-07,
+        "terrain": -0.0021117677969952134
+      }
+    ],
+    [
+      {
+        "x": 51.54988129701318,
+        "y": 0.03772072623214581,
+        "z": 62.20245037288382,
+        "h": 0.0018341204073890772,
+        "terrain": 0.002312371401608032
+      },
+      {
+        "x": 51.27658377306602,
+        "y": 0.037527816950144004,
+        "z": 62.63212030662362,
+        "h": 0.001641211125387268,
+        "terrain": 0.003865496207044107
+      },
+      {
+        "x": 52.02144527328371,
+        "y": 0.06144256842978439,
+        "z": 61.876561557973076,
+        "h": 0.025555962605027654,
+        "terrain": 0.023403317962656336
+      },
+      {
+        "x": 52.13799644649708,
+        "y": 0.0358803744708265,
+        "z": 61.98820759959619,
+        "h": -6.231353930231804e-06,
+        "terrain": -0.002029023595174123
+      }
+    ],
+    [
+      {
+        "x": 51.555545370260546,
+        "y": 0.03725641620746822,
+        "z": 62.20162533012955,
+        "h": 0.001507544901174575,
+        "terrain": 0.0018059687764676174
+      },
+      {
+        "x": 51.26497315156103,
+        "y": 0.03750697103599775,
+        "z": 62.61938412307024,
+        "h": 0.0017580997297041065,
+        "terrain": 0.0039385880344935675
+      },
+      {
+        "x": 51.95779941044359,
+        "y": 0.07053306698833779,
+        "z": 61.95202025151499,
+        "h": 0.03478419568204415,
+        "terrain": 0.03268788122168263
+      },
+      {
+        "x": 52.15208640469957,
+        "y": 0.03574799512493392,
+        "z": 62.011472726863886,
+        "h": -8.761813597258362e-07,
+        "terrain": -0.0019301836198228825
+      }
+    ],
+    [
+      {
+        "x": 51.56042567597774,
+        "y": 0.035569783846223814,
+        "z": 62.23007449410507,
+        "h": -3.4799415079861395e-05,
+        "terrain": 2.6673503338806026e-05
+      },
+      {
+        "x": 51.25553583798529,
+        "y": 0.04771094069855569,
+        "z": 62.60671028019429,
+        "h": 0.012106357437252021,
+        "terrain": 0.014219081690134756
+      },
+      {
+        "x": 51.900611324254335,
+        "y": 0.07968655810405406,
+        "z": 62.019810184020734,
+        "h": 0.04408197484275038,
+        "terrain": 0.042046892009734736
+      },
+      {
+        "x": 52.167578137384105,
+        "y": 0.04586072902938741,
+        "z": 62.03605701897366,
+        "h": 0.010256145768083733,
+        "terrain": 0.008428388807068553
+      }
+    ],
+    [
+      {
+        "x": 51.564963889144174,
+        "y": 0.03537089892104691,
+        "z": 62.23254085535673,
+        "h": -8.329912967086628e-05,
+        "terrain": -0.00021212546297550566
+      },
+      {
+        "x": 51.24749832687559,
+        "y": 0.04404300737969839,
+        "z": 62.59470654299705,
+        "h": 0.008588809328980615,
+        "terrain": 0.010616556116154446
+      },
+      {
+        "x": 51.87829780706319,
+        "y": 0.07927112397115987,
+        "z": 62.080666744732646,
+        "h": 0.043816925920442104,
+        "terrain": 0.04161462278166104
+      },
+      {
+        "x": 52.182481189742475,
+        "y": 0.04212207263926989,
+        "z": 62.06196145770995,
+        "h": 0.006667874588552114,
+        "terrain": 0.004941904894083735
+      }
+    ],
+    [
+      {
+        "x": 51.543527351779375,
+        "y": 0.03992315281881027,
+        "z": 62.249007315823995,
+        "h": 0.004624970520175131,
+        "terrain": 0.004476826722834816
+      },
+      {
+        "x": 51.2402005596058,
+        "y": 0.03718344363517734,
+        "z": 62.58396745587252,
+        "h": 0.0018852613365421946,
+        "terrain": 0.0038165158602720545
+      },
+      {
+        "x": 51.891597763983754,
+        "y": 0.06433056232731615,
+        "z": 62.112957545899434,
+        "h": 0.029032380028681012,
+        "terrain": 0.026524113448708406
+      },
+      {
+        "x": 52.19616616139066,
+        "y": 0.035297450235639606,
+        "z": 62.09003349612607,
+        "h": -7.320629955346708e-07,
+        "terrain": -0.001620802454360852
+      }
+    ],
+    [
+      {
+        "x": 51.49897470391855,
+        "y": 0.05618799577924428,
+        "z": 62.27457207472775,
+        "h": 0.021050985222992646,
+        "terrain": 0.021045090943879047
+      },
+      {
+        "x": 51.2346144948946,
+        "y": 0.03615829624571723,
+        "z": 62.57374434674817,
+        "h": 0.0010212856894656018,
+        "terrain": 0.0028373248727109057
+      },
+      {
+        "x": 51.84295420926592,
+        "y": 0.05232214192561046,
+        "z": 62.161742722509466,
+        "h": 0.017185131369358828,
+        "terrain": 0.014766032838396566
+      },
+      {
+        "x": 52.210126297279785,
+        "y": 0.035133698731754946,
+        "z": 62.119556358551606,
+        "h": -3.3118244966840165e-06,
+        "terrain": -0.0015122987237550234
+      }
+    ],
+    [
+      {
+        "x": 51.44606857329134,
+        "y": 0.07422324357665452,
+        "z": 62.300907750225846,
+        "h": 0.03925208058821772,
+        "terrain": 0.03945178835877603
+      },
+      {
+        "x": 51.22826303422978,
+        "y": 0.03551697290969276,
+        "z": 62.564799239189746,
+        "h": 0.0005458099212559512,
+        "terrain": 0.0022479899939823883
+      },
+      {
+        "x": 51.800344312747335,
+        "y": 0.04617347451818723,
+        "z": 62.20219896963398,
+        "h": 0.011202311529750417,
+        "terrain": 0.008831103948428294
+      },
+      {
+        "x": 52.221761396377374,
+        "y": 0.034962495397114636,
+        "z": 62.15136516356742,
+        "h": -8.667591322172614e-06,
+        "terrain": -0.0014057200798911762
+      }
+    ],
+    [
+      {
+        "x": 51.34988777082399,
+        "y": 0.06160632952716469,
+        "z": 62.33588510495534,
+        "h": 0.026805206428926753,
+        "terrain": 0.02753560482968869
+      },
+      {
+        "x": 51.221368138583465,
+        "y": 0.03675977416443837,
+        "z": 62.55710503088297,
+        "h": 0.0019586510662004306,
+        "terrain": 0.00354692817906644
+      },
+      {
+        "x": 51.79869577831945,
+        "y": 0.04190707441301648,
+        "z": 62.221932954385466,
+        "h": 0.007105951314778543,
+        "terrain": 0.0047169739384730555
+      },
+      {
+        "x": 52.23136220078941,
+        "y": 0.0347925774101546,
+        "z": 62.18533423045596,
+        "h": -8.545688083330758e-06,
+        "terrain": -0.0012922631126622078
+      }
+    ],
+    [
+      {
+        "x": 51.25101427176063,
+        "y": 0.05444677816541881,
+        "z": 62.36406388437981,
+        "h": 0.019819402661701957,
+        "terrain": 0.02110943224246168
+      },
+      {
+        "x": 51.2148460255926,
+        "y": 0.03709920944784462,
+        "z": 62.54982341240413,
+        "h": 0.002471833944127759,
+        "terrain": 0.003939481394640898
+      },
+      {
+        "x": 51.749527352193674,
+        "y": 0.035966959434835175,
+        "z": 62.22652389808977,
+        "h": 0.001339583931118318,
+        "terrain": -0.0010539149762807815
+      },
+      {
+        "x": 52.23956034039835,
+        "y": 0.03462317044857861,
+        "z": 62.22074876999764,
+        "h": -4.20505513824658e-06,
+        "terrain": -0.0011753791549235573
+      }
+    ],
+    [
+      {
+        "x": 51.15331045572915,
+        "y": 0.045921692846960994,
+        "z": 62.383330655636954,
+        "h": 0.011471289066408985,
+        "terrain": 0.01331661365926591
+      },
+      {
+        "x": 51.20874371313709,
+        "y": 0.03854217832833891,
+        "z": 62.543712475579056,
+        "h": 0.004091774547786897,
+        "terrain": 0.005432005083259216
+      },
+      {
+        "x": 51.75303415490553,
+        "y": 0.03444802301899878,
+        "z": 62.243610055813235,
+        "h": -2.3807615532251726e-06,
+        "terrain": -0.0026378163992452353
+      },
+      {
+        "x": 52.24626949675392,
+        "y": 0.03862124648030621,
+        "z": 62.257220785941016,
+        "h": 0.0041708426997542,
+        "terrain": 0.0031087754294118197
+      }
+    ],
+    [
+      {
+        "x": 51.05063217077925,
+        "y": 0.03659589229143958,
+        "z": 62.39593935829834,
+        "h": 0.0023252039086503196,
+        "terrain": 0.004761580850820672
+      },
+      {
+        "x": 51.2043530186988,
+        "y": 0.03762817522027684,
+        "z": 62.53811025911145,
+        "h": 0.0033574868374875765,
+        "terrain": 0.004553936480652054
+      },
+      {
+        "x": 51.76058213970397,
+        "y": 0.03425427009553272,
+        "z": 62.26077084241407,
+        "h": -1.6418287256541963e-05,
+        "terrain": -0.002713055766081489
+      },
+      {
+        "x": 52.19421819322204,
+        "y": 0.03889403228271442,
+        "z": 62.31509003791398,
+        "h": 0.004623343899925164,
+        "terrain": 0.0035939887248442326
+      }
+    ],
+    [
+      {
+        "x": 50.95139168680819,
+        "y": 0.034012111376727515,
+        "z": 62.39996997478239,
+        "h": -7.659327628456447e-05,
+        "terrain": 0.0029182981192432088
+      },
+      {
+        "x": 51.199694354069884,
+        "y": 0.03633587540483244,
+        "z": 62.53310602292252,
+        "h": 0.0022471707518203605,
+        "terrain": 0.003299555754498064
+      },
+      {
+        "x": 51.76710274214291,
+        "y": 0.034431311822366285,
+        "z": 62.27910674714464,
+        "h": 0.0003426071693542034,
+        "terrain": -0.00237698584844568
+      },
+      {
+        "x": 52.19678914250016,
+        "y": 0.03735116015090222,
+        "z": 62.35190817519021,
+        "h": 0.0032624554978901432,
+        "terrain": 0.0023226844730669036
+      }
+    ],
+    [
+      {
+        "x": 50.860044915067704,
+        "y": 0.03539300705614763,
+        "z": 62.39486487559398,
+        "h": 0.0014880861241030607,
+        "terrain": 0.004964854522520889
+      },
+      {
+        "x": 51.19509804890154,
+        "y": 0.03577323914912178,
+        "z": 62.52922297346912,
+        "h": 0.001868318217077209,
+        "terrain": 0.002774062400906087
+      },
+      {
+        "x": 51.77259598137889,
+        "y": 0.03389625845432466,
+        "z": 62.298543069261,
+        "h": -8.662477719913533e-06,
+        "terrain": -0.0027470381729124346
+      },
+      {
+        "x": 52.19587514786638,
+        "y": 0.03586823857466803,
+        "z": 62.39001960057142,
+        "h": 0.0019633176426234605,
+        "terrain": 0.0011067115797683338
+      }
+    ],
+    [
+      {
+        "x": 50.78039680036722,
+        "y": 0.04108132960215001,
+        "z": 62.382811199835494,
+        "h": 0.007361532825032449,
+        "terrain": 0.011218247414978112
+      },
+      {
+        "x": 51.19016496655851,
+        "y": 0.03580715892372257,
+        "z": 62.52572732183598,
+        "h": 0.0020873621466050113,
+        "terrain": 0.002847651881944073
+      },
+      {
+        "x": 51.77656549626325,
+        "y": 0.033835125404594324,
+        "z": 62.31944497859484,
+        "h": 0.00011532862747676417,
+        "terrain": -0.002635417149381189
+      },
+      {
+        "x": 52.19491457635291,
+        "y": 0.03366914422039352,
+        "z": 62.42907708499576,
+        "h": -5.065255672404012e-05,
+        "terrain": -0.0008199395890675643
+      }
+    ],
+    [
+      {
+        "x": 50.72631435667127,
+        "y": 0.04182039774378418,
+        "z": 62.36428211890571,
+        "h": 0.008286616447555954,
+        "terrain": 0.012333365561511371
+      },
+      {
+        "x": 51.184923332584404,
+        "y": 0.03555146486722701,
+        "z": 62.52287703461314,
+        "h": 0.0020176835709987823,
+        "terrain": 0.0026338484220001235
+      },
+      {
+        "x": 51.77923898659687,
+        "y": 0.03353069503064945,
+        "z": 62.34132088340135,
+        "h": -3.086265578781742e-06,
+        "terrain": -0.0027627441034049835
+      },
+      {
+        "x": 52.19874557113264,
+        "y": 0.0360517905319002,
+        "z": 62.46935666889232,
+        "h": 0.0025180092356719697,
+        "terrain": 0.0018590015748728358
+      }
+    ],
+    [
+      {
+        "x": 50.724932148215736,
+        "y": 0.03527375064230264,
+        "z": 62.319620874489324,
+        "h": 0.0019264390370725506,
+        "terrain": 0.005807630601406651
+      },
+      {
+        "x": 51.203667405968865,
+        "y": 0.0353797694642261,
+        "z": 62.52177344258378,
+        "h": 0.002032457858996007,
+        "terrain": 0.0023152639688314436
+      },
+      {
+        "x": 51.80519800772927,
+        "y": 0.03333821183308525,
+        "z": 62.36494277244613,
+        "h": -9.09977214483674e-06,
+        "terrain": -0.0027167919880328392
+      },
+      {
+        "x": 52.11510817688075,
+        "y": 0.052944593621686645,
+        "z": 62.52251076628658,
+        "h": 0.019597282016456552,
+        "terrain": 0.01885812011600086
+      }
+    ],
+    [
+      {
+        "x": 50.72942971406878,
+        "y": 0.0363294677945791,
+        "z": 62.299265181563335,
+        "h": 0.003168656381570069,
+        "terrain": 0.006840582822374909
+      },
+      {
+        "x": 51.1990456639057,
+        "y": 0.0359009935946513,
+        "z": 62.521025886779825,
+        "h": 0.0027401821816422645,
+        "terrain": 0.0028730273816891735
+      },
+      {
+        "x": 51.80685266395326,
+        "y": 0.0331502473068123,
+        "z": 62.389020318300474,
+        "h": -1.0564106196737401e-05,
+        "terrain": -0.0027145603111490488
+      },
+      {
+        "x": 52.009341192181054,
+        "y": 0.05244607205194291,
+        "z": 62.56235975904949,
+        "h": 0.019285260638933877,
+        "terrain": 0.018351421637283358
+      }
+    ],
+    [
+      {
+        "x": 50.73389868813583,
+        "y": 0.03766779595541716,
+        "z": 62.27988989873836,
+        "h": 0.004693106216467467,
+        "terrain": 0.008157491616926735
+      },
+      {
+        "x": 51.19370524230436,
+        "y": 0.03647644790328434,
+        "z": 62.52083218562229,
+        "h": 0.003501758164334642,
+        "terrain": 0.0034904764845456876
+      },
+      {
+        "x": 51.806764940074075,
+        "y": 0.03296677566799416,
+        "z": 62.41406417425986,
+        "h": -7.914070955538895e-06,
+        "terrain": -0.002704581924872426
+      },
+      {
+        "x": 51.902767411714876,
+        "y": 0.05568903147923028,
+        "z": 62.59184051602309,
+        "h": 0.022714341740280586,
+        "terrain": 0.021561886609012315
+      }
+    ],
+    [
+      {
+        "x": 50.742047670532926,
+        "y": 0.03589161801126328,
+        "z": 62.261435782729556,
+        "h": 0.0031022782454839153,
+        "terrain": 0.006336238054631075
+      },
+      {
+        "x": 51.19141260713536,
+        "y": 0.035353847407153124,
+        "z": 62.52130430126054,
+        "h": 0.0025645076413737594,
+        "terrain": 0.0023857395077380855
+      },
+      {
+        "x": 51.80862039142597,
+        "y": 0.03278486351126333,
+        "z": 62.44001020709542,
+        "h": -4.476254516037263e-06,
+        "terrain": -0.0026827568224373835
+      },
+      {
+        "x": 51.795085180671634,
+        "y": 0.05777234409015581,
+        "z": 62.608630041741876,
+        "h": 0.024983004324376445,
+        "terrain": 0.02356618425777693
+      }
+    ],
+    [
+      {
+        "x": 50.75154089799578,
+        "y": 0.03443536950452532,
+        "z": 62.244172803464785,
+        "h": 0.0018302316747128551,
+        "terrain": 0.004826629183360281
+      },
+      {
+        "x": 51.189403247572905,
+        "y": 0.0342214152500059,
+        "z": 62.52244164871875,
+        "h": 0.0016162774201934403,
+        "terrain": 0.0012687647119904236
+      },
+      {
+        "x": 51.80961120213187,
+        "y": 0.032601232533090156,
+        "z": 62.4671059129287,
+        "h": -3.905296722304214e-06,
+        "terrain": -0.002656284115119492
+      },
+      {
+        "x": 51.686335929097154,
+        "y": 0.06418297450871634,
+        "z": 62.614830440807516,
+        "h": 0.031577836678903876,
+        "terrain": 0.029862589844548357
+      }
+    ],
+    [
+      {
+        "x": 50.76082768287905,
+        "y": 0.04196577964283882,
+        "z": 62.228139939213094,
+        "h": 0.009543337093237866,
+        "terrain": 0.012305505558203644
+      },
+      {
+        "x": 51.17194417874002,
+        "y": 0.03229126346871237,
+        "z": 62.49994191200417,
+        "h": -0.00013117908088858266,
+        "terrain": -0.0005180405071550584
+      },
+      {
+        "x": 51.808756459812855,
+        "y": 0.04003979625706473,
+        "z": 62.49471542823916,
+        "h": 0.007617353707463781,
+        "terrain": 0.004992018155208389
+      },
+      {
+        "x": 51.58790075534394,
+        "y": 0.07474954115222662,
+        "z": 62.612043327822704,
+        "h": 0.04232709860262567,
+        "terrain": 0.040298511441745725
+      }
+    ],
+    [
+      {
+        "x": 50.77105833964383,
+        "y": 0.043927640515322275,
+        "z": 62.21344434052025,
+        "h": 0.011686046422278615,
+        "terrain": 0.014209629024669879
+      },
+      {
+        "x": 51.16832189803343,
+        "y": 0.032074423123441435,
+        "z": 62.50183770421167,
+        "h": -0.0001671709696022261,
+        "terrain": -0.0007072357623835734
+      },
+      {
+        "x": 51.80704348125387,
+        "y": 0.04200733050231628,
+        "z": 62.52330963583509,
+        "h": 0.00976573640927262,
+        "terrain": 0.007174585161555898
+      },
+      {
+        "x": 51.50233066291243,
+        "y": 0.07882477105155716,
+        "z": 62.58687093416333,
+        "h": 0.0465831769585135,
+        "terrain": 0.04410569005971734
+      }
+    ],
+    [
+      {
+        "x": 50.780713739526234,
+        "y": 0.035169056983113345,
+        "z": 62.19960397788234,
+        "h": 0.0031061434009962605,
+        "terrain": 0.00539740674745191
+      },
+      {
+        "x": 51.14637515300129,
+        "y": 0.03254259926315876,
+        "z": 62.49729252619093,
+        "h": 0.00047968568104167497,
+        "terrain": -6.678548215682811e-05
+      },
+      {
+        "x": 51.80275264398675,
+        "y": 0.03322068069839468,
+        "z": 62.55248886143253,
+        "h": 0.0011577671162775979,
+        "terrain": -0.0013978230302419195
+      },
+      {
+        "x": 51.47453756047587,
+        "y": 0.06567109076700337,
+        "z": 62.59882931782749,
+        "h": 0.03360817718488629,
+        "terrain": 0.03103147592388926
+      }
+    ],
+    [
+      {
+        "x": 50.79162113655362,
+        "y": 0.0331870994697787,
+        "z": 62.18712835419703,
+        "h": 0.001300396836213951,
+        "terrain": 0.003353066706385785
+      },
+      {
+        "x": 51.098377173476074,
+        "y": 0.04529982285746693,
+        "z": 62.48235352489579,
+        "h": 0.013413120223902175,
+        "terrain": 0.013066273200262157
+      },
+      {
+        "x": 51.79800955510228,
+        "y": 0.03188413678222324,
+        "z": 62.58247807971592,
+        "h": -2.5658513415169364e-06,
+        "terrain": -0.00251507310781441
+      },
+      {
+        "x": 51.44938383256145,
+        "y": 0.05269842908339241,
+        "z": 62.565818992164495,
+        "h": 0.02081172644982766,
+        "terrain": 0.017778830067989568
+      }
+    ],
+    [
+      {
+        "x": 50.80214447306423,
+        "y": 0.032100387320656905,
+        "z": 62.17602776645672,
+        "h": 0.00038714428753231867,
+        "terrain": 0.002205927111170295
+      },
+      {
+        "x": 51.04469170132614,
+        "y": 0.06714263144043217,
+        "z": 62.460773028138235,
+        "h": 0.03542938840730758,
+        "terrain": 0.03532681450100886
+      },
+      {
+        "x": 51.79117194789433,
+        "y": 0.031708495713207684,
+        "z": 62.61290169503157,
+        "h": -4.747319916901605e-06,
+        "terrain": -0.0024719198020736396
+      },
+      {
+        "x": 51.38303277253811,
+        "y": 0.04453486148563784,
+        "z": 62.55123116537424,
+        "h": 0.012821618452513249,
+        "terrain": 0.010029831875334093
+      }
+    ],
+    [
+      {
+        "x": 50.81127615204988,
+        "y": 0.03283895728814678,
+        "z": 62.16563584970554,
+        "h": 0.0012961607479630539,
+        "terrain": 0.002893232167614272
+      },
+      {
+        "x": 50.955944898771165,
+        "y": 0.061172359860880605,
+        "z": 62.42076419233488,
+        "h": 0.029629563320696883,
+        "terrain": 0.0300376526341625
+      },
+      {
+        "x": 51.781513806989125,
+        "y": 0.031534600611351986,
+        "z": 62.64312722249222,
+        "h": -8.195928831737989e-06,
+        "terrain": -0.002433022585022454
+      },
+      {
+        "x": 51.356725261907485,
+        "y": 0.04023070854443386,
+        "z": 62.553787819108315,
+        "h": 0.008687912004250137,
+        "terrain": 0.005936936371322837
+      }
+    ],
+    [
+      {
+        "x": 50.820083911373835,
+        "y": 0.03387030233241678,
+        "z": 62.15675861379758,
+        "h": 0.0024946497556126773,
+        "terrain": 0.0038743874417560345
+      },
+      {
+        "x": 50.859091165028396,
+        "y": 0.05345588446487461,
+        "z": 62.368412049933085,
+        "h": 0.022080231888070512,
+        "terrain": 0.023042881881529483
+      },
+      {
+        "x": 51.770020357871445,
+        "y": 0.031366661126103215,
+        "z": 62.673495174917,
+        "h": -8.991450700884893e-06,
+        "terrain": -0.0023894368148336814
+      },
+      {
+        "x": 51.291758548649845,
+        "y": 0.03493426797691884,
+        "z": 62.575837979025906,
+        "h": 0.0035586154001147428,
+        "terrain": 0.0011561573718063892
+      }
+    ],
+    [
+      {
+        "x": 50.82888167552128,
+        "y": 0.03474385000261597,
+        "z": 62.14880187399699,
+        "h": 0.0035313108704978454,
+        "terrain": 0.00469715106469689
+      },
+      {
+        "x": 50.76839639460932,
+        "y": 0.04545829707742393,
+        "z": 62.31083860439375,
+        "h": 0.014245757945305804,
+        "terrain": 0.01570046928072085
+      },
+      {
+        "x": 51.756692111165734,
+        "y": 0.03371462708518447,
+        "z": 62.70440427132445,
+        "h": 0.002502087953066343,
+        "terrain": 0.00017226118683996705
+      },
+      {
+        "x": 51.27799445752548,
+        "y": 0.03120831499533098,
+        "z": 62.58396709971286,
+        "h": -4.224136787146218e-06,
+        "terrain": -0.0024610027171198985
+      }
+    ],
+    [
+      {
+        "x": 50.83869296691707,
+        "y": 0.03486383287314665,
+        "z": 62.14239400446317,
+        "h": 0.0038100745408757393,
+        "terrain": 0.004758045795126335
+      },
+      {
+        "x": 50.68028199901144,
+        "y": 0.03495652205548609,
+        "z": 62.246376285234426,
+        "h": 0.0039027637232151857,
+        "terrain": 0.0058179869587378155
+      },
+      {
+        "x": 51.687858449081894,
+        "y": 0.03626319642711584,
+        "z": 62.705299262021796,
+        "h": 0.005209438094844931,
+        "terrain": 0.0026396881005649117
+      },
+      {
+        "x": 51.2687439729425,
+        "y": 0.03105300364726168,
+        "z": 62.595600738931935,
+        "h": -7.546850092285328e-07,
+        "terrain": -0.0025438292661730776
+      }
+    ],
+    [
+      {
+        "x": 50.847716744581184,
+        "y": 0.03326444841489873,
+        "z": 62.137596745318994,
+        "h": 0.002365002655183469,
+        "terrain": 0.003103155543740438
+      },
+      {
+        "x": 50.60037860746649,
+        "y": 0.030850627067861455,
+        "z": 62.17704146297256,
+        "h": -4.88186918538025e-05,
+        "terrain": 0.0022629180447800087
+      },
+      {
+        "x": 51.67282139681987,
+        "y": 0.03619850758786128,
+        "z": 62.73475729280664,
+        "h": 0.005299061828146018,
+        "terrain": 0.0027833482378872496
+      },
+      {
+        "x": 51.25893114085047,
+        "y": 0.03198171338842723,
+        "z": 62.60791227297031,
+        "h": 0.001082267628711976,
+        "terrain": -0.0015374905090178095
+      }
+    ],
+    [
+      {
+        "x": 50.855524259704694,
+        "y": 0.033595549941110234,
+        "z": 62.133009009333776,
+        "h": 0.0028458336022497664,
+        "terrain": 0.0033867556145587736
+      },
+      {
+        "x": 50.529694615665434,
+        "y": 0.030738288979128156,
+        "z": 62.10838390801978,
+        "h": -1.1427359732307796e-05,
+        "terrain": 0.002630909349981749
+      },
+      {
+        "x": 51.652873566032866,
+        "y": 0.03432524304988492,
+        "z": 62.76206177112488,
+        "h": 0.003575526711024457,
+        "terrain": 0.001098622025140994
+      },
+      {
+        "x": 51.2468076621263,
+        "y": 0.032087690134011373,
+        "z": 62.62050180727789,
+        "h": 0.001337973795150908,
+        "terrain": -0.0013345642472445546
+      }
+    ],
+    [
+      {
+        "x": 50.86289392941391,
+        "y": 0.03250578527533473,
+        "z": 62.12999737885829,
+        "h": 0.0019011203126426254,
+        "terrain": 0.002250613546895836
+      },
+      {
+        "x": 50.466666539298046,
+        "y": 0.036655240701116545,
+        "z": 62.03504031593773,
+        "h": 0.006050575738424435,
+        "terrain": 0.008977945484847653
+      },
+      {
+        "x": 51.6316406533667,
+        "y": 0.03252346513839541,
+        "z": 62.78908872806791,
+        "h": 0.0019188001757032974,
+        "terrain": -0.000515511283931798
+      },
+      {
+        "x": 51.23375578209203,
+        "y": 0.030603398990224236,
+        "z": 62.633050376473626,
+        "h": -1.265972467871511e-06,
+        "terrain": -0.0027136423731638736
+      }
+    ],
+    [
+      {
+        "x": 50.86922714777657,
+        "y": 0.032543288419807616,
+        "z": 62.12777089946478,
+        "h": 0.0020789212084050515,
+        "terrain": 0.0022477989983519034
+      },
+      {
+        "x": 50.43418536949035,
+        "y": 0.038331839462579155,
+        "z": 61.97986487419918,
+        "h": 0.007867472251176594,
+        "terrain": 0.010891067432396734
+      },
+      {
+        "x": 51.6038883120283,
+        "y": 0.030840477936249618,
+        "z": 62.80630622673521,
+        "h": 0.0003761107248470563,
+        "terrain": -0.0020880377647466627
+      },
+      {
+        "x": 51.21856780936078,
+        "y": 0.03045649255140921,
+        "z": 62.645539978445605,
+        "h": -7.874659993350329e-06,
+        "terrain": -0.0027373686029455516
+      }
+    ],
+    [
+      {
+        "x": 50.8759579984286,
+        "y": 0.03248910276160445,
+        "z": 62.12737925935563,
+        "h": 0.0021602226027380047,
+        "terrain": 0.0021483105563628105
+      },
+      {
+        "x": 50.42195440378964,
+        "y": 0.03396366615478469,
+        "z": 61.93851596425039,
+        "h": 0.0036347859959182383,
+        "terrain": 0.006634905107595353
+      },
+      {
+        "x": 51.572950048033555,
+        "y": 0.03680408704264243,
+        "z": 62.81513565010524,
+        "h": 0.00647520688377598,
+        "terrain": 0.003923419903389062
+      },
+      {
+        "x": 51.203448954344864,
+        "y": 0.030328671264278448,
+        "z": 62.65922403135967,
+        "h": -2.0889458799944443e-07,
+        "terrain": -0.002741559667449156
+      }
+    ],
+    [
+      {
+        "x": 50.88143054334015,
+        "y": 0.03216702817266629,
+        "z": 62.12781020622248,
+        "h": 0.0019687849100189,
+        "terrain": 0.0017884083531369624
+      },
+      {
+        "x": 50.413035270049605,
+        "y": 0.031646205221811066,
+        "z": 61.926958989314045,
+        "h": 0.0014479619591636775,
+        "terrain": 0.004379493108271876
+      },
+      {
+        "x": 51.533762955855465,
+        "y": 0.051593125688027625,
+        "z": 62.816090359884726,
+        "h": 0.021394882425380235,
+        "terrain": 0.018699618333691895
+      },
+      {
+        "x": 51.18727857756911,
+        "y": 0.030193757850751315,
+        "z": 62.67264763259239,
+        "h": -4.4854118960754065e-06,
+        "terrain": -0.002743515233060243
+      }
+    ],
+    [
+      {
+        "x": 50.886548931378194,
+        "y": 0.03235451382676039,
+        "z": 62.129745502386115,
+        "h": 0.002282034493703273,
+        "terrain": 0.0019385599119247539
+      },
+      {
+        "x": 50.42697586836143,
+        "y": 0.03193486770886726,
+        "z": 61.909832924035996,
+        "h": 0.001862388375810146,
+        "terrain": 0.00461236436623871
+      },
+      {
+        "x": 51.44844795322001,
+        "y": 0.04821654348618909,
+        "z": 62.76596314731577,
+        "h": 0.018144064153131967,
+        "terrain": 0.01490186449148602
+      },
+      {
+        "x": 51.16939009568668,
+        "y": 0.030062285231584936,
+        "z": 62.68726230961875,
+        "h": -1.0194101472182508e-05,
+        "terrain": -0.0027269386879236503
+      }
+    ],
+    [
+      {
+        "x": 50.889751065125054,
+        "y": 0.03335329691851923,
+        "z": 62.13144871462029,
+        "h": 0.0034017013419171387,
+        "terrain": 0.0029133417396403696
+      },
+      {
+        "x": 50.43992381452325,
+        "y": 0.034077752137515904,
+        "z": 61.892845766707346,
+        "h": 0.004126156560913809,
+        "terrain": 0.006706134575643067
+      },
+      {
+        "x": 51.36475632024376,
+        "y": 0.05139535822479638,
+        "z": 62.710455008680626,
+        "h": 0.02144376264819428,
+        "terrain": 0.017627251164893103
+      },
+      {
+        "x": 51.1494762235312,
+        "y": 0.029943053857779643,
+        "z": 62.70047956552597,
+        "h": -8.541718822449194e-06,
+        "terrain": -0.002681340082727815
+      }
+    ],
+    [
+      {
+        "x": 50.89283801325042,
+        "y": 0.03303548473561216,
+        "z": 62.13537889592488,
+        "h": 0.0031999000266724805,
+        "terrain": 0.0025695713278400326
+      },
+      {
+        "x": 50.453278675709434,
+        "y": 0.03375464774271349,
+        "z": 61.87832764579647,
+        "h": 0.003919063033773813,
+        "terrain": 0.006329684850594958
+      },
+      {
+        "x": 51.2834666010369,
+        "y": 0.053414667281709786,
+        "z": 62.65393866999251,
+        "h": 0.02357908257277011,
+        "terrain": 0.019697195389868728
+      },
+      {
+        "x": 51.12886098648562,
+        "y": 0.029829471425533438,
+        "z": 62.71492792774966,
+        "h": -6.1132834062382294e-06,
+        "terrain": -0.002623060534472449
+      }
+    ],
+    [
+      {
+        "x": 50.89620919010787,
+        "y": 0.03143632397960925,
+        "z": 62.142808694402305,
+        "h": 0.0017118978473853832,
+        "terrain": 0.0009382906542248527
+      },
+      {
+        "x": 50.46761670768402,
+        "y": 0.03128888174406232,
+        "z": 61.86793760768092,
+        "h": 0.0015644556118384525,
+        "terrain": 0.003800254678554677
+      },
+      {
+        "x": 51.20297773376666,
+        "y": 0.05717919865777596,
+        "z": 62.59209997181405,
+        "h": 0.02745477252555209,
+        "terrain": 0.02410816803714795
+      },
+      {
+        "x": 51.10831236286884,
+        "y": 0.029722460303411944,
+        "z": 62.731760830542406,
+        "h": -1.9658288119261732e-06,
+        "terrain": -0.002556463957886921
+      }
+    ],
+    [
+      {
+        "x": 50.86901653674753,
+        "y": 0.02959998137636664,
+        "z": 62.14971045089006,
+        "h": -1.810579507770249e-05,
+        "terrain": -0.000719706902433951
+      },
+      {
+        "x": 50.48020367993217,
+        "y": 0.03437792899841138,
+        "z": 61.856756905220855,
+        "h": 0.004759841826967037,
+        "terrain": 0.006836891713998389
+      },
+      {
+        "x": 51.12938477000565,
+        "y": 0.06658911038982539,
+        "z": 62.53112030593257,
+        "h": 0.03697102321838105,
+        "terrain": 0.03410417038974663
+      },
+      {
+        "x": 51.08474288049547,
+        "y": 0.0325897378595688,
+        "z": 62.74634162774908,
+        "h": 0.0029716506881244564,
+        "terrain": 0.0005085970983364219
+      }
+    ],
+    [
+      {
+        "x": 50.86792653894014,
+        "y": 0.02935776170527812,
+        "z": 62.15343007137723,
+        "h": -0.00015876265877604046,
+        "terrain": -0.0009586603162881659
+      },
+      {
+        "x": 50.49263670540872,
+        "y": 0.04215032647696141,
+        "z": 61.84765074641845,
+        "h": 0.01263380211290725,
+        "terrain": 0.014555082919015479
+      },
+      {
+        "x": 51.05180277244555,
+        "y": 0.07478745307908209,
+        "z": 62.48590877675034,
+        "h": 0.04527092871502793,
+        "terrain": 0.04291088464275794
+      },
+      {
+        "x": 51.059920925240085,
+        "y": 0.04027880701076593,
+        "z": 62.7619041530765,
+        "h": 0.010762282646711772,
+        "terrain": 0.008407116213798992
+      }
+    ],
+    [
+      {
+        "x": 50.861389137106755,
+        "y": 0.029315207706828047,
+        "z": 62.15106702507616,
+        "h": -0.00010447709000610539,
+        "terrain": -0.0009540023233610764
+      },
+      {
+        "x": 50.504186685274796,
+        "y": 0.03581485768472188,
+        "z": 61.839727826393286,
+        "h": 0.00639517288788773,
+        "terrain": 0.008168720905505057
+      },
+      {
+        "x": 51.03322230153583,
+        "y": 0.06877225907252855,
+        "z": 62.46953272632956,
+        "h": 0.039352574275694406,
+        "terrain": 0.03704151033098514
+      },
+      {
+        "x": 51.0334915881902,
+        "y": 0.033879647470164524,
+        "z": 62.7766398522776,
+        "h": 0.00445996267333037,
+        "terrain": 0.0022306759567849235
+      }
+    ],
+    [
+      {
+        "x": 50.84156291944715,
+        "y": 0.03757243610638729,
+        "z": 62.1225374524382,
+        "h": 0.008244928622818837,
+        "terrain": 0.0074700997409986175
+      },
+      {
+        "x": 50.514749942477245,
+        "y": 0.030965992615927307,
+        "z": 61.832940697824924,
+        "h": 0.0016384851323588507,
+        "terrain": 0.003272781072960626
+      },
+      {
+        "x": 50.97346784643802,
+        "y": 0.0543356497756925,
+        "z": 62.46859525127568,
+        "h": 0.025008142292124048,
+        "terrain": 0.023058361804203543
+      },
+      {
+        "x": 51.00516130216397,
+        "y": 0.02932318267916386,
+        "z": 62.79073173865494,
+        "h": -4.324804404596428e-06,
+        "terrain": -0.0020875687588616312
+      }
+    ],
+    [
+      {
+        "x": 50.816070912414524,
+        "y": 0.056706103288601414,
+        "z": 62.077971597271905,
+        "h": 0.027466178511909967,
+        "terrain": 0.026828731884846083
+      },
+      {
+        "x": 50.524581645832264,
+        "y": 0.03002014966968304,
+        "z": 61.82707927071307,
+        "h": 0.0007802248929915967,
+        "terrain": 0.0022825139492148455
+      },
+      {
+        "x": 50.92561672361411,
+        "y": 0.044162938544765315,
+        "z": 62.4197084928736,
+        "h": 0.01492301376807387,
+        "terrain": 0.013252456818726846
+      },
+      {
+        "x": 50.975085051370144,
+        "y": 0.029236456692851878,
+        "z": 62.804291695565844,
+        "h": -3.4680838395665433e-06,
+        "terrain": -0.001922340725675653
+      }
+    ],
+    [
+      {
+        "x": 50.78555410670471,
+        "y": 0.06397539443744116,
+        "z": 62.01097070521007,
+        "h": 0.03481853063180579,
+        "terrain": 0.03438974310150985
+      },
+      {
+        "x": 50.53301054973464,
+        "y": 0.03014075083809001,
+        "z": 61.82044872939951,
+        "h": 0.0009838870324546346,
+        "terrain": 0.002367879033238124
+      },
+      {
+        "x": 50.892416442015154,
+        "y": 0.03925020589178811,
+        "z": 62.39125535848384,
+        "h": 0.01009334208615274,
+        "terrain": 0.008590269709070352
+      },
+      {
+        "x": 50.94270977399773,
+        "y": 0.029149140731411182,
+        "z": 62.815566260880146,
+        "h": -7.723074224194777e-06,
+        "terrain": -0.0017424344608546194
+      }
+    ],
+    [
+      {
+        "x": 50.75143583990369,
+        "y": 0.05383925045255547,
+        "z": 61.91367772719689,
+        "h": 0.024761002518409958,
+        "terrain": 0.024626764500931222
+      },
+      {
+        "x": 50.54061112215356,
+        "y": 0.031399015837311646,
+        "z": 61.81365217044756,
+        "h": 0.002320767903166128,
+        "terrain": 0.003595974198231551
+      },
+      {
+        "x": 50.88603323243453,
+        "y": 0.03469515671415875,
+        "z": 62.3412755167114,
+        "h": 0.005616908780013237,
+        "terrain": 0.004101545721138022
+      },
+      {
+        "x": 50.90838104444524,
+        "y": 0.029069350317195163,
+        "z": 62.82511018187347,
+        "h": -8.897616950352683e-06,
+        "terrain": -0.0015427389261423938
+      }
+    ],
+    [
+      {
+        "x": 50.72527759408918,
+        "y": 0.04574637712573951,
+        "z": 61.81602221680226,
+        "h": 0.016742378897379562,
+        "terrain": 0.016879944663116812
+      },
+      {
+        "x": 50.54745387991267,
+        "y": 0.031334634741934354,
+        "z": 61.807005153358176,
+        "h": 0.0023306365135744036,
+        "terrain": 0.0035055624340986774
+      },
+      {
+        "x": 50.86836681589418,
+        "y": 0.029073925981397394,
+        "z": 62.3416457803242,
+        "h": 6.992775303744665e-05,
+        "terrain": -0.0013940113561321313
+      },
+      {
+        "x": 50.87268141096925,
+        "y": 0.029387823495461752,
+        "z": 62.832991294710666,
+        "h": 0.0003838252671018033,
+        "terrain": -0.000937659858309365
+      }
+    ],
+    [
+      {
+        "x": 50.70703209725716,
+        "y": 0.03694550335198908,
+        "z": 61.71657294280372,
+        "h": 0.008011468425019985,
+        "terrain": 0.00840712238911178
+      },
+      {
+        "x": 50.55334313617624,
+        "y": 0.03299654944152053,
+        "z": 61.8015648688775,
+        "h": 0.004062514514551439,
+        "terrain": 0.005144731834260948
+      },
+      {
+        "x": 50.85147639038092,
+        "y": 0.028927409724450702,
+        "z": 62.3469468850893,
+        "h": -6.625202518390199e-06,
+        "terrain": -0.0014231705395593604
+      },
+      {
+        "x": 50.823274141206674,
+        "y": 0.033712111179951196,
+        "z": 62.80572495900411,
+        "h": 0.0047780762529821,
+        "terrain": 0.0037348576916203455
+      }
+    ],
+    [
+      {
+        "x": 50.69567108741209,
+        "y": 0.030046094949295277,
+        "z": 61.61388991286954,
+        "h": 0.001177816045003277,
+        "terrain": 0.001833937116793756
+      },
+      {
+        "x": 50.55885765052312,
+        "y": 0.03171264216584191,
+        "z": 61.79702291964875,
+        "h": 0.0028443632615499062,
+        "terrain": 0.0038386332045671975
+      },
+      {
+        "x": 50.833951174557136,
+        "y": 0.02885765228489546,
+        "z": 62.35434226266239,
+        "h": -1.062661939653927e-05,
+        "terrain": -0.0013722022256619157
+      },
+      {
+        "x": 50.777937368952394,
+        "y": 0.03311093903481178,
+        "z": 62.7876763026376,
+        "h": 0.004242660130519778,
+        "terrain": 0.003455587133508669
+      }
+    ],
+    [
+      {
+        "x": 50.694005549604384,
+        "y": 0.02873668265129902,
+        "z": 61.51780006026839,
+        "h": -6.997046534257256e-05,
+        "terrain": 0.0008111408417884394
+      },
+      {
+        "x": 50.56338771208041,
+        "y": 0.03129824386550661,
+        "z": 61.7923394438976,
+        "h": 0.002491590748865016,
+        "terrain": 0.0034078544385564083
+      },
+      {
+        "x": 50.81546267548205,
+        "y": 0.02942033460695657,
+        "z": 62.36073095110378,
+        "h": 0.0006136814903149767,
+        "terrain": -0.0006818685219240998
+      },
+      {
+        "x": 50.740685567771514,
+        "y": 0.03191859247424889,
+        "z": 62.78923690697408,
+        "h": 0.003111939357607299,
+        "terrain": 0.0025425578417734053
+      }
+    ],
+    [
+      {
+        "x": 50.70005933673364,
+        "y": 0.03226337901992646,
+        "z": 61.426800381641975,
+        "h": 0.0035142949980187244,
+        "terrain": 0.004598660731857766
+      },
+      {
+        "x": 50.567159682489134,
+        "y": 0.03064386163236266,
+        "z": 61.78774439530787,
+        "h": 0.001894777610454926,
+        "terrain": 0.002741228695237935
+      },
+      {
+        "x": 50.795568751250094,
+        "y": 0.028739730512508804,
+        "z": 62.366097680306574,
+        "h": -9.353509398928655e-06,
+        "terrain": -0.0012250419612078144
+      },
+      {
+        "x": 50.702298457769736,
+        "y": 0.030706999783367855,
+        "z": 62.78822589868832,
+        "h": 0.0019579157614601217,
+        "terrain": 0.001612732724217577
+      }
+    ],
+    [
+      {
+        "x": 50.71380417226891,
+        "y": 0.037649488012900134,
+        "z": 61.35503333654496,
+        "h": 0.00895398505102081,
+        "terrain": 0.01016635035256043
+      },
+      {
+        "x": 50.570433505767845,
+        "y": 0.03146010749315266,
+        "z": 61.78248712685742,
+        "h": 0.00276460453127333,
+        "terrain": 0.0035493606708137983
+      },
+      {
+        "x": 50.774405835039964,
+        "y": 0.029466515172362033,
+        "z": 62.369600176863294,
+        "h": 0.0007710122104827042,
+        "terrain": -0.00035208578488388903
+      },
+      {
+        "x": 50.66296055926776,
+        "y": 0.028618168434850644,
+        "z": 62.78854842846287,
+        "h": -7.733452702868293e-05,
+        "terrain": -0.00018886017544192044
+      }
+    ],
+    [
+      {
+        "x": 50.712151327188764,
+        "y": 0.036456872080761066,
+        "z": 61.305087625217304,
+        "h": 0.0078136153903152,
+        "terrain": 0.009168698496626666
+      },
+      {
+        "x": 50.56972599776634,
+        "y": 0.030632534264794762,
+        "z": 61.78130874383717,
+        "h": 0.001989277574348896,
+        "terrain": 0.0027279628897587498
+      },
+      {
+        "x": 50.77096536890094,
+        "y": 0.028641659133170908,
+        "z": 62.36926842843911,
+        "h": -1.5975572749587824e-06,
+        "terrain": -0.0011530416448631495
+      },
+      {
+        "x": 50.656705935215136,
+        "y": 0.036483022598206176,
+        "z": 62.795261700194764,
+        "h": 0.00783976590776031,
+        "terrain": 0.007729927830120723
+      }
+    ]
+  ]
+}

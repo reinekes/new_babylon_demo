@@ -3,7 +3,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {dairyHerd,dairyPose} from '../game3d/dairy-herd.js';
 test('visible cows and calves follow only real operational dairy records and stable IDs',()=>{
  const s={buildings:[{type:'cowshed',x:3,y:4,level:1,dairy:{cows:3,calves:2}}]},before=JSON.stringify(s),herd=dairyHerd(s);
- assert.equal(herd.length,5);assert.equal(herd.filter(a=>a.calf).length,2);assert.equal(new Set(herd.map(a=>a.id)).size,5);assert.equal(JSON.stringify(s),before);assert.notDeepEqual(dairyPose(herd[1],0),dairyPose(herd[1],4));assert.deepEqual(dairyHerd(JSON.parse(before)),herd);
+ assert.equal(herd.length,5);assert.equal(herd.filter(a=>a.calf).length,2);assert.equal(new Set(herd.map(a=>a.id)).size,5);assert.equal(JSON.stringify(s),before);assert.deepEqual(dairyPose(herd[1],0),dairyPose(herd[1],4));assert.deepEqual(dairyHerd(JSON.parse(before)),herd);
  s.buildings[0].construction={kind:'new'};assert.equal(dairyHerd(s).length,0);
 });
 

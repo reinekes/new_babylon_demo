@@ -1,3 +1,4 @@
+import {groundHeading} from '../game3d/ground-turn.js';
 import {visibleCitizens} from '../workforce.js';
 import {animalsFor} from '../fauna.js';
 import {residentAppearance} from '../resident-appearance.js';
@@ -110,10 +111,6 @@ export function createDistrictActors(B,scene,materials){
   part('cylinder',tool,wood,0,0,.09,.024,.36,.024,[Math.PI/2,0,0]);
   ball(tool,cream,.04,0,.24,.15,.045,.07);
   tool.setEnabled(false);
-  if(look.craft==='weaver'||look.craft==='tailor'){
-   ball(body,linen,-.15,.16,.15,.075,.13,.07);
-   part('cylinder',body,wood,-.15,.16,.15,.018,.20,.018);
-  }
   const load=node('carried-goods',body,0,.22,.37);
   return {root,body,head,arms,legs,load,tool,cargoKey:null,lastX:c.x,lastY:c.y,kind:'person',gait:id*.83,move:0,snap:true};
  }
@@ -165,13 +162,15 @@ export function createDistrictActors(B,scene,materials){
   return {root,body,neck,tail,legs,ears,lastX:c.x,lastY:c.y,kind:c.kind,gait:0,move:0,snap:true};
  }
  const ease=(from,to,rate=12)=>from+(to-from)*(1-Math.exp(-frameDelta*rate));
- function position(a,c,s){
+ function position(a,c,s,groundAnimal=false){
   const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
   if(distance>.00001){
    const target=Math.atan2(dx,dz),angle=Math.atan2(Math.sin(target-a.root.rotation.y),Math.cos(target-a.root.rotation.y));
    a.targetYaw=target;
-   a.root.rotation.y=a.snap?target:a.root.rotation.y+angle*(1-Math.exp(-frameDelta*10));
-  }else if(a.targetYaw!==undefined){
+   if(a.snap)a.root.rotation.y=target;
+   else if(groundAnimal)a.root.rotation.y=groundHeading(a.root.rotation.y,target,distance,.36);
+   else a.root.rotation.y+=angle*(1-Math.exp(-frameDelta*10));
+  }else if(!groundAnimal&&a.targetYaw!==undefined){
    const angle=Math.atan2(Math.sin(a.targetYaw-a.root.rotation.y),Math.cos(a.targetYaw-a.root.rotation.y));
    a.root.rotation.y+=angle*(1-Math.exp(-frameDelta*10));
   }
@@ -182,8 +181,29 @@ export function createDistrictActors(B,scene,materials){
   a.root.position.x=c.x*6;a.root.position.z=c.y*6;
   a.root.position.y=onBridge(s.buildings,c.x,c.y,s)?.22:surfaceElevation(c.x,c.y,s);
  }
+ function dress(a,look){
+  const spec=look.profession;
+  if(a.outfit===spec)return;
+  a.outfit=spec;
+  a.workwear??=node('work-clothes',a.body);
+  for(const m of a.workwear.getChildMeshes()){
+   const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();
+  }
+  if(!spec)return;
+  const fabric=material('work-cloth-'+spec.color,spec.color);fabric.albedoTexture=materials.linen?.albedoTexture||null;
+  const sizes={short:[-.032,.46,.33,.34],wrap:[.008,.46,.49,.34],mantle:[.086,.48,.74,.36],apron:[.026,.38,.61,.22]};
+  if(spec.shape==='sash')part('wrap',a.workwear,fabric,0,.30,0,.38,.12,.28,[0,0,-.52]);
+  else{
+   const [y,w,h,d]=sizes[spec.shape];
+   part('wrap',a.workwear,fabric,0,y,spec.shape==='apron'?.086:0,w,h,d);
+  }
+  if(['weaver','tailor'].includes(spec.id)){
+   ball(a.workwear,linen,-.15,.16,.15,.075,.13,.07);
+   part('cylinder',a.workwear,wood,-.15,.16,.15,.018,.20,.018);
+  }
+ }
  function poseHuman(a,c,time,look,s){
-  position(a,c,s);setCargo(a,c);
+  position(a,c,s);setCargo(a,c);dress(a,look);
   const child=c.age<16,scale=child?.55+Math.min(c.age,15)*.022:1;
   a.root.scaling.set(scale,scale,scale);
   const working=['working','constructing'].includes(c.phase);
@@ -208,7 +228,7 @@ export function createDistrictActors(B,scene,materials){
   }
  }
  function poseAnimal(a,c,time,s){
-  position(a,c,s);
+  position(a,c,s,c.behavior!=='flying');
   const phase=a.gait,rest=c.behavior==='resting',bird=a.kind==='bird',grazing=['grazing','drinking'].includes(c.behavior);
   a.body.position.y=ease(a.body.position.y,rest?.30:.49+Math.cos(phase*2)*.012*a.move,6);
   a.body.scaling.y=1+Math.sin(time*1.8)*.008;
@@ -234,7 +254,7 @@ export function createDistrictActors(B,scene,materials){
   for(const c of visible){
    seen.add(c.id);let a=people.get(c.id);
    if(focus?.citizenId!==c.id&&!inView(c)){if(a){a.root.setEnabled(false);a.snap=true;}continue;}
-   const look=residentAppearance(c,professions);
+   const look=residentAppearance(c,professions,s);
    if(!a){a=human(c,look);people.set(c.id,a);}a.root.setEnabled(true);poseHuman(a,c,t,look,s);
   }
   for(const [id,a]of people)if(!seen.has(id)){a.root.setEnabled(false);a.snap=true;}

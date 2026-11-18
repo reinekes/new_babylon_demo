@@ -1,3 +1,4 @@
+import {groundHeading,groundStep} from './ground-turn.js';
 import {loadModel} from './asset-loading.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {buildingKey,isOperational} from '../definitions.js';
@@ -91,22 +92,10 @@ function approach(state,from,to,clear){
  return null;
 }
 
-function timedPath(points){
+function routeLength(points){
  let length=0;
- const segments=[];
- for(let i=1;i<points.length;i++){
-  const from=points[i-1],to=points[i],distance=Math.hypot(to.x-from.x,to.y-from.y);
-  if(distance<1e-6)continue;
-  length+=distance;
-  segments.push({from,to,length,distance,yaw:Math.atan2(to.x-from.x,to.y-from.y)});
- }
- return {segments,length};
-}
-
-function pathPoint(path,distance){
- const segment=path.segments.find(part=>distance<part.length)||path.segments.at(-1);
- const t=Math.max(0,Math.min(1,1-(segment.length-distance)/segment.distance));
- return {x:segment.from.x+(segment.to.x-segment.from.x)*t,y:segment.from.y+(segment.to.y-segment.from.y)*t,yaw:segment.yaw};
+ for(let i=1;i<points.length;i++)length+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);
+ return length;
 }
 
 const penKey=building=>building.type+':'+buildingKey(building);
@@ -175,7 +164,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const idle=copy.animationGroups.find(group=>/Idle$/i.test(group.name));
   const baseStride=spec.strides[variant]??spec.fallback.stride;
   const stride=file===GOAT_MODELS.pasture.file?baseStride*scale:baseStride;
-  const member={root,owned,copy,walk,idle,stride,phase:index*.31,point:null,index,attempt:0,waitUntil:0};
+  const member={root,owned,copy,walk,idle,stride,turnRadius:spec.height*.37,phase:index*.31,point:null,index,attempt:0,waitUntil:0};
   const targets=walk?.targetedAnimations||[];
   member.restPositions=targets.filter(({target,animation})=>target.position&&animation.targetProperty==='position')
    .map(({target})=>({target,position:target.position.clone()}));
@@ -191,10 +180,11 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   root.position.set(point.x*6,surfaceElevation(point.x,point.y,state),point.y*6);
   if(!last)root.rotation.y=point.yaw;
   else if(walking&&dt){
-   const delta=point.yaw-root.rotation.y;
-   root.rotation.y+=Math.atan2(Math.sin(delta),Math.cos(delta))*Math.min(1,dt*7);
    const distance=Math.hypot(point.x-last.x,point.y-last.y)*6;
-   if(distance<1.5)member.phase+=distance/member.stride;
+   if(distance<1.5){
+    root.rotation.y=groundHeading(root.rotation.y,point.yaw,distance,member.turnRadius);
+    member.phase+=distance/member.stride;
+   }
   }
   member.point=point;
   const clip=walking?member.walk:(member.idle||member.walk);
@@ -229,18 +219,14 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
    const approaches=targets.map((_,i)=>{
     const start=herd.members[i].point;
     const external=start&&approach(state,start,outside,clearApproach);
-    return external&&timedPath(external);
+    return external&&{points:external,length:routeLength(external)};
    });
    if(approaches.every(Boolean)){
     const gateTime=Math.max(...approaches.map(path=>path.length))/PACE;
-    const paths=approaches.map((path,i)=>{
-     const entry=timedPath([outside,inside,targets[i]]);
-     return {
-      length:path.length+entry.length,
-      segments:[...path.segments,...entry.segments.map(segment=>({...segment,length:segment.length+path.length}))],
-      delay:gateTime+i*herd.spec.space/PACE-path.length/PACE,
-     };
-    });
+    const paths=approaches.map((path,i)=>({
+     points:[...path.points.slice(1),inside,targets[i]],next:0,outsideEndsAt:path.points.length-1,
+     delay:gateTime+i*herd.spec.space/PACE-path.length/PACE
+    }));
     return {building,targets,paths,start:clock};
    }
   }
@@ -276,22 +262,11 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
    if(!member.goal)member.waitUntil=clock+.55+seed(herd.seed,member.attempt)*1.1;
   }
   if(member.goal){
-   const dx=member.goal.x-from.x,dy=member.goal.y-from.y;
-   const distance=Math.hypot(dx,dy);
-   const yaw=Math.atan2(dx,dy);
-   const difference=yaw-member.root.rotation.y;
-   const turn=Math.atan2(Math.sin(difference),Math.cos(difference));
-   if(Math.abs(turn)>.37){
-    member.root.rotation.y+=Math.sign(turn)*Math.min(Math.abs(turn),elapsed*1.8);
-    pose(member,from,state,elapsed,false);
-    return;
-   }
    const pace=PACE*(.70+seed(herd.seed,member.index+herd.index*23+671)*.45);
-   const step=Math.min(distance,pace*elapsed);
-   const next={x:from.x+dx*step/distance,y:from.y+dy*step/distance,yaw};
-   if(clearOfGroup(herd,member,from,next)&&closeToGroup(herd,member,next)){
+   const next=groundStep(from,member.goal,member.root.rotation.y,pace*elapsed,member.turnRadius/6);
+   if(clearOfGroup(herd,member,from,next)&&closeToGroup(herd,member,next)&&clear(state,from,next)){
     pose(member,next,state,elapsed,true);
-    if(step<distance)return;
+    if(!next.arrived)return;
    }
    member.goal=null;
    member.waitUntil=clock+.8+seed(herd.seed,member.attempt+member.index*13)*3.1;
@@ -345,12 +320,25 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
     for(let i=0;i<herd.members.length;i++){
      const member=herd.members[i],path=transfer.paths[i];
      if(!path){member.root.setEnabled(false);continue;}
-     const distance=Math.max(0,(clock-transfer.start-path.delay)*PACE);
-     arrived&&=distance>=path.length;
      claimed.add(transfer.targets[i].id);
      member.root.metadata.herdDestination=transfer.building.type;
      member.root.scaling.setAll(transfer.targets[i].young?.68:1);
-     pose(member,pathPoint(path,distance),state,elapsed,distance>0&&distance<path.length);
+     const goal=path.points[path.next];
+     if(goal&&elapsed&&clock>transfer.start+path.delay){
+      const next=groundStep(member.point,goal,member.root.rotation.y,elapsed*PACE,member.turnRadius/6);
+      // The approach was planned as straight segments. Check the bend too,
+      // up to the outer gate. Inside the pen the stall is the intended target.
+      if(path.next<path.outsideEndsAt&&!clear(state,member.point,next)){
+       herd.transfer=null;
+       herd.nextSearch=clock+6;
+       arrived=false;
+       break;
+      }
+      const walking=next.x!==member.point.x||next.y!==member.point.y;
+      pose(member,next,state,elapsed,walking);
+      if(next.arrived)path.next++;
+     }else if(elapsed)pose(member,member.point,state,elapsed,false);
+     if(path.next<path.points.length)arrived=false;
     }
     if(arrived){
      herd.handled.set(penKey(transfer.building),transfer.building.built?.order??0);
@@ -360,7 +348,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
       const hour=lightingAt(state.simTime).hour;
       const release=state.simTime+(24-hour)*DAY_SECONDS/24;
       for(const [i,target] of transfer.targets.entries()){
-       settledSheep.set(target.id,{...target,yaw:pathPoint(transfer.paths[i],transfer.paths[i].length).yaw,release});
+       settledSheep.set(target.id,{...target,...herd.members[i].point,yaw:herd.members[i].root.rotation.y,release});
       }
      }
      for(const member of herd.members){member.root.setEnabled(false);member.point=null;member.goal=null;}

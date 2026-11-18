@@ -31,7 +31,6 @@ export function dairyHerd(state){
  return result;
 }
 
-export function dairyPose(spec,time){
- const sway=spec.index===0?0:Math.sin(time*.36+spec.index*1.7)*.075;
- return {...spec.anchor,yaw:spec.yaw+sway,walking:false};
+export function dairyPose(spec){
+ return {...spec.anchor,yaw:spec.yaw,walking:false};
 }

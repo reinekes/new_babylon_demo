@@ -1,8 +1,10 @@
+import {professionClothing} from './work-clothing.js';
+const cuts={short:[[-2.2,-5.7],[2.3,-5.7],[2.8,-3.4],[-2.8,-3.1]],apron:[[-1.15,-8.8],[1.1,-8.8],[2.0,-3.1],[-1.9,-3.1]],sash:[[-1.8,-9.4],[-.4,-9.4],[2,-5.5],[1.1,-4.9]],wrap:[[-2,-8.1],[.9,-9.1],[2.9,-3.1],[-2.2,-3.2]],mantle:[[-2,-9.4],[2.1,-9.1],[2.8,-3.6],[-2.6,-2.9]]};
 // Work clues are game readability aids, not a claim of historical uniforms.
-export function residentAppearance(c,buildings=[]){
+export function residentAppearance(c,buildings=[],state={},profession=professionClothing(c,buildings,state)){
  const work=buildings instanceof Map?buildings.get(c.work):buildings.find(b=>(b.id||`${b.x},${b.y}`)===c.work)?.type;
  const craft=c.role==='watercarrier'?'watercarrier':c.role==='tailor'?'tailor':work==='weaver'?'weaver':null,wear=c.clothing??100;
- return {craft,work,wear:wear>50?'new':wear>25?'worn':'ragged',patches:wear>50?0:wear>25?1:2,
+ return {craft,work,profession,wear:wear>50?'new':wear>25?'worn':'ragged',patches:wear>50?0:wear>25?1:2,
   robe:wear<=25?'#9b927b':wear<=50?'#b6a88d':craft==='watercarrier'?'#668f9a':craft==='tailor'?'#bb8e6b':craft==='weaver'?'#7e9c97':c.robe||'#dfc99d'};
 }
 export function drawResidentClothes(r,p,q,look){
@@ -11,6 +13,10 @@ export function drawResidentClothes(r,p,q,look){
  const line=(pts,color,w=.7)=>r.line(pts.map(([a,b])=>[x+a*q,y+b*q]),color,w*q);
  const edge=look.wear==='ragged'?[[-2.8,-2.8],[-1.8,-3.4],[-.7,-2.2],[.3,-3.1],[1.6,-2.3],[2.8,-3]]:[[-2.8,-2.6],[2.8,-2.6]];
  poly([[-1.9,-9.4],[1.9,-9.4],...edge.toReversed()],look.robe);
+ if(look.profession){
+  const {shape,color}=look.profession;
+  poly(cuts[shape],color);
+ }
  line([[-1.7,-8.5],[1.8,-6.6],[-1.9,-4.5]],look.wear==='new'?'#f1e3be':'#94846c',.7);
  line([[-2.2,-5.8],[2.2,-5.8]],'#796047',.9);
  if(look.wear==='new'){line([[-2.4,-3.3],[2.4,-3.3]],'#f5e7c3',.65);for(let i=0;i<5;i++)line([[-1.9+i*.95,-3.2],[-1.9+i*.95,-2.5]],'#d1b68b',.45);}

@@ -1,3 +1,4 @@
+import {groundHeading} from './ground-turn.js';
 import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
@@ -19,7 +20,7 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
   const nodes=[...new Set([...groups.values()].flatMap(g=>g.targetedAnimations.map(a=>a.target)).filter(n=>n?.position&&n?.rotation))];
   const v={root,groups,owned,nodes,skeletons:copy.skeletons,clip:null,clock:0,weight:0,transition:null,transitionTime:0};a.variants.set(key,v);return v;
  }
- function make(c){const root=new B.TransformNode(`fauna-${c.id}`,scene),model=new B.TransformNode(`fauna-${c.id}-pose`,scene);model.parent=root;root.metadata={...c.decorative?{decorativeId:c.id}:{animalId:c.id},animalKind:c.kind,gaitPhase:0};root.scaling.setAll(c.growth||1);return {id:c.id,kind:c.kind,decorative:!!c.decorative,root,model,variants:new Map(),lastX:c.x,lastY:c.y,yaw:null,phase:0,hunting:false};}
+ function make(c){const root=new B.TransformNode(`fauna-${c.id}`,scene),model=new B.TransformNode(`fauna-${c.id}-pose`,scene);model.parent=root;root.metadata={...c.decorative?{decorativeId:c.id}:{animalId:c.id},animalKind:c.kind,gaitPhase:0};root.scaling.setAll(c.growth||1);return {id:c.id,kind:c.kind,decorative:!!c.decorative,root,model,variants:new Map(),lastX:c.x,lastY:c.y,phase:0,hunting:false};}
  function sample(v,clip,phase,dt,speed,frozen){
   if(!v.groups.has(clip))clip=v.groups.has('Sit')?'Sit':v.groups.has('Idle')?'Idle':'Walk';const g=v.groups.get(clip);
   if(v.clip!==clip){v.transition=v.clip?v.nodes.map(n=>({node:n,p:n.position.clone(),q:n.rotationQuaternion?.clone(),r:n.rotation.clone(),s:n.scaling.clone()})):null;v.transitionTime=0;for(const old of v.groups.values())old.stop();g.start(true,1,g.from,g.to,false);g.pause();v.clip=clip;v.clock=0;}
@@ -38,7 +39,10 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
    // A strike and the first frame leaving it must have one silhouette, even
    // when the cat had already started a normal sit/walk fade.
    const exclusive=fresh||hunting||a.hunting;a.hunting=hunting;
-   if(distance>.00001&&distance<3&&!paused&&!dead)a.yaw=Math.atan2(dx,dz);if(a.yaw!==null&&!dead){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(fresh?1:1-Math.exp(-dt*10));}
+   if(distance>.00001&&distance<3&&!paused&&!dead){
+    const radius=IMPORTED_FAUNA_MODELS[key].stride*.50*a.root.scaling.y;
+    a.root.rotation.y=groundHeading(a.root.rotation.y,Math.atan2(dx,dz),distance,radius);
+   }
    if(action==='Walk'&&!paused&&!dead)a.phase=(a.phase+distance/IMPORTED_FAUNA_MODELS[key].stride)%1;
    action=sample(v,action,a.phase,dt,speed,paused||dead);
    for(const [variantKey,other]of a.variants){const target=variantKey===key?1:0;if(exclusive)other.weight=target;else if(!paused)other.weight+=Math.sign(target-other.weight)*Math.min(Math.abs(target-other.weight),dt*speed/.35);for(const m of other.owned){m.visibility=other.weight;m.isPickable=!a.decorative&&other.weight>=.5;}other.root.setEnabled(other.weight>0);}

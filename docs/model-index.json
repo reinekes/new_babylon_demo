@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "e92d5e8665c49379c79eb4605b3f000f18d86109e4ed0ff8d7ca756295ea3db3"
+      "sha256": "626914bce652dd8853a345e1ec19b1782298a82eb4247b1904f4bf1b3d64e07e"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "fa7be8184c4fb97c5421f7b8234cf63d21958fa40bf2f15be315c550188e5570"
+      "sha256": "88089de9433d9d5d4ebe957a7b7e9c05d6a206a0d17cfd9ada654c71937d3b3c"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -33,7 +33,7 @@
     },
     {
       "file": "game3d/caravan.js",
-      "sha256": "a320d3986b8648fb6f2eaac38bcce40fbea3b337183b252d6deadf8c5835b6e5"
+      "sha256": "9bdef0e0be4218755cb38a2c7850742a0594b36b66e3ee3c16098a0796a24f06"
     },
     {
       "file": "game3d/crop-studio.js",
@@ -53,15 +53,15 @@
     },
     {
       "file": "game3d/goats.js",
-      "sha256": "7ff65159352c737b5ea5186446a9f6a3418edca57af5dda2c7ed89e07994ce70"
+      "sha256": "695411d7de2e1a3a6923c7a8359ef5e60706f294631f134a246a1fa19aa795aa"
     },
     {
       "file": "game3d/imported-fauna.js",
-      "sha256": "453fe136397f6779ddc8feb53c9021a11a4423a4384d5c7cccf716fb204589ad"
+      "sha256": "d875690fc2d459faeddebc106e335db8d6cb2a2ff32e7d59a44a8773f5cc45f3"
     },
     {
       "file": "game3d/jackals.js",
-      "sha256": "ac8dbf27261aefbe939227d45190e45a9024ffb00549b14384ea5e93dc745240"
+      "sha256": "02a1a82f5a81926893f83213e0b5500af43622a3abfb9a6eafb3c77d30aa980b"
     },
     {
       "file": "game3d/landscape.js",
@@ -93,7 +93,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "9db6b4b62a4b1c5a0bd456ff197cbbabb98580e9abd6e037f4af80ceecc1e8c1"
+      "sha256": "23dcdd3f064b7af7955bc3987b842ad58c221fa41ca7ca56e2d6c1e57ea2468e"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -198,7 +198,7 @@
         {
           "model": "alluvial-bull.glb",
           "file": "game3d/test-livestock.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -236,7 +236,7 @@
         {
           "model": "alluvial-pig.glb",
           "file": "game3d/test-livestock.js",
-          "line": 11,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -268,7 +268,7 @@
         {
           "model": "alluvial-ram.glb",
           "file": "game3d/test-livestock.js",
-          "line": 14,
+          "line": 15,
           "kind": "literal"
         }
       ]
@@ -304,7 +304,7 @@
         {
           "model": "ambient-bull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 23,
+          "line": 24,
           "kind": "literal"
         }
       ]
@@ -337,7 +337,7 @@
         {
           "model": "ambient-dog.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 20,
+          "line": 21,
           "kind": "literal"
         }
       ]
@@ -414,7 +414,7 @@
         {
           "model": "ambient-duck.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 21,
+          "line": 22,
           "kind": "literal"
         }
       ]
@@ -447,7 +447,7 @@
         {
           "model": "ambient-sheep-kenchoo.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 24,
+          "line": 25,
           "kind": "literal"
         }
       ]
@@ -479,7 +479,7 @@
         {
           "model": "ambient-yard-pig.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 44,
+          "line": 45,
           "kind": "literal"
         }
       ]
@@ -512,7 +512,7 @@
         {
           "model": "caravan-camel.glb",
           "file": "game3d/caravan.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -544,7 +544,7 @@
         {
           "model": "caravan-merchant.glb",
           "file": "game3d/caravan.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -577,7 +577,7 @@
         {
           "model": "cat-sitting.glb",
           "file": "game3d/imported-fauna.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -610,7 +610,7 @@
         {
           "model": "cat-walk.glb",
           "file": "game3d/imported-fauna.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -737,7 +737,7 @@
         {
           "model": "gazelle-downloaded.glb",
           "file": "game3d/imported-fauna.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -771,7 +771,7 @@
         {
           "model": "goat-authored-lod.glb",
           "file": "game3d/goats.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -839,7 +839,7 @@
         {
           "model": "goat-downloaded.glb",
           "file": "game3d/goats.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -909,7 +909,7 @@
         {
           "model": "historical-man.glb",
           "file": "game3d/actors.js",
-          "line": 114,
+          "line": 115,
           "kind": "literal"
         }
       ]
@@ -941,7 +941,7 @@
         {
           "model": "human-native-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -973,7 +973,7 @@
         {
           "model": "human-native-child.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1005,7 +1005,7 @@
         {
           "model": "human-native-female.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1037,7 +1037,7 @@
         {
           "model": "human-native-male.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1069,7 +1069,7 @@
         {
           "model": "imported-boar.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 18,
+          "line": 19,
           "kind": "literal"
         }
       ]
@@ -1101,7 +1101,7 @@
         {
           "model": "imported-fox.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 17,
+          "line": 18,
           "kind": "literal"
         }
       ]
@@ -1158,7 +1158,7 @@
         {
           "model": "imported-lioness.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 19,
+          "line": 20,
           "kind": "literal"
         }
       ]
@@ -1189,7 +1189,7 @@
         {
           "model": "imported-orange-bird.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 16,
+          "line": 17,
           "kind": "literal"
         }
       ]
@@ -1247,7 +1247,7 @@
         {
           "model": "jackal.glb",
           "file": "game3d/jackals.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -1761,7 +1761,7 @@
         {
           "model": "pasture-bull.glb",
           "file": "game3d/test-livestock.js",
-          "line": 13,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -1846,13 +1846,13 @@
         {
           "model": "pasture-goat.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 256,
+          "line": 257,
           "kind": "literal"
         },
         {
           "model": "pasture-goat.glb",
           "file": "game3d/goats.js",
-          "line": 4,
+          "line": 5,
           "kind": "literal"
         }
       ]
@@ -1884,7 +1884,7 @@
         {
           "model": "pasture-pig.glb",
           "file": "game3d/test-livestock.js",
-          "line": 11,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -1917,7 +1917,7 @@
         {
           "model": "pasture-ram.glb",
           "file": "game3d/test-livestock.js",
-          "line": 14,
+          "line": 15,
           "kind": "literal"
         }
       ]
@@ -2028,7 +2028,7 @@
         {
           "model": "resident.glb",
           "file": "game3d/actors.js",
-          "line": 65,
+          "line": 66,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2216,7 +2216,7 @@
         {
           "model": "sheep.glb",
           "file": "game3d/actors.js",
-          "line": 68,
+          "line": 69,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2247,7 +2247,7 @@
         {
           "model": "shore-mallard-female.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 29,
+          "line": 30,
           "kind": "literal"
         }
       ]
@@ -2278,7 +2278,7 @@
         {
           "model": "shore-mallard.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 28,
+          "line": 29,
           "kind": "literal"
         }
       ]
@@ -2311,7 +2311,7 @@
         {
           "model": "shore-seagull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 27,
+          "line": 28,
           "kind": "literal"
         }
       ]
@@ -2374,7 +2374,7 @@
         {
           "model": "source-walk-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2406,7 +2406,7 @@
         {
           "model": "source-walk-child.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2438,7 +2438,7 @@
         {
           "model": "source-walk-female.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2470,13 +2470,13 @@
         {
           "model": "source-walk-male.glb",
           "file": "game3d/actors.js",
-          "line": 103,
+          "line": 104,
           "kind": "reviewed-dynamic-expansion"
         },
         {
           "model": "source-walk-male.glb",
           "file": "game3d/caravan.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]
@@ -2508,7 +2508,7 @@
         {
           "model": "sumer-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 105,
+          "line": 106,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2540,7 +2540,7 @@
         {
           "model": "sumer-child.glb",
           "file": "game3d/actors.js",
-          "line": 105,
+          "line": 106,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2572,7 +2572,7 @@
         {
           "model": "sumer-people.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 105,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2975,7 +2975,7 @@
         {
           "model": "test-goat-trellis.glb",
           "file": "game3d/test-livestock.js",
-          "line": 12,
+          "line": 13,
           "kind": "literal"
         }
       ]

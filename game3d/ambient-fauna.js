@@ -1,6 +1,7 @@
+import {groundHeading,groundStep} from './ground-turn.js';
 import {createTestLivestock} from './test-livestock.js';
 import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=living-fields-20261116';
-import {dairyHerd,dairyPose} from './dairy-herd.js?v=audit-fixes-20261113';
+import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {acquireDonkey,DONKEY_MODELS} from './donkey.js';
 import {ecologyCount} from '../ecology.js';
@@ -354,13 +355,11 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     const dx=x-a.root.position.x,dz=z-a.root.position.z,distance=Math.hypot(dx,dz);
     a.root.position.set(x,surfaceElevation(animal.x,animal.y,state),z);
     if(advancing&&distance>1e-5&&distance<2){
-     const yaw=Math.atan2(dx,dz),delta=yaw-a.root.rotation.y;
-     a.root.rotation.y+=Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*12));
+     a.root.rotation.y=groundHeading(a.root.rotation.y,Math.atan2(dx,dz),distance,.32);
      a.walkPhase=(a.walkPhase+distance/AMBIENT_MODELS['sheep-kenchoo'].stride)%1;
     }
     if(!animal.walking&&Number.isFinite(animal.yaw)){
      if(!a.clip)a.root.rotation.y=animal.yaw;
-     else if(advancing){const delta=animal.yaw-a.root.rotation.y;a.root.rotation.y+=Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*5));}
     }
     if(advancing||!a.clip)animate(a,clock,animal.walking);
     continue;
@@ -375,8 +374,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
      const distance=Math.hypot(dx,dz);
      a.root.position.set(place.x*6,surfaceElevation(place.x,place.y,state),place.y*6);
      if(advancing&&place.walking&&distance>1e-5&&distance<1){
-      const yaw=Math.atan2(dx,dz),delta=yaw-a.root.rotation.y;
-      a.root.rotation.y+=Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*speed*7));
+      a.root.rotation.y=groundHeading(a.root.rotation.y,Math.atan2(dx,dz),distance,.23*PIG_SCALES[a.index]);
       a.walkPhase=(a.walkPhase+distance/((a.groups.has('Walk')?.42:.54)*PIG_SCALES[a.index]))%1;
      }
      if(advancing)a.model.rotation.x=a.root.metadata.pigBehavior==='foraging'?.065*(.6+.4*Math.sin(time*3)):0;
@@ -411,9 +409,15 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     if(ambientClearSegment(state,{x,y},candidate))a.target=candidate;else a.restUntil=clock+.6;
    }
    if(a.target){
-    const dx=a.target.x-x,dy=a.target.y-y,d=Math.hypot(dx,dy),step=Math.min(d,dt*speed*config.pace*(a.species==='boar'?.9+(a.index%3)*.12:1)/6),nx=x+(d?dx/d*step:0),ny=y+(d?dy/d*step:0);
-    if(ambientClearSegment(state,{x,y},{x:nx,y:ny})){a.root.position.set(nx*6,surfaceElevation(nx,ny,state),ny*6);moved=step*6;if(d>.001){const yaw=Math.atan2(dx,dy),delta=yaw-a.root.rotation.y;a.root.rotation.y=a.species==='boar'?a.root.rotation.y+Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*speed*6)):yaw;}}else{a.target=null;a.restUntil=clock+.8;}
-    if(d<=step+.001){a.target=null;a.restUntil=clock+1.2+a.index*.3+(a.species==='boar'?(a.routeAttempt+a.index)%3*.58:0);}
+    const pace=config.pace*(a.species==='boar'?.9+(a.index%3)*.12:1);
+    const stride=a.species==='donkey'?donkeySource.model.stride:config.stride;
+    const next=groundStep({x,y},a.target,a.root.rotation.y,dt*speed*pace/6,stride*.64/6);
+    if(ambientClearSegment(state,{x,y},next)){
+     moved=Math.hypot(next.x-x,next.y-y)*6;
+     a.root.position.set(next.x*6,surfaceElevation(next.x,next.y,state),next.y*6);
+     a.root.rotation.y=next.yaw;
+     if(next.arrived){a.target=null;a.restUntil=clock+1.2+a.index*.3+(a.species==='boar'?(a.routeAttempt+a.index)%3*.58:0);}
+    }else{a.target=null;a.restUntil=clock+.8;}
    }
    if(moved>0)a.walkPhase=(a.walkPhase+moved/(a.species==='donkey'?donkeySource.model.stride:config.stride))%1;
    animate(a,clock,moved>.00001);

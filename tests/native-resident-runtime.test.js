@@ -28,3 +28,41 @@ test('native relaxed hand surfaces clear the actual drapery and carrying palms r
  const s=stateWithPeople();s.citizens=s.citizens.slice(0,2);
  for(const mode of ['idle','carry']){for(const c of s.citizens){c.cargo=mode==='carry'?{wood:3}:{};c.phase=mode==='carry'?'toStore':'waiting';}actors.update(s,.05);scene.render();for(const c of s.citizens){const root=actors.rootFor({citizenId:c.id});for(const side of ['l','r']){const palm=local(root,'hand_'+side),shoulder=local(root,'upperarm_'+side);assert.equal(Math.sign(palm.x),Math.sign(shoulder.x),`${mode}/${c.sex}/${side}: crossed wrists`);if(mode==='idle'){assert.ok(palm.y<shoulder.y-.20,'relaxed arms remain below the shoulders');const centre=palmSurfaceCentre(root,side),surface=skirtClearance(root,centre);assert.equal(surface.inside,false,`${c.sex}/${side}: palm surface is inside the actual wool skirt`);assert.ok(surface.clearance>.005,`${c.sex}/${side}: hand surface touches the wool skirt`);}else assert.ok(B.Vector3.Distance(palm,new B.Vector3(side==='l'?-.21:.21,1.01,.34))<.12,'carrying palm retains the existing load contact bound');}}}
 }));
+
+test('five distinct cloth cuts stay on the real male and female rigs and share geometry between wearers', async()=>studio(({scene,actors})=>{
+ const state=stateWithPeople();
+ state.citizens=state.citizens.slice(0,2);
+ const twin={...state.citizens[0],id:7888,x:8};
+ state.citizens.push(twin);
+ const extents=[new Map(),new Map()];
+ for(const [calling,style] of [['potter','apron'],['clayworker','short'],['kilnworker','sash'],['brickmaker','wrap'],['scribe','mantle']]){
+  for(const c of state.citizens){c.calling=calling;c.role='production';c.pendingRole=null;}
+  actors.update(state,.05);scene.render();
+  const garments=state.citizens.map(c=>actors.rootFor({citizenId:c.id}).getChildMeshes().find(m=>m.metadata?.profession===calling));
+  for(const [i,mesh] of garments.slice(0,2).entries()){
+   assert.ok(mesh,style+' exists on '+state.citizens[i].sex);
+   const p=mesh.getVerticesData(B.VertexBuffer.PositionKind),weights=mesh.getVerticesData(B.VertexBuffer.MatricesWeightsKind);
+   let min=Infinity,max=-Infinity;
+   for(let k=0;k<p.length;k+=3){
+    assert.ok(Number.isFinite(p[k])&&Number.isFinite(p[k+1])&&Number.isFinite(p[k+2]));
+    min=Math.min(min,p[k+1]);max=Math.max(max,p[k+1]);
+    const j=k/3*4;assert.ok(Math.abs(weights[j]+weights[j+1]+weights[j+2]+weights[j+3]-1)<1e-5);
+   }
+   if(style==='apron' && state.citizens[i].sex==='f'){
+    // This return of the front pleat moves in front of the knee in Walk.
+    // The shorter pattern exposed a rectangular patch of the base robe.
+    let frontCoverage=0;
+    for(let k=0;k<p.length;k+=3) if(Math.abs(p[k])<.14 && p[k+2]>.21 && p[k+1]<.68) frontCoverage++;
+    assert.ok(frontCoverage>=4,'the protective panel covers the returning front pleat below the knee fold');
+   }
+   extents[i].set(style,{min,max});
+  }
+  assert.equal(garments[0].geometry,garments[2].geometry,'one fitted pattern per source body and cut');
+  assert.notEqual(garments[0].skeleton,garments[2].skeleton,'each wearer retains a separate moving skeleton');
+ }
+ for(const bounds of extents){
+  assert.ok(bounds.get('apron').min+.07<bounds.get('short').min,'protective panel falls below the tucked short wrap');
+  assert.ok(bounds.get('sash').max>bounds.get('apron').max+.18,'the sling reaches the shoulder');
+  assert.ok(bounds.get('wrap').min<bounds.get('mantle').min,'a wrap falls below the shoulder shawl');
+ }
+}));

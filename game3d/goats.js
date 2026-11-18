@@ -1,3 +1,4 @@
+import {groundHeading} from './ground-turn.js';
 import {loadModel} from './asset-loading.js';
 import {onBridge} from '../world.js';
 import {surfaceElevation} from '../district3d/terrain.js';
@@ -32,7 +33,7 @@ export async function createGameGoats(B,scene,meshes=[],options={}){
   const nodes=[...new Set([...groups.values()].flatMap(g=>g.targetedAnimations.map(a=>a.target)).filter(n=>n?.position&&n?.rotation))];
   // The pasture walk is calibrated from hoof travel in the model's native metres.
   const stride=GOAT_MODELS[variant].stride*(variant==='pasture'?root.scaling.y:1);
-  return {root,model,owned,nodes,groups,skeletons:copy.skeletons,variant,stride,lastX:c.x,lastY:c.y,yaw:null,phase:gaitOffset,clock:0,idleOffset:gaitOffset,clip:null,transition:null,transitionTime:0};
+  return {root,model,owned,nodes,groups,skeletons:copy.skeletons,variant,stride,lastX:c.x,lastY:c.y,phase:gaitOffset,clock:0,idleOffset:gaitOffset,clip:null,transition:null,transitionTime:0};
  }
  function snapshot(a){return a.nodes.map(n=>({node:n,p:n.position.clone(),q:n.rotationQuaternion?.clone(),r:n.rotation.clone(),s:n.scaling.clone()}));}
  function play(a,clip){const g=a.groups.get(clip);if(!g)throw Error(`Missing goat animation: ${a.variant}/${clip}`);a.transition=a.clip?snapshot(a):null;a.transitionTime=0;for(const old of a.groups.values())old.stop();g.start(true,1,g.from,g.to,false);g.pause();a.clip=clip;a.clock=0;return g;}
@@ -41,7 +42,9 @@ export async function createGameGoats(B,scene,meshes=[],options={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||!dt||!speed;const seen=new Set();
   for(const c of animals){if(c.kind!=='goat')continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(paused&&!fresh)continue;
    const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;a.lastX=c.x;a.lastY=c.y;a.root.position.set(c.x*6,onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
-   if(distance>.00001&&distance<3&&!paused)a.yaw=Math.atan2(dx,dz);if(a.yaw!==null){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(fresh?1:1-Math.exp(-dt*10));}
+   if(distance>.00001&&distance<3&&!paused&&!c.dead&&c.behavior!=='dead'){
+    a.root.rotation.y=groundHeading(a.root.rotation.y,Math.atan2(dx,dz),distance,.32*a.root.scaling.y);
+   }
    const dead=!!(c.dead||c.behavior==='dead'),clip=goatAction(c,distance),g=clip!==a.clip?play(a,clip):a.groups.get(clip);
    if(!paused&&!dead){if(clip==='Walk'){if(distance<3)a.phase=(a.phase+distance/a.stride)%1;}else a.clock+=dt*speed;}
    const duration=Math.max(.01,(g.to-g.from)/(g.targetedAnimations[0]?.animation.framePerSecond||30)),phase=dead?0:clip==='Walk'?a.phase:(a.idleOffset+a.clock/duration)%1;g.goToFrame(g.from+phase*(g.to-g.from));

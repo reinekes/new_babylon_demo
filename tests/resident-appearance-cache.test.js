@@ -112,3 +112,21 @@ test('far geometry shares the real resident rig and restores the original mesh w
  assert.equal(skin.subMeshes[0].indexCount,full,'the full range is rendered after returning from LOD');
  assert.equal(JSON.stringify(state),before);
 }));
+
+test('working residents keep their full fitted garment while the body switches LOD and their saved load stays owned',async()=>studio(({state,c,frame})=>{
+ const near={camera:{position:{x:42,y:3,z:58},fov:.8},viewportHeight:800};
+ const far={camera:{position:{x:-1200,y:800,z:-1200},fov:.8},viewportHeight:400};
+ state.buildings=[{id:'yard',type:'pottery',x:2,y:2}];c.work='yard';c.cargo={pottery:3};c.phase='toStore';
+ const before=JSON.stringify(c),root=frame(state,near),potter=garment(root);
+ assert.equal(root.metadata.workClothing,'potter');assert.equal(potter.metadata.clothShape,'apron');
+ assert.equal(potter.material.albedoTexture.name,'resident-fine-woven-cloth');
+ const body=root.getChildMeshes().find(m=>m.skeleton&&m.geometry&&/civilian skin|adapted skin|source body/i.test(m.name));
+ assert.ok(body);const full=body.geometry;
+ frame(state,far);assert.notEqual(body.geometry,full);assert.equal(garment(root),potter);
+ state.buildings[0].type='brickyard';frame(state,far);const brickmaker=garment(root);
+ assert.equal(root.metadata.workClothing,'brickmaker');assert.equal(brickmaker.metadata.clothShape,'wrap');
+ assert.ok(potter.isDisposed());assert.ok(brickmaker.skeleton);assert.equal(root.metadata.clothColor,'#b46b42');
+ const count=brickmaker.getTotalIndices();assert.ok(count>100);
+ frame(state,near);assert.equal(body.geometry,full);assert.equal(garment(root),brickmaker);assert.equal(brickmaker.getTotalIndices(),count);
+ assert.equal(JSON.stringify(c),before);
+}));

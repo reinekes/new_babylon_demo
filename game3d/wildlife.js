@@ -1,3 +1,4 @@
+import {groundHeading} from './ground-turn.js';
 import {createOnager,onagerDistanceGeometry,poseOnager} from './onager.js?v=valley-seam-herds-20261112';
 import {createPelican,posePelican} from './pelican.js?v=audit-fixes-20261113';
 import {regionalBirds,createRegionalBird,createRegionalFrog,poseRegionalBird} from './regional-wildlife.js';
@@ -282,11 +283,18 @@ export function createWildlife(B,scene,meshes=[]){
    const delta=fresh?1:1-Math.exp(-dt*9);blend=delta;
    if(distance>.00001&&distance<3){a.yaw=Math.atan2(dx,dz);a.gait+=distance/d.stride*Math.PI*2;}
    a.root.metadata.gait=a.gait;
-   if(a.yaw!==null&&Number.isFinite(a.yaw)){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*delta;}
+   if(a.yaw!==null&&Number.isFinite(a.yaw)){
+    if((a.legs&&!d.bird)||d.onager||d.turtle){
+     if(distance>.00001&&distance<3&&!c.dead)a.root.rotation.y=groundHeading(a.root.rotation.y,a.yaw,distance,d.stride*.6);
+    }else{
+     const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));
+     a.root.rotation.y+=angle*delta;
+    }
+   }
    a.move=ease(a.move,distance>.00001&&distance<3?1:0);
    const t=time+a.idPhase;
    if(d.onager){
-    if(Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
+    if(fresh&&Number.isFinite(c.yaw))a.root.rotation.y=c.yaw;
     if(nearOnager){
      a.detail.move=a.move;
      a.detail.gait=a.gait+(c.phase??0);
