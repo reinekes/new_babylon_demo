@@ -1,6 +1,7 @@
 import {isStrictSumer} from '../scenario-profiles.js';
 import {houseVisualKind} from './house-architecture.js';
 import {loadModel} from './asset-loading.js';
+import {batteredAdobe} from './reference-civic.js';
 import {footprintSize} from '../footprints.js';
 
 const FORTIFICATION_MODELS=Object.freeze({cityGate:'uruk-city-gate.glb',cityWall:'uruk-city-wall.glb'});
@@ -9,10 +10,10 @@ const WATCH_HOUSE_MODEL='watch-house-v2.glb';
 const REED_CAMP_MODEL='reed-camp-sf3d.glb';
 const HOUSE_CATALOGUE={
  'courtyard-1':['house','84ef78b6072b'],
- 'courtyard-2':['house-2','c99ad4297e03'],
- 'courtyard-3':['house-3','b8d0c4e44d96'],
- hut:['starterHut','b4fc4c40764d'],
- reedCamp:['reedCamp','e630b90f315c'],
+ 'courtyard-2':['house-2','feb3dfd79f0c'],
+ 'courtyard-3':['house-3','f5b16b4399d7'],
+ hut:['starterHut','57ed6b25e246'],
+ reedCamp:['reedCamp','7b60cd0774b3'],
 };
 
 export const SACRED_MODELS=Object.freeze({
@@ -102,21 +103,36 @@ export function createIshtarGateFallback(B,scene,m,blue,b={type:'ishtarGate'}){
 export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
  const groups=new Map();
  const box=(name,x,y,z,w,h,d,mat)=>{const mesh=B.MeshBuilder.CreateBox('sumer-gate-'+name,{width:w,height:h,depth:d},scene);mesh.position.set(x,y,z);mesh.material=mat;if(!groups.has(mat))groups.set(mat,[]);groups.get(mat).push(mesh);};
- box('threshold',0,.05,0,5.2,.1,2.2,m.fired||m.raw);
+ const pier=(name,x,y,z,w,h,d,insetX,insetZ,mat)=>{
+  const mesh=batteredAdobe(B,scene,'sumer-gate-'+name,{x,y,z,w,h,d,insetX,insetZ},mat);
+  if(!groups.has(mat))groups.set(mat,[]);groups.get(mat).push(mesh);
+ };
+ box('threshold',0,.035,0,5.2,.07,3.93,m.soil);
  for(const side of [-1,1]){
-  box('brick-pier',side*1.83,1.56,0,1.54,3.12,1.85,m.raw);
-  box('buttress',side*2.33,1.08,.2,.44,2.16,2.16,m.raw);
-  box('plaster-base',side*1.83,.22,.95,1.56,.32,.06,m.trim);
+  const x=side*1.62;
+  pier('tapered-pylon',x,0,-.47,1.40,3.19,1.92,.16,.17,m.raw);
+  // Raised jambs create the stepped recess seen on both pylon fronts.
+  for(const dx of [-.48,.48]){
+   const rib=batteredAdobe(B,scene,'sumer-gate-recess-jamb',{x:x+dx,y:.06,z:.48,w:.16,h:2.82,d:.22,insetX:.022,insetZ:.055},m.fired);
+   rib.rotation.x=-.046;
+   if(!groups.has(m.fired))groups.set(m.fired,[]);groups.get(m.fired).push(rib);
+  }
+  for(const y of [2.27,2.81])box('niche-header',x,y,.50-y*.045,1.06,.09,.19,m.fired);
+  box('pylon-cap',x,3.22,-.47,1.14,.14,1.62,m.raw);
+  pier('court-return',side*2.43,0,.06,.34,.99,3.87,.044,.052,m.raw);
+  box('approach',side*1.84,.27,1.26,1.20,.54,1.39,m.fired);
+  box('approach-cap',side*1.84,.56,1.26,1.24,.07,1.42,m.trim);
  }
- box('timber-lintel',0,2.53,0,2.55,.24,1.9,m.wood);
- box('brick-header',0,2.89,0,2.55,.48,1.85,m.raw);
- box('earth-cap',0,3.15,0,5.22,.12,1.98,m.soil);
+ box('timber-lintel',0,2.43,-.45,2.36,.27,1.52,m.wood);
+ box('brick-header',0,2.71,-.45,2.28,.31,1.60,m.raw);
  const {scale,center}=sacredModelTransform(b);
  return [...groups].map(([mat,parts])=>{const mesh=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);mesh.name='game-sumer-gate-'+mat.name;mesh.material=mat;mesh.scaling.setAll(scale);mesh.position.set(center,0,center);return mesh;});
 }
 
 function modelKey(b,state){
  if(b?.type==='house'&&!b.reedCamp&&!b.campSalvage&&b.construction?.kind!=='new')return houseVisualKind(b,state);
+ // These Southern Sumer buildings are authored around their actual city joints and ports.
+ if(isStrictSumer(state)&&['market','watchHouse','cityWall','cityGate'].includes(b?.type))return null;
  if(b?.type==='market'&&footprintSize(b)===2&&b.construction?.kind!=='new')return 'market';
  if(b?.type==='watchHouse'&&b.construction?.kind!=='new')return 'watchHouse';
  if(b?.construction?.kind!=='new'&&(b?.type==='cityWall'||b?.type==='cityGate'))return b.type;

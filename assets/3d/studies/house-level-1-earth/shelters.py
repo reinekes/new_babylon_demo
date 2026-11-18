@@ -6,6 +6,9 @@ from earth_geometry import (bowl, clay, export, face, jar, make_ground, plaster,
                             pot, quad, rng, slab, straw, surface, tint, vert, wood)
 
 
+from courtyard_parts import kiln_bricks, mat, storage_basket
+
+
 def woven_panel(points, width, count):
     """Split cane follows a sequence of support rails; slight irregularity breaks the fringe."""
     surface('reed')
@@ -66,6 +69,9 @@ def starter():
         pole((-.99,y,z),(.98,y,z),.015,(132,113,84),6,1)
     jar(1.23,1.32,.054,.53,pot,(169,121,89))
     jar(-1.19,1.65,.054,.42,bowl,(152,110,82))
+    kiln_bricks(.64,1.025,.36,.06)
+    mat(.11,1.62,.78,.58,.068)
+    storage_basket(-1.26,1.20,.053,.67)
 
 
 def camp():
@@ -112,6 +118,17 @@ def camp():
     slab(-.42,1.48,1.33,.77,.059,.080,(160,140,113),.035)
     jar(1.32,1.84,.053,.41,pot,(158,116,87))
     jar(-1.06,1.82,.054,.35,bowl,(168,125,93))
+    mat(.46,.62,.87,1.44,.073)
+    storage_basket(-.92,.93,.054,.63)
+    # Lashings wrap across the outside bends where the roof bears on its frame.
+    for z in (-1.43,.03,1.49):
+        for t in (.33,pi-.33):
+            surface('reed')
+            for j in range(3):
+                x,y,pz=arch(t+.042*j,z)
+                pole((x*1.056,y*1.060,pz-.085),(x*1.06,y*1.067+.014,pz+.085),
+                     .021,(107,85,56),6,.97)
+    surface('earth')
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)

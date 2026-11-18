@@ -40,7 +40,8 @@ group('river-cargo-boat','active','Речной визит только преж
 group('adobe-courtyard','optional','Художественный двор courtyard.html; HOME_ASSET в buildings.js — неиспользуемая константа.','courtyard/app.js|model(\'adobe-courtyard\')');
 group('date-palm','fallback','Резерв основной valley-date-palm при ошибке; также художественный двор.','game3d/landscape.js|if(!palmSources.length)');
 group('valley-date-palm','active','Основные пальмы долины/лесозаготовок; также crop-studio.','game3d/valley-vegetation.js|palm:');
-group('valley-barley crop-emmer','active','Детали зрелых полей; при ошибке остаётся процедурный посев. Определение вида художественное.','game3d/field-crops.js|CROP_ASSET');
+group('crop-emmer','active','Деталь зрелой двузернянки.','game3d/field-crops.js|EMMER_CROP_ASSET');
+group('valley-barley','spare','Прежняя модель ячменя в атласе. В игровой посадке используется собственный barley-tillers.glb.','model-atlas/catalog.js|valley-barley');
 group('valley-dry-grass-1 valley-dry-grass-2 valley-dry-grass-3 valley-reed-1 valley-reed-2 valley-reed-3 miracle-green-grass-1 miracle-green-grass-2 miracle-green-grass-3','active','Растительность обычной долины; зелёная трава также в чудесном саду.','game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS');
 group('miracle-birch-1 miracle-cactus-1 miracle-cactus-2 miracle-daisy-1 miracle-daisy-2 miracle-lilac-1 miracle-lilac-2 miracle-snowdrop-1 miracle-snowdrop-2','active','Только временный чудесный сад; фантазия, не обычная историческая флора.','game3d/miracle-garden.js|MIRACLE_PLANT_ASSETS');
 group('sacred-ishtar-gate sacred-shrine-3 sacred-ziggurat-1 sacred-ziggurat-3','active','Готовое священное здание только прежней ветви; строгая ветвь использует сырцовую процедурную архитектуру без этих GLB.','game3d/sacred-models.js|SACRED_MODELS');
@@ -95,7 +96,11 @@ async function jsFiles(root,dir=''){
 export function scanReferences(sources){
  const refs=[];
  for(const [file,code] of Object.entries(sources))for(const [i,line] of code.split('\n').entries()){
-  for(const match of line.matchAll(/\b([a-z0-9]+(?:-[a-z0-9]+)*\.glb)\b/g))refs.push({model:match[1],file,line:i+1,kind:'literal'});
+  for(const match of line.matchAll(/\b([a-z0-9]+(?:-[a-z0-9]+)*\.glb)\b/g)){
+   // The independent city catalogue and its authored crop sources live outside ART.
+   if(/assets\/3d\/[\w/-]*$/.test(line.slice(0,match.index)))continue;
+   refs.push({model:match[1],file,line:i+1,kind:'literal'});
+  }
   if(file==='courtyard/app.js')for(const match of line.matchAll(/\bmodel\('([a-z0-9-]+)'\)/g))refs.push({model:match[1]+'.glb',file,line:i+1,kind:'dynamic-name'});
  }
  const actor=sources['game3d/actors.js'];

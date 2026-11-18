@@ -1,13 +1,14 @@
-import {isExtractionCourt,extractionWorkArea,extractionWorkspaceWidth} from '../extraction-courts.js';
+import {createReferenceWorkshop,isReferenceWorkshop,workshopAngle,turnWorkshopParts} from './reference-workshops.js';
+import {drawReferenceYard} from './reference-yards.js';
 import {visualSurfaceElevation} from './shore-profile.js';
 import {riverAxis} from '../world.js';
 import {footprintSize} from '../footprints.js';
 import {fortificationLayout} from '../fortification-layout.js';
-import {sheepfoldGateSide,sheepfoldLayout} from '../sheepfold-layout.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {isReedShrine} from '../building-presentation.js';
 import {workstationLayout} from './workstations.js';
 import {constructionProgress} from '../construction.js';
+import {batteredAdobe,civicArchitecture} from './reference-civic.js';
 import {createReedRoof} from './reed-roof.js';
 import {dressSumerYard} from './sumer-yard-details.js';
 import {createMusicCourtyard} from './music-courtyard.js';
@@ -65,40 +66,7 @@ export function createArchitecture(B,scene,b,m,state){
  const stack=(x,z,n=8,mat=m.raw)=>{for(let i=0;i<n;i++)block(x+(i%3)*.42,.12+Math.floor(i/6)*.23,z+Math.floor(i%6/3)*.43,.39,.21,.37,mat);};
  const bench=(x,z,w=1.5)=>{block(x,.77,z,w,.12,.65,m.wood);for(const s of [-1,1])block(x+s*w*.4,.38,z,.1,.76,.5,m.wood);};
  const basin=(x,z,w,d)=>{block(x,.1,z,w,.2,d,m.raw);for(const s of [-1,1]){block(x+s*w/2,.3,z,.16,.5,d,m.raw);block(x,.3,z+s*d/2,w,.5,.16,m.raw);}block(x,.22,z,w-.16,.025,d-.16,m.shade);};
- const fence=(x,z,w,d,eastGap=0)=>{
-  const posts=(a,b,count)=>{for(let i=0;i<count;i++){
-   const t=i/(count-1);cylinder(a[0]+(b[0]-a[0])*t,.52,a[1]+(b[1]-a[1])*t,.035,1.04);
-  }};
-  const rails=(a,b,count)=>{
-   posts(a,b,count);
-   for(const h of [.25,.7])beam([a[0],h,a[1]],[b[0],h,b[1]],.035,m.reed);
-  };
-  const west=x-w/2,east=x+w/2,north=z-d/2,south=z+d/2;
-  rails([west,north],[east,north],8);
-  rails([west,south],[east,south],8);
-  rails([west,north],[west,south],6);
-  if(eastGap){
-   rails([east,north],[east,z-eastGap],3);
-   rails([east,z+eastGap],[east,south],3);
-  }else rails([east,north],[east,south],6);
- };
- const loom=(x,z)=>{for(const s of [-1,1])beam([x+s*.65,.08,z+.35],[x+s*.65,1.75,z-.12],.06);beam([x-.7,1.75,z-.12],[x+.7,1.75,z-.12],.06);for(let i=0;i<13;i++)beam([x-.6+i*.1,.23,z+.31],[x-.6+i*.1,1.7,z-.1],.01,m.linen);block(x,.82,z+.13,1.17,.72,.035,m.linen);};
  const ground=()=>block(0,.025,0,5.3,.05,5.3,m.soil);
- const oven=(x,z,width,depth,height,material)=>{
-  // Wedge voussoirs leave a real loading recess instead of a dark decal
-  // attached to the face of an opaque brick block.
-  const radius=width*.5,opening=radius*.57,spring=height*.35;
-  for(const side of [-1,1])block(x+side*(opening+radius)/2,spring/2,z,(radius-opening),spring,depth,material);
-  for(let i=0;i<13;i++){
-   const a=(i+.5)*Math.PI/13;
-   const wedge=block(x+Math.cos(a)*(radius+opening)/2,spring+Math.sin(a)*(radius+opening)/2,z,
-    (radius-opening)*1.08,(radius+opening)*Math.sin(Math.PI/26)*1.11,depth,material);
-   wedge.rotation.z=a;
-  }
-  block(x,height*.25,z-depth*.46,width*.84,height*.47,.14,m.raw);
-  block(x,.055,z,opening*2,.11,depth,m.fired);
- };
-
  const reedSanctuary=()=>{
   ground();
   const back=-2.18,front=1.58,center=(back+front)/2,depth=front-back;
@@ -116,7 +84,8 @@ export function createArchitecture(B,scene,b,m,state){
   };
   block(0,base/2,center,4.18,base,depth+.08,m.raw);
   for(const side of [-1,1]){
-   block(side*1.97,(base+eave)/2,center,.15,eave-base,depth,m.reed);
+   block(side*1.97,(base+eave)/2,center,.22,eave-base,depth,m.reed);
+   block(side*2.00,.32,center,.24,.31,depth,m.raw);
    for(const y of [.42,1.12])beam([side*2.05,y,back],[side*2.05,y,front],.025,m.wood);
    for(const z of [back,center,front])beam([side*2.04,base,z],[side*2.04,eave,z],.055,m.reed);
   }
@@ -125,61 +94,31 @@ export function createArchitecture(B,scene,b,m,state){
    const [x0,y0]=profile[i-1],[x1,y1]=profile[i],x=(x0+x1)/2;
    for(const z of [back-.07,center,front+.07])beam([x0,y0+.052,z],[x1,y1+.052,z],.043,m.reed);
    endMat(x0,y0,x1,y1,base,back);
-   endMat(x0,y0,x1,y1,Math.abs(x)<.71?1.85:base,front);
+   endMat(x0,y0,x1,y1,Math.abs(x)<1.36?1.79:base,front);
   }
-  for(const x of [-.72,.72])beam([x,base,front+.1],[x,1.88,front+.1],.067,m.reed);
-  beam([-.78,1.85,front+.1],[.78,1.85,front+.1],.057,m.wood);
-  block(-1.29,.29,2.03,.92,.52,.46,m.raw);
-  jar(-1.29,2.03,.38,.55);
-  jar(1.31,2.02,.53);
- };
- if(isExtractionCourt(b)){
-  const {x,z}=extractionWorkArea(b,state);
-  const width=extractionWorkspaceWidth(b),height=level===3?2.15:1.75;
-  dressSumerYard(b.type,{block,beam,cylinder,jar,m},{x,z});
-  cloth(x,z,width,2.4,height,m.reed);
-  if(b.type==='clay'){
-   basin(x,z+.16,1.52,1.08);
-   // A low retaining edge and exposed benches read as a cut clay bank.
-   // Terrain and remaining clay still belong to the live extraction plot.
-   const px=6-x,pz=6-z,side=px<3?-1:1;
-   for(let step=0;step<3;step++){
-    const high=.12*(3-step);
-    block(px+side*(1.71-step*.45),high*.5,pz+.08,.48,high,3.16-step*.49,m.raw);
+  for(const x of [-1.34,1.34])beam([x,base,front+.1],[x,1.83,front+.1],.075,m.reed);
+  beam([-1.41,1.79,front+.1],[1.41,1.79,front+.1],.069,m.wood);
+  // Individual ties cross the reed gable; a dark altar sits deep inside
+  // behind the full-width opening, and the offering tables flank the sill.
+  for(const side of [-1,1]){
+   for(let i=0;i<4;i++){
+    const y=1.89+i*.12;
+    beam([side*.04,y,front+.09],[side*(.64-i*.11),y+.26,front+.09],.026,m.reed);
    }
+   block(side*1.44,.25,1.95,1.06,.47,.67,m.raw);
+   block(side*1.44,.51,1.95,1.10,.07,.70,m.trim);
+   jar(side*1.45,1.98,.65,.56);jar(side*1.04,2.08,.31,.55);
   }
-  if(b.type==='quarry'||b.type==='logging')bench(x,z+.25,1.55);
-  if(b.type==='reed')for(let i=0;i<3;i++)block(x-.9+i*.6,.11,z+.35,.50,.18,1.25,m.reed);
-  if(b.type==='garden'||b.type==='hunting')for(let i=0;i<3;i++)jar(x-.7+i*.7,z+.2,.63);
-  const posts=(x1,z1,x2,z2)=>{
-   for(let i=0;i<4;i++)cylinder(x1+(x2-x1)*i/3,.40,z1+(z2-z1)*i/3,.035,.80);
-   for(const h of [.28,.59])beam([x1,h,z1],[x2,h,z2],.032,m.reed);
-  };
-  // The street ports meet the corners. Keep them open for workers.
-  for(const edge of [-2.78,8.78]){
-   posts(edge,-1.50,edge,7.50);
-   posts(-1.50,edge,7.50,edge);
-  }
- }else switch(b.type){
- case 'pottery':ground();room(-1.3,-1.45,2.2,1.8,2);cloth(-1.15,.65,2.4,1.6);cylinder(1.4,.65,-.7,.85,1.3,m.fired,.6);cylinder(1.4,1.4,-.7,.6,.3,m.terracotta,.34);block(1.4,.35,.14,.47,.58,.04,m.shade);bench(-1.2,.7);for(let i=0;i<5;i++)jar(-1.85+i*.34,.7,.37,.84);for(let i=0;i<7;i++)jar(-1.9+i*.61,1.9,.52+i%2*.18);break;
- case 'bakery':
-  ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);
-  oven(1.57,.40,1.56,1.56,1.42,m.raw);
-  block(-1.28,.2,1.28,1.12,.24,.64,m.shade);
-  block(-1.28,.36,1.28,.86,.12,.37,m.raw,.14);
-  bench(-.16,1.36,.94);
-  cylinder(-.15,.86,1.36,.31,.04,m.terracotta);
-  cylinder(-.15,.90,1.36,.19,.055,m.linen);
-  jar(-1.65,.65,.61);
-  break;
- case 'coppersmith':ground();room(-.58,-1.52,3.48,1.64,2.29);cloth(-.80,.69,2.81,2.0,1.98,m.reed);basin(1.4,.35,1.4,1.3);bench(-.8,1.1,1.6);break
- case 'dairyStore':ground();room(-.30,-1.52,4.0,1.72,1.94);cloth(-.73,.52,3.18,2.10,1.84,m.reed);jar(1.4,.35,1.1);jar(1.8,1.35,.85);bench(-.8,1.1,1.6);break
- case 'brewery':ground();room(0,-1.55,4.6,1.5,2.2);cloth(-.75,.65,3.3,2.2,2.05,m.reed);for(let i=0;i<6;i++)jar(-1.7+(i%3)*.95,.1+Math.floor(i/3)*1.35,1.05);basin(1.8,.45,.7,1.3);beam([1.6,.8,.1],[2,1.25,-.1]);break;
- case 'granary':ground();for(const x of [-1.6,0,1.6]){block(x,.3,-.6,1.45,.6,3.8,m.raw);room(x,-.6,1.25,3.5,2.8);for(const z of [-1.9,-1,.1])block(x,.57,z,1.5,.13,.12,m.shade);}for(let i=0;i<5;i++)jar(-1.7+i*.8,1.8,.65);
-  if(isStrictSumer(state)){cloth(-.6,1.2,3.8,2.4,2.25,m.reed);bench(-.45,1.25,2);block(-.55,.93,1.25,.42,.06,.3,m.raw);for(const x of [.55,1.15])block(x,.2,1.5,.48,.37,.55,m.linen,.23);}
-  break;
- case 'depot':ground();room(-1.55,-.25,1.7,4.3,2.45);room(.6,-1.65,2.5,1.5,2.7);cloth(.9,.5,2.8,2.5,1.9,m.reed);stack(.3,.2,14);for(let i=0;i<4;i++)block(.2+i*.52,.32,1.8,.45,.6,.55,m.wood);jar(1.9,-1.5,.85,2.8);
-  if(b.commonMeals){bench(.7,.45,2);bench(.7,1.3,2);for(const x of [.15,.8,1.4])cylinder(x,.91,.45,.15,.1,m.fired,.19);cylinder(1.85,.2,1.65,.35,.36,m.fired);}
+  block(0,.42,-1.23,1.36,.48,.69,m.raw);jar(0,-1.26,.53,.68);
+  block(0,.207,1.50,1.30,.043,1.24,m.reed);
+
+ };
+ const referenceYard=drawReferenceYard(B,scene,b,state,{groups,add,block,beam,cylinder,jar,m});
+ if(!referenceYard)switch(b.type){
+ case 'pottery':case 'bakery':case 'coppersmith':case 'dairyStore':case 'brewery':case 'granary':case 'depot':
+ case 'brickyard':case 'kiln':case 'joineryYard':case 'matYard':case 'basketry':case 'linenYard':case 'weaver':case 'tailor':
+  createReferenceWorkshop(b,{B,scene,add,block,beam,cylinder,jar,ground,m,wall});
+  turnWorkshopParts(B,[...groups.values()].flat(),workshopAngle(b.workCorner));
   break;
  case 'shrine':if(isReedShrine(state,b)){reedSanctuary();break;}ground();block(0,.25,0,5.2,.5,4.8,m.fired);room(0,-.8,3.5,2.8,3.3);for(const x of [-1.75,-1.05,1.05,1.75]){block(x,1.6,.8,.26,3.2,.43,m.raw);block(x,3.3,.8,.37,.15,.52,m.trim);}for(let i=0;i<4;i++)block(0,.08+i*.12,2.4-i*.26,1.6,.17,.55,m.fired);block(0,.72,1.45,1.1,.65,.55,m.stone);jar(-1.25,1.65,.6);jar(1.3,1.6,.65);break;
  case 'ziggurat':{
@@ -189,8 +128,27 @@ export function createArchitecture(B,scene,b,m,state){
    // on the preceding terrace; every tread has a solid riser down to that deck.
    const stages=[{z:1.6,w:10.8,d:8.4,base:0,h:3.25},{z:1.15,w:7.6,d:5.7,base:3.25,h:2.45},{z:.65,w:4.9,d:3.6,base:5.7,h:1.8}].slice(0,isStrictSumer(state)?level:3);
    for(const [j,a]of stages.entries()){
-    block(3,a.base+a.h/2,a.z,a.w,a.h,a.d,m.fired);
-    for(const sign of [-1,1])for(let k=0;k<8-j;k++)block(3-a.w/2+.35+k*(a.w-.7)/(7-j),a.base+a.h/2,a.z+sign*a.d/2,.21,a.h*.86,.12,m.raw);
+    const ix=a.w*.055,iz=a.d*.064;
+    const core=batteredAdobe(B,scene,'terrace-'+j,{x:3,y:a.base,z:a.z,w:a.w,h:a.h,d:a.d,insetX:ix,insetZ:iz},m.fired);
+    add(core,m.fired);
+    const topWidth=a.w-ix*2,topDepth=a.d-iz*2;
+    // The exposed floor is fired brick. Only the narrow edge course takes
+    // the lighter finish, so a single-stage sanctuary does not look slab-capped.
+    block(3,a.base+a.h-.055,a.z,topWidth+.13,.13,topDepth+.13,m.fired);
+    for(const side of [-1,1]){
+     block(3,a.base+a.h-.12,a.z+side*topDepth/2,topWidth+.13,.11,.13,m.raw);
+     block(3+side*topWidth/2,a.base+a.h-.12,a.z,.13,.11,topDepth+.13,m.raw);
+     for(let k=0;k<5-j;k++){
+      const x=3-a.w/2+.54+k*(a.w-1.08)/(4-j);
+      const rib=block(x,a.base+a.h*.47,a.z+side*(a.d/2-iz*.47-.09),.39,a.h*.92,.31,m.raw);
+      rib.rotation.x=-side*Math.atan2(iz,a.h);
+     }
+     for(let k=0;k<4-j;k++){
+      const z=a.z-a.d/2+.55+k*(a.d-1.10)/(3-j);
+      const rib=block(3+side*(a.w/2-ix*.47),a.base+a.h*.47,z,.36,a.h*.92,.40,m.raw);
+      rib.rotation.z=side*Math.atan2(ix,a.h);
+     }
+    }
    }
    const flight=(x0,z0,x1,z1,base,rise,width,count)=>{
     const dx=x1-x0,dz=z1-z0,alongX=Math.abs(dx)>Math.abs(dz),run=Math.hypot(dx,dz),step=run/count;
@@ -204,6 +162,9 @@ export function createArchitecture(B,scene,b,m,state){
    if(stages.length>2)flight(3,4.0,3,2.45,5.7,1.8,1.15,11);
    const top=stages.at(-1),before=new Set([...groups.values()].flat());room(3,.48,2.7,2.4,2.9);
    for(const parts of groups.values())for(const mesh of parts)if(!before.has(mesh))mesh.position.y+=top.base+top.h;
+   const crown=top.base+top.h+2.89;
+   block(3,crown,.48,2.94,.16,2.64,m.fired);
+   for(let i=0;i<8;i++)block(1.82+i*.34,crown-.14,1.69,.17,.19,.16,m.raw);
    break;
   }
 
@@ -214,87 +175,9 @@ export function createArchitecture(B,scene,b,m,state){
   for(let i=0;i<(large?20:10);i++){const count=large?20:10,t=(i+.5)/count;block(ox,.06+t*(large?5.75:2.3),oz+(large?5.25:2.35)-t*(large?4.6:2.7),large?1.8:1.05,.14,large?.58:.55,brick);}
   for(const sign of [-1,1])for(let i=0;i<12;i++){const t=(i+.5)/12;block(ox+sign*(large?4.65:2.25)*(1-t),.08+t*(large?3.15:.85),oz+(large?3.9:1.9),large?.65:.35,.15,large?1.1:.6,brick);}
   break;}
- case 'brickyard':ground();room(-1.6,-1.7,1.8,1.5,1.65);basin(-1.45,.05,1.65,1.35);cloth(-1.4,-.25,2,1.6,1.65,m.reed);for(let r=0;r<5;r++)for(let k=0;k<5;k++)block(-.1+k*.5,.13,-1.8+r*.88,.4,.2,.57,m.raw);bench(-1.5,1.6,1.5);block(-1.5,.86,1.6,.6,.08,.34,m.wood);break;
- case 'kiln':
-  ground();
-  oven(-.7,-.66,2.85,2.87,2.52,m.fired);
-  cloth(1.78,.1,1.22,3.16,1.65,m.reed);
-  stack(1.02,-1.54,12,m.fired);
-  stack(-1.93,1.43,9,m.raw);
-  break;
- case 'watchHouse':{
-  ground();
-  room(-.36,-1.42,3.7,1.65,2.18);
-  cloth(-.05,.50,3.9,1.88,1.98,m.reed);
-  // Keep both front approaches clear; the side parapets mark the courtyard
-  // without closing the walking corners used by the actual city graph.
-  for(const side of [-1,1]){
-   block(side*2.43,.31,.85,.25,.60,2.3,m.raw);
-   block(side*2.43,.64,.85,.31,.085,2.34,m.plaster);
-   block(side*2.28,.35,2.12,.42,.69,.40,m.raw);
-  }
-  bench(.1,-.12,1.52);
-  jar(-1.76,.45,.68);
-  beam([1.68,.12,-.29],[1.9,1.47,-.51],.043,m.wood);
-  cylinder(1.97,.25,-.86,.19,.48,m.terracotta,.16);
-  break;
- }
- case 'waterpoint':ground();basin(0,.4,2.6,2.1);cloth(-.25,-.8,3.6,1.5,2.1,m.reed);for(let i=0;i<6;i++)jar(-2.1+i*.8,1.95,.55);beam([-1.8,.3,-2],[1.8,.3,-2],.13,m.reed);block(0,.26,-1.7,.55,.1,.6,m.shade);break;
- case 'joineryYard':ground();room(-.71,-1.48,3.14,1.84,1.97);cloth(-.85,.50,2.89,1.63,2.05,m.reed);bench(-.8,1.1,1.6);for(let i=0;i<4;i++)block(1.35,.16+i*.10,1.1,1.65,.10,.45,m.wood);break
- case 'matYard':ground();room(-1.55,-1.04,1.68,2.56,1.83);cloth(.80,-.78,2.45,2.74,1.87,m.reed);block(0,.13,1.15,2.5,.18,1.35,m.reed);break
- case 'basketry':ground();room(.56,-1.62,3.50,1.47,1.96);cloth(-.86,.53,2.63,2.08,1.80,m.reed);bench(-.8,1.1,1.6);cylinder(1.6,.25,.65,.47,.5,m.reed);break
- case 'linenYard':
- case 'weaver':ground();room(-1.5,-.4,1.7,3.8,2);cloth(.65,.05,3,3.6,2.25,m.reed);loom(.3,-.9);loom(.5,1.1);for(let i=0;i<5;i++)cylinder(1.8,.28,-1.4+i*.66,.24,.52,m.linen,.18);break;
- case 'tailor':ground();room(0,-1.55,4.3,1.65,2.35);cloth(-.5,.55,3.3,2,2.05);bench(-.7,.5,2.5);for(let i=0;i<3;i++)block(-1.4+i*.65,.86,.5,.55,.06,.58,m.linen);for(let i=0;i<4;i++){beam([1.65,.1,-.5+i*.65],[1.65,1.7,-.5+i*.65]);block(1.65,1.27,-.5+i*.65,.6,.8,.07,m.linen);}break;
- case 'cowshed':
-  if(b.footprint===2){
-   block(3,.025,3,11,.05,11,m.soil);
-   fence(3,3,11,11,1.20);
-   cloth(4.9,5.5,4.1,3,2,m.reed);
-   basin(6.8,.15,.6,3);
-   for(let i=0;i<5;i++)block(1.5+i*1.25,.085,5.6,1,.13,1.45,m.reed,.13*(i%2));
-  }else{ground();fence(0,0,5,5,1.05);}
-  cloth(-.5,-1.15,3.6,2.4,2.35,m.reed);basin(1.9,-.8,.5,2);for(let i=0;i<4;i++)block(-1.65+i*.78,.05,.8,.62,.13,1.25,m.reed);for(let i=0;i<3;i++)jar(-1.7+i*.48,-1.35,.38);bench(-1.8,1.65,.5);break;
- case 'sheepfold':{
-  const {center,halfWidth,gateHalfWidth}=sheepfoldLayout(b);
-  const side=sheepfoldGateSide(b,state);
-  if(center){
-   block(3,.025,3,11,.05,11,m.soil);
-   cloth(-.85,3,2.7,8.2,1.9,m.reed);
-   basin(5.65,-1.38,2.6,.65);
-   basin(3,7.28,2.6,.72);
-   for(let i=0;i<5;i++)block(-1,.06,-.15+i*1.55,1.34,.10,1.22,m.reed,.1*(i%2));
-  }else{
-   ground();
-   cloth(-1.49,-.05,1.52,3.67,1.55,m.reed);
-   basin(-.22,2.05,2.15,.55);
-   for(let i=0;i<3;i++)block(-1.7,.06,-.99+i*.9,.71,.10,.68,m.reed,.1);
-  }
-  fence(center,center,2*halfWidth,2*halfWidth,gateHalfWidth);
-  if(side){
-   const angle=side*Math.PI/2,c=Math.cos(angle),sin=Math.sin(angle);
-   const rotation=B.Quaternion.RotationAxis(B.Axis.Y,angle);
-   for(const parts of groups.values())for(const mesh of parts){
-    const x=mesh.position.x-center,z=mesh.position.z-center;
-    mesh.position.x=center+x*c+z*sin;
-    mesh.position.z=center-x*sin+z*c;
-    if(mesh.rotationQuaternion)mesh.rotationQuaternion=rotation.multiply(mesh.rotationQuaternion);
-    else mesh.rotation.y+=angle;
-   }
-  }
-  break;
- }
- case 'cityWall':case 'cityGate':{
-  for(const p of fortificationLayout(b,state)){
-   const part=B.MeshBuilder.CreateBox(`fortification-${serial++}`,{width:p.w,height:p.h,depth:p.d},scene);
-   part.position.set(p.x,p.bottom+p.h/2,p.z);
-   add(part,p.material==='brick'?m.raw:m[p.material]);
-  }
-  break;
- }
  case 'levee':{
   const angle=(riverAxis(state)==='x'?0:Math.PI/2)-(b.rotation||0)*Math.PI/2;
-  const profile=[[-2.25,-.09],[-1.48,.21],[-.56,.63],[.54,.64],[1.46,.25],[2.25,-.09]];
+  const profile=[[-1.83,-.09],[-1.58,.10],[-.72,.81],[-.58,.89],[.58,.89],[.72,.82],[1.61,.10],[1.83,-.09]];
   const positions=[],indices=[],uvs=[];
   const endHeight=adjacent=>adjacent?.type==='levee'&&!adjacent.construction?1:.62;
   const alongX=riverAxis(state)==='x';
@@ -303,7 +186,7 @@ export function createArchitecture(B,scene,b,m,state){
    const height=i===0?endHeight(neighbor(-1)):i===4?endHeight(neighbor(1)):1;
    for(const [z,y] of profile){
     const ground=state?.world?visualSurfaceElevation(b.x+(alongX?x:z)/6,b.y+(alongX?z:-x)/6,state):0;
-    const elevation=y>0?y*height+ground*Math.max(0,1-y/.65):ground-.055;
+    const elevation=y>0?y*height+ground*Math.max(0,1-y/.89):ground-.055;
     positions.push(x*Math.cos(angle)+z*Math.sin(angle),elevation,-x*Math.sin(angle)+z*Math.cos(angle));
     uvs.push(x*.45,z*.45);
    }
@@ -321,37 +204,14 @@ export function createArchitecture(B,scene,b,m,state){
   add(bank,m.soil);
   break;
  }
- case 'harbor':for(let i=0;i<17;i++)block(0,.35,-2.55+i*.32,5.2,.15,.29,m.wood);for(const x of [-2.3,2.3])for(const z of [-2.3,0,2.3])cylinder(x,.3,z,.13,1.55);cloth(-1.2,-1.3,2.4,1.8,2.1,m.reed);stack(-1.9,-1.7,7);jar(-.5,-1.2,.7,.45);for(let i=0;i<4;i++)beam([.3+i*.42,.6,.4],[.3+i*.42,.6,2.2],.12,m.reed);
-  if(isStrictSumer(state)){for(const z of [.45,1.18,1.88])jar(-1.72,z,.42,.44);block(-.72,.52,1.65,.9,.3,.53,m.linen,.17);}
+ case 'healer':case 'harbor':case 'market':case 'waterpoint':case 'watchHouse':case 'cityWall':case 'cityGate':
+  civicArchitecture(b.type,b,{B,scene,add,block,beam,cylinder,jar,ground,m},
+   b.type==='cityGate'||b.type==='cityWall'?fortificationLayout(b,state):[]);
   break;
- case 'market':
-  if(footprintSize(b)===2){
-   block(3,.025,3,11.5,.05,11.5,m.soil);
-   room(3,-.65,6.7,2.5,2.6);
-   for(const x of [-.85,6.85])for(const z of [1.25,3.75,6.25]){
-    cloth(x,z,2.1,1.7,1.85,m.reed);
-    jar(x,z,.57,.75);
-   }
-   break;
-  }
-  ground();cloth(0,-1.55,4.5,1.6,2.15);cloth(-1.6,.8,1.65,2.6,1.9,m.reed);cloth(1.65,.8,1.5,2.6,2.35);bench(0,-1.55,3.8);for(let i=0;i<6;i++)jar(-1.5+i*.6,-1.55,.4,.85);for(let i=0;i<3;i++)block(1.65,.3,.1+i*.75,.8,.5,.6,m.reed);break;
- case 'clay':ground();basin(.8,.7,3,2.7);room(-1.65,-1.6,1.7,1.5,1.45);cloth(-1.5,.3,1.9,1.5,1.5,m.reed);for(let i=0;i<4;i++)jar(-2+i*.45,1.9,.5);break;
- case 'quarry':ground();for(let i=0;i<7;i++){const mesh=block(.2+i%3*.85,.25+Math.floor(i/3)*.25,-1.4+Math.floor(i/3)*1.1,.85,.7,.9,m.stone,i*.39);mesh.rotation.z=.11;}cloth(-1.5,-1.5,1.7,1.8,1.5,m.reed);bench(-1.2,1.5);beam([.4,.1,1.6],[1.9,1.6,1.6],.075);break;
- case 'reed':ground();cloth(-.65,-1.15,3.8,2.2,2.1,m.reed);for(let i=0;i<7;i++){const a=cylinder(-1.8+i*.58,.65,.75,.19,1.3,m.reed,.13);a.rotation.z=.12*(i%2?1:-1);}for(let i=0;i<4;i++)block(-1.6+i, .09,1.85,.85,.08,1,m.reed);bench(1.5,-.9);break;
- case 'garden':ground();for(let i=0;i<4;i++){block(-1.85+i*1.2,.12,.6,.78,.2,3.7,m.soil);for(let j=0;j<6;j++){const a=cylinder(-1.85+i*1.2,.26,-.9+j*.57,.18,.32,m.grass,.25);a.rotation.z=.15;}}cloth(0,-1.95,4.2,1.1,1.65,m.reed);for(let i=0;i<4;i++)jar(-1.5+i,-1.95,.55);break;
- case 'logging':ground();room(-1.5,-1.45,1.9,2,1.9);cloth(.8,-.8,2.9,2.6,1.9,m.reed);for(let i=0;i<7;i++){beam([-.8+i*.44,.2,1.0],[-.8+i*.44,.2,2.3],.15);beam([-.8+i*.44,.47,1],[-.8+i*.44,.47,2.3],.13);}bench(.9,-1);break;
- case 'hunting':ground();room(-1.35,-1.4,2.1,1.9,1.7);for(const z of [-.2,1.6]){for(const x of [-1.6,.1])beam([x,.1,z+.3],[x,2,z],.055);beam([-1.6,2,z],[.1,2,z]);block(-.75,1.15,z+.12,1.3,1.35,.05,m.linen);}cloth(1.55,-.3,1.6,2.7,1.55,m.reed);jar(1.7,1.7,.75);break;
- case 'fishing':ground();room(-1.3,-1.65,2.1,1.4,1.8);for(const x of [-2.1,1.2])beam([x,.1,-.2],[x,2,-.4],.06);beam([-2.1,2,-.4],[1.2,2,-.4]);for(let i=0;i<17;i++)beam([-2+i*.19,.4,-.2],[-2+i*.19,1.95,-.4],.009,m.linen);for(let i=0;i<9;i++)beam([-2,.4+i*.18,-.2-i*.024],[1.1,.4+i*.18,-.2-i*.024],.009,m.linen);for(let i=0;i<4;i++)jar(-1.6+i*.8,1.6,.6);cloth(1.65,-1.15,1.5,2,1.6,m.reed);break;
- case 'healer':ground();room(-1.6,-.5,1.6,3.8,2.1);room(.5,-1.65,2.55,1.5,2.4);cloth(.65,.75,2.6,2,1.95);for(const x of [0,1.3]){bench(x,.75,.8);block(x,.88,.75,.7,.06,1.5,m.linen);}for(let i=0;i<5;i++)jar(-1.9+i*.32,-1.5,.25,2.2);basin(-1.9,1.7,.6,.55);break;
  default:throw Error(`Missing original architecture for ${b.type}`);
  }
- if(!isExtractionCourt(b))dressSumerYard(b.type,{block,beam,cylinder,jar,m});
+ if(!referenceYard&&!isReferenceWorkshop(b.type))dressSumerYard(b.type,{block,beam,cylinder,jar,m});
  // Expansion occupies the yard away from the existing palm targets.
- if(level>=2&&b.type==='pottery'){
-  block(-1.54,.31,-.45,1.4,.62,.62,m.raw);
-  block(-1.54,.65,-.45,1.54,.09,.66,m.wood);
-  for(const x of [-1.96,-1.55,-1.13])jar(x,-.45,.34,.69);
- }
  if(level>=2&&b.type==='fishing'){
   const rackX=-1.36,rackZ=1.08;
   for(const x of [-2.06,-.66])beam([x,.08,rackZ],[x,1.28,rackZ],.048,m.wood);
@@ -367,7 +227,7 @@ export function createArchitecture(B,scene,b,m,state){
   const {x,z,height:h,kind}=a;
   // The active equipment belongs to an attached open work bay. Its edge
   // shades the tools while leaving both front/side working bodies readable.
-  if(!['garden','sheepfold','cowshed'].includes(b.type)){
+  if(!referenceYard&&!isReferenceWorkshop(b.type)){
    const bx=x-a.sx*.28,bz=z-a.sz*.28,shade=canopies.find(c=>Math.abs(c.x-bx)<(c.w+1.72)/2-.05&&Math.abs(c.z-bz)<(c.d+1.72)/2-.05);
    if(shade){const x0=Math.min(shade.x-shade.w/2,bx-.86),x1=Math.max(shade.x+shade.w/2,bx+.86),z0=Math.min(shade.z-shade.d/2,bz-.86),z1=Math.max(shade.z+shade.d/2,bz+.86);for(const part of shade.parts){const parts=groups.get(part.material),i=parts.indexOf(part);if(i>=0)parts.splice(i,1);part.dispose();}canopies.splice(canopies.indexOf(shade),1);cloth((x0+x1)/2,(z0+z1)/2,x1-x0,z1-z0,Math.max(2.18,shade.y),shade.mat);}
    else cloth(bx,bz,1.72,1.72,2.18,m.reed);

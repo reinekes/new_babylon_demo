@@ -102,8 +102,8 @@ def pole(a,b,r,color,sides=9,tip=.87):
     for j in range(sides):
         quad(lo[j-1],lo[j],hi[j],hi[j-1])
         if j>1: face(lo[0],lo[j],lo[j-1]);face(hi[0],hi[j-1],hi[j])
-def jar(x,z,y,scale,shape,base,bands=()):
-    previous_surface=surface_ranges[-1][2];surface('pottery')
+def jar(x,z,y,scale,shape,base,bands=(),material='pottery'):
+    previous_surface=surface_ranges[-1][2];surface(material)
     rows=[]
     sides=16 if city else 28
     for k,(radius,height) in enumerate(shape):

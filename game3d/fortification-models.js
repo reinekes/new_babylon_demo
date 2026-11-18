@@ -79,3 +79,20 @@ export function createGateTorches(B,scene,b,materials){
  }
  return parts;
 }
+
+
+// Keep the two wick meshes independent so the existing night-light service
+// can place and cull flames on the tower face and beside the guardroom door.
+export function createSumerWatchTorches(B,scene,materials){
+ const parts=[];
+ for(const [id,x,y,z] of [['tower',-1.65,2.36,-.25],['door',.37,1.46,-.10]]){
+  const arm=B.MeshBuilder.CreateBox('watch-bracket-'+id,{width:.14,height:.11,depth:.42},scene);
+  arm.position.set(x,y,z+.09);arm.material=materials.wood;
+  const socket=B.MeshBuilder.CreateCylinder('watch-socket-'+id,{height:.27,diameterBottom:.10,diameterTop:.19,tessellation:9},scene);
+  socket.position.set(x,y+.11,z+.28);socket.material=materials.terracotta;
+  const wick=B.MeshBuilder.CreateCylinder('watch-wick-'+id,{height:.055,diameter:.14,tessellation:8},scene);
+  wick.position.set(x,y+.27,z+.28);wick.material=materials.shade;
+  parts.push(arm,socket,wick);
+ }
+ return parts;
+}

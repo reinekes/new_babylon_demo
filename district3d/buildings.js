@@ -1,6 +1,8 @@
 import {constructionProgress} from '../construction.js';
 import {fortificationLayout,fortificationWorldPoint} from '../fortification-layout.js';
 import {bridgeSpanAt,riverLocal,riverAxis} from '../world.js';
+import {batteredAdobe} from '../game3d/reference-civic.js';
+import {createReedRoof} from '../game3d/reed-roof.js';
 import {fieldPatchBedGeometry} from '../game3d/field-shore.js';
 // Original procedural adobe architecture. All vertices are local to one 6 m tile.
 // Archaeological forms are a stylisation, not reconstructions of specific excavated houses.
@@ -157,14 +159,13 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
  };
  const field=()=>{
   const visual=districtCropVisual(b);
-  if(b.fieldPatch){
-   const bed=new B.Mesh('joined-field-bed',scene),data=new B.VertexData();
-   Object.assign(data,fieldPatchBedGeometry(b));data.normals=[];
-   B.VertexData.ComputeNormals(data.positions,data.indices,data.normals);data.applyToMesh(bed);bed.useVertexColors=true;add(bed,'joinedSilt');
-  }else box(0,.02,0,5.35,.09,5.35,'silt');
+  {
+   const bed=new B.Mesh('field-soil-ridges',scene),data=new B.VertexData();
+   Object.assign(data,fieldPatchBedGeometry(b.fieldPatch?b:{...b,fieldPatch:{joins:[false,false,false,false]}},b.fieldPatch?2.9:2.65));data.normals=[];
+   B.VertexData.ComputeNormals(data.positions,data.indices,data.normals);data.applyToMesh(bed);bed.useVertexColors=true;add(bed,b.fieldPatch?'joinedSilt':'silt');
+  }
   const h=.08+visual.growth*.75;
   for(let row=0;row<8;row++){
-   if(!b.fieldPatch)box(-2.2+row*.62,.09,0,.29,.14,5.02,'silt');
    for(let i=0;i<13;i++){
     // Fixed positions keep crop loss stable between quantised harvest stages.
     if((row*13+i+.5)/104>visual.sown*visual.standing)continue;
@@ -240,6 +241,27 @@ export function createDistrictBuilding(B,scene,b,materials,s) {
     beam(point(x,.36,z+side*.8),point(Math.min(right,x+.50),.72,z+side*.8),.027,'wood');
    }
    for(const side of [-1,1])beam(point(left,.75,z+side*.8),point(right,.75,z+side*.8),.045,'wood');
+   // The landing surfaces meet the existing .22 m pedestrian deck. Each
+   // shelter frames the approach with columns clear of the walking deck.
+   for(const dir of [-1,1]){
+    const length=Math.min(2.95,(right-left)*.18);
+    const x=dir<0?left+length/2:right-length/2;
+    const [cx,,cz]=point(x,0,z),pavilionZ=z;
+    const base=batteredAdobe(B,scene,'bridge-bank-abutment',{x:cx,y:-1.23,z:cz,
+     w:horizontal?2.14:length,h:1.43,d:horizontal?length:2.14,insetX:.12,insetZ:.12},m.raw||m.brick||m.plaster);
+    add(base,m.raw||m.brick||m.plaster);
+    for(const u of [-1,1])for(const v of [-1,1]){
+     const post=point(x+u*(length*.37),1.33,pavilionZ+v*.89);
+     cyl(...post,.068,2.24,'reed');
+    }
+    const [rx,,rz]=point(x,0,pavilionZ);
+    const roofMat=m.reedRoof||m.reed||m.straw;
+    add(createReedRoof(B,scene,'bridge-bank-mat',roofMat,{x:rx,y:2.50,z:rz,
+     width:horizontal?1.90:length*.90,depth:horizontal?length*.90:2.03,sag:.045}),roofMat);
+    for(const v of [-1,1])beam(point(x-length*.44,2.43,pavilionZ+v*.89),point(x+length*.44,2.43,pavilionZ+v*.89),.064,'reed');
+    const [vx,,vz]=point(x+dir*.24,0,pavilionZ+dir*.88);
+    pot(vx,vz,.44,.21);
+   }
    break;
   }
   case 'harbor':

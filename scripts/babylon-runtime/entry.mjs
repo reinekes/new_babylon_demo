@@ -16,6 +16,7 @@ export {ImageProcessingConfiguration} from '@babylonjs/core/Materials/imageProce
 export {Material} from '@babylonjs/core/Materials/material.js';
 export {Matrix} from '@babylonjs/core/Maths/math.vector.js';
 export {Mesh} from '@babylonjs/core/Meshes/mesh.js';
+export {MaterialPluginBase} from '@babylonjs/core/Materials/materialPluginBase.js';
 export {PBRMaterial} from '@babylonjs/core/Materials/PBR/pbrMaterial.js';
 export {Plane} from '@babylonjs/core/Maths/math.plane.js';
 export {PointLight} from '@babylonjs/core/Lights/pointLight.js';

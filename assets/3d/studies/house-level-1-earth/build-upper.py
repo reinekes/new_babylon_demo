@@ -6,7 +6,7 @@ Then run postprocess.py and city-mesh.cjs as for level I.
 import argparse
 from pathlib import Path
 from earth_geometry import bowl, clay, export, jar, make_ground, plaster, pole, pot, rng, slab, straw, surface
-from courtyard_parts import awning, front_wall, hanging, ladder, mat, room
+from courtyard_parts import awning, bread_oven, front_wall, hanging, kiln_bricks, ladder, mat, room, storage_basket
 
 def second():
     main=room(.0,-1.43,4.45,1.67,.045,2.51,.45,.91)
@@ -24,6 +24,12 @@ def second():
     jar(-1.72,.86,1.82,.33,bowl,(163,113,85))
     mat(-.11,1.43,1.18,.62,.073)
     hanging(-1.96,2.347,.52,.75,.35)
+    bread_oven(-1.70,1.30,1.10)
+    storage_basket(.99,-.30,.052,.79)
+    kiln_bricks(1.73,2.376,.87,.075)
+    # A working roof carries one drying reed mat and a shallow serving bowl.
+    mat(-.99,-1.32,1.29,.69,main+.045)
+    jar(.35,-1.79,main+.04,.35,bowl,(162,115,80))
     for i in range(6):
         surface('reed');pole((-.82,main+.028,-1.92+.032*i),(.29,main+.028,-1.92+.032*i),.020,straw,6)
     surface('earth')
@@ -57,6 +63,13 @@ def third():
     jar(-1.75,1.60,.053,.38,pot,(157,115,87))
     mat(-.45,1.20,1.02,.62,.074)
     hanging(-1.85,-.887,.61,ceiling+.16,.43)
+    # The back parapet shelters a roof store and the lower lane has a built-in bench.
+    storage_basket(.88,-1.64,floor+.065,.87)
+    mat(-1.12,-1.51,1.00,.57,ceiling+.04)
+    slab(-1.50,1.53,.96,.47,.057,.40,clay,.07)
+    jar(-1.49,1.51,.412,.41,bowl,(178,135,90))
+    kiln_bricks(-1.56,2.375,1.08,.072)
+    hanging(.44,-.20,.61,floor+.03,.62)
 
 
 if __name__=='__main__':

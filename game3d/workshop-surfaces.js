@@ -3,12 +3,13 @@
 // the same texture objects, including those on the channel and road surfaces.
 const libraries=new WeakMap();
 const finishes={
- plaster:['plaster','#cbb699',.98],raw:['plaster','#a98a68',.98],
- fired:['plaster','#af7956',.94],trim:['plaster','#d3bea0',.98],
+ plaster:['plaster','#c6aa82',.97],raw:['adobe-bond','#b59369',.99],
+ fired:['adobe-bond','#b17e57',.96],trim:['plaster','#d3bea0',.98],
  earth:['earth','#a38c6e',1],stone:['earth','#989180',1],
- wood:['wood','#89745b',.94],reed:['reed','#b3a07a',.90],
+ wood:['wood','#886e4b',.94],reed:['woven-fibre','#bca476',.90],
  pottery:['pottery','#a57152',.94],cloth:['cloth','#b8aa90',.98],
- char:['wood','#514940',1],copper:['pottery','#866a50',.68],
+ char:['wood','#514940',1],copper:[null,'#d88b65',.34],
+ 'dyed-weft':['cloth','#883d30',.96],
 };
 export function workshopSurfaces(B,scene){
  let result=libraries.get(scene);if(result)return result;
@@ -20,7 +21,7 @@ export function workshopSurfaces(B,scene){
     for(const slot of ['color','normal']){
      const texture=new B.Texture('assets/3d/textures/courtyard/'+kind+'-'+slot+'.jpg',scene,false,true);
      texture.wrapU=texture.wrapV=B.Texture.WRAP_ADDRESSMODE;
-     if(slot==='normal')texture.gammaSpace=false;
+     if(slot==='normal'){texture.gammaSpace=false;texture.level=kind==='plaster'?.32:.6;}
      pair[slot]=texture;
     }
    }
@@ -30,11 +31,11 @@ export function workshopSurfaces(B,scene){
  }
  function material(key){
   if(!materials.has(key)){
-   const [kind,color,roughness]=finishes[key],maps=textures(kind);
+   const [kind,color,roughness]=finishes[key],maps=kind?textures(kind):null;
    const mat=new B.PBRMaterial('courtyard-'+key,scene);
    mat.albedoColor=B.Color3.FromHexString(color).toLinearSpace();
-   mat.metallic=key==='copper'?.37:0;mat.roughness=roughness;
-   if(maps.color){mat.albedoTexture=maps.color;mat.bumpTexture=maps.normal;}
+   mat.metallic=key==='copper'?.64:0;mat.roughness=roughness;
+   if(maps?.color){mat.albedoTexture=maps.color;mat.bumpTexture=maps.normal;}
    materials.set(key,mat);
   }
   return materials.get(key);

@@ -75,7 +75,10 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
    // elevation at every endpoint, including at street and footpath junctions.
    const crown=Math.sin(Math.PI*t)*(1-Math.abs(side))*(level>=3?.022:.012);
    g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown,Z-origin.z);g.uvs.push(X/3,Z/3);
-   const alpha=Math.abs(side)===1?0:Math.abs(side)>.8?.32:.8+.15*noise(X,Z),v=.92+noise(X*2,Z*2)*.08;g.colors.push(v,v,v,alpha);
+   const margin=Math.abs(side),alpha=margin===1?0:margin>.8?.32:.84+.12*noise(X,Z);
+   const wear=level===1 ? .14*Math.exp(-side*side*5)-.12*Math.exp(-((margin-.48)**2)/.015) : 0;
+   const v=.88+wear+.09*noise(X*2,Z*2);
+   g.colors.push(v*1.025,v,v*.955,alpha);
    if(j<steps&&k<fractions.length-1){const i=j*fractions.length+k;g.indices.push(i,i+fractions.length,i+1,i+1,i+fractions.length,i+fractions.length+1);}
   }
  }

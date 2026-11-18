@@ -8,6 +8,10 @@ import {worldHeight, worldWidth, terrain, signedRiverDistance} from '../world.js
 import {syncCitizens} from '../workforce.js';
 import {createGameRenderer} from '../game3d/renderer.js';
 import {extractionKinds} from '../extraction-courts.js';
+import {referenceYardFrame} from '../game3d/reference-yards.js';
+import {isReferenceWorkshop,workshopAngle} from '../game3d/reference-workshops.js';
+import {workstationBuilding} from '../game3d/workstations.js';
+import {fieldCropKind} from '../game3d/crop-varieties.js';
 import {stockStores} from '../inventory.js';
 
 const query=new URLSearchParams(location.search);
@@ -30,7 +34,7 @@ for(const type of legacyFounder?['house']:Object.keys(BUILDINGS)){
  cells.sort((a,b)=>type==='canal'
   ?Math.abs(signedRiverDistance(a.x,a.y,state))-Math.abs(signedRiverDistance(b.x,b.y,state))
   :Math.hypot(a.x-29,a.y-19)-Math.hypot(b.x-29,b.y-19));
- const position=cells.find(({x,y})=>!canBuild(state,type,x,y));
+ const position=cells.find(({x,y})=>(type!=='field'||fieldCropKind({x,y})==='barley')&&!canBuild(state,type,x,y));
  if(!position)throw Error('No legal slot for '+type+': '+[...new Set(cells.map(({x,y})=>canBuild(state,type,x,y)))].join(', '));
  const result=build(state,type,position.x,position.y,0,{instant:true});
  if(!result.ok)throw Error(type+': '+result.reason);
@@ -46,6 +50,7 @@ if(!stress){
  const path=state.roads?.find(r=>!r.construction);
  if(path){path.built=true;models.set('road',path);}
 }
+if(!stress&&models.has('ziggurat'))models.get('ziggurat').level=3;
 if(!stress&&models.has('field'))Object.assign(models.get('field').crop,{sown:1,growth:.98,total:40,remaining:40,seedUsed:4});
 if(stress){
  for(let y=2;y<worldHeight(state)-2&&state.buildings.length<250;y+=2)
@@ -74,12 +79,25 @@ const meshesFor=(type)=>{
  const b=models.get(type),key=buildingKey(b),cells=footprintCells(b);
  const buildings=renderer.buildings.meshes.filter(mesh=>mesh.metadata?.buildingKey===key&&mesh.isVisible&&mesh.getTotalVertices());
  const resource=extractionKinds[type];
- return resource?buildings.concat(renderer.scene.meshes.filter(mesh=>{
+ if(!resource)return buildings;
+ const palms=type==='garden'?cells.flatMap(({x,y})=>[
+  `date-palm-resource-dates-${x}-${y}-`,`date-palm-garden-${x}-${y}-`
+ ]):[];
+ return buildings.concat(renderer.scene.meshes.filter(mesh=>{
+  // The landscape batches these same palm instances in the city. The exported
+  // single orchard needs the individual frond and trunk matrices within its site.
+  if(palms.some(prefix=>mesh.name.startsWith(prefix))&&mesh.sourceMesh)return true;
   const site=mesh.metadata?.resourceSite;
   return mesh.isEnabled()&&mesh.name.startsWith('deposit-open-')&&site?.kind===resource&&
    cells.some(cell=>cell.x===site.x&&cell.y===site.y)&&mesh.getTotalVertices();
- })):buildings;
+ }));
 };
+function cameraAngle(type){
+ const b=models.get(type);
+ if(type==='cityGate')return .27;
+ if(isReferenceWorkshop(type))return 1.05-workshopAngle(workstationBuilding(b,state).workCorner);
+ return 1.05-referenceYardFrame(b,state).angle;
+}
 const focus=type=>{
  if((type==='starterHut')!==(state.scenario.history==='legacy-v1')){
   const url=new URL(location.href);url.searchParams.set('model',type);location.assign(url);return;
@@ -92,7 +110,7 @@ const focus=type=>{
  }
  const b=models.get(type),n=footprintSize(b),center=(n-1)*3;
  renderer.camera.setTarget(new renderer.B.Vector3(b.x*6+center,1.1,b.y*6+center));
- renderer.camera.alpha=Math.PI/2-.56;renderer.camera.beta=1.01;renderer.camera.radius=n===1?12:n===2?23:30;
+ renderer.camera.alpha=cameraAngle(type);renderer.camera.beta=1.01;renderer.camera.radius=n===1?12:n===2?23:30;
  renderer.camera.inertialAlphaOffset=0;renderer.camera.inertialBetaOffset=0;renderer.camera.inertialRadiusOffset=0;
  selector.value=type;
  renderer.draw(state,null,performance.now(),{paused:true});
@@ -104,7 +122,7 @@ selector.onchange=()=>focus(selector.value);
 document.querySelector('#overview').onclick=()=>{renderer.overview();renderer.draw(state,null,performance.now(),{paused:true});};
 focus(models.has(requested)?requested:'house');
 renderer.draw(state,null,performance.now(),{paused:true});
-window.sumerStudio={renderer,state,models,focus,meshesFor,encode,decode,
+window.sumerStudio={renderer,state,models,focus,cameraAngle,meshesFor,encode,decode,
  async benchmark(seconds=12){
   renderer.overview();const intervals=[],cpu=[];
   let start,last;

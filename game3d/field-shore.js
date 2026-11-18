@@ -15,8 +15,8 @@ export function fieldWorldPoint(building,x,z){
 
 // Every shared edge uses the same samples and height profile on either side.
 // Only the unjoined edge fades into the ground and wanders from the tile line.
-export function fieldPatchBedGeometry(b){
- const {joins}=b.fieldPatch,[north,east,south,west]=joins,limits=fieldPatchLimits(joins),positions=[],uvs=[],indices=[],colors=[];
+export function fieldPatchBedGeometry(b,rim=2.9){
+ const {joins}=b.fieldPatch,[north,east,south,west]=joins,limits=fieldPatchLimits(joins,rim),positions=[],uvs=[],indices=[],colors=[];
  const xSteps=32,zSteps=12,phase=(b.x*17+b.y*31)*.75;
  const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
  for(let row=0;row<=zSteps;row++)for(let col=0;col<=xSteps;col++){

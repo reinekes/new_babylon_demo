@@ -15,7 +15,7 @@ test('main HTML leaves 3D vendors to the mode-specific loader',()=>{
 });
 test('concurrent callers load one runtime with the GLB plugin and reuse it',async()=>{
  const load=await loader(),f=fixture(),a=load(f),b=load(f);
- assert.equal(f.scripts.length,1);assert.match(f.scripts[0].src,/babylon-runtime-9\.31\.0\.js$/);
+ assert.equal(f.scripts.length,1);assert.match(new URL(f.scripts[0].src).pathname,/babylon-runtime-9\.31\.0\.js$/);
  f.engineReady();f.pluginsReady();f.scripts[0].onload();
  assert.equal(await a,f.B);assert.equal(await b,f.B);assert.equal(await load(f),f.B);
  assert.equal(f.scripts.length,1);
@@ -52,6 +52,7 @@ test('the modular runtime registers the scene shader includes before its first r
  const scope={};
  runInNewContext(readFileSync(new URL('../assets/vendor/babylon-runtime-9.31.0.js',import.meta.url),'utf8'),scope);
  assert.ok(scope.BABYLON.SceneLoader.IsPluginForExtensionAvailable('.glb'));
+ assert.equal(typeof scope.BABYLON.MaterialPluginBase,'function','the production build supports the animated barley material');
  const includes=scope.BABYLON.Effect.IncludesShadersStore;
  for(const name of ['helperFunctions','imageProcessingDeclaration','imageProcessingFunctions'])assert.ok(includes[name],name);
 });

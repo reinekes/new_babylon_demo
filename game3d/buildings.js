@@ -14,7 +14,7 @@ import {footprintSize} from '../footprints.js';
 import {fortificationSignature} from '../fortification-layout.js';
 import {sheepfoldGateSide} from '../sheepfold-layout.js';
 import {createWatchHouseFire} from './watch-house-fire.js';
-import {createGateTorches,createImportedFortification} from './fortification-models.js';
+import {createGateTorches,createImportedFortification,createSumerWatchTorches} from './fortification-models.js';
 import {createArchitecture} from './architecture.js';
 import {createHouseArchitecture,houseVisualKind} from './house-architecture.js';
 import {clippedFieldGeometry,organicHousePoint,organicHouseVariant} from './field-shore.js';
@@ -246,6 +246,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     lamp.position.set(doorCentre-.27+index*.18,.73,doorZ);lamp.material=shade;lamp.parent=root;lamp.metadata={homeLamp:true,lampIndex:index};sources.push(lamp);
    }
   }
+  if(b.type==='watchHouse'&&isStrictSumer(state)&&b.construction?.kind!=='new')for(const mesh of createSumerWatchTorches(B,scene,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='cityGate'&&b.construction?.kind!=='new')for(const mesh of createGateTorches(B,scene,b,materialSet)){mesh.parent=root;sources.push(mesh);}
   if(!b.reedCamp)for(const mesh of createBuildingFoundations(B,scene,b,materialSet,state,shoreContext)){mesh.parent=root;sources.push(mesh);}
   for(const source of sources){source.isVisible=false;source.isPickable=false;source.checkCollisions=false;source.receiveShadows=true;source.computeWorldMatrix(true);}
@@ -313,7 +314,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     placeRoot(root,view);root.metadata={tile:{x:b.x,y:b.y},buildingKey:key,type:b.type};
     for(const source of template.sources){
      // Buildings with torches receive local lights while sharing their geometry.
-     const localLighting=source.metadata?.homeLamp||b.type==='cityGate'&&b.construction?.kind!=='new'||b.type==='watchHouse'&&sacredModels.ready(b,state);
+     const localLighting=source.metadata?.homeLamp||b.type==='cityGate'&&b.construction?.kind!=='new'||b.type==='watchHouse'&&b.construction?.kind!=='new'&&(isStrictSumer(state)||sacredModels.ready(b,state));
      const mesh=localLighting?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(localLighting){mesh.receiveShadows=true;mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;}
      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }

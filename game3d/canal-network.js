@@ -1,7 +1,7 @@
 import {canalArm,WATER_HEIGHT} from './water.js';
 import {visualSurfaceElevation,lakeDistance,lakeContours} from './lake-shore.js';
 import {renderedShoreDistance} from './shore-profile.js';
-const STEP=.24,OUTER=.9,INNER=.51,TILE=6,clamp=n=>Math.max(0,Math.min(1,n));
+const STEP=.24,OUTER=1.40,INNER=.49,TILE=6,clamp=n=>Math.max(0,Math.min(1,n));
 const empty=()=>({positions:[],indices:[],colors:[],uvs:[]});
 const geometryCache=new WeakMap();
 function surfaceSampler(s){
@@ -12,9 +12,20 @@ export function canalArms(s,canals){return canals.flatMap(c=>(c.arms?.length?c.a
 export function canalDistance(x,z,arms,wetOnly=false){let best=Infinity,arm=null,t=0;for(const a of arms){if(wetOnly&&!a.wet)continue;const dx=(a.b.x-a.a.x)*TILE,dz=(a.b.y-a.a.y)*TILE,q=clamp(((x-a.a.x*TILE)*dx+(z-a.a.y*TILE)*dz)/(dx*dx+dz*dz||1)),d=Math.hypot(x-a.a.x*TILE-q*dx,z-a.a.y*TILE-q*dz)/(wetOnly?a.width||1:1);if(d<best){best=d;arm=a;t=q;}}return {distance:best,arm,t};}
 function clip(points,limit){const out=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],da=a.d-limit,db=b.d-limit;if(da<=0)out.push(a);if((da<0)!==(db<0)){const t=da/(da-db);out.push({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,d:limit});}}return out;}
 function append(g,poly,sample,arms,water){if(poly.length<3)return;const index=g.positions.length/3;for(const p of poly){const near=canalDistance(p.x,p.z,arms),level=near.arm?.wet?WATER_HEIGHT+.006:.095,{ground,shore,lake}=sample(p.x,p.z),blend=clamp((near.distance-.43)/.44),ease=blend*blend*(3-2*blend),height=water?WATER_HEIGHT+.006:Math.min(ground+.018,level-.25+(ground+.018-level+.25)*ease);
-  // A thin sediment shelf on the sloping earth follows every real branch.
-  const shelf=water?0:.021*Math.sin(Math.PI*blend)*(.58+.42*Math.cos(p.x*2.1+p.z*1.7));
-  g.positions.push(p.x,height+shelf,p.z);g.uvs.push(p.x/3,p.z/3);if(water){g.colors.push(Math.max(.20,WATER_HEIGHT-ground),lake<0?1:0,clamp((shore+.16)/.16),1);}else{const tone=.74+.23*blend+.04*Math.cos(p.x*3.5-p.z*1.8)*Math.sin(Math.PI*blend);if(near.arm?.drain)g.colors.push(tone*.71,tone*.66,tone*.53,1);else g.colors.push(tone,tone,tone,1);}}for(let i=1;i<poly.length-1;i++)g.indices.push(index,index+i,index+i+1);}
+  // The bed has a wet toe, a steep cut and a compacted berm above it.
+  // The same distance field runs through bends and T junctions. The berm
+  // sinks into the river/lake at a mouth rather than damming the inlet.
+  const outerBlend=clamp((near.distance-.73)/.25)*clamp((1.40-near.distance)/.37);
+  const lip=water?0:.22*outerBlend*clamp((shore+.01)/.40);
+  const shelf=water?0:.024*Math.sin(Math.PI*blend)*(.58+.42*Math.cos(p.x*2.1+p.z*1.7));
+  g.positions.push(p.x,height+shelf+lip,p.z);g.uvs.push(p.x/2,p.z/2);
+  if(water){g.colors.push(Math.max(.20,WATER_HEIGHT-ground),lake<0?1:0,clamp((shore+.16)/.16),1);}
+  else{
+   const tone=.68+.29*blend+.05*Math.cos(p.x*3.5-p.z*1.8)*Math.sin(Math.PI*blend);
+   if(near.arm?.drain)g.colors.push(tone*.71,tone*.66,tone*.53,1);
+   else g.colors.push(tone+.22*outerBlend,tone+.13*outerBlend,tone+.04*outerBlend,1);
+  }
+ }for(let i=1;i<poly.length-1;i++)g.indices.push(index,index+i,index+i+1);}
 // One union surface for all branches: no crossed arm walls, overlapping lids or
 // square cut-outs at L/T/X junctions. Fine cells are allocated only near channels.
 export function canalNetworkGeometry(s,canals){

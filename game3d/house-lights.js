@@ -3,6 +3,7 @@ import {buildingKey} from '../definitions.js';
 import {houseLightCount} from '../households.js';
 import {footprintSize} from '../footprints.js';
 import {roofAccessLayout} from './roof-access.js';
+import {fishingLampSeats} from './reference-yards.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 
 export const HOUSE_LIGHT_LIMIT=6;
@@ -45,7 +46,15 @@ function createFestivalLamps(B,scene){
     const size=footprintSize(b),center=(size-1)*3,edge=size*3-.18,angle=(b.rotation||0)*Math.PI/2,c=Math.cos(angle),s=Math.sin(angle);
     const at=(x,y,z,ground=false)=>{const X=b.x*6+center+c*(x-center)+s*(z-center),Z=b.y*6+center-s*(x-center)+c*(z-center);positions.push({x:X,y:y+(ground?Math.max(0,surfaceElevation(X/6,Z/6,state)):0),z:Z});};
     for(const [x,z]of [[-edge,-edge],[edge,-edge],[-edge,edge],[edge,edge],[-.85,edge],[.85,edge]])at(center+x,.14,center+z,true);
-    const roof=roofAccessLayout(b,state);if(roof)for(const dz of [-.37,.37])at(roof.x-roof.side*.22,roof.height+.19,roof.z+dz);
+    if(b.type==='fishing'){
+     for(const [x,height,z]of fishingLampSeats)at(x,height+.06,z);
+    }else{
+     const roof=roofAccessLayout(b,state);
+     if(roof)for(const dz of [-.37,.37]){
+      const yaw=roof.angle||0,dx=-roof.side*.22;
+      at(roof.x+dx*Math.cos(yaw)+dz*Math.sin(yaw),roof.height+.19,roof.z-dx*Math.sin(yaw)+dz*Math.cos(yaw));
+     }
+    }
    }
    lampCount=positions.length;if(lampCount&&!meshes.length)create();
    const offsets=[0,.23,.19,-.065];

@@ -135,3 +135,37 @@ def hanging(x,z,span,y,fall):
 def front_wall(gap_x, gap_width):
     for a,b in [(-2.25,gap_x-gap_width/2),(gap_x+gap_width/2,2.25)]:
         if b>a:slab((a+b)/2,2.25,b-a,.22,.035,.73,plaster,.052,.24,.038)
+
+
+def bread_oven(x,z,size):
+    """A clay tannur viewed from above, with a dark, hollow, fire-worn lip."""
+    from earth_geometry import jar
+    profile=[(.29,0),(.37,.12),(.39,.29),(.34,.47),(.26,.60),(.22,.61),
+             (.207,.576),(.218,.50),(.262,.34),(.24,.20),(0,.16)]
+    jar(x,z,.052,size,profile,(158,107,70))
+    surface('earth')
+
+
+def storage_basket(x,z,base,size):
+    """Bound wicker hamper with a broad rolled rim and visible coiled cover."""
+    from earth_geometry import jar
+    profile=[(.18,0),(.31,.05),(.42,.22),(.43,.43),(.395,.56),(.415,.58),
+             (.40,.61),(.374,.60),(.37,.53),(.35,.43),(0,.40)]
+    jar(x,z,base,size,profile,(158,126,79),material='reed')
+    surface('reed')
+    for height,radius in [(.14,.397),(.45,.424),(.57,.412)]:
+        for i in range(14):
+            a=i*2*pi/14;b=(i+1)*2*pi/14
+            pole((x+size*radius*cos(a),base+size*height,z+size*radius*sin(a)),
+                 (x+size*radius*cos(b),base+size*height,z+size*radius*sin(b)),
+                 size*.020,(126,99,60),5,1)
+    surface('earth')
+
+
+def kiln_bricks(x,z,width,base):
+    """Short courses where foot traffic has abraded the plaster at a return."""
+    for course,count in enumerate([3,2]):
+        for j in range(count):
+            cx=x+width*((j+.5+course*.5)/3-.5)
+            slab(cx,z,width*.305,.078,base+.13*course,base+.13*course+.115,
+                 tint(clay,.88+.045*((course+j)%3)),.027,.20,.004)

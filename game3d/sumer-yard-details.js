@@ -68,10 +68,7 @@ export function dressSumerYard(type, {block, beam, cylinder, jar, m}, area) {
   case 'tailor':
    for(let i=0;i<4;i++)block(-1.82,.12+i*.063,1.03,.53,.049,.40,i%2?m.reed:m.linen,.08*i);
    break;
-  case 'healer':jar(1.69,-.69,.45);jar(1.97,-.71,.33);break;
-  case 'waterpoint':jar(-1.45,-1.45,.72);basket(-.97,-1.5,.22);break;
   case 'fishing':basket(-1.77,1.15,.27);jar(-1.4,1.32,.42);break;
-  case 'harbor':basket(-1.2,-.88,.24,.45);basket(-.75,-1.3,.26,.45);break;
   case 'cowshed':basket(-1.35,-.87,.23);break;
  }
 }

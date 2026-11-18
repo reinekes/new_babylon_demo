@@ -1,3 +1,4 @@
+import {createArchitecture} from '../game3d/architecture.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -126,7 +127,13 @@ test('shoreline festival lamps stay above the building platform instead of sinki
   const before=JSON.stringify(f.state);f.r.updateLight(f.state);const view=f.r.houseLights;
   const bowlPositions=Array.from(view.festivalMeshes[0].thinInstanceGetWorldMatrices(),matrix=>matrix.getTranslation());assert.equal(bowlPositions.length,8);
   for(const position of bowlPositions)assert.ok([position.x,position.y,position.z].every(Number.isFinite)&&position.y>.13,'oil bowls remain above the authored y=0 platform');
-  assert.ok(bowlPositions.slice(-2).every(position=>position.y>1.9),'roof lamps follow the authored roof, not the negative shoreline elevation');
+  const materials=Object.fromEntries(['raw','wood','reed','plaster','shade','stone','terracotta','soil'].map(k=>[k,new B.StandardMaterial(k,f.scene)]));
+  const building=f.state.buildings[0],meshes=createArchitecture(B,f.scene,building,materials,f.state);
+  for(const pos of bowlPositions.slice(-2)){
+   const ray=new B.Ray(new B.Vector3(pos.x-building.x*6,2,pos.z-building.y*6),new B.Vector3(0,-1,0),2);
+   const top=Math.max(...meshes.filter(m=>m.material===materials.raw).map(m=>ray.intersectsMesh(m)).filter(hit=>hit.hit).map(hit=>hit.pickedPoint.y));
+   assert.ok(top>.4&&Math.abs(pos.y-.06-top)<.025,'the actual earthen seat supports the oil bowl clear of the shore and the reed roof');
+  }
   assert.equal(active(f.points())[0].position.y,1.5,'bounded real lights illuminate the same raised platform');assert.equal(JSON.stringify(f.state),before);
  }finally{f.close();}
 });

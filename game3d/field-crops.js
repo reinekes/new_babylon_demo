@@ -5,9 +5,29 @@ import {lakeContours} from './lake-shore.js';
 import {fieldWorldPoint,FIELD_SHORE_BUFFER} from './field-shore.js';
 import {renderedShoreDistance,visualSurfaceElevation} from './shore-profile.js';
 
-export const FIELD_CROP_ASSET='assets/art-courtyard/models/valley-barley.glb';
+export const FIELD_CROP_ASSET='assets/3d/crops/barley-tillers.glb';
 export const EMMER_CROP_ASSET='assets/art-courtyard/models/crop-emmer.glb';
 export const usesBarleyCards=b=>b.type==='field'&&b.construction?.kind!=='new'&&districtCropVisual(b).growth>.35;
+
+// One material animates the whole crop. The feet are fixed, and the tallest
+// seed heads move a few centimetres in a broad ripple across neighbouring plots.
+function addBarleyBreeze(B, material){
+ if(!B.MaterialPluginBase)return;
+ class BarleyBreeze extends B.MaterialPluginBase {
+  constructor(){super(material,'BarleyBreeze',190,{});this.registerForExtraEvents=true;this.doNotSerialize=true;this._enable(true);}
+  getClassName(){return 'BarleyBreeze';}
+  getUniforms(){return {ubo:[{name:'barleyTime',size:1,type:'float'}],vertex:'uniform float barleyTime;'};}
+  hardBindForSubMesh(buffer){buffer.updateFloat('barleyTime',(performance.now()*.001)%6000);}
+  getCustomCode(stage){
+   if(stage!=='vertex')return null;
+   return {CUSTOM_VERTEX_UPDATE_WORLDPOS:`
+    float tip = smoothstep(0.10, 1.0, positionUpdated.y);
+    float gust = sin(barleyTime*1.55 + worldPos.x*.68 + worldPos.z*.29);
+    worldPos.xz += vec2(.042,.016) * tip * tip * gust;`};
+  }
+ }
+ return new BarleyBreeze();
+}
 
 // One optional atlas load for the layer. Keep the established procedural crops
 // if the asset cannot load; a failed optional model must never hide the field.
@@ -27,6 +47,7 @@ export async function loadFieldCrops(B,scene){
   // gaps between stalks are cutouts, not opaque rectangles or blended sheets.
   material.transparencyMode=B.PBRMaterial.PBRMATERIAL_ALPHATEST;material.alphaCutOff=.35;material.useAlphaFromAlbedoTexture=true;material.backFaceCulling=false;material.twoSidedLighting=true;
   if(material.albedoTexture)material.albedoTexture.hasAlpha=true;
+  addBarleyBreeze(B,material);
   const source=B.VertexData.ExtractFromMesh(base),bounds=base.getBoundingInfo().boundingBox,min=bounds.minimum,max=bounds.maximum,height=max.y-min.y;
   if(!(height>0))throw Error('Barley model has no height');
   const authoredScale=.95/height,cx=(min.x+max.x)/2,cz=(min.z+max.z)/2;
@@ -59,11 +80,14 @@ export async function loadFieldCrops(B,scene){
    let allDry=true;
    for(let row=0;row<count;row++)for(let i=0;i<count;i++){
     if((row*count+i+.5)/(count*count)>visual.sown*visual.standing)continue;
-    const spacing=b.fieldPatch?6/count:count===8?.62:1.25,start=b.fieldPatch?-3+spacing/2:count===8?-2.2:-1.875,x=start+row*spacing,z=start+i*spacing,world=fieldWorldPoint(b,x,z);
+    const spacing=b.fieldPatch?6/count:count===8?.62:1.25,start=b.fieldPatch?-3+spacing/2:count===8?-2.2:-1.875,isBarley=kind==='barley';
+    const wind=Math.sin(row*.55+i*.32),jitter=Math.sin(i*12.37+row*7.91);
+    const x=start+row*spacing+(isBarley?.085*wind:0),z=start+i*spacing+(isBarley?.086*jitter:0),world=fieldWorldPoint(b,x,z);
     // Whole clumps stay on the dry part of the rounded bank. A conservative
     // radius covers all triangles after rotation, not just their centre.
     if(renderedShoreDistance(world.x,world.y,state,contours)<FIELD_SHORE_BUFFER+radius*scale/6*1.3){allDry=false;continue;}
-    points.push({x,z,angle:(row*1.71+i*.83)%Math.PI});
+    points.push({x,z,angle:isBarley?.40*wind+.24*jitter:(row*1.71+i*.83)%Math.PI,
+     height:isBarley?.92+.08*Math.cos(row*1.7+i*.81):1});
    }
    if(!points.length)return [];
    // Inland batches share their geometry across fields. Their rows and stages
@@ -74,11 +98,11 @@ export async function loadFieldCrops(B,scene){
    const key=`${kind}:${growth}:${points.length}:${Number(!!b.fieldPatch)}`,cached=allDry&&flat?batches.get(key):null;
    if(cached){const mesh=cached.clone(`game-field-${kind}`,null,true);mesh.metadata={fieldCrops:true,cropKind:kind,clumps:points.length};return [mesh];}
    const positions=[],indices=[],normals=[],uvs=[],colors=[];
-   for(const {x,z,angle}of points){
+   for(const {x,z,angle,height}of points){
     const c=Math.cos(angle),s=Math.sin(angle),offset=positions.length/3;
     for(let k=0;k<data.positions.length;k+=3){
      const X=x+(data.positions[k]*c+data.positions[k+2]*s)*scale,Z=z+(-data.positions[k]*s+data.positions[k+2]*c)*scale,p=fieldWorldPoint(b,X,Z);
-     positions.push(X,.16+data.positions[k+1]*scale+visualSurfaceElevation(p.x,p.y,state,contours),Z);
+     positions.push(X,(kind==='barley'?.035:.16)+data.positions[k+1]*scale*height+visualSurfaceElevation(p.x,p.y,state,contours),Z);
      if(data.normals.length)normals.push(data.normals[k]*c+data.normals[k+2]*s,data.normals[k+1],-data.normals[k]*s+data.normals[k+2]*c);
     }
     indices.push(...data.indices.map(i=>i+offset));uvs.push(...(data.uvs||[]));if(data.colors)colors.push(...data.colors);

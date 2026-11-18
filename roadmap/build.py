@@ -119,7 +119,7 @@ def model_register(root):
                 raise ValueError(f'Неизвестный статус модели: {key}')
             if item['status'] == 'ready' and not (item.get('image') and item.get('checked')):
                 raise ValueError(f'Для готовой модели нужны изображение и проверка в игре: {key}')
-            links = [item[k] for k in ('previous', 'image', 'checked', 'release', 'source', 'model') if item.get(k)]
+            links = [item[k] for k in ('previous', 'image', 'checked', 'release', 'source', 'model', 'reference') if item.get(k)]
             if not group.get('future') and 'previous' not in item:
                 links.append(f'evidence/2026-11-18/building-models/previous/{key}.webp')
             for link in links:

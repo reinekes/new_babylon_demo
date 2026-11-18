@@ -4,10 +4,10 @@
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
     "total": 91,
-    "active": 65,
+    "active": 64,
     "fallback": 10,
     "optional": 6,
-    "spare": 10
+    "spare": 11
   },
   "errors": [],
   "runtimeInputs": [
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "b4100ae068a67433382f113caa58c594b70bc0df9d529f52fbcbc151ac0f8b97"
+      "sha256": "4165c132a4f1b83b792ace755f71652c09f3d817705ee803e1628fd7909ca335"
     },
     {
       "file": "game3d/caravan.js",
@@ -45,7 +45,7 @@
     },
     {
       "file": "game3d/field-crops.js",
-      "sha256": "f6668f346a8e50eecbf48d5a9eea10b7551db092983703aaea4767d78af0b520"
+      "sha256": "de14938462b17ebbe0633a790a0fa5a71f624511c67e062f17da400ab3589840"
     },
     {
       "file": "game3d/goats.js",
@@ -77,7 +77,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "9f23b9b78fbc3428ef0f35b2db51208e544df23ebd14ebb205df6e97ecfbabbc"
+      "sha256": "c212941f2ba4316a9a6ae083cb499c535fe835e7b8e116baa5fdadddc7d9579f"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -501,8 +501,8 @@
     {
       "file": "crop-emmer.glb",
       "status": "active",
-      "purpose": "Детали зрелых полей; при ошибке остаётся процедурный посев. Определение вида художественное.",
-      "classificationEvidence": "game3d/field-crops.js|CROP_ASSET",
+      "purpose": "Деталь зрелой двузернянки.",
+      "classificationEvidence": "game3d/field-crops.js|EMMER_CROP_ASSET",
       "bytes": 631660,
       "sha256": "0b09a7ff8d588d1730dc7f80f8df1885955943aa9c115434cbce4eed69e2a9c2",
       "version": "0b09a7ff8d58",
@@ -1171,7 +1171,7 @@
         {
           "model": "market-2x2.glb",
           "file": "game3d/sacred-models.js",
-          "line": 7,
+          "line": 8,
           "kind": "literal"
         }
       ]
@@ -1566,7 +1566,7 @@
         {
           "model": "reed-camp-sf3d.glb",
           "file": "game3d/sacred-models.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -1706,7 +1706,7 @@
         {
           "model": "sacred-ishtar-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 19,
+          "line": 20,
           "kind": "literal"
         }
       ]
@@ -1735,7 +1735,7 @@
         {
           "model": "sacred-shrine-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 20,
+          "line": 21,
           "kind": "literal"
         }
       ]
@@ -1764,7 +1764,7 @@
         {
           "model": "sacred-ziggurat-1.glb",
           "file": "game3d/sacred-models.js",
-          "line": 21,
+          "line": 22,
           "kind": "literal"
         }
       ]
@@ -1793,7 +1793,7 @@
         {
           "model": "sacred-ziggurat-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 22,
+          "line": 23,
           "kind": "literal"
         }
       ]
@@ -2662,7 +2662,7 @@
         {
           "model": "uruk-city-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
@@ -2691,16 +2691,16 @@
         {
           "model": "uruk-city-wall.glb",
           "file": "game3d/sacred-models.js",
-          "line": 6,
+          "line": 7,
           "kind": "literal"
         }
       ]
     },
     {
       "file": "valley-barley.glb",
-      "status": "active",
-      "purpose": "Детали зрелых полей; при ошибке остаётся процедурный посев. Определение вида художественное.",
-      "classificationEvidence": "game3d/field-crops.js|CROP_ASSET",
+      "status": "spare",
+      "purpose": "Прежняя модель ячменя в атласе. В игровой посадке используется собственный barley-tillers.glb.",
+      "classificationEvidence": "model-atlas/catalog.js|valley-barley",
       "bytes": 92432,
       "sha256": "13292796c892ba54a1926c74db28288a93d884edb5b8aefbc7ca330c4c0a9b40",
       "version": "13292796c892",
@@ -2716,14 +2716,7 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": [
-        {
-          "model": "valley-barley.glb",
-          "file": "game3d/field-crops.js",
-          "line": 8,
-          "kind": "literal"
-        }
-      ]
+      "references": []
     },
     {
       "file": "valley-date-palm.glb",
@@ -2958,7 +2951,7 @@
         {
           "model": "watch-house-v2.glb",
           "file": "game3d/sacred-models.js",
-          "line": 8,
+          "line": 9,
           "kind": "literal"
         }
       ]

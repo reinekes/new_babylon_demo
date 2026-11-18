@@ -21,13 +21,18 @@ test('first Sumerian shrine has structural reed walls and roof, while masonry up
   }
  }finally{t.dispose();}
 });
-test('a watch courtyard fits one tile and keeps two approaches open under its reed shade',()=>{
+test('the watch tower rises above the guardroom on one tile and both court approaches stay open',()=>{
  const t=setup();
  try{
   const building={type:'watchHouse',x:8,y:8,level:1},s={scenario:strictScenario()},before=JSON.stringify(building);
   const meshes=createArchitecture(B,t.scene,building,t.m,s),bounds=extent(meshes);
   assert.ok(bounds.x0>=-2.9&&bounds.x1<=2.9&&bounds.z0>=-2.9&&bounds.z1<=2.9);
-  assert.ok(bounds.h>1.8&&bounds.h<3.2);
+  const heightAt=(x,z)=>{
+   const ray=new B.Ray(new B.Vector3(x,6,z),new B.Vector3(0,-1,0),8);
+   return Math.max(...meshes.map(mesh=>ray.intersectsMesh(mesh)).filter(hit=>hit.hit).map(hit=>hit.pickedPoint.y));
+  };
+  assert.ok(bounds.h>4&&bounds.h<4.7);
+  assert.ok(heightAt(-1.34,-1.21)>heightAt(.95,-1.29)+1.6,'raised watch platform overlooks the guardroom');
   assert.ok(meshes.some(m=>m.material===t.m.reed));
   assert.ok(meshes.some(m=>m.material===t.m.raw));
   for(const x of [-1.25,1.25]){

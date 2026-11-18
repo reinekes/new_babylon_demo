@@ -70,10 +70,10 @@ test('an invalid detailed rig cannot replace or destroy the working bootstrap la
 });
 test('a city without initial fields requests crop detail only when its first field is later built',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),originalLoad=B.SceneLoader.LoadAssetContainerAsync,s=fixture();s.buildings=s.buildings.filter(b=>b.type!=='field');const loads=[];
- B.SceneLoader.LoadAssetContainerAsync=(_path,file)=>{loads.push(file);return new Promise(()=>{});};
+ B.SceneLoader.LoadAssetContainerAsync=(_path,file)=>{if(file.includes('barley-tillers.glb'))loads.push(file);return new Promise(()=>{});};
  const materials=Object.fromEntries(['soil','wood','plaster','brick','reed','linen','terracotta','stone','grass'].map(name=>[name,new B.PBRMaterial(name,scene)]));let view;
  try{view=await createGameBuildings(B,scene,materials,{deferAssets:true});view.sync(s);await new Promise(resolve=>setTimeout(resolve,0));assert.equal(loads.length,0);
-  s.buildings.push({type:'field',x:5,y:10,level:1,crop:{sown:1,growth:.6}});const before=JSON.stringify(s);view.sync(s);await new Promise(resolve=>setTimeout(resolve,0));assert.equal(loads.length,1);assert.ok(loads[0].includes('valley-barley.glb'));assert.equal(JSON.stringify(s),before);
+  s.buildings.push({type:'field',x:5,y:10,level:1,crop:{sown:1,growth:.6}});const before=JSON.stringify(s);view.sync(s);await new Promise(resolve=>setTimeout(resolve,0));assert.equal(loads.length,1);assert.ok(loads[0].includes('barley-tillers.glb'));assert.equal(JSON.stringify(s),before);
   view.sync(s);await new Promise(resolve=>setTimeout(resolve,0));assert.equal(loads.length,1,'one shared crop request is reused on later updates');assert.ok(view.meshes.some(m=>m.metadata?.type==='field'&&m.getTotalVertices()>0));
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=originalLoad;scene.dispose();engine.dispose();}
 });

@@ -1,3 +1,5 @@
+import {isReferenceWorkshop,workshopAngle,turnWorkshopParts} from './reference-workshops.js';
+import {workstationBuilding} from './workstations.js';
 import {footprintSize} from '../footprints.js';
 import {fortificationLayout} from '../fortification-layout.js';
 import {extractionWorkArea,isExtractionCourt} from '../extraction-courts.js';
@@ -127,31 +129,50 @@ function extractionEquipment(b,state,e){
 
 function furnishings(b,state,e){
  const {box,rod,loop,lathe,vessel,panel,rack,screen,hurdle,coil,mortar}=e;
+ // A broad lidded basket keeps a readable woven rim at city-camera distance.
+ const grainBasket=(x,y,z,r,h,lid=true)=>{
+  lathe(x,y,z,[[0,0],[r*.76,.01],[r*.89,h*.13],[r,h*.82],[r*.98,h],[r*.87,h],[r*.84,h*.48],[0,h*.25]],'reed');
+  for(const f of [.19,.73,.96])loop(x,y+h*f,z,r*(f<.3?.89:.985),.040,'reed');
+  if(lid)lathe(x,y+h,z,[[0,.043],[r*.68,.035],[r*.96,.002],[r,.019],[r*.88,.072],[r*.45,.094],[0,.10]],'reed');
+ };
  const hearth=(x,z,scale)=>{
   vessel(x,.055,z,'trough',scale,'fired');
   for(let i=0;i<3;i++)rod([x-.22*scale,.15*scale,z+(i-1)*.10],[x+.19*scale,.17*scale,z+(i-1)*.10+.03],.045*scale,'char');
  };
  switch(b.type){
   case 'pottery':
-   rack(.05,.84,1.20,1.33);
-   box(.05,.78,.84,1.31,.075,.48,'wood');
-   for(let i=0;i<3;i++)vessel(-.37+i*.39,.82,.84,'bowl',.52+i*.04);break;
+   for(const [x,s] of [[-.95,.79],[-1.56,.66]])vessel(x,.065,.77,'bowl',s);
+   vessel(.16,.06,.01,'jar',.76);break;
   case 'bakery':
-   mortar(1.56,.055,1.69,1.15);
+   grainBasket(-1.80,.06,-1.23,.43,.55);grainBasket(-1.83,.06,-.30,.37,.36);
+   mortar(1.39,.055,1.45,1.42);
    rod([1.06,.13,.69],[1.28,.20,1.56],.035,'wood');
    box(1.02,.14,.63,.32,.045,.38,'wood',.24);break;
   case 'brewery':
    // Suspended mash strainer and the receiving vessel underneath.
+   grainBasket(-1.73,.06,1.58,.36,.49,false);grainBasket(-.94,.06,1.70,.31,.34);
    rack(.85,1.82,1.0,1.43);vessel(.85,.06,1.82,'jar',.92);
    vessel(.85,.88,1.82,'bin',.60,'reed');
    for(const dx of [-.2,.2])rod([.85+dx,1.18,1.82],[.85+dx*.54,1.49,1.82],.017,'reed');break;
   case 'coppersmith':
-   hearth(-1.81,1.85,1.20);
-   vessel(-1.12,.07,1.81,'bowl',.64,'fired');
-   for(let i=0;i<3;i++)box(-1.10+i*.14,.16,1.85,.096,.078,.35,'copper',i*.1);break;
+   hearth(.87,.07,.78);
+   // A raised timber cooling bench separates finished metal from the grey
+   // casting moulds behind it. Slightly chamfered castings catch the sun.
+   box(-.54,.84,1.41,2.07,.12,.77,'char');
+   for(const x of [-1.36,.28])for(const z of [1.16,1.67])box(x,.43,z,.12,.79,.13,'wood');
+   for(const [i,x] of [-1.16,-.54,.08].entries()){
+    const bar=box(x,1.00,1.41,.47,.20,.57,'copper',.055*(i-1));
+    // Raise the shoulders to a short central flat, retaining a broad sunlit bevel.
+    const p=Array.from(bar.getVerticesData('position'));
+    for(let j=0;j<p.length;j+=3)if(p[j+1]>.001){p[j]*=.79;p[j+2]*=.82;}
+    bar.setVerticesData('position',p);bar.createNormals();
+   }
+   vessel(.51,.07,1.71,'bowl',.64,'fired');
+   for(let i=0;i<3;i++)box(.41+i*.14,.18,1.73,.096,.078,.35,'copper',i*.1);break;
   case 'kiln':
-   // A stepped stack of unfired ware waits on the dry side of the kiln.
-   for(let i=0;i<5;i++)vessel(1.28+(i%3)*.43,.055+Math.floor(i/3)*.24,-1.28+Math.floor(i/3)*.18,'bowl',.72,'raw');break;
+   for(let i=0;i<8;i++)rod([.72+i*.082,.14,.14],[.73+i*.08,.14,1.19],.049,'reed');
+   for(const z of [.32,.99])box(1.02,.16,z,.69,.13,.045,'wood');
+   vessel(1.92,.06,-.39,'bowl',.76);break;
   case 'brickyard':
    for(const dz of [-.31,.31])box(.72,.18,1.97+dz,1.40,.22,.08,'wood');
    for(const dx of [-.66,-.22,.22,.66])box(.72+dx,.18,1.97,.065,.22,.63,'wood');
@@ -164,22 +185,23 @@ function furnishings(b,state,e){
   case 'basketry':
    for(let i=0;i<12;i++){
     const a=i*Math.PI/6;rod([-.73+.17*Math.cos(a),.11,1.88+.17*Math.sin(a)],[-.73+.39*Math.cos(a),.87+.08*Math.sin(i),1.88+.39*Math.sin(a)],.022,'reed');
-   }for(const [y,r] of [[.24,.21],[.31,.24],[.38,.26],[.45,.27]])loop(-.73,y,1.88,r,.042,'reed');break;
+   }for(const [y,r] of [[.24,.21],[.31,.24],[.38,.26],[.45,.27]])loop(-.73,y,1.88,r,.042,'reed');
+   grainBasket(1.47,.06,.19,.47,.68,false);grainBasket(1.65,.06,1.20,.36,.44);grainBasket(.77,.06,.92,.31,.56,false);break;
   case 'matYard':
    for(let i=0;i<3;i++){const y=.19+(i===2?.19:0),z=1.90+(i%2)*.27;
     rod([-1.50,y,z],[-.06,y,z],.135,'reed',1);for(const x of [-1.28,-.27])box(x,y,z,.027,.27,.27,'cloth');}break;
   case 'weaver':
-   for(let i=0;i<5;i++){const x=-.33+i*.17;rod([x,1.38,.98],[x+.035,.47,.97],.012,'cloth');lathe(x+.035,.32,.97,[[.028,0],[.083,.055],[.068,.13],[.023,.16]],'raw',1,8);}
-   rack(.01,.98,.96,1.33);break;
+   vessel(.47,.055,.75,'bin',1.22,'reed');
+   for(const [dx,dz] of [[-.16,-.10],[.13,-.10],[0,.15]])lathe(.47+dx,.62,.75+dz,[[.06,0],[.18,.04],[.20,.16],[.13,.26],[0,.29]],'cloth');
+   break;
   case 'linenYard':
-   rack(.12,1.83,2.22,1.66);
-   for(let i=0;i<5;i++){
-    const x=-.9+i*.44;panel([[[x,1.68,1.83],[x-.04,.42+.05*Math.cos(i),1.95]],[[x+.16,1.72,1.80],[x+.19,.35,1.91]],[[x+.32,1.66,1.84],[x+.30,.43,1.93]]],'cloth');
-   }break;
+   for(const x of [-1.8,-1.5,-1.2])rod([x,.31,.95],[x+.18,.33,1.23],.04,'reed');
+   vessel(1.70,.06,1.40,'bin',1.15,'reed');
+   coil(1.7,.62,1.4,.29);break;
   case 'tailor':
-   for(const dx of [-.43,.43])rod([-.77+dx,.07,1.90],[-.77+dx,1.36,1.90],.044,'wood');
-   for(const y of [.39,1.31])rod([-1.32,y,1.90],[-.20,y,1.90],.037,'wood');
-   panel([[[-1.14,1.30,1.90],[-1.12,.39,1.90]],[[-.83,1.26,1.93],[-.81,.42,1.92]],[[-.40,1.30,1.90],[-.42,.39,1.90]]],'cloth');break;
+   grainBasket(-1.91,.06,1.57,.36,.45,false);
+   for(const dx of [-.13,.14])lathe(-1.91+dx,.43,1.56,[[.04,0],[.14,.05],[.15,.17],[.08,.22],[0,.23]],'cloth');
+   vessel(.96,.06,.90,'bin',.84,'reed');break;
   case 'dairyStore':
    rack(.10,1.84,1.32,1.45);
    for(const dx of [-.30,.28]){const x=.10+dx;vessel(x,.06,1.84,'bowl',.65);vessel(x,.81,1.84,'bin',.46,'cloth');rod([x,.99,1.84],[x,1.50,1.84],.018,'reed');}
@@ -193,16 +215,13 @@ function furnishings(b,state,e){
    hurdle(.10,-1.75,1.62,.91);
    vessel(1.28,.055,-1.52,'trough',1.12,'stone');break;
   case 'granary':
-   vessel(1.72,.055,1.58,'bin',1.46,'reed');
-   for(const y of [.24,.68,.86])loop(1.72,y,1.58,y>.4?.59:.44,.045,'reed');
-   vessel(.89,.055,2.06,'bowl',.70,'wood');break;
+   grainBasket(-1.65,.54,1.00,.48,.52,false);grainBasket(-.77,.54,1.06,.34,.37);
+   vessel(1.56,.54,1.04,'jar',.90);vessel(1.56,.06,1.83,'bowl',.62);break;
   case 'depot':
-   // Lashing passes over the lid of a sealed storage jar.
-   for(const [x,z,s] of [[-.81,1.58,1.28],[-.24,2.12,.85]]){
-    vessel(x,.055,z,'jar',s);box(x,.055+s*.766,z,s*.32,.046,s*.31,'raw',.08);loop(x,.055+s*.68,z,s*.16,.026,'reed');}break;
+   for(const [x,r,h] of [[-1.56,.46,.36],[-.44,.44,.39],[.63,.36,.32]])grainBasket(x,.902,.45,r,h);
+   vessel(1.81,.06,.55,'jar',.94);break;
   case 'waterpoint':
-   rack(.03,1.46,1.15,1.60);rod([-.37,1.62,1.46],[-.37,.52,1.46],.021,'reed');
-   vessel(-.37,.28,1.46,'bowl',.77,'pottery');coil(.61,.07,1.54,.23);break;
+   vessel(-1.92,.64,.38,'bowl',.77,'pottery');coil(-2.05,.66,.84,.17);break;
   case 'fishing':
    // Tapered, open wicker fish trap. Hoops and longitudinal rods enclose it.
    for(const dx of [-.61,-.28,.04,.34,.56]){
@@ -211,17 +230,12 @@ function furnishings(b,state,e){
    for(let i=0;i<9;i++){const a=i*2*Math.PI/9;rod([.04,.38+.28*Math.sin(a),1.82+.28*Math.cos(a)],[1.22,.38+.09*Math.sin(a),1.82+.09*Math.cos(a)],.018,'reed');}
    break;
   case 'harbor':
-   for(const [x,z] of [[-2.16,1.31],[2.18,-1.41]]){
-    rod([x,.39,z],[x+.03,1.14,z],.14,'wood');coil(x,.97,z,.17);coil(x+.38,.46,z+.05,.24);
-   }break;
+   for(const x of [-2.17,-.71]){coil(x,1.00,1.56,.16);coil(x+.35,.77,1.24,.21);}break;
   case 'healer':
-   screen(.73,1.68,1.36,1.22,'reed');
-   mortar(-.51,.06,1.66,.95);vessel(-1.09,.06,1.80,'bowl',.56);break;
+   mortar(.84,.06,1.62,.83);vessel(1.29,.06,1.73,'bowl',.49);break;
   case 'market':{
-   const k=(footprintSize(b)-1)*3;
-   rack(k-.58,k+2.03,1.82,1.72);
-   panel([[[k-1.36,1.76,k+2.03],[k-1.36,1.56,k+2.40]],[[k-.67,1.73,k+2.02],[k-.67,1.48,k+2.44]],[[k+.19,1.74,k+2.04],[k+.19,1.53,k+2.41]]],'cloth');
-   for(const x of [-.99,-.42,.16])vessel(k+x,.07,k+2.19,'bin',.63,'reed');break;
+   const wide=footprintSize(b)===2,x=wide?6.92:1.46,z=wide?6.38:.30;
+   for(const dz of [-.34,.17,.46])vessel(x+.20,.51,z+dz,'bowl',.45,'wood');break;
   }
   case 'musicHouse':
    // A resting frame drum and a second hide awaiting tensioning.
@@ -241,9 +255,7 @@ function furnishings(b,state,e){
     box(x,.15,z,.57,.29,.65,'raw');vessel(x,.3,z,'bin',.91,'fired');}break;
   }
   case 'watchHouse':
-   rack(-1.49,1.73,1.10,1.57);
-   for(let i=0;i<3;i++)rod([-1.88+i*.30,.05,1.88],[-1.78+i*.30,1.83+.06*i,1.70],.039,'wood');
-   vessel(-.63,.06,1.98,'jar',.72);break;
+   coil(-2.02,.065,1.42,.27);vessel(1.97,.06,.38,'jar',.72);break;
   case 'cityGate':{
    const c=(footprintSize(b)-1)*3,s=footprintSize(b)===2?2.29:1.62;
    for(const sign of [-1,1]){
@@ -274,13 +286,31 @@ export function applyWorkshopArchitecture(B,scene,b,state,base,sources,root){
  const palette=workshopSurfaces(B,scene);
  const roles=new Map([[base.plaster,'plaster'],[base.raw,'raw'],[base.fired,'fired'],[base.trim,'trim'],[base.terracotta,'pottery'],
   [base.wood,'wood'],[base.linen,'cloth'],[base.reed,'reed'],[base.stone,'stone'],[base.soil,'earth']]);
+ let recess;
  for(const mesh of sources){
+  // Indirect daylight colours the plaster jambs; only the recessed back plane
+  // of a deep doorway or fire chamber is fully occluded.
+  if(base.shade && mesh.material===base.shade && isReferenceWorkshop(b.type)){
+   recess ||= scene.getMaterialByName('workshop-deep-recess');
+   if(!recess){
+    recess=new B.StandardMaterial('workshop-deep-recess',scene);
+    recess.diffuseColor=B.Color3.Black();recess.specularColor=B.Color3.Black();
+    recess.emissiveColor=B.Color3.FromHexString('#211710').toLinearSpace();
+   }
+   mesh.material=recess;
+   continue;
+  }
   const role=roles.get(mesh.material);
   if(role&&mesh.material)mesh.material=palette.material(role);
  }
  const tools=equipment(B,scene,palette);
  furnishings(b,state,tools);
- for(const detail of tools.finish(root,b.type)){
+ const details=tools.finish(root,b.type);
+ if(isReferenceWorkshop(b.type)){
+  const angle=workshopAngle(workstationBuilding(b,state).workCorner);
+  turnWorkshopParts(B,details,angle);
+ }
+ for(const detail of details){
   // Common props and a static wall can share their existing instanced draw.
   // Imported originals and moving workstations keep their individual transforms.
   const index=sources.findIndex(mesh=>mesh.material===detail.material&&
