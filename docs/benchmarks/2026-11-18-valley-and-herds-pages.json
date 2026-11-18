@@ -1,0 +1,1644 @@
+{
+  "deployment": "https://github.com/reinekes/new_babylon_demo/actions/runs/44298460683",
+  "commit": "12d4a596866a4daa4ed5671596c278d97ebd17bd",
+  "publishedFiles": [
+    {
+      "path": "index.html",
+      "bytes": 34136,
+      "sha256": "b6520223a3d4a50a807ae50c333e3d0d4de6e2170b08d4f4dae5678a095e0665"
+    },
+    {
+      "path": "scripts/sumer-building-studio.js",
+      "bytes": 8814,
+      "sha256": "41af481c619152189641d3de2ff3055604b7c4deb760099a0ae392ab738dedf4"
+    },
+    {
+      "path": "model-atlas/data/animals.json",
+      "bytes": 46957,
+      "sha256": "937b9e523df57f359f7966486142d8bcd4144db8fbdb0c20e279ebe5efd7a6a5"
+    },
+    {
+      "path": "model-atlas/data/mini.json",
+      "bytes": 38964,
+      "sha256": "6e41f36f4a8bd97d93981beecf2c412600213f859be9962c8c126554c8de2874"
+    },
+    {
+      "path": "game3d/goods.js",
+      "bytes": 6740,
+      "sha256": "f23f5d8f334caa7ce490b8e2470a4b21cccc8f2c95c71e8ae20e7c622ee26589"
+    },
+    {
+      "path": "game3d/craft-parcels.js",
+      "bytes": 5821,
+      "sha256": "baeca533939b3fe917c1c6c38e3dc929608670218c224f34433b3612988d0bd7"
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "bytes": 28646,
+      "sha256": "7806a8664482e39505ca65ba24be4ea40d0baaad194f2ff086a01e63da0ffdc8"
+    },
+    {
+      "path": "game3d/yard-craft-meshes.js",
+      "bytes": 9519,
+      "sha256": "6b4f75886615553bc89dbe69914d4c967766942e28ce05866d2399847a5ad358"
+    },
+    {
+      "path": "game3d/valley-vegetation.js",
+      "bytes": 13009,
+      "sha256": "8772ef61cfc7628fe05bbdc9b30741750553815b2e6fe43b4d6aa137e50f7503"
+    },
+    {
+      "path": "game3d/marsh-distance-plants.js",
+      "bytes": 3035,
+      "sha256": "97f0e947965c7c0a4a63536de9607ac06463b686224340d12a2ca4fdd5103e34"
+    },
+    {
+      "path": "assets/3d/textures/floodplain-botany-distant.webp",
+      "bytes": 126940,
+      "sha256": "944d981b59e03edc70a2dd8ede061c4e10da44d2502d34b94f85f70f096b319c"
+    },
+    {
+      "path": "game3d/test-livestock.js",
+      "bytes": 17166,
+      "sha256": "ca9ce6a9efa03f9044561895e85810ed07a0fb08772e207a6c30b418385dc5d1"
+    },
+    {
+      "path": "roadmap/reports/2026-11-18-valley-and-herds.md",
+      "bytes": 10362,
+      "sha256": "1c598b2c90cda6bf19b486052072ba59b8c606a96b64df355f5f2cf4f3cf6dc6"
+    },
+    {
+      "path": "roadmap/index.html",
+      "bytes": 5098503,
+      "sha256": "b431b25091e5d4e0f111b781d37197404b9bad88b4db91c04d6c8c20e46fe476"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/yard-props/valley-and-herds.webp",
+      "bytes": 97780,
+      "sha256": "ddf88aa3902673a334e3dc55eff3f0d76ac68634bc9baa0f9a9ee17a784e4564"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-18-floodplain-botany-webgl.json",
+      "bytes": 1949,
+      "sha256": "1593be8a234573d1be1423e723307835ddc56f6ee82c54766dd4d548a8b21af2"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-18-valley-and-herds.json",
+      "bytes": 29771,
+      "sha256": "838809b383a505b7776611c5dd2630abce98b5f8df54f9f2506836ab4d4daf89"
+    },
+    {
+      "path": "docs/model-prototypes/sumer-building-set/40-building-models.zip",
+      "bytes": 47320710,
+      "sha256": "9c1b90c1a49329a2b72268e1d560f5ca7f8d0ec195849d18afed80e66aa3b2a4"
+    },
+    {
+      "path": "assets/3d/textures/river-silt_normal.webp",
+      "bytes": 487528,
+      "sha256": "78bec5df8dbb8a02d606b55e3e0d43fedcc98e8129a83e7e87c911d8952bc68e"
+    },
+    {
+      "path": "assets/3d/textures/river-silt_color.webp",
+      "bytes": 79420,
+      "sha256": "d20400a24f0151895c313e6d96c741f7dba7b36630fb56e2c009371ceecbbf1c"
+    },
+    {
+      "path": "assets/3d/textures/floodplain-alluvium_normal.webp",
+      "bytes": 553876,
+      "sha256": "e829b004f8999b6b891f435469016ec5dab338916e236589c96a09e880051d39"
+    },
+    {
+      "path": "assets/3d/textures/floodplain-alluvium_color.webp",
+      "bytes": 136896,
+      "sha256": "1007f2f8a94c3cb7c8710349659eb3c3cb59e9fea2408a0979222145977e967d"
+    },
+    {
+      "path": "assets/3d/textures/courtyard/yard-craft-color.jpg",
+      "bytes": 180326,
+      "sha256": "b32a9f79db39105d2e04f1d985466e4cd4ca2ad6d8e6597826684ed30dc9b8fa"
+    },
+    {
+      "path": "assets/3d/textures/courtyard/yard-craft-normal.jpg",
+      "bytes": 424895,
+      "sha256": "0b8d382dc7ac80e335e52b314873d4285174adc7bbf21fc153b08ca805ed8b98"
+    },
+    {
+      "path": "assets/art-courtyard/models/alluvial-awn-grass.glb",
+      "bytes": 165428,
+      "sha256": "bc120129fe6e55abd931ac5384d975e6167349d0cce81e7909cee6acb6cf9918"
+    },
+    {
+      "path": "assets/art-courtyard/models/alluvial-ram.glb",
+      "bytes": 2618268,
+      "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064"
+    },
+    {
+      "path": "assets/art-courtyard/models/alluvial-bull.glb",
+      "bytes": 2720752,
+      "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae"
+    },
+    {
+      "path": "assets/art-courtyard/models/alluvial-pig.glb",
+      "bytes": 2576076,
+      "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8"
+    },
+    {
+      "path": "assets/art-courtyard/models/marsh-cattail.glb",
+      "bytes": 164244,
+      "sha256": "af120ac8660159e2dc3952e38c86ca2132110cf557a43d5fcbad91ee4267fd64"
+    },
+    {
+      "path": "assets/art-courtyard/models/marsh-clubrush.glb",
+      "bytes": 173440,
+      "sha256": "3db0700f06d1a7f7e784ff45d674889e72a5ef4a1e6a5d6670ce85a01bcfab0a"
+    },
+    {
+      "path": "assets/art-courtyard/models/marsh-plumed-cane.glb",
+      "bytes": 180860,
+      "sha256": "0ad5e1537a32e4d50e60327a3a44f43e97b81ad2bdf8cdbc0bfc1cae64c9a070"
+    },
+    {
+      "path": "assets/art-courtyard/models/ambient-bull.glb",
+      "bytes": 5800664,
+      "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4"
+    },
+    {
+      "path": "assets/art-courtyard/models/ambient-dog.glb",
+      "bytes": 2161184,
+      "sha256": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4"
+    },
+    {
+      "path": "assets/art-courtyard/models/ambient-donkey.glb",
+      "bytes": 4356268,
+      "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc"
+    },
+    {
+      "path": "assets/art-courtyard/models/ambient-duck.glb",
+      "bytes": 2740460,
+      "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71"
+    },
+    {
+      "path": "assets/art-courtyard/models/ambient-sheep-kenchoo.glb",
+      "bytes": 1785652,
+      "sha256": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5"
+    },
+    {
+      "path": "assets/art-courtyard/models/ambient-yard-pig.glb",
+      "bytes": 2105828,
+      "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543"
+    },
+    {
+      "path": "assets/art-courtyard/models/caravan-camel.glb",
+      "bytes": 4713460,
+      "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276"
+    },
+    {
+      "path": "assets/art-courtyard/models/cat-sitting.glb",
+      "bytes": 3289240,
+      "sha256": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3"
+    },
+    {
+      "path": "assets/art-courtyard/models/cat-walk.glb",
+      "bytes": 667472,
+      "sha256": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917"
+    },
+    {
+      "path": "assets/art-courtyard/models/gazelle-downloaded.glb",
+      "bytes": 3731492,
+      "sha256": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat-authored-lod.glb",
+      "bytes": 1649492,
+      "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat-authored.glb",
+      "bytes": 4000280,
+      "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat-downloaded.glb",
+      "bytes": 8930460,
+      "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65"
+    },
+    {
+      "path": "assets/art-courtyard/models/goat.glb",
+      "bytes": 29877228,
+      "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249"
+    },
+    {
+      "path": "assets/art-courtyard/models/imported-boar.glb",
+      "bytes": 1951108,
+      "sha256": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89"
+    },
+    {
+      "path": "assets/art-courtyard/models/imported-fox.glb",
+      "bytes": 1884684,
+      "sha256": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b"
+    },
+    {
+      "path": "assets/art-courtyard/models/imported-goose.glb",
+      "bytes": 1310296,
+      "sha256": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f"
+    },
+    {
+      "path": "assets/art-courtyard/models/imported-lioness.glb",
+      "bytes": 2322264,
+      "sha256": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e"
+    },
+    {
+      "path": "assets/art-courtyard/models/imported-orange-bird.glb",
+      "bytes": 570772,
+      "sha256": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d"
+    },
+    {
+      "path": "assets/art-courtyard/models/imported-sky-birds.glb",
+      "bytes": 195568,
+      "sha256": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04"
+    },
+    {
+      "path": "assets/art-courtyard/models/jackal.glb",
+      "bytes": 1424196,
+      "sha256": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19"
+    },
+    {
+      "path": "assets/art-courtyard/models/sheep.glb",
+      "bytes": 2024888,
+      "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b"
+    },
+    {
+      "path": "assets/art-courtyard/models/shore-mallard-female.glb",
+      "bytes": 363016,
+      "sha256": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47"
+    },
+    {
+      "path": "assets/art-courtyard/models/shore-mallard.glb",
+      "bytes": 2592180,
+      "sha256": "6f7174d94cab33025c8ee053df196bc323ba5a85a825091155fd29b9c7d240e1"
+    },
+    {
+      "path": "assets/art-courtyard/models/shore-seagull.glb",
+      "bytes": 516392,
+      "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be"
+    },
+    {
+      "path": "assets/art-courtyard/models/sky-bird-single.glb",
+      "bytes": 38304,
+      "sha256": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-cobra-base.glb",
+      "bytes": 1539392,
+      "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-cobra-head-up.glb",
+      "bytes": 1541772,
+      "sha256": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-common-quail.glb",
+      "bytes": 2050532,
+      "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-frog-jump.glb",
+      "bytes": 1855544,
+      "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-horse-brown.glb",
+      "bytes": 1660088,
+      "sha256": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-horse-run.glb",
+      "bytes": 1277372,
+      "sha256": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-northern-cardinal.glb",
+      "bytes": 1978712,
+      "sha256": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-oriental-goby.glb",
+      "bytes": 3031240,
+      "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-pelican-wasis.glb",
+      "bytes": 5244380,
+      "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-realistic-rat.glb",
+      "bytes": 2129524,
+      "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-schlegel-frog.glb",
+      "bytes": 2502324,
+      "sha256": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-white-eagle.glb",
+      "bytes": 886568,
+      "sha256": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514"
+    },
+    {
+      "path": "assets/art-courtyard/models/supplied-yellowfin-goby.glb",
+      "bytes": 1519376,
+      "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27"
+    },
+    {
+      "path": "assets/art-courtyard/models/test-bull-trellis.glb",
+      "bytes": 1930912,
+      "sha256": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9"
+    },
+    {
+      "path": "assets/art-courtyard/models/test-goat-trellis.glb",
+      "bytes": 1108340,
+      "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f"
+    },
+    {
+      "path": "assets/art-courtyard/models/test-pig-trellis.glb",
+      "bytes": 967568,
+      "sha256": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902"
+    }
+  ],
+  "priorAnimalGlbHashMatches": 42,
+  "yards": [
+    {
+      "id": "pottery",
+      "cityPixels": 114681,
+      "glbPixels": 149256,
+      "sha256": "047fcbb0044cc7654891fa2e68237b4e2c71d097a7cbb9b31453e94221458fb8",
+      "vertices": {
+        "missingFromGLB": 0,
+        "missingFromScene": 0
+      }
+    },
+    {
+      "id": "brickyard",
+      "cityPixels": 108696,
+      "glbPixels": 141142,
+      "sha256": "79683ae4af2980d7cb9fbe9bd597f5ea05a87888a4b1750d64a8fe931826ac3f",
+      "vertices": {
+        "missingFromGLB": 0,
+        "missingFromScene": 0
+      }
+    },
+    {
+      "id": "kiln",
+      "cityPixels": 99303,
+      "glbPixels": 143998,
+      "sha256": "1aeb17f91b979b465bac2669774195303f1e216a631d690224a3d440eaf803b9",
+      "vertices": {
+        "missingFromGLB": 0,
+        "missingFromScene": 0
+      }
+    },
+    {
+      "id": "bakery",
+      "cityPixels": 96117,
+      "glbPixels": 168064,
+      "sha256": "d7d185df7372d16d7a3adafe650065c5db82a53ee7697e6924c82457db4083ab",
+      "vertices": {
+        "missingFromGLB": 0,
+        "missingFromScene": 0
+      }
+    },
+    {
+      "id": "brewery",
+      "cityPixels": 115403,
+      "glbPixels": 176572,
+      "sha256": "1450f27f9443d86188ee972a6d50e4891cdd54cafac0dd48c1b037c63e349ac7",
+      "vertices": {
+        "missingFromGLB": 0,
+        "missingFromScene": 0
+      }
+    }
+  ],
+  "studioHttpFailures": [
+    [
+      404,
+      "https://reinekes.github.io/favicon.ico"
+    ]
+  ],
+  "publicModels": {
+    "at": "2026-11-18T11:52:55.573Z",
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "models": [
+      {
+        "name": "alluvial-ram",
+        "meshCount": 1,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "triangles": 35468,
+        "activePixels": 36245,
+        "glError": 0
+      },
+      {
+        "name": "alluvial-bull",
+        "meshCount": 1,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "triangles": 40812,
+        "activePixels": 34411,
+        "glError": 0
+      },
+      {
+        "name": "alluvial-pig",
+        "meshCount": 1,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "triangles": 35790,
+        "activePixels": 35272,
+        "glError": 0
+      },
+      {
+        "name": "marsh-plumed-cane",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 1152,
+        "activePixels": 6545,
+        "glError": 0
+      },
+      {
+        "name": "marsh-cattail",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 720,
+        "activePixels": 14410,
+        "glError": 0
+      },
+      {
+        "name": "marsh-clubrush",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 950,
+        "activePixels": 16703,
+        "glError": 0
+      },
+      {
+        "name": "alluvial-awn-grass",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 620,
+        "activePixels": 8865,
+        "glError": 0
+      },
+      {
+        "name": "basket",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 10512,
+        "activePixels": 57972,
+        "glError": 0
+      },
+      {
+        "name": "mat",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 6032,
+        "activePixels": 75439,
+        "glError": 0
+      },
+      {
+        "name": "clay",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 2032,
+        "activePixels": 50246,
+        "glError": 0
+      },
+      {
+        "name": "brick",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 2688,
+        "activePixels": 97155,
+        "glError": 0
+      },
+      {
+        "name": "firedBrick",
+        "meshCount": 1,
+        "clips": [],
+        "triangles": 2688,
+        "activePixels": 99053,
+        "glError": 0
+      },
+      {
+        "name": "sheep",
+        "meshCount": 1,
+        "clips": [
+          "Graze",
+          "Idle",
+          "StartGraze",
+          "StartWalk",
+          "StopGraze",
+          "StopWalk",
+          "Walk"
+        ],
+        "triangles": 2940,
+        "activePixels": 25244,
+        "glError": 0
+      },
+      {
+        "name": "test-bull-trellis",
+        "meshCount": 1,
+        "clips": [
+          "Walk"
+        ],
+        "triangles": 14512,
+        "activePixels": 30979,
+        "glError": 0
+      },
+      {
+        "name": "ambient-yard-pig",
+        "meshCount": 1,
+        "clips": [
+          "Walk",
+          "Animation"
+        ],
+        "triangles": 9816,
+        "activePixels": 37697,
+        "glError": 0
+      }
+    ],
+    "exceptions": [],
+    "failures": [],
+    "shaders": []
+  },
+  "publicAtlasLinks": {
+    "at": "2026-11-18T11:52:29.975Z",
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "entries": [
+      {
+        "slug": "alluvial-ram",
+        "details": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом. · 35 468 треугольников · alluvial-ram.glb",
+        "clips": [
+          "Неподвижно",
+          "Walk",
+          "Idle"
+        ],
+        "category": "Животные",
+        "glError": 0
+      },
+      {
+        "slug": "alluvial-bull",
+        "details": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом. · 40 812 треугольников · alluvial-bull.glb",
+        "clips": [
+          "Неподвижно",
+          "Walk",
+          "Idle"
+        ],
+        "category": "Животные",
+        "glError": 0
+      },
+      {
+        "slug": "alluvial-pig",
+        "details": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом. · 35 790 треугольников · alluvial-pig.glb",
+        "clips": [
+          "Неподвижно",
+          "Walk",
+          "Idle"
+        ],
+        "category": "Животные",
+        "glError": 0
+      },
+      {
+        "slug": "marsh-plumed-cane",
+        "details": "Авторские куртины речной поймы и сухой травы в обычной долине. · 1 152 треугольников · marsh-plumed-cane.glb",
+        "clips": [
+          "Неподвижно"
+        ],
+        "category": "Мини-модели",
+        "glError": 0
+      },
+      {
+        "slug": "marsh-cattail",
+        "details": "Авторские куртины речной поймы и сухой травы в обычной долине. · 720 треугольников · marsh-cattail.glb",
+        "clips": [
+          "Неподвижно"
+        ],
+        "category": "Мини-модели",
+        "glError": 0
+      },
+      {
+        "slug": "marsh-clubrush",
+        "details": "Авторские куртины речной поймы и сухой травы в обычной долине. · 950 треугольников · marsh-clubrush.glb",
+        "clips": [
+          "Неподвижно"
+        ],
+        "category": "Мини-модели",
+        "glError": 0
+      },
+      {
+        "slug": "alluvial-awn-grass",
+        "details": "Авторские куртины речной поймы и сухой травы в обычной долине. · 620 треугольников · alluvial-awn-grass.glb",
+        "clips": [
+          "Неподвижно"
+        ],
+        "category": "Мини-модели",
+        "glError": 0
+      },
+      {
+        "slug": "test-bull-trellis",
+        "details": "Текстурированная модель TRELLIS.2 с ходьбой в прогулочном стаде. · 14 512 треугольников · test-bull-trellis.glb",
+        "clips": [
+          "Неподвижно",
+          "Walk"
+        ],
+        "category": "Животные",
+        "glError": 0
+      },
+      {
+        "slug": "ambient-yard-pig",
+        "details": "Один из двух обликов свободного стада свиней. · 9 816 треугольников · ambient-yard-pig.glb",
+        "clips": [
+          "Неподвижно",
+          "Walk",
+          "Animation"
+        ],
+        "category": "Животные",
+        "glError": 0
+      },
+      {
+        "slug": "sheep",
+        "details": "Основное стадо овец симуляции; также художественный двор. · 2 940 треугольников · sheep.glb",
+        "clips": [
+          "Неподвижно",
+          "Graze",
+          "Idle",
+          "StartGraze",
+          "StartWalk",
+          "StopGraze",
+          "StopWalk",
+          "Walk"
+        ],
+        "category": "Животные",
+        "glError": 0
+      }
+    ],
+    "exceptions": [],
+    "failures": [],
+    "shaders": []
+  },
+  "publicCity": {
+    "at": "2026-11-18T11:53:12.367Z",
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "eyes": {
+      "groundAndCraftMaterials": [
+        {
+          "name": "alluvial-earth",
+          "maps": [
+            [
+              "assets/3d/textures/floodplain-alluvium_color.webp",
+              true
+            ],
+            [
+              "assets/3d/textures/floodplain-alluvium_normal.webp",
+              true
+            ]
+          ]
+        },
+        {
+          "name": "laminated-bank-silt",
+          "maps": [
+            [
+              "assets/3d/textures/river-silt_color.webp",
+              true
+            ],
+            [
+              "assets/3d/textures/river-silt_normal.webp",
+              true
+            ]
+          ]
+        },
+        {
+          "name": "handmade-yard-craft",
+          "maps": [
+            [
+              "assets/3d/textures/courtyard/yard-craft-color.jpg",
+              true
+            ],
+            [
+              "assets/3d/textures/courtyard/yard-craft-normal.jpg",
+              true
+            ]
+          ]
+        }
+      ],
+      "plantCounts": {
+        "M_dry_grass": 297,
+        "alluvial-awn-grass-epidermis": 263,
+        "GrassAtlas": 91,
+        "marsh-clubrush-epidermis": 129,
+        "Plant_Bark": 77,
+        "Reed_Leaves": 77,
+        "marsh-plumed-cane-epidermis": 129,
+        "marsh-cattail-epidermis": 144
+      },
+      "animals": [
+        {
+          "species": "sheep",
+          "variant": "alluvial-ram.glb",
+          "parts": 1
+        },
+        {
+          "species": "pig",
+          "variant": "alluvial-pig.glb",
+          "parts": 1
+        },
+        {
+          "species": "pig",
+          "variant": "test-pig-trellis.glb",
+          "parts": 1
+        },
+        {
+          "species": "pig",
+          "variant": "ambient-yard-pig.glb",
+          "parts": 1
+        },
+        {
+          "species": "pig",
+          "variant": "alluvial-pig.glb",
+          "parts": 1
+        },
+        {
+          "species": "pig",
+          "variant": "test-pig-trellis.glb",
+          "parts": 1
+        },
+        {
+          "species": "goat",
+          "variant": "test-goat-trellis.glb",
+          "parts": 1
+        },
+        {
+          "species": "goat",
+          "variant": "goat-downloaded.glb",
+          "parts": 5
+        },
+        {
+          "species": "goat",
+          "variant": "test-goat-trellis.glb",
+          "parts": 1
+        },
+        {
+          "species": "goat",
+          "variant": "goat-downloaded.glb",
+          "parts": 5
+        },
+        {
+          "species": "bull",
+          "variant": "alluvial-bull.glb",
+          "parts": 1
+        },
+        {
+          "species": "bull",
+          "variant": "test-bull-trellis.glb",
+          "parts": 1
+        },
+        {
+          "species": "bull",
+          "variant": "ambient-bull.glb",
+          "parts": 1
+        },
+        {
+          "species": "bull",
+          "variant": "alluvial-bull.glb",
+          "parts": 1
+        },
+        {
+          "species": "bull",
+          "variant": "test-bull-trellis.glb",
+          "parts": 1
+        },
+        {
+          "species": "bull",
+          "variant": "ambient-bull.glb",
+          "parts": 1
+        },
+        {
+          "species": "bull",
+          "variant": "alluvial-bull.glb",
+          "parts": 1
+        },
+        {
+          "species": "sheep",
+          "variant": "alluvial-ram.glb",
+          "parts": 1
+        },
+        {
+          "species": "sheep",
+          "variant": "ambient-sheep-kenchoo.glb",
+          "parts": 1
+        },
+        {
+          "species": "sheep",
+          "variant": "alluvial-ram.glb",
+          "parts": 1
+        },
+        {
+          "species": "sheep",
+          "variant": "ambient-sheep-kenchoo.glb",
+          "parts": 1
+        },
+        {
+          "species": "sheep",
+          "variant": "alluvial-ram.glb",
+          "parts": 1
+        },
+        {
+          "species": "sheep",
+          "variant": "ambient-sheep-kenchoo.glb",
+          "parts": 1
+        },
+        {
+          "parts": 2
+        },
+        {
+          "parts": 2
+        },
+        {
+          "parts": 2
+        },
+        {
+          "parts": 1
+        },
+        {
+          "parts": 1
+        }
+      ],
+      "errors": [],
+      "glError": 0
+    },
+    "yards": {
+      "brickyard": {
+        "count": 1,
+        "triangles": 9920
+      },
+      "pottery": {
+        "count": 1,
+        "triangles": 15040
+      },
+      "bakery": {
+        "count": 1,
+        "triangles": 896
+      },
+      "brewery": {
+        "count": 1,
+        "triangles": 7168
+      },
+      "kiln": {
+        "count": 1,
+        "triangles": 6720
+      }
+    },
+    "herdPhoto": "livestock-sheep-6",
+    "exceptions": [],
+    "failures": [],
+    "shaders": []
+  },
+  "gameHerds": {
+    "legacy": {
+      "release": "12d4a59",
+      "url": "https://reinekes.github.io/new_babylon_demo",
+      "herd": {
+        "origin": "https://reinekes.github.io",
+        "mode": "Прежняя история",
+        "title": "Новый Вавилон — имена богов",
+        "webGL": 2,
+        "frames": 863,
+        "animals": [
+          {
+            "file": "alluvial-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-pig-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "ambient-yard-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Animation"
+            ]
+          },
+          {
+            "file": "alluvial-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-pig-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "ambient-yard-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Animation"
+            ]
+          },
+          {
+            "file": "alluvial-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "goat-downloaded.glb",
+            "skin": true,
+            "clips": [
+              "Idle",
+              "Walk",
+              "Graze",
+              "Rest",
+              "SourceRigAction"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "goat-downloaded.glb",
+            "skin": true,
+            "clips": [
+              "Idle",
+              "Walk",
+              "Graze",
+              "Rest",
+              "SourceRigAction"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "goat-downloaded.glb",
+            "skin": true,
+            "clips": [
+              "Idle",
+              "Walk",
+              "Graze",
+              "Rest",
+              "SourceRigAction"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "alluvial-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-bull-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "ambient-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Eat",
+              "SourceOriginal-Idle_01",
+              "SourceOriginal-Idle_02_Chew",
+              "SourceOriginal-Walk"
+            ]
+          },
+          {
+            "file": "alluvial-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "alluvial-ram.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "ambient-sheep-kenchoo.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Animation"
+            ]
+          },
+          {
+            "file": "alluvial-ram.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "ambient-sheep-kenchoo.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Animation"
+            ]
+          },
+          {
+            "file": "alluvial-ram.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "ambient-sheep-kenchoo.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Animation"
+            ]
+          },
+          {
+            "file": "alluvial-ram.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          }
+        ]
+      },
+      "observations": [
+        {
+          "species": "bull",
+          "dimensions": {
+            "albedoTexture": [
+              1536,
+              1024
+            ],
+            "bumpTexture": [
+              1536,
+              1024
+            ],
+            "metallicTexture": [
+              1536,
+              1024
+            ]
+          },
+          "results": {
+            "albedoTexture": {
+              "changed": 30307,
+              "total": 1688669,
+              "maskPixels": 38361
+            },
+            "bumpTexture": {
+              "changed": 1937,
+              "total": 58622,
+              "maskPixels": 38361
+            },
+            "metallicTexture": {
+              "changed": 13839,
+              "total": 199511,
+              "maskPixels": 38361
+            }
+          },
+          "negative": {
+            "changed": 0,
+            "total": 0,
+            "maskPixels": 38361
+          },
+          "visible": 38361,
+          "glError": 0
+        },
+        {
+          "species": "ram",
+          "dimensions": {
+            "albedoTexture": [
+              1536,
+              1024
+            ],
+            "bumpTexture": [
+              1536,
+              1024
+            ],
+            "metallicTexture": [
+              1536,
+              1024
+            ]
+          },
+          "results": {
+            "albedoTexture": {
+              "changed": 23461,
+              "total": 1305958,
+              "maskPixels": 23949
+            },
+            "bumpTexture": {
+              "changed": 2769,
+              "total": 57025,
+              "maskPixels": 23949
+            },
+            "metallicTexture": {
+              "changed": 2293,
+              "total": 64013,
+              "maskPixels": 23949
+            }
+          },
+          "negative": {
+            "changed": 0,
+            "total": 0,
+            "maskPixels": 23949
+          },
+          "visible": 23949,
+          "glError": 0
+        },
+        {
+          "species": "pig",
+          "dimensions": {
+            "albedoTexture": [
+              1536,
+              1024
+            ],
+            "bumpTexture": [
+              1536,
+              1024
+            ],
+            "metallicTexture": [
+              1536,
+              1024
+            ]
+          },
+          "results": {
+            "albedoTexture": {
+              "changed": 27465,
+              "total": 1177563,
+              "maskPixels": 80039
+            },
+            "bumpTexture": {
+              "changed": 963,
+              "total": 41807,
+              "maskPixels": 80039
+            },
+            "metallicTexture": {
+              "changed": 8870,
+              "total": 202906,
+              "maskPixels": 80039
+            }
+          },
+          "negative": {
+            "changed": 0,
+            "total": 0,
+            "maskPixels": 80039
+          },
+          "visible": 80039,
+          "glError": 0
+        }
+      ],
+      "exceptions": [],
+      "http": []
+    },
+    "newMature": {
+      "release": "12d4a59",
+      "url": "https://reinekes.github.io/new_babylon_demo",
+      "herd": {
+        "origin": "https://reinekes.github.io",
+        "mode": "Взрослый бог",
+        "title": "Новый Вавилон — имена богов",
+        "webGL": 2,
+        "frames": 1203,
+        "animals": [
+          {
+            "file": "alluvial-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-pig-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "ambient-yard-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Animation"
+            ]
+          },
+          {
+            "file": "alluvial-pig.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "goat-downloaded.glb",
+            "skin": true,
+            "clips": [
+              "Idle",
+              "Walk",
+              "Graze",
+              "Rest",
+              "SourceRigAction"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "goat-downloaded.glb",
+            "skin": true,
+            "clips": [
+              "Idle",
+              "Walk",
+              "Graze",
+              "Rest",
+              "SourceRigAction"
+            ]
+          },
+          {
+            "file": "test-goat-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "alluvial-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-bull-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "ambient-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Eat",
+              "SourceOriginal-Idle_01",
+              "SourceOriginal-Idle_02_Chew",
+              "SourceOriginal-Walk"
+            ]
+          },
+          {
+            "file": "alluvial-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "test-bull-trellis.glb",
+            "skin": true,
+            "clips": [
+              "Walk"
+            ]
+          },
+          {
+            "file": "ambient-bull.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Eat",
+              "SourceOriginal-Idle_01",
+              "SourceOriginal-Idle_02_Chew",
+              "SourceOriginal-Walk"
+            ]
+          },
+          {
+            "file": "alluvial-ram.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "ambient-sheep-kenchoo.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Animation"
+            ]
+          },
+          {
+            "file": "alluvial-ram.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle"
+            ]
+          },
+          {
+            "file": "ambient-sheep-kenchoo.glb",
+            "skin": true,
+            "clips": [
+              "Walk",
+              "Idle",
+              "SourceOriginal-Animation"
+            ]
+          }
+        ]
+      },
+      "observations": [
+        {
+          "species": "bull",
+          "dimensions": {
+            "albedoTexture": [
+              1536,
+              1024
+            ],
+            "bumpTexture": [
+              1536,
+              1024
+            ],
+            "metallicTexture": [
+              1536,
+              1024
+            ]
+          },
+          "results": {
+            "albedoTexture": {
+              "changed": 23431,
+              "total": 1085905,
+              "maskPixels": 33356
+            },
+            "bumpTexture": {
+              "changed": 1731,
+              "total": 45690,
+              "maskPixels": 33356
+            },
+            "metallicTexture": {
+              "changed": 4248,
+              "total": 85061,
+              "maskPixels": 33356
+            }
+          },
+          "negative": {
+            "changed": 0,
+            "total": 0,
+            "maskPixels": 33356
+          },
+          "visible": 33356,
+          "glError": 0
+        },
+        {
+          "species": "ram",
+          "dimensions": {
+            "albedoTexture": [
+              1536,
+              1024
+            ],
+            "bumpTexture": [
+              1536,
+              1024
+            ],
+            "metallicTexture": [
+              1536,
+              1024
+            ]
+          },
+          "results": {
+            "albedoTexture": {
+              "changed": 21945,
+              "total": 1172302,
+              "maskPixels": 23494
+            },
+            "bumpTexture": {
+              "changed": 2506,
+              "total": 52986,
+              "maskPixels": 23494
+            },
+            "metallicTexture": {
+              "changed": 3154,
+              "total": 77958,
+              "maskPixels": 23494
+            }
+          },
+          "negative": {
+            "changed": 0,
+            "total": 0,
+            "maskPixels": 23494
+          },
+          "visible": 23494,
+          "glError": 0
+        },
+        {
+          "species": "pig",
+          "dimensions": {
+            "albedoTexture": [
+              1536,
+              1024
+            ],
+            "bumpTexture": [
+              1536,
+              1024
+            ],
+            "metallicTexture": [
+              1536,
+              1024
+            ]
+          },
+          "results": {
+            "albedoTexture": {
+              "changed": 20369,
+              "total": 847955,
+              "maskPixels": 51514
+            },
+            "bumpTexture": {
+              "changed": 1212,
+              "total": 43688,
+              "maskPixels": 51514
+            },
+            "metallicTexture": {
+              "changed": 10786,
+              "total": 267733,
+              "maskPixels": 51514
+            }
+          },
+          "negative": {
+            "changed": 0,
+            "total": 0,
+            "maskPixels": 51514
+          },
+          "visible": 51514,
+          "glError": 0
+        }
+      ],
+      "exceptions": [],
+      "http": []
+    }
+  },
+  "publicPlants": {
+    "inGame": {
+      "marsh-plumed-cane": {
+        "instances": 129,
+        "triangles": 1152,
+        "texture": true,
+        "pixels": {
+          "visible": 81591,
+          "without": 0
+        }
+      },
+      "marsh-cattail": {
+        "instances": 144,
+        "triangles": 720,
+        "texture": true,
+        "pixels": {
+          "visible": 186342,
+          "without": 0
+        }
+      },
+      "alluvial-awn-grass": {
+        "instances": 263,
+        "triangles": 620,
+        "texture": true,
+        "pixels": {
+          "visible": 65902,
+          "without": 0
+        }
+      },
+      "marsh-clubrush": {
+        "instances": 129,
+        "triangles": 950,
+        "texture": true,
+        "pixels": {
+          "visible": 135381,
+          "without": 0
+        }
+      }
+    },
+    "bank": {
+      "vertices": 12075,
+      "triangles": 19320,
+      "material": "laminated-bank-silt",
+      "albedo": "assets/3d/textures/river-silt_color.webp",
+      "normal": "assets/3d/textures/river-silt_normal.webp",
+      "pixels": {
+        "visible": 16112,
+        "without": 0
+      }
+    },
+    "soil": {
+      "albedo": "assets/3d/textures/floodplain-alluvium_color.webp",
+      "normal": "assets/3d/textures/floodplain-alluvium_normal.webp"
+    },
+    "gpu": 2,
+    "glError": 0,
+    "lod": {
+      "far": {
+        "nearOn": 0,
+        "farOn": 16,
+        "farTriangles": 3990,
+        "nearTriangles": 537898,
+        "atlas": true,
+        "changedPixels": 4395,
+        "control": 0,
+        "siltDisabledInOverview": true
+      },
+      "near": {
+        "detailed": 41,
+        "impostors": 0,
+        "siltEnabled": true
+      },
+      "glError": 0
+    },
+    "errors": [],
+    "failedRequests": [],
+    "origin": "https://reinekes.github.io/new_babylon_demo"
+  }
+}

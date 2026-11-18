@@ -234,7 +234,8 @@
           "note": "Трубчатый носик открывается в полость сосуда. В гончарном дворе собраны кувшины, неглубокие чаши и крупная тара.",
           "reference": "../docs/model-prototypes/sumer-building-set/pottery.webp",
           "previousCommit": "77bcbd61086452cd7a4cddd5311467d8fa99dd82",
-          "modelVersion": "047fcbb0044c"
+          "modelVersion": "047fcbb0044c",
+          "release": "../docs/versions/2026-11-18-05.md"
         },
         {
           "id": "brickyard",
@@ -248,7 +249,8 @@
           "note": "Сырец лежит на площадке для сушки. На кирпичах видны плоская постель, слегка выпуклый верх и сбитые углы.",
           "reference": "../docs/model-prototypes/sumer-building-set/brickyard.webp",
           "previousCommit": "77bcbd61086452cd7a4cddd5311467d8fa99dd82",
-          "modelVersion": "79683ae4af29"
+          "modelVersion": "79683ae4af29",
+          "release": "../docs/versions/2026-11-18-05.md"
         },
         {
           "id": "kiln",
@@ -262,7 +264,8 @@
           "note": "Штабель обожжённых кирпичей у печи легко отличить от сырца по ребру и цвету излома.",
           "reference": "../docs/model-prototypes/sumer-building-set/kiln.webp",
           "previousCommit": "77bcbd61086452cd7a4cddd5311467d8fa99dd82",
-          "modelVersion": "1aeb17f91b97"
+          "modelVersion": "1aeb17f91b97",
+          "release": "../docs/versions/2026-11-18-05.md"
         },
         {
           "id": "sheepfold",
@@ -380,7 +383,8 @@
           "note": "Для зерна у пекарни лежит седловидная зернотёрка с углублением и съёмным верхним камнем.",
           "reference": "../docs/model-prototypes/sumer-building-set/bakery.webp",
           "previousCommit": "77bcbd61086452cd7a4cddd5311467d8fa99dd82",
-          "modelVersion": "d7d185df7372"
+          "modelVersion": "d7d185df7372",
+          "release": "../docs/versions/2026-11-18-05.md"
         },
         {
           "id": "brewery",
@@ -394,7 +398,8 @@
           "note": "У чанов стоят пузатые сосуды для брожения. Узкие горловины и следы формовки видны у края площадки.",
           "reference": "../docs/model-prototypes/sumer-building-set/brewery.webp",
           "previousCommit": "77bcbd61086452cd7a4cddd5311467d8fa99dd82",
-          "modelVersion": "1450f27f9443"
+          "modelVersion": "1450f27f9443",
+          "release": "../docs/versions/2026-11-18-05.md"
         },
         {
           "id": "dairyStore",
