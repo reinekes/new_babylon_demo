@@ -52,14 +52,19 @@ def bake(kind):
     mica=np.clip(grain-1.55,0,1)
     if kind=='floodplain-alluvium':
         line,shoulder=baking_cracks()
-        # Desiccation plates survive in patches; adjacent silt drapes and dust
-        # obscure most of the network, even at the edges of this repeating tile.
-        patch=np.clip(.40+.50*noise(45)+.22*noise(13),0,1)
+        # Compact flood silt has a continuous bed of fines. Most optical
+        # contrast is in grains, with occasional exposed hairline fissures.
+        # Broad contrast here would repeat across every street in the city.
+        patch=np.clip((noise(45)-.38)*.52+.20*noise(13),0,1)
         grit=np.maximum(0,grain-1.0)
-        lift=.37*cloud+.13*clot+.13*grit+.05*dust-patch*(.54*line+.15*shoulder)
-        value=6.3*cloud+3.5*clot+3.0*grain+2.4*dust+6.8*mica-patch*(21*line+5*shoulder)
-        base=[152,135,111]
-        ochre=(.72*cloud+.28*noise(20))[:,:,None]*[3.0,.9,-1.7]
+        # Isolated fine gravel has a rounded crown with a narrow contact
+        # shadow. The cutoffs leave most of the bed as uninterrupted silt.
+        pebbles=np.clip((grain-1.95)*1.7,0,1)*np.clip(clot+.27,0,1)
+        rim=np.maximum(0,np.roll(pebbles,2,axis=1)-pebbles)
+        lift=.084*clot+.094*grain+.074*grit+.009*dust+.15*pebbles-patch*(.23*line+.046*shoulder)
+        value=.83*cloud+1.30*clot+2.65*grain+1.65*dust+4.2*mica+11*pebbles-5*rim-patch*(11*line+2.4*shoulder)
+        base=[157,143,121]
+        ochre=(.6*cloud+.4*noise(20))[:,:,None]*[.56,.18,-.20]
     else:
         # Discontinuous, low asymmetric ripples from shallow water. Periodic
         # warping breaks long parallel stripes. Compact channels retain fine sand.
@@ -77,5 +82,34 @@ def bake(kind):
     Image.fromarray(normal_map(lift,1.33)).save(OUTPUT/(kind+'_normal.webp'),quality=95,method=5)
 
 
+def bake_water_slopes():
+    """Encode two periodic ripple slopes and the area sheltered from wind."""
+    size = 512
+    random = np.random.default_rng(137)
+    cycles = np.fft.fftfreq(size) * size
+    kx, ky = np.meshgrid(cycles, cycles)
+
+    def wind_band(low, high, across, along, angle):
+        c, s = np.cos(angle), np.sin(angle)
+        k = np.hypot((kx*c + ky*s)*across, (ky*c - kx*s)*along)
+        profile = np.exp(-.5*((k - (high+low)*.5)/((high-low)*.38))**2)
+        height = np.fft.fft2(random.normal(size=k.shape)) * profile
+        dx = np.fft.ifft2(1j*kx*height).real
+        dy = np.fft.ifft2(1j*ky*height).real
+        scale = np.sqrt((dx*dx + dy*dy).mean())
+        return dx/scale, dy/scale
+
+    broad_x, broad_y = wind_band(2, 13, 1.55, .75, .29)
+    fine_x, fine_y = wind_band(6, 32, 1.3, .80, -.36)
+    gusts = np.fft.fft2(random.normal(size=kx.shape)) * np.exp(-(kx*kx+ky*ky)/8)
+    fetch = np.fft.ifft2(gusts).real
+    fetch = (fetch-fetch.mean()) / fetch.std()
+    channels = np.stack((.5+(.64*broad_x+.36*fine_x)*.25,
+                         .5+(.64*broad_y+.36*fine_y)*.25, .5+fetch*.16), axis=-1)
+    pixels = np.uint8(np.clip(channels, 0, 1)*255+.5)
+    Image.fromarray(pixels).save(OUTPUT/'alluvial-water-slopes.webp', lossless=True, method=6)
+
+
 if __name__=='__main__':
     for surface in ('floodplain-alluvium','river-silt'):bake(surface)
+    bake_water_slopes()

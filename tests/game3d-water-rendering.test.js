@@ -63,14 +63,15 @@ test('both water layers move ripples in the saved river direction and reuse the 
    const startup=createDistrictTerrain(B,scene,s,materials);
    try{
     const early=startup.meshes.find(m=>m.name==='living-river').material;
+    assert.equal(early.shaderPath.fragment,full.material.shaderPath.fragment,'the initial valley uses the same optics');
+    assert.ok(early.getActiveTextures()[0].url.endsWith('/alluvial-water-slopes.webp'));
     for(const sign of [-1,1]){
      s.world.river.flowSign=sign;startup.update(s,5);full.update(s,5);
-     for(const material of [early,full.material]){const flow=material._vectors2.riverFlow;assert.equal(flow.x,axis==='x'?sign:0);assert.equal(flow.y,axis==='y'?sign:0);}
+     for(const material of [early,full.material]){const flow=material._vectors2.riverFlow;assert.equal(flow.x,axis==='x'?sign:0);assert.equal(flow.y,axis==='y'?sign:0);
+      assert.deepEqual(Array.from(material._vectors3.riverCurve.asArray()),[.12/6,1,1.2*6]);assert.equal(material._floats.riverGrade,.08);assert.equal(material._floats.time,5);}
      const previous=full.material._vectors2.riverFlow;full.update(s,6);assert.equal(full.material._vectors2.riverFlow,previous);
     }
    }finally{startup.dispose();}
   }
-  assert.match(B.Effect.ShadersStore.districtRiverFragmentShader,/vWorld\.xz-riverFlow\*time/);
-  assert.match(B.Effect.ShadersStore.gameClearWaterFragmentShader,/vWorld\.xz-riverFlow\*mix\(time/);
  }finally{full.dispose();scene.dispose();engine.dispose();}
 });

@@ -23,11 +23,13 @@ group('goat-downloaded','active','Основная коза симуляции �
 group('goat-authored-lod','optional','Авторская коза через API createGameGoats; main выбирает downloaded.','game3d/goats.js|authored:');
 group('goat-authored goat','spare','Сохранённая авторская полная коза / исходная загруженная коза; вызова загрузки в runtime нет.','assets/art-courtyard/ATTRIBUTION.md|## Goats');
 group('cat-walk cat-sitting gazelle-downloaded','active','Кошки/газели симуляции; два независимых кошачьих рига переключаются по действию.','game3d/imported-fauna.js|IMPORTED_FAUNA_MODELS');
-group('alluvial-ram alluvial-bull alluvial-pig','active','Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.','game3d/test-livestock.js|alluvial-');
-group('test-pig-trellis test-goat-trellis test-bull-trellis','active','Текстурированная модель TRELLIS.2 с ходьбой в прогулочном стаде.','game3d/test-livestock.js|loadAnimals');
+group('pasture-ram pasture-bull pasture-pig','active','Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида.','game3d/test-livestock.js|pasture-');
+group('alluvial-ram alluvial-bull alluvial-pig','fallback','Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой.','game3d/test-livestock.js|fallback:');
+group('test-goat-trellis','active','Один из обликов свободного стада коз.','game3d/test-livestock.js|test-goat-trellis');
+group('test-pig-trellis test-bull-trellis','spare','Исходные модели TRELLIS.2 с прежней походкой. Открываются в атласе.','model-atlas/catalog.js|test-bull-trellis');
 group('ambient-bull','active','Декоративный бык, коровы/телята молочного двора и отдельные рабочие волы.','game3d/ambient-fauna.js|dairyHerd');
 group('ambient-dog imported-boar imported-fox imported-lioness imported-orange-bird','active','Дополнительная фауна; декоративные актёры не являются отдельными ресурсами/животными сохранения.','game3d/ambient-fauna.js|AMBIENT_MODELS');
-group('ambient-yard-pig','active','Один из двух обликов свободного стада свиней.','game3d/ambient-fauna.js|YARD_PIG_MODEL');
+group('ambient-yard-pig','optional','Прежняя модель дворовой свиньи для отдельных сцен.','game3d/ambient-fauna.js|YARD_PIG_MODEL');
 group('shore-mallard','active','Селезень кряквы у берега.','game3d/ambient-fauna.js|SHORE_MODELS');
 group('shore-mallard-female','active','Самка кряквы у берега. Добавлен клип покоя.','game3d/ambient-fauna.js|SHORE_MODELS');
 group('shore-seagull','optional','Чайка в отдельных сценах, скрыта на основной карте.','game3d/ambient-fauna.js|SHORE_MODELS');

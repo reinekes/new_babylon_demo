@@ -113,6 +113,12 @@ export async function loadValleyPlantSources(B,scene,files,meshes,containers,kin
    const upwardCanopy=parts.every(p=>{const n=p.getVerticesData(B.VertexBuffer.NormalKind);return n?.length&&n.every((v,i)=>i%3!==1||v>.98);});
    if(mat){
    mat.metallic=0;mat.roughness=.92;
+   // The dry-grass atlas stores the same mid-gloss green channel on every
+   // upright blade. Use the matte straw roughness so they do not all flare
+   // white together at grazing sun angles. Keep the AO and normal maps.
+   if(mat.name==='M_dry_grass'){
+    mat.useRoughnessFromMetallicTextureGreen=false;mat.useRoughnessFromMetallicTextureAlpha=false;
+   }
    if(mat.albedoTexture?.hasAlpha||mat.transparencyMode===B.Material.MATERIAL_ALPHATEST){
     mat.transparencyMode=B.Material.MATERIAL_ALPHATEST;mat.backFaceCulling=false;
     // Thin leaf cards transmit sunlight through their authored green atlas.

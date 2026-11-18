@@ -1,16 +1,16 @@
 {
-  "release": "alluvial-craft-20261118",
+  "release": "river-herds-20261118",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 33580,
-      "sha256": "8bd9d65e78136e31de8265dfc3784935996dce1f06238588f58d1c46cf426d95"
+      "bytes": 34922,
+      "sha256": "c1894b1efd15a52244da08820427e47d741cf73ece60da2571326ca47259fca9"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 31857,
-      "sha256": "a1214dccc7ae2171df1bea9139b03f45a9fbd5c177242b4f4f850914ce2dd7b6"
+      "bytes": 32601,
+      "sha256": "2065e54489d04887e2a4ad29024d252e6afb241f839f4a5b0a6d420e6b9d3bc1"
     },
     {
       "file": "festival-candle-report.json",
@@ -30,6 +30,43 @@
       "meshes": 1,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "models/pasture-ram.glb",
+      "bytes": 2799184,
+      "sha256": "b2cc547a1534b87d4544e48e642360c1cdd0e41c20248596d6adc93e83e5ec96",
+      "triangles": 16360,
+      "meshes": 2,
+      "bones": 38,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Animation"
+      ]
+    },
+    {
+      "file": "models/pasture-pig.glb",
+      "bytes": 1699180,
+      "sha256": "7bb75ccbe1b74509fa628c61fa74005dc643fe7214798a373a409d973d06ded4",
+      "triangles": 26126,
+      "meshes": 4,
+      "bones": 17,
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
+    },
+    {
+      "file": "models/pasture-bull.glb",
+      "bytes": 1956500,
+      "sha256": "708a1c70678c21f496aef8d09eca2596272e7c2f34bd9c66e517ab1353747be1",
+      "triangles": 14512,
+      "meshes": 1,
+      "bones": 15,
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
     },
     {
       "file": "models/alluvial-bull.glb",

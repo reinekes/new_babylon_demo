@@ -182,7 +182,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   }
   terrainSignature=next;terrainRoadSignature=roads;catGroundHeights.clear();
   if(base){for(const m of base.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}base.dispose();}
-  base=createDistrictTerrain(B,scene,s,materials,{renderRoads:false});
+  base=createDistrictTerrain(B,scene,s,materials,{renderRoads:false,curvedLakeBeds:true});
   for(const m of base.meshes){if(['connected-earth-streets','living-river','saved-lakes','valley-scrub','river-reed-beds'].includes(m.name)||palmSources.length&&['date-palm-trunks','date-palm-crowns'].includes(m.name))m.setEnabled(false);if(m.name==='soft-riparian-grass'){const c=m.getVerticesData(B.VertexBuffer.ColorKind);for(let i=3;i<c.length;i+=4)c[i]*=.43;m.setVerticesData(B.VertexBuffer.ColorKind,c,true);}registerMeshes([m]);}
  }
  // Use the supplied CC BY 4.0 date palm; retain the existing licensed palm as a
@@ -424,7 +424,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   previousFlood=view;
   remove(floodMeshes);
   if(!view?.tiles.length)return;
-  floodMaterial??=material('floodplain-water-tint','#3c949d');
+  floodMaterial??=material('floodplain-water-tint','#78857a');
   floodMaterial.backFaceCulling=false;
   floodMaterial.transparencyMode=B.Material.MATERIAL_ALPHABLEND;
   floodMaterial.alpha=view.phase==='active'?.6:.27;

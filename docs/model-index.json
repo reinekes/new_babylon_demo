@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "manifestRelease": "alluvial-craft-20261118",
+  "manifestRelease": "river-herds-20261118",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 98,
-    "active": 71,
-    "fallback": 10,
-    "optional": 6,
-    "spare": 11
+    "total": 101,
+    "active": 68,
+    "fallback": 13,
+    "optional": 7,
+    "spare": 13
   },
   "errors": [],
   "runtimeInputs": [
@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "3406cad244f56ecaad996132209341a1dbe5d9d25f366eb76cf31b1973ed9cdc"
+      "sha256": "70483acee073bd84febda73159d6d5fc5f8a710cd9a2b19992346e8ef7c2185e"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -89,11 +89,11 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "ca9ce6a9efa03f9044561895e85810ed07a0fb08772e207a6c30b418385dc5d1"
+      "sha256": "732974f956d72fdf034aed8d568526cd33ce4e7375494d189c9cf6ba897e51ea"
     },
     {
       "file": "game3d/valley-vegetation.js",
-      "sha256": "8772ef61cfc7628fe05bbdc9b30741750553815b2e6fe43b4d6aa137e50f7503"
+      "sha256": "81dddf5e7d621270a9bfc58f008a349984b38c5bf4405c38a17bec38fb93f0cc"
     }
   ],
   "models": [
@@ -163,9 +163,9 @@
     },
     {
       "file": "alluvial-bull.glb",
-      "status": "active",
-      "purpose": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.",
-      "classificationEvidence": "game3d/test-livestock.js|alluvial-",
+      "status": "fallback",
+      "purpose": "Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой.",
+      "classificationEvidence": "game3d/test-livestock.js|fallback:",
       "bytes": 2720752,
       "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
       "version": "098d0f5f64c3",
@@ -201,9 +201,9 @@
     },
     {
       "file": "alluvial-pig.glb",
-      "status": "active",
-      "purpose": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.",
-      "classificationEvidence": "game3d/test-livestock.js|alluvial-",
+      "status": "fallback",
+      "purpose": "Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой.",
+      "classificationEvidence": "game3d/test-livestock.js|fallback:",
       "bytes": 2576076,
       "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
       "version": "b6a003319428",
@@ -239,9 +239,9 @@
     },
     {
       "file": "alluvial-ram.glb",
-      "status": "active",
-      "purpose": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.",
-      "classificationEvidence": "game3d/test-livestock.js|alluvial-",
+      "status": "fallback",
+      "purpose": "Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой.",
+      "classificationEvidence": "game3d/test-livestock.js|fallback:",
       "bytes": 2618268,
       "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
       "version": "d4906b0586e3",
@@ -301,12 +301,6 @@
           "model": "ambient-bull.glb",
           "file": "game3d/ambient-fauna.js",
           "line": 22,
-          "kind": "literal"
-        },
-        {
-          "model": "ambient-bull.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 12,
           "kind": "literal"
         }
       ]
@@ -457,19 +451,13 @@
           "file": "game3d/ambient-fauna.js",
           "line": 23,
           "kind": "literal"
-        },
-        {
-          "model": "ambient-sheep-kenchoo.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 13,
-          "kind": "literal"
         }
       ]
     },
     {
       "file": "ambient-yard-pig.glb",
-      "status": "active",
-      "purpose": "Один из двух обликов свободного стада свиней.",
+      "status": "optional",
+      "purpose": "Прежняя модель дворовой свиньи для отдельных сцен.",
       "classificationEvidence": "game3d/ambient-fauna.js|YARD_PIG_MODEL",
       "bytes": 2105828,
       "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
@@ -494,12 +482,6 @@
           "model": "ambient-yard-pig.glb",
           "file": "game3d/ambient-fauna.js",
           "line": 43,
-          "kind": "literal"
-        },
-        {
-          "model": "ambient-yard-pig.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 10,
           "kind": "literal"
         }
       ]
@@ -1767,6 +1749,103 @@
       ]
     },
     {
+      "file": "pasture-bull.glb",
+      "status": "active",
+      "purpose": "Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида.",
+      "classificationEvidence": "game3d/test-livestock.js|pasture-",
+      "bytes": 1956500,
+      "sha256": "708a1c70678c21f496aef8d09eca2596272e7c2f34bd9c66e517ab1353747be1",
+      "version": "708a1c70678c",
+      "triangles": 14512,
+      "meshes": 1,
+      "bones": 15,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "Новый Вавилон / TRELLIS.2 Standard (3D Valley)",
+          "license": "Результат генерации по референсу проекта, условия 3D Valley",
+          "source": "https://3dvalley.com/tools/create/image-to-3d",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "pasture-bull.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 12,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "pasture-pig.glb",
+      "status": "active",
+      "purpose": "Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида.",
+      "classificationEvidence": "game3d/test-livestock.js|pasture-",
+      "bytes": 1699180,
+      "sha256": "7bb75ccbe1b74509fa628c61fa74005dc643fe7214798a373a409d973d06ded4",
+      "version": "7bb75ccbe1b7",
+      "triangles": 26126,
+      "meshes": 4,
+      "bones": 17,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "New Babylon, generated with Microsoft TRELLIS.2",
+          "license": "TRELLIS.2 code and weights: MIT. Project-generated reference and asset.",
+          "source": "https://huggingface.co/spaces/microsoft/TRELLIS.2",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "pasture-pig.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 10,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "pasture-ram.glb",
+      "status": "active",
+      "purpose": "Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида.",
+      "classificationEvidence": "game3d/test-livestock.js|pasture-",
+      "bytes": 2799184,
+      "sha256": "b2cc547a1534b87d4544e48e642360c1cdd0e41c20248596d6adc93e83e5ec96",
+      "version": "b2cc547a1534",
+      "triangles": 16360,
+      "meshes": 2,
+      "bones": 38,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Animation"
+      ],
+      "sources": [
+        {
+          "author": "kenchoo (https://sketchfab.com/kenchoo)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/sheep-08b05ae799d947f1a68c49b2d661eb53",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "pasture-ram.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 13,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
       "file": "reed-camp-sf3d.glb",
       "status": "fallback",
       "purpose": "Резерв временного шалаша при ошибке загрузки тростникового навеса из каталога.",
@@ -2771,9 +2850,9 @@
     },
     {
       "file": "test-bull-trellis.glb",
-      "status": "active",
-      "purpose": "Текстурированная модель TRELLIS.2 с ходьбой в прогулочном стаде.",
-      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "status": "spare",
+      "purpose": "Исходные модели TRELLIS.2 с прежней походкой. Открываются в атласе.",
+      "classificationEvidence": "model-atlas/catalog.js|test-bull-trellis",
       "bytes": 1930912,
       "sha256": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9",
       "version": "67a930020e52",
@@ -2791,20 +2870,13 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": [
-        {
-          "model": "test-bull-trellis.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 12,
-          "kind": "literal"
-        }
-      ]
+      "references": []
     },
     {
       "file": "test-goat-trellis.glb",
       "status": "active",
-      "purpose": "Текстурированная модель TRELLIS.2 с ходьбой в прогулочном стаде.",
-      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "purpose": "Один из обликов свободного стада коз.",
+      "classificationEvidence": "game3d/test-livestock.js|test-goat-trellis",
       "bytes": 1108340,
       "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
       "version": "0a752a0c419a",
@@ -2833,9 +2905,9 @@
     },
     {
       "file": "test-pig-trellis.glb",
-      "status": "active",
-      "purpose": "Текстурированная модель TRELLIS.2 с ходьбой в прогулочном стаде.",
-      "classificationEvidence": "game3d/test-livestock.js|loadAnimals",
+      "status": "spare",
+      "purpose": "Исходные модели TRELLIS.2 с прежней походкой. Открываются в атласе.",
+      "classificationEvidence": "model-atlas/catalog.js|test-bull-trellis",
       "bytes": 967568,
       "sha256": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902",
       "version": "fb31c4e3bd88",
@@ -2853,14 +2925,7 @@
           "evidence": "asset.extras"
         }
       ],
-      "references": [
-        {
-          "model": "test-pig-trellis.glb",
-          "file": "game3d/test-livestock.js",
-          "line": 10,
-          "kind": "literal"
-        }
-      ]
+      "references": []
     },
     {
       "file": "uruk-city-gate.glb",

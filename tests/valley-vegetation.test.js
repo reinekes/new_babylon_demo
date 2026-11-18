@@ -85,9 +85,22 @@ test('leaf lighting flips double-sided normals without changing source atlas, al
 test('actual dry-grass upward canopy normals stay up on both faces, while real reed normals keep two-sided lighting',async()=>{
  Object.assign(sandbox,{TextDecoder,TextEncoder,URL,Blob});vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url),'utf8'),sandbox);
  const engine=new B.NullEngine(),scene=new B.Scene(engine),original=B.SceneLoader.LoadAssetContainerAsync,meshes=[],containers=[];
- B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>p.skipMaterials=true);const raw=readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url)),c=await original.call(B.SceneLoader,'',new Uint8Array(raw),scene,undefined,'.glb');for(const m of c.meshes)if(m.getTotalVertices()>0){const mat=new B.PBRMaterial(m.name+'-test',scene);mat.backFaceCulling=false;mat.transparencyMode=B.Material.MATERIAL_ALPHATEST;m.material=mat;c.materials.push(mat);}return c;};
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{
+  B.SceneLoader.OnPluginActivatedObservable.addOnce(p=>p.skipMaterials=true);
+  const raw=readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url));
+  const gltf=JSON.parse(raw.subarray(20,20+raw.readUInt32LE(12)));
+  const c=await original.call(B.SceneLoader,'',new Uint8Array(raw),scene,undefined,'.glb');
+  for(const m of c.meshes)if(m.getTotalVertices()>0){
+   const materialName=file.startsWith('valley-dry-grass')?gltf.materials[0].name:m.name+'-test';
+   const mat=new B.PBRMaterial(materialName,scene);mat.backFaceCulling=false;mat.transparencyMode=B.Material.MATERIAL_ALPHATEST;
+   mat.useRoughnessFromMetallicTextureGreen=true;mat.useRoughnessFromMetallicTextureAlpha=false;
+   m.material=mat;c.materials.push(mat);
+  }return c;
+ };
  try{const grass=await loadValleyPlantSources(B,scene,['valley-dry-grass-1.glb','valley-dry-grass-2.glb','valley-dry-grass-3.glb'],meshes,containers,'grass'),reed=await loadValleyPlantSources(B,scene,['valley-reed-1.glb'],meshes,containers,'reed');assert.equal(grass.length,3);assert.equal(reed.length,2);
   for(const m of grass){assert.equal(m.metadata.upwardCanopy,true);assert.equal(m.material.twoSidedLighting,false);const normals=m.getVerticesData(B.VertexBuffer.NormalKind);for(let i=1;i<normals.length;i+=3)assert.ok(normals[i]>.999);assert.equal(m.material.unlit,false);assert.equal(m.material.emissiveColor.r,0);}
+  for(const m of grass){assert.equal(m.material.useRoughnessFromMetallicTextureGreen,false);assert.equal(m.material.useRoughnessFromMetallicTextureAlpha,false);assert.equal(m.material.roughness,.92);}
+  for(const m of reed)assert.equal(m.material.useRoughnessFromMetallicTextureGreen,true);
   for(const m of reed){assert.equal(m.metadata.upwardCanopy,false);assert.equal(m.material.twoSidedLighting,true);}
   // Reflected glTF positions and normals are already baked into left-handed
   // geometry by MergeMeshes. Compare actual winding to a native Babylon box;

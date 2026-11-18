@@ -28,6 +28,9 @@ const names = {
   'ambient-bull':'Бык и основа модели вола','ambient-donkey':'Вьючный осёл',
   'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца · вариант стада','sheep':'Овца из овчарни',
   'ambient-yard-pig':'Домашняя свинья',
+  'pasture-ram':'Пастбищный баран',
+  'pasture-bull':'Пастбищный бык',
+  'pasture-pig':'Щетинистая домашняя свинья',
   'alluvial-pig':'Домашняя свинья · щетинистая',
   'alluvial-bull':'Длиннорогий бык · гнедой',
   'alluvial-ram':'Баран · спиральные рога',
@@ -55,7 +58,7 @@ const ages = {male:'Мужчина',female:'Женщина',child:'Ребёно�
 function glbGroup(name) {
   if (/^(?:human-native-|source-walk-|sumer-(?:people|child|adolescent)|resident|historical-man|caravan-merchant)/.test(name)) return 'people';
   if (/duck|goose|bird|seagull|mallard/.test(name)) return 'birds';
-  if (/^alluvial-(?:ram|pig|bull)$|^test-(?:pig|goat|bull)-trellis$|^ambient-|^caravan-camel|^cat-|^gazelle|^goat|^imported-|^jackal|^sheep/.test(name)) return 'animals';
+  if (/^(?:alluvial|pasture)-(?:ram|pig|bull)$|^test-(?:pig|goat|bull)-trellis$|^ambient-|^caravan-camel|^cat-|^gazelle|^goat|^imported-|^jackal|^sheep/.test(name)) return 'animals';
   if (name==='river-cargo-boat') return 'transport';
   if (/^crop-|^date-palm|^valley-|^miracle-|^marsh-|^alluvial-awn-grass$/.test(name)) return 'plants';
   if (name==='festival-candle') return 'goods';

@@ -169,3 +169,9 @@ Adaptations by New Babylon: scripts/art-courtyard/prepare_valley_plants.py. Grou
 ## Рынок 2 × 2
 
 `market-2x2.glb` — собственная геометрия и материалы проекта по концепту ImageGen. Отдельная лицензия для этого ассета не указана.
+
+## Пастбищные животные
+
+- `pasture-ram.glb` использует сетку, UV-развёртку, шерсть и скелет овцы kenchoo. Проект изменил грудь, голову, уши, хвост и шерстяной контур, добавил закрученные роговые чехлы. Сохранены оригинальная атрибуция внутри GLB и исходная карточка овцы. [Sheep — kenchoo](https://sketchfab.com/3d-models/sheep-08b05ae799d947f1a68c49b2d661eb53) · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- `pasture-bull.glb` создан на основе проектной модели `test-bull-trellis.glb`, полученной через TRELLIS.2 Standard в 3D Valley. Изменены холка, рога, голова, круп, кожа и походка. Сохранены сведения о происхождении исходного файла. [3D Valley](https://3dvalley.com/tools/create/image-to-3d)
+- `pasture-pig.glb` создан на основе проектной модели `test-pig-trellis.glb`. Перестроены пропорции, носовой диск и ушной хрящ, добавлены щетина и анимация головы и ушей. [Microsoft TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2)

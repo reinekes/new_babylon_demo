@@ -1,8 +1,9 @@
 import {roadIsBuilt} from '../roads.js';
 import {footprintSize} from '../footprints.js';
 import {isStrictSumer} from '../scenario-profiles.js';
-import {atmosphereDeclarations,atmosphereDefines,atmosphereUniforms,bindAtmosphere} from '../game3d/atmosphere.js';
-import {worldWidth,worldHeight,river,riverAxis,riverLength,riverAcrossSize,worldFromRiver,signedRiverDistance,riverFlowVector} from '../world.js';
+import {createAlluvialWaterMaterial} from '../game3d/alluvial-water.js';
+import {refineLakeBedGrid} from './lake-bed-grid.js';
+import {worldWidth,worldHeight,river,riverAxis,riverLength,riverAcrossSize,worldFromRiver,signedRiverDistance} from '../world.js';
 import {generateStreets} from '../city-life.js';
 import {cachedStreetsFor} from '../workforce.js';
 import {RIVER_BANK_SECTION,riverRows,riverStepsPerTile,SCENERY_MARGIN} from './river-profile.js';
@@ -97,11 +98,16 @@ export function alluvialHeight(x,y,s,d=shoreDistance(x,y,s)){
 }
 export function alluvialNormal(x,y,s){const e=.02,dx=(alluvialHeight(x+e,y,s)-alluvialHeight(x-e,y,s))/(2*e*TILE),dz=(alluvialHeight(x,y+e,s)-alluvialHeight(x,y-e,s))/(2*e*TILE),length=Math.hypot(dx,1,dz);return [-dx/length,1/length,-dz/length];}
 export function alluvialColor(x,y,s,d=shoreDistance(x,y,s)){
- const fertile=smooth((4.3-Math.abs(signedRiverDistance(x,y,s)))/3),wet=1-smooth((d+.05)/.7);
- // Fine grain comes from the shared soil texture. Vertex colour carries only
- // broad variation so long exterior triangles do not turn grain into stripes.
- const tone=.024+.012*Math.sin(x*.14+y*.08)*Math.sin(y*.13-x*.055),sand=smooth(dryRelief(x,y,s,d)/2.5)*.105;
- return [.92-fertile*.20-wet*.20+tone+sand,.83-fertile*.09-wet*.17+tone+sand*.78,.64-fertile*.12-wet*.12+tone+sand*.52,1];
+ // Moisture darkens the same sediment through the river and lake margins.
+ // Dune slopes already catch directional light through their surface normals.
+ const moisture=1-smooth((d+.12)/2.6),wet=1-smooth((d+.10)/.60);
+ // Silt beds can extend across several plots. Interpolate one world-locked
+ // field so the small repeat of the grain atlas cannot stamp out the bed.
+ const u=x*.29+y*.11,v=y*.29-x*.11,i=Math.floor(u),j=Math.floor(v);
+ const a=smooth(u-i),b=smooth(v-j);
+ const near=noise(i,j)*(1-a)+noise(i+1,j)*a,far=noise(i,j+1)*(1-a)+noise(i+1,j+1)*a;
+ const tone=.066*((1-b)*near+b*far-.5);
+ return [.94-.09*moisture-.11*wet+tone,.90-.06*moisture-.10*wet+tone*.89,.80-.04*moisture-.08*wet+tone*.73,1];
 }
 function terrainVertex(g,x,y,s,scenery){
  const d=shoreDistance(x,y,s);
@@ -112,7 +118,9 @@ function terrainVertex(g,x,y,s,scenery){
  g.colors.push(...alluvialColor(x,y,s,d));
 }
 function stripGeometry(g,rows,xs,s,scenery){
- let previous=null;const triangle=(a,b,c)=>riverAxis(s)==='x'?g.indices.push(a,c,b):g.indices.push(a,b,c);
+ // Produce upward Babylon winding at the source. Both the refined bed and
+ // road-masked grass can now derive independent topologies from the same strip.
+ let previous=null;const triangle=(a,b,c)=>riverAxis(s)==='x'?g.indices.push(a,b,c):g.indices.push(a,c,b);
  for(const y of rows){const coordinates=xs(y),start=g.positions.length/3;for(const across of coordinates){const p=worldFromRiver(across,y,s);terrainVertex(g,p.x,p.y,s,scenery);}
   const row={coordinates,start};if(previous){let a=0,b=0;while(a<previous.coordinates.length-1||b<coordinates.length-1){
    if(a===previous.coordinates.length-1||(b<coordinates.length-1&&coordinates[b+1]<previous.coordinates[a+1])){triangle(previous.start+a,start+b,start+b+1);b++;}
@@ -121,7 +129,8 @@ function stripGeometry(g,rows,xs,s,scenery){
  }
 }
 export function alluvialTerrainGeometry(s){
- const g={positions:[],indices:[],colors:[]};stripGeometry(g,riverRows(false,s),y=>terrainRowXs(y,true,-.5,riverAcrossSize(s)-.5,s),s,false);return g;
+ const g={positions:[],indices:[],colors:[]};stripGeometry(g,riverRows(false,s),y=>terrainRowXs(y,true,-.5,riverAcrossSize(s)-.5,s),s,false);
+ return g;
 }
 export function alluvialSceneryGeometry(s){
  const g={positions:[],indices:[],colors:[]},rows=riverRows(true,s),main=riverRows(false,s);
@@ -134,7 +143,7 @@ export function alluvialSceneryGeometry(s){
  return g;
 }
 
-export function createDistrictTerrain(B,scene,initialState,materials,{renderRoads=true,finishedRoadsOnly=false}={}) {
+export function createDistrictTerrain(B,scene,initialState,materials,{renderRoads=true,finishedRoadsOnly=false,curvedLakeBeds=false}={}) {
   const meshes=[],ownedMaterials=[],textures=[];
   let state=initialState,roadMeshes=[],roadSignature='',waterTime=0;
   const leafBatches=new Map();
@@ -145,11 +154,10 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
     const floodplain=name==='alluvial-valley'||name==='distant-alluvial-plain',tileScale=name.includes('grass')?8:4.5;
     for(let i=0;i<positions.length;i+=3){
       const x=positions[i],z=positions[i+2];
-      // World-locked broad turns in the silt sheet soften repetition. Both
-      // terrain meshes evaluate the same map on every shared boundary vertex.
-      const u=floodplain?.60*Math.sin(x*.059+z*.071)+.31*Math.sin(z*.16-x*.023):0;
-      const v=floodplain?.52*Math.sin(z*.043-x*.081)+.24*Math.sin(x*.133+z*.016):0;
-      data.uvs.push(x/tileScale+u,z/tileScale+v);
+      // A single, metric projection keeps grains the same size across both
+      // meshes, even on distant triangles with very different edge lengths.
+      if(floodplain)data.uvs.push((.93*x+.37*z)/3.4,(.93*z-.37*x)/3.4);
+      else data.uvs.push(x/tileScale,z/tileScale);
     }
     B.VertexData.ComputeNormals(positions,indices,data.normals);
     // Babylon's left-handed front winding differs from a right-handed cross product.
@@ -173,61 +181,46 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
   // Extra columns follow the exact water cross-section, so coarse land triangles
   // cannot poke through the separate transparent river as angular dry patches.
   const ground=alluvialTerrainGeometry(state),background=alluvialSceneryGeometry(state);
-  geometry('alluvial-valley',ground.positions,ground.indices,materials.soil,ground.colors,ground.normals).freezeWorldMatrix();
+  let bed=ground;
+  if(curvedLakeBeds&&state.world?.lakes?.length){
+    // Only the detailed soil is carved to the organic contour. Grass retains
+    // its original fixed topology so a later wet/dry mask can reuse its mesh.
+    bed={positions:ground.positions.slice(),normals:ground.normals.slice(),colors:ground.colors.slice(),indices:ground.indices};
+    refineLakeBedGrid(bed,state,TILE,worldWidth(state),worldHeight(state));
+  }
+  geometry('alluvial-valley',bed.positions,bed.indices,materials.soil,bed.colors,bed.normals).freezeWorldMatrix();
   geometry('distant-alluvial-plain',background.positions,background.indices,materials.soil,background.colors,background.normals).freezeWorldMatrix();
-  // Original lightweight water shader: directional ripples, Fresnel sky and sun glints.
-  // No mirrored scene render, downloaded environment, or per-frame geometry allocation.
-  B.Effect.ShadersStore.districtRiverVertexShader=`
-    precision highp float;
-    attribute vec3 position;
-    uniform mat4 world,worldViewProjection;
-    varying vec3 vWorld;
-    void main(){vWorld=(world*vec4(position,1.0)).xyz;gl_Position=worldViewProjection*vec4(position,1.0);}`;
-  B.Effect.ShadersStore.districtRiverFragmentShader=`
-    precision highp float;
-    varying vec3 vWorld;
-    uniform vec3 cameraPosition;
-    uniform float time,night;
-    uniform vec2 riverFlow;
-    uniform vec3 sunLightDirection;
-    ${atmosphereDeclarations}
-    void main(){
-      vec2 p=vWorld.xz-riverFlow*time*.62;
-      float a=p.x*2.8+p.y*1.4,b=p.x*1.1-p.y*3.7;
-      vec3 n=normalize(vec3(.13*cos(a)+.06*cos(b),1.0,.08*cos(a)-.12*cos(b)));
-      vec3 view=normalize(cameraPosition-vWorld);
-      float fresnel=.24+.64*pow(1.0-max(dot(n,view),0.0),3.0);
-      vec3 reflected=reflect(-view,n);
-      vec3 sky=mix(vec3(.69,.76,.73),vec3(.36,.58,.68),clamp(reflected.y,0.0,1.0));
-      float fine=sin(a+sin(b)*.55)*.5+.5;
-      vec3 water=mix(vec3(.12,.27,.23),sky,fresnel)+fine*.035;
-      float sun=pow(max(dot(reflect(normalize(sunLightDirection),n),view),0.0),80.0);
-      water+=vec3(1.0,.87,.62)*sun*.65;
-      water=mix(water,water*vec3(.29,.39,.55),night*.88);
-      gl_FragColor=applyImageProcessing(vec4(valleyFog(toLinearSpace(water),vWorld,cameraPosition),1.0));
-    }`;
-  const water=new B.ShaderMaterial('river-water',scene,{vertex:'districtRiver',fragment:'districtRiver'},
-    {attributes:['position'],uniforms:['world','worldViewProjection','cameraPosition','time','night','riverFlow','sunLightDirection',...atmosphereUniforms],defines:atmosphereDefines(scene)});
-  water.backFaceCulling=false;water.setFloat('time',0);water.setFloat('night',0);
-  const flow=riverFlowVector(state),flowUniform=new B.Vector2(flow.x,flow.y);water.setVector2('riverFlow',flowUniform);
-  const fallbackSun=new B.Vector3(-.65,-.9,.45);water.onBindObservable.add(()=>{if(scene.activeCamera)water.setVector3('cameraPosition',scene.activeCamera.globalPosition);water.setVector3('sunLightDirection',scene.getLightByName('city-sun')?.direction||fallbackSun);bindAtmosphere(scene,water);});
-  ownedMaterials.push(water);
-  const wp=[],wi=[],uv=[];
-  const waterRows=riverRows(true,state);
+  const surface=createAlluvialWaterMaterial(B,scene,'river-water'),water=surface.material;
+  surface.update(state,0);
+  const wp=[],wi=[],wc=[];
+  const waterRows=riverRows(true,state),cross=[-1.145,-.94,0,.94,1.145];
   for(let j=0;j<waterRows.length;j++){
-    const y=waterRows[j],c=river(y,state);
-    for(const across of [c-1.1,c+1.1]){const p=worldFromRiver(across,y,state);wp.push(p.x*TILE,-.18,p.y*TILE);uv.push(p.x/worldWidth(state),(p.y+.5)/worldHeight(state));}
-    if(j<waterRows.length-1){const a=j*2;wi.push(a,a+2,a+1,a+1,a+2,a+3);}
+    const along=waterRows[j],center=river(along,state);
+    for(let col=0;col<cross.length;col++){
+      const p=worldFromRiver(center+cross[col],along,state);
+      wp.push(p.x*TILE,-.18,p.y*TILE);
+      wc.push(Math.max(0,-.18-surfaceElevationFromShore(p.x,p.y,state,Math.abs(cross[col])-1.1)),0,0,1);
+      if(j<waterRows.length-1&&col<cross.length-1){
+        const i=j*cross.length+col;wi.push(i,i+cross.length,i+1,i+1,i+cross.length,i+cross.length+1);
+      }
+    }
   }
-  const riverMesh=geometry('living-river',wp,wi,water);
-  riverMesh.setVerticesData(B.VertexBuffer.UVKind,uv);riverMesh.receiveShadows=false;
-  const lp=[],li=[],lu=[];
-  for(const lake of state?.world?.lakes||[])for(const c of lake.cells){
-    const a=lp.length/3;
-    for(const [dx,dy]of [[-.5,-.5],[-.5,.5],[.5,-.5],[.5,.5]]){const x=c.x+dx,y=c.y+dy;lp.push(x*TILE,-.18,y*TILE);lu.push(x/worldWidth(state),y/worldHeight(state));}
-    li.push(a,a+1,a+2,a+2,a+1,a+3);
+  geometry('living-river',wp,wi,water,wc).receiveShadows=false;
+  const lp=[],li=[],lc=[];
+  for(const lake of state?.world?.lakes||[]){
+    const cells=new Set(lake.cells.map(c=>c.x+','+c.y));
+    for(const {x,y} of lake.cells){
+      const center=lp.length/3;
+      lp.push(x*TILE,-.18,y*TILE);lc.push(.7,1,0,1);
+      for(const [dx,dy]of [[-.5,-.5],[-.5,0],[-.5,.5],[0,.5],[.5,.5],[.5,0],[.5,-.5],[0,-.5]]){
+        const adjacent=cells.has((x+dx*2)+','+y)&&cells.has(x+','+(y+dy*2))&&cells.has((x+dx*2)+','+(y+dy*2));
+        lp.push((x+dx)*TILE,-.18,(y+dy)*TILE);
+        lc.push(adjacent?.7:0,1,0,1);
+      }
+      for(let i=0;i<8;i++)li.push(center,center+1+i,center+1+(i+1)%8);
+    }
   }
-  if(li.length){const lake=geometry('saved-lakes',lp,li,water);lake.setVerticesData(B.VertexBuffer.UVKind,lu);lake.receiveShadows=false;}
+  if(li.length)geometry('saved-lakes',lp,li,water,lc).receiveShadows=false;
   const trunks=[],fronds=[],reeds=[],stones=[],scrub=[];
   let initialRoads=districtRoadEdges(state),nearbyRoads=indexNearbyRoads(initialRoads);
   const occupied=(x,y)=>state.buildings?.some(b=>Math.abs(b.x-x)<.7&&Math.abs(b.y-y)<.7)||nearbyRoads(x,y).some(([a,b])=>{
@@ -239,7 +232,9 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
   const grassMaterial=materials.grass.clone('riparian-grass-cover');ownedMaterials.push(grassMaterial);
   grassMaterial.albedoColor=C(.79,.90,.56);grassMaterial.roughness=1;grassMaterial.metallic=0;
   grassMaterial.transparencyMode=B.Material.MATERIAL_ALPHABLEND;
-  grassMaterial.alpha=.96;grassMaterial.forceDepthWrite=false;
+  // The ground below already darkens with moisture. Give the living stems
+  // their own silhouettes and leave only a faint ground tint between them.
+  grassMaterial.alpha=.29;grassMaterial.forceDepthWrite=false;
   const gp=[],gi=[],gc=[],staticGrassAlpha=[];
   const grassStaticSignature=s=>JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,(s.buildings||[]).map(b=>[b.x,b.y])]);
   const grassGroundAlpha=(x,y)=>{
@@ -247,7 +242,8 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
     // The grass cover sits above two terrain meshes with different tessellation.
     // Let the shared soil carry their seam, and blend the cover back on both sides.
     const edge=Math.min(x+.5,worldWidth(state)-.5-x,y+.5,worldHeight(state)-.5-y);
-    let alpha=smooth((d-.22)/.38)*(1-smooth((d-2.7)/1.3))*smooth(Math.abs(edge)/2);
+    const grassReach=2.2+.45*Math.sin(x*.39+y*.28)+.22*Math.sin(y*.63-x*.24);
+    let alpha=smooth((d-.22)/.64)*(1-smooth((d-grassReach)/1.65))*smooth(Math.abs(edge)/2);
     for(const b of state.buildings||[]){
       const qx=Math.abs(x-b.x)-.56,qy=Math.abs(y-b.y)-.56;
       const distance=Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0);
@@ -388,5 +384,5 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
     if(inds.length)roadMeshes.push(geometry('connected-earth-streets',pos,inds,roadMaterial));
   }
   updateRoads(state);
-  return {meshes,refreshRoadMask,light(n){water.setFloat('night',n);},update(s,t){state=s;updateRoads(s);const direction=riverFlowVector(s);if(flowUniform.x!==direction.x||flowUniform.y!==direction.y){flowUniform.set(direction.x,direction.y);water.setVector2('riverFlow',flowUniform);}const time=Number.isFinite(t)?t:waterTime+.016;waterTime=time;water.setFloat('time',time);},dispose(){for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
+  return {meshes,refreshRoadMask,light(n){water.setFloat('night',n);},update(s,t){state=s;updateRoads(s);waterTime=Number.isFinite(t)?t:waterTime+.016;surface.update(s,waterTime);},dispose(){surface.dispose();for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
 }

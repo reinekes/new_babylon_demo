@@ -5,24 +5,49 @@ import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {MODEL_VERSIONS} from '../game3d/model-versions.js';
 import {readGlb} from '../scripts/model-index.mjs';
+import {createTestLivestock} from '../game3d/test-livestock.js';
 
 const root=fileURLToPath(new URL('..',import.meta.url));
 const animalsDir=join(root,'assets/art-courtyard/models');
 
-test('each courtyard herd keeps its former models alongside its new anatomical sculpt',async()=>{
+test('each previous herd model and its new pasture sculpt remain individually available',async()=>{
  const atlas=JSON.parse(await readFile(join(root,'model-atlas/data/animals.json'),'utf8'));
  const models=new Set(atlas.rows.flatMap(row=>row.previews.map(p=>p.entry?.file)));
- const controller=await readFile(join(root,'game3d/test-livestock.js'),'utf8');
- for(const [kind,files] of Object.entries({
-  pig:['alluvial-pig.glb','test-pig-trellis.glb','ambient-yard-pig.glb'],
-  bull:['alluvial-bull.glb','test-bull-trellis.glb','ambient-bull.glb'],
-  sheep:['alluvial-ram.glb','ambient-sheep-kenchoo.glb'],
- })){
-  const configs=controller.split('\n').find(line=>line.trim().startsWith(kind+':'));
-  for(const file of files){
-   assert.ok(configs?.includes(file),file+' must participate in its live herd');
-   assert.ok(models.has(file),file+' must open separately in the atlas');
-   assert.ok(MODEL_VERSIONS[file],file+' must load through the versioned city loader');
+ for(const file of ['pasture-ram','pasture-bull','pasture-pig','alluvial-ram','alluvial-bull','alluvial-pig',
+  'test-bull-trellis','test-pig-trellis','ambient-yard-pig','ambient-sheep-kenchoo','ambient-bull']){
+  const name=file+'.glb';
+  assert.ok(models.has(name),name+' must open separately in the atlas');
+  assert.ok(MODEL_VERSIONS[name],name+' must have a versioned model URL');
+ }
+});
+
+test('city requests a previous model only for the species whose primary GLB failed',async()=>{
+ for(const missing of [null,'pasture-bull.glb']){
+  const requests=[];
+  const B={SceneLoader:{async LoadAssetContainerAsync(_url,filename){
+   const file=filename.split('?')[0];requests.push(file);
+   if(file===missing)return null;
+   return {dispose(){}};
+  }}};
+  const view=createTestLivestock(B,{},[],()=>false,()=>false);
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.deepEqual(requests.filter(file=>file.startsWith('pasture-')).sort(),
+   ['pasture-bull.glb','pasture-pig.glb','pasture-ram.glb']);
+  assert.deepEqual(requests.filter(file=>file.startsWith('alluvial-')),missing?['alluvial-bull.glb']:[]);
+  assert.deepEqual(requests.filter(file=>file.includes('goat')).sort(),['goat-downloaded.glb','test-goat-trellis.glb']);
+  view.dispose();
+ }
+});
+
+test('each active animal in the city has a skin, a walk, an idle and its source credit',async()=>{
+ for(const kind of ['pig','bull','ram']){
+  const g=readGlb(await readFile(join(animalsDir,'pasture-'+kind+'.glb')));
+  assert.ok(g.skins[0].joints.length>=15);
+  for(const key of ['source','license','author','adaptation'])assert.ok(g.asset.extras[key],kind+' '+key);
+  for(const name of ['Walk','Idle'])assert.ok(g.animations.find(a=>a.name===name)?.channels.length>=8);
+  for(const mesh of g.meshes)for(const prim of mesh.primitives){
+   assert.equal(g.accessors[prim.attributes.POSITION].count,g.accessors[prim.attributes.JOINTS_0].count);
+   assert.equal(g.accessors[prim.attributes.POSITION].count,g.accessors[prim.attributes.WEIGHTS_0].count);
   }
  }
 });

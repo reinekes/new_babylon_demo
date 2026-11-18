@@ -14,3 +14,15 @@ test('canal geometry reuses one derived result across unrelated construction and
 test('lake inlet enters the actual organic water contour at the same level',()=>{const s=world(),arm=canalArm(s,{x:4,y:4,wet:true,progress:1},-1,0);assert.equal(arm.mouth,true);assert.ok(renderedShoreDistance(arm.b.x,arm.b.y,s)<-.12);assert.equal(arm.startHeight,arm.endHeight);assert.ok(Math.abs(arm.endHeight-WATER_HEIGHT)<.01);assert.equal(fieldWater(s,{x:6,y:6}).canal,true);});
 test('L/T junction is one closed continuous water footprint without arm caps or holes',()=>{const s=world(),before=JSON.stringify(s),g=canalNetworkGeometry(s,plan(s));for(const [x,z]of [[5*6,4*6],[5*6+.3,4*6+.3],[5*6,5*6],[5*6+.3,5*6-.3],[5*6,4.5*6]])assert.ok(covers(g.water,x,z),`${x},${z} has continuous water`);assert.ok(!covers(g.water,5*6+1.2,4*6+1.2));assert.ok(g.water.positions.every(Number.isFinite));assert.ok(g.water.positions.filter((_,i)=>i%3===1).every(y=>Math.abs(y-WATER_HEIGHT)<.01));assert.equal(JSON.stringify(s),before);});
 test('unfinished disconnection has no water and decorative banks open at mouths only',()=>{const s=world();s.buildings.find(b=>b.type==='canal'&&b.x===4).construction={kind:'new'};const g=canalNetworkGeometry(s,plan(s));assert.equal(g.water.indices.length,0);const arm=canalArm(s,{x:4,y:4,wet:true,progress:1},-1,0),mesh={positions:[3.6*6,0,4*6,20*6,0,20*6],colors:[1,1,1,1,1,1,1,1]};openCanalMouths(mesh,[arm]);assert.ok(mesh.positions[1]<WATER_HEIGHT);assert.equal(mesh.positions[4],0);assert.equal(mesh.colors[3],0);assert.equal(mesh.colors[7],1);assert.equal(canalDistance(24,24,[arm]).distance,0);});
+
+test('the inlet water fades inside the natural sheet while retaining opaque vertex colours for mesh export',()=>{
+ const s=world(),water=canalNetworkGeometry(s,plan(s)).water;
+ let openMouth=false,channel=false;
+ for(let i=0;i<water.positions.length;i+=3){
+  const j=i/3*4,d=renderedShoreDistance(water.positions[i]/6,water.positions[i+2]/6,s);
+  assert.equal(water.colors[j+3],1);
+  if(d<=-.16){assert.equal(water.colors[j+2],.125);openMouth=true;}
+  if(d>=0){assert.equal(water.colors[j+2],1);channel=true;}
+ }
+ assert.ok(openMouth&&channel);
+});

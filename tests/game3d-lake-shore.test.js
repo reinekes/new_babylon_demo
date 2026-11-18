@@ -22,3 +22,24 @@ test('soft lake margin and reeds follow only the joined shoreline; separate lake
  s.world.lakes.push({id:'separate',cells:[{x:30,y:14}]});assert.equal(lakeContours(s).length,2);assert.ok(lakeDistance(30,14,s)<0);assert.ok(organicLakeGeometry(s).indices.length>g.indices.length);
  assert.equal(lakeBedHeight(0),WATER_HEIGHT);assert.ok(lakeBedHeight(-.4)<-.9);assert.equal(lakeBedHeight(.3),0);
 });
+
+test('detailed bed triangles stay submerged around the convex corners of a saved lake',async()=>{
+ const {alluvialTerrainGeometry,TILE}=await import('../district3d/terrain.js');
+ const {refineLakeBedGrid}=await import('../district3d/lake-bed-grid.js');
+ const s={buildings:[],world:{width:64,height:64,generationVersion:2,lakes:[{cells:[{x:28,y:17}]}]}};
+ const grid=alluvialTerrainGeometry(s),before=JSON.stringify(s);
+ refineLakeBedGrid(grid,s,TILE,64,64);
+ const contours=lakeContours(s);
+ let samples=0;
+ for(let i=0;i<grid.indices.length;i+=3){
+  const points=grid.indices.slice(i,i+3).map(index=>({x:grid.positions[index*3]/TILE,y:grid.positions[index*3+2]/TILE}));
+  if(!points.every(p=>Math.abs(p.x-28)<1.4&&Math.abs(p.y-17)<1.4))continue;
+  const x=points.reduce((n,p)=>n+p.x,0)/3,y=points.reduce((n,p)=>n+p.y,0)/3;
+  const d=lakeDistance(x,y,s,contours);
+  if(d>-.06||d<-.22)continue;
+  const bed=points.reduce((n,p)=>n+visualSurfaceElevation(p.x,p.y,s,contours),0)/3;
+  assert.ok(bed<WATER_HEIGHT,`lake corner at ${x}/${y} is under the water`);samples++;
+ }
+ assert.ok(samples>10);
+ assert.equal(JSON.stringify(s),before);
+});

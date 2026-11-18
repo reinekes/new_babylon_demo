@@ -7,10 +7,10 @@ import {DAY_SECONDS,lightingAt,seed} from '../city-life.js';
 import {dairyHerd} from './dairy-herd.js';
 
 const MODELS={
- pig:{files:['alluvial-pig.glb','test-pig-trellis.glb','ambient-yard-pig.glb'],strides:[.33,.34,.42],height:.64,space:.22},
+ pig:{files:['pasture-pig.glb'],strides:[.34],fallback:{file:'alluvial-pig.glb',stride:.33},height:.64,space:.22},
  goat:{files:['test-goat-trellis.glb','goat-downloaded.glb'],strides:[.40,.30],height:.96,space:.22},
- bull:{files:['alluvial-bull.glb','test-bull-trellis.glb','ambient-bull.glb'],strides:[.69,.62,1.23],height:1.43,space:.32,pen:'cowshed'},
- sheep:{files:['alluvial-ram.glb','ambient-sheep-kenchoo.glb'],strides:[.38,.31],height:.83,space:.21,pen:'sheepfold'},
+ bull:{files:['pasture-bull.glb'],strides:[.62],fallback:{file:'alluvial-bull.glb',stride:.69},height:1.43,space:.32,pen:'cowshed'},
+ sheep:{files:['pasture-ram.glb'],strides:[.31],fallback:{file:'alluvial-ram.glb',stride:.38},height:.83,space:.21,pen:'sheepfold'},
 };
 const PACE=.105;
 const MAX_HERD=7;
@@ -133,8 +133,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
  const assets=new Map(),claimed=new Set(),settledSheep=new Map();
  let disposed=false,ready=false,clock=0,buildings,count,world,pens=[];
  const loadAnimals=async()=>{
-  const files=[...new Set(herds.flatMap(herd=>herd.spec.files))];
-  await Promise.all(files.map(async file=>{
+  async function loadFile(file){
    try{
     const source=shared.has(file)?await shared.get(file):
      await loadModel(B,scene,'assets/art-courtyard/models/',file,scene,undefined,'.glb');
@@ -142,6 +141,10 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
     if(disposed){if(!shared.has(file))source.dispose();}
     else assets.set(file,source);
    }catch(error){console.warn('Livestock model unavailable:',file,error);}
+  }
+  await Promise.all(herds.map(async({spec})=>{
+   await Promise.all(spec.files.map(loadFile));
+   if(!disposed&&spec.fallback&&!spec.files.some(file=>assets.has(file)))await loadFile(spec.fallback.file);
   }));
   ready=true;
  };
@@ -151,8 +154,8 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   const {spec,kind}=herd;
   const preferred=index%spec.files.length;
   const variant=assets.has(spec.files[preferred])?preferred:spec.files.findIndex(file=>assets.has(file));
-  if(variant<0)return null;
-  const file=spec.files[variant];
+  const file=spec.files[variant]||spec.fallback?.file;
+  if(!assets.has(file))return null;
   const source=assets.get(file);
   const name=`livestock-${kind}-${index}`;
   const root=new B.TransformNode(name,scene),display=new B.TransformNode(name+'-model',scene);
@@ -169,7 +172,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   for(const mesh of owned){mesh.isPickable=false;mesh.receiveShadows=true;meshes.push(mesh);}
   const walk=copy.animationGroups.find(group=>/-Walk$/i.test(group.name))||copy.animationGroups.find(group=>/-Animation$/i.test(group.name));
   const idle=copy.animationGroups.find(group=>/Idle$/i.test(group.name));
-  const member={root,owned,copy,walk,idle,stride:spec.strides[variant],phase:index*.31,point:null,index,attempt:0,waitUntil:0};
+  const member={root,owned,copy,walk,idle,stride:spec.strides[variant]??spec.fallback.stride,phase:index*.31,point:null,index,attempt:0,waitUntil:0};
   const targets=walk?.targetedAnimations||[];
   member.restPositions=targets.filter(({target,animation})=>target.position&&animation.targetProperty==='position')
    .map(({target})=>({target,position:target.position.clone()}));

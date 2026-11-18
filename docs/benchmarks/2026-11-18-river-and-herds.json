@@ -1,0 +1,1174 @@
+{
+  "release": "river-herds-20261118",
+  "baselineCommit": "cba3a0f74f91287e48e2afe1ee42a937e9507a99",
+  "legacyFilesSHA256": {
+    "alluvial-bull.glb": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
+    "alluvial-pig.glb": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
+    "alluvial-ram.glb": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
+    "ambient-bull.glb": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
+    "ambient-dog.glb": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4",
+    "ambient-donkey.glb": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
+    "ambient-duck.glb": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
+    "ambient-sheep-kenchoo.glb": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5",
+    "ambient-yard-pig.glb": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
+    "caravan-camel.glb": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
+    "cat-sitting.glb": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3",
+    "cat-walk.glb": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917",
+    "gazelle-downloaded.glb": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922",
+    "goat-authored-lod.glb": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+    "goat-authored.glb": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+    "goat-downloaded.glb": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
+    "goat.glb": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+    "imported-boar.glb": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89",
+    "imported-fox.glb": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b",
+    "imported-goose.glb": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f",
+    "imported-lioness.glb": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e",
+    "imported-orange-bird.glb": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d",
+    "imported-sky-birds.glb": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04",
+    "jackal.glb": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19",
+    "sheep.glb": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
+    "shore-mallard-female.glb": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47",
+    "shore-mallard.glb": "6f7174d94cab33025c8ee053df196bc323ba5a85a825091155fd29b9c7d240e1",
+    "shore-seagull.glb": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+    "sky-bird-single.glb": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7",
+    "supplied-cobra-base.glb": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
+    "supplied-cobra-head-up.glb": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf",
+    "supplied-common-quail.glb": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
+    "supplied-frog-jump.glb": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
+    "supplied-horse-brown.glb": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4",
+    "supplied-horse-run.glb": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8",
+    "supplied-northern-cardinal.glb": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9",
+    "supplied-oriental-goby.glb": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
+    "supplied-pelican-wasis.glb": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
+    "supplied-realistic-rat.glb": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
+    "supplied-schlegel-frog.glb": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66",
+    "supplied-white-eagle.glb": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514",
+    "supplied-yellowfin-goby.glb": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
+    "test-bull-trellis.glb": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9",
+    "test-goat-trellis.glb": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
+    "test-pig-trellis.glb": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902"
+  },
+  "unchangedNonGLBEntries": 25,
+  "cityWebGL": {
+    "mode": "Взрослый бог",
+    "origin": "http://127.0.0.1:8976",
+    "initialGLError": 0,
+    "webGL": 2,
+    "specimens": [
+      {
+        "file": "pasture-ram.glb",
+        "silhouettePixels": 49300,
+        "poseChangedPixels": 9845,
+        "glError": 0,
+        "center": [
+          182.03516672298332,
+          0.3818000101858897,
+          163.57653785372028
+        ],
+        "extent": [
+          0.9937408022827015,
+          0.763600020371779,
+          0.8163394629678464
+        ],
+        "triangles": 16360,
+        "clips": [
+          "Walk",
+          "Idle",
+          "SourceOriginal-Animation"
+        ],
+        "rigged": true,
+        "loaded": true
+      },
+      {
+        "file": "pasture-bull.glb",
+        "silhouettePixels": 94962,
+        "poseChangedPixels": 9437,
+        "glError": 0,
+        "center": [
+          169.13768440594487,
+          0.6577999730462594,
+          170.70704886463912
+        ],
+        "extent": [
+          2.0798866783205767,
+          1.3156000382156918,
+          1.9882245095308235
+        ],
+        "triangles": 14512,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "rigged": true,
+        "loaded": true
+      },
+      {
+        "file": "pasture-pig.glb",
+        "silhouettePixels": 33807,
+        "poseChangedPixels": 8170,
+        "glError": 0,
+        "center": [
+          192.66455536888597,
+          0.29440000592616666,
+          181.68155246481643
+        ],
+        "extent": [
+          1.0214803755571893,
+          0.5888000051145692,
+          0.38632326246764137
+        ],
+        "triangles": 26126,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "rigged": true,
+        "loaded": true
+      }
+    ],
+    "water": [
+      {
+        "name": "horizon-river",
+        "indices": 1152,
+        "compiled": true
+      },
+      {
+        "name": "clear-living-river",
+        "indices": 28224,
+        "compiled": true
+      },
+      {
+        "name": "clear-saved-lakes",
+        "indices": 37968,
+        "compiled": true
+      }
+    ],
+    "exceptions": [],
+    "http": []
+  },
+  "modelAtlasWebGL": {
+    "origin": "http://127.0.0.1:8976",
+    "transport": "Chrome network",
+    "timestamp": "2026-11-18T13:14:03.689Z",
+    "preservation": {
+      "baseRevision": "cba3a0f74f91287e48e2afe1ee42a937e9507a99",
+      "oldGlbCount": 45,
+      "listedAndUnchangedOldGlbs": 45,
+      "oldOtherCounts": {
+        "flock": 1,
+        "wildlife": 19,
+        "dairy": 2,
+        "source": 3
+      },
+      "unchangedOtherRows": 25,
+      "unchangedOtherRowOrder": true,
+      "currentGlbCount": 48,
+      "added": [
+        "pasture-bull.glb",
+        "pasture-pig.glb",
+        "pasture-ram.glb"
+      ],
+      "oldGlbs": [
+        {
+          "file": "alluvial-bull.glb",
+          "byteLength": 2720752,
+          "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "alluvial-pig.glb",
+          "byteLength": 2576076,
+          "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "alluvial-ram.glb",
+          "byteLength": 2618268,
+          "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-bull.glb",
+          "byteLength": 5800664,
+          "sha256": "5c28f930db523588844713a55e6271feecb06913e64c8de471862379a5c330c4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-dog.glb",
+          "byteLength": 2161184,
+          "sha256": "50ad8270bc45b26932cd4c2b16461b7918d9d0d1e198a724f6f5d38096b955f4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-donkey.glb",
+          "byteLength": 4356268,
+          "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-duck.glb",
+          "byteLength": 2740460,
+          "sha256": "1e0c78ec30c261258076e697053ae3f37addb9eb89806c3ce03b23dde8d87c71",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-sheep-kenchoo.glb",
+          "byteLength": 1785652,
+          "sha256": "cb8f6357313bbb35d605c6a9a67b34f8b0c772082d5597fae1fe33dc5c8beaa5",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "ambient-yard-pig.glb",
+          "byteLength": 2105828,
+          "sha256": "0df10688d4c59116f65c2099838fe7be3d3eccce643a4286b468b79b25344543",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "caravan-camel.glb",
+          "byteLength": 4713460,
+          "sha256": "8dd22d84999253331b9153668905aeaf4b235beb749a7401b6ee9a9c07eef276",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "cat-sitting.glb",
+          "byteLength": 3289240,
+          "sha256": "8c3cbc007f1596b5b3f8964bcbe2a6f6510f1588e65a5248b111153d99bb65e3",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "cat-walk.glb",
+          "byteLength": 667472,
+          "sha256": "eca672f2759a0fe979a1b5a43ba9b846b792c76e6082caae14169ea7242c0917",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "gazelle-downloaded.glb",
+          "byteLength": 3731492,
+          "sha256": "cb33e303498e388da979e5044eae8898d0dd4de4f46bbddd4a20a2d7ac4f1922",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-authored-lod.glb",
+          "byteLength": 1649492,
+          "sha256": "c2d8562fa2e8b3d0fe6b890b4c56c343ac150c9afe15520c586d516b00f3a9f9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-authored.glb",
+          "byteLength": 4000280,
+          "sha256": "af8de5e848bc882ce3aec23dc57417d75b5de43d24038acf2b00a534ea9a53aa",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat-downloaded.glb",
+          "byteLength": 8930460,
+          "sha256": "bae9407ee4258773abc711d1095de61d710c0800223ecd46acf4a8e502c1ec65",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "goat.glb",
+          "byteLength": 29877228,
+          "sha256": "27805596b278d0d8e419763d57c5757db241cf41e420e75e457bcb532f456249",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-boar.glb",
+          "byteLength": 1951108,
+          "sha256": "15710d8d81217b9a76d9ed896489958f17b747c249bf1e80a11cb30b68023c89",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-fox.glb",
+          "byteLength": 1884684,
+          "sha256": "f72eb437960dcf24e65de024ba29ec24a249453b31e05748e0f765960a955f2b",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-goose.glb",
+          "byteLength": 1310296,
+          "sha256": "efa137a7461e2edeea9bd969dca6d5a7ec532c4ebfad4a9343793b674126e12f",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-lioness.glb",
+          "byteLength": 2322264,
+          "sha256": "0a5491a85f5e07f22e3a4688ad2ae986ce51c2732acedd6765a613f9ed181e3e",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-orange-bird.glb",
+          "byteLength": 570772,
+          "sha256": "ead5b61ed9b53a42829a2d69aeb578d99ebd14a17ceb8ec1f265db804d19b23d",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "imported-sky-birds.glb",
+          "byteLength": 195568,
+          "sha256": "edd15834eabf428b29d2573d043866658564f51db5de3adf5ee4946261650f04",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "jackal.glb",
+          "byteLength": 1424196,
+          "sha256": "1217179bfbcc3a172f99d69102bdff7f51d88328a47d0c353c1c44df6148da19",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "sheep.glb",
+          "byteLength": 2024888,
+          "sha256": "e370ab4973594c28472b95d7a3b3b7ee96a5771fcfde14be8b55cdc1e7d2f46b",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-mallard-female.glb",
+          "byteLength": 363016,
+          "sha256": "deb44a9676342246e64486a26d73752ca7952cfc93482877867ba2d3e8783d47",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-mallard.glb",
+          "byteLength": 2592180,
+          "sha256": "6f7174d94cab33025c8ee053df196bc323ba5a85a825091155fd29b9c7d240e1",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "shore-seagull.glb",
+          "byteLength": 516392,
+          "sha256": "7e4f1a707aa4693b07312fa4f9c32faba485945a7f7c40657dbb4dd81e5a96be",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "sky-bird-single.glb",
+          "byteLength": 38304,
+          "sha256": "964c4b58caf50fa797ec3c212f529a546cbd1b46546d7e2b9d707d7a4cc047c7",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-cobra-base.glb",
+          "byteLength": 1539392,
+          "sha256": "1dd646a4a001cbe156a368a31c4a4744bd2ee1dbe8a6d40eb6da43bb93700818",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-cobra-head-up.glb",
+          "byteLength": 1541772,
+          "sha256": "a2d107887b232371958000ff4dbf1d52b8a509979e4f4d59ed8ecaa9c764cedf",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-common-quail.glb",
+          "byteLength": 2050532,
+          "sha256": "32147a1d198bb7dc03fa680851011424d1701d140791bf0128e558436adf0fc7",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-frog-jump.glb",
+          "byteLength": 1855544,
+          "sha256": "c542468f473fd92d217e44366b582780d364a0ddeaae194a5e342845cf306954",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-horse-brown.glb",
+          "byteLength": 1660088,
+          "sha256": "0ee7ff259db75f648eff74336205ff190f60fc73f18ff50d6206b304aa18e7a4",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-horse-run.glb",
+          "byteLength": 1277372,
+          "sha256": "5b91c0729a4f75c909451c40521360b59201a3740fc205e4457cb87cd11e52c8",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-northern-cardinal.glb",
+          "byteLength": 1978712,
+          "sha256": "3c4ad8719436995e773eb8728d392344e4db501d3bc73e776f24aacaef989af9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-oriental-goby.glb",
+          "byteLength": 3031240,
+          "sha256": "4a03227aa63b2b69c591509cd1215b8f234d3b966102ed18c6f2223d2909a930",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-pelican-wasis.glb",
+          "byteLength": 5244380,
+          "sha256": "fe0253c6ece2f79460d878a001aa2be367423acaa44eadb89a8ffee886c546db",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-realistic-rat.glb",
+          "byteLength": 2129524,
+          "sha256": "24c286f98b4d20e2ff7158fd9e8360d7a5061100f1bc064f47753ffe0398b7ee",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-schlegel-frog.glb",
+          "byteLength": 2502324,
+          "sha256": "5fa37e8414b3e11b41f488b47ca9012c567128215fb75c9563eef56c5230cf66",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-white-eagle.glb",
+          "byteLength": 886568,
+          "sha256": "a72a2176fa4d189f14869b375ef0983b6103dad58e79142f1efc7faa762ca514",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "supplied-yellowfin-goby.glb",
+          "byteLength": 1519376,
+          "sha256": "a72a598b2210c9829bae6ebf1d4f5bca17ad08622fea1b706e4143b57de78d27",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-bull-trellis.glb",
+          "byteLength": 1930912,
+          "sha256": "67a930020e5264908a132aeaba3a90f829de33cb3467119d0476ef9df19ad1c9",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-goat-trellis.glb",
+          "byteLength": 1108340,
+          "sha256": "0a752a0c419ab452e6708399eb721552ba2acc5badc3a366220e28ce49d6af5f",
+          "unchanged": true,
+          "listed": true
+        },
+        {
+          "file": "test-pig-trellis.glb",
+          "byteLength": 967568,
+          "sha256": "fb31c4e3bd8807a810b7370cbb9c77d5369ea89acb5e73bc25c5b7558138c902",
+          "unchanged": true,
+          "listed": true
+        }
+      ]
+    },
+    "pages": [
+      {
+        "file": "pasture-ram.glb",
+        "url": "http://127.0.0.1:8976/model-atlas/?model=pasture-ram.glb",
+        "title": "Пастбищный баран · Используется",
+        "category": "animals",
+        "detail": "Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида. · 16 360 треугольников · pasture-ram.glb",
+        "clips": [
+          "Walk",
+          "Idle",
+          "SourceOriginal-Animation"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.79,
+          11.796000001430512,
+          17.81399999856949,
+          23.79,
+          29.81399999856949
+        ],
+        "meshCount": 2,
+        "skinned": 2,
+        "triangles": 16360,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 17175,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8976/assets/art-courtyard/models/pasture-ram.glb?v=b2cc547a1534",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "failedHttp": []
+      },
+      {
+        "file": "alluvial-ram.glb",
+        "url": "http://127.0.0.1:8976/model-atlas/?model=alluvial-ram.glb",
+        "title": "Баран · спиральные рога · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой. · 35 468 треугольников · alluvial-ram.glb",
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.651999995708466,
+          11.645999994277954,
+          17.663999998569487,
+          23.621999995708464,
+          29.63399999856949
+        ],
+        "meshCount": 1,
+        "skinned": 1,
+        "triangles": 35468,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 15290,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8976/assets/art-courtyard/models/alluvial-ram.glb?v=d4906b0586e3",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "failedHttp": []
+      },
+      {
+        "file": "pasture-bull.glb",
+        "url": "http://127.0.0.1:8976/model-atlas/?model=pasture-bull.glb",
+        "title": "Пастбищный бык · Используется",
+        "category": "animals",
+        "detail": "Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида. · 14 512 треугольников · pasture-bull.glb",
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.003999998569489,
+          10.992000002861023,
+          16.97399999856949,
+          22.992000002861023,
+          29.99399999856949
+        ],
+        "meshCount": 1,
+        "skinned": 1,
+        "triangles": 14512,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 14961,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8976/assets/art-courtyard/models/pasture-bull.glb?v=708a1c70678c",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "failedHttp": []
+      },
+      {
+        "file": "alluvial-bull.glb",
+        "url": "http://127.0.0.1:8976/model-atlas/?model=alluvial-bull.glb",
+        "title": "Длиннорогий бык · гнедой · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой. · 40 812 треугольников · alluvial-bull.glb",
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.046000001430511,
+          11.052000002861023,
+          17.05200000286102,
+          24.053999998569488,
+          30.053999998569488
+        ],
+        "meshCount": 1,
+        "skinned": 1,
+        "triangles": 40812,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 14087,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8976/assets/art-courtyard/models/alluvial-bull.glb?v=098d0f5f64c3",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "failedHttp": []
+      },
+      {
+        "file": "pasture-pig.glb",
+        "url": "http://127.0.0.1:8976/model-atlas/?model=pasture-pig.glb",
+        "title": "Щетинистая домашняя свинья · Используется",
+        "category": "animals",
+        "detail": "Основные модели свободных стад города. Геометрия, покой и шаг проверены для каждого вида. · 26 126 треугольников · pasture-pig.glb",
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          5.051999995708465,
+          11.051999995708465,
+          17.057999997138978,
+          24.053999998569488,
+          30.06
+        ],
+        "meshCount": 4,
+        "skinned": 4,
+        "triangles": 26126,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 14509,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8976/assets/art-courtyard/models/pasture-pig.glb?v=7bb75ccbe1b7",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "failedHttp": []
+      },
+      {
+        "file": "alluvial-pig.glb",
+        "url": "http://127.0.0.1:8976/model-atlas/?model=alluvial-pig.glb",
+        "title": "Домашняя свинья · щетинистая · Резерв при ошибке",
+        "category": "animals",
+        "detail": "Прежние модели свободных стад. Игра загружает соответствующую модель при ошибке загрузки новой. · 35 790 треугольников · alluvial-pig.glb",
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "played": "Walk",
+        "playing": true,
+        "frames": [
+          4.9860000014305115,
+          11.01600000143051,
+          17.97600000143051,
+          23.99399999856949,
+          30.011999995708464
+        ],
+        "meshCount": 1,
+        "skinned": 1,
+        "triangles": 35790,
+        "framebuffer": [
+          688,
+          330
+        ],
+        "modelPixels": 14369,
+        "webgl": 2,
+        "glError": 0,
+        "modelResponses": [
+          [
+            "http://127.0.0.1:8976/assets/art-courtyard/models/alluvial-pig.glb?v=b6a003319428",
+            200
+          ]
+        ],
+        "pageResponse": 200,
+        "exceptions": [],
+        "failedHttp": []
+      }
+    ]
+  },
+  "largeCity": {
+    "simulationSpeed": 4,
+    "framesMeasuredVia": "requestAnimationFrame, 18 seconds per run",
+    "order": "after, before, before, after",
+    "meanFPS": {
+      "before": 29.862582212215653,
+      "after": 30.334315798822153
+    },
+    "runs": [
+      {
+        "label": "after-riparian-pair1-mixed",
+        "captured": "2026-11-18T13:12:13.913Z",
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 30.584095160386102,
+          "frames": 551,
+          "seconds": 18.015900000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.799999952316284,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 550,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 551,
+              "p50": 25.600000023841858,
+              "p95": 33.89999997615814
+            },
+            "buildings": {
+              "samples": 551,
+              "p50": 0.6999999284744263,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 551,
+              "p50": 3.799999952316284,
+              "p95": 10.899999976158142
+            },
+            "scene": {
+              "samples": 551,
+              "p50": 19.799999952316284,
+              "p95": 23
+            }
+          }
+        },
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8976/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 440,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 23529876,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": []
+      },
+      {
+        "label": "before-riparian-pair1-mixed",
+        "captured": "2026-11-18T13:12:47.344Z",
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 30.00122001264377,
+          "frames": 541,
+          "seconds": 18.0326,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.799999952316284,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 540,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 541,
+              "p50": 25.899999976158142,
+              "p95": 33.5
+            },
+            "buildings": {
+              "samples": 541,
+              "p50": 0.6999999284744263,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 541,
+              "p50": 3.899999976158142,
+              "p95": 10.700000047683716
+            },
+            "scene": {
+              "samples": 541,
+              "p50": 19.899999976158142,
+              "p95": 23.299999952316284
+            }
+          }
+        },
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8978/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 439,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 14228787,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": []
+      },
+      {
+        "label": "before-riparian-pair2-mixed",
+        "captured": "2026-11-18T13:13:20.912Z",
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.723944411787535,
+          "frames": 536,
+          "seconds": 18.032600000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.899999976158142,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 535,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 536,
+              "p50": 26.300000071525574,
+              "p95": 33.39999997615814
+            },
+            "buildings": {
+              "samples": 536,
+              "p50": 0.7000000476837158,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 536,
+              "p50": 3.899999976158142,
+              "p95": 11
+            },
+            "scene": {
+              "samples": 536,
+              "p50": 20.299999952316284,
+              "p95": 23.700000047683716
+            }
+          }
+        },
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8978/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 439,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 23948472,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": []
+      },
+      {
+        "label": "after-riparian-pair2-mixed",
+        "captured": "2026-11-18T13:13:54.592Z",
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 30.084536437258205,
+          "frames": 542,
+          "seconds": 18.0159,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.799999952316284,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 541,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 542,
+              "p50": 25.90000009536743,
+              "p95": 33.699999928474426
+            },
+            "buildings": {
+              "samples": 542,
+              "p50": 0.6999999284744263,
+              "p95": 0.8000000715255737
+            },
+            "actors": {
+              "samples": 542,
+              "p50": 3.799999952316284,
+              "p95": 10.700000047683716
+            },
+            "scene": {
+              "samples": 542,
+              "p50": 19.899999976158142,
+              "p95": 23.399999976158142
+            }
+          }
+        },
+        "scene": {
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8976/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 440,
+          "visibleBuildingMeshes": 2977,
+          "houseVisualMeshes": {},
+          "activeIndices": 13935099,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": []
+      }
+    ]
+  },
+  "soil": {
+    "cameraSeed": 137,
+    "openGroundLuminanceStdDev": {
+      "before": 9.69,
+      "after": 3.03
+    },
+    "block64MeanLuminanceStdDev": {
+      "before": 4.37,
+      "after": 0.83
+    }
+  },
+  "water": {
+    "cameraSeed": 137,
+    "changedPixelsAtOneSimSecond": {
+      "river": 76913,
+      "lake": 27847,
+      "stationaryControl": 0
+    },
+    "coldStartGLErrors": []
+  },
+  "blockedNewModelsWebGL": {
+    "mode": "Взрослый бог",
+    "origin": "http://127.0.0.1:8976",
+    "initialGLError": 0,
+    "webGL": 2,
+    "specimens": [
+      {
+        "file": "alluvial-ram.glb",
+        "silhouettePixels": 43701,
+        "poseChangedPixels": 16298,
+        "glError": 0,
+        "center": [
+          174.87360821961863,
+          0.3817999927330473,
+          161.39657617620662
+        ],
+        "extent": [
+          1.1205478250044507,
+          0.7635999854584474,
+          0.9675228386929007
+        ],
+        "triangles": 35468,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "rigged": true,
+        "loaded": true
+      },
+      {
+        "file": "alluvial-bull.glb",
+        "silhouettePixels": 63022,
+        "poseChangedPixels": 13009,
+        "glError": 0,
+        "center": [
+          159.72197178804382,
+          0.657800017990579,
+          169.7541430741576
+        ],
+        "extent": [
+          2.009431972950324,
+          1.3156000359629494,
+          0.98001171186786
+        ],
+        "triangles": 40812,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "rigged": true,
+        "loaded": true
+      },
+      {
+        "file": "alluvial-pig.glb",
+        "silhouettePixels": 48646,
+        "poseChangedPixels": 9092,
+        "glError": 0,
+        "center": [
+          187.69999370580751,
+          0.2943999915789863,
+          179.5448141632125
+        ],
+        "extent": [
+          0.7169304018968319,
+          0.5887999831762977,
+          1.3200739601495286
+        ],
+        "triangles": 35790,
+        "clips": [
+          "Walk",
+          "Idle"
+        ],
+        "rigged": true,
+        "loaded": true
+      }
+    ],
+    "water": [
+      {
+        "name": "horizon-river",
+        "indices": 1152,
+        "compiled": true
+      },
+      {
+        "name": "clear-living-river",
+        "indices": 28224,
+        "compiled": true
+      },
+      {
+        "name": "clear-saved-lakes",
+        "indices": 30918,
+        "compiled": true
+      }
+    ],
+    "exceptions": [],
+    "http": []
+  }
+}

@@ -19,7 +19,11 @@ function append(g,poly,sample,arms,water){if(poly.length<3)return;const index=g.
   const lip=water?0:.22*outerBlend*clamp((shore+.01)/.40);
   const shelf=water?0:.024*Math.sin(Math.PI*blend)*(.58+.42*Math.cos(p.x*2.1+p.z*1.7));
   g.positions.push(p.x,height+shelf+lip,p.z);g.uvs.push(p.x/2,p.z/2);
-  if(water){g.colors.push(Math.max(.20,WATER_HEIGHT-ground),lake<0?1:0,clamp((shore+.16)/.16),1);}
+  if(water){
+   const cutBed=Math.min(ground+.018,level-.25+(ground+.018-level+.25)*ease);
+   const inlet=clamp((shore+.16)/.16);
+   g.colors.push(Math.max(0,height-cutBed),lake<0?1:0,.125+.875*inlet,1);
+  }
   else{
    const tone=.68+.29*blend+.05*Math.cos(p.x*3.5-p.z*1.8)*Math.sin(Math.PI*blend);
    if(near.arm?.drain)g.colors.push(tone*.71,tone*.66,tone*.53,1);
