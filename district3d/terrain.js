@@ -142,7 +142,15 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
   const geometry=(name,positions,indices,material,colors,sharedNormals)=>{
     const mesh=new B.Mesh(name,scene),data=new B.VertexData();
     data.positions=positions;data.indices=indices;data.uvs=[];data.normals=[];
-    for(let i=0;i<positions.length;i+=3)data.uvs.push(positions[i]/(name.includes('grass')?8:4.5),positions[i+2]/(name.includes('grass')?8:4.5));
+    const floodplain=name==='alluvial-valley'||name==='distant-alluvial-plain',tileScale=name.includes('grass')?8:4.5;
+    for(let i=0;i<positions.length;i+=3){
+      const x=positions[i],z=positions[i+2];
+      // World-locked broad turns in the silt sheet soften repetition. Both
+      // terrain meshes evaluate the same map on every shared boundary vertex.
+      const u=floodplain?.60*Math.sin(x*.059+z*.071)+.31*Math.sin(z*.16-x*.023):0;
+      const v=floodplain?.52*Math.sin(z*.043-x*.081)+.24*Math.sin(x*.133+z*.016):0;
+      data.uvs.push(x/tileScale+u,z/tileScale+v);
+    }
     B.VertexData.ComputeNormals(positions,indices,data.normals);
     // Babylon's left-handed front winding differs from a right-handed cross product.
     // All meshes made here are ground/water ribbons whose visible side must face up.

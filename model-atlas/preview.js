@@ -154,7 +154,7 @@ async function makeModel(B,scene,item,profile) {
   const materials=createDistrictMaterials(B,scene);
   if (item.kind==='goods') {
     const {createGoodsSources}=await import('../game3d/goods.js');
-    createGoodsSources(B,scene,materials).sources.get(item.key).setEnabled(true);
+    createGoodsSources(B,scene,materials,[item.key]).sources.get(item.key).setEnabled(true);
     return;
   }
   if (item.kind==='boat') {

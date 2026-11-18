@@ -2,13 +2,13 @@
 export function createDistrictMaterials(B,scene,{deferPhotos=false}={}){
  const pendingPhotos=[],photoReady=[];let photosEnabled=!deferPhotos;
  const make=(name,color,roughness=1)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(color);m.metallic=0;m.roughness=roughness;return m;};
- const photo=(m,name,repeat=1,relief=.35)=>{
-  if(!photosEnabled){pendingPhotos.push([m,name,repeat,relief]);return m;}
+ const photo=(m,name,repeat=1,relief=.35,format='jpg')=>{
+  if(!photosEnabled){pendingPhotos.push([m,name,repeat,relief,format]);return m;}
   let failed=false,done=0,resolve;const ready=new Promise(r=>resolve=r),loaded=()=>{if(++done===2)resolve();},error=()=>{failed=true;loaded();};
-  const a=new B.Texture(`assets/3d/textures/${name}_color.jpg`,scene,false,true,undefined,loaded,error),n=new B.Texture(`assets/3d/textures/${name}_normal.jpg`,scene,false,true,undefined,loaded,error);a.uScale=a.vScale=n.uScale=n.vScale=repeat;n.level=relief;
+  const a=new B.Texture(`assets/3d/textures/${name}_color.${format}`,scene,false,true,undefined,loaded,error),n=new B.Texture(`assets/3d/textures/${name}_normal.${format}`,scene,false,true,undefined,loaded,error);a.uScale=a.vScale=n.uScale=n.vScale=repeat;n.level=relief;
   if(deferPhotos)photoReady.push(ready.then(()=>{if(!failed&&!scene.isDisposed){m.albedoTexture=a;m.bumpTexture=n;}else{a.dispose();n.dispose();}}));else{m.albedoTexture=a;m.bumpTexture=n;}return m;
  };
- const mats={plaster:photo(make('warm-clay-plaster','#fff0da'),'clay_plaster',1,.38),soil:photo(make('alluvial-earth','#ead6b7'),'dry_ground_01',1,.25),grass:photo(make('dry-river-grass','#dcdfb2'),'sparse_grass',1,.3),wood:photo(make('worn-timber','#c1a886'),'wood_table_worn',1,.45),stone:photo(make('bank-stone','#b0a68e'),'dry_ground_01',1,.7),terracotta:make('fired-pottery','#a56b43',.98),brick:make('exposed-mudbrick','#d3ad82'),reed:make('reed-mat','#c0ad78'),linen:make('woven-linen','#ddd0af')};
+ const mats={plaster:photo(make('warm-clay-plaster','#fff0da'),'clay_plaster',1,.38),soil:photo(make('alluvial-earth','#ead6b7'),'floodplain-alluvium',1,.55,'webp'),bankSilt:photo(make('laminated-bank-silt','#f4e8cf',.86),'river-silt',1,.74,'webp'),grass:photo(make('dry-river-grass','#dcdfb2'),'sparse_grass',1,.3),wood:photo(make('worn-timber','#c1a886'),'wood_table_worn',1,.45),stone:photo(make('bank-stone','#b0a68e'),'dry_ground_01',1,.7),terracotta:make('fired-pottery','#a56b43',.98),brick:make('exposed-mudbrick','#d3ad82'),reed:make('reed-mat','#c0ad78'),linen:make('woven-linen','#ddd0af')};
  // PBR albedo is linear: an sRGB brown assigned directly turns pale pink in
  // the tone-mapped sun. Keep all procedural jars/cargo/goods matte earth clay.
  mats.terracotta.albedoColor=mats.terracotta.albedoColor.toLinearSpace();

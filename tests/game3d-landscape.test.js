@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGameLandscape, landscapePlan, landscapeSignature, resourcePlacementSites,landscapeFallbackTufts} from '../game3d/landscape.js';
 import {createGame} from '../engine.js';
+import {VALLEY_PLANT_ASSETS} from '../game3d/valley-vegetation.js';
 import {terrain} from '../world.js';
 import {strictScenario,legacyScenario} from '../scenario-profiles.js';
 
@@ -85,15 +86,16 @@ function loadGeometry(scene,file='date-palm.glb'){
 
 test('real GLB palms share baked geometry; canals, road work and trade update a live mesh list read-only',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
- const original=B.SceneLoader.LoadAssetContainerAsync;let loads=0;
- B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;file=file.split('?')[0];assert.equal(root,'assets/art-courtyard/models/');assert.match(file,/^(?:valley-(?:dry-grass-[123]|reed-[123]|date-palm)|miracle-green-grass-[123]|caravan-(?:merchant|camel)|river-cargo-boat)\.glb$/);return loadGeometry(scene,file);};
+ const original=B.SceneLoader.LoadAssetContainerAsync,loadedPlants=[];
+ const plantFiles=Object.values(VALLEY_PLANT_ASSETS).flat();
+ B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{file=file.split('?')[0];assert.equal(root,'assets/art-courtyard/models/');if(plantFiles.includes(file))loadedPlants.push(file);return loadGeometry(scene,file);};
  let view;const s=createGame({start:'established'});s.roads=[{id:'local',a:{x:2.5,y:4.5},b:{x:3.5,y:4.5},level:2}];
  let canalX=0;while(terrain(canalX,8)==='water'||terrain(canalX+1,8)!=='water')canalX++;
  s.buildings.push({type:'canal',x:canalX,y:8,level:1});
  s.trade.caravan={x:12.6,y:8.1,transport:'river',stock:{food:30},route:[],routeIndex:0};
  const before=JSON.stringify(s);
  try{
-  view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.equal(loads,12);assert.equal(JSON.stringify(s),before);
+  view=await createGameLandscape(B,scene,s,materials);const live=view.meshes;assert.deepEqual([...loadedPlants].sort(),[...plantFiles].sort(),'each requested botanic source is loaded once');assert.equal(JSON.stringify(s),before);
   assert.ok(live.some(m=>m.name.startsWith('valley-grass-')&&m.thinInstanceCount>0));assert.ok(live.some(m=>m.name.startsWith('valley-reed-')&&m.thinInstanceCount>0));assert.ok(!live.some(m=>['volumetric-riparian-colonies','deposit-reed-bed'].includes(m.name)),'imported plants replace old grass ribbons and reed cylinders');
   for(const name of ['date-palm-trunks','date-palm-crowns','connected-earth-streets','living-river','saved-lakes'])for(const m of live.filter(m=>m.name===name))assert.equal(m.isEnabled(),false);
   const palms=live.filter(m=>m.name.startsWith('date-palm-')&&m.sourceMesh);assert.ok(palms.length);const palmBatches=live.filter(m=>m.metadata?.palmBatch),rendered=new Map();for(const batch of palmBatches)for(const id of batch.metadata.palmBatch.parts)rendered.set(id,(rendered.get(id)||0)+1);assert.ok(palms.every(m=>(m.isEnabled()?1:0)+(rendered.get(m.uniqueId)||0)===1),'every original part is rendered exactly once, individually or in its GPU batch');assert.equal(palmBatches.reduce((n,m)=>n+m.thinInstanceCount,0),palms.filter(m=>!m.isEnabled()).length);assert.ok(new Set(palms.map(m=>m.sourceMesh)).size<palms.length);
@@ -197,10 +199,10 @@ test('real gathering tree falls at saved target, leaves a stump and recovers wit
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });
 
-import {cargoLayout,createGoodsSources,GOODS_HEIGHT,GOODS_KINDS} from '../game3d/goods.js';
+import {cargoLayout,createGoodsSources,GOODS_HEIGHT,GOODS_KINDS,CRAFT_PARCEL_HEIGHT} from '../game3d/goods.js';
 import {groundStocks} from '../game3d/landscape.js';
 import {generateStreets} from '../city-life.js';
-test('goods are detailed shared rectangular geometry resting on exact support planes',()=>{
+test('warehouse parcels use a single shared mesh per kind and rest on their actual support planes',()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
  try{const goods=createGoodsSources(B,scene,materials),stock=Object.fromEntries(GOODS_KINDS.map(k=>[k,150])),before=JSON.stringify(stock),layout=cargoLayout(stock);
   assert.equal(layout.length,GOODS_KINDS.length*3);assert.equal(JSON.stringify(stock),before);assert.deepEqual(cargoLayout({faith:100,prestige:100}),[]);
@@ -209,9 +211,14 @@ test('goods are detailed shared rectangular geometry resting on exact support pl
    if(['copper','axe','blade','chisel'].includes(kind)){
     assert.ok(src.isVerticesDataPresent(B.VertexBuffer.ColorKind),`${kind} bakes distinct material colors`);
     assert.equal(src.subMeshes.length,1,`${kind} keeps one shared draw range`);
+   }else if(Object.hasOwn(CRAFT_PARCEL_HEIGHT,kind)){
+    assert.ok(Math.abs(bounds.maximum.y-CRAFT_PARCEL_HEIGHT[kind])<1e-6);
+    assert.ok(src.getTotalVertices()>200,kind+' has modeled relief or individual reeds');
+    assert.ok(bounds.maximum.x-bounds.minimum.x>.48&&bounds.maximum.z-bounds.minimum.z>.42);
+    assert.equal(src.subMeshes.length,1);
    }else if(!['milk','water','beer','pottery'].includes(kind)){assert.ok(bounds.maximum.x-bounds.minimum.x>.6);assert.ok(bounds.maximum.z-bounds.minimum.z>.5);assert.ok(src.getIndices().length%36===0,`${kind} consists of straight rectangular goods, never round sacks`);}
    const parcel=src.createInstance('support-test');parcel.setEnabled(true);
-   for(const p of layout.filter(p=>p.kind===kind)){parcel.position.set(p.x,p.y,p.z);parcel.computeWorldMatrix(true);const b=parcel.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-p.layer*GOODS_HEIGHT)<1e-6);if(p.layer)assert.ok(layout.some(q=>q.kind===kind&&q.x===p.x&&q.z===p.z&&q.layer===p.layer-1));}
+   for(const p of layout.filter(p=>p.kind===kind)){parcel.position.set(p.x,p.y,p.z);parcel.computeWorldMatrix(true);const b=parcel.getBoundingInfo().boundingBox;assert.ok(Math.abs(b.minimumWorld.y-p.layer*(CRAFT_PARCEL_HEIGHT[kind]??GOODS_HEIGHT))<1e-6);if(p.layer)assert.ok(layout.some(q=>q.kind===kind&&q.x===p.x&&q.z===p.z&&q.layer===p.layer-1));}
    assert.equal(parcel.sourceMesh,src);parcel.dispose();
   }
   for(const src of goods.meshes)src.dispose();assert.equal(scene.meshes.length,0);
@@ -240,7 +247,9 @@ test('ground display represents every actual material including clothing and raw
  for(const kind of MATERIALS)assert.ok(layout.some(p=>p.kind===kind),kind);
  assert.equal(JSON.stringify(stock),before);
  const engine=new B.NullEngine(),scene=new B.Scene(engine),materials=Object.fromEntries(['soil','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
- try{const goods=createGoodsSources(B,scene,materials);assert.equal(goods.sources.get('brick').material,materials.soil);assert.equal(goods.sources.get('firedBrick').material,materials.terracotta);assert.equal(goods.sources.get('clothing').material,materials.linen);
+ try{const goods=createGoodsSources(B,scene,materials);const raw=goods.sources.get('brick'),fired=goods.sources.get('firedBrick');
+  assert.equal(raw.material.name,'handmade-yard-craft');assert.equal(raw.material.uniqueId,fired.material.uniqueId);
+  assert.notEqual(raw.getVerticesData('uv')[0],fired.getVerticesData('uv')[0],'unfired clay and fired brick sample different atlas charts');assert.equal(goods.sources.get('clothing').material,materials.linen);
   assert.ok(goods.sources.get('clothing').getTotalVertices()>24);for(const key of ['brick','firedBrick'])assert.ok(goods.sources.get(key).getTotalVertices()>=120);
   for(const src of goods.meshes)src.dispose();assert.equal(scene.meshes.length,0);
  }finally{scene.dispose();engine.dispose();}

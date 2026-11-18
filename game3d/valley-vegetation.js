@@ -1,3 +1,4 @@
+import {createMarshDistanceCover} from './marsh-distance-plants.js';
 import {extractionOwner} from '../extraction-courts.js';
 import {loadModel} from './asset-loading.js';
 import {worldWidth,worldHeight,signedRiverDistance} from '../world.js';
@@ -7,7 +8,12 @@ import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js'
 import {sceneryClear} from './nature.js';
 import {resourceDisplayLayout} from './nature-details.js';
 
-export const VALLEY_PLANT_ASSETS=Object.freeze({grass:['valley-dry-grass-1.glb','valley-dry-grass-2.glb','valley-dry-grass-3.glb'],greenGrass:['miracle-green-grass-1.glb','miracle-green-grass-2.glb','miracle-green-grass-3.glb'],reed:['valley-reed-1.glb','valley-reed-2.glb','valley-reed-3.glb'],palm:['valley-date-palm.glb']});
+export const VALLEY_PLANT_ASSETS=Object.freeze({
+ grass:['valley-dry-grass-1.glb','valley-dry-grass-2.glb','valley-dry-grass-3.glb','alluvial-awn-grass.glb'],
+ greenGrass:['miracle-green-grass-1.glb','miracle-green-grass-2.glb','miracle-green-grass-3.glb','marsh-clubrush.glb'],
+ reed:['valley-reed-1.glb','valley-reed-2.glb','valley-reed-3.glb','marsh-plumed-cane.glb','marsh-cattail.glb'],
+ palm:['valley-date-palm.glb']
+});
 export const VEGETATION_BUDGETS=Object.freeze({low:{grass:180,greenGrass:80,reed:90},balanced:{grass:360,greenGrass:150,reed:180},high:{grass:560,greenGrass:220,reed:260}});
 const random=(x,y)=>{const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;return n-Math.floor(n);};
 const distance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t);};
@@ -17,7 +23,15 @@ export function vegetationBankDistance(x,y,s,contours=lakeContours(s)){return Ma
 export function valleyVegetationPlan(s,roads=[],tier='balanced'){
  const WIDTH=worldWidth(s),HEIGHT=worldHeight(s),budget=VEGETATION_BUDGETS[tier]||VEGETATION_BUDGETS.balanced,contours=lakeContours(s),plan={grass:[],greenGrass:[],reed:[]};
  const clear=(p,r=.24)=>p.x>0&&p.y>0&&p.x<WIDTH-1&&p.y<HEIGHT-1&&sceneryClear(s,p,r)&&roads.every(e=>distance(p,e.a,e.b)>.28+r);
- const put=(kind,p,seed)=>plan[kind].push({...p,angle:random(seed,37)*Math.PI*2,scale:(kind==='reed'?1:2)*((kind==='reed'?.75:.65)+random(seed,53)*.55),variant:Math.floor(random(seed,61)*3)});
+ const put=(kind,p,seed)=>{
+  const mix=random(seed,61),size=(kind==='reed'?1:2)*((kind==='reed'?.75:.65)+random(seed,53)*.55);
+  // The new marsh plants are distributed by colony; individual sizes and orientations vary.
+  const colony=random(Math.floor(p.x/2.15)+(s.world?.seed||0),Math.floor(p.y/2.15));
+  let variant=Math.floor(mix*3);
+  if(kind==='reed'&&colony>.27)variant=colony>.63?4:3;
+  if(kind==='greenGrass'&&colony>.56||kind==='grass'&&colony>.59)variant=3;
+  plan[kind].push({...p,angle:random(seed,37)*Math.PI*2,scale:size,variant});
+ };
  const homes=s.buildings.filter(b=>b.type==='house'),canals=s.buildings.filter(b=>b.type==='canal');
  const deposits=s.world?.deposits||[],centers=[];
  const districtClear=p=>clear(p,.38)&&!deposits.some(d=>Math.abs(d.x-p.x)<.64&&Math.abs(d.y-p.y)<.64);
@@ -88,8 +102,8 @@ export function valleyVegetationPlan(s,roads=[],tier='balanced'){
 // source glTF root CW override. A retained CW override flips PBR front lighting.
 // Only material-compatible parts merge; textures are never replaced by a tint.
 export async function loadValleyPlantSources(B,scene,files,meshes,containers,kind){
- const sources=[];let variant=0;
- for(const file of files){let container;try{
+ const sources=[];
+ for(const [variant,file] of files.entries()){let container;try{
   container=await loadModel(B,scene,'assets/art-courtyard/models/',file,scene);containers.push(container);container.addAllToScene();const groups=new Map();
   for(const m of container.meshes)if(m.getTotalVertices()>0){m.computeWorldMatrix(true);if(!groups.has(m.material))groups.set(m.material,[]);groups.get(m.material).push(m);}
   for(const [mat,parts]of groups){
@@ -117,22 +131,24 @@ export async function loadValleyPlantSources(B,scene,files,meshes,containers,kin
   }
    const m=B.Mesh.MergeMeshes(parts,true,true,undefined,false,false);if(!m)continue;m.name=`valley-${kind}-source-${sources.length}`;m.material=mat;m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.isPickable=false;m.receiveShadows=true;m.setEnabled(false);m.metadata={valleyVariant:variant,upwardCanopy};sources.push(m);meshes.push(m);
   }
-  variant++;
  }catch(error){container?.dispose();/* An unavailable optional plant must not stop the city renderer. */}}
  return sources;
 }
 
 export async function createValleyVegetation(B,scene,{tier='balanced',assets=VALLEY_PLANT_ASSETS}={}){
- const meshes=[],containers=[],sources={};let currentTier=tier,signature='',disposed=false,plan=null;const batches=[];
+ const meshes=[],containers=[],sources={},distant=createMarshDistanceCover(B,scene);let currentTier=tier,signature='',disposed=false,plan=null;const batches=[];
  for(const kind of ['grass','greenGrass','reed'])sources[kind]=await loadValleyPlantSources(B,scene,assets[kind]||[],meshes,containers,kind);
- function clear(){for(const m of batches){m.dispose();const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}batches.length=0;}
- return {meshes,sources,get plan(){return plan;},setQuality(next){if(VEGETATION_BUDGETS[next]&&next!==currentTier){currentTier=next;signature='';}},update(s,roads,key){if(disposed||signature===`${key}|${currentTier}`)return false;signature=`${key}|${currentTier}`;clear();plan=valleyVegetationPlan(s,roads,currentTier);
-  for(const kind of ['grass','greenGrass','reed']){const variants=1+Math.max(-1,...sources[kind].map(m=>m.metadata.valleyVariant));for(const src of sources[kind]){
+ function clear(){for(const m of distant.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}distant.clear();for(const m of batches){m.dispose();const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}batches.length=0;}
+ return {meshes,sources,get plan(){return plan;},setQuality(next){if(VEGETATION_BUDGETS[next]&&next!==currentTier){currentTier=next;signature='';}},update(s,roads,key){if(disposed)return false;if(signature===`${key}|${currentTier}`){distant.update();return false;}signature=`${key}|${currentTier}`;clear();plan=valleyVegetationPlan(s,roads,currentTier);
+  for(const kind of ['grass','greenGrass','reed']){
+   const variants=[...new Set(sources[kind].map(m=>m.metadata.valleyVariant))];
+   const available=new Set(variants);
+   for(const src of sources[kind]){
    // Static plants keep their exact transforms/materials, grouped in 16-tile
    // cells. One GPU instance buffer replaces hundreds of scene graph objects;
    // cells retain useful frustum bounds for close views of the enlarged valley.
    const cells=new Map();
-   for(const p of plan[kind]){if(p.variant%variants!==src.metadata.valleyVariant)continue;const key=`${Math.floor(p.x/16)},${Math.floor(p.y/16)}`;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(p);}
+   for(const p of plan[kind]){if((available.has(p.variant)?p.variant:variants[p.variant%variants.length])!==src.metadata.valleyVariant)continue;const key=`${Math.floor(p.x/16)},${Math.floor(p.y/16)}`;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(p);}
    for(const [cell,points]of cells){
     const m=src.clone(`valley-${kind}-batch-${cell}-${src.uniqueId}`);m.setEnabled(true);m.isVisible=true;m.position.setAll(0);m.rotation.setAll(0);m.rotationQuaternion=null;m.scaling.setAll(1);
     const matrices=new Float32Array(points.length*16);
@@ -140,9 +156,9 @@ export async function createValleyVegetation(B,scene,{tier='balanced',assets=VAL
     // Thin-instance world attributes live on geometry, so regions need their
     // own geometry bindings even though they retain the same plant/material.
     m.makeGeometryUnique();
-    m.thinInstanceSetBuffer('matrix',matrices,16,true);m.thinInstanceRefreshBoundingInfo();m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.isPickable=false;m.receiveShadows=true;m.metadata={valleyBatch:{kind,cell,points}};m.freezeWorldMatrix();meshes.push(m);batches.push(m);
+    m.thinInstanceSetBuffer('matrix',matrices,16,true);m.thinInstanceRefreshBoundingInfo();m.overrideMaterialSideOrientation=B.Material.CounterClockWiseSideOrientation;m.isPickable=false;m.receiveShadows=true;m.metadata={valleyBatch:{kind,cell,points}};m.freezeWorldMatrix();meshes.push(m);batches.push(m);distant.collect(m,points,cell,matrices);
    }
   }}
-  return true;
- },dispose(){if(disposed)return;disposed=true;clear();for(const m of meshes)if(!m.isDisposed?.())m.dispose();meshes.length=0;for(const c of containers)c.dispose();}};
+  distant.finish();meshes.push(...distant.meshes);distant.update();return true;
+ },dispose(){if(disposed)return;disposed=true;clear();distant.dispose();for(const m of meshes)if(!m.isDisposed?.())m.dispose();meshes.length=0;for(const c of containers)c.dispose();}};
 }

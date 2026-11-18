@@ -16,6 +16,7 @@ import {stockStores} from '../inventory.js';
 
 const query=new URLSearchParams(location.search);
 const requested=query.get('model')||'house';
+const craftDownloads=new Set(['pottery','brickyard','kiln','bakery','brewery']);
 const homeVariants={'house-2':'Дом II','house-3':'Дом III',starterHut:'Дом основателей',reedCamp:'Тростниковый шалаш'};
 const titles={...Object.fromEntries(Object.entries(BUILDINGS).map(([id,def])=>[id,def.name])),...homeVariants,road:'Дорога'};
 const legacyFounder=requested==='starterHut';
@@ -115,7 +116,9 @@ const focus=type=>{
  selector.value=type;
  renderer.draw(state,null,performance.now(),{paused:true});
  renderer.buildings.sacredReady().then(()=>{if(selector.value===type)renderer.draw(state,null,performance.now(),{paused:true});});
- const link=document.querySelector('#download');link.href='assets/3d/sumer-buildings/'+type+'.glb';link.download=type+'.glb';
+ const link=document.querySelector('#download');
+ link.download=type+'.glb';
+ link.href='assets/3d/sumer-buildings/'+link.download+(craftDownloads.has(type)?'?v=alluvial-craft-20261118':'');
  status.textContent=titles[type]+' · '+n+'×'+n+(type==='bridge'?' · пролёт по реке':'');
 };
 selector.onchange=()=>focus(selector.value);

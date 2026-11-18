@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createGame} from '../engine.js';
-import {createValleyVegetation,loadValleyPlantSources,valleyVegetationPlan,vegetationBankDistance,VEGETATION_BUDGETS} from '../game3d/valley-vegetation.js';
+import {createValleyVegetation,loadValleyPlantSources,valleyVegetationPlan,vegetationBankDistance,VEGETATION_BUDGETS,VALLEY_PLANT_ASSETS} from '../game3d/valley-vegetation.js';
 import {landscapePlan} from '../game3d/landscape.js';
-import {sceneryClear} from '../game3d/nature.js';
+import {sceneryClear,siltLensesGeometry} from '../game3d/nature.js';
 import {lakeDistance,visualSurfaceElevation} from '../game3d/lake-shore.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 
@@ -18,6 +18,26 @@ test('imported plants follow visible wet/dry bands and avoid full farm/workplace
  assert.equal(JSON.stringify(s),before);
  const low=valleyVegetationPlan(s,roads,'low'),high=valleyVegetationPlan(s,roads,'high');assert.deepEqual(low.grass,high.grass.slice(0,low.grass.length));for(const tier of ['low','balanced','high']){const p=valleyVegetationPlan(s,roads,tier);const dry=p.grass.filter(g=>g.dryland);assert.equal(new Set(dry.map(g=>`${g.x},${g.y}`)).size,dry.length);assert.ok(p.grass.length<=VEGETATION_BUDGETS[tier].grass);assert.ok(p.reed.length<=VEGETATION_BUDGETS[tier].reed+90);}
  s.buildings.push({type:'house',x:a.grass[0].x,y:a.grass[0].y});const next=valleyVegetationPlan(s,roads);assert.ok(!next.grass.some(p=>p.x===a.grass[0].x&&p.y===a.grass[0].y));
+});
+test('original alluvial plants form distinct colonies and silt bars fit the real bank',()=>{
+ const s=createGame({start:'established',seed:137}),before=JSON.stringify(s),roads=landscapePlan(s).roads;
+ const plants=valleyVegetationPlan(s,roads,'high');
+ for(const [kind,index] of [['grass',3],['greenGrass',3],['reed',3],['reed',4]]){
+  const uri=new URL('../assets/art-courtyard/models/'+VALLEY_PLANT_ASSETS[kind][index],import.meta.url);
+  const raw=readFileSync(uri),g=JSON.parse(raw.subarray(20,20+raw.readUInt32LE(12)));
+  assert.equal(g.meshes.length,1);assert.equal(g.materials.length,1);assert.equal(g.materials[0].alphaMode,'MASK');
+  assert.ok(g.images[0].bufferView>=0&&g.accessors[g.meshes[0].primitives[0].indices].count>1000);
+  assert.ok(plants[kind].some(p=>p.variant===index));
+ }
+ const bars=siltLensesGeometry(s,roads);
+ assert.ok(bars.indices.length>100);assert.equal(bars.colors.length,bars.positions.length/3*4);
+ assert.ok(bars.colors.some((v,i)=>i%4===3&&v===0));
+ assert.ok(bars.colors.some((v,i)=>i%4===3&&v>.46));
+ for(let i=0;i<bars.positions.length;i+=3){
+  const x=bars.positions[i]/6,y=bars.positions[i+2]/6,above=bars.positions[i+1]-visualSurfaceElevation(x,y,s);
+  assert.ok(above>=.020&&above<.10);
+ }
+ assert.equal(JSON.stringify(s),before);
 });
 test('settlement and wet access clumps fill open pockets without taking extra instance budget',()=>{
  const s=createGame({start:'established',seed:137});s.buildings.push({type:'canal',x:12,y:9,level:1});const roads=landscapePlan(s).roads;
@@ -38,12 +58,13 @@ test('settlement and wet access clumps fill open pockets without taking extra in
 const sandbox={console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),sandbox);const B=sandbox.BABYLON;
 test('material layers stay together per variant; cached instances are grounded, bounded and disposed',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),original=B.SceneLoader.LoadAssetContainerAsync;let loads=0,view;
+ const expectedLoads=['grass','greenGrass','reed'].reduce((n,kind)=>n+VALLEY_PLANT_ASSETS[kind].length,0);
  B.SceneLoader.LoadAssetContainerAsync=async(root,file)=>{loads++;const c=new B.AssetContainer(scene),reflection=new B.TransformNode('reflection',scene);reflection.scaling.z=-1;c.transformNodes.push(reflection);
   for(let i=0;i<2;i++){const m=B.MeshBuilder.CreatePlane(`${file}-layer-${i}`,{size:1},scene);m.position.y=.5;m.parent=reflection;m.material=new B.PBRMaterial(`${file}-mat-${i}`,scene);m.material.transparencyMode=B.Material.MATERIAL_ALPHATEST;c.materials.push(m.material);c.meshes.push(m);}c.removeAllFromScene();return c;};
- try{const s=createGame({start:'established'}),roads=landscapePlan(s).roads,before=JSON.stringify(s);view=await createValleyVegetation(B,scene,{tier:'low'});assert.equal(loads,9);view.update(s,roads,'initial');const live=view.meshes,batches=live.filter(m=>m.thinInstanceCount>0),first=batches[0],copies=batches.reduce((n,m)=>n+m.thinInstanceCount,0);assert.ok(first,'GPU batches must exist');assert.equal(copies,(view.plan.grass.length+view.plan.greenGrass.length+view.plan.reed.length)*2,'both alpha material layers at every selected variant');assert.ok(batches.length<copies/2,'spatial batches reduce scene objects without reducing vegetation');
+ try{const s=createGame({start:'established'}),roads=landscapePlan(s).roads,before=JSON.stringify(s);view=await createValleyVegetation(B,scene,{tier:'low'});assert.equal(loads,expectedLoads);view.update(s,roads,'initial');const live=view.meshes,batches=live.filter(m=>m.thinInstanceCount>0),first=batches[0],copies=batches.reduce((n,m)=>n+m.thinInstanceCount,0);assert.ok(first,'GPU batches must exist');assert.equal(copies,(view.plan.grass.length+view.plan.greenGrass.length+view.plan.reed.length)*2,'both alpha material layers at every selected variant');assert.ok(batches.length<copies/2,'spatial batches reduce scene objects without reducing vegetation');
   for(const m of batches){const source=view.sources[m.metadata.valleyBatch.kind].find(src=>src.material===m.material);assert.ok(source,'materials remain shared with the selected source');assert.notEqual(m.geometry,source.geometry);assert.equal(source.getVertexBuffer('world0'),undefined,'sources must never receive regional matrix attributes');for(const kind of [B.VertexBuffer.PositionKind,B.VertexBuffer.NormalKind])assert.deepEqual(Array.from(m.getVerticesData(kind)),Array.from(source.getVerticesData(kind)));for(let column=0;column<4;column++)assert.equal(m.getVertexBuffer('world'+column).getBuffer(),m._thinInstanceDataStorage.matrixBuffer.getBuffer(),'each region must bind its own GPU matrix buffer');const points=m.metadata.valleyBatch.points,matrices=m.thinInstanceGetWorldMatrices();assert.equal(points.length,matrices.length);for(let i=0;i<points.length;i++){const p=points[i],matrix=matrices[i];assert.ok(Math.abs(matrix.m[12]-p.x*6)<1e-4);assert.ok(Math.abs(matrix.m[14]-p.y*6)<1e-4);assert.ok(Math.abs(matrix.m[13]-visualSurfaceElevation(p.x,p.y,s))<1e-5);assert.ok(matrix.determinant()>0);}assert.ok(m.material.needAlphaTesting());assert.equal(m.material.twoSidedLighting,true,'back-facing leaf cards must receive light on the visible side');assert.equal(m.overrideMaterialSideOrientation,B.Material.CounterClockWiseSideOrientation);assert.equal(m.isEnabled(),true);}
-  const count=scene.meshes.length;view.update(s,roads,'initial');assert.ok(live.includes(first));assert.equal(scene.meshes.length,count);assert.equal(loads,9);assert.equal(JSON.stringify(s),before);
-  view.setQuality('high');view.update(s,roads,'initial');assert.ok(first.isDisposed());assert.ok(view.meshes.reduce((n,m)=>n+(m.thinInstanceCount||0),0)>copies);assert.equal(loads,9);for(const m of view.meshes.filter(m=>m.metadata?.valleyBatch))for(let column=0;column<4;column++)assert.equal(m.getVertexBuffer('world'+column).getBuffer(),m._thinInstanceDataStorage.matrixBuffer.getBuffer());for(const sources of Object.values(view.sources))for(const src of sources)assert.ok(scene.materials.includes(src.material),'tier changes retain source materials');view.dispose();view.dispose();assert.equal(live.length,0);assert.equal(scene.meshes.length,0);assert.equal(JSON.stringify(s),before);
+  const count=scene.meshes.length;view.update(s,roads,'initial');assert.ok(live.includes(first));assert.equal(scene.meshes.length,count);assert.equal(loads,expectedLoads);assert.equal(JSON.stringify(s),before);
+  view.setQuality('high');view.update(s,roads,'initial');assert.ok(first.isDisposed());assert.ok(view.meshes.reduce((n,m)=>n+(m.thinInstanceCount||0),0)>copies);assert.equal(loads,expectedLoads);for(const m of view.meshes.filter(m=>m.metadata?.valleyBatch))for(let column=0;column<4;column++)assert.equal(m.getVertexBuffer('world'+column).getBuffer(),m._thinInstanceDataStorage.matrixBuffer.getBuffer());for(const sources of Object.values(view.sources))for(const src of sources)assert.ok(scene.materials.includes(src.material),'tier changes retain source materials');view.dispose();view.dispose();assert.equal(live.length,0);assert.equal(scene.meshes.length,0);assert.equal(JSON.stringify(s),before);
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });
 test('unavailable plant files preserve a working empty optional layer and dispose cleanly',async()=>{

@@ -373,14 +373,15 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
       a.walkPhase=(a.walkPhase+distance/((a.groups.has('Walk')?.42:.54)*PIG_SCALES[a.index]))%1;
      }
      if(advancing)a.model.rotation.x=a.root.metadata.pigBehavior==='foraging'?.065*(.6+.4*Math.sin(time*3)):0;
-     const clip=(place.walking&&a.groups.get('Walk'))||a.groups.get('Animation');
+     const clipName=place.walking&&a.groups.has('Walk')?'Walk':'Animation';
+     const clip=a.groups.get(clipName);
      if(clip){
-      if(a.clip!==clip.name){
+      if(a.clip!==clipName){
        a.groups.get(a.clip)?.stop();
-       clip.start(true);clip.pause();a.clip=clip.name;
+       clip.start(true);clip.pause();a.clip=clipName;
       }
       clip.goToFrame(clip.from+a.walkPhase*(clip.to-clip.from));
-      a.root.metadata.clip=clip.name;
+      a.root.metadata.clip=clipName;
      }
     }
     continue;

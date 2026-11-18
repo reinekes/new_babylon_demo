@@ -1,12 +1,16 @@
+import {createHandmadeParcel} from './craft-parcels.js';
+import {createYardBrick,yardCraftMaterial} from './yard-craft-meshes.js';
 import {createCopperParcel} from './copper-goods.js';
 
 // Display-only goods. Rectangular parcels share baked geometry; amounts remain in simulation.
 export const GOODS_HEIGHT=.36;
+// The next layer sits on the rim, binding or top brick of its own kind.
+export const CRAFT_PARCEL_HEIGHT=Object.freeze({basket:.34,mat:.28,clay:.235,brick:.34,firedBrick:.34});
 export const GOODS_KINDS=['food','wood','clay','stone','reed','pottery','wool','cloth','beer','hides','clothing','brick','firedBrick','water','milk','flax','basket','mat','copper','axe','blade','chisel','timber','joinery'];
 export function cargoLayout(stock,{columns=4,layers=3,maxKinds=Infinity}={}){
  const result=[];let i=0;
  for(const kind of GOODS_KINDS){if(i>=maxKinds)break;const amount=stock?.[kind];if(!Number.isFinite(amount)||amount<=0)continue;
-  for(let j=0;j<Math.min(layers,Math.ceil(amount/50));j++)result.push({kind,x:((i%columns)-(columns-1)/2)*.78,y:j*GOODS_HEIGHT,z:Math.floor(i/columns)*.66,layer:j});i++;
+  for(let j=0;j<Math.min(layers,Math.ceil(amount/50));j++)result.push({kind,x:((i%columns)-(columns-1)/2)*.78,y:j*(CRAFT_PARCEL_HEIGHT[kind]??GOODS_HEIGHT),z:Math.floor(i/columns)*.66,layer:j});i++;
  }return result;
 }
 // Radius/height profiles for transport jars and open pottery, including inner walls.
@@ -20,8 +24,10 @@ const vesselProfiles={
  pottery:[[0,0],[.072,0],[.077,.016],[.077,.031],[.107,.043],[.132,.086],[.145,.127],
   [.145,.142],[.131,.146],[.126,.132],[.115,.096],[.093,.065],[.060,.046],[0,.042]],
 };
-export function createGoodsSources(B,scene,materials){
+export function createGoodsSources(B,scene,materials,kinds=GOODS_KINDS){
  const sources=new Map(),owned=[];
+ const parcelMaterials={stone:materials.stone,wood:materials.wood,timber:materials.wood,joinery:materials.wood,
+  cloth:materials.linen,wool:materials.linen,hides:materials.linen,clothing:materials.linen};
  const metal=new B.StandardMaterial('goods-copper-and-wood',scene);
  metal.diffuseColor=B.Color3.White();
  metal.specularColor=new B.Color3(.25,.19,.14);
@@ -30,14 +36,19 @@ export function createGoodsSources(B,scene,materials){
  clayware.diffuseColor=B.Color3.White();
  clayware.specularColor=new B.Color3(.11,.08,.055);
  clayware.specularPower=16;
- for(const kind of GOODS_KINDS){
+ for(const kind of kinds){
   const copper=['axe','blade','chisel','copper'].includes(kind);
   const profile=vesselProfiles[kind];
-  const pieces=[],mat=copper?metal:profile?clayware:['clay','firedBrick'].includes(kind)?materials.terracotta:kind==='brick'?(materials.soil||materials.terracotta):kind==='stone'?materials.stone:['wood','timber','joinery'].includes(kind)?materials.wood:['cloth','wool','hides','clothing'].includes(kind)?materials.linen:materials.reed;
+  const handmade=kind==='basket'||kind==='mat'||kind==='clay';
+  const brickParcel=kind==='brick'||kind==='firedBrick';
+  const pieces=[];
+  let mat=parcelMaterials[kind]||materials.reed;
   const box=(x,y,z,w,h,d)=>{const m=B.MeshBuilder.CreateBox(`goods-part-${kind}`,{width:w,height:h,depth:d},scene);m.position.set(x,y,z);pieces.push(m);return m;};
   if(copper){
+   mat=metal;
    pieces.push(...createCopperParcel(B,scene,kind));
   }else if(profile){
+   mat=clayware;
    function tint(mesh,hex,variation=0){
     const color=B.Color3.FromHexString(hex),values=[];
     const points=mesh.getVerticesData(B.VertexBuffer.PositionKind);
@@ -72,13 +83,22 @@ export function createGoodsSources(B,scene,materials){
      pieces.push(stopper);
     }
    }
-  }else if(kind==='mat'){
-   for(const x of [-.2,0,.2])box(x,.105,0,.19,.21,.56);
-  }else if(kind==='basket'){
-   box(0,.06,0,.55,.12,.54);for(const x of [-.25,.25])box(x,.18,0,.07,.24,.54);for(const z of [-.235,.235])box(0,.18,z,.55,.24,.07);
+  }else if(handmade){
+   mat=kind==='clay'?yardCraftMaterial(B,scene):clayware;
+   pieces.push(createHandmadeParcel(B,scene,kind));
+  }else if(brickParcel){
+   const fired=kind==='firedBrick';
+   for(let level=0;level<3;level++)for(let col=0;col<2;col++)for(let row=0;row<2;row++){
+    const seed=1+level*4+col*2+row;
+    const brick=createYardBrick(B,scene,{width:.288,height:.112,depth:.223,fired,seed});
+    brick.position.set((col-.5)*.298+.008*Math.sin(seed),level*.110,(row-.5)*.236);
+    brick.rotation.y=.018*Math.cos(seed*2);
+    pieces.push(brick);
+   }
+   mat=pieces[0].material;
   }else if(['wood','reed','flax','timber','joinery'].includes(kind)){
    for(const x of [-.22,0,.22])for(const y of [.08,.26])box(x,y,0,.19,.16,.56);
-  }else if(['clay','stone','brick','firedBrick'].includes(kind)){
+  }else if(kind==='stone'){
    for(const x of [-.17,.17])for(const z of [-.14,.14])box(x,.09,z,.32,.18,.26);
    box(0,.27,0,.64,.18,.52);
   }else{
@@ -87,10 +107,17 @@ export function createGoodsSources(B,scene,materials){
    // Folded fabric and wool bales stay block shaped, with visible folded ends.
    else for(const y of [.08,.16,.24])box(0,y,.269,.61,.018,.025);
   }
-  if(!copper&&!['clay','stone','brick','firedBrick','water','beer','pottery','milk'].includes(kind))for(const z of [-.16,.16]){
+  if(!copper&&!handmade&&!brickParcel&&!profile&&kind!=='stone')for(const z of [-.16,.16]){
    box(0,.35,z,.70,.02,.035);box(-.34,.18,z,.025,.34,.035);box(.34,.18,z,.025,.34,.035);
   }
-  const mesh=B.Mesh.MergeMeshes(pieces,true,true,undefined,false,false);mesh.name=`goods-source-${kind}`;mesh.material=mat;mesh.isPickable=false;mesh.receiveShadows=true;mesh.setEnabled(false);sources.set(kind,mesh);owned.push(mesh);
+  const mesh=pieces.length===1?pieces[0]:B.Mesh.MergeMeshes(pieces,true,true,undefined,false,false);
+  if(CRAFT_PARCEL_HEIGHT[kind]){
+   const bounds=mesh.getBoundingInfo().boundingBox;
+   const scale=CRAFT_PARCEL_HEIGHT[kind]/(bounds.maximum.y-bounds.minimum.y);
+   const fit=B.Matrix.Scaling(1,scale,1).multiply(B.Matrix.Translation(0,-bounds.minimum.y*scale,0));
+   mesh.bakeTransformIntoVertices(fit);
+  }
+  mesh.name=`goods-source-${kind}`;mesh.material=mat;mesh.isPickable=false;mesh.receiveShadows=true;mesh.setEnabled(false);sources.set(kind,mesh);owned.push(mesh);
  }
  return {sources,meshes:owned};
 }

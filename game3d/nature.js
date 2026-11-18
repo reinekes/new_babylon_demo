@@ -1,4 +1,4 @@
-import {worldWidth,worldHeight,riverPoint,riverAxis,terrain} from '../world.js';
+import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain} from '../world.js';
 import {TILE,shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 import {footprintSize} from '../footprints.js';
 import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js';
@@ -77,4 +77,55 @@ export function lakebankGeometry(s){
    for(let k=0;k<4;k++){const t=k/3,d=-.025+width*t,x=p.x+dy/len*d,y=p.y-dx/len*d,blocked=(s.buildings||[]).some(b=>Math.abs(b.x-x)<.55&&Math.abs(b.y-y)<.55);g.positions.push(x*TILE,visualSurfaceElevation(x,y,s,contours)+.027,y*TILE);g.uvs.push(x/3,y/3);g.colors.push(.62+t*.13,.57+t*.12,.43+t*.10,blocked||k===3?0:Math.sin(Math.PI*(.2+.8*t))*.58);if(j<n&&k<3){const i=offset+j*4+k;g.indices.push(i,i+4,i+1,i+1,i+4,i+5);}}
   }
  }return g;
+}
+
+// Low crescent-shaped tongues deposited by slack water. Outer rings taper
+// into the physical shore; all bars share a single static geometry buffer.
+export function siltLensesGeometry(s,roads=[]){
+ const g={positions:[],indices:[],colors:[],uvs:[]},contours=lakeContours(s);
+ const phase=(s.world?.seed||0)%4093;
+ function lens(center,tangent,outer,seed){
+  const length=.27+.28*noise(seed,19),breadth=.08+.095*noise(seed,21);
+  if(!sceneryClear(s,center,length+.1)||roads.some(r=>distance(center,r.a,r.b)<length+.24))return;
+  const height=.018+.046*noise(seed,27),offset=g.positions.length/3,steps=14;
+  const shoulders=[-1,-.70,-.28,.13,.48,.74,1],stride=shoulders.length;
+  const lobe=noise(seed,67)*2*Math.PI;
+  for(let j=0;j<=steps;j++){
+   const t=j/steps,along=(2*t-1)*length;
+   // A bar pinches and bends downstream; two shallow ridges carry its deposited strata.
+   const envelope=.03+Math.sin(Math.PI*t)**.75;
+   const spread=envelope*(.74+.20*Math.sin(t*7.3+lobe)+.08*Math.sin(t*15.1-lobe));
+   const bend=breadth*(.55*Math.sin(t*5.7+lobe)+.24*Math.sin(t*8.3-lobe));
+   for(const u of shoulders){
+    const cross=breadth*spread*u*(u<0?.76:1.21)+bend;
+    const x=center.x+along*tangent.x+cross*outer.x,y=center.y+along*tangent.y+cross*outer.y;
+    const core=1-Math.abs(u),ridge=.34+.46*Math.exp(-(((u+.32)*3)**2))+.2*Math.cos(u*7.6+t*3.8);
+    const h=height*core*envelope*ridge;
+    g.positions.push(x*TILE,visualSurfaceElevation(x,y,s,contours)+.021+h,y*TILE);
+    const tone=.82+.07*core;
+    g.colors.push(tone,tone*.91,tone*.76,.62*core*envelope);
+    g.uvs.push(x*TILE/2.7,y*TILE/2.7);
+   }
+   if(j<steps)for(let i=0;i<stride-1;i++){
+    const a=offset+j*stride+i;
+    g.indices.push(a,a+1,a+stride,a+stride,a+1,a+stride+1);
+   }
+  }
+ }
+ for(const side of [-1,1])for(let i=0;i<riverLength(s)-1;i++){
+  const seed=i+phase+side*73;
+  if(noise(seed,46)>.53)continue;
+  const along=i+.2+.56*noise(seed,87),across=side*(1.33+.18*noise(seed,93));
+  const p=riverPoint(along,s,across),after=riverPoint(along+.02,s,across);
+  const dx=after.x-p.x,dy=after.y-p.y,l=Math.hypot(dx,dy);
+  lens(p,{x:dx/l,y:dy/l},{x:dy/l,y:-dx/l},seed);
+ }
+ for(const {points} of contours)for(let j=0;j<points.length;j+=15){
+  const a=points[j],b=points[(j+1)%points.length],dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy);
+  if(l<.0001)continue;
+  const outward={x:dy/l,y:-dx/l},p={x:a.x+.21*outward.x,y:a.y+.21*outward.y};
+  if(lakeDistance(p.x,p.y,s,contours)<.10)continue;
+  lens(p,{x:dx/l,y:dy/l},outward,j+phase);
+ }
+ return g;
 }

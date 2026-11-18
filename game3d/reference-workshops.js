@@ -1,3 +1,4 @@
+import {createCraftVessel,createYardBrick} from './yard-craft-meshes.js';
 import {workshopSurfaces} from './workshop-surfaces.js';
 // Dimensions in metres. The open front corner is reserved for the animated
 // workstation. Rotating the entire yard keeps that corner accessible on any road.
@@ -176,9 +177,24 @@ export function createReferenceWorkshop(b, kit) {
   for(const sx of [-1,1]) beam([x+sx*w*.46,base,z],[x+sx*w*.46,y+.07,z],.047,m.wood);
   for(const h of [base+(y-base)*.45,y]) block(x,h,z,w,.075,.50,m.wood);
  }
- function bricks(x,z,columns,rows,levels,material,w=.44,d=.34) {
+ function craftVessel(form,x,z,scale,y=groundY,turn=0) {
+  const mesh=createCraftVessel(B,scene,form,x*2.1+z);
+  mesh.position.set(x,y,z);
+  mesh.scaling.setAll(scale);
+  mesh.rotation.y=turn;
+  return add(mesh,mesh.material);
+ }
+ function looseBrick(x,y,z,width,height,depth,fired,seed) {
+  const mesh=createYardBrick(B,scene,{width,height,depth,fired,seed});
+  mesh.position.set(x,y,z);
+  mesh.rotation.y=.031*Math.sin(seed*1.7);
+  return add(mesh,mesh.material);
+ }
+ function bricks(x,z,columns,rows,levels,fired,width=.40,depth=.30) {
+  const height=fired?.135:.14;
   for(let j=0;j<levels;j++)for(let r=0;r<rows;r++)for(let c=0;c<columns;c++){
-   block(x+c*(w+.023)+(j%2)*.025,.14+j*.18,z+r*(d+.027),w,.17,d,material,(r-c)*.004);
+   looseBrick(x+c*(width+.019)+(j%2)*.022,groundY+j*height*.95,z+r*(depth+.021),
+    width,height,depth,fired,c+columns*(r+j*rows));
   }
  }
  function basin(x,z,w,d) {
@@ -204,7 +220,7 @@ export function createReferenceWorkshop(b, kit) {
  function grainJars() {
   // Terracotta fermenters have lower, wider shoulders than ordinary jars.
   for(const [x,z,s] of [[-1.68,-.50,1.06],[-.63,-.52,1.0],[.39,-.50,.93],[-1.55,.64,.92]]){
-   const vessel=jar(x,z,1.42*s,groundY);vessel.scaling.x=1.28;vessel.scaling.z=1.28;
+   craftVessel('fermenter',x,z,1.35*s);
   }
  }
  ground();
@@ -215,27 +231,35 @@ export function createReferenceWorkshop(b, kit) {
   block(-1.64,.84,-1.70,1.48,1.66,1.30,m.raw);
   roofMat(-1.56,-.83,1.94,2.35,1.81,.11);
   basin(-1.66,1.04,1.27,.80);
-  for(let row=0;row<4;row++)for(let col=0;col<6;col++){
-   const x=-.52+row*.73,z=-1.79+col*.51;
-   block(x,.139,z,.52,.17,.39,m.raw,.012*Math.sin(col+row));
+  for(let row=0;row<5;row++)for(let col=0;col<7;col++){
+   const seed=col+row*7;
+   const x=-.53+row*.55+.023*Math.sin(seed),z=-1.81+col*.409;
+   looseBrick(x,groundY,z,.392,.129,.286,false,seed);
   }
-  jar(-2.04,1.83,.64,groundY);break;
+  craftVessel('spouted',-2.04,1.83,.64,groundY,-.63);break;
  case 'kiln':
   firingChamber(-.60,-.40,2.79,2.82,2.39);
   roofMat(1.64,-1.21,1.39,2.12,1.76,.16);
-  bricks(-2.18,1.40,3,2,2,m.raw);
-  bricks(1.09,-1.98,3,2,3,m.fired,.38,.30);
+  bricks(-2.18,1.40,3,2,2,false);
+  bricks(1.09,-1.98,3,2,3,true,.38,.30);
   break;
  case 'pottery': {
   room(-1.29,-1.51,2.12,1.65,2.03,-1.50);
   bound(.47,0,.43);roofMat(-1.29,-.40,2.18,1.04,2.12);
   shelf(-1.19,.43,1.91,.12,1.01);
-  for(const y of [.562,1.05])for(let n=0;n<3;n++){
-   const v=jar(-1.82+n*.61,.43,.58,y);v.scaling.x=v.scaling.z=1.17;
-  }
+  craftVessel('jar',-1.82,.43,.44,.562);
+  for(let i=0;i<3;i++)craftVessel('bowl',-1.20,.43,.53,.562+i*.065);
+  craftVessel('spouted',-.58,.43,.44,.562,-.62);
+  craftVessel('spouted',-1.79,.43,.57,1.05,-.83);
+  craftVessel('jar',-1.11,.43,.55,1.05);
+  craftVessel('bowl',-.55,.43,.51,1.05);
   firingChamber(.84,-1.30,1.41,1.45,1.42);
-  jar(-.15,1.48,.95,groundY);
-  if ((b.level||1)>=2) {shelf(.44,-.42,1.15,.16,.95);for(const x of [.13,.68])jar(x,-.41,.49,1);}
+  craftVessel('jar',-.15,1.48,.94);
+  if ((b.level||1)>=2) {
+   shelf(.44,-.42,1.15,.16,.95);
+   craftVessel('bowl',.13,-.41,.49,1);
+   craftVessel('spouted',.68,-.41,.44,1,-.76);
+  }
   break;
  }
  case 'bakery':

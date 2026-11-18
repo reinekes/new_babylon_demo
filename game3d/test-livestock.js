@@ -7,10 +7,10 @@ import {DAY_SECONDS,lightingAt,seed} from '../city-life.js';
 import {dairyHerd} from './dairy-herd.js';
 
 const MODELS={
- pig:{files:['test-pig-trellis.glb','ambient-yard-pig.glb'],strides:[.34,.42],height:.64,space:.22},
+ pig:{files:['alluvial-pig.glb','test-pig-trellis.glb','ambient-yard-pig.glb'],strides:[.33,.34,.42],height:.64,space:.22},
  goat:{files:['test-goat-trellis.glb','goat-downloaded.glb'],strides:[.40,.30],height:.96,space:.22},
- bull:{files:['test-bull-trellis.glb','ambient-bull.glb'],strides:[.62,1.23],height:1.43,space:.32,pen:'cowshed'},
- sheep:{files:['ambient-sheep-kenchoo.glb'],strides:[.31],height:.83,space:.21,pen:'sheepfold'},
+ bull:{files:['alluvial-bull.glb','test-bull-trellis.glb','ambient-bull.glb'],strides:[.69,.62,1.23],height:1.43,space:.32,pen:'cowshed'},
+ sheep:{files:['alluvial-ram.glb','ambient-sheep-kenchoo.glb'],strides:[.38,.31],height:.83,space:.21,pen:'sheepfold'},
 };
 const PACE=.105;
 const MAX_HERD=7;
@@ -149,9 +149,11 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
 
  function makeMember(herd,index){
   const {spec,kind}=herd;
-  const variant=index%spec.files.length;
-  const source=assets.get(spec.files[variant])||spec.files.map(file=>assets.get(file)).find(Boolean);
-  if(!source)return null;
+  const preferred=index%spec.files.length;
+  const variant=assets.has(spec.files[preferred])?preferred:spec.files.findIndex(file=>assets.has(file));
+  if(variant<0)return null;
+  const file=spec.files[variant];
+  const source=assets.get(file);
   const name=`livestock-${kind}-${index}`;
   const root=new B.TransformNode(name,scene),display=new B.TransformNode(name+'-model',scene);
   const copy=source.instantiateModelsToScene(node=>name+'-'+node,false,{doNotInstantiate:true});
@@ -161,7 +163,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
   display.scaling.setAll(scale);
   display.position.set(-(min.x+max.x)*scale/2,-min.y*scale,-(min.z+max.z)*scale/2);
   display.parent=root;
-  root.metadata={herdAnimal:true,herdSpecies:kind,herdVariant:variant};
+  root.metadata={herdAnimal:true,herdSpecies:kind,herdVariant:variant,herdModel:file};
   root.setEnabled(false);
   const owned=root.getChildMeshes();
   for(const mesh of owned){mesh.isPickable=false;mesh.receiveShadows=true;meshes.push(mesh);}

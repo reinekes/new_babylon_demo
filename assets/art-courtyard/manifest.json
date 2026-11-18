@@ -1,5 +1,5 @@
 {
-  "release": "festival-candles-tests-20261028-1",
+  "release": "alluvial-craft-20261118",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
@@ -21,6 +21,78 @@
       "file": "historical-man-report.json",
       "bytes": 1110,
       "sha256": "b39f8b64ca8b3823474ac24d003304cded6c10621b1e4f8ba0b826badb002abf"
+    },
+    {
+      "file": "models/alluvial-awn-grass.glb",
+      "bytes": 165428,
+      "sha256": "bc120129fe6e55abd931ac5384d975e6167349d0cce81e7909cee6acb6cf9918",
+      "triangles": 620,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/alluvial-bull.glb",
+      "bytes": 2720752,
+      "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
+      "triangles": 40812,
+      "meshes": 1,
+      "bones": 20,
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
+    },
+    {
+      "file": "models/alluvial-pig.glb",
+      "bytes": 2576076,
+      "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
+      "triangles": 35790,
+      "meshes": 1,
+      "bones": 20,
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
+    },
+    {
+      "file": "models/alluvial-ram.glb",
+      "bytes": 2618268,
+      "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
+      "triangles": 35468,
+      "meshes": 1,
+      "bones": 20,
+      "clips": [
+        "Walk",
+        "Idle"
+      ]
+    },
+    {
+      "file": "models/marsh-cattail.glb",
+      "bytes": 164244,
+      "sha256": "af120ac8660159e2dc3952e38c86ca2132110cf557a43d5fcbad91ee4267fd64",
+      "triangles": 720,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/marsh-clubrush.glb",
+      "bytes": 173440,
+      "sha256": "3db0700f06d1a7f7e784ff45d674889e72a5ef4a1e6a5d6670ce85a01bcfab0a",
+      "triangles": 950,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
+    },
+    {
+      "file": "models/marsh-plumed-cane.glb",
+      "bytes": 180860,
+      "sha256": "0ad5e1537a32e4d50e60327a3a44f43e97b81ad2bdf8cdbc0bfc1cae64c9a070",
+      "triangles": 1152,
+      "meshes": 1,
+      "bones": 0,
+      "clips": []
     },
     {
       "file": "models/adobe-courtyard.glb",

@@ -14,6 +14,10 @@ const model = (kind, label, fields={}) => ({kind,label,...fields});
 const row = (group, title, description, ...previews) => ({group,title,description,previews});
 const built = (type, level, starter=false) => model('building', `Уровень ${level}`, {type,level,starter});
 const names = {
+  'marsh-cattail':'Рогоз с початками',
+  'marsh-clubrush':'Камыш со сборными колосками',
+  'marsh-plumed-cane':'Высокий тростник с метёлками',
+  'alluvial-awn-grass':'Сухой остистый злак поймы',
   'source-walk-male':'Взрослый мужчина','source-walk-female':'Взрослая женщина',
   'source-walk-child':'Ребёнок','source-walk-adolescent':'Подросток',
   'resident':'Житель, основной резерв','resident-lod':'Житель, облегчённый GLB',
@@ -24,6 +28,9 @@ const names = {
   'ambient-bull':'Бык и основа модели вола','ambient-donkey':'Вьючный осёл',
   'ambient-dog':'Собака','ambient-sheep-kenchoo':'Овца · вариант стада','sheep':'Овца из овчарни',
   'ambient-yard-pig':'Домашняя свинья',
+  'alluvial-pig':'Домашняя свинья · щетинистая',
+  'alluvial-bull':'Длиннорогий бык · гнедой',
+  'alluvial-ram':'Баран · спиральные рога',
   'test-pig-trellis':'Свинья · тестовое стадо',
   'test-goat-trellis':'Коза · тестовое стадо',
   'test-bull-trellis':'Бык · тестовое стадо',
@@ -48,9 +55,9 @@ const ages = {male:'Мужчина',female:'Женщина',child:'Ребёно�
 function glbGroup(name) {
   if (/^(?:human-native-|source-walk-|sumer-(?:people|child|adolescent)|resident|historical-man|caravan-merchant)/.test(name)) return 'people';
   if (/duck|goose|bird|seagull|mallard/.test(name)) return 'birds';
-  if (/^test-(?:pig|goat|bull)-trellis$|^ambient-|^caravan-camel|^cat-|^gazelle|^goat|^imported-|^jackal|^sheep/.test(name)) return 'animals';
+  if (/^alluvial-(?:ram|pig|bull)$|^test-(?:pig|goat|bull)-trellis$|^ambient-|^caravan-camel|^cat-|^gazelle|^goat|^imported-|^jackal|^sheep/.test(name)) return 'animals';
   if (name==='river-cargo-boat') return 'transport';
-  if (/^crop-|^date-palm|^valley-|^miracle-/.test(name)) return 'plants';
+  if (/^crop-|^date-palm|^valley-|^miracle-|^marsh-|^alluvial-awn-grass$/.test(name)) return 'plants';
   if (name==='festival-candle') return 'goods';
   return 'other';
 }

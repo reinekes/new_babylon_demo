@@ -28,7 +28,7 @@ import {createNatureDetails,resourceDisplayLayout} from './nature-details.js';
 import {deformedTerrainNormals,stitchTerrainRim} from './terrain-deformation.js';
 import {cargoLayout,createGoodsSources} from './goods.js';
 import {lakeContours,lakeDistance,visualSurfaceElevation} from './lake-shore.js';
-import {sceneryClear,lakebankGeometry,floodplainTufts,tuftGeometry,riverbankGeometry,rectangularSiteGeometry} from './nature.js';
+import {sceneryClear,lakebankGeometry,siltLensesGeometry,floodplainTufts,tuftGeometry,riverbankGeometry,rectangularSiteGeometry} from './nature.js';
 
 import {createValleyVegetation,loadValleyPlantSources,VALLEY_PLANT_ASSETS,vegetationBankDistance} from './valley-vegetation.js';
 
@@ -124,7 +124,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  let currentState=initialState;
  const registeredMeshes=new WeakSet();
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map(),trailMeshes=[];
- let finishedRoadIds=new Set(),trailSignature='',trailState=null,trailBucket=-1;
+ let finishedRoadIds=new Set(),trailSignature='',trailState=null,trailBucket=-1,siltSurface=null;
  let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='',staticScenerySignature='',natureGeometrySignature='';
  const roadRenderGroups=createRoadRenderGroups(B,scene,meshes);let batchRoads=options.batchRoads!==false;
  const palmRenderGroups=createPalmRenderGroups(B,scene,meshes);let batchPalms=options.batchPalms!==false;
@@ -137,7 +137,8 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  const waterView=createGameWater(B,scene,materials);
  const natureDetails=createNatureDetails(B,scene,materials,options);
  const valleyVegetation=await createValleyVegetation(B,scene,options);meshes.push(...valleyVegetation.meshes);
- const meadow=material('volumetric-floodplain-grass','#7b8750'),shore=material('irregular-wet-sand-margin','#ffffff');meadow.backFaceCulling=false;shore.transparencyMode=B.Material.MATERIAL_ALPHABLEND;shore.forceDepthWrite=false;shore.albedoTexture=materials.soil?.albedoTexture||null;
+ const meadow=material('volumetric-floodplain-grass','#7b8750'),shore=materials.bankSilt||material('irregular-wet-sand-margin','#ffffff');meadow.backFaceCulling=false;shore.transparencyMode=B.Material.MATERIAL_ALPHABLEND;shore.forceDepthWrite=false;
+ if(!materials.bankSilt)shore.albedoTexture=materials.soil?.albedoTexture||null;
  const trail=material('game-footpath-trodden-soil','#8f7657');
  trail.albedoColor=color(.84,.76,.65);trail.albedoTexture=materials.soil?.albedoTexture||null;trail.bumpTexture=materials.soil?.bumpTexture||null;
  const earth=material('game-road-compacted-earth','#806443'),gravel=material('game-road-clay-gravel','#a18b63'),paving=material('game-road-bedded-stone','#afa68b'),work=material('game-road-work','#b99b6a'),bank=material('game-channel-bank','#a5885e'),wetMud=material('game-wet-channel-mud','#4d584a'),rainMaterial=material('game-rain','#a5c5ce');
@@ -244,7 +245,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
     mesh.unfreezeWorldMatrix();mesh.rotation.y=(p.x+p.y)*2.399;mesh.freezeWorldMatrix();
    }
    if(plot&&d.kind==='reed')for(const [i,p]of resourceDisplayLayout(d).entries()){
-    const sources=valleyVegetation.sources.reed,variant=i%3,selected=sources.filter(m=>m.metadata?.valleyVariant===variant);
+    const sources=valleyVegetation.sources.reed,variant=i%2===0&&sources.some(m=>m.metadata.valleyVariant===3)?3:i%3,selected=sources.filter(m=>m.metadata?.valleyVariant===variant);
     for(const src of selected.length?selected:[reedSource]){
      const h=1.25+p.size*.38,mesh=plotPart(plot,src,`deposit-open-reed-${d.x}-${d.y}`,p,src===reedSource?[1,h,1]:[p.size,p.size,p.size],src===reedSource?h/2:0);
      mesh.unfreezeWorldMatrix();mesh.rotation.y=p.angle;mesh.freezeWorldMatrix();
@@ -338,6 +339,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   for(const c of plan.canals)for(const [dx,dy]of c.arms.length?c.arms:[[1,0],[-1,0]]){const mid={x:c.x+dx*.5,y:c.y+dy*.5};if(plan.roads.some(r=>pointDistance(mid,r.a,r.b)<.09))for(const offset of [-.22,0,.22]){const center={x:mid.x+dx*offset/TILE,y:mid.y+dy*offset/TILE};strip('canal-road-crossing',{x:center.x-dy*.13,y:center.y+dx*.13},{x:center.x+dy*.13,y:center.y-dx*.13},.19,.18,materials.wood);}}
   const tufts=landscapeFallbackTufts(s,plan.roads,valleyVegetation.sources),grass=meshData('volumetric-riparian-colonies',tuftGeometry(s,tufts),meadow);if(grass){grass.metadata={natureTufts:tufts};grass.freezeWorldMatrix();}
   const margin=meshData('irregular-physical-riverbanks',openCanalMouths(riverbankGeometry(s),arms),shore);if(margin){margin.hasVertexAlpha=true;margin.freezeWorldMatrix();}
+  siltSurface=meshData('laminated-flood-silt-bars',openCanalMouths(siltLensesGeometry(s,plan.roads),arms),shore);if(siltSurface){siltSurface.hasVertexAlpha=true;siltSurface.freezeWorldMatrix();}
   const lakeMargin=meshData('organic-lake-soft-banks',openCanalMouths(lakebankGeometry(s),arms),shore);if(lakeMargin){lakeMargin.hasVertexAlpha=true;lakeMargin.freezeWorldMatrix();}
    staticScenerySignature=nextScenery;
   }
@@ -396,10 +398,17 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  let weatherSignature='',landscapePlanRoads=[];
  function updateWeather(s,time){const weather=weatherAt(s),rain=weather.type==='rain',wind=weather.type==='wind',key=`${s.season}|${!!s.drought}|${rain}`;
   if(key!==weatherSignature){weatherSignature=key;const dry=s.drought>0,summer=s.season===1;const soil=materials.soil,grass=materials.grass;
+   if(materials.bankSilt){materials.bankSilt.albedoColor=rain?color(.66,.68,.63):dry?color(1,.92,.78):color(.85,.83,.73);materials.bankSilt.roughness=rain?.72:.92;}
+   for(const kind of ['greenGrass','reed'])for(const src of valleyVegetation.sources[kind]){
+    if(src.metadata.valleyVariant>=3)src.material.albedoColor=dry?color(1,.85,.61):summer?color(1,.94,.78):color(.95,1,.95);
+   }
    soil.albedoColor=color(rain?.82:.94,rain?.76:.86,rain?.62:.71);grass.albedoColor=dry?color(.83,.72,.42):summer?color(.8,.79,.5):color(.71,.87,.52);
    for(const m of base?.meshes||[])if(m.name==='soft-riparian-grass'&&m.material)m.material.albedoColor=grass.albedoColor.clone();
    meadow.albedoColor=dry?color(.57,.43,.21):summer?color(.48,.47,.25):rain?color(.32,.43,.19):color(.40,.48,.24);
   }
+  // At town overview scale the relief is subpixel; the physical banks and
+  // world-mapped silt textures continue to show the wet/dry transition.
+  if(siltSurface){const visible=(scene.activeCamera?.radius??0)<120;if(siltSurface.isEnabled()!==visible)siltSurface.setEnabled(visible);}
   natureDetails.update(s,time,weather,landscapePlanRoads,natureGeometrySignature);
   if(valleyVegetation.update(s,landscapePlanRoads,natureGeometrySignature)){const registered=new Set(meshes);for(const m of valleyVegetation.meshes)if(!registered.has(m))meshes.push(m);}
   registerMeshes(natureDetails.meshes);

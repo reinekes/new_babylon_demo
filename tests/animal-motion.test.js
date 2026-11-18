@@ -15,7 +15,10 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
   assert.ok(companion.isEnabled()&&ambientDryPoint(state,companion.position.x/6,companion.position.z/6));
   assert.ok(B.Vector3.Distance(pig.position,companion.position)>1.8);
   assert.equal(companion.metadata.clip,'Animation');
-  assert.equal(pig.metadata.clip,'Animation');
+  assert.equal(pig.metadata.pigBehavior,'walking');
+  assert.equal(pig.metadata.clip,'Walk');
+  const pigClips=new Map(scene.animationGroups.filter(g=>g.name.startsWith(pig.name+'-')).map(g=>[g.name.slice(pig.name.length+1),g]));
+  const usedPigClips=new Set([pig.metadata.clip]);
   assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
   const pigPositions=new Set([pig.position.asArray().join(',')]),pigPose=snap(pig);
   const mallard=view.roots().find(r=>r.metadata.ambientSpecies==='mallard');
@@ -69,10 +72,16 @@ test('real GLBs parse, every terrestrial species walks with deforming skin, paus
    assert.ok(B.Vector3.Distance(mallard.position,female.position)>.52);
    if(!before){if(returned.size===2&&dipped.size===2&&ripples.size===2&&shorePhases.every(phases=>phases.has('scanning')))break;continue;}
    pigPositions.add(pig.position.asArray().join(','));
+   const expectedPigClip=pig.metadata.pigBehavior==='walking'?'Walk':'Animation';
+   assert.equal(pig.metadata.clip,expectedPigClip);
+   usedPigClips.add(expectedPigClip);
+   assert.equal(pigClips.get(expectedPigClip).isStarted,true);
+   assert.equal(Boolean(pigClips.get(expectedPigClip==='Walk'?'Animation':'Walk').isStarted),false);
    assert.ok(ambientDryPoint(state,pig.position.x/6,pig.position.z/6));
    if(i===20||i===60)for(const r of roots){const now=skin(r),before=positions.get(r);if(now.some((v,j)=>Math.abs(v-before[j])>.0005))skinChanged.add(r.metadata.ambientSpecies);}
    for(const r of roots){const p={x:r.position.x/6,y:r.position.z/6};assert.ok(ambientDryPoint(state,p.x,p.y));assert.ok(ambientClearSegment(state,before.get(r),p));if(r.metadata.clip==='Walk')moving.add(r.metadata.ambientSpecies);if(snap(r)!==start.get(r))deforming.add(r.metadata.ambientSpecies);}
   }
+  assert.deepEqual([...usedPigClips].sort(),['Animation','Walk']);
   assert.ok(pigPositions.size>1);
   assert.notEqual(snap(pig),pigPose);
   assert.equal(returned.size,2);

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "manifestRelease": "festival-candles-tests-20261028-1",
+  "manifestRelease": "alluvial-craft-20261118",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 91,
-    "active": 64,
+    "total": 98,
+    "active": 71,
     "fallback": 10,
     "optional": 6,
     "spare": 11
@@ -21,7 +21,7 @@
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "f55735a00a46e4c895da8aead8988fd5f07764700e4be6a04a34bbc57fde0f63"
+      "sha256": "7806a8664482e39505ca65ba24be4ea40d0baaad194f2ff086a01e63da0ffdc8"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -61,7 +61,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "b9492d64ee376ad8d0ce76010a9f5c736287b5805213eda78a739ead6871454c"
+      "sha256": "3406cad244f56ecaad996132209341a1dbe5d9d25f366eb76cf31b1973ed9cdc"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -89,11 +89,11 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "c1acc3adc15ed2184973367578bbd52a61f96aaf6a12997ca8da9763c89299e2"
+      "sha256": "ca9ce6a9efa03f9044561895e85810ed07a0fb08772e207a6c30b418385dc5d1"
     },
     {
       "file": "game3d/valley-vegetation.js",
-      "sha256": "4cfd3004b9571a9162e6b90fc83505ceea815fc8fdda04d44603eb63d28ced2c"
+      "sha256": "8772ef61cfc7628fe05bbdc9b30741750553815b2e6fe43b4d6aa137e50f7503"
     }
   ],
   "models": [
@@ -128,6 +128,143 @@
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
           "line": 30,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "alluvial-awn-grass.glb",
+      "status": "active",
+      "purpose": "Авторские куртины речной поймы и сухой травы в обычной долине.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 165428,
+      "sha256": "bc120129fe6e55abd931ac5384d975e6167349d0cce81e7909cee6acb6cf9918",
+      "version": "bc120129fe6e",
+      "triangles": 620,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon",
+          "license": "Project-authored geometry and atlas; explicit standalone asset license not recorded.",
+          "source": "scripts/art-courtyard/build_marsh_botany.py",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "alluvial-awn-grass.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 12,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "alluvial-bull.glb",
+      "status": "active",
+      "purpose": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.",
+      "classificationEvidence": "game3d/test-livestock.js|alluvial-",
+      "bytes": 2720752,
+      "sha256": "098d0f5f64c3e2f2b2a18beca4460805229dfa5a4ce9f5b8fa21c49d3bae75ae",
+      "version": "098d0f5f64c3",
+      "triangles": 40812,
+      "meshes": 1,
+      "bones": 20,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "Новый Вавилон",
+          "license": "Авторская игровая модель проекта",
+          "source": "https://github.com/reinekes/new_babylon_demo/blob/main/scripts/art-courtyard/sculpt_alluvial_livestock.py",
+          "evidence": "asset.extras"
+        },
+        {
+          "author": "Новый Вавилон / TRELLIS.2 Standard (3D Valley)",
+          "license": "Результат генерации по референсу проекта, условия 3D Valley",
+          "source": "https://3dvalley.com/tools/create/image-to-3d",
+          "evidence": "asset.extras.coat_reference"
+        }
+      ],
+      "references": [
+        {
+          "model": "alluvial-bull.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 12,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "alluvial-pig.glb",
+      "status": "active",
+      "purpose": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.",
+      "classificationEvidence": "game3d/test-livestock.js|alluvial-",
+      "bytes": 2576076,
+      "sha256": "b6a00331942899b9b82699e291cbe0588edfcbce344200b69e83fb4857945cd8",
+      "version": "b6a003319428",
+      "triangles": 35790,
+      "meshes": 1,
+      "bones": 20,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "Новый Вавилон",
+          "license": "Авторская игровая модель проекта",
+          "source": "https://github.com/reinekes/new_babylon_demo/blob/main/scripts/art-courtyard/sculpt_alluvial_livestock.py",
+          "evidence": "asset.extras"
+        },
+        {
+          "author": "New Babylon, generated with Microsoft TRELLIS.2",
+          "license": "TRELLIS.2 code and weights: MIT. Project-generated reference and asset.",
+          "source": "https://huggingface.co/spaces/microsoft/TRELLIS.2",
+          "evidence": "asset.extras.coat_reference"
+        }
+      ],
+      "references": [
+        {
+          "model": "alluvial-pig.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 10,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "alluvial-ram.glb",
+      "status": "active",
+      "purpose": "Авторская скульптура в свободном городском стаде, собственные ходьба и покой, варианты прежних животных доступны рядом.",
+      "classificationEvidence": "game3d/test-livestock.js|alluvial-",
+      "bytes": 2618268,
+      "sha256": "d4906b0586e3f1d60c516fd1443f56ba6a7a53553feff0ffe16499ee63db0064",
+      "version": "d4906b0586e3",
+      "triangles": 35468,
+      "meshes": 1,
+      "bones": 20,
+      "clips": [
+        "Walk",
+        "Idle"
+      ],
+      "sources": [
+        {
+          "author": "Новый Вавилон",
+          "license": "Авторская игровая модель проекта",
+          "source": "https://github.com/reinekes/new_babylon_demo/blob/main/scripts/art-courtyard/sculpt_alluvial_livestock.py",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "alluvial-ram.glb",
+          "file": "game3d/test-livestock.js",
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -557,7 +694,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 191,
+          "line": 192,
           "kind": "literal"
         }
       ]
@@ -1177,6 +1314,93 @@
       ]
     },
     {
+      "file": "marsh-cattail.glb",
+      "status": "active",
+      "purpose": "Авторские куртины речной поймы и сухой травы в обычной долине.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 164244,
+      "sha256": "af120ac8660159e2dc3952e38c86ca2132110cf557a43d5fcbad91ee4267fd64",
+      "version": "af120ac86601",
+      "triangles": 720,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon",
+          "license": "Project-authored geometry and atlas; explicit standalone asset license not recorded.",
+          "source": "scripts/art-courtyard/build_marsh_botany.py",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "marsh-cattail.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 14,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "marsh-clubrush.glb",
+      "status": "active",
+      "purpose": "Авторские куртины речной поймы и сухой травы в обычной долине.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 173440,
+      "sha256": "3db0700f06d1a7f7e784ff45d674889e72a5ef4a1e6a5d6670ce85a01bcfab0a",
+      "version": "3db0700f06d1",
+      "triangles": 950,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon",
+          "license": "Project-authored geometry and atlas; explicit standalone asset license not recorded.",
+          "source": "scripts/art-courtyard/build_marsh_botany.py",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "marsh-clubrush.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 13,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
+      "file": "marsh-plumed-cane.glb",
+      "status": "active",
+      "purpose": "Авторские куртины речной поймы и сухой травы в обычной долине.",
+      "classificationEvidence": "game3d/valley-vegetation.js|VALLEY_PLANT_ASSETS",
+      "bytes": 180860,
+      "sha256": "0ad5e1537a32e4d50e60327a3a44f43e97b81ad2bdf8cdbc0bfc1cae64c9a070",
+      "version": "0ad5e1537a32",
+      "triangles": 1152,
+      "meshes": 1,
+      "bones": 0,
+      "clips": [],
+      "sources": [
+        {
+          "author": "New Babylon",
+          "license": "Project-authored geometry and atlas; explicit standalone asset license not recorded.",
+          "source": "scripts/art-courtyard/build_marsh_botany.py",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "marsh-plumed-cane.glb",
+          "file": "game3d/valley-vegetation.js",
+          "line": 14,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
       "file": "miracle-birch-1.glb",
       "status": "active",
       "purpose": "Только временный чудесный сад; фантазия, не обычная историческая флора.",
@@ -1351,7 +1575,7 @@
         {
           "model": "miracle-green-grass-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -1386,7 +1610,7 @@
         {
           "model": "miracle-green-grass-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -1421,7 +1645,7 @@
         {
           "model": "miracle-green-grass-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 13,
           "kind": "literal"
         }
       ]
@@ -2748,7 +2972,7 @@
         {
           "model": "valley-date-palm.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 15,
           "kind": "literal"
         }
       ]
@@ -2777,7 +3001,7 @@
         {
           "model": "valley-dry-grass-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -2806,7 +3030,7 @@
         {
           "model": "valley-dry-grass-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -2835,7 +3059,7 @@
         {
           "model": "valley-dry-grass-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 12,
           "kind": "literal"
         }
       ]
@@ -2864,7 +3088,7 @@
         {
           "model": "valley-reed-1.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -2893,7 +3117,7 @@
         {
           "model": "valley-reed-2.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 14,
           "kind": "literal"
         }
       ]
@@ -2922,7 +3146,7 @@
         {
           "model": "valley-reed-3.glb",
           "file": "game3d/valley-vegetation.js",
-          "line": 10,
+          "line": 14,
           "kind": "literal"
         }
       ]

@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-18",
+  "entry": "scripts/sumer-building-studio.html?model=garden",
+  "view": "Real game landscape, established city, WebGL 2. Screens captured without UI. Pixel counts compare the fixed framebuffer with the selected geometry visible and hidden; control compares consecutive hidden frames. Overview and close-up checked separately.",
+  "viewport": [
+    1170,
+    735
+  ],
+  "inGame": {
+    "marsh-plumed-cane": {
+      "instances": 129,
+      "triangles": 1152,
+      "texture": true,
+      "pixels": {
+        "visible": 81591,
+        "without": 0
+      }
+    },
+    "marsh-cattail": {
+      "instances": 144,
+      "triangles": 720,
+      "texture": true,
+      "pixels": {
+        "visible": 186342,
+        "without": 0
+      }
+    },
+    "alluvial-awn-grass": {
+      "instances": 263,
+      "triangles": 620,
+      "texture": true,
+      "pixels": {
+        "visible": 65902,
+        "without": 0
+      }
+    },
+    "marsh-clubrush": {
+      "instances": 129,
+      "triangles": 950,
+      "texture": true,
+      "pixels": {
+        "visible": 135381,
+        "without": 0
+      }
+    }
+  },
+  "bank": {
+    "vertices": 12075,
+    "triangles": 19320,
+    "material": "laminated-bank-silt",
+    "albedo": "assets/3d/textures/river-silt_color.webp",
+    "normal": "assets/3d/textures/river-silt_normal.webp",
+    "pixels": {
+      "visible": 16112,
+      "without": 0
+    }
+  },
+  "soil": {
+    "albedo": "assets/3d/textures/floodplain-alluvium_color.webp",
+    "normal": "assets/3d/textures/floodplain-alluvium_normal.webp"
+  },
+  "gpu": 2,
+  "glError": 0,
+  "lod": {
+    "far": {
+      "nearOn": 0,
+      "farOn": 16,
+      "farTriangles": 3990,
+      "nearTriangles": 537898,
+      "atlas": true,
+      "changedPixels": 4395,
+      "control": 0,
+      "siltDisabledInOverview": true
+    },
+    "near": {
+      "detailed": 41,
+      "impostors": 0,
+      "siltEnabled": true
+    },
+    "glError": 0
+  },
+  "errors": []
+}

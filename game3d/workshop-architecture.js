@@ -4,6 +4,7 @@ import {footprintSize} from '../footprints.js';
 import {fortificationLayout} from '../fortification-layout.js';
 import {extractionWorkArea,isExtractionCourt} from '../extraction-courts.js';
 import {riverAxis} from '../world.js';
+import {createGrindingStone} from './yard-craft-meshes.js';
 import {workshopSurfaces} from './workshop-surfaces.js';
 
 // Small fixed installations belong to a building template. They neither claim
@@ -82,6 +83,17 @@ function equipment(B,scene,palette){
   vessel(x,y,z,'trough',s,'stone');
   rod([x+.035,y+s*.14,z],[x+s*.23,y+s*.51,z-.05],s*.060,'stone');
  }
+ function quern(x,y,z) {
+  // The handstone lies across the rear of the bed, leaving its wear hollow visible.
+  for(const handheld of [false,true]){
+   const mesh=createGrindingStone(B,scene,handheld);
+   mesh.position.set(x+(handheld?.17:0),y+(handheld?.173:0),z+(handheld?-.027:0));
+   mesh.rotation.y=handheld?1.72:.16;
+   const material=mesh.material;
+   if(!groups.has(material))groups.set(material,[]);
+   groups.get(material).push(mesh);
+  }
+ }
  function finish(root,type){
   const result=[];
   for(const [material,parts] of groups){
@@ -91,7 +103,7 @@ function equipment(B,scene,palette){
   }
   return result;
  }
- return {box,rod,loop,lathe,vessel,panel,rack,screen,hurdle,coil,mortar,finish};
+ return {box,rod,loop,lathe,vessel,panel,rack,screen,hurdle,coil,mortar,quern,finish};
 }
 
 function extractionEquipment(b,state,e){
@@ -128,7 +140,7 @@ function extractionEquipment(b,state,e){
 }
 
 function furnishings(b,state,e){
- const {box,rod,loop,lathe,vessel,panel,rack,screen,hurdle,coil,mortar}=e;
+ const {box,rod,loop,lathe,vessel,panel,rack,screen,hurdle,coil,mortar,quern}=e;
  // A broad lidded basket keeps a readable woven rim at city-camera distance.
  const grainBasket=(x,y,z,r,h,lid=true)=>{
   lathe(x,y,z,[[0,0],[r*.76,.01],[r*.89,h*.13],[r,h*.82],[r*.98,h],[r*.87,h],[r*.84,h*.48],[0,h*.25]],'reed');
@@ -145,7 +157,7 @@ function furnishings(b,state,e){
    vessel(.16,.06,.01,'jar',.76);break;
   case 'bakery':
    grainBasket(-1.80,.06,-1.23,.43,.55);grainBasket(-1.83,.06,-.30,.37,.36);
-   mortar(1.39,.055,1.45,1.42);
+   quern(1.40,.055,1.48);
    rod([1.06,.13,.69],[1.28,.20,1.56],.035,'wood');
    box(1.02,.14,.63,.32,.045,.38,'wood',.24);break;
   case 'brewery':
