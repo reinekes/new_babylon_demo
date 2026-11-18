@@ -1,0 +1,388 @@
+{
+  "date": "2026-11-18",
+  "fixture": "scripts/sumer-building-studio.html?stress",
+  "baseline": "33be6d3",
+  "model": {
+    "url": "assets/3d/sumer-buildings/house.glb",
+    "bytes": 1325556,
+    "triangles": 8246,
+    "sha256": "84ef78b6072ba7c842f9666680ecdc7eadef80cd54d925a29bb6616cd72b1db8"
+  },
+  "setup": {
+    "speed": 4,
+    "population": 500,
+    "buildings": 250,
+    "ordinaryLevelOneHouses": 208,
+    "durationSecondsPerRun": 18,
+    "cameraNear": "catalog courtyard house, radius 12",
+    "cameraOverview": "renderer.overview()",
+    "fpsMethod": "count of requestAnimationFrame intervals divided by elapsed time",
+    "cpuProfile": "performance.now() wall time around calls on main thread; nested scopes are not additive",
+    "saveCheck": "decode and re-encode before and after; compare complete saved strings, plus ordered citizen IDs before benchmark",
+    "viewport": [
+      1440,
+      900
+    ],
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36"
+  },
+  "fps": {
+    "overview": {
+      "base": [
+        28.42,
+        28.42
+      ],
+      "updated": [
+        29.75,
+        28.97
+      ],
+      "meanChangePercent": 3.3
+    },
+    "near": {
+      "base": [
+        46.24
+      ],
+      "updated": [
+        47.62
+      ],
+      "meanChangePercent": 3.0
+    }
+  },
+  "runs": [
+    {
+      "label": "before-1",
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 28.41918294849023,
+        "frames": 512,
+        "seconds": 18.016,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 10.800000071525574
+      },
+      "endSaveByteEqual": true,
+      "scene": {
+        "visibleBuildingMeshes": 3422,
+        "activeIndices": 11151291,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "captured": "2026-11-18T08:07:49.398Z"
+    },
+    {
+      "label": "before-2",
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 28.42215487581236,
+        "frames": 513,
+        "seconds": 18.0493,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 10.799999952316284,
+        "framesMs": {
+          "samples": 512,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 513,
+            "p50": 26.5,
+            "p95": 36.299999952316284
+          },
+          "buildings": {
+            "samples": 513,
+            "p50": 0.6000000238418579,
+            "p95": 0.8000000715255737
+          },
+          "actors": {
+            "samples": 513,
+            "p50": 3.899999976158142,
+            "p95": 11.299999952316284
+          },
+          "scene": {
+            "samples": 513,
+            "p50": 20.5,
+            "p95": 25
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "scene": {
+        "visibleBuildingMeshes": 3422,
+        "activeIndices": 11151639,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "captured": "2026-11-18T08:09:02.127Z"
+    },
+    {
+      "label": "before-near",
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 46.23683249389151,
+        "frames": 833,
+        "seconds": 18.015940000000004,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 9.299999952316284,
+        "framesMs": {
+          "samples": 833,
+          "p50": 16.700000000000728,
+          "p95": 33.399999999999636
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 834,
+            "p50": 14.899999976158142,
+            "p95": 23.200000047683716
+          },
+          "buildings": {
+            "samples": 834,
+            "p50": 0.6000000238418579,
+            "p95": 0.8000000715255737
+          },
+          "actors": {
+            "samples": 834,
+            "p50": 3.700000047683716,
+            "p95": 10.899999976158142
+          },
+          "scene": {
+            "samples": 834,
+            "p50": 9.600000023841858,
+            "p95": 11.700000047683716
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "scene": {
+        "cameraRadius": 12,
+        "sceneTextures": 407,
+        "visibleBuildingMeshes": 3422,
+        "activeIndices": 6979470,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "captured": "2026-11-18T08:10:48.417Z"
+    },
+    {
+      "label": "after-1",
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 29.75166242964509,
+        "frames": 536,
+        "seconds": 18.0158,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 10.700000047683716,
+        "framesMs": {
+          "samples": 535,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 536,
+            "p50": 25.699999928474426,
+            "p95": 34.09999990463257
+          },
+          "buildings": {
+            "samples": 536,
+            "p50": 0.6000000238418579,
+            "p95": 0.8000000715255737
+          },
+          "actors": {
+            "samples": 536,
+            "p50": 3.9000000953674316,
+            "p95": 10.600000023841858
+          },
+          "scene": {
+            "samples": 536,
+            "p50": 19.59999990463257,
+            "p95": 23.100000023841858
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8848/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 418,
+        "visibleBuildingMeshes": 2971,
+        "activeIndices": 22089465,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "captured": "2026-11-18T08:31:47.796Z"
+    },
+    {
+      "label": "after-2",
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 28.974245115452923,
+        "frames": 522,
+        "seconds": 18.016000000000005,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 10.699999928474426,
+        "framesMs": {
+          "samples": 521,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 522,
+            "p50": 26.200000047683716,
+            "p95": 34.200000047683716
+          },
+          "buildings": {
+            "samples": 522,
+            "p50": 0.6000000238418579,
+            "p95": 0.8000000715255737
+          },
+          "actors": {
+            "samples": 522,
+            "p50": 4,
+            "p95": 10.800000071525574
+          },
+          "scene": {
+            "samples": 522,
+            "p50": 20,
+            "p95": 23.899999976158142
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8848/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 739.10423044749,
+        "sceneTextures": 419,
+        "visibleBuildingMeshes": 2971,
+        "activeIndices": 22094865,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "captured": "2026-11-18T08:32:18.187Z"
+    },
+    {
+      "label": "after-near",
+      "before": {
+        "population": 500,
+        "buildings": 250,
+        "ordinaryLevelOne": 208,
+        "saveBytes": 506596,
+        "saveByteEqual": true,
+        "sameCitizenIds": true
+      },
+      "timing": {
+        "fps": 47.624212327166575,
+        "frames": 858,
+        "seconds": 18.016046,
+        "population": 500,
+        "buildings": 250,
+        "simulationP95": 9.100000023841858,
+        "framesMs": {
+          "samples": 858,
+          "p50": 16.700000000000728,
+          "p95": 33.399999999999636
+        },
+        "cpuMs": {
+          "draw": {
+            "samples": 859,
+            "p50": 14.599999904632568,
+            "p95": 21
+          },
+          "buildings": {
+            "samples": 859,
+            "p50": 0.6000000238418579,
+            "p95": 0.7000000476837158
+          },
+          "actors": {
+            "samples": 859,
+            "p50": 3.6999999284744263,
+            "p95": 9.799999952316284
+          },
+          "scene": {
+            "samples": 859,
+            "p50": 9.200000047683716,
+            "p95": 10.800000071525574
+          }
+        }
+      },
+      "endSaveByteEqual": true,
+      "scene": {
+        "importedEarthHouses": 208,
+        "runtimeAsset": "http://127.0.0.1:8848/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+        "trianglesPerHouse": 8246,
+        "importedParts": 1248,
+        "cameraRadius": 12,
+        "sceneTextures": 419,
+        "visibleBuildingMeshes": 2971,
+        "activeIndices": 7291095,
+        "glError": 0,
+        "resolution": [
+          1440,
+          780
+        ]
+      },
+      "captured": "2026-11-18T08:32:48.451Z"
+    }
+  ]
+}
