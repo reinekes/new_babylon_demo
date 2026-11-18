@@ -106,7 +106,7 @@
           "checked": "../docs/benchmarks/2026-11-18-river-farms-and-pits.json",
           "previous": "evidence/2026-11-18/river-farms-and-pits/field-before.webp",
           "note": "Берег задаёт контур пашни, борозд и посадок даже на участке в одну клетку. GLB сохраняет отдельную модель ячменя с тонкими стеблями, колосьями и остями.",
-          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "release": "../docs/versions/2026-11-18-13.md",
           "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
           "modelVersion": "river-farms-and-pits-20261118"
         },
@@ -134,7 +134,7 @@
           "previous": "evidence/2026-11-18/river-farms-and-pits/fishing-before.webp",
           "note": "Плетёная хижина с сетью и вершей стоит на дощатом настиле. Игра ставит под ним сваи и подкосы, а со стороны суши добавляет ступени. В GLB доступна отдельная хижина.",
           "reference": "../docs/model-prototypes/sumer-building-set/fishing.webp",
-          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "release": "../docs/versions/2026-11-18-13.md",
           "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
           "modelVersion": "river-farms-and-pits-20261118"
         },
@@ -180,7 +180,7 @@
           "previous": "evidence/2026-11-18/river-farms-and-pits/clay-before.webp",
           "note": "В грунте открывается выемка глубиной 2,15 м со спуском на рабочее дно. Туда опускается та же модель местной залежи глины, в натуральном масштабе. В GLB сохранён отдельный двор.",
           "reference": "../docs/model-prototypes/sumer-building-set/clay.webp",
-          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "release": "../docs/versions/2026-11-18-13.md",
           "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
           "modelVersion": "river-farms-and-pits-20261118"
         },
@@ -221,7 +221,7 @@
           "previous": "evidence/2026-11-18/river-farms-and-pits/quarry-before.webp",
           "note": "Ступенчатый разрез глубиной 2,65 м открывает те же расколотые блоки, которые видны на участке до стройки. В игре грунт и залежь образуют рабочую каменоломню. В GLB сохранён отдельный двор.",
           "reference": "../docs/model-prototypes/sumer-building-set/quarry.webp",
-          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "release": "../docs/versions/2026-11-18-13.md",
           "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
           "modelVersion": "river-farms-and-pits-20261118"
         }
@@ -438,7 +438,7 @@
           "previous": "evidence/2026-11-18/river-farms-and-pits/waterpoint-before.webp",
           "note": "Навес и кувшины стоят на дощатом настиле. Со стороны реки видны сваи с подкосами, с суши к настилу ведут пять ступеней.",
           "reference": "../docs/model-prototypes/sumer-building-set/waterpoint.webp",
-          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "release": "../docs/versions/2026-11-18-13.md",
           "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
           "modelVersion": "river-farms-and-pits-20261118"
         },
@@ -580,7 +580,7 @@
           "previous": "evidence/2026-11-18/river-farms-and-pits/harbor-before.webp",
           "note": "Крытая грузовая площадка смотрит к воде. Игра подбирает высоту свай и размещает подкосы и ступени по берегу. GLB показывает отдельно стоящую пристань.",
           "reference": "../docs/model-prototypes/sumer-building-set/harbor.webp",
-          "release": "reports/2026-11-18-river-farms-and-pits.md",
+          "release": "../docs/versions/2026-11-18-13.md",
           "previousCommit": "85b5161ced72da7bfafaa6fa0d97ee4a7132bac7",
           "modelVersion": "river-farms-and-pits-20261118"
         },
@@ -675,7 +675,7 @@
           "checked": "evidence/2026-11-18/river-farms-and-pits/cattle-herd.webp",
           "model": "../assets/art-courtyard/models/pasture-cow.glb",
           "note": "Раньше у всего стада была модель быка. У коровы более лёгкие плечи, тонкие рога и вымя. В двух проверенных стадах на шесть и семь коров пришлось по одному и два быка.",
-          "release": "reports/2026-11-18-river-farms-and-pits.md"
+          "release": "../docs/versions/2026-11-18-13.md"
         }
       ]
     },

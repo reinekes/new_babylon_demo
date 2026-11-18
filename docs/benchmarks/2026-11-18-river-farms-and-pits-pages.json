@@ -1,0 +1,1156 @@
+{
+  "commit": "f0e78ed884efb8713886fd5547fd2c34beee31fe",
+  "run": "https://github.com/reinekes/new_babylon_demo/actions/runs/44374833077",
+  "files": [
+    {
+      "path": "agriculture.js",
+      "bytes": 9612,
+      "sha256": "10521b9b6b962b3e050dc9fe9a00a9e438d578c1fede1891368fb8868caa16a1"
+    },
+    {
+      "path": "architecture.js",
+      "bytes": 23644,
+      "sha256": "5d5c24c3f95d9864ec6b623b40af8e0b8ff62abe95a41a407d4cf3bb021a8163"
+    },
+    {
+      "path": "assets/3d/sumer-buildings/clay.glb",
+      "bytes": 1806160,
+      "sha256": "5630e9a57fa603e1d42b76a0bead27a1e698ad2c885e6d5beb7fa6113997be42"
+    },
+    {
+      "path": "assets/3d/sumer-buildings/field.glb",
+      "bytes": 1305416,
+      "sha256": "98987dd74e7e21926f4977a0631d5d7508e7dc62a5d98478104f50f68c7e7e8d"
+    },
+    {
+      "path": "assets/3d/sumer-buildings/fishing.glb",
+      "bytes": 1572368,
+      "sha256": "bcc2cb37526e6b3fc45a3eb89e4951051077a34ff6e104df1148c13ad7c7e2ad"
+    },
+    {
+      "path": "assets/3d/sumer-buildings/harbor.glb",
+      "bytes": 1527164,
+      "sha256": "5c1188563dab645791651d035049670b2f38ae01fd95313bc05ac26f0914f4d2"
+    },
+    {
+      "path": "assets/3d/sumer-buildings/quarry.glb",
+      "bytes": 1564100,
+      "sha256": "c25182a987872b2f66d9d9cd9e6304c76f3e1de90d6457e17ab1123a95a078c4"
+    },
+    {
+      "path": "assets/3d/sumer-buildings/waterpoint.glb",
+      "bytes": 1387524,
+      "sha256": "8cfca85a53a71b2b2af9731ba1a486b4c9b271c9bbc974f13fd721377822b83c"
+    },
+    {
+      "path": "assets/3d/textures/ploughed-loam_color.webp",
+      "bytes": 46154,
+      "sha256": "aad55e0d59b39d0e26e17e8446a17723c4eb4d2cdea7eb3df1287b1a95eb9077"
+    },
+    {
+      "path": "assets/3d/textures/ploughed-loam_normal.webp",
+      "bytes": 154968,
+      "sha256": "1a66934b4e4dffc542969251ed42f0d7db1496a879232cec98f9b565747011ff"
+    },
+    {
+      "path": "assets/art-courtyard/ATTRIBUTION.md",
+      "bytes": 37198,
+      "sha256": "0f61c8c0fce23be097ed040684dccd12af0ea23baaba1428279c9f7465b5758f"
+    },
+    {
+      "path": "assets/art-courtyard/CREDITS.html",
+      "bytes": 33653,
+      "sha256": "52123b8c1914cbe44f7ee21a322957d55f379cf3a5801faa1b5b3c7c594c994a"
+    },
+    {
+      "path": "assets/art-courtyard/manifest.json",
+      "bytes": 31334,
+      "sha256": "042da36f6857ab7f24e1954161bc911196611bbccb8965333f1c2b545e608ae7"
+    },
+    {
+      "path": "assets/art-courtyard/models/pasture-cow.glb",
+      "bytes": 2073692,
+      "sha256": "5608c12d6d1417db1a14a309537fb5db523e0178ff91bf30973f50a59f6fc3bc"
+    },
+    {
+      "path": "courtyard.html",
+      "bytes": 16437,
+      "sha256": "0ca532ad992bdab614c19e4929bc526deb906481503b90972bc37027f08e840f"
+    },
+    {
+      "path": "crop-studio.html",
+      "bytes": 2544,
+      "sha256": "551c063822a64b9da5a22d8981f76ff5e78cfefeabb434e214af07a86f9320b3"
+    },
+    {
+      "path": "district3d.html",
+      "bytes": 21429,
+      "sha256": "039a23b0eab511cfe08cfa242c2d25fd3b0b0e9071464d9558fd71cdbb8974af"
+    },
+    {
+      "path": "district3d/actors.js",
+      "bytes": 18033,
+      "sha256": "69b3f07da6ebf40292cc9f9bb5509c4c3ad6269de85ca9a23df572bf9d2442ce"
+    },
+    {
+      "path": "district3d/app.js",
+      "bytes": 16358,
+      "sha256": "3e40f0457ee8f6f1427338bea994f62c9a7c171f20c4c22680ca5585ee4b82ce"
+    },
+    {
+      "path": "district3d/buildings.js",
+      "bytes": 23311,
+      "sha256": "b5e275f4171b79917c6cb71836b563bd4bace6f431f217f15c0fb376a046a3e8"
+    },
+    {
+      "path": "district3d/materials.js",
+      "bytes": 4441,
+      "sha256": "df715b81fe68845aa584caa362a8da3623616257a6ad510ec5f80204b81e7ccf"
+    },
+    {
+      "path": "district3d/mineral-footing.js",
+      "bytes": 1322,
+      "sha256": "1746b1444655f5a2798acc83b9aecb544b24c0696ce48ba9d304451684bdb19c"
+    },
+    {
+      "path": "district3d/mineral-sites.js",
+      "bytes": 5730,
+      "sha256": "abf7e452343e3767f742189a48a9ad536fbd1558a668f1384157ea6e6b473134"
+    },
+    {
+      "path": "district3d/terrain.js",
+      "bytes": 23765,
+      "sha256": "6b26d9bc8fa263dcdde3b1cc3e96297e519fa8ed41af343ccf188d5e0f084acc"
+    },
+    {
+      "path": "docs/MODEL_INDEX.md",
+      "bytes": 63669,
+      "sha256": "d629fa772d4447c767bed734a33332641e772447f753aea045ede9095bf453a1"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-18-river-farms-and-pits.json",
+      "bytes": 39336,
+      "sha256": "aa11221f6484954a5118deb7373f36d00db82ec9c38ef08f0f1367163e229dc1"
+    },
+    {
+      "path": "docs/model-index.json",
+      "bytes": 120145,
+      "sha256": "3593e1090746d97d2c88e9bfbf98e803c4b71dd3d987af8b34099bb93d10f2f5"
+    },
+    {
+      "path": "game3d/actors.js",
+      "bytes": 76631,
+      "sha256": "5e0b0eaf4e768523157c346d39966d0ddf444b81822011ad2a757719889d82e8"
+    },
+    {
+      "path": "game3d/ambient-fauna.js",
+      "bytes": 29383,
+      "sha256": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f"
+    },
+    {
+      "path": "game3d/bootstrap-actors.js",
+      "bytes": 1899,
+      "sha256": "0f685e4e293b6b8f07e5e004c2b2e4e826798847ee34e3aa6055e4ecbcd1debb"
+    },
+    {
+      "path": "game3d/bootstrap-landscape.js",
+      "bytes": 5326,
+      "sha256": "bbc605abefe9809b6f8542a27fd896989528cb8fba62044dccd845463b99dd7f"
+    },
+    {
+      "path": "game3d/building-foundations.js",
+      "bytes": 10725,
+      "sha256": "cba8bdd45f9b5903c20fc0b2614250090d4eae559a337e74f67e2f876221723b"
+    },
+    {
+      "path": "game3d/buildings.js",
+      "bytes": 28874,
+      "sha256": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba"
+    },
+    {
+      "path": "game3d/deposit-picking.js",
+      "bytes": 4526,
+      "sha256": "50e462363ba8985fa79c0abcb145b677c043b27c89233b79120daefa4327fc7c"
+    },
+    {
+      "path": "game3d/field-crops.js",
+      "bytes": 11652,
+      "sha256": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6"
+    },
+    {
+      "path": "game3d/field-shore.js",
+      "bytes": 10667,
+      "sha256": "858d11e21bed37df9aa1cb8f4953f242a2b8740795603759baa575b44951afec"
+    },
+    {
+      "path": "game3d/landscape.js",
+      "bytes": 44304,
+      "sha256": "5e19e2860bfc7b72f6397f5d8cfcca877603dfa90c253db924b3f303ca28d6d8"
+    },
+    {
+      "path": "game3d/mineral-excavation.js",
+      "bytes": 13796,
+      "sha256": "d4b82e235caeee9abc64efeedd5db4ac0067a344f6d5355800a53557ab471cf4"
+    },
+    {
+      "path": "game3d/model-versions.js",
+      "bytes": 4324,
+      "sha256": "c6d7d47a485a22049fa079ea3d6b124abe11dbc7d1c00c11472ecadedd90157d"
+    },
+    {
+      "path": "game3d/plough-teams.js",
+      "bytes": 5242,
+      "sha256": "29b925d62449c21a6a2eef7af65b47445cfbc98300010fd4b30c946c9ab5a5e0"
+    },
+    {
+      "path": "game3d/reference-yards.js",
+      "bytes": 18879,
+      "sha256": "3fb26db6c2a67af11be70d62ca2f9ad3e7169df4f2c8b6e1e8502c4e27e15196"
+    },
+    {
+      "path": "game3d/renderer.js",
+      "bytes": 31742,
+      "sha256": "013c2235ed5fcb21b0508acd7530a43bdf5b653fd8b3dced7812c8eb97197244"
+    },
+    {
+      "path": "game3d/test-livestock.js",
+      "bytes": 18741,
+      "sha256": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5"
+    },
+    {
+      "path": "game3d/work-poses.js",
+      "bytes": 6728,
+      "sha256": "45c10bf63e43d6cc326e70672db09306bc7a0e7508f0d6aa26e9948b87a8fe35"
+    },
+    {
+      "path": "game3d/workshop-architecture.js",
+      "bytes": 17598,
+      "sha256": "e4b6e0868be7cffeec2afbba8afdfaa57f73253d8957770948bb79255915b686"
+    },
+    {
+      "path": "goat-studio.html",
+      "bytes": 21158,
+      "sha256": "f41747572f9ab4316abde7cdb824745b829d85d1a3664a50dd248fd2b48c9021"
+    },
+    {
+      "path": "index.html",
+      "bytes": 35159,
+      "sha256": "70d6fdadb151fe19b5b4e80d37c3c0d3426cfa4da0acdcfee51355b61d796249"
+    },
+    {
+      "path": "mallards.html",
+      "bytes": 3864,
+      "sha256": "4c2cc7bc638e8d4aee2bb359488b289ee15724d7c87834f430b36c5b89439202"
+    },
+    {
+      "path": "mineral-map-art.js",
+      "bytes": 3730,
+      "sha256": "2148d1a639a6e555db55af00748e3140a8ce63a0c37f3cb08e37bc630a6cebe3"
+    },
+    {
+      "path": "model-atlas/app.js",
+      "bytes": 12753,
+      "sha256": "f589e72b9f908a60806d0019f847647771387f5af06242729a61ef3cd227a3db"
+    },
+    {
+      "path": "model-atlas/catalog.js",
+      "bytes": 15283,
+      "sha256": "fbdb490a13977fead3c0dcf4548284af08b11c882e9deaf5e1c7a177a44b083f"
+    },
+    {
+      "path": "model-atlas/data/animals.json",
+      "bytes": 51123,
+      "sha256": "6aeaa73367f296bf2b99959c91d753afc3d7c0736da29dc7b38762b48e47b5f5"
+    },
+    {
+      "path": "model-atlas/data/links.json",
+      "bytes": 4254,
+      "sha256": "cbd4a2aa20e86f411db5c5b43b5d66ee7a196ca453ab7afd9e70280119b55837"
+    },
+    {
+      "path": "model-atlas/index.html",
+      "bytes": 12311,
+      "sha256": "f79250b4837e3a57742b2327652befe5e1ffa565f3c9e88e75a587a77ec7c682"
+    },
+    {
+      "path": "model-atlas/preview.js",
+      "bytes": 12850,
+      "sha256": "213726919c0af9d14ef5af283348a74d5638bdf0927a5d4a98f6f08e4148f86a"
+    },
+    {
+      "path": "plough-team.js",
+      "bytes": 7866,
+      "sha256": "49ae139bda9f830babf3fcc9f680b42c4c73ee82a8942a2156eeb412c995f3f2"
+    },
+    {
+      "path": "renderer.js",
+      "bytes": 52668,
+      "sha256": "6a3bcb60e578331371d722e74b2e2a09a164468f9f760135ee686ef2870eab42"
+    },
+    {
+      "path": "roadmap/assets/app.js",
+      "bytes": 34907,
+      "sha256": "d3f79c997da50f1146cc1a842474c7fd1ee975fa306f2b644b63d4fa70c6b839"
+    },
+    {
+      "path": "roadmap/building-models.json",
+      "bytes": 44241,
+      "sha256": "4ca409c363ce4a1569b1c80f265d2e6b679177a788eb44540201ff95e0d894f9"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/bank-steps.webp",
+      "bytes": 92976,
+      "sha256": "98cd36241e6753de0116ca7378f4b4e7d13beea2d6cbad0a0f9c3940371f49c7"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/cattle-herd.webp",
+      "bytes": 41362,
+      "sha256": "f297cea2100a710fdd67869849fc0fa06034215330f0327133c2a7192b8d30ee"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/clay-after.webp",
+      "bytes": 79798,
+      "sha256": "63348e42e87b4eab0bfb9b385946c1cce0392fd1892f87594a6f368954d5da51"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/clay-before.webp",
+      "bytes": 80102,
+      "sha256": "76cfa23a95dfcdcf8b52d4ae6f98f1588badc422200b691beadb1f3d3367c18b"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/clay-deposit.webp",
+      "bytes": 61088,
+      "sha256": "a57fba105a798d4e8005352d3a00712239af1c3e4db9d63076bfa5a28997d874"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/clay-riverbank.webp",
+      "bytes": 76984,
+      "sha256": "550bf0419c50271bf9b5d890770c031e24749454200d6851663d4f60da23d482"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/field-barley.webp",
+      "bytes": 89052,
+      "sha256": "3684769165a774ee4daced8fa9126ea869c19011109ec24dbf19fb5eb1f2d5c8"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/field-before.webp",
+      "bytes": 51346,
+      "sha256": "3d08a808b555c6f27ed99c97cf67abe03f07fddbd9662351cb6d7a7211b0a843"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/field.webp",
+      "bytes": 66510,
+      "sha256": "9a80e8591eb501fde808f273952771bbdf0f605a01c9fefda7f04d7d45d4fbd2"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/fishing-before.webp",
+      "bytes": 55028,
+      "sha256": "68fed41375a0e24fbdc5e698beec972c8bd01b8c0bed86e0df0908491e161b69"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/fishing.webp",
+      "bytes": 59228,
+      "sha256": "e7e752b9e2657a989f6e473b35e512010f8548542ddf1a4c4d6a10a3d4c0b619"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/harbor-before.webp",
+      "bytes": 45208,
+      "sha256": "859a2dad270d67e42e62452798756361d8432830e93d4c01f2fb25147a10fd73"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/harbor.webp",
+      "bytes": 52376,
+      "sha256": "3d2379c7067de41f123e68fc9e02b90eafc9d005ff1670f9f1fb150ffb1d279c"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/pasture-cow-side.webp",
+      "bytes": 54156,
+      "sha256": "87c867aa36afb6beb3114cc1450ddefcf8c49a94cb10e62727b3d7ccc2e760d7"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/pre-sowing-plough.webp",
+      "bytes": 78690,
+      "sha256": "628b5df6282b01d8586170dbe7e3fbaa346e69a21eda5d040011a2bf727d90ac"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/quarry-after.webp",
+      "bytes": 83784,
+      "sha256": "9a797b4ca9fa0072625ede78e33ff494e362b884bfbaecfc94e3ac92a2dd2ae6"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/quarry-before.webp",
+      "bytes": 81198,
+      "sha256": "1ec3e7b1f75e31d289aafb83bf4b502c5032bdc327a447aad9111d653e1f31e7"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/river-plough.mp4",
+      "bytes": 1155499,
+      "sha256": "6f3e2583de4915c0f6fb8b8ba8ce8f59a6f8ca586c7b60b571e1589c58894320"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/river-plough.webp",
+      "bytes": 99590,
+      "sha256": "c41e3bf7d91d3fae224e05368632655185c5c07334004d4ad2c44cacf502cbbe"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/riverbank.webp",
+      "bytes": 69274,
+      "sha256": "bba121d173de5d323ec489c673d84723cebfc42cd9ca8d5a09416cd0922664b9"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/stone-deposit.webp",
+      "bytes": 55716,
+      "sha256": "e6ad5e74013612a44bccad094f974774fc3fba23a5fe6764a8d299b0a828351e"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/waterpoint-before.webp",
+      "bytes": 71250,
+      "sha256": "14b5fb71d2ba8ba279b27ed897f3c69f356a713c41403c99355e2a66f0e4376d"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-18/river-farms-and-pits/waterpoint.webp",
+      "bytes": 77596,
+      "sha256": "008049a580c44d021caeb53703a18d11174db4b09a898ffdf425c7e8bacbf1a9"
+    },
+    {
+      "path": "roadmap/index.html",
+      "bytes": 5139582,
+      "sha256": "0ec39d7b37305d94b09e91f046dc7885ccdb65a597fa69a5bf18e74c0cbed7f9"
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "bytes": 17894,
+      "sha256": "c4615ea7ce72443060a54d81ccbe33f0826c459a7ab685a1f6cc3138b993ccbf"
+    },
+    {
+      "path": "roadmap/reports/2026-11-18-river-farms-and-pits.md",
+      "bytes": 9937,
+      "sha256": "12a0492baccbcab9adcc9c626cc526432eadb84023db64b6c910401ca41697f5"
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "bytes": 5081908,
+      "sha256": "c955985031be470652241de7977bdd69dc453fb446e5dd7ab1e5204536138ad1"
+    },
+    {
+      "path": "roadmap/tests/app.test.mjs",
+      "bytes": 10679,
+      "sha256": "510d1cceb09e464b77a76358a1a56e0fd20b1237d20052e532d097a7013eb829"
+    },
+    {
+      "path": "scripts/art-courtyard/build_alluvial_surfaces.py",
+      "bytes": 6378,
+      "sha256": "1f9ef328821ad14e36f68baeb99b828f068b733dd0bea4115c337c60486d1cc4"
+    },
+    {
+      "path": "scripts/art-courtyard/sculpt_pasture_cow.py",
+      "bytes": 3985,
+      "sha256": "24938fc1faaa65609f14ab41860160c5482ff6eb89180f877a5fc9f0ec63b03f"
+    },
+    {
+      "path": "scripts/model-index.mjs",
+      "bytes": 29641,
+      "sha256": "ecd1aad7971f0ac08c9e831ad1c8bdf7cffeee93890ba30cb56ca63626319165"
+    },
+    {
+      "path": "scripts/sumer-building-studio.html",
+      "bytes": 6710,
+      "sha256": "ea4afe6e9937c6f77d2218a309868af23264daad081f82d67610f5fc1bb3e871"
+    },
+    {
+      "path": "scripts/sumer-building-studio.js",
+      "bytes": 9126,
+      "sha256": "4a9ca930bdf9c9132ae031bffb0e72e48c30b9d25d6b7147b3a7b175e09da7e5"
+    },
+    {
+      "path": "workforce.js",
+      "bytes": 107453,
+      "sha256": "f54a077230185b973d370baf2385e8c101c8d1769f68484b21b73f66daf425e0"
+    }
+  ],
+  "city": {
+    "entry": "index.html",
+    "naturalSources": {
+      "quarry": {
+        "source": "native-mineral-source-stone",
+        "material": "mineral-bedding",
+        "form": "natural",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.35222111922737953,
+        "world": [
+          60,
+          0.017742953593135408,
+          60
+        ],
+        "bedRelativeToLand": 0,
+        "walls": [],
+        "triangles": 2954,
+        "geometry": {
+          "position": "d909d8fb21c2a84185b79e07be34337862a818efb3112efb7dbbc23e272793db",
+          "normal": "072a49d7f0c8ae02c6ec2d20e3379223fb760c96f32f978057b3f7c9a67facd2",
+          "color": "55f77af48427b23a181ce4bf71c54ea5c1102ddfca792f3d3080a287c1afbb55",
+          "uv": "cc20323db8b306e17736f69e5ae51fbc566431e8497162b8da3aa05e1b8fca72",
+          "indices": "84716747f9c2f830b838dac4fa71f419f9579e191a3f29ffa7bf836b225be47e"
+        }
+      },
+      "clay": {
+        "source": "native-mineral-source-clay",
+        "material": "mineral-bedding",
+        "form": "natural",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.08162766535579061,
+        "world": [
+          54,
+          0.0024810557672883776,
+          42
+        ],
+        "bedRelativeToLand": 0,
+        "walls": [],
+        "triangles": 2360,
+        "geometry": {
+          "position": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+          "normal": "c5a84167456ef65401dba0fa157382d94e0e02f19f6573beb81301710cfe8a66",
+          "color": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+          "uv": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+          "indices": "558bcf8ef760bb44c69134e4308995f109073e83583227ab866e28be09c9e35c"
+        }
+      }
+    },
+    "afterConstruction": {
+      "quarry": {
+        "source": "native-mineral-source-stone",
+        "material": "mineral-bedding",
+        "form": "excavated",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.35222111922737953,
+        "world": [
+          60,
+          -2.65,
+          60
+        ],
+        "bedRelativeToLand": -2.65,
+        "walls": [
+          [
+            "rim",
+            80
+          ],
+          [
+            "bowl",
+            1112
+          ],
+          [
+            "ladder",
+            308
+          ]
+        ],
+        "triangles": 2954,
+        "geometry": {
+          "position": "d909d8fb21c2a84185b79e07be34337862a818efb3112efb7dbbc23e272793db",
+          "normal": "072a49d7f0c8ae02c6ec2d20e3379223fb760c96f32f978057b3f7c9a67facd2",
+          "color": "55f77af48427b23a181ce4bf71c54ea5c1102ddfca792f3d3080a287c1afbb55",
+          "uv": "cc20323db8b306e17736f69e5ae51fbc566431e8497162b8da3aa05e1b8fca72",
+          "indices": "84716747f9c2f830b838dac4fa71f419f9579e191a3f29ffa7bf836b225be47e"
+        }
+      },
+      "clay": {
+        "source": "native-mineral-source-clay",
+        "material": "mineral-bedding",
+        "form": "excavated",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 0.08162766535579061,
+        "world": [
+          54,
+          -2.15,
+          42
+        ],
+        "bedRelativeToLand": -2.15,
+        "walls": [
+          [
+            "rim",
+            80
+          ],
+          [
+            "bowl",
+            1066
+          ],
+          [
+            "ladder",
+            252
+          ]
+        ],
+        "triangles": 2360,
+        "geometry": {
+          "position": "b6eec31cb5efb8c29e3b850402d25ef9f3ac6621944a57f73de45f06b65b4ebc",
+          "normal": "c5a84167456ef65401dba0fa157382d94e0e02f19f6573beb81301710cfe8a66",
+          "color": "95e890dc8f8ebeeb71bf884eddffc21777abde0bc27ecc1af0995de7134341b9",
+          "uv": "1e476c0ec307971fcad9bbc42141643df39f420a73095bfc0cb419025897c3df",
+          "indices": "558bcf8ef760bb44c69134e4308995f109073e83583227ab866e28be09c9e35c"
+        }
+      }
+    },
+    "profiles": {
+      "field": {
+        "visible": 1,
+        "foundation": null,
+        "soilVertices": 4812,
+        "minCoastDistance": 0.013000000000029655
+      },
+      "fishing": {
+        "visible": 10,
+        "foundation": {
+          "lift": 0.8,
+          "piles": 9,
+          "braces": 5,
+          "stairs": 5,
+          "boards": 19
+        },
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "waterpoint": {
+        "visible": 9,
+        "foundation": {
+          "lift": 0.8,
+          "piles": 9,
+          "braces": 5,
+          "stairs": 5,
+          "boards": 19
+        },
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "harbor": {
+        "visible": 9,
+        "foundation": {
+          "lift": 0.8,
+          "piles": 9,
+          "braces": 3,
+          "stairs": 5,
+          "boards": 19
+        },
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "quarry": {
+        "visible": 7,
+        "foundation": null,
+        "soilVertices": 0,
+        "minCoastDistance": null
+      },
+      "clay": {
+        "visible": 8,
+        "foundation": null,
+        "soilVertices": 0,
+        "minCoastDistance": null
+      }
+    },
+    "cattle": {
+      "cow": 7,
+      "bull": 2
+    },
+    "stockBefore": {
+      "quarry": 240,
+      "clay": 480
+    },
+    "stockAfter": {
+      "quarry": 240,
+      "clay": 480
+    },
+    "citizenIds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "glError": 0,
+    "runtimeErrors": [],
+    "assetErrors": [],
+    "dryFieldMarginMetersAlongRiverCrossSection": 0.078
+  },
+  "canvas": {
+    "renderer": "2d",
+    "oldSaveRoundtrip": true,
+    "builtSaveRoundtrip": true,
+    "result": [
+      {
+        "kind": "stone",
+        "site": [
+          10,
+          10
+        ],
+        "before": 12880,
+        "after": 29163,
+        "stock": 1,
+        "endStock": 1,
+        "depth": 2.65
+      },
+      {
+        "kind": "clay",
+        "site": [
+          9,
+          7
+        ],
+        "before": 7797,
+        "after": 30766,
+        "stock": 1,
+        "endStock": 1,
+        "depth": 2.15
+      }
+    ],
+    "exceptions": [],
+    "errors": []
+  },
+  "workingResidents": [
+    {
+      "job": "quarry",
+      "id": 9,
+      "source": {
+        "x": 10,
+        "y": 10
+      },
+      "position": [
+        61.86,
+        -2.40248559360918,
+        60
+      ],
+      "highest": -2.40248559360918,
+      "support": "deposit-open-stone-10-10",
+      "delta": 0,
+      "gl": 0,
+      "exceptions": [],
+      "errors": []
+    },
+    {
+      "job": "clay",
+      "id": 7,
+      "source": {
+        "x": 9,
+        "y": 7
+      },
+      "position": [
+        55.86,
+        -2.1500000000000004,
+        42
+      ],
+      "highest": -2.1500000000000004,
+      "support": "excavated-clay-bowl-9-7",
+      "delta": 0,
+      "gl": 0,
+      "exceptions": [],
+      "errors": []
+    }
+  ],
+  "plough": [
+    {
+      "case": "bank-sowing",
+      "field": "12,8",
+      "driver": 0,
+      "progress": 0.10753968253968381,
+      "cows": 6,
+      "bulls": 1,
+      "adultFiles": [
+        "pasture-cow.glb",
+        "pasture-bull.glb"
+      ],
+      "allRigged": true,
+      "oxen": 2,
+      "observedFrames": 387,
+      "measuredDistance": 0.9515041666666617,
+      "elapsedMs": 6873.900000095367,
+      "webgl": 2,
+      "glError": 0,
+      "exceptions": [],
+      "httpErrors": [],
+      "work": "sowing",
+      "measuredShoulders": [
+        {
+          "shoulderMetres": 1.2046132836255303,
+          "yokeUndersideMetres": 1.2032221555709839,
+          "gapMetres": -0.0013911280545464422
+        },
+        {
+          "shoulderMetres": 1.2568510347902233,
+          "yokeUndersideMetres": 1.2032221555709839,
+          "gapMetres": -0.05362887921923942
+        }
+      ],
+      "shareTip": {
+        "world": [
+          70.4815256499205,
+          0.03105470951646566,
+          49.25397713133617
+        ],
+        "soilTop": 0.04823939589764903,
+        "clearance": -0.017184686381183367
+      }
+    },
+    {
+      "case": "preparing",
+      "field": "12,8",
+      "driver": 0,
+      "progress": 0.0834285714285733,
+      "cows": 7,
+      "bulls": 2,
+      "adultFiles": [
+        "pasture-cow.glb",
+        "pasture-bull.glb"
+      ],
+      "allRigged": true,
+      "oxen": 2,
+      "observedFrames": 302,
+      "measuredDistance": 0.9520914412359764,
+      "elapsedMs": 5599.600000023842,
+      "webgl": 2,
+      "glError": 0,
+      "exceptions": [],
+      "httpErrors": [],
+      "work": "preparing",
+      "measuredShoulders": [
+        {
+          "shoulderMetres": 1.214709528379668,
+          "yokeUndersideMetres": 1.2032221555709839,
+          "gapMetres": -0.011487372808684171
+        },
+        {
+          "shoulderMetres": 1.2362762156877736,
+          "yokeUndersideMetres": 1.2032221555709839,
+          "gapMetres": -0.033054060116789685
+        }
+      ],
+      "shareTip": {
+        "world": [
+          71.04072818825462,
+          0.03105470951646566,
+          46.81972264766693
+        ],
+        "soilTop": 0.0730942019830576,
+        "clearance": -0.04203949246659194
+      }
+    }
+  ],
+  "modelCards": {
+    "panels": [
+      {
+        "id": "field",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "field.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "fishing",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "fishing.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "waterpoint",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "waterpoint.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "harbor",
+        "pictures": [
+          [
+            1120,
+            680
+          ],
+          [
+            1120,
+            680
+          ]
+        ],
+        "model": "harbor.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "clay",
+        "pictures": [
+          [
+            1060,
+            735
+          ],
+          [
+            1060,
+            735
+          ]
+        ],
+        "model": "clay.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "quarry",
+        "pictures": [
+          [
+            1060,
+            735
+          ],
+          [
+            1060,
+            735
+          ]
+        ],
+        "model": "quarry.glb",
+        "version": "river-farms-and-pits-20261118"
+      },
+      {
+        "id": "pasture-cow",
+        "pictures": [
+          [
+            1024,
+            416
+          ],
+          [
+            1040,
+            710
+          ]
+        ],
+        "model": "pasture-cow.glb",
+        "version": null
+      }
+    ],
+    "errors": [],
+    "exceptions": []
+  },
+  "riverbank": {
+    "origin": "https://reinekes.github.io/new_babylon_demo/index.html?shore-proof=1795028365683",
+    "layers": {
+      "field": {
+        "tile": {
+          "x": 14,
+          "y": 10,
+          "footprint": 1,
+          "source": null,
+          "shoreDistance": 0.17700974095295008
+        },
+        "mesh": "14,10-field-district-wet-silt",
+        "metadata": {
+          "fieldBed": true
+        },
+        "vertices": 4812,
+        "triangles": 8387,
+        "normalsCount": 4812,
+        "minY": -0.1612032688935584,
+        "maxY": 0.16183647279970875,
+        "minShoreInMetres": 0.07800000000017793,
+        "material": "district-wet-silt"
+      },
+      "fishing": {
+        "tile": {
+          "x": 16,
+          "y": 12,
+          "footprint": 1,
+          "source": null,
+          "shoreDistance": 0.19845708162134157
+        },
+        "mesh": "16,12-game-shore-timber-foundation",
+        "metadata": {
+          "shoreFoundation": true,
+          "timber": true,
+          "lift": 0.8,
+          "pileCount": 9,
+          "boardCount": 19,
+          "braceCount": 5,
+          "stairSteps": 5,
+          "wetDirection": [
+            -1,
+            0
+          ],
+          "half": 2.65,
+          "run": 1.1,
+          "stairWidth": 1.12
+        },
+        "vertices": 1272,
+        "triangles": 840,
+        "normalsCount": 1272,
+        "minY": -0.9836318967567881,
+        "maxY": 1.2997307554971906,
+        "minShoreInMetres": -2.30438294008271,
+        "material": "courtyard-wood"
+      },
+      "harbor": {
+        "tile": {
+          "x": 15,
+          "y": 7,
+          "footprint": 1,
+          "source": null,
+          "shoreDistance": 0.1926204750020193
+        },
+        "mesh": "15,7-game-shore-timber-foundation",
+        "metadata": {
+          "shoreFoundation": true,
+          "timber": true,
+          "lift": 0.8,
+          "pileCount": 9,
+          "boardCount": 19,
+          "braceCount": 3,
+          "stairSteps": 5,
+          "wetDirection": [
+            1,
+            0
+          ],
+          "half": 2.65,
+          "run": 1.1,
+          "stairWidth": 1.12
+        },
+        "vertices": 1116,
+        "triangles": 708,
+        "normalsCount": 1116,
+        "minY": -0.9863683159061122,
+        "maxY": 0.8550000214576721,
+        "minShoreInMetres": -2.346855030643453,
+        "material": "courtyard-wood"
+      },
+      "waterpoint": {
+        "tile": {
+          "x": 17,
+          "y": 9,
+          "footprint": 1,
+          "source": null,
+          "shoreDistance": 0.18667590540220713
+        },
+        "mesh": "17,9-game-shore-timber-foundation",
+        "metadata": {
+          "shoreFoundation": true,
+          "timber": true,
+          "lift": 0.8,
+          "pileCount": 9,
+          "boardCount": 19,
+          "braceCount": 5,
+          "stairSteps": 5,
+          "wetDirection": [
+            -1,
+            0
+          ],
+          "half": 2.65,
+          "run": 1.1,
+          "stairWidth": 1.12
+        },
+        "vertices": 1144,
+        "triangles": 732,
+        "normalsCount": 1144,
+        "minY": -0.9897308267637539,
+        "maxY": 0.8550000214576721,
+        "minShoreInMetres": -2.43960481819754,
+        "material": "courtyard-wood"
+      }
+    },
+    "files": [
+      {
+        "path": "game3d/building-foundations.js",
+        "bytes": 10725,
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/building-foundations.js?v=river-farms-and-pits-20261118",
+        "hash": "cba8bdd45f9b5903c20fc0b2614250090d4eae559a337e74f67e2f876221723b",
+        "commitHash": "cba8bdd45f9b5903c20fc0b2614250090d4eae559a337e74f67e2f876221723b",
+        "matchesCommit": true
+      },
+      {
+        "path": "game3d/buildings.js",
+        "bytes": 28874,
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/buildings.js?v=river-farms-and-pits-20261118",
+        "hash": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba",
+        "commitHash": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba",
+        "matchesCommit": true
+      },
+      {
+        "path": "game3d/field-shore.js",
+        "bytes": 10667,
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/field-shore.js?v=river-farms-and-pits-20261118",
+        "hash": "858d11e21bed37df9aa1cb8f4953f242a2b8740795603759baa575b44951afec",
+        "commitHash": "858d11e21bed37df9aa1cb8f4953f242a2b8740795603759baa575b44951afec",
+        "matchesCommit": true
+      },
+      {
+        "path": "game3d/field-crops.js",
+        "bytes": 11652,
+        "url": "https://reinekes.github.io/new_babylon_demo/game3d/field-crops.js?v=river-farms-and-pits-20261118",
+        "hash": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6",
+        "commitHash": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6",
+        "matchesCommit": true
+      },
+      {
+        "path": "district3d/buildings.js",
+        "bytes": 23311,
+        "url": "https://reinekes.github.io/new_babylon_demo/district3d/buildings.js?v=river-farms-and-pits-20261118",
+        "hash": "b5e275f4171b79917c6cb71836b563bd4bace6f431f217f15c0fb376a046a3e8",
+        "commitHash": "b5e275f4171b79917c6cb71836b563bd4bace6f431f217f15c0fb376a046a3e8",
+        "matchesCommit": true
+      },
+      {
+        "path": "assets/3d/textures/ploughed-loam_color.webp",
+        "bytes": 46154,
+        "url": "https://reinekes.github.io/new_babylon_demo/assets/3d/textures/ploughed-loam_color.webp",
+        "hash": "aad55e0d59b39d0e26e17e8446a17723c4eb4d2cdea7eb3df1287b1a95eb9077",
+        "commitHash": "aad55e0d59b39d0e26e17e8446a17723c4eb4d2cdea7eb3df1287b1a95eb9077",
+        "matchesCommit": true
+      },
+      {
+        "path": "assets/3d/textures/ploughed-loam_normal.webp",
+        "bytes": 154968,
+        "url": "https://reinekes.github.io/new_babylon_demo/assets/3d/textures/ploughed-loam_normal.webp",
+        "hash": "1a66934b4e4dffc542969251ed42f0d7db1496a879232cec98f9b565747011ff",
+        "commitHash": "1a66934b4e4dffc542969251ed42f0d7db1496a879232cec98f9b565747011ff",
+        "matchesCommit": true
+      }
+    ],
+    "gl": 0,
+    "webgl": 2,
+    "exceptions": [],
+    "gameHttp": [],
+    "outsideProject": [],
+    "sha": "f0e78ed884efb8713886fd5547fd2c34beee31fe",
+    "matches": 7
+  },
+  "standaloneDownloadsCompared": 6
+}
