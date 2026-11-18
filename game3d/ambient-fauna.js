@@ -2,6 +2,7 @@ import {createTestLivestock} from './test-livestock.js';
 import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=living-fields-20261116';
 import {dairyHerd,dairyPose} from './dairy-herd.js?v=audit-fixes-20261113';
 import {loadModel} from './asset-loading.js';
+import {acquireDonkey,DONKEY_MODELS} from './donkey.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
 import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength,signedRiverDistance,onBridge} from '../world.js';
@@ -18,7 +19,7 @@ export const AMBIENT_MODELS=Object.freeze({
  lioness:{file:'imported-lioness.glb',count:1,stride:.42,pace:.3},
  dog:{file:'ambient-dog.glb',count:1,stride:.36,pace:.32},
  duck:{file:'ambient-duck.glb',count:2,stride:.17,pace:.16},
- donkey:{file:'ambient-donkey.glb',count:1,stride:1.17,pace:.48},
+ donkey:{...DONKEY_MODELS.pasture,count:1,pace:.48},
  bull:{file:'ambient-bull.glb',count:1,stride:1.23,pace:.46},
  'sheep-kenchoo':{file:'ambient-sheep-kenchoo.glb',count:1,stride:.31,pace:.2}
 });
@@ -189,7 +190,12 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  const entries=[...groundModels,...(options.includeShoreBirds?Object.entries(SHORE_MODELS).filter(([kind])=>!options.hidePlaceholderBirds||kind!=='seagull'):[])];if(options.includeSkyBirds!==false&&options.includeRestrictedBirds!==false)entries.push(['sky-birds',{file:SKY_BIRD_MODEL,count:2}]);
  if(options.includeTestLivestock)entries.push(['bull',AMBIENT_MODELS.bull],['sheep-kenchoo',AMBIENT_MODELS['sheep-kenchoo']]);
  if(options.includeYardPig&&!options.includeTestLivestock)entries.push(['yard-pig',YARD_PIG_MODEL]);
- const results=await Promise.allSettled(entries.map(async([species,c])=>({species,asset:await load(c.file)})));
+ let donkeySource;
+ const results=await Promise.allSettled(entries.map(async([species,c])=>{
+  if(species!=='donkey')return {species,asset:await load(c.file)};
+  donkeySource=await acquireDonkey(scene,load);
+  return {species,asset:donkeySource.asset};
+ }));
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
  const ploughs=assets.has('bull')?createPloughTeams(B,scene,assets.get('bull'),meshes):null;
  let disposed=false,clock=0,lastState=null;
@@ -198,6 +204,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function register(a){a.owned=a.root.getChildMeshes().filter(mesh=>mesh!==a.wake);for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
  function imported(species,index,farm=null,foldId=null){const source=assets.get(farm?'bull':species);if(!source)return null;const id=foldId||farm?.id||`ambient-${species}-${index}`,copy=source.instantiateModelsToScene(n=>`${id}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(id,scene),model=new B.TransformNode(`${id}-model`,scene);model.parent=root;for(const n of copy.rootNodes)n.parent=model;
   root.metadata={ambientId:id,ambientSpecies:species,...(farm?{dairyBuilding:farm.building.id||`${farm.building.x},${farm.building.y}`,calf:farm.calf}:{}),sourceMotion:['orange-bird','sky-birds'].includes(species)?'source clip':'articulated Walk / Idle; provenance embedded in GLB'};
+  if(species==='donkey')root.metadata.modelFile=donkeySource.model.file;
   if(species==='yard-pig'){
    model.scaling.setAll(YARD_PIG_MODEL.scale*PIG_SCALES[index]);
    root.rotation.y=[0,-.9,1.25,2.1,-1.8][index];
@@ -408,12 +415,12 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     if(ambientClearSegment(state,{x,y},{x:nx,y:ny})){a.root.position.set(nx*6,surfaceElevation(nx,ny,state),ny*6);moved=step*6;if(d>.001){const yaw=Math.atan2(dx,dy),delta=yaw-a.root.rotation.y;a.root.rotation.y=a.species==='boar'?a.root.rotation.y+Math.atan2(Math.sin(delta),Math.cos(delta))*(1-Math.exp(-dt*speed*6)):yaw;}}else{a.target=null;a.restUntil=clock+.8;}
     if(d<=step+.001){a.target=null;a.restUntil=clock+1.2+a.index*.3+(a.species==='boar'?(a.routeAttempt+a.index)%3*.58:0);}
    }
-   if(moved>0)a.walkPhase=(a.walkPhase+moved/config.stride)%1;
+   if(moved>0)a.walkPhase=(a.walkPhase+moved/(a.species==='donkey'?donkeySource.model.stride:config.stride))%1;
    animate(a,clock,moved>.00001);
 
   }
  }
- function dispose(){if(disposed)return;disposed=true;testLivestock?.dispose();ploughs?.dispose();for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const a of assets.values())a.dispose();assets.clear();}
+ function dispose(){if(disposed)return;disposed=true;testLivestock?.dispose();ploughs?.dispose();for(const a of [...actors])removeActor(a);for(const t of templates)t.dispose();skyMaterial?.dispose();for(const m of farmMaterials.values())m.dispose();for(const [species,asset] of assets)if(species!=='donkey')asset.dispose();donkeySource?.release();assets.clear();}
  function supportsFoldSheep(animal){
   return foldSheepAvailable&&animal.kind==='sheep'&&!animal.young&&Number(animal.id.split('-').at(-1))%2===1;
  }

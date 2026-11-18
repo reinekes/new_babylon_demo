@@ -4,6 +4,7 @@ export const MODEL_VERSIONS=Object.freeze({
  "marsh-clubrush.glb": "3db0700f06d1",
  "marsh-plumed-cane.glb": "0ad5e1537a32",
  "alluvial-awn-grass.glb": "bc120129fe6e",
+ "pasture-donkey.glb": "b0d4e156f94e",
  "pasture-goat.glb": "d120e227ce0b",
  "pasture-ram.glb": "b2cc547a1534",
  "pasture-pig.glb": "7bb75ccbe1b7",

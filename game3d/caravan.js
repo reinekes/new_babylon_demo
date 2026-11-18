@@ -1,9 +1,10 @@
 import {isStrictSumer} from '../scenario-profiles.js';
 import {loadModel} from './asset-loading.js';
+import {acquireDonkey,createDonkeyPack,DONKEY_MODELS} from './donkey.js';
 import {surfaceElevation,TILE} from '../district3d/terrain.js';
 import {cargoLayout} from './goods.js';
 export const CARAVAN_MODELS={merchant:'caravan-merchant.glb',camel:'caravan-camel.glb'};
-export const SUMER_CARAVAN_MODEL='ambient-donkey.glb';
+export const SUMER_CARAVAN_MODEL=DONKEY_MODELS.pasture.file;
 export const SUMER_MERCHANT_MODEL='source-walk-male.glb';
 export const CARAVAN_RELEASE='caravan-20261023-1';
 // Follow the saved road polyline backwards, preserving formation around corners.
@@ -22,11 +23,16 @@ export async function createTradeCaravan(B,scene,meshes,materials,goods,options=
  let merchantKind=animal==='donkey'?'sumerMerchant':'merchant';
  const pending=new Map(),failed=new Set();
  const load=options.loadAsset||(file=>loadModel(B,scene,'assets/art-courtyard/models/',`${file}?v=${CARAVAN_RELEASE}`,scene,undefined,'.glb'));
+ let donkeySource;
+ async function loadSource(kind){
+  if(kind==='donkey'){donkeySource=await acquireDonkey(scene,load);return donkeySource.asset;}
+  return load(kind==='sumerMerchant'?SUMER_MERCHANT_MODEL:CARAVAN_MODELS[kind]);
+ }
+ function release(kind,asset){if(kind==='donkey')donkeySource.release();else asset.dispose();}
  function request(kind){
   if(disposed||sources.has(kind)||failed.has(kind))return pending.get(kind)||null;
   if(pending.has(kind))return pending.get(kind);
-  const file=kind==='donkey'?SUMER_CARAVAN_MODEL:kind==='sumerMerchant'?SUMER_MERCHANT_MODEL:CARAVAN_MODELS[kind];
-  const promise=Promise.resolve().then(()=>load(file)).then(asset=>{if(disposed)asset.dispose();else sources.set(kind,asset);return asset;}).catch(error=>{failed.add(kind);(options.warn||console.warn)('Caravan model unavailable',error);return null;}).finally(()=>pending.delete(kind));
+  const promise=Promise.resolve().then(()=>loadSource(kind)).then(asset=>{if(disposed)release(kind,asset);else sources.set(kind,asset);return asset;}).catch(error=>{failed.add(kind);(options.warn||console.warn)('Caravan model unavailable',error);return null;}).finally(()=>pending.delete(kind));
   pending.set(kind,promise);return promise;
  }
  await Promise.allSettled([request(merchantKind),request(animal)]);
@@ -35,23 +41,43 @@ export async function createTradeCaravan(B,scene,meshes,materials,goods,options=
  const register=m=>{m.isPickable=false;m.receiveShadows=true;meshes.push(m);return m;};
  const forget=m=>{const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);m.dispose();};
  const clearCargo=()=>{for(const m of cargoMeshes)forget(m);cargoMeshes.length=0;};
- function actor(kind,index){const source=sources.get(kind==='merchant'?merchantKind:kind),nativeMerchant=kind==='merchant'&&merchantKind==='sumerMerchant',stride=nativeMerchant?[...(source.transformNodes||[]),...(source.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident?.strideMetres).find(Number.isFinite)||1.577233669095413:kind==='donkey'?1.17:kind==='camel'?2:1.04;const copy=source.instantiateModelsToScene(n=>`caravan-${index}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(`caravan-${kind}-${index}`,scene);for(const n of copy.rootNodes)n.parent=root;const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.replace(`caravan-${index}-`,'').replace('Walk_Loop','Walk').replace('Idle_Loop','Idle'),g);}for(const skeleton of copy.skeletons||[])skeleton.useTextureToStoreBoneMatrices=true;const owned=root.getChildMeshes();for(const m of owned)register(m);const a={kind,stride,root,groups,skeletons:copy.skeletons,owned,phase:index*.31,clock:index*1.1,clip:null,last:null};actors.push(a);
-  if(kind==='camel'||kind==='donkey'){
+ function actor(kind,index){const source=sources.get(kind==='merchant'?merchantKind:kind),nativeMerchant=kind==='merchant'&&merchantKind==='sumerMerchant',stride=nativeMerchant?[...(source.transformNodes||[]),...(source.meshes||[])].map(n=>n.metadata?.gltf?.extras?.native_resident?.strideMetres).find(Number.isFinite)||1.577233669095413:kind==='donkey'?donkeySource.model.stride:kind==='camel'?2:1.04;const copy=source.instantiateModelsToScene(n=>`caravan-${index}-${n}`,false,{doNotInstantiate:true}),root=new B.TransformNode(`caravan-${kind}-${index}`,scene);for(const n of copy.rootNodes)n.parent=root;const groups=new Map();for(const g of copy.animationGroups){g.stop();groups.set(g.name.replace(`caravan-${index}-`,'').replace('Walk_Loop','Walk').replace('Idle_Loop','Idle'),g);}for(const skeleton of copy.skeletons||[])skeleton.useTextureToStoreBoneMatrices=true;const owned=root.getChildMeshes();for(const m of owned)register(m);const a={kind,stride,root,groups,skeletons:copy.skeletons,owned,phase:index*.31,clock:index*1.1,clip:null,last:null};actors.push(a);
+  if(kind==='donkey'&&donkeySource.model===DONKEY_MODELS.pasture){
+   a.pack=createDonkeyPack(B,scene,root,index,{wool,linen,rope},mesh=>owned.push(register(mesh)));
+  }else if(kind==='camel'||kind==='donkey'){
    const scale=kind==='donkey'?.56:1,lower=kind==='donkey'?-.08:0;
    const cloth=B.MeshBuilder.CreateSphere(`camel-${index}-woven-saddle`,{diameter:1,segments:12},scene);cloth.parent=root;cloth.position.set(0,1.94*scale+lower,-.28*scale);cloth.scaling.set(1.16*scale,.10*scale,1.26*scale);cloth.material=wool;owned.push(register(cloth));
    for(const side of [-1,1]){const bag=B.MeshBuilder.CreateSphere(`camel-${index}-cloth-pannier`,{diameter:1,segments:12},scene);bag.parent=root;bag.position.set(side*.56*scale,1.59*scale+lower,-.27*scale);bag.scaling.set(.48*scale,.65*scale,.81*scale);bag.material=linen;owned.push(register(bag));for(const z of [-.58,.06]){const tie=B.MeshBuilder.CreateTube(`camel-${index}-tied-pannier`,{path:[new B.Vector3(side*.67,1.36,z),new B.Vector3(side*.77,1.77,z),new B.Vector3(0,2.02,z),new B.Vector3(-side*.77,1.77,z)],radius:.017,tessellation:5},scene);tie.scaling.setAll(scale);tie.position.y=lower;tie.material=rope;tie.parent=root;owned.push(register(tie));}}
   }return a;
  }
  function clear(){clearCargo();for(const a of actors){for(const m of a.owned){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}for(const g of a.groups.values())g.dispose();a.root.dispose();for(const sk of a.skeletons||[])sk.dispose();}actors.length=0;cargoSignature='';}
- function goodsUpdate(c){const sig=caravanCargoSignature(c.stock);if(sig===cargoSignature)return;cargoSignature=sig;clearCargo();const layout=cargoLayout(c.stock,{columns:2,layers:2,maxKinds:13});for(const [i,p]of layout.entries()){const a=actors[1+i%2],source=goods?.sources.get(p.kind);if(!a||!source)continue;const m=source.createInstance(`caravan-stock-${p.kind}`);m.setEnabled(true);m.parent=a.root;const scale=a.kind==='donkey'?.56:1;m.scaling.setAll(.42*scale);m.position.set((Math.floor(i/2)%2?1:-1)*.58*scale,(1.88+Math.floor(i/8)*.19)*scale+(a.kind==='donkey'?-.08:0),(-.62+(Math.floor(i/4)%2)*.60)*scale);m.metadata={goods:{...p},caravanCargo:true};m.rotation.y=(i%3-1)*.1;cargoMeshes.push(register(m));}}
+ function goodsUpdate(c){
+  const sig=caravanCargoSignature(c.stock);if(sig===cargoSignature)return;
+  cargoSignature=sig;clearCargo();
+  const layout=cargoLayout(c.stock,{columns:2,layers:2,maxKinds:13});
+  for(const [i,p] of layout.entries()){
+   const a=actors[1+i%2],source=goods?.sources.get(p.kind);if(!a||!source)continue;
+   const m=source.createInstance(`caravan-stock-${p.kind}`);m.setEnabled(true);m.parent=a.pack?.root||a.root;
+   if(a.pack){
+    const slot=Math.floor(i/2),side=slot%2?1:-1,tier=Math.floor(slot/4);
+    m.scaling.setAll(.16);m.position.set(side*.275,.858+tier*.034,Math.floor(slot/2)%2?-.071:-.244);
+    m.rotation.y=side*(slot%3-1)*.08;
+   }else{
+    const scale=a.kind==='donkey'?.56:1;m.scaling.setAll(.42*scale);
+    m.position.set((Math.floor(i/2)%2?1:-1)*.58*scale,(1.88+Math.floor(i/8)*.19)*scale+(a.kind==='donkey'?-.08:0),(-.62+(Math.floor(i/4)%2)*.60)*scale);
+    m.rotation.y=(i%3-1)*.1;
+   }
+   m.metadata={goods:{...p},caravanCargo:true};cargoMeshes.push(register(m));
+  }
+ }
  function pose(a,clip,phase,dt=0){if(!a.groups.has(clip))clip='Idle';const g=a.groups.get(clip);if(!g)return;if(a.clip!==clip){a.transition=a.clip?[...new Set([...a.groups.values()].flatMap(g=>g.targetedAnimations.map(t=>t.target)).filter(n=>n?.position&&n?.scaling))].map(n=>({n,p:n.position.clone(),q:n.rotationQuaternion?.clone(),s:n.scaling.clone()})):null;a.blend=0;for(const old of a.groups.values())old.stop();g.start(true,1,g.from,g.to,false);g.pause();a.clip=clip;}g.goToFrame(g.from+(phase%1)*(g.to-g.from));if(a.transition){a.blend=Math.min(1,a.blend+dt/.25);const t=a.blend*a.blend*(3-2*a.blend);for(const v of a.transition){v.n.position.copyFrom(B.Vector3.Lerp(v.p,v.n.position,t));v.n.scaling.copyFrom(B.Vector3.Lerp(v.s,v.n.scaling,t));if(v.q&&v.n.rotationQuaternion)B.Quaternion.SlerpToRef(v.q,v.n.rotationQuaternion,t,v.n.rotationQuaternion);}if(a.blend===1)a.transition=null;}}
  function update(state,c,time=state.simTime||0){if(disposed)return;animal=isStrictSumer(state)?'donkey':'camel';merchantKind=animal==='donkey'?'sumerMerchant':'merchant';const formation=caravanFormation(c,state),newKey=formation.length?animal+':'+(c.id||'current-land-caravan'):null;if(key!==newKey){clear();key=newKey;lastTime=null;}if(newKey){request(merchantKind);request(animal);if(!actors.length&&sources.has(merchantKind)&&sources.has(animal))for(const [i,p]of formation.entries())actor(p.kind,i);}
   if(!actors.length){lastTime=time;return;}goodsUpdate(c);const dt=lastTime===null?0:Math.max(0,time-lastTime),reset=lastTime!==null&&(time<lastTime||dt>5);lastTime=time;const stopped=['trading','unloading'].includes(c.phase);
   for(const [i,a]of actors.entries()){const p=formation[i],d=a.last?Math.hypot(p.x-a.last.x,p.y-a.last.y)*TILE:0;const moved=d>.000001&&!reset;const fresh=!a.last;
    // Position derives only from the saved caravan; gait is distance-driven and freezes on pause.
-   if(dt>0||fresh||reset){a.root.position.set(p.x*TILE,surfaceElevation(p.x,p.y,state),p.y*TILE);a.root.rotation.y=p.yaw;a.last={x:p.x,y:p.y};if(moved)a.phase=(a.phase+d/a.stride)%1;if(stopped&&dt>0)a.clock+=Math.min(dt,.25);const clip=stopped?(a.kind==='camel'&&i===2?'Idle2':'Idle'):'Walk';pose(a,clip,stopped?a.clock/(a.kind==='camel'?4.5:3):a.phase,Math.min(dt,.1));}
-   a.root.metadata={caravanId:c.id,kind:a.kind,clip:a.clip,gaitPhase:a.phase,historicalArtisticCamel:a.kind==='camel'};
+   if(dt>0||fresh||reset){a.root.position.set(p.x*TILE,surfaceElevation(p.x,p.y,state),p.y*TILE);a.root.rotation.y=p.yaw;a.last={x:p.x,y:p.y};if(moved)a.phase=(a.phase+d/a.stride)%1;if(stopped&&dt>0)a.clock+=Math.min(dt,.25);const clip=stopped?(a.kind==='camel'&&i===2?'Idle2':'Idle'):'Walk';pose(a,clip,stopped?a.clock/(a.kind==='camel'?4.5:3):a.phase,Math.min(dt,.1));a.pack?.update();}
+   a.root.metadata={caravanId:c.id,kind:a.kind,clip:a.clip,gaitPhase:a.phase,historicalArtisticCamel:a.kind==='camel',...(a.kind==='donkey'?{modelFile:donkeySource.model.file}:{})};
   }
  }
- return {update,actors,get ready(){return Promise.all([...pending.values()]);},loaded:()=>sources.has(merchantKind)&&sources.has(animal),dispose(){if(disposed)return;disposed=true;clear();for(const source of sources.values())source.dispose();sources.clear();for(const m of ownedMaterials)m.dispose();}};
+ return {update,actors,get ready(){return Promise.all([...pending.values()]);},loaded:()=>sources.has(merchantKind)&&sources.has(animal),dispose(){if(disposed)return;disposed=true;clear();for(const [kind,source] of sources)release(kind,source);sources.clear();for(const m of ownedMaterials)m.dispose();}};
 }

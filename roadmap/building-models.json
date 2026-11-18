@@ -640,6 +640,17 @@
           "model": "../assets/art-courtyard/models/pasture-goat.glb",
           "note": "Взрослая коза. Сбоку видны холка, лёгкая голова и сгиб скакательного сустава. На видео коза идёт по земле своим игровым маршрутом.",
           "release": "../docs/versions/2026-11-18-09.md"
+        },
+        {
+          "id": "pasture-donkey",
+          "name": "Домашний осёл",
+          "status": "ready",
+          "previous": "evidence/2026-11-18/pasture-donkey/before.webp",
+          "previousModel": "../assets/art-courtyard/models/ambient-donkey.glb",
+          "image": "evidence/2026-11-18/pasture-donkey/side.webp",
+          "checked": "evidence/2026-11-18/pasture-donkey/walk.mp4",
+          "model": "../assets/art-courtyard/models/pasture-donkey.glb",
+          "note": "Сбоку видны вытянутая морда, длинные уши и сгибы ног. Сняты шаг осла по городскому маршруту и вьючные сумы каравана."
         }
       ]
     },

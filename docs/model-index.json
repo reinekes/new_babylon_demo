@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "manifestRelease": "pasture-goat-20261118",
+  "manifestRelease": "pasture-donkey-20261118",
   "scope": "Local shipped GLBs in assets/art-courtyard/models; current main game plus explicitly separate courtyard/crop studios. Procedural meshes and Downloads originals excluded.",
   "counts": {
-    "total": 102,
+    "total": 103,
     "active": 67,
-    "fallback": 15,
+    "fallback": 16,
     "optional": 7,
     "spare": 13
   },
@@ -21,7 +21,7 @@
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "7b9b01199fe07d783d8669948d1dee988d296f589022d314e1ff375ae0400aff"
+      "sha256": "fa7be8184c4fb97c5421f7b8234cf63d21958fa40bf2f15be315c550188e5570"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -33,11 +33,15 @@
     },
     {
       "file": "game3d/caravan.js",
-      "sha256": "d4a0de69f92297dd6ffffc892f424cd7107ab5eacab29fa2591339f367fe44f3"
+      "sha256": "a320d3986b8648fb6f2eaac38bcce40fbea3b337183b252d6deadf8c5835b6e5"
     },
     {
       "file": "game3d/crop-studio.js",
       "sha256": "caf9ad862e6dcdd2b220cfb977868d2114cdce3dbe89605beec0cbdc9c889ca3"
+    },
+    {
+      "file": "game3d/donkey.js",
+      "sha256": "1e99bb7b4ce1a7608ad83554539e5315a8fae345b1ef0e581495a375f144cd9a"
     },
     {
       "file": "game3d/festival-candles.js",
@@ -300,7 +304,7 @@
         {
           "model": "ambient-bull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 22,
+          "line": 23,
           "kind": "literal"
         }
       ]
@@ -333,16 +337,16 @@
         {
           "model": "ambient-dog.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 19,
+          "line": 20,
           "kind": "literal"
         }
       ]
     },
     {
       "file": "ambient-donkey.glb",
-      "status": "active",
-      "purpose": "Декоративный осёл и вьючный караван строгой шумерской ветви с реальным stock; источник GLB общий.",
-      "classificationEvidence": "game3d/caravan.js|SUMER_CARAVAN_MODEL",
+      "status": "fallback",
+      "purpose": "Прежний вьючный осёл на пастбище и в караване при недоступности новой модели.",
+      "classificationEvidence": "game3d/donkey.js|ambient-donkey.glb",
       "bytes": 4356268,
       "sha256": "dc6504da3ec7b2a3e4110220ea7eb363a536abcd59b92b0e55d74c66a76515fc",
       "version": "dc6504da3ec7",
@@ -376,14 +380,8 @@
       "references": [
         {
           "model": "ambient-donkey.glb",
-          "file": "game3d/ambient-fauna.js",
-          "line": 21,
-          "kind": "literal"
-        },
-        {
-          "model": "ambient-donkey.glb",
-          "file": "game3d/caravan.js",
-          "line": 6,
+          "file": "game3d/donkey.js",
+          "line": 4,
           "kind": "literal"
         }
       ]
@@ -416,7 +414,7 @@
         {
           "model": "ambient-duck.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 20,
+          "line": 21,
           "kind": "literal"
         }
       ]
@@ -449,7 +447,7 @@
         {
           "model": "ambient-sheep-kenchoo.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 23,
+          "line": 24,
           "kind": "literal"
         }
       ]
@@ -481,7 +479,7 @@
         {
           "model": "ambient-yard-pig.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 43,
+          "line": 44,
           "kind": "literal"
         }
       ]
@@ -514,7 +512,7 @@
         {
           "model": "caravan-camel.glb",
           "file": "game3d/caravan.js",
-          "line": 5,
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -546,7 +544,7 @@
         {
           "model": "caravan-merchant.glb",
           "file": "game3d/caravan.js",
-          "line": 5,
+          "line": 6,
           "kind": "literal"
         }
       ]
@@ -1071,7 +1069,7 @@
         {
           "model": "imported-boar.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 17,
+          "line": 18,
           "kind": "literal"
         }
       ]
@@ -1103,7 +1101,7 @@
         {
           "model": "imported-fox.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 16,
+          "line": 17,
           "kind": "literal"
         }
       ]
@@ -1160,7 +1158,7 @@
         {
           "model": "imported-lioness.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 18,
+          "line": 19,
           "kind": "literal"
         }
       ]
@@ -1191,7 +1189,7 @@
         {
           "model": "imported-orange-bird.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 15,
+          "line": 16,
           "kind": "literal"
         }
       ]
@@ -1769,6 +1767,50 @@
       ]
     },
     {
+      "file": "pasture-donkey.glb",
+      "status": "active",
+      "purpose": "Домашний осёл на пастбище и вьючные ослы сухопутного каравана строгой шумерской ветви.",
+      "classificationEvidence": "game3d/donkey.js|pasture-donkey.glb",
+      "bytes": 5405032,
+      "sha256": "b0d4e156f94e74ae5d97ff7a09bda06ead449d7885d2568852a92f5a71b69497",
+      "version": "b0d4e156f94e",
+      "triangles": 24340,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Armature|call",
+        "SourceOriginal-Armature|front leg kick",
+        "SourceOriginal-Armature|grazing",
+        "SourceOriginal-Armature|idle",
+        "SourceOriginal-Armature|laydown",
+        "SourceOriginal-Armature|rear leg kick",
+        "SourceOriginal-Armature|run",
+        "SourceOriginal-Armature|sleep",
+        "SourceOriginal-Armature|trot",
+        "SourceOriginal-Armature|wake up",
+        "SourceOriginal-Armature|walk",
+        "SourceOriginal-Armature|wound"
+      ],
+      "sources": [
+        {
+          "author": "AnimalMesh 3D (https://sketchfab.com/AnimalMesh3D)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/animated-realistic-donkey-3d-animal-model-32ce1c2f276a4e27bb26b8bb99439bb7",
+          "evidence": "asset.extras"
+        }
+      ],
+      "references": [
+        {
+          "model": "pasture-donkey.glb",
+          "file": "game3d/donkey.js",
+          "line": 3,
+          "kind": "literal"
+        }
+      ]
+    },
+    {
       "file": "pasture-goat.glb",
       "status": "active",
       "purpose": "Пастбищная коза свободного стада и отдельных животных симуляции с шагом, покоем, выпасом и отдыхом.",
@@ -1804,7 +1846,7 @@
         {
           "model": "pasture-goat.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 249,
+          "line": 256,
           "kind": "literal"
         },
         {
@@ -2205,7 +2247,7 @@
         {
           "model": "shore-mallard-female.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 28,
+          "line": 29,
           "kind": "literal"
         }
       ]
@@ -2236,7 +2278,7 @@
         {
           "model": "shore-mallard.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 27,
+          "line": 28,
           "kind": "literal"
         }
       ]
@@ -2269,7 +2311,7 @@
         {
           "model": "shore-seagull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 26,
+          "line": 27,
           "kind": "literal"
         }
       ]
@@ -2434,7 +2476,7 @@
         {
           "model": "source-walk-male.glb",
           "file": "game3d/caravan.js",
-          "line": 7,
+          "line": 8,
           "kind": "literal"
         }
       ]

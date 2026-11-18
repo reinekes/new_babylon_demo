@@ -1,16 +1,16 @@
 {
-  "release": "pasture-goat-20261118",
+  "release": "pasture-donkey-20261118",
   "purpose": "current runtime art assets for New Babylon; no save data",
   "files": [
     {
       "file": "ATTRIBUTION.md",
-      "bytes": 35808,
-      "sha256": "c8fa7f382e4303b50b0ea0ad866dd4c952a5dd5adc7ec11789b27f0efdaa176c"
+      "bytes": 36781,
+      "sha256": "8adc93a4c7f10f5008a76943003614d094d51854c0b088f2a6f63ca41f983edf"
     },
     {
       "file": "CREDITS.html",
-      "bytes": 32952,
-      "sha256": "2bf386a7484addcdcec593dde4c7403682362b0ca24842e360c253048d120808"
+      "bytes": 33357,
+      "sha256": "f35b1b22cf0fb0808c31e19efed549d22a2fe7e87e0174ad25d95e8c926d44bd"
     },
     {
       "file": "festival-candle-report.json",
@@ -30,6 +30,30 @@
       "meshes": 1,
       "bones": 0,
       "clips": []
+    },
+    {
+      "file": "models/pasture-donkey.glb",
+      "bytes": 5405032,
+      "sha256": "b0d4e156f94e74ae5d97ff7a09bda06ead449d7885d2568852a92f5a71b69497",
+      "triangles": 24340,
+      "meshes": 4,
+      "bones": 53,
+      "clips": [
+        "Walk",
+        "Idle",
+        "SourceOriginal-Armature|call",
+        "SourceOriginal-Armature|front leg kick",
+        "SourceOriginal-Armature|grazing",
+        "SourceOriginal-Armature|idle",
+        "SourceOriginal-Armature|laydown",
+        "SourceOriginal-Armature|rear leg kick",
+        "SourceOriginal-Armature|run",
+        "SourceOriginal-Armature|sleep",
+        "SourceOriginal-Armature|trot",
+        "SourceOriginal-Armature|wake up",
+        "SourceOriginal-Armature|walk",
+        "SourceOriginal-Armature|wound"
+      ]
     },
     {
       "file": "models/pasture-goat.glb",
