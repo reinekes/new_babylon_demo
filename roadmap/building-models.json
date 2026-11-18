@@ -650,7 +650,8 @@
           "image": "evidence/2026-11-18/pasture-donkey/side.webp",
           "checked": "evidence/2026-11-18/pasture-donkey/walk.mp4",
           "model": "../assets/art-courtyard/models/pasture-donkey.glb",
-          "note": "Сбоку видны вытянутая морда, длинные уши и сгибы ног. Сняты шаг осла по городскому маршруту и вьючные сумы каравана."
+          "note": "Сбоку видны вытянутая морда, длинные уши и сгибы ног. Сняты шаг осла по городскому маршруту и вьючные сумы каравана.",
+          "release": "../docs/versions/2026-11-18-11.md"
         }
       ]
     },
