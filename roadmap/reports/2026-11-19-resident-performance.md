@@ -44,3 +44,15 @@ renderer.draw(state, null, performance.now(), {paused: true})
 await renderer.scene.whenReadyAsync()
 console.log(await benchmark(18))
 ```
+
+## resident-workplace-performance-20261119 | Восстановлена частота кадров большого города
+
+date: 2026-11-19
+type: release
+release: resident-workplace-performance-20261119
+commit: 1a0ca6630a56ce1efce9ba3395ee09e685883ec7
+publication: verified
+groups: performance; graphics; people
+source: docs/versions/2026-11-19-02.md
+
+GitHub Pages опубликовал игровой коммит `1a0ca663`. В публичной версии проверены семь сцен с жителями и 45 позиций каталога. [Проверка WebGL и файлов](../../docs/benchmarks/2026-11-19-resident-performance-pages.json)

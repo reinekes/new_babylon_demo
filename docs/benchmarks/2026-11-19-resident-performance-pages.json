@@ -1,0 +1,641 @@
+{
+  "deployment": {
+    "commit": "1a0ca6630a56ce1efce9ba3395ee09e685883ec7",
+    "url": "https://github.com/reinekes/new_babylon_demo/actions/runs/44595421265",
+    "sha256": [
+      {
+        "path": "courtyard.html",
+        "bytes": 16459,
+        "sha256": "89ea53cba3cc8e8ebab9b763fcf5294ea2b82133b6a82d84297290d70fcbb94a"
+      },
+      {
+        "path": "crop-studio.html",
+        "bytes": 3237,
+        "sha256": "60413c6ae314f9e3c76b9b2bdac6d91dc1543ff2a01dacb7d95f4b0ad874ac9f"
+      },
+      {
+        "path": "district3d.html",
+        "bytes": 21823,
+        "sha256": "d26d4ea42006bd4961e32e256435627b806b487e071c3adfc08745f8956808a0"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-resident-performance-4x.json",
+        "bytes": 56279,
+        "sha256": "7f75da868572f4f765ad3549470e41a56f210ca93efd13cb502b6f0c030f8d7d"
+      },
+      {
+        "path": "docs/model-index.json",
+        "bytes": 120145,
+        "sha256": "24d9760691484c6206c1740c969ce94d0ee346e9f278086a8ea450da8f74e92c"
+      },
+      {
+        "path": "game3d/actors.js",
+        "bytes": 87416,
+        "sha256": "d5b80a7ddfb3e5940a9d5e65559f3779ef26e7d20ca1e87afda3eb2ace23217e"
+      },
+      {
+        "path": "game3d/ambient-fauna.js",
+        "bytes": 30387,
+        "sha256": "697f767ce32db020d3676d1d3973c13c65ac4f22723aa1f3787e84399616a76b"
+      },
+      {
+        "path": "game3d/buildings.js",
+        "bytes": 30126,
+        "sha256": "5b153890768921ca13e63cc1113af8ee843fc2fb7d117e910dcab517c86c5c50"
+      },
+      {
+        "path": "game3d/field-crops.js",
+        "bytes": 12515,
+        "sha256": "4425aa36d4cb89da7355c2f1def8b34c671c320566e4b790f31d7fddaf9bc9a2"
+      },
+      {
+        "path": "game3d/home-visits.js",
+        "bytes": 11758,
+        "sha256": "9029eaf842466251822d7e1ba9566ca52c41ba87db380533134674cb58e770a6"
+      },
+      {
+        "path": "game3d/test-livestock.js",
+        "bytes": 18952,
+        "sha256": "d1ec8426dba00a3de4f31deace9a939597face1d2881418c060d254aa86c873f"
+      },
+      {
+        "path": "goat-studio.html",
+        "bytes": 21516,
+        "sha256": "fdfefddd0c11f84c41916cecde1e5030dc04d36f453b766fac0154879f3dd927"
+      },
+      {
+        "path": "index.html",
+        "bytes": 35923,
+        "sha256": "fd62fd255a7acc59d3eb533d48d526c8622e727a05ff0eb9b4eb017e905b77c7"
+      },
+      {
+        "path": "mallards.html",
+        "bytes": 5214,
+        "sha256": "26aee627fb9191f5688ed341b69d612c0088689a51e3d9e7f79892bd1170b721"
+      },
+      {
+        "path": "model-atlas/index.html",
+        "bytes": 12928,
+        "sha256": "a914f2e66790d3159937653d6e933e897d1d3fd226b68d0a697a61544015c373"
+      },
+      {
+        "path": "roadmap/reports/2026-11-19-resident-performance.md",
+        "bytes": 7504,
+        "sha256": "2a32e8f44e4870de19d9ddea276b40d515fd9e07611a6fb7ebe095e9c1ef4a5c"
+      },
+      {
+        "path": "scripts/sumer-building-studio.html",
+        "bytes": 7886,
+        "sha256": "98be734a2a1c4104a7a173e72a332ad123ac5392a6046094baa4560de6b31a71"
+      }
+    ]
+  },
+  "ordinaryScenes": {
+    "entry": "https://reinekes.github.io/new_babylon_demo/index.html",
+    "release": "resident-workplace-performance-20261119",
+    "results": [
+      {
+        "stage": "bench",
+        "resident": 8,
+        "home": "10,11",
+        "startStage": "out",
+        "positionBeforeM": [
+          59.769999999999996,
+          0.06910021157132396,
+          65.76437968915289
+        ],
+        "positionAfterM": [
+          58.53999999999999,
+          0.073,
+          67.5
+        ],
+        "travelM": 2.127273624096068,
+        "pelvisM": [
+          58.5554084777832,
+          0.4650000035762787,
+          67.5
+        ],
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "roof",
+        "resident": 7,
+        "home": "6,11",
+        "startStage": "out",
+        "positionBeforeM": [
+          38.04880535334637,
+          1.8423436922582292,
+          65.22
+        ],
+        "positionAfterM": [
+          36.56,
+          2.175,
+          65.02
+        ],
+        "travelM": 1.5385712850671505,
+        "pelvisM": [
+          36.563453674316406,
+          2.304999828338623,
+          65.04862976074219
+        ],
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "enter",
+        "resident": 0,
+        "home": "6,7",
+        "startStage": "street",
+        "positionBeforeM": [
+          38.93298825476427,
+          0,
+          45.01919910790746
+        ],
+        "positionAfterM": [
+          35.75712100098259,
+          0.07139012512282364,
+          43.60091795873126
+        ],
+        "travelM": 3.4789008007869926,
+        "pelvisM": [
+          35.75919723510742,
+          0.9885661005973816,
+          43.603614807128906
+        ],
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "fish-lift",
+        "resident": 0,
+        "lineTipM": [
+          31.923288345336914,
+          0.8877283930778503,
+          83.32106018066406
+        ],
+        "fishM": [
+          31.923288345336914,
+          0.8877283930778503,
+          83.3210678100586
+        ],
+        "gapM": 7.62939453125e-06,
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "dress",
+        "resident": 0,
+        "animal": {
+          "id": "gazelle-11",
+          "dead": true,
+          "hauler": 0,
+          "point": [
+            68.0383347775863,
+            0.79,
+            62.0383347775863
+          ],
+          "rig": true
+        },
+        "horizontalGapToDressingBenchM": 9.745385528546885e-08,
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "collect",
+        "resident": 8,
+        "palmsM": [
+          [
+            56.80622863769531,
+            0.9121093153953552,
+            50.55287170410156
+          ],
+          [
+            56.54623031616211,
+            0.9127704501152039,
+            50.806297302246094
+          ]
+        ],
+        "fixtureM": [
+          56.58,
+          0.83,
+          50.58
+        ],
+        "maximumPalmToFixtureM": 0.24331421652391197,
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "receive",
+        "resident": 8,
+        "palmsM": [
+          [
+            59.42393112182617,
+            1.0294852256774902,
+            55.26485061645508
+          ],
+          [
+            59.03621292114258,
+            1.029799222946167,
+            55.2666130065918
+          ]
+        ],
+        "fixtureM": [
+          59.23,
+          0.87,
+          55.059999999999995
+        ],
+        "maximumPalmToFixtureM": 0.3252355424599134,
+        "webgl": 2,
+        "glError": 0
+      }
+    ],
+    "passed": true,
+    "completedUTC": "2026-11-19T19:17:00.665336+00:00"
+  },
+  "catalog": {
+    "summary": {
+      "cityWall": {
+        "parts": 3,
+        "triangles": 732,
+        "camera": 12,
+        "gl": 0
+      },
+      "cityGate": {
+        "parts": 19,
+        "triangles": 5684,
+        "camera": 23,
+        "gl": 0
+      },
+      "watchHouse": {
+        "parts": 14,
+        "triangles": 5282,
+        "camera": 12,
+        "gl": 0
+      },
+      "musicHouse": {
+        "parts": 8,
+        "triangles": 2244,
+        "camera": 12,
+        "gl": 0
+      },
+      "ishtarGate": {
+        "parts": 7,
+        "triangles": 636,
+        "camera": 30,
+        "gl": 0
+      },
+      "cowshed": {
+        "parts": 8,
+        "triangles": 7364,
+        "camera": 23,
+        "gl": 0
+      },
+      "pottery": {
+        "parts": 12,
+        "triangles": 19840,
+        "camera": 12,
+        "gl": 0
+      },
+      "joineryYard": {
+        "parts": 7,
+        "triangles": 4368,
+        "camera": 12,
+        "gl": 0
+      },
+      "coppersmith": {
+        "parts": 11,
+        "triangles": 4980,
+        "camera": 12,
+        "gl": 0
+      },
+      "matYard": {
+        "parts": 6,
+        "triangles": 2668,
+        "camera": 12,
+        "gl": 0
+      },
+      "basketry": {
+        "parts": 8,
+        "triangles": 12584,
+        "camera": 12,
+        "gl": 0
+      },
+      "dairyStore": {
+        "parts": 9,
+        "triangles": 5544,
+        "camera": 12,
+        "gl": 0
+      },
+      "linenYard": {
+        "parts": 8,
+        "triangles": 6978,
+        "camera": 12,
+        "gl": 0
+      },
+      "bakery": {
+        "parts": 8,
+        "triangles": 8672,
+        "camera": 12,
+        "gl": 0
+      },
+      "brewery": {
+        "parts": 10,
+        "triangles": 15416,
+        "camera": 12,
+        "gl": 0
+      },
+      "harbor": {
+        "parts": 8,
+        "triangles": 11392,
+        "camera": 12,
+        "gl": 0
+      },
+      "kiln": {
+        "parts": 8,
+        "triangles": 9276,
+        "camera": 12,
+        "gl": 0
+      },
+      "brickyard": {
+        "parts": 7,
+        "triangles": 12208,
+        "camera": 12,
+        "gl": 0
+      },
+      "waterpoint": {
+        "parts": 9,
+        "triangles": 7278,
+        "camera": 12,
+        "gl": 0
+      },
+      "tailor": {
+        "parts": 11,
+        "triangles": 7296,
+        "camera": 12,
+        "gl": 0
+      },
+      "sheepfold": {
+        "parts": 8,
+        "triangles": 8686,
+        "camera": 23,
+        "gl": 0
+      },
+      "weaver": {
+        "parts": 11,
+        "triangles": 5148,
+        "camera": 12,
+        "gl": 0
+      },
+      "house": {
+        "parts": 11,
+        "triangles": 9929,
+        "camera": 12,
+        "gl": 0
+      },
+      "field": {
+        "parts": 2,
+        "triangles": 22408,
+        "camera": 12,
+        "gl": 0
+      },
+      "clay": {
+        "parts": 12,
+        "triangles": 12382,
+        "camera": 23,
+        "gl": 0
+      },
+      "reed": {
+        "parts": 29,
+        "triangles": 22177,
+        "camera": 23,
+        "gl": 0
+      },
+      "shrine": {
+        "parts": 8,
+        "triangles": 13432,
+        "camera": 12,
+        "gl": 0
+      },
+      "garden": {
+        "parts": 13,
+        "triangles": 19902,
+        "camera": 23,
+        "gl": 0
+      },
+      "depot": {
+        "parts": 9,
+        "triangles": 11976,
+        "camera": 12,
+        "gl": 0
+      },
+      "granary": {
+        "parts": 9,
+        "triangles": 6740,
+        "camera": 12,
+        "gl": 0
+      },
+      "ziggurat": {
+        "parts": 8,
+        "triangles": 15024,
+        "camera": 23,
+        "gl": 0
+      },
+      "bridge": {
+        "parts": 5,
+        "triangles": 5980,
+        "camera": 12,
+        "gl": 0
+      },
+      "fishing": {
+        "parts": 11,
+        "triangles": 9500,
+        "camera": 12,
+        "gl": 0
+      },
+      "hunting": {
+        "parts": 12,
+        "triangles": 6950,
+        "camera": 23,
+        "gl": 0
+      },
+      "logging": {
+        "parts": 21,
+        "triangles": 37549,
+        "camera": 23,
+        "gl": 0
+      },
+      "quarry": {
+        "parts": 11,
+        "triangles": 7650,
+        "camera": 23,
+        "gl": 0
+      },
+      "healer": {
+        "parts": 12,
+        "triangles": 9172,
+        "camera": 12,
+        "gl": 0
+      },
+      "levee": {
+        "parts": 3,
+        "triangles": 280,
+        "camera": 12,
+        "gl": 0
+      },
+      "canal": {
+        "parts": 2,
+        "triangles": 2192,
+        "camera": 12,
+        "gl": 0
+      },
+      "market": {
+        "parts": 9,
+        "triangles": 14852,
+        "camera": 23,
+        "gl": 0
+      },
+      "house-2": {
+        "parts": 11,
+        "triangles": 9679,
+        "camera": 12,
+        "gl": 0
+      },
+      "house-3": {
+        "parts": 15,
+        "triangles": 9563,
+        "camera": 12,
+        "gl": 0
+      },
+      "reedCamp": {
+        "parts": 5,
+        "triangles": 5405,
+        "camera": 12,
+        "gl": 0
+      },
+      "road": {
+        "parts": 1,
+        "triangles": 144,
+        "camera": 12,
+        "gl": 0
+      },
+      "starterHut": {
+        "parts": 10,
+        "triangles": 8756,
+        "camera": 12,
+        "gl": 0
+      }
+    },
+    "exceptions": [],
+    "http": [
+      [
+        404,
+        "https://reinekes.github.io/favicon.ico"
+      ]
+    ],
+    "warn": []
+  },
+  "singlePublishedStressRun": {
+    "before": {
+      "population": 500,
+      "buildings": 250,
+      "ordinaryLevelOne": 70,
+      "saveBytes": 505504,
+      "saveByteEqual": true,
+      "sameCitizenCargoAndResources": true,
+      "sameCitizenIds": true
+    },
+    "timing": {
+      "fps": 30.943785456420827,
+      "frames": 558,
+      "seconds": 18.032700000000006,
+      "population": 500,
+      "buildings": 250,
+      "simulationP95": 10.699999928474426,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+      "errors": [],
+      "framesMs": {
+        "samples": 557,
+        "p50": 33.30000000000291,
+        "p95": 50
+      },
+      "cpuMs": {
+        "draw": {
+          "samples": 558,
+          "p50": 26.59999990463257,
+          "p95": 37.299999952316284
+        },
+        "buildings": {
+          "samples": 558,
+          "p50": 0.5,
+          "p95": 0.6000000238418579
+        },
+        "actors": {
+          "samples": 558,
+          "p50": 4.399999976158142,
+          "p95": 13.299999952316284
+        },
+        "scene": {
+          "samples": 558,
+          "p50": 19.90000009536743,
+          "p95": 23.59999990463257
+        }
+      }
+    },
+    "endSaveByteEqual": true,
+    "endCargoAndResources": true,
+    "scene": {
+      "dressedResidents": 68,
+      "visibleWorkMeshes": 67,
+      "assignedResidents": 52,
+      "ambientDonkeys": [
+        {
+          "id": "ambient-donkey-0",
+          "file": "pasture-donkey.glb",
+          "triangles": 24340
+        },
+        {
+          "id": "ambient-donkey-1",
+          "file": "pasture-donkey.glb",
+          "triangles": 24340
+        }
+      ],
+      "houseTierDistribution": [
+        70,
+        69,
+        69
+      ],
+      "importedEarthHouses": 70,
+      "runtimeAsset": "https://reinekes.github.io/new_babylon_demo/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+      "trianglesPerHouse": 8246,
+      "importedParts": 420,
+      "cameraRadius": 739.10423044749,
+      "sceneTextures": 490,
+      "visibleBuildingMeshes": 2976,
+      "houseVisualMeshes": {},
+      "activeIndices": 15071178,
+      "glError": 0,
+      "resolution": [
+        1440,
+        780
+      ]
+    },
+    "viewport": [
+      1440,
+      900
+    ],
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+    "canvasHidden": false,
+    "releaseModules": [
+      "https://reinekes.github.io/new_babylon_demo/game3d/buildings.js?v=resident-workplace-performance-20261119",
+      "https://reinekes.github.io/new_babylon_demo/game3d/field-crops.js?v=resident-workplace-performance-20261119",
+      "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=resident-workplace-performance-20261119",
+      "https://reinekes.github.io/new_babylon_demo/game3d/home-visits.js?v=resident-workplace-performance-20261119",
+      "https://reinekes.github.io/new_babylon_demo/game3d/ambient-fauna.js?v=resident-workplace-performance-20261119",
+      "https://reinekes.github.io/new_babylon_demo/game3d/test-livestock.js?v=resident-workplace-performance-20261119"
+    ],
+    "exceptions": [],
+    "label": "public-perf-1911-mixed",
+    "captured": "2026-11-19T19:17:48.038Z"
+  }
+}
