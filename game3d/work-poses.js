@@ -5,11 +5,12 @@ import {needsCanalCleaning} from '../canal-maintenance.js';
 import {workstationBuilding} from './workstations.js';
 import {isWorkday,treatmentViewPosition} from '../workforce.js';
 import {qualifiedHealer} from '../education.js';
-import {stockStores} from '../inventory.js';
-import {seedReserve} from '../food-planning.js';
+import {productionOutputFits} from '../building-inventory.js';
+import {canMilk} from '../dairy.js';
+import {orchardMaturity} from '../orchard-layout.js';
 import {buildingKey,isOperational,BUILDINGS} from '../definitions.js';
 import {materialsReady,workRequired} from '../construction.js';
-import {artisanNeeds} from '../artisan.js';
+import {isArtisan,artisanNeeds} from '../artisan.js';
 import {brickNeeds} from '../bricks.js';
 import {kilnNeeds} from '../kilns.js';
 import {craftBatch,craftResource,craftState} from '../textiles.js';
@@ -22,39 +23,46 @@ export function workplaceIndex(s){return new Map([...(s.buildings||[]),...(s.roa
 // or any initializer (rendering must never migrate or mutate a saved city).
 export function workplaceActivity(s,c,index){
  if(c.age<16)return null;
- if(c.waterTrip?.phase==='fill')return {kind:'gathering',task:'water-filling',stage:'working',target:{x:c.x,y:c.y},progress:(c.waterTrip.elapsed||0)/2};
+ if(c.waterTrip?.phase==='fill')return {kind:'gathering',task:'water-filling',stage:'working',target:c.waterDip||{x:c.x,y:c.y},progress:(c.waterTrip.elapsed||0)/2};
  if(c.carrying)return null;
+ if(c.phase==='studying'){
+  const school=index.get(c.school);
+  return c.role==='healer'&&school&&isOperational(school)&&['shrine','ziggurat'].includes(school.type)?
+   {kind:'scribing',task:'school-tablet',stage:'working',target:school}:null;
+ }
  const b=index.get(c.phase==='constructing'?c.site:c.work);
  if(c.phase==='constructing'&&b?.construction&&c.siteDuty==='builder')return {kind:'building',stage:materialsReady(b.construction)?'working':'waiting',target:workstationBuilding(b,s),progress:b.construction.work/workRequired(b)};
  if(c.phase!=='working'||!b)return null;
- if(needsCanalCleaning(b))return {kind:'farming',task:'canal-cleaning',stage:'working',target:b};
+ if(['shrine','ziggurat'].includes(b.type)&&isOperational(b)&&!c.guarding)return {kind:'work',task:'offering',stage:'working',target:b};
+ if(b.type==='canal')return {kind:'farming',task:'canal-cleaning',stage:needsCanalCleaning(b)?'working':'waiting',target:b};
  if(b.type==='granary'&&isOperational(b)&&!c.guarding&&c.calling==='scribe'&&c.role==='production'&&c.workplace===c.work){
-  return {kind:'scribing',stage:'working',target:b,progress:(c.workElapsed||0)/ACCOUNT_WORK_SECONDS};
+  return {kind:'scribing',task:'account',stage:'working',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/ACCOUNT_WORK_SECONDS};
  }
  if(b.type==='musicHouse')return {kind:'music',task:musicPerformance(s,b).lyrist?.id===c.id?'lyre':'lithophone',stage:musicWorking(s,b,c)?'working':'waiting',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/12};
  if(b.type==='healer'){
   const waiting={kind:'healing',stage:'waiting',target:b};
   if(!isOperational(b)||c.guarding||c.role!=='healer'||!qualifiedHealer(c)||!isWorkday(s.simTime||0)||s.funeral?.actors.some(a=>a.id===c.id))return waiting;
   const patients=(s.citizens||[]).filter(p=>p.clinic===c.work&&p.phase==='treatment'&&p.health<(p.careGoal||85)&&!s.funeral?.actors.some(a=>a.id===p.id));if(!patients.length)return waiting;
-  let reserve=seedReserve(s),food=0,reed=0;
-  // Read the same local stock and distributed seed reserve without initialisers.
-  for(const store of stockStores(s)){const n=store.stock?.food||0,protectedFood=Math.min(reserve,n);reserve-=protectedFood;if(buildingKey(store)===c.store){food=Math.max(0,n-protectedFood);reed=store.stock?.reed||0;}}
-  if(food<=1e-8||reed<=1e-8)return waiting;
-  const patient=patients[0],position=treatmentViewPosition(s,patient)||patient;
-  return {kind:'healing',stage:'working',target:{x:position.x,y:position.y},patientId:patient.id,progress:1-patient.health/(patient.careGoal||85)};
+  const input=b.workshopStock?.input;
+  if(!(input?.food>0&&input.reed>0))return waiting;
+  const patient=patients[Math.floor((s.simTime||0)/8)%patients.length],position=treatmentViewPosition(s,patient)||patient;
+  return {kind:'healing',stage:'working',target:{x:position.x,y:position.y},clinicPlace:position.clinicPlace,clinic:b,patientId:patient.id,progress:1-patient.health/(patient.careGoal||85)};
  }
  if(!isOperational(b)||c.guarding||['depot','waterpoint','healer','logging','quarry','hunting','fishing'].includes(b.type))return {kind:'gathering',task:b.type,stage:'waiting',target:b};
  let kind='gathering',task=b.type,active=true;
  if(b.type==='field'){
   const crop=b.crop||{},{sow,harvest}=fieldCalendar(s,b);kind='farming';task=canTillField(s,b)?'ploughing':crop.sheaves>1e-8?'threshing':s.season===harvest?'harvesting':'sowing';
   active=task==='ploughing'||crop.sheaves>1e-8||s.season===sow&&!fieldResting(s,b)&&crop.sown<1-1e-8&&crop.seedStock>1e-8||s.season===harvest&&crop.remaining>1e-8;
- }else if(['pottery','brewery'].includes(b.type)){
-  kind=b.type==='pottery'?'pottery':'brewing';task=b.artisan?.stage;
-  active=['forming','brewing'].includes(task)||task==='idle'&&!Object.values(artisanNeeds(b)).some(n=>n>1e-8);
+ }else if(isArtisan(b)){
+  kind=b.type==='pottery'?'pottery':b.type==='brewery'?'brewing':'work';task=b.artisan?.stage;
+  active=['forming','brewing','milling','baking','cuttingJoinery','castingAxe','weavingMat','weavingBasket','preservingMilk','preparingFiber','weavingLinen'].includes(task)||task==='idle'&&!Object.values(artisanNeeds(b)).some(n=>n>1e-8);
  }else if(['weaver','tailor'].includes(b.type)){kind='weaving';active=(craftState(b)?.[craftResource(b)]||0)+1e-8>=craftBatch(b);}
  else if(b.type==='brickyard'){kind='brickmaking';active=!!b.brickmaking&&!b.brickmaking.wet&&(b.brickmaking.ready>0||!Object.values(brickNeeds(b)).some(n=>n>1e-8));}
  else if(b.type==='kiln')active=!!b.firing&&!b.firing.hot&&(b.firing.ready>0||!Object.values(kilnNeeds(b)).some(n=>n>1e-8));
+ else if(b.type==='cowshed')active=canMilk(b);
+ else if(b.type==='garden')active=orchardMaturity(s,b).yield>0;
  else if(b.type==='sheepfold')active=(b.flock?.fleece||0)>=1-1e-8;
+ if(active&&!productionOutputFits(s,b))active=false;
  return {kind,task,stage:active?'working':'waiting',target:workstationBuilding(b,s),progress:(c.workElapsed||0)/(BUILDINGS[b.type]?.workTime||12)};
 }
 // Palm coordinates are in the resident root's metre space. Cargo and the specialised

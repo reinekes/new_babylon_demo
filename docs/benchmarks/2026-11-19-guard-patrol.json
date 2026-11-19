@@ -1,0 +1,104 @@
+{
+  "date": "2026-11-19",
+  "page": "index.html",
+  "save": "Ordinary established Southern Sumer settlement. Validated encode/decode. Completed gate and watch house were placed with the building command. Both guards were assigned through assignGuard.",
+  "measurement": "One real night watch citizen was followed as the game clock advanced. At each endpoint the lowest skinned vertex was compared to surfaceElevation at the same x/z, in metres. The route was adjacent to the gate.",
+  "game": {
+    "id": 0,
+    "guardPost": "5,6",
+    "gate": [
+      4,
+      7
+    ],
+    "rot": 1,
+    "route": [
+      [
+        4.5,
+        6.5
+      ],
+      [
+        4.5,
+        5.5
+      ],
+      [
+        4.5,
+        6.5
+      ]
+    ],
+    "nightPatrol": true,
+    "gateMeshes": [
+      "4,7-gate-torch-bracket",
+      "4,7-gate-torch-handle",
+      "4,7-gate-torch-wrap",
+      "4,7-gate-wick--1",
+      "4,7-gate-torch-mount",
+      "4,7-gate-torch-band",
+      "4,7-gate-torch-band",
+      "4,7-gate-torch-bracket",
+      "4,7-gate-torch-handle",
+      "4,7-gate-torch-wrap",
+      "4,7-gate-wick-1",
+      "4,7-gate-torch-mount"
+    ],
+    "samples": [
+      {
+        "p": [
+          26.969254500000055,
+          0,
+          38.970000000000056
+        ],
+        "lowestVertex": [
+          27.10069089495922,
+          -5.376604504483365e-08,
+          38.870352753700175
+        ],
+        "groundAtVertex": 0,
+        "rig": 9,
+        "foot": [
+          [
+            26.832944869995117,
+            0.08989643305540085,
+            38.93794631958008
+          ],
+          [
+            27.105566024780273,
+            0.08989618718624115,
+            38.933326721191406
+          ]
+        ]
+      },
+      {
+        "p": [
+          25.990665393258006,
+          0,
+          37.76646000000001
+        ],
+        "lowestVertex": [
+          25.983571883643357,
+          -0.00013080589911005584,
+          37.52534092372346
+        ],
+        "groundAtVertex": 0,
+        "rig": 9,
+        "foot": [
+          [
+            25.98384666442871,
+            0.0907982736825943,
+            37.653968811035156
+          ],
+          [
+            26.057870864868164,
+            0.21897386014461517,
+            37.9958381652832
+          ]
+        ]
+      }
+    ],
+    "moved": 1.5511754160746338,
+    "frames": 172,
+    "glError": 0,
+    "webgl": 2
+  },
+  "uncaughtExceptions": [],
+  "failedRequests": []
+}

@@ -1,0 +1,566 @@
+{
+  "scene": "index.html",
+  "mode": "established, strict Sumer, seed 137",
+  "units": "World positions and heights in metres, simulation time in seconds. Each named WebGL view loads a real save of the same resident, beginning paused.",
+  "workflows": {
+    "fishing": {
+      "simulation": {
+        "kind": "fishing",
+        "key": "5,13",
+        "worker": 0,
+        "summary": [
+          {
+            "phase": "rod",
+            "t": 6.399999999999993,
+            "id": 0,
+            "worker": [
+              5.5,
+              12.5
+            ],
+            "cargo": 0,
+            "stock": 0,
+            "prey": "fish:lake-0:5,14:0",
+            "target": {
+              "id": "fish:lake-0:5,14:0",
+              "kind": "fish",
+              "x": 5.114766740579743,
+              "y": 13.89617793113022
+            },
+            "progress": 0.3376574934237595
+          },
+          {
+            "phase": "fish-cast",
+            "t": 10.29999999999998,
+            "id": 0,
+            "worker": [
+              5.704766740579743,
+              13.89617793113022
+            ],
+            "cargo": 0,
+            "stock": 0,
+            "prey": "fish:lake-0:5,14:0",
+            "target": {
+              "id": "fish:lake-0:5,14:0",
+              "kind": "fish",
+              "x": 5.114766740579743,
+              "y": 13.89617793113022
+            },
+            "progress": 0.4500000000000002
+          },
+          {
+            "phase": "fish-lift",
+            "t": 11.699999999999974,
+            "id": 0,
+            "worker": [
+              5.704766740579743,
+              13.89617793113022
+            ],
+            "cargo": 0,
+            "stock": 0,
+            "prey": "fish:lake-0:5,14:0",
+            "target": {
+              "id": "fish:lake-0:5,14:0",
+              "kind": "fish",
+              "x": 5.114766740579743,
+              "y": 13.89617793113022
+            },
+            "progress": 0.8700000000000006
+          },
+          {
+            "phase": "fish-return",
+            "t": 12.199999999999973,
+            "id": 0,
+            "worker": [
+              5.704766740579743,
+              13.89617793113022
+            ],
+            "cargo": 5,
+            "stock": 0
+          },
+          {
+            "phase": "output",
+            "t": 13.399999999999968,
+            "id": 0,
+            "worker": [
+              5.5,
+              12.5
+            ],
+            "cargo": 0,
+            "stock": 5,
+            "prey": "fish:lake-0:5,14:1",
+            "target": {
+              "id": "fish:lake-0:5,14:1",
+              "kind": "fish",
+              "x": 4.970513968089518,
+              "y": 13.928377699977723
+            },
+            "progress": 0.11303772858470133
+          },
+          {
+            "stage": "porter-dispatch",
+            "id": 6,
+            "amount": 5,
+            "job": 13,
+            "target": "9,8"
+          },
+          {
+            "phase": "porter",
+            "t": 19.1,
+            "id": 0,
+            "worker": [
+              5.650513968089518,
+              13.928377699977723
+            ],
+            "cargo": 0,
+            "stock": 0,
+            "prey": "fish:lake-0:5,14:1",
+            "target": {
+              "id": "fish:lake-0:5,14:1",
+              "kind": "fish",
+              "x": 4.970513968089518,
+              "y": 13.928377699977723
+            },
+            "progress": 0.9300000000000006
+          },
+          {
+            "phase": "delivered",
+            "target": "9,8",
+            "carrier": 6,
+            "delivered": 5,
+            "stock": 77.09880000000071
+          }
+        ]
+      },
+      "gameWebGL": [
+        {
+          "phase": "rod",
+          "id": 0,
+          "actor": [
+            32.60402020253554,
+            0,
+            75.84852813742387
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "fishing-rod-rack",
+              [
+                2.038334846496582,
+                0.4099999964237213,
+                -2.038334846496582
+              ]
+            ],
+            [
+              "5,13-fishing-rod-rack",
+              [
+                32.03833484649658,
+                0.4099999964237213,
+                75.96166515350342
+              ]
+            ]
+          ],
+          "line": {
+            "meta": {
+              "citizenId": 0
+            },
+            "enabled": false,
+            "ends": [
+              0,
+              0,
+              0,
+              0,
+              -1,
+              0
+            ]
+          },
+          "fish": {
+            "enabled": false,
+            "point": [
+              32.60401916503906,
+              0,
+              75.84852600097656
+            ]
+          },
+          "meat": 0,
+          "rope": [],
+          "webgl": 2,
+          "glError": 0
+        },
+        {
+          "phase": "fish-cast",
+          "id": 0,
+          "actor": [
+            34.228600443478456,
+            -0.0018519636032380271,
+            83.37706758678132
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "fishing-rod-rack",
+              [
+                2.3353195190429688,
+                0.4099999964237213,
+                -2.3353195190429688
+              ]
+            ],
+            [
+              "5,13-fishing-rod-rack",
+              [
+                32.33531951904297,
+                0.4099999964237213,
+                75.66468048095703
+              ]
+            ]
+          ],
+          "line": {
+            "meta": {
+              "citizenId": 0,
+              "waterContact": true,
+              "catchLift": 0,
+              "phase": "wait"
+            },
+            "enabled": true,
+            "ends": [
+              33.07978057861328,
+              2.0699472427368164,
+              83.24502563476562,
+              30.688600540161133,
+              -0.1679999977350235,
+              83.37706756591797
+            ]
+          },
+          "fish": {
+            "enabled": false,
+            "point": [
+              34.228599548339844,
+              -0.0018519635777920485,
+              83.37706756591797
+            ]
+          },
+          "meat": 0,
+          "rope": [],
+          "webgl": 2,
+          "glError": 0
+        },
+        {
+          "phase": "fish-lift",
+          "id": 0,
+          "actor": [
+            34.228600443478456,
+            -0.0018519636032380271,
+            83.37706758678132
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "fishing-rod-rack",
+              [
+                2.3353195190429688,
+                0.4099999964237213,
+                -2.3353195190429688
+              ]
+            ],
+            [
+              "5,13-fishing-rod-rack",
+              [
+                32.33531951904297,
+                0.4099999964237213,
+                75.66468048095703
+              ]
+            ]
+          ],
+          "line": {
+            "meta": {
+              "citizenId": 0,
+              "waterContact": false,
+              "catchLift": 0.5357142857142877,
+              "phase": "lift"
+            },
+            "enabled": true,
+            "ends": [
+              32.993350982666016,
+              2.142693042755127,
+              83.27252197265625,
+              31.923288345336914,
+              0.8877283930778503,
+              83.32106018066406
+            ]
+          },
+          "fish": {
+            "enabled": true,
+            "point": [
+              31.923288345336914,
+              0.8877283930778503,
+              83.3210678100586
+            ]
+          },
+          "meat": 0,
+          "rope": [],
+          "webgl": 2,
+          "glError": 0
+        }
+      ],
+      "uncaughtExceptions": 0,
+      "failedHTTPRequests": 0
+    },
+    "hunting": {
+      "simulation": {
+        "kind": "hunting",
+        "key": "10,9",
+        "worker": 0,
+        "summary": [
+          {
+            "phase": "fallen",
+            "t": 12.499999999999972,
+            "id": 0,
+            "worker": [
+              10.495735389159114,
+              7.319828732337192
+            ],
+            "cargo": 0,
+            "stock": 0,
+            "prey": "gazelle-11",
+            "target": {
+              "id": "gazelle-11",
+              "kind": "gazelle",
+              "x": 10.3,
+              "y": 6.7
+            },
+            "progress": 0
+          },
+          {
+            "phase": "drag",
+            "t": 14.199999999999966,
+            "id": 0,
+            "worker": [
+              10.471343748356208,
+              7.2425885364613265
+            ],
+            "cargo": 4,
+            "stock": 0,
+            "prey": "gazelle-11"
+          },
+          {
+            "phase": "dress",
+            "t": 17.799999999999983,
+            "id": 0,
+            "worker": [
+              11.5,
+              10.5
+            ],
+            "cargo": 4,
+            "stock": 0,
+            "prey": "gazelle-11",
+            "progress": 0.31746831943473375
+          },
+          {
+            "phase": "output",
+            "t": 19.80000000000001,
+            "id": 0,
+            "worker": [
+              11.5,
+              10.5
+            ],
+            "cargo": 0,
+            "stock": 4
+          },
+          {
+            "stage": "porter-dispatch",
+            "id": 7,
+            "amount": 4,
+            "job": 15,
+            "target": "9,8"
+          },
+          {
+            "phase": "porter",
+            "t": 24.70000000000008,
+            "id": 0,
+            "worker": [
+              11.5,
+              10.5
+            ],
+            "cargo": 0,
+            "stock": 0
+          },
+          {
+            "phase": "delivered",
+            "target": "9,8",
+            "carrier": 7,
+            "delivered": 4,
+            "stock": 76.0580000000008
+          }
+        ]
+      },
+      "gameWebGL": [
+        {
+          "phase": "fallen",
+          "id": 0,
+          "actor": [
+            62.97441233495468,
+            0.08983417068383207,
+            43.91897239402315
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "game-dressing-bench",
+              [
+                8.335319519042969,
+                0.395000011920929,
+                8.335319519042969
+              ]
+            ],
+            [
+              "10,9-game-dressing-bench",
+              [
+                68.33531951904297,
+                0.395000011920929,
+                62.33531951904297
+              ]
+            ]
+          ],
+          "animal": {
+            "id": "gazelle-11",
+            "dead": true,
+            "point": [
+              61.800000000000004,
+              0.13165438536207008,
+              40.2
+            ],
+            "rig": true
+          },
+          "meat": 0,
+          "rope": [],
+          "webgl": 2,
+          "glError": 0
+        },
+        {
+          "phase": "drag",
+          "id": 0,
+          "actor": [
+            63.23260591254592,
+            0.08880361766753135,
+            43.327780664323114
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "game-dressing-bench",
+              [
+                8.335319519042969,
+                0.395000011920929,
+                8.335319519042969
+              ]
+            ],
+            [
+              "10,9-game-dressing-bench",
+              [
+                68.33531951904297,
+                0.395000011920929,
+                62.33531951904297
+              ]
+            ]
+          ],
+          "animal": {
+            "id": "gazelle-11",
+            "dead": true,
+            "hauler": 0,
+            "point": [
+              62.466704848612736,
+              0.10791870176345776,
+              42.311232020606994
+            ],
+            "rig": true
+          },
+          "meat": 0,
+          "rope": [
+            {
+              "prey": "gazelle-11",
+              "citizenId": 0
+            }
+          ],
+          "webgl": 2,
+          "glError": 0
+        },
+        {
+          "phase": "dress",
+          "id": 0,
+          "actor": [
+            68.15147186257613,
+            0,
+            62.60402020253554
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "game-dressing-bench",
+              [
+                8.038334846496582,
+                0.395000011920929,
+                8.038334846496582
+              ]
+            ],
+            [
+              "10,9-game-dressing-bench",
+              [
+                68.03833484649658,
+                0.395000011920929,
+                62.03833484649658
+              ]
+            ]
+          ],
+          "animal": {
+            "id": "gazelle-11",
+            "dead": true,
+            "hauler": 0,
+            "point": [
+              68.0383347775863,
+              0.79,
+              62.0383347775863
+            ],
+            "rig": true
+          },
+          "meat": 0,
+          "rope": [],
+          "webgl": 2,
+          "glError": 0
+        },
+        {
+          "phase": "porter",
+          "id": 7,
+          "actor": [
+            68.85528933825276,
+            0,
+            62.23776550174723
+          ],
+          "rig": true,
+          "furniture": [
+            [
+              "game-dressing-bench",
+              [
+                8.038334846496582,
+                0.395000011920929,
+                8.038334846496582
+              ]
+            ],
+            [
+              "10,9-game-dressing-bench",
+              [
+                68.03833484649658,
+                0.395000011920929,
+                62.03833484649658
+              ]
+            ]
+          ],
+          "meat": 3,
+          "rope": [],
+          "webgl": 2,
+          "glError": 0
+        }
+      ],
+      "uncaughtExceptions": 0,
+      "failedHTTPRequests": 0
+    }
+  }
+}

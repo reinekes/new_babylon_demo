@@ -1,3 +1,5 @@
+import {foodYieldMultiplier} from './rich-catch.js';
+import {orchardMaturity} from './orchard-layout.js';
 import {sickleBlunt} from './agriculture.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {initializeDairy,dairyNeeds,dairyInputCapacity} from './dairy.js';
@@ -47,6 +49,20 @@ export function homeStockCapacity(s,b,k){
 }
 export const outputCapacity=b=>24*(b?.level||1);
 export function outputRoom(b,k){return Math.max(0,outputCapacity(b)-n(b.workshopStock?.output?.[k]));}
+// A worker only processes a batch that will fit in the on-site output store.
+export function productionOutputFits(s,b){
+ if(!isProductionStore(b))return true;
+ const artisan=isArtisan(b),selected=b.type==='coppersmith'?artisanOutput(b):null;
+ for(const [key,amount] of Object.entries(BUILDINGS[b.type].output)){
+  if(!MATERIALS.includes(key)||selected&&key!==selected)continue;
+  let multiplier=artisan||b.type==='cowshed'?1:outputMultiplier(b);
+  if(!artisan&&key==='food')multiplier*=foodYieldMultiplier(s,b);
+  if(!artisan&&b.type==='garden')multiplier*=orchardMaturity(s,b).yield;
+  if(!artisan&&['clay','reed'].includes(key)&&s.buffs?.inspiration)multiplier*=1.75;
+  if(outputRoom(b,key)+eps<amount*multiplier)return false;
+ }
+ return true;
+}
 export function putProductionOutput(s,b,goods,{record=true}={}){
  if(!b.workshopStock||Object.entries(goods).some(([k,v])=>!MATERIALS.includes(k)||!Number.isFinite(v)||v<0||outputRoom(b,k)+eps<v))return false;
  for(const [k,v]of Object.entries(goods)){b.workshopStock.output[k]=n(b.workshopStock.output[k])+v;if(record)recordBuildingProduction(s,b,k,v);}return true;

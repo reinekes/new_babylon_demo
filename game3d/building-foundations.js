@@ -118,7 +118,7 @@ export function createBuildingFoundations(B,scene,b,materials,state,context=foun
   const half=width/2,axes=[[1,0],[-1,0],[0,1],[0,-1]];
   const sideDepth=([x,z])=>[-.85,0,.85].reduce((depth,t)=>depth+Math.max(0,-heightAt(center+half*(x+z*t),center+half*(z+x*t))),0);
   const sides=axes.map(dir=>({dir,depth:sideDepth(dir)})).sort((a,b)=>b.depth-a.depth);
-  if(sides[0].depth>.36)return [raisedLanding(B,scene,b,materials,center,width,heightAt,sides[0].dir)];
+  if(sides[0].depth>.36)return [raisedLanding(B,scene,b,materials,center,b.type==='house'?n*6-.10:width,heightAt,sides[0].dir)];
  }
  const parts=[];
  const columns=Math.ceil(width/.34),rows=Math.ceil(depth/.34),stepX=width/columns,stepZ=depth/rows;

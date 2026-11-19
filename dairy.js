@@ -35,8 +35,12 @@ export function settleManagedDairy(s,pasture){
  }
 }
 // One batch per call lets the caller reserve real output room before any input is spent.
+export function canMilk(b){
+ const d=b.dairy,ration=dairyRation(b);
+ return !!d&&d.cows>=1&&dairyRate(b)>0&&d.reed>=1+ration&&d.water>=4+ration;
+}
 export function workDairy(b,seconds){
- const d=b.dairy;if(!d||!Number.isFinite(seconds)||seconds<=0||d.cows<1||!dairyRate(b)||d.reed<1+dairyRation(b)||d.water<4+dairyRation(b))return 0;
+ const d=b.dairy;if(!Number.isFinite(seconds)||seconds<=0||!canMilk(b))return 0;
  d.elapsed=Math.min(8,n(d.elapsed)+seconds*dairyRate(b));if(d.elapsed<8-1e-7)return 0;
  d.reed-=1;d.water-=4;d.elapsed=0;return 3;
 }

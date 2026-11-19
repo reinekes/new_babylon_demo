@@ -1,0 +1,700 @@
+{
+  "date": "2026-11-19",
+  "environment": "Chrome 157, Babylon WebGL 2, production game3d/renderer.js, rendered GLB workers in tests/fixtures/dairy-yard.html with controlled on-duty state. No save, routes or inventories were advanced by the harness.",
+  "units": "metres unless marked otherwise",
+  "coverage": {
+    "newCraftStages": 10,
+    "adultBodies": [
+      "male",
+      "female"
+    ],
+    "otherBuildingScenes": 16,
+    "resourceAndPastureScenes": 6,
+    "logicMatrix": "10 stages × 3 levels × 4 quarter-turns × 2 worker slots = 240 accessible stations; rendered snapshots use level 1, rotation 0."
+  },
+  "workshops": [
+    {
+      "building": "bakery",
+      "stage": "milling",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.007,
+            "right": 0.007
+          },
+          "stationToNearestBuildingTriangle": 0.016,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.019,
+            "right": 0.085
+          }
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.037,
+            "right": 0.037
+          },
+          "stationToNearestBuildingTriangle": 0.012,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.023,
+            "right": 0.024
+          }
+        }
+      ]
+    },
+    {
+      "building": "bakery",
+      "stage": "baking",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.135,
+            "right": 0.117
+          },
+          "stationToNearestBuildingTriangle": 0.03,
+          "tool": "bread-paddle-blade",
+          "toolCenterToGoal": 0.036
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.127,
+            "right": 0.127
+          },
+          "stationToNearestBuildingTriangle": 0.03,
+          "tool": "bread-paddle-blade",
+          "toolCenterToGoal": 0.094
+        }
+      ]
+    },
+    {
+      "building": "linenYard",
+      "stage": "preparingFiber",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.052,
+            "right": 0.034
+          },
+          "stationToNearestBuildingTriangle": 0.011,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.039,
+            "right": 0.068
+          }
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.007,
+            "right": 0.007
+          },
+          "stationToNearestBuildingTriangle": 0.039,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0,
+            "right": 0.116
+          }
+        }
+      ]
+    },
+    {
+      "building": "linenYard",
+      "stage": "weavingLinen",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.097
+          },
+          "stationToNearestBuildingTriangle": 0.004,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.017,
+            "right": 0.006
+          }
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.058
+          },
+          "stationToNearestBuildingTriangle": 0.004,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.014,
+            "right": 0.012
+          }
+        }
+      ]
+    },
+    {
+      "building": "dairyStore",
+      "stage": "preservingMilk",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.048,
+            "right": 0.044
+          },
+          "stationToNearestBuildingTriangle": 0.032,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.058,
+            "right": 0.062
+          }
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.003,
+            "right": 0.011
+          },
+          "stationToNearestBuildingTriangle": 0.032,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.054,
+            "right": 0.072
+          }
+        }
+      ]
+    },
+    {
+      "building": "basketry",
+      "stage": "weavingBasket",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.03
+          },
+          "stationToNearestBuildingTriangle": 0.037,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.076,
+            "right": 0.07
+          }
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.076
+          },
+          "stationToNearestBuildingTriangle": 0.003,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.05,
+            "right": 0.057
+          }
+        }
+      ]
+    },
+    {
+      "building": "matYard",
+      "stage": "weavingMat",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.068,
+            "right": 0.117
+          },
+          "stationToNearestBuildingTriangle": 0.009,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.068,
+            "right": 0.087
+          }
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.085
+          },
+          "stationToNearestBuildingTriangle": 0.009,
+          "palmsToNearestBuildingTriangle": {
+            "left": 0.003,
+            "right": 0.003
+          }
+        }
+      ]
+    },
+    {
+      "building": "coppersmith",
+      "stage": "castingAxe",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.003,
+            "right": 0.029
+          },
+          "stationToNearestBuildingTriangle": 0.001,
+          "tool": "casting-cup",
+          "toolCenterToGoal": 0.056
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.04
+          },
+          "stationToNearestBuildingTriangle": 0.001,
+          "tool": "casting-cup",
+          "toolCenterToGoal": 0.042
+        }
+      ]
+    },
+    {
+      "building": "joineryYard",
+      "stage": "cuttingJoinery",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.037
+          },
+          "stationToNearestBuildingTriangle": 0.016,
+          "tool": "joinery-cutting-edge",
+          "toolCenterToGoal": 0.084
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0,
+            "right": 0.068
+          },
+          "stationToNearestBuildingTriangle": 0.016,
+          "tool": "joinery-cutting-edge",
+          "toolCenterToGoal": 0.095
+        }
+      ]
+    },
+    {
+      "building": "granary",
+      "stage": "account",
+      "workers": [
+        {
+          "sex": "m",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.046,
+            "right": 0.022
+          },
+          "tool": "scribe-reed-stylus",
+          "toolCenterToGoal": 0.035
+        },
+        {
+          "sex": "f",
+          "visibleGLB": true,
+          "contact": "artisan",
+          "palmToGoal": {
+            "left": 0.021,
+            "right": 0.002
+          },
+          "tool": "scribe-reed-stylus",
+          "toolCenterToGoal": 0.03
+        }
+      ]
+    }
+  ],
+  "existingAndServiceScenes": [
+    {
+      "building": "pottery",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "forming",
+          "contact": "wheel",
+          "palmY": 1.073
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "forming",
+          "contact": "wheel",
+          "palmY": 1.075
+        }
+      ]
+    },
+    {
+      "building": "brewery",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "brewing",
+          "contact": "vat",
+          "palmY": 1.036
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "brewing",
+          "contact": "vat",
+          "palmY": 1.057
+        }
+      ]
+    },
+    {
+      "building": "weaver",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "weaver",
+          "contact": "loom",
+          "palmY": 1.052
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "weaver",
+          "contact": "loom",
+          "palmY": 1.05
+        }
+      ]
+    },
+    {
+      "building": "tailor",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "tailor",
+          "contact": "table",
+          "palmY": 0.993
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "tailor",
+          "contact": "table",
+          "palmY": 0.993
+        }
+      ]
+    },
+    {
+      "building": "brickyard",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "brickyard",
+          "contact": "mould",
+          "palmY": 0.995
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "brickyard",
+          "contact": "mould",
+          "palmY": 0.994
+        }
+      ]
+    },
+    {
+      "building": "kiln",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "kiln",
+          "contact": "kiln",
+          "palmY": 1
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "kiln",
+          "contact": "kiln",
+          "palmY": 0.994
+        }
+      ]
+    },
+    {
+      "building": "clay",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "clay",
+          "contact": "clay",
+          "palmY": 0.996
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "clay",
+          "contact": "clay",
+          "palmY": 0.995
+        }
+      ]
+    },
+    {
+      "building": "reed",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "reed",
+          "contact": "reed",
+          "palmY": 0.994
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "reed",
+          "contact": "reed",
+          "palmY": 0.996
+        }
+      ]
+    },
+    {
+      "building": "garden",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "garden",
+          "contact": "mortar",
+          "palmY": 1.005
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "garden",
+          "contact": "mortar",
+          "palmY": 0.995
+        }
+      ]
+    },
+    {
+      "building": "sheepfold",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "sheepfold",
+          "contact": "fleece",
+          "palmY": 0.995
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "sheepfold",
+          "contact": "fleece",
+          "palmY": 0.994
+        }
+      ]
+    },
+    {
+      "building": "field",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "sowing",
+          "contact": "farming",
+          "palmY": 1.001
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "sowing",
+          "contact": "farming",
+          "palmY": 0.927
+        }
+      ]
+    },
+    {
+      "building": "house",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "building",
+          "contact": "building",
+          "palmY": 1.37
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "building",
+          "contact": "building",
+          "palmY": 1.355
+        }
+      ]
+    },
+    {
+      "building": "cowshed",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "cowshed",
+          "contact": "dairy",
+          "palmY": 0.473
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "cowshed",
+          "contact": "dairy",
+          "palmY": 0.454
+        }
+      ]
+    },
+    {
+      "building": "musicHouse",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "lithophone",
+          "contact": "lithophone",
+          "palmY": 0.623
+        },
+        {
+          "sex": "f",
+          "stage": "working",
+          "activity": "lyre",
+          "contact": "lyre",
+          "palmY": 1.04
+        }
+      ]
+    },
+    {
+      "building": "healer",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "healing",
+          "contact": "healing",
+          "palmY": 1.271,
+          "dressingPad": true,
+          "patientPosture": "seated on clinic linen couch",
+          "padToClosestSampledPatientJoint": 0.224
+        },
+        {
+          "sex": "f",
+          "stage": "waiting",
+          "activity": "recovery",
+          "contact": "patient",
+          "palmY": 0.464
+        }
+      ]
+    },
+    {
+      "building": "waterpoint",
+      "workers": [
+        {
+          "sex": "m",
+          "stage": "working",
+          "activity": "water-filling",
+          "contact": null,
+          "palmY": 0.813,
+          "waterSurfaceY": -0.18,
+          "vesselCenterY": -0.188,
+          "waterSignedDistanceTiles": -0.065,
+          "workerSignedShoreDistanceTiles": 0.05
+        }
+      ]
+    }
+  ],
+  "extraction": [
+    {
+      "building": "clay",
+      "implement": "clay-hoe-edge",
+      "activity": "strike",
+      "buildingMeshes": 8,
+      "footingY": -1.638,
+      "toolCenterToStrikePoint": 0.036
+    },
+    {
+      "building": "quarry",
+      "implement": "quarry-pick-head",
+      "activity": "strike",
+      "buildingMeshes": 7,
+      "footingY": -1.576,
+      "toolCenterToStrikePoint": 0.026
+    },
+    {
+      "building": "logging",
+      "implement": "logging-axe-head",
+      "activity": "strike",
+      "buildingMeshes": 9,
+      "footingY": 0,
+      "toolCenterToStrikePoint": 0.104
+    },
+    {
+      "building": "garden",
+      "implement": "date-bunch-hook",
+      "activity": "strike",
+      "buildingMeshes": 11,
+      "footingY": 0,
+      "toolCenterToStrikePoint": 0.101
+    },
+    {
+      "building": "reed",
+      "implement": "reed-knife-edge",
+      "activity": "strike",
+      "buildingMeshes": 7,
+      "footingY": 0,
+      "toolCenterToStrikePoint": 0.107
+    },
+    {
+      "building": "sheepfold",
+      "implement": "shepherd-crook",
+      "activity": "waiting",
+      "buildingMeshes": 8,
+      "footingY": 0,
+      "followingWalkingFlock": true
+    }
+  ],
+  "notes": [
+    "The resolution measures the exported wrist joint rather than fingertips. Tool measurements use mesh centres; a shaped blade or hook projects beyond the centre.",
+    "The medical rig targets the near upper arm of the actual patient. No skin-to-skin distance bound has been established for all morphologies.",
+    "The two illustrated sheets are captures of 19 rendered scenes. The full open map simulation was tested separately."
+  ]
+}

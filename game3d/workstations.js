@@ -1,3 +1,4 @@
+import {artisanContact,artisanPose,hasArtisanContact} from './artisan-contacts.js';
 import {isExtractionCourt,extractionWorkArea} from '../extraction-courts.js';
 import {isDryPoint} from '../world.js';
 import {insideFootprint,footprintSize} from '../footprints.js';
@@ -29,7 +30,7 @@ export function workstationContext(state){
  stationContexts.set(state,cached);return cached;
 }
 export function workstationBuilding(b,state,context=null){
- if(!state||!equipment[b.type]&&!b.construction&&b.type!=='field')return b;
+ if(!state||b.type==='granary'&&!b.construction||!equipment[b.type]&&!hasArtisanContact(b.type)&&!b.construction&&!['field','fishing','hunting'].includes(b.type))return b;
  // Same ordered dry corners as generateStreets, without rebuilding its whole graph.
  const n=footprintSize(b),port=[[b.x+n-.5,b.y+n-.5],[b.x-.5,b.y+n-.5],[b.x+n-.5,b.y-.5],[b.x-.5,b.y-.5]].map(([x,y])=>({x,y})).find(p=>context?context.canUse(p.x,p.y):isDryPoint(state,p.x,p.y)&&!(state.buildings||[]).some(v=>insideFootprint(v,p.x,p.y)));
  if(!port)return b;
@@ -45,6 +46,7 @@ export function workstationLayout(b){
 }
 export function workstationFor(b,c,index=0){
  if(!b?.type||!['working','strike'].includes(c.activity?.stage)||c.walking||c.carrying)return null;
+ if(!b.construction&&hasArtisanContact(b.type))return artisanContact(b,c,index,workstationWorldPoint);
  const layout=b.construction||b.type==='field'?[{kind:b.construction?'building':'farming',x:(b.workCorner?.[0]||1)*(b.construction?2.72:2.62),z:(b.workCorner?.[1]||1)*(b.construction?2.72:2.62),height:b.construction?.95:c.activity.task==='harvesting'?.65:.12,sx:b.workCorner?.[0]||1,sz:b.workCorner?.[1]||1}]:workstationLayout(b);if(!layout.length)return null;
  const stations=layout.map(a=>({...a,world:workstationWorldPoint(b,[a.x,a.height,a.z])})).sort((a,d)=>Math.hypot(a.world.x-c.x,a.world.y-c.y)-Math.hypot(d.world.x-c.x,d.world.y-c.y));
  if(b.type==='musicHouse'&&c.activity.task==='lyre'){
@@ -59,8 +61,19 @@ export function workstationFor(b,c,index=0){
 // Targets remain ON equipment throughout the cycle: hands turn clay, feed cloth,
 // knead mud or rub grain across a surface, instead of both hovering in empty air.
 export function workstationPose(contact,time){
+ if(contact.kind==='artisan')return artisanPose(contact,time);
+ if(contact.kind==='gathering-site'){
+  const lift=(1+Math.sin(time*3.1))*.5;
+  const heights={quarry:[.98,1.13],logging:[.99,1.03],reed:[.76,.79],clay:[.72,.94],garden:[1.13,1.39]};
+  const tools={quarry:'quarry',logging:'logging',reed:'reed-knife',clay:'clay-hoe',garden:'date-pole'};
+  const [r,l]=heights[contact.task];
+  return {right:[.09,r+lift*.11,.42],left:[-.11,l+lift*.09,.45],tool:tools[contact.task],bend:contact.task==='garden'?-.06:.32,twist:lift*.055};
+ }
+ if(contact.kind==='healing'){const lift=(1+Math.cos(time*3))*.5;return {right:[.11,contact.target.height+lift*.035,.49],left:[-.10,contact.target.height+.025,.48],tool:'care-pad',bend:.22,twist:0};}
  const wave=Math.sin(time*3.6),lift=(1-Math.cos(time*3.6))*.5;
  const height=contact.target.height;
+ if(contact.kind==='study')return {right:[.07,height+.08+.025*lift,.44],left:[-.13,height,.46],tool:'scribe-stylus',bend:.14,twist:wave*.012};
+ if(contact.kind==='offering')return {right:[.04,height+.035+.14*lift,.47],left:[-.13,height+.10+.08*(1-lift),.37],tool:null,bend:.44,twist:wave*.018};
  if(contact.kind==='lithophone')return {right:[.1,.50,.49],left:[-.1,.50,.49],tool:null,bend:.50,twist:wave*.012};
  if(contact.kind==='building')return {right:[.10,1.28+lift*.13,.49],left:[-.10,height,.49],tool:'building',bend:.15,twist:wave*.012};
  if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.012};

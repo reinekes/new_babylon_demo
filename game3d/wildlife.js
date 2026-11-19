@@ -276,6 +276,8 @@ export function createWildlife(B,scene,meshes=[]){
    const {d}=a,dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6;
    // Include the dorsal fin and its small animated roll, not just the body centre.
    a.root.position.set(c.x*6,Number.isFinite(c.elevation)&&(d.otter||d.regional||d.frog||d.pelican)?c.elevation:d.fish?Math.min(WATER_HEIGHT-.32,(Number.isFinite(c.waterLevel)?c.waterLevel:WATER_HEIGHT)-(Number.isFinite(c.swimDepth)?c.swimDepth:.28)):onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   if(c.hauler!==undefined){a.root.rotation.y=c.yaw;a.root.position.y+=c.carcassHeight||0;}
+   if(c.kind==='gazelle'){a.root.metadata.dead=!!c.dead;a.root.metadata.hauler=c.hauler;}
    a.lastX=c.x;a.lastY=c.y;
    const newDetail=d.onager&&!a.detail;
    const nearOnager=d.onager&&updateOnagerDetail(a,c);

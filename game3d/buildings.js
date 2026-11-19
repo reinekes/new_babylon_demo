@@ -3,6 +3,7 @@ import {blessingCupAt} from '../blessing-discovery.js';
 import {cultSign} from '../cult-sign.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {potterWheelView} from '../potter-wheel.js';
+import {harvestFurniture} from './harvest-gear.js';
 import {workstationBuilding,workstationContext} from './workstations.js';
 import {createRoofAccess} from './roof-access.js';
 import {fieldPatches} from '../field-patches.js';
@@ -213,6 +214,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
 
   }
   applyWorkshopArchitecture(B,scene,b,state,materialSet,sources,root);
+  for(const mesh of harvestFurniture(B,scene,workstationBuilding(b,state),materialSet)){mesh.parent=root;sources.push(mesh);}
   const marks=cultSign(state,b);
   if(marks.length){
    const x=1.65,y=.89,z=2.62;
@@ -327,7 +329,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
      mesh.metadata={...root.metadata,homeLamp:!!source.metadata?.homeLamp,lampIndex:source.metadata?.lampIndex,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
     const platform=template.sources.find(mesh=>mesh.metadata?.lift)?.metadata;
-    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view),removeWalkway:walkways.add(view,platform)};active.set(key,record);meshes.push(...parts);
+    record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view),platform,removeWalkway:walkways.add(view,platform)};active.set(key,record);meshes.push(...parts);
     if(b.type==='watchHouse'||b.type==='cityGate')watchHouseFire.add(key,root,parts);
    }
    if(record.rotation!==rotationOf(view)){
@@ -359,5 +361,5 @@ export async function createGameBuildings(B,scene,materials,options={}){
   for(const [key,entry]of fieldBeds)if(!fieldSites.has(`${entry.x},${entry.y}`)&&!(previewRecord?.x===entry.x&&previewRecord?.y===entry.y)){entry.owner.dispose();fieldBeds.delete(key);}
  }
  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
- return {sync,meshes,loadDetails,floorHeight:walkways.heightAt,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;watchHouseFire.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,loadDetails,homeCatalogue:(b,s)=>sacredModels.catalogue(b,s),homePlatform:b=>active.get(buildingKey(b))?.platform,floorHeight:walkways.heightAt,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;watchHouseFire.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

@@ -1,3 +1,6 @@
+import {gatheringContact} from './gathering-contacts.js';
+import {clinicProvider} from './clinic-contacts.js';
+import {serviceWorkContact,canalWorkContact} from '../service-court.js';
 import {footprintSize} from '../footprints.js';
 import {workstationFor} from './workstations.js';
 import {isDryPoint,onBridge} from '../world.js';
@@ -49,16 +52,18 @@ export function residentViewPositions(state,citizens){
  for(const c of order){
   // Funeral rails and the solved palms share these exact presentation anchors.
   if(c.funeralContact||c.eventContact){const contact=c.funeralContact||c.eventContact;result.set(c.id,{x:contact.x,y:contact.y});continue;}
+  if(c.activity?.stand&&['take-rod','dress-game'].includes(c.activity.task)&&Math.hypot(c.x-c.activity.stand.x,c.y-c.activity.stand.y)<.22){result.set(c.id,c.activity.stand);continue;}
+  if(c.freightHandoff){result.set(c.id,{x:c.x,y:c.y});continue;}
   if(c.festivalContact){result.set(c.id,{x:c.festivalContact.x,y:c.festivalContact.y});continue;}
   let p={x:c.x,y:c.y};
   const target=c.activity?.target,workKey=target?.type?`${target.x},${target.y}`:c.activity?.kind==='healing'?`patient:${c.activity.patientId}`:null,slot=workKey?(workSlots.get(workKey)||0):0;
-  let contact=workKey?workstationFor(target,c,slot):null;
-  if(c.activity?.kind==='healing'&&c.activity.stage==='working'&&!c.carrying&&!c.walking){
-   const dx=c.x-target.x,dy=c.y-target.y,d=Math.hypot(dx,dy)||1,q={x:target.x+dx/d*.095,y:target.y+dy/d*.095};
-   if(Math.hypot(q.x-c.x,q.y-c.y)<.3)contact={kind:'healing',stand:q,target:{...target,height:1.12},building:target};
-  }
+  let contact=workKey?(serviceWorkContact(state,target,c,slot)||canalWorkContact(state,target,c)||workstationFor(target,c,slot)):gatheringContact(state,c);
+  if(c.clinicPlace){
+   const q=c.clinicPlace;
+   contact={kind:'patient',task:'recovery',building:target,stand:q.stand,target:q.target,via:q.via,seatHeight:q.seatHeight};
+  }else if(c.activity?.kind==='healing'&&c.activity.stage==='working'&&!c.carrying&&!c.walking)contact=clinicProvider(c.activity.clinic,c.activity,c);
   if(contact){workSlots.set(workKey,slot+1);const q=contact.stand;
-   const clearApproach=[0,.25,.5,.75,1].every(t=>{const x=c.x+(q.x-c.x)*t,y=c.y+(q.y-c.y)*t;return isDryPoint(state,x,y)&&!solids(x,y)?.some(o=>o.b!==target&&(o.b.x!==target.x||o.b.y!==target.y)&&Math.abs(x-o.b.x-(o.half-.5))<o.half-.04&&Math.abs(y-o.b.y-(o.half-.5))<o.half-.04);});
+   const clearApproach=[0,.25,.5,.75,1].every(t=>{const x=c.x+(q.x-c.x)*t,y=c.y+(q.y-c.y)*t;return isDryPoint(state,x,y)&&!solids(x,y)?.some(o=>o.b!==contact.building&&!(contact.kind==='gathering-site'&&c.work===o.b.x+','+o.b.y)&&o.b!==target&&(o.b.x!==target.x||o.b.y!==target.y)&&Math.abs(x-o.b.x-(o.half-.5))<o.half-.04&&Math.abs(y-o.b.y-(o.half-.5))<o.half-.04);});
    if(clearApproach&&neighbours(q.x,q.y).every(other=>Math.hypot(other.x-q.x,other.y-q.y)>=gap-.001)){p={x:q.x,y:q.y,contact};}
   }
   const bridge=bridges.length>0&&onBridge(bridges,c.x,c.y,state),phase=residentMotion(c.id).phase;

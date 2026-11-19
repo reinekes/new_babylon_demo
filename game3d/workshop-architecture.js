@@ -1,3 +1,4 @@
+import {offeringBowl,templeStoreBaskets} from '../service-court.js';
 import {mineralWorkBay} from './mineral-excavation.js';
 import {isReferenceWorkshop,workshopAngle,turnWorkshopParts} from './reference-workshops.js';
 import {workstationBuilding} from './workstations.js';
@@ -157,6 +158,9 @@ function furnishings(b,state,e){
   for(const f of [.19,.73,.96])loop(x,y+h*f,z,r*(f<.3?.89:.985),.040,'reed');
   if(lid)lathe(x,y+h,z,[[0,.043],[r*.68,.035],[r*.96,.002],[r,.019],[r*.88,.072],[r*.45,.094],[0,.10]],'reed');
  };
+ if(b.type==='shrine'||b.type==='ziggurat'){
+  for(const place of templeStoreBaskets(b))grainBasket(place.x,.06,place.z,.25,place.height-.06,false);
+ }
  const hearth=(x,z,scale)=>{
   vessel(x,.055,z,'trough',scale,'fired');
   for(let i=0;i<3;i++)rod([x-.22*scale,.15*scale,z+(i-1)*.10],[x+.19*scale,.17*scale,z+(i-1)*.10+.03],.045*scale,'char');
@@ -180,10 +184,10 @@ function furnishings(b,state,e){
    hearth(.87,.07,.78);
    // A raised timber cooling bench separates finished metal from the grey
    // casting moulds behind it. Slightly chamfered castings catch the sun.
-   box(-.54,.84,1.41,2.07,.12,.77,'char');
-   for(const x of [-1.36,.28])for(const z of [1.16,1.67])box(x,.43,z,.12,.79,.13,'wood');
+   box(-.54,.84,1.72,2.07,.12,.77,'char');
+   for(const x of [-1.36,.28])for(const z of [1.47,1.98])box(x,.43,z,.12,.79,.13,'wood');
    for(const [i,x] of [-1.16,-.54,.08].entries()){
-    const bar=box(x,1.00,1.41,.47,.20,.57,'copper',.055*(i-1));
+    const bar=box(x,1.00,1.72,.47,.20,.57,'copper',.055*(i-1));
     // Raise the shoulders to a short central flat, retaining a broad sunlit bevel.
     const p=Array.from(bar.getVerticesData('position'));
     for(let j=0;j<p.length;j+=3)if(p[j+1]>.001){p[j]*=.79;p[j+2]*=.82;}
@@ -266,10 +270,9 @@ function furnishings(b,state,e){
    loop(-.94,.43,.84,.23,.046,'wood',true);break;
   case 'shrine':
    vessel(-1.57,.07,1.94,'trough',1.24,'stone');
-   vessel(-1.57,.36,1.94,'bowl',.60);break;
+   {const bowl=offeringBowl(b);vessel(bowl.x,bowl.base,bowl.z,'bowl',bowl.scale);}break;
   case 'ziggurat':{
-   const large=footprintSize(b)===2,x=large?5.25:1.72,z=large?7.55:2.16;
-   for(const dx of [-.30,.30]){box(x+dx,.16,z,.46,.3,.47,'raw');vessel(x+dx,.31,z,'bowl',.79,'pottery');}break;
+   for(const slot of [0,1]){const bowl=offeringBowl(b,slot);box(bowl.x,.16,bowl.z,.46,.3,.47,'raw');vessel(bowl.x,bowl.base,bowl.z,'bowl',bowl.scale,'pottery');}break;
   }
   case 'ishtarGate':{
    const size=footprintSize(b),c=(size-1)*3;

@@ -1,0 +1,284 @@
+{
+  "summary": {
+    "cityWall": {
+      "parts": 3,
+      "triangles": 732,
+      "camera": 12,
+      "gl": 0
+    },
+    "cityGate": {
+      "parts": 19,
+      "triangles": 5684,
+      "camera": 23,
+      "gl": 0
+    },
+    "watchHouse": {
+      "parts": 14,
+      "triangles": 5282,
+      "camera": 12,
+      "gl": 0
+    },
+    "musicHouse": {
+      "parts": 8,
+      "triangles": 2244,
+      "camera": 12,
+      "gl": 0
+    },
+    "ishtarGate": {
+      "parts": 7,
+      "triangles": 636,
+      "camera": 30,
+      "gl": 0
+    },
+    "cowshed": {
+      "parts": 8,
+      "triangles": 7364,
+      "camera": 23,
+      "gl": 0
+    },
+    "pottery": {
+      "parts": 12,
+      "triangles": 19840,
+      "camera": 12,
+      "gl": 0
+    },
+    "joineryYard": {
+      "parts": 7,
+      "triangles": 4368,
+      "camera": 12,
+      "gl": 0
+    },
+    "coppersmith": {
+      "parts": 11,
+      "triangles": 4980,
+      "camera": 12,
+      "gl": 0
+    },
+    "matYard": {
+      "parts": 6,
+      "triangles": 2668,
+      "camera": 12,
+      "gl": 0
+    },
+    "basketry": {
+      "parts": 8,
+      "triangles": 12584,
+      "camera": 12,
+      "gl": 0
+    },
+    "dairyStore": {
+      "parts": 9,
+      "triangles": 5544,
+      "camera": 12,
+      "gl": 0
+    },
+    "linenYard": {
+      "parts": 8,
+      "triangles": 6978,
+      "camera": 12,
+      "gl": 0
+    },
+    "bakery": {
+      "parts": 8,
+      "triangles": 8672,
+      "camera": 12,
+      "gl": 0
+    },
+    "brewery": {
+      "parts": 10,
+      "triangles": 15416,
+      "camera": 12,
+      "gl": 0
+    },
+    "harbor": {
+      "parts": 8,
+      "triangles": 11392,
+      "camera": 12,
+      "gl": 0
+    },
+    "kiln": {
+      "parts": 8,
+      "triangles": 9276,
+      "camera": 12,
+      "gl": 0
+    },
+    "brickyard": {
+      "parts": 7,
+      "triangles": 12208,
+      "camera": 12,
+      "gl": 0
+    },
+    "waterpoint": {
+      "parts": 9,
+      "triangles": 7278,
+      "camera": 12,
+      "gl": 0
+    },
+    "tailor": {
+      "parts": 11,
+      "triangles": 7296,
+      "camera": 12,
+      "gl": 0
+    },
+    "sheepfold": {
+      "parts": 8,
+      "triangles": 8686,
+      "camera": 23,
+      "gl": 0
+    },
+    "weaver": {
+      "parts": 11,
+      "triangles": 5148,
+      "camera": 12,
+      "gl": 0
+    },
+    "house": {
+      "parts": 11,
+      "triangles": 9929,
+      "camera": 12,
+      "gl": 0
+    },
+    "field": {
+      "parts": 2,
+      "triangles": 22408,
+      "camera": 12,
+      "gl": 0
+    },
+    "clay": {
+      "parts": 12,
+      "triangles": 12382,
+      "camera": 23,
+      "gl": 0
+    },
+    "reed": {
+      "parts": 29,
+      "triangles": 22177,
+      "camera": 23,
+      "gl": 0
+    },
+    "shrine": {
+      "parts": 8,
+      "triangles": 13432,
+      "camera": 12,
+      "gl": 0
+    },
+    "garden": {
+      "parts": 13,
+      "triangles": 19902,
+      "camera": 23,
+      "gl": 0
+    },
+    "depot": {
+      "parts": 9,
+      "triangles": 11976,
+      "camera": 12,
+      "gl": 0
+    },
+    "granary": {
+      "parts": 9,
+      "triangles": 6740,
+      "camera": 12,
+      "gl": 0
+    },
+    "ziggurat": {
+      "parts": 8,
+      "triangles": 15024,
+      "camera": 23,
+      "gl": 0
+    },
+    "bridge": {
+      "parts": 5,
+      "triangles": 5980,
+      "camera": 12,
+      "gl": 0
+    },
+    "fishing": {
+      "parts": 11,
+      "triangles": 9500,
+      "camera": 12,
+      "gl": 0
+    },
+    "hunting": {
+      "parts": 12,
+      "triangles": 6950,
+      "camera": 23,
+      "gl": 0
+    },
+    "logging": {
+      "parts": 21,
+      "triangles": 37549,
+      "camera": 23,
+      "gl": 0
+    },
+    "quarry": {
+      "parts": 11,
+      "triangles": 7650,
+      "camera": 23,
+      "gl": 0
+    },
+    "healer": {
+      "parts": 12,
+      "triangles": 9172,
+      "camera": 12,
+      "gl": 0
+    },
+    "levee": {
+      "parts": 3,
+      "triangles": 280,
+      "camera": 12,
+      "gl": 0
+    },
+    "canal": {
+      "parts": 2,
+      "triangles": 2192,
+      "camera": 12,
+      "gl": 0
+    },
+    "market": {
+      "parts": 9,
+      "triangles": 14852,
+      "camera": 23,
+      "gl": 0
+    },
+    "house-2": {
+      "parts": 11,
+      "triangles": 9679,
+      "camera": 12,
+      "gl": 0
+    },
+    "house-3": {
+      "parts": 15,
+      "triangles": 9563,
+      "camera": 12,
+      "gl": 0
+    },
+    "reedCamp": {
+      "parts": 5,
+      "triangles": 5405,
+      "camera": 12,
+      "gl": 0
+    },
+    "road": {
+      "parts": 1,
+      "triangles": 144,
+      "camera": 12,
+      "gl": 0
+    },
+    "starterHut": {
+      "parts": 10,
+      "triangles": 8756,
+      "camera": 12,
+      "gl": 0
+    }
+  },
+  "exceptions": [],
+  "http": [],
+  "warn": [],
+  "source": "Local production renderer, scripts/sumer-building-studio.html. Each of the 45 selections was focused and drawn on the GPU. Parts and triangles count visible meshes belonging to the selection; they do not count people.",
+  "firstPassOptionalIcon": [
+    [
+      404,
+      "http://127.0.0.1:8991/favicon.ico"
+    ]
+  ]
+}

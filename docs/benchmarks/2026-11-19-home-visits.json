@@ -1,0 +1,754 @@
+{
+  "date": "2026-11-19",
+  "source": "workspace",
+  "units": "World positions and ray heights are metres. Simulation clock is in game seconds.",
+  "ordinaryGame": {
+    "page": "index.html",
+    "scenario": "sumer-iii-v1",
+    "start": "beehives",
+    "seed": 137,
+    "observation": "Three regular saves were obtained by advancing an unchanged city. Bench and roof were observed on loading. The entrance was observed by resuming the last saved real return trip. Only the photo camera and its daylight setting changed for the screenshots.",
+    "records": [
+      {
+        "stage": "enter",
+        "id": 0,
+        "age": 20.5,
+        "houseId": "6,7",
+        "simTimeOnObservation": 63.6,
+        "positionMetres": [
+          35.7513,
+          0.0707,
+          43.8437
+        ],
+        "nativeResidentMesh": true,
+        "webGLError": 0,
+        "javascriptErrors": [],
+        "failedHTTP": [],
+        "screenshot": "roadmap/evidence/2026-11-19/resident-buildings/home-door.webp",
+        "jointsMetres": {
+          "pelvis": [
+            35.735,
+            1.0162,
+            43.8641
+          ],
+          "hand_l": [
+            35.9274,
+            0.9875,
+            43.852
+          ],
+          "hand_r": [
+            35.5373,
+            0.9995,
+            43.7888
+          ],
+          "thigh_l": [
+            35.8161,
+            0.9659,
+            43.8747
+          ],
+          "calf_l": [
+            35.8122,
+            0.5769,
+            43.6712
+          ],
+          "foot_l": [
+            35.8229,
+            0.2017,
+            43.7449
+          ],
+          "thigh_r": [
+            35.6513,
+            0.9697,
+            43.8583
+          ],
+          "calf_r": [
+            35.6869,
+            0.5324,
+            43.873
+          ],
+          "foot_r": [
+            35.7104,
+            0.1661,
+            43.9813
+          ]
+        }
+      },
+      {
+        "stage": "bench",
+        "id": 8,
+        "age": 38,
+        "houseId": "10,11",
+        "simTimeOnObservation": 4.24,
+        "positionMetres": [
+          58.54,
+          0.073,
+          67.5
+        ],
+        "nativeResidentMesh": true,
+        "webGLError": 0,
+        "javascriptErrors": [],
+        "failedHTTP": [],
+        "screenshot": "roadmap/evidence/2026-11-19/resident-buildings/home-bench.webp",
+        "jointsMetres": {
+          "pelvis": [
+            58.5555,
+            0.465,
+            67.5
+          ],
+          "hand_l": [
+            58.8447,
+            0.5852,
+            67.6905
+          ],
+          "hand_r": [
+            58.8434,
+            0.5861,
+            67.3097
+          ],
+          "thigh_l": [
+            58.555,
+            0.4168,
+            67.5847
+          ],
+          "calf_l": [
+            58.9896,
+            0.4797,
+            67.5712
+          ],
+          "foot_l": [
+            58.7882,
+            0.163,
+            67.6393
+          ],
+          "thigh_r": [
+            58.5539,
+            0.4168,
+            67.4153
+          ],
+          "calf_r": [
+            58.9884,
+            0.4779,
+            67.4284
+          ],
+          "foot_r": [
+            58.7835,
+            0.163,
+            67.3607
+          ]
+        }
+      },
+      {
+        "stage": "roof",
+        "id": 7,
+        "age": 40,
+        "houseId": "6,11",
+        "simTimeOnObservation": 2.64,
+        "positionMetres": [
+          36.56,
+          2.175,
+          65.02
+        ],
+        "nativeResidentMesh": true,
+        "webGLError": 0,
+        "javascriptErrors": [],
+        "failedHTTP": [],
+        "screenshot": "roadmap/evidence/2026-11-19/resident-buildings/home-roof.webp",
+        "jointsMetres": {
+          "pelvis": [
+            36.5635,
+            2.305,
+            65.0486
+          ],
+          "hand_l": [
+            36.2926,
+            2.4385,
+            65.3699
+          ],
+          "hand_r": [
+            36.9028,
+            2.4385,
+            65.2963
+          ],
+          "thigh_l": [
+            36.4689,
+            2.2667,
+            65.0624
+          ],
+          "calf_l": [
+            36.0964,
+            2.2952,
+            65.3141
+          ],
+          "foot_l": [
+            36.5353,
+            2.2804,
+            65.3604
+          ],
+          "thigh_r": [
+            36.6585,
+            2.2667,
+            65.0384
+          ],
+          "calf_r": [
+            37.0797,
+            2.2952,
+            65.1956
+          ],
+          "foot_r": [
+            36.6651,
+            2.2804,
+            65.3464
+          ]
+        }
+      }
+    ]
+  },
+  "houseGeometry": {
+    "page": "scripts/sumer-building-studio.html",
+    "observation": "Controlled poses of one native resident in the production WebGL renderer. Each downward ray tested the occupied house meshes. Daytime and route state were selected in the studio to cover every house form.",
+    "variants": [
+      {
+        "house": "house",
+        "stage": "bench",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          172.54,
+          0.073,
+          97.5
+        ],
+        "pelvisMetres": [
+          172.5688,
+          0.465,
+          97.5
+        ],
+        "supportRayMetres": 0.381,
+        "supportMeshes": [
+          "29,16-game-house-earth-1-Straw-tempered mud plaster",
+          "29,16-game-house-earth-1-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "pelvisAboveSeatMetres": 0.084
+      },
+      {
+        "house": "house",
+        "stage": "roof",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          174.56,
+          2.175,
+          95.02
+        ],
+        "pelvisMetres": [
+          174.5634,
+          2.305,
+          95.0486
+        ],
+        "supportRayMetres": 2.171,
+        "supportMeshes": [
+          "29,16-game-house-earth-1-Straw-tempered mud plaster",
+          "29,16-game-house-earth-1-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": 0.004
+      },
+      {
+        "house": "house",
+        "stage": "enter",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          173.77,
+          0.1329,
+          96.4077
+        ],
+        "pelvisMetres": [
+          173.7458,
+          1.1191,
+          96.3837
+        ],
+        "supportRayMetres": 0.1354,
+        "supportMeshes": [
+          "29,16-game-house-earth-1-Straw-tempered mud plaster",
+          "29,16-game-house-earth-1-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": -0.0026,
+        "entry": {
+          "samples": 63,
+          "initialPositionMetres": [
+            176.8963,
+            0.036,
+            98.9918
+          ],
+          "lastVisiblePositionMetres": [
+            173.77,
+            0.0721,
+            95.4777
+          ]
+        }
+      },
+      {
+        "house": "house-2",
+        "stage": "bench",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          175.66,
+          0.073,
+          96.78
+        ],
+        "pelvisMetres": [
+          175.6312,
+          0.535,
+          96.78
+        ],
+        "supportRayMetres": 0.4441,
+        "supportMeshes": [
+          "29,16-game-house-earth-2-Straw-tempered mud plaster",
+          "29,16-game-house-earth-2-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "pelvisAboveSeatMetres": 0.0909
+      },
+      {
+        "house": "house-2",
+        "stage": "roof",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          174.72,
+          2.424,
+          94.71
+        ],
+        "pelvisMetres": [
+          174.7234,
+          2.554,
+          94.7386
+        ],
+        "supportRayMetres": 2.4212,
+        "supportMeshes": [
+          "29,16-game-house-earth-2-Straw-tempered mud plaster",
+          "29,16-game-house-earth-2-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": 0.0028
+      },
+      {
+        "house": "house-2",
+        "stage": "enter",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          174.45,
+          0.138,
+          95.5662
+        ],
+        "pelvisMetres": [
+          174.4602,
+          1.0892,
+          95.545
+        ],
+        "supportRayMetres": 0.1447,
+        "supportMeshes": [
+          "29,16-game-house-earth-2-Straw-tempered mud plaster",
+          "29,16-game-house-earth-2-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": -0.0068,
+        "entry": {
+          "samples": 64,
+          "initialPositionMetres": [
+            176.8966,
+            0.0363,
+            98.9894
+          ],
+          "lastVisiblePositionMetres": [
+            174.45,
+            0.0726,
+            94.6359
+          ]
+        }
+      },
+      {
+        "house": "house-3",
+        "stage": "bench",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          172.9,
+          0.073,
+          97.59
+        ],
+        "pelvisMetres": [
+          172.9,
+          0.505,
+          97.6188
+        ],
+        "supportRayMetres": 0.4251,
+        "supportMeshes": [
+          "29,16-game-house-earth-3-Straw-tempered mud plaster",
+          "29,16-game-house-earth-3-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "pelvisAboveSeatMetres": 0.0799
+      },
+      {
+        "house": "house-3",
+        "stage": "roof",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          174.62,
+          2.264,
+          95.03
+        ],
+        "pelvisMetres": [
+          174.6234,
+          2.394,
+          95.0586
+        ],
+        "supportRayMetres": 2.2648,
+        "supportMeshes": [
+          "29,16-game-house-earth-3-Straw-tempered mud plaster",
+          "29,16-game-house-earth-3-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": -0.0008
+      },
+      {
+        "house": "house-3",
+        "stage": "enter",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          173.44,
+          0.1365,
+          95.8555
+        ],
+        "pelvisMetres": [
+          173.4655,
+          1.1247,
+          95.8246
+        ],
+        "supportRayMetres": 0.1494,
+        "supportMeshes": [
+          "29,16-game-house-earth-3-Straw-tempered mud plaster",
+          "29,16-game-house-earth-3-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": -0.0129,
+        "entry": {
+          "samples": 69,
+          "initialPositionMetres": [
+            176.8963,
+            0.036,
+            98.9919
+          ],
+          "lastVisiblePositionMetres": [
+            173.44,
+            0.0724,
+            94.9253
+          ]
+        }
+      },
+      {
+        "house": "reedCamp",
+        "stage": "mat",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          173.58,
+          0.073,
+          97.65
+        ],
+        "pelvisMetres": [
+          173.58,
+          0.19,
+          97.6788
+        ],
+        "supportRayMetres": 0.1003,
+        "supportMeshes": [
+          "29,16-game-camp-earth-Compacted alluvial soil",
+          "29,16-game-camp-earth-Handwoven fibre"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "pelvisAboveSeatMetres": 0.0897
+      },
+      {
+        "house": "reedCamp",
+        "stage": "enter",
+        "houseId": "29,16",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          173.8,
+          0.1328,
+          97.3634
+        ],
+        "pelvisMetres": [
+          173.8093,
+          1.1294,
+          97.3574
+        ],
+        "supportRayMetres": 0.0963,
+        "supportMeshes": [
+          "29,16-game-camp-earth-Compacted alluvial soil",
+          "29,16-game-camp-earth-Handwoven fibre"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": 0.0365,
+        "entry": {
+          "samples": 59,
+          "initialPositionMetres": [
+            176.8963,
+            0.0361,
+            98.9916
+          ],
+          "lastVisiblePositionMetres": [
+            173.8,
+            0.0725,
+            96.5069
+          ]
+        }
+      },
+      {
+        "house": "starterHut",
+        "stage": "mat",
+        "houseId": "29,19",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          174.08,
+          0.073,
+          115.79
+        ],
+        "pelvisMetres": [
+          174.08,
+          0.19,
+          115.8188
+        ],
+        "supportRayMetres": 0.0935,
+        "supportMeshes": [
+          "29,19-game-house-earth-hut-Compacted alluvial soil",
+          "29,19-game-house-earth-hut-Dry reed rind and binding"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "pelvisAboveSeatMetres": 0.0965
+      },
+      {
+        "house": "starterHut",
+        "stage": "enter",
+        "houseId": "29,19",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          174.04,
+          0.1302,
+          115.1794
+        ],
+        "pelvisMetres": [
+          174.047,
+          1.0861,
+          115.2029
+        ],
+        "supportRayMetres": 0.1517,
+        "supportMeshes": [
+          "29,19-game-house-earth-hut-Straw-tempered mud plaster",
+          "29,19-game-house-earth-hut-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": -0.0216,
+        "entry": {
+          "samples": 55,
+          "initialPositionMetres": [
+            176.8964,
+            0.0362,
+            116.9909
+          ],
+          "lastVisiblePositionMetres": [
+            174.04,
+            0.0727,
+            114.2924
+          ]
+        }
+      }
+    ],
+    "javascriptErrors": [],
+    "failedHTTP": []
+  },
+  "raisedHouse": {
+    "plot": [
+      12,
+      28
+    ],
+    "scenario": "sumer-iii-v1",
+    "foundation": {
+      "shoreFoundation": true,
+      "timber": true,
+      "lift": 0.55,
+      "pileCount": 9,
+      "boardCount": 21,
+      "braceCount": 4,
+      "stairSteps": 4,
+      "wetDirection": [
+        1,
+        0
+      ],
+      "half": 2.95,
+      "run": 0.88,
+      "stairWidth": 1.12
+    },
+    "records": [
+      {
+        "house": "house",
+        "stage": "roof",
+        "houseId": "12,28",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          72.56,
+          2.725,
+          167.02
+        ],
+        "pelvisMetres": [
+          72.5635,
+          2.855,
+          167.0486
+        ],
+        "supportRayMetres": 2.721,
+        "supportMeshes": [
+          "12,28-game-house-earth-1-Straw-tempered mud plaster",
+          "12,28-game-house-earth-1-Compacted alluvial soil"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": 0.004
+      },
+      {
+        "house": "house",
+        "stage": "bench",
+        "houseId": "12,28",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          70.54,
+          0.623,
+          169.5
+        ],
+        "pelvisMetres": [
+          70.5688,
+          1.015,
+          169.5
+        ],
+        "supportRayMetres": 0.931,
+        "supportMeshes": [
+          "12,28-game-house-earth-1-Straw-tempered mud plaster",
+          "12,28-game-house-earth-1-Compacted alluvial soil",
+          "12,28-game-shore-timber-foundation"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "pelvisAboveSeatMetres": 0.084
+      },
+      {
+        "house": "house",
+        "stage": "enter",
+        "houseId": "12,28",
+        "residentId": 1,
+        "quarterTurns": 0,
+        "positionMetres": [
+          71.77,
+          0.6835,
+          168.4013
+        ],
+        "pelvisMetres": [
+          71.8008,
+          1.6931,
+          168.3802
+        ],
+        "supportRayMetres": 0.6855,
+        "supportMeshes": [
+          "12,28-game-house-earth-1-Straw-tempered mud plaster",
+          "12,28-game-house-earth-1-Compacted alluvial soil",
+          "12,28-game-shore-timber-foundation"
+        ],
+        "webGLError": 0,
+        "pauseHeld": true,
+        "saveUnchanged": true,
+        "rootMinusSurfaceMetres": -0.0021,
+        "entry": {
+          "samples": 130,
+          "initialPositionMetres": [
+            68.896,
+            0.033,
+            171
+          ],
+          "lastVisiblePositionMetres": [
+            71.77,
+            0.6222,
+            167.4712
+          ]
+        }
+      }
+    ],
+    "javascriptErrors": [],
+    "failedHTTP": []
+  },
+  "tests": {
+    "runner": "node --test tests/home-visits.test.js tests/game3d-actors.test.js tests/game3d-building-foundations.test.js tests/native-resident-runtime.test.js tests/season-jump-presentation.test.js",
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0,
+    "total": 51,
+    "coverage": [
+      "all authored and fallback levels and both shelters",
+      "rotation and local positions",
+      "one seat per household, rotating eligibility",
+      "children returning from play and priority of special activities",
+      "pantry parcel preserved visually through threshold",
+      "descent from rooftop when work interrupts",
+      "access on dry bank via actual timber stairs",
+      "resident model, animation, pause, save, season change and foundation regressions"
+    ]
+  }
+}

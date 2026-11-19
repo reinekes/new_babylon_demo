@@ -17,7 +17,7 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "5e0b0eaf4e768523157c346d39966d0ddf444b81822011ad2a757719889d82e8"
+      "sha256": "a1c848368bc88069dcaa937b3e03528d1d092f2c918b49ca19249f13a4a7edaf"
     },
     {
       "file": "game3d/ambient-fauna.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba"
+      "sha256": "c32c35864ca6c0c8c7f70cbc7c9b724b1b7bc37b1767656633da59dfc57982ae"
     },
     {
       "file": "game3d/caravan.js",
@@ -57,7 +57,7 @@
     },
     {
       "file": "game3d/imported-fauna.js",
-      "sha256": "d875690fc2d459faeddebc106e335db8d6cb2a2ff32e7d59a44a8773f5cc45f3"
+      "sha256": "3eb136166554f9d8af1fce4b9fee75c2298e31bd4ec3ced5352e98af2fef15f7"
     },
     {
       "file": "game3d/jackals.js",
@@ -135,7 +135,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 30,
+          "line": 31,
           "kind": "literal"
         }
       ]
@@ -913,7 +913,7 @@
         {
           "model": "historical-man.glb",
           "file": "game3d/actors.js",
-          "line": 115,
+          "line": 124,
           "kind": "literal"
         }
       ]
@@ -945,7 +945,7 @@
         {
           "model": "human-native-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -977,7 +977,7 @@
         {
           "model": "human-native-child.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1009,7 +1009,7 @@
         {
           "model": "human-native-female.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -1041,7 +1041,7 @@
         {
           "model": "human-native-male.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2094,7 +2094,7 @@
         {
           "model": "resident.glb",
           "file": "game3d/actors.js",
-          "line": 66,
+          "line": 74,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2282,7 +2282,7 @@
         {
           "model": "sheep.glb",
           "file": "game3d/actors.js",
-          "line": 69,
+          "line": 77,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2440,7 +2440,7 @@
         {
           "model": "source-walk-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2472,7 +2472,7 @@
         {
           "model": "source-walk-child.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2504,7 +2504,7 @@
         {
           "model": "source-walk-female.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2536,7 +2536,7 @@
         {
           "model": "source-walk-male.glb",
           "file": "game3d/actors.js",
-          "line": 104,
+          "line": 113,
           "kind": "reviewed-dynamic-expansion"
         },
         {
@@ -2574,7 +2574,7 @@
         {
           "model": "sumer-adolescent.glb",
           "file": "game3d/actors.js",
-          "line": 106,
+          "line": 115,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2606,7 +2606,7 @@
         {
           "model": "sumer-child.glb",
           "file": "game3d/actors.js",
-          "line": 106,
+          "line": 115,
           "kind": "reviewed-dynamic-expansion"
         }
       ]
@@ -2638,7 +2638,7 @@
         {
           "model": "sumer-people.glb",
           "file": "game3d/actors.js",
-          "line": 105,
+          "line": 114,
           "kind": "reviewed-dynamic-expansion"
         }
       ]

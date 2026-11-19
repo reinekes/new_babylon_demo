@@ -1,3 +1,4 @@
+import {carcassPosition,harvestApron} from './harvest-handling.js';
 import {footprintSize} from './footprints.js';
 import {sheepfoldGateSide,sheepfoldLayout,sheepfoldWorldPoint} from './sheepfold-layout.js';
 import {ecologyCount} from './ecology.js';
@@ -304,8 +305,20 @@ export function flockLeader(s,b){
 export function animalsFor(s){
  const time=s.simTime||0,result=[],kills=s.gathering?.kills||[],jobs=s.gathering?.jobs||[];
  for(const actor of naturalAnimalsFor(s,{displayGroups:true})){
-  const kill=kills.find(k=>k.id===actor.id&&time<k.respawnAt);
-  if(kill){if(time-kill.time<8)result.push({...actor,x:kill.x,y:kill.y,behavior:'dead',dead:true,walking:false,deathProgress:Math.min(1,Math.max(0,(time-kill.time)/.5))});continue;}
+  const kill=kills.find(k=>k.id===actor.id&&(k.hauler!==undefined||time<k.respawnAt));
+  if(kill?.taken){
+   const carrier=kill.hauler===undefined?null:s.citizens.find(c=>c.id===kill.hauler&&(c.phase==='toWorkshop'||c.phase==='blocked')&&c.cargo?.hides);
+   if(carrier){
+    let p=carcassPosition(carrier,kill),height=0;
+    if(carrier.phase==='toWorkshop'&&carrier.routeIndex>=carrier.route.length){
+     const b=s.buildings.find(b=>b.x+','+b.y===carrier.work);
+     if(b){const mid=(footprintSize(b)-1)/2,apron=harvestApron(b.x+mid,b.y+mid,carrier,carrier.id);p={...apron.middle,yaw:Math.atan2(apron.dy,-apron.dx)};height=.79;}
+    }
+    result.push({...actor,...p,behavior:'dead',dead:true,walking:false,deathProgress:1,hauler:carrier.id,carcassHeight:height});
+   }
+   continue;
+  }
+  if(kill){if(time-kill.time<8||jobs.some(j=>j.stage==='retrieve'&&j.target.id===kill.id))result.push({...actor,x:kill.x,y:kill.y,behavior:'dead',dead:true,walking:false,deathProgress:Math.min(1,Math.max(0,(time-kill.time)/.5))});continue;}
   const hunt=jobs.find(j=>j.kind==='hunting'&&j.stage!=='return'&&j.target?.id===actor.id);
   result.push(hunt?{...actor,x:hunt.target.x,y:hunt.target.y,behavior:'looking',walking:false}:actor);
  }

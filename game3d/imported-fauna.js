@@ -33,6 +33,7 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||!dt||!speed;const seen=new Set();
   for(const c of animals){if(!supports(c.kind))continue;seen.add(c.id);let a=actors.get(c.id),fresh=!a;if(!a){a=make(c);actors.set(c.id,a);}if(paused&&!fresh)continue;
    const dx=c.x-a.lastX,dz=c.y-a.lastY,distance=Math.hypot(dx,dz)*6,dead=!!(c.dead||c.behavior==='dead');a.lastX=c.x;a.lastY=c.y;a.root.position.set(c.x*6,onBridge(state.buildings,c.x,c.y,state)?.22:surfaceElevation(c.x,c.y,state),c.y*6);
+   if(c.hauler!==undefined){a.root.position.y+=c.carcassHeight||0;a.root.rotation.y=c.yaw;}
    let action=importedFaunaAction(c,paused?0:distance),key=c.kind==='gazelle'?'gazelle':action==='Walk'?'catWalk':'catSit';if(!sources.has(key))key=sources.has('catWalk')?'catWalk':'catSit';
    const v=variant(a,key);v.root.setEnabled(true);
    const hunting=c.kind==='cat'&&(c.behavior==='hunting'||Number.isFinite(c.catchProgress));
@@ -59,7 +60,7 @@ export async function createImportedFauna(B,scene,meshes=[],options={}){
     }
    }
    const fall=dead?Math.max(0,Math.min(1,c.deathProgress??1)):0;a.model.rotation.z=fall*Math.PI*.5;a.model.position.y=fall*(c.kind==='cat'?.12:.30);a.model.position.x=fall*(c.kind==='cat'?.12:.3);
-   Object.assign(a.root.metadata,{gaitPhase:a.phase,clip:action,faunaVariant:key,dead});
+   Object.assign(a.root.metadata,{gaitPhase:a.phase,clip:action,faunaVariant:key,dead,hauler:c.hauler});
   }
   for(const[id,a]of actors)if(!seen.has(id)){remove(a);actors.delete(id);}
  }

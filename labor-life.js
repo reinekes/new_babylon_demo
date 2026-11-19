@@ -1,5 +1,8 @@
+import {productionOutputFits} from './building-inventory.js';
 import {extractableCourts,extractionKinds,extractionSources,isExtractionCourt} from './extraction-courts.js';
 import {availableExtractionSources,extractionStock} from './extraction-stock.js';
+import {dressingClaim,dressingSeconds,harvestApron} from './harvest-handling.js';
+import {footprintSize} from './footprints.js';
 import {toolWorkMultiplier} from './axe-kit.js';
 import {advanceReedBeds} from './reed-stock.js';
 import {forestOpen} from './forest-stock.js';
@@ -41,7 +44,8 @@ function nearbyFish(state,origin){
 function fishingStand(state,from,target,jobs=[]){
  for(let d=.23;d<1.7;d+=.09)for(let i=0;i<12;i++){
   const p=pointNear(state,target,d,i*Math.PI/6);
-  if(clearGround(state,p)&&gatheringPathClear(state,from,p)&&jobs.every(j=>distance(j.stand,p)>.18))return p;
+  // Allow room for both feet on the sloping edge of the bank.
+  if(clearGround(state,p)&&[[.13,0],[-.13,0],[0,.13],[0,-.13]].every(([dx,dy])=>isDryPoint(state,p.x+dx,p.y+dy))&&gatheringPathClear(state,from,p)&&jobs.every(j=>distance(j.stand,p)>.18))return p;
  }
  return null;
 }
@@ -75,9 +79,9 @@ function newJob(s,c,b,origin){
   const options=featureTargets(s,b,origin).filter(f=>f.health>0&&!reserved.has(f.id)).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const f of options){const p=stance(s,c,f);if(p){target={id:f.id,kind:f.kind,x:f.x,y:f.y};stand=p;break;}}
  }else if(b.type==='hunting'){
-  const killed=new Set(g.kills.filter(k=>s.simTime<k.respawnAt).map(k=>k.id));
+  const killed=new Set(g.kills.filter(k=>k.hauler!==undefined||s.simTime<k.respawnAt).map(k=>k.id));
   const prey=naturalAnimalsFor(s).filter(a=>a.kind==='gazelle'&&!reserved.has(a.id)&&!killed.has(a.id)&&distance(origin,a)<6).sort((a,b)=>distance(c,a)-distance(c,b));
-  for(const a of prey){const p=stance(s,c,a,.65);if(p){target={id:a.id,kind:a.kind,x:a.x,y:a.y};stand=p;break;}}
+  for(const a of prey){const p=stance(s,c,a,.65);if(p&&gatheringPathClear(s,p,a)&&gatheringPathClear(s,a,origin)){target={id:a.id,kind:a.kind,x:a.x,y:a.y};stand=p;break;}}
  }else if(b.type==='fishing'){
   const fish=nearbyFish(s,origin).filter(a=>!reserved.has(a.id)).sort((a,b)=>distance(c,a)-distance(c,b));
   for(const a of fish){
@@ -88,7 +92,7 @@ function newJob(s,c,b,origin){
  }
  if(!target||!stand)return null;
  const source=target.id.startsWith('deposit:')?{x:target.x,y:target.y}:null;
- const job={citizen:c.id,work:c.work,kind:b.type,target,stand,origin:{x:origin.x,y:origin.y},stage:'approach',progress:0,...source?{source}:{}};g.jobs.push(job);return job;
+ const job={citizen:c.id,work:c.work,kind:b.type,target,stand,origin:{x:origin.x,y:origin.y},stage:b.type==='fishing'?'gear':'approach',progress:0,...source?{source}:{}};g.jobs.push(job);return job;
 }
 function move(c,to,dt,rate=1){const d=distance(c,to),step=Math.min(d,dt*.65*Math.max(.5,rate));if(d>1e-8){c.x+=(to.x-c.x)*step/d;c.y+=(to.y-c.y)*step/d;}return d-step<1e-6;}
 /** Actual local work trip. A load can only be collected once its target was worked. */
@@ -103,6 +107,24 @@ export function workGathering(s,c,b,dt,rate,origin){
  const stock=j?.source&&extractionStock(s,j.source,extractionKinds[b.type]);
  if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target)||stock&&(stock.resting||stock.stock<=1e-8))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
  if(!j)j=newJob(s,c,b,origin||c);if(!j)return false;
+ if(j.stage==='gear'){
+  if(!move(c,j.origin,dt,rate))return false;
+  j.progress=clamp(j.progress+dt*rate/.85);
+  if(j.progress>=1){j.stage='approach';j.progress=0;}
+  return false;
+ }
+ if(j.stage==='retrieve'){
+  // A worker has to reach the fallen animal before its food and hide become cargo.
+  const dx=j.stand.x-j.target.x,dy=j.stand.y-j.target.y,d=Math.hypot(dx,dy)||1;
+  const pickup={x:j.target.x+dx/d*.065,y:j.target.y+dy/d*.065};
+  if(!move(c,pickup,dt,rate))return false;
+  j.progress=clamp(j.progress+dt*rate/.65);
+  if(j.progress<1)return false;
+  const kill=g.kills.find(k=>k.id===j.target.id&&!k.taken);
+  g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;
+  if(!kill)return false;
+  return {...j.origin,prey:kill.id};
+ }
  if(j.stage==='approach'){if(move(c,j.stand,dt,rate))j.stage='working';return false;}
  c.workElapsed=Math.min(BUILDINGS[b.type].workTime,c.workElapsed+dt*rate*toolWorkMultiplier(b));j.progress=clamp(c.workElapsed/BUILDINGS[b.type].workTime);
  if(j.progress<1)return false;
@@ -110,6 +132,7 @@ export function workGathering(s,c,b,dt,rate,origin){
   // The same living actor falls; this ID cannot yield a second load until recovery.
   if(g.kills.some(k=>k.id===j.target.id&&s.simTime<k.respawnAt)){g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return false;}
   g.kills.push({...j.target,time:s.simTime,respawnAt:s.simTime+180});
+  j.stage='retrieve';j.progress=0;return false;
  }else if(kindFor[b.type]&&!j.source){
   const f=g.features.find(f=>f.id===j.target.id);if(!f||f.health<=0){g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return false;}
   f.health=Math.max(0,f.health-(b.type==='logging'?1:.2));if(f.health<1e-7){f.health=0;f.felledAt=s.simTime;f.recoverAt=s.simTime+(b.type==='logging'?120:180);}
@@ -124,13 +147,34 @@ export function advanceGathering(s){
  g.jobs=g.jobs.filter(j=>{if(!active.has(j.work)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work&&c.phase==='working'))return false;if(!paths.legs.has(j))paths.legs.set(j,clearGround(s,j.stand)&&gatheringPathClear(s,j.origin,j.stand));return paths.legs.get(j);});
  g.features=g.features.filter(f=>active.has(f.id.split(':')[1]));
  for(const f of g.features)if(f.recoverAt!==null&&s.simTime>=f.recoverAt){f.health=1;f.felledAt=null;f.recoverAt=null;}
- g.kills=g.kills.filter(k=>s.simTime<k.respawnAt);
+ g.kills=g.kills.filter(k=>{
+  if(k.hauler!==undefined&&!s.citizens.some(c=>c.id===k.hauler&&(c.phase==='toWorkshop'||c.phase==='blocked')&&c.cargo?.hides>0))delete k.hauler;
+  return k.hauler!==undefined||s.simTime<k.respawnAt||g.jobs.some(j=>j.stage==='retrieve'&&j.target.id===k.id);
+ });
 }
 /** Read-only renderer contract; no rewards, moves or writes occur in a view. */
-export function actorWorkActivity(s,c,pettingPairs){
+export function actorWorkActivity(s,c,pettingPairs,workplaces){
  if(c.activity)return c.activity;
+ const catchLoad=dressingClaim(s,c);
+ if(catchLoad){
+  if(c.phase==='blocked'||c.routeIndex<c.route.length)return {kind:'gathering',task:'haul-game',stage:'carry',prey:catchLoad.id};
+  const b=workplaces?.get(c.work)||s.buildings.find(b=>buildingKey(b)===c.work);
+  if(b){const mid=(footprintSize(b)-1)/2,a=harvestApron(b.x+mid,b.y+mid,c,c.id);
+   return {kind:'gathering',task:'dress-game',stage:'working',prey:catchLoad.id,stand:a.stand,target:a.surface,progress:clamp(c.workElapsed/dressingSeconds)};}
+ }
  const manual=manualGatheringActivity(s,c);if(manual)return manual;
  const j=s.gathering?.jobs.find(j=>j.citizen===c.id&&j.work===c.work&&c.phase==='working');
+ const building=j&&(workplaces?.get(j.work)||s.buildings.find(b=>buildingKey(b)===j.work));
+ if(j&&j.stage!=='approach'){
+  const b=building;
+  if(b?.workshopStock&&!productionOutputFits(s,b))return {kind:'gathering',task:b.type,stage:'waiting',target:b};
+ }
+ if(j?.stage==='gear'){
+  const b=building,mid=(footprintSize(b)-1)/2;
+  const a=harvestApron(b.x+mid,b.y+mid,j.origin,c.id);
+  return {kind:'fishing',task:'take-rod',stage:'working',progress:j.progress,stand:a.stand,target:a.surface};
+ }
+ if(j?.stage==='retrieve')return {kind:'gathering',task:'lift-game',stage:'working',progress:j.progress,target:j.target};
  if(j)return {kind:j.source&&['clay','reed','garden'].includes(j.kind)?'gathering':j.kind,task:j.kind,target:j.target,progress:j.progress,stage:j.stage==='working'&&j.progress>.8?'strike':j.stage};
  const pair=(pettingPairs||catPettingPairs(s)).find(p=>p.citizenId===c.id);return pair?{kind:'petting',target:{x:pair.x,y:pair.y},progress:((s.simTime||0)%3)/3,stage:'working'}:null;
 }
@@ -139,12 +183,12 @@ export function validateGathering(s){
  if(!g||!Array.isArray(s.citizens)||!Array.isArray(s.buildings)||!Array.isArray(g.features)||!Array.isArray(g.jobs)||!Array.isArray(g.kills)||g.features.length>worldWidth(s)*worldHeight(s)*4||g.jobs.length>s.population||g.kills.length>128)return false;
  if(!unique(g.features.map(f=>f.id))||!unique(g.jobs.map(j=>j.citizen))||!unique(g.kills.map(k=>k.id)))return false;
  if(g.features.some(f=>typeof f.id!=='string'||!/^((tree)|(rock)):\d+,\d+:[0-3]$/.test(f.id)||!['tree','rock'].includes(f.kind)||!point(f)||!finite(f.health,0,1)||(f.felledAt!==null&&!finite(f.felledAt,0,s.simTime+.1))||(f.recoverAt!==null&&!finite(f.recoverAt))||((f.health===0)!==(f.recoverAt!==null))))return false;
- if(g.kills.some(k=>typeof k.id!=='string'||!/^gazelle-\d+$/.test(k.id)||k.kind!=='gazelle'||!point(k)||!finite(k.time,0,s.simTime+.1)||!finite(k.respawnAt,k.time, k.time+180.001)))return false;
+ if(g.kills.some(k=>typeof k.id!=='string'||!/^gazelle-\d+$/.test(k.id)||k.kind!=='gazelle'||!point(k)||!finite(k.time,0,s.simTime+.1)||!finite(k.respawnAt,k.time, k.time+180.001)||k.taken!==undefined&&k.taken!==true||k.hauler!==undefined&&(!k.taken||!Number.isInteger(k.hauler)||!s.citizens.some(c=>c.id===k.hauler))))return false;
  const natural=new Map(naturalAnimalsFor(s).map(a=>[a.id,a]));
  if(!unique(g.jobs.map(j=>j.target?.id)))return false;
  return !g.jobs.some(j=>{
   const building=s.buildings.find(b=>buildingKey(b)===j.work&&b.type===j.kind),court=isExtractionCourt(building)&&extractableCourts.has(j.kind);
-  if(!Number.isInteger(j.citizen)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work)||typeof j.work!=='string'||!building||!GATHERING_TYPES.includes(j.kind)&&!court||!point(j.target)||typeof j.target.id!=='string'||!point(j.stand)||!point(j.origin)||!['approach','working','return'].includes(j.stage)||!finite(j.progress,0,1))return true;
+  if(!Number.isInteger(j.citizen)||!s.citizens.some(c=>c.id===j.citizen&&c.work===j.work)||typeof j.work!=='string'||!building||!GATHERING_TYPES.includes(j.kind)&&!court||!point(j.target)||typeof j.target.id!=='string'||!point(j.stand)||!point(j.origin)||!(['approach','working','return'].includes(j.stage)||j.stage==='gear'&&j.kind==='fishing'||j.stage==='retrieve'&&j.kind==='hunting'&&g.kills.some(k=>k.id===j.target.id&&!k.taken))||!finite(j.progress,0,1))return true;
   if(!clearGround(s,j.stand)||!gatheringPathClear(s,j.origin,j.stand))return true;
   if(j.source!==undefined){
    if(!court||!j.source||Object.keys(j.source).length!==2||j.target.kind!==extractionKinds[j.kind])return true;

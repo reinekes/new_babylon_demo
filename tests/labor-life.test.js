@@ -11,7 +11,7 @@ test('hunter approaches one existing gazelle, kills that identity once, receives
  const s=createGame({start:'established'}),a=naturalAnimalsFor(s).find(a=>a.kind==='gazelle'),b={type:'hunting',x:5,y:15,level:1},p={x:a.x-.8,y:a.y},c=worker(s,b,p),food=s.resources.food;
  assert.ok(gatheringPathClear(s,p,a));workGathering(s,c,b,.1,1,p);const job=s.gathering.jobs[0];assert.ok(job);assert.equal(job.stage,'approach');assert.equal(s.gathering.kills.length,0);assert.equal(s.resources.food,food);
  const target=job.target.id;step(s,c,b,p,()=>s.gathering.jobs[0]?.stage==='working');const before=structuredClone(s);assert.equal(actorWorkActivity(s,c).kind,'hunting');assert.deepEqual(s,before);
- const via=step(s,c,b,p,done=>!!done);assert.deepEqual(via,p);assert.equal(s.gathering.kills.length,1);assert.equal(s.gathering.kills[0].id,target);assert.equal(animalsFor(s).find(a=>a.id===target).behavior,'dead');assert.ok(!s.gathering.jobs.length);
+ const via=step(s,c,b,p,done=>!!done);assert.deepEqual(via,{...p,prey:target});assert.ok(Math.hypot(c.x-job.target.x,c.y-job.target.y)<.08);assert.equal(s.gathering.kills.length,1);assert.equal(s.gathering.kills[0].id,target);assert.equal(animalsFor(s).find(a=>a.id===target).behavior,'dead');assert.ok(!s.gathering.jobs.length);
  c.phase='toStore';advanceGathering(s);assert.equal(s.gathering.kills.length,1);assert.equal(s.resources.food,food,'renderer/work target does not credit global stock');
 });
 test('wood is worked at a real tree, falls once, recovers on simulation time; stone target uses a pick activity',()=>{
