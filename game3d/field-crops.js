@@ -33,7 +33,7 @@ function addBarleyBreeze(B, material){
 // if the asset cannot load; a failed optional model must never hide the field.
 export async function loadFieldCrops(B,scene){
  let container,base;
- const batches=new Map(),owned=[],extraContainers=[];
+ const batches=new Map(),flatGardens=new Map(),owned=[],extraContainers=[];
  try{
   container=await loadModel(B,scene,'',FIELD_CROP_ASSET,scene,undefined,'.glb');container.addAllToScene();
   const sources=container.meshes.filter(m=>m.getTotalVertices());
@@ -125,19 +125,38 @@ export async function loadFieldCrops(B,scene){
   }
   function createGarden(b,state){
    if(b.type!=='house'||b.construction?.kind==='new')return [];
-   const seed=cropSeed(b),kinds=['onion','lentil','pea','chickpea','flax'],positions=[],indices=[],colors=[],contours=lakeContours(state);let plants=0;
+   const seed=cropSeed(b),kinds=['onion','lentil','pea','chickpea','flax'],positions=[],indices=[],colors=[],contours=lakeContours(state);let plants=0,flat=true;
    // Small household beds stand beside the front edge, inside the 6 m tile.
    for(let row=0;row<2;row++)for(let i=0;i<5;i++){
     const kind=kinds[(seed+row)%kinds.length],data=sourcesByKind.get(kind).data,x=-1.05+i*.42,z=2.32+row*.30,world=fieldWorldPoint(b,x,z);
     if(renderedShoreDistance(world.x,world.y,state,contours)<FIELD_SHORE_BUFFER+.05)continue;
     const offset=positions.length/3;
-    for(let k=0;k<data.positions.length;k+=3){const X=x+data.positions[k]*.62,Z=z+data.positions[k+2]*.62,p=fieldWorldPoint(b,X,Z);positions.push(X,.12+data.positions[k+1]*.62+visualSurfaceElevation(p.x,p.y,state,contours),Z);}
+    for(let k=0;k<data.positions.length;k+=3){
+     const X=x+data.positions[k]*.62,Z=z+data.positions[k+2]*.62,p=fieldWorldPoint(b,X,Z),elevation=visualSurfaceElevation(p.x,p.y,state,contours);
+     if(elevation!==0)flat=false;
+     positions.push(X,.12+data.positions[k+1]*.62+elevation,Z);
+    }
     indices.push(...data.indices.map(k=>k+offset));colors.push(...data.colors);plants++;
    }
    if(!plants)return [];
-   const mesh=botanicalMesh(B,scene,'game-household-garden',{positions,indices,colors},botanicalMaterial);mesh.metadata={householdGarden:true,plants,cropKinds:[kinds[seed%kinds.length],kinds[(seed+1)%kinds.length]]};return [mesh];
+   const variant=seed%kinds.length,name='game-household-garden';
+   let mesh;
+   // A complete, level bed of a given seed pair has identical vertices, normals
+   // and colours in each yard. Shore-clipped and sloping beds remain individual.
+   if(flat&&plants===10){
+    let source=flatGardens.get(variant);
+    if(!source){
+     source=botanicalMesh(B,scene,name+'-source',{positions,indices,colors},botanicalMaterial);
+     source.isVisible=false;source.receiveShadows=true;flatGardens.set(variant,source);
+    }
+    mesh=source.createInstance(name);
+    mesh.onDisposeObservable.addOnce(()=>{
+     if(!source.instances.length&&flatGardens.delete(variant))source.dispose();
+    });
+   }else mesh=botanicalMesh(B,scene,name,{positions,indices,colors},botanicalMaterial);
+   mesh.metadata={householdGarden:true,plants,cropKinds:[kinds[variant],kinds[(seed+1)%kinds.length]]};return [mesh];
   }
-  return {create,createGarden,dispose(){for(const mesh of batches.values())mesh.dispose();batches.clear();for(const item of owned)item.dispose();for(const extra of extraContainers)extra.dispose();base.dispose();container.dispose();}};
+  return {create,createGarden,dispose(){const sources=[...flatGardens.values()];flatGardens.clear();for(const mesh of sources)mesh.dispose();for(const mesh of batches.values())mesh.dispose();batches.clear();for(const item of owned)item.dispose();for(const extra of extraContainers)extra.dispose();base.dispose();container.dispose();}};
  }catch{
   base?.dispose();container?.dispose();return null;
  }

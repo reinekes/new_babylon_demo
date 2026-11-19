@@ -121,7 +121,7 @@ function penEntrance(state,building){
  };
 }
 
-export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
+export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),clearForSearch=()=>clear){
  const herds=Object.entries(MODELS).map(([kind,spec],index)=>({kind,spec,index,members:[],handled:new Map()}));
  const assets=new Map(),coats=new Map(),claimed=new Set(),settledSheep=new Map();
  let disposed=false,ready=false,clock=0,buildings,count,world,pens=[];
@@ -220,21 +220,24 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map()){
  function assign(herd,state){
   const candidates=pens.filter(b=>isOperational(b)&&b.type===herd.spec.pen&&herd.handled.get(penKey(b))!==(b.built?.order??0));
   const leader=herd.members[0].point;
-  if(!leader)return null;
+  if(!leader||!candidates.length)return null;
   const otherZones=herds.filter(other=>other!==herd&&other.zone).map(other=>other.zone);
+  const clearGround=clearForSearch(state);
   const clearApproach=(world,from,to)=>otherZones.every(zone=>
-   segmentDistance(zone,from,to)>zone.radius+.18)&&clear(world,from,to);
+   segmentDistance(zone,from,to)>zone.radius+.18)&&clearGround(world,from,to);
   for(const building of candidates.sort((a,b)=>Math.hypot(a.x-leader.x,a.y-leader.y)-Math.hypot(b.x-leader.x,b.y-leader.y))){
    const approaching=herd.members.filter(m=>m.index<herd.size&&(herd.kind!=='bull'||!cattleBull(m.index)));
    const targets=penTargets(state,building,herd.kind).slice(0,approaching.length);
    if(!targets.length)continue;
    const {outside,inside}=penEntrance(state,building);
-   const approaches=targets.map((_,i)=>{
+   const approaches=[];
+   for(let i=0;i<targets.length;i++){
     const start=approaching[i].point;
     const external=start&&approach(state,start,outside,clearApproach);
-    return external&&{points:external,length:routeLength(external)};
-   });
-   if(approaches.every(Boolean)){
+    if(!external)break; // The group can enter only if every member can reach this gate.
+    approaches.push({points:external,length:routeLength(external)});
+   }
+   if(approaches.length===targets.length){
     const gateTime=Math.max(...approaches.map(path=>path.length))/PACE;
     const paths=approaches.map((path,i)=>({
      points:[...path.points.slice(1),inside,targets[i]],next:0,outsideEndsAt:path.points.length-1,

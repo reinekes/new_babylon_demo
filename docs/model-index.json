@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "a1c848368bc88069dcaa937b3e03528d1d092f2c918b49ca19249f13a4a7edaf"
+      "sha256": "d5b80a7ddfb3e5940a9d5e65559f3779ef26e7d20ca1e87afda3eb2ace23217e"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f"
+      "sha256": "697f767ce32db020d3676d1d3973c13c65ac4f22723aa1f3787e84399616a76b"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "c32c35864ca6c0c8c7f70cbc7c9b724b1b7bc37b1767656633da59dfc57982ae"
+      "sha256": "5b153890768921ca13e63cc1113af8ee843fc2fb7d117e910dcab517c86c5c50"
     },
     {
       "file": "game3d/caravan.js",
@@ -49,7 +49,7 @@
     },
     {
       "file": "game3d/field-crops.js",
-      "sha256": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6"
+      "sha256": "4425aa36d4cb89da7355c2f1def8b34c671c320566e4b790f31d7fddaf9bc9a2"
     },
     {
       "file": "game3d/goats.js",
@@ -97,7 +97,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5"
+      "sha256": "d1ec8426dba00a3de4f31deace9a939597face1d2881418c060d254aa86c873f"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -483,7 +483,7 @@
         {
           "model": "ambient-yard-pig.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 45,
+          "line": 76,
           "kind": "literal"
         }
       ]
@@ -1765,7 +1765,7 @@
         {
           "model": "pasture-bull.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 192,
+          "line": 223,
           "kind": "literal"
         },
         {
@@ -1809,13 +1809,13 @@
         {
           "model": "pasture-cow.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 192,
+          "line": 223,
           "kind": "literal"
         },
         {
           "model": "pasture-cow.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 224,
+          "line": 255,
           "kind": "literal"
         },
         {
@@ -1912,7 +1912,7 @@
         {
           "model": "pasture-goat.glb",
           "file": "game3d/ambient-fauna.js",
-          "line": 265,
+          "line": 296,
           "kind": "literal"
         },
         {

@@ -30,11 +30,42 @@ const SHORE_MODELS={
  'mallard-female':{file:'shore-mallard-female.glb',role:'female',scale:1,motion:'authored shore idle'}
 };
 // Ambient actors are deliberately absent from saves, hunting, stocks and selection.
-export function ambientDryPoint(state,x,y,margin=.18){
- if(!Number.isFinite(x)||!Number.isFinite(y)||x<1||y<1||x>worldWidth(state)-2||y>worldHeight(state)-2||shoreDistance(x,y,state)<margin)return false;
- return !(state.buildings||[]).some(b=>{const r=b.type==='canal'?.36:.72,n=footprintSize(b);return x>b.x-r&&x<b.x+n-1+r&&y>b.y-r&&y<b.y+n-1+r;});
+function dryGround(state,x,y,margin){
+ return Number.isFinite(x)&&Number.isFinite(y)&&x>=1&&y>=1&&x<=worldWidth(state)-2&&y<=worldHeight(state)-2&&shoreDistance(x,y,state)>=margin;
 }
-export function ambientClearSegment(state,a,b){const n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/.06));for(let i=0;i<=n;i++)if(!ambientDryPoint(state,a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false;return true;}
+function obstructs(b,x,y){
+ const r=b.type==='canal'?.36:.72,n=footprintSize(b);
+ return x>b.x-r&&x<b.x+n-1+r&&y>b.y-r&&y<b.y+n-1+r;
+}
+export function ambientDryPoint(state,x,y,margin=.18){
+ return dryGround(state,x,y,margin)&&!(state.buildings||[]).some(b=>obstructs(b,x,y));
+}
+function clearSegment(state,a,b,dry){
+ const n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/.06));
+ for(let i=0;i<=n;i++)if(!dry(state,a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false;
+ return true;
+}
+export function ambientClearSegment(state,a,b){return clearSegment(state,a,b,ambientDryPoint);}
+
+// One synchronous search may sample thousands of points on the way to a pen.
+// Index only this search so edits to a building or the shoreline apply on the next one.
+export function penClearance(state){
+ const columns=new Map();
+ for(const b of state.buildings||[]){
+  const r=b.type==='canal'?.36:.72,n=footprintSize(b);
+  for(let x=Math.floor(b.x-r);x<=Math.floor(b.x+n-1+r);x++){
+   let rows=columns.get(x);
+   if(!rows){rows=new Map();columns.set(x,rows);}
+   for(let y=Math.floor(b.y-r);y<=Math.floor(b.y+n-1+r);y++){
+    let cell=rows.get(y);
+    if(!cell){cell=[];rows.set(y,cell);}
+    cell.push(b);
+   }
+  }
+ }
+ const dry=(world,x,y)=>dryGround(world,x,y,.18)&&!columns.get(Math.floor(x))?.get(Math.floor(y))?.some(b=>obstructs(b,x,y));
+ return (world,a,b)=>clearSegment(world,a,b,dry);
+}
 export function ambientAnchor(state,species,index=0,occupied=[]){
  const kinds=Object.keys(AMBIENT_MODELS),id=kinds.indexOf(species),houses=(state.buildings||[]).filter(b=>b.type==='house'),home=houses[(Math.max(0,id)*2+index*3)%Math.max(1,houses.length)]||{x:8,y:8};
  const wild={goose:{x:27,y:10},duck:{x:29,y:21},fox:{x:4,y:24},boar:{x:28,y:17},lioness:{x:34,y:27},onager:{x:31,y:19},bull:{x:22,y:12},'sheep-kenchoo':{x:5,y:15},donkey:{x:home.x+2,y:home.y+2}};
@@ -263,7 +294,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  }
  const herdSources=new Map(entries.filter(([kind])=>assets.has(kind)).map(([kind,spec])=>[spec.file,assets.get(kind)]));
  if(options.herdGoat)herdSources.set('pasture-goat.glb',options.herdGoat);
- const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment,herdSources):null;
+ const testLivestock=options.includeTestLivestock?createTestLivestock(B,scene,meshes,ambientDryPoint,ambientClearSegment,herdSources,penClearance):null;
  const yardPigs=assets.has('yard-pig')&&!testLivestock?PIG_SCALES.map((_,i)=>imported('yard-pig',i)):[];
  let yardPlan,yardPlaces=[],yardAnchors=[];
  let route=null,routeBuildings=null,routeCount=-1;

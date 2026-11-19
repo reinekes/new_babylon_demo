@@ -1,0 +1,1857 @@
+{
+  "method": {
+    "scene": "scripts/sumer-building-studio.html?stress",
+    "seed": 137,
+    "population": 500,
+    "buildings": 250,
+    "speed": 4,
+    "viewport": [
+      1440,
+      900
+    ],
+    "renderBuffer": [
+      1440,
+      780
+    ],
+    "houseTiers": [
+      70,
+      69,
+      69
+    ],
+    "hardware": "Apple M5, ANGLE Metal, Chrome 157 WebGL2",
+    "wallSecondsPerRun": 18,
+    "order": [
+      "workplaces",
+      "previous",
+      "optimized",
+      "previous",
+      "optimized",
+      "workplaces",
+      "optimized",
+      "workplaces",
+      "previous"
+    ],
+    "frameRate": "requestAnimationFrame callbacks with advanceTime and the production WebGL draw divided by elapsed seconds",
+    "stageStats": "Arithmetic mean of three observed FPS values; frame and CPU quantiles are medians of three per-run quantiles. Separate CDP sampling runs are excluded from FPS.",
+    "revisions": {
+      "previous": "03e0ee73",
+      "workplaces": "9b97b037 (game code 087d4344)",
+      "optimized": "resident-workplace-performance-20261119"
+    }
+  },
+  "groups": {
+    "previous": {
+      "fps": [
+        24.175992473718182,
+        24.21053792616614,
+        24.253957079845563
+      ],
+      "meanFps": 24.21349582657663,
+      "p95FrameMsRuns": [
+        66.59999999999854,
+        50.10000000000218,
+        50.10000000000218
+      ],
+      "medianP95FrameMs": 50.10000000000218,
+      "medianOfRunP95ActorMs": 15.700000047683716,
+      "medianOfRunP50DrawMs": 28.100000023841858,
+      "medianOfRunP50SceneMs": 21.5
+    },
+    "workplaces": {
+      "fps": [
+        22.750042898499384,
+        23.368246937427497,
+        23.137385143363225
+      ],
+      "meanFps": 23.085224993096702,
+      "p95FrameMsRuns": [
+        66.60000000000218,
+        66.60000000000218,
+        66.69999999999709
+      ],
+      "medianP95FrameMs": 66.60000000000218,
+      "medianOfRunP95ActorMs": 19.200000047683716,
+      "medianOfRunP50DrawMs": 29.699999928474426,
+      "medianOfRunP50SceneMs": 22.100000023841858
+    },
+    "optimized": {
+      "fps": [
+        29.307282415630556,
+        29.807003813298245,
+        29.251776198934287
+      ],
+      "meanFps": 29.45535414262103,
+      "p95FrameMsRuns": [
+        50,
+        50,
+        50
+      ],
+      "medianP95FrameMs": 50,
+      "medianOfRunP95ActorMs": 11.600000023841858,
+      "medianOfRunP50DrawMs": 27.899999976158142,
+      "medianOfRunP50SceneMs": 20.799999952316284
+    }
+  },
+  "cpuSampling": {
+    "before": {
+      "samples": 15209,
+      "durationMs": 19097.9,
+      "inclusivePercent": {
+        "actors.js update": 30.76,
+        "test-livestock.js assign": 13.96,
+        "test-livestock.js clearApproach": 13.87,
+        "home-visits.js homeVisits": 0.53,
+        "babylon-9.31.0.js _evaluateActiveMeshes": 16.84
+      }
+    },
+    "after": {
+      "samples": 12653,
+      "durationMs": 18835.3,
+      "inclusivePercent": {
+        "actors.js update": 18.59,
+        "test-livestock.js assign": 0.3,
+        "test-livestock.js clearApproach": 0.21,
+        "home-visits.js homeVisits": 0.47,
+        "babylon-9.31.0.js _evaluateActiveMeshes": 22.45
+      }
+    }
+  },
+  "runs": [
+    {
+      "stage": "workplaces",
+      "sources": {
+        "game3d/actors.js": "a1c848368bc88069dcaa937b3e03528d1d092f2c918b49ca19249f13a4a7edaf",
+        "game3d/ambient-fauna.js": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f",
+        "game3d/test-livestock.js": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5",
+        "game3d/buildings.js": "c32c35864ca6c0c8c7f70cbc7c9b724b1b7bc37b1767656633da59dfc57982ae",
+        "game3d/field-crops.js": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6",
+        "game3d/home-visits.js": "70b37745ae49f38bacba3cfa1f7becce3af9ffd501f4d47e014356236de92d36"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 22.750042898499384,
+          "frames": 411,
+          "seconds": 18.0659,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.400000095367432,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 410,
+            "p50": 33.30000000000291,
+            "p95": 66.60000000000218
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 411,
+              "p50": 30.40000009536743,
+              "p95": 47.799999952316284
+            },
+            "buildings": {
+              "samples": 411,
+              "p50": 0.7000000476837158,
+              "p95": 1
+            },
+            "actors": {
+              "samples": 411,
+              "p50": 4.799999952316284,
+              "p95": 19.200000047683716
+            },
+            "scene": {
+              "samples": 411,
+              "p50": 22.399999976158142,
+              "p95": 28.299999952316284
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9011/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 482,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25573266,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-1-workplaces-mixed",
+        "captured": "2026-11-19T19:01:24.384Z"
+      }
+    },
+    {
+      "stage": "previous",
+      "sources": {
+        "game3d/actors.js": "5e0b0eaf4e768523157c346d39966d0ddf444b81822011ad2a757719889d82e8",
+        "game3d/ambient-fauna.js": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f",
+        "game3d/test-livestock.js": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5",
+        "game3d/buildings.js": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba",
+        "game3d/field-crops.js": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 24.175992473718182,
+          "frames": 442,
+          "seconds": 18.2826,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.199999928474426,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 441,
+            "p50": 33.29999999999927,
+            "p95": 66.59999999999854
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 442,
+              "p50": 28,
+              "p95": 43.89999997615814
+            },
+            "buildings": {
+              "samples": 442,
+              "p50": 0.7000000476837158,
+              "p95": 1
+            },
+            "actors": {
+              "samples": 442,
+              "p50": 4.299999952316284,
+              "p95": 16.100000023841858
+            },
+            "scene": {
+              "samples": 442,
+              "p50": 21.5,
+              "p95": 26.399999976158142
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9006/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 461,
+          "visibleBuildingMeshes": 2973,
+          "houseVisualMeshes": {},
+          "activeIndices": 25291776,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-2-previous-mixed",
+        "captured": "2026-11-19T19:01:58.523Z"
+      }
+    },
+    {
+      "stage": "optimized",
+      "sources": {
+        "game3d/actors.js": "d5b80a7ddfb3e5940a9d5e65559f3779ef26e7d20ca1e87afda3eb2ace23217e",
+        "game3d/ambient-fauna.js": "697f767ce32db020d3676d1d3973c13c65ac4f22723aa1f3787e84399616a76b",
+        "game3d/test-livestock.js": "d1ec8426dba00a3de4f31deace9a939597face1d2881418c060d254aa86c873f",
+        "game3d/buildings.js": "5b153890768921ca13e63cc1113af8ee843fc2fb7d117e910dcab517c86c5c50",
+        "game3d/field-crops.js": "4425aa36d4cb89da7355c2f1def8b34c671c320566e4b790f31d7fddaf9bc9a2",
+        "game3d/home-visits.js": "9029eaf842466251822d7e1ba9566ca52c41ba87db380533134674cb58e770a6"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.307282415630556,
+          "frames": 528,
+          "seconds": 18.015999999999995,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.100000023841858,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 527,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 528,
+              "p50": 27.899999976158142,
+              "p95": 37.39999997615814
+            },
+            "buildings": {
+              "samples": 528,
+              "p50": 0.5,
+              "p95": 0.6000000238418579
+            },
+            "actors": {
+              "samples": 528,
+              "p50": 4.399999976158142,
+              "p95": 11.599999904632568
+            },
+            "scene": {
+              "samples": 528,
+              "p50": 20.699999928474426,
+              "p95": 25.5
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 66,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 491,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25571364,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-3-optimized-mixed",
+        "captured": "2026-11-19T19:02:32.059Z"
+      }
+    },
+    {
+      "stage": "previous",
+      "sources": {
+        "game3d/actors.js": "5e0b0eaf4e768523157c346d39966d0ddf444b81822011ad2a757719889d82e8",
+        "game3d/ambient-fauna.js": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f",
+        "game3d/test-livestock.js": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5",
+        "game3d/buildings.js": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba",
+        "game3d/field-crops.js": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 24.21053792616614,
+          "frames": 439,
+          "seconds": 18.132599999999996,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.399999976158142,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 438,
+            "p50": 33.29999999999927,
+            "p95": 50.10000000000218
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 439,
+              "p50": 28.399999976158142,
+              "p95": 44.10000002384186
+            },
+            "buildings": {
+              "samples": 439,
+              "p50": 0.7000000476837158,
+              "p95": 1
+            },
+            "actors": {
+              "samples": 439,
+              "p50": 4.299999952316284,
+              "p95": 15.300000071525574
+            },
+            "scene": {
+              "samples": 439,
+              "p50": 21.5,
+              "p95": 26.5
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9006/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 461,
+          "visibleBuildingMeshes": 2973,
+          "houseVisualMeshes": {},
+          "activeIndices": 25295934,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-4-previous-mixed",
+        "captured": "2026-11-19T19:03:06.323Z"
+      }
+    },
+    {
+      "stage": "optimized",
+      "sources": {
+        "game3d/actors.js": "d5b80a7ddfb3e5940a9d5e65559f3779ef26e7d20ca1e87afda3eb2ace23217e",
+        "game3d/ambient-fauna.js": "697f767ce32db020d3676d1d3973c13c65ac4f22723aa1f3787e84399616a76b",
+        "game3d/test-livestock.js": "d1ec8426dba00a3de4f31deace9a939597face1d2881418c060d254aa86c873f",
+        "game3d/buildings.js": "5b153890768921ca13e63cc1113af8ee843fc2fb7d117e910dcab517c86c5c50",
+        "game3d/field-crops.js": "4425aa36d4cb89da7355c2f1def8b34c671c320566e4b790f31d7fddaf9bc9a2",
+        "game3d/home-visits.js": "9029eaf842466251822d7e1ba9566ca52c41ba87db380533134674cb58e770a6"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.807003813298245,
+          "frames": 537,
+          "seconds": 18.015900000000006,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.5,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 536,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 537,
+              "p50": 27.899999976158142,
+              "p95": 37.5
+            },
+            "buildings": {
+              "samples": 537,
+              "p50": 0.5,
+              "p95": 0.6000000238418579
+            },
+            "actors": {
+              "samples": 537,
+              "p50": 4.399999976158142,
+              "p95": 13.600000023841858
+            },
+            "scene": {
+              "samples": 537,
+              "p50": 20.799999952316284,
+              "p95": 24.600000023841858
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 68,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 490,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25560342,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-5-optimized-mixed",
+        "captured": "2026-11-19T19:03:39.719Z"
+      }
+    },
+    {
+      "stage": "workplaces",
+      "sources": {
+        "game3d/actors.js": "a1c848368bc88069dcaa937b3e03528d1d092f2c918b49ca19249f13a4a7edaf",
+        "game3d/ambient-fauna.js": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f",
+        "game3d/test-livestock.js": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5",
+        "game3d/buildings.js": "c32c35864ca6c0c8c7f70cbc7c9b724b1b7bc37b1767656633da59dfc57982ae",
+        "game3d/field-crops.js": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6",
+        "game3d/home-visits.js": "70b37745ae49f38bacba3cfa1f7becce3af9ffd501f4d47e014356236de92d36"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 23.368246937427497,
+          "frames": 421,
+          "seconds": 18.0159,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 12.600000023841858,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 420,
+            "p50": 33.30000000000291,
+            "p95": 66.60000000000218
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 421,
+              "p50": 29.600000023841858,
+              "p95": 48.300000071525574
+            },
+            "buildings": {
+              "samples": 421,
+              "p50": 0.7000000476837158,
+              "p95": 1
+            },
+            "actors": {
+              "samples": 421,
+              "p50": 4.599999904632568,
+              "p95": 21.100000023841858
+            },
+            "scene": {
+              "samples": 421,
+              "p50": 22.100000023841858,
+              "p95": 26.899999976158142
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 66,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9011/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 488,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25539984,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-6-workplaces-mixed",
+        "captured": "2026-11-19T19:04:13.748Z"
+      }
+    },
+    {
+      "stage": "optimized",
+      "sources": {
+        "game3d/actors.js": "d5b80a7ddfb3e5940a9d5e65559f3779ef26e7d20ca1e87afda3eb2ace23217e",
+        "game3d/ambient-fauna.js": "697f767ce32db020d3676d1d3973c13c65ac4f22723aa1f3787e84399616a76b",
+        "game3d/test-livestock.js": "d1ec8426dba00a3de4f31deace9a939597face1d2881418c060d254aa86c873f",
+        "game3d/buildings.js": "5b153890768921ca13e63cc1113af8ee843fc2fb7d117e910dcab517c86c5c50",
+        "game3d/field-crops.js": "4425aa36d4cb89da7355c2f1def8b34c671c320566e4b790f31d7fddaf9bc9a2",
+        "game3d/home-visits.js": "9029eaf842466251822d7e1ba9566ca52c41ba87db380533134674cb58e770a6"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 29.251776198934287,
+          "frames": 527,
+          "seconds": 18.015999999999995,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.900000095367432,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 526,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 527,
+              "p50": 28.200000047683716,
+              "p95": 37.200000047683716
+            },
+            "buildings": {
+              "samples": 527,
+              "p50": 0.5,
+              "p95": 0.6999999284744263
+            },
+            "actors": {
+              "samples": 527,
+              "p50": 4.400000095367432,
+              "p95": 11.600000023841858
+            },
+            "scene": {
+              "samples": 527,
+              "p50": 21.40000009536743,
+              "p95": 26.100000023841858
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 68,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 490,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25563384,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-7-optimized-mixed",
+        "captured": "2026-11-19T19:04:47.162Z"
+      }
+    },
+    {
+      "stage": "workplaces",
+      "sources": {
+        "game3d/actors.js": "a1c848368bc88069dcaa937b3e03528d1d092f2c918b49ca19249f13a4a7edaf",
+        "game3d/ambient-fauna.js": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f",
+        "game3d/test-livestock.js": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5",
+        "game3d/buildings.js": "c32c35864ca6c0c8c7f70cbc7c9b724b1b7bc37b1767656633da59dfc57982ae",
+        "game3d/field-crops.js": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6",
+        "game3d/home-visits.js": "70b37745ae49f38bacba3cfa1f7becce3af9ffd501f4d47e014356236de92d36"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 23.137385143363225,
+          "frames": 418,
+          "seconds": 18.066,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.700000047683716,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 417,
+            "p50": 33.30000000000291,
+            "p95": 66.69999999999709
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 418,
+              "p50": 29.699999928474426,
+              "p95": 47.199999928474426
+            },
+            "buildings": {
+              "samples": 418,
+              "p50": 0.7000000476837158,
+              "p95": 0.9000000953674316
+            },
+            "actors": {
+              "samples": 418,
+              "p50": 4.5,
+              "p95": 18.700000047683716
+            },
+            "scene": {
+              "samples": 418,
+              "p50": 22.100000023841858,
+              "p95": 27.5
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9011/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 487,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25553322,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-8-workplaces-mixed",
+        "captured": "2026-11-19T19:05:21.253Z"
+      }
+    },
+    {
+      "stage": "previous",
+      "sources": {
+        "game3d/actors.js": "5e0b0eaf4e768523157c346d39966d0ddf444b81822011ad2a757719889d82e8",
+        "game3d/ambient-fauna.js": "d087d8414bb4c6f2f00b7fff34d627a40c872fb4791b446a0de6f4a6ec684f4f",
+        "game3d/test-livestock.js": "79939bf28ac908c8a8cb1a3d3748f727cd5bc9be42acfbf3b2bc593b76077ac5",
+        "game3d/buildings.js": "247f4c1abd75baa0fa07b1dc83b07a642aefafb67631d218af75e0eebf8f82ba",
+        "game3d/field-crops.js": "4b0afad8c6f55549e9138d71d7469ab0dadb9be1621c5acf9b73beb5aa3850d6"
+      },
+      "result": {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 24.253957079845563,
+          "frames": 441,
+          "seconds": 18.1826,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.700000047683716,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 440,
+            "p50": 33.30000000000291,
+            "p95": 50.10000000000218
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 441,
+              "p50": 28.100000023841858,
+              "p95": 43.200000047683716
+            },
+            "buildings": {
+              "samples": 441,
+              "p50": 0.7000000476837158,
+              "p95": 0.9000000953674316
+            },
+            "actors": {
+              "samples": 441,
+              "p50": 4.299999952316284,
+              "p95": 15.700000047683716
+            },
+            "scene": {
+              "samples": 441,
+              "p50": 21.699999928474426,
+              "p95": 26.200000047683716
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9006/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 461,
+          "visibleBuildingMeshes": 2973,
+          "houseVisualMeshes": {},
+          "activeIndices": 25298118,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "perf4x-1911-9-previous-mixed",
+        "captured": "2026-11-19T19:05:55.434Z"
+      }
+    }
+  ],
+  "behaviourTrace": {
+    "baseline": "9b97b037",
+    "framesPerScenario": 24,
+    "interval": "fixed 1/24 s wall at 4×",
+    "comparison": "identical JSON of ordered citizen view objects including all public fields, display positions, contact targets, workstation palms, and matching canonical authoritative states before and after presentation and the next simulation tick",
+    "scenarios": 19,
+    "frames": 456,
+    "residentFrames": 4545,
+    "rows": [
+      {
+        "save": "nb-1911-collect.save",
+        "frames": 24,
+        "residentFrames": 240,
+        "sha256": "6ffd25e73136bc9ae822b81fa7e5402b23dbdf5a40b46cb9b7499a56879410f8",
+        "tasks": [
+          "offering"
+        ],
+        "contacts": [
+          "offering",
+          "collect"
+        ],
+        "homes": []
+      },
+      {
+        "save": "nb-1911-guard.save",
+        "frames": 24,
+        "residentFrames": 24,
+        "sha256": "a93bc4ff4fea21491b3d3226edd6b42755c68fe9039ae04e3af1ed43fb4187b0",
+        "tasks": [
+          "watchHouse"
+        ],
+        "contacts": [],
+        "homes": []
+      },
+      {
+        "save": "nb-1911-offering.save",
+        "frames": 24,
+        "residentFrames": 240,
+        "sha256": "a468a617a333f8ff3d4b8ee939f9341c02e44680ab248c64ed91f2386880cc7e",
+        "tasks": [
+          "offering"
+        ],
+        "contacts": [
+          "offering",
+          "collect"
+        ],
+        "homes": []
+      },
+      {
+        "save": "nb-1911-receive.save",
+        "frames": 24,
+        "residentFrames": 240,
+        "sha256": "e8fc1ed05d362e712eb3bca10f86a5889c279b92407dcb62d3133c1156d11107",
+        "tasks": [
+          "offering",
+          "sowing",
+          "clay"
+        ],
+        "contacts": [
+          "offering",
+          "clay",
+          "receive"
+        ],
+        "homes": [
+          "out",
+          "bench"
+        ]
+      },
+      {
+        "save": "nb-1911-study.save",
+        "frames": 24,
+        "residentFrames": 216,
+        "sha256": "90b118fcda113b000f9f494c9c698c714e865215c833218d2cb7a3f8f5d90b62",
+        "tasks": [
+          "school-tablet",
+          "offering"
+        ],
+        "contacts": [
+          "study",
+          "offering"
+        ],
+        "homes": []
+      },
+      {
+        "save": "nb-home-natural-bench.json",
+        "frames": 24,
+        "residentFrames": 144,
+        "sha256": "38eaa3e34ad2771008d680dcafeae5c84fc2c687d7d54334ab220210863181ce",
+        "tasks": [],
+        "contacts": [],
+        "homes": [
+          "in",
+          "bench"
+        ]
+      },
+      {
+        "save": "nb-home-natural-enter.json",
+        "frames": 24,
+        "residentFrames": 288,
+        "sha256": "58e172cbff3aeea1ba7dca7abc5e10d6b8dab9ef7200f58e015dadda5564b239",
+        "tasks": [],
+        "contacts": [],
+        "homes": [
+          "enter"
+        ]
+      },
+      {
+        "save": "nb-home-natural-roof.json",
+        "frames": 24,
+        "residentFrames": 120,
+        "sha256": "ca87bf968cd8d3920a291d930225eccaa7758ca0ce71e37c4380aa9784c61b23",
+        "tasks": [],
+        "contacts": [],
+        "homes": [
+          "roof"
+        ]
+      },
+      {
+        "save": "nb-worker-fishing-fish-cast.json",
+        "frames": 24,
+        "residentFrames": 269,
+        "sha256": "1ff70c356dd01157c2b72dfb61938b13c7cc4ee1dcbf9a3ba770723f80520e5e",
+        "tasks": [
+          "fishing",
+          "sowing"
+        ],
+        "contacts": [
+          "farming",
+          "collect"
+        ],
+        "homes": [
+          "roof",
+          "leave"
+        ]
+      },
+      {
+        "save": "nb-worker-fishing-fish-lift.json",
+        "frames": 24,
+        "residentFrames": 287,
+        "sha256": "332a32fbf9eebe31c6b4602d47761a4ca607aa6fe584c84aeeb9a51797d76421",
+        "tasks": [
+          "fishing"
+        ],
+        "contacts": [],
+        "homes": [
+          "leave",
+          "enter"
+        ]
+      },
+      {
+        "save": "nb-worker-fishing-fish-return.json",
+        "frames": 24,
+        "residentFrames": 286,
+        "sha256": "8232c596727a083adc02410fd363944b2464f0794131d56917fe68e55be1a1d1",
+        "tasks": [],
+        "contacts": [
+          "collect"
+        ],
+        "homes": [
+          "leave"
+        ]
+      },
+      {
+        "save": "nb-worker-fishing-output.json",
+        "frames": 24,
+        "residentFrames": 287,
+        "sha256": "8a5a6240a70cecfb3436b2e5056f220f5524aa6f6f4b5a76bcc3bb8c037fcfe5",
+        "tasks": [
+          "take-rod"
+        ],
+        "contacts": [
+          "collect"
+        ],
+        "homes": [
+          "enter",
+          "leave"
+        ]
+      },
+      {
+        "save": "nb-worker-fishing-porter.json",
+        "frames": 24,
+        "residentFrames": 288,
+        "sha256": "7158f8b80b59319b62362c9f7089036495fc6d8e5955474aee6abf1103323567",
+        "tasks": [
+          "fishing",
+          "sowing",
+          "offering",
+          "clay"
+        ],
+        "contacts": [
+          "farming",
+          "offering",
+          "clay"
+        ],
+        "homes": []
+      },
+      {
+        "save": "nb-worker-fishing-rod.json",
+        "frames": 24,
+        "residentFrames": 288,
+        "sha256": "86a8356ec4406c2eadbdfa19690163b6cc91d18d51d679912ce9d3afda018e4a",
+        "tasks": [
+          "take-rod",
+          "fishing"
+        ],
+        "contacts": [
+          "collect"
+        ],
+        "homes": []
+      },
+      {
+        "save": "nb-worker-hunting-drag.json",
+        "frames": 24,
+        "residentFrames": 240,
+        "sha256": "a9fcfb7993be76456a1ad3c6afa9040c8410bbeeeb0aacaa3815d0196d680d45",
+        "tasks": [
+          "haul-game",
+          "sowing"
+        ],
+        "contacts": [
+          "farming"
+        ],
+        "homes": [
+          "enter",
+          "leave"
+        ]
+      },
+      {
+        "save": "nb-worker-hunting-dress.json",
+        "frames": 24,
+        "residentFrames": 248,
+        "sha256": "6da05c9a0de846524b4ea31ae39d9c31c11668de2c548717a9661f4d5fd433a3",
+        "tasks": [
+          "dress-game",
+          "sowing",
+          "hunting",
+          "clay",
+          "offering"
+        ],
+        "contacts": [
+          "farming",
+          "clay",
+          "offering"
+        ],
+        "homes": [
+          "out"
+        ]
+      },
+      {
+        "save": "nb-worker-hunting-fallen.json",
+        "frames": 24,
+        "residentFrames": 264,
+        "sha256": "90e4c45f5edaa9bb95e99199d80a727beccb724dabae55755b1469443ab5284f",
+        "tasks": [
+          "lift-game"
+        ],
+        "contacts": [
+          "collect"
+        ],
+        "homes": [
+          "enter",
+          "leave"
+        ]
+      },
+      {
+        "save": "nb-worker-hunting-output.json",
+        "frames": 24,
+        "residentFrames": 288,
+        "sha256": "6a8266ecb10d5ee21258f0cf4685a3036464083851f1749078545df83c21a57e",
+        "tasks": [
+          "hunting",
+          "sowing",
+          "clay",
+          "offering"
+        ],
+        "contacts": [
+          "farming",
+          "clay",
+          "offering"
+        ],
+        "homes": []
+      },
+      {
+        "save": "nb-worker-hunting-porter.json",
+        "frames": 24,
+        "residentFrames": 288,
+        "sha256": "c733102e5ee3b873ca0946986dc8ae697ca1767b57733b7209fe90f165edf7c1",
+        "tasks": [
+          "hunting"
+        ],
+        "contacts": [],
+        "homes": [
+          "enter",
+          "leave"
+        ]
+      }
+    ]
+  },
+  "poseTrace": {
+    "method": "Babylon.js 9.31.0 NullEngine, 10 shipped male/female source-walk GLB actors, fixed 38 update and render calls, dt .033 and simulation speed 4. 32 frames after warmup counted. Hash covers float32 world matrices of both arms and legs, paws/feet, spine and equipped tool; test cycles 10 tasks, then roof and bench, ladder, freight walk, pause. Profiling counter counts recursive forced calls of TransformNode.computeWorldMatrix(true) within actor update and scene render. Host CPU totals are diagnostic only.",
+    "scenes": {
+      "professionsCargoPause": {
+        "before": {
+          "hash": "fc5cc81b7814a1764a9b16e9f98322d1df42b8772d5f9ab78db3a5212b51aee5",
+          "totalMs": 276.3168319999992,
+          "forcedPerFrame": 2008.78125
+        },
+        "afterIK": {
+          "hash": "fc5cc81b7814a1764a9b16e9f98322d1df42b8772d5f9ab78db3a5212b51aee5",
+          "totalMs": 178.3001690000001,
+          "forcedPerFrame": 691.28125
+        }
+      },
+      "professionsHomeCargoPause": {
+        "before": {
+          "boundTime": 13.119792999999788,
+          "boundCalls": 10,
+          "hash": "ab42da2be08354934e6693caecb418facac91c1d20ae1d8aff3a7456710fc9bb",
+          "totalMs": 279.9466279999997,
+          "forcedPerFrame": 2278.5
+        },
+        "optimized": {
+          "boundTime": 4.063875000000053,
+          "boundCalls": 2,
+          "hash": "ab42da2be08354934e6693caecb418facac91c1d20ae1d8aff3a7456710fc9bb",
+          "totalMs": 216.77008500000034,
+          "forcedPerFrame": 691
+        }
+      }
+    },
+    "targetedNodeTests": {
+      "suites": [
+        "tests/game3d-actors.test.js",
+        "tests/dairy-workstation-glb.test.js",
+        "tests/music-workstation-glb.test.js"
+      ],
+      "passed": 33,
+      "failed": 0
+    }
+  },
+  "homeLookupMicrobenchmark": {
+    "scenario": "production stress seed 137, mixed homes, 500 residents, 250 buildings, simulation rate 4×",
+    "type": "CPU microbenchmark of homeVisits alone, not measured FPS; mocked catalogue and active platform lookups",
+    "clock": "180 deterministic simulation frames, each advanced by 1/24 wall-seconds at 4×, nine presentation calls at each state",
+    "samplesAfterWarmup": 1540,
+    "before": {
+      "catalogueQueries": 635819,
+      "platformQueries": 635819,
+      "cpuMeanMs": 0.19635181233767282,
+      "cpuP50Ms": 0.1737089999996897,
+      "cpuP95Ms": 0.34037499999976717
+    },
+    "after": {
+      "catalogueQueries": 89976,
+      "platformQueries": 44265,
+      "cpuMeanMs": 0.1485818162337495,
+      "cpuP50Ms": 0.13208300000042072,
+      "cpuP95Ms": 0.26350000000002183
+    },
+    "identicalHomeTraceSHA256": "379480d0edcdad0795bc60fb7801e6afae2bcf30ae99af0929c339c764335df8",
+    "traceFields": [
+      "id",
+      "x",
+      "y",
+      "carrying",
+      "homeVisit"
+    ],
+    "across180SimulationFrames": {
+      "out": 1031,
+      "roof": 916,
+      "in": 1308,
+      "leave": 1516,
+      "enter": 60,
+      "bench": 82
+    }
+  },
+  "geometry": {
+    "gardenMeshesVerified": 208,
+    "sourcesBefore": 208,
+    "sourcesAfter": 12,
+    "unsharedShoreGardens": 7,
+    "lampsAndGardenSampleExportSHA256": "d52a63ec9141b6f8bc762b60cbb037aebe260e19e4362919e8e82ce35a78d277"
+  },
+  "archive": [
+    {
+      "file": "legacy-v1.json",
+      "bytes": 1115,
+      "canonicalBytes": 15586,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5f60c84e6789e2ce48fa3941351ed3e8bbc89b78d17d72ef6e770dd87011abf5"
+    },
+    {
+      "file": "legacy-v2.json",
+      "bytes": 3722,
+      "canonicalBytes": 14795,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "6eb71b9385b6f9e3a7919cccf19b828d35c0a5c91eafd8f68bbc754facbd86b7"
+    },
+    {
+      "file": "legacy-v3.json",
+      "bytes": 6935,
+      "canonicalBytes": 16420,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5045bd0494767f469116ed626fdcb1e8ca503fc803f93ab632ffa9b104f922f9"
+    },
+    {
+      "file": "legacy-v4.json",
+      "bytes": 7123,
+      "canonicalBytes": 17736,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d4f19c224c63cd40f4482addd4bd0ea516ae00760d48c15a6550156da2e81080"
+    },
+    {
+      "file": "legacy-v5.json",
+      "bytes": 10554,
+      "canonicalBytes": 21451,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d0e2086a6fdf01f3996aee6b53e32f1450ac19bd0ac26a15aba12b7958e248b7"
+    },
+    {
+      "file": "legacy-v6-city.json",
+      "bytes": 7281,
+      "canonicalBytes": 16070,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "a3571a1285a284c2fff5026cc99d96f673e53b951b0dd51b82e3c9ff32983694"
+    },
+    {
+      "file": "legacy-v6-funeral.json",
+      "bytes": 9970,
+      "canonicalBytes": 19447,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "84db001bc085b911964ba561b2e886bdcff883c6712dda0d7498b3fbcc05199d"
+    },
+    {
+      "file": "legacy-v7-city.json",
+      "bytes": 8217,
+      "canonicalBytes": 16168,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "329449361ef9d8786a96da00f94d12ba2bd03dd4091fb23f190a625ab3e6717e"
+    },
+    {
+      "file": "legacy-v8-city.json",
+      "bytes": 8267,
+      "canonicalBytes": 16247,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "0bad910c2e9b407bd17a5cb44bc6a6bdba74aef6226ab06ca2373830fd1d7290"
+    },
+    {
+      "file": "legacy-v10-healer.json",
+      "bytes": 10914,
+      "canonicalBytes": 16730,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "693fa5a2ee18420e344ddc80f585196e5fb93b3923f35aaef8f570796b2e9cf6"
+    },
+    {
+      "file": "legacy-v11-autumn.json",
+      "bytes": 15332,
+      "canonicalBytes": 22504,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "2070d654d1b24d6029afa6368f15b1bffd36232b521473f900766952cd052b84"
+    },
+    {
+      "file": "legacy-v12-harvest.json",
+      "bytes": 13426,
+      "canonicalBytes": 20010,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1ce6e80b7bae1e7adfb2de59ef1895c937800fc050897bead58b25189108dc82"
+    },
+    {
+      "file": "legacy-v13-autumn.json",
+      "bytes": 13874,
+      "canonicalBytes": 20516,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1fc4519e7d0d5296411e2c86a78212688020a8d45720e9cf078ac62b2c5c383d"
+    },
+    {
+      "file": "legacy-v14-warning-city.json",
+      "bytes": 12290,
+      "canonicalBytes": 18566,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4b62d30cb25439becf8ed79bcf1c9dc45d50a7e4818b39aec302cd03a203f46e"
+    },
+    {
+      "file": "legacy-v15-districts.json",
+      "bytes": 13267,
+      "canonicalBytes": 18858,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f3058a2ffa7cbf5fdb3e5ff14b5c3cc2b436cbc4361f5c81d1b7e76a51f4b27d"
+    },
+    {
+      "file": "legacy-v16-textiles.json",
+      "bytes": 16006,
+      "canonicalBytes": 22268,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4049d985aae20e2d4b4a8e13a709a03a8c50129e0c185044723663b497bdc160"
+    },
+    {
+      "file": "legacy-v17-water-bricks.json",
+      "bytes": 11682,
+      "canonicalBytes": 16697,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "b422ce3deb9743b093fa6085ec969224fc2ba7db94fe1cb88be7c18c68effa77"
+    },
+    {
+      "file": "legacy-v18-kiln.json",
+      "bytes": 12620,
+      "canonicalBytes": 17329,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "12df80b13eade67b774cfb95d40f4c6277a914d3a31e1b775578d8ea7a55befd"
+    },
+    {
+      "file": "legacy-v19-masonry.json",
+      "bytes": 12435,
+      "canonicalBytes": 16911,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "d4b2943eed7ad25913cd56c0663de3bf12bb7d38094653a60175efd5a3e72acb"
+    },
+    {
+      "file": "legacy-v27-local-stock.json",
+      "bytes": 27798,
+      "canonicalBytes": 17036,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f1e8483a4b82eb8ca91188ba71beaa82e48a4608abe6348a884aaa6beb88b8e1"
+    }
+  ],
+  "pausedWebGLFrames": {
+    "method": "Same seed, mixed housing, paused production renderer. Compare lossless canvas PNG bytes. Count WebGL triangles and draws including instances and shadow passes at the same simulation time.",
+    "views": {
+      "overview": {
+        "sha256OfBothPNGs": "66cddb47d280f7854bed15a202ad63ed45d05cc12189c860f91fe8520703699e",
+        "webglDrawCallsBefore": 2182,
+        "webglDrawCallsAfter": 1436,
+        "trianglesSubmittedPerFrameBoth": 7980431,
+        "webGLErrorBefore": 0,
+        "webGLErrorAfter": 0
+      },
+      "house": {
+        "sha256OfBothPNGs": "049227709e0efd89dc1c4dd0e8363fbca178a325ea316dac4d45a5a709f9fe19",
+        "webglDrawCallsBefore": 678,
+        "webglDrawCallsAfter": 578,
+        "trianglesSubmittedPerFrameBoth": 2878861,
+        "webGLErrorBefore": 0,
+        "webGLErrorAfter": 0
+      },
+      "house-2": {
+        "sha256OfBothPNGs": "75eb9aaa9be75a180358274429244dd41417e188cab94984977154c2742e51ed",
+        "webglDrawCallsBefore": 689,
+        "webglDrawCallsAfter": 589,
+        "trianglesSubmittedPerFrameBoth": 2878361,
+        "webGLErrorBefore": 0,
+        "webGLErrorAfter": 0
+      },
+      "house-3": {
+        "sha256OfBothPNGs": "b9b5b833789343eea858340b6a705a88987cde5853ba11d961000c2085d6d5ae",
+        "webglDrawCallsBefore": 688,
+        "webglDrawCallsAfter": 588,
+        "trianglesSubmittedPerFrameBoth": 2878861,
+        "webGLErrorBefore": 0,
+        "webGLErrorAfter": 0
+      }
+    }
+  },
+  "ordinaryWebGLScenes": {
+    "entry": "http://127.0.0.1:8991/index.html",
+    "release": "resident-workplace-performance-20261119",
+    "results": [
+      {
+        "stage": "bench",
+        "resident": 8,
+        "home": "10,11",
+        "startStage": "out",
+        "positionBeforeM": [
+          59.769999999999996,
+          0.06910021157132396,
+          65.76437968915289
+        ],
+        "positionAfterM": [
+          58.53999999999999,
+          0.073,
+          67.5
+        ],
+        "travelM": 2.127273624096068,
+        "pelvisM": [
+          58.5554084777832,
+          0.4650000035762787,
+          67.5
+        ],
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "roof",
+        "resident": 7,
+        "home": "6,11",
+        "startStage": "out",
+        "positionBeforeM": [
+          38.04880535334637,
+          1.8423436922582292,
+          65.22
+        ],
+        "positionAfterM": [
+          36.56,
+          2.175,
+          65.02
+        ],
+        "travelM": 1.5385712850671505,
+        "pelvisM": [
+          36.563453674316406,
+          2.304999828338623,
+          65.04862976074219
+        ],
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "enter",
+        "resident": 0,
+        "home": "6,7",
+        "startStage": "street",
+        "positionBeforeM": [
+          38.93298825476427,
+          0,
+          45.01919910790746
+        ],
+        "positionAfterM": [
+          35.74515454057653,
+          0.06989431757206625,
+          44.10350929578574
+        ],
+        "travelM": 3.317477481003356,
+        "pelvisM": [
+          35.71902084350586,
+          1.0102618932724,
+          44.10790252685547
+        ],
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "fish-lift",
+        "resident": 0,
+        "lineTipM": [
+          31.923288345336914,
+          0.8877283930778503,
+          83.32106018066406
+        ],
+        "fishM": [
+          31.923288345336914,
+          0.8877283930778503,
+          83.3210678100586
+        ],
+        "gapM": 7.62939453125e-06,
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "dress",
+        "resident": 0,
+        "animal": {
+          "id": "gazelle-11",
+          "dead": true,
+          "hauler": 0,
+          "point": [
+            68.0383347775863,
+            0.79,
+            62.0383347775863
+          ],
+          "rig": true
+        },
+        "horizontalGapToDressingBenchM": 9.745385528546885e-08,
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "collect",
+        "resident": 8,
+        "palmsM": [
+          [
+            56.80622863769531,
+            0.9121093153953552,
+            50.55287170410156
+          ],
+          [
+            56.54623031616211,
+            0.9127704501152039,
+            50.806297302246094
+          ]
+        ],
+        "fixtureM": [
+          56.58,
+          0.83,
+          50.58
+        ],
+        "maximumPalmToFixtureM": 0.24331421652391197,
+        "webgl": 2,
+        "glError": 0
+      },
+      {
+        "stage": "receive",
+        "resident": 8,
+        "palmsM": [
+          [
+            59.42393112182617,
+            1.0294852256774902,
+            55.26485061645508
+          ],
+          [
+            59.03621292114258,
+            1.029799222946167,
+            55.2666130065918
+          ]
+        ],
+        "fixtureM": [
+          59.23,
+          0.87,
+          55.059999999999995
+        ],
+        "maximumPalmToFixtureM": 0.3252355424599134,
+        "webgl": 2,
+        "glError": 0
+      }
+    ],
+    "passed": true,
+    "completedUTC": "2026-11-19T19:08:39.145096+00:00"
+  }
+}

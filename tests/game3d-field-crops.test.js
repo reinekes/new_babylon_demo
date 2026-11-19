@@ -92,7 +92,10 @@ test('seven crop species build single material batches with real wheat geometry 
 test('household gardens batch ten plants and preserve old simulation data',async()=>{
  const t=setup();let assets;try{
   assets=await loadFieldCrops(B,t.scene);const b={type:'house',id:2,x:3,y:4},state={buildings:[b]},before=structuredClone(state),[mesh]=assets.createGarden(b,state);
-  assert.equal(mesh.metadata.plants,10);assert.equal(mesh.metadata.cropKinds.length,2);assert.deepEqual(state,before);assert.equal(assets.createGarden({...b,construction:{kind:'new'}},state).length,0);assert.equal(assets.createGarden({...b,type:'temple'},state).length,0);mesh.dispose();
+  assert.equal(mesh.metadata.plants,10);assert.equal(mesh.metadata.cropKinds.length,2);assert.deepEqual(state,before);assert.equal(assets.createGarden({...b,construction:{kind:'new'}},state).length,0);assert.equal(assets.createGarden({...b,type:'temple'},state).length,0);
+  const neighbour={...b,id:7,x:5},[sameBed]=assets.createGarden(neighbour,{buildings:[neighbour]});
+  assert.ok(mesh.sourceMesh);assert.equal(sameBed.sourceMesh,mesh.sourceMesh);
+  mesh.dispose();assert.equal(sameBed.getTotalVertices(),sameBed.sourceMesh.getTotalVertices());sameBed.dispose();
  }finally{assets?.dispose();t.dispose();}
 });
 

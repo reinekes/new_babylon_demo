@@ -203,6 +203,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   try{const copy=material.clone(name);prepare(copy);return copy;}
   finally{block?.(previous);}
  }
+ const bindBounds=new WeakMap();
  function instantiate(source,name,metadata){
   const copy=source.instantiateModelsToScene(n=>`${name}-${n}`,false,{doNotInstantiate:true});
   const root=new B.TransformNode(name,scene),model=new B.TransformNode(`${name}-model`,scene);model.parent=root;root.metadata=metadata;
@@ -213,9 +214,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    for(const {target,animation} of g.targetedAnimations){targets.all.add(target);if(animation.targetProperty==='position')targets.position.add(target);else if(animation.targetProperty==='rotationQuaternion')targets.rotationQuaternion.add(target);}
    clipTargets.set(key,targets);
   }
-  // GLBs use metres; ground their authored soles before applying child size.
-  model.computeWorldMatrix(true);for(const m of model.getChildMeshes())m.computeWorldMatrix(true);
-  const bounds=model.getHierarchyBoundingVectors(true),height=bounds.max.y-bounds.min.y;
+  // Every fresh copy of the same GLB has the same bind-space soles and height.
+  let bounds=bindBounds.get(source);
+  if(!bounds){bounds=model.getHierarchyBoundingVectors(true);bindBounds.set(source,bounds);}
+  const height=bounds.max.y-bounds.min.y;
   const unit=metadata.citizenId!==undefined&&height>0?1.7/height:1;
   model.scaling.setAll(unit);model.position.y=-bounds.min.y*unit;
   register(root);
@@ -280,12 +282,14 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // Solve the authored y-axis upper/lower arm bones toward a palm target in world space.
  // This uses the real glTF joints, keeping skin, hands and attached tools connected.
  function aimJoint(node,child,end){
-  node.parent.computeWorldMatrix(true);const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
-  const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();child.position.normalizeToNew().rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix(true);
+  const origin=node.getAbsolutePosition(),inverse=node.parent.getWorldMatrix().clone().invert();
+  const vector=B.Vector3.TransformNormal(end.subtract(origin),inverse).normalize(),base=node.rotationQuaternion||B.Quaternion.FromEulerVector(node.rotation),axis=vec();child.position.normalizeToNew().rotateByQuaternionToRef(base,axis);node.rotationQuaternion=B.Quaternion.FromUnitVectorsToRef(axis,vector,new B.Quaternion()).multiply(base);node.computeWorldMatrix();
  }
  function poseArm(a,side,local){
   const {upper,lower}=a.arms[side],hand=a.hands[side];if(!upper||!lower||!hand)return;
-  a.root.computeWorldMatrix(true);upper.computeWorldMatrix(true);lower.computeWorldMatrix(true);hand.computeWorldMatrix(true);
+  // Forcing the palm updates the full GLB ancestry, including helper/twist nodes.
+  // The changed joint itself is dirty; only refresh the chain again at the elbow.
+  hand.computeWorldMatrix(true);
   const shoulder=upper.getAbsolutePosition(),elbow=lower.getAbsolutePosition(),palm=hand.getAbsolutePosition();
   const l1=B.Vector3.Distance(shoulder,elbow),l2=B.Vector3.Distance(elbow,palm),goal=B.Vector3.TransformCoordinates(local,a.root.getWorldMatrix());
   const ray=goal.subtract(shoulder),length=Math.max(.001,Math.max(Math.abs(l1-l2)+.005,Math.min(ray.length(),l1+l2-.005))),direction=ray.normalize();
@@ -302,8 +306,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // keep their authored ground points and every upper/lower segment keeps its length.
  function seatedMilking(a,seatHeight=.45){
   if(!a.pelvis)return;
-  const planted=Object.values(a.legs).filter(l=>l.upper&&l.lower&&l.foot).map(leg=>{for(const n of [leg.upper,leg.lower,leg.foot,leg.toe].filter(Boolean))n.computeWorldMatrix(true);return {leg,hip:leg.upper.getAbsolutePosition().clone(),knee:leg.lower.getAbsolutePosition().clone(),foot:leg.foot.getAbsolutePosition().clone(),toe:leg.toe?.getAbsolutePosition().clone()};});
-  a.root.computeWorldMatrix(true);a.pelvis.computeWorldMatrix(true);a.pelvis.parent.computeWorldMatrix(true);
+  const planted=Object.values(a.legs).filter(l=>l.upper&&l.lower&&l.foot).map(leg=>{(leg.toe||leg.foot).computeWorldMatrix(true);return {leg,hip:leg.upper.getAbsolutePosition().clone(),knee:leg.lower.getAbsolutePosition().clone(),foot:leg.foot.getAbsolutePosition().clone(),toe:leg.toe?.getAbsolutePosition().clone()};});
+  a.pelvis.computeWorldMatrix(true);
   const target=a.pelvis.getAbsolutePosition().clone();target.y=a.root.position.y+seatHeight*a.root.scaling.y;
   a.pelvis.position.copyFrom(B.Vector3.TransformCoordinates(target,a.pelvis.parent.getWorldMatrix().clone().invert()));a.pelvis.computeWorldMatrix(true);
   const floorSeat=['roof','mat'].includes(a.c.homeVisit?.stage);
@@ -665,7 +669,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const inverse=a.root.computeWorldMatrix(true).clone().invert(),local=p=>B.Vector3.TransformCoordinates(vec(p.x*6,surfaceElevation(p.x,p.y,a.state)+p.height,p.y*6),inverse);
     // Per-person nonuniform stature changes effective segment lengths after a
     // solve; iterate the actual GLB chain until both palms settle on the rails.
-    for(let solve=0;solve<4;solve++){poseArm(a,'l',local(a.c.funeralContact.hands.left));poseArm(a,'r',local(a.c.funeralContact.hands.right));}
+    const left=local(a.c.funeralContact.hands.left),right=local(a.c.funeralContact.hands.right);
+    for(let solve=0;solve<4;solve++){poseArm(a,'l',left);poseArm(a,'r',right);}
    }else if(Number.isFinite(a.c.homeVisit?.seatHeight)){
     const floor=a.c.homeVisit.stage!=='bench',height=a.c.homeVisit.seatHeight/a.root.scaling.y+(floor?.13:.11);
     poseArm(a,'l',vec(floor?-.31:-.19,height,.32));poseArm(a,'r',vec(floor?.31:.19,height,.32));
@@ -737,14 +742,16 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const arm=arms.sort((x,y)=>distance(x)-distance(y))[0];
     if(arm){const upper=arm.upper.getAbsolutePosition(),lower=arm.lower.getAbsolutePosition(),out=a.root.position.subtract(upper);out.y=0;out.normalize();
      const dressing=B.Vector3.Lerp(upper,lower,.26+.055*Math.sin(a.time*3)).add(out.scale(.07)),support=B.Vector3.Lerp(upper,lower,.70).add(out.scale(.06));
-     for(let n=0;n<3;n++){poseArm(a,'r',B.Vector3.TransformCoordinates(dressing,inverse));poseArm(a,'l',B.Vector3.TransformCoordinates(support,inverse));}
+     const right=B.Vector3.TransformCoordinates(dressing,inverse),left=B.Vector3.TransformCoordinates(support,inverse);
+     for(let n=0;n<3;n++){poseArm(a,'r',right);poseArm(a,'l',left);}
     }
    }else if(work&&a.workContact?.kind==='gathering-site'){
     poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
    }else if(work&&a.workContact){
     const hands=workstationHands(a.workContact,a.time),inverse=a.root.computeWorldMatrix(true).clone().invert();
     const local=p=>B.Vector3.TransformCoordinates(vec(p.x*6,surfaceElevation(p.x,p.y,a.state)+p.height,p.y*6),inverse);
-    for(let solve=0;solve<(music||a.workContact.kind==='artisan'?3:1);solve++){poseArm(a,'r',local(hands.right));poseArm(a,'l',local(hands.left));}
+    const right=local(hands.right),left=local(hands.left);
+    for(let solve=0;solve<(music||a.workContact.kind==='artisan'?3:1);solve++){poseArm(a,'r',right);poseArm(a,'l',left);}
    }else if(work){
     poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
    }else if(a.pose==='dance'){
@@ -785,8 +792,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
      const point=vec(target.x*6,ground+target.height+(['quarry','logging','clay'].includes(task)?lift*.30:0),target.y*6);
      const inverse=a.root.computeWorldMatrix(true).clone().invert(),grip=a.hands.r.getAbsolutePosition();
      const axis=grip.subtract(point).normalize(),shaft=B.Vector3.TransformNormal(vec(0,gatheringToolLength[task],0),a.hands.r.getWorldMatrix()).length();
-     const right=point.add(axis.scale(shaft)),left=point.add(axis.scale(Math.max(.08,shaft-.25)));
-     for(let i=0;i<2;i++){poseArm(a,'r',B.Vector3.TransformCoordinates(right,inverse));if(task!=='reed')poseArm(a,'l',B.Vector3.TransformCoordinates(left,inverse));}
+     const right=B.Vector3.TransformCoordinates(point.add(axis.scale(shaft)),inverse),left=B.Vector3.TransformCoordinates(point.add(axis.scale(Math.max(.08,shaft-.25))),inverse);
+     for(let i=0;i<2;i++){poseArm(a,'r',right);if(task!=='reed')poseArm(a,'l',left);}
      a.hands.r.computeWorldMatrix(true);a.tool.computeWorldMatrix(true);
      direction=point.subtract(a.tool.getAbsolutePosition());
     }

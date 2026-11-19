@@ -86,6 +86,8 @@ test('sync is read only, shares geometry and creates no meshes for unchanged fra
   assert.equal(t.scene.meshes.length,count);assert.equal(live[0],first);assert.equal(t.layer.meshes,live);
   assert.equal(live.find(m=>m.metadata.buildingKey==='home'&&m.metadata.homeLamp).material.name,'game-occupied-home');
   assert.equal(live.find(m=>m.metadata.buildingKey==='second'&&m.metadata.homeLamp).material.name,'game-door-shadow');
+  const dark=live.filter(m=>m.metadata.homeLamp&&m.material.name==='game-door-shadow');
+  assert.equal(dark.length,7);assert.ok(dark[0].sourceMesh);assert.ok(dark.every(m=>m.sourceMesh===dark[0].sourceMesh));
   t.layer.sync({buildings:[house(1,8,4,'second')],citizens:[]});assert.ok(first.isDisposed());assert.ok(live.every(m=>m.metadata.buildingKey==='second'));
   t.layer.sync({buildings:[]});assert.equal(live.length,0);assert.ok(firstSource.isDisposed());
   t.layer.dispose();assert.equal(t.scene.meshes.length,0);t.layer.dispose();

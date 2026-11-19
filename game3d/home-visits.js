@@ -118,12 +118,14 @@ function visitAt(l,clock,b,id){
 }
 export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
  let previous=new Map(),transits=new Map(),seats=new Map(),lastState=null,lastClock=-Infinity;
+ const houseLayout=(b,s)=>layoutFor(kindOf(b,s),homeAsset(b,s));
  return function homeVisits(s,people){
   const clock=(s.simTime||0)/BASE_TIME_RATE;
   if(s!==lastState||clock<lastClock||clock-lastClock>40){previous.clear();transits.clear();seats.clear();}
   lastClock=clock;lastState=s;
-  const homes=new Map((s.buildings||[]).filter(b=>b.type==='house'&&!b.campSalvage&&b.construction?.kind!=='new').map(b=>[buildingKey(b),b]));
-  const shown=new Map(people.map(c=>[c.id,c])),next=new Map(),residents=s.citizens||[];
+  const homes=new Map(),shown=new Map(),next=new Map(),residents=s.citizens||[];
+  for(const b of s.buildings||[])if(b.type==='house'&&!b.campSalvage&&b.construction?.kind!=='new')homes.set(buildingKey(b),b);
+  for(const c of people)shown.set(c.id,c);
   // Reserve a household's single seat for one daylight outing. A new arrival
   // must not replace someone already halfway up the ladder.
   const openings=new Map();
@@ -147,15 +149,15 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
    if(!b||ineligible(c)||real&&(real.eventContact||real.miracleContact||real.funeralContact||real.festivalContact||real.peaceRelief)||s.funeral?.scope==='city'){transits.delete(c.id);continue;}
    const atHome=homePhase(c.phase),given=transits.get(c.id);
    if(!atHome&&!wasHome&&!given){if(returning(c.phase))next.set(c.id,{home:c.home,phase:c.phase,parcel:real?.carrying?{...real.cargo}:null});continue;}
-   const l=layoutFor(kindOf(b,s),homeAsset(b,s)),platform=homePlatform(b);let transit=given,p;
+   let transit=given,p;
    let indoorsUntil=prior?.indoorsUntil||0;
    if(atHome&&(returning(prior?.phase)||prior?.phase==='playing')&&prior.home===c.home){
     const port=prior.phase==='playing'?prior.port:c;
-    transit={route:track(streetToRoom(b,l,port,platform)),start:clock,entry:true,home:c.home,parcel:prior.parcel};transits.set(c.id,transit);
+    transit={route:track(streetToRoom(b,houseLayout(b,s),port,homePlatform(b))),start:clock,entry:true,home:c.home,parcel:prior.parcel};transits.set(c.id,transit);
     const offset=houseOffset(b);
     indoorsUntil=(Math.floor((clock+transit.route.duration+offset)/117)+1)*117-offset;
    }else if(!atHome&&wasHome&&leaving(c.phase)&&c.route?.length>1&&!given?.exit){
-    const roomOut=streetToRoom(b,l,c.route?.[0]||prior.port||c,platform).reverse();
+    const roomOut=streetToRoom(b,houseLayout(b,s),c.route?.[0]||prior.port||c,homePlatform(b)).reverse();
     // An interrupted outing returns by its own stairs or ladder before joining the street.
     const prefix=prior.p?[prior.p,...(prior.p.returnPoints||[])]:[];
     const points=prefix.length?[...prefix,...roomOut]:roomOut;
@@ -174,10 +176,10 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
      if(t-r.duration<walk.duration*.60)p={...follow(walk,(t-r.duration)/.60),stage:'leave',returnPoints:[]};
     }
     if(!p){transits.delete(c.id);if(transit.entry)transit=null;}
-   }else if(atHome&&clock>=indoorsUntil&&!real&&seats.get(c.home)?.id===c.id&&!loaded(c))p=visitAt(l,clock,b,c.id);
+   }else if(atHome&&clock>=indoorsUntil&&!real&&seats.get(c.home)?.id===c.id&&!loaded(c))p=visitAt(houseLayout(b,s),clock,b,c.id);
    if(atHome||returning(c.phase)||p)next.set(c.id,{phase:c.phase,home:c.home,port:{x:c.x,y:c.y},indoorsUntil,p});
    if(!p)continue;
-   const at=world(b,p),parcel=transit?.entry&&transit.parcel,view={...(real||c),...at,...(parcel?{cargo:parcel}:{}),kind:'person',walking:p.walking,playing:false,carrying:!!(parcel||real?.carrying||loaded(c)),activity:null,
+   const platform=homePlatform(b),at=world(b,p),parcel=transit?.entry&&transit.parcel,view={...(real||c),...at,...(parcel?{cargo:parcel}:{}),kind:'person',walking:p.walking,playing:false,carrying:!!(parcel||real?.carrying||loaded(c)),activity:null,
     homeVisit:{house:c.home,stage:p.stage,height:p.height,deck:platform&&Math.max(Math.abs(p.x),Math.abs(p.z))<=platform.half?platform.lift:undefined,yaw:p.yaw+quarter(b),climbing:!!p.climbing,seatHeight:p.seatHeight}};
    shown.set(c.id,view);
   }

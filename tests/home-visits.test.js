@@ -85,6 +85,19 @@ test('household members share one seat, children reach the door after play, and 
  s.funeral={scope:'city'};const ceremonial={...c,eventContact:{}};assert.deepEqual(seen(s,view,280.2,[ceremonial]),[ceremonial]);
 });
 
+test('residents staying indoors do not repeatedly query the house model or deck',()=>{
+ const s=city(),family=s.citizens[0];
+ s.citizens=Array.from({length:80},(_,id)=>({...family,id}));
+ let modelReads=0,deckReads=0;
+ const view=createHomeVisits(()=>{modelReads++;return true;},()=>{deckReads++;return null;});
+ for(let i=0;i<20;i++){
+  modelReads=0;deckReads=0;
+  const people=seen(s,view,i*.1);
+  assert.ok(modelReads<=1,'only the resident with the seat can need the model');
+  assert.equal(deckReads,people.length,'only visible outings need the deck height');
+ }
+});
+
 test('a raised house enters from the dry timber stairs before using its deck and its elevated roof',()=>{
  const s=city(),c=s.citizens[0],p={half:2.95,run:.88,wetDirection:[-1,0],lift:.55},view=createHomeVisits(()=>true,()=>p);
  c.phase='toHome';seen(s,view,270,[c]);c.phase='home';
