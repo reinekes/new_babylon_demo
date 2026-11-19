@@ -1,0 +1,867 @@
+{
+  "deployment": {
+    "commit": "087d434464383adc208e7c25041e290e0eefcec8",
+    "run": "https://github.com/reinekes/new_babylon_demo/actions/runs/44571417422",
+    "files": [
+      {
+        "path": "building-inventory.js",
+        "bytes": 11166,
+        "sha256": "75855f61f22cdceb69d8e719de855cef26a223f3866dc23cd3595d04ed396c81"
+      },
+      {
+        "path": "courtyard.html",
+        "bytes": 16407,
+        "sha256": "f70ad0980847a2c1358da4947a4a9301c72b77089942cc28e93079bb43911bcf"
+      },
+      {
+        "path": "crop-studio.html",
+        "bytes": 3227,
+        "sha256": "c7244d211310c9c01c9f762cdf8fde995d9c33f0fe6496ba7dde4b748cad8996"
+      },
+      {
+        "path": "dairy.js",
+        "bytes": 3728,
+        "sha256": "8ae85d2d01977d8208c698f69d8ae35aa7ffa4f0d95871959a7d6c9ed2a135d4"
+      },
+      {
+        "path": "district3d.html",
+        "bytes": 21771,
+        "sha256": "149eafad6b926a5226184009b17b5111657abdc61aef7e04dc40aa4c70fcd978"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-building-coverage.json",
+        "bytes": 4981,
+        "sha256": "da20a6ccb47e033724ff7f5dc5839107c9bab2a6c15514f0d597c77c777fa73f"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-city-4x.json",
+        "bytes": 16973,
+        "sha256": "77207b6c637eb16593d9f8444b36203a5dbfa903e96a9f57f9d1b788c0e30d59"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-civic-work.json",
+        "bytes": 4812,
+        "sha256": "117d366faa4c4d01ff48ef178cf6b4f132ce5d7b962fcb4b670409b3d49e5118"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-guard-patrol.json",
+        "bytes": 2416,
+        "sha256": "fa200c7ab34623344a5eac95e1e35f078951ece5121fd1e292372b1b59d431c4"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-harvest-work.json",
+        "bytes": 13813,
+        "sha256": "2cd2ad9022f7b3570877fb8bfe11e4e9ba3c9f1b5c66bb1d304431848d7595e6"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-home-visits.json",
+        "bytes": 18469,
+        "sha256": "09eec999ec4afa7a59310dc626d61b93db071b6ba87a1a50b9c5f831a4e7779b"
+      },
+      {
+        "path": "docs/benchmarks/2026-11-19-workplace-contacts.json",
+        "bytes": 16499,
+        "sha256": "fcdea20861b82af07e93b8c0080ce3962088cbf79e37872750ff478620c2a0d1"
+      },
+      {
+        "path": "docs/model-index.json",
+        "bytes": 120145,
+        "sha256": "d28d67a419a2d5819f0af18db5704c6b495204dafdd746959c8e39ca63d57c65"
+      },
+      {
+        "path": "fauna.js",
+        "bytes": 20029,
+        "sha256": "c1793cc10d251faca9db0375d87fec90eab793fb344f8cbb9e98acda80aafce6"
+      },
+      {
+        "path": "game3d/actors.js",
+        "bytes": 87391,
+        "sha256": "a1c848368bc88069dcaa937b3e03528d1d092f2c918b49ca19249f13a4a7edaf"
+      },
+      {
+        "path": "game3d/artisan-contacts.js",
+        "bytes": 6195,
+        "sha256": "c1fc8b198aea7d72aa2b5534969b26987e6e66f1408d1f4db0e1c222104b190b"
+      },
+      {
+        "path": "game3d/building-foundations.js",
+        "bytes": 10750,
+        "sha256": "f1dd3b679b69edc26c0a3b0416cb9c547369659d6e43f4d6bfc7142efc9e2104"
+      },
+      {
+        "path": "game3d/buildings.js",
+        "bytes": 29163,
+        "sha256": "c32c35864ca6c0c8c7f70cbc7c9b724b1b7bc37b1767656633da59dfc57982ae"
+      },
+      {
+        "path": "game3d/clinic-contacts.js",
+        "bytes": 1256,
+        "sha256": "9e1ed2bc63da32eadbd4c6de49cfd9953f911c3d5c730df87dbb4799a47fab0f"
+      },
+      {
+        "path": "game3d/gathering-contacts.js",
+        "bytes": 1875,
+        "sha256": "c3bbe24cb25123aa98c2bd77cc452b43b0606a3d16d7a5d9a85d63744f14587a"
+      },
+      {
+        "path": "game3d/harvest-gear.js",
+        "bytes": 3563,
+        "sha256": "b7e5ed608e1d26725f171c04baa53420d1b2994a2ae3b44addf829fa96229f64"
+      },
+      {
+        "path": "game3d/home-visits.js",
+        "bytes": 11659,
+        "sha256": "70b37745ae49f38bacba3cfa1f7becce3af9ffd501f4d47e014356236de92d36"
+      },
+      {
+        "path": "game3d/imported-fauna.js",
+        "bytes": 7973,
+        "sha256": "3eb136166554f9d8af1fce4b9fee75c2298e31bd4ec3ced5352e98af2fef15f7"
+      },
+      {
+        "path": "game3d/renderer.js",
+        "bytes": 31844,
+        "sha256": "bc0575be6708ed532299715bd3f3e251f77c7470d8bc02a6308a2f364a58b9be"
+      },
+      {
+        "path": "game3d/resident-motion.js",
+        "bytes": 7180,
+        "sha256": "2f0193ee13a3dc4560f21ce6e15f5730fbc08be12967238dd301a9001d900e37"
+      },
+      {
+        "path": "game3d/water-carrier.js",
+        "bytes": 2637,
+        "sha256": "a75a84f1c9967271a6708dff5e706dc07e21d6783ac40b84b937c11006088793"
+      },
+      {
+        "path": "game3d/wildlife.js",
+        "bytes": 28310,
+        "sha256": "75406521a9d046d057ac4e7b1d08fcf93ff21bfab6ce81888c7623c978b2b99c"
+      },
+      {
+        "path": "game3d/work-poses.js",
+        "bytes": 7338,
+        "sha256": "67609c482e16bdaffb0177a595da2000b1494e6e1ef457e828ab7c45462f69aa"
+      },
+      {
+        "path": "game3d/workshop-architecture.js",
+        "bytes": 17847,
+        "sha256": "ff0957ccf4b1123f58b2a0a02f0cc0201d91ae1286fbc53e127c5120efa2e7ad"
+      },
+      {
+        "path": "game3d/workstations.js",
+        "bytes": 9650,
+        "sha256": "6145bc13e943268d006a8808cdd45225e902604a662c449fa669adfb4265470e"
+      },
+      {
+        "path": "goat-studio.html",
+        "bytes": 21464,
+        "sha256": "25354bac91590b8104e4cb3b276e70e5b1e0fff70d81477e5f4ec559fe12ce1a"
+      },
+      {
+        "path": "harvest-handling.js",
+        "bytes": 1259,
+        "sha256": "be11d50ec8f9f61e91dee20c027e8d277c95a31db0f71fc151b162a2a226c7a1"
+      },
+      {
+        "path": "index.html",
+        "bytes": 35860,
+        "sha256": "f4eb3d77088c6e7d549e7ac372594c81303db15af2c324e31cfc12a34062b724"
+      },
+      {
+        "path": "labor-life.js",
+        "bytes": 15135,
+        "sha256": "9f012e06a3f6a8a35a6b176290e68e3f35e451bff60a5d774de65a03a658acbb"
+      },
+      {
+        "path": "mallards.html",
+        "bytes": 5151,
+        "sha256": "78f9c30839cc2502db1e0354cde1c61382670ca449d924245b90c99badb230f2"
+      },
+      {
+        "path": "model-atlas/index.html",
+        "bytes": 12876,
+        "sha256": "e77f54da655cc85507c726af3908686b1e3862ab16125888468d58386f6c1668"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/harvest-work/fishing.webp",
+        "bytes": 80222,
+        "sha256": "8ddb386c3f8b903b0ce273be1a23341d2d4dfc0fdc35117155da63234e7e1afa"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/harvest-work/hunting.webp",
+        "bytes": 115038,
+        "sha256": "b59a3cb2379f62a68f674a8899224ab2a7d9002cc313c97575ba24e75b22787c"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/resident-buildings/home-bench.webp",
+        "bytes": 91486,
+        "sha256": "5c1a8b674ebfd0baefde54d73e6492373fb913d1640111f40dd742c6dd96fdb7"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/resident-buildings/home-door.webp",
+        "bytes": 93798,
+        "sha256": "b4854423418629fcbdb2cdd294abf1a34c1d388f6bcac2d6dc99e73ac5f16b27"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/resident-buildings/home-roof.webp",
+        "bytes": 102570,
+        "sha256": "0c88d5dff326ef0419014e636452c7bbe66483debc859b4f4b69e8e417ea2c5b"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/residents-and-buildings/fieldwork.webp",
+        "bytes": 197338,
+        "sha256": "f84cf3756163a84f6b617b2f0b79564640802fda3a503ac2e7a5f460c1db3f86"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/residents-and-buildings/guard-at-gate.webp",
+        "bytes": 43348,
+        "sha256": "dbbf3be428ed7c110777b5d894d5442df6023101dafd812a3fa81beda23fa936"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/residents-and-buildings/guard-step.webp",
+        "bytes": 22780,
+        "sha256": "fd935f7b6360fca9032235a8c6acf679e5c580b4c49ca2c14156fdf9e89fe238"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/residents-and-buildings/offering.webp",
+        "bytes": 111064,
+        "sha256": "c3dda80bb25b2662bd6ee77d7e8d1af389bf528a255ad42661239da9d1d9114c"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/residents-and-buildings/receive.webp",
+        "bytes": 93762,
+        "sha256": "fb245482b9c01676146bcb78600f1e6f5755c50db5eb2623e8fd729b89b6bde2"
+      },
+      {
+        "path": "roadmap/evidence/2026-11-19/residents-and-buildings/workshops.webp",
+        "bytes": 120588,
+        "sha256": "d157cf616968b9d36e962bf6915c21cb9053081bbd905433e895a20d787a0caf"
+      },
+      {
+        "path": "roadmap/index.html",
+        "bytes": 5146422,
+        "sha256": "4c9d94a6d8427ad45a7d5058c37cb60afe34d01a80f5875146b08899091aa1c8"
+      },
+      {
+        "path": "roadmap/manifest.json",
+        "bytes": 17947,
+        "sha256": "a53936ed2673e427114f75f53a9fc37c1a5e4bdba939af7ea2d305b31905752c"
+      },
+      {
+        "path": "roadmap/reports/2026-11-19-residents-and-buildings.md",
+        "bytes": 57263,
+        "sha256": "dcdf576facc785a816e1d5b79063096262e71218b25f73f2e1f7b43cc5844a33"
+      },
+      {
+        "path": "roadmap/snapshot.json",
+        "bytes": 5088748,
+        "sha256": "46dd1a74e7415e5b961b19982f3f36c9969fa7d258fc08300cb504462c896785"
+      },
+      {
+        "path": "scripts/sumer-building-studio.html",
+        "bytes": 7823,
+        "sha256": "7f62e1dd1652c5a1348feb774889bf9a0a30d7bb6953c2b71ae5be78ad46c0ec"
+      },
+      {
+        "path": "service-court.js",
+        "bytes": 7873,
+        "sha256": "1625915e05ffdf4c45e96dc0d65b8b635e7e35220b2adc3679f7beee84e6fbc1"
+      },
+      {
+        "path": "workforce.js",
+        "bytes": 108238,
+        "sha256": "ba1698076a8eb139febd3e079febe12ea9e85980b95bb70f0866974eaef3f78d"
+      }
+    ]
+  },
+  "productionCatalog": {
+    "summary": {
+      "cityWall": {
+        "parts": 3,
+        "triangles": 732,
+        "camera": 12,
+        "gl": 0
+      },
+      "cityGate": {
+        "parts": 19,
+        "triangles": 5684,
+        "camera": 23,
+        "gl": 0
+      },
+      "watchHouse": {
+        "parts": 14,
+        "triangles": 5282,
+        "camera": 12,
+        "gl": 0
+      },
+      "musicHouse": {
+        "parts": 8,
+        "triangles": 2244,
+        "camera": 12,
+        "gl": 0
+      },
+      "ishtarGate": {
+        "parts": 7,
+        "triangles": 636,
+        "camera": 30,
+        "gl": 0
+      },
+      "cowshed": {
+        "parts": 8,
+        "triangles": 7364,
+        "camera": 23,
+        "gl": 0
+      },
+      "pottery": {
+        "parts": 12,
+        "triangles": 19840,
+        "camera": 12,
+        "gl": 0
+      },
+      "joineryYard": {
+        "parts": 7,
+        "triangles": 4368,
+        "camera": 12,
+        "gl": 0
+      },
+      "coppersmith": {
+        "parts": 11,
+        "triangles": 4980,
+        "camera": 12,
+        "gl": 0
+      },
+      "matYard": {
+        "parts": 6,
+        "triangles": 2668,
+        "camera": 12,
+        "gl": 0
+      },
+      "basketry": {
+        "parts": 8,
+        "triangles": 12584,
+        "camera": 12,
+        "gl": 0
+      },
+      "dairyStore": {
+        "parts": 9,
+        "triangles": 5544,
+        "camera": 12,
+        "gl": 0
+      },
+      "linenYard": {
+        "parts": 8,
+        "triangles": 6978,
+        "camera": 12,
+        "gl": 0
+      },
+      "bakery": {
+        "parts": 8,
+        "triangles": 8672,
+        "camera": 12,
+        "gl": 0
+      },
+      "brewery": {
+        "parts": 10,
+        "triangles": 15416,
+        "camera": 12,
+        "gl": 0
+      },
+      "harbor": {
+        "parts": 8,
+        "triangles": 11392,
+        "camera": 12,
+        "gl": 0
+      },
+      "kiln": {
+        "parts": 8,
+        "triangles": 9276,
+        "camera": 12,
+        "gl": 0
+      },
+      "brickyard": {
+        "parts": 7,
+        "triangles": 12208,
+        "camera": 12,
+        "gl": 0
+      },
+      "waterpoint": {
+        "parts": 9,
+        "triangles": 7278,
+        "camera": 12,
+        "gl": 0
+      },
+      "tailor": {
+        "parts": 11,
+        "triangles": 7296,
+        "camera": 12,
+        "gl": 0
+      },
+      "sheepfold": {
+        "parts": 8,
+        "triangles": 8686,
+        "camera": 23,
+        "gl": 0
+      },
+      "weaver": {
+        "parts": 11,
+        "triangles": 5148,
+        "camera": 12,
+        "gl": 0
+      },
+      "house": {
+        "parts": 11,
+        "triangles": 9929,
+        "camera": 12,
+        "gl": 0
+      },
+      "field": {
+        "parts": 2,
+        "triangles": 22408,
+        "camera": 12,
+        "gl": 0
+      },
+      "clay": {
+        "parts": 12,
+        "triangles": 12382,
+        "camera": 23,
+        "gl": 0
+      },
+      "reed": {
+        "parts": 29,
+        "triangles": 22177,
+        "camera": 23,
+        "gl": 0
+      },
+      "shrine": {
+        "parts": 8,
+        "triangles": 13432,
+        "camera": 12,
+        "gl": 0
+      },
+      "garden": {
+        "parts": 13,
+        "triangles": 19902,
+        "camera": 23,
+        "gl": 0
+      },
+      "depot": {
+        "parts": 9,
+        "triangles": 11976,
+        "camera": 12,
+        "gl": 0
+      },
+      "granary": {
+        "parts": 9,
+        "triangles": 6740,
+        "camera": 12,
+        "gl": 0
+      },
+      "ziggurat": {
+        "parts": 8,
+        "triangles": 15024,
+        "camera": 23,
+        "gl": 0
+      },
+      "bridge": {
+        "parts": 5,
+        "triangles": 5980,
+        "camera": 12,
+        "gl": 0
+      },
+      "fishing": {
+        "parts": 11,
+        "triangles": 9500,
+        "camera": 12,
+        "gl": 0
+      },
+      "hunting": {
+        "parts": 12,
+        "triangles": 6950,
+        "camera": 23,
+        "gl": 0
+      },
+      "logging": {
+        "parts": 21,
+        "triangles": 37549,
+        "camera": 23,
+        "gl": 0
+      },
+      "quarry": {
+        "parts": 11,
+        "triangles": 7650,
+        "camera": 23,
+        "gl": 0
+      },
+      "healer": {
+        "parts": 12,
+        "triangles": 9172,
+        "camera": 12,
+        "gl": 0
+      },
+      "levee": {
+        "parts": 3,
+        "triangles": 280,
+        "camera": 12,
+        "gl": 0
+      },
+      "canal": {
+        "parts": 2,
+        "triangles": 2192,
+        "camera": 12,
+        "gl": 0
+      },
+      "market": {
+        "parts": 9,
+        "triangles": 14852,
+        "camera": 23,
+        "gl": 0
+      },
+      "house-2": {
+        "parts": 11,
+        "triangles": 9679,
+        "camera": 12,
+        "gl": 0
+      },
+      "house-3": {
+        "parts": 15,
+        "triangles": 9563,
+        "camera": 12,
+        "gl": 0
+      },
+      "reedCamp": {
+        "parts": 5,
+        "triangles": 5405,
+        "camera": 12,
+        "gl": 0
+      },
+      "road": {
+        "parts": 1,
+        "triangles": 144,
+        "camera": 12,
+        "gl": 0
+      },
+      "starterHut": {
+        "parts": 10,
+        "triangles": 8756,
+        "camera": 12,
+        "gl": 0
+      }
+    },
+    "exceptions": [],
+    "http": [
+      [
+        404,
+        "https://reinekes.github.io/favicon.ico"
+      ]
+    ],
+    "warn": []
+  },
+  "ordinaryCivicScenes": [
+    {
+      "facts": {
+        "url": "/new_babylon_demo/index.html",
+        "kind": "offering",
+        "id": 0,
+        "feet": [
+          52.15,
+          0,
+          50.419999999999995
+        ],
+        "station": {
+          "x": 8.691666666666666,
+          "y": 8.403333333333332
+        },
+        "target": {
+          "x": 8.738333333333333,
+          "y": 8.323333333333334,
+          "height": 0.522
+        },
+        "palms": [
+          [
+            52.481719970703125,
+            0.7018877863883972,
+            50.11008834838867
+          ],
+          [
+            52.3276481628418,
+            0.5942028760910034,
+            49.997920989990234
+          ]
+        ],
+        "loaded": true,
+        "webgl": 2,
+        "gl": 0
+      },
+      "errors": [],
+      "http": []
+    },
+    {
+      "facts": {
+        "url": "/new_babylon_demo/index.html",
+        "kind": "collect",
+        "id": 8,
+        "feet": [
+          57,
+          0,
+          51.01500000000018
+        ],
+        "station": {
+          "x": 9.5,
+          "y": 8.5
+        },
+        "target": {
+          "x": 9.43,
+          "y": 8.43,
+          "height": 0.83
+        },
+        "palms": [
+          [
+            56.80392074584961,
+            0.9115892648696899,
+            50.54947280883789
+          ],
+          [
+            56.54292297363281,
+            0.9122663140296936,
+            50.80388641357422
+          ]
+        ],
+        "loaded": true,
+        "webgl": 2,
+        "gl": 0
+      },
+      "errors": [],
+      "http": []
+    },
+    {
+      "facts": {
+        "url": "/new_babylon_demo/index.html",
+        "kind": "receive",
+        "id": 8,
+        "feet": [
+          59.23,
+          0,
+          55.74728476207648
+        ],
+        "station": {
+          "x": 9.871666666666666,
+          "y": 9.28
+        },
+        "target": {
+          "x": 9.871666666666666,
+          "y": 9.176666666666666,
+          "height": 0.87
+        },
+        "palms": [
+          [
+            59.42433166503906,
+            1.029720664024353,
+            55.26280212402344
+          ],
+          [
+            59.03580856323242,
+            1.0300383567810059,
+            55.26456832885742
+          ]
+        ],
+        "loaded": true,
+        "webgl": 2,
+        "gl": 0
+      },
+      "errors": [],
+      "http": []
+    },
+    {
+      "facts": {
+        "url": "/new_babylon_demo/index.html",
+        "kind": "study",
+        "id": 0,
+        "feet": [
+          53.58,
+          0,
+          50.419999999999995
+        ],
+        "station": {
+          "x": 8.93,
+          "y": 8.403333333333332
+        },
+        "target": {
+          "x": 8.93,
+          "y": 8.336666666666666,
+          "height": 1.05
+        },
+        "palms": [
+          [
+            53.71147537231445,
+            1.07304847240448,
+            50.08145523071289
+          ],
+          [
+            53.509742736816406,
+            1.1302158832550049,
+            50.070613861083984
+          ]
+        ],
+        "loaded": true,
+        "webgl": 2,
+        "gl": 0
+      },
+      "errors": [],
+      "http": []
+    }
+  ],
+  "ordinaryHomes": {
+    "url": "https://reinekes.github.io/new_babylon_demo/index.html",
+    "release": "resident-workplaces-20261119",
+    "commit": "087d434464383adc208e7c25041e290e0eefcec8",
+    "verifiedAtUTC": "2026-11-19T16:56:58.451Z",
+    "webGL": "Chrome WebGL2",
+    "method": "Three ordinary unmodified founder-city saves from the simulation, seed 137, strict Sumer. Bench and roof retained their local world height. Enter used unpaused normal time to follow a returning resident. Photo mode only changed the framing and daylight.",
+    "records": [
+      {
+        "stage": "bench",
+        "resident": 8,
+        "house": "10,11",
+        "originalSimTime": 4.24,
+        "positionM": [
+          58.54,
+          0.073,
+          67.5
+        ],
+        "pelvisM": [
+          58.5554,
+          0.465,
+          67.5
+        ],
+        "nativeSkin": true,
+        "webGLError": 0,
+        "browserErrors": [],
+        "failedHTTP": []
+      },
+      {
+        "stage": "roof",
+        "resident": 7,
+        "house": "6,11",
+        "originalSimTime": 2.64,
+        "positionM": [
+          36.56,
+          2.175,
+          65.02
+        ],
+        "pelvisM": [
+          36.5635,
+          2.305,
+          65.0486
+        ],
+        "nativeSkin": true,
+        "webGLError": 0,
+        "browserErrors": [],
+        "failedHTTP": []
+      },
+      {
+        "stage": "enter",
+        "resident": 0,
+        "house": "6,7",
+        "originalSimTime": 63.6,
+        "positionM": [
+          35.7604,
+          0.0718,
+          43.4624
+        ],
+        "pelvisM": [
+          35.776,
+          0.986,
+          43.4478
+        ],
+        "nativeSkin": true,
+        "webGLError": 0,
+        "browserErrors": [],
+        "failedHTTP": []
+      }
+    ]
+  },
+  "ordinaryHarvest": {
+    "checkedAtUTC": "2026-11-19T16:57:34.886031+00:00",
+    "source": "GitHub Pages, ordinary index.html loaded in fresh Chrome browser contexts",
+    "release": "resident-workplaces-20261119",
+    "gameCommit": "087d4344",
+    "coordinateUnits": "metres",
+    "scenes": [
+      {
+        "name": "fish-lift",
+        "document": "https://reinekes.github.io/new_babylon_demo/index.html?resident-harvest=1795107364156",
+        "releaseModules": [
+          "./game3d/actors.js?v=resident-workplaces-20261119",
+          "./labor-life.js?v=resident-workplaces-20261119",
+          "./game3d/harvest-gear.js?v=resident-workplaces-20261119",
+          "./harvest-handling.js?v=resident-workplaces-20261119"
+        ],
+        "resident": 0,
+        "position": [
+          34.228600443478456,
+          -0.0018519636032380271,
+          83.37706758678132
+        ],
+        "webgl": 2,
+        "glError": 0,
+        "failedRequests": [],
+        "uncaughtExceptions": [],
+        "lineTip": [
+          31.923288345336914,
+          0.8877283930778503,
+          83.32106018066406
+        ],
+        "fishOnHook": [
+          31.923288345336914,
+          0.8877283930778503,
+          83.3210678100586
+        ],
+        "attachmentGapMetres": 7.62939453125e-06,
+        "liftProgress": 0.5357142857142877,
+        "fishHeightAboveWaterMetres": 1.0677283930778503,
+        "status": "passed"
+      },
+      {
+        "name": "dress",
+        "document": "https://reinekes.github.io/new_babylon_demo/index.html?resident-harvest=1795107387305",
+        "releaseModules": [
+          "./game3d/actors.js?v=resident-workplaces-20261119",
+          "./labor-life.js?v=resident-workplaces-20261119",
+          "./game3d/harvest-gear.js?v=resident-workplaces-20261119",
+          "./harvest-handling.js?v=resident-workplaces-20261119"
+        ],
+        "resident": 0,
+        "position": [
+          68.15147186257613,
+          0,
+          62.60402020253554
+        ],
+        "webgl": 2,
+        "glError": 0,
+        "failedRequests": [],
+        "uncaughtExceptions": [],
+        "gazelle": {
+          "id": "gazelle-11",
+          "dead": true,
+          "hauler": 0,
+          "point": [
+            68.0383347775863,
+            0.79,
+            62.0383347775863
+          ],
+          "rig": true
+        },
+        "benchGeometryCenter": [
+          68.03833484649658,
+          0.395000011920929,
+          62.03833484649658
+        ],
+        "benchTop": 0.79,
+        "horizontalGapMetres": 9.745385528546885e-08,
+        "status": "passed"
+      }
+    ],
+    "passed": true
+  }
+}
