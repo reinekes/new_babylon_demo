@@ -50,7 +50,8 @@
           "image": "evidence/2026-11-20/communal-house/game-courtyard.webp",
           "model": "../assets/3d/sumer-buildings/communalHouse.glb",
           "checked": "../docs/benchmarks/2026-11-20-communal-house-and-herds.json",
-          "note": "Новая постройка на четырёх клетках. Из ворот видны общий зал, скамья под тростниковым навесом, печь и лестница на крышу."
+          "note": "Новая постройка на четырёх клетках. Из ворот видны общий зал, скамья под тростниковым навесом, печь и лестница на крышу.",
+          "release": "../docs/versions/2026-11-20.md"
         },
         {
           "id": "starterHut",
