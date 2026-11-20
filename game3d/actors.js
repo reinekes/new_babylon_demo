@@ -900,7 +900,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // the running channels here and preserve their current clip and frame.
   const channels=a.sampledChannels?[]:[...(group?.animatables||[])];
   for(const channel of channels)manuallySampledChannels.add(channel);
-  const rig={meshes:children,transformNodes:[a.root,...a.root.getChildTransformNodes(false,n=>!(n instanceof B.AbstractMesh))],skeletons:a.skeletons,animationGroups:[...a.groups.values()],materials:a.materials,channels};
+  const childMeshes=new Set(children);
+  const rig={meshes:children,transformNodes:[a.root,...a.root.getChildTransformNodes(false,n=>!childMeshes.has(n))],skeletons:a.skeletons,animationGroups:[...a.groups.values()],materials:a.materials,channels};
   // Plain membership lists avoid AssetContainer's scene/context observers.
   // These are already instantiated, actor-owned objects, not loader assets.
   for(const [key,kind]of sleepingLists)for(const asset of rig[key])scene[`remove${kind}`](asset);

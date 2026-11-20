@@ -58,7 +58,9 @@ test('hidden resident rigs warm one per frame and are reused when a crowd leaves
  B.SceneLoader.LoadAssetContainerAsync=async()=>mockContainer(scene,'resident');let view;
  try{
   scene.activeCamera=new B.FreeCamera('warmup-camera',new B.Vector3(0,5,-10),scene);
-  view=await createGameActors(B,scene,{}, {includeFauna:false,warmHiddenResidents:true});
+  // The compact WebGL game bundle exposes Mesh and TransformNode, but omits AbstractMesh.
+  const gameRuntime=Object.create(B,{AbstractMesh:{value:undefined}});
+  view=await createGameActors(gameRuntime,scene,{}, {includeFauna:false,warmHiddenResidents:true});
   const s=createGame({start:'established'}),base=s.citizens.find(c=>c.age>=16);
   s.citizens=Array.from({length:8},(_,i)=>({...base,id:1000+i,phase:'home',age:30,cargo:{},buildCargo:{}}));s.population=8;s.simTime=35;
   assert.equal(actorViewCitizens(s).length,0);const before=JSON.stringify(s);
