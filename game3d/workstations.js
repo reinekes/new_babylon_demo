@@ -65,7 +65,7 @@ function milkingApproach(b,c,stand){
 }
 export function workstationFor(b,c,index=0){
  if(!b?.type||!['working','strike'].includes(c.activity?.stage)||c.walking||c.carrying)return null;
- if(!b.construction&&hasArtisanContact(b.type))return artisanContact(b,c,index,workstationWorldPoint);
+ if(!b.construction&&(hasArtisanContact(b.type)||b.type==='kiln'&&c.activity.task==='light-kiln'))return artisanContact(b,c,index,workstationWorldPoint);
  const layout=b.construction||b.type==='field'?[{kind:b.construction?'building':'farming',x:(b.workCorner?.[0]||1)*(b.construction?2.72:2.62),z:(b.workCorner?.[1]||1)*(b.construction?2.72:2.62),height:b.construction?.95:c.activity.task==='harvesting'?.65:.12,sx:b.workCorner?.[0]||1,sz:b.workCorner?.[1]||1}]:workstationLayout(b);if(!layout.length)return null;
  const stations=layout.map(a=>({...a,world:workstationWorldPoint(b,[a.x,a.height,a.z])})).sort((a,d)=>Math.hypot(a.world.x-c.x,a.world.y-c.y)-Math.hypot(d.world.x-c.x,d.world.y-c.y));
  if(b.type==='musicHouse'&&c.activity.task==='lyre'){

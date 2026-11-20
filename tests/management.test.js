@@ -12,7 +12,8 @@ test('high priority takes scarce free workers and changing it preserves the old 
  run(s,3);assert.ok(s.buildings.find(b=>b.x===11&&b.y===9).construction.delivered.clay>0);assert.ok(s.citizens.some(c=>c.site==='10,9'));assert.ok(decode(encode(s)));
 });
 test('manual builders only labour, carriers only deliver, role change waits for current cargo',()=>{
- const s=stocked();for(const c of s.citizens)management.setCitizenRole(s,c.id,'production');management.setCitizenRole(s,10,'builder');management.setCitizenRole(s,11,'carrier');build(s,'house',10,9);
+ const s=stocked();s.simTime=s.seasonElapsed=2.5; // 09:00, both named workers have left the morning window.
+ for(const c of s.citizens)management.setCitizenRole(s,c.id,'production');management.setCitizenRole(s,10,'builder');management.setCitizenRole(s,11,'carrier');build(s,'house',10,9);
  const builder=s.citizens[10],carrier=s.citizens[11];run(s,1);assert.equal(builder.siteDuty,'builder');assert.deepEqual(builder.buildCargo,{});assert.equal(carrier.siteDuty,'carrier');assert.ok(Object.values(carrier.buildCargo).some(n=>n>0));
  management.setCitizenRole(s,11,'builder');assert.equal(carrier.role,'carrier');assert.equal(carrier.pendingRole,'builder');run(s,4);assert.equal(carrier.role,'builder');assert.equal(carrier.pendingRole,undefined);assert.ok(decode(encode(s)));
 });

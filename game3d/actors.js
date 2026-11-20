@@ -1,10 +1,11 @@
+import {workRate} from '../wellbeing.js';
 import {freightGesture} from '../service-court.js';
 import {fishingHands,updateFishingTackle} from './harvest-gear.js';
 import {carcassPosition} from '../harvest-handling.js';
 import {createHomeVisits} from './home-visits.js';
 import {waterCarrierAtBank,dipWaterVessel} from './water-carrier.js';
 import {gatheringToolLength} from './gathering-contacts.js';
-import {artisanWalk} from './artisan-contacts.js';
+import {artisanWalk,KILN_TAPER_LENGTH} from './artisan-contacts.js';
 import {showBlessingApproach} from '../blessing-presentation.js';
 import {showRainObserver} from '../rain-presentation.js';
 import {createActorShadowFilter} from './shadow-casters.js';
@@ -49,9 +50,19 @@ export function actorViewFrame(state){
  // Pair once, using the actual rendered child-play positions and walking flags.
  // A hand must be able to reach the cat; the general neighbourhood test is wider.
  const pettingPairs=catPettingPairs(state,residents).filter(p=>{const c=byId.get(p.citizenId),scale=c.age<16?.55+Math.max(0,Math.min(c.age,15))*.022:1;return Math.hypot(c.x-p.x,c.y-p.y)<=.16*scale;});
- const workplaces=workplaceIndex(state);
+ const workplaces=workplaceIndex(state);let kilnTenders;
  const visible=new Map(residents.map(c=>{
   const activity=c.controlled&&c.activity?c.activity:actorWorkActivity(state,c,pettingPairs,workplaces)||workplaceActivity(state,c,workplaces);
+  if(!c.controlled&&activity?.task==='light-kiln'&&activity.stage==='working'){
+   // Only the worker whose interval completes first takes a taper. A second
+   // member of the crew tends the charge at the loading bench.
+   kilnTenders??=new Map();
+   const left=(1-activity.progress)/workRate(c,'kiln',workplaces.get(c.home)),lead=kilnTenders.get(c.work);
+   if(!lead||left<lead.left){
+    if(lead)lead.activity.task='kiln';
+    kilnTenders.set(c.work,{activity,left});
+   }else activity.task='kiln';
+  }
   const freightHandoff=freightGesture(c,workplaces,state.district?.jobs);
   const flock=activity?.task==='sheepfold'&&activity.stage==='waiting'&&!c.carrying?flockLeader(state,workplaces.get(c.work)):null;
   return [c.id,flock?{...c,x:flock.x,y:flock.y,walking:flock.walking,herding:true,activity}:{...c,activity,...(freightHandoff?{freightHandoff}:{})}];
@@ -146,6 +157,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
  const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#829e91'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952'),lapis=mat('relic-lapis','#276b94');
  const shadowShape=B.MeshBuilder.CreateCapsule('resident-shadow-shape',{height:1.7,radius:.26,tessellation:6,capSubdivisions:2,subdivisions:1},scene);shadowShape.isVisible=false;shadowShape.isPickable=false;shadowShape.material=linen;const shadowFilter=createActorShadowFilter();
+ const taperEmber=mat('taper-ember','#ff893a');taperEmber.emissiveColor=B.Color3.FromHexString('#ff7a31');
  gold.emissiveColor=B.Color3.FromHexString('#77541c').toLinearSpace();
  function register(root){for(const m of root.getChildMeshes()){m.receiveShadows=true;m.isPickable=true;if(!meshes.includes(m))meshes.push(m);}}
  function prune(root){for(const m of root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}}
@@ -154,12 +166,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // Babylon creates one scheduler entry per clip channel. Distant idle and
  // walk loops already sample authored poses here, without a clock tick.
  const manuallySampledChannels=new Set();
+ function restoreChannels(channels){
+  for(const channel of channels)if(!manuallySampledChannels.delete(channel))scene.animatables.push(channel);
+ }
  function attachClock(a){
-  if(!a.sampledChannels)return;
-  for(const channel of a.sampledChannels){
-   if(!manuallySampledChannels.delete(channel))scene.animatables.push(channel);
-  }
-  a.sampledChannels=null;
+  if(a.sampledChannels){restoreChannels(a.sampledChannels);a.sampledChannels=null;}
  }
  function queueManualChannels(a,group){
   a.sampledChannels=[...group.animatables];
@@ -339,7 +350,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  }
  function workerTool(a,kind){
   if(a.toolKind===kind){a.tool.setEnabled(!!kind);return;}
-  a.toolKind=kind;a.tool.scaling.setAll(1);const grip=kind==='hunting'?a.hands.l:a.hands.r;if(grip){a.tool.parent=grip;a.tool.position.set(0,kind==='hoe'?0:.045,0);a.tool.rotationQuaternion=B.Quaternion.Identity();}prune(a.tool);for(const n of a.tool.getChildren())n.dispose();
+  a.toolKind=kind;a.tool.scaling.setAll(1);const grip=kind==='hunting'?a.hands.l:a.hands.r;if(grip){a.tool.parent=grip;a.tool.position.set(0,kind==='hoe'||kind==='kiln-taper'?0:.045,0);a.tool.rotationQuaternion=B.Quaternion.Identity();}prune(a.tool);for(const n of a.tool.getChildren())n.dispose();
   if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();a.fishingLine=null;}
   if(a.caughtFish){prune(a.caughtFish);a.caughtFish.dispose();a.caughtFish=null;}
   if(a.shotArrow){prune(a.shotArrow);a.shotArrow.dispose();a.shotArrow=null;}
@@ -347,6 +358,12 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(a.scribeTablet){prune(a.scribeTablet);a.scribeTablet.dispose();a.scribeTablet=null;}
   a.tool.setEnabled(!!kind);if(!kind)return;
   // Every implement shares its grip origin with the GLB palm. No detached tools.
+  if(kind==='kiln-taper'){
+   for(let i=0;i<3;i++){const angle=i*2*Math.PI/3;box('kiln-reed-taper',a.tool,reed,Math.cos(angle)*.013,.19,Math.sin(angle)*.013,.022,.62-i*.014,.022);}
+   for(const h of [.09,.34])sphere('kiln-reed-binding',a.tool,linen,0,h,0,.057,.026,.057);
+   sphere('kiln-charred-reeds',a.tool,dark,0,.48,0,.069,.13,.065);
+   sphere('kiln-taper-ember',a.tool,taperEmber,0,KILN_TAPER_LENGTH,0,.057,.047,.055);return;
+  }
   if(kind==='reed-knife'||kind==='clay-hoe'||kind==='date-pole'){
    const h=kind==='reed-knife'?.15:kind==='clay-hoe'?.89:2.47;
    box('gathering-shaft',a.tool,wood,0,h/2,0,.038,h,.038);
@@ -539,6 +556,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   a.workContact=viewPosition.contact||null;a.presentationCitizen=c;
   let dx=0,dz=0,distance=0;
   const aisle=artisanWalk(a,a.workContact,c,dt,speed,paused);
+  const carryingTaper=aisle&&!aisle.exiting&&a.workContact?.task==='light-kiln';
   if(aisle){a.workContact=null;c={...c,walking:true,activity:null,phase:'toWork'};}
   const offsetX=(aisle?.x??viewPosition.x)-c.x,offsetY=(aisle?.y??viewPosition.y)-c.y;
   const eventContact=!!c.eventContact;
@@ -604,7 +622,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(keepsake&&!a.playAnimal){a.playAnimal=clayAnimal(a.root.name,a.hands.r||a.root,'peace');if(!a.hands.r)a.playAnimal.position.set(.25,.05,.3);}
    a.playAnimal?.setEnabled(!!(playing||keepsake));
   }
-  if(a.tool&&plough)workerTool(a,null);
+  if(a.tool&&carryingTaper)workerTool(a,'kiln-taper');
+  else if(a.tool&&plough)workerTool(a,null);
   else if(a.tool&&(!paused||a.toolKind===null||a.ploughPoseChanged)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
    const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,c.herding?'herd-staff':!c.carrying&&(active||c.activity?.kind==='fishing'&&c.activity.stage==='approach')?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
@@ -636,7 +655,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  // Animation clips set the skeletal base, then apply small task-specific arm gestures.
  const observer=scene.onAfterAnimationsObservable.add(()=>{
   for(const a of people.values()){
-   if(!a.root.isEnabled()||a.poseSample===false)continue;
+   if(a.sleepingRig||!a.root.isEnabled()||a.poseSample===false)continue;
    const plough=a.plough;
    if(a.manualIdle&&!a.paused){const g=a.groups.get(a.clip),fps=g.targetedAnimations[0]?.animation.framePerSecond||30,span=g.to-g.from;if(span>0)g.goToFrame(g.from+(a.time*fps)%span);}
    // Walking animatables are paused, avoiding a second clock-based evaluation.
@@ -679,7 +698,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     for(let solve=0;solve<4;solve++){poseArm(a,'l',left);poseArm(a,'r',right);}
    }else if(Number.isFinite(a.c.homeVisit?.seatHeight)){
     const floor=a.c.homeVisit.stage!=='bench',height=a.c.homeVisit.seatHeight/a.root.scaling.y+(floor?.13:.11);
-    poseArm(a,'l',vec(floor?-.31:-.19,height,.32));poseArm(a,'r',vec(floor?.31:.19,height,.32));
+    const gesture=a.c.homeVisit.speaking?(reducedMotion?.11:.19+.11*Math.sin(a.time*3.4)):0;
+    const left=a.c.homeVisit.companion===1?gesture:0,right=gesture-left;
+    poseArm(a,'l',vec(-(floor?.31:.19)-left*.35,height+left,.32+left*.5));
+    poseArm(a,'r',vec((floor?.31:.19)+right*.35,height+right,.32+right*.5));
    }else if(a.c.homeVisit?.climbing){
     // Both directions face the wall. Grip alternates with rung height so a pause
     // keeps each hand on the same rung, even at a high simulation speed.
@@ -805,6 +827,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     }
     if(a.workContact?.kind==='artisan'){
      const p=a.workContact.target,point=vec(p.x*6,a.root.position.y+p.height,p.y*6);
+     if(a.toolKind==='kiln-taper'&&a.workContact.progress>=.88){
+      const palm=a.hands.r,grip=palm.getAbsolutePosition(),away=grip.subtract(point).normalize();
+      const shaft=B.Vector3.TransformNormal(vec(0,KILN_TAPER_LENGTH,0),palm.getWorldMatrix()).length();
+      const inverse=a.root.getWorldMatrix().clone().invert(),gripTarget=B.Vector3.TransformCoordinates(point.add(away.scale(shaft)),inverse);
+      for(let solve=0;solve<3;solve++)poseArm(a,'r',gripTarget);
+      palm.computeWorldMatrix(true);
+     }
      direction=point.subtract(a.hands.r.getAbsolutePosition());
     }
     if(a.workContact?.kind==='vat'){
@@ -862,7 +891,16 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(state)update(state,0,{paused:true});
  }
  function storeSleepingRig(a){
-  const rig={meshes:a.root.getChildMeshes(),transformNodes:[a.root,...a.root.getChildTransformNodes(false)],skeletons:[...a.skeletons],animationGroups:[...a.groups.values()],materials:[...a.materials]};
+  a.root.setEnabled(false);a.lastX=null;a.lastY=null;
+  const children=a.root.getChildMeshes();
+  if(a.fishingLine){a.fishingLine.setEnabled(false);children.push(a.fishingLine);}
+  const group=a.groups.get(a.clip);
+  if(group)group.speedRatio=0;
+  // Distance-sampled tracks are already outside the engine clock. Park only
+  // the running channels here and preserve their current clip and frame.
+  const channels=a.sampledChannels?[]:[...(group?.animatables||[])];
+  for(const channel of channels)manuallySampledChannels.add(channel);
+  const rig={meshes:children,transformNodes:[a.root,...a.root.getChildTransformNodes(false,n=>!(n instanceof B.AbstractMesh))],skeletons:a.skeletons,animationGroups:[...a.groups.values()],materials:a.materials,channels};
   // Plain membership lists avoid AssetContainer's scene/context observers.
   // These are already instantiated, actor-owned objects, not loader assets.
   for(const [key,kind]of sleepingLists)for(const asset of rig[key])scene[`remove${kind}`](asset);
@@ -871,19 +909,25 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  const sleepingLists=[['transformNodes','TransformNode'],['meshes','Mesh'],['skeletons','Skeleton'],['animationGroups','AnimationGroup'],['materials','Material']];
  function releaseSleepingRig(a,restore=false){
   const rig=a.sleepingRig;if(!rig)return;
-  if(restore){for(const [key,kind]of sleepingLists)for(const asset of rig[key])scene[`add${kind}`](asset);for(const mesh of rig.meshes)meshes.push(mesh);}
+  restoreChannels(rig.channels);
+  if(restore){
+   for(const [key,kind]of sleepingLists)for(const asset of rig[key])scene[`add${kind}`](asset);
+   for(const mesh of rig.meshes)meshes.push(mesh);
+   a.root.setEnabled(true);
+   if(rig.resetPose)resetResidentPresentation(a);
+  }
   // Actor ownership/disposal remains with remove(a), including never-woken rigs.
   a.sleepingRig=null;
  }
  let courierCandidates=[],courierScanAt=-Infinity,lastCourierWarm=-Infinity;
- function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null,rainReaction=null,blessingApproach=null}={}){
+ function update(state,dt=1/60,{paused=false,speed=1,camera=null,viewportHeight=0,focusId=null,weather=null,rainReaction=null,blessingApproach=null}={}){
   if(disposed)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));speed=Math.max(0,Number.isFinite(speed)?speed:1);paused=paused||dt===0||speed===0;
   const replacedState=presentedState!==state;presentedState=state;
-  if(replacedState){courierScanAt=lastCourierWarm=-Infinity;courierCandidates=[];for(const a of people.values())resetResidentPresentation(a);}
+  if(replacedState){courierScanAt=lastCourierWarm=-Infinity;courierCandidates=[];for(const a of people.values()){if(a.sleepingRig)a.sleepingRig.resetPose=true;else resetResidentPresentation(a);}}
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused){poseTime+=dt*speed;poseClock+=dt;}
-  const frame=actorViewFrame(state),visible=homeVisits(state,showBlessingApproach(showRainObserver(frame.citizens,state,rainReaction),state,blessingApproach)),positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
+  const frame=actorViewFrame(state),visible=homeVisits(state,showBlessingApproach(showRainObserver(frame.citizens,state,rainReaction),state,blessingApproach),weather),positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   for(const c of visible)if(c.homeVisit)positions.set(c.id,{x:c.x,y:c.y,homeVisit:c.homeVisit});
   const teams=ambient?.hasPloughTeams?ploughTeams(state,visible):[];
   for(const team of teams)positions.set(team.driverId,{...team.driver,plough:team});
@@ -899,7 +943,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // route sample, facing and gait phase when optional detail becomes ready.
    if(a&&a.anatomy!==variant){continuity={lastX:a.lastX,lastY:a.lastY,yaw:a.yaw,walkPhase:a.walkPhase,viewOffsetX:a.viewOffsetX,viewOffsetY:a.viewOffsetY,eventContactActive:a.eventContactActive,ceremonyJoin:a.ceremonyJoin,rotationY:a.root.rotation.y};remove(a);people.delete(c.id);a=null;}
    if(!a){const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;if(continuity){const {rotationY,...fields}=continuity;Object.assign(a,fields);a.root.rotation.y=rotationY;}people.set(c.id,a);}
-   releaseSleepingRig(a,true);a.root.setEnabled(true);
+   if(a.sleepingRig)releaseSleepingRig(a,true);
    const important=!!(c.controlled||c.relic||c.miracleContact||c.funeralContact||c.eventContact||c.festivalContact||c.swimming||c.id===focusId);
    const pixels=residentScreenHeight(camera,{x:c.x*6,y:1,z:c.y*6},viewportHeight,1.7*anatomy.scale);
    const reduced=useResidentGeometryLOD(pixels,a.geometryReduced,important);
@@ -933,9 +977,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   if(warmHiddenResidents&&(warmRoom||courier)){const c=courier||(state.citizens||[]).find(c=>!seen.has(c.id)&&!people.has(c.id));if(c){
    const anatomy=residentAnatomy(c.age),historical=historicalSource&&usesHistoricalMan(c),variant=historical?'historical-man':anatomy.source==='adult'?(c.sex==='f'?'female':'male'):anatomy.source;
    const source=historical?historicalSource:anatomy.source==='child'?(childSource||residentSource):anatomy.source==='adolescent'?(adolescentSource||residentSource):c.sex==='f'?(femaleSource||residentSource):residentSource;
-   const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);a.root.setEnabled(false);storeSleepingRig(a);people.set(c.id,a);
+   const a=instantiate(source,`citizen-${c.id}`,{citizenId:c.id,child:c.age<16});a.anatomy=variant;a.footOffset=a.model.position.y;appearance(a,c,state,buildingTypes);storeSleepingRig(a);people.set(c.id,a);
   }}
-  const living=new Set((state.citizens||[]).map(c=>c.id));for(const c of visible)if(c.visitor)living.add(c.id);for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)){a.root.setEnabled(false);a.lastX=null;a.lastY=null;if(a.fishingLine)a.fishingLine.setEnabled(false);for(const g of a.groups.values())g.speedRatio=0;}
+  const living=new Set((state.citizens||[]).map(c=>c.id));for(const c of visible)if(c.visitor)living.add(c.id);for(const [id,a]of people)if(!living.has(id)){remove(a);people.delete(id);}else if(!seen.has(id)&&!a.sleepingRig)storeSleepingRig(a);
   ambient?.updateHerds(state,dt,paused,speed);
   const fauna=animalsFor(state).filter(c=>!ambient?.herdClaims(c.id)).map(c=>c.kind==='sheep'&&ambient?ambient.herdSheepPose(c):c).map(c=>c.kind==='cat'&&pettingCats.has(c.id)?{...c,behavior:'petting',walking:false}:c),animals=fauna.filter(c=>c.kind==='sheep'&&!ambient?.supportsFoldSheep(c)),seenSheep=new Set();for(const c of animals){
    seenSheep.add(c.id);let a=sheep.get(c.id);const index=Number(c.id.split('-').at(-1));

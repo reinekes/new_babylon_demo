@@ -54,7 +54,7 @@ import {validateFieldSoil} from './field-soil.js';
 import {depositCanalSilt,validateCanalMaintenance} from './canal-maintenance.js';
 import {validateCityLabor} from './city-labor.js';
 import {initializeCatDiscovery,validateCatDiscovery,miraclePrice} from './miracle-discovery.js';
-import {calendarRateFor,DAYS_PER_MONTH} from './calendar.js';
+import {calendarRateFor,DAYS_PER_MONTH,simulationSeconds,BASE_TIME_RATE} from './calendar.js';
 import {initializeCatFishing,validateCatFishing,usesCatDiscovery} from './cat-fishing-ledger.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {legacyScenario,validateScenario,isStrictSumer} from './scenario-profiles.js';
@@ -443,7 +443,14 @@ function recordCivicDeath(s,citizen){
  snapshotLifeAnalytics(s);
  return true;
 }
-export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
+// Footsteps always use city simulation seconds. Ritual holds, lowering and the jackal
+// animation keep their authored real-time durations while the calendar is stopped.
+export function advanceFrame(s,realSeconds,speed=1){
+ const seconds=simulationSeconds(realSeconds,speed);
+ if(s.funeral)return advanceTime(s,seconds,{funeralTimerRate:1/BASE_TIME_RATE});
+ return advanceTime(s,ceremonyActive(s)?seconds/BASE_TIME_RATE:seconds);
+}
+export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
  if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
@@ -451,7 +458,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s)}={}){
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
-  if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
+  if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt,funeralTimerRate);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
   advanceSupplyVow(s);
   advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;

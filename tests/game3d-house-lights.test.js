@@ -149,3 +149,17 @@ test('large-gate ground lamps clear the level footprint beside a dune',()=>{
   assert.equal(JSON.stringify(f.state),before);
  }finally{f.close();}
 });
+
+test('occupied communal court has three evening wicks and uses the existing bounded point-light pool',()=>{
+ const f=setup();
+ try{
+  const b={type:'communalHouse',x:3,y:2,level:1,footprint:2,rotation:1};
+  f.state.buildings=[b];f.state.citizens=[{id:7,home:'3,2'}];f.state.simTime=30;
+  f.r.updateLight(f.state);const lamps=f.scene.meshes.filter(m=>m.metadata?.communalLamp);
+  assert.equal(lamps.length,4);assert.ok(lamps.every(m=>m.isEnabled()&&m.thinInstanceCount===3));
+  assert.equal(active(f.points()).length,1);assert.ok(Math.abs(active(f.points())[0].position.x-(3*6+3+1.04))<1e-6);
+  f.state.citizens=[];f.r.updateLight(f.state);assert.ok(lamps.every(m=>!m.isEnabled()));assert.equal(active(f.points()).length,0);
+  f.state.citizens=[{id:7,home:'3,2'}];f.state.simTime=10;f.r.updateLight(f.state);
+  assert.ok(lamps.every(m=>!m.isEnabled()));
+ }finally{f.close();}
+});

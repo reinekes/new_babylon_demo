@@ -136,6 +136,7 @@ export function walkerAt(agent, seconds) {
 
 export function sceneDepth(entity) {
   if(entity.ploughDepth!==undefined)return entity.ploughDepth;
+  if(entity.homeVisit?.height>.4||Number.isFinite(entity.homeVisit?.seatHeight))return Math.max(entity.x+entity.y,entity.homeVisit.depth);
   // Roads run on the boundaries of each one-tile footprint. On either front
   // side x+y exceeds the building centre; on either rear side it is smaller.
   // A front-corner offset would incorrectly hide people beside visible walls.

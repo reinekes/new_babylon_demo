@@ -92,7 +92,7 @@ import {buildingInventoryHTML} from './ui-building-inventory.js';
 import {CROP_NAMES,fieldCropKind} from './game3d/crop-varieties.js';
 import {personalMemoryHTML,renderLifeAnalytics} from './ui-life-analytics.js';
 import {canRotateBuilding,nextRotation} from './placement.js';
-import {calendarAt,MONTH_NAMES,monthTrackHTML,simulationSeconds,clockText,useThreeDayCalendar} from './calendar.js';
+import {calendarAt,MONTH_NAMES,monthTrackHTML,clockText,useThreeDayCalendar} from './calendar.js';
 import {grantTestResources,triggerTestEvent,triggerTestMiracleScene,instantTestUpgrade,killTestCitizens,addTestCitizens,testToolsReason} from './test-tools.js';
 import {FESTIVAL_COST,festivalReason,orderFestival,cancelFestival,festivalSummary,festivalView} from './festival.js';
 import {createCityAudio} from './city-audio.js';
@@ -127,7 +127,7 @@ import {weatherAt} from './environment.js';
 import {builderConsent,setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
-import {BUILDINGS,MIRACLES,SEASONS,build,canPlace,advanceTime,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,canPlace,advanceTime,advanceFrame,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,guardCapacity,isResidence,COMMUNAL_CAPACITY,COMMUNAL_MOOD_PENALTY,isCityFortification,isOperational,levelOf,outputMultiplier} from './definitions.js';
@@ -2155,7 +2155,7 @@ function frame(now){
  if(shownSupplyRoute&&($('tile-detail').hidden||inspectedPerson!==null||!inspected||inspected.x!==shownSupplyRoute.route.home.x||inspected.y!==shownSupplyRoute.route.home.y))clearSupplyRoute();
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event&&state.godhood?.namelessEndingAt===undefined;
- if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceTime(state,ceremonyActive(state)?dt/1000*speed:simulationSeconds(dt/1000,relicControlActive(state)?1:speed));if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
+ if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceFrame(state,dt/1000,relicControlActive(state)?1:speed);if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
  syncCeremonySpeed();ceremonyPresentation();
  const currentStory=miracleStories.find(scene=>scene.active);
  const openingAllowed=!presentationPaused&&!ceremonyActive(state);

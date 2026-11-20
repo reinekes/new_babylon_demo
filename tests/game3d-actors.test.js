@@ -74,6 +74,23 @@ test('hidden resident rigs warm one per frame and are reused when a crowd leaves
   assert.ok(roots[1].getChildMeshes().every(m=>scene.meshes.includes(m)&&view.meshes.includes(m)),'emerging residents join the scene without recloning');
   const positions=residentViewPositions(s,actorViewCitizens(s));
   for(const c of s.citizens){const root=byId.get(c.id);assert.equal(view.rootFor({citizenId:c.id}),root);assert.ok(root.isEnabled());assert.equal(root.position.x,positions.get(c.id).x*6);}
+  const activeCounts=[scene.meshes.length,scene.transformNodes.length,scene.animationGroups.length,view.meshes.length];
+  const ownedMeshes=roots[1].getChildMeshes(),idle=scene.animationGroups.find(g=>g.name.includes('citizen-1001-Idle_Loop'));
+  assert.ok(idle.animatables.some(track=>scene.animatables.includes(track)));
+  for(const c of s.citizens)c.phase='home';
+  view.update(s,1/60);scene.render();
+  assert.ok(ownedMeshes.every(m=>!scene.meshes.includes(m)&&!view.meshes.includes(m)),'returning home parks a previously visible rig');
+  assert.ok(idle.animatables.every(track=>!scene.animatables.includes(track)),'Babylon no longer ticks a sleeping resident');
+  const enable=roots[1].setEnabled;let repeatDisables=0;
+  roots[1].setEnabled=function(on){if(!on)repeatDisables++;return enable.call(this,on);};
+  for(let i=0;i<6;i++){view.update(s,1/60);scene.render();}
+  assert.equal(repeatDisables,0,'sleepers are left untouched on subsequent hidden frames');
+  for(const c of s.citizens)c.phase='toStore';
+  view.update(s,1/60,{paused:true,speed:4});scene.render();
+  assert.equal(idle.speedRatio,0);assert.equal(view.rootFor({citizenId:1001}),roots[1]);
+  view.update(s,1/60,{speed:4});scene.render();
+  assert.equal(idle.speedRatio,4);assert.ok(idle.animatables.every(track=>scene.animatables.includes(track)));
+  assert.deepEqual([scene.meshes.length,scene.transformNodes.length,scene.animationGroups.length,view.meshes.length],activeCounts);
   await new Promise(resolve=>setTimeout(resolve,0));
   assert.equal(scene.onDisposeObservable.observers.length,disposeObservers,'woken or removed rigs retain no temporary container observers');
  }finally{view?.dispose();B.SceneLoader.LoadAssetContainerAsync=original;scene.dispose();engine.dispose();}

@@ -22,12 +22,16 @@ export function isWorkplaceOpen(type,time){
 
 const residentMinute=id=>(Math.imul((id||0)>>>0,17)>>>0)%36;
 export function residentDepartureHour(type,id){
- return (workplaceHours(type)||day).open+(3+residentMinute(id))/60;
+ // Reserve the final five minutes for the walk from the room to the real sill.
+ const person=(id||0)>>>0,minute=Math.imul(person,149)>>>0;
+ const slot=minute%241,fraction=(Math.floor(person/241)*.6180339887498949)%1;
+ return 5+(slot===240?slot-fraction:slot+fraction)*(235/240)/60;
 }
 export function residentReturnHour(type,id){
  return (workplaceHours(type)||day).close-(residentMinute(id)%7)*.04;
 }
 
 export function canDepartForWork(type,id,time){
- return isWorkplaceOpen(type,time)&&workHourAt(time)>=residentDepartureHour(type,id);
+ const hour=workHourAt(time);
+ return hour>=residentDepartureHour(type,id)&&hour<(workplaceHours(type)||day).close;
 }

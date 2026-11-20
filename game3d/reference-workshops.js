@@ -1,3 +1,8 @@
+export const ovenChambers={
+ kiln:[-.60,-.40,2.79,2.82,2.39],pottery:[.84,-1.30,1.41,1.45,1.42],
+ bakery:[.83,-.78,1.79,1.84,1.50],coppersmith:[.89,-.67,1.40,1.37,1.62]
+};
+
 import {createCraftVessel,createYardBrick} from './yard-craft-meshes.js';
 import {workshopSurfaces} from './workshop-surfaces.js';
 // Dimensions in metres. The open front corner is reserved for the animated
@@ -238,7 +243,7 @@ export function createReferenceWorkshop(b, kit) {
   }
   craftVessel('spouted',-2.04,1.83,.64,groundY,-.63);break;
  case 'kiln':
-  firingChamber(-.60,-.40,2.79,2.82,2.39);
+  firingChamber(...ovenChambers.kiln);
   roofMat(1.64,-1.21,1.39,2.12,1.76,.16);
   bricks(-2.18,1.40,3,2,2,false);
   bricks(1.09,-1.98,3,2,3,true,.38,.30);
@@ -253,7 +258,7 @@ export function createReferenceWorkshop(b, kit) {
   craftVessel('spouted',-1.79,.43,.57,1.05,-.83);
   craftVessel('jar',-1.11,.43,.55,1.05);
   craftVessel('bowl',-.55,.43,.51,1.05);
-  firingChamber(.84,-1.30,1.41,1.45,1.42);
+  firingChamber(...ovenChambers.pottery);
   craftVessel('jar',-.15,1.48,.94);
   if ((b.level||1)>=2) {
    shelf(.44,-.42,1.15,.16,.95);
@@ -266,7 +271,7 @@ export function createReferenceWorkshop(b, kit) {
   bound(1.06,.83,.71);
   block(0,.86,-2.35,4.89,1.71,.21,wall);
   roofMat(.25,-1.22,4.07,2.33,2.17,.16);
-  firingChamber(.83,-.78,1.79,1.84,1.50);
+  firingChamber(...ovenChambers.bakery);
   lowMat(-.52,1.12,1.69,.99);
   for(const [x,z,r] of [[-.95,.97,.25],[-.38,.94,.26],[-.68,1.39,.23]]){
    cylinder(x,.14,z,r,.07,m.raw,r*.94);
@@ -307,7 +312,7 @@ export function createReferenceWorkshop(b, kit) {
  case 'coppersmith':
   room(-1.38,-1.26,1.87,2.12,2.26,-1.26);
   bound(.72,.83,.77);roofMat(1.05,-.92,2.22,2.10,2.16,.16);
-  firingChamber(.89,-.67,1.40,1.37,1.62);
+  firingChamber(...ovenChambers.coppersmith);
   table(-.96,.47,2.14,.67,.64);
   for(const x of [-1.54,-.91,-.28]){
    block(x,.74,.47,.51,.14,.30,m.stone);

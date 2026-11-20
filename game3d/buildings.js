@@ -1,3 +1,6 @@
+import {createOvenFires} from './oven-fire.js';
+import {ovenChambers} from './reference-workshops.js';
+import {BASE_TIME_RATE} from '../calendar.js';
 import {isExtractionCourt,extractionWorkArea} from '../extraction-courts.js';
 import {blessingCupAt} from '../blessing-discovery.js';
 import {cultSign} from '../cult-sign.js';
@@ -72,7 +75,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  const walkways=shoreWalkways();
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
- const watchHouseFire=createWatchHouseFire(B,scene);
+ const watchHouseFire=createWatchHouseFire(B,scene),ovenFires=createOvenFires(B,scene);
  let fortificationClay;
  const visualSignature=(b,state,shoreContext,fieldPatch=null,stationContext=null)=>gameBuildingSignature(b,state,shoreContext,fieldPatch,stationContext)+(sacredModels.ready(b,state)?'|model-ready':'')+(b.type==='cityGate'&&sacredModels.ready({type:'cityWall'},state)?'|wing-model':'');
  const highlightMaterial=new B.StandardMaterial('nearby-building-glow',scene);highlightMaterial.emissiveColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.diffuseColor=B.Color3.FromHexString('#f5ce79');highlightMaterial.disableLighting=true;highlightMaterial.alpha=.17;highlightMaterial.disableDepthWrite=true;ownedMaterials.push(highlightMaterial);
@@ -241,6 +244,11 @@ export async function createGameBuildings(B,scene,materials,options={}){
   if(b.construction&&b.construction.kind!=='new')for(const mesh of createConstructionSite(B,scene,b,materialSet,state)){mesh.parent=root;sources.push(mesh);}
   if(b.type==='field'){const layout=bankFieldLayout(b,state);sources=sources.filter(mesh=>clipField(mesh,b,state,layout));}
   if(cropAssets&&b.type==='field')for(const mesh of cropAssets.create(b,state)){mesh.parent=root;sources.push(mesh);}
+  if(b.type==='communalHouse'&&sacredModels.ready(b,state)){
+   // Three narrow ventilation slits over the hall entrance in the supplied facade.
+   const {center}=sacredModelTransform(b);
+   lampOrigin={x:center-.48,y:2.92,z:center-2.285,spacing:.48,slots:3};
+  }
   if(isHouse(b)){
    const earth=sacredModels.ready(b,state);
    const kind=houseVisualKind(b,state);
@@ -260,7 +268,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   t={root,sources,lampOrigin,users:1};templates.set(key,t);return t;
  }
  function syncHomeLamps(record,b,occupants){
-  const count=Math.ceil(Math.min(1,occupants/Math.max(1,capacityOf(b)))*4);
+  const slots=record.lampOrigin.slots||4,count=Math.ceil(Math.min(1,occupants/Math.max(1,capacityOf(b)))*slots);
   if(record.litWindows===count)return;
   if(!lampSources){
    const dark=B.MeshBuilder.CreateBox('home-lamp-unlit-source',{width:.15,height:.2,depth:.04},scene);
@@ -268,12 +276,13 @@ export async function createGameBuildings(B,scene,materials,options={}){
    dark.material=shade;lit.material=warm;lampSources=[dark,lit];
    for(const source of lampSources){source.isVisible=false;source.isPickable=false;source.receiveShadows=true;}
   }
-  for(let index=0;index<4;index++){
+  for(let index=0;index<slots;index++){
    const lit=index<count,slot=record.lampStart+index,previous=record.meshes[slot];
    if(previous&&lit===(index<record.litWindows))continue;
    const mesh=lampSources[Number(lit)].createInstance(`${record.root.metadata.buildingKey}-game-home-lamp-${index}`);
    const origin=record.lampOrigin;
-   mesh.parent=record.root;mesh.position.set(origin.x+index*.18,origin.y,origin.z);
+   mesh.parent=record.root;mesh.position.set(origin.x+index*(origin.spacing||.18),origin.y,origin.z);
+   if(origin.slots)mesh.scaling.set(.72,1.78,.65);
    mesh.metadata={...record.root.metadata,homeLamp:true,lampIndex:index};mesh.isVisible=true;mesh.isPickable=true;mesh.freezeWorldMatrix();
    record.meshes[slot]=mesh;
    if(previous){meshes[meshes.indexOf(previous)]=mesh;previous.dispose();}
@@ -282,7 +291,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   record.litWindows=count;
  }
  function release(key){const t=templates.get(key);if(t&&!--t.users){t.root.dispose();templates.delete(key);}}
- function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}watchHouseFire.remove(key);record.removeWalkway?.();record.root.dispose();release(record.signature);active.delete(key);
+ function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}watchHouseFire.remove(key);ovenFires.remove(key);record.removeWalkway?.();record.root.dispose();release(record.signature);active.delete(key);
   if(record.lampOrigin&&lampSources?.every(source=>source.instances.length===0)){
    for(const source of lampSources)source.dispose();
    lampSources=null;
@@ -354,11 +363,13 @@ export async function createGameBuildings(B,scene,materials,options={}){
     }
     const platform=template.sources.find(mesh=>mesh.metadata?.lift)?.metadata;
     record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view),platform,removeWalkway:walkways.add(view,platform),lampOrigin:template.lampOrigin,lampStart:parts.length};active.set(key,record);meshes.push(...parts);
+    if(ovenChambers[b.type])ovenFires.add(key,b,root,platform?.lift||0,workstationBuilding(b,state,stationContext).workCorner);
     if(b.type==='watchHouse'||b.type==='cityGate')watchHouseFire.add(key,root,parts);
    }
    if(record.rotation!==rotationOf(view)){
     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,view);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(view);
    }
+   if(ovenChambers[b.type])ovenFires.sync(key,b);
    if(record.lampOrigin)syncHomeLamps(record,b,occupied.get(key)||0);
    // The courtyard architecture keeps its three shared templates. A tiny garden
    // owns its terrain-dependent geometry separately, so plant variety never
@@ -380,9 +391,10 @@ export async function createGameBuildings(B,scene,materials,options={}){
    }
   }
   for(const key of active.keys())if(!seen.has(key))remove(key);
+  ovenFires.update((state.simTime||0)/BASE_TIME_RATE);
   const fieldSites=new Set((state.buildings||[]).filter(b=>b.type==='field').map(b=>`${b.x},${b.y}`));
   for(const [key,entry]of fieldBeds)if(!fieldSites.has(`${entry.x},${entry.y}`)&&!(previewRecord?.x===entry.x&&previewRecord?.y===entry.y)){entry.owner.dispose();fieldBeds.delete(key);}
  }
  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
- return {sync,meshes,loadDetails,homeCatalogue:(b,s)=>sacredModels.catalogue(b,s),homePlatform:b=>active.get(buildingKey(b))?.platform,floorHeight:walkways.heightAt,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;for(const source of lampSources||[])source.dispose();watchHouseFire.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,loadDetails,homeCatalogue:(b,s)=>sacredModels.catalogue(b,s),homePlatform:b=>active.get(buildingKey(b))?.platform,floorHeight:walkways.heightAt,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;for(const source of lampSources||[])source.dispose();watchHouseFire.dispose();ovenFires.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }

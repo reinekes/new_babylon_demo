@@ -31,6 +31,7 @@ function rooftop(a,x,z,w,d){
 export function drawCommunalHouse(r,b){
  const yaw=(b.rotation||0)*Math.PI/2,cos=Math.cos(yaw),sin=Math.sin(yaw);
  const position=(x,z,h=0)=>r.point(b.x+.5+(x*cos+z*sin)/6,b.y+.5+(z*cos-x*sin)/6,h*10);
+ const occupied=r.houseOccupancy?.get(b.x+','+b.y)||0,lit=occupied>0&&r.lighting?.night>.08;
  const faces=[];
  function block(x,z,w,d,height,top=EARTH.plaster,side=EARTH.shade,bottom=0){
   const corners=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]];
@@ -54,9 +55,12 @@ export function drawCommunalHouse(r,b){
  block(0,5.22,1.54,.23,1.74,'#a18160','#7a614a',1.58);
  if(cos+sin>0){
   const door=[[-.72,.07],[.72,.07],[.72,2.43],[-.72,2.43]].map(([x,h])=>position(x,-2.15,h));
-  faces.push({depth:position(0,-2.14).y,draw:()=>r.polygon(door,'#554635')});
+  faces.push({depth:position(0,-2.14).y,draw:()=>r.polygon(door,lit?'#b8783e':'#554635')});
  }
  faces.sort((a,c)=>a.depth-c.depth);for(const face of faces)face.draw();
+ if(lit)for(const [x,z] of [[-.43,-2.40],[2.56,1.04],[-1.90,2.14]]){
+  const p=position(x,z,.18);r.lights.push({x:p.x,y:p.y,size:19*r.s});r.line([[p.x,p.y],[p.x,p.y-1.6*r.s]],'#ffc779',1.2*r.s);
+ }
 }
 export function drawCourtyardHouse(r,b,state){
  const a=brush(r,b),{p,q,c}=a,level=levelOf(b),variant=houseVariant(b),h=25+(level-1)*9+(variant===3?7:0),night=(r.lighting?.night||0)>.12;

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,advanceTime,build,encode,decode} from '../engine.js';
 import {layRoad,roadIsBuilt} from '../roads.js';
-import {footpathRibbonPoint,recordFootsteps,visibleFootpaths} from '../footpaths.js';
+import {footpathRibbonPoint,recordFootsteps,visibleFootpaths,streetCurveLookup,residentFootpathPositions} from '../footpaths.js';
 import {navigationSegmentClear} from '../navigation.js';
 import {networkFor,visibleCitizens} from '../workforce.js';
 
@@ -44,13 +44,16 @@ test('Amal follows the same safe worn curve in either direction and after loadin
  const reloaded=visibleCitizens(loaded).find(c=>c.id===amal.id);
  assert.deepEqual([reloaded.x,reloaded.y],[forward.x,forward.y]);
  const drift=Math.abs(forward.y-amal.y);
- assert.ok(drift>.001&&drift<=.047,'feet follow the small drift of the worn soil');
+ assert.ok(drift>.001&&drift<=.15,'feet follow the gradual drift of the worn soil');
  const t=(amal.x-a.x)/(b.x-a.x),curve=footpathRibbonPoint(a,b,trail.control,t);
  assert.ok(Math.hypot(curve.x-forward.x,curve.y-forward.y)<1e-8);
  amal.route=[b,a];amal.routeIndex=1;amal.phase='toHome';
  assert.ok(Math.hypot(shown().x-forward.x,shown().y-forward.y)<1e-8);
  assert.ok(layRoad(s,point(a.x-.5,a.y-.5),point(b.x-.5,b.y-.5)).ok);
- assert.deepEqual([shown().x,shown().y],[amal.x,amal.y],'a finished street stays straight');
+ const paving=footpathRibbonPoint(a,b,streetCurveLookup(s)(a,b),t);
+ assert.ok(Math.hypot(shown().x-paving.x,shown().y-paving.y)<1e-8,'feet stay on the paving after promotion');
+ const waterRoute=residentFootpathPositions(s)({...amal,route:[],waterTrip:{route:[b,a],index:1}});
+ assert.ok(Math.hypot(waterRoute.x-paving.x,waterRoute.y-paving.y)<1e-8,'a water carrier follows the same street while using their own job route');
 });
 
 test('an explicit street promotes a matching automatic edge, including after save and load',()=>{
@@ -101,17 +104,27 @@ test('curves share their junction and stay out of buildings',()=>{
  for(let i=1;i<=20;i++)assert.ok(navigationSegmentClear(s,footpathRibbonPoint(second.a,second.b,second.control,(i-1)/20),footpathRibbonPoint(second.a,second.b,second.control,i/20)));
 });
 
-test('open trails drift gently over several plots and approach junctions along the walking direction',()=>{
- const s=createGame({start:'established'}),y=2.5;
+test('a long street and its trodden route share a gradual sweep through grid junctions',()=>{
+ const s=createGame({start:'established'}),y=2.5,curves=streetCurveLookup(s);
  for(let i=0;i<6;i++)recordFootsteps(s,point(1.5+i,y),point(2.5+i,y),5);
- const paths=visibleFootpaths(s);
+ const paths=visibleFootpaths(s),drifts=[];
  assert.equal(paths.length,6);
- const drifts=paths.map(({a,b,control})=>{
-  const at=t=>footpathRibbonPoint(a,b,control,t);
-  assert.ok(Math.abs(at(.001).y-y)<1e-6&&Math.abs(at(.999).y-y)<1e-6,'end tangents match the next straight segment');
-  return at(.5).y-y;
- });
- assert.ok(drifts.every(d=>Math.abs(d)<=.047));
- assert.ok(drifts.some(d=>Math.abs(d)>.008));
- assert.ok(drifts.filter((d,i)=>i&&d*drifts[i-1]<0).length<=2,'the ground does not switch sides on every tile');
+ for(const [i,{a,b,control}] of paths.entries()){
+  assert.deepEqual(control,curves(a,b));
+  const at=t=>footpathRibbonPoint(a,b,control,t),start=at(0),end=at(1);
+  for(const t of [0,.25,.5,.75,1]){
+   const p=at(t),rev=footpathRibbonPoint(b,a,curves(b,a),1-t);
+   assert.ok(Math.abs(p.y-y)<=.15);assert.ok(Math.hypot(rev.x-p.x,rev.y-p.y)<1e-8);
+  }
+  drifts.push(at(.5).y-y);
+  if(i){
+   const prev=paths[i-1],last=footpathRibbonPoint(prev.a,prev.b,prev.control,1),approach=footpathRibbonPoint(prev.a,prev.b,prev.control,.99),leave=at(.01);
+   assert.deepEqual(last,start,'parallel and crossing streets meet at one point');
+   const angle=(a,b)=>Math.atan2(b.y-a.y,b.x-a.x);
+   assert.ok(Math.abs(angle(approach,start)-angle(start,leave))<.06,'the heading carries through the join');
+  }
+  assert.ok(Math.abs(end.y-y)<.15);
+ }
+ assert.ok(drifts.some(v=>Math.abs(v)>.06),'the sweep is visible at city scale');
+ assert.ok(drifts.filter((d,i)=>i&&d*drifts[i-1]<0).length<=2,'no alternating excursion at every cell');
 });

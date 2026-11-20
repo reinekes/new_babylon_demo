@@ -56,3 +56,29 @@ test('cached workstation corners match the real port after terrain and footprint
  context=workstationContext(state);
  state.world.lakes.push({cells:[{x:6,y:9}]});check();assert.notEqual(workstationContext(state),context);
 });
+
+test('kiln tender carries fire only to a charged, idle firebox via the open frontage',async()=>{
+ const {workplaceActivity,workplaceIndex}=await import('../game3d/work-poses.js');
+ const {KILN_WEAR_LIMIT,startFiring,advanceKilns,collectFired}=await import('../kilns.js');
+ const b={type:'kiln',level:1,x:6,y:10,firing:{brick:4,reed:2,hot:0,ready:0,time:0}};
+ const c={age:32,work:'6,10',phase:'working',x:6.5,y:10.5,workElapsed:4.9};
+ const state={buildings:[b],citizens:[c],world:{lakes:[]}},activity=()=>workplaceActivity(state,c,workplaceIndex(state));
+ assert.notEqual(activity().task,'light-kiln');b.firing.reed++;
+ assert.equal(activity().task,'light-kiln');
+ b.kilnBanked=true;assert.notEqual(activity().task,'light-kiln');delete b.kilnBanked;
+ b.kilnWear=KILN_WEAR_LIMIT;assert.notEqual(activity().task,'light-kiln');b.kilnWear=0;
+ const {workshopAngle,ovenChambers}=await import('../game3d/reference-workshops.js');
+ const [x,z,,depth]=ovenChambers.kiln,coals=z+depth/2-.15;
+ for(let rotation=0;rotation<4;rotation++)for(const workCorner of [[1,1],[-1,1],[1,-1],[-1,-1]]){
+  const building={...b,rotation,workCorner},angle=workshopAngle(workCorner);
+  const placed=(x,h,z)=>workstationWorldPoint(building,[x*Math.cos(angle)+z*Math.sin(angle),h,z*Math.cos(angle)-x*Math.sin(angle)]);
+  const port=placed(3,0,3),contact=workstationFor(building,{...c,...port,activity:activity()});
+  assert.ok(contact?.via?.length>=3);assert.equal(workstationPose(contact,0).tool,'kiln-taper');
+  const mouth=placed(x,.18,coals),front=placed(x,0,z+depth/2);
+  assert.ok(Math.hypot(contact.target.x-mouth.x,contact.target.y-mouth.y)<1e-8);
+  assert.ok(Math.hypot(contact.via[0].x-port.x,contact.via[0].y-port.y)<.15);
+  for(const p of contact.via)assert.ok((p.x-front.x)*(front.x-mouth.x)+(p.y-front.y)*(front.y-mouth.y)>0,'walk stays in front of the chamber');
+ }
+ assert.equal(startFiring(b),4);assert.equal(startFiring(b),0);assert.notEqual(activity().task,'light-kiln');
+ advanceKilns(state,28);assert.notEqual(activity().task,'light-kiln');assert.equal(collectFired(b),4);
+});

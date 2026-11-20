@@ -116,12 +116,14 @@ function urgentShift(s,c,ctx){
  const work=ctx.buildings.get(c.work);
  return work?.type==='healer'||!!(work?.humanWaterProject&&!work.humanWaterProject.delivery);
 }
+// A paid unloading run that already left the house can finish its market pickup after dusk.
+const unloadingAtMarket=(s,c)=>c.phase==='toMarket'&&c.tradeJob&&activeLaborKind(s)==='unload';
 function shiftOpen(s,c,ctx){
- if(!isWorkday(s.simTime))return false;
- const type=shiftType(c,ctx);
- return urgentShift(s,c,ctx)||isWorkplaceOpen(type,s.simTime)&&hourAt(s.simTime)<residentReturnHour(type,c.id);
+ const type=shiftType(c,ctx),hour=hourAt(s.simTime);
+ return !!unloadingAtMarket(s,c)||hour>=5&&hour<19&&(urgentShift(s,c,ctx)||hour<residentReturnHour(type,c.id));
 }
-const shiftDeparture=(s,c,ctx)=>isWorkday(s.simTime)&&(canDepartForWork(shiftType(c,ctx),c.id,s.simTime)||urgentShift(s,c,ctx));
+const scheduledArrivals=new Set(['toWork','returnWork','toSite','toSupply','toMarket','toSaleSupply','toDistrictSupply']);
+const shiftDeparture=(s,c,ctx)=>canDepartForWork(shiftType(c,ctx),c.id,s.simTime)||isWorkday(s.simTime)&&urgentShift(s,c,ctx);
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 
 const floodGeometry=s=>floodPhase(s)==='active'?`${s.riverFlood.along},${s.riverFlood.bank}:${floodProtectionRevision(s)}`:'';
@@ -312,7 +314,7 @@ export function syncCitizens(s){
  for(const c of citizens)if(c.workplace&&(!ctx.buildings.has(c.workplace)||!isComplete(ctx.buildings.get(c.workplace))||!canStaffBuilding(c,ctx.buildings.get(c.workplace))))delete c.workplace;
  for(const c of citizens)if(c.guardPost){const b=ctx.buildings.get(c.guardPost);if(!guardCapacity(b?.type)||!isComplete(b)||!canWork(c)||!['auto','production'].includes(c.role))delete c.guardPost;}
  const reserved=new Set(citizens.filter(c=>c.workplace||c.guardPost).map(c=>c.id));
- const assignments=new Map(),locked=new Set(citizens.filter(c=>['festival','relic','relicGuest','awakening'].includes(c.phase)||c.floodShelter||c.fireShelter||c.commonMealTarget||c.memorialMove||!canWork(c)||c.manualGathering||c.pantryTrip||c.clinic||c.school).map(c=>c.id));
+ const assignments=new Map(),locked=new Set(citizens.filter(c=>['festival','relic','relicGuest','awakening'].includes(c.phase)||c.floodShelter||c.fireShelter||c.commonMealTarget||c.memorialMove||!canWork(c)||c.manualGathering||c.pantryTrip||c.clinic||c.school||unloadingAtMarket(s,c)).map(c=>c.id));
  for(const c of citizens)if(c.pantryTrip){if(c.work&&!ctx.buildings.has(c.work))c.work=null;if(c.site&&!ctx.buildings.get(c.site)?.construction){c.site=null;c.sitePort=null;c.siteDuty=null;}}
  for(const c of citizens)if(!canWork(c)){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.store=null;}
  if(s.funeral?.scope==='family')for(const a of s.funeral.actors)locked.add(a.id);
@@ -898,6 +900,18 @@ function scheduleEveningVisit(s,ctx){
  }
  for(const host of eligible)for(const guest of eligible)if(tryVisit(host,guest))return;
 }
+export function residentWalkingSpeed(s,c,buildings,road,position=c){
+ let speed=1.05*(s.buffs?.haste?1.5:1)*roadPace(road);
+ if(!c.pantryTrip&&c.phase!=='toHome'&&c.phase!=='toRest'){
+  const duty=c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?buildings.get(c.work)?.type:null;
+  speed*=workRate(c,duty,buildings.get(c.home));
+ }
+ if(onBridge(s.buildings,position.x,position.y,s)){
+  const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-position.y)<.16);
+  speed*=1+((bridge?.level||1)-1)*.25;
+ }
+ return speed;
+}
 function advanceCitizen(s,c,dt,ctx,constructionWork){
  reconcileManualGathering(s,c,ctx);
  if(c.phase==='festival'||advanceFloodShelter(s,c,dt,ctx)||advanceFireShelter(s,c,dt,ctx))return;
@@ -914,7 +928,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
  if(c.districtJob&&!hasCargo(c)&&['home','resting'].includes(c.phase)){const b=ctx.buildings.get(c.home),canRefill=homeMealFood(b)+1e-7<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food');if(canRefill||!isWorkday(s.simTime)){delete c.districtJob;c.store=closestStore(s,ctx,c.home);invalidateAssignments(s);}}
  if(criticalFoodTrip(s,c,ctx)||waitForHomeMeal(s,c,ctx))return;
  if(!urgentHouseholdSupply(s,c,ctx))neighborHouseholdSupply(s,c,ctx);
- const day=isWorkday(s.simTime);if(c.health>=(c.careGoal||85)){delete c.recovering;delete c.careGoal;}
+ const departed=canDepartForWork(undefined,c.id,s.simTime),day=isWorkday(s.simTime)||departed;if(c.health>=(c.careGoal||85)){delete c.recovering;delete c.careGoal;}
  if(c.clinic){const clinic=ctx.buildings.get(c.clinic);if(!day||!clinic||!isComplete(clinic)||c.health>=(c.careGoal||85)){delete c.clinic;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}else if(c.phase==='treatment')return;else if(c.phase==='blocked'){startTrip(s,c,c.clinic,'toHealer',ctx);if(c.phase==='blocked')return;}}
  if(!c.clinic&&c.phase==='home'&&day&&(c.health<60||c.recovering)&&!hasCargo(c)&&!hasBuildCargo(c)&&!c.craftSite&&c.clothingTarget===undefined&&!c.districtJob&&!c.seedField&&!c.pantryTrip&&!c.saleJob&&!c.tradeJob&&ctx.buildings.get(c.work)?.type!=='healer'){
   const home=ctx.ports.get(c.home);let best=null,length=Infinity;
@@ -923,7 +937,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
  }
 
  if(c.school){if(!day||c.role!=='healer'||!ctx.buildings.has(c.school)){delete c.school;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}else if(c.phase==='blocked')startTrip(s,c,c.school,'toSchool',ctx);}
- if(!c.school&&!c.clinic&&day&&canWork(c)&&c.role==='healer'&&!medicalLevel(c)&&c.phase==='home'&&!hasCargo(c)&&!hasBuildCargo(c)&&!c.craftSite&&c.clothingTarget===undefined&&!c.pantryTrip&&!c.tradeJob&&!c.saleJob){
+ if(!c.school&&!c.clinic&&departed&&canWork(c)&&c.role==='healer'&&!medicalLevel(c)&&c.phase==='home'&&!hasCargo(c)&&!hasBuildCargo(c)&&!c.craftSite&&c.clothingTarget===undefined&&!c.pantryTrip&&!c.tradeJob&&!c.saleJob){
   const home=ctx.ports.get(c.home);let best=null,length=Infinity;
   for(const b of ctx.temples){if(!isComplete(b))continue;const key=buildingKey(b),port=ctx.ports.get(key),route=port&&routeBetween(s,home?.key,port.key,ctx);if(route&&route.length<length){best=key;length=route.length;}}
   if(best){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.school=best;startTrip(s,c,best,'toSchool',ctx);invalidateAssignments(s);}
@@ -952,7 +966,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
  const watch=c.guardPost&&c.guardPost===c.work?watchShift(s,c,ctx.buildings.get(c.work)):null;
  const watchOpen=watch&&watchOnShift(watch,s.simTime);
  if(watchOpen&&c.phase==='blocked')startTrip(s,c,c.work,'toWork',ctx);
- if(!day&&!watchOpen&&!['toEveningGame','home','toHome','toStore','toWorkshop','toSaleMarket','toPantrySupply','toPantryHome','toDistrictStore','toClothesHome','toRest','resting'].includes(c.phase)&&!(c.phase==='toWork'&&(c.seedFood>0||craftLoad(c)>0))&&!(c.phase==='toSite'&&Object.values(c.buildCargo||{}).some(n=>n>0))){
+ if(!day&&!watchOpen&&!unloadingAtMarket(s,c)&&!['toEveningGame','home','toHome','toStore','toWorkshop','toSaleMarket','toPantrySupply','toPantryHome','toDistrictStore','toClothesHome','toRest','resting'].includes(c.phase)&&!(c.phase==='toWork'&&(c.seedFood>0||craftLoad(c)>0))&&!(c.phase==='toSite'&&Object.values(c.buildCargo||{}).some(n=>n>0))){
   if(hasCargo(c)&&c.saleJob)startTrip(s,c,c.saleMarket,'toSaleMarket',ctx);else if(hasCargo(c)&&c.store)startTrip(s,c,c.store,'toStore',ctx);else startTrip(s,c,c.home,'toHome',ctx);
  }
  if((day||watch)&&['working','toWork','returnWork','waiting','constructing','toSite','toSupply'].includes(c.phase)&&
@@ -961,7 +975,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
   if(day&&canCopyLaw(s,c)){copyLaw(s,dt);return;}
   const own=ctx.buildings.get(c.home);if(own?.householdStock?.clothing>=1){const target=residentsAtHome(s,ctx,c.home).filter(p=>p.clothing<=REPLACE_CLOTHING_AT&&!s.citizens.some(q=>q.clothingTarget===p.id)).sort((a,b)=>a.clothing-b.clothing)[0];if(target){own.householdStock.clothing--;equipClothing(target);}}
   const evening=hourAt(s.simTime)>=19&&hourAt(s.simTime)<20;
-  const householdTime=day&&canDepartForWork(undefined,c.id,s.simTime);
+  const householdTime=departed;
   if(canWork(c)&&!c.craftSite&&c.clothingTarget===undefined&&!c.districtJob&&!c.tradeJob&&!c.saleJob&&(householdTime||evening)){
    const b=own,needs=b&&houseDemand(s,ctx,c.home)*8/3-(b.pantry||0)>1e-7;
    const store=needs&&hasMealStock(s,ctx)&&!s.citizens.some(p=>p.pantryTrip&&(p.pantryTarget||p.home)===c.home)?closestStock(s,ctx,c.home,'food'):null;
@@ -979,12 +993,14 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
     else if(c.tradeJob)startTrip(s,c,c.tradeMarket,'toMarket',ctx);
     else if(c.site)beginSiteTrip(s,c,ctx);
     else startTrip(s,c,c.work,'toWork',ctx);
-   }else if(day&&beginManualGathering(s,c,ctx,(from,to)=>routeBetween(s,from,to,ctx)))invalidateAssignments(s);
+   }else if(departed&&beginManualGathering(s,c,ctx,(from,to)=>routeBetween(s,from,to,ctx)))invalidateAssignments(s);
    else return;
   }
  }
  let remaining=dt;
  for(let transition=0;transition<12&&remaining>1e-8;transition++){
+  // Early commuters reach their workplace and wait there until it opens.
+  if(['working','waiting','constructing'].includes(c.phase)&&!watchOpen&&!isWorkplaceOpen(shiftType(c,ctx),s.simTime)&&!urgentShift(s,c,ctx))return;
   if(c.phase==='manualGathering'){if(workManualGathering(s,c,remaining,workRate(c,null,ctx.buildings.get(c.home)))){recordCitizenHarvest(s,c,c.cargo);const resource=Object.keys(c.cargo)[0];markCreatorCargo(s,c,resource,c.cargo[resource]);startTrip(s,c,c.store,'toStore',ctx);}return;}
   if(c.phase==='waiting'||c.phase==='constructing'){
    const q=ctx.buildings.get(c.site)?.construction;if(!q){startTrip(s,c,c.home,'toHome',ctx);continue;}
@@ -1067,6 +1083,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
    if(c.workElapsed<dressingSeconds)return;
   }
   if(!next){
+   if(scheduledArrivals.has(c.phase)&&!watchOpen&&hourAt(s.simTime)<9&&!isWorkplaceOpen(shiftType(c,ctx),s.simTime)&&!urgentShift(s,c,ctx)&&!hasCargo(c)&&!hasBuildCargo(c)&&!c.seedFood&&!craftLoad(c))return;
    const phase=c.phase;arrival(s,c,ctx);
    // Another worker must clear the full output store before this delivery can advance.
    if(c.phase==='home'||c.phase==='resting'||phase==='toWorkshop'&&c.phase===phase)return;
@@ -1077,10 +1094,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
    watch==='night'&&c.phase==='returnWork'&&!navigationSegmentClear(s,c,next,ctx.network.navigation.obstacles)){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
   const dist=distance(c,next);
   const road=roadSegment(s,c,next);
-  let speed=1.05*(s.buffs?.haste?1.5:1)*roadPace(road);if(!c.pantryTrip&&!['toHome','toRest'].includes(c.phase))speed*=workRate(c,c.siteDuty==='builder'?'builder':c.siteDuty==='carrier'||c.districtJob||c.tradeJob||c.saleJob?'carrier':c.work?ctx.buildings.get(c.work)?.type:null,ctx.buildings.get(c.home));
-  if(onBridge(s.buildings,c.x,c.y,s)){
-   const bridge=s.buildings.find(b=>b.type==='bridge'&&Math.abs(b.y+.5-c.y)<.16);speed*=1+((bridge?.level||1)-1)*.25;
-  }
+  const speed=residentWalkingSpeed(s,c,ctx.buildings,road,c);
   const travel=dist/speed;
   if(c.phase==='toDistrictStore'&&c.windCargo&&!c.windRoute&&!s.windDelivery.path&&dist>1e-8&&remaining>0){
    if(road?.level>=2&&!road.floodDamage)c.windRoute='road';
@@ -1193,13 +1207,14 @@ function guardView(s,c){
 }
 export function visibleCitizens(s){
  const footpathPosition=residentFootpathPositions(s);
- const people=(s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='studying'&&!!c.school||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:(c.floodShelter||c.fireShelter)&&c.routeIndex<c.route.length||waterBusy(c)||['toEveningGame','toManualGathering','toCommonMeal','toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.memorialMove?true:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...guardView(s,c),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...relicCitizenView(s,c),...godhoodCitizenView(s,c),...treatmentViewPosition(s,c)}));
+ const people=(s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='studying'&&!!c.school||c.phase==='home'&&c.age>=3&&c.age<16&&canDepartForWork(undefined,c.id,s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:(c.floodShelter||c.fireShelter)&&c.routeIndex<c.route.length||waterBusy(c)||['toEveningGame','toManualGathering','toCommonMeal','toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.memorialMove?true:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...guardView(s,c),...childPlay(s,c),...festivalCitizenView(s,c),...relicCitizenView(s,c),...godhoodCitizenView(s,c),...treatmentViewPosition(s,c)}));
  const walkingPlots=s.gathering?.jobs.filter(j=>j.source&&j.stage==='approach');
  if(s.civicOrder?.law?.copyRemaining&&isWorkday(s.simTime)){
   const author=s.citizens.find(c=>c.id===s.civicOrder.law.author);
   if(author&&canCopyLaw(s,author))people.push({...author,kind:'person',lifeStage:lifeStage(author),phase:'copyingLaw',walking:false,carrying:false});
  }
  for(const person of people){
+  if(person.walking&&scheduledArrivals.has(person.phase)&&person.route?.length&&person.routeIndex>=person.route.length)person.walking=false;
   if(person.walking)Object.assign(person,footpathPosition(person));
   else if(walkingPlots?.length&&walkingPlots.some(j=>j.citizen===person.id))person.walking=true;
  }

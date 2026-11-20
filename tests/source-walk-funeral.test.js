@@ -35,7 +35,7 @@ test('the supplied male and female source rigs keep four moving bearers on their
   assert.equal(state.funeral.stage,'procession');
   let maximum=0;
   const roots=new Map(),locations=new Set();
-  for(const seconds of [.2,.5,1,2,3]){
+  for(const seconds of [.2,1.05,.45,.65,.8]){
    advanceFuneral(state,seconds);assert.equal(state.funeral.stage,'procession','measure real moving route positions');
    const before=JSON.stringify(state);actors.update(state,.1);scene.render();assert.equal(JSON.stringify(state),before,'drawing preserves identities, inventories and funeral state');
    const view=funeralView(state),carriers=view.biers.flatMap(b=>b.carriers);assert.equal(carriers.length,4);

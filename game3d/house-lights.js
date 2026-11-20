@@ -1,5 +1,5 @@
 import {isStrictSumer} from '../scenario-profiles.js';
-import {buildingKey} from '../definitions.js';
+import {buildingKey,isResidence} from '../definitions.js';
 import {houseLightCount} from '../households.js';
 import {footprintSize} from '../footprints.js';
 import {roofAccessLayout} from './roof-access.js';
@@ -18,14 +18,15 @@ function festivalBuildings(state,focus,limit){
 // Small oil bowls illuminate doors, courtyards and flat roof edges. Four shared
 // thin-instance batches keep even a large city's celebration to four draws;
 // emissive flames and soft pools do not allocate a light for every wick.
-function createFestivalLamps(B,scene){
+function createFestivalLamps(B,scene,domestic=false){
+ const prefix=domestic?'communal-evening':'festival';
  const meshes=[],materials=[];let signature='',lampCount=0,buildingCount=0;
  const makeMaterial=(name,color,alpha=1)=>{const m=new B.StandardMaterial(name,scene);m.diffuseColor=B.Color3.FromHexString(color);m.emissiveColor=m.diffuseColor.clone();m.disableLighting=true;m.alpha=alpha;m.specularColor=B.Color3.Black();if(alpha<1){m.disableDepthWrite=true;m.backFaceCulling=false;}materials.push(m);return m;};
  function create(){
-  const bowl=B.MeshBuilder.CreateCylinder('festival-oil-bowls',{height:.12,diameterTop:.34,diameterBottom:.22,tessellation:8},scene);
-  const flame=B.MeshBuilder.CreateCylinder('festival-oil-flames',{height:.33,diameterTop:0,diameterBottom:.13,tessellation:6},scene);
-  const core=B.MeshBuilder.CreateCylinder('festival-oil-cores',{height:.20,diameterTop:0,diameterBottom:.075,tessellation:6},scene);
-  const pool=new B.Mesh('festival-oil-light-pools',scene),data=new B.VertexData(),segments=16;
+  const bowl=B.MeshBuilder.CreateCylinder(prefix+'-oil-bowls',{height:.12,diameterTop:.34,diameterBottom:.22,tessellation:8},scene);
+  const flame=B.MeshBuilder.CreateCylinder(prefix+'-oil-flames',{height:.33,diameterTop:0,diameterBottom:.13,tessellation:6},scene);
+  const core=B.MeshBuilder.CreateCylinder(prefix+'-oil-cores',{height:.20,diameterTop:0,diameterBottom:.075,tessellation:6},scene);
+  const pool=new B.Mesh(prefix+'-oil-light-pools',scene),data=new B.VertexData(),segments=16;
   data.positions=[0,0,0];data.normals=[0,1,0];data.colors=[1,1,1,.72];data.indices=[];
   // Geometry-only radial falloff: a bright centre fades through two soft rings
   // to a fully transparent rim, without textures, canvases or a hard disc edge.
@@ -34,17 +35,22 @@ function createFestivalLamps(B,scene){
    for(let i=0;i<segments;i++){const next=(i+1)%segments,current=1+ring*segments+i,following=1+ring*segments+next;if(!ring)data.indices.push(0,following,current);else{const inner=current-segments,innerNext=following-segments;data.indices.push(inner,following,current,inner,innerNext,following);}}
   }
   data.applyToMesh(pool);pool.useVertexColors=true;pool.hasVertexAlpha=true;
-  const finishes=[makeMaterial('festival-baked-clay','#b46f3d'),makeMaterial('festival-amber-flame','#ff982f'),makeMaterial('festival-warm-wick','#fff2b4'),makeMaterial('festival-soft-lamplight','#ec9b44',.19)];
-  for(const [i,mesh]of [bowl,flame,core,pool].entries()){mesh.material=finishes[i];mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=false;mesh.metadata={festivalLamp:true,festivalBatch:i};mesh.setEnabled(false);meshes.push(mesh);}
+  const finishes=[makeMaterial(prefix+'-baked-clay','#b46f3d'),makeMaterial(prefix+'-amber-flame','#ff982f'),makeMaterial(prefix+'-warm-wick','#fff2b4'),makeMaterial(prefix+'-soft-lamplight','#ec9b44',.19)];
+  for(const [i,mesh]of [bowl,flame,core,pool].entries()){mesh.material=finishes[i];mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=false;mesh.metadata=domestic?{communalLamp:true}:{festivalLamp:true,festivalBatch:i};mesh.setEnabled(false);meshes.push(mesh);}
  }
- function update(state,active){
+ function update(state,active,occupiedCourts){
   if(!active){lampCount=0;buildingCount=0;signature='';for(const mesh of meshes)if(mesh.isEnabled())mesh.setEnabled(false);return;}
-  const buildings=litFestivalBuildings(state),sig=(isStrictSumer(state)?'sumer:':'legacy:')+buildings.map(b=>[b.type,b.x,b.y,b.level||1,b.rotation||0,footprintSize(b),!!b.starterHut].join(':')).join('|');
+  const buildings=occupiedCourts||litFestivalBuildings(state),sig=(isStrictSumer(state)?'sumer:':'legacy:')+buildings.map(b=>[b.type,b.x,b.y,b.level||1,b.rotation||0,footprintSize(b),!!b.starterHut].join(':')).join('|');
   if(sig!==signature){
    signature=sig;const positions=[];buildingCount=buildings.length;
    for(const b of buildings){
     const size=footprintSize(b),center=(size-1)*3,edge=size*3-.18,angle=(b.rotation||0)*Math.PI/2,c=Math.cos(angle),s=Math.sin(angle);
     const at=(x,y,z,ground=false)=>{const X=b.x*6+center+c*(x-center)+s*(z-center),Z=b.y*6+center-s*(x-center)+c*(z-center);positions.push({x:X,y:y+(ground?Math.max(0,surfaceElevation(X/6,Z/6,state)):0),z:Z});};
+    if(domestic){
+     // One wick just inside the hall, two more on the courtyard paving, clear of the stair and bench.
+     for(const [x,z] of [[-.43,-2.40],[2.56,1.04],[-1.90,2.14]])at(center+x,.145,center+z,true);
+     continue;
+    }
     for(const [x,z]of [[-edge,-edge],[edge,-edge],[-edge,edge],[edge,edge],[-.85,edge],[.85,edge]])at(center+x,.14,center+z,true);
     if(b.type==='fishing'){
      for(const [x,height,z]of fishingLampSeats)at(x,height+.06,z);
@@ -63,7 +69,7 @@ function createFestivalLamps(B,scene){
     mesh.thinInstanceSetBuffer('matrix',matrices,16,true);mesh.thinInstanceRefreshBoundingInfo();mesh.metadata.lampCount=lampCount;if(mesh.isEnabled()!==!!lampCount)mesh.setEnabled(!!lampCount);
    }
   }
-  if(meshes.length){const pulse=1+.07*Math.sin((state.festival.elapsed||0)*8.1);materials[1].emissiveColor.set(pulse,.34*pulse,.035*pulse);materials[2].emissiveColor.set(1,.87,.48);}
+  if(meshes.length){const pulse=1+.07*Math.sin((domestic?(state.simTime||0)*8:state.festival.elapsed||0)*8.1);materials[1].emissiveColor.set(pulse,.34*pulse,.035*pulse);materials[2].emissiveColor.set(1,.87,.48);}
  }
  function dispose(){for(const mesh of meshes)mesh.dispose();for(const material of materials)material.dispose();lampCount=0;buildingCount=0;signature='';}
  return {update,dispose,meshes,get lampCount(){return lampCount;},get buildingCount(){return buildingCount;}};
@@ -71,19 +77,25 @@ function createFestivalLamps(B,scene){
 
 // Only presentation data: household identities, buildings and simulation time
 // remain untouched. Count residents once before choosing the nearest homes.
-function nearestOccupiedHomes(state,focus,limit){
+function nearestOccupiedHomes(state,focus,limit,courts){
  const occupancy=new Map();for(const c of state.citizens||[]){const home=c.home;occupancy.set(home,(occupancy.get(home)||0)+1);}
  const x=Number.isFinite(focus?.x)?focus.x:0,z=Number.isFinite(focus?.z)?focus.z:0,homes=[];
  for(const b of state.buildings||[]){
-  if(b.type!=='house'||b.construction?.kind==='new')continue;
+  if(!isResidence(b)||b.construction?.kind==='new')continue;
   const key=buildingKey(b),count=houseLightCount(b,occupancy.get(key)||0);if(!count)continue;
-  const px=b.x*6,pz=b.y*6+1.2;homes.push({key,count,x:px,z:pz,distance:(px-x)**2+(pz-z)**2});
+  const communal=b.type==='communalHouse';
+  if(communal)courts.push(b);
+  let px=b.x*6,pz=b.y*6+1.2;
+  if(communal){
+   const center=(footprintSize(b)-1)*3,angle=(b.rotation||0)*Math.PI/2,cs=Math.cos(angle),sn=Math.sin(angle);
+   px=b.x*6+center+2.56*cs+1.04*sn;pz=b.y*6+center-2.56*sn+1.04*cs;
+  }homes.push({key,count,x:px,z:pz,h:communal?.49:1.5,distance:(px-x)**2+(pz-z)**2});
  }
  homes.sort((a,b)=>a.distance-b.distance||(a.key<b.key?-1:a.key>b.key?1:0));return homes.slice(0,limit);
 }
 
 export function createHouseLights(B,scene,{limit=HOUSE_LIGHT_LIMIT,lamps=new Map()}={}){
- const pool=[],festival=createFestivalLamps(B,scene);let disposed=false;
+ const pool=[],festival=createFestivalLamps(B,scene),domestic=createFestivalLamps(B,scene,true);let disposed=false;
  function disable(lamp){
   // Babylon Light.setEnabled calls _resyncMeshes even if its value is unchanged.
   // Guard transitions so daylight never adds a repeated full-scene pass.
@@ -92,8 +104,9 @@ export function createHouseLights(B,scene,{limit=HOUSE_LIGHT_LIMIT,lamps=new Map
  function update(state,night,focus){
   if(disposed)return;
   const celebrating=isNightLightsFestival(state);festival.update(state,celebrating);
-  lamps.clear();if(!(night>0)&&!celebrating){for(const lamp of pool)disable(lamp);return;}
-  const homes=celebrating?festivalBuildings(state,focus,limit):nearestOccupiedHomes(state,focus,limit),used=new Set(),assigned=new Map();
+  lamps.clear();if(!(night>0)&&!celebrating){domestic.update(state,false);for(const lamp of pool)disable(lamp);return;}
+  const courts=[],homes=celebrating?festivalBuildings(state,focus,limit):nearestOccupiedHomes(state,focus,limit,courts),used=new Set(),assigned=new Map();
+  domestic.update(state,night>.08&&courts.length>0,courts);
   // Keep each retained home on its existing light. Camera pans only move the
   // free slots; the pool never grows beyond the original six-light budget.
   for(const home of homes){const lamp=pool.find(l=>l.metadata?.houseKey===home.key);if(lamp){assigned.set(home.key,lamp);used.add(lamp);}}
@@ -101,11 +114,12 @@ export function createHouseLights(B,scene,{limit=HOUSE_LIGHT_LIMIT,lamps=new Map
    let lamp=assigned.get(home.key)||pool.find(l=>!used.has(l));
    if(!lamp){lamp=new B.PointLight(`occupied-house-pool-${pool.length}`,new B.Vector3(home.x,1.5,home.z),scene);lamp.diffuse=new B.Color3(1,.60,.22);lamp.range=7;pool.push(lamp);}
    used.add(lamp);lamp.metadata={houseKey:home.key};
-   if(lamp.position.x!==home.x||lamp.position.y!==1.5||lamp.position.z!==home.z)lamp.position.set(home.x,1.5,home.z);
+   const height=home.h??1.5;
+   if(lamp.position.x!==home.x||lamp.position.y!==height||lamp.position.z!==home.z)lamp.position.set(home.x,height,home.z);
    const intensity=(celebrating?Math.max(.75,night):night)*home.count*3.5;if(lamp.intensity!==intensity)lamp.intensity=intensity;if(!lamp.isEnabled())lamp.setEnabled(true);lamps.set(home.key,lamp);
   }
   for(const lamp of pool)if(!used.has(lamp))disable(lamp);
  }
- function dispose(){if(disposed)return;disposed=true;for(const lamp of pool)lamp.dispose();pool.length=0;lamps.clear();festival.dispose();}
+ function dispose(){if(disposed)return;disposed=true;for(const lamp of pool)lamp.dispose();pool.length=0;lamps.clear();festival.dispose();domestic.dispose();}
  return {update,dispose,lamps,festivalMeshes:festival.meshes,get festivalLampCount(){return festival.lampCount;},get festivalBuildingCount(){return festival.buildingCount;}};
 }

@@ -1,4 +1,4 @@
-import {footpathRibbonPoint} from '../footpaths.js';
+import {footpathRibbonPoint,footpathRibbonTangent} from '../footpaths.js';
 import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
 import {createAlluvialWaterMaterial} from './alluvial-water.js';
 import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain,isDryPoint,onBridge} from '../world.js';
@@ -73,15 +73,14 @@ function shoulderPoint(row,side,t){
  return {x:row.p.x+row.nx*d,y:row.p.y+row.nz*d};
 }
 
-export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null,obstacles=obstacleIndex(s.buildings||[])){
- const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
+export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null,obstacles=obstacleIndex(s.buildings||[]),progress=1){
+ const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter*progress)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
  const g={positions:[],indices:[],uvs:[],colors:[],centers:[],widths:[],origin};
  const rows=[];
- if(!len||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return g;
+ if(!len||progress<=0||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return g;
  for(let j=0;j<=steps;j++){
-  const t=j/steps,p=footpathRibbonPoint(a,b,control,t);
-  const slope=control?16*t*(1-t)*(1-2*t)*TILE:0;
-  const vx=control?dx+slope*(control.x-(a.x+b.x)/2):dx,vz=control?dz+slope*(control.y-(a.y+b.y)/2):dz;
+  const t=j/steps*progress,p=footpathRibbonPoint(a,b,control,t);
+  const {x:vx,y:vz}=footpathRibbonTangent(a,b,control,t);
   const tangent=Math.hypot(vx,vz)||1,nx=-vz/tangent,nz=vx/tangent;
   const x=p.x*TILE,z=p.y*TILE;
   g.centers.push({x,y:z});

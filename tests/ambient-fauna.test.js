@@ -197,7 +197,7 @@ test('mallards make a long riverbank circuit with separate feeding and lookout s
 });
 
 
-test('free herds keep grazing after encounters, without overlapping, pivoting in place or moving on pause',async()=>{
+test('complete free herds move forward between distant dry pastures, preserve spacing and stop on pause',async()=>{
  const engine=new B.NullEngine(),scene=new B.Scene(engine),state=createGame({start:'established',seed:73129});
  const names=['pig','goat','bull','cow','ram'].map(kind=>'pasture-'+kind+'.glb');
  const shared=new Map(names.map(file=>[file,source(scene,file)]));
@@ -207,17 +207,26 @@ test('free herds keep grazing after encounters, without overlapping, pivoting in
   view.update(state,0,true,1);
   const herd=scene.transformNodes.filter(n=>n.metadata?.herdSpecies&&n.isEnabled());
   assert.deepEqual(new Set(herd.map(n=>n.metadata.herdSpecies)),new Set(['pig','goat','bull','sheep']));
-  const previous=new Map(),recent=new Map();
+  const previous=new Map(),recent=new Map(),species=new Map();
+  for(const n of herd){
+   const kind=n.metadata.herdSpecies;
+   if(!species.has(kind))species.set(kind,{group:[],first:null,maximum:0,forward:0,reverse:0,displacements:[]});
+   const stats=species.get(kind);
+   stats.group.push(n);stats.displacements.push({from:n.position.clone(),maximum:0});
+  }
   let reverseSteps=0;
   for(let frame=0;frame<3000;frame++){
    view.update(state,.05,false,2);
    for(const n of herd){
     const {x,z}=n.position,yaw=n.rotation.y,last=previous.get(n);
+    if(frame%12===0)assert.ok(ambientDryPoint(state,x/6,z/6),'unsafe grazing path for '+n.name);
     if(last){
      const dx=x-last.x,dz=z-last.z,distance=Math.hypot(dx,dz);
      if(distance>1e-6){
       recent.set(n,(recent.get(n)||0)+distance);
-      if(dx*Math.sin(yaw)+dz*Math.cos(yaw)<-distance*.9)reverseSteps++;
+      const stats=species.get(n.metadata.herdSpecies);
+      if(dx*Math.sin(yaw)+dz*Math.cos(yaw)<0){reverseSteps++;stats.reverse+=distance;}
+      else stats.forward+=distance;
      }else assert.equal(yaw,last.yaw,'stationary turn '+n.name);
     }
     for(const other of herd)if(other!==n&&other.metadata.herdSpecies===n.metadata.herdSpecies){
@@ -226,10 +235,25 @@ test('free herds keep grazing after encounters, without overlapping, pivoting in
     }
     previous.set(n,{x,z,yaw});
    }
+   for(const stats of species.values()){
+    const {group}=stats;
+    const center={x:group.reduce((sum,n)=>sum+n.position.x,0)/group.length,z:group.reduce((sum,n)=>sum+n.position.z,0)/group.length};
+    stats.first??=center;
+    stats.maximum=Math.max(stats.maximum,Math.hypot(center.x-stats.first.x,center.z-stats.first.z));
+    assert.ok(group.every(n=>Math.hypot(n.position.x-center.x,n.position.z-center.z)<12),'the moving herd stays together');
+    for(const [i,n] of group.entries()){
+     const q=stats.displacements[i];q.maximum=Math.max(q.maximum,Math.hypot(n.position.x-q.from.x,n.position.z-q.from.z));
+    }
+   }
    if((frame+1)%600===0){
     for(const n of herd)assert.ok((recent.get(n)||0)>.1,n.name+' stalled for a minute');
     recent.clear();
    }
+  }
+  for(const [kind,stats]of species){
+   assert.ok(stats.maximum>22,kind+' herd center travelled only '+stats.maximum+' m');
+   assert.ok(stats.displacements.every(q=>q.maximum>15),kind+' left an animal at the old pasture');
+   assert.ok(stats.reverse/(stats.forward+stats.reverse)<.035,kind+' spends too much distance backing');
   }
   assert.ok(reverseSteps>0,'at least one blocked animal backs out');
   view.update(state,.1,true,4);

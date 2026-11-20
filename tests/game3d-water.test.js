@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {bridgeSpan,river} from '../world.js';
 import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
+import {streetCurveLookup,footpathRibbonPoint} from '../footpaths.js';
 import {waterDepth,waterSurfaceGeometry,canalArm, wornRoadGeometry,submergedPebbles,canalSection} from '../game3d/water.js';
 
 const state={buildings:[],world:{lakes:[{cells:[{x:26,y:7},{x:27,y:7}]}]}};
@@ -31,6 +32,18 @@ test('built streets keep their route centre, shared shoulders and fading edges i
  const joint=road=>Array.from({length:7},(_,i)=>{const j=road.positions.length-21+i*3;return [road.positions[j]+road.origin.x,road.positions[j+1],road.positions[j+2]+road.origin.z];});
  assert.deepEqual(joint(g),joint(next).reverse());
  assert.equal(JSON.stringify([a,b,state]),before);
+});
+
+test('curved paving keeps both verges joined, and upgrades cover the same centre as the resident route',()=>{
+ const a={x:2.5,y:4.5},b={x:3.5,y:4.5},c={x:4.5,y:4.5},lookup=streetCurveLookup(state);
+ const street=(p,q,progress=1)=>wornRoadGeometry(state,p,q,1.22,.038,1,2,lookup(p,q),undefined,progress);
+ const first=street(a,b),next=street(c,b),partial=street(a,b,.42);
+ for(let i=0;i<7;i++){
+  const p=first.positions.length-21+i*3,q=next.positions.length-3-i*3;
+  assert.ok(Math.hypot(first.positions[p]+first.origin.x-next.positions[q]-next.origin.x,first.positions[p+2]+first.origin.z-next.positions[q+2]-next.origin.z)<1e-7);
+ }
+ const stop=footpathRibbonPoint(a,b,lookup(a,b),.42);
+ assert.ok(Math.hypot(stop.x*6-partial.centers.at(-1).x,stop.y*6-partial.centers.at(-1).y)<1e-8);
 });
 
 test('shoulders narrow at buildings and lakes, and bridge decks keep their own surface',()=>{

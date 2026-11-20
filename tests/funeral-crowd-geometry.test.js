@@ -46,10 +46,10 @@ test('the walking mourners spread on clear ground without moving saved citizens'
  assert.ok(people.every(p=>isDryPoint(state,p.x,p.y)));
  const positions=people.map(p=>[Math.round(p.x*100),Math.round(p.y*100)].join(','));
  assert.ok(new Set(positions).size>=people.length*.9);
- assert.ok(people.filter(p=>{
+ assert.ok(people.every(p=>{
   const c=state.citizens.find(c=>c.id===p.id);
-  return Math.hypot(p.x-c.x,p.y-c.y)>.07;
- }).length>=people.length*.5);
+  return p.x===c.x&&p.y===c.y;
+ }),'each walking mourner is drawn at their own saved route position');
 });
 
 test('recessing releases small groups at different times and a mid-stage save preserves them',async()=>{

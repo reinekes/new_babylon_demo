@@ -24,10 +24,10 @@ function routeStart(from,to){
 }
 function terrainAccess(s){
  const flood=floodPhase(s)==='active'?s.riverFlood:null;
- const key=s.buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.footprint||1}:${b.construction?.kind||''}:${b.type==='cityGate'?b.rotation||0:''}`).join('|')+(flood?`/flood:${flood.along}:${flood.bank}:${floodProtectionRevision(s)}`:'');
+ const buildings=s.buildings||[],key=buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.footprint||1}:${b.construction?.kind||''}:${b.type==='cityGate'?b.rotation||0:''}`).join('|')+(flood?`/flood:${flood.along}:${flood.bank}:${floodProtectionRevision(s)}`:'');
  let view=terrainCache.get(s);
  if(view?.key!==key||view.river!==s.world?.river||view.lakes!==s.world?.lakes||view.lakeCount!==s.world?.lakes?.length){
-  view={key,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length,obstacles:obstacleIndex(s.buildings),flooded:flood&&floodFootprint(s,flood),controls:new Map()};
+  view={key,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length,obstacles:obstacleIndex(buildings),flooded:flood&&floodFootprint(s,flood),controls:new Map(),offsets:new Map(),bridges:buildings.filter(b=>b.type==='bridge')};
   terrainCache.set(s,view);
  }
  return view;
@@ -39,7 +39,7 @@ function footpathAccess(s,navigation){
   const x=(a.x+b.x)/2,y=(a.y+b.y)/2;
   // Walking uses its existing obstacle and terrain rules. Bridges have their
   // own surface and must never acquire a dirt overlay.
-  const dry=!(navigation.flooded&&floodedSegment(navigation.flooded,a,b))&&!onBridge(s.buildings,x,y,s)&&navigationSegmentClear(s,a,b,navigation.obstacles);
+  const dry=!(navigation.flooded&&floodedSegment(navigation.flooded,a,b))&&!onBridge(navigation.bridges||s.buildings||[],x,y,s)&&navigationSegmentClear(s,a,b,navigation.obstacles);
   passability.set(id,dry);
   return dry;
  };
@@ -106,44 +106,70 @@ export function visibleFootpaths(s,finishedIds=null){
  return result;
 }
 
+// All streets crossing a point share a ground offset. Coordinates vary over
+// several plots, so a long street keeps its sweep through grid junctions.
+function groundOffset(s,view,x,y){
+ const key=x+','+y;
+ if(view.offsets.has(key))return view.offsets.get(key);
+ const phase=(s.world?.seed||0)*.013;
+ const dx=.092*Math.sin(y*.81+x*.23-phase)+.029*Math.sin(x*.67-y*.47+phase);
+ const dy=.109*Math.sin(x*.87+y*.31+phase)+.037*Math.cos(x*.39-y*.74-phase);
+ let room=1;
+ for(let xx=Math.floor(x);xx<=Math.ceil(x);xx++)for(let yy=Math.floor(y);yy<=Math.ceil(y);yy++){
+  for(const box of view.obstacles.get(xx+','+yy)||[]){
+   const clearance=Math.hypot(Math.max(box.minX-x,x-box.maxX,0),Math.max(box.minY-y,y-box.maxY,0));
+   room=Math.min(room,Math.max(0,(clearance-.06)/.37));
+  }
+ }
+ for(const [ox,oy] of [[0,0],[-.23,-.23],[-.23,.23],[.23,-.23],[.23,.23]]){
+  if(!isDryPoint(s,x+ox,y+oy)||onBridge(view.bridges,x+ox,y+oy,s)){room=0;break;}
+ }
+ room=room*room*(3-2*room);
+ const offset={x:dx*room,y:dy*room};view.offsets.set(key,offset);return offset;
+}
+
 function footpathControl(s,view,id,from,to){
  if(view.controls.has(id))return view.controls.get(id);
  const [a,b]=from.x<to.x||from.x===to.x&&from.y<to.y?[from,to]:[to,from];
- const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
- // Ground varies over several plots. An open run can drift a few handbreadths
- // to one side; the worn centre eases back onto its heading at each junction.
- const phase=(s.world?.seed||0)*.013;
- const drift=.068*Math.sin(mx*.86+my*.39+phase)+.026*Math.cos(mx*.35-my*.78-phase);
- const clear=(p,q)=>isDryPoint(s,p.x,p.y)&&isDryPoint(s,q.x,q.y)&&!(view.flooded&&floodedSegment(view.flooded,p,q))&&navigationSegmentClear(s,p,q,view.obstacles);
  let control=null;
- if(len>EPSILON&&Math.abs(drift)>.008&&cachedFootpathAccess(s,view)(id,a,b)){
-  const offset=d=>({x:mx-dy/len*d,y:my+dx/len*d});
-  const candidate=offset(drift),margin=offset(drift+Math.sign(drift)*.09);
-  let centre=a,edge=a,safe=true;
-  for(let i=1;i<=6;i++){
-   const p=footpathRibbonPoint(a,b,candidate,i/6),outer=footpathRibbonPoint(a,b,margin,i/6);
-   if(!clear(centre,p)||!clear(edge,outer)){safe=false;break;}
-   centre=p;edge=outer;
+ if(!onBridge(view.bridges,(a.x+b.x)/2,(a.y+b.y)/2,s)&&navigationSegmentClear(s,a,b,view.obstacles)){
+  const along=t=>groundOffset(s,view,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t);
+  const start=along(0),end=along(1);
+  // Opposite segments evaluate the same gradient at a junction. Convert it
+  // to Bézier handles so their verges and walkers share the incoming heading.
+  const handle=(point,t,sign)=>{
+   if(!point.x&&!point.y)return point;
+   const back=along(t-.25),front=along(t+.25);
+   return {x:point.x+sign*(front.x-back.x)*2/3,y:point.y+sign*(front.y-back.y)*2/3};
+  };
+  const offsets=[start,handle(start,0,1),handle(end,1,-1),end];
+  if(offsets.some(d=>d.x||d.y)){
+   let prev=footpathRibbonPoint(a,b,offsets,0),clear=true;
+   for(let i=1;i<=8;i++){
+    const next=footpathRibbonPoint(a,b,offsets,i/8);
+    if(!isDryPoint(s,next.x,next.y)||onBridge(view.bridges,next.x,next.y,s)||!navigationSegmentClear(s,prev,next,view.obstacles)){clear=false;break;}
+    prev=next;
+   }
+   if(clear)control=offsets;
   }
-  if(safe)control=candidate;
  }
- view.controls.set(id,control);
- return control;
+ view.controls.set(id,control);return control;
+}
+
+// Take the topology snapshot once for the complete Canvas or WebGL road pass.
+export function streetCurveLookup(s){
+ const view=terrainAccess(s);
+ return (a,b,id=footpathId(a,b))=>footpathControl(s,view,id,a,b);
 }
 
 export function residentFootpathPositions(s){
  let view;
  return c=>{
-  if(c.waterTrip||c.floodShelter||c.fireShelter||c.controlled||c.eventContact||c.festivalContact||c.funeralContact)return null;
-  const a=c.route?.[c.routeIndex-1],b=c.route?.[c.routeIndex];
+  if(c.waterTrip?.fire||c.floodShelter||c.fireShelter||c.controlled||c.eventContact||c.festivalContact||c.funeralContact)return null;
+  const route=c.waterTrip?.route||c.route,index=c.waterTrip?.index??c.routeIndex;
+  const a=route?.[index-1],b=route?.[index];
   if(!a||!b)return null;
-  if(!view){
-   view=terrainAccess(s);
-   if(view.roads!==s.roads||view.roadCount!==s.roads?.length){
-    view.roads=s.roads;view.roadCount=s.roads?.length;
-    view.roadById=new Map((s.roads||[]).map(r=>[r.id,r]));
-   }
-  }
+  view??=terrainAccess(s);
   let edge=residentEdges.get(b);
   if(edge?.start!==a||edge.view!==view){
    const origin=routeStart(a,b),grid=origin&&Math.abs(origin.x-a.x)<EPSILON&&Math.abs(origin.y-a.y)<EPSILON;
@@ -152,8 +178,6 @@ export function residentFootpathPositions(s){
    residentEdges.set(b,edge);
   }
   if(!edge.control)return null;
-  const road=view.roadById?.get(edge.id);
-  if(road&&(road.construction||road.level>1||road.built!==false))return null;
   const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((c.x-a.x)*dx+(c.y-a.y)*dy)/(dx*dx+dy*dy)));
   return {...footpathRibbonPoint(a,b,edge.control,t),followingFootpath:true};
  };
@@ -176,6 +200,17 @@ export function validateFootpaths(s){
 export function footpathRibbonPoint(a,b,control,t){
  const x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;
  if(!control)return {x,y};
- const weight=8*t*t*(1-t)*(1-t);
- return {x:x+weight*(control.x-(a.x+b.x)/2),y:y+weight*(control.y-(a.y+b.y)/2)};
+ const u=a.x<b.x||a.x===b.x&&a.y<b.y?t:1-t,v=1-u;
+ const k0=v*v*v,k1=3*u*v*v,k2=3*u*u*v,k3=u*u*u;
+ return {x:x+control[0].x*k0+control[1].x*k1+control[2].x*k2+control[3].x*k3,
+  y:y+control[0].y*k0+control[1].y*k1+control[2].y*k2+control[3].y*k3};
+}
+
+export function footpathRibbonTangent(a,b,control,t){
+ const dx=b.x-a.x,dy=b.y-a.y;
+ if(!control)return {x:dx,y:dy};
+ const sign=a.x<b.x||a.x===b.x&&a.y<b.y?1:-1,u=sign===1?t:1-t,v=1-u;
+ const [a0,a1,a2,a3]=control,k0=3*sign*v*v,k1=6*sign*u*v,k2=3*sign*u*u;
+ return {x:dx+(a1.x-a0.x)*k0+(a2.x-a1.x)*k1+(a3.x-a2.x)*k2,
+  y:dy+(a1.y-a0.y)*k0+(a2.y-a1.y)*k1+(a3.y-a2.y)*k2};
 }

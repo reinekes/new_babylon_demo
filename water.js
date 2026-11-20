@@ -290,7 +290,7 @@ export function advanceWater(s,dt){
    if(origin&&begin(s,c,home,null,nav,origin))assigned.add(c.home);
   }
  }
- if(day<6||day>=19)return changes.delete(s);
+ if(day<5||day>=19)return changes.delete(s);
  // Build household demand once per step: never rescan every resident per courier.
  const buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),daily=new Map(),adults=new Set(),assigned=new Set();
  for(const c of s.citizens){const home=supplyHome(c);daily.set(home,(daily.get(home)||0)+waterDemand(c));if(c.age>=16&&c.health>20&&!c.floodShelter)adults.add(home);if(c.waterTrip)assigned.add(c.waterTrip.target);}

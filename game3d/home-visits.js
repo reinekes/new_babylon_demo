@@ -3,7 +3,8 @@
 import {buildingKey,isResidence} from '../definitions.js';
 import {BASE_TIME_RATE} from '../calendar.js';
 import {DAY_SECONDS} from '../city-life.js';
-import {workHourAt} from '../work-schedule.js';
+import {weatherAt} from '../environment.js';
+import {canDepartForWork,residentDepartureHour,workHourAt} from '../work-schedule.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 
 const point=(x,z,height=.068)=>({x,z,height});
@@ -20,7 +21,9 @@ function layoutFor(kind,catalogue){
   const roof=[...entry,point(-2.24,2.99,floor),point(-2.59,3.83,floor),point(-3.06,3.83,floor)];
   for(let i=0;i<12;i++)roof.push(point(-3.06,3.50-i*.28,floor+(deck-floor)*(i+1)/12));
   roof.push(point(-3.06,-.02,deck),point(-4.12,-.12,deck));
-  const layout={inner,door,sill,court,gate:point(0,5.52,floor),outsideCorner:5.83,bench,benchYaw:-Math.PI/2,benchHeight:.495,roof};
+  // Two places on the long adobe bench leave its rolled reed mat free.
+  const companions=[1.02,2.21].map(z=>[...entry,point(2.23,.38,floor),point(2.71,z,floor),point(3.21,z,floor)]);
+  const layout={companions,inner,door,sill,court,gate:point(0,5.52,floor),outsideCorner:5.83,bench,benchYaw:-Math.PI/2,benchHeight:.495,roof};
   layouts.set(key,layout);return layout;
  }
  if(kind==='camp'||kind==='hut'){
@@ -113,29 +116,83 @@ function excursion(l,roof){
  return pair[key];
 }
 const houseOffset=b=>hash(b.x*197+b.y*263)%117;
-function visitAt(l,clock,b,id){
- // Start and finish indoors. Suppress cycles that would cross nightfall.
- const offset=houseOffset(b),cycle=Math.floor((clock+offset)/117),
- elapsed=clock+offset-cycle*117,startHour=workHourAt((clock-elapsed)*BASE_TIME_RATE);
- if(startHour<6.15||startHour>=19)return null;
- const roof=!!l.roof&&((cycle+id+b.x+b.y)&1)===1,{out,back}=excursion(l,roof),hold=7+(hash(id+cycle)%6);
- if(startHour+(out.duration+hold+back.duration)*BASE_TIME_RATE*24/DAY_SECONDS>=19)return null;
- if(elapsed<out.duration)return {...follow(out,elapsed),stage:'out',returnPoints:[...out.points.slice(0,out.ends.findIndex(x=>x>=elapsed))].reverse()};
- if(elapsed<out.duration+hold)return {...out.points.at(-1),yaw:roof?.12:l.benchYaw,walking:false,stage:roof?'roof':l.roof?'bench':'mat',seatHeight:(roof?.13:l.benchHeight-out.points.at(-1).height+.085),returnPoints:[...out.points].reverse().slice(1)};
- if(elapsed<out.duration+hold+back.duration){
-  const t=elapsed-out.duration-hold,index=back.ends.findIndex(x=>x>=t);
-  return {...follow(back,t),stage:'in',returnPoints:back.points.slice(Math.max(1,index))};
- }
+function followVisit(out,back,elapsed,hold,seat){
+ if(elapsed<0)return null;
+ if(elapsed<out.duration)return {...follow(out,elapsed),stage:'out',returnPoints:out.points.slice(0,out.ends.findIndex(t=>t>=elapsed)).reverse()};
+ if(elapsed<out.duration+hold)return {...out.points.at(-1),...seat,walking:false,returnPoints:back.points.slice(1)};
+ const t=elapsed-out.duration-hold;
+ if(t<back.duration)return {...follow(back,t),stage:'in',returnPoints:back.points.slice(Math.max(1,back.ends.findIndex(end=>end>=t)))};
  return null;
 }
+function visitAt(l,clock,b,id,drySince){
+ const offset=houseOffset(b),cycle=Math.floor((clock+offset)/117),elapsed=clock+offset-cycle*117,start=(clock-elapsed)*BASE_TIME_RATE;
+ const startHour=workHourAt(start);
+ if(startHour<6.15||startHour>=19||clock-elapsed<drySince||!canDepartForWork(undefined,id,start)||(startHour-residentDepartureHour(undefined,id))*hourSeconds<morningWindow)return null;
+ const roof=!!l.roof&&((cycle+id+b.x+b.y)&1)===1,{out,back}=excursion(l,roof),hold=7+(hash(id+cycle)%6);
+ if(startHour+(out.duration+hold+back.duration)*BASE_TIME_RATE*24/DAY_SECONDS>=19)return null;
+ return followVisit(out,back,elapsed,hold,{yaw:roof?.12:l.benchYaw,stage:roof?'roof':l.roof?'bench':'mat',seatHeight:roof?.13:l.benchHeight-out.points.at(-1).height+.085});
+}
+// A morning visit uses the simulation clock and stable resident ID. Reopening a
+// save halfway through the doorway reconstructs the same position and heading.
+const hourSeconds=DAY_SECONDS/(24*BASE_TIME_RATE),morningWindow=12;
+const morningRoutes=new WeakMap();
+function morningVisit(l,id,elapsed,sheltered){
+ let routes=morningRoutes.get(l);
+ if(!routes){
+  routes=[-.24,0,.24].map(side=>{
+   const spot=point(l.court.x+side,Math.max(l.court.z+.18,l.sill.z+.25),l.court.height);
+   const points=[l.inner,l.door,l.sill,l.court,spot];
+   return {out:track(points),back:track([...points].reverse())};
+  });
+  const threshold=[l.inner,l.door];
+  routes.push({out:track(threshold),back:track([...threshold].reverse())});
+  morningRoutes.set(l,routes);
+ }
+ const route=routes[sheltered?3:id%3],pose=followVisit(route.out,route.back,elapsed,2+(id%5)*.35,{stage:sheltered?'threshold':'courtyard',yaw:(id%3-1)*.55});
+ return pose&&{...pose,morning:true,sheltered};
+}
+function morningCaregivers(residents){
+ const households=new Map();
+ for(const c of residents)if(c.age<3&&homePhase(c.phase)){
+  if(!households.has(c.home))households.set(c.home,{parents:new Set(),carer:null,rank:Infinity});
+  const h=households.get(c.home);for(const id of c.parents||[])h.parents.add(id);
+ }
+ if(!households.size)return households;
+ for(const c of residents){
+  const h=households.get(c.home);
+  if(!h||c.age<16||!homePhase(c.phase)||ineligible(c)||loaded(c)||c.guardPost||c.recovering||c.health<65)continue;
+  const rank=(h.parents.has(c.id)?0:1);
+  if(rank<h.rank||rank===h.rank&&c.id<h.carer){h.rank=rank;h.carer=c.id;}
+ }
+ return households;
+}
+const socialRoutes=new WeakMap();
+function eveningVisit(layout,slot,clock){
+ let routes=socialRoutes.get(layout);
+ if(!routes){
+  routes=[...layout.companions,layout.roof].map(path=>({out:track(path),back:track([...path].reverse())}));socialRoutes.set(layout,routes);
+ }
+ const {out,back}=routes[slot.index],roof=slot.index===2;
+ const hold=slot.finish-slot.start-out.duration-back.duration;
+ if(hold<3)return null;
+ return followVisit(out,back,clock-slot.start,hold,{stage:roof?'roof':'bench',yaw:roof?.40:layout.benchYaw+(slot.index===0?.76:-.76),seatHeight:roof?.13:layout.benchHeight-out.points.at(-1).height+.085,companion:roof?undefined:slot.index});
+}
 export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
- let previous=new Map(),transits=new Map(),seats=new Map(),lastState=null,lastClock=-Infinity;
- const houseLayout=(b,s)=>layoutFor(kindOf(b,s),homeAsset(b,s));
- return function homeVisits(s,people){
+ let previous=new Map(),transits=new Map(),seats=new Map(),evenings=new Map(),lastState=null,lastClock=-Infinity,wasWet=false,drySince=-Infinity,wetSince=-Infinity;
+ return function homeVisits(s,people,weather){
   const clock=(s.simTime||0)/BASE_TIME_RATE;
-  if(s!==lastState||clock<lastClock||clock-lastClock>40){previous.clear();transits.clear();seats.clear();}
+  const reset=s!==lastState||clock<lastClock||clock-lastClock>40;
+  const wet=(weather||weatherAt(s).type)==='rain';
+  if(reset){previous.clear();transits.clear();seats.clear();evenings.clear();drySince=wetSince=-Infinity;}
+  else if(!wet&&wasWet)drySince=clock;
+  else if(wet&&!wasWet)wetSince=clock;
+  wasWet=wet;
   lastClock=clock;lastState=s;
-  const homes=new Map(),shown=new Map(),next=new Map(),residents=s.citizens||[];
+  const homes=new Map(),shown=new Map(),next=new Map(),residents=s.citizens||[],frameLayouts=new Map();
+  const houseLayout=b=>{
+   if(!frameLayouts.has(b))frameLayouts.set(b,layoutFor(kindOf(b,s),homeAsset(b,s)));
+   return frameLayouts.get(b);
+  };
   for(const b of s.buildings||[])if(isResidence(b)&&!b.campSalvage&&b.construction?.kind!=='new')homes.set(buildingKey(b),b);
   for(const c of people)shown.set(c.id,c);
   // Reserve a household's single seat for one daylight outing. A new arrival
@@ -155,27 +212,66 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
    }
    for(const [key,slot] of openings)seats.set(key,slot);
   }
+  const hour=workHourAt(s.simTime||0),social=new Map();
+  const morning=hour>=5&&hour<=9+morningWindow/hourSeconds&&!s.funeral&&!s.miracleCelebration;
+  const carers=morning?morningCaregivers(residents):null;
+  if(!wet&&hour>=19&&hour<23&&!s.funeral){
+   const hourLength=DAY_SECONDS/(24*BASE_TIME_RATE),dusk=clock-(hour-19)*hourLength;
+   const day=Math.floor(((s.simTime||0)+DAY_SECONDS/3)/DAY_SECONDS);
+   for(const [key,b] of homes){
+    if(b.type!=='communalHouse')continue;
+    let group=evenings.get(key);
+    if(!group||group.day!==day){group={day,slots:new Map()};evenings.set(key,group);}
+    social.set(key,group);
+   }
+   if(social.size){
+    const available=new Map();
+    for(const c of residents){
+     if(!social.has(c.home)||!homePhase(c.phase)||c.age<16||ineligible(c)||loaded(c)||shown.has(c.id)||transits.has(c.id)||returning(previous.get(c.id)?.phase))continue;
+     if(!available.has(c.home))available.set(c.home,[]);available.get(c.home).push(c.id);
+    }
+    for(const [key,group] of social){
+     const ids=available.get(key)||[];
+     for(const id of group.slots.keys())if(!ids.includes(id))group.slots.delete(id);
+     if(ids.length<2)continue;
+     ids.sort((a,b)=>hash(a^Math.imul(day,0x9e3779b1))-hash(b^Math.imul(day,0x9e3779b1)));
+     const used=new Set([...group.slots.values()].map(slot=>slot.index));
+     for(const id of ids){if(group.slots.has(id)||used.size===3)continue;
+      const index=[0,1,2].find(i=>!used.has(i)),start=Math.max(drySince,dusk+1.2+index*1.6,reset?-Infinity:clock);
+      const finish=dusk+hourLength*3.65-index*1.1;
+      if(finish-start<18)break;
+      group.slots.set(id,{start,finish,index});used.add(index);
+     }
+    }
+   }
+  }else evenings.clear();
   for(const c of residents){
    const b=homes.get(c.home),real=shown.get(c.id),prior=previous.get(c.id),wasHome=prior?.home===c.home&&homePhase(prior.phase);
    if(b&&real?.playing&&!ineligible(c)){next.set(c.id,{home:c.home,phase:'playing',port:{x:real.x,y:real.y}});transits.delete(c.id);continue;}
    if(!b||ineligible(c)||real&&(real.eventContact||real.miracleContact||real.funeralContact||real.festivalContact||real.peaceRelief||real.phase==='copyingLaw')||s.funeral?.scope==='city'){transits.delete(c.id);continue;}
    const atHome=homePhase(c.phase),given=transits.get(c.id);
+   const canStepOut=c.age>=16&&!c.guardPost&&!c.recovering&&!(c.health<65)&&!(c.diningUntil>s.simTime)&&carers?.get(c.home)?.carer!==c.id;
+   const waterExit=c.waterTrip?.origin===c.home&&(c.waterTrip.phase==='source'||c.waterTrip.phase==='deliver'),departing=leaving(c.phase)||waterExit;
+   const streetRoute=waterExit?c.waterTrip.route:c.route,streetIndex=waterExit?c.waterTrip.index:c.routeIndex;
    if(!atHome&&!wasHome&&!given){if(returning(c.phase))next.set(c.id,{home:c.home,phase:c.phase,parcel:real?.carrying?{...real.cargo}:null});continue;}
    let transit=given,p;
    let indoorsUntil=prior?.indoorsUntil||0;
-   if(atHome&&(returning(prior?.phase)||prior?.phase==='playing')&&prior.home===c.home){
+   if((wet&&!prior?.p?.sheltered||prior?.p?.morning&&!canStepOut)&&atHome&&prior?.p&&!given&&prior.p.returnPoints?.length){
+    const route=track([prior.p,...prior.p.returnPoints]);
+    transit={route,start:clock,entry:true,home:c.home};transits.set(c.id,transit);
+   }else if(atHome&&(returning(prior?.phase)||prior?.phase==='playing')&&prior.home===c.home){
     const port=prior.phase==='playing'?prior.port:c;
-    transit={route:track(streetToRoom(b,houseLayout(b,s),port,homePlatform(b))),start:clock,entry:true,home:c.home,parcel:prior.parcel};transits.set(c.id,transit);
+    transit={route:track(streetToRoom(b,houseLayout(b),port,homePlatform(b))),start:clock,entry:true,home:c.home,parcel:prior.parcel};transits.set(c.id,transit);
     const offset=houseOffset(b);
     indoorsUntil=(Math.floor((clock+transit.route.duration+offset)/117)+1)*117-offset;
-   }else if(!atHome&&wasHome&&leaving(c.phase)&&c.route?.length>1&&!given?.exit){
-    const roomOut=streetToRoom(b,houseLayout(b,s),c.route?.[0]||prior.port||c,homePlatform(b)).reverse();
+   }else if(!atHome&&wasHome&&departing&&streetRoute?.length>1&&!given?.exit){
+    const roomOut=streetToRoom(b,houseLayout(b),streetRoute[0]||prior.port||c,homePlatform(b)).reverse();
     // An interrupted outing returns by its own stairs or ladder before joining the street.
-    const prefix=prior.p?[prior.p,...(prior.p.returnPoints||[])]:[];
-    const points=prefix.length?[...prefix,...roomOut]:roomOut;
-    transit={route:track(points),start:clock,exit:true,home:c.home};transits.set(c.id,transit);
+    const pose=prior.p;
+    const points=pose?.morning?[pose,...roomOut.slice(Math.min(3,pose.returnPoints.length))]:pose?[pose,...(pose.returnPoints||[]),...roomOut]:roomOut;
+    transit={route:track(points),start:clock,exit:true,fromMorning:!!pose?.morning,home:c.home};transits.set(c.id,transit);
    }
-   if(transit&&(transit.home!==c.home||transit.exit&&!leaving(c.phase)||transit.entry&&!atHome)){transits.delete(c.id);transit=null;}
+   if(transit&&(transit.home!==c.home||transit.exit&&!departing&&!(transit.fromMorning&&real&&!atHome)||transit.entry&&!atHome)){transits.delete(c.id);transit=null;}
    if(transit){
     const t=clock-transit.start,r=transit.route;
     if(t<r.duration){
@@ -183,19 +279,33 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
      p={...follow(r,t),stage:transit.entry?'enter':'leave',returnPoints:r.points.slice(Math.max(1,index))};
     }else if(transit.exit&&real){
      // Catch up along the street's actual waypoints, never a diagonal through a neighbour.
-     const tail=(c.route||[]).slice(1,c.routeIndex).map(v=>local(b,v));
+     const tail=(streetRoute||[]).slice(1,streetIndex).map(v=>local(b,v));
      const walk=track([r.points.at(-1),...tail,local(b,real)]);
      if(t-r.duration<walk.duration*.60)p={...follow(walk,(t-r.duration)/.60),stage:'leave',returnPoints:[]};
     }
     if(!p){transits.delete(c.id);if(transit.entry)transit=null;}
-   }else if(atHome&&clock>=indoorsUntil&&!real&&seats.get(c.home)?.id===c.id&&!loaded(c))p=visitAt(houseLayout(b,s),clock,b,c.id);
+   }else if(atHome&&!real&&!loaded(c)){
+    const slot=social.get(c.home)?.slots.get(c.id);
+    if(morning&&canStepOut&&clock>=indoorsUntil){
+     const elapsed=(hour-residentDepartureHour(undefined,c.id))*hourSeconds;
+     const sheltered=wet||prior?.p?.sheltered;
+     if(elapsed>=0&&elapsed<morningWindow&&(prior?.p?.sheltered||clock-elapsed>=(wet?wetSince:drySince)))p=morningVisit(houseLayout(b),c.id,elapsed,sheltered);
+    }
+    if(slot)p=eveningVisit(houseLayout(b),slot,clock);
+    else if(!p&&!wet&&canStepOut&&clock>=indoorsUntil&&seats.get(c.home)?.id===c.id)p=visitAt(houseLayout(b),clock,b,c.id,drySince);
+   }
    if(atHome||returning(c.phase)||p)next.set(c.id,{phase:c.phase,home:c.home,port:{x:c.x,y:c.y},indoorsUntil,p});
    if(!p)continue;
    const platform=homePlatform(b),at=world(b,p),parcel=transit?.entry&&transit.parcel,view={...(real||c),...at,...(parcel?{cargo:parcel}:{}),kind:'person',walking:p.walking,playing:false,carrying:!!(parcel||real?.carrying||loaded(c)),activity:null,
-    homeVisit:{house:c.home,stage:p.stage,height:p.height,deck:platform&&Math.max(Math.abs(p.x),Math.abs(p.z))<=platform.half?platform.lift:undefined,yaw:p.yaw+quarter(b),climbing:!!p.climbing,seatHeight:p.seatHeight}};
+    homeVisit:{house:c.home,depth:b.x+b.y+.012,stage:p.stage,...(p.morning?{morning:true}:{}),height:p.height,deck:platform&&Math.max(Math.abs(p.x),Math.abs(p.z))<=platform.half?platform.lift:undefined,yaw:p.yaw+quarter(b),climbing:!!p.climbing,seatHeight:p.seatHeight,companion:p.companion}};
    shown.set(c.id,view);
   }
   for(const id of transits.keys())if(!next.has(id))transits.delete(id);
+  // Gestures alternate only while two actual housemates are seated together.
+  for(const group of social.values()){
+   const pair=[...group.slots.keys()].map(id=>shown.get(id)).filter(c=>c?.homeVisit?.companion!==undefined);
+   if(pair.length===2)for(const c of pair)c.homeVisit.speaking=Math.floor(clock/3.6)%2===c.homeVisit.companion;
+  }
   previous=next;
   return [...shown.values()];
  };

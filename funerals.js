@@ -18,8 +18,8 @@ function returning(s,f){
  f.stage='returning';f.timer=0;const net=networkFor(s);
  for(const a of f.actors){const c=s.citizens.find(c=>c.id===a.id),home=c&&net.ports.find(p=>`${p.building.x},${p.building.y}`===c.home&&!p.building.siteKey);a.route=c&&home?path(s,nearest(net,c),home):[];a.routeIndex=0;a.delay=0;}
 }
-export function advanceFuneral(s,dt){
- if(s.funeral?.style==='desert')return advanceDesertFuneral(s,dt);
+export function advanceFuneral(s,dt,timerRate=1){
+ if(s.funeral?.style==='desert')return advanceDesertFuneral(s,dt,timerRate);
  const f=s.funeral;if(!f)return false;if(!Number.isFinite(dt)||dt<=0)return true;
  f.timer+=dt;
  if(f.stage==='gathering'||f.stage==='returning'){

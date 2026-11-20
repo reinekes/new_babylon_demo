@@ -1,4 +1,5 @@
 import {artisanSummary} from './artisan.js';
+import {ovenHeat} from './kilns.js';
 import {potterWheelView} from './potter-wheel.js';
 import {levelOf} from './definitions.js';
 import {masonryBox} from './masonry-art.js';
@@ -33,9 +34,12 @@ export function drawArtisan(r,b,s,t=0){
   box(-7,2,9,4.5,13,'#bb8a62','#906549','#ad7d56');poly([[-16,-11],[-13,-22],[-7,-27],[0,-22],[2,-11],[-7,-6]],'#c99b72');
   for(let k=0;k<3;k++)line([[-14+k,-13-k*4],[-7,-9-k*5],[k,-13-k*4]],'#a77b59',.65);
   poly([[-11,1],[-11,-5],[-8,-9],[-4,-7],[-3,-3],[-3,4]],'#5e4c3c');
-  if(v.stage==='firing'||v.stage==='cooling')poly([[-10,0],[-9,-4],[-5,-3],[-4,2]],v.stage==='firing'?'#df9150':'#aa6443');
-  if(v.stage==='firing'){
-   const flicker=r.reduce?0:Math.sin(t*8)*1.2;poly([[-9,0],[-8,-5],[-6,-9-flicker],[-4,-3],[-4,2]],'#f4c478');r.lights.push({x:p.x-7*q,y:p.y-4*q,size:17*q});
+  const heat=ovenHeat(b);
+  if(heat?.coal)poly([[-10,0],[-9,-4],[-5,-3],[-4,2]],heat.flame?'#df9150':'#aa6443');
+  if(heat?.flame){
+   const flicker=r.reduce?0:Math.sin(t*8)*1.2,flame=heat.flame;
+   poly([[-9,0],[-8,-5*flame],[-6,-(9+flicker)*flame],[-4,-3*flame],[-4,2]],'#f4c478');
+   r.lights.push({x:p.x-7*q,y:p.y-4*q,size:(4+13*flame)*q});
    for(let k=0;k<2;k++){const lift=r.reduce?5+k*5:(t*2+k*7)%14;oval(-7+Math.sin(lift*.2),-29-lift,1.5+lift*.07,2+lift*.12,'#77695525');}
   }
   // Hand-driven turntable; its incision follows real forming labour in 2D too.
@@ -47,7 +51,8 @@ export function drawArtisan(r,b,s,t=0){
   if(v.stage==='ready'&&v.ready>0)for(let k=0;k<Math.min(2,v.ready);k++)jar(12+k*9,9-k*1.7,1,'#bd7d57');
  }else if(b.type==='coppersmith'){
   box(10,4,8,4,7,'#bc8561','#97674c','#a97655');
-  oval(10,-3,4,2,v.stage==='castingAxe'?'#f3ae56':'#574234');
+  oval(10,-3,4,2,'#574234');
+  const flame=ovenHeat(b)?.flame;if(flame)oval(10,-3,4*flame,2*flame,'#f3ae56');
   box(20,6,6,3,3,'#9c9b86','#76765f','#848572');
  }else if(b.type==='dairyStore'){
   jar(9,6,1.35);jar(21,4,1);
@@ -56,7 +61,8 @@ export function drawArtisan(r,b,s,t=0){
  }else if(b.type==='bakery'){
   box(8,4,10,5,9,'#c68e65','#906549','#ad7d56');
   oval(8,-7,7,4,'#cf9b70');
-  oval(8,1,3,2,v.stage==='baking'?'#eda45f':'#5e4c3c');
+  oval(8,1,3,2,'#5e4c3c');
+  const flame=ovenHeat(b)?.flame;if(flame)oval(8,1,3*flame,2*flame,'#eda45f');
   box(21,6,6,3,2,'#b7aa91','#877b65','#9f9075');
   const handstone=v.stage==='milling'?Math.sin(t*5)*1.3:0;
   oval(21,3,3.5,1.55,'#a38f73');

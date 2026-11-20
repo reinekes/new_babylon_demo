@@ -7,13 +7,34 @@ export const KILN_RECIPE=Object.freeze({brick:4,reed:3});
 export const KILN_WEAR_LIMIT=8;
 export const kilnNeedsRepair=b=>b?.kilnWear===KILN_WEAR_LIMIT;
 export const FIRING_SECONDS=20,COOLING_SECONDS=8,IGNITION_CHECK=10,FIRE_RESPONSE_SECONDS=60;
+const heatedStage={pottery:'firing',bakery:'baking',coppersmith:'castingAxe'};
+
+export function ovenHeat(b){
+ if(!isOperational(b)||b.kilnBanked)return null;
+ if(b.type==='kiln'){
+  if(!b.firing?.hot)return null;
+  if(b.firing.time>=FIRING_SECONDS)return {flame:0,coal:Math.max(0,1-(b.firing.time-FIRING_SECONDS)/COOLING_SECONDS)};
+ }else if(b.type==='pottery'&&b.artisan?.stage==='cooling')return {flame:0,coal:Math.max(0,1-b.artisan.elapsed/6)};
+ else if(!heatedStage[b.type]||b.artisan?.stage!==heatedStage[b.type])return null;
+ const t=b.type==='kiln'?b.firing.time:b.artisan.elapsed;
+ const flame=Math.min(1,.11+Math.max(0,t)*.66);
+ return {flame,coal:.28+.72*flame};
+}
+
 const fields=['brick','reed','hot','time','ready'];
 const empty=()=>({brick:0,reed:0,hot:0,time:0,ready:0});
 function valid(v){return v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===fields.length&&fields.every(k=>Number.isFinite(v[k])&&v[k]>=0)&&v.brick<=4&&v.reed<=3&&[0,4].includes(v.hot)&&[0,4].includes(v.ready)&&!(v.hot&&v.ready)&&v.time<FIRING_SECONDS+COOLING_SECONDS&&(!v.time||v.hot>0)&&(!v.hot&&!v.ready||v.brick===0&&v.reed===0);}
 export function initializeKilns(s){for(const b of s.buildings||[])if(b.type==='kiln'&&b.firing===undefined)b.firing=empty();}
 export function kilnNeeds(b){const v=b?.firing;return b?.type==='kiln'&&isOperational(b)&&valid(v)&&!v.hot&&!v.ready?(kilnNeedsRepair(b)?{brick:Math.max(0,1-v.brick),reed:0}:{brick:4-v.brick,reed:3-v.reed}):{brick:0,reed:0};}
 // Loading/ignition is worker action; charged fuel keeps burning overnight.
-export function startFiring(b){const v=b?.firing;if(b?.type!=='kiln'||!isOperational(b)||!valid(v)||b.kilnBanked||v.hot||v.ready||kilnNeedsRepair(b)||v.brick<4||v.reed<3)return 0;v.brick-=4;v.reed-=3;v.hot=4;v.time=0;return 4;}
+export function canStartFiring(b){
+ const v=b?.firing;
+ return b?.type==='kiln'&&isOperational(b)&&!!valid(v)&&!b.kilnBanked&&!v.hot&&!v.ready&&!kilnNeedsRepair(b)&&v.brick>=KILN_RECIPE.brick&&v.reed>=KILN_RECIPE.reed;
+}
+export function startFiring(b){
+ if(!canStartFiring(b))return 0;
+ const v=b.firing;v.brick-=KILN_RECIPE.brick;v.reed-=KILN_RECIPE.reed;v.hot=4;v.time=0;return 4;
+}
 function bankBatch(b){
  const batch=b.firing;
  Object.assign(batch,{brick:batch.hot,hot:0,time:0});

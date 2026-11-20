@@ -1,0 +1,1321 @@
+{
+  "release": "evening-life-and-pastures-20261120",
+  "beforeCommit": "59e9f045",
+  "evensong": {
+    "method": "Ordinary index.html in Chrome 158, WebGL 2 on Apple M5 Metal. Saved city loaded via the normal save slot in new browser contexts, HTTP cache disabled. The courtyard fixture starts with its home residents indoors; renderer follows the saved clock, then controlled daylight/rain/empty-house changes. The kiln fixture advances through ordinary engine.advanceTime, tracking the real batch and yearly output. Measurements use world-space skeletal joints and meshes; the second image comparison uses rendered screen pixels.",
+    "fixtures": {
+      "occupiedHouse": "d1efa917998d6eed64481e035a65751f6a3e62a891b41a87d2f32c15ac02f4f4",
+      "workingKiln": "5281546976a54c7602e3d15e930dc179293ebb19bc0f35122cb08e68a1333c16"
+    },
+    "courtyard": {
+      "residentCount": 24,
+      "residentsOutside": [
+        {
+          "id": 16,
+          "stage": "bench",
+          "yaw": 0.76,
+          "worldMetres": [
+            52.02,
+            0.065,
+            35.79
+          ]
+        },
+        {
+          "id": 17,
+          "stage": "bench",
+          "yaw": -0.7599999999999998,
+          "worldMetres": [
+            53.21,
+            0.065,
+            35.79
+          ]
+        },
+        {
+          "id": 18,
+          "stage": "roof",
+          "yaw": 1.9707963267948965,
+          "worldMetres": [
+            50.88,
+            2.525,
+            43.12
+          ]
+        }
+      ],
+      "speakerSwaps": [
+        [
+          30.1,
+          16
+        ],
+        [
+          30.2,
+          17
+        ]
+      ],
+      "gestureHandTravelMetres": {
+        "16": {
+          "left": 0.0,
+          "right": 0.0983
+        },
+        "17": {
+          "left": 0.337,
+          "right": 0.0
+        }
+      },
+      "noonOilLamps": 0,
+      "eveningOilLamps": 3,
+      "occupiedHallSlits": [
+        {
+          "name": "8,6-game-home-lamp-0",
+          "p": [
+            48.715,
+            2.92,
+            39.48
+          ],
+          "material": "game-occupied-home",
+          "on": true
+        },
+        {
+          "name": "8,6-game-home-lamp-1",
+          "p": [
+            48.715,
+            2.92,
+            39
+          ],
+          "material": "game-occupied-home",
+          "on": true
+        },
+        {
+          "name": "8,6-game-home-lamp-2",
+          "p": [
+            48.715,
+            2.92,
+            38.52
+          ],
+          "material": "game-occupied-home",
+          "on": true
+        }
+      ],
+      "benchLight": [
+        {
+          "p": [
+            52.04,
+            0.49,
+            36.44
+          ],
+          "intensity": 14
+        }
+      ],
+      "rainStairSampleWorldHeightsMetres": [
+        2.525,
+        2.136,
+        1.49706,
+        0.85812,
+        0.2246,
+        0.065
+      ],
+      "hiddenBySimTime": 33.255,
+      "peopleAfterRain": 0,
+      "emptyHouse": {
+        "occupants": 0,
+        "peopleOutside": 0,
+        "litBowls": 0,
+        "enabledLocalLights": 0
+      }
+    },
+    "kiln": {
+      "charged": {
+        "brick": 4,
+        "reed": 3,
+        "hot": 0,
+        "time": 0,
+        "ready": 0
+      },
+      "ignition": {
+        "brick": 0,
+        "reed": 0,
+        "hot": 4,
+        "time": 0.065,
+        "ready": 0
+      },
+      "warmupFlameScale": 0.1529,
+      "burnFlameScale": 1,
+      "shader": "oven-hot-gas",
+      "compiled": true,
+      "UVBottomTop": [
+        [
+          0.164000004529953,
+          0
+        ],
+        [
+          1.1372558176517487,
+          1
+        ]
+      ],
+      "flameOccludedByBuilding": false,
+      "sparkNumber": 5,
+      "largestObservedSparkMotionMetres": 0.9547,
+      "firePixelTest": {
+        "secondsApartSimulation": 0.24,
+        "cropPixels": 20881,
+        "hotPixels": 4243,
+        "pixelsWithChannelChangeAbove20": 6637
+      },
+      "cooling": {
+        "batchSeconds": 21.58500000000004,
+        "visibleFlames": 0,
+        "coalVisibility": 0.83754
+      },
+      "fireRootEnabledAfterCompletion": false,
+      "producedFiredBricks": 4
+    },
+    "evidence": [
+      "roadmap/evidence/2026-11-20/evening-life/courtyard.webp",
+      "roadmap/evidence/2026-11-20/evening-life/neighbours.webp",
+      "roadmap/evidence/2026-11-20/evening-life/kiln.webp"
+    ],
+    "webglErrors": [
+      0,
+      0
+    ],
+    "uncaughtExceptions": []
+  },
+  "ovenIgnitionFile": "2026-11-20-kiln-ignition.json",
+  "herdMovementFile": "2026-11-20-pasture-migration.json",
+  "streets": {
+    "baselineCommit": "59e9f045",
+    "saveSHA256": "2485ad60eb80e26803e6ab745fbb365e216944367ef9e7f2350882b9818fc330",
+    "fixture": {
+      "scenario": "established Southern Sumer, seed 137",
+      "simulationSeconds": 65,
+      "residents": 12,
+      "buildings": 5,
+      "roads": 5,
+      "wornPaths": 10,
+      "tileMetres": 6
+    },
+    "before": {
+      "builtStreets": {
+        "count": 5,
+        "maxSidewaysMeters": 0,
+        "averageDeviationMeters": 0,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0
+      },
+      "wornPaths": {
+        "count": 10,
+        "maxSidewaysMeters": 0.20073976539915606,
+        "averageDeviationMeters": 0.07354349774141866,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0
+      },
+      "webgl": {
+        "rg": {
+          "trailVertices": 504,
+          "streets": 5,
+          "gl": 0,
+          "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "canvas": {
+        "result": {
+          "renderer": "2d",
+          "buildings": 5,
+          "people": 12
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      }
+    },
+    "after": {
+      "builtStreets": {
+        "count": 5,
+        "maxSidewaysMeters": 0.8101854632143421,
+        "averageDeviationMeters": 0.612632968268862,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0
+      },
+      "wornPaths": {
+        "count": 10,
+        "maxSidewaysMeters": 0.4053390660778966,
+        "averageDeviationMeters": 0.08010660207511897,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0
+      },
+      "webgl": {
+        "rg": {
+          "outdoorStreetCenterVertices": 65,
+          "maxWalkingLineErrorMeters": 0,
+          "maximumSidewaysMeters": 0.8101543270585552,
+          "trailVertices": 504,
+          "streets": 5,
+          "gl": 0,
+          "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "canvas": {
+        "result": {
+          "renderer": "2d",
+          "buildings": 5,
+          "people": 12,
+          "streets": 5,
+          "pavementSamples": 25,
+          "maxErrorPixels": 0
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "triangleSafety": {
+        "trails": {
+          "invalidVertices": 0,
+          "vertices": 504,
+          "invalidEdges": 0,
+          "edges": 1238
+        },
+        "roads": {
+          "invalidVertices": 0,
+          "vertices": 455,
+          "invalidEdges": 0,
+          "edges": 1170
+        }
+      },
+      "saveMutatedDuringMeasurement": false
+    },
+    "shots": {
+      "streets": {
+        "before": "roadmap/evidence/2026-11-20/street-curves/streets-before.webp",
+        "after": "roadmap/evidence/2026-11-20/street-curves/streets-after.webp"
+      },
+      "trails": {
+        "before": "roadmap/evidence/2026-11-20/street-curves/trails-before.webp",
+        "after": "roadmap/evidence/2026-11-20/street-curves/trails-after.webp"
+      },
+      "canvas": {
+        "before": "roadmap/evidence/2026-11-20/street-curves/canvas-before.webp",
+        "after": "roadmap/evidence/2026-11-20/street-curves/canvas-after.webp"
+      }
+    },
+    "interpretation": "Sideways distance is measured normal to the straight saved graph edge. Eight of ten paths in this settled block are still straight beside plots or between walls. The two open segments share a displaced junction. A road and any crossing path share its rendered coordinates. Movement and wear are display projections; the save holds the original route, work, family and cargo.",
+    "verification": {
+      "roadRelatedNodeTests": 108,
+      "passed": 108,
+      "failed": 0,
+      "webglErrors": 0,
+      "workingTreeWhitespaceCheck": "clean"
+    }
+  },
+  "walkingPace": {
+    "before": {
+      "ordinary-1": {
+        "seconds": 1.1833999999761582,
+        "frames": 72,
+        "bearerOrOrdinaryMetresPerSecond": 0.7873669089223676,
+        "mournerOrOrdinaryMetresPerSecond": 0.7873669089223676
+      },
+      "ordinary-4": {
+        "seconds": 1.202399999976158,
+        "frames": 73,
+        "bearerOrOrdinaryMetresPerSecond": 3.143712574912671,
+        "mournerOrOrdinaryMetresPerSecond": 3.143712574912671
+      },
+      "funeral-1": {
+        "seconds": 1.2141999999284745,
+        "frames": 74,
+        "bearerOrOrdinaryMetresPerSecond": 4.31339992440938,
+        "mournerOrOrdinaryMetresPerSecond": 5.11008071188072
+      },
+      "funeral-4": {
+        "seconds": 1.216899999976158,
+        "frames": 74,
+        "bearerOrOrdinaryMetresPerSecond": 15.621118420457611,
+        "mournerOrOrdinaryMetresPerSecond": 17.942547560751393
+      }
+    },
+    "after": {
+      "ordinary-1": {
+        "seconds": 1.1642000000476838,
+        "frames": 71,
+        "bearerOrOrdinaryMetresPerSecond": 0.7890557893509188,
+        "mournerOrOrdinaryMetresPerSecond": 0.7890557893509188
+      },
+      "ordinary-4": {
+        "seconds": 1.2011000000238419,
+        "frames": 73,
+        "bearerOrOrdinaryMetresPerSecond": 3.1471151443885215,
+        "mournerOrOrdinaryMetresPerSecond": 3.1471151443885215
+      },
+      "funeral-1": {
+        "seconds": 1.218,
+        "frames": 74,
+        "bearerOrOrdinaryMetresPerSecond": 0.786594827586207,
+        "mournerOrOrdinaryMetresPerSecond": 0.7865948275862158
+      },
+      "funeral-4": {
+        "seconds": 1.2164000000953674,
+        "frames": 74,
+        "bearerOrOrdinaryMetresPerSecond": 3.1505179214892576,
+        "mournerOrOrdinaryMetresPerSecond": 3.150517921489275
+      }
+    },
+    "fixture": "Established seed 137, id 0 and id 4 measured in both scenarios. The ordinary six-metre segment (11.5,8.5) to (12.5,8.5) lies on an uncurved level-I road. Rendered root x/z is measured by the native RAF loop with the selected UI speed; no household transit. No ground animation clock was manually advanced during measurement.",
+    "subjects": {
+      "bearer": 0,
+      "mourner": 4
+    },
+    "palmErrorCm": 1.5
+  },
+  "artisanOvens": {
+    "service": "local",
+    "method": "Loaded encode/decode-equal saves from normal advanceTime shortly before each firing. Ran ordinary index.html at 4x through real transitions. Measured rendered artwork, lit pixels and three rays across each arch.",
+    "hotPixelCriteria": "98 x 61 pixel patch around the projected firebed. Red > 215, green > 65, red/green > 1.09 and green/blue > 1.6.",
+    "scenes": {
+      "bakery": {
+        "validatedLoadedStage": "milling",
+        "loadedSaveRoundTripEqual": true,
+        "stages": [
+          {
+            "render": "cold",
+            "simulation": "milling",
+            "t": 17.7
+          },
+          {
+            "render": "flame",
+            "simulation": "baking",
+            "t": 18.425
+          },
+          {
+            "render": "off",
+            "simulation": "idle",
+            "t": 23.475
+          }
+        ],
+        "durationWallSec": 11.6,
+        "hotSurfaceMaterial": "oven-hot-gas",
+        "renderedFramesWithCompiledFlame": 590,
+        "maximumVisibleSparks": 5,
+        "framesWithMovingSparks": 556,
+        "framesWithCoalsOnly": 0,
+        "coolingCoalOpacityRange": null,
+        "mouthPixels": {
+          "cold": 0,
+          "hot": 448,
+          "done": 0
+        },
+        "worldBedCenterErrorMm": 0.00248,
+        "archClearInCentre": true,
+        "opaqueJambHitDistanceM": [
+          0.237,
+          0.237
+        ],
+        "finishedBatch": {
+          "food": 5
+        },
+        "WebGL": 2,
+        "glError": 0,
+        "exceptions": [],
+        "failedRequests": [],
+        "passed": true
+      },
+      "coppersmith": {
+        "validatedLoadedStage": "idle",
+        "loadedSaveRoundTripEqual": true,
+        "stages": [
+          {
+            "render": "cold",
+            "simulation": "idle",
+            "t": 4.15
+          },
+          {
+            "render": "flame",
+            "simulation": "castingAxe",
+            "t": 4.825
+          },
+          {
+            "render": "off",
+            "simulation": "idle",
+            "t": 12.166
+          }
+        ],
+        "durationWallSec": 16.1,
+        "hotSurfaceMaterial": "oven-hot-gas",
+        "renderedFramesWithCompiledFlame": 877,
+        "maximumVisibleSparks": 5,
+        "framesWithMovingSparks": 830,
+        "framesWithCoalsOnly": 0,
+        "coolingCoalOpacityRange": null,
+        "mouthPixels": {
+          "cold": 0,
+          "hot": 652,
+          "done": 0
+        },
+        "worldBedCenterErrorMm": 0.00179,
+        "archClearInCentre": true,
+        "opaqueJambHitDistanceM": [
+          0.24,
+          0.234
+        ],
+        "finishedBatch": {
+          "axe": 1
+        },
+        "WebGL": 2,
+        "glError": 0,
+        "exceptions": [],
+        "failedRequests": [],
+        "passed": true
+      },
+      "pottery": {
+        "validatedLoadedStage": "drying",
+        "loadedSaveRoundTripEqual": true,
+        "stages": [
+          {
+            "render": "cold",
+            "simulation": "drying",
+            "t": 30.15
+          },
+          {
+            "render": "flame",
+            "simulation": "firing",
+            "t": 30.875
+          },
+          {
+            "render": "coals",
+            "simulation": "cooling",
+            "t": 42.874
+          },
+          {
+            "render": "off",
+            "simulation": "idle",
+            "t": 48.874
+          }
+        ],
+        "durationWallSec": 37.5,
+        "hotSurfaceMaterial": "oven-hot-gas",
+        "renderedFramesWithCompiledFlame": 1438,
+        "maximumVisibleSparks": 5,
+        "framesWithMovingSparks": 1374,
+        "framesWithCoalsOnly": 719,
+        "coolingCoalOpacityRange": [
+          0.18023876470589004,
+          0.9990634313725562
+        ],
+        "mouthPixels": {
+          "cold": 0,
+          "hot": 647,
+          "cool": 0,
+          "done": 0
+        },
+        "worldBedCenterErrorMm": 0.00153,
+        "archClearInCentre": true,
+        "opaqueJambHitDistanceM": [
+          0.24,
+          0.231
+        ],
+        "finishedBatch": {
+          "pottery": 2
+        },
+        "WebGL": 2,
+        "glError": 0,
+        "exceptions": [],
+        "failedRequests": [],
+        "passed": true
+      }
+    }
+  },
+  "dawnWork": {
+    "city": 500,
+    "buildings": 250,
+    "originalIdsPreserved": true,
+    "uniqueTimes": 500,
+    "nightWatch": 0,
+    "middayReload": true,
+    "hour": 9.019999999999762,
+    "scheduledCounts": {
+      "5": 128,
+      "6": 126,
+      "7": 128,
+      "8": 118
+    },
+    "alreadyOutsideAtDawn": 46,
+    "observedByHour": {
+      "5": 7,
+      "6": 21,
+      "7": 44,
+      "8": 17
+    },
+    "observedByPhase": {
+      "toWork": 12,
+      "waterTrip": 37,
+      "toDistrictSupply": 40
+    }
+  },
+  "dawnDoorways": {
+    "archive": "docs/benchmarks/city500-save-2026-11-13.json",
+    "run": "Unmodified canonical 500/250 save, normal city replay past the first night; sampled workforce and shared Canvas/WebGL doorway paths every 0.2 elapsed seconds at 1x, 04:49–09:36; no forced duties, spawns or weather",
+    "city": 500,
+    "buildings": 250,
+    "uniqueSlots": 500,
+    "weather": [
+      "wind",
+      "cloudy"
+    ],
+    "save": {
+      "canonical": true,
+      "sameDoorPose": true,
+      "id": 38,
+      "hour": 7.009999999999874
+    },
+    "disjoint": {
+      "workExit": 88,
+      "childPlayed": 2,
+      "porchExit": 384,
+      "onDutyBeforeDawn": 26
+    },
+    "economicDepartures": 89,
+    "thresholdByHour": {
+      "5": 112,
+      "6": 122,
+      "7": 117,
+      "8": 120,
+      "9": 1
+    },
+    "aggregate": {
+      "morningPorch": 414,
+      "reachedCourt": 413,
+      "workDoor": 88,
+      "alreadyActiveAtDawn": 46
+    },
+    "actualFromHomeAtDawn": {
+      "residents": 454,
+      "crossed": 452,
+      "min": 5.0499999999999865,
+      "max": 8.969999999999757,
+      "afterNine": []
+    },
+    "plannedByHour": {
+      "5": 128,
+      "6": 126,
+      "7": 128,
+      "8": 118
+    },
+    "plannedRange": [
+      5,
+      8.916666666666666
+    ],
+    "alreadyActiveOnly": {
+      "waterTrip": 23,
+      "toHome": 3
+    },
+    "firstAndLastCrossingForResidentsIndoorsAtDawn": [
+      5.0499999999999865,
+      8.969999999999757
+    ]
+  },
+  "smallCityWebGLDawn": {
+    "canonical": true,
+    "loadedAt": 7.003239999999874,
+    "frames": 1436,
+    "groupSize": 12,
+    "records": [
+      {
+        "id": 0,
+        "age": 20,
+        "hour": 5.006639999999987,
+        "scheduled": 5,
+        "phase": "toWork",
+        "mesh": true,
+        "route": 6,
+        "position": [
+          8.508767500000001,
+          8.5
+        ],
+        "work": "12,8"
+      },
+      {
+        "id": 5,
+        "age": 26,
+        "hour": 5.373299999999965,
+        "scheduled": 5.366666666666666,
+        "phase": "toWork",
+        "mesh": true,
+        "route": 3,
+        "position": [
+          8.508715,
+          8.5
+        ],
+        "work": "9,8"
+      },
+      {
+        "id": 2,
+        "age": 34,
+        "hour": 5.956619999999933,
+        "scheduled": 5.95,
+        "phase": "toWork",
+        "mesh": true,
+        "route": 4,
+        "position": [
+          8.5,
+          8.491232499999999
+        ],
+        "work": "7,7"
+      },
+      {
+        "id": 4,
+        "age": 48,
+        "hour": 6.906579999999881,
+        "scheduled": 6.9,
+        "phase": "toWork",
+        "mesh": true,
+        "route": 3,
+        "position": [
+          8.5088893,
+          8.5
+        ],
+        "work": "9,8"
+      },
+      {
+        "id": 1,
+        "age": 27,
+        "hour": 7.489899999999846,
+        "scheduled": 7.483333333333333,
+        "phase": "toWork",
+        "mesh": true,
+        "route": 6,
+        "position": [
+          8.50894285,
+          8.5
+        ],
+        "work": "12,8"
+      },
+      {
+        "id": 9,
+        "age": 34,
+        "hour": 8.006539999999816,
+        "scheduled": 7.266666666666667,
+        "phase": "toDistrictSupply",
+        "mesh": true,
+        "route": 5,
+        "position": [
+          9.491057150000001,
+          9.5
+        ],
+        "work": null
+      },
+      {
+        "id": 3,
+        "age": 41,
+        "hour": 8.43983999999979,
+        "scheduled": 8.433333333333334,
+        "phase": "toWork",
+        "mesh": true,
+        "route": 4,
+        "position": [
+          8.5,
+          8.4911107
+        ],
+        "work": "7,7"
+      },
+      {
+        "id": 8,
+        "age": 38,
+        "hour": 8.806499999999765,
+        "scheduled": 8.8,
+        "phase": "toDistrictSupply",
+        "mesh": true,
+        "route": 5,
+        "position": [
+          9.49105715,
+          9.5
+        ],
+        "work": null
+      }
+    ],
+    "children": [
+      {
+        "id": 10,
+        "age": 6,
+        "hour": 5.736639999999948,
+        "scheduled": 5.733333333333333,
+        "phase": "playing",
+        "mesh": true,
+        "route": 0,
+        "position": [
+          9.5,
+          9.5
+        ],
+        "work": null
+      },
+      {
+        "id": 11,
+        "age": 12,
+        "hour": 8.219859999999798,
+        "scheduled": 8.216666666666667,
+        "phase": "playing",
+        "mesh": true,
+        "route": 0,
+        "position": [
+          9.5,
+          9.5
+        ],
+        "work": null
+      }
+    ],
+    "yard": [
+      {
+        "id": 7,
+        "age": 40,
+        "role": "auto",
+        "phase": "home",
+        "mesh": "citizen-7",
+        "coordinates": [
+          47.77,
+          0.073,
+          49.24
+        ]
+      },
+      {
+        "id": 9,
+        "age": 34,
+        "role": "auto",
+        "phase": "home",
+        "mesh": "citizen-9",
+        "coordinates": [
+          53.53,
+          0.073,
+          55.24
+        ]
+      },
+      {
+        "id": 6,
+        "age": 33,
+        "role": "auto",
+        "phase": "home",
+        "mesh": "citizen-6",
+        "coordinates": [
+          47.53,
+          0.073,
+          49.24
+        ]
+      }
+    ],
+    "doorWork": [
+      0,
+      5,
+      2,
+      4,
+      1,
+      9,
+      3,
+      8
+    ],
+    "morning": {
+      "out": 89,
+      "courtyard": 127,
+      "in": 85
+    },
+    "gl": 0,
+    "webgl": 2,
+    "errors": [],
+    "failures": []
+  },
+  "archivedSaves": [
+    {
+      "file": "legacy-v1.json",
+      "bytes": 1115,
+      "canonicalBytes": 15586,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5f60c84e6789e2ce48fa3941351ed3e8bbc89b78d17d72ef6e770dd87011abf5"
+    },
+    {
+      "file": "legacy-v2.json",
+      "bytes": 3722,
+      "canonicalBytes": 14795,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "6eb71b9385b6f9e3a7919cccf19b828d35c0a5c91eafd8f68bbc754facbd86b7"
+    },
+    {
+      "file": "legacy-v3.json",
+      "bytes": 6935,
+      "canonicalBytes": 16420,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5045bd0494767f469116ed626fdcb1e8ca503fc803f93ab632ffa9b104f922f9"
+    },
+    {
+      "file": "legacy-v4.json",
+      "bytes": 7123,
+      "canonicalBytes": 17736,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d4f19c224c63cd40f4482addd4bd0ea516ae00760d48c15a6550156da2e81080"
+    },
+    {
+      "file": "legacy-v5.json",
+      "bytes": 10554,
+      "canonicalBytes": 21451,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d0e2086a6fdf01f3996aee6b53e32f1450ac19bd0ac26a15aba12b7958e248b7"
+    },
+    {
+      "file": "legacy-v6-city.json",
+      "bytes": 7281,
+      "canonicalBytes": 16070,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "a3571a1285a284c2fff5026cc99d96f673e53b951b0dd51b82e3c9ff32983694"
+    },
+    {
+      "file": "legacy-v6-funeral.json",
+      "bytes": 9970,
+      "canonicalBytes": 19447,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "84db001bc085b911964ba561b2e886bdcff883c6712dda0d7498b3fbcc05199d"
+    },
+    {
+      "file": "legacy-v7-city.json",
+      "bytes": 8217,
+      "canonicalBytes": 16168,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "329449361ef9d8786a96da00f94d12ba2bd03dd4091fb23f190a625ab3e6717e"
+    },
+    {
+      "file": "legacy-v8-city.json",
+      "bytes": 8267,
+      "canonicalBytes": 16247,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "0bad910c2e9b407bd17a5cb44bc6a6bdba74aef6226ab06ca2373830fd1d7290"
+    },
+    {
+      "file": "legacy-v10-healer.json",
+      "bytes": 10914,
+      "canonicalBytes": 16730,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "693fa5a2ee18420e344ddc80f585196e5fb93b3923f35aaef8f570796b2e9cf6"
+    },
+    {
+      "file": "legacy-v11-autumn.json",
+      "bytes": 15332,
+      "canonicalBytes": 22504,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "2070d654d1b24d6029afa6368f15b1bffd36232b521473f900766952cd052b84"
+    },
+    {
+      "file": "legacy-v12-harvest.json",
+      "bytes": 13426,
+      "canonicalBytes": 20010,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1ce6e80b7bae1e7adfb2de59ef1895c937800fc050897bead58b25189108dc82"
+    },
+    {
+      "file": "legacy-v13-autumn.json",
+      "bytes": 13874,
+      "canonicalBytes": 20516,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1fc4519e7d0d5296411e2c86a78212688020a8d45720e9cf078ac62b2c5c383d"
+    },
+    {
+      "file": "legacy-v14-warning-city.json",
+      "bytes": 12290,
+      "canonicalBytes": 18566,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4b62d30cb25439becf8ed79bcf1c9dc45d50a7e4818b39aec302cd03a203f46e"
+    },
+    {
+      "file": "legacy-v15-districts.json",
+      "bytes": 13267,
+      "canonicalBytes": 18858,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f3058a2ffa7cbf5fdb3e5ff14b5c3cc2b436cbc4361f5c81d1b7e76a51f4b27d"
+    },
+    {
+      "file": "legacy-v16-textiles.json",
+      "bytes": 16006,
+      "canonicalBytes": 22268,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4049d985aae20e2d4b4a8e13a709a03a8c50129e0c185044723663b497bdc160"
+    },
+    {
+      "file": "legacy-v17-water-bricks.json",
+      "bytes": 11682,
+      "canonicalBytes": 16697,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "b422ce3deb9743b093fa6085ec969224fc2ba7db94fe1cb88be7c18c68effa77"
+    },
+    {
+      "file": "legacy-v18-kiln.json",
+      "bytes": 12620,
+      "canonicalBytes": 17329,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "12df80b13eade67b774cfb95d40f4c6277a914d3a31e1b775578d8ea7a55befd"
+    },
+    {
+      "file": "legacy-v19-masonry.json",
+      "bytes": 12435,
+      "canonicalBytes": 16911,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "d4b2943eed7ad25913cd56c0663de3bf12bb7d38094653a60175efd5a3e72acb"
+    },
+    {
+      "file": "legacy-v27-local-stock.json",
+      "bytes": 27798,
+      "canonicalBytes": 17036,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f1e8483a4b82eb8ca91188ba71beaa82e48a4608abe6348a884aaa6beb88b8e1"
+    }
+  ],
+  "performance": {
+    "method": "Chrome requestAnimationFrame in sumer-building-studio.html?stress, warm scene, 18 real seconds at 4x per run. Matched overview and city, revisions run in ABBA order. FPS is rendered frames over actual elapsed wall time.",
+    "citizens": 500,
+    "buildings": 250,
+    "privateHouseTiers": [
+      70,
+      69,
+      69
+    ],
+    "cameraRadiusMetres": 739.10423044749,
+    "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "renderResolution": [
+      1440,
+      780
+    ],
+    "runs": [
+      {
+        "build": "before",
+        "recorded": "2026-11-20T18:36:53.090Z",
+        "frames": 559,
+        "seconds": 18.0326,
+        "fps": 30.99941217572619,
+        "frameMs": {
+          "samples": 558,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "separateCpuMs": {
+          "draw": {
+            "samples": 559,
+            "p50": 26.600000023841858,
+            "p95": 36.10000002384186
+          },
+          "buildings": {
+            "samples": 559,
+            "p50": 0.5,
+            "p95": 0.6999999284744263
+          },
+          "actors": {
+            "samples": 559,
+            "p50": 4.200000047683716,
+            "p95": 11.299999952316284
+          },
+          "scene": {
+            "samples": 559,
+            "p50": 20,
+            "p95": 23.399999976158142
+          }
+        },
+        "residentIdsPreserved": true,
+        "cargoAndResourcesPreserved": true,
+        "saveRoundTrip": true,
+        "webGLError": 0,
+        "uncaughtExceptions": []
+      },
+      {
+        "build": "after",
+        "recorded": "2026-11-20T18:37:26.494Z",
+        "frames": 534,
+        "seconds": 18.016,
+        "fps": 29.64031971580817,
+        "frameMs": {
+          "samples": 533,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "separateCpuMs": {
+          "draw": {
+            "samples": 534,
+            "p50": 26.899999976158142,
+            "p95": 40.59999990463257
+          },
+          "buildings": {
+            "samples": 534,
+            "p50": 0.5,
+            "p95": 0.7000000476837158
+          },
+          "actors": {
+            "samples": 534,
+            "p50": 4.200000047683716,
+            "p95": 17.300000071525574
+          },
+          "scene": {
+            "samples": 534,
+            "p50": 20.899999976158142,
+            "p95": 25
+          }
+        },
+        "residentIdsPreserved": true,
+        "cargoAndResourcesPreserved": true,
+        "saveRoundTrip": true,
+        "webGLError": 0,
+        "uncaughtExceptions": []
+      },
+      {
+        "build": "after",
+        "recorded": "2026-11-20T18:38:00.036Z",
+        "frames": 529,
+        "seconds": 18.032600000000002,
+        "fps": 29.33575857058882,
+        "frameMs": {
+          "samples": 528,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "separateCpuMs": {
+          "draw": {
+            "samples": 529,
+            "p50": 27.399999976158142,
+            "p95": 40.5
+          },
+          "buildings": {
+            "samples": 529,
+            "p50": 0.5,
+            "p95": 0.6000000238418579
+          },
+          "actors": {
+            "samples": 529,
+            "p50": 4.200000047683716,
+            "p95": 15.600000023841858
+          },
+          "scene": {
+            "samples": 529,
+            "p50": 21.199999928474426,
+            "p95": 25.100000023841858
+          }
+        },
+        "residentIdsPreserved": true,
+        "cargoAndResourcesPreserved": true,
+        "saveRoundTrip": true,
+        "webGLError": 0,
+        "uncaughtExceptions": []
+      },
+      {
+        "build": "before",
+        "recorded": "2026-11-20T18:38:33.497Z",
+        "frames": 553,
+        "seconds": 18.015999999999995,
+        "fps": 30.694937833037308,
+        "frameMs": {
+          "samples": 552,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "separateCpuMs": {
+          "draw": {
+            "samples": 553,
+            "p50": 26.700000047683716,
+            "p95": 35
+          },
+          "buildings": {
+            "samples": 553,
+            "p50": 0.5,
+            "p95": 0.6999999284744263
+          },
+          "actors": {
+            "samples": 553,
+            "p50": 4.299999952316284,
+            "p95": 11
+          },
+          "scene": {
+            "samples": 553,
+            "p50": 20.300000071525574,
+            "p95": 24.200000047683716
+          }
+        },
+        "residentIdsPreserved": true,
+        "cargoAndResourcesPreserved": true,
+        "saveRoundTrip": true,
+        "webGLError": 0,
+        "uncaughtExceptions": []
+      }
+    ],
+    "meanFPS": {
+      "before": 30.847175004381747,
+      "after": 29.488039143198495
+    }
+  },
+  "sleepingResidents": {
+    "method": "Actual 24 adult GLBs, existing rendering code with the first iteration of the morning routines compared to the same code after parking inactive rigs. Babylon NullEngine CPU-only microbenchmark.",
+    "before": {
+      "empty": {
+        "sceneMeshes": 1,
+        "sceneTransforms": 0,
+        "sceneSkeletons": 0,
+        "animationGroups": 0,
+        "globalAnimatables": 724,
+        "actorMeshes": 0
+      },
+      "awake": {
+        "sceneMeshes": 1250,
+        "sceneTransforms": 2812,
+        "sceneSkeletons": 24,
+        "animationGroups": 48,
+        "globalAnimatables": 4828,
+        "actorMeshes": 1123
+      },
+      "awakeRoots": 24,
+      "parkMs": 46.958708000000115,
+      "hidden": {
+        "sceneMeshes": 1250,
+        "sceneTransforms": 2812,
+        "sceneSkeletons": 24,
+        "animationGroups": 48,
+        "globalAnimatables": 4828,
+        "actorMeshes": 1123
+      },
+      "hiddenChildMeshes": 264,
+      "disabledCallsAcross101HiddenFrames": 2424,
+      "hiddenNullEngineUpdateAndRenderMs": {
+        "median": 16.2524999999996,
+        "p95": 29.127666999999747
+      },
+      "wakeMs": 42.3568750000004,
+      "reawakened": {
+        "sceneMeshes": 1250,
+        "sceneTransforms": 2812,
+        "sceneSkeletons": 24,
+        "animationGroups": 48,
+        "globalAnimatables": 4828,
+        "actorMeshes": 1123
+      },
+      "sameRoots": true,
+      "uniqueMeshes": true,
+      "afterDispose": {
+        "sceneMeshes": 0,
+        "sceneTransforms": 0,
+        "sceneSkeletons": 0,
+        "animationGroups": 0,
+        "globalAnimatables": 0,
+        "actorMeshes": 0
+      }
+    },
+    "after": {
+      "empty": {
+        "sceneMeshes": 1,
+        "sceneTransforms": 0,
+        "sceneSkeletons": 0,
+        "animationGroups": 0,
+        "globalAnimatables": 724,
+        "actorMeshes": 0
+      },
+      "awake": {
+        "sceneMeshes": 1250,
+        "sceneTransforms": 2812,
+        "sceneSkeletons": 24,
+        "animationGroups": 48,
+        "globalAnimatables": 4828,
+        "actorMeshes": 1123
+      },
+      "awakeRoots": 24,
+      "parkMs": 9.083582999999976,
+      "hidden": {
+        "sceneMeshes": 986,
+        "sceneTransforms": 424,
+        "sceneSkeletons": 0,
+        "animationGroups": 0,
+        "globalAnimatables": 724,
+        "actorMeshes": 859
+      },
+      "hiddenChildMeshes": 0,
+      "disabledCallsAcross101HiddenFrames": 24,
+      "hiddenNullEngineUpdateAndRenderMs": {
+        "median": 2.47629100000006,
+        "p95": 2.6544999999999845
+      },
+      "wakeMs": 11.045333000000028,
+      "reawakened": {
+        "sceneMeshes": 1250,
+        "sceneTransforms": 2812,
+        "sceneSkeletons": 24,
+        "animationGroups": 48,
+        "globalAnimatables": 4828,
+        "actorMeshes": 1123
+      },
+      "sameRoots": true,
+      "uniqueMeshes": true,
+      "afterDispose": {
+        "sceneMeshes": 0,
+        "sceneTransforms": 0,
+        "sceneSkeletons": 0,
+        "animationGroups": 0,
+        "globalAnimatables": 0,
+        "actorMeshes": 0
+      }
+    }
+  }
+}

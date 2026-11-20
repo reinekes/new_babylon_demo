@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-20",
+  "scene": "Established settlement, ordinary index.html loaded from a validated save during an actual worker approach. Clicked 4x and followed the right palm, rigid taper tip and firing chamber to ignition.",
+  "nativeCitizenId": 0,
+  "workplace": "8,9",
+  "webGL": 2,
+  "runtimeExceptions": [],
+  "failedRequests": [],
+  "glError": 0,
+  "renderedFrames": 662,
+  "framesHoldingTaper": 328,
+  "taperDuringApproach": {
+    "feetAtPickupM": [
+      50.933149,
+      0,
+      56.934602
+    ],
+    "feetAtMouthM": [
+      47.03,
+      0,
+      55.54
+    ],
+    "trackedYardRouteM": 4.221681,
+    "minimumFootClearanceFromFrontPlaneM": 0.53
+  },
+  "rightHandMaxDistanceFromGripM": 0,
+  "tipToActualIgnitedBedCenterM": {
+    "atPickup": 4.277803,
+    "closest": 0.015254,
+    "lastFrameBeforeIgnition": 0.015254
+  },
+  "economicState": {
+    "duringInitialStreetApproach": {
+      "brick": 0,
+      "reed": 0,
+      "hot": 0,
+      "time": 0,
+      "ready": 0
+    },
+    "afterSuppliesArrivedFromSameSimulation": {
+      "brick": 4,
+      "reed": 3,
+      "hot": 0,
+      "time": 0,
+      "ready": 0
+    },
+    "immediatelyAfterFiring": {
+      "brick": 0,
+      "reed": 0,
+      "hot": 4,
+      "time": 0.2333,
+      "ready": 0
+    }
+  },
+  "geometryRegression": {
+    "residentModelSexes": 2,
+    "buildingRotations": 4,
+    "completionOrderVariants": 2,
+    "maximumTipToFuelContactPointM": 0.009633,
+    "workCornerRotationPairs": 16,
+    "kilnWorkstationAndAccountingTestsPassed": 27
+  },
+  "evidence": [
+    "roadmap/evidence/2026-11-20/kiln-ignition/tender-at-mouth.webp",
+    "roadmap/evidence/2026-11-20/kiln-ignition/fired-charge.webp"
+  ]
+}

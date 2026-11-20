@@ -12,7 +12,7 @@ import {buildingKey,isOperational,BUILDINGS} from '../definitions.js';
 import {materialsReady,workRequired} from '../construction.js';
 import {isArtisan,artisanNeeds} from '../artisan.js';
 import {brickNeeds} from '../bricks.js';
-import {kilnNeeds} from '../kilns.js';
+import {canStartFiring,kilnNeeds,kilnNeedsRepair} from '../kilns.js';
 import {craftBatch,craftResource,craftState} from '../textiles.js';
 import {musicPerformance,musicWorking} from '../music.js';
 import {ACCOUNT_WORK_SECONDS} from '../scribes.js';
@@ -59,7 +59,10 @@ export function workplaceActivity(s,c,index){
   active=['forming','brewing','milling','baking','cuttingJoinery','castingAxe','weavingMat','weavingBasket','preservingMilk','preparingFiber','weavingLinen'].includes(task)||task==='idle'&&!Object.values(artisanNeeds(b)).some(n=>n>1e-8);
  }else if(['weaver','tailor'].includes(b.type)){kind='weaving';active=(craftState(b)?.[craftResource(b)]||0)+1e-8>=craftBatch(b);}
  else if(b.type==='brickyard'){kind='brickmaking';active=!!b.brickmaking&&!b.brickmaking.wet&&(b.brickmaking.ready>0||!Object.values(brickNeeds(b)).some(n=>n>1e-8));}
- else if(b.type==='kiln')active=!!b.firing&&!b.firing.hot&&(b.firing.ready>0||!Object.values(kilnNeeds(b)).some(n=>n>1e-8));
+ else if(b.type==='kiln'){
+  if(canStartFiring(b))task='light-kiln';
+  else active=!!b.firing&&!b.firing.hot&&(b.firing.ready>0||kilnNeedsRepair(b)&&kilnNeeds(b).brick===0);
+ }
  else if(b.type==='cowshed')active=canMilk(b);
  else if(b.type==='garden')active=orchardMaturity(s,b).yield>0;
  else if(b.type==='sheepfold')active=(b.flock?.fleece||0)>=1-1e-8;

@@ -1,4 +1,5 @@
 import {visibleCitizens} from '../workforce.js';
+import {createHomeVisits} from '../game3d/home-visits.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {Renderer} from '../renderer.js';
@@ -13,7 +14,10 @@ test('actual render queue interleaves people and solid buildings in depth order'
  Object.assign(r,{ctx,canvas:{getBoundingClientRect:()=>({left:0,top:0})},w:945,h:715,zoom:1.25,pan:{x:0,y:0},ambient:12,visualLast:null,lightMode:'day',reduce:true,lights:[],effects:[],hover:null});
  const order=[];r.person=p=>order.push(p);r.building=b=>order.push({...b,kind:'building'});
  const state=createGame({start:'established'});advanceTime(state,1);r.draw(state,null,1000);
- assert.equal(order.filter(e=>e.kind==='person').length,visibleCitizens(state).length);
+ const drawn=order.filter(e=>e.kind==='person'),street=visibleCitizens(state);
+ const expected=createHomeVisits()(state,street);
+ assert.deepEqual(drawn.map(c=>c.id).sort((a,b)=>a-b),expected.map(c=>c.id).sort((a,b)=>a-b));
+ assert.ok(drawn.some(c=>c.homeVisit?.morning&&!street.some(p=>p.id===c.id)),'a neighbour at their door joins the same depth queue as workers');
  for(let i=1;i<order.length;i++)assert.ok(sceneDepth(order[i])>=sceneDepth(order[i-1])-1e-8);
  assert.ok(order.findIndex(e=>e.kind==='person')<order.findLastIndex(e=>e.kind==='building'),'some residents must be drawn before houses, not in a final overlay pass');
 });

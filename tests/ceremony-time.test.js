@@ -28,3 +28,32 @@ test('a seasonal event never blocks a new family funeral',async()=>{
  s.citizens[0].age=85;s.event=null;advanceCalendar(s,45-s.seasonElapsed);assert.ok(s.funeral);assert.equal(s.event,null);assert.ok(decode(encode(s)));
  const before=s.funeral.timer;advanceTime(s,1);assert.ok(s.funeral.timer>before||s.funeral.stage!=='gathering');
 });
+
+test('the same free resident covers the ordinary distance at 1× and 4× in the main frame clock',async()=>{
+ const {advanceFrame}=await import('../engine.js'),{advanceFuneral}=await import('../funerals.js');
+ const {assignWorkplace,setCitizenRole}=await import('../management.js');
+ for(const speed of [1,4]){
+  const normal=createGame({start:'established',seed:137}),field=normal.buildings.find(b=>b.type==='field');
+  for(const house of normal.buildings.filter(b=>b.type==='house'))Object.assign(house,{pantry:50,pantryDelivered:50,water:20});
+  setCitizenRole(normal,4,'production');assignWorkplace(normal,4,`${field.x},${field.y}`);
+  const rite=decode(encode(normal));startFuneral(rite,dead);
+  while(rite.funeral.stage==='gathering')advanceFuneral(rite,.05);
+  advanceFuneral(rite,2.6);advanceTime(normal,1.8);
+  const distance=[];
+  for(const state of [normal,rite]){
+   const c=state.citizens.find(c=>c.id===4);let travelled=0;
+   for(let i=0;i<45;i++){const {x,y}=c;advanceFrame(state,1/60,speed);travelled+=Math.hypot(c.x-x,c.y-y);}
+   distance.push(travelled);assert.ok(decode(encode(state)));
+  }
+  assert.ok(distance[0]>.08&&Math.abs(distance[0]-distance[1])<.002,`ordinary/rite distances at ${speed}×: ${distance}`);
+  assert.equal(rite.simTime,0);
+ }
+});
+
+test('the stationary farewell still lasts five real seconds at 1×',async()=>{
+ const {advanceFrame}=await import('../engine.js'),s=createGame({start:'established'});
+ for(const c of s.citizens.filter(c=>c.age>=16)){c.cargo={clay:1};c.phase='toStore';}
+ startFuneral(s,dead);assert.deepEqual(s.funeral.bearers,[]);
+ for(let i=0;i<19;i++)advanceFrame(s,.25);
+ assert.equal(s.funeral.stage,'farewell');advanceFrame(s,.25);assert.equal(s.funeral,null);assert.equal(s.simTime,0);
+});

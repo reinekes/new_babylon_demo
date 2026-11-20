@@ -19,7 +19,7 @@ import {vegetationFor, weatherAt} from '../environment.js';
 import {irrigationFor, CARDINAL} from '../irrigation.js';
 import {constructionProgress} from '../construction.js';
 import {roadIsBuilt,roadKey} from '../roads.js';
-import {visibleFootpaths} from '../footpaths.js';
+import {streetCurveLookup,footpathRibbonPoint,visibleFootpaths} from '../footpaths.js';
 import {obstacleIndex} from '../navigation.js';
 import {generateStreets} from '../city-life.js';
 import {cachedStreetsFor} from '../workforce.js';
@@ -264,7 +264,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  function meshData(name,g,mat,collection=staticMeshes){if(!g.indices.length)return null;const m=new B.Mesh(name,scene),d=new B.VertexData();d.positions=g.positions;d.indices=g.indices;d.colors=g.colors;d.uvs=g.uvs||g.positions.filter((_,i)=>i%3!==1).map(v=>v/3);d.normals=[];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);
   if(d.normals.find((v,i)=>i%3===1&&Math.abs(v)>.01)<0){for(let i=0;i<d.indices.length;i+=3)[d.indices[i+1],d.indices[i+2]]=[d.indices[i+2],d.indices[i+1]];B.VertexData.ComputeNormals(d.positions,d.indices,d.normals);}d.applyToMesh(m);m.material=mat;m.useVertexColors=true;add(m,collection);return m;
  }
- function road(name,s,a,b,width,height,mat,level,collection){const g=wornRoadGeometry(s,a,b,width,height,level,2,null,roadObstacles),m=meshData(name,g,mat,collection);if(!m)return;m.position.set(g.origin.x,0,g.origin.z);m.hasVertexAlpha=true;m.metadata={road:{a:{...a},b:{...b},level}};m.freezeWorldMatrix();return m;}
+ function road(name,s,a,b,width,height,mat,level,collection,control,progress=1){const g=wornRoadGeometry(s,a,b,width,height,level,2,control,roadObstacles,progress),m=meshData(name,g,mat,collection);if(!m)return;m.position.set(g.origin.x,0,g.origin.z);m.hasVertexAlpha=true;m.metadata={road:{a:{...a},b:{...b},level}};m.freezeWorldMatrix();return m;}
  const originalTerrain=new WeakMap(),terrainCuts=new WeakMap();
  function carveChannels(s,arms){
   const cutKey=JSON.stringify(arms.map(a=>[a.a.x,a.a.y,a.b.x,a.b.y,a.startHeight,a.endHeight]));let groundChanged=false;
@@ -297,14 +297,15 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(trailState!==s)trailSignature='';
   trailState=s;trailBucket=bucket;
   const paths=visibleFootpaths(s,finishedRoadIds);
-  const keys=paths.map(r=>`${r.id}:${r.level}:${r.control?.x||''},${r.control?.y||''}`),key=keys.join(';');
-  if(key===trailSignature&&(paths.length||!trailMeshes.length))return;
+  const keys=paths.map(r=>`${r.id}:${r.level}`),key=keys.join(';');
+  if(key===trailSignature&&(paths.length||!trailMeshes.length)&&paths.every((r,i)=>trailGeometry.get(keys[i])?.control===r.control))return;
   trailSignature=key;remove(trailMeshes);
   const geometry={positions:[],indices:[],colors:[],uvs:[]},previous=trailGeometry;
   trailGeometry=new Map();
   for(const [i,r] of paths.entries()){
-   const g=previous.get(keys[i])||wornRoadGeometry(s,r.a,r.b,.35+r.level*.105,.029,1,.85,r.control,roadObstacles);
-   trailGeometry.set(keys[i],g);
+   const prior=previous.get(keys[i]);
+   const g=prior&&prior.control===r.control?prior.geometry:wornRoadGeometry(s,r.a,r.b,.35+r.level*.105,.029,1,.85,r.control,roadObstacles);
+   trailGeometry.set(keys[i],{control:r.control,geometry:g});
    const first=geometry.positions.length/3,opacity=.16+r.level*.105;
    for(let i=0;i<g.positions.length;i+=3)geometry.positions.push(g.positions[i]+g.origin.x,g.positions[i+1],g.positions[i+2]+g.origin.z);
    for(let i=0;i<g.colors.length;i+=4)geometry.colors.push(g.colors[i],g.colors[i+1],g.colors[i+2],g.colors[i+3]*opacity);
@@ -321,11 +322,13 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   // Natural placement follows occupied footprints and path endpoints, not work
   // counters, paving level or resource quantities. Weather still advances below.
   natureGeometrySignature=JSON.stringify([worldKey,s.buildings.map(b=>[b.type,b.footprint||1]),depositGeometry(s),plan.roads.map(r=>[r.a,r.b])]);
+  const lookupCurve=streetCurveLookup(s);
   for(const r of plan.roads){if(!finishedRoadIds.has(r.id)||shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)<.08)continue;const mat=r.level>=3?paving:r.level===2?gravel:earth;
    seenRoads.add(r.id);const key=JSON.stringify([worldKey,r.a,r.b,r.level,r.target,r.progress]),previous=roadBatches.get(r.id);if(previous?.key===key)continue;if(previous)remove(previous.meshes);
    const batch=[],record={key,meshes:batch,road:{id:r.id,a:r.a,b:r.b,working:!!r.target}};roadBatches.set(r.id,record);
-   record.road.mesh=road(`road-${r.id}-level-${r.level}`,s,r.a,r.b,1.22,.038,mat,r.level,batch);
-   if(r.target){const end={x:r.a.x+(r.b.x-r.a.x)*r.progress,y:r.a.y+(r.b.y-r.a.y)*r.progress};road(`road-upgrade-${r.id}`,s,r.a,end,.89,.063,r.target===3?paving:gravel,r.target,batch);for(const t of [.1,.9])box('road-work-materials',(r.a.x+(r.b.x-r.a.x)*t)*TILE,.21,(r.a.y+(r.b.y-r.a.y)*t)*TILE+.9,.45,.35,.5,work,batch);}
+   const control=lookupCurve(r.a,r.b,r.id);
+   record.road.mesh=road(`road-${r.id}-level-${r.level}`,s,r.a,r.b,1.22,.038,mat,r.level,batch,control);
+   if(r.target){road(`road-upgrade-${r.id}`,s,r.a,r.b,.89,.063,r.target===3?paving:gravel,r.target,batch,control,r.progress);for(const t of [.1,.9]){const p=footpathRibbonPoint(r.a,r.b,control,t);box('road-work-materials',p.x*TILE,.21,p.y*TILE+.9,.45,.35,.5,work,batch);}}
   }
   for(const [id,batch]of roadBatches)if(!seenRoads.has(id)){remove(batch.meshes);roadBatches.delete(id);}
   updateRoadGroups();

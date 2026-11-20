@@ -120,3 +120,17 @@ test('a neglected fire stops the batch and requires the normal kiln repair',asyn
  assert.equal(startFiring(b),0);
  assert.ok(validateKilns(s));
 });
+
+test('oven ignition increases after a charged batch, then only embers remain until cooling completes',async()=>{
+ const {ovenHeat}=await import('../kilns.js');
+ const s=fixture(),b=s.buildings[0];
+ assert.equal(ovenHeat(b),null);b.firing.brick=4;b.firing.reed=3;startFiring(b);
+ assert.ok(ovenHeat(b).flame>0&&ovenHeat(b).flame<.2);
+ advanceKilns(s,2);assert.equal(ovenHeat(b).flame,1);
+ advanceKilns(s,19);assert.equal(ovenHeat(b).flame,0);assert.ok(ovenHeat(b).coal<1);
+ advanceKilns(s,7);assert.equal(ovenHeat(b),null);
+ for(const [type,stage] of [['bakery','baking'],['pottery','firing'],['coppersmith','castingAxe']]){
+  assert.equal(ovenHeat({type,artisan:{stage:'idle',elapsed:0}}),null);
+  assert.equal(ovenHeat({type,artisan:{stage,elapsed:2}}).flame,1);
+ }
+});

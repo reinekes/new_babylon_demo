@@ -1,4 +1,5 @@
 import {groundHeading,groundStep} from './ground-turn.js';
+import {planPasture,segmentDistance} from './herd-pastures.js';
 import {loadModel} from './asset-loading.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {buildingKey,isOperational} from '../definitions.js';
@@ -49,12 +50,6 @@ function randomPoint(herd,member){
  const angle=seed(herd.seed,member.index*149+attempt*11+herd.index*1729)*2*Math.PI;
  const radius=Math.sqrt(seed(herd.seed,member.index*173+attempt*7+herd.index*1949))*herd.zone.radius;
  return {x:herd.zone.x+Math.cos(angle)*radius,y:herd.zone.y+Math.sin(angle)*radius,yaw:angle};
-}
-
-function segmentDistance(point,from,to){
- const dx=to.x-from.x,dy=to.y-from.y;
- const along=Math.max(0,Math.min(1,((point.x-from.x)*dx+(point.y-from.y)*dy)/(dx*dx+dy*dy||1)));
- return Math.hypot(point.x-from.x-dx*along,point.y-from.y-dy*along);
 }
 
 const closeToGroup=(herd,member,point)=>herd.members.some(other=>other!==member&&other.point&&
@@ -288,18 +283,27 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
     const direction=Math.atan2(goal.x-from.x,goal.y-from.y)-member.root.rotation.y;
     if(i<12&&Math.cos(direction)<.15)continue;
     // A clear straight line to a grazing spot may start with an obstructed turn.
-    if(!canMoveTo(groundStep(from,goal,member.root.rotation.y,radius,radius)))continue;
+    if(!canMoveTo(groundStep(from,goal,member.root.rotation.y,radius,radius))||
+       !canMoveTo(groundStep(from,goal,member.root.rotation.y,Math.min(radius,PACE*elapsed*.6),radius)))continue;
     member.goal=goal;
     break;
    }
-   // Back a few hoof-lengths out of a blocked turn. Keep heading and gait
-   // consistent with walking backwards until there is space to turn forward.
+   // Explore a short, forward arc before resorting to a backward step.
    if(!member.goal){
+    const yaw=member.root.rotation.y;
+    for(const bend of [0,.8,-.8,1.55,-1.55]){
+     const goal={x:from.x+Math.sin(yaw+bend)*radius*3,y:from.y+Math.cos(yaw+bend)*radius*3};
+     if(Math.hypot(goal.x-herd.zone.x,goal.y-herd.zone.y)>herd.zone.radius+.12||!canMoveTo(goal)||
+        !canMoveTo(groundStep(from,goal,yaw,radius,radius))||!canMoveTo(groundStep(from,goal,yaw,Math.min(radius,PACE*elapsed*.6),radius)))continue;
+     member.goal=goal;break;
+    }
+   }
+   if(!member.goal&&clock>=(member.nextReverse??0)){
     const yaw=member.root.rotation.y+Math.PI,side=member.attempt%2?1:-1;
     for(const angle of [side*.65,-side*.65,0]){
-     const goal={x:from.x+Math.sin(yaw+angle)*radius*2.4,y:from.y+Math.cos(yaw+angle)*radius*2.4};
-     if(Math.hypot(goal.x-herd.zone.x,goal.y-herd.zone.y)>herd.zone.radius+radius*2.4||!canMoveTo(goal))continue;
-     member.goal=goal;member.backing=true;break;
+     const goal={x:from.x+Math.sin(yaw+angle)*radius*1.65,y:from.y+Math.cos(yaw+angle)*radius*1.65};
+     if(Math.hypot(goal.x-herd.zone.x,goal.y-herd.zone.y)>herd.zone.radius+radius*1.65||!canMoveTo(goal))continue;
+     member.goal=goal;member.backing=true;member.nextReverse=clock+18;break;
     }
    }
    if(!member.goal)member.waitUntil=clock+.55+seed(herd.seed,member.attempt)*1.1;
@@ -319,6 +323,64 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
   pose(member,member.point,state,elapsed,false);
  }
 
+ function stopPasture(herd,arrived=false){
+  const trip=herd.pastureTrip;
+  if(!trip)return;
+  if(arrived)herd.zone=trip.end;
+  else{
+   let x=0,y=0;
+   for(const {member} of trip.slots){x+=member.point.x;y+=member.point.y;}
+   herd.zone={x:x/trip.slots.length,y:y/trip.slots.length,radius:herd.zone.radius};
+  }
+  herd.pastureTrip=null;
+  for(const {member} of trip.slots){
+   member.goal=null;member.escape=null;member.blockedSince=null;member.backing=false;
+   member.waitUntil=clock+(member.index%4)*.44;
+  }
+ }
+
+ function drivePasture(herd,state,dt){
+  if(!dt)return;
+  const trip=herd.pastureTrip;
+  const rearmost=Math.min(...trip.slots.map(({member,x,y})=>trip.progress(member.point)-x*trip.dx-y*trip.dy));
+  if(rearmost>trip.best+.035){trip.best=rearmost;trip.elapsedWithoutProgress=0;}else trip.elapsedWithoutProgress+=dt;
+  if(rearmost>trip.span-.28||trip.elapsedWithoutProgress>15){
+   stopPasture(herd,rearmost>trip.span-.28);
+   herd.grazeUntil=clock+11+seed(herd.seed,herd.tripCount+herd.index)*13;
+   return;
+  }
+  for(const {member,x,y,goal} of trip.slots){
+   const from=member.point,relative=trip.progress(from)-x*trip.dx-y*trip.dy;
+   if(relative>rearmost+.72||Math.hypot(goal.x-from.x,goal.y-from.y)<.22){pose(member,from,state,dt,false);continue;}
+   const radius=member.turnRadius/6,yaw=member.root.rotation.y;
+   const budget=dt*PACE*(1+.04*Math.sin(member.index*1.7));
+   const canStep=to=>clearOfGroup(herd,member,from,to)&&trip.clear(state,from,to);
+   const desired=Math.atan2(goal.x-from.x,goal.y-from.y);
+   let advanced=false;
+   for(const turn of [0,.85,-.85,1.65,-1.65]){
+    const aim=turn?{x:from.x+Math.sin(desired+turn)*.5,y:from.y+Math.cos(desired+turn)*.5}:goal;
+    const look=groundStep(from,aim,yaw,Math.max(budget,radius*.85),radius);
+    if(!canStep(look))continue;
+    const next=groundStep(from,aim,yaw,budget,radius);
+    if(!canStep(next))continue;
+    pose(member,next,state,dt,true);advanced=true;break;
+   }
+   if(advanced){member.blockedSince=null;member.escape=null;continue;}
+   member.blockedSince??=clock;
+   if(clock-member.blockedSince>1.2&&clock>=(member.nextReverse??0)){
+    const heading=yaw+Math.PI,goal={x:from.x+Math.sin(heading)*radius*1.65,y:from.y+Math.cos(heading)*radius*1.65};
+    if(canStep(goal)){member.escape=goal;member.nextReverse=clock+20;}
+   }
+   if(member.escape){
+    const back=groundStep(from,member.escape,yaw+Math.PI,budget*.55,radius);
+    back.yaw-=Math.PI;
+    if(canStep(back)){pose(member,back,state,dt,true,true);if(back.arrived)member.escape=null;continue;}
+    member.escape=null;
+   }
+   pose(member,from,state,dt,false);
+  }
+ }
+
  function update(state,dt,paused,speed,otherHerd=[]){
   if(!ready||disposed)return;
   const elapsed=paused?0:Math.min(.1,Math.max(0,dt))*speed;
@@ -331,7 +393,9 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
     if(herd.transfer&&!pens.some(b=>penKey(b)===penKey(herd.transfer.building)))herd.transfer=null;
     for(const key of herd.handled.keys())if(!pens.some(b=>penKey(b)===key))herd.handled.delete(key);
     const worldSeed=state.world?.seed??0;
+    if(herd.pastureTrip){stopPasture(herd);herd.grazeUntil=clock+2;}
     if(herd.seed!==worldSeed){
+     herd.tripCount=0;herd.grazeUntil=clock+7+herd.index*2.3;
      herd.seed=worldSeed;
      herd.size=herd.kind==='bull'?7+Math.floor(seed(worldSeed,53)*3):4+Math.floor(seed(worldSeed,herd.index+51)*4);
      herd.zone=null;
@@ -359,6 +423,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
    if(!paused&&!transfer&&herd.spec.pen&&clock>=herd.nextSearch){
     herd.nextSearch=clock+6;
     transfer=herd.transfer=assign(herd,state);
+    if(transfer)stopPasture(herd);
    }
    if(transfer){
     let arrived=true;
@@ -407,6 +472,14 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
     continue;
    }
    if(!herd.zone)continue;
+   if(!paused&&!herd.pastureTrip&&clock>=herd.grazeUntil){
+    const nearby=herds.filter(h=>h!==herd&&h.zone);
+    herd.tripCount++;
+    const clearGround=clearForSearch(state);
+    herd.pastureTrip=planPasture(herd,state,nearby,otherHerd,clearGround,zone=>zoneClear(state,zone,dry,clearGround));
+    herd.grazeUntil=clock+8+herd.index;
+   }
+   if(herd.pastureTrip){drivePasture(herd,state,elapsed);continue;}
    for(const member of herd.members){
     if(member.index>=herd.size||!member.point&&clock-(herd.departedAt??-Infinity)<8){member.root.setEnabled(false);continue;}
     if(member.root.metadata.herdDestination&&herd.kind==='bull')for(const mesh of member.owned)if(mesh.name.endsWith('Udder and four teats'))mesh.setEnabled(true);

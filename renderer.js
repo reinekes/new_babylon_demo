@@ -1,3 +1,5 @@
+import {createHomeVisits} from './game3d/home-visits.js';
+import {ovenHeat} from './kilns.js';
 import {extractionStockFraction} from './extraction-stock.js';
 import {mineralExcavations} from './game3d/mineral-excavation.js';
 import {drawMapMineral} from './mineral-map-art.js';
@@ -15,7 +17,7 @@ import {miracleCelebrationView} from './miracle-celebration.js';
 import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint,occupiesCell} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
-import {footpathRibbonPoint,visibleFootpaths} from './footpaths.js';
+import {footpathRibbonPoint,streetCurveLookup,visibleFootpaths} from './footpaths.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
 import {ceremonyJoinStep} from './festival-layout.js';
@@ -243,22 +245,29 @@ export class Renderer{
  }
  person(person) {
   const rain=this.rainReaction?.id===person.id?this.rainReaction.phase:null;
-  const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.onBridge?5:0);
+  const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.homeVisit?person.homeVisit.height*10:person.onBridge?5:0);
+  const seated=Number.isFinite(person.homeVisit?.seatHeight);
   const playTime=person.miracleContact?this.state?.miracleCelebration?.elapsed||0:(this.state?.simTime||0)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
   const dance=person.celebrating&&!this.reduce?Math.sin(playTime*4+(Number(person.id)||0))*.7:0;p.y-=Math.abs(dance)*q;
   const stride=person.walking&&!this.reduce?Math.sin((person.festivalTorch?playTime*4:person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
   if(person.playing&&person.id%2===0){c.fillStyle='#b4804f';c.beginPath();c.arc(p.x+6*q,p.y-Math.abs(Math.sin(playTime*3))*3*q,1.8*q,0,7);c.fill();}
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();
-  this.line([[p.x-1.1*q,p.y-3*q],[p.x+stride*q,p.y]],'#665841',1.25*q);
-  this.line([[p.x+1.1*q,p.y-3*q],[p.x-stride*q,p.y]],'#665841',1.25*q);
+  if(seated)p.y+=1.6*q;
+  this.line([[p.x-1.1*q,p.y-3*q],[p.x+(seated?-1.8:stride)*q,p.y-(seated?1.7:0)*q]],'#665841',1.25*q);
+  this.line([[p.x+1.1*q,p.y-3*q],[p.x+(seated?2.2:-stride)*q,p.y-(seated?1.7:0)*q]],'#665841',1.25*q);
   const look=residentAppearance(person,this.professionByWork||[],this.state),pose=residentPose(person,manualGatheringActivity(this.state,person)?.task||look.work,playTime,this.reduce);drawResidentClothes(this,p,q,look);
   if(rain){
    const raised=rain==='cover';
    this.line([[p.x-2*q,p.y-7*q],[p.x-4*q,p.y-(raised?9:6)*q],[p.x-(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);
    this.line([[p.x+2*q,p.y-7*q],[p.x+4*q,p.y-(raised?9:6)*q],[p.x+(raised?1:5)*q,p.y-(raised?11:7)*q]],'#a3835e',1.2*q);
   }
-  if(!rain&&!['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder','peaceRelief'].includes(pose.kind)){
+  if(person.homeVisit?.speaking){
+   const side=person.homeVisit.companion===1?-1:1,wave=this.reduce?0:Math.sin(playTime*15)*.85;
+   this.line([[p.x+side*2*q,p.y-7*q],[p.x+side*3.5*q,p.y-6.5*q],[p.x+side*4.4*q,p.y-(7.1+wave)*q]],'#a3835e',1.2*q);
+   this.line([[p.x-side*2*q,p.y-7*q],[p.x-side*2.5*q,p.y-3.5*q]],'#a3835e',1.2*q);
+  }
+  if(!rain&&!person.homeVisit?.speaking&&!['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder','peaceRelief'].includes(pose.kind)){
    this.line([[p.x-2*q,p.y-7*q],[p.x-3*q,p.y-(4+stride*.4)*q]],'#a3835e',1.2*q);
    this.line([[p.x+2*q,p.y-7*q],[p.x+3*q,p.y-(4-stride*.4)*q]],'#a3835e',1.2*q);
   }
@@ -300,26 +309,27 @@ export class Renderer{
   const c=this.ctx;c.save();c.lineCap='round';c.lineJoin='round';
   const state=this.state,roads=state.roads||[];
   const finished=new Set(roads.filter(r=>r.construction||roadIsBuilt(r)).map(r=>r.id));
-  const points=r=>[this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)];
+  const lookup=streetCurveLookup(state),controls=new Map();
+  const points=(r,control=controls.get(r))=>control?[0,.25,.5,.75,1].map(t=>{
+   const p=footpathRibbonPoint(r.a,r.b,control,t);return this.point(p.x,p.y);
+  }):[this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)];
   for(const path of visibleFootpaths(state,finished)){
    if(!this.inView((path.a.x+path.b.x)/2,(path.a.y+path.b.y)/2,50))continue;
-   const opacity=.11+path.level*.06;
-   const curve=path.control?[0,.25,.5,.75,1].map(t=>{
-    const p=footpathRibbonPoint(path.a,path.b,path.control,t);return this.point(p.x,p.y);
-   }):points(path);
+   const opacity=.11+path.level*.06,curve=points(path,path.control);
    this.line(curve,`rgba(95,73,47,${opacity*.38})`,(2.6+path.level*.65)*this.s);
    this.line(curve,`rgba(118,90,56,${opacity})`,(1.6+path.level*.4)*this.s);
   }
   const showNetwork=this.roadMode&&!this.photoMode,hovered=showNetwork?this.roadNear(this.hover||{})?.id:null;
   const visibleRoads=roads.filter(r=>(finished.has(r.id)||showNetwork||this.routeRoads?.has(r.id)||this.selectedRoad===r.id||this.selectedRoad?.id===r.id)&&this.inView(r.x,r.y,55));
   const built=visibleRoads.filter(r=>finished.has(r.id));
+  for(const r of built)controls.set(r,lookup(r.a,r.b,r.id));
   for(const [color,width]of [['#af9c73',7.6],['#dbc79c',5.4]])for(const r of built)this.line(points(r),color,width*this.s);
   for(const road of visibleRoads){
    const {a,b,level}=road,path=points(road);
    if(finished.has(road.id)){
     this.line(path,level===3?'#ad7956':level===2?'#b5af94':'#ead9b4',(level>1?4:1.2)*this.s);
-    if(level===3)for(let k=1;k<5;k++){const f=k/5,p=this.point(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}
-    if(road.construction){const p=this.point(road.x,road.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}
+    if(level===3)for(let k=1;k<5;k++){const q=footpathRibbonPoint(a,b,controls.get(road),k/5),p=this.point(q.x,q.y);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}
+    if(road.construction){const q=footpathRibbonPoint(a,b,controls.get(road),.5),p=this.point(q.x,q.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}
    }else if(showNetwork)this.line(path,'rgba(238,211,143,.55)',1.1*this.s);
    if(!this.photoMode&&(this.routeRoads?.has(road.id)||this.selectedRoad===road.id||this.selectedRoad?.id===road.id||hovered===road.id))this.line(path,'#fff0ae',2*this.s);
   }
@@ -397,7 +407,9 @@ export class Renderer{
   if(this.presentedCeremonyState!==s){this.presentedCeremonyState=s;this.ceremonyPositions=new Map();}
   const records=this.ceremonyPositions,seen=new Set();let network;
   const miracle=miracleCelebrationView(s),overrides=new Map(miracle?.participants.map(p=>[p.id,p])||[]),source=miracle?s.citizens:showBlessingApproach(showRainObserver(visibleCitizens(s),s,this.rainReaction),s,this.blessingApproach);
-  const people=source.map(original=>{
+  const households=this.homeVisits??=createHomeVisits();
+  const residents=miracle?source:households(s,source,this.weather?.type);
+  const people=residents.map(original=>{
    const participant=overrides.get(original.id),person=participant?{...original,...participant,activity:null,phase:'miracle',carrying:false,cargo:{},playing:false,eventContact:null,festivalContact:null,miracleContact:participant}:original;
    seen.add(person.id);const contact=person.eventContact||person.festivalContact,target={x:contact?.x??person.x,y:contact?.y??person.y},eventContact=!!person.eventContact;
    let record=records.get(person.id),point=target;
@@ -445,6 +457,7 @@ export class Renderer{
  const miracle=miracleCelebrationView(s);if(miracle?.kind==='fertility'){const key=`${miracle.center.x}:${miracle.center.y}`;if(this.miraclePlanKey!==key){this.miraclePlanKey=key;this.miraclePlan=miracleGardenPlan(miracle.center);}entities.push(...this.miraclePlan.filter(p=>miraclePlantClear(s,p)).map(p=>({...p,plantKind:p.kind,kind:'miraclePlant',age:miracle.elapsed})));}
  const feast=festivalView(s);if(feast)entities.push({kind:'festivalCourt',x:feast.court?.x??feast.x+.25,y:feast.court?.y??feast.y+.35,view:feast});
  const funeral=funeralView(s);
+ if(this.footstepFuneral!==s.funeral){this.footstepFuneral=s.funeral;this.funeralFootsteps=new Map();}
  entities.push(...animalsFor(s),...this.groundStocks(s));
  if(funeral){
   if(funeral.coffin)entities.push({...funeral.coffin,kind:'bier'});
@@ -454,9 +467,11 @@ export class Renderer{
   for(const id of funeral.mourners||[]){
    const existing=entities.find(e=>e.kind==='person'&&e.id===id),citizen=existing||s.citizens.find(c=>c.id===id);
    if(!citizen)continue;
-   const person=mourners.get(id),walking=person?.walking??true;
+   const person=mourners.get(id),walking=person?.walking??true,position=person||citizen;
+   const prior=this.funeralFootsteps.get(id),stride=prior?prior.stride+Math.hypot(position.x-prior.x,position.y-prior.y)*(4+(id%4)*.2)/1.05:id*.73;
+   this.funeralFootsteps.set(id,{x:position.x,y:position.y,stride});
    const appearance={...person,kind:'person',robe:'#c7c9ae',mourningTorch:person?.torch??!!funeral.torches,
-    carrying:false,walking,phase:'mourning',step:walking?((s.simTime||0)+(s.funeral?.timer||0))*4+id*.73:0};
+    carrying:false,walking,phase:'mourning',step:stride};
    if(existing)Object.assign(existing,appearance);
    else entities.push({...citizen,...appearance});
   }
@@ -470,7 +485,15 @@ export class Renderer{
   if(e.kind==='person'&&s.funeral?.actors.some(a=>a.id===e.id)&&funeral?.gather&&funeral.stage==='gathering'&&Math.abs(e.x-funeral.gather.x)+Math.abs(e.y-funeral.gather.y)<.05)continue;
   const p=this.point(e.x,e.y);
   if(e.kind==='bridgeRail')this.bridgeRail(e.across,e.end,e.along);
-  else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);drawCultSign(this,e,s);drawFestivalBuildingLights(this,e,s);}
+  else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);const heat=ovenHeat(e);
+   if(heat?.flame&&!this.reduce){
+    const mouth={kiln:[0,-6],pottery:[-7,-4],bakery:[8,1],coppersmith:[10,-3]}[e.type],clock=(s.simTime||0)*8;
+    for(let i=0;i<4;i++){const age=(clock*(.57+i*.07)+i*.39)%1;if(age>.68)continue;
+     const x=p.x+(mouth[0]+Math.sin(i+age*5)*2.2)*this.s,y=p.y+(mouth[1]-age*17)*this.s;
+     this.line([[x,y],[x+.27*this.s,y-.85*this.s]],'#ffbc56',this.s*.65*heat.flame);
+    }
+   }
+   drawCultSign(this,e,s);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='catOffering')drawCatOffering(this,e);
   else if(e.kind==='person')this.person(e);
   else if(e.kind==='ploughTeam')drawPloughTeam(this,e);

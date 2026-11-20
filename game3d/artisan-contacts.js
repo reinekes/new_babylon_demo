@@ -1,6 +1,12 @@
+import {ovenChambers} from './reference-workshops.js';
+
+export const KILN_TAPER_LENGTH=.55;
+const [kilnX,kilnZ,,kilnDepth]=ovenChambers.kiln;
+const kilnCoals=kilnZ+kilnDepth/2-.15;
 // Coordinates in the unrotated workshop, in metres. The yard entrance is at
 // front right. The same surfaces appear in reference-workshops and workshop-architecture.
 const stations={
+ 'light-kiln':{work:[[kilnX,.18,kilnCoals],[kilnX+.19,.18,kilnCoals]],stands:[[kilnX-.37,kilnCoals+.68],[kilnX+.37,kilnCoals+.68]],kneel:.40},
  account:{work:[[-.76,1.09,1.67],[.97,1.09,1.66]],stands:[[-.78,2.10],[1.06,2.10]]},
  milling:{work:[[1.48,.36,1.50],[1.64,.35,1.45]],stands:[[1.47,1.83],[2.01,1.42]],kneel:.33},
  baking:{work:[[.62,.18,.045],[1.08,.18,.045]],stands:[[.52,.56],[1.19,.56]],kneel:.68},
@@ -33,7 +39,7 @@ export function artisanContact(b,c,slot,worldPoint){
  else if(task==='baking'){via.push(point(.85,0,2.18),point(.76,0,.95));}
  else if(task==='preparingFiber'){via.push(point(-.41,0,1.80));}
  via.push(stand);
- return {kind:'artisan',task,stand,target,building:b,seatHeight:station.kneel,via};
+ return {kind:'artisan',task,stand,target,building:b,progress:c.activity.progress,seatHeight:station.kneel,via};
 }
 export function artisanPose(contact,time){
  const wave=Math.sin(time*3.4),beat=(1+Math.cos(time*3.4))*.5,h=contact.target.height;
@@ -41,6 +47,13 @@ export function artisanPose(contact,time){
  switch(contact.task){
   case 'account':right=[.09,h+.08+beat*.025,.42];left=[-.13,h,.46];tool='scribe-stylus';bend=.14;break;
   case 'milling':right=[.09,h,.49+wave*.045];left=[-.09,h,.49+wave*.045];bend=.57;break;
+  case 'light-kiln':{
+   // The last part of the worker's charge interval pushes the smouldering end
+   // onto the fuel. Until then the taper is held slightly above the firebed.
+   const reach=Math.min(1,Math.max(0,((contact.progress??0)-.30)/.58));
+   right=[.10,h+.29+(1-reach)*.10,.038-(1-reach)*.085];
+   left=[-.14,.57,-.14];tool='kiln-taper';bend=.38;break;
+  }
   case 'baking':right=[.08,h+.51,.23+wave*.065];left=[-.09,h+.43,.31+wave*.065];tool='baking-paddle';bend=.5;break;
   case 'preparingFiber':right=[.08,h+beat*.055,.49];left=[-.08,h+(1-beat)*.055,.49];bend=.52;break;
   case 'weavingLinen':right=[.12+wave*.09,h+.012,.49];left=[-.15,h+.055,.49];break;

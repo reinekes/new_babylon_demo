@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {BASE_TIME_RATE} from '../calendar.js';
 import {legacyScenario,strictScenario} from '../scenario-profiles.js';
 import {createHomeVisits} from '../game3d/home-visits.js';
-import {workHourAt} from '../work-schedule.js';
+import {workHourAt,residentDepartureHour} from '../work-schedule.js';
 
 const house={type:'house',x:6,y:11,level:1,rotation:0};
 function city(b=house,scenario=strictScenario()){
@@ -26,7 +26,7 @@ test('all five house forms have reachable seating and an enclosed threshold; roo
    if(prev)assert.ok(distance(prev,actor)<.28,'continuous walking route, including steps');
    const v=actor.homeVisit;
    if(v.climbing){climbed=true;assert.equal(v.yaw,-Math.PI/2);}
-   if(!actor.walking){sit.add(v.stage);assert.ok(v.seatHeight>0);assert.ok(workHourAt(s.simTime)<19&&workHourAt(s.simTime)>=6);}
+   if(!actor.walking&&!v.morning){sit.add(v.stage);assert.ok(v.seatHeight>0);assert.ok(workHourAt(s.simTime)<19&&workHourAt(s.simTime)>=6);}
    prev=actor;
   }
   assert.deepEqual([...sit].sort(),expected);
@@ -75,7 +75,7 @@ test('a resident returns from the roof on the same access before joining a real 
 test('household members share one seat, children reach the door after play, and cargo and emergencies keep priority',()=>{
  const s=city(),view=createHomeVisits(),c=s.citizens[0];s.citizens.push({...c,id:8},{...c,id:9,age:7},{...c,id:10,cargo:{clay:1}},{...c,id:11,fireShelter:'x'});const ids=new Set();
  for(let t=0;t<1400;t+=.5){
-  const residents=seen(s,view,t);assert.ok(residents.length<=1);
+  const residents=seen(s,view,t);assert.ok(residents.filter(p=>p.homeVisit?.seatHeight).length<=1);
   for(const a of residents){assert.ok([7,8].includes(a.id));if(a.homeVisit.seatHeight)ids.add(a.id);}
  }
  assert.deepEqual([...ids].sort(),[7,8]);
@@ -119,7 +119,7 @@ test('communal residents reach the left bench and the right roof of the rotated 
   const yaw=rotation*Math.PI/2,cos=Math.cos(yaw),sin=Math.sin(yaw);
   for(let t=0;t<1200;t+=.25){
    const [actor]=seen(s,view,t);
-   if(!actor||actor.walking)continue;
+   if(!actor||actor.walking||actor.homeVisit.morning)continue;
    const stage=actor.homeVisit.stage;seats.add(stage);
    const [x,z,height]=stage==='bench'?[3.21,1.87,.065]:[-4.12,-.12,2.525];
    assert.ok(Math.abs(actor.x-(b.x+.5+(x*cos+z*sin)/6))<1e-8);
@@ -127,5 +127,104 @@ test('communal residents reach the left bench and the right roof of the rotated 
    assert.equal(actor.homeVisit.height,height);
   }
   assert.deepEqual([...seats].sort(),['bench','roof']);
+ }
+});
+
+test('two housemates speak in turn from different places on the communal bench, another reaches the roof and walks down in rain',()=>{
+ const b={...house,type:'communalHouse',footprint:2},s=city(b),visit=createHomeVisits();
+ s.citizens=Array.from({length:8},(_,id)=>({...s.citizens[0],id}));
+ const frame=(clock,wet=false)=>{s.simTime=clock*BASE_TIME_RATE;return visit(s,[],wet?'rain':'sunny');};
+ const speaks=new Set();let roof,previous,clock=219;
+ for(;clock<272;clock+=.25){
+  const actors=frame(clock),benches=actors.filter(p=>p.homeVisit.stage==='bench');roof=actors.find(p=>p.homeVisit.stage==='roof');
+  assert.equal(new Set(actors.map(c=>c.id)).size,actors.length);
+  if(benches.length!==2||!roof)continue;
+  assert.ok(Math.hypot(benches[0].x-benches[1].x,benches[0].y-benches[1].y)*6>1);
+  const talking=benches.filter(p=>p.homeVisit.speaking);assert.equal(talking.length,1);speaks.add(talking[0].id);
+  if(speaks.size===2){previous=roof;break;}
+ }
+ assert.equal(speaks.size,2);assert.ok(previous.homeVisit.height>2);
+ let descended=false,inside=false;
+ for(let t=clock+.15;t<clock+28;t+=.15){
+  const actors=frame(t,true);assert.ok(!actors.some(p=>p.homeVisit.stage==='roof'||p.homeVisit.stage==='bench'));
+  const p=actors.find(c=>c.id===roof.id);
+  if(!p){inside=true;break;}
+  assert.equal(p.homeVisit.stage,'enter');assert.ok(distance(p,previous)<.20);
+  if(p.homeVisit.height<.10)descended=true;previous=p;
+ }
+ assert.ok(descended&&inside);
+ const restored=JSON.parse(JSON.stringify(s));assert.ok(!createHomeVisits()(restored,[],'rain').some(p=>p.homeVisit.stage==='roof'));
+});
+
+test('each free adult crosses their actual morning threshold, pauses in the court and resumes through a saved morning',async()=>{
+ const {createGame,encode,decode}=await import('../engine.js');
+ const state=createGame({start:'established'}),adults=state.citizens.filter(c=>c.age>=16),view=createHomeVisits();
+ state.citizens.forEach(c=>{c.phase='home';c.diningUntil=0;});
+ const visited=new Set();let restored=false;
+ for(let time=52.4;time<63.7;time+=.025){
+  state.simTime=state.calendarOffset=time;
+  const cast=view(state,[],'sunny');
+  for(const a of cast.filter(p=>p.homeVisit?.morning)){
+   const scheduled=residentDepartureHour(undefined,a.id);assert.ok(workHourAt(time)+1e-7>=scheduled);
+   if(a.homeVisit.stage==='courtyard')visited.add(a.id);
+   if(!restored&&a.homeVisit.stage==='out'&&workHourAt(time)>scheduled+.04){
+    const loaded=decode(encode(state));assert.ok(loaded);const replay=createHomeVisits()(loaded,[],'sunny').find(p=>p.id===a.id);
+    assert.deepEqual([replay.x,replay.y,replay.homeVisit],[a.x,a.y,a.homeVisit]);restored=true;
+   }
+  }
+ }
+ assert.deepEqual([...visited].sort(),adults.map(c=>c.id).sort());assert.ok(restored);
+});
+
+test('a porch visitor continues out to a newly assigned job without going back through the room',()=>{
+ const s=city(),view=createHomeVisits(),c=s.citizens[0],start=((residentDepartureHour(undefined,c.id)-8+24)%24)*20;
+ const frame=t=>{s.simTime=t*BASE_TIME_RATE;return view(s,c.phase==='home'?[]:[{...c,walking:true}],'sunny').find(p=>p.id===c.id);};
+ let t=start,prior;for(;t<start+6;t+=.1){prior=frame(t);if(prior?.homeVisit.stage==='courtyard')break;}
+ assert.equal(prior.homeVisit.stage,'courtyard');c.phase='toWork';c.route=[{x:c.x,y:c.y},{x:c.x+1,y:c.y}];c.routeIndex=1;
+ let onStreet=false;const sill=(prior.y-house.y)*6;
+ for(let i=0;i<240;i++){const actor=frame(t+i*.1);if(!actor.homeVisit){onStreet=true;break;}assert.equal(actor.homeVisit.stage,'leave');assert.ok(distance(prior,actor)<.12);if(i<10)assert.ok((actor.y-house.y)*6>sill-.4,'starts toward the gate at the current court position');prior=actor;}
+ assert.ok(onStreet);
+});
+
+test('an infant and the parent caring for them, a sick resident, a watchman and a loaded courier keep their duties',()=>{
+ const s=city(),c=s.citizens[0],view=createHomeVisits();s.citizens=[{...c,id:0,age:1,parents:[1]},{...c,id:1},{...c,id:2,health:42},{...c,id:3,guardPost:'1,1'},{...c,id:4,cargo:{clay:2}},{...c,id:5},{...c,id:6,fireShelter:'s'}];const outside=new Set();
+ for(let t=415;t<508;t+=.2){s.simTime=t*BASE_TIME_RATE;for(const actor of view(s,[],'sunny'))if(actor.homeVisit.morning)outside.add(actor.id);}
+ assert.deepEqual([...outside],[5]);
+});
+
+
+test('a rainy morning reaches just the covered door, and rain sends a courtyard visitor home on foot',()=>{
+ const b={...house,rotation:1},s=city(b),c=s.citizens[0],start=((residentDepartureHour(undefined,c.id)-8+24)%24)*20;
+ const run=(view,t,wet)=>{s.simTime=t*BASE_TIME_RATE;return view(s,[],wet?'rain':'sunny')[0];};
+ const rainView=createHomeVisits();let found=false;
+ for(let t=start-.2;t<start+12;t+=.1){
+  const a=run(rainView,t,true);if(!a)continue;
+  assert.ok((a.x-b.x)*6<=-.13+1e-8,'remains behind the real room doorway');
+  assert.ok(!a.homeVisit.climbing&&a.homeVisit.stage!=='courtyard');
+  if(a.homeVisit.stage==='threshold')found=true;
+ }
+ assert.ok(found);
+ const visit=createHomeVisits();let previous,entered=false,finish=false;
+ for(let t=start-.2;t<start+12;t+=.1){
+  const a=run(visit,t,!!previous);
+  if(!previous&&a?.homeVisit.stage==='courtyard'){previous=a;continue;}
+  if(!previous)continue;
+  if(!a){finish=true;continue;}
+  assert.equal(finish,false);assert.equal(a.homeVisit.stage,'enter');assert.ok(distance(previous,a)<.12);
+  previous=a;entered=true;
+ }
+ assert.ok(entered&&finish);
+});
+
+
+test('the last morning starter crosses the actual sill of every house by nine',()=>{
+ const last=Array.from({length:500},(_,id)=>id).sort((a,b)=>residentDepartureHour(undefined,b)-residentDepartureHour(undefined,a))[0];
+ for(const [b,sill] of [[house,.33],[{...house,level:2},-.46],[{...house,level:3},-.19],[{...house,reedCamp:true},1.40],[{...house,type:'communalHouse'},-1.92]]){
+  const state=city(b);state.citizens[0].id=last;const view=createHomeVisits(),start=residentDepartureHour(undefined,last);let crossed=false;
+  for(let h=start;h<=9;h+=.004){
+   state.simTime=((h-8+24)%24)*20*BASE_TIME_RATE;const [a]=view(state,[],'sunny');
+   if(a?.homeVisit?.morning&&(a.y-b.y-(b.type==='communalHouse'?.5:0))*6>=sill){crossed=true;break;}
+  }
+  assert.ok(crossed,b.type+' '+b.level);
  }
 });
