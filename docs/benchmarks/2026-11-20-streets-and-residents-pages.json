@@ -1,0 +1,196 @@
+{
+  "release": "streets-rites-professions-20261120",
+  "commit": "b4f1bab34f5086b3c091e872502a7638fa66ac49",
+  "workflow": "https://github.com/reinekes/new_babylon_demo/actions/runs/44785912197",
+  "publishedFilesChecked": 53,
+  "funeral": {
+    "deployment": {
+      "url": "https://reinekes.github.io/new_babylon_demo/index.html?view=3d",
+      "version": 3,
+      "crew": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modules": [
+        "https://reinekes.github.io/new_babylon_demo/desert-funeral.js?v=streets-rites-professions-20261120",
+        "https://reinekes.github.io/new_babylon_demo/game3d/funeral-ritual.js?v=streets-rites-professions-20261120"
+      ],
+      "assets": [
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/source-walk-male.glb?v=3400d4b0792d",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/source-walk-female.glb?v=aa326f1a562b",
+        "https://reinekes.github.io/new_babylon_demo/assets/art-courtyard/models/jackal.glb?v=1217179bfbcc"
+      ],
+      "webGL": 2,
+      "glError": 0
+    },
+    "results": [
+      {
+        "stage": "gathering",
+        "t": 1.0000000000000002,
+        "participants": 39,
+        "carrierCount": 0,
+        "mesh": true,
+        "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "shroudGripErrorMetres": null,
+        "saveRoundtrip": true
+      },
+      {
+        "stage": "procession",
+        "t": 6.999999999999983,
+        "participants": 39,
+        "carrierCount": 4,
+        "mesh": true,
+        "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "shroudGripErrorMetres": null,
+        "saveRoundtrip": true
+      },
+      {
+        "stage": "farewell",
+        "t": 2.000000000000001,
+        "participants": 39,
+        "carrierCount": 0,
+        "mesh": true,
+        "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "shroudGripErrorMetres": null,
+        "saveRoundtrip": true
+      },
+      {
+        "stage": "jackals",
+        "t": 4.99999999999999,
+        "participants": 39,
+        "carrierCount": 0,
+        "mesh": true,
+        "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "shroudGripErrorMetres": 7.71397933467084e-07,
+        "clip": "Pull",
+        "saveRoundtrip": true
+      },
+      {
+        "stage": "returning",
+        "t": 0,
+        "participants": 39,
+        "carrierCount": 0,
+        "mesh": false,
+        "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "shroudGripErrorMetres": null,
+        "saveRoundtrip": true
+      }
+    ],
+    "errors": [],
+    "failures": []
+  },
+  "roads": {
+    "rg": {
+      "url": "https://reinekes.github.io/new_babylon_demo/index.html?roadProof=1795196893231",
+      "renderer": "3d",
+      "trailVertices": 504,
+      "streets": 5,
+      "offsetsMeters": [
+        0.19985782822206488,
+        0.17460379981752538,
+        0
+      ],
+      "profileMatches": true,
+      "gl": 0,
+      "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    },
+    "exceptions": [],
+    "http": [],
+    "warn": [],
+    "assetVerification": {
+      "firstPass": {
+        "rg": {
+          "url": "https://reinekes.github.io/new_babylon_demo/index.html?roadProof=1795196835934",
+          "renderer": "3d",
+          "trailVertices": 504,
+          "streets": 5,
+          "offsetsMeters": [
+            0.19985782822206488,
+            0.17460379981752538,
+            0
+          ],
+          "profileMatches": true,
+          "gl": 0,
+          "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "transport": "Direct browser HTTPS via HTTP/1.1",
+      "earthCss": {
+        "loaded": true,
+        "reloaded": false,
+        "url": "https://reinekes.github.io/new_babylon_demo/earth-presentation.css?v=blessing-camera-20261107-1"
+      },
+      "requestCount": 560,
+      "failedRequests": [
+        {
+          "url": "https://reinekes.github.io/new_babylon_demo/earth-presentation.css?v=blessing-camera-20261107-1",
+          "error": "net::ERR_SSL_PROTOCOL_ERROR"
+        },
+        {
+          "url": "https://reinekes.github.io/new_babylon_demo/creator-presentation.css?v=creator-scenes-20261106-1",
+          "error": "net::ERR_SSL_PROTOCOL_ERROR"
+        }
+      ],
+      "publicHouseModelVisible": true,
+      "fixtureSha256": "2485ad60eb80e26803e6ab745fbb365e216944367ef9e7f2350882b9818fc330"
+    },
+    "presentationCss": {
+      "initialRequest": "Transient TLS error during the first successful road geometry capture.",
+      "retriedWith": "HTTPS HTTP/1.1",
+      "sha256": "0075efc00275c691302095efbcf93fb9298d9ab6a1bb559c1c28929b3cb16794",
+      "matchesCommit": true
+    }
+  },
+  "professions": {
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "dateEpoch": 1795196735,
+    "roles": {
+      "lawmaker": {
+        "actor": 0,
+        "frameSamples": 39,
+        "visibleMeshes": 22,
+        "palmMovementM": 0.02062732506890715,
+        "tools": [
+          "scribe-reed-stylus",
+          "scribe-tablet",
+          "scribe-clay-tablet",
+          "scribe-impression"
+        ],
+        "entry": "/new_babylon_demo/index.html",
+        "webgl": 2,
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheepfold": {
+        "actor": 0,
+        "frameSamples": 35,
+        "visibleMeshes": 11,
+        "palmMovementM": 0.018070490772030327,
+        "tools": [],
+        "entry": "/new_babylon_demo/index.html",
+        "webgl": 2,
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "cowshed": {
+        "actor": 0,
+        "cow": "dairy-10,9-0",
+        "model": "pasture-cow.glb",
+        "sampledGrasps": 12,
+        "maxToTeatTipM": 0.06365763866132078,
+        "maxToUdderSurfaceM": 0.019767616083129647,
+        "webgl": 2,
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      }
+    }
+  }
+}
