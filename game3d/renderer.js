@@ -1,4 +1,4 @@
-import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js?v=living-fields-20261116';
+import {createRenderableMeshCandidates} from './renderable-mesh-candidates.js';
 import {createOverviewShadowCadence,shadowCasterInside} from './shadow-casters.js?v=city500-fauna-courts-20261113';
 import {pickResourceDeposit} from './deposit-picking.js';
 import {miracleCelebrationView} from '../miracle-celebration.js';
@@ -15,6 +15,7 @@ import {worldWidth,worldHeight,terrain} from '../world.js';
 import {celestialAt,createSkyHorizon} from './sky-horizon.js';
 import {createHouseLights} from './house-lights.js';
 import {createDistrictMaterials} from '../district3d/materials.js';
+import {withTerrainElevationIndex} from '../district3d/terrain.js';
 import {createMiracleGarden} from './miracle-garden.js';
 import {vegetationBankDistance} from './valley-vegetation.js';
 import {visualSurfaceElevation} from './lake-shore.js';
@@ -177,6 +178,7 @@ export class GameRenderer3D{
  }
  updateLight(state,refreshShadow=true,weather=weatherAt(state)){
   const B=this.B,clock=celestialAt(state.simTime,this.lightMode),n=clock.night;
+  this.scene.metadata??={};this.scene.metadata.nightWindows=n>.01;
   this.scene.fogDensity=valleyFogDensity(this.camera.radius);
   const cloud=weather.type==='rain'?.7:weather.type==='clouds'?.85:1;
   if(refreshShadow){this.sun.direction.set(clock.light.direction.x,clock.light.direction.y,clock.light.direction.z);this.sun.position=this.camera.target.subtract(this.sun.direction.normalizeToNew().scale(140));this.sun.shadowFrustumSize=Math.max(42,Math.min(260,this.camera.radius*1.5));}
@@ -215,17 +217,21 @@ export class GameRenderer3D{
   const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,visualSurfaceElevation(r.a.x,r.a.y,this.state)+.24,r.a.y*6),b=new B.Vector3(r.b.x*6,visualSurfaceElevation(r.b.x,r.b.y,this.state)+.24,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
  }
  draw(state,selection,now,options={}){
-  if(!this.layersReady)return;const changedState=state!==this.state;const start=performance.now(),dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState)this.resize();if(changedState&&foundingCameraTarget(state))this.home();
-  const paused=options.paused??simDelta<=0,shadowMap=this.shadow.getShadowMap();
-  const overviewCadence=this.mapOverview&&!this.photoMode&&this.scene.shadowsEnabled&&state.citizens.length>=300&&!state.funeral&&!state.festival&&!state.miracleCelebration;
-  this.refreshShadow=this.renderOverviewShadow?.(state,this.lightMode,this.camera,overviewCadence,paused,dt)??true;
-  const refreshRate=overviewCadence&&!paused?2:1;if(shadowMap.refreshRate!==refreshRate)shadowMap.refreshRate=refreshRate;
-  if(this.refreshShadow&&refreshRate>1)shadowMap.resetRefreshCounter();
-  const weather=weatherAt(state);
-  this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1,camera:this.camera,viewportHeight:this.engine.getRenderHeight(),weather:weather.type,rainReaction:options.rainReaction,blessingApproach:options.blessingApproach,focusId:this.focusCitizenId??this.inspected?.citizenId});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state,this.refreshShadow,weather);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
-  if(this.refreshShadow)shadowMap.renderList=[...this.buildings.meshes,...(this.actors.shadowMeshes?.()||this.actors.meshes),...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());
-  this.scene.render();
-  this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
+  if(!this.layersReady)return;
+  const start=performance.now();
+  return withTerrainElevationIndex(state,()=>{
+   const changedState=state!==this.state,dt=this.lastTime===null?0:Math.max(0,Math.min(.25,(now-this.lastTime)/1000)),simDelta=this.lastSim===null?0:state.simTime-this.lastSim;this.lastTime=now;this.lastSim=state.simTime;this.state=state;this.selection=selection;if(changedState)this.resize();if(changedState&&foundingCameraTarget(state))this.home();
+   const paused=options.paused??simDelta<=0,shadowMap=this.shadow.getShadowMap();
+   const overviewCadence=this.mapOverview&&!this.photoMode&&this.scene.shadowsEnabled&&state.citizens.length>=300&&!state.funeral&&!state.festival&&!state.miracleCelebration;
+   this.refreshShadow=this.renderOverviewShadow?.(state,this.lightMode,this.camera,overviewCadence,paused,dt)??true;
+   const refreshRate=overviewCadence&&!paused?2:1;if(shadowMap.refreshRate!==refreshRate)shadowMap.refreshRate=refreshRate;
+   if(this.refreshShadow&&refreshRate>1)shadowMap.resetRefreshCounter();
+   const weather=weatherAt(state);
+   this.buildings.sync(state);this.landscape.update(state,state.simTime,selection);this.actors.update(state,dt,{paused,speed:options.speed??1,camera:this.camera,viewportHeight:this.engine.getRenderHeight(),weather:weather.type,rainReaction:options.rainReaction,blessingApproach:options.blessingApproach,focusId:this.focusCitizenId??this.inspected?.citizenId});this.relicScene?.update(state);this.sacredEffects?.update(state,dt,{paused});this.updateLight(state,this.refreshShadow,weather);this.updateSelection();this.updateEffects(state,state.event?dt:paused?0:dt);this.miracleGarden?.update(0,{paused,celebration:miracleCelebrationView(state)});
+   if(this.refreshShadow)shadowMap.renderList=[...this.buildings.meshes,...(this.actors.shadowMeshes?.()||this.actors.meshes),...this.landscape.meshes.filter(m=>/palm/.test(m.name))].filter(m=>!m.isDisposed()&&m.isEnabled());
+   this.scene.render();
+   this.samples.push(performance.now()-start);this.frameCount++;if(!this.windowStart)this.windowStart=now;if(now-this.windowStart>=2000){this.samples.sort((a,b)=>a-b);this.metrics.textContent=`${Math.round(this.frameCount*1000/(now-this.windowStart))} FPS · CPU p95 ${(this.samples[Math.floor(this.samples.length*.95)]||0).toFixed(1)} мс`;this.metrics.dataset.simTime=state.simTime.toFixed(2);this.metrics.dataset.citizens=state.citizens.length;this.metrics.dataset.buildings=state.buildings.length;this.metrics.dataset.paused=String(paused);this.samples=[];this.frameCount=0;this.windowStart=now;}
+  });
  }
  dispose(){this.disposed=true;this.detailQueue?.dispose();this.detailNote?.remove();this.unbindMap?.();this.observer?.disconnect();for(const [name,fn]of this.inputHandlers||[])this.canvas.removeEventListener(name,fn);this.controls?.remove();this.metrics?.remove();this.reachNote?.remove();this.reach?.dispose();this.buildings?.dispose();this.actors?.dispose();this.landscape?.dispose();this.miracleGarden?.dispose();this.relicScene?.dispose();this.sacredEffects?.dispose();this.houseLights?.dispose();this.skyHorizon?.dispose();this.scene?.dispose();this.engine?.dispose();}
 }

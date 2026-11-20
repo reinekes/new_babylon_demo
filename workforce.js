@@ -77,7 +77,7 @@ import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
 import {advanceTradeLogistics,loadSaleCargo} from './trading.js';
 import {ensureRoads,roadSegment,roadPace,roadTopologyRevision} from './roads.js';
-import {recordFootsteps,residentFootpathPositions} from './footpaths.js';
+import {recordFootsteps,residentFootpathPositions,routingTraffic} from './footpaths.js';
 import {watchOnDuty,watchOnShift,watchPatrolRoute,watchShift} from './watch-house.js';
 import {canDepartForWork,isWorkplaceOpen,residentReturnHour,workHourAt} from './work-schedule.js';
 import {isComplete,materialsReady,finishConstruction,orderedSites,constructionEntities,workRequired} from './construction.js';
@@ -144,12 +144,24 @@ export function networkFor(s,{materializeRoads=true}={}){
  if(materializeRoads&&(cache.roads!==s.roads||cache.roadCount!==s.roads?.length)){ensureRoads(s,cache.network);cache.roads=s.roads;cache.roadCount=s.roads.length;}return cache.network;
 }
 // Internal callers reuse a validated access context within the same city network.
-export function routeBetween(s,from,to,ctx){
- const network=ctx?.network||networkFor(s),cache=caches.get(s),key=`${from}>${to}`;
- if(cache.paths.has(key))return cache.paths.get(key);
+export function routeBetween(s,from,to,ctx,residentId){
+ const network=ctx?.network||networkFor(s),cache=caches.get(s);
+ // Stable cohorts notice lightly worn paths at different thresholds. No random
+ // draw is needed and a loaded resident makes the same choice.
+ const cohort=(residentId||0)%4,snapshot=residentId===undefined||from===to?null:routingTraffic(s);
+ const traffic=snapshot?.maxBand>cohort?snapshot:null;
+ let paths=cache.paths,key=from+'>'+to,backKey=to+'>'+from;
+ if(traffic){
+  if(cache.traffic!==traffic){cache.traffic=traffic;cache.residentPaths=new Map();}
+  paths=cache.residentPaths;key=cohort+':'+key;backKey=cohort+':'+backKey;
+ }
+ if(paths.has(key))return paths.get(key);
  // Canonical direction keeps equal-cost ties independent of earlier route
  // requests: a reloaded city chooses the same paths as the running city.
- const reverse=String(from)>String(to),path=shortestWalkingPath(network,reverse?to:from,reverse?from:to),result=path&&reverse?[...path].reverse():path;cache.paths.set(key,result);cache.paths.set(`${to}>${from}`,result?[...result].reverse():null);return result;
+ const reverse=String(from)>String(to),start=reverse?to:from,end=reverse?from:to;
+ const usual=traffic?routeBetween(s,start,end,ctx):null;
+ const path=shortestWalkingPath(network,start,end,traffic,cohort,usual),result=path&&reverse?[...path].reverse():path;
+ paths.set(key,result);paths.set(backKey,result?[...result].reverse():null);return result;
 }
 function context(s){
  const network=networkFor(s),cache=caches.get(s);
@@ -221,7 +233,7 @@ function startTrip(s,c,targetKey,phase,ctx,via=null){
  const forts=ctx.network.navigation.fortifications;
  const exit=via?null:serviceExit(s,c,ctx);
  const origin=exit?.port||nearestWalkingNode(ctx.network,via||c,forts&&(p=>forts.segmentClear(via||c,p)));
- const route=origin&&routeBetween(s,origin.key,target.key,ctx);
+ const route=origin&&routeBetween(s,origin.key,target.key,ctx,c.id);
  const flooded=ctx.network.navigation.flooded;
  if(!route||forts&&via&&!forts.segmentClear(c,via)||flooded&&(via&&floodedSegment(flooded,c,via)||floodedSegment(flooded,via||c,origin))){c.phase='blocked';c.route=[];c.routeIndex=0;return;}
  const approach=routeThroughCourt(s,c,target.building,target,phase,ctx);
@@ -993,7 +1005,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
     else if(c.tradeJob)startTrip(s,c,c.tradeMarket,'toMarket',ctx);
     else if(c.site)beginSiteTrip(s,c,ctx);
     else startTrip(s,c,c.work,'toWork',ctx);
-   }else if(departed&&beginManualGathering(s,c,ctx,(from,to)=>routeBetween(s,from,to,ctx)))invalidateAssignments(s);
+   }else if(departed&&beginManualGathering(s,c,ctx,(from,to)=>routeBetween(s,from,to,ctx,c.id)))invalidateAssignments(s);
    else return;
   }
  }
@@ -1103,7 +1115,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
     if(onBridge(s.buildings,c.x+(next.x-c.x)*mid,c.y+(next.y-c.y)*mid,s))c.windRoute='bridge';
    }
   }
-  if(!road||road.level===1&&!road.built)recordFootsteps(s,c,next,Math.min(dist,remaining*speed),ctx.network.navigation);
+  recordFootsteps(s,c,next,Math.min(dist,remaining*speed),ctx.network.navigation);
   if(travel<=remaining+1e-8){c.x=next.x;c.y=next.y;c.routeIndex++;remaining-=travel;}
   else{const fraction=remaining/travel;c.x+=(next.x-c.x)*fraction;c.y+=(next.y-c.y)*fraction;return;}
  }

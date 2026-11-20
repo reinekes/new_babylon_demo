@@ -54,3 +54,14 @@ test('frozen building part culling is reused until camera or world matrix change
  part.geometry={};assert.deepEqual(read().data,[part]);assert.equal(tests,4);
  part.isVisible=false;assert.equal(read().length,0);assert.equal(tests,4);
 });
+
+test('a lit window remains eligible at valley scale only while it is in the camera frustum',()=>{
+ const bounds=()=>({boundingSphere:{centerWorld:{x:0,y:0,z:700},radiusWorld:.01}});
+ const lamp=mesh({metadata:{litHomeLamp:true},getBoundingInfo:bounds,isInFrustum:()=>true});
+ const dark=mesh({metadata:{homeLamp:true},getBoundingInfo:bounds,isInFrustum:()=>true});
+ const scene={metadata:{nightWindows:true},meshes:[lamp,dark],frustumPlanes:[{}],activeCamera:{layerMask:1,position:{x:0,y:0,z:0},fov:.8},getEngine:()=>({getRenderHeight:()=>720})};
+ const read=createRenderableMeshCandidates(scene);
+ assert.deepEqual(read().data,[lamp]);
+ scene.metadata.nightWindows=false;assert.deepEqual(read().data,[]);
+ scene.metadata.nightWindows=true;lamp.isInFrustum=()=>false;assert.deepEqual(read().data,[]);
+});

@@ -7,7 +7,7 @@ export function createRenderableMeshCandidates(scene){
  const frozenResults=new WeakMap(),lastTransform=[],lastFrustum=[];
  let frame=0,cameraRevision=0,lastCamera,lastProjection;
  function cameraChanged(camera,transform,planes,height){
-  const projection=[height,camera?.mode,camera?.fovMode,camera?.fov,scene.skipFrustumClipping,Boolean(scene.frustumPlanes)].join('|');
+  const projection=[height,camera?.mode,camera?.fovMode,camera?.fov,scene.skipFrustumClipping,Boolean(scene.frustumPlanes),Boolean(scene.metadata?.nightWindows)].join('|');
   let changed=camera!==lastCamera||projection!==lastProjection||transform.length!==lastTransform.length||planes.length*4!==lastFrustum.length;
   for(let i=0;i<transform.length;i++){
    if(transform[i]!==lastTransform[i])changed=true;
@@ -56,7 +56,7 @@ export function createRenderableMeshCandidates(scene){
    if(!mesh.actionManager&&!mesh.alwaysSelectAsActiveMesh&&!mesh.billboardMode&&halfFovTangent){
     if(!matrixReady)mesh.computeWorldMatrix?.();const sphere=mesh.getBoundingInfo?.()?.boundingSphere;
     if(sphere){const p=sphere.centerWorld,depth=view?Math.abs(p.x*view[2]+p.y*view[6]+p.z*view[10]+view[14]):Math.hypot(p.x-eye.x,p.y-eye.y,p.z-eye.z)*.7,pixels=sphere.radiusWorld*height/(halfFovTangent*Math.max(.01,depth));
-     if(pixels<1)return false;
+     if(pixels<1&&!(scene.metadata?.nightWindows&&mesh.metadata?.litHomeLamp))return false;
     }
    }
   return true;

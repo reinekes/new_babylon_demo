@@ -121,13 +121,50 @@ test('communal residents reach the left bench and the right roof of the rotated 
    const [actor]=seen(s,view,t);
    if(!actor||actor.walking||actor.homeVisit.morning)continue;
    const stage=actor.homeVisit.stage;seats.add(stage);
-   const [x,z,height]=stage==='bench'?[3.21,1.87,.065]:[-4.12,-.12,2.525];
+   const [x,z,height]=stage==='bench'?[3.21,actor.homeVisit.companion===0?1.02:1.87,.065]:[-4.12,-.12,2.525];
    assert.ok(Math.abs(actor.x-(b.x+.5+(x*cos+z*sin)/6))<1e-8);
    assert.ok(Math.abs(actor.y-(b.y+.5+(z*cos-x*sin)/6))<1e-8);
    assert.equal(actor.homeVisit.height,height);
   }
   assert.deepEqual([...seats].sort(),['bench','roof']);
  }
+});
+
+test('a free resident sits at dusk and a late-returning housemate walks in before joining the conversation',()=>{
+ const b={...house,type:'communalHouse',footprint:2},s=city(b),visit=createHomeVisits(),first=s.citizens[0];
+ const late={...first,id:8,phase:'toHome',x:b.x+.5,y:b.y+.5+5.55/6};
+ const ill={...first,id:9,health:44},carrier={...first,id:10,cargo:{food:1}},guard={...first,id:11,guardPost:'4,2'};
+ const infant={...first,id:12,age:1,parents:[13]},parent={...first,id:13};
+ s.citizens.push(late,ill,carrier,guard,infant,parent);
+ let alone=false,entered=false,walkedOut=false,paired=0;
+ for(let clock=183;clock<320;clock+=.2){
+  s.simTime=clock*BASE_TIME_RATE;
+  if(clock>285)late.phase='home';
+  const cast=visit(s,late.phase==='toHome'?[late]:[],'sunny'),courtyard=cast.filter(c=>c.homeVisit);
+  assert.ok(courtyard.every(c=>c.id===first.id||c.id===late.id));
+  const early=courtyard.find(c=>c.id===first.id),arriving=courtyard.find(c=>c.id===late.id);
+  if(workHourAt(s.simTime)<18&&early?.homeVisit.stage==='bench'){
+   alone=true;assert.equal(early.homeVisit.speaking,undefined);
+   const replay=createHomeVisits()(structuredClone(s),[late],'sunny').find(c=>c.id===first.id);
+   assert.deepEqual([replay.x,replay.y,replay.homeVisit],[early.x,early.y,early.homeVisit]);
+  }
+  if(arriving?.homeVisit.stage==='enter')entered=true;
+  if(arriving?.homeVisit.stage==='out'){assert.ok(entered);walkedOut=true;}
+  if(arriving?.homeVisit.stage==='bench'&&early?.homeVisit.stage==='bench'){
+   assert.ok(walkedOut);assert.equal([arriving,early].filter(c=>c.homeVisit.speaking).length,1);paired++;
+  }
+ }
+ assert.ok(alone&&entered&&walkedOut&&paired>15);
+});
+
+test('a separate family funeral leaves the communal bench open for nonparticipants',()=>{
+ const s=city({...house,type:'communalHouse'}),resident=s.citizens[0],mourner={...resident,id:42};
+ s.citizens.push(mourner);s.funeral={scope:'family'};
+ const visible={...mourner,phase:'mourning',funeralContact:{walking:true}},visit=createHomeVisits();
+ s.simTime=235*BASE_TIME_RATE;const cast=visit(s,[visible],'sunny');
+ assert.equal(cast.find(c=>c.id===resident.id)?.homeVisit?.stage,'bench');
+ assert.equal(cast.find(c=>c.id===mourner.id),visible);
+ s.funeral={scope:'city'};assert.deepEqual(visit(s,[visible],'sunny'),[visible]);
 });
 
 test('two housemates speak in turn from different places on the communal bench, another reaches the roof and walks down in rain',()=>{

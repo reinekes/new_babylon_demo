@@ -1,7 +1,7 @@
-import {footpathRibbonPoint,footpathRibbonTangent} from '../footpaths.js';
-import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
+import {streetCrossSections,streetEndFade} from '../street-surfaces.js';
+import {obstacleIndex} from '../navigation.js';
 import {createAlluvialWaterMaterial} from './alluvial-water.js';
-import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain,isDryPoint,onBridge} from '../world.js';
+import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
 import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
@@ -59,52 +59,13 @@ export function submergedPebbles(s){
  return result;
 }
 
-function dryClearance(s,a,b,index){
- return isDryPoint(s,a.x,a.y)&&isDryPoint(s,b.x,b.y)&&navigationSegmentClear(s,a,b,index);
-}
-function safeFraction(clear){
- if(clear(1))return 1;
- let lo=0,hi=1;
- for(let i=0;i<7;i++){const mid=(lo+hi)/2;if(clear(mid))lo=mid;else hi=mid;}
- return lo;
-}
-function shoulderPoint(row,side,t){
- const d=row.reach*side*t;
- return {x:row.p.x+row.nx*d,y:row.p.y+row.nz*d};
-}
-
 export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null,obstacles=obstacleIndex(s.buildings||[]),progress=1){
  const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter*progress)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
  const g={positions:[],indices:[],uvs:[],colors:[],centers:[],widths:[],origin};
- const rows=[];
- if(!len||progress<=0||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return g;
- for(let j=0;j<=steps;j++){
-  const t=j/steps*progress,p=footpathRibbonPoint(a,b,control,t);
-  const {x:vx,y:vz}=footpathRibbonTangent(a,b,control,t);
-  const tangent=Math.hypot(vx,vz)||1,nx=-vz/tangent,nz=vx/tangent;
-  const x=p.x*TILE,z=p.y*TILE;
-  g.centers.push({x,y:z});
-  const half=width*.5*(.98+.035*Math.sin(x*.7+z*.34)+.022*Math.sin(x*1.03-z*.58)),reach=half*1.045/TILE;
-  const row={t,p,x,z,nx,nz,half,reach,trimLeft:1,trimRight:1};
-  for(const side of [-1,1]){
-   const key=side<0?'left':'right';
-   row[key]=safeFraction(k=>dryClearance(s,p,shoulderPoint(row,side,k),obstacles));
-  }
-  rows.push(row);
- }
- // The outer edge between two legal samples can still nick a courtyard corner.
- // Limit the whole span, sharing the most restrictive width at each junction.
- for(let j=1;j<=steps;j++){
-  const a=rows[j-1],b=rows[j];
-  for(const side of [-1,1]){
-   const key=side<0?'left':'right';
-   const scale=safeFraction(k=>dryClearance(s,shoulderPoint(a,side,a[key]*k),shoulderPoint(b,side,b[key]*k),obstacles));
-   const trim=side<0?'trimLeft':'trimRight';
-   a[trim]=Math.min(a[trim],scale);b[trim]=Math.min(b[trim],scale);
-  }
- }
- for(let j=0;j<=steps;j++){
+ const rows=streetCrossSections(s,a,b,width,control,obstacles,steps,progress);
+ for(let j=0;j<rows.length;j++){
   const row=rows[j],{t,x,z,nx,nz,half}=row;
+  g.centers.push({x,y:z});
   const left=row.left*row.trimLeft,right=row.right*row.trimRight;
   g.widths.push(half*(left+right));
   for(let k=0;k<fractions.length;k++){
@@ -118,8 +79,9 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
    g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown,Z-origin.z);g.uvs.push(X/3,Z/3);
    const margin=Math.abs(side),alpha=margin===1?0:margin>.8?.32:.84+.12*noise(X,Z);
    const wear=level===1 ? .14*Math.exp(-side*side*5)-.12*Math.exp(-((margin-.48)**2)/.015) : 0;
-   const v=.88+wear+.09*noise(X*2,Z*2);
-   g.colors.push(v*1.025,v,v*.955,alpha);
+   const compaction=typeof width==='number'?0:width.traffic;
+   const v=.88+wear+.09*noise(X*2,Z*2)+compaction*.07*(1-margin);
+   g.colors.push(v*1.025,v,v*.955,alpha*streetEndFade(width,t));
    if(j<steps&&k<fractions.length-1){const i=j*fractions.length+k;g.indices.push(i,i+fractions.length,i+1,i+1,i+fractions.length,i+fractions.length+1);}
   }
  }

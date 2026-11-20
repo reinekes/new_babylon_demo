@@ -464,3 +464,24 @@ test('the communal courtyard preserves its gate, bench and stairs at all four ro
   assert.ok(ghost.meshes.some(m=>m.material.name.includes('mud plaster')));
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;t.dispose();}
 });
+
+test('occupied doorways share one night light footprint which follows rotation, eviction and demolition',async()=>{
+ const t=await setup();
+ try{
+  const a=house(1,3,4,'a'),b=house(2,7,3,'b'),empty=house(1,4,5,'empty');
+  const state={buildings:[a,b,empty],citizens:[{home:'a'},{home:'a'},{home:'b'}]};
+  const sync=night=>{t.layer.sync(state);t.layer.light(night);};
+  sync(0);
+  assert.equal(t.scene.getMeshByName('occupied-courtyard-light'),null);
+  sync(1);
+  const pool=t.scene.getMeshByName('occupied-courtyard-light');
+  assert.ok(pool.isEnabled());assert.equal(pool.thinInstanceCount,2);
+  const matrix=()=>Array.from(pool.thinInstanceGetWorldMatrices()[0].asArray());
+  const oldMatrix=matrix();a.rotation=1;sync(1);assert.notDeepEqual(matrix(),oldMatrix);
+  const turned=matrix();sync(.45);assert.deepEqual(matrix(),turned);assert.ok(pool.material.alpha<.45);
+  state.citizens=state.citizens.filter(c=>c.home!=='a');sync(1);assert.equal(pool.thinInstanceCount,1);
+  state.buildings=[a,empty];sync(1);assert.equal(pool.isEnabled(),false);
+  state.citizens=[{home:'a'}];sync(1);assert.ok(pool.isEnabled());assert.deepEqual(matrix(),turned);
+  sync(0);assert.equal(pool.isEnabled(),false);t.layer.dispose();assert.ok(pool.isDisposed());
+ }finally{t.dispose();}
+});

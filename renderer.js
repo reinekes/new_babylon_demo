@@ -17,7 +17,9 @@ import {miracleCelebrationView} from './miracle-celebration.js';
 import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint,occupiesCell} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
-import {footpathRibbonPoint,streetCurveLookup,visibleFootpaths} from './footpaths.js';
+import {footpathRibbonPoint} from './footpaths.js';
+import {streetSurfaceLayout,streetCrossSections} from './street-surfaces.js';
+import {obstacleIndex} from './navigation.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
 import {ceremonyJoinStep} from './festival-layout.js';
@@ -309,27 +311,52 @@ export class Renderer{
   const c=this.ctx;c.save();c.lineCap='round';c.lineJoin='round';
   const state=this.state,roads=state.roads||[];
   const finished=new Set(roads.filter(r=>r.construction||roadIsBuilt(r)).map(r=>r.id));
-  const lookup=streetCurveLookup(state),controls=new Map();
-  const points=(r,control=controls.get(r))=>control?[0,.25,.5,.75,1].map(t=>{
-   const p=footpathRibbonPoint(r.a,r.b,control,t);return this.point(p.x,p.y);
-  }):[this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)];
-  for(const path of visibleFootpaths(state,finished)){
-   if(!this.inView((path.a.x+path.b.x)/2,(path.a.y+path.b.y)/2,50))continue;
-   const opacity=.11+path.level*.06,curve=points(path,path.control);
-   this.line(curve,`rgba(95,73,47,${opacity*.38})`,(2.6+path.level*.65)*this.s);
-   this.line(curve,`rgba(118,90,56,${opacity})`,(1.6+path.level*.4)*this.s);
+  const bucket=Math.floor((state.simTime||0)/2),paved=roads.filter(r=>finished.has(r.id));
+  const pavedKey=paved.map(r=>r.id+'/'+r.level).join('|');
+  let cache=this.streetPaint;
+  if(!cache||cache.state!==state||cache.city!==this.citySignature){
+   cache=this.streetPaint={state,city:this.citySignature,obstacles:obstacleIndex(state.buildings||[]),shapes:new Map()};
+  }
+  if(cache.bucket!==bucket||cache.pavedKey!==pavedKey){
+   const shapes=new Map();
+   for(const profile of streetSurfaceLayout(state,paved).values()){
+    const previous=cache.shapes.get(profile.id);
+    if(previous&&previous.profile.control===profile.control&&previous.profile.start===profile.start&&previous.profile.end===profile.end&&previous.profile.width===profile.width&&previous.profile.startTip===profile.startTip&&previous.profile.endTip===profile.endTip&&previous.profile.built===profile.built){shapes.set(profile.id,previous);continue;}
+    const rows=streetCrossSections(state,profile.a,profile.b,profile,profile.control,cache.obstacles,8);
+    shapes.set(profile.id,{profile,rows});
+   }
+   Object.assign(cache,{bucket,pavedKey,shapes});
+  }
+  const points=r=>{
+   const control=cache.shapes.get(r.id)?.profile.control;
+   return control?[0,.25,.5,.75,1].map(t=>{const p=footpathRibbonPoint(r.a,r.b,control,t);return this.point(p.x,p.y);}):[this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)];
+  };
+  const fill=(shape,scale,color)=>{
+   if(!shape?.rows.length)return;
+   const left=[],right=[];
+   for(const r of shape.rows){
+    const half=r.reach/1.045*scale,lo=-half*r.left*r.trimLeft,hi=half*r.right*r.trimRight;
+    left.push(this.point(r.p.x+r.nx*lo,r.p.y+r.nz*lo));right.push(this.point(r.p.x+r.nx*hi,r.p.y+r.nz*hi));
+   }
+   this.polygon(left.concat(right.reverse()),color);
+  };
+  for(const shape of cache.shapes.values()){
+   const p=shape.profile;
+   if(p.built||!this.inView((p.a.x+p.b.x)/2,(p.a.y+p.b.y)/2,50))continue;
+   const opacity=.21+p.traffic*.52;
+   fill(shape,1,`rgba(104,80,51,${opacity*.48})`);fill(shape,.74,`rgba(144,111,74,${opacity})`);
   }
   const showNetwork=this.roadMode&&!this.photoMode,hovered=showNetwork?this.roadNear(this.hover||{})?.id:null;
   const visibleRoads=roads.filter(r=>(finished.has(r.id)||showNetwork||this.routeRoads?.has(r.id)||this.selectedRoad===r.id||this.selectedRoad?.id===r.id)&&this.inView(r.x,r.y,55));
   const built=visibleRoads.filter(r=>finished.has(r.id));
-  for(const r of built)controls.set(r,lookup(r.a,r.b,r.id));
-  for(const [color,width]of [['#af9c73',7.6],['#dbc79c',5.4]])for(const r of built)this.line(points(r),color,width*this.s);
+  for(const [color,scale] of [['#af9c73',1],['#dbc79c',.76]])for(const r of built)fill(cache.shapes.get(r.id),scale,color);
   for(const road of visibleRoads){
    const {a,b,level}=road,path=points(road);
    if(finished.has(road.id)){
-    this.line(path,level===3?'#ad7956':level===2?'#b5af94':'#ead9b4',(level>1?4:1.2)*this.s);
-    if(level===3)for(let k=1;k<5;k++){const q=footpathRibbonPoint(a,b,controls.get(road),k/5),p=this.point(q.x,q.y);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}
-    if(road.construction){const q=footpathRibbonPoint(a,b,controls.get(road),.5),p=this.point(q.x,q.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}
+    const shape=cache.shapes.get(road.id);
+    fill(shape,level>1?.57:.23,level===3?'#ad7956':level===2?'#b5af94':'#e4d1a8');
+    if(level===3)for(let k=1;k<5;k++){const q=footpathRibbonPoint(a,b,shape?.profile.control,k/5),p=this.point(q.x,q.y);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}
+    if(road.construction){const q=footpathRibbonPoint(a,b,shape?.profile.control,.5),p=this.point(q.x,q.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}
    }else if(showNetwork)this.line(path,'rgba(238,211,143,.55)',1.1*this.s);
    if(!this.photoMode&&(this.routeRoads?.has(road.id)||this.selectedRoad===road.id||this.selectedRoad?.id===road.id||hovered===road.id))this.line(path,'#fff0ae',2*this.s);
   }

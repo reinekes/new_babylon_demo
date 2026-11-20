@@ -19,7 +19,8 @@ import {vegetationFor, weatherAt} from '../environment.js';
 import {irrigationFor, CARDINAL} from '../irrigation.js';
 import {constructionProgress} from '../construction.js';
 import {roadIsBuilt,roadKey} from '../roads.js';
-import {streetCurveLookup,footpathRibbonPoint,visibleFootpaths} from '../footpaths.js';
+import {footpathRibbonPoint} from '../footpaths.js';
+import {streetSurfaceLayout} from '../street-surfaces.js';
 import {obstacleIndex} from '../navigation.js';
 import {generateStreets} from '../city-life.js';
 import {cachedStreetsFor} from '../workforce.js';
@@ -125,7 +126,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  let currentState=initialState,roadObstacles;
  const registeredMeshes=new WeakSet();
  const meshes=[],ownedMaterials=[],palmSources=[],palmInstances=[],resourceMeshes=[],resourceSources=[],selectionMeshes=[],workFeatureMeshes=[],workFeatureRoots=[],workFeatures=new Map(),roadBatches=new Map(),trailMeshes=[];
- let finishedRoadIds=new Set(),trailSignature='',trailGeometry=new Map(),trailState=null,trailBucket=-1,siltSurface=null;
+ let pavedRoads=[],roadWorldKey='',roadWorldRevision=0,trailSignature='',trailGeometry=new Map(),trailState=null,trailBucket=-1,siltSurface=null;
  let base=null,staticMeshes=[],stockMeshes=[],signature='',terrainSignature='',terrainRoadSignature='',stockSignature='',disposed=false,palmsSignature='',streetNetwork=null,resourceSignature='',selectionSignature='',staticScenerySignature='',natureGeometrySignature='';
  const roadRenderGroups=createRoadRenderGroups(B,scene,meshes);let batchRoads=options.batchRoads!==false;
  const palmRenderGroups=createPalmRenderGroups(B,scene,meshes);let batchPalms=options.batchPalms!==false;
@@ -147,13 +148,13 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  bank.albedoColor=color(1,.91,.76);wetMud.albedoColor=color(.42,.37,.28);
  earth.albedoColor=color(1.05,1,.88);earth.albedoTexture=materials.soil?.albedoTexture||null;earth.bumpTexture=materials.soil?.bumpTexture||null;
  // Actual roads and complex junctions retain their generated ribbon/union.
- // One tiling earth pair covers paths and canal banks at world-space scale.
+ // Dirt lanes keep the fine silt of the floodplain. Worked surfaces use coarser aggregate.
  const groundMaps=workshopSurfaces(B,scene).textures('earth');
- if(groundMaps.color)for(const mat of [earth,gravel,paving,trail,bank,wetMud]){
+ if(groundMaps.color)for(const mat of [gravel,paving,bank,wetMud]){
   mat.albedoTexture=groundMaps.color;mat.bumpTexture=groundMaps.normal;
  }
- earth.albedoColor=B.Color3.FromHexString('#ac9475').toLinearSpace();
- trail.albedoColor=B.Color3.FromHexString('#97836c').toLinearSpace();
+ earth.albedoColor=B.Color3.FromHexString('#cbb390').toLinearSpace();
+ trail.albedoColor=B.Color3.FromHexString('#aa9275').toLinearSpace();
  bank.albedoColor=B.Color3.FromHexString('#b69e80').toLinearSpace();
  wetMud.albedoColor=B.Color3.FromHexString('#81735e').toLinearSpace();
  for(const mat of [earth,gravel,paving,trail]){mat.transparencyMode=B.Material.MATERIAL_ALPHABLEND;mat.forceDepthWrite=false;}
@@ -291,22 +292,45 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   }
   if(groundChanged)stitchTerrainRim(B,base.meshes,s);
  }
+ function updatePavedSurfaces(s,surfaces){
+  const seen=new Set();let changed=false;
+  for(const r of pavedRoads){
+   const profile=surfaces.get(r.id);if(!profile)continue;
+   seen.add(r.id);
+   const key=[roadWorldRevision,r.a.x,r.a.y,r.b.x,r.b.y,r.level,r.target,r.progress,profile.start,profile.width,profile.end,profile.startTip,profile.endTip].join('|');
+   const previous=roadBatches.get(r.id);
+   if(previous?.key===key)continue;
+   changed=true;if(previous)remove(previous.meshes);
+   const batch=[],record={key,meshes:batch,road:{id:r.id,a:r.a,b:r.b,working:!!r.target}};
+   roadBatches.set(r.id,record);
+   const control=profile.control,mat=r.level>=3?paving:r.level===2?gravel:earth;
+   record.road.mesh=road(`road-${r.id}-level-${r.level}`,s,r.a,r.b,profile,.038,mat,r.level,batch,control);
+   if(r.target){
+    const inset={...profile,start:profile.start*.74,width:profile.width*.74,end:profile.end*.74};
+    road(`road-upgrade-${r.id}`,s,r.a,r.b,inset,.063,r.target===3?paving:gravel,r.target,batch,control,r.progress);
+    for(const t of [.1,.9]){const p=footpathRibbonPoint(r.a,r.b,control,t);box('road-work-materials',p.x*TILE,.21,p.y*TILE+.9,.45,.35,.5,work,batch);}
+   }
+  }
+  for(const [id,batch] of roadBatches)if(!seen.has(id)){remove(batch.meshes);roadBatches.delete(id);changed=true;}
+  if(changed){catGroundHeights.clear();updateRoadGroups();}
+ }
  function updateTrails(s){
   const bucket=Math.floor((s.simTime||0)/2);
   if(trailState===s&&trailBucket===bucket)return;
   if(trailState!==s)trailSignature='';
   trailState=s;trailBucket=bucket;
-  const paths=visibleFootpaths(s,finishedRoadIds);
-  const keys=paths.map(r=>`${r.id}:${r.level}`),key=keys.join(';');
+  const surfaces=streetSurfaceLayout(s,pavedRoads);updatePavedSurfaces(s,surfaces);
+  const paths=[...surfaces.values()].filter(r=>!r.built);
+  const keys=paths.map(r=>`${r.id}:${r.start}/${r.width}/${r.end}/${+!!r.startTip}${+!!r.endTip}`),key=keys.join(';');
   if(key===trailSignature&&(paths.length||!trailMeshes.length)&&paths.every((r,i)=>trailGeometry.get(keys[i])?.control===r.control))return;
   trailSignature=key;remove(trailMeshes);
   const geometry={positions:[],indices:[],colors:[],uvs:[]},previous=trailGeometry;
   trailGeometry=new Map();
   for(const [i,r] of paths.entries()){
    const prior=previous.get(keys[i]);
-   const g=prior&&prior.control===r.control?prior.geometry:wornRoadGeometry(s,r.a,r.b,.35+r.level*.105,.029,1,.85,r.control,roadObstacles);
+   const g=prior&&prior.control===r.control?prior.geometry:wornRoadGeometry(s,r.a,r.b,r,.029,1,.85,r.control,roadObstacles);
    trailGeometry.set(keys[i],{control:r.control,geometry:g});
-   const first=geometry.positions.length/3,opacity=.16+r.level*.105;
+   const first=geometry.positions.length/3,opacity=.30+r.traffic*.67;
    for(let i=0;i<g.positions.length;i+=3)geometry.positions.push(g.positions[i]+g.origin.x,g.positions[i+1],g.positions[i+2]+g.origin.z);
    for(let i=0;i<g.colors.length;i+=4)geometry.colors.push(g.colors[i],g.colors[i+1],g.colors[i+2],g.colors[i+3]*opacity);
    for(const i of g.indices)geometry.indices.push(first+i);
@@ -317,21 +341,12 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  }
  function rebuildGeometry(s,plan){catGroundHeights.clear();
   roadObstacles=obstacleIndex(s.buildings||[]);trailGeometry.clear();
-  finishedRoadIds=new Set(plan.roads.filter(r=>r.built||r.target).map(r=>r.id));trailState=null;trailSignature='';stockSignature='';remove(trailMeshes);
-  const worldKey=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1,b.type==='cityGate'?b.rotation||0:0,b.type==='cityGate'||b.type==='bridge'?b.construction?.kind:null])]),seenRoads=new Set();
+  pavedRoads=plan.roads.filter(r=>(r.built||r.target)&&shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)>=.08);trailState=null;trailSignature='';stockSignature='';remove(trailMeshes);
+  const worldKey=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1,b.type==='cityGate'?b.rotation||0:0,b.type==='cityGate'||b.type==='bridge'?b.construction?.kind:null])]);
+  if(roadWorldKey!==worldKey){roadWorldKey=worldKey;roadWorldRevision++;}
   // Natural placement follows occupied footprints and path endpoints, not work
   // counters, paving level or resource quantities. Weather still advances below.
   natureGeometrySignature=JSON.stringify([worldKey,s.buildings.map(b=>[b.type,b.footprint||1]),depositGeometry(s),plan.roads.map(r=>[r.a,r.b])]);
-  const lookupCurve=streetCurveLookup(s);
-  for(const r of plan.roads){if(!finishedRoadIds.has(r.id)||shoreDistance((r.a.x+r.b.x)/2,(r.a.y+r.b.y)/2,s)<.08)continue;const mat=r.level>=3?paving:r.level===2?gravel:earth;
-   seenRoads.add(r.id);const key=JSON.stringify([worldKey,r.a,r.b,r.level,r.target,r.progress]),previous=roadBatches.get(r.id);if(previous?.key===key)continue;if(previous)remove(previous.meshes);
-   const batch=[],record={key,meshes:batch,road:{id:r.id,a:r.a,b:r.b,working:!!r.target}};roadBatches.set(r.id,record);
-   const control=lookupCurve(r.a,r.b,r.id);
-   record.road.mesh=road(`road-${r.id}-level-${r.level}`,s,r.a,r.b,1.22,.038,mat,r.level,batch,control);
-   if(r.target){road(`road-upgrade-${r.id}`,s,r.a,r.b,.89,.063,r.target===3?paving:gravel,r.target,batch,control,r.progress);for(const t of [.1,.9]){const p=footpathRibbonPoint(r.a,r.b,control,t);box('road-work-materials',p.x*TILE,.21,p.y*TILE+.9,.45,.35,.5,work,batch);}}
-  }
-  for(const [id,batch]of roadBatches)if(!seenRoads.has(id)){remove(batch.meshes);roadBatches.delete(id);}
-  updateRoadGroups();
   const channels=canalNetworkGeometry(s,plan.canals),arms=channels.arms;
   // Road work changes paving only. Static scenery uses footprints/endpoints,
   // while canal progress remains part of its exact geometry dependency key.

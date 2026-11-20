@@ -39,15 +39,45 @@ function dryRelief(x,y,s,d){
   const mound=smooth((Math.sin(x*.16+y*.23+phase*.8)*Math.cos(x*.22-y*.16)-.1)/.90);
   return (ridge*(.72+1.68*swell)+mound*.67)*smooth((d-3.4)/5.5);
 }
-function occupiedReliefWeight(x,y,s){
-  let weight=1;
-  for(const b of s?.buildings||[]){
-    const size=footprintSize(b),qx=Math.max(b.x-.5-x,x-(b.x+size-.5),0),qy=Math.max(b.y-.5-y,y-(b.y+size-.5),0);
-    if(qx>=1.6||qy>=1.6)continue;
-    weight=Math.min(weight,smooth(Math.hypot(qx,qy)/1.6));
-    if(weight===0)return 0;
+// The settlement stays fixed during a synchronous draw. Only plots within
+// 1.6 tiles can flatten a height sample; keep the original order in each bin.
+const reliefIndexes=new WeakMap(),emptyPlots=[],reliefCellSize=4,reliefMargin=1.6;
+let activeRelief=null;
+function indexReliefPlots(s){
+ const buildings=s.buildings||emptyPlots;
+ let index=reliefIndexes.get(s);
+ if(index&&index.plots.length===buildings.length&&buildings.every((b,i)=>{
+  const p=index.plots[i];return p.x===b.x&&p.y===b.y&&p.type===b.type&&p.footprint===b.footprint;
+ }))return index;
+ const plots=[],cells=new Map();
+ for(const b of buildings){
+  const size=footprintSize(b),p={x:b.x,y:b.y,size,type:b.type,footprint:b.footprint};plots.push(p);
+  const minX=Math.floor((b.x-.5-reliefMargin)/reliefCellSize),maxX=Math.floor((b.x+size-.5+reliefMargin)/reliefCellSize);
+  const minY=Math.floor((b.y-.5-reliefMargin)/reliefCellSize),maxY=Math.floor((b.y+size-.5+reliefMargin)/reliefCellSize);
+  for(let y=minY;y<=maxY;y++){
+   let row=cells.get(y);if(!row)cells.set(y,row=new Map());
+   for(let x=minX;x<=maxX;x++){let bin=row.get(x);if(!bin)row.set(x,bin=[]);bin.push(p);}
   }
-  return weight;
+ }
+ index={state:s,plots,cells};reliefIndexes.set(s,index);return index;
+}
+export function withTerrainElevationIndex(s,draw){
+ const previous=activeRelief;
+ activeRelief=indexReliefPlots(s);
+ try{return draw();}finally{activeRelief=previous;}
+}
+function occupiedReliefWeight(x,y,s){
+ // Lake-bed samplers omit lakes on a shallow state copy but share the plots.
+ const indexed=activeRelief!==null&&activeRelief.state.buildings===s?.buildings;
+ const plots=indexed?activeRelief.cells.get(Math.floor(y/reliefCellSize))?.get(Math.floor(x/reliefCellSize))||emptyPlots:s?.buildings||emptyPlots;
+ let weight=1;
+ for(const b of plots){
+  const size=indexed?b.size:footprintSize(b),qx=Math.max(b.x-.5-x,x-(b.x+size-.5),0),qy=Math.max(b.y-.5-y,y-(b.y+size-.5),0);
+  if(qx>=reliefMargin||qy>=reliefMargin)continue;
+  weight=Math.min(weight,smooth(Math.hypot(qx,qy)/reliefMargin));
+  if(weight===0)return 0;
+ }
+ return weight;
 }
 function surfaceElevationFromShore(x,y,s,d){
   if(d<.22)return -.88+.88*smooth((d+.35)/.57);

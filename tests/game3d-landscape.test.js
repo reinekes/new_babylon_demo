@@ -444,7 +444,19 @@ test('resident wear has one fading 3D ground batch and automatic edges have no s
   assert.ok(finished);
   s.simTime+=400;view.update(s,s.simTime);
   assert.ok(!view.meshes.some(m=>m.name==='resident-footpaths'));
-  assert.ok(view.meshes.includes(finished));
+  // The former junction becomes a softly ended lane when its branch fades.
+  const quietLane=view.meshes.find(m=>m.name===finished.name);assert.ok(quietLane);
+  const {a:from,b:to}=quietLane.metadata.road;
+  const middleWidth=m=>{
+   const v=m.getVerticesData(B.VertexBuffer.PositionKind),i=Math.floor(v.length/21/2)*21;
+   return Math.hypot(v[i]-v[i+18],v[i+2]-v[i+20]);
+  };
+  const quiet=middleWidth(quietLane);
+  for(let i=0;i<32;i++)recordFootsteps(s,from,to,Math.hypot(from.x-to.x,from.y-to.y));
+  s.simTime+=2;view.update(s,s.simTime);
+  const busy=view.meshes.find(m=>m.name===finished.name);
+  assert.ok(busy&&busy!==quietLane&&middleWidth(busy)>quiet*2.5);
+  view.update(s,s.simTime);assert.ok(view.meshes.includes(busy));
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
 });
 

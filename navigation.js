@@ -111,13 +111,39 @@ class MinHeap{
  before(a,b){return a.priority<b.priority-EPS||Math.abs(a.priority-b.priority)<EPS&&a.order<b.order;}
  pop(){const a=this.items,first=a[0],tail=a.pop();if(a.length){let i=0;while(i*2+1<a.length){let next=i*2+1;if(next+1<a.length&&this.before(a[next+1],a[next]))next++;if(!this.before(a[next],tail))break;a[i]=a[next];i=next;}a[i]=tail;}return first;}
 }
-export function shortestWalkingPath(network,from,to){
- if(!from||!to||!network.nodes.has(from)||!network.nodes.has(to)||network.components.get(from)!==network.components.get(to))return null;
- const goal=network.nodes.get(to),heuristic=key=>{const p=network.nodes.get(key);return Math.hypot(goal.x-p.x,goal.y-p.y)/(network.navigation?.maxSpeed||1);},open=new MinHeap(),costs=new Map([[from,0]]),previous=new Map([[from,null]]);open.push(from,heuristic(from),0);
+const trafficCostFactor=(band,cohort)=>band>cohort?1-band*.0225:1;
+function costToBeat(network,route,traffic,cohort){
+ let total=0,canImprove=false;
+ for(let i=1;i<route.length;i++){
+  const a=route[i-1],b=route[i],edge=pairKey(a.key||pointKey(a.x,a.y),b.key||pointKey(b.x,b.y));
+  const base=network.navigation?.costs.get(edge)??Math.hypot(b.x-a.x,b.y-a.y);
+  const band=traffic.bands.get(edge)||0;
+  canImprove||=band<traffic.maxBand;
+  total+=base*trafficCostFactor(band,cohort);
+ }
+ // The ordinary route already minimizes physical travel time. If all its
+ // edges also have the largest discount, no alternative can beat it.
+ return canImprove?total:0;
+}
+export function shortestWalkingPath(network,from,to,traffic=null,cohort=0,usual=null){
+ if(!from||!to||!network.nodes.has(from)||!network.nodes.has(to)||network.components?.get(from)!==network.components?.get(to))return null;
+ // Even the busiest track reduces perceived travel cost by at most 18%.
+ // Keep the A* lower bound admissible when traffic can lower an edge cost.
+ const minimumFactor=trafficCostFactor(traffic?.maxBand||0,cohort);
+ const limit=usual&&traffic?costToBeat(network,usual,traffic,cohort):Infinity;
+ if(!limit)return usual;
+ const goal=network.nodes.get(to),heuristic=key=>{const p=network.nodes.get(key);return Math.hypot(goal.x-p.x,goal.y-p.y)*minimumFactor/(network.navigation?.maxSpeed||1);},open=new MinHeap(),costs=new Map([[from,0]]),previous=new Map([[from,null]]);open.push(from,heuristic(from),0);
  while(open.items.length){const current=open.pop();if(current.cost>(costs.get(current.key)??Infinity)+EPS)continue;
-  if(current.key===to){const path=[];for(let key=to;key!==null;key=previous.get(key))path.push(network.nodes.get(key));return path.reverse();}
-  for(const next of network.graph.get(current.key)||[]){const a=network.nodes.get(current.key),b=network.nodes.get(next),cost=current.cost+(network.navigation?.costs.get(pairKey(current.key,next))??Math.hypot(b.x-a.x,b.y-a.y));if(cost>=(costs.get(next)??Infinity)-EPS)continue;costs.set(next,cost);previous.set(next,current.key);open.push(next,cost+heuristic(next),cost);}
- }return null;
+  if(current.key===to){
+   const path=[];for(let key=to;key!==null;key=previous.get(key))path.push(network.nodes.get(key));return path.reverse();
+  }
+  for(const next of network.graph.get(current.key)||[]){const a=network.nodes.get(current.key),b=network.nodes.get(next),edge=pairKey(current.key,next);
+   const band=traffic?.bands.get(edge)||0,factor=trafficCostFactor(band,cohort);
+   const cost=current.cost+(network.navigation?.costs.get(edge)??Math.hypot(b.x-a.x,b.y-a.y))*factor;if(cost>=(costs.get(next)??Infinity)-EPS)continue;
+   // A*'s lower bound can rule out a branch before allocating a queue entry.
+   const priority=cost+heuristic(next);if(priority>=limit-EPS)continue;
+   costs.set(next,cost);previous.set(next,current.key);open.push(next,priority,cost);}
+ }return usual;
 }
 export function nearestWalkingNode(network,p,accept=null){
  let best=null,distance=Infinity;

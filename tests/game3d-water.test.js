@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {bridgeSpan,river} from '../world.js';
 import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
-import {streetCurveLookup,footpathRibbonPoint} from '../footpaths.js';
+import {footpathId,recordFootsteps,streetCurveLookup,footpathRibbonPoint} from '../footpaths.js';
+import {streetSurfaceLayout,streetWidthAt} from '../street-surfaces.js';
 import {waterDepth,waterSurfaceGeometry,canalArm, wornRoadGeometry,submergedPebbles,canalSection} from '../game3d/water.js';
 
 const state={buildings:[],world:{lakes:[{cells:[{x:26,y:7},{x:27,y:7}]}]}};
@@ -46,13 +47,34 @@ test('curved paving keeps both verges joined, and upgrades cover the same centre
  assert.ok(Math.hypot(stop.x*6-partial.centers.at(-1).x,stop.y*6-partial.centers.at(-1).y)<1e-8);
 });
 
+test('repeated walks widen both surfaces, taper into quieter blocks and preserve narrow side streets',()=>{
+ const s={buildings:[],world:{lakes:[]},simTime:0};
+ const a={x:1.5,y:2.5},b={x:2.5,y:2.5},c={x:3.5,y:2.5},branch={x:2.5,y:3.5},d={x:4.5,y:2.5};
+ const road=(a,b)=>({id:footpathId(a,b),a,b,level:1,built:true});
+ const paved=[road(a,b),road(b,branch)];
+ for(const [from,to,passes] of [[a,b,32],[c,b,2],[b,branch,2],[c,d,32]]){
+  for(let i=0;i<passes;i++)recordFootsteps(s,from,to,1);
+ }
+ const layouts=streetSurfaceLayout(s,paved),main=layouts.get(footpathId(a,b)),side=layouts.get(footpathId(b,branch)),quiet=layouts.get(footpathId(b,c)),busy=layouts.get(footpathId(c,d));
+ assert.ok(main.width>2.5*side.width&&busy.width>5*quiet.width);
+ assert.equal(main.end,quiet.start);assert.equal(quiet.end,busy.start);
+ assert.equal(side.start,side.width);assert.equal(streetWidthAt(main,.5),main.width);
+ assert.ok(streetWidthAt(main,.85)>main.end&&streetWidthAt(main,.85)<main.width);
+ const shape=p=>wornRoadGeometry(s,p.a,p.b,p,.04,1,2,p.control);
+ const first=shape(main),next=shape(quiet);
+ for(let i=0;i<7;i++){
+  const j=first.positions.length-21+i*3,k=i*3;
+  assert.ok(Math.hypot(first.positions[j]+first.origin.x-next.positions[k]-next.origin.x,first.positions[j+2]+first.origin.z-next.positions[k+2]-next.origin.z)<1e-7);
+ }
+});
+
 test('shoulders narrow at buildings and lakes, and bridge decks keep their own surface',()=>{
  const a={x:1.5,y:2.46},b={x:2.5,y:2.46};
  for(const s of [
   {buildings:[{type:'house',x:2,y:3}],world:{lakes:[]}},
   {buildings:[],world:{lakes:[{cells:[{x:2,y:3}]}]}},
  ]){
-  const index=obstacleIndex(s.buildings),g=wornRoadGeometry(s,a,b,1.22,.04,1,.85,null,index);
+  const index=obstacleIndex(s.buildings),g=wornRoadGeometry(s,a,b,3.42,.04,1,.85,null,index);
   assert.ok(g.indices.length);
   const point=i=>({x:(g.positions[i*3]+g.origin.x)/6,y:(g.positions[i*3+2]+g.origin.z)/6});
   for(let i=0;i<g.indices.length;i+=3)for(let j=0;j<3;j++){

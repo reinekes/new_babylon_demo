@@ -1,0 +1,72 @@
+{
+  "fixture": "Обычное сохранение поселения, 12 жителей. На контрольных отрезках через recordFootsteps записаны полные проходы без изменения кода отрисовки.",
+  "recordedPasses": {
+    "busyBuilt": 32,
+    "quietBuilt": 2,
+    "busyFootpath": 32,
+    "quietFootpath": 3
+  },
+  "webgl": {
+    "roads": [
+      {
+        "id": "road-road:10,11|9,11-level-1",
+        "meters": 3.16
+      },
+      {
+        "id": "road-road:10,11|11,11-level-1",
+        "meters": 3.216
+      },
+      {
+        "id": "road-road:11,11|12,11-level-1",
+        "meters": 2.929
+      },
+      {
+        "id": "road-road:12,11|13,11-level-1",
+        "meters": 3.246
+      },
+      {
+        "id": "road-road:11,10|11,11-level-1",
+        "meters": 1.166
+      }
+    ],
+    "busyTrail": 3.015,
+    "quietTrail": 0.643,
+    "glError": 0,
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "method": "Расстояние между внешними вершинами поперёк середины ленты после загрузки в обычном index.html.",
+    "errors": {
+      "js": [],
+      "http": [],
+      "console": []
+    }
+  },
+  "canvas": {
+    "renderer": "2d",
+    "roads": 5,
+    "widthsPx": [
+      91.05,
+      89.29,
+      78.97,
+      80.58,
+      29.64
+    ],
+    "people": 12,
+    "method": "Ширина внешнего полигона улицы поперёк середины участка в экранных пикселях при одном масштабе и изометрической проекции.",
+    "errors": {
+      "js": [],
+      "http": [],
+      "console": []
+    }
+  },
+  "elevationCpu": {
+    "fixture": "500 жителей, 250 зданий и 529 отрезков дороги",
+    "runtime": "v22.22.3",
+    "samplesPerIteration": 7377,
+    "measuredPairedIterations": 10,
+    "warmupPairedIterations": 2,
+    "unindexedMedianMs": 97.17,
+    "indexedMedianMs": 17.24,
+    "equalChecksum": 227.4667510654947,
+    "method": "13 точек попеременно слева, посередине и справа каждого отрезка и 500 координат жителей. Порядок измерений чередовался."
+  }
+}

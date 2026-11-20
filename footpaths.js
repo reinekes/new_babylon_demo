@@ -3,7 +3,7 @@ import {navigationSegmentClear,obstacleIndex} from './navigation.js';
 import {floodFootprint,floodPhase,floodProtectionRevision,floodedSegment} from './river-flood.js';
 
 const EPSILON=1e-6;
-const MAX_WEAR=8;
+const MAX_WEAR=32;
 const DECAY_SECONDS=36;
 const LEVEL_THRESHOLD=[1.6,2.8,4.4,6.2];
 const cache=new WeakMap(),terrainCache=new WeakMap();
@@ -15,6 +15,36 @@ export function footpathId(a,b){
  return `road:${from<to?`${from}|${to}`:`${to}|${from}`}`;
 }
 function wearAt(path,time){return Math.max(0,path.wear-Math.max(0,time-path.at)/DECAY_SECONDS);}
+// Distance is accumulated in full-edge traversals. The displayed width is
+// continuous; planning uses eight bands so a single footstep cannot churn
+// every cached trip in the city.
+const routeBand=wear=>Math.min(8,Math.floor((wear+1.5)/4));
+const trafficSnapshots=new WeakMap();
+export function routingTraffic(s){
+ const time=s.simTime||0,paths=s.footpaths;
+ if(!paths?.length)return null;
+ const previous=trafficSnapshots.get(s);
+ if(previous?.paths===paths&&time>=previous.time&&time<=previous.until)return previous.bands.size?previous:null;
+ const bands=new Map();let until=Infinity,maxBand=0;
+ let same=previous?.paths===paths&&time>=previous.time;
+ for(const path of paths){
+  const wear=wearAt(path,time),band=routeBand(wear);
+  if(!band)continue;
+  const a=`${path.a.x+.5},${path.a.y+.5}`,b=`${path.b.x+.5},${path.b.y+.5}`;
+  const edge=a+'>'+b;
+  bands.set(edge,band);bands.set(b+'>'+a,band);
+  if(same&&previous.bands.get(edge)!==band)same=false;
+  maxBand=Math.max(maxBand,band);
+  until=Math.min(until,time+(wear-(band*4-1.5))*DECAY_SECONDS);
+ }
+ // Another passage may postpone the predicted decay without changing a band.
+ // Preserve both route caches when every routing weight is still identical.
+ if(same&&bands.size===previous.bands.size){
+  previous.time=time;previous.until=until;return bands.size?previous:null;
+ }
+ const snapshot={paths,time,until,bands,maxBand};trafficSnapshots.set(s,snapshot);
+ return bands.size?snapshot:null;
+}
 function routeStart(from,to){
  if(Math.abs(to.x+.5-Math.round(to.x+.5))>EPSILON||Math.abs(to.y+.5-Math.round(to.y+.5))>EPSILON)return null;
  const dx=to.x-from.x,dy=to.y-from.y,absX=Math.abs(dx),absY=Math.abs(dy);
@@ -70,8 +100,8 @@ function pathIndex(s,time){
  return index;
 }
 
-// Only consumed walking distance counts. Grid diagonals and cardinal edges use
-// the same wear model; a walking shortcut never becomes a road in the graph.
+// A complete diagonal and a complete cardinal passage each contribute one
+// unit. Earth tracks form without spending materials or creating paving orders.
 export function recordFootsteps(s,from,to,distance,navigation){
  if(distance<=EPSILON)return;
  const origin=routeStart(from,to);
@@ -87,7 +117,9 @@ export function recordFootsteps(s,from,to,distance,navigation){
   index.byId.set(id,path);
   index.paths.push(path);
  }
- path.wear=Math.min(MAX_WEAR,wearAt(path,time)+distance);
+ const before=wearAt(path,time),length=Math.hypot(to.x-origin.x,to.y-origin.y);
+ path.wear=Math.min(MAX_WEAR,before+distance/length);
+ if(routeBand(before)!==routeBand(path.wear))trafficSnapshots.delete(s);
  path.at=time;
 }
 
@@ -101,7 +133,7 @@ export function visibleFootpaths(s,finishedIds=null){
   const id=footpathId(path.a,path.b);
   if(finishedIds?.has(id)||!access(id,path.a,path.b))continue;
   const level=LEVEL_THRESHOLD.filter(threshold=>wear>=threshold).length;
-  result.push({id,a:path.a,b:path.b,level,control:footpathControl(s,view,id,path.a,path.b)});
+  result.push({id,a:path.a,b:path.b,level,traffic:wear/MAX_WEAR,control:footpathControl(s,view,id,path.a,path.b)});
  }
  return result;
 }

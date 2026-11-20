@@ -1,0 +1,559 @@
+{
+  "release": "traffic-streets-and-lamplight-20261121",
+  "beforeCommit": "32a418dfb895b13ef579a63d64039e29ff7ceb06",
+  "traffic": {
+    "passesPerEdge": [
+      0,
+      3,
+      7,
+      11,
+      15
+    ],
+    "choosingOutOf100": [
+      0,
+      25,
+      50,
+      75,
+      100
+    ],
+    "maxWear": 32,
+    "maxCostReduction": 0.18,
+    "dryValidate": "tests/traffic-routing.test.js"
+  },
+  "evening": {
+    "saveSHA256": "d98dbeb3caa84a11bd64172d0ce858b27bf3ba0a0941f5d74733f888a139b4a5",
+    "residents": 40,
+    "communalResidents": 24,
+    "simulationStep": 0.025,
+    "simulation": {
+      "before": {
+        "0": {
+          "weather": [
+            "wind"
+          ],
+          "firstPairHour": 19.46,
+          "lastPairHour": 22.27,
+          "minutesWithPair": 169.2
+        },
+        "1": {
+          "weather": [
+            "cloudy",
+            "sunny"
+          ],
+          "firstPairHour": 19.46,
+          "lastPairHour": 22.27,
+          "minutesWithPair": 169.2
+        }
+      },
+      "after": {
+        "0": {
+          "weather": [
+            "wind"
+          ],
+          "firstPairHour": 17.71,
+          "lastPairHour": 23.57,
+          "minutesWithPair": 352.2
+        },
+        "1": {
+          "weather": [
+            "cloudy",
+            "sunny"
+          ],
+          "firstPairHour": 17.71,
+          "lastPairHour": 23.57,
+          "minutesWithPair": 352.2
+        }
+      }
+    },
+    "webgl": {
+      "before": {
+        "firstSampleHour": 18.037,
+        "lastSampleHour": 23.97,
+        "samples": 108,
+        "firstSeenPairHour": 19.5,
+        "lastSeenPairHour": 22.25,
+        "glErrors": 0,
+        "speakers": [
+          17,
+          18
+        ],
+        "speakerHandExcursionMetres": {
+          "17": 0.335,
+          "18": 0.293
+        },
+        "captures": {
+          "dusk": {
+            "hour": 18.307,
+            "home": 21,
+            "seated": []
+          },
+          "evening": {
+            "hour": 20.173,
+            "home": 22,
+            "seated": [
+              {
+                "id": 18,
+                "stage": "bench",
+                "knee": 65.602,
+                "hip": [
+                  53.199,
+                  0.58,
+                  35.801
+                ],
+                "foot": [
+                  53.142,
+                  0.154,
+                  36.062
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 19,
+                "stage": "roof",
+                "knee": 40.858,
+                "hip": [
+                  50.907,
+                  2.655,
+                  43.109
+                ],
+                "foot": [
+                  51.166,
+                  2.628,
+                  42.93
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 17,
+                "stage": "bench",
+                "knee": 58.416,
+                "hip": [
+                  52.04,
+                  0.58,
+                  35.811
+                ],
+                "foot": [
+                  52.306,
+                  0.169,
+                  35.872
+                ],
+                "skeleton": true,
+                "meshes": 8
+              }
+            ]
+          },
+          "late": {
+            "hour": 22.866,
+            "home": 24,
+            "seated": []
+          }
+        }
+      },
+      "after": {
+        "firstSampleHour": 18.057,
+        "lastSampleHour": 23.946,
+        "samples": 113,
+        "firstSeenPairHour": 18.057,
+        "lastSeenPairHour": 23.536,
+        "glErrors": 0,
+        "speakers": [
+          17,
+          18
+        ],
+        "speakerHandExcursionMetres": {
+          "17": 0.335,
+          "18": 0.293
+        },
+        "captures": {
+          "dusk": {
+            "hour": 18.313,
+            "home": 21,
+            "seated": [
+              {
+                "id": 17,
+                "stage": "bench",
+                "knee": 58.416,
+                "hip": [
+                  52.04,
+                  0.58,
+                  35.811
+                ],
+                "foot": [
+                  52.306,
+                  0.169,
+                  35.872
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 18,
+                "stage": "bench",
+                "knee": 65.602,
+                "hip": [
+                  53.199,
+                  0.58,
+                  35.801
+                ],
+                "foot": [
+                  53.142,
+                  0.154,
+                  36.062
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 19,
+                "stage": "roof",
+                "knee": 40.858,
+                "hip": [
+                  50.907,
+                  2.655,
+                  43.109
+                ],
+                "foot": [
+                  51.166,
+                  2.628,
+                  42.93
+                ],
+                "skeleton": true,
+                "meshes": 8
+              }
+            ]
+          },
+          "evening": {
+            "hour": 20.17,
+            "home": 22,
+            "seated": [
+              {
+                "id": 17,
+                "stage": "bench",
+                "knee": 58.416,
+                "hip": [
+                  52.04,
+                  0.58,
+                  35.811
+                ],
+                "foot": [
+                  52.306,
+                  0.169,
+                  35.872
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 18,
+                "stage": "bench",
+                "knee": 65.602,
+                "hip": [
+                  53.199,
+                  0.58,
+                  35.801
+                ],
+                "foot": [
+                  53.142,
+                  0.154,
+                  36.062
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 19,
+                "stage": "roof",
+                "knee": 40.858,
+                "hip": [
+                  50.907,
+                  2.655,
+                  43.109
+                ],
+                "foot": [
+                  51.166,
+                  2.628,
+                  42.93
+                ],
+                "skeleton": true,
+                "meshes": 8
+              }
+            ]
+          },
+          "late": {
+            "hour": 22.853,
+            "home": 24,
+            "seated": [
+              {
+                "id": 17,
+                "stage": "bench",
+                "knee": 58.416,
+                "hip": [
+                  52.04,
+                  0.58,
+                  35.811
+                ],
+                "foot": [
+                  52.306,
+                  0.169,
+                  35.872
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 18,
+                "stage": "bench",
+                "knee": 65.602,
+                "hip": [
+                  53.199,
+                  0.58,
+                  35.801
+                ],
+                "foot": [
+                  53.142,
+                  0.154,
+                  36.062
+                ],
+                "skeleton": true,
+                "meshes": 8
+              },
+              {
+                "id": 19,
+                "stage": "roof",
+                "knee": 40.858,
+                "hip": [
+                  50.907,
+                  2.655,
+                  43.109
+                ],
+                "foot": [
+                  51.166,
+                  2.628,
+                  42.93
+                ],
+                "skeleton": true,
+                "meshes": 8
+              }
+            ]
+          }
+        }
+      }
+    },
+    "singleResident": {
+      "before": {
+        "totalPopulation": 17,
+        "communalResidents": 1,
+        "minutesSeated": 0.0,
+        "ordinaryPhases": [
+          "home",
+          "toDistrictSupply",
+          "toHome"
+        ]
+      },
+      "after": {
+        "totalPopulation": 17,
+        "communalResidents": 1,
+        "minutesSeated": 214.8,
+        "ordinaryPhases": [
+          "home",
+          "toDistrictSupply",
+          "toHome"
+        ]
+      }
+    }
+  },
+  "homeLights": {
+    "source": "docs/benchmarks/city500-save-2026-11-13.json",
+    "saveSHA256": "4d89c8eea62f8ee4c70f258a089b78e66ae7e9c9ccaa7983bbd5894cf0da1b9d",
+    "method": "Same paused night on index.html. Screenshot with all occupied-home illumination enabled vs disabled. Occupied homes in frame and outside the six point lights. At least 2 pixels around each projected door centre where red increases by >5 RGB levels and >3 above blue increase. Near radius 15 px, district 8 px, overview 5 px.",
+    "before": {
+      "near": {
+        "radius": 35,
+        "checked": 0,
+        "homesWithLight": 0,
+        "medianWarmPixels": 0,
+        "medianPeak": 0,
+        "batch": []
+      },
+      "district": {
+        "radius": 160,
+        "checked": 19,
+        "homesWithLight": 6,
+        "medianWarmPixels": 1,
+        "medianPeak": 10,
+        "batch": []
+      },
+      "overview": {
+        "radius": 739.1,
+        "checked": 57,
+        "homesWithLight": 0,
+        "medianWarmPixels": 0,
+        "medianPeak": 0,
+        "batch": []
+      }
+    },
+    "after": {
+      "near": {
+        "radius": 35,
+        "checked": 0,
+        "homesWithLight": 0,
+        "medianWarmPixels": 0,
+        "medianPeak": 0,
+        "batch": [
+          [
+            63,
+            true
+          ]
+        ]
+      },
+      "district": {
+        "radius": 160,
+        "checked": 19,
+        "homesWithLight": 18,
+        "medianWarmPixels": 16,
+        "medianPeak": 81,
+        "batch": [
+          [
+            63,
+            true
+          ]
+        ]
+      },
+      "overview": {
+        "radius": 739.1,
+        "checked": 57,
+        "homesWithLight": 56,
+        "medianWarmPixels": 3,
+        "medianPeak": 43,
+        "batch": [
+          [
+            63,
+            true
+          ]
+        ]
+      }
+    },
+    "errors": []
+  },
+  "performance": {
+    "method": "Three 18-second runs per build, same saved 500 residents and 250 buildings at 4x. Chrome requestAnimationFrame, overview, warmed WebGL scene, order before/after/after/before, then a warmed before/after pair. Frame time includes simulation and presentation.",
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+    "viewport": [
+      1440,
+      900
+    ],
+    "renderResolution": [
+      1440,
+      780
+    ],
+    "cameraRadius": 739.10423044749,
+    "houseLevels": [
+      70,
+      69,
+      69
+    ],
+    "runs": [
+      {
+        "build": "before",
+        "frames": 306,
+        "seconds": 18.032700000000002,
+        "fps": 16.969172669650135,
+        "frameMs": {
+          "samples": 305,
+          "p50": 50,
+          "p95": 100.09999999999854
+        },
+        "simulationCpuP95Ms": 22.600000023841858,
+        "errors": [],
+        "webGlError": 0,
+        "citizenIdsCargoResourcesAndSaveVerified": true
+      },
+      {
+        "build": "after",
+        "frames": 542,
+        "seconds": 18.016,
+        "fps": 30.08436944937833,
+        "frameMs": {
+          "samples": 541,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "simulationCpuP95Ms": 11,
+        "errors": [],
+        "webGlError": 0,
+        "citizenIdsCargoResourcesAndSaveVerified": true
+      },
+      {
+        "build": "after",
+        "frames": 544,
+        "seconds": 18.032700000000002,
+        "fps": 30.167418079378017,
+        "frameMs": {
+          "samples": 543,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "simulationCpuP95Ms": 11.099999904632568,
+        "errors": [],
+        "webGlError": 0,
+        "citizenIdsCargoResourcesAndSaveVerified": true
+      },
+      {
+        "build": "before",
+        "frames": 531,
+        "seconds": 18.016000000000005,
+        "fps": 29.473801065719353,
+        "frameMs": {
+          "samples": 530,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "simulationCpuP95Ms": 11.200000047683716,
+        "errors": [],
+        "webGlError": 0,
+        "citizenIdsCargoResourcesAndSaveVerified": true
+      },
+      {
+        "build": "before",
+        "frames": 532,
+        "seconds": 18.015900000000002,
+        "fps": 29.529471189338306,
+        "frameMs": {
+          "samples": 531,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "simulationCpuP95Ms": 11.5,
+        "errors": [],
+        "webGlError": 0,
+        "citizenIdsCargoResourcesAndSaveVerified": true
+      },
+      {
+        "build": "after",
+        "frames": 543,
+        "seconds": 18.0325,
+        "fps": 30.11229724109247,
+        "frameMs": {
+          "samples": 542,
+          "p50": 33.29999999999927,
+          "p95": 50
+        },
+        "simulationCpuP95Ms": 11,
+        "errors": [],
+        "webGlError": 0,
+        "citizenIdsCargoResourcesAndSaveVerified": true
+      }
+    ],
+    "meanFPS": {
+      "before": 25.32414830823593,
+      "after": 30.121361589949604
+    }
+  },
+  "legacySaves": {
+    "count": 20,
+    "byteIdenticalAgainstPrevious": true
+  }
+}

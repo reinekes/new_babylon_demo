@@ -123,7 +123,7 @@ test('automatic roads are hidden in 2D outside road mode; finished road outlines
  const a={key:'a',x:0,y:0},b={key:'b',x:1,y:0},c={key:'c',x:2,y:0},d={key:'d',x:3,y:0};
  const road=(id,a,b,built)=>({id,a,b,built,level:1,x:(a.x+b.x)/2,y:0});
  const roads=[road('built-a',a,b,true),road('built-b',b,c,true),road('automatic',c,d,false)];
- Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads},streets:{edges:[[a,b],[b,c],[c,d]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push({path,color}),inView:()=>true});
+ Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads},streets:{edges:[[a,b],[b,c],[c,d]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push({path,color}),polygon:(path,color)=>calls.push({path,color}),inView:()=>true});
  r.streetsLayer();
  assert.deepEqual(calls.slice(0,4).map(call=>call.color),['#af9c73','#af9c73','#dbc79c','#dbc79c']);
  assert.ok(calls.every(call=>call.path[1][0]<d.x));

@@ -3,10 +3,25 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {river,signedRiverDistance} from '../world.js';
-import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain,indexNearbyRoads,alluvialHeight,alluvialNormal} from '../district3d/terrain.js';
+import {districtRoadEdges,shoreDistance,surfaceElevation,createDistrictTerrain,indexNearbyRoads,alluvialHeight,alluvialNormal,withTerrainElevationIndex} from '../district3d/terrain.js';
 const context={console,setTimeout,clearTimeout,performance,window:{URL:globalThis.URL,addEventListener(){},removeEventListener(){}},navigator:{userAgent:"node"}};
 vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),context);
 const B=context.BABYLON;
+
+test('indexed relief gives identical heights after plots are added, moved, resized or removed',()=>{
+ const s={world:{seed:717,lakes:[{cells:[{x:18,y:4}]}]},buildings:[{type:'house',x:-2,y:1},{type:'communalHouse',x:4,y:5,footprint:2}]};
+ const heights=()=>{
+  const samples=[];
+  for(let y=-2.3;y<13;y+=.37)for(let x=-5.2;x<23;x+=.31)samples.push(surfaceElevation(x,y,s));
+  return samples;
+ };
+ const check=()=>assert.deepEqual(withTerrainElevationIndex(s,heights),heights());
+ check();s.buildings.push({type:'house',x:1,y:3});check();
+ s.buildings[1].x+=4;check();delete s.buildings[1].footprint;check();
+ s.buildings.splice(0,1);check();
+ assert.throws(()=>withTerrainElevationIndex(s,()=>{throw Error('interrupted draw');}));
+ s.buildings.length=0;check();
+});
 
 test('road spatial lookup retains every segment capable of cutting the grass mask',()=>{
  const edges=Array.from({length:600},(_,i)=>[{x:i%30-5,y:Math.floor(i/30)-3},{x:i%30-4,y:Math.floor(i/30)-2.5}]);

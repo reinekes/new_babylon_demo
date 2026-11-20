@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "5c91a817a964cc48277936f11bf21348c50501a9137ef68a699a92ee3c1daccf"
+      "sha256": "9978dbc5ffbc21f25db4af699e9f209ae8edfff3fa63c13041f48c4b9889053f"
     },
     {
       "file": "game3d/caravan.js",
@@ -65,7 +65,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "24068e7b11c102f6b4d8b8e0a61c82c669546a1bc18470aed46069feb2e22893"
+      "sha256": "a929c6e9e5268f711cf06fa7eb03e74d9866fdd67792bf32a77351ed94c649df"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -135,7 +135,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 34,
+          "line": 35,
           "kind": "literal"
         }
       ]
@@ -678,7 +678,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 193,
+          "line": 194,
           "kind": "literal"
         }
       ]

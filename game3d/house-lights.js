@@ -1,3 +1,4 @@
+import {createLampPool} from './home-light-spill.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {buildingKey,isResidence} from '../definitions.js';
 import {houseLightCount} from '../households.js';
@@ -26,15 +27,7 @@ function createFestivalLamps(B,scene,domestic=false){
   const bowl=B.MeshBuilder.CreateCylinder(prefix+'-oil-bowls',{height:.12,diameterTop:.34,diameterBottom:.22,tessellation:8},scene);
   const flame=B.MeshBuilder.CreateCylinder(prefix+'-oil-flames',{height:.33,diameterTop:0,diameterBottom:.13,tessellation:6},scene);
   const core=B.MeshBuilder.CreateCylinder(prefix+'-oil-cores',{height:.20,diameterTop:0,diameterBottom:.075,tessellation:6},scene);
-  const pool=new B.Mesh(prefix+'-oil-light-pools',scene),data=new B.VertexData(),segments=16;
-  data.positions=[0,0,0];data.normals=[0,1,0];data.colors=[1,1,1,.72];data.indices=[];
-  // Geometry-only radial falloff: a bright centre fades through two soft rings
-  // to a fully transparent rim, without textures, canvases or a hard disc edge.
-  for(const [ring,[radius,alpha]]of [[.18,.54],[.43,.18],[.78,0]].entries()){
-   for(let i=0;i<segments;i++){const angle=i/segments*Math.PI*2;data.positions.push(Math.cos(angle)*radius,0,Math.sin(angle)*radius);data.normals.push(0,1,0);data.colors.push(1,1,1,alpha);}
-   for(let i=0;i<segments;i++){const next=(i+1)%segments,current=1+ring*segments+i,following=1+ring*segments+next;if(!ring)data.indices.push(0,following,current);else{const inner=current-segments,innerNext=following-segments;data.indices.push(inner,following,current,inner,innerNext,following);}}
-  }
-  data.applyToMesh(pool);pool.useVertexColors=true;pool.hasVertexAlpha=true;
+  const pool=createLampPool(B,scene,prefix+'-oil-light-pools',[[.18,.54],[.43,.18],[.78,0]],.72);
   const finishes=[makeMaterial(prefix+'-baked-clay','#b46f3d'),makeMaterial(prefix+'-amber-flame','#ff982f'),makeMaterial(prefix+'-warm-wick','#fff2b4'),makeMaterial(prefix+'-soft-lamplight','#ec9b44',.19)];
   for(const [i,mesh]of [bowl,flame,core,pool].entries()){mesh.material=finishes[i];mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=false;mesh.metadata=domestic?{communalLamp:true}:{festivalLamp:true,festivalBatch:i};mesh.setEnabled(false);meshes.push(mesh);}
  }

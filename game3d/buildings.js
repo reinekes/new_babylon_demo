@@ -1,3 +1,4 @@
+import {createHomeLightSpill} from './home-light-spill.js';
 import {createOvenFires} from './oven-fire.js';
 import {ovenChambers} from './reference-workshops.js';
 import {BASE_TIME_RATE} from '../calendar.js';
@@ -72,7 +73,7 @@ export function mergeCourtyardAsset(B,container){
 export async function createGameBuildings(B,scene,materials,options={}){
  let cropAssets=options.deferAssets?null:await loadFieldCrops(B,scene),cropPromise=null;
  const templates=new Map(),active=new Map(),meshes=[],ownedMaterials=[],fieldBeds=new Map();let fieldBedState=null;
- const walkways=shoreWalkways();
+ const walkways=shoreWalkways(),homeLightSpill=createHomeLightSpill(B,scene);
  let disposed=false,previewRecord=null,highlightSignature='';const highlighted=[];
  const sacredModels=createSacredModels(B,scene);
  const watchHouseFire=createWatchHouseFire(B,scene),ovenFires=createOvenFires(B,scene);
@@ -270,6 +271,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
  function syncHomeLamps(record,b,occupants){
   const slots=record.lampOrigin.slots||4,count=Math.ceil(Math.min(1,occupants/Math.max(1,capacityOf(b)))*slots);
   if(record.litWindows===count)return;
+  if(Boolean(record.litWindows)!==Boolean(count))homeLightSpill.invalidate();
   if(!lampSources){
    const dark=B.MeshBuilder.CreateBox('home-lamp-unlit-source',{width:.15,height:.2,depth:.04},scene);
    const lit=dark.clone('home-lamp-lit-source');
@@ -283,7 +285,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
    const origin=record.lampOrigin;
    mesh.parent=record.root;mesh.position.set(origin.x+index*(origin.spacing||.18),origin.y,origin.z);
    if(origin.slots)mesh.scaling.set(.72,1.78,.65);
-   mesh.metadata={...record.root.metadata,homeLamp:true,lampIndex:index};mesh.isVisible=true;mesh.isPickable=true;mesh.freezeWorldMatrix();
+   mesh.metadata={...record.root.metadata,homeLamp:true,litHomeLamp:lit,lampIndex:index};mesh.isVisible=true;mesh.isPickable=true;mesh.freezeWorldMatrix();
    record.meshes[slot]=mesh;
    if(previous){meshes[meshes.indexOf(previous)]=mesh;previous.dispose();}
    else meshes.push(mesh);
@@ -291,7 +293,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   record.litWindows=count;
  }
  function release(key){const t=templates.get(key);if(t&&!--t.users){t.root.dispose();templates.delete(key);}}
- function remove(key){const record=active.get(key);if(!record)return;for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}watchHouseFire.remove(key);ovenFires.remove(key);record.removeWalkway?.();record.root.dispose();release(record.signature);active.delete(key);
+ function remove(key){const record=active.get(key);if(!record)return;if(record.litWindows)homeLightSpill.invalidate();for(const m of record.meshes){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}watchHouseFire.remove(key);ovenFires.remove(key);record.removeWalkway?.();record.root.dispose();release(record.signature);active.delete(key);
   if(record.lampOrigin&&lampSources?.every(source=>source.instances.length===0)){
    for(const source of lampSources)source.dispose();
    lampSources=null;
@@ -367,6 +369,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     if(b.type==='watchHouse'||b.type==='cityGate')watchHouseFire.add(key,root,parts);
    }
    if(record.rotation!==rotationOf(view)){
+    if(record.litWindows)homeLightSpill.invalidate();
     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,view);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(view);
    }
    if(ovenChambers[b.type])ovenFires.sync(key,b);
@@ -396,5 +399,5 @@ export async function createGameBuildings(B,scene,materials,options={}){
   for(const [key,entry]of fieldBeds)if(!fieldSites.has(`${entry.x},${entry.y}`)&&!(previewRecord?.x===entry.x&&previewRecord?.y===entry.y)){entry.owner.dispose();fieldBeds.delete(key);}
  }
  function loadDetails(){if(cropPromise||cropAssets||disposed)return cropPromise;cropPromise=loadFieldCrops(B,scene).then(value=>{if(disposed){value?.dispose?.();return;}cropAssets=value;for(const [key,record]of [...active])if(record.root.metadata?.type==='field')remove(key);return value;});return cropPromise;}
- return {sync,meshes,loadDetails,homeCatalogue:(b,s)=>sacredModels.catalogue(b,s),homePlatform:b=>active.get(buildingKey(b))?.platform,floorHeight:walkways.heightAt,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;for(const source of lampSources||[])source.dispose();watchHouseFire.dispose();ovenFires.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
+ return {sync,meshes,loadDetails,homeCatalogue:(b,s)=>sacredModels.catalogue(b,s),homePlatform:b=>active.get(buildingKey(b))?.platform,floorHeight:walkways.heightAt,sacredReady:()=>sacredModels.idle(),refreshMaterials(){for(const m of ownedMaterials)if(/home-plaster|house-\d-finish|plaster-trim/.test(m.name))m.bumpTexture=materials.plaster.bumpTexture;},preview,clearPreview,highlight,light(night,seconds,camera){watchHouseFire.update(night,seconds,camera);const n=Math.max(0,Math.min(1,night||0));homeLightSpill.update(n,active);warm.emissiveColor.set(.065+.72*n,.035+.38*n,.012+.11*n);},dispose(){if(disposed)return;clearHighlights();clearPreview();for(const key of previewTemplates.keys())release(key);previewTemplates.clear();ghostMaterials.clear();for(const key of active.keys())remove(key);clearFieldBeds();fieldBedState=null;for(const source of lampSources||[])source.dispose();watchHouseFire.dispose();ovenFires.dispose();homeLightSpill.dispose();sacredModels.dispose();cropAssets?.dispose();for(const m of ownedMaterials)m.dispose(false,false);disposed=true;}};
 }
